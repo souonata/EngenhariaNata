@@ -7,7 +7,8 @@ Este é um portfólio multi-app com simulador de interface móvel iOS/Android. *
 ### Componentes Principais
 - **index.html**: Tela inicial simulada (device frame, status bar, app icons, dock) com navegação para sub-apps
 - **mutuo/**: App de comparação de sistemas de amortização (SAC/Price/Americano) com i18n PT-BR/IT-IT
-- **sobre/**: Página informativa sobre os projetos
+- **helice/**: Calculadora de passo de hélice para barcos (RPM, Slip, Redução)
+- **sobre/**: Página informativa sobre os projetos ("Sobre mim")
 
 ### Estrutura Completa do Projeto
 ```
@@ -20,15 +21,20 @@ Este é um portfólio multi-app com simulador de interface móvel iOS/Android. *
 ├── GLOSSARIO.md                 (Glossário educacional)
 ├── README.md                    (Documentação principal)
 ├── mutuo/
-│   ├── index.html               (Calculadora de amortização)
+│   ├── mutuo.html               (Calculadora de amortização)
 │   ├── mutuo-script.js
 │   ├── mutuo-styles.css
-│   └── .htaccess                (Configurações específicas)
+│   └── .htaccess
+├── helice/
+│   ├── helice.html              (Calculadora de hélice)
+│   ├── helice-script.js
+│   ├── helice-styles.css
+│   └── test-nocache.html
 └── sobre/
-    ├── index.html               (Sobre o projeto)
+    ├── sobre.html               (Sobre o projeto)
     ├── sobre-script.js          (Lógica de expansão/colapso)
     ├── sobre-styles.css         (Estilos e accordion)
-    └── .htaccess                (Configurações específicas)
+    └── .htaccess
 ```
 
 ## Convenções de Código
@@ -40,6 +46,12 @@ Este é um portfólio multi-app com simulador de interface móvel iOS/Android. *
 <script src="arquivo.js?v=1.0.0"></script>
 ```
 Incremente `?v=X.X.X` quando modificar arquivos. Meta tags anti-cache obrigatórias em todas as páginas HTML.
+
+### Limpeza de Código (Clean Code)
+- **NUNCA** deixe `console.log` no código de produção.
+- **NUNCA** deixe trechos de código comentados (dead code).
+- Remova funções não utilizadas.
+- Mantenha o código limpo e legível.
 
 ### Comentários Extremamente Detalhados
 Este projeto usa **documentação inline educacional**. NUNCA remova comentários existentes. Ao adicionar código:
@@ -85,10 +97,11 @@ app-folder/
 ```
 
 ### Links e Navegação
-Sempre use caminhos relativos da raiz: `href="mutuo/"` ou `href="sobre/"`
+Sempre use caminhos relativos da raiz: `href="mutuo/mutuo.html"` ou `href="sobre/sobre.html"`
 
 ### Gradientes e Visual Branding
-- Background padrão: `linear-gradient(135deg, #4A90E2 0%, #2E5C8A 100%)` (azul)
+- **Background dos Apps**: Cor sólida `#4e7262` (Verde Engenharia Nata) para padronização visual com a tela inicial.
+- **Tela Inicial**: Imagem de fundo ou gradiente conforme `index-styles.css`.
 - Logo "ENGENHARIA NATA" no dock: fonte Courier New, cor `#00ff88`, efeito glow
 - Ícones SVG com gradientes personalizados por app:
   - Verde (`#4CAF50` → `#2E7D32`) para finanças (Mutuo)
@@ -113,6 +126,13 @@ Todos os apps devem ter botão home centralizado no rodapé:
 .home-button-fixed:hover {
     transform: translateX(-50%) scale(1.1);  /* Mantém centralizado ao escalar */
     box-shadow: 0 12px 30px rgba(91, 243, 172, 0.6);
+}
+
+/* Ajuste de padding no body para não cobrir conteúdo */
+@media (max-width: 480px) {
+    body {
+        padding-bottom: 110px; /* Espaço extra para o botão home */
+    }
 }
 ```
 
@@ -309,10 +329,11 @@ novo-app/
 
 ### 4. CSS Base (copiar estrutura de mutuo-styles.css)
 - Reset global (`* { margin: 0; padding: 0; box-sizing: border-box; }`)
-- Body com gradiente roxo padrão
+- Body com background `#4e7262` (Verde Engenharia Nata)
 - Recipiente centralizado (`max-width: 900px`)
 - Botão home fixo centralizado (ver seção "Botão Home Fixo")
 - Media queries para tablet (`@media (min-width: 768px)`)
+- Padding bottom extra para mobile (`padding-bottom: 110px`)
 
 ## Regras de Edição
 
@@ -326,6 +347,7 @@ novo-app/
 8. Sempre destrua gráficos Chart.js antes de recriar (`chart.destroy()`)
 9. **Botão home sempre centralizado** usando `left: 50%` + `transform: translateX(-50%)`
 10. Use seletor CSS correto `.app-icon` (não `.icone-app`) para ícones na home
+11. **Limpeza**: Remova `console.log` e código comentado antes de finalizar.
 
 ## Versões Atuais dos Arquivos
 

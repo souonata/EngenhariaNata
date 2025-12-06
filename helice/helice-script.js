@@ -44,7 +44,7 @@ const traducoes = {
         'info-slip-texto': 'Deslizamento entre a hélice e a água. Barcos de lazer típicos têm 10-20% de slip. Quanto menor o slip, mais eficiente a hélice.',
         'formula-titulo': '📐 Fórmula Utilizada',
         'formula-explicacao': 'Onde 1056 é a constante de conversão de nós para polegadas/minuto',
-        'footer': 'Calculadora de Hélice - Brasil & Itália © 2025',
+        'footer': 'Calculadora de Hélice - Engenharia Nata © 2025',
         'grafico-label': 'Passo (polegadas)',
         'grafico-eixo-x': 'Velocidade (nós)',
         'grafico-eixo-y': 'Passo Recomendado (pol)'
@@ -72,7 +72,7 @@ const traducoes = {
         'info-slip-texto': "Scivolamento tra l'elica e l'acqua. Barche da diporto tipiche hanno 10-20% di slip. Minore è lo slip, più efficiente è l'elica.",
         'formula-titulo': '📐 Formula Utilizzata',
         'formula-explicacao': 'Dove 1056 è la costante di conversione da nodi a pollici/minuto',
-        'footer': 'Calcolatore Elica - Brasile & Italia © 2025',
+        'footer': 'Calcolatore Elica - Engenharia Nata © 2025',
         'grafico-label': 'Passo (pollici)',
         'grafico-eixo-x': 'Velocità (nodi)',
         'grafico-eixo-y': 'Passo Consigliato (pol)'
@@ -147,8 +147,6 @@ function atualizarResultado() {
     const reducao = parseFloat(document.getElementById('sliderReducao').value);
     const rpmMotor = parseFloat(document.getElementById('sliderRPM').value);
     const slipPercent = parseFloat(document.getElementById('sliderSlip').value);
-    
-    console.log('Valores lidos:', {velocidade, reducao, rpmMotor, slipPercent});
     
     // Atualiza displays dos sliders
     document.getElementById('valorVelocidade').textContent = velocidade;
@@ -281,8 +279,6 @@ function atualizarGrafico() {
  * Inicialização quando a página carrega
  */
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚤 Inicializando calculadora...');
-    
     // Verifica se todos os elementos existem
     const elementos = {
         sliderVelocidade: document.getElementById('sliderVelocidade'),
@@ -294,8 +290,6 @@ document.addEventListener('DOMContentLoaded', function() {
         valorRPM: document.getElementById('valorRPM'),
         valorSlip: document.getElementById('valorSlip')
     };
-    
-    console.log('Elementos encontrados:', elementos);
     
     // Inicializa com o idioma salvo
     trocarIdioma(idiomaAtual);
@@ -312,6 +306,4 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Calcula resultado inicial
     atualizarResultado();
-    
-    console.log('🚤 Calculadora de Hélice carregada com sucesso!');
 });

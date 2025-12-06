@@ -233,9 +233,7 @@ function obterValorNumericoFormatado(valorFormatado) {
  * Nome alternativo para a mesma função acima
  * Mantido para compatibilidade com código antigo
  */
-function obterValorNumerico(valorFormatado) {
-    return obterValorNumericoFormatado(valorFormatado);
-}
+/* Removido: function obterValorNumerico(valorFormatado) era redundante */
 
 /**
  * Guarda o valor original do campo quando o usuário começa a editar
@@ -432,7 +430,7 @@ const traducoes = {
         'amortization-table': 'Tabella di Ammortamento Completa',
         'installment': 'Rata',
         'value': 'Valore',
-        'footer': 'Calcolatrice di Mutui - Brasile & Italia © 2025',
+        'footer': 'Calcolatrice di Mutui - Engenharia Nata © 2025',
         'quick-controls': 'Controlli Rapidi',
         'quick-controls-desc': 'Regola i parametri e ricalcola istantaneamente',
         'evolution-charts': '📊 Evoluzione nel Tempo',
@@ -758,8 +756,7 @@ function atualizarParcelaExibida() {
     
     if (!parcela) return;
     
-    console.log('Parcela:', parcela.parcela, 'Dados:', parcela);
-    
+    // Atualiza os valores na tela
     document.getElementById('numeroParcela').textContent = parcela.parcela;
     document.getElementById('valorParcela').textContent = formatarMoeda(parcela.valorParcela);
     document.getElementById('valorAmortizacao').textContent = formatarMoeda(parcela.amortizacao);
@@ -814,7 +811,7 @@ function toggleExemplos() {
 function atualizarExemplosComValores() {
     // Usar valores dos controles rápidos
     const valorEmprestimoInput = valorRapido.value;
-    const valorEmprestimo = obterValorNumerico(valorEmprestimoInput);
+    const valorEmprestimo = obterValorNumericoFormatado(valorEmprestimoInput);
     const taxaJuros = parseFloat(taxaRapida.value.replace(',', '.'));
     const prazoAnos = parseInt(prazoRapido.value);
     const periodoJuros = document.querySelector('input[name="periodoRapido"]:checked').value;
@@ -1209,7 +1206,4 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleExemplos();
         });
     });
-    
-    // Não calcular automaticamente no carregamento - deixa usuário inserir valores
-    // calcularEmprestimo();
 });

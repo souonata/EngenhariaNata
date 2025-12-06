@@ -17,12 +17,19 @@ const traducoes = {
         'page-title': '📱 Sobre o Projeto',
         'page-subtitle': 'Portfólio de apps web',
         'overview-title': 'Visão Geral',
-        'overview-description': 'Portfólio com 2 apps web usando HTML5, CSS3 e JavaScript puro.',
+        'overview-description': 'Portfólio com 3 apps web usando HTML5, CSS3 e JavaScript puro.',
         'app-mutuo-desc': 'Calculadora de amortização bilíngue',
+        'app-helice-desc': 'Calculadora de passo de hélice',
         'app-about-desc': 'Informações do projeto',
         'calculator-title': 'Calculadora de Empréstimos BR/IT',
         'what-it-does': 'O que faz:',
         'calculator-description': 'Compara 3 sistemas de amortização de empréstimos: SAC, Price e Americano. Ajuda pessoas a entenderem qual sistema é melhor para sua situação financeira.',
+        'helice-title': 'Calculadora de Hélice',
+        'helice-description': 'Calcula o passo ideal da hélice para barcos de lazer, considerando RPM, redução e slip.',
+        'feature-pitch-title': 'Cálculo de Passo',
+        'feature-pitch-desc': 'Determina o passo correto para atingir o RPM máximo',
+        'feature-slip-title': 'Análise de Slip',
+        'feature-slip-desc': 'Considera a eficiência e o deslizamento na água',
         'feature-bilingual-title': 'Bilíngue',
         'feature-bilingual-desc': 'Português e Italiano com troca instantânea',
         'feature-charts-title': 'Gráficos',
@@ -52,12 +59,19 @@ const traducoes = {
         'page-title': '📱 Sul Progetto',
         'page-subtitle': 'Portfolio di app web',
         'overview-title': 'Panoramica',
-        'overview-description': 'Portfolio con 2 app web utilizzando HTML5, CSS3 e JavaScript puro.',
+        'overview-description': 'Portfolio con 3 app web utilizzando HTML5, CSS3 e JavaScript puro.',
         'app-mutuo-desc': 'Calcolatrice di ammortamento bilingue',
+        'app-helice-desc': 'Calcolatore passo elica',
         'app-about-desc': 'Informazioni sul progetto',
         'calculator-title': 'Calcolatrice Prestiti BR/IT',
         'what-it-does': 'Cosa fa:',
         'calculator-description': 'Confronta 3 sistemi di ammortamento dei prestiti: SAC, alla Francese e Americano. Aiuta le persone a capire quale sistema è migliore per la loro situazione finanziaria.',
+        'helice-title': 'Calcolatore Elica',
+        'helice-description': 'Calcola il passo ideale dell\'elica per barche da diporto, considerando RPM, riduzione e slip.',
+        'feature-pitch-title': 'Calcolo del Passo',
+        'feature-pitch-desc': 'Determina il passo corretto per raggiungere il massimo RPM',
+        'feature-slip-title': 'Analisi dello Slip',
+        'feature-slip-desc': 'Considera l\'efficienza e lo scivolamento nell\'acqua',
         'feature-bilingual-title': 'Bilingue',
         'feature-bilingual-desc': 'Portoghese e Italiano con cambio istantaneo',
         'feature-charts-title': 'Grafici',
@@ -114,8 +128,6 @@ function trocarIdioma(novoIdioma) {
             btn.classList.remove('active');
         }
     });
-    
-    console.log(`🌍 Idioma alterado para: ${novoIdioma}`);
 }
 
 /**
@@ -180,11 +192,6 @@ document.addEventListener('DOMContentLoaded', function() {
         conteudo.style.overflow = 'hidden';
         conteudo.style.transition = 'max-height 0.4s ease';
     });
-    
-    // Mensagem no console para debug
-    console.log('🎭 Sistema de accordion inicializado! Clique nos títulos para expandir/retrair.');
-    console.log(`📦 Total de seções expansíveis: ${conteudos.length}`);
-    console.log('🌍 Sistema i18n inicializado! Use os botões para trocar idioma.');
 });
 
 /**

@@ -1,0 +1,438 @@
+/* ============================================
+   RESET E CONFIGURAÇÕES GLOBAIS
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    overflow-x: hidden;
+    width: 100%;
+    touch-action: pan-y;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    /* Verde Engenharia Nata */
+    background: #4e7262;
+    color: #333;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 15px;
+    padding-bottom: 110px; /* Espaço para botão home */
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+}
+
+/* ============================================
+   BOTÃO HOME FIXO
+   ============================================ */
+.botao-home-fixo {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    /* Gradiente Azul/Teal Padrão */
+    background: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    text-decoration: none;
+    color: white;
+}
+
+.botao-home-fixo:hover {
+    transform: translateX(-50%) scale(1.15);
+    box-shadow: 0 12px 30px rgba(91, 243, 172, 0.6);
+}
+
+.botao-home-fixo svg {
+    width: 28px;
+    height: 28px;
+    fill: white;
+}
+
+/* ============================================
+   CONTAINER PRINCIPAL
+   ============================================ */
+.conteiner-principal {
+    width: 100%;
+    margin: 0;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ============================================
+   CABEÇALHO
+   ============================================ */
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+    padding: 20px 0;
+}
+
+.seletor-idioma {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.btn-idioma {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+}
+
+.btn-idioma:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.btn-idioma.ativo {
+    background: white;
+    color: #4e7262; /* Verde do fundo para contraste */
+    border-color: white;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+}
+
+.flag {
+    font-size: 1.3rem;
+}
+
+.texto-idioma {
+    font-size: 0.9rem;
+}
+
+header h1 {
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.subtitulo {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* ============================================
+   SEÇÃO DE CONTROLES
+   ============================================ */
+.cartao {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.grupo-entrada {
+    margin-bottom: 25px;
+}
+
+.grupo-entrada:last-child {
+    margin-bottom: 0;
+}
+
+.grupo-entrada label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+/* Input numérico estilizado */
+.wrapper-numero {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.wrapper-numero input {
+    width: 100%;
+    padding: 12px;
+    padding-right: 50px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.wrapper-numero input:focus {
+    border-color: #2d9fa3ff;
+}
+
+.sufixo-input {
+    position: absolute;
+    right: 15px;
+    color: #888;
+    font-weight: 600;
+}
+
+/* ============================================
+   SLIDER COM BOTÕES (+ e -)
+   ============================================ */
+.slider-com-botoes {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.arrow-btn {
+    width: 36px;
+    height: 36px;
+    border: 2px solid #2d9fa3ff;
+    background: white;
+    color: #2d9fa3ff;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    flex-shrink: 0;
+}
+
+.arrow-btn:hover {
+    background: #2d9fa3ff;
+    color: white;
+    transform: scale(1.1);
+}
+
+.arrow-btn:active {
+    transform: scale(0.95);
+    background: #237a7d;
+    color: white;
+}
+
+/* Slider Range */
+input[type="range"] {
+    flex: 1;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, #2d9fa3ff 0%, #667eea 100%);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(45, 159, 163, 0.4);
+    transition: transform 0.2s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, #2d9fa3ff 0%, #667eea 100%);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(45, 159, 163, 0.4);
+}
+
+/* Cabeçalho do Controle com valor à direita */
+.cabecalho-controle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.cabecalho-controle label {
+    font-size: 1rem;
+    color: #2d9fa3ff;
+    font-weight: 600;
+}
+
+.valor-display {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+    background: #f0f0f0;
+    padding: 4px 12px;
+    border-radius: 20px;
+    min-width: 80px;
+    text-align: center;
+}
+
+
+/* Radio Buttons Customizados */
+.grupo-radio {
+    display: flex;
+    gap: 15px;
+}
+
+.opcao-radio {
+    flex: 1;
+    position: relative;
+}
+
+.opcao-radio input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.cartao-radio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.opcao-radio input:checked + .cartao-radio {
+    border-color: #2d9fa3ff;
+    background-color: #e0f7fa;
+    box-shadow: 0 4px 10px rgba(45, 159, 163, 0.2);
+}
+
+.icone-radio {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.rotulo-radio {
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* ============================================
+   RESULTADOS
+   ============================================ */
+.grade-resultados {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.item-resultado {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    border-bottom: 4px solid #2d9fa3ff;
+}
+
+.icone-resultado {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.valor-resultado {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.rotulo-resultado {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 5px;
+    display: block;
+}
+
+.sub-resultado {
+    font-size: 0.75rem;
+    color: #888;
+    display: block;
+}
+
+.custo-item {
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 1px dashed #ddd;
+    color: #2d9fa3ff;
+    font-weight: 600;
+}
+
+.estimativa-preco {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%);
+    color: white;
+    border-bottom: none;
+}
+
+.estimativa-preco .valor-resultado {
+    color: white;
+    font-size: 2rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.estimativa-preco .rotulo-resultado {
+    color: rgba(255,255,255,0.9);
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+footer {
+    text-align: center;
+    color: white;
+    margin-top: 20px;
+    padding: 15px 0;
+    opacity: 0.9;
+}
+
+footer p {
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+    .grade-resultados {
+        grid-template-columns: 1fr;
+    }
+}

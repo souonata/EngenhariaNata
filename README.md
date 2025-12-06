@@ -11,7 +11,10 @@ Portfólio de apps web usando HTML5, CSS3 e JavaScript puro. Sem frameworks.
 ### 💰 Mutuo
 Calculadora de empréstimos com 3 sistemas de amortização (SAC, Price, Americano). Bilíngue PT-BR/IT-IT.
 
-### 📚 About Me
+### 🚤 Helice
+Calculadora de passo de hélice para barcos de lazer. Calcula passo ideal, RPM na hélice e velocidade teórica.
+
+### 📚 Sobre mim
 Informações sobre o projeto.
 
 ## 📂 Estrutura do Projeto
@@ -24,6 +27,10 @@ Informações sobre o projeto.
 │   ├── mutuo.html
 │   ├── mutuo-script.js
 │   └── mutuo-styles.css
+├── helice/                      (Calculadora de hélice)
+│   ├── helice.html
+│   ├── helice-script.js
+│   └── helice-styles.css
 └── sobre/                       (Sobre o projeto)
     ├── sobre.html
     ├── sobre-script.js

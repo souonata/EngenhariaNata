@@ -21,9 +21,10 @@ let idiomaAtual = localStorage.getItem('idiomaPreferido') || 'pt-BR';
 const traducoes = {
     'pt-BR': {
         // Nomes dos aplicativos
-        'app-about': 'About Me',
+        'app-about': 'Sobre mim',
         'app-helice': 'Hélice',
         'app-mutuo': 'Financiamento',
+        'app-solar': 'Solar Off-Grid',
         
         // Dias da semana por extenso (minúscula)
         'dia-dom': 'domingo',
@@ -53,6 +54,7 @@ const traducoes = {
         'app-about': 'Su di Me',
         'app-helice': 'Elica',
         'app-mutuo': 'Mutuo',
+        'app-solar': 'Solare Off-Grid',
         
         // Dias da semana por extenso em italiano (minúscula)
         'dia-dom': 'domenica',

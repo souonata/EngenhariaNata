@@ -52,6 +52,15 @@ Quando você vir uma palavra em **inglês** no código, procure aqui para saber 
 - `.special-features` = **funcionalidades-especiais**
 - `.special-feature` = **funcionalidade-especial**
 
+### Hélice (helice/helice.html)
+- `.slider-group` = **grupo-de-deslizantes**
+- `.slider-label` = **rótulo-do-deslizante**
+- `.slider-value` = **valor-do-deslizante**
+- `.result-card` = **cartão-de-resultado**
+- `.result-value` = **valor-do-resultado**
+- `.result-unit` = **unidade-do-resultado**
+- `.info-section` = **seção-de-informações**
+
 ### Sobre (sobre/index.html)
 - `.tech-list` = **lista-de-tecnologias**
 - `.features-grid` = **grade-de-funcionalidades**
@@ -97,6 +106,12 @@ Quando você vir uma palavra em **inglês** no código, procure aqui para saber 
 - `formatarMoeda()` = **formatar moeda** (R$ ou €)
 - `atualizarGraficos()` = **atualizar gráficos**
 - `toggleExemplos()` = **alternar exemplos** (mostrar/esconder)
+
+### helice-script.js
+- `calcularPasso()` = **calcular passo** (da hélice)
+- `atualizarResultado()` = **atualizar resultado** (na tela)
+- `atualizarGrafico()` = **atualizar gráfico** (curva de passo)
+- `trocarIdioma()` = **trocar idioma** (PT ↔ IT)
 
 ---
 

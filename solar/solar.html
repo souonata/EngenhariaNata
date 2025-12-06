@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <title>Dimensionamento Solar Off-Grid</title>
+    <link rel="stylesheet" href="solar-styles.css?v=1.0.2">
+</head>
+<body>
+    <div class="conteiner-principal">
+        <!-- Cabeçalho -->
+        <header>
+            <div class="seletor-idioma">
+                <button id="btnPortugues" class="btn-idioma" data-lang="pt-BR">
+                    <span class="flag">🇧🇷</span>
+                    <span class="texto-idioma">Português</span>
+                </button>
+                <button id="btnItaliano" class="btn-idioma" data-lang="it-IT">
+                    <span class="flag">🇮🇹</span>
+                    <span class="texto-idioma">Italiano</span>
+                </button>
+            </div>
+            <h1 data-i18n="app-title">☀️ Solar Off-Grid</h1>
+            <p class="subtitulo" data-i18n="app-subtitle">Dimensionamento de Sistema Fotovoltaico</p>
+        </header>
+
+        <!-- Inputs -->
+        <section class="cartao">
+            <!-- Consumo -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderConsumo" data-i18n="label-consumo">Consumo Médio Mensal</label>
+                    <span id="valConsumo" class="valor-display">150 kWh</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn" data-target="sliderConsumo" data-step="-10" aria-label="Diminuir consumo">−</button>
+                    <input type="range" id="sliderConsumo" min="10" max="1000" step="10" value="150">
+                    <button type="button" class="arrow-btn" data-target="sliderConsumo" data-step="10" aria-label="Aumentar consumo">+</button>
+                </div>
+            </div>
+
+            <!-- Autonomia -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderAutonomia" data-i18n="label-autonomia">Dias de Autonomia</label>
+                    <span id="valAutonomia" class="valor-display">2 dias</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn" data-target="sliderAutonomia" data-step="-1" aria-label="Diminuir autonomia">−</button>
+                    <input type="range" id="sliderAutonomia" min="1" max="10" step="1" value="2">
+                    <button type="button" class="arrow-btn" data-target="sliderAutonomia" data-step="1" aria-label="Aumentar autonomia">+</button>
+                </div>
+            </div>
+
+            <!-- Tipo de Bateria -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-tipo-bateria">Tipo de Bateria</label>
+                <div class="grupo-radio">
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoBateria" value="chumbo" checked>
+                        <div class="cartao-radio">
+                            <span class="icone-radio">🔋</span>
+                            <span class="rotulo-radio" data-i18n="opt-chumbo">Chumbo-Ácido</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoBateria" value="litio">
+                        <div class="cartao-radio">
+                            <span class="icone-radio">⚡</span>
+                            <span class="rotulo-radio" data-i18n="opt-litio">Lítio (LiFePO4)</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Vida Útil (Anos) -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderVidaUtil" data-i18n="label-vida-util">Vida Útil Estimada</label>
+                    <span id="valVidaUtil" class="valor-display">3 anos</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn" data-target="sliderVidaUtil" data-step="-0.5" aria-label="Diminuir vida útil">−</button>
+                    <input type="range" id="sliderVidaUtil" min="1" max="5" step="0.5" value="3">
+                    <button type="button" class="arrow-btn" data-target="sliderVidaUtil" data-step="0.5" aria-label="Aumentar vida útil">+</button>
+                </div>
+                <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">
+                    <span id="descVidaUtil">DoD Diário: --%</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resultados -->
+        <section class="cartao">
+            <h2 style="margin-bottom: 20px; text-align: center; color: #2d9fa3ff;" data-i18n="results-title">Sistema Recomendado</h2>
+            
+            <div class="grade-resultados">
+                <!-- Placas -->
+                <div class="item-resultado">
+                    <span class="icone-resultado">☀️</span>
+                    <span id="resQtdPlacas" class="valor-resultado">4</span>
+                    <span class="rotulo-resultado" data-i18n="res-placas">Placas Solares</span>
+                    <span id="resPotenciaPlacas" class="sub-resultado">400W cada</span>
+                    <span id="custoPaineis" class="sub-resultado custo-item">R$ 0</span>
+                </div>
+
+                <!-- Baterias -->
+                <div class="item-resultado">
+                    <span class="icone-resultado">🔋</span>
+                    <span id="resQtdBaterias" class="valor-resultado">8</span>
+                    <span class="rotulo-resultado" data-i18n="res-baterias">Baterias</span>
+                    <span id="resVidaUtilReal" class="sub-resultado" style="color: #2d9fa3ff; font-weight: 600;"></span>
+                    <span id="resMotivoBaterias" class="sub-resultado" style="font-size: 0.75rem; color: #666;"></span>
+                    <span id="custoBaterias" class="sub-resultado custo-item">R$ 0</span>
+                </div>
+
+                <!-- Inversor -->
+                <div class="item-resultado">
+                    <span class="icone-resultado">🔌</span>
+                    <span id="resPotenciaInversor" class="valor-resultado">3 kW</span>
+                    <span class="rotulo-resultado" data-i18n="res-inversor">Inversor Off-Grid</span>
+                    <span class="sub-resultado" data-i18n="res-onda-pura">Onda Senoidal Pura</span>
+                    <span id="custoInversor" class="sub-resultado custo-item">R$ 0</span>
+                </div>
+
+                <!-- Peso Baterias -->
+                <div class="item-resultado">
+                    <span class="icone-resultado">⚖️</span>
+                    <span id="resPesoBaterias" class="valor-resultado">0 kg</span>
+                    <span class="rotulo-resultado" data-i18n="res-peso">Peso Estimado</span>
+                </div>
+
+                <!-- Preço Total -->
+                <div class="item-resultado estimativa-preco">
+                    <span class="icone-resultado">💰</span>
+                    <span id="resPrecoEstimado" class="valor-resultado">R$ 15.000</span>
+                    <span class="rotulo-resultado" data-i18n="res-estimativa">Custo Total</span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p data-i18n="footer">Solar Off-Grid - Engenharia NATA © 2025</p>
+    </footer>
+
+    <a href="../index.html" class="botao-home-fixo">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <script src="solar-script.js?v=1.0.9"></script>
+</body>
+</html>

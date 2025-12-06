@@ -239,9 +239,13 @@ body {
    APPS GRID - Grade de ícones dos aplicativos
    ============================================ */
 .apps-grid {
-    /* Grade com 4 colunas */
+    /* Grade com 3 colunas para mobile (antes era 4) */
+    /* Isso faz o 4º app pular para a próxima linha */
     display: grid;
-    grid-template-columns: repeat(4, 1fr);  /* 4 colunas de tamanho igual */
+    grid-template-columns: repeat(3, 1fr);
+    
+    /* Centraliza os ícones horizontalmente em suas células */
+    justify-items: center;
     
     gap: 25px;      /* Espaço entre os ícones */
     padding: 20px 0;
