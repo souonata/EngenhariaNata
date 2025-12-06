@@ -14,7 +14,7 @@
     
     <!-- Carrega o arquivo CSS com controle de versão -->
     <!-- Mude ?v=1.0.0 para ?v=1.0.1 quando atualizar o CSS -->
-    <link rel="stylesheet" href="sobre-styles.css?v=1.5.0">
+    <link rel="stylesheet" href="sobre-styles.css?v=1.5.1">
 </head>
 <body>
     <!-- Container principal que limita a largura máxima -->
@@ -48,12 +48,13 @@
                 <span class="seta-expansao">▼</span>
             </div>
             <div class="card-content conteudo-expansivel">
-                <p data-i18n="overview-description">Portfólio com 2 apps web usando HTML5, CSS3 e JavaScript puro.</p>
+                <p data-i18n="overview-description">Portfólio com 4 apps web usando HTML5, CSS3 e JavaScript puro.</p>
                 
                 <ul class="tech-list">
                     <li><strong>💰 Mutuo</strong> - <span data-i18n="app-mutuo-desc">Calculadora de amortização bilíngue</span></li>
                     <li><strong>🚤 Helice</strong> - <span data-i18n="app-helice-desc">Calculadora de passo de hélice</span></li>
-                    <li><strong>📚 Sobre mim</strong> - <span data-i18n="app-about-desc">Informações do projeto</span></li>
+                    <li><strong>☀️ Solar</strong> - <span data-i18n="app-solar-desc">Dimensionamento fotovoltaico off-grid</span></li>
+                    <li><strong>📖 Sobre mim</strong> - <span data-i18n="app-about-desc">Informações do projeto</span></li>
                 </ul>
             </div>
         </div>
@@ -153,6 +154,34 @@
             </div>
         </div>
 
+        <!-- ========================================== -->
+        <!-- CARTÃO 3B: CALCULADORA SOLAR -->
+        <!-- ========================================== -->
+        <div class="card highlight card-expansivel">
+            <div class="card-header card-header-clicavel" onclick="alternarSecao(this)">
+                <span class="icon">☀️</span>
+                <h2 data-i18n="solar-title">Dimensionamento Solar</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <p class="app-description">
+                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="solar-description">Dimensiona sistemas fotovoltaicos off-grid, calculando painéis, baterias e inversor necessários.</span>
+                </p>
+                
+                <div class="features-grid">
+                    <div class="feature">
+                        <span class="feature-icon">🔋</span>
+                        <h4 data-i18n="feature-battery-title">Baterias AGM/Lítio</h4>
+                        <p data-i18n="feature-battery-desc">Compara chumbo-ácido e LiFePO₄ com tabelas de vida útil</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">⚙️</span>
+                        <h4 data-i18n="feature-config-title">Configurável</h4>
+                        <p data-i18n="feature-config-desc">Customize preços de painéis, baterias e especificações</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- ========================================== -->
         <!-- CARTÃO 4: RECURSOS ESPECIAIS -->
@@ -233,6 +262,6 @@
     <!-- SCRIPT PARA ACCORDION (EXPANSÃO/RETRAÇÃO) -->
     <!-- A lógica está no arquivo sobre-script.js -->
     <!-- ========================================== -->
-    <script src="sobre-script.js?v=1.2.0"></script>
+    <script src="sobre-script.js?v=1.3.0"></script>
 </body>
 </html>

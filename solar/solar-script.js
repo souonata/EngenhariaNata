@@ -1,9 +1,9 @@
 // ============================================
-// CALCULADORA SOLAR OFF-GRID
+// CALCULADORA SOLAR
 // ============================================
 
 // Variável que guarda o idioma atual (Português ou Italiano)
-let idiomaAtual = localStorage.getItem('idiomaPreferido') || 'pt-BR';
+let idiomaAtual = localStorage.getItem('idiomaSolar') || 'pt-BR';
 
 // ============================================
 // CONSTANTES DO SISTEMA (Valores Fixos)
@@ -11,14 +11,31 @@ let idiomaAtual = localStorage.getItem('idiomaPreferido') || 'pt-BR';
 
 const HSP = 5.0; // Horas de Sol Pleno
 const EFICIENCIA_SISTEMA = 0.80; // Eficiência global (perdas de 20%)
-const POTENCIA_PAINEL = 400; // Watts por painel
+
+// Taxa de conversão BRL → EUR (aproximada, baseada em preços de referência 2024)
+const TAXA_BRL_EUR = 6.19;
 
 // ============================================
-// ESPECIFICAÇÕES DAS BATERIAS
+// VALORES PADRÃO DOS COMPONENTES (em BRL)
 // ============================================
+const VALORES_PADRAO = {
+    potenciaPainel: 400,
+    precoPainel: 1200,
+    tensaoAGM: 12,
+    capacidadeAGM: 100,
+    precoAGM: 420,
+    pesoAGM: 30,
+    tensaoLitio: 12,
+    capacidadeLitio: 100,
+    precoLitio: 3500,
+    pesoLitio: 12
+};
 
-const BAT_CHUMBO = { v: 12, ah: 100, price_brl: 420, price_eur: 68, weight: 30 }; 
-const BAT_LITIO = { v: 12, ah: 100, price_brl: 3500, price_eur: 565, weight: 12 }; 
+// Função para obter configuração atual (customizada ou padrão)
+function obterConfig() {
+    const configSalva = localStorage.getItem('configSolar');
+    return configSalva ? JSON.parse(configSalva) : VALORES_PADRAO;
+}
 
 // ============================================
 // TABELAS DE VIDA ÚTIL (Ciclos vs Descarga)
@@ -40,14 +57,9 @@ const CICLOS_LITIO = [
 ];
 
 // ============================================
-// PREÇOS DE MERCADO (Estimativas 2024)
+// PREÇOS DE INVERSORES (Tabela fixa)
 // ============================================
 
-// Painel solar 400-450W
-const PRECO_PAINEL_BRL = 1200;
-const PRECO_PAINEL_EUR = 194;
-
-// Tabela de preços de inversores por potência
 const PRECOS_INVERSOR_BRL = [
     { kw: 1, preco: 1100 },
     { kw: 2, preco: 1550 },
@@ -95,7 +107,7 @@ function calcularPrecoInversor(potenciaKw, moeda) {
 // ============================================
 const traducoes = {
     'pt-BR': {
-        'app-title': '☀️ Solar Off-Grid',
+        'app-title': '☀️ Solar',
         'app-subtitle': 'Dimensionamento de Sistema Fotovoltaico',
         'label-consumo': 'Consumo Médio Mensal',
         'label-autonomia': 'Dias de Autonomia',
@@ -106,13 +118,13 @@ const traducoes = {
         'results-title': 'Sistema Recomendado',
         'res-placas': 'Placas Solares',
         'res-baterias': 'Baterias',
-        'res-inversor': 'Inversor Off-Grid',
+        'res-inversor': 'Inversor',
         'res-onda-pura': 'Onda Senoidal Pura',
         'res-peso': 'Peso das Baterias',
         'res-estimativa': 'Estimativa de Custo',
         'custos-titulo': 'Detalhamento de Custos',
         'custo-total': 'Total',
-        'footer': 'Solar Off-Grid - Engenharia NATA © 2025',
+        'footer': 'Solar - Engenharia NATA © 2025',
         'dias': 'dias',
         'dia': 'dia',
         'anos': 'anos',
@@ -120,7 +132,7 @@ const traducoes = {
         'moeda': 'R$'
     },
     'it-IT': {
-        'app-title': '☀️ Solare Off-Grid',
+        'app-title': '☀️ Solare',
         'app-subtitle': 'Dimensionamento Impianto Fotovoltaico',
         'label-consumo': 'Consumo Medio Mensile',
         'label-autonomia': 'Giorni di Autonomia',
@@ -131,13 +143,13 @@ const traducoes = {
         'results-title': 'Sistema Consigliato',
         'res-placas': 'Pannelli Solari',
         'res-baterias': 'Batterie',
-        'res-inversor': 'Inverter Off-Grid',
+        'res-inversor': 'Inverter',
         'res-onda-pura': 'Onda Sinusoidale Pura',
         'res-peso': 'Peso Batterie',
         'res-estimativa': 'Costo Stimato',
         'custos-titulo': 'Dettaglio Costi',
         'custo-total': 'Totale',
-        'footer': 'Solare Off-Grid - Engenharia NATA © 2025',
+        'footer': 'Solare - Engenharia NATA © 2025',
         'dias': 'giorni',
         'dia': 'giorno',
         'anos': 'anni',
@@ -155,7 +167,7 @@ let timeoutId = null;
 // ============================================
 function trocarIdioma(novoIdioma) {
     idiomaAtual = novoIdioma;
-    localStorage.setItem('idiomaPreferido', novoIdioma);
+    localStorage.setItem('idiomaSolar', novoIdioma);
     document.documentElement.lang = novoIdioma;
     
     document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -313,6 +325,17 @@ function calcularSistema(dodAlvo) {
     const autonomia = parseInt(document.getElementById('sliderAutonomia').value);
     const tipoBateria = document.querySelector('input[name="tipoBateria"]:checked').value;
 
+    // Obter configuração customizada ou padrão
+    const config = obterConfig();
+    
+    // Montar especificações das baterias baseado na config
+    const batSpec = tipoBateria === 'litio' 
+        ? { v: config.tensaoLitio, ah: config.capacidadeLitio, price_brl: config.precoLitio, weight: config.pesoLitio }
+        : { v: config.tensaoAGM, ah: config.capacidadeAGM, price_brl: config.precoAGM, weight: config.pesoAGM };
+    
+    const POTENCIA_PAINEL = config.potenciaPainel;
+    const PRECO_PAINEL = config.precoPainel;
+
     if (consumoMensal <= 0) {
         // Zera resultados se consumo inválido
         ['resQtdPlacas', 'resQtdBaterias', 'resPotenciaInversor', 'resPesoBaterias'].forEach(id => {
@@ -326,21 +349,25 @@ function calcularSistema(dodAlvo) {
     const energiaDiaria = consumoMensal / 30; // kWh
     
     // 2. Dimensionamento Baterias
-    // Critério A: Vida Útil (DoD diário limitado para preservar ciclos)
+    // O DoD escolhido (via slider de vida útil) afeta AMBOS os critérios:
+    // - Quanto menor o DoD, mais baterias são necessárias para a mesma energia utilizável
+    // - O DoD limita quanto da capacidade nominal pode ser usada
+    
+    // Critério A: Vida Útil (capacidade nominal para 1 dia de consumo com DoD alvo)
+    // Se consumo diário = 10 kWh e DoD = 50%, preciso de 10/0.5 = 20 kWh nominais
     const capVidaUtil = energiaDiaria / dodAlvo;
     
-    // Critério B: Autonomia (energia para N dias sem sol)
-    // Usa DoD de 100% como referência (sem limites artificiais)
-    const capAutonomia = energiaDiaria * autonomia;
+    // Critério B: Autonomia (capacidade nominal para N dias com o MESMO DoD)
+    // Se autonomia = 3 dias, consumo = 10 kWh/dia, DoD = 50%:
+    // Energia total necessária = 10 * 3 = 30 kWh utilizáveis
+    // Capacidade nominal = 30 / 0.5 = 60 kWh
+    const energiaAutonomia = energiaDiaria * autonomia; // kWh utilizáveis necessários
+    const capAutonomia = energiaAutonomia / dodAlvo;    // kWh nominais necessários
     
     // Escolhe o maior requisito (o gargalo)
     const capacidadeNecessariaKWh = Math.max(capVidaUtil, capAutonomia);
     
-    // DoD máximo permitido pela tecnologia (para cálculo dos painéis)
-    const maxDoDTecnologia = tipoBateria === 'litio' ? 0.95 : 0.70;
-    
-    // Seleciona bateria
-    const batSpec = tipoBateria === 'litio' ? BAT_LITIO : BAT_CHUMBO;
+    // Calcula energia por bateria
     const energiaPorBateria = (batSpec.v * batSpec.ah) / 1000; // kWh
     
     // Calcula quantidade (arredonda para cima e garante paridade para 24V/48V)
@@ -351,35 +378,37 @@ function calcularSistema(dodAlvo) {
     const capacidadeRealKWh = qtdBaterias * energiaPorBateria;
     
     // 3. Dimensionamento Painéis
-    // Os painéis precisam gerar energia para:
-    // - Consumo diário da casa
-    // - Recarregar TODO o banco de baterias em 1 dia de sol (pior caso)
+    // Os painéis precisam gerar energia suficiente para:
+    // - Recarregar o banco de baterias (o que foi consumido) em 1 dia de sol
     // 
-    // Energia utilizável do banco (considerando DoD máximo da tecnologia)
-    const energiaUtilizavelBanco = capacidadeRealKWh * maxDoDTecnologia;
+    // A energia a recarregar é o que foi descarregado = capacidade * DoD
+    // Isso já inclui o consumo diário, pois o banco foi dimensionado para isso
+    const energiaUtilizavelBanco = capacidadeRealKWh * dodAlvo;
     
-    // Total que os painéis devem gerar por dia:
-    // Consumo diário + Recarga completa do banco (após autonomia dias de descarga)
-    const energiaParaRecarga = energiaUtilizavelBanco; // Recarga total em 1 dia
-    const energiaTotalGerar = (energiaDiaria + energiaParaRecarga) / EFICIENCIA_SISTEMA;
+    // Energia que os painéis devem gerar por dia (considerando perdas do sistema)
+    const energiaTotalGerar = energiaUtilizavelBanco / EFICIENCIA_SISTEMA;
     
     const potenciaSolarNecessaria = (energiaTotalGerar * 1000) / HSP; // Watts
     const qtdPaineis = Math.ceil(potenciaSolarNecessaria / POTENCIA_PAINEL);
     
     // 4. Inversor
     // Deve aguentar a potência dos painéis + margem para picos
-    const potenciaInversor = Math.max(3, Math.ceil(potenciaSolarNecessaria / 1000)); // Mínimo 3kW
+    const potenciaInversor = Math.max(1, Math.ceil(potenciaSolarNecessaria / 1000)); // Mínimo 1kW
     
     // 5. Peso e Custo
     const pesoTotal = qtdBaterias * batSpec.weight;
     
-    const precoPainel = idiomaAtual === 'pt-BR' ? PRECO_PAINEL_BRL : PRECO_PAINEL_EUR;
-    const precoBat = idiomaAtual === 'pt-BR' ? batSpec.price_brl : batSpec.price_eur;
-    const moedaInversor = idiomaAtual === 'pt-BR' ? 'BRL' : 'EUR';
+    // Conversão de moeda: config salva em BRL, converter para EUR se italiano
+    const moedaCalculo = idiomaAtual === 'pt-BR' ? 'BRL' : 'EUR';
+    const fatorConversao = idiomaAtual === 'pt-BR' ? 1 : 1 / TAXA_BRL_EUR;
     
-    const custoPaineis = qtdPaineis * precoPainel;
-    const custoBaterias = qtdBaterias * precoBat;
-    const custoInversor = calcularPrecoInversor(potenciaInversor, moedaInversor);
+    // Preços convertidos para a moeda do idioma
+    const precoPainelConvertido = PRECO_PAINEL * fatorConversao;
+    const precoBateriaConvertido = batSpec.price_brl * fatorConversao;
+    
+    const custoPaineis = qtdPaineis * precoPainelConvertido;
+    const custoBaterias = qtdBaterias * precoBateriaConvertido;
+    const custoInversor = calcularPrecoInversor(potenciaInversor, moedaCalculo);
     const custoTotal = custoPaineis + custoBaterias + custoInversor;
 
     // 6. Exibir Resultados
@@ -389,7 +418,7 @@ function calcularSistema(dodAlvo) {
     document.getElementById('resPesoBaterias').textContent = `${pesoTotal} kg`;
     
     const moeda = traducoes[idiomaAtual]['moeda'];
-    const formatarPreco = (valor) => `${moeda} ${valor.toLocaleString(idiomaAtual, {maximumFractionDigits: 0})}`;
+    const formatarPreco = (valor) => `${moeda} ${valor.toLocaleString(idiomaAtual, {minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: true})}`;
     
     // Exibir custos detalhados
     document.getElementById('resPrecoEstimado').textContent = formatarPreco(custoTotal);
@@ -397,27 +426,34 @@ function calcularSistema(dodAlvo) {
     document.getElementById('custoBaterias').textContent = formatarPreco(custoBaterias);
     document.getElementById('custoInversor').textContent = formatarPreco(custoInversor);
     
-    // 7. Calcular e exibir vida útil real baseada no DoD efetivo
-    // DoD real = energia consumida por dia / capacidade real do banco
-    const dodReal = (energiaDiaria / capacidadeRealKWh) * 100; // em %
-    const ciclosEstimados = obterCiclosPorDoD(dodReal, tipoBateria);
-    const vidaUtilAnos = ciclosEstimados / 365;
-    
-    const textoAnos = idiomaAtual === 'pt-BR' ? 'anos' : 'anni';
-    const textoVidaUtil = idiomaAtual === 'pt-BR' ? 'Vida útil' : 'Vita utile';
-    document.getElementById('resVidaUtilReal').textContent = 
-        `${textoVidaUtil}: ~${vidaUtilAnos.toFixed(1)} ${textoAnos} (DoD ${dodReal.toFixed(0)}%)`;
-    
-    // Motivo do dimensionamento (qual critério foi o gargalo)
-    let motivo = '';
-    if (capVidaUtil > capAutonomia) {
-        motivo = idiomaAtual === 'pt-BR' ? '(gargalo: vida útil)' : '(limite: vita utile)';
-    } else if (capAutonomia > capVidaUtil) {
-        motivo = idiomaAtual === 'pt-BR' ? '(gargalo: autonomia)' : '(limite: autonomia)';
+    // Motivo do dimensionamento das BATERIAS
+    // Com a nova lógica, autonomia sempre é o fator quando > 1 dia
+    // pois capAutonomia = capVidaUtil * autonomia
+    let motivoBaterias = '';
+    if (autonomia > 1) {
+        motivoBaterias = idiomaAtual === 'pt-BR' ? '(gargalo: autonomia)' : '(limite: autonomia)';
     } else {
-        motivo = idiomaAtual === 'pt-BR' ? '(equilibrado)' : '(equilibrato)';
+        motivoBaterias = idiomaAtual === 'pt-BR' ? '(gargalo: vida útil)' : '(limite: vita utile)';
     }
-    document.getElementById('resMotivoBaterias').textContent = motivo;
+    document.getElementById('resMotivoBaterias').textContent = motivoBaterias;
+    
+    // Motivo do dimensionamento dos PAINÉIS
+    // Painéis são dimensionados para recarregar o banco em 1 dia
+    // O gargalo é sempre o tamanho do banco (que depende de autonomia ou vida útil)
+    let motivoPaineis = idiomaAtual === 'pt-BR' ? '(recarga do banco)' : '(ricarica banco)';
+    document.getElementById('resMotivoPaineis').textContent = motivoPaineis;
+    
+    // Motivo do dimensionamento do INVERSOR
+    // Inversor precisa atender: potência dos painéis OU mínimo 1kW
+    const potenciaPaineisKw = (qtdPaineis * POTENCIA_PAINEL) / 1000;
+    const potenciaMinimaKw = 1;
+    let motivoInversor = '';
+    if (potenciaInversor === potenciaMinimaKw && potenciaPaineisKw < potenciaMinimaKw) {
+        motivoInversor = idiomaAtual === 'pt-BR' ? '(gargalo: mínimo 1kW)' : '(limite: minimo 1kW)';
+    } else {
+        motivoInversor = idiomaAtual === 'pt-BR' ? '(gargalo: potência painéis)' : '(limite: potenza pannelli)';
+    }
+    document.getElementById('resMotivoInversor').textContent = motivoInversor;
 }
 
 // ============================================

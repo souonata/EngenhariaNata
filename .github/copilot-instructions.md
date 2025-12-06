@@ -8,6 +8,7 @@ Este é um portfólio multi-app com simulador de interface móvel iOS/Android. *
 - **index.html**: Tela inicial simulada (device frame, status bar, app icons, dock) com navegação para sub-apps
 - **mutuo/**: App de comparação de sistemas de amortização (SAC/Price/Americano) com i18n PT-BR/IT-IT
 - **helice/**: Calculadora de passo de hélice para barcos (RPM, Slip, Redução)
+- **solar/**: Dimensionamento de sistemas fotovoltaicos off-grid (painéis, baterias, inversor)
 - **sobre/**: Página informativa sobre os projetos ("Sobre mim")
 
 ### Estrutura Completa do Projeto
@@ -29,7 +30,14 @@ Este é um portfólio multi-app com simulador de interface móvel iOS/Android. *
 │   ├── helice.html              (Calculadora de hélice)
 │   ├── helice-script.js
 │   ├── helice-styles.css
-│   └── test-nocache.html
+│   └── .htaccess
+├── solar/
+│   ├── solar.html               (Dimensionamento solar)
+│   ├── solar-script.js
+│   ├── solar-styles.css
+│   ├── config.html              (Configuração de preços)
+│   ├── config-script.js
+│   └── .htaccess
 └── sobre/
     ├── sobre.html               (Sobre o projeto)
     ├── sobre-script.js          (Lógica de expansão/colapso)
@@ -354,12 +362,20 @@ novo-app/
 Mantenha sempre atualizado ao modificar:
 
 ```
-index.html                           → index-styles.css?v=1.1.0
-                                     → index-script.js?v=1.1.0
+index.html                           → index-styles.css?v=1.2.1
+                                     → index-script.js?v=1.2.0
 
-mutuo/index.html                     → mutuo-styles.css?v=1.1.0
+mutuo/mutuo.html                     → mutuo-styles.css?v=1.1.0
                                      → mutuo-script.js?v=1.1.0
 
-sobre/index.html                     → sobre-styles.css?v=1.1.0
-                                     → sobre-script.js?v=1.1.0
+helice/helice.html                   → helice-styles.css?v=1.0.0
+                                     → helice-script.js?v=1.0.0
+
+solar/solar.html                     → solar-styles.css?v=1.1.0
+                                     → solar-script.js?v=1.1.2
+
+solar/config.html                    → config-script.js?v=1.0.1
+
+sobre/sobre.html                     → sobre-styles.css?v=1.5.0
+                                     → sobre-script.js?v=1.2.0
 ```
