@@ -22,6 +22,7 @@ const traducoes = {
     'pt-BR': {
         // Nomes dos aplicativos
         'app-about': 'About Me',
+        'app-helice': 'Hélice',
         'app-mutuo': 'Financiamento',
         
         // Dias da semana por extenso (minúscula)
@@ -50,6 +51,7 @@ const traducoes = {
     'it-IT': {
         // Nomes dos aplicativos em italiano
         'app-about': 'Su di Me',
+        'app-helice': 'Elica',
         'app-mutuo': 'Mutuo',
         
         // Dias da semana por extenso em italiano (minúscula)

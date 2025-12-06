@@ -1,0 +1,438 @@
+/* ============================================
+   RESET E CONFIGURAÇÕES GLOBAIS
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Bloqueia scroll horizontal em TODA a página */
+html {
+    overflow-x: hidden;
+    width: 100%;
+    touch-action: pan-y;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: linear-gradient(135deg, #4A90E2 0%, #2E5C8A 100%);
+    color: #333;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 15px;
+    padding-bottom: 110px; /* Espaço para botão home */
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+}
+
+/* ============================================
+   BOTÃO HOME FIXO
+   ============================================ */
+.home-button-fixed {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #4A90E2 0%, #2E5C8A 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(74, 144, 226, 0.4);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    text-decoration: none;
+    color: white;
+}
+
+.home-button-fixed:hover {
+    transform: translateX(-50%) scale(1.15);
+    box-shadow: 0 12px 30px rgba(74, 144, 226, 0.6);
+}
+
+.home-button-fixed svg {
+    width: 28px;
+    height: 28px;
+    fill: white;
+}
+
+/* ============================================
+   CONTAINER PRINCIPAL
+   ============================================ */
+.container {
+    width: 100%;
+    margin: 0;
+}
+
+/* ============================================
+   CABEÇALHO
+   ============================================ */
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+    padding: 20px 0;
+}
+
+/* Seletor de idioma */
+.language-selector {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.lang-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+}
+
+.lang-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.lang-btn.active {
+    background: white;
+    color: #667eea;
+    border-color: white;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+}
+
+.flag {
+    font-size: 1.3rem;
+}
+
+.lang-text {
+    font-size: 0.9rem;
+}
+
+header h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* ============================================
+   SEÇÃO DE CONTROLES
+   ============================================ */
+.controles {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.input-group {
+    margin-bottom: 30px;
+}
+
+.input-group:last-child {
+    margin-bottom: 0;
+}
+
+.input-group label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+/* Display do valor do slider */
+.slider-display {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    margin-bottom: 10px;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #4A90E2;
+}
+
+.valor-display {
+    min-width: 80px;
+}
+
+/* Estilos do slider (input range) */
+input[type="range"] {
+    width: 100%;
+    height: 16px;
+    border-radius: 8px;
+    background: #e0e0e0;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #4A90E2;
+    cursor: grab;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    border: 3px solid white;
+    transition: all 0.2s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+    cursor: grabbing;
+    transform: scale(1.15);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #4A90E2;
+    cursor: grab;
+    border: 3px solid white;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+input[type="range"]::-moz-range-thumb:active {
+    cursor: grabbing;
+    transform: scale(1.15);
+}
+
+/* Labels dos limites do range */
+.range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Grupo de informação (somente leitura) */
+.info-group {
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 4px solid #4A90E2;
+}
+
+.info-text {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* ============================================
+   SEÇÃO DE RESULTADO
+   ============================================ */
+.resultado {
+    background: linear-gradient(135deg, #4A90E2 0%, #2E5C8A 100%);
+    color: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.resultado h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.resultado-principal {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.valor-grande {
+    font-size: 4rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Detalhes adicionais */
+.detalhes {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.detalhe-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.detalhe-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.detalhe-valor {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+/* ============================================
+   SEÇÃO DE GRÁFICO
+   ============================================ */
+.grafico-section {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.grafico-section h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* ============================================
+   SEÇÃO INFORMATIVA
+   ============================================ */
+.info-educativa {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.info-educativa h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+}
+
+.info-card {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    border-left: 4px solid #4A90E2;
+}
+
+.info-card h4 {
+    color: #4A90E2;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.info-card p {
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Caixa de fórmula */
+.formula-box {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.formula-box h4 {
+    color: #856404;
+    margin-bottom: 15px;
+}
+
+.formula-box code {
+    display: block;
+    background: white;
+    padding: 15px;
+    border-radius: 5px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: #d63384;
+    margin-bottom: 10px;
+    overflow-x: auto;
+}
+
+.formula-box p {
+    color: #856404;
+    font-size: 0.9rem;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+footer {
+    text-align: center;
+    color: white;
+    margin-top: 20px;
+    padding: 15px 0;
+    opacity: 0.9;
+}
+
+/* ============================================
+   RESPONSIVE - MOBILE
+   ============================================ */
+@media (min-width: 768px) {
+    .detalhes {
+        flex-direction: row;
+    }
+    
+    .detalhe-item {
+        flex: 1;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .chart-container {
+        height: 400px;
+    }
+}

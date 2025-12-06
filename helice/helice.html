@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <!-- Meta viewport otimizada para mobile: desabilita zoom e scroll lateral -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Meta tags para DESABILITAR cache - sempre carrega arquivos atualizados -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <title>Calculadora de Hélice</title>
+    
+    <!-- Carrega o arquivo CSS com controle de versão -->
+    <link rel="stylesheet" href="helice-styles.css?v=1.5.0">
+    
+    <!-- Chart.js para gráficos interativos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- ========================================== -->
+        <!-- CABEÇALHO COM SELETOR DE IDIOMA -->
+        <!-- ========================================== -->
+        <header>
+            <div class="language-selector">
+                <!-- Botão para português (ativo definido pelo JavaScript) -->
+                <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">
+                    <span class="flag">🇧🇷</span>
+                    <span class="lang-text">Português</span>
+                </button>
+                <!-- Botão para italiano -->
+                <button id="btnItaliano" class="lang-btn" data-lang="it-IT">
+                    <span class="flag">🇮🇹</span>
+                    <span class="lang-text">Italiano</span>
+                </button>
+            </div>
+            <!-- Título principal -->
+            <h1 data-i18n="app-title">🚤 Calculadora de Passo de Hélice</h1>
+            <p class="subtitle" data-i18n="app-subtitle">Para barcos de lazer</p>
+        </header>
+
+        <!-- ========================================== -->
+        <!-- CONTROLES DE ENTRADA -->
+        <!-- ========================================== -->
+        <section class="controles">
+            <!-- Velocidade desejada -->
+            <div class="input-group">
+                <label for="sliderVelocidade" data-i18n="label-velocidade">Velocidade Desejada (nós)</label>
+                <div class="slider-display">
+                    <span id="valorVelocidade" class="valor-display">25</span>
+                    <span data-i18n="unidade-nos">nós</span>
+                </div>
+                <input type="range" id="sliderVelocidade" min="5" max="60" step="1" value="25">
+                <div class="range-labels">
+                    <span>5</span>
+                    <span>60</span>
+                </div>
+            </div>
+
+            <!-- Redução da rabeta -->
+            <div class="input-group">
+                <label for="sliderReducao" data-i18n="label-reducao">Redução da Rabeta</label>
+                <div class="slider-display">
+                    <span id="valorReducao" class="valor-display">2.00</span>
+                    <span>:1</span>
+                </div>
+                <input type="range" id="sliderReducao" min="1.00" max="3.50" step="0.01" value="2.00">
+                <div class="range-labels">
+                    <span>1.00:1</span>
+                    <span>3.50:1</span>
+                </div>
+            </div>
+
+            <!-- RPM máximo do motor -->
+            <div class="input-group">
+                <label for="sliderRPM" data-i18n="label-rpm">RPM Máximo do Motor</label>
+                <div class="slider-display">
+                    <span id="valorRPM" class="valor-display">5000</span>
+                    <span>rpm</span>
+                </div>
+                <input type="range" id="sliderRPM" min="2000" max="8000" step="100" value="5000">
+                <div class="range-labels">
+                    <span>2000</span>
+                    <span>8000</span>
+                </div>
+            </div>
+
+            <!-- Slip ajustável -->
+            <div class="input-group">
+                <label for="sliderSlip" data-i18n="label-slip">Slip Estimado</label>
+                <div class="slider-display">
+                    <span id="valorSlip" class="valor-display">15</span>
+                    <span>%</span>
+                </div>
+                <input type="range" id="sliderSlip" min="10" max="20" step="1" value="15">
+                <div class="range-labels">
+                    <span>10%</span>
+                    <span>20%</span>
+                </div>
+                <p class="info-text" data-i18n="info-slip">Valor típico para barcos de lazer: 10-15%. Representa a perda de eficiência da hélice.</p>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- RESULTADO -->
+        <!-- ========================================== -->
+        <section class="resultado">
+            <h2 data-i18n="resultado-titulo">📐 Passo Recomendado</h2>
+            <div class="resultado-principal">
+                <span id="resultadoPasso" class="valor-grande">18</span>
+                <span data-i18n="unidade-polegadas">polegadas</span>
+            </div>
+            
+            <!-- Detalhes adicionais -->
+            <div class="detalhes">
+                <div class="detalhe-item">
+                    <span class="detalhe-label" data-i18n="rpm-helice">RPM na Hélice:</span>
+                    <span id="rpmHelice" class="detalhe-valor">2500</span>
+                    <span>rpm</span>
+                </div>
+                <div class="detalhe-item">
+                    <span class="detalhe-label" data-i18n="velocidade-teorica">Velocidade Teórica:</span>
+                    <span id="velocidadeTeorica" class="detalhe-valor">29.4</span>
+                    <span data-i18n="unidade-nos">nós</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- GRÁFICO INTERATIVO -->
+        <!-- ========================================== -->
+        <section class="grafico-section">
+            <h3 data-i18n="grafico-titulo">📊 Relação Passo × Velocidade</h3>
+            <div class="chart-container">
+                <canvas id="graficoHelice"></canvas>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- INFORMAÇÕES EDUCATIVAS -->
+        <!-- ========================================== -->
+        <section class="info-educativa">
+            <h3 data-i18n="info-titulo">ℹ️ Como Funciona</h3>
+            
+            <div class="info-card">
+                <h4 data-i18n="info-passo-titulo">O que é Passo?</h4>
+                <p data-i18n="info-passo-texto">O passo é a distância teórica (em polegadas) que a hélice avançaria em uma rotação completa, sem considerar o deslizamento (slip).</p>
+            </div>
+
+            <div class="info-card">
+                <h4 data-i18n="info-reducao-titulo">Redução da Rabeta</h4>
+                <p data-i18n="info-reducao-texto">Relação entre a rotação do motor e a rotação da hélice. Ex: 2:1 significa que o motor gira 2 vezes para a hélice girar 1 vez.</p>
+            </div>
+
+            <div class="info-card">
+                <h4 data-i18n="info-slip-titulo">O que é Slip?</h4>
+                <p data-i18n="info-slip-texto">Deslizamento entre a hélice e a água. Barcos de lazer típicos têm 10-20% de slip. Quanto menor o slip, mais eficiente a hélice.</p>
+            </div>
+
+            <div class="formula-box">
+                <h4 data-i18n="formula-titulo">📐 Fórmula Utilizada</h4>
+                <code>Passo = (Velocidade × 1056 × Redução) / (RPM × (1 - Slip))</code>
+                <p data-i18n="formula-explicacao">Onde 1056 é a constante de conversão de nós para polegadas/minuto</p>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p data-i18n="footer">Calculadora de Hélice - Brasil & Itália © 2025</p>
+    </footer>
+
+    <!-- Botão de retorno à tela inicial (fixo centralizado no rodapé) -->
+    <a href="../index.html" class="home-button-fixed">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <!-- Carrega o JavaScript -->
+    <script src="helice-script.js?v=1.4.0"></script>
+</body>
+</html>

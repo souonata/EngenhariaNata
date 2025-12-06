@@ -104,7 +104,7 @@ Todos os apps devem ter botão home centralizado no rodapé:
     transform: translateX(-50%);  /* Centraliza horizontalmente */
     width: 60px;            /* 50px no mobile */
     height: 60px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%);
     border-radius: 50%;
     box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
     z-index: 1000;
@@ -112,7 +112,7 @@ Todos os apps devem ter botão home centralizado no rodapé:
 
 .home-button-fixed:hover {
     transform: translateX(-50%) scale(1.1);  /* Mantém centralizado ao escalar */
-    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.6);
+    box-shadow: 0 12px 30px rgba(91, 243, 172, 0.6);
 }
 ```
 

@@ -22,8 +22,8 @@ body {
     /* Fonte do sistema (mesma do iPhone/Android) */
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     
-    /* Fundo com gradiente roxo padrão do projeto */
-    background: linear-gradient(135deg, #4A90E2 0%, #2E5C8A 100%);
+    /* Fundo com gradiente verde padrão do projeto */
+    background: linear-gradient(135deg, #4e7262 0%, #3a5a4d 100%);
     
     /* Cor do texto */
     color: #333;
@@ -1045,37 +1045,62 @@ input[type="number"] {
 
 .slider-container {
     margin: 15px 0;
+    padding: 10px 0; /* Mais espaço ao redor para facilitar toque */
 }
 
 #sliderParcelas {
     width: 100%;
-    height: 8px;
-    border-radius: 5px;
+    height: 16px; /* Aumentado de 8px para 16px - barra mais alta */
+    border-radius: 8px;
     background: #e0e0e0;
     outline: none;
     -webkit-appearance: none;
     appearance: none;
+    cursor: pointer; /* Cursor de mão em toda a barra */
 }
 
 #sliderParcelas::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 20px;
-    height: 20px;
+    width: 36px;  /* Aumentado de 20px para 36px - botão maior */
+    height: 36px; /* Aumentado de 20px para 36px */
     border-radius: 50%;
     background: #4A90E2;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    cursor: grab;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3); /* Sombra mais forte */
+    border: 3px solid white; /* Borda branca para destacar */
+    transition: all 0.2s ease;
+}
+
+#sliderParcelas::-webkit-slider-thumb:hover {
+    transform: scale(1.1); /* Aumenta 10% ao passar mouse */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+#sliderParcelas::-webkit-slider-thumb:active {
+    cursor: grabbing;
+    transform: scale(1.15); /* Aumenta mais ao clicar */
 }
 
 #sliderParcelas::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
+    width: 36px;  /* Aumentado de 20px para 36px */
+    height: 36px; /* Aumentado de 20px para 36px */
     border-radius: 50%;
     background: #4A90E2;
-    cursor: pointer;
-    border: none;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    cursor: grab;
+    border: 3px solid white;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    transition: all 0.2s ease;
+}
+
+#sliderParcelas::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+#sliderParcelas::-moz-range-thumb:active {
+    cursor: grabbing;
+    transform: scale(1.15);
 }
 
 .parcela-detalhes {
@@ -1274,7 +1299,7 @@ footer {
     }
 }
 
-/* Botão HOME fixo - Padrão com gradiente roxo */
+/* Botão HOME fixo - Padrão com gradiente verde */
 .home-button-fixed {
     position: fixed;
     bottom: 25px;       /* SEMPRE 25px da parte inferior visível da tela */
@@ -1283,8 +1308,8 @@ footer {
     width: 60px;
     height: 60px;
     
-    /* Fundo com gradiente roxo igual aos outros apps */
-    background: linear-gradient(135deg, #4A90E2 0%, #2E5C8A 100%);
+    /* Fundo com gradiente verde igual aos outros apps */
+    background: linear-gradient(135deg, #4e7262 0%, #3a5a4d 100%);
     
     border-radius: 50%;
     display: flex;
@@ -1292,7 +1317,7 @@ footer {
     justify-content: center;
     
     /* Sombra colorida para dar profundidade */
-    box-shadow: 0 8px 20px rgba(74, 144, 226, 0.4);
+    box-shadow: 0 8px 20px rgba(78, 114, 98, 0.4);
     
     transition: all 0.3s ease;
     z-index: 1000;

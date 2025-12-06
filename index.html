@@ -72,6 +72,29 @@
                     <span class="app-name" data-i18n="app-about">About Me</span>
                 </a>
 
+                <!-- Ícone do aplicativo de cálculo de hélice -->
+                <!-- Ao clicar, abre a página helice/helice.html -->
+                <a href="helice/helice.html" class="app-icon">
+                    <!-- Ícone SVG personalizado com gradiente azul-turquesa -->
+                    <div class="icon">
+                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Definição do gradiente (azul turquesa → azul marinho) -->
+                            <defs>
+                                <linearGradient id="gradient-helice" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#00ACC1;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#006064;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <!-- Retângulo com cantos arredondados preenchido com o gradiente -->
+                            <rect width="60" height="60" rx="12" fill="url(#gradient-helice)"/>
+                            <!-- Símbolo ⚓ (âncora) no centro do ícone -->
+                            <text x="30" y="40" font-size="28" text-anchor="middle">⚓</text>
+                        </svg>
+                    </div>
+                    <!-- Nome do aplicativo que aparece abaixo do ícone -->
+                    <span class="app-name" data-i18n="app-helice">Hélice</span>
+                </a>
+
                 <!-- Ícone do aplicativo da calculadora -->
                 <!-- Ao clicar, abre a página mutuo/mutuo.html -->
                 <a href="mutuo/mutuo.html" class="app-icon">
