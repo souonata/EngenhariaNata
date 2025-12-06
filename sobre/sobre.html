@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <!-- Meta viewport otimizada para mobile: desabilita zoom e scroll lateral -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Meta tags para DESABILITAR cache - sempre carrega arquivos atualizados -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <title>Sobre Meus Projetos</title>
+    
+    <!-- Carrega o arquivo CSS com controle de versão -->
+    <!-- Mude ?v=1.0.0 para ?v=1.0.1 quando atualizar o CSS -->
+    <link rel="stylesheet" href="sobre-styles.css?v=1.2.0">
+</head>
+<body>
+    <!-- Container principal que limita a largura máxima -->
+    <div class="container">
+        
+        <!-- ========================================== -->
+        <!-- CABEÇALHO COM SELETOR DE IDIOMA -->
+        <!-- ========================================== -->
+        <header>
+            <div class="language-selector">
+                <!-- Botão para português (ativo definido pelo JavaScript) -->
+                <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">
+                    <span class="flag">🇧🇷</span>
+                    <span class="lang-text">Português</span>
+                </button>
+                <!-- Botão para italiano -->
+                <button id="btnItaliano" class="lang-btn" data-lang="it-IT">
+                    <span class="flag">🇮🇹</span>
+                    <span class="lang-text">Italiano</span>
+                </button>
+            </div>
+            <h1 data-i18n="page-title">📱 Sobre o Projeto</h1>
+            <p class="subtitle" data-i18n="page-subtitle">Portfólio de apps web</p>
+        </header>
+
+        <!-- CARTÃO 1: VISÃO GERAL -->
+        <div class="card card-expansivel">
+            <div class="card-header card-header-clicavel" onclick="alternarSecao(this)">
+                <span class="icon">🎯</span>
+                <h2 data-i18n="overview-title">Visão Geral</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <p data-i18n="overview-description">Portfólio com 2 apps web usando HTML5, CSS3 e JavaScript puro.</p>
+                
+                <ul class="tech-list">
+                    <li><strong>💰 Mutuo</strong> - <span data-i18n="app-mutuo-desc">Calculadora de amortização bilíngue</span></li>
+                    <li><strong>📚 About Me</strong> - <span data-i18n="app-about-desc">Informações do projeto</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- CARTÃO 2: CALCULADORA DE EMPRÉSTIMOS -->
+        <!-- Cartão destacado (classe highlight) com descrição completa do app -->
+        <!-- ========================================== -->
+        <div class="card highlight card-expansivel">
+            <div class="card-header card-header-clicavel" onclick="alternarSecao(this)">
+                <span class="icon">💰</span>
+                <h2 data-i18n="calculator-title">Calculadora de Empréstimos BR/IT</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <!-- Caixa amarela com descrição do que o app faz -->
+                <p class="app-description">
+                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="calculator-description">Compara 3 sistemas de amortização de empréstimos: SAC, Price e Americano.
+                    Ajuda pessoas a entenderem qual sistema é melhor para sua situação financeira.</span>
+                </p>
+                
+                <!-- Grade de funcionalidades (4 caixas) -->
+                <div class="features-grid">
+                    <!-- Funcionalidade 1: Bilíngue -->
+                    <div class="feature">
+                        <span class="feature-icon">🌍</span>
+                        <h4 data-i18n="feature-bilingual-title">Bilíngue</h4>
+                        <p data-i18n="feature-bilingual-desc">Português e Italiano com troca instantânea</p>
+                    </div>
+                    
+                    <!-- Funcionalidade 2: Gráficos -->
+                    <div class="feature">
+                        <span class="feature-icon">📊</span>
+                        <h4 data-i18n="feature-charts-title">Gráficos</h4>
+                        <p data-i18n="feature-charts-desc">Visualização da evolução dos juros e amortização</p>
+                    </div>
+                    
+                    <!-- Funcionalidade 3: Responsivo -->
+                    <div class="feature">
+                        <span class="feature-icon">📱</span>
+                        <h4 data-i18n="feature-responsive-title">Responsivo</h4>
+                        <p data-i18n="feature-responsive-desc">Funciona perfeitamente em celular, tablet e desktop</p>
+                    </div>
+                    
+                    <!-- Funcionalidade 4: Rápido -->
+                    <div class="feature">
+                        <span class="feature-icon">⚡</span>
+                        <h4 data-i18n="feature-fast-title">Rápido</h4>
+                        <p data-i18n="feature-fast-desc">Cálculos instantâneos ao mudar valores</p>
+                    </div>
+                </div>
+
+                <!-- Estatísticas do projeto (linhas de código) -->
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-number">371</span>
+                        <span class="stat-label" data-i18n="stat-html">linhas HTML</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">1085</span>
+                        <span class="stat-label" data-i18n="stat-js">linhas JavaScript</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">1200</span>
+                        <span class="stat-label" data-i18n="stat-css">linhas CSS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- CARTÃO 4: RECURSOS ESPECIAIS -->
+        <div class="card card-expansivel">
+            <div class="card-header card-header-clicavel" onclick="alternarSecao(this)">
+                <span class="icon">✨</span>
+                <h2 data-i18n="features-title">Recursos Principais</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <div class="special-features">
+                    
+                    <div class="special-feature">
+                        <h4 data-i18n="resource-bilingual-title">🌍 Bilíngue</h4>
+                        <p data-i18n="resource-bilingual-desc">Troca entre Português e Italiano em 1 clique. Moeda muda automaticamente (R$ ↔ €).</p>
+                    </div>
+
+                    <div class="special-feature">
+                        <h4 data-i18n="resource-charts-title">📊 Gráficos Interativos</h4>
+                        <p data-i18n="resource-charts-desc">Visualize a evolução dos juros e amortização ao longo do tempo.</p>
+                    </div>
+
+                    <div class="special-feature">
+                        <h4 data-i18n="resource-mobile-title">📱 Mobile-First</h4>
+                        <p data-i18n="resource-mobile-desc">Funciona perfeitamente em celulares, tablets e computadores.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        <!-- CARTÃO 5: TECNOLOGIAS -->
+        <div class="card card-expansivel">
+            <div class="card-header card-header-clicavel" onclick="alternarSecao(this)">
+                <span class="icon">📚</span>
+                <h2 data-i18n="tech-title">Tecnologias Usadas</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <ul class="tech-list">
+                    <li><strong>HTML5</strong> - <span data-i18n="tech-html">Estrutura das páginas</span></li>
+                    <li><strong>CSS3</strong> - <span data-i18n="tech-css">Estilos e animações</span></li>
+                    <li><strong>JavaScript Puro</strong> - <span data-i18n="tech-js">Sem frameworks</span></li>
+                    <li><strong>Chart.js</strong> - <span data-i18n="tech-chart">Gráficos interativos</span></li>
+                </ul>
+            </div>
+        </div>
+
+
+
+
+
+        <!-- ========================================== -->
+        <!-- FOOTER -->
+        <!-- Rodapé da página -->
+        <!-- ========================================== -->
+        <footer>
+            <p data-i18n="footer-text">💻 Portfólio Engenharia NATA</p>
+        </footer>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ========================================== -->
+    <!-- BOTÃO INÍCIO FIXO -->
+    <!-- Botão que fica sempre visível no rodapé para voltar à página inicial -->
+    <!-- ========================================== -->
+    <a href="../index.html" class="home-button-fixed">
+        <!-- Ícone SVG de casinha -->
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <!-- ========================================== -->
+    <!-- SCRIPT PARA ACCORDION (EXPANSÃO/RETRAÇÃO) -->
+    <!-- A lógica está no arquivo sobre-script.js -->
+    <!-- ========================================== -->
+    <script src="sobre-script.js?v=1.2.0"></script>
+</body>
+</html>

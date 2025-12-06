@@ -1,0 +1,61 @@
+# 📱 Portfólio Engenharia NATA
+
+Portfólio web com simulador mobile e sistema bilíngue (PT-BR/IT-IT).
+
+## 🎯 Visão Geral
+
+Portfólio de apps web usando HTML5, CSS3 e JavaScript puro. Sem frameworks.
+
+## 🚀 Aplicativos Disponíveis
+
+### 💰 Mutuo
+Calculadora de empréstimos com 3 sistemas de amortização (SAC, Price, Americano). Bilíngue PT-BR/IT-IT.
+
+### 📚 About Me
+Informações sobre o projeto.
+
+## 📂 Estrutura do Projeto
+
+```
+├── index.html                   (Tela inicial)
+├── index-script.js              (Lógica da tela inicial)
+├── index-styles.css             (Estilos da tela inicial)
+├── mutuo/                       (Calculadora de empréstimos)
+│   ├── mutuo.html
+│   ├── mutuo-script.js
+│   └── mutuo-styles.css
+└── sobre/                       (Sobre o projeto)
+    ├── sobre.html
+    ├── sobre-script.js
+    └── sobre-styles.css
+```
+
+## 🛠️ Como Usar
+
+### Abrir Localmente
+```powershell
+# PowerShell (Windows)
+Start-Process "index.html"
+```
+
+### Live Server (Recomendado)
+1. Instale a extensão "Live Server" no VS Code
+2. Clique com botão direito em `index.html`
+3. Selecione "Open with Live Server"
+
+## 🌍 Idiomas
+
+Português (padrão) e Italiano. Troca automática de moeda (R$ ↔ €).
+
+## 📚 Documentação
+
+- **[sobre/](sobre/)** - Informações sobre o projeto
+- **[GLOSSARIO.md](GLOSSARIO.md)** - Termos técnicos em português
+
+## 🤝 Contribuindo
+
+Projeto open source. Sinta-se livre para explorar, modificar e aprender.
+
+## 👨‍💻 Autor
+
+**Engenharia NATA** - Portfólio web educacional

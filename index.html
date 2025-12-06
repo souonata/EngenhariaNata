@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <!-- Meta viewport otimizada para mobile: desabilita zoom e scroll lateral -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Meta tags para DESABILITAR cache - sempre carrega arquivos atualizados -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <title>Início</title>
+    
+    <!-- Carrega o arquivo CSS com controle de versão -->
+    <!-- Mude ?v=1.0.0 para ?v=1.0.1 quando atualizar o CSS -->
+    <link rel="stylesheet" href="index-styles.css?v=1.2.0">
+</head>
+<body>
+    <!-- ========================================== -->
+    <!-- SELETOR DE IDIOMA (PADRÃO GLOBAL - FORA DO CELULAR) -->
+    <!-- ========================================== -->
+    <div class="language-selector">
+        <!-- Botão para português (ativo definido pelo JavaScript) -->
+        <button id="btnPT" class="lang-btn" data-lang="pt-BR">
+            <span class="flag">🇧🇷</span>
+            <span class="lang-text">Português</span>
+        </button>
+        <!-- Botão para italiano -->
+        <button id="btnIT" class="lang-btn" data-lang="it-IT">
+            <span class="flag">🇮🇹</span>
+            <span class="lang-text">Italiano</span>
+        </button>
+    </div>
+
+    <!-- Recipiente que simula a tela de um celular -->
+    <div class="device-screen">
+        
+        <!-- Barra de status (topo do celular) -->
+        <!-- Mostra: horário completo com segundos e data -->
+        <div class="barra-status">
+            <!-- Horário à esquerda e data à direita -->
+            <span class="horario" id="horario">12:30:00</span>
+            <span class="data" id="data">Qui 05/12</span>
+        </div>
+        
+        <!-- Tela principal onde ficam os aplicativos -->
+        <div class="home-screen">
+            <!-- Grade de aplicativos (pode ter vários ícones aqui) -->
+            <div class="apps-grid">
+                
+                <!-- Ícone do aplicativo Sobre o Projeto -->
+                <!-- Ao clicar, abre a página sobre/sobre.html -->
+                <a href="sobre/sobre.html" class="app-icon">
+                    <!-- Ícone SVG personalizado com gradiente azul -->
+                    <div class="icon">
+                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Definição do gradiente (azul claro → azul escuro) -->
+                            <defs>
+                                <linearGradient id="gradient-about" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#64B5F6;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#2196F3;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <!-- Retângulo com cantos arredondados preenchido com o gradiente -->
+                            <rect width="60" height="60" rx="12" fill="url(#gradient-about)"/>
+                            <!-- Símbolo 📖 (livro) no centro do ícone -->
+                            <text x="30" y="40" font-size="28" text-anchor="middle">📖</text>
+                        </svg>
+                    </div>
+                    <!-- Nome do aplicativo que aparece abaixo do ícone -->
+                    <span class="app-name" data-i18n="app-about">About Me</span>
+                </a>
+
+                <!-- Ícone do aplicativo da calculadora -->
+                <!-- Ao clicar, abre a página mutuo/mutuo.html -->
+                <a href="mutuo/mutuo.html" class="app-icon">
+                    <!-- Ícone SVG personalizado com gradiente verde -->
+                    <div class="icon">
+                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Definição do gradiente (verde claro → verde escuro) -->
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#2E7D32;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <!-- Retângulo com cantos arredondados preenchido com o gradiente -->
+                            <rect width="60" height="60" rx="12" fill="url(#gradient)"/>
+                            <!-- Símbolo $ no centro do ícone -->
+                            <text x="30" y="38" font-size="28" text-anchor="middle" fill="white" font-weight="bold">$</text>
+                        </svg>
+                    </div>
+                    <!-- Nome do aplicativo que aparece abaixo do ícone -->
+                    <span class="app-name" data-i18n="app-mutuo">Mutuo</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Dock (barra inferior do celular) -->
+        <!-- Logo Engenharia NATA com estilo de engenharia de ponta -->
+        <div class="dock">
+            <div class="logo-container">
+                <svg class="logo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" fill="currentColor"/>
+                    <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none"/>
+                </svg>
+                <span class="logo-text">ENGENHARIA <span class="logo-highlight">NATA</span></span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Carrega o JavaScript que faz o relógio funcionar e adiciona efeitos -->
+    <script src="index-script.js?v=1.2.0"></script>
+</body>
+</html>

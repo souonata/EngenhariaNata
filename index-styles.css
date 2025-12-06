@@ -1,0 +1,474 @@
+/* ============================================
+   RESET GLOBAL - Remove margens e paddings padrão
+   ============================================ */
+* {
+    margin: 0;           /* Remove margem de TODOS os elementos */
+    padding: 0;          /* Remove padding de TODOS os elementos */
+    box-sizing: border-box;  /* Faz width incluir border e padding */
+}
+
+/* Bloqueia scroll horizontal em TODA a página */
+html {
+    overflow-x: hidden;
+    width: 100%;
+    /* Desabilita zoom com pinch (dois dedos) no iOS */
+    touch-action: pan-y;
+}
+
+/* ============================================
+   BODY - Estilo da página inteira
+   ============================================ */
+body {
+    /* Fonte do sistema (igual iPhone/Android) */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    
+    /* Ocupa toda a altura da janela */
+    min-height: 100vh;
+    
+    /* Layout em coluna: seletor de idioma acima do celular */
+    display: flex;
+    flex-direction: column;
+    align-items: center;      /* Centraliza horizontalmente */
+    gap: 15px;                /* Espaço mínimo entre seletor e celular */
+    
+    /* Padding mínimo apenas no topo e laterais */
+    padding: 15px 20px 20px 20px;
+    
+    /* BLOQUEIA scroll horizontal e zoom indesejado */
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+    
+    /* Fundo verde estilo Windows 98/2000 - verde musgo suave e nostalgico */
+    /* Esse tom era famoso por ser relaxante aos olhos e dar sensação de profundidade */
+    background: #4e7262;
+    /* Alternativa com gradiente sutil para dar profundidade: */
+    /* background: linear-gradient(135deg, #3a6351 0%, #2d4f3f 100%); */
+}
+
+/* ============================================
+   DEVICE-SCREEN - Simula a tela de um celular
+   ============================================ */
+.device-screen {
+    /* Tamanho reduzido para caber melhor na tela (70% da altura original) */
+    width: 375px;
+    height: 500px;
+    
+    /* Fundo escuro com mais contraste - quase preto para destacar os ícones coloridos */
+    background: linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 100%);
+    
+    /* Cantos bem arredondados (como celular real) */
+    border-radius: 40px;
+    
+    /* Sombra forte para dar profundidade */
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    
+    /* Espaçamento interno */
+    padding: 15px;
+    
+    /* Layout em coluna (status bar em cima, conteúdo embaixo) */
+    display: flex;
+    flex-direction: column;
+    
+    /* Necessário para absolute positioning */
+    position: relative;
+    
+    /* Esconde conteúdo que sair dos limites */
+    overflow: hidden;
+}
+
+/* ============================================
+   RESPONSIVE - Telas maiores (tablets)
+   ============================================ */
+/* Se a tela for maior que 768px (tablet), aumenta o dispositivo */
+@media (min-width: 768px) {
+    .device-screen {
+        width: 768px;      /* Tamanho de iPad */
+        height: 800px;     /* Reduzido ainda mais para caber melhor na tela */
+        border-radius: 50px;  /* Cantos mais arredondados */
+        padding: 20px;        /* Mais espaço interno */
+    }
+}
+
+/* ============================================
+   BARRA DE STATUS - Barra do topo (horário)
+   ============================================ */
+.barra-status {
+    /* Distribui horário à esquerda e data à direita */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    /* Texto branco */
+    color: white;
+    font-size: 14px;
+    font-weight: 600;  /* Negrito */
+    
+    /* Espaçamento */
+    padding: 10px 15px;
+    margin-bottom: 20px;
+}
+
+/* ========================================== */
+/* SELETOR DE IDIOMA GLOBAL (PADRÃO) */
+/* Botões para trocar entre PT-BR e IT-IT */
+/* Fica FORA do celular, sobre o fundo */
+/* ========================================== */
+.language-selector {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    z-index: 100;  /* Fica acima do celular */
+}
+
+.lang-btn {
+    /* Remove estilo padrão de botão */
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
+    padding: 10px 20px;
+    
+    /* Cursor de ponteiro ao passar o mouse */
+    cursor: pointer;
+    
+    /* Transição suave de todas as mudanças */
+    transition: all 0.3s ease;
+    
+    /* Cor do texto */
+    color: white;
+    
+    /* Fonte e tamanho */
+    font-size: 0.95rem;
+    font-weight: 600;
+    
+    /* Centraliza conteúdo */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    /* Remove seleção do texto */
+    user-select: none;
+}
+
+/* Efeito ao passar o mouse */
+.lang-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Botão ativo (idioma selecionado) */
+.lang-btn.active {
+    background: white;
+    color: #4e7262;  /* Verde do fundo */
+    border-color: white;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+}
+
+/* Bandeira (emoji) dentro do botão */
+.flag {
+    font-size: 1.3rem;
+}
+
+/* Texto do idioma */
+.lang-text {
+    font-size: 0.9rem;
+}
+
+/* ============================================
+   HORÁRIO - Estilo display LED/LCD vintage
+   ============================================ */
+.horario {
+    /* Cor laranja vibrante estilo displays de 7 segmentos dos anos 80/90 */
+    color: #ff8c00;
+    
+    /* Fonte monoespaçada que lembra displays digitais antigos */
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 16px;
+    font-weight: 700;  /* Extra negrito */
+    letter-spacing: 2px;  /* Espaçamento entre letras para efeito digital */
+    
+    /* Impede quebra de linha */
+    white-space: nowrap;
+    flex-shrink: 0;  /* Não encolhe */
+    
+    /* Efeito de brilho/glow para simular LED */
+    text-shadow: 
+        0 0 5px rgba(255, 140, 0, 0.8),   /* Brilho próximo */
+        0 0 10px rgba(255, 140, 0, 0.6),  /* Brilho médio */
+        0 0 15px rgba(255, 140, 0, 0.4);  /* Halo externo */
+}
+
+/* ============================================
+   DATA - Dia da semana e data à direita
+   ============================================ */
+.data {
+    /* Cor branca para contrastar com horário laranja */
+    color: white;
+    
+    /* Fonte monoespaçada igual ao horário */
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    
+    /* Impede quebra de linha */
+    white-space: nowrap;
+    flex-shrink: 0;
+    
+    /* Sutil glow branco */
+    text-shadow: 
+        0 0 3px rgba(255, 255, 255, 0.5),
+        0 0 6px rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================
+   TELA INICIAL - Área principal com os apps
+   ============================================ */
+.home-screen {
+    /* Ocupa todo espaço restante */
+    flex: 1;
+    
+    padding: 20px;
+    
+    /* Permite rolar se tiver muitos apps */
+    overflow-y: auto;
+}
+
+/* ============================================
+   APPS GRID - Grade de ícones dos aplicativos
+   ============================================ */
+.apps-grid {
+    /* Grade com 4 colunas */
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);  /* 4 colunas de tamanho igual */
+    
+    gap: 25px;      /* Espaço entre os ícones */
+    padding: 20px 0;
+}
+
+/* Em telas maiores (tablet), aumenta para 6 colunas */
+@media (min-width: 768px) {
+    .apps-grid {
+        grid-template-columns: repeat(6, 1fr);  /* 6 colunas */
+        gap: 35px;  /* Mais espaço entre ícones */
+    }
+}
+
+/* ============================================
+   APP ICON - Cada ícone de aplicativo
+   ============================================ */
+.app-icon {
+    /* Layout em coluna (ícone em cima, nome embaixo) */
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* Centraliza */
+    
+    /* Remove sublinhado do link */
+    text-decoration: none;
+    
+    /* Mostra que é clicável */
+    cursor: pointer;
+    
+    /* Transição suave ao mudar tamanho */
+    transition: transform 0.2s ease;
+}
+
+/* Quando passa o mouse: aumenta 10% */
+.app-icon:hover {
+    transform: scale(1.1);
+}
+
+/* Quando clica: diminui para 95% (efeito de "apertar") */
+.app-icon:active {
+    transform: scale(0.95);
+}
+
+/* ============================================
+   ÍCONE - Recipiente do ícone SVG
+   ============================================ */
+.icon {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 8px;
+    
+    /* Cantos arredondados */
+    border-radius: 12px;
+    
+    /* Esconde conteúdo que sair */
+    overflow: hidden;
+    
+    /* Sombra ao redor do ícone */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    
+    /* Transição suave da sombra */
+    transition: box-shadow 0.2s ease;
+}
+
+/* Hover: sombra verde brilhante ao redor */
+.app-icon:hover .icon {
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
+}
+
+/* O SVG dentro ocupa todo o espaço */
+.icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;  /* Remove espaço extra embaixo */
+}
+
+/* ============================================
+   APP NAME - Nome do aplicativo
+   ============================================ */
+.app-name {
+    color: white;
+    font-size: 11px;
+    text-align: center;
+    
+    /* Limita largura para não ficar muito largo */
+    max-width: 75px;
+    
+    /* Altura da linha menor para texto compacto */
+    line-height: 1.2;
+    
+    /* Sombra no texto para destacar do fundo */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Em telas maiores: ícones e texto maiores */
+@media (min-width: 768px) {
+    .icon {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .app-name {
+        font-size: 13px;
+        max-width: 90px;
+    }
+}
+
+/* ============================================
+   DOCK - Barra inferior com logo (como iPhone)
+   Centralizado horizontalmente na parte inferior da tela
+   ============================================ */
+.dock {
+    /* Fundo semi-transparente com efeito de vidro */
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);  /* Efeito de desfoque no fundo */
+    
+    /* Visual arredondado */
+    border-radius: 25px;
+    padding: 15px 20px;
+    margin: 10px 0;
+    
+    /* Centraliza conteúdo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70px;  /* Altura mínima */
+}
+
+/* Recipiente da logo */
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: fadeIn 1s ease;
+}
+
+/* Ícone da logo (escudo com check) */
+.logo-icon {
+    width: 32px;
+    height: 32px;
+    color: #00ff88;
+    filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.5));
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Texto da logo */
+.logo-text {
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.95);
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+}
+
+/* Palavra NATA destacada */
+.logo-highlight {
+    color: #00ff88;
+    font-weight: 900;
+    text-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+}
+
+/* Animação de pulsação no ícone */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.5));
+    }
+    50% {
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 12px rgba(0, 255, 136, 0.8));
+    }
+}
+
+/* Animação de fade-in */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   SCROLLBAR - Personalização da barra de rolagem
+   ============================================ */
+/* Largura da barra de rolagem */
+.home-screen::-webkit-scrollbar {
+    width: 6px;
+}
+
+/* Trilho da barra (fundo) - transparente */
+.home-screen::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* A barra em si (que você arrasta) */
+.home-screen::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);  /* Branco transparente */
+    border-radius: 3px;
+}
+
+/* Quando passa o mouse sobre a barra, fica mais visível */
+.home-screen::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================
+   ANIMAÇÕES
+   ============================================ */
+/* Animação de aparecer subindo (fade in + slide up) */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;              /* Começa invisível */
+        transform: translateY(20px);  /* 20px abaixo da posição final */
+    }
+    to {
+        opacity: 1;              /* Termina visível */
+        transform: translateY(0);     /* Na posição correta */
+    }
+}
+
+/* Aplica a animação a cada ícone quando a página carrega */
+.app-icon {
+    animation: fadeInUp 0.5s ease;  /* Dura 0.5 segundos */
+}
+
