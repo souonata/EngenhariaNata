@@ -4,7 +4,7 @@ Pequeno resumo para contribuintes e estudantes: o repositório reúne apps simpl
 
 Arquitetura (resumida):
 - index.html → tela inicial / launcher
-- Pastas de apps: `mutuo/`, `helice/`, `solar/`, `sobre/` (cada uma contém `app.html`, `app-script.js`, `app-styles.css`)
+- Pastas de apps: `mutuo/`, `helice/`, `solar/`, `bitola/`, `arcondicionado/`, `aquecimento/`, `fazenda/`, `sobre/` (cada uma contém `app.html`, `app-script.js`, `app-styles.css`)
 
 Pontos importantes:
 - Idioma do usuário salvo em `localStorage` na chave `idiomaPreferido` (pt-BR / it-IT)
@@ -340,30 +340,42 @@ novo-app/
 14. Use seletor CSS correto `.app-icon` (não `.icone-app`) para ícones na home
 15. **Limpeza**: Remova `console.log` e código comentado antes de finalizar
 16. **Documentação**: Mantenha README.md, GLOSSARIO.md e copilot-instructions.md atualizados
+17. **Badges DEV**: Apps em desenvolvimento devem ter badge "DEV" no ícone (classe `icon-dev`) e marca d'água dentro do app (`.watermark-dev` e `.dev-badge-header`)
+18. **Apps com badge DEV**: Ar Condicionado, Aquecedor Solar, Fazenda (em desenvolvimento)
 
 ## Versões Atuais dos Arquivos
 
 Mantenha sempre atualizado ao modificar:
 
 ```
-index.html                           → index-styles.css?v=1.2.1
+index.html                           → index-styles.css?v=1.2.2
                                      → index-script.js?v=1.2.0
                                      → site-config.js?v=1.0.0
-                                     → ripple.js?v=1.0.0
-                                     → ripple-init.js?v=1.0.0
 
 mutuo/mutuo.html                     → mutuo-styles.css?v=1.2.5
                                      → mutuo-script.js?v=1.1.1 (2055 linhas, totalmente comentado)
 
 helice/helice.html                   → helice-styles.css?v=1.5.6
-                                     → helice-script.js?v=1.4.0 (921 linhas, totalmente comentado)
+                                     → helice-script.js?v=1.4.0 (1094 linhas, totalmente comentado)
 
 solar/solar.html                     → solar-styles.css?v=1.1.1
                                      → solar-script.js?v=1.1.4 (890 linhas, totalmente comentado)
 
 solar/config.html                    → config-script.js?v=1.0.5
 
-sobre/sobre.html                     → sobre-styles.css?v=1.5.7
+bitola/bitola.html                   → bitola-styles.css?v=1.0.0
+                                     → bitola-script.js?v=1.0.0
+
+arcondicionado/arcondicionado.html   → arcondicionado-styles.css?v=1.0.0
+                                     → arcondicionado-script.js?v=1.0.0
+
+aquecimento/aquecimento.html         → aquecimento-styles.css?v=1.0.0
+                                     → aquecimento-script.js?v=1.0.0
+
+fazenda/fazenda.html                 → fazenda-styles.css?v=1.0.0
+                                     → fazenda-script.js?v=1.0.0 (759 linhas, totalmente comentado)
+
+sobre/sobre.html                     → sobre-styles.css?v=1.5.8
                                      → sobre-script.js?v=1.3.4
 ```
 

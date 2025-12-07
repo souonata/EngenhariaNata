@@ -67,6 +67,9 @@ Este glossário ajuda visitantes não técnicos e estudantes a entender os termo
 - **Produção por Ciclo** — Quantidade de produto (carne) obtida por animal em um ciclo completo (cria até abate).
 - **Tempo de Crescimento** — Período (em dias) desde o nascimento até o animal começar a produzir ou estar pronto para abate.
 - **Auto-Sustentabilidade** — Capacidade de uma fazenda produzir todos os alimentos necessários para uma família sem depender de fontes externas.
+- **Produção Mínima por Pessoa/Dia** — Quantidade mínima de alimento (kg) que deve ser produzida por pessoa por dia. No app, configurável via sliders para plantas (frutas/verduras/legumes) e proteínas (animais).
+- **Distribuição Proporcional** — Sistema que divide a produção mínima total entre os itens selecionados. Exemplo: se 0.5 kg/dia de plantas e 3 tipos selecionados, cada um produz 0.167 kg/dia.
+- **Consumo Fixo vs Proporcional** — Alguns itens (ex.: ovos de galinha) têm consumo fixo garantido (2 ovos/pessoa/dia), enquanto outros recebem a produção restante distribuída proporcionalmente.
 
 ## ☀️ Energia Solar Térmica
 

@@ -52,6 +52,17 @@ const traducoes = {
         'aquecimento-title': 'Dimensionador de Aquecedor Solar',
         'aquecimento-description': 'Dimensionador completo de sistemas de aquecimento solar térmico. Calcula área de coletores, volume do boiler, número de painéis e potência necessária. Suporta água de consumo e aquecimento ambiente.',
 
+        'fazenda-title': 'Dimensionador de Fazenda Auto-Sustentável',
+        'fazenda-description': 'Planejador completo de fazenda auto-sustentável. Calcula espaço necessário, quantidade de plantas (frutas, verduras, legumes) e animais necessários para alimentar uma família. Inclui calendário de plantio/colheita e frequência de reprodução dos animais para manter produção contínua.',
+        'feature-plantas-title': 'Plantas e Animais',
+        'feature-plantas-desc': 'Seleção de frutas, verduras, legumes e animais com cálculo proporcional de produção mínima',
+        'feature-producao-minima-title': 'Produção Mínima',
+        'feature-producao-minima-desc': 'Sliders ajustáveis para definir produção mínima diária de plantas e proteínas por pessoa',
+        'feature-calendario-title': 'Calendário',
+        'feature-calendario-desc': 'Calendário completo de plantio, colheita e reprodução animal para manter produção contínua',
+        'feature-espaco-title': 'Dimensionamento',
+        'feature-espaco-desc': 'Calcula área necessária, quantidade de plantas/animais e consumo diário por pessoa',
+
         'feature-pitch-title': 'Cálculo de Passo',
         'feature-pitch-desc': 'Determina o passo aproximado para a hélice',
         'feature-slip-title': 'Análise de Slip',
@@ -155,6 +166,17 @@ const traducoes = {
 
         'aquecimento-title': 'Dimensionatore Riscaldatore Solare',
         'aquecimento-description': 'Dimensionatore completo di sistemi di riscaldamento solare termico. Calcola l\'area dei collettori, volume del boiler, numero di pannelli e potenza necessaria. Supporta riscaldamento dell\'acqua sanitaria e riscaldamento ambiente.',
+
+        'fazenda-title': 'Dimensionatore Fattoria Auto-Sostenibile',
+        'fazenda-description': 'Pianificatore completo di fattoria auto-sostenibile. Calcola lo spazio necessario, quantità di piante (frutta, verdura, legumi) e animali necessari per nutrire una famiglia. Include calendario di semina/raccolto e frequenza di riproduzione degli animali per mantenere produzione continua.',
+        'feature-plantas-title': 'Piante e Animali',
+        'feature-plantas-desc': 'Selezione di frutta, verdura, legumi e animali con calcolo proporzionale di produzione minima',
+        'feature-producao-minima-title': 'Produzione Minima',
+        'feature-producao-minima-desc': 'Slider regolabili per definire produzione minima giornaliera di piante e proteine per persona',
+        'feature-calendario-title': 'Calendario',
+        'feature-calendario-desc': 'Calendario completo di semina, raccolto e riproduzione animale per mantenere produzione continua',
+        'feature-espaco-title': 'Dimensionamento',
+        'feature-espaco-desc': 'Calcola area necessaria, quantità di piante/animali e consumo giornaliero per persona',
 
         'feature-pitch-title': 'Calcolo del Passo',
         'feature-pitch-desc': 'Stima il passo dell\'elica',
