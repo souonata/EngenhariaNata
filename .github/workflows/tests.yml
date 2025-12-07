@@ -1,3 +1,7 @@
+# GitHub Actions Workflow - Testes Automatizados
+# Este workflow executa testes automatizados sempre que há push ou pull request
+# Testa funcionalidades críticas do projeto sem dependências externas
+
 name: Tests
 
 on:
@@ -5,6 +9,8 @@ on:
   pull_request:
 
 jobs:
+  # Testes em Node.js (Ubuntu)
+  # Executa testes unitários de lógica de negócio (cálculos, conversões, etc.)
   node-tests:
     name: Node test runner
     runs-on: ubuntu-latest
@@ -16,7 +22,17 @@ jobs:
           node-version: '18'
       - name: Run Node tests
         run: node tests/run-tests.js
+        # Executa todos os testes em tests/*_test.js:
+        # - mutuo_parsing_test.js: Validação de parsing de valores monetários
+        # - mutuo_tax_conversion_test.js: Conversão de taxas de juros
+        # - mutuo_valorrapido_test.js: Cálculos rápidos de empréstimos
+        # - solar_battery_sizing_test.js: Dimensionamento de baterias
+        # - solar_gargalos_test.js: Cálculo de gargalos (vida útil vs autonomia)
+        # - solar_locale_test.js: Formatação de números por idioma
+        # - home_button_i18n_test.js: Internacionalização do botão home
 
+  # Testes de smoke em PowerShell (Windows)
+  # Verifica integridade de arquivos compartilhados e configurações
   pwsh-smoke:
     name: PowerShell smoke checks (Windows)
     runs-on: windows-latest
@@ -25,5 +41,7 @@ jobs:
       - name: Run PowerShell checks
         shell: pwsh
         run: |
+          # Verifica se site-config.js está correto e acessível
           pwsh -NoProfile -ExecutionPolicy Bypass -File .\tests\check-site-config.ps1
+          # Verifica se ripple.js e ripple-init.js estão funcionando
           pwsh -NoProfile -ExecutionPolicy Bypass -File .\tests\check-ripple.ps1

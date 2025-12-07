@@ -66,6 +66,7 @@ const traducoes = {
         'stat-html': 'linhas HTML',
         'stat-js': 'linhas JavaScript',
         'stat-css': 'linhas CSS',
+        'code-commented-note': '💡 Todo o código JavaScript está completamente comentado em português para facilitar o aprendizado!',
 
         'features-title': 'Recursos Principais',
         'resource-bilingual-title': '🌍 Bilíngue',
@@ -133,6 +134,7 @@ const traducoes = {
         'stat-html': 'righe HTML',
         'stat-js': 'righe JavaScript',
         'stat-css': 'righe CSS',
+        'code-commented-note': '💡 Tutto il codice JavaScript è completamente commentato in portoghese per facilitare l\'apprendimento!',
 
         'features-title': 'Caratteristiche Principali',
         'resource-bilingual-title': '🌍 Bilingue',

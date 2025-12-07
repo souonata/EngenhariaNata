@@ -32,10 +32,14 @@ Incremente `?v=X.X.X` quando modificar arquivos. Meta tags anti-cache obrigatór
 - Mantenha o código limpo e legível.
 
 ### Comentários Extremamente Detalhados
-Este projeto usa **documentação inline educacional**. NUNCA remova comentários existentes. Ao adicionar código:
-- Blocos de comentário `/* ========== */` para seções
+Este projeto usa **documentação inline educacional em português**. NUNCA remova comentários existentes. Ao adicionar código:
+- **TODAS as linhas devem ser comentadas** explicando o que fazem e por quê
+- Blocos de comentário `/* ========== */` para seções principais
+- Comentários linha por linha para funções complexas
 - Explique **POR QUÊ** cada decisão, não apenas O QUÊ
-- Exemplo do padrão: veja `index-script.js` linhas 1-40 ou `index-styles.css` linhas 1-50
+- Use português claro e didático, como se estivesse ensinando um iniciante
+- Exemplo do padrão: veja `mutuo-script.js`, `helice-script.js`, `solar-script.js` - todas as funções principais têm comentários linha por linha
+- Para funções matemáticas/financeiras, explique as fórmulas e dê exemplos práticos
 
 ### Internacionalização (i18n)
 A calculadora usa sistema custom de tradução PT-BR/IT-IT:
@@ -321,20 +325,22 @@ novo-app/
 
 ## Regras de Edição
 
-1. **Preserve todos os comentários** educacionais existentes
-2. Incremente versões de cache (`?v=X.X.X`) ao modificar CSS/JS
-3. Teste em português E italiano antes de finalizar (se bilíngue)
-4. Mobile-first: valide em 375px width primeiro
-5. Mantenha acessibilidade: use labels/aria quando apropriado
-6. Limite valores com segurança (veja `ajustarValor()` - MAX_VALOR, MAX_TAXA)
-7. Use `toLocaleString(idiomaAtual)` para formatação automática de números
-
-8. O dimensionamento de baterias agora usa capacidade em kWh por padrão (ex.: 48V x 100Ah ≈ 4.8 kWh para LiFePO4). Ao adicionar ou atualizar valores, prefira informar a capacidade em kWh e mantenha a tensão correta (12V, 24V, 48V) para consistência.
-8b. A página de configuração do Solar (`solar/config.html`) permite ajustar especificações e preços — os sliders de peso para AGM e LiFePO₄ agora aceitam até **180 kg**. O inversor mínimo considerado foi reduzido para **1 kW** para suportar sistemas menores.
-8. Sempre destrua gráficos Chart.js antes de recriar (`chart.destroy()`)
-9. **Botão home sempre centralizado** usando `left: 50%` + `transform: translateX(-50%)`
-10. Use seletor CSS correto `.app-icon` (não `.icone-app`) para ícones na home
-11. **Limpeza**: Remova `console.log` e código comentado antes de finalizar.
+1. **Preserve TODOS os comentários** educacionais existentes - eles são parte essencial do projeto
+2. **Ao adicionar código novo, comente CADA linha** explicando o que faz e por quê
+3. **Use português** para todos os comentários e nomes de variáveis/funções quando possível
+4. Incremente versões de cache (`?v=X.X.X`) ao modificar CSS/JS
+5. Teste em português E italiano antes de finalizar (se bilíngue)
+6. Mobile-first: valide em 375px width primeiro
+7. Mantenha acessibilidade: use labels/aria quando apropriado
+8. Limite valores com segurança (veja `ajustarValor()` - MAX_VALOR, MAX_TAXA)
+9. Use `toLocaleString(idiomaAtual)` para formatação automática de números
+10. O dimensionamento de baterias usa capacidade em kWh por padrão (ex.: 48V x 100Ah ≈ 4.8 kWh para LiFePO4)
+11. A página de configuração do Solar permite ajustar especificações — sliders de peso até **180 kg**, inversor mínimo **1 kW**
+12. Sempre destrua gráficos Chart.js antes de recriar (`chart.destroy()`)
+13. **Botão home sempre centralizado** usando `left: 50%` + `transform: translateX(-50%)`
+14. Use seletor CSS correto `.app-icon` (não `.icone-app`) para ícones na home
+15. **Limpeza**: Remova `console.log` e código comentado antes de finalizar
+16. **Documentação**: Mantenha README.md, GLOSSARIO.md e copilot-instructions.md atualizados
 
 ## Versões Atuais dos Arquivos
 
@@ -343,18 +349,23 @@ Mantenha sempre atualizado ao modificar:
 ```
 index.html                           → index-styles.css?v=1.2.1
                                      → index-script.js?v=1.2.0
+                                     → site-config.js?v=1.0.0
+                                     → ripple.js?v=1.0.0
+                                     → ripple-init.js?v=1.0.0
 
 mutuo/mutuo.html                     → mutuo-styles.css?v=1.2.5
-                                     → mutuo-script.js?v=1.1.1
+                                     → mutuo-script.js?v=1.1.1 (2055 linhas, totalmente comentado)
 
 helice/helice.html                   → helice-styles.css?v=1.5.6
-                                     → helice-script.js?v=1.4.0
+                                     → helice-script.js?v=1.4.0 (921 linhas, totalmente comentado)
 
 solar/solar.html                     → solar-styles.css?v=1.1.1
-                                     → solar-script.js?v=1.1.4
+                                     → solar-script.js?v=1.1.4 (890 linhas, totalmente comentado)
 
 solar/config.html                    → config-script.js?v=1.0.5
 
 sobre/sobre.html                     → sobre-styles.css?v=1.5.7
-                                     → sobre-script.js?v=1.3.0
+                                     → sobre-script.js?v=1.3.4
 ```
+
+**Nota**: Todos os arquivos JavaScript principais foram refatorados com comentários detalhados em português para fins educacionais. O código mantém a funcionalidade original mas agora é muito mais didático e fácil de entender para iniciantes.
