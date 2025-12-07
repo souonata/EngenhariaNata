@@ -30,7 +30,7 @@ body {
 /* ============================================
    BOTÃO HOME FIXO
    ============================================ */
-.botao-home-fixo {
+.home-button-fixed {
     position: fixed;
     bottom: 15px;
     left: 50%;
@@ -50,12 +50,12 @@ body {
     color: white;
 }
 
-.botao-home-fixo:hover {
+.home-button-fixed:hover {
     transform: translateX(-50%) scale(1.15);
     box-shadow: 0 12px 30px rgba(91, 243, 172, 0.6);
 }
 
-.botao-home-fixo svg {
+.home-button-fixed svg {
     width: 22px;
     height: 22px;
     fill: white;

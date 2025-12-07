@@ -7,20 +7,21 @@
 const VALORES_PADRAO = {
     potenciaPainel: 400,
     precoPainel: 1200,
-    // AGM (Chumbo-Ácido)
+    // AGM (Chumbo-Ácido) - capacity expressed in kWh now
     tensaoAGM: 12,
-    capacidadeAGM: 100,
+    capacidadeAGM: 1.2,   // kWh (~12V x 100Ah)
     precoAGM: 420,
     pesoAGM: 30,
-    // LiFePO4 (Lítio)
-    tensaoLitio: 12,
-    capacidadeLitio: 100,
-    precoLitio: 3500,
-    pesoLitio: 12
+    // LiFePO4 (Lítio) - common modular off-grid pack: 48V x 100Ah ≈ 4.8 kWh
+    tensaoLitio: 48,
+    capacidadeLitio: 4.8, // kWh
+    precoLitio: 12000,
+    pesoLitio: 60
 };
 
 // Idioma atual (herda do localStorage)
-let idiomaAtual = localStorage.getItem('idiomaSolar') || 'pt-BR';
+// Usa a chave padronizada para compartilhar preferência entre apps
+let idiomaAtual = localStorage.getItem('idiomaPreferido') || 'pt-BR';
 
 // ============================================
 // DICIONÁRIO DE TRADUÇÃO
@@ -31,8 +32,8 @@ const traducoes = {
         'config-subtitle': 'Valores de Referência 2024',
         'config-ref-title': '📋 Valores de Referência (Brasil 2024)',
         'config-ref-painel': 'Painel Solar 400-450W: R$ 1.200',
-        'config-ref-bat-agm': 'Bateria AGM 12V 100Ah: R$ 420',
-        'config-ref-bat-litio': 'Bateria LiFePO₄ 12V 100Ah: R$ 3.500',
+        'config-ref-bat-agm': 'Bateria AGM 12V 100Ah (~1.2 kWh): R$ 420',
+        'config-ref-bat-litio': 'Bateria Lítio 48V 100Ah (~4.8 kWh): R$ 12.000',
         'config-ref-inv1': 'Inversor Off-Grid 1kW: R$ 1.100',
         'config-ref-inv2': 'Inversor Off-Grid 2kW: R$ 1.550',
         'config-ref-inv5': 'Inversor Off-Grid 5kW: R$ 2.500',
@@ -49,14 +50,15 @@ const traducoes = {
         'config-resetar': '🔄 Restaurar Padrões',
         'footer': 'Solar - Engenharia NATA © 2025',
         'moeda': 'R$'
+        , 'aria-home': 'Voltar para a tela inicial'
     },
     'it-IT': {
         'config-title': '⚙️ Configurazioni',
         'config-subtitle': 'Valori di Riferimento 2024',
         'config-ref-title': '📋 Valori di Riferimento (Italia 2024)',
         'config-ref-painel': 'Pannello Solare 400-450W: € 194',
-        'config-ref-bat-agm': 'Batteria AGM 12V 100Ah: € 68',
-        'config-ref-bat-litio': 'Batteria LiFePO₄ 12V 100Ah: € 565',
+        'config-ref-bat-agm': 'Batteria AGM 12V 100Ah (~1.2 kWh): € 68',
+        'config-ref-bat-litio': 'Batteria Litio 48V 100Ah (~4.8 kWh): € 1.940',
         'config-ref-inv1': 'Inverter Off-Grid 1kW: € 178',
         'config-ref-inv2': 'Inverter Off-Grid 2kW: € 250',
         'config-ref-inv5': 'Inverter Off-Grid 5kW: € 404',
@@ -73,6 +75,7 @@ const traducoes = {
         'config-resetar': '🔄 Ripristina Predefiniti',
         'footer': 'Solare - Engenharia NATA © 2025',
         'moeda': '€'
+        , 'aria-home': 'Torna alla schermata iniziale'
     }
 };
 
@@ -82,6 +85,8 @@ const traducoes = {
 
 function trocarIdioma(idioma) {
     idiomaAtual = idioma;
+    // Persiste a escolha de idioma para todo o portfólio
+    localStorage.setItem('idiomaPreferido', idioma);
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const chave = el.getAttribute('data-i18n');
         if (traducoes[idioma] && traducoes[idioma][chave]) {
@@ -89,6 +94,10 @@ function trocarIdioma(idioma) {
         }
     });
     atualizarDisplays();
+
+    // Ajusta aria-label do botão home para o idioma selecionado (acessibilidade)
+    const homeLabel = traducoes[idioma]['aria-home'] || 'Home';
+    document.querySelectorAll('.home-button-fixed').forEach(el => el.setAttribute('aria-label', homeLabel));
 }
 
 function atualizarDisplays() {
@@ -106,7 +115,7 @@ function atualizarDisplays() {
     const precoAGM = document.getElementById('sliderPrecoAGM').value;
     const pesoAGM = document.getElementById('sliderPesoAGM').value;
     document.getElementById('valTensaoAGM').textContent = `${tensaoAGM} V`;
-    document.getElementById('valCapacidadeAGM').textContent = `${capacidadeAGM} Ah`;
+    document.getElementById('valCapacidadeAGM').textContent = `${parseFloat(capacidadeAGM).toFixed(1)} kWh`;
     document.getElementById('valPrecoAGM').textContent = `${moeda} ${parseInt(precoAGM).toLocaleString(idiomaAtual, {useGrouping: true})}`;
     document.getElementById('valPesoAGM').textContent = `${pesoAGM} kg`;
     
@@ -116,7 +125,7 @@ function atualizarDisplays() {
     const precoLitio = document.getElementById('sliderPrecoLitio').value;
     const pesoLitio = document.getElementById('sliderPesoLitio').value;
     document.getElementById('valTensaoLitio').textContent = `${tensaoLitio} V`;
-    document.getElementById('valCapacidadeLitio').textContent = `${capacidadeLitio} Ah`;
+    document.getElementById('valCapacidadeLitio').textContent = `${parseFloat(capacidadeLitio).toFixed(1)} kWh`;
     document.getElementById('valPrecoLitio').textContent = `${moeda} ${parseInt(precoLitio).toLocaleString(idiomaAtual, {useGrouping: true})}`;
     document.getElementById('valPesoLitio').textContent = `${pesoLitio} kg`;
 }
@@ -162,11 +171,11 @@ function salvarValores() {
         potenciaPainel: parseInt(document.getElementById('sliderPotenciaPainel').value),
         precoPainel: parseInt(document.getElementById('sliderPrecoPainel').value),
         tensaoAGM: parseInt(document.getElementById('sliderTensaoAGM').value),
-        capacidadeAGM: parseInt(document.getElementById('sliderCapacidadeAGM').value),
+        capacidadeAGM: parseFloat(document.getElementById('sliderCapacidadeAGM').value),
         precoAGM: parseInt(document.getElementById('sliderPrecoAGM').value),
         pesoAGM: parseInt(document.getElementById('sliderPesoAGM').value),
         tensaoLitio: parseInt(document.getElementById('sliderTensaoLitio').value),
-        capacidadeLitio: parseInt(document.getElementById('sliderCapacidadeLitio').value),
+        capacidadeLitio: parseFloat(document.getElementById('sliderCapacidadeLitio').value),
         precoLitio: parseInt(document.getElementById('sliderPrecoLitio').value),
         pesoLitio: parseInt(document.getElementById('sliderPesoLitio').value)
     };

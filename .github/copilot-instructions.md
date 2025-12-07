@@ -1,49 +1,19 @@
-# Copilot Instructions - Portfolio Bilíngue de Apps Web
+# Developer Notes — Engenharia NATA (short)
 
-## Arquitetura do Projeto
+Pequeno resumo para contribuintes e estudantes: o repositório reúne apps simples em HTML/CSS/JS puro. O objetivo aqui é ser conciso — mantenha a documentação técnica separada quando precisar de detalhes.
 
-Este é um portfólio multi-app com simulador de interface móvel iOS/Android. **Estrutura raiz-baseada**: cada app fica em sua própria pasta, com `index.html` servindo como launcher mobile simulado.
+Arquitetura (resumida):
+- index.html → tela inicial / launcher
+- Pastas de apps: `mutuo/`, `helice/`, `solar/`, `sobre/` (cada uma contém `app.html`, `app-script.js`, `app-styles.css`)
 
-### Componentes Principais
-- **index.html**: Tela inicial simulada (device frame, status bar, app icons, dock) com navegação para sub-apps
-- **mutuo/**: App de comparação de sistemas de amortização (SAC/Price/Americano) com i18n PT-BR/IT-IT
-- **helice/**: Calculadora de passo de hélice para barcos (RPM, Slip, Redução)
-- **solar/**: Dimensionamento de sistemas fotovoltaicos off-grid (painéis, baterias, inversor)
-- **sobre/**: Página informativa sobre os projetos ("Sobre mim")
+Pontos importantes:
+- Idioma do usuário salvo em `localStorage` na chave `idiomaPreferido` (pt-BR / it-IT)
+- Configurações do Solar são salvas em `localStorage` na chave `configSolar`
 
-### Estrutura Completa do Projeto
-```
-├── .github/
-│   └── copilot-instructions.md  (Documentação completa)
-├── .htaccess                    (Configurações do servidor)
-├── index.html                   (Tela inicial simulada - mobile)
-├── index-script.js              (Lógica da tela inicial)
-├── index-styles.css             (Estilos da tela inicial)
-├── GLOSSARIO.md                 (Glossário educacional)
-├── README.md                    (Documentação principal)
-├── mutuo/
-│   ├── mutuo.html               (Calculadora de amortização)
-│   ├── mutuo-script.js
-│   ├── mutuo-styles.css
-│   └── .htaccess
-├── helice/
-│   ├── helice.html              (Calculadora de hélice)
-│   ├── helice-script.js
-│   ├── helice-styles.css
-│   └── .htaccess
-├── solar/
-│   ├── solar.html               (Dimensionamento solar)
-│   ├── solar-script.js
-│   ├── solar-styles.css
-│   ├── config.html              (Configuração de preços)
-│   ├── config-script.js
-│   └── .htaccess
-└── sobre/
-    ├── sobre.html               (Sobre o projeto)
-    ├── sobre-script.js          (Lógica de expansão/colapso)
-    ├── sobre-styles.css         (Estilos e accordion)
-    └── .htaccess
-```
+Boas práticas (mínimas):
+- Use cache-busting `?v=X.Y.Z` ao atualizar CSS/JS para evitar problemas de cache.
+- Evite deixar `console.log` ou código morto no repositório público.
+- Preserve comentários que ajudem novos leitores a entender o projeto.
 
 ## Convenções de Código
 
@@ -75,6 +45,12 @@ A calculadora usa sistema custom de tradução PT-BR/IT-IT:
 - Moeda auto-switch: BRL (pt-BR) ↔ EUR (it-IT)
 - Sempre forneça traduções completas ao adicionar texto novo
 - **Inicialização**: `trocarIdioma('pt-BR')` no DOMContentLoaded
+
+IMPORTANT NOTE: The project uses a single, standardized localStorage key for language persistence: `idiomaPreferido`. Avoid creating per-app language keys (e.g. `idiomaSolar`).
+
+Accessibility & Tests:
+- Decorative SVG icons should include `aria-hidden="true"` and meaningful images (logos) should include `role="img"` + a `<title>`.
+- Small, dependency-free tests were added under `tests/` to validate numeric parsing and language key usage. These can be run with Node.js (example: `node tests/run-tests.js`).
 
 ### Formatação de Números
 - Português: `100.000,50` (ponto = milhares, vírgula = decimal)
@@ -352,6 +328,9 @@ novo-app/
 5. Mantenha acessibilidade: use labels/aria quando apropriado
 6. Limite valores com segurança (veja `ajustarValor()` - MAX_VALOR, MAX_TAXA)
 7. Use `toLocaleString(idiomaAtual)` para formatação automática de números
+
+8. O dimensionamento de baterias agora usa capacidade em kWh por padrão (ex.: 48V x 100Ah ≈ 4.8 kWh para LiFePO4). Ao adicionar ou atualizar valores, prefira informar a capacidade em kWh e mantenha a tensão correta (12V, 24V, 48V) para consistência.
+8b. A página de configuração do Solar (`solar/config.html`) permite ajustar especificações e preços — os sliders de peso para AGM e LiFePO₄ agora aceitam até **180 kg**. O inversor mínimo considerado foi reduzido para **1 kW** para suportar sistemas menores.
 8. Sempre destrua gráficos Chart.js antes de recriar (`chart.destroy()`)
 9. **Botão home sempre centralizado** usando `left: 50%` + `transform: translateX(-50%)`
 10. Use seletor CSS correto `.app-icon` (não `.icone-app`) para ícones na home
@@ -365,17 +344,17 @@ Mantenha sempre atualizado ao modificar:
 index.html                           → index-styles.css?v=1.2.1
                                      → index-script.js?v=1.2.0
 
-mutuo/mutuo.html                     → mutuo-styles.css?v=1.1.0
-                                     → mutuo-script.js?v=1.1.0
+mutuo/mutuo.html                     → mutuo-styles.css?v=1.2.5
+                                     → mutuo-script.js?v=1.1.1
 
-helice/helice.html                   → helice-styles.css?v=1.0.0
-                                     → helice-script.js?v=1.0.0
+helice/helice.html                   → helice-styles.css?v=1.5.6
+                                     → helice-script.js?v=1.4.0
 
-solar/solar.html                     → solar-styles.css?v=1.1.0
-                                     → solar-script.js?v=1.1.2
+solar/solar.html                     → solar-styles.css?v=1.1.1
+                                     → solar-script.js?v=1.1.4
 
-solar/config.html                    → config-script.js?v=1.0.1
+solar/config.html                    → config-script.js?v=1.0.5
 
-sobre/sobre.html                     → sobre-styles.css?v=1.5.0
-                                     → sobre-script.js?v=1.2.0
+sobre/sobre.html                     → sobre-styles.css?v=1.5.7
+                                     → sobre-script.js?v=1.3.0
 ```

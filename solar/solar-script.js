@@ -3,7 +3,8 @@
 // ============================================
 
 // Variável que guarda o idioma atual (Português ou Italiano)
-let idiomaAtual = localStorage.getItem('idiomaSolar') || 'pt-BR';
+// Padroniza a chave localStorage para o mesmo usado pelo restante do projeto
+let idiomaAtual = localStorage.getItem('idiomaPreferido') || 'pt-BR';
 
 // ============================================
 // CONSTANTES DO SISTEMA (Valores Fixos)
@@ -18,17 +19,23 @@ const TAXA_BRL_EUR = 6.19;
 // ============================================
 // VALORES PADRÃO DOS COMPONENTES (em BRL)
 // ============================================
+// Defaults updated to use battery capacity in kWh (common off-grid modules)
+// Choice rationale: common modular LiFePO4 packs for off-grid use are
+// frequently 48V x 100Ah ≈ 4.8 kWh. AGM typical small deep-cycle 12V 100Ah ≈ 1.2 kWh.
+// Prices are approximate market values (BRL) for typical modules.
 const VALORES_PADRAO = {
     potenciaPainel: 400,
     precoPainel: 1200,
+    // AGM defaults (12 V, capacity in kWh)
     tensaoAGM: 12,
-    capacidadeAGM: 100,
+    capacidadeAGM: 1.2,   // kWh (12 V × 100 Ah ≈ 1.2 kWh)
     precoAGM: 420,
     pesoAGM: 30,
-    tensaoLitio: 12,
-    capacidadeLitio: 100,
-    precoLitio: 3500,
-    pesoLitio: 12
+    // Lithium defaults (48 V, capacity in kWh)
+    tensaoLitio: 48,
+    capacidadeLitio: 4.8, // kWh (48 V × 100 Ah ≈ 4.8 kWh) — common modular pack
+    precoLitio: 12000,     // approximate BRL price for a 48V 100Ah LiFePO4 module
+    pesoLitio: 60
 };
 
 // Função para obter configuração atual (customizada ou padrão)
@@ -130,6 +137,7 @@ const traducoes = {
         'anos': 'anos',
         'ano': 'ano',
         'moeda': 'R$'
+        , 'aria-home': 'Voltar para a tela inicial'
     },
     'it-IT': {
         'app-title': '☀️ Solare',
@@ -155,6 +163,7 @@ const traducoes = {
         'anos': 'anni',
         'ano': 'anno',
         'moeda': '€'
+        , 'aria-home': 'Torna alla schermata iniziale'
     }
 };
 
@@ -167,7 +176,8 @@ let timeoutId = null;
 // ============================================
 function trocarIdioma(novoIdioma) {
     idiomaAtual = novoIdioma;
-    localStorage.setItem('idiomaSolar', novoIdioma);
+    // Persiste a preferência de idioma usando a chave padronizada do projeto
+    localStorage.setItem('idiomaPreferido', novoIdioma);
     document.documentElement.lang = novoIdioma;
     
     document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -186,6 +196,10 @@ function trocarIdioma(novoIdioma) {
     });
 
     atualizarInterface();
+
+    // Atualiza aria-label do botão home
+    const homeLabel = traducoes[novoIdioma]['aria-home'] || 'Home';
+    document.querySelectorAll('.home-button-fixed').forEach(el => el.setAttribute('aria-label', homeLabel));
 }
 
 // ============================================
@@ -327,11 +341,23 @@ function calcularSistema(dodAlvo) {
 
     // Obter configuração customizada ou padrão
     const config = obterConfig();
+    // Backwards compatibility: older configs stored capacity in Ah (e.g. 100)
+    // If capacity seems too large (>20) interpret as Ah and convert to kWh using voltage
+    if (config.capacidadeLitio && config.capacidadeLitio > 20 && config.tensaoLitio) {
+        config.capacidadeLitioAh = config.capacidadeLitio; // preserve older value
+        config.capacidadeLitio = (config.tensaoLitio * config.capacidadeLitio) / 1000; // convert to kWh
+    }
+    if (config.capacidadeAGM && config.capacidadeAGM > 20 && config.tensaoAGM) {
+        config.capacidadeAGMAh = config.capacidadeAGM;
+        config.capacidadeAGM = (config.tensaoAGM * config.capacidadeAGM) / 1000; // kWh
+    }
     
     // Montar especificações das baterias baseado na config
-    const batSpec = tipoBateria === 'litio' 
-        ? { v: config.tensaoLitio, ah: config.capacidadeLitio, price_brl: config.precoLitio, weight: config.pesoLitio }
-        : { v: config.tensaoAGM, ah: config.capacidadeAGM, price_brl: config.precoAGM, weight: config.pesoAGM };
+    // Support capacity expressed as kWh (new default) but remain compatible
+    // with older config that used Ah (capacidade in Ah). Prefer explicit kWh.
+    const batSpec = (tipoBateria === 'litio')
+        ? { v: config.tensaoLitio, kwh: config.capacidadeLitio, ah: config.capacidadeLitioAh || null, price_brl: config.precoLitio, weight: config.pesoLitio }
+        : { v: config.tensaoAGM, kwh: config.capacidadeAGM, ah: config.capacidadeAGMAh || null, price_brl: config.precoAGM, weight: config.pesoAGM };
     
     const POTENCIA_PAINEL = config.potenciaPainel;
     const PRECO_PAINEL = config.precoPainel;
@@ -368,7 +394,10 @@ function calcularSistema(dodAlvo) {
     const capacidadeNecessariaKWh = Math.max(capVidaUtil, capAutonomia);
     
     // Calcula energia por bateria
-    const energiaPorBateria = (batSpec.v * batSpec.ah) / 1000; // kWh
+    // energiaPorBateria: if kWh provided use it; else if Ah provided fallback to V*Ah/1000
+    const energiaPorBateria = (typeof batSpec.kwh === 'number' && !isNaN(batSpec.kwh))
+        ? batSpec.kwh
+        : ((batSpec.v && batSpec.ah) ? (batSpec.v * batSpec.ah) / 1000 : 0);
     
     // Calcula quantidade (arredonda para cima e garante paridade para 24V/48V)
     let qtdBaterias = Math.ceil(capacidadeNecessariaKWh / energiaPorBateria);
@@ -413,7 +442,9 @@ function calcularSistema(dodAlvo) {
 
     // 6. Exibir Resultados
     document.getElementById('resQtdPlacas').textContent = `${qtdPaineis} x ${POTENCIA_PAINEL}W`;
-    document.getElementById('resQtdBaterias').textContent = `${qtdBaterias} x ${batSpec.ah}Ah (${batSpec.v}V)`;
+    // Exibe quantas unidades do módulo escolhido (kWh e tensão)
+    const unidadeKWh = (typeof batSpec.kwh === 'number' ? batSpec.kwh.toFixed(1) : (batSpec.ah ? ((batSpec.v * batSpec.ah)/1000).toFixed(1) : '0.0'));
+    document.getElementById('resQtdBaterias').textContent = `${qtdBaterias} x ${unidadeKWh} kWh (${batSpec.v}V)`;
     document.getElementById('resPotenciaInversor').textContent = `${potenciaInversor} kW`;
     document.getElementById('resPesoBaterias').textContent = `${pesoTotal} kg`;
     
@@ -426,32 +457,57 @@ function calcularSistema(dodAlvo) {
     document.getElementById('custoBaterias').textContent = formatarPreco(custoBaterias);
     document.getElementById('custoInversor').textContent = formatarPreco(custoInversor);
     
-    // Motivo do dimensionamento das BATERIAS
-    // Com a nova lógica, autonomia sempre é o fator quando > 1 dia
-    // pois capAutonomia = capVidaUtil * autonomia
+    // Motivo do dimensionamento das BATERIAS — explicita parâmetros que geraram o gargalo
+    // Ex: autonomia X dias × consumoDiario Y kWh → utilizável necessário Z kWh → DoD alvo W% → capacidade nominal necessária T kWh → módulos M × S kWh
     let motivoBaterias = '';
+    const consumoDiario = energiaDiaria; // kWh/dia
+    const capNecessariaRounded = Math.round(capacidadeNecessariaKWh * 100) / 100;
+    const energiaPorBatRounded = Math.round(energiaPorBateria * 100) / 100;
+
     if (autonomia > 1) {
-        motivoBaterias = idiomaAtual === 'pt-BR' ? '(gargalo: autonomia)' : '(limite: autonomia)';
+        if (idiomaAtual === 'pt-BR') {
+            motivoBaterias = `(gargalo: autonomia) ${autonomia} dia(s) × ${consumoDiario.toFixed(3)} kWh/dia → utilizável necessário ${energiaAutonomia.toFixed(3)} kWh → DoD alvo ${Math.round(dodAlvo * 100)}% → capacidade nominal necessária ${capNecessariaRounded} kWh → ${qtdBaterias} × ${energiaPorBatRounded} kWh`;
+        } else {
+            motivoBaterias = `(limite: autonomia) ${autonomia} giorno(i) × ${consumoDiario.toFixed(3)} kWh/giorno → utilizzabile necessario ${energiaAutonomia.toFixed(3)} kWh → DoD target ${Math.round(dodAlvo * 100)}% → capacità nominale necessaria ${capNecessariaRounded} kWh → ${qtdBaterias} × ${energiaPorBatRounded} kWh`;
+        }
     } else {
-        motivoBaterias = idiomaAtual === 'pt-BR' ? '(gargalo: vida útil)' : '(limite: vita utile)';
+        // Quando autonomia === 1, o dimensionamento vem da vida útil / DoD desejado
+        if (idiomaAtual === 'pt-BR') {
+            motivoBaterias = `(gargalo: vida útil) DoD alvo ${Math.round(dodAlvo * 100)}% → energia diária ${consumoDiario.toFixed(3)} kWh → capacidade nominal necessária ${capNecessariaRounded} kWh → ${qtdBaterias} × ${energiaPorBatRounded} kWh`;
+        } else {
+            motivoBaterias = `(limite: vita utile) DoD target ${Math.round(dodAlvo * 100)}% → energia giornaliera ${consumoDiario.toFixed(3)} kWh → capacità nominale necessaria ${capNecessariaRounded} kWh → ${qtdBaterias} × ${energiaPorBatRounded} kWh`;
+        }
     }
     document.getElementById('resMotivoBaterias').textContent = motivoBaterias;
     
-    // Motivo do dimensionamento dos PAINÉIS
-    // Painéis são dimensionados para recarregar o banco em 1 dia
-    // O gargalo é sempre o tamanho do banco (que depende de autonomia ou vida útil)
-    let motivoPaineis = idiomaAtual === 'pt-BR' ? '(recarga do banco)' : '(ricarica banco)';
+    // Motivo do dimensionamento dos PAINÉIS — explicita porque exigem essa potência (recarga do banco)
+    const energiaUtilBancoRounded = Math.round(energiaUtilizavelBanco * 100) / 100;
+    const energiaTotalGerarRounded = Math.round(energiaTotalGerar * 100) / 100;
+    const potenciaReqRounded = Math.round(potenciaSolarNecessaria);
+    let motivoPaineis = '';
+    if (idiomaAtual === 'pt-BR') {
+        motivoPaineis = `(gargalo: recarga do banco) banco fornece ${energiaUtilBancoRounded} kWh utilizáveis → com perdas ${energiaTotalGerarRounded} kWh/dia → potência requerida ≈ ${potenciaReqRounded} W → ${qtdPaineis} × ${POTENCIA_PAINEL}W`;
+    } else {
+        motivoPaineis = `(limite: ricarica banco) banco fornisce ${energiaUtilBancoRounded} kWh utilizzabili → con perdite ${energiaTotalGerarRounded} kWh/giorno → potenza richiesta ≈ ${potenciaReqRounded} W → ${qtdPaineis} × ${POTENCIA_PAINEL}W`;
+    }
     document.getElementById('resMotivoPaineis').textContent = motivoPaineis;
     
-    // Motivo do dimensionamento do INVERSOR
-    // Inversor precisa atender: potência dos painéis OU mínimo 1kW
+    // Motivo do dimensionamento do INVERSOR — mostra se é limite mínimo ou potência dos painéis
     const potenciaPaineisKw = (qtdPaineis * POTENCIA_PAINEL) / 1000;
     const potenciaMinimaKw = 1;
     let motivoInversor = '';
     if (potenciaInversor === potenciaMinimaKw && potenciaPaineisKw < potenciaMinimaKw) {
-        motivoInversor = idiomaAtual === 'pt-BR' ? '(gargalo: mínimo 1kW)' : '(limite: minimo 1kW)';
+        if (idiomaAtual === 'pt-BR') {
+            motivoInversor = `(gargalo: mínimo 1kW) potência dos painéis ${potenciaPaineisKw.toFixed(2)} kW < mínimo exigido ${potenciaMinimaKw} kW`;
+        } else {
+            motivoInversor = `(limite: minimo 1kW) potenza pannelli ${potenciaPaineisKw.toFixed(2)} kW < minimo richiesto ${potenciaMinimaKw} kW`;
+        }
     } else {
-        motivoInversor = idiomaAtual === 'pt-BR' ? '(gargalo: potência painéis)' : '(limite: potenza pannelli)';
+        if (idiomaAtual === 'pt-BR') {
+            motivoInversor = `(gargalo: potência painéis) painéis fornecem ${potenciaPaineisKw.toFixed(2)} kW → inversor dimensionado ${potenciaInversor} kW`;
+        } else {
+            motivoInversor = `(limite: potenza pannelli) pannelli forniscono ${potenciaPaineisKw.toFixed(2)} kW → inverter dimensionado ${potenciaInversor} kW`;
+        }
     }
     document.getElementById('resMotivoInversor').textContent = motivoInversor;
 }

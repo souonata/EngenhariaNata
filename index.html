@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <!-- Meta viewport otimizada para mobile: desabilita zoom e scroll lateral -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Meta tags para DESABILITAR cache - sempre carrega arquivos atualizados -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -54,7 +54,7 @@
                 <a href="sobre/sobre.html" class="app-icon">
                     <!-- Ícone SVG personalizado com gradiente azul -->
                     <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <!-- Definição do gradiente (roxo claro → roxo escuro) -->
                             <defs>
                                 <linearGradient id="gradient-about" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -77,7 +77,7 @@
                 <a href="helice/helice.html" class="app-icon">
                     <!-- Ícone SVG personalizado com gradiente azul-turquesa -->
                     <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <!-- Definição do gradiente (azul turquesa → azul marinho) -->
                             <defs>
                                 <linearGradient id="gradient-helice" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -100,7 +100,7 @@
                 <a href="mutuo/mutuo.html" class="app-icon">
                     <!-- Ícone SVG personalizado com gradiente verde -->
                     <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <!-- Definição do gradiente (verde claro → verde escuro) -->
                             <defs>
                                 <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -121,7 +121,7 @@
                 <!-- Ícone do aplicativo Solar -->
                 <a href="solar/solar.html" class="app-icon">
                     <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <defs>
                                 <linearGradient id="gradient-solar" x1="0%" y1="0%" x2="100%" y2="100%">
                                     <stop offset="0%" style="stop-color:#00c6ff;stop-opacity:1" />
@@ -141,7 +141,8 @@
         <!-- Logo Engenharia NATA com estilo de engenharia de ponta -->
         <div class="dock">
             <div class="logo-container">
-                <svg class="logo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg class="logo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="logoTitle">
+                    <title id="logoTitle">ENGENHARIA NATA</title>
                     <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" fill="currentColor"/>
                     <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none"/>
                 </svg>

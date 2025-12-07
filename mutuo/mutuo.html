@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <!-- Meta viewport otimizada para mobile: desabilita zoom e scroll lateral -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Meta tags para DESABILITAR cache do navegador -->
     <!-- Isso garante que sempre carrega a versão mais nova dos arquivos -->
@@ -15,7 +15,7 @@
     
     <!-- Carrega o CSS com parâmetro de versão (?v=1.0.0) -->
     <!-- Quando atualizar o CSS, mude a versão para forçar o navegador a baixar de novo -->
-    <link rel="stylesheet" href="mutuo-styles.css?v=1.2.0">
+    <link rel="stylesheet" href="mutuo-styles.css?v=1.2.5">
 </head>
 <body>
     <div class="container">
@@ -387,8 +387,8 @@
 
     <!-- Botão de retorno à tela inicial (fixo centralizado no rodapé) -->
     <!-- Fica sempre visível enquanto rola a página -->
-    <a href="../index.html" class="home-button-fixed">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+    <a href="../index.html" class="home-button-fixed" aria-label="Voltar à tela inicial">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
         </svg>
     </a>
@@ -398,6 +398,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
     
     <!-- JavaScript da calculadora -->
-    <script src="mutuo-script.js?v=1.1.0"></script>
+    <script src="mutuo-script.js?v=1.1.1"></script>
 </body>
 </html>

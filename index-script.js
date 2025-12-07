@@ -48,6 +48,9 @@ const traducoes = {
         'mes-out': 'outubro',
         'mes-nov': 'novembro',
         'mes-dez': 'dezembro'
+        ,
+        // Aria label for the home button
+        'aria-home': 'Voltar para a tela inicial'
     },
     'it-IT': {
         // Nomes dos aplicativos em italiano
@@ -78,6 +81,9 @@ const traducoes = {
         'mes-out': 'ottobre',
         'mes-nov': 'novembre',
         'mes-dez': 'dicembre'
+        ,
+        // Aria label for the home button
+        'aria-home': 'Torna alla schermata iniziale'
     }
 };
 
@@ -122,6 +128,10 @@ function trocarIdioma(novoIdioma) {
     
     // Atualiza o relógio com os dias da semana no idioma correto
     atualizarHorario();
+
+    // Update home button aria-labels (accessibility)
+    const homeLabel = traducoes[novoIdioma]['aria-home'] || 'Home';
+    document.querySelectorAll('.home-button-fixed').forEach(el => el.setAttribute('aria-label', homeLabel));
 }
 
 /**

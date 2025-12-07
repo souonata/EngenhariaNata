@@ -220,13 +220,28 @@ function formatarPrazoInput(e) {
  */
 function obterValorNumericoFormatado(valorFormatado) {
     if (!valorFormatado) return 0; // Se está vazio, retorna zero
-    
-    // Remove todos os pontos (separador de milhares)
-    // Remove todas as vírgulas (separador decimal)
-    const valor = valorFormatado.replace(/\./g, '').replace(/,/g, '');
-    
-    // Converte para número. Se falhar, retorna 0
-    return parseFloat(valor) || 0;
+
+    // Normaliza entradas como:
+    //  - "100.000" -> 100000
+    //  - "10,5"    -> 10.5
+    //  - "1.234,56"-> 1234.56
+    //  - "1234.56" -> 1234.56
+    let v = String(valorFormatado).trim();
+
+    // Caso tenha ambos '.' e ',' assumimos que '.' é separador de milhares e ',' decimal
+    if (v.indexOf('.') !== -1 && v.indexOf(',') !== -1) {
+        v = v.replace(/\./g, '');      // remove separador de milhares
+        v = v.replace(',', '.');        // converte decimal para ponto
+    } else {
+        // Caso apenas ',' exista, converte para ponto (10,5 => 10.5)
+        // Caso apenas '.' exista, mantemos (1234.56)
+        v = v.replace(/,/g, '.');
+    }
+
+    // Remove qualquer caractere que não seja dígito, ponto ou sinal de menos
+    v = v.replace(/[^0-9.\-]/g, '');
+
+    return parseFloat(v) || 0;
 }
 
 /**
@@ -320,6 +335,7 @@ const traducoes = {
         'installment': 'Parcela',
         'value': 'Valor',
         'footer': 'Calculadora de Empréstimos - Engenharia Nata © 2025',
+        'aria-home': 'Voltar para a tela inicial',
         'quick-controls': 'Controles Rápidos',
         'quick-controls-desc': 'Ajuste os parâmetros e recalcule instantaneamente',
         'evolution-charts': '📊 Evolução ao Longo do Tempo',
@@ -431,6 +447,7 @@ const traducoes = {
         'installment': 'Rata',
         'value': 'Valore',
         'footer': 'Calcolatrice di Mutui - Engenharia Nata © 2025',
+        'aria-home': 'Torna alla schermata iniziale',
         'quick-controls': 'Controlli Rapidi',
         'quick-controls-desc': 'Regola i parametri e ricalcola istantaneamente',
         'evolution-charts': '📊 Evoluzione nel Tempo',
@@ -539,6 +556,10 @@ function trocarIdioma(idioma) {
         preencherTabelaAmortizacao();
         atualizarGraficos();
     }
+
+    // Atualiza o aria-label do botão home (acessibilidade)
+    const homeLabel = traducoes[idioma]['aria-home'] || 'Home';
+    document.querySelectorAll('.home-button-fixed').forEach(el => el.setAttribute('aria-label', homeLabel));
 }
 
 // Função para converter taxa de juros para mensal

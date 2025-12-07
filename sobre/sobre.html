@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <!-- Meta viewport otimizada para mobile: desabilita zoom e scroll lateral -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Meta tags para DESABILITAR cache - sempre carrega arquivos atualizados -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -14,7 +14,7 @@
     
     <!-- Carrega o arquivo CSS com controle de versão -->
     <!-- Mude ?v=1.0.0 para ?v=1.0.1 quando atualizar o CSS -->
-    <link rel="stylesheet" href="sobre-styles.css?v=1.5.1">
+    <link rel="stylesheet" href="sobre-styles.css?v=1.5.7">
 </head>
 <body>
     <!-- Container principal que limita a largura máxima -->
@@ -48,7 +48,7 @@
                 <span class="seta-expansao">▼</span>
             </div>
             <div class="card-content conteudo-expansivel">
-                <p data-i18n="overview-description">Portfólio com 4 apps web usando HTML5, CSS3 e JavaScript puro.</p>
+                <p data-i18n="overview-description">Pequeno portfólio com apps educativos que demonstram cálculos e conceitos práticos de forma simples.</p>
                 
                 <ul class="tech-list">
                     <li><strong>💰 Mutuo</strong> - <span data-i18n="app-mutuo-desc">Calculadora de amortização bilíngue</span></li>
@@ -72,8 +72,7 @@
             <div class="card-content conteudo-expansivel">
                 <!-- Caixa amarela com descrição do que o app faz -->
                 <p class="app-description">
-                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="calculator-description">Compara 3 sistemas de amortização de empréstimos: SAC, Price e Americano.
-                    Ajuda pessoas a entenderem qual sistema é melhor para sua situação financeira.</span>
+                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="calculator-description">Compara sistemas de amortização e mostra parcelas e gráficos para facilitar comparações.</span>
                 </p>
                 
                 <!-- Grade de funcionalidades (4 caixas) -->
@@ -136,7 +135,7 @@
             </div>
             <div class="card-content conteudo-expansivel">
                 <p class="app-description">
-                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="helice-description">Calcula o passo ideal da hélice para barcos de lazer, considerando RPM, redução e slip.</span>
+                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="helice-description">Calcula o passo estimado da hélice para ajudar na escolha.</span>
                 </p>
                 
                 <div class="features-grid">
@@ -165,19 +164,21 @@
             </div>
             <div class="card-content conteudo-expansivel">
                 <p class="app-description">
-                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="solar-description">Dimensiona sistemas fotovoltaicos off-grid, calculando painéis, baterias e inversor necessários.</span>
+                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="solar-description">Ajuda a estimar painéis, baterias e inversor para sistemas off-grid de forma simplificada.</span>
                 </p>
                 
                 <div class="features-grid">
                     <div class="feature">
                         <span class="feature-icon">🔋</span>
                         <h4 data-i18n="feature-battery-title">Baterias AGM/Lítio</h4>
-                        <p data-i18n="feature-battery-desc">Compara chumbo-ácido e LiFePO₄ com tabelas de vida útil</p>
+                        <!-- Atualizado: explica capacidade em kWh e limitações de peso/config -->
+                        <p data-i18n="feature-battery-desc">Compara chumbo-ácido e LiFePO₄ usando capacidade em <strong>kWh</strong>, tabelas de vida útil e parâmetros configuráveis.</p>
+                        <p class="small-note" data-i18n="feature-battery-note">As configurações permitem ajustar kWh/Ah, tensão, preço e peso (sliders até 180 kg).</p>
                     </div>
                     <div class="feature">
                         <span class="feature-icon">⚙️</span>
                         <h4 data-i18n="feature-config-title">Configurável</h4>
-                        <p data-i18n="feature-config-desc">Customize preços de painéis, baterias e especificações</p>
+                        <p data-i18n="feature-config-desc">Customize preços, potências e especificações das baterias — mudanças salvas em `localStorage` (chave `configSolar`).</p>
                     </div>
                 </div>
             </div>
@@ -196,17 +197,17 @@
                     
                     <div class="special-feature">
                         <h4 data-i18n="resource-bilingual-title">🌍 Bilíngue</h4>
-                        <p data-i18n="resource-bilingual-desc">Troca entre Português e Italiano em 1 clique. Moeda muda automaticamente (R$ ↔ €).</p>
+                        <p data-i18n="resource-bilingual-desc">Troca entre Português e Italiano e exibe moeda correspondente.</p>
                     </div>
 
                     <div class="special-feature">
                         <h4 data-i18n="resource-charts-title">📊 Gráficos Interativos</h4>
-                        <p data-i18n="resource-charts-desc">Visualize a evolução dos juros e amortização ao longo do tempo.</p>
+                        <p data-i18n="resource-charts-desc">Gráficos simples para visualizar valores ao longo do tempo.</p>
                     </div>
 
                     <div class="special-feature">
                         <h4 data-i18n="resource-mobile-title">📱 Mobile-First</h4>
-                        <p data-i18n="resource-mobile-desc">Funciona perfeitamente em celulares, tablets e computadores.</p>
+                        <p data-i18n="resource-mobile-desc">Desenvolvido para funcionar bem em dispositivos móveis e desktops.</p>
                     </div>
                 </div>
             </div>
@@ -251,9 +252,9 @@
     <!-- BOTÃO INÍCIO FIXO -->
     <!-- Botão que fica sempre visível no rodapé para voltar à página inicial -->
     <!-- ========================================== -->
-    <a href="../index.html" class="home-button-fixed">
+    <a href="../index.html" class="home-button-fixed" aria-label="Voltar à tela inicial">
         <!-- Ícone SVG de casinha -->
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
         </svg>
     </a>

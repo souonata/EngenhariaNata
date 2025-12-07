@@ -48,6 +48,7 @@ const traducoes = {
         'grafico-label': 'Passo (polegadas)',
         'grafico-eixo-x': 'Velocidade (nós)',
         'grafico-eixo-y': 'Passo Recomendado (pol)'
+        , 'aria-home': 'Voltar para a tela inicial'
     },
     'it-IT': {
         'app-title': '🚤 Calcolatore Passo Elica',
@@ -76,6 +77,7 @@ const traducoes = {
         'grafico-label': 'Passo (pollici)',
         'grafico-eixo-x': 'Velocità (nodi)',
         'grafico-eixo-y': 'Passo Consigliato (pol)'
+        , 'aria-home': 'Torna alla schermata iniziale'
     }
 };
 
@@ -111,6 +113,10 @@ function trocarIdioma(novoIdioma) {
     
     // Atualiza gráfico com labels traduzidas
     atualizarGrafico();
+
+    // Atualiza aria-label do botão home
+    const homeLabel = traducoes[novoIdioma]['aria-home'] || 'Home';
+    document.querySelectorAll('.home-button-fixed').forEach(el => el.setAttribute('aria-label', homeLabel));
 }
 
 /**

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <!-- Meta viewport otimizada para mobile: desabilita zoom e scroll lateral -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Meta tags para DESABILITAR cache - sempre carrega arquivos atualizados -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -13,7 +13,7 @@
     <title>Calculadora de Hélice</title>
     
     <!-- Carrega o arquivo CSS com controle de versão -->
-    <link rel="stylesheet" href="helice-styles.css?v=1.5.0">
+    <link rel="stylesheet" href="helice-styles.css?v=1.5.6">
     
     <!-- Chart.js para gráficos interativos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -172,8 +172,8 @@
     </footer>
 
     <!-- Botão de retorno à tela inicial (fixo centralizado no rodapé) -->
-    <a href="../index.html" class="home-button-fixed">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+    <a href="../index.html" class="home-button-fixed" aria-label="Voltar à tela inicial">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
         </svg>
     </a>

@@ -50,13 +50,13 @@ body {
    ============================================ */
 .home-button-fixed {
     position: fixed;    /* Fica fixo na tela (não rola com a página) */
-    bottom: 25px;       /* SEMPRE 25px da parte inferior visível da tela */
+    bottom: 15px;       /* compact like Solar */
     left: 50%;          /* Começa no meio (50%) */
     transform: translateX(-50%);  /* Move metade da largura para esquerda (centraliza) */
     
     /* Tamanho do botão circular */
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     
     /* Fundo com gradiente azul igual aos outros apps */
     background: linear-gradient(135deg, #4A90E2 0%, #2E5C8A 100%);
@@ -93,8 +93,8 @@ body {
 
 /* Tamanho do ícone SVG dentro do botão */
 .home-button-fixed svg {
-    width: 28px;
-    height: 28px;
+    width: 22px;
+    height: 22px;
     fill: white;  /* Branco para contrastar com o gradiente */
 }
 
@@ -116,8 +116,8 @@ body {
 header {
     text-align: center;  /* Centraliza todo o texto */
     color: white;
-    margin-bottom: 30px;
-    padding: 20px 0;
+    margin-bottom: 10px; /* compact */
+    padding: 8px 0;
 }
 
 /* ========================================== */
@@ -127,8 +127,8 @@ header {
 .language-selector {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 8px;
+    margin-bottom: 8px;
 }
 
 .lang-btn {
@@ -184,11 +184,9 @@ header {
 
 /* Título principal (H1) */
 header h1 {
-    font-size: 2rem;  /* 32px - título padrão */
-    margin-bottom: 10px;
-    
-    /* Sombra no texto para destacar do fundo */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    font-size: 1.4rem;  /* compact */
+    margin-bottom: 2px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.12);
 }
 
 /* Subtítulo (texto menor abaixo do título) */
@@ -203,15 +201,11 @@ header h1 {
    ============================================ */
 .card {
     background: white;       /* Fundo branco */
-    border-radius: 15px;     /* Cantos bem arredondados */
-    padding: 15px;           /* Espaçamento interno */
-    margin-bottom: 20px;     /* Espaço entre cards */
-    
-    /* Sombra forte para dar profundidade */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    
-    /* Animação de aparecer ao carregar */
-    animation: fadeInUp 0.7s ease;
+    border-radius: 12px;     /* slightly smaller corners */
+    padding: 12px;           /* compact padding */
+    margin-bottom: 12px;     /* compact spacing */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    animation: fadeInUp 0.55s ease;
 }
 
 /* Card destacado (com fundo especial e borda) */
@@ -229,8 +223,8 @@ header h1 {
     display: flex;
     align-items: center;     /* Alinha verticalmente */
     gap: 15px;               /* Espaço de 15px entre ícone e título */
-    margin-bottom: 20px;
-    padding-bottom: 15px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
     
     /* Linha roxa embaixo do cabeçalho */
     border-bottom: 3px solid #4A90E2;
@@ -271,18 +265,18 @@ header h1 {
 
 /* Card expansível quando está expandido */
 .card-expansivel.expandido .conteudo-expansivel {
-    margin-top: 20px;  /* Adiciona espaço quando expandido */
+    margin-top: 12px;  /* Adiciona espaço compacta quando expandido */
 }
 
 /* Ícone emoji no cabeçalho */
 .card-header .icon {
-    font-size: 2.5rem;  /* 40px - ícone grande */
+    font-size: 1.6rem;  /* compact icon */
 }
 
 /* Título H2 do card */
 .card-header h2 {
     color: #4A90E2;     /* Roxo */
-    font-size: 1.8rem;  /* 28.8px */
+    font-size: 1rem;  /* compact */
 }
 
 /* Conteúdo dentro do card */
@@ -323,7 +317,7 @@ header h1 {
     /* Barra amarela na borda esquerda */
     border-left: 5px solid #ffc107;
     
-    margin-bottom: 20px;
+    margin-bottom: 8px;
     font-size: 1.1rem;
 }
 
@@ -338,16 +332,16 @@ header h1 {
     /* auto-fit faz com que os itens se reorganizem automaticamente */
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     
-    gap: 20px;       /* Espaço entre itens */
-    margin: 25px 0;
+    gap: 12px;       /* compact spacing */
+    margin: 12px 0;
 }
 
 /* Cada caixa de funcionalidade */
 .feature {
     text-align: center;
-    padding: 20px;
+    padding: 12px; /* compact */
     background: white;
-    border-radius: 15px;
+    border-radius: 12px;
     
     /* Sombra leve */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -364,7 +358,7 @@ header h1 {
 
 /* Ícone emoji da feature */
 .feature-icon {
-    font-size: 3rem;  /* 48px - ícone grande */
+    font-size: 2rem;  /* compact icon */
     display: block;
     margin-bottom: 10px;
 }
@@ -389,10 +383,10 @@ header h1 {
 .stats {
     display: flex;
     justify-content: space-around;  /* Distribui igualmente no espaço */
-    margin-top: 30px;
-    padding: 20px;
+    margin-top: 12px;
+    padding: 12px;
     background: white;
-    border-radius: 15px;
+    border-radius: 12px;
 }
 
 /* Cada estatística individual */
@@ -403,7 +397,7 @@ header h1 {
 /* Número grande da estatística */
 .stat-number {
     display: block;
-    font-size: 2.5rem;   /* 40px - número BEM grande */
+    font-size: 1.8rem;   /* smaller for compact layout */
     font-weight: bold;
     color: #4A90E2;      /* Roxo */
     margin-bottom: 5px;
@@ -462,15 +456,15 @@ footer p {
 
     /* Botão HOME menor no mobile */
     .home-button-fixed {
-        bottom: 25px;  /* Mantém 25px também no mobile */
-        width: 50px;   /* Menor que no desktop (60px) */
-        height: 50px;
+        bottom: 15px;  /* compact */
+        width: 46px;   /* slightly smaller on mobile */
+        height: 46px;
     }
     
     /* Ícone menor dentro do botão HOME */
     .home-button-fixed svg {
-        width: 24px;   /* Menor que no desktop (28px) */
-        height: 24px;
+        width: 20px;   /* smaller mobile icon */
+        height: 20px;
     }
 
     /* Título principal menor */
@@ -480,7 +474,7 @@ footer p {
 
     /* Cards com menos padding */
     .card {
-        padding: 20px;  /* Menor que 30px do desktop */
+        padding: 12px;  /* Menor que 30px do desktop - compact */
     }
 
     /* Títulos dos cards menores */
