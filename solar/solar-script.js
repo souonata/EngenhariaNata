@@ -142,42 +142,78 @@ const PRECOS_INVERSOR_EUR = [
     { kw: 5, preco: 404 }
 ];
 
-// Função para calcular preço do inversor por interpolação
-// ------------------------------------------------------
-// Explicação deste algoritmo:
-// Recebe uma potência em kW e retorna um preço estimado consultando
-// uma tabela de pontos (kw, preco). Se a potência estiver fora dos
-// limites da tabela, fazemos extrapolação linear na extremidade.
-// Se estiver entre dois pontos, interpolamos linearmente. Isso fornece
-// um valor razoável para potências intermediárias sem precisar de uma
-// tabela completa para cada possível kW.
+/**
+ * Calcula o preço estimado de um inversor baseado na potência desejada
+ * 
+ * Esta função usa interpolação linear para estimar o preço de inversores
+ * com potências que não estão diretamente na tabela de preços. Isso evita
+ * a necessidade de ter uma entrada na tabela para cada possível potência.
+ * 
+ * @param {number} potenciaKw - Potência do inversor em quilowatts (kW)
+ * @param {string} moeda - Moeda desejada ('BRL' para Real ou 'EUR' para Euro)
+ * @returns {number} Preço estimado do inversor na moeda especificada
+ * 
+ * Explicação do algoritmo:
+ * 1. Se a potência for menor ou igual ao menor valor da tabela, retorna o preço mínimo
+ * 2. Se a potência for maior que o maior valor da tabela, faz extrapolação linear
+ *    (estende a linha formada pelos dois últimos pontos da tabela)
+ * 3. Se a potência estiver entre dois pontos da tabela, faz interpolação linear
+ *    (calcula um valor proporcional entre os dois pontos)
+ * 
+ * Exemplo de interpolação:
+ * - Tabela: 1kW = R$ 1100, 2kW = R$ 1550
+ * - Potência desejada: 1.5kW
+ * - Razão: (1.5 - 1) / (2 - 1) = 0.5 (meio caminho)
+ * - Preço: 1100 + 0.5 × (1550 - 1100) = 1100 + 225 = R$ 1325
+ */
 function calcularPrecoInversor(potenciaKw, moeda) {
+    // PASSO 1: Seleciona a tabela de preços baseada na moeda
+    // Se a moeda for BRL (Real), usa a tabela em reais; caso contrário, usa a tabela em euros
     const tabela = moeda === 'BRL' ? PRECOS_INVERSOR_BRL : PRECOS_INVERSOR_EUR;
     
-    // Se menor ou igual ao menor da tabela
+    // PASSO 2: Verifica se a potência é menor ou igual ao menor valor da tabela
+    // Se for, retorna o preço do menor inversor da tabela (sem extrapolação para baixo)
     if (potenciaKw <= tabela[0].kw) {
         return tabela[0].preco;
     }
     
-    // Se maior que o maior da tabela, extrapola linearmente
+    // PASSO 3: Verifica se a potência é maior ou igual ao maior valor da tabela
+    // Se for, faz extrapolação linear para cima usando os dois últimos pontos
     if (potenciaKw >= tabela[tabela.length - 1].kw) {
-        const ultimo = tabela[tabela.length - 1];
-        const penultimo = tabela[tabela.length - 2];
+        const ultimo = tabela[tabela.length - 1];      // Último ponto da tabela (maior potência)
+        const penultimo = tabela[tabela.length - 2];   // Penúltimo ponto da tabela
+        
+        // Calcula a taxa de variação de preço por kW (inclinação da reta)
+        // Exemplo: se 2kW = R$ 1550 e 5kW = R$ 2500, então:
+        // precoPorKw = (2500 - 1550) / (5 - 2) = 950 / 3 ≈ R$ 316,67 por kW
         const precoPorKw = (ultimo.preco - penultimo.preco) / (ultimo.kw - penultimo.kw);
+        
+        // Extrapola o preço: preço do último ponto + (diferença de potência × taxa por kW)
+        // Exemplo: para 7kW, preço = 2500 + (7 - 5) × 316,67 = 2500 + 633,34 = R$ 3133,34
         return ultimo.preco + (potenciaKw - ultimo.kw) * precoPorKw;
     }
     
-    // Interpola entre os pontos da tabela
+    // PASSO 4: Interpola entre dois pontos da tabela
+    // Procura o intervalo na tabela onde a potência desejada se encaixa
     for (let i = 0; i < tabela.length - 1; i++) {
-        const p1 = tabela[i];
-        const p2 = tabela[i + 1];
+        const p1 = tabela[i];     // Ponto inferior do intervalo
+        const p2 = tabela[i + 1]; // Ponto superior do intervalo
         
+        // Verifica se a potência está dentro deste intervalo
         if (potenciaKw >= p1.kw && potenciaKw <= p2.kw) {
+            // Calcula a razão (0 a 1) de onde a potência está no intervalo
+            // Exemplo: se p1 = 1kW, p2 = 2kW e potenciaKw = 1.5kW:
+            // razao = (1.5 - 1) / (2 - 1) = 0.5 (meio caminho)
             const razao = (potenciaKw - p1.kw) / (p2.kw - p1.kw);
+            
+            // Interpola o preço proporcionalmente
+            // Exemplo: se p1.preco = 1100, p2.preco = 1550 e razao = 0.5:
+            // preco = 1100 + 0.5 × (1550 - 1100) = 1100 + 225 = 1325
             return p1.preco + razao * (p2.preco - p1.preco);
         }
     }
     
+    // PASSO 5: Fallback (não deveria chegar aqui, mas retorna o preço máximo como segurança)
     return tabela[tabela.length - 1].preco;
 }
 
@@ -274,28 +310,66 @@ function trocarIdioma(novoIdioma) {
     document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
 }
 
-// ============================================
-// FUNÇÃO: CALCULAR DESCARGA PERMITIDA (DoD)
-// ============================================
-// O objetivo aqui é derivar um DoD diário aceitável a partir do número
-// de ciclos que queremos obter da bateria. As tabelas (CICLOS_AGM,
-// CICLOS_LITIO) ligam ciclo → DoD. A função faz interpolação linear
-// entre pontos da tabela para um resultado suave.
+/**
+ * Calcula o DoD (Depth of Discharge - Profundidade de Descarga) permitido
+ * baseado no número de ciclos desejados da bateria
+ * 
+ * Esta função é fundamental para o dimensionamento do sistema. Ela determina
+ * qual percentual da capacidade da bateria pode ser usado diariamente para
+ * garantir que a bateria dure o número de anos desejado.
+ * 
+ * A relação é inversa: quanto mais ciclos você quer (mais anos de vida útil),
+ * menor deve ser o DoD diário (menos você pode descarregar a bateria por dia).
+ * 
+ * @param {number} ciclos - Número total de ciclos desejados (ex: 1825 para 5 anos × 365 dias)
+ * @param {string} tipo - Tipo de bateria ('litio' para LiFePO4 ou 'chumbo' para AGM/Gel)
+ * @returns {number} DoD em percentual (ex: 50 para 50%)
+ * 
+ * Explicação:
+ * - As tabelas CICLOS_AGM e CICLOS_LITIO relacionam ciclos de vida com DoD
+ * - Exemplo: bateria LiFePO4 com DoD de 50% pode fazer ~5090 ciclos
+ * - Se você quer 1825 ciclos (5 anos), precisa usar um DoD menor (ex: ~60%)
+ * - A função interpola linearmente entre os pontos da tabela para valores intermediários
+ */
 function obterDoDPorCiclos(ciclos, tipo) {
+    // PASSO 1: Seleciona a tabela de ciclos baseada no tipo de bateria
+    // Baterias de lítio têm muito mais ciclos que baterias de chumbo-ácido
     const dados = tipo === 'litio' ? CICLOS_LITIO : CICLOS_AGM;
     
+    // PASSO 2: Verifica se o número de ciclos é maior ou igual ao máximo da tabela
+    // Se for, retorna o DoD mínimo (25%) - isso significa que você quer muitos ciclos,
+    // então precisa usar a bateria de forma muito conservadora
     if (ciclos >= dados[0].c) return dados[0].dod; // Mínimo DoD = 25%
+    
+    // PASSO 3: Verifica se o número de ciclos é menor ou igual ao mínimo da tabela
+    // Se for, retorna o DoD máximo (95%) - isso significa que você quer poucos ciclos,
+    // então pode usar a bateria de forma mais agressiva
     if (ciclos <= dados[dados.length - 1].c) return dados[dados.length - 1].dod; // Máximo DoD = 95%
 
+    // PASSO 4: Interpola entre dois pontos da tabela
+    // Procura o intervalo na tabela onde o número de ciclos se encaixa
+    // Nota: a tabela está ordenada do maior número de ciclos (menor DoD) para o menor
     for (let i = 0; i < dados.length - 1; i++) {
-        const p1 = dados[i];
-        const p2 = dados[i+1];
+        const p1 = dados[i];     // Ponto com mais ciclos (menor DoD)
+        const p2 = dados[i+1];   // Ponto com menos ciclos (maior DoD)
         
+        // Verifica se o número de ciclos está dentro deste intervalo
+        // Nota: p1.c > p2.c porque a tabela está em ordem decrescente
         if (ciclos <= p1.c && ciclos >= p2.c) {
+            // Calcula a razão (0 a 1) de onde o número de ciclos está no intervalo
+            // Exemplo: se p1.c = 5090, p2.c = 4005 e ciclos = 4500:
+            // razao = (4500 - 4005) / (5090 - 4005) = 495 / 1085 ≈ 0.456
             const razao = (ciclos - p2.c) / (p1.c - p2.c);
+            
+            // Interpola o DoD proporcionalmente
+            // Como p1.dod < p2.dod (menos ciclos = maior DoD), somamos a diferença
+            // Exemplo: se p1.dod = 50%, p2.dod = 60% e razao = 0.456:
+            // dod = 60 + 0.456 × (50 - 60) = 60 - 4.56 = 55.44%
             return p2.dod + razao * (p1.dod - p2.dod);
         }
     }
+    
+    // PASSO 5: Fallback (não deveria chegar aqui, mas retorna 50% como valor padrão)
     return 50;
 }
 
@@ -442,110 +516,238 @@ function atualizarInterface() {
 // A função tenta ser transparente: também gera frases explicativas
 // (motivos) para cada dimensão (baterias, painéis, inversor), que são
 // mostradas na UI para educar o usuário sobre o porquê dos números.
+/**
+ * Função principal que calcula todo o dimensionamento do sistema solar
+ * 
+ * Esta é a função central do algoritmo. Ela recebe o DoD alvo (em fração decimal,
+ * ex: 0.5 para 50%) e calcula:
+ * - Quantidade de baterias necessárias
+ * - Quantidade de painéis solares necessários
+ * - Potência do inversor
+ * - Peso total das baterias
+ * - Custo estimado do sistema
+ * 
+ * @param {number} dodAlvo - DoD (Depth of Discharge) alvo em fração decimal (ex: 0.5 para 50%)
+ * 
+ * Algoritmo resumido:
+ * 1. Calcula energia diária necessária (consumo mensal ÷ 30 dias)
+ * 2. Calcula capacidade de baterias necessária por dois critérios:
+ *    - Critério A: Vida útil (energia diária ÷ DoD)
+ *    - Critério B: Autonomia (energia diária × dias de autonomia ÷ DoD)
+ *    - Escolhe o maior dos dois (gargalo)
+ * 3. Calcula quantidade de baterias (arredonda para cima e garante paridade)
+ * 4. Calcula quantidade de painéis (baseado na energia necessária para recarregar o banco)
+ * 5. Dimensiona o inversor (mínimo 1kW ou potência dos painéis)
+ * 6. Calcula custos e exibe resultados na interface
+ */
 function calcularSistema(dodAlvo) {
-    const consumoMensal = parseFloat(document.getElementById('sliderConsumo').value) || 0;
-    const autonomia = parseInt(document.getElementById('sliderAutonomia').value);
-    const tipoBateria = document.querySelector('input[name="tipoBateria"]:checked').value;
+    // ============================================
+    // PASSO 1: OBTER VALORES DA INTERFACE
+    // ============================================
+    // Lê os valores dos sliders e radio buttons da interface do usuário
+    const consumoMensal = parseFloat(document.getElementById('sliderConsumo').value) || 0; // Consumo em kWh/mês
+    const autonomia = parseInt(document.getElementById('sliderAutonomia').value);           // Dias de autonomia
+    const tipoBateria = document.querySelector('input[name="tipoBateria"]:checked').value;  // 'litio' ou 'chumbo'
 
-    // Obter configuração customizada ou padrão
+    // ============================================
+    // PASSO 2: OBTER CONFIGURAÇÃO DOS COMPONENTES
+    // ============================================
+    // Obtém a configuração customizada do usuário (salva no localStorage) ou usa os valores padrão
     const config = obterConfig();
-    // Backwards compatibility: older configs stored capacity in Ah (e.g. 100)
-    // If capacity seems too large (>20) interpret as Ah and convert to kWh using voltage
+    
+    // Compatibilidade com versões antigas: configurações antigas guardavam capacidade em Ah (ex: 100 Ah)
+    // Se a capacidade parecer muito grande (>20), interpreta como Ah e converte para kWh usando a tensão
+    // Isso permite que configurações antigas continuem funcionando
     if (config.capacidadeLitio && config.capacidadeLitio > 20 && config.tensaoLitio) {
-        config.capacidadeLitioAh = config.capacidadeLitio; // preserve older value
-        config.capacidadeLitio = (config.tensaoLitio * config.capacidadeLitio) / 1000; // convert to kWh
+        config.capacidadeLitioAh = config.capacidadeLitio; // Preserva o valor antigo em Ah
+        // Converte Ah para kWh: kWh = (V × Ah) / 1000
+        // Exemplo: 48V × 100Ah = 4800 Wh = 4.8 kWh
+        config.capacidadeLitio = (config.tensaoLitio * config.capacidadeLitio) / 1000;
     }
     if (config.capacidadeAGM && config.capacidadeAGM > 20 && config.tensaoAGM) {
-        config.capacidadeAGMAh = config.capacidadeAGM;
-        config.capacidadeAGM = (config.tensaoAGM * config.capacidadeAGM) / 1000; // kWh
+        config.capacidadeAGMAh = config.capacidadeAGM; // Preserva o valor antigo em Ah
+        // Converte Ah para kWh: kWh = (V × Ah) / 1000
+        // Exemplo: 12V × 100Ah = 1200 Wh = 1.2 kWh
+        config.capacidadeAGM = (config.tensaoAGM * config.capacidadeAGM) / 1000;
     }
     
-    // Montar especificações das baterias baseado na config
-    // Support capacity expressed as kWh (new default) but remain compatible
-    // with older config that used Ah (capacidade in Ah). Prefer explicit kWh.
+    // ============================================
+    // PASSO 3: MONTAR ESPECIFICAÇÕES DAS BATERIAS
+    // ============================================
+    // Cria um objeto com todas as especificações da bateria escolhida
+    // Suporta capacidade expressa em kWh (padrão novo) mas mantém compatibilidade
+    // com configurações antigas que usavam Ah
     const batSpec = (tipoBateria === 'litio')
-        ? { v: config.tensaoLitio, kwh: config.capacidadeLitio, ah: config.capacidadeLitioAh || null, price_brl: config.precoLitio, weight: config.pesoLitio }
-        : { v: config.tensaoAGM, kwh: config.capacidadeAGM, ah: config.capacidadeAGMAh || null, price_brl: config.precoAGM, weight: config.pesoAGM };
+        ? { 
+            v: config.tensaoLitio,                    // Tensão em volts (ex: 48V)
+            kwh: config.capacidadeLitio,              // Capacidade em kWh (ex: 4.8 kWh)
+            ah: config.capacidadeLitioAh || null,     // Capacidade em Ah (se disponível, para referência)
+            price_brl: config.precoLitio,             // Preço unitário em BRL
+            weight: config.pesoLitio                  // Peso em kg
+          }
+        : { 
+            v: config.tensaoAGM,                      // Tensão em volts (ex: 12V)
+            kwh: config.capacidadeAGM,                // Capacidade em kWh (ex: 1.2 kWh)
+            ah: config.capacidadeAGMAh || null,       // Capacidade em Ah (se disponível, para referência)
+            price_brl: config.precoAGM,               // Preço unitário em BRL
+            weight: config.pesoAGM                    // Peso em kg
+          };
     
-    const POTENCIA_PAINEL = config.potenciaPainel;
-    const PRECO_PAINEL = config.precoPainel;
+    // Obtém especificações dos painéis solares
+    const POTENCIA_PAINEL = config.potenciaPainel; // Potência de cada painel em Watts (ex: 400W)
+    const PRECO_PAINEL = config.precoPainel;       // Preço de cada painel em BRL
 
+    // ============================================
+    // PASSO 4: VALIDAÇÃO DE ENTRADA
+    // ============================================
+    // Se o consumo for inválido (zero ou negativo), zera todos os resultados e sai da função
     if (consumoMensal <= 0) {
-        // Zera resultados se consumo inválido
+        // Zera todos os campos de resultado na interface
         ['resQtdPlacas', 'resQtdBaterias', 'resPotenciaInversor', 'resPesoBaterias'].forEach(id => {
             document.getElementById(id).textContent = '0';
         });
+        // Zera o preço estimado
         document.getElementById('resPrecoEstimado').textContent = `${traducoes[idiomaAtual]['moeda']} 0`;
-        return;
+        return; // Interrompe a execução da função
     }
 
-    // 1. Energia Diária
-    const energiaDiaria = consumoMensal / 30; // kWh
+    // ============================================
+    // PASSO 5: CALCULAR ENERGIA DIÁRIA NECESSÁRIA
+    // ============================================
+    // Converte o consumo mensal para consumo diário médio
+    // Divide por 30 para obter a média diária (assumindo 30 dias por mês)
+    const energiaDiaria = consumoMensal / 30; // kWh/dia
     
-    // 2. Dimensionamento Baterias
+    // ============================================
+    // PASSO 6: DIMENSIONAMENTO DAS BATERIAS
+    // ============================================
     // O DoD escolhido (via slider de vida útil) afeta AMBOS os critérios:
     // - Quanto menor o DoD, mais baterias são necessárias para a mesma energia utilizável
-    // - O DoD limita quanto da capacidade nominal pode ser usada
+    // - O DoD limita quanto da capacidade nominal pode ser usada diariamente
     
-    // Critério A: Vida Útil (capacidade nominal para 1 dia de consumo com DoD alvo)
-    // Se consumo diário = 10 kWh e DoD = 50%, preciso de 10/0.5 = 20 kWh nominais
+    // CRITÉRIO A: Vida Útil
+    // Calcula a capacidade nominal necessária para 1 dia de consumo com o DoD alvo
+    // Fórmula: capacidadeNominal = energiaDiaria / DoD
+    // Exemplo: se consumo diário = 10 kWh e DoD = 50% (0.5):
+    // capacidadeNominal = 10 / 0.5 = 20 kWh nominais
+    // Isso garante que a bateria não seja descarregada além do DoD alvo em um dia normal
     const capVidaUtil = energiaDiaria / dodAlvo;
     
-    // Critério B: Autonomia (capacidade nominal para N dias com o MESMO DoD)
-    // Se autonomia = 3 dias, consumo = 10 kWh/dia, DoD = 50%:
-    // Energia total necessária = 10 * 3 = 30 kWh utilizáveis
-    // Capacidade nominal = 30 / 0.5 = 60 kWh
-    const energiaAutonomia = energiaDiaria * autonomia; // kWh utilizáveis necessários
+    // CRITÉRIO B: Autonomia
+    // Calcula a capacidade nominal necessária para N dias de autonomia com o MESMO DoD
+    // Fórmula: capacidadeNominal = (energiaDiaria × autonomia) / DoD
+    // Exemplo: se autonomia = 3 dias, consumo = 10 kWh/dia, DoD = 50% (0.5):
+    // energiaTotalNecessaria = 10 × 3 = 30 kWh utilizáveis
+    // capacidadeNominal = 30 / 0.5 = 60 kWh nominais
+    // Isso garante que o sistema funcione por N dias sem sol, respeitando o DoD alvo
+    const energiaAutonomia = energiaDiaria * autonomia; // kWh utilizáveis necessários para a autonomia
     const capAutonomia = energiaAutonomia / dodAlvo;    // kWh nominais necessários
     
     // Escolhe o maior requisito (o gargalo)
+    // O sistema precisa atender AMBOS os critérios, então escolhemos o maior valor
+    // Exemplo: se capVidaUtil = 20 kWh e capAutonomia = 60 kWh, escolhemos 60 kWh
     const capacidadeNecessariaKWh = Math.max(capVidaUtil, capAutonomia);
     
-    // Calcula energia por bateria
-    // energiaPorBateria: if kWh provided use it; else if Ah provided fallback to V*Ah/1000
+    // ============================================
+    // PASSO 7: CALCULAR QUANTIDADE DE BATERIAS
+    // ============================================
+    // Calcula a energia (capacidade) de uma única bateria
+    // Prioriza kWh se disponível; caso contrário, calcula a partir de V × Ah / 1000
     const energiaPorBateria = (typeof batSpec.kwh === 'number' && !isNaN(batSpec.kwh))
-        ? batSpec.kwh
-        : ((batSpec.v && batSpec.ah) ? (batSpec.v * batSpec.ah) / 1000 : 0);
+        ? batSpec.kwh  // Usa kWh diretamente se disponível
+        : ((batSpec.v && batSpec.ah) ? (batSpec.v * batSpec.ah) / 1000 : 0); // Calcula de Ah se necessário
     
-    // Calcula quantidade (arredonda para cima e garante paridade para 24V/48V)
+    // Calcula a quantidade de baterias necessárias
+    // Arredonda para cima (Math.ceil) para garantir que temos capacidade suficiente
+    // Exemplo: se precisamos de 60 kWh e cada bateria tem 4.8 kWh:
+    // qtdBaterias = ceil(60 / 4.8) = ceil(12.5) = 13 baterias
     let qtdBaterias = Math.ceil(capacidadeNecessariaKWh / energiaPorBateria);
+    
+    // Garante paridade (número par) para tensões mais altas (24V/48V)
+    // Isso facilita a montagem prática do banco de baterias (conexão em série/paralelo)
+    // Exemplo: se calculamos 13 baterias, incrementamos para 14 (par)
     if (qtdBaterias % 2 !== 0 && qtdBaterias > 1) qtdBaterias++; // Preferência por pares
     
-    // Capacidade real do banco de baterias instalado
+    // Calcula a capacidade real do banco de baterias instalado
+    // Isso pode ser maior que a capacidade necessária devido ao arredondamento e paridade
+    // Exemplo: se precisamos de 60 kWh mas instalamos 14 baterias de 4.8 kWh:
+    // capacidadeReal = 14 × 4.8 = 67.2 kWh
     const capacidadeRealKWh = qtdBaterias * energiaPorBateria;
     
-    // 3. Dimensionamento Painéis
-    // Os painéis precisam gerar energia suficiente para:
-    // - Recarregar o banco de baterias (o que foi consumido) em 1 dia de sol
-    // 
-    // A energia a recarregar é o que foi descarregado = capacidade * DoD
+    // ============================================
+    // PASSO 8: DIMENSIONAMENTO DOS PAINÉIS SOLARES
+    // ============================================
+    // Os painéis precisam gerar energia suficiente para recarregar o banco de baterias
+    // em 1 dia de sol. A energia a recarregar é o que foi descarregado = capacidade × DoD
     // Isso já inclui o consumo diário, pois o banco foi dimensionado para isso
+    
+    // Calcula a energia utilizável do banco de baterias
+    // Esta é a energia que pode ser extraída do banco respeitando o DoD alvo
+    // Exemplo: se capacidadeReal = 67.2 kWh e DoD = 50% (0.5):
+    // energiaUtilizavel = 67.2 × 0.5 = 33.6 kWh utilizáveis
     const energiaUtilizavelBanco = capacidadeRealKWh * dodAlvo;
     
-    // Energia que os painéis devem gerar por dia (considerando perdas do sistema)
+    // Calcula a energia que os painéis devem gerar por dia
+    // Considera as perdas do sistema (cabo, controlador, inversor, etc.)
+    // Fórmula: energiaGerar = energiaUtilizavel / eficienciaSistema
+    // Exemplo: se energiaUtilizavel = 33.6 kWh e eficiencia = 80% (0.8):
+    // energiaTotalGerar = 33.6 / 0.8 = 42 kWh/dia
     const energiaTotalGerar = energiaUtilizavelBanco / EFICIENCIA_SISTEMA;
     
+    // Calcula a potência solar necessária em Watts
+    // Fórmula: potencia = (energia × 1000) / HSP
+    // Onde HSP (Horas de Sol Pleno) é o número médio de horas de sol por dia
+    // Exemplo: se energiaTotalGerar = 42 kWh/dia e HSP = 5 horas:
+    // potenciaSolar = (42 × 1000) / 5 = 8400 W = 8.4 kW
     const potenciaSolarNecessaria = (energiaTotalGerar * 1000) / HSP; // Watts
+    
+    // Calcula a quantidade de painéis necessários
+    // Arredonda para cima para garantir que temos potência suficiente
+    // Exemplo: se precisamos de 8400 W e cada painel tem 400 W:
+    // qtdPaineis = ceil(8400 / 400) = ceil(21) = 21 painéis
     const qtdPaineis = Math.ceil(potenciaSolarNecessaria / POTENCIA_PAINEL);
     
-    // 4. Inversor
-    // Deve aguentar a potência dos painéis + margem para picos
+    // ============================================
+    // PASSO 9: DIMENSIONAMENTO DO INVERSOR
+    // ============================================
+    // O inversor deve aguentar a potência dos painéis + margem para picos
+    // Mínimo de 1 kW (requisito prático para sistemas off-grid)
+    // Fórmula: potenciaInversor = max(1kW, ceil(potenciaSolar / 1000))
+    // Exemplo: se potenciaSolar = 8400 W:
+    // potenciaInversor = max(1, ceil(8.4)) = max(1, 9) = 9 kW
     const potenciaInversor = Math.max(1, Math.ceil(potenciaSolarNecessaria / 1000)); // Mínimo 1kW
     
-    // 5. Peso e Custo
+    // ============================================
+    // PASSO 10: CALCULAR PESO E CUSTOS
+    // ============================================
+    // Calcula o peso total das baterias
+    // Exemplo: se temos 14 baterias de 60 kg cada:
+    // pesoTotal = 14 × 60 = 840 kg
     const pesoTotal = qtdBaterias * batSpec.weight;
     
-    // Conversão de moeda: config salva em BRL, converter para EUR se italiano
+    // Conversão de moeda: a configuração salva os preços em BRL (Real)
+    // Se o idioma for italiano, converte para EUR (Euro) usando a taxa de câmbio
     const moedaCalculo = idiomaAtual === 'pt-BR' ? 'BRL' : 'EUR';
+    // Fator de conversão: 1 para BRL (sem conversão) ou 1/taxa para EUR
+    // Exemplo: se TAXA_BRL_EUR = 6.19, então 1 BRL = 1/6.19 ≈ 0.1615 EUR
     const fatorConversao = idiomaAtual === 'pt-BR' ? 1 : 1 / TAXA_BRL_EUR;
     
-    // Preços convertidos para a moeda do idioma
+    // Converte os preços unitários para a moeda do idioma
+    // Exemplo: se PRECO_PAINEL = 1200 BRL e fatorConversao = 0.1615:
+    // precoPainelConvertido = 1200 × 0.1615 ≈ 194 EUR
     const precoPainelConvertido = PRECO_PAINEL * fatorConversao;
     const precoBateriaConvertido = batSpec.price_brl * fatorConversao;
     
+    // Calcula os custos totais de cada componente
+    // Exemplo: se temos 21 painéis a 1200 BRL cada:
+    // custoPaineis = 21 × 1200 = 25200 BRL
     const custoPaineis = qtdPaineis * precoPainelConvertido;
     const custoBaterias = qtdBaterias * precoBateriaConvertido;
+    // O preço do inversor é calculado por interpolação baseado na potência
     const custoInversor = calcularPrecoInversor(potenciaInversor, moedaCalculo);
+    
+    // Calcula o custo total do sistema
+    // Exemplo: custoTotal = 25200 + 168000 + 2500 = 195700 BRL
     const custoTotal = custoPaineis + custoBaterias + custoInversor;
 
     // 6. Exibir Resultados

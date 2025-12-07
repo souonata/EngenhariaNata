@@ -31,10 +31,45 @@
  * Idioma ativo no momento
  * Tenta carregar do localStorage, senão usa português como padrão
  */
-// Support centralized keys if SiteConfig is present
-const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
-const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
-let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
+// ============================================
+// CONFIGURAÇÃO DE CHAVES E SELETORES
+// ============================================
+// Verifica se o arquivo site-config.js foi carregado
+// Se sim, usa as configurações centralizadas
+// Se não, usa valores padrão como fallback (compatibilidade)
+
+// SITE_LS: Chaves usadas no localStorage (armazenamento do navegador)
+// typeof SiteConfig !== 'undefined' = verifica se SiteConfig existe
+// Se existe, usa SiteConfig.LOCAL_STORAGE
+// Se não existe, cria um objeto com valores padrão
+const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) 
+    ? SiteConfig.LOCAL_STORAGE  // Usa configuração centralizada
+    : { 
+        LANGUAGE_KEY: 'idiomaPreferido',      // Chave para guardar idioma
+        SOLAR_CONFIG_KEY: 'configSolar'       // Chave para guardar config do Solar
+      };
+
+// SITE_SEL: Seletores CSS para encontrar elementos na página
+// Mesma lógica: usa SiteConfig se disponível, senão usa valores padrão
+const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) 
+    ? SiteConfig.SELECTORS  // Usa seletores centralizados
+    : { 
+        HOME_BUTTON: '.home-button-fixed',    // Botão para voltar ao início
+        LANG_BTN: '.lang-btn',                // Botões de idioma
+        APP_ICON: '.app-icon',                // Ícones dos apps
+        ARROW_BTN: '.arrow-btn',              // Botões de seta
+        BUTTON_ACTION: '.btn-acao'            // Botões de ação
+      };
+
+// idiomaAtual: Idioma que está sendo usado agora
+// localStorage.getItem() = tenta pegar o idioma salvo
+// || = se não encontrar, usa o valor depois do ||
+// Se SiteConfig existe, usa SiteConfig.DEFAULTS.language
+// Se não existe, usa 'pt-BR' como padrão
+let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) 
+    || (typeof SiteConfig !== 'undefined' 
+        ? SiteConfig.DEFAULTS.language  // Usa padrão do SiteConfig
+        : 'pt-BR');                     // Usa português como último recurso
 
 /**
  * Dicionário de traduções
@@ -110,129 +145,192 @@ const traducoes = {
 };
 
 /**
- * Troca o idioma da interface
- * @param {string} novoIdioma - Código do idioma ('pt-BR' ou 'it-IT')
+ * Troca o idioma da interface inteira
+ * 
+ * Esta função é chamada quando o usuário clica em um botão de idioma.
+ * Ela atualiza todos os textos visíveis na página para o novo idioma.
+ * 
+ * @param {string} novoIdioma - Código do idioma ('pt-BR' para português ou 'it-IT' para italiano)
+ * 
+ * Como funciona:
+ * 1. Atualiza a variável que guarda o idioma atual
+ * 2. Salva a preferência no navegador (localStorage)
+ * 3. Atualiza o atributo lang do HTML (ajuda leitores de tela)
+ * 4. Busca todos os elementos com data-i18n e traduz seus textos
+ * 5. Destaca o botão do idioma ativo
+ * 6. Atualiza o relógio com dias/meses no idioma correto
  */
 function trocarIdioma(novoIdioma) {
-    // Atualiza a variável global do idioma
+    // PASSO 1: Atualiza a variável global que guarda o idioma atual
+    // Isso permite que outras funções saibam qual idioma usar
     idiomaAtual = novoIdioma;
     
-    // Salva no localStorage para manter entre páginas
+    // PASSO 2: Salva a preferência no localStorage (armazenamento do navegador)
+    // Isso faz com que a escolha seja lembrada mesmo depois de fechar o navegador
+    // SITE_LS.LANGUAGE_KEY = 'idiomaPreferido' (chave onde guardamos)
     localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
     
-    // Atualiza o atributo lang do HTML (boas práticas de acessibilidade)
+    // PASSO 3: Atualiza o atributo lang do elemento <html>
+    // Isso ajuda leitores de tela e ferramentas de acessibilidade
+    // a saberem qual idioma está sendo usado
     document.documentElement.lang = novoIdioma;
     
-    // Busca todos os elementos que têm o atributo data-i18n
-    // (são os elementos que precisam ser traduzidos)
+    // PASSO 4: Busca todos os elementos que precisam ser traduzidos
+    // [data-i18n] = seletor CSS que encontra elementos com o atributo data-i18n
+    // Exemplo: <span data-i18n="app-about">Sobre mim</span>
     const elementosTraduzir = document.querySelectorAll('[data-i18n]');
     
-    // Para cada elemento que precisa tradução
-    elementosTraduzir.forEach(elemento => {
-        // Pega a chave de tradução (ex: "app-about", "app-mutuo")
+    // PASSO 5: Para cada elemento encontrado, traduz o texto
+    elementosTraduzir.forEach(function(elemento) {
+        // Pega a chave de tradução do atributo data-i18n
+        // Exemplo: se data-i18n="app-about", chave = "app-about"
         const chave = elemento.getAttribute('data-i18n');
         
-        // Se existe tradução para essa chave no idioma atual
+        // Verifica se existe tradução para essa chave no idioma escolhido
+        // traducoes[novoIdioma] = objeto com todas as traduções do idioma
+        // traducoes[novoIdioma][chave] = tradução específica dessa chave
         if (traducoes[novoIdioma] && traducoes[novoIdioma][chave]) {
             // Substitui o texto do elemento pela tradução
+            // textContent = conteúdo de texto do elemento (sem HTML)
             elemento.textContent = traducoes[novoIdioma][chave];
         }
     });
     
-    // Atualiza os botões de idioma (destaca o ativo)
-    document.querySelectorAll(SITE_SEL.LANG_BTN).forEach(botao => {
+    // PASSO 6: Atualiza a aparência dos botões de idioma
+    // Destaca o botão do idioma ativo (adiciona classe 'active')
+    document.querySelectorAll(SITE_SEL.LANG_BTN).forEach(function(botao) {
+        // Se este botão corresponde ao idioma escolhido
         if (botao.getAttribute('data-lang') === novoIdioma) {
+            // Adiciona a classe 'active' para destacar visualmente
             botao.classList.add('active');
         } else {
+            // Remove a classe 'active' dos outros botões
             botao.classList.remove('active');
         }
     });
     
-    // Atualiza o relógio com os dias da semana no idioma correto
+    // PASSO 7: Atualiza o relógio com dias da semana e meses no idioma correto
     atualizarHorario();
 
-    // Update home button aria-labels (accessibility)
+    // PASSO 8: Atualiza os rótulos de acessibilidade (aria-label) do botão home
+    // Isso ajuda leitores de tela a anunciarem o botão corretamente
     const homeLabel = traducoes[novoIdioma]['aria-home'] || 'Home';
-    document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
+    document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(function(elemento) {
+        elemento.setAttribute('aria-label', homeLabel);
+    });
 }
 
 /**
- * Atualiza o horário e data mostrados na barra de status do celular simulado
- * Mostra hora completa (HH:MM:SS) à esquerda e data (Dia DD/MM) à direita
- * Executa a cada 1 segundo para manter o relógio sincronizado
+ * Atualiza o horário e data mostrados na barra de status
+ * 
+ * Esta função é chamada a cada segundo para manter o relógio atualizado.
+ * Ela mostra:
+ * - Horário completo (HH:MM:SS) à esquerda
+ * - Data formatada (Dia DD Mês) à direita
+ * 
+ * Tudo é traduzido para o idioma atual (português ou italiano).
  */
 function atualizarHorario() {
-    // Pega os elementos HTML onde horário e data vão aparecer
-    const elementoHorario = document.getElementById('horario');
-    const elementoData = document.getElementById('data');
+    // PASSO 1: Pega os elementos HTML onde vamos mostrar o horário e a data
+    // getElementById busca um elemento pelo seu ID
+    const elementoHorario = document.getElementById('horario');  // Elemento para mostrar horas:minutos:segundos
+    const elementoData = document.getElementById('data');        // Elemento para mostrar dia da semana + data
     
-    // Cria um objeto Date com a hora atual do sistema
+    // PASSO 2: Cria um objeto Date que contém a data e hora atual do sistema
+    // new Date() = pega a data/hora do computador/navegador
     const agora = new Date();
     
-    // Pega as horas (0-23)
-    // String() converte para texto
-    // padStart(2, '0') adiciona zero à esquerda se necessário (ex: "9" vira "09")
+    // PASSO 3: Formata as horas (0-23)
+    // agora.getHours() = pega as horas (0 a 23)
+    // String() = converte o número para texto
+    // padStart(2, '0') = adiciona zero à esquerda se tiver só 1 dígito
+    // Exemplo: 9 vira "09", 15 continua "15"
     const horas = String(agora.getHours()).padStart(2, '0');
     
-    // Pega os minutos (0-59) e formata igual às horas
+    // PASSO 4: Formata os minutos (0-59) da mesma forma
     const minutos = String(agora.getMinutes()).padStart(2, '0');
     
-    // Pega os segundos (0-59)
+    // PASSO 5: Formata os segundos (0-59) da mesma forma
     const segundos = String(agora.getSeconds()).padStart(2, '0');
     
-    // Array com os dias da semana traduzidos
+    // PASSO 6: Cria um array (lista) com os nomes dos dias da semana traduzidos
+    // getDay() retorna: 0=domingo, 1=segunda, 2=terça, etc.
+    // Usamos esse número como índice do array para pegar o nome correto
     const diasSemana = [
-        traducoes[idiomaAtual]['dia-dom'],
-        traducoes[idiomaAtual]['dia-seg'],
-        traducoes[idiomaAtual]['dia-ter'],
-        traducoes[idiomaAtual]['dia-qua'],
-        traducoes[idiomaAtual]['dia-qui'],
-        traducoes[idiomaAtual]['dia-sex'],
-        traducoes[idiomaAtual]['dia-sab']
+        traducoes[idiomaAtual]['dia-dom'],  // Índice 0: domingo
+        traducoes[idiomaAtual]['dia-seg'],  // Índice 1: segunda
+        traducoes[idiomaAtual]['dia-ter'],  // Índice 2: terça
+        traducoes[idiomaAtual]['dia-qua'],  // Índice 3: quarta
+        traducoes[idiomaAtual]['dia-qui'],  // Índice 4: quinta
+        traducoes[idiomaAtual]['dia-sex'],  // Índice 5: sexta
+        traducoes[idiomaAtual]['dia-sab']   // Índice 6: sábado
     ];
+    // Pega o nome do dia da semana usando o número retornado por getDay()
     const diaSemana = diasSemana[agora.getDay()];
     
-    // Array com os meses traduzidos
+    // PASSO 7: Cria um array com os nomes dos meses traduzidos
+    // getMonth() retorna: 0=janeiro, 1=fevereiro, 2=março, etc.
     const meses = [
-        traducoes[idiomaAtual]['mes-jan'],
-        traducoes[idiomaAtual]['mes-fev'],
-        traducoes[idiomaAtual]['mes-mar'],
-        traducoes[idiomaAtual]['mes-abr'],
-        traducoes[idiomaAtual]['mes-mai'],
-        traducoes[idiomaAtual]['mes-jun'],
-        traducoes[idiomaAtual]['mes-jul'],
-        traducoes[idiomaAtual]['mes-ago'],
-        traducoes[idiomaAtual]['mes-set'],
-        traducoes[idiomaAtual]['mes-out'],
-        traducoes[idiomaAtual]['mes-nov'],
-        traducoes[idiomaAtual]['mes-dez']
+        traducoes[idiomaAtual]['mes-jan'],  // Índice 0: janeiro
+        traducoes[idiomaAtual]['mes-fev'],  // Índice 1: fevereiro
+        traducoes[idiomaAtual]['mes-mar'],  // Índice 2: março
+        traducoes[idiomaAtual]['mes-abr'],  // Índice 3: abril
+        traducoes[idiomaAtual]['mes-mai'],  // Índice 4: maio
+        traducoes[idiomaAtual]['mes-jun'],  // Índice 5: junho
+        traducoes[idiomaAtual]['mes-jul'],  // Índice 6: julho
+        traducoes[idiomaAtual]['mes-ago'],  // Índice 7: agosto
+        traducoes[idiomaAtual]['mes-set'],  // Índice 8: setembro
+        traducoes[idiomaAtual]['mes-out'],  // Índice 9: outubro
+        traducoes[idiomaAtual]['mes-nov'],  // Índice 10: novembro
+        traducoes[idiomaAtual]['mes-dez']   // Índice 11: dezembro
     ];
+    // Pega o nome do mês usando o número retornado por getMonth()
     const mesAbreviado = meses[agora.getMonth()];
     
-    // Pega o dia do mês (1-31) SEM zero à esquerda
+    // PASSO 8: Pega o dia do mês (1-31) sem formatação especial
+    // getDate() retorna o dia do mês (1, 2, 3, ..., 31)
     const dia = agora.getDate();
     
-    // Atualiza horário (esquerda) e data (direita) separadamente
+    // PASSO 9: Atualiza o conteúdo dos elementos HTML na página
+    // Template string (usando ${}) permite inserir variáveis dentro do texto
+    // Horário: mostra "HH:MM:SS" (exemplo: "14:30:45")
     elementoHorario.textContent = `${horas}:${minutos}:${segundos}`;
+    
+    // Data: mostra "dia da semana dia mês" (exemplo: "segunda 15 janeiro")
     elementoData.textContent = `${diaSemana} ${dia} ${mesAbreviado}`;
 }
 
 // ============================================
 // INICIALIZAÇÃO QUANDO A PÁGINA CARREGA
 // ============================================
+// DOMContentLoaded = evento que acontece quando o HTML foi completamente carregado
+// Isso garante que todos os elementos existem antes de tentar usá-los
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializa com o idioma salvo ou português
+    // PASSO 1: Inicializa a interface com o idioma salvo (ou português se não houver)
+    // idiomaAtual já foi definido no início do arquivo (carregado do localStorage ou padrão)
     trocarIdioma(idiomaAtual);
     
-    // Adiciona event listeners nos botões de idioma
-    document.getElementById('btnPT').addEventListener('click', () => trocarIdioma('pt-BR'));
-    document.getElementById('btnIT').addEventListener('click', () => trocarIdioma('it-IT'));
+    // PASSO 2: Adiciona "ouvintes" de eventos nos botões de idioma
+    // Quando o usuário clicar nesses botões, a função trocarIdioma será chamada
     
-    // Atualiza o horário assim que a página carrega
+    // Botão de português: quando clicado, troca para pt-BR
+    document.getElementById('btnPT').addEventListener('click', function() {
+        trocarIdioma('pt-BR');
+    });
+    
+    // Botão de italiano: quando clicado, troca para it-IT
+    document.getElementById('btnIT').addEventListener('click', function() {
+        trocarIdioma('it-IT');
+    });
+    
+    // PASSO 3: Atualiza o horário imediatamente quando a página carrega
+    // Isso evita mostrar "00:00:00" por um segundo
     atualizarHorario();
     
-    // Atualiza a cada 1 segundo (1000 milissegundos) para mostrar os segundos mudando
-    // setInterval executa a função repetidamente no intervalo especificado
+    // PASSO 4: Configura o relógio para atualizar automaticamente a cada segundo
+    // setInterval(funcao, tempo) = executa a função repetidamente
+    // atualizarHorario = função que atualiza o horário
+    // 1000 = intervalo em milissegundos (1000ms = 1 segundo)
     setInterval(atualizarHorario, 1000);
 });
 

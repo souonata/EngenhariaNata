@@ -1,67 +1,83 @@
-(/*
- assets/js/site-config.js — Configuração global do site (explicação didática)
- ------------------------------------------------------------------------
- Este arquivo centraliza constantes e referências que são usadas por várias
- páginas e scripts do portfólio. Ele é projetado para carregar cedo e ser
- independente de outras dependências (pequeno e livre de frameworks).
+// ============================================
+// CONFIGURAÇÃO GLOBAL DO SITE
+// ============================================
+// Este arquivo centraliza todas as configurações que são usadas
+// por várias páginas do portfólio. Isso evita repetir o mesmo
+// código em cada arquivo e facilita manutenção.
+//
+// Por que centralizar?
+// - Se precisar mudar o nome de uma chave do localStorage, muda só aqui
+// - Se precisar ajustar valores padrão, muda só aqui
+// - Todos os arquivos usam as mesmas configurações, evitando erros
+// ============================================
 
- Componentes principais:
- - LOCAL_STORAGE: chaves padronizadas para persistência (ex.: idioma e config solar).
- - DEFAULTS: valores padrão usados quando não há configuração salva — útil para
-     demonstrar e testar o comportamento do site sem precisar alterar múltiplos arquivos.
- - SELECTORS: seletores CSS compartilhados (botões de idioma, home button, etc.)
-     para evitar repetição de strings em cada script de página.
- - ASSETS: caminhos base para CSS/JS e CDNs (por exemplo Chart.js).
- - UI: parâmetros sensíveis à interface, como comportamento do efeito ripple.
-
- Exemplo de uso (em outro script):
-     const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido' };
-     const idioma = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || SiteConfig.DEFAULTS.language;
-
- Manter essas constantes em um único arquivo facilita alterar políticas do
- site sem tocar múltiplas páginas — por exemplo mudar a taxa de conversão
- de BRL↔EUR ou ajustar limites de peso para baterias.
-*/)
+// Função que cria um objeto isolado (IIFE - Immediately Invoked Function Expression)
+// Isso evita que as variáveis dentro poluam o escopo global
 (function(global){
+    // 'use strict' força o JavaScript a ser mais rigoroso
+    // e ajuda a evitar erros comuns
     'use strict';
 
+    // Objeto principal com todas as configurações
+    // Mantemos os nomes em inglês para compatibilidade com o código existente
     const SiteConfig = {
+        // LOCAL_STORAGE: Chaves usadas no localStorage (armazenamento do navegador)
+        // Essas são as "gavetas" onde guardamos informações do usuário
         LOCAL_STORAGE: {
-            LANGUAGE_KEY: 'idiomaPreferido',
-            SOLAR_CONFIG_KEY: 'configSolar'
+            LANGUAGE_KEY: 'idiomaPreferido',      // Guarda o idioma escolhido (pt-BR ou it-IT)
+            SOLAR_CONFIG_KEY: 'configSolar'       // Guarda as configurações do app Solar
         },
 
+        // DEFAULTS: Valores padrão usados quando não há nada salvo
         DEFAULTS: {
-            language: 'pt-BR',
-            TAXA_BRL_EUR: 6.19,
+            language: 'pt-BR',                    // Idioma padrão: Português do Brasil
+            TAXA_BRL_EUR: 6.19,                   // Taxa de conversão: 1 Euro = 6.19 Reais (aproximado)
             BATTERY: {
-                LFP_MAX_KG: 180,
-                AGM_MAX_KG: 180,
-                DEFAULT_LFP_KWH: 4.8,
-                DEFAULT_AGM_KWH: 1.2
+                LFP_MAX_KG: 180,                  // Peso máximo de bateria de lítio (LiFePO4): 180 kg
+                AGM_MAX_KG: 180,                  // Peso máximo de bateria AGM: 180 kg
+                DEFAULT_LFP_KWH: 4.8,             // Capacidade padrão lítio: 4.8 kWh
+                DEFAULT_AGM_KWH: 1.2              // Capacidade padrão AGM: 1.2 kWh
             },
-            INVERTER_MIN_KW: 1
+            INVERTER_MIN_KW: 1                    // Potência mínima do inversor: 1 kW
         },
 
+        // SELECTORS: Seletores CSS usados para encontrar elementos na página
+        // Em vez de escrever '.home-button-fixed' em vários lugares,
+        // escrevemos SELECTORS.HOME_BUTTON e se precisar mudar, muda só aqui
         SELECTORS: {
-            HOME_BUTTON: '.home-button-fixed',
-            LANG_BTN: '.lang-btn',
-            APP_ICON: '.app-icon',
-            ARROW_BTN: '.arrow-btn',
-            BUTTON_ACTION: '.btn-acao'
+            HOME_BUTTON: '.home-button-fixed',    // Botão fixo para voltar ao início
+            LANG_BTN: '.lang-btn',                // Botões de seleção de idioma
+            APP_ICON: '.app-icon',                // Ícones dos aplicativos na tela inicial
+            ARROW_BTN: '.arrow-btn',              // Botões de seta (+ e -) nos sliders
+            BUTTON_ACTION: '.btn-acao'            // Botões de ação genéricos
         },
 
+        // ASSETS: Caminhos e URLs de recursos externos
         ASSETS: {
-            CSS_BASE: 'assets/css/',
-            JS_BASE: 'assets/js/',
-            CHARTJS_CDN: 'https://cdn.jsdelivr.net/npm/chart.js'
+            CSS_BASE: 'assets/css/',              // Pasta onde ficam os arquivos CSS
+            JS_BASE: 'assets/js/',                // Pasta onde ficam os arquivos JavaScript
+            CHARTJS_CDN: 'https://cdn.jsdelivr.net/npm/chart.js'  // URL da biblioteca de gráficos Chart.js
         },
 
+        // UI: Configurações da interface do usuário
         UI: {
-            RIPPLE: { durationMs: 700, sizePct: 0.9 }
+            RIPPLE: { 
+                durationMs: 700,                  // Quanto tempo o efeito ripple dura (0.7 segundos)
+                sizePct: 0.9                      // Tamanho do efeito: 90% do elemento
+            }
         }
     };
 
-    // Expose read-only property on window
-    try { global.SiteConfig = Object.freeze(SiteConfig); } catch(e){ global.SiteConfig = SiteConfig; }
+    // Tenta tornar o objeto somente leitura (não pode ser modificado depois)
+    // Se der erro (navegadores antigos), usa o objeto normal
+    try { 
+        // Object.freeze() impede que o objeto seja modificado
+        global.SiteConfig = Object.freeze(ConfiguracaoSite); 
+    } catch(erro){ 
+        // Se der erro, usa o objeto sem proteção (compatibilidade)
+        global.SiteConfig = ConfiguracaoSite; 
+    }
+    
+    // Agora o objeto está disponível globalmente como window.SiteConfig
+    // Outros arquivos podem usar: SiteConfig.PADROES.idioma, etc.
 })(window);

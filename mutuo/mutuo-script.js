@@ -385,42 +385,74 @@ function formatarPrazoInput(e) {
 // ============================================
 
 /**
- * Converte um texto formatado em número puro
- * Exemplo: "100.000" vira 100000, "1.500" vira 1500
- * Remove pontos e vírgulas para fazer cálculos
+ * Converte um texto formatado de volta para número puro
+ * 
+ * Esta função é essencial porque o usuário pode digitar valores formatados
+ * (com pontos e vírgulas), mas para fazer cálculos precisamos de números puros.
+ * 
+ * Exemplos de conversão:
+ * - "100.000" → 100000 (remove pontos de milhares)
+ * - "1.500" → 1500 (remove pontos de milhares)
+ * - "10,5" → 10.5 (troca vírgula por ponto)
+ * - "1.234,56" → 1234.56 (remove pontos, troca vírgula por ponto)
+ * - "1234.56" → 1234.56 (mantém como está)
+ * 
+ * @param {string|number} valorFormatado - Valor formatado (texto ou número)
+ * @returns {number} Número puro para cálculos
  */
 function obterValorNumericoFormatado(valorFormatado) {
-    if (!valorFormatado) return 0; // Se está vazio, retorna zero
+    // Se o valor está vazio, nulo ou undefined, retorna zero
+    if (!valorFormatado) return 0;
 
-    // Normaliza entradas como:
-    //  - "100.000" -> 100000
-    //  - "10,5"    -> 10.5
-    //  - "1.234,56"-> 1234.56
-    //  - "1234.56" -> 1234.56
-    let v = String(valorFormatado).trim();
+    // Converte para texto e remove espaços no início e fim
+    // String() = converte para texto (caso seja número)
+    // .trim() = remove espaços no início e fim
+    let valorTexto = String(valorFormatado).trim();
 
-    // Caso tenha ambos '.' e ',' assumimos que '.' é separador de milhares e ',' decimal
-    if (v.indexOf('.') !== -1 && v.indexOf(',') !== -1) {
-        v = v.replace(/\./g, '');      // remove separador de milhares
-        v = v.replace(',', '.');        // converte decimal para ponto
-    } else {
-        // Caso apenas ',' exista (ex: 10,5) -> converte para ponto: 10.5
-        // Caso apenas '.' exista (formato PT/IT como 100.000) -> trata como separador
-        // de milhares e remove todos os pontos para produzir 100000.
-        if (v.indexOf(',') !== -1) {
-            // Has comma -> treat comma as decimal separator
-            v = v.replace(/\./g, ''); // remove any stray thousands separators
-            v = v.replace(',', '.');
-        } else {
-            // Only dots present: treat them as thousands separators and remove them
-            v = v.replace(/\./g, '');
-        }
+    // ============================================
+    // CASO 1: Tem AMBOS ponto e vírgula
+    // ============================================
+    // Exemplo: "1.234,56"
+    // Neste caso, ponto = separador de milhares, vírgula = decimal
+    if (valorTexto.indexOf('.') !== -1 && valorTexto.indexOf(',') !== -1) {
+        // Remove todos os pontos (separadores de milhares)
+        // /\./g = regex que encontra todos os pontos (g = global, todos)
+        valorTexto = valorTexto.replace(/\./g, '');
+        // Troca a vírgula por ponto (padrão JavaScript para decimais)
+        valorTexto = valorTexto.replace(',', '.');
+    } 
+    // ============================================
+    // CASO 2: Tem APENAS vírgula
+    // ============================================
+    // Exemplo: "10,5"
+    // Neste caso, vírgula = separador decimal
+    else if (valorTexto.indexOf(',') !== -1) {
+        // Remove qualquer ponto que possa existir (por segurança)
+        valorTexto = valorTexto.replace(/\./g, '');
+        // Troca vírgula por ponto
+        valorTexto = valorTexto.replace(',', '.');
+    } 
+    // ============================================
+    // CASO 3: Tem APENAS pontos (ou nenhum)
+    // ============================================
+    // Exemplo: "100.000" ou "100000"
+    // Neste caso, pontos = separadores de milhares
+    else {
+        // Remove todos os pontos
+        valorTexto = valorTexto.replace(/\./g, '');
     }
 
-    // Remove qualquer caractere que não seja dígito, ponto ou sinal de menos
-    v = v.replace(/[^0-9.\-]/g, '');
+    // Remove qualquer caractere que não seja número, ponto ou sinal de menos
+    // [^0-9.\-] = regex que encontra qualquer coisa que NÃO seja:
+    // - 0-9 = dígitos
+    // - . = ponto
+    // - \- = sinal de menos (escapado)
+    valorTexto = valorTexto.replace(/[^0-9.\-]/g, '');
 
-    return parseFloat(v) || 0;
+    // Converte o texto limpo para número decimal
+    // parseFloat() = converte texto para número (permite decimais)
+    // || 0 = se não conseguir converter (NaN), usa zero
+    return parseFloat(valorTexto) || 0;
 }
 
 /**
@@ -752,28 +784,59 @@ function trocarIdioma(idioma) {
     document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
 }
 
-// Função para converter taxa de juros para mensal
-// ---------------------------------------------
-// Recebe uma taxa numérica e o período em que ela é informada ('ano'|'mes'|'dia')
-// e retorna a taxa equivalente por mês (em decimal, ex: 0.01 = 1%).
-// Explicação:
-// - Se a taxa é anual (ex: 12% a.a.), convertemos para mensal usando juros compostos:
-//     taxa_mensal = (1 + taxa_anual)^(1/12) - 1
-//   Isso respeita capitalização composta (não é simplesmente taxa / 12).
-// - Se a taxa é mensal, dividimos por 100 (para transformar em decimal).
-// - Se a taxa é diária assumimos 30 dias por mês e aplicamos composição:
-//     taxa_mensal = (1 + taxa_diaria)^(30) - 1
+/**
+ * Converte uma taxa de juros para o equivalente mensal
+ * 
+ * Esta função é essencial para os cálculos de empréstimo, pois todos os
+ * sistemas de amortização trabalham com taxas mensais, mas o usuário pode
+ * informar a taxa em diferentes períodos (ano, mês ou dia).
+ * 
+ * @param {number} taxa - Taxa de juros em percentual (ex: 12 = 12%)
+ * @param {string} periodo - Período da taxa: 'ano', 'mes' ou 'dia'
+ * @returns {number} Taxa mensal equivalente em decimal (ex: 0.01 = 1%)
+ * 
+ * IMPORTANTE: Usa juros compostos, não simples!
+ * 
+ * Exemplos:
+ * - 12% ao ano → ~0.95% ao mês (não é 12/12 = 1%!)
+ * - 1% ao mês → 0.01 (decimal)
+ * - 0.03% ao dia → ~0.94% ao mês (assumindo 30 dias)
+ */
 function converterTaxaParaMensal(taxa, periodo) {
+    // switch = estrutura que escolhe uma ação baseada no valor da variável
     switch(periodo) {
         case 'ano':
-            // Juros compostos: (1 + taxa_anual)^(1/12) - 1
+            // CASO 1: Taxa anual → mensal
+            // Fórmula de juros compostos: taxa_mensal = (1 + taxa_anual)^(1/12) - 1
+            // 
+            // Por que não simplesmente dividir por 12?
+            // Porque juros compostos não são lineares!
+            // Exemplo: 12% ao ano não é 1% ao mês
+            // Com juros compostos: (1.12)^(1/12) - 1 ≈ 0.0095 = 0.95% ao mês
+            //
+            // Math.pow(base, expoente) = eleva a base ao expoente
+            // taxa / 100 = converte percentual para decimal (12% → 0.12)
+            // 1/12 = divide o ano em 12 meses
             return Math.pow(1 + taxa / 100, 1/12) - 1;
+            
         case 'mes':
+            // CASO 2: Taxa mensal → mensal (já está no período correto)
+            // Apenas converte de percentual para decimal
+            // Exemplo: 1% → 0.01
             return taxa / 100;
+            
         case 'dia':
-            // Assumindo 30 dias por mês
+            // CASO 3: Taxa diária → mensal
+            // Assumimos que 1 mês = 30 dias
+            // Fórmula: taxa_mensal = (1 + taxa_diaria)^30 - 1
+            //
+            // Exemplo: 0.03% ao dia
+            // (1.0003)^30 - 1 ≈ 0.0094 = 0.94% ao mês
             return Math.pow(1 + taxa / 100, 30) - 1;
+            
         default:
+            // CASO PADRÃO: Se o período não for reconhecido, trata como mensal
+            // Isso evita erros se alguém passar um valor inválido
             return taxa / 100;
     }
 }
@@ -834,219 +897,426 @@ function obterLimiteMaximoTaxa(periodo) {
     }
 }
 
-// Sistema Price / Tabela Price (Parcelas fixas - Anuidade)
-// -------------------------------------------------------
-// Neste sistema a parcela (PMT) é constante durante todo o prazo.
-// A fórmula do PMT garante que o valor presente (PV) das parcelas
-// descontadas pela taxa i resulte no valor emprestado. O algoritmo
-// calcula a parcela fixa (usando a fórmula de anuidade) e depois,
-// para cada período, separa a parcela em juros (saldo × i) e amortização
-// (PMT - juros). O saldo diminui pela amortização até zerar no fim.
-// Fórmula: PMT = PV × [i × (1+i)^n] / [(1+i)^n - 1]
+/**
+ * Calcula a tabela de amortização usando o Sistema Price (Tabela Price)
+ * 
+ * Este é o sistema mais comum no Brasil para empréstimos pessoais e consignados.
+ * Também é conhecido como "Sistema Francês" na Itália.
+ * 
+ * Características:
+ * - Parcelas FIXAS durante todo o prazo
+ * - No início: paga mais juros, menos amortização
+ * - No final: paga menos juros, mais amortização
+ * - Total de juros: maior que no SAC
+ * 
+ * @param {number} valorEmprestimo - Valor total emprestado (ex: 100000)
+ * @param {number} taxaMensal - Taxa de juros mensal em decimal (ex: 0.01 = 1%)
+ * @param {number} numeroParcelas - Número total de parcelas (ex: 120)
+ * @returns {Array} Array com objetos contendo dados de cada parcela
+ * 
+ * Fórmula da parcela fixa (PMT):
+ * PMT = PV × [i × (1+i)^n] / [(1+i)^n - 1]
+ * 
+ * Onde:
+ * - PV = Valor Presente (valor emprestado)
+ * - i = taxa de juros mensal
+ * - n = número de parcelas
+ */
 function calcularPrice(valorEmprestimo, taxaMensal, numeroParcelas) {
+    // Array que vai guardar os dados de cada parcela
     const tabela = [];
+    
+    // Saldo devedor começa sendo o valor total emprestado
+    // Vai diminuindo conforme as parcelas são pagas
     let saldoDevedor = valorEmprestimo;
     
-    // Cálculo da parcela fixa (PMT)
+    // PASSO 1: Calcula o valor da parcela fixa (PMT)
+    // Esta parcela será a mesma em todos os meses
+    
+    // Calcula (1 + taxa)^número_de_parcelas
+    // Este é um fator usado na fórmula
     const fator = Math.pow(1 + taxaMensal, numeroParcelas);
+    
+    // Aplica a fórmula completa da parcela fixa
+    // PMT = PV × [i × (1+i)^n] / [(1+i)^n - 1]
+    // 
+    // Explicação da fórmula:
+    // - (taxaMensal * fator) = numerador da fração
+    // - (fator - 1) = denominador da fração
+    // - Multiplica pelo valor emprestado para obter a parcela
     const parcelaFixa = valorEmprestimo * (taxaMensal * fator) / (fator - 1);
     
+    // PASSO 2: Para cada parcela, calcula juros, amortização e saldo
+    // Loop que repete uma vez para cada parcela (de 1 até numeroParcelas)
     for (let i = 1; i <= numeroParcelas; i++) {
-        // Juros sobre o saldo devedor atual
+        // Calcula os juros da parcela atual
+        // Juros = Saldo Devedor × Taxa Mensal
+        // No início, o saldo é maior, então os juros são maiores
+        // No final, o saldo é menor, então os juros são menores
         const juros = saldoDevedor * taxaMensal;
-        // Amortização é a diferença entre parcela e juros
+        
+        // Calcula a amortização (quanto do empréstimo está sendo pago)
+        // Amortização = Parcela Fixa - Juros
+        // No início: parcela grande, juros grandes → amortização pequena
+        // No final: parcela grande, juros pequenos → amortização grande
         const amortizacao = parcelaFixa - juros;
-        // Atualiza saldo devedor
+        
+        // Reduz o saldo devedor pela amortização paga
+        // saldoDevedor -= amortizacao é o mesmo que:
+        // saldoDevedor = saldoDevedor - amortizacao
         saldoDevedor -= amortizacao;
         
-        // Corrigir arredondamento na última parcela
+        // CORREÇÃO: Na última parcela, força o saldo a ser zero
+        // Isso corrige pequenos erros de arredondamento que podem acumular
+        // Exemplo: pode sobrar R$ 0.01 devido a arredondamentos
         if (i === numeroParcelas) {
             saldoDevedor = 0;
         }
         
+        // Adiciona os dados desta parcela ao array da tabela
         tabela.push({
-            parcela: i,
-            valorParcela: parcelaFixa,
-            amortizacao: amortizacao,
-            juros: juros,
-            saldoDevedor: Math.max(0, saldoDevedor)
+            parcela: i,                    // Número da parcela (1, 2, 3, ...)
+            valorParcela: parcelaFixa,     // Valor total da parcela (sempre igual)
+            amortizacao: amortizacao,      // Quanto foi amortizado nesta parcela
+            juros: juros,                  // Quanto foi pago de juros nesta parcela
+            saldoDevedor: Math.max(0, saldoDevedor)  // Saldo restante (nunca negativo)
         });
     }
     
+    // Retorna a tabela completa com todas as parcelas
     return tabela;
 }
 
-// Sistema SAC / Ammortamento all'Italiana (Amortização Constante)
-// Usado: Brasil (financiamento imobiliário Caixa) e Itália
-// Amortização = Valor / n
-// Juros = Saldo Devedor × taxa
-// Parcela = Amortização + Juros
+/**
+ * Calcula a tabela de amortização usando o Sistema SAC
+ * 
+ * SAC = Sistema de Amortização Constante
+ * Também conhecido como "Ammortamento all'Italiana" na Itália.
+ * 
+ * Este sistema é muito usado no Brasil para financiamento imobiliário (Caixa).
+ * 
+ * Características:
+ * - Amortização FIXA (sempre a mesma)
+ * - Parcelas VARIÁVEIS (diminuem com o tempo)
+ * - No início: parcelas maiores (muita amortização + muitos juros)
+ * - No final: parcelas menores (muita amortização + poucos juros)
+ * - Total de juros: menor que no Price
+ * 
+ * @param {number} valorEmprestimo - Valor total emprestado (ex: 100000)
+ * @param {number} taxaMensal - Taxa de juros mensal em decimal (ex: 0.01 = 1%)
+ * @param {number} numeroParcelas - Número total de parcelas (ex: 120)
+ * @returns {Array} Array com objetos contendo dados de cada parcela
+ * 
+ * Fórmulas:
+ * - Amortização = Valor Emprestado ÷ Número de Parcelas (sempre igual)
+ * - Juros = Saldo Devedor × Taxa Mensal (diminui a cada mês)
+ * - Parcela = Amortização + Juros (diminui a cada mês)
+ */
 function calcularSAC(valorEmprestimo, taxaMensal, numeroParcelas) {
+    // Array que vai guardar os dados de cada parcela
     const tabela = [];
+    
+    // Saldo devedor começa sendo o valor total emprestado
     let saldoDevedor = valorEmprestimo;
+    
+    // Calcula a amortização constante (sempre a mesma em todas as parcelas)
+    // Exemplo: R$ 100.000 ÷ 120 parcelas = R$ 833,33 por mês
     const amortizacaoConstante = valorEmprestimo / numeroParcelas;
     
+    // Para cada parcela, calcula juros, parcela e saldo
+    // Loop que repete uma vez para cada parcela (de 1 até numeroParcelas)
     for (let i = 1; i <= numeroParcelas; i++) {
-        // Juros sobre o saldo devedor atual
+        // PASSO 1: Calcula os juros da parcela atual
+        // Juros = Saldo Devedor × Taxa Mensal
+        // 
+        // Como o saldo diminui a cada mês, os juros também diminuem
+        // Exemplo:
+        // - Mês 1: saldo = R$ 100.000 → juros = R$ 1.000
+        // - Mês 60: saldo = R$ 50.000 → juros = R$ 500
+        // - Mês 120: saldo = R$ 833 → juros = R$ 8,33
         const juros = saldoDevedor * taxaMensal;
-        // Parcela = amortização constante + juros
+        
+        // PASSO 2: Calcula o valor total da parcela
+        // Parcela = Amortização Constante + Juros
+        // 
+        // Como a amortização é fixa e os juros diminuem,
+        // a parcela também diminui com o tempo
+        // Exemplo:
+        // - Mês 1: R$ 833,33 + R$ 1.000 = R$ 1.833,33
+        // - Mês 60: R$ 833,33 + R$ 500 = R$ 1.333,33
+        // - Mês 120: R$ 833,33 + R$ 8,33 = R$ 841,66
         const valorParcela = amortizacaoConstante + juros;
-        // Atualiza saldo devedor
+        
+        // PASSO 3: Reduz o saldo devedor pela amortização paga
+        // Como a amortização é constante, o saldo diminui sempre o mesmo valor
         saldoDevedor -= amortizacaoConstante;
         
-        // Corrigir arredondamento na última parcela
+        // CORREÇÃO: Na última parcela, força o saldo a ser zero
+        // Isso corrige pequenos erros de arredondamento
         if (i === numeroParcelas) {
             saldoDevedor = 0;
         }
         
+        // Adiciona os dados desta parcela ao array da tabela
         tabela.push({
-            parcela: i,
-            valorParcela: valorParcela,
-            amortizacao: amortizacaoConstante,
-            juros: juros,
-            saldoDevedor: Math.max(0, saldoDevedor)
+            parcela: i,                        // Número da parcela (1, 2, 3, ...)
+            valorParcela: valorParcela,        // Valor total da parcela (diminui com o tempo)
+            amortizacao: amortizacaoConstante, // Amortização (sempre igual)
+            juros: juros,                      // Juros (diminuem com o tempo)
+            saldoDevedor: Math.max(0, saldoDevedor)  // Saldo restante (nunca negativo)
         });
     }
     
+    // Retorna a tabela completa com todas as parcelas
     return tabela;
 }
 
-// Sistema Americano (Juros periódicos + principal no final)
-// --------------------------------------------------------
-// Também conhecido por "sistema americano" ou "Alemão" no repositório.
-// Neste sistema pagam-se juros (constantes) durante os períodos 1..n-1
-// e na última parcela paga-se o principal + juros finais. Útil para
-// investidores ou operações em que o principal é devolvido no final.
+/**
+ * Calcula a tabela de amortização usando o Sistema Americano
+ * 
+ * Também conhecido como "Sistema Alemão" ou "Sistema de Juros Periódicos".
+ * 
+ * Este sistema é raro no Brasil, mas pode ser usado em situações específicas,
+ * como investimentos onde o principal é devolvido no final.
+ * 
+ * Características:
+ * - Parcelas 1 a (n-1): pagam APENAS juros (valor constante)
+ * - Última parcela (n): paga juros + todo o principal de uma vez
+ * - Saldo devedor: permanece igual até a última parcela
+ * - Total de juros: maior que nos outros sistemas
+ * 
+ * @param {number} valorEmprestimo - Valor total emprestado (ex: 100000)
+ * @param {number} taxaMensal - Taxa de juros mensal em decimal (ex: 0.01 = 1%)
+ * @param {number} numeroParcelas - Número total de parcelas (ex: 120)
+ * @returns {Array} Array com objetos contendo dados de cada parcela
+ * 
+ * Exemplo prático:
+ * - Empréstimo: R$ 100.000 a 1% ao mês por 120 meses
+ * - Parcelas 1 a 119: R$ 1.000 (só juros)
+ * - Parcela 120: R$ 101.000 (R$ 1.000 juros + R$ 100.000 principal)
+ */
 function calcularAlemao(valorEmprestimo, taxaMensal, numeroParcelas) {
+    // Array que vai guardar os dados de cada parcela
     const tabela = [];
+    
+    // Calcula o valor dos juros mensais (sempre o mesmo)
+    // Juros = Valor Emprestado × Taxa Mensal
+    // Exemplo: R$ 100.000 × 0.01 = R$ 1.000 por mês
     const jurosMensal = valorEmprestimo * taxaMensal;
     
+    // Para cada parcela, calcula os valores
+    // Loop que repete uma vez para cada parcela (de 1 até numeroParcelas)
     for (let i = 1; i <= numeroParcelas; i++) {
+        // Verifica se é a última parcela
         if (i === numeroParcelas) {
-            // Última parcela: principal + juros
+            // ÚLTIMA PARCELA: paga juros + todo o principal
             tabela.push({
-                parcela: i,
-                valorParcela: valorEmprestimo + jurosMensal,
-                amortizacao: valorEmprestimo,
-                juros: jurosMensal,
-                saldoDevedor: 0
+                parcela: i,                                    // Número da parcela
+                valorParcela: valorEmprestimo + jurosMensal,  // Total: principal + juros
+                amortizacao: valorEmprestimo,                 // Amortiza tudo de uma vez
+                juros: jurosMensal,                           // Juros da última parcela
+                saldoDevedor: 0                               // Saldo zera após pagar
             });
         } else {
-            // Parcelas intermediárias: apenas juros
+            // PARCELAS INTERMEDIÁRIAS (1 até n-1): pagam apenas juros
+            // Não há amortização, então o saldo permanece igual
             tabela.push({
-                parcela: i,
-                valorParcela: jurosMensal,
-                amortizacao: 0,
-                juros: jurosMensal,
-                saldoDevedor: valorEmprestimo
+                parcela: i,                    // Número da parcela
+                valorParcela: jurosMensal,     // Valor da parcela = apenas juros
+                amortizacao: 0,                // Não amortiza nada (zero)
+                juros: jurosMensal,            // Juros pagos
+                saldoDevedor: valorEmprestimo  // Saldo continua igual (não diminui)
             });
         }
     }
     
+    // Retorna a tabela completa com todas as parcelas
     return tabela;
 }
 
-// Função principal de cálculo
+/**
+ * Função principal que calcula o empréstimo completo
+ * 
+ * Esta é a função mais importante do arquivo. Ela:
+ * 1. Lê os valores informados pelo usuário (valor, taxa, prazo, sistema)
+ * 2. Valida os dados
+ * 3. Converte a taxa para mensal
+ * 4. Calcula a tabela de amortização usando o sistema escolhido
+ * 5. Calcula totais (juros, valor total a pagar)
+ * 6. Atualiza toda a interface (tabela, gráficos, resumos)
+ * 
+ * Esta função é chamada sempre que o usuário muda qualquer valor
+ * (slider, input, sistema de amortização, etc.)
+ */
 function calcularEmprestimo() {
-    // Obter valores dos sliders e inputs
-    // Para valor emprestado, verificar se há valor no input acima do limite do slider
+    // ============================================
+    // PASSO 1: LER VALORES DOS CONTROLES
+    // ============================================
+    
+    // Lê o valor do slider de valor emprestado
+    // parseFloat() = converte texto para número decimal
+    // || 0 = se não conseguir converter, usa zero
     let valorEmprestimo = parseFloat(sliderValor.value) || 0;
     
-    // Se houver input manual com valor acima do máximo do slider, usar esse valor
+    // Verifica se o usuário digitou um valor manual maior que o máximo do slider
+    // Isso permite valores acima do limite do slider (até 10 milhões)
     const inputValor = document.getElementById('inputValor');
     if (inputValor) {
+        // Remove pontos (separadores de milhares) e troca vírgula por ponto
+        // Exemplo: "100.000" → "100000", "1.500,50" → "1500.50"
         const valorInputTexto = inputValor.value.replace(/\./g, '').replace(',', '.');
+        // Converte para número
         const valorInput = parseFloat(valorInputTexto) || 0;
+        // Pega o máximo permitido pelo slider (depende do idioma)
         const maxSlider = obterMaxValorSlider();
+        // Se o valor digitado está acima do slider mas dentro do limite (10 milhões)
         if (valorInput > maxSlider && valorInput <= 10000000) {
+            // Usa o valor digitado manualmente
             valorEmprestimo = valorInput;
         }
     }
     
+    // Lê o período da taxa de juros (ano, mês ou dia)
+    // querySelector com :checked = pega o radio button selecionado
     const periodoJuros = document.querySelector('input[name="periodoRapido"]:checked').value;
+    
+    // Lê a taxa de juros do slider
     const taxaJuros = parseFloat(sliderTaxa.value) || 0;
+    
+    // Lê o prazo em anos do slider
+    // parseInt() = converte para número inteiro (sem decimais)
     const prazoAnos = parseInt(sliderPrazo.value) || 0;
+    
+    // Lê o sistema de amortização escolhido (SAC, Price ou Americano)
     const tipoCalculo = document.querySelector('input[name="sistemaRapido"]:checked').value;
     
-    // Validações
-    // Se o valor informado é menor que 1.000, forçamos 1.000 (não abortamos)
+    // ============================================
+    // PASSO 2: VALIDAR OS DADOS
+    // ============================================
+    
+    // Validação 1: Valor emprestado deve ser pelo menos R$ 1.000
     if (!valorEmprestimo || valorEmprestimo < 1000) {
-        // Atualiza o slider para o mínimo aceitável para manter consistência
+        // Se for menor, ajusta o slider para o mínimo
         if (sliderValor) {
             sliderValor.value = 1000;
-            atualizarDisplayValor();
+            atualizarDisplayValor();  // Atualiza o display do valor
         }
-        // Use o valor mínimo para os cálculos
+        // Usa o valor mínimo para os cálculos
         valorEmprestimo = 1000;
     }
     
+    // Validação 2: Taxa não pode ser negativa
     if (taxaJuros < 0) {
-        return;
+        return;  // Para a execução se a taxa for inválida
     }
     
+    // Validação 3: Prazo deve ser pelo menos 1 ano
     if (!prazoAnos || prazoAnos <= 0) {
-        return;
+        return;  // Para a execução se o prazo for inválido
     }
     
-    // Converter taxa para mensal
+    // ============================================
+    // PASSO 3: CONVERTER E PREPARAR DADOS
+    // ============================================
+    
+    // Converte a taxa para mensal (todos os cálculos usam taxa mensal)
+    // Exemplo: 12% ao ano → ~0.95% ao mês
     const taxaMensal = converterTaxaParaMensal(taxaJuros, periodoJuros);
+    
+    // Converte prazo de anos para número de parcelas
+    // Exemplo: 10 anos → 120 parcelas (10 × 12 meses)
     const numeroParcelas = prazoAnos * 12;
     
-    // Calcular de acordo com o sistema escolhido
+    // ============================================
+    // PASSO 4: CALCULAR A TABELA DE AMORTIZAÇÃO
+    // ============================================
+    
+    // Escolhe qual função usar baseado no sistema selecionado
     switch(tipoCalculo) {
         case 'price':
+            // Sistema Price: parcelas fixas
             tabelaAmortizacaoAtual = calcularPrice(valorEmprestimo, taxaMensal, numeroParcelas);
             break;
+            
         case 'sac':
+            // Sistema SAC: amortização constante, parcelas decrescentes
             tabelaAmortizacaoAtual = calcularSAC(valorEmprestimo, taxaMensal, numeroParcelas);
             break;
+            
         case 'alemao':
+            // Sistema Americano: só juros + principal no final
             tabelaAmortizacaoAtual = calcularAlemao(valorEmprestimo, taxaMensal, numeroParcelas);
             break;
+            
         default:
+            // Se o sistema não for reconhecido, mostra erro e para
             alert('Sistema de amortização inválido.');
             return;
     }
     
-    // Armazenar dados para uso posterior
+    // ============================================
+    // PASSO 5: GUARDAR DADOS PARA USO POSTERIOR
+    // ============================================
+    
+    // Salva todos os dados em uma variável global
+    // Isso permite que outras funções acessem esses dados depois
     dadosEmprestimo = {
-        valorEmprestimo,
-        periodoJuros,
-        taxaJuros,
-        taxaMensal,
-        prazoAnos,
-        numeroParcelas,
-        tipoCalculo
+        valorEmprestimo: valorEmprestimo,    // Valor emprestado
+        periodoJuros: periodoJuros,          // Período da taxa (ano/mês/dia)
+        taxaJuros: taxaJuros,                // Taxa no período original
+        taxaMensal: taxaMensal,              // Taxa convertida para mensal
+        prazoAnos: prazoAnos,                // Prazo em anos
+        numeroParcelas: numeroParcelas,      // Número de parcelas
+        tipoCalculo: tipoCalculo             // Sistema usado (price/sac/alemao)
     };
     
-    // Calcular totais
-    const totalJuros = tabelaAmortizacaoAtual.reduce((sum, item) => sum + item.juros, 0);
+    // ============================================
+    // PASSO 6: CALCULAR TOTAIS E ESTATÍSTICAS
+    // ============================================
+    
+    // Calcula o total de juros pagos
+    // reduce() = percorre o array somando os juros de cada parcela
+    // (sum, item) => sum + item.juros = para cada item, adiciona os juros ao total
+    const totalJuros = tabelaAmortizacaoAtual.reduce(function(soma, parcela) {
+        return soma + parcela.juros;
+    }, 0);
+    
+    // Calcula o valor total a pagar
+    // Total = Valor emprestado + Total de juros
     const totalPagar = valorEmprestimo + totalJuros;
+    
+    // Calcula a porcentagem de juros sobre o valor emprestado
+    // Exemplo: R$ 60.000 de juros em R$ 100.000 = 60%
     const porcentagemJuros = (totalJuros / valorEmprestimo) * 100;
     
-    // Exibir resultados
+    // ============================================
+    // PASSO 7: ATUALIZAR A INTERFACE
+    // ============================================
+    
+    // Mostra os resultados principais (valor, juros, total, porcentagem)
     exibirResultados(valorEmprestimo, totalJuros, totalPagar, porcentagemJuros);
     
-    // Configurar slider
-    sliderParcelas.max = numeroParcelas;
-    sliderParcelas.value = 1;
-    document.getElementById('totalParcelas').textContent = numeroParcelas;
+    // Configura o slider de seleção de parcela
+    sliderParcelas.max = numeroParcelas;      // Define o máximo como número de parcelas
+    sliderParcelas.value = 1;                 // Volta para a primeira parcela
+    document.getElementById('totalParcelas').textContent = numeroParcelas;  // Mostra o total
     
-    // Atualizar primeira parcela
+    // Atualiza a exibição da parcela selecionada (mostra dados da parcela 1)
     atualizarParcelaExibida();
     
-    // Preencher tabela
+    // Preenche a tabela completa de amortização (todas as parcelas)
     preencherTabelaAmortizacao();
     
-    // Atualizar gráficos
+    // Atualiza os gráficos com os novos dados
     atualizarGraficos();
     
-    // Atualizar exemplos com valores atuais (para quando o usuário abrir "Saiba Mais")
+    // Atualiza os exemplos educativos com os valores atuais
+    // Isso faz com que quando o usuário clicar em "Saiba Mais",
+    // os exemplos usem os mesmos valores que ele está calculando
     atualizarExemplosComValores();
     
-    // Mostrar seção de resultados (sem scroll automático)
+    // Mostra a seção de resultados (caso esteja escondida)
     resultados.style.display = 'block';
-    // resultados.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 // Exibir resumo dos resultados
@@ -1229,42 +1499,98 @@ function obterTextoPeriodicidade(periodo) {
     return textos[idiomaAtual][periodo] || textos[idiomaAtual]['ano'];
 }
 
-// Formatar número sem símbolo de moeda
+/**
+ * Formata um número sem símbolo de moeda
+ * 
+ * Adiciona separadores de milhares conforme o idioma.
+ * Exemplo: 100000 → "100.000" (pt-BR) ou "100.000" (it-IT)
+ * 
+ * @param {number} valor - Número a ser formatado
+ * @returns {string} Número formatado como texto
+ */
 function formatarNumero(valor) {
+    // Intl.NumberFormat = API do JavaScript para formatar números
+    // idiomaAtual = 'pt-BR' ou 'it-IT' (define o formato regional)
     return new Intl.NumberFormat(idiomaAtual, {
-        useGrouping: true,           // Usa agrupamento (separa os milhares)
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    }).format(valor);
+        useGrouping: true,           // Ativa separador de milhares (pontos ou espaços)
+        minimumFractionDigits: 0,    // Mínimo de casas decimais: 0 (não mostra decimais)
+        maximumFractionDigits: 0     // Máximo de casas decimais: 0 (não permite decimais)
+    }).format(valor);                // .format() aplica a formatação ao número
 }
 
-// Formatar números de forma compacta para gráficos (300k ao invés de 300.000)
+/**
+ * Formata números de forma compacta para gráficos
+ * 
+ * Usa abreviações para números grandes:
+ * - 1.500.000 → "1,5M" (milhões)
+ * - 150.000 → "150k" (milhares)
+ * - 500 → "500" (sem abreviação)
+ * 
+ * Isso deixa os gráficos mais legíveis quando os valores são muito grandes.
+ * 
+ * @param {number} valor - Número a ser formatado
+ * @returns {string} Número formatado de forma compacta
+ */
 function formatarNumeroCompacto(valor) {
+    // Se o valor é maior ou igual a 1 milhão
     if (valor >= 1000000) {
-        return (valor / 1000000).toFixed(1).replace('.', ',') + 'M';
-    } else if (valor >= 1000) {
-        return (valor / 1000).toFixed(0) + 'k';
+        // Divide por 1 milhão, arredonda para 1 casa decimal
+        // Exemplo: 1.500.000 / 1.000.000 = 1.5
+        const valorEmMilhoes = (valor / 1000000).toFixed(1);
+        // Troca ponto por vírgula (formato brasileiro/italiano)
+        // Exemplo: "1.5" → "1,5"
+        // Adiciona "M" no final
+        return valorEmMilhoes.replace('.', ',') + 'M';
+    } 
+    // Se o valor é maior ou igual a 1 mil (mas menor que 1 milhão)
+    else if (valor >= 1000) {
+        // Divide por 1 mil, arredonda para número inteiro
+        // Exemplo: 150.000 / 1.000 = 150
+        const valorEmMilhares = (valor / 1000).toFixed(0);
+        // Adiciona "k" no final
+        return valorEmMilhares + 'k';
     }
+    // Se o valor é menor que 1 mil, retorna como está (sem abreviação)
     return valor.toString();
 }
 
-// Formatar valores monetários
+/**
+ * Formata valores monetários com 2 casas decimais
+ * 
+ * Formata números como moeda (R$ ou €) com centavos.
+ * Exemplo: 1234.56 → "R$ 1.234,56" (pt-BR) ou "€ 1.234,56" (it-IT)
+ * 
+ * @param {number} valor - Valor a ser formatado
+ * @returns {string} Valor formatado como moeda
+ */
 function formatarMoeda(valor) {
+    // Intl.NumberFormat com style: 'currency' formata como moeda
     return new Intl.NumberFormat(idiomaAtual, {
-        style: 'currency',
-        currency: moedaAtual,
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
+        style: 'currency',           // Formata como moeda (adiciona R$ ou €)
+        currency: moedaAtual,        // moedaAtual = 'BRL' ou 'EUR'
+        minimumFractionDigits: 2,    // Sempre mostra 2 casas decimais (centavos)
+        maximumFractionDigits: 2     // Máximo de 2 casas decimais
     }).format(valor);
 }
 
-// Formatar valores monetários sem decimais
+/**
+ * Formata valores monetários sem casas decimais
+ * 
+ * Formata números como moeda (R$ ou €) sem centavos.
+ * Exemplo: 1234.56 → "R$ 1.235" (arredondado, pt-BR)
+ * 
+ * Usado para valores grandes onde centavos não são relevantes.
+ * 
+ * @param {number} valor - Valor a ser formatado
+ * @returns {string} Valor formatado como moeda sem decimais
+ */
 function formatarMoedaSemDecimal(valor) {
+    // Intl.NumberFormat com style: 'currency' formata como moeda
     return new Intl.NumberFormat(idiomaAtual, {
-        style: 'currency',
-        currency: moedaAtual,
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
+        style: 'currency',           // Formata como moeda (adiciona R$ ou €)
+        currency: moedaAtual,        // moedaAtual = 'BRL' ou 'EUR'
+        minimumFractionDigits: 0,    // Não mostra decimais
+        maximumFractionDigits: 0     // Não permite decimais
     }).format(valor);
 }
 
