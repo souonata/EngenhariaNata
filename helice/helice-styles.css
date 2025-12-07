@@ -1,4 +1,14 @@
 /* ============================================
+   HELICE - Estilos Específicos da Calculadora de Hélice
+   ============================================
+   
+   NOTA: Os estilos padrão de controles (sliders, inputs, botões, radio buttons)
+   foram movidos para assets/css/controls-styles.css para reutilização.
+   
+   Este arquivo contém apenas estilos específicos do Helice que não são genéricos.
+   ============================================ */
+
+/* ============================================
    RESET E CONFIGURAÇÕES GLOBAIS
    ============================================ */
 * {
@@ -265,87 +275,6 @@ footer p {
     }
 }
 
-.grupo-radio {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-.grupo-radio-compacto {
-    display: flex;
-    flex-direction: row;
-    gap: 4px;
-    align-items: center;
-}
-
-.opcao-radio-compacto {
-    position: relative;
-    width: auto;
-}
-
-.opcao-radio-compacto input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-}
-
-.cartao-radio-compacto {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 3px 6px;
-    border: 2px solid #e0e0e0;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.3s;
-    min-width: 35px;
-    font-size: 0.7rem;
-}
-
-.opcao-radio-compacto input:checked + .cartao-radio-compacto {
-    border-color: #2d9fa3ff;
-    background-color: #e0f7fa;
-    box-shadow: 0 2px 6px rgba(45, 159, 163, 0.2);
-}
-
-.opcao-radio-compacto .rotulo-radio {
-    font-weight: 600;
-    font-size: 0.7rem;
-    text-align: center;
-}
-
-.opcao-radio {
-    flex: 0 0 auto;
-    position: relative;
-}
-
-.opcao-radio input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-}
-
-.cartao-radio {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 8px 12px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.opcao-radio input:checked + .cartao-radio {
-    border-color: #2d9fa3ff;
-    background-color: #e0f7fa;
-    box-shadow: 0 4px 10px rgba(45, 159, 163, 0.2);
-}
-
-.rotulo-radio {
-    font-weight: 600;
-    font-size: 0.8rem;
-    text-align: center;
-}
+/* Estilos de radio buttons movidos para assets/css/controls-styles.css */
+/* Os estilos globais de .grupo-radio, .opcao-radio, .cartao-radio estão em controls-styles.css */
+/* Mantendo apenas estilos específicos do Helice se necessário */

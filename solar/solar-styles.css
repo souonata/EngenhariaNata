@@ -1,4 +1,14 @@
 /* ============================================
+   SOLAR - Estilos Específicos do Dimensionamento Solar
+   ============================================
+   
+   NOTA: Os estilos padrão de controles (sliders, inputs, botões, radio buttons)
+   foram movidos para assets/css/controls-styles.css para reutilização.
+   
+   Este arquivo contém apenas estilos específicos do Solar que não são genéricos.
+   ============================================ */
+
+/* ============================================
    RESET E CONFIGURAÇÕES GLOBAIS
    ============================================ */
 * {
@@ -121,51 +131,14 @@ header h1 {
 :root { --ripple-color: rgba(255,255,255,0.18); }
 
 
-/* Radio Buttons Customizados */
-.grupo-radio {
-    display: flex;
-    gap: 10px;
-}
+/* Estilos de radio buttons movidos para assets/css/controls-styles.css */
+/* Os estilos globais de .grupo-radio, .opcao-radio, .cartao-radio estão em controls-styles.css */
+/* Mantendo apenas estilos específicos do Solar se necessário */
 
-.opcao-radio {
-    flex: 1;
-    position: relative;
-}
-
-.opcao-radio input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-}
-
-.cartao-radio {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 8px 12px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.opcao-radio input:checked + .cartao-radio {
-    border-color: #2d9fa3ff;
-    background-color: #e0f7fa;
-    box-shadow: 0 4px 10px rgba(45, 159, 163, 0.2);
-}
-
+/* Ícone específico do radio do Solar */
 .icone-radio {
     font-size: 1.2rem;
     margin-bottom: 0;
-}
-
-.rotulo-radio {
-    font-weight: 600;
-    font-size: 0.8rem;
-    text-align: center;
 }
 
 /* ============================================
