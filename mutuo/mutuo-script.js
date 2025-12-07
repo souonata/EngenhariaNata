@@ -40,6 +40,10 @@ let tabelaAmortizacaoAtual = [];
 // Armazena os dados do empréstimo atual (valor, taxa, prazo, etc)
 let dadosEmprestimo = {};
 
+// Armazena a última posição do slider de parcelas selecionada pelo usuário
+// Isso permite manter a posição quando outros valores são alterados
+let ultimaParcelaSelecionada = 1;
+
 // Idioma atual da aplicação - prefer using site-wide keys when available
 const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
 const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
@@ -190,6 +194,9 @@ function ajustarValor(targetId, step) {
         
         // Atualiza o slider
         slider.value = parcela;
+        
+        // Salva a posição atual para manter quando outros valores mudarem
+        ultimaParcelaSelecionada = parcela;
         
         // Atualiza exibição da parcela
         if (window.atualizarParcelaExibida) window.atualizarParcelaExibida();
@@ -1298,10 +1305,17 @@ function calcularEmprestimo() {
     
     // Configura o slider de seleção de parcela
     sliderParcelas.max = numeroParcelas;      // Define o máximo como número de parcelas
-    sliderParcelas.value = 1;                 // Volta para a primeira parcela
+    
+    // Restaura a última posição selecionada, ou o máximo se for maior que o novo máximo
+    // Isso mantém a parcela que o usuário estava visualizando quando outros valores mudam
+    if (ultimaParcelaSelecionada > numeroParcelas) {
+        // Se a última posição for maior que o novo máximo, usa o máximo
+        ultimaParcelaSelecionada = numeroParcelas;
+    }
+    sliderParcelas.value = ultimaParcelaSelecionada;
     document.getElementById('totalParcelas').textContent = numeroParcelas;  // Mostra o total
     
-    // Atualiza a exibição da parcela selecionada (mostra dados da parcela 1)
+    // Atualiza a exibição da parcela selecionada
     atualizarParcelaExibida();
     
     // Preenche a tabela completa de amortização (todas as parcelas)
@@ -1914,7 +1928,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Event Listeners para sliders
-    sliderParcelas.addEventListener('input', atualizarParcelaExibida);
+    sliderParcelas.addEventListener('input', function() {
+        // Salva a posição atual do slider sempre que o usuário o move
+        ultimaParcelaSelecionada = parseInt(sliderParcelas.value);
+        atualizarParcelaExibida();
+    });
     
     if (sliderValor) {
         sliderValor.addEventListener('input', function() {

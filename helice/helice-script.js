@@ -467,13 +467,52 @@ function atualizarResultado() {
     const unidadePasso = document.querySelector('input[name="unidadePasso"]:checked').value;
     
     // ============================================
-    // PASSO 2: OBTER VALORES DOS SLIDERS
+    // PASSO 2: OBTER VALORES DOS INPUTS OU SLIDERS
     // ============================================
-    // Lê os valores atuais de todos os sliders e converte para números
-    const velocidadeInput = parseFloat(document.getElementById('sliderVelocidade').value); // Velocidade na unidade selecionada
-    const reducao = parseFloat(document.getElementById('sliderReducao').value);            // Redução da rabeta (ex: 2.0)
-    const rpmMotor = parseFloat(document.getElementById('sliderRPM').value);               // RPM máximo do motor
-    const slipPercent = parseFloat(document.getElementById('sliderSlip').value);           // Slip em percentual (ex: 15)
+    // Lê os valores dos inputs editáveis (se existirem e tiverem valores válidos) ou dos sliders
+    // Isso permite valores fora dos limites do slider quando digitados manualmente
+    const inputVelocidade = document.getElementById('inputVelocidade');
+    const inputReducao = document.getElementById('inputReducao');
+    const inputRPM = document.getElementById('inputRPM');
+    const inputSlip = document.getElementById('inputSlip');
+    const sliderVelocidade = document.getElementById('sliderVelocidade');
+    const sliderReducao = document.getElementById('sliderReducao');
+    const sliderRPM = document.getElementById('sliderRPM');
+    const sliderSlip = document.getElementById('sliderSlip');
+    
+    // Obtém valores dos inputs ou sliders (inputs têm prioridade se existirem e tiverem valores válidos)
+    // Se o input tiver um valor válido (número > 0), usa ele; caso contrário, usa o slider
+    let velocidadeInput = parseFloat(sliderVelocidade.value);
+    if (inputVelocidade && inputVelocidade.value) {
+        const valorInput = parseFloat(inputVelocidade.value);
+        if (!isNaN(valorInput) && valorInput > 0) {
+            velocidadeInput = valorInput;
+        }
+    }
+    
+    let reducao = parseFloat(sliderReducao.value);
+    if (inputReducao && inputReducao.value) {
+        const valorInput = parseFloat(inputReducao.value);
+        if (!isNaN(valorInput) && valorInput > 0) {
+            reducao = valorInput;
+        }
+    }
+    
+    let rpmMotor = parseFloat(sliderRPM.value);
+    if (inputRPM && inputRPM.value) {
+        const valorInput = parseFloat(inputRPM.value);
+        if (!isNaN(valorInput) && valorInput > 0) {
+            rpmMotor = valorInput;
+        }
+    }
+    
+    let slipPercent = parseFloat(sliderSlip.value);
+    if (inputSlip && inputSlip.value) {
+        const valorInput = parseFloat(inputSlip.value);
+        if (!isNaN(valorInput) && valorInput > 0) {
+            slipPercent = valorInput;
+        }
+    }
     
     // ============================================
     // PASSO 3: CONVERTER VELOCIDADE PARA NÓS
@@ -484,12 +523,12 @@ function atualizarResultado() {
     // ============================================
     // PASSO 4: ATUALIZAR DISPLAYS DOS VALORES DE ENTRADA
     // ============================================
-    // Atualiza os textos ao lado dos sliders para mostrar os valores atuais
+    // Atualiza os inputs ao lado dos sliders para mostrar os valores atuais
     // Formata velocidade: nós sem decimais, outras unidades com 1 decimal
-    document.getElementById('valorVelocidade').textContent = velocidadeInput.toFixed(unidadeVelocidade === 'knots' ? 0 : 1);
-    document.getElementById('valorReducao').textContent = reducao.toFixed(2);     // Redução com 2 decimais (ex: 2.00)
-    document.getElementById('valorRPM').textContent = rpmMotor;                   // RPM como número inteiro
-    document.getElementById('valorSlip').textContent = slipPercent;               // Slip como número inteiro (percentual)
+    if (inputVelocidade) inputVelocidade.value = velocidadeInput.toFixed(unidadeVelocidade === 'knots' ? 0 : 1);
+    if (inputReducao) inputReducao.value = reducao.toFixed(2);     // Redução com 2 decimais (ex: 2.00)
+    if (inputRPM) inputRPM.value = Math.round(rpmMotor);           // RPM como número inteiro
+    if (inputSlip) inputSlip.value = Math.round(slipPercent);      // Slip como número inteiro (percentual)
     
     // ============================================
     // PASSO 5: CALCULAR O PASSO DA HÉLICE
@@ -786,15 +825,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================
     // Cria um objeto com referências a todos os elementos importantes da página
     // Isso facilita o acesso posterior e melhora a organização do código
+    // Referências aos elementos (mantidas para compatibilidade, mas não mais usadas diretamente)
     const elementos = {
         sliderVelocidade: document.getElementById('sliderVelocidade'),  // Slider de velocidade
         sliderReducao: document.getElementById('sliderReducao'),        // Slider de redução
         sliderRPM: document.getElementById('sliderRPM'),                // Slider de RPM
-        sliderSlip: document.getElementById('sliderSlip'),              // Slider de slip
-        valorVelocidade: document.getElementById('valorVelocidade'),    // Display do valor de velocidade
-        valorReducao: document.getElementById('valorReducao'),          // Display do valor de redução
-        valorRPM: document.getElementById('valorRPM'),                  // Display do valor de RPM
-        valorSlip: document.getElementById('valorSlip')                 // Display do valor de slip
+        sliderSlip: document.getElementById('sliderSlip')               // Slider de slip
     };
     
     // ============================================
@@ -818,10 +854,119 @@ document.addEventListener('DOMContentLoaded', function() {
     // Adiciona event listeners ao evento 'input' de cada slider
     // O evento 'input' é disparado sempre que o valor do slider muda
     // Quando isso acontece, a função `atualizarResultado()` é chamada para recalcular tudo
-    document.getElementById('sliderVelocidade').addEventListener('input', atualizarResultado);
-    document.getElementById('sliderReducao').addEventListener('input', atualizarResultado);
-    document.getElementById('sliderRPM').addEventListener('input', atualizarResultado);
-    document.getElementById('sliderSlip').addEventListener('input', atualizarResultado);
+    const sliderVelocidade = document.getElementById('sliderVelocidade');
+    const sliderReducao = document.getElementById('sliderReducao');
+    const sliderRPM = document.getElementById('sliderRPM');
+    const sliderSlip = document.getElementById('sliderSlip');
+    
+    sliderVelocidade.addEventListener('input', () => {
+        const valor = parseFloat(sliderVelocidade.value);
+        const inputVelocidade = document.getElementById('inputVelocidade');
+        if (inputVelocidade) {
+            const unidadeVelocidade = document.querySelector('input[name="unidadeVelocidade"]:checked')?.value || 'knots';
+            // Atualiza o input para corresponder ao slider
+            inputVelocidade.value = valor.toFixed(unidadeVelocidade === 'knots' ? 0 : 1);
+        }
+        // Chama atualizarResultado que vai ler do slider (já que o input foi atualizado)
+        atualizarResultado();
+    });
+    
+    sliderReducao.addEventListener('input', () => {
+        const valor = parseFloat(sliderReducao.value);
+        const inputReducao = document.getElementById('inputReducao');
+        if (inputReducao) {
+            // Atualiza o input para corresponder ao slider
+            inputReducao.value = valor.toFixed(2);
+        }
+        atualizarResultado();
+    });
+    
+    sliderRPM.addEventListener('input', () => {
+        const valor = parseFloat(sliderRPM.value);
+        const inputRPM = document.getElementById('inputRPM');
+        if (inputRPM) {
+            // Atualiza o input para corresponder ao slider
+            inputRPM.value = Math.round(valor);
+        }
+        atualizarResultado();
+    });
+    
+    sliderSlip.addEventListener('input', () => {
+        const valor = parseFloat(sliderSlip.value);
+        const inputSlip = document.getElementById('inputSlip');
+        if (inputSlip) {
+            // Atualiza o input para corresponder ao slider
+            inputSlip.value = Math.round(valor);
+        }
+        atualizarResultado();
+    });
+    
+    // ============================================
+    // PASSO 4B: CONFIGURAR EVENT LISTENERS DOS INPUTS EDITÁVEIS
+    // ============================================
+    // Permite edição manual dos valores, inclusive fora dos limites do slider
+    const inputVelocidadeEl = document.getElementById('inputVelocidade');
+    const inputReducaoEl = document.getElementById('inputReducao');
+    const inputRPMEl = document.getElementById('inputRPM');
+    const inputSlipEl = document.getElementById('inputSlip');
+    
+    if (inputVelocidadeEl) {
+        inputVelocidadeEl.addEventListener('focus', (e) => e.target.select());
+        inputVelocidadeEl.addEventListener('input', () => {
+            const valor = parseFloat(inputVelocidadeEl.value);
+            if (!isNaN(valor) && valor > 0) {
+                // Atualiza o slider apenas se estiver dentro dos limites
+                const slider = document.getElementById('sliderVelocidade');
+                if (valor >= parseFloat(slider.min) && valor <= parseFloat(slider.max)) {
+                    slider.value = valor;
+                }
+                // Sempre recalcula, mesmo se estiver fora dos limites
+                atualizarResultado();
+            }
+        });
+    }
+    
+    if (inputReducaoEl) {
+        inputReducaoEl.addEventListener('focus', (e) => e.target.select());
+        inputReducaoEl.addEventListener('input', () => {
+            const valor = parseFloat(inputReducaoEl.value);
+            if (!isNaN(valor) && valor > 0) {
+                const slider = document.getElementById('sliderReducao');
+                if (valor >= parseFloat(slider.min) && valor <= parseFloat(slider.max)) {
+                    slider.value = valor;
+                }
+                atualizarResultado();
+            }
+        });
+    }
+    
+    if (inputRPMEl) {
+        inputRPMEl.addEventListener('focus', (e) => e.target.select());
+        inputRPMEl.addEventListener('input', () => {
+            const valor = parseFloat(inputRPMEl.value);
+            if (!isNaN(valor) && valor > 0) {
+                const slider = document.getElementById('sliderRPM');
+                if (valor >= parseFloat(slider.min) && valor <= parseFloat(slider.max)) {
+                    slider.value = valor;
+                }
+                atualizarResultado();
+            }
+        });
+    }
+    
+    if (inputSlipEl) {
+        inputSlipEl.addEventListener('focus', (e) => e.target.select());
+        inputSlipEl.addEventListener('input', () => {
+            const valor = parseFloat(inputSlipEl.value);
+            if (!isNaN(valor) && valor > 0) {
+                const slider = document.getElementById('sliderSlip');
+                if (valor >= parseFloat(slider.min) && valor <= parseFloat(slider.max)) {
+                    slider.value = valor;
+                }
+                atualizarResultado();
+            }
+        });
+    }
     
     // ============================================
     // PASSO 5: CONFIGURAR BOTÕES DE SETA (↑ ↓)

@@ -439,14 +439,18 @@ function ajustarValor(targetId, step) {
 // Além disso, garante limites corretos para sliders e corrige valores
 // fora dos limites (por exemplo, vida útil máx/mín).
 function atualizarInterface() {
-    // 1. Ler valores dos sliders
+    // 1. Ler valores dos inputs editáveis ou sliders (inputs têm prioridade)
     const sliderConsumo = document.getElementById('sliderConsumo');
     const sliderAutonomia = document.getElementById('sliderAutonomia');
     const sliderVidaUtil = document.getElementById('sliderVidaUtil');
+    const inputConsumo = document.getElementById('inputConsumo');
+    const inputAutonomia = document.getElementById('inputAutonomia');
+    const inputVidaUtil = document.getElementById('inputVidaUtil');
     const tipoBateria = document.querySelector('input[name="tipoBateria"]:checked').value;
     
-    const consumo = parseInt(sliderConsumo.value);
-    const autonomia = parseInt(sliderAutonomia.value);
+    // Obtém valores dos inputs ou sliders (inputs têm prioridade se existirem)
+    const consumo = inputConsumo ? parseInt(inputConsumo.value) || parseInt(sliderConsumo.value) : parseInt(sliderConsumo.value);
+    const autonomia = inputAutonomia ? parseInt(inputAutonomia.value) || parseInt(sliderAutonomia.value) : parseInt(sliderAutonomia.value);
     
     // 2. Ajustar limites do slider de Vida Útil baseado no tipo de bateria
     if (tipoBateria === 'litio') {
@@ -457,32 +461,20 @@ function atualizarInterface() {
         sliderVidaUtil.max = "5";
     }
     
-    // 3. Corrigir valor se estiver fora dos limites
-    let vidaUtil = parseFloat(sliderVidaUtil.value);
+    // 3. Corrigir valor se estiver fora dos limites (apenas para o slider, não para o input)
+    let vidaUtil = inputVidaUtil ? parseFloat(inputVidaUtil.value) || parseFloat(sliderVidaUtil.value) : parseFloat(sliderVidaUtil.value);
     const minVida = parseFloat(sliderVidaUtil.min);
     const maxVida = parseFloat(sliderVidaUtil.max);
     
-    if (vidaUtil < minVida) {
-        vidaUtil = minVida;
-        sliderVidaUtil.value = vidaUtil;
-    }
-    if (vidaUtil > maxVida) {
-        vidaUtil = maxVida;
+    // Ajusta o slider apenas se o valor estiver dentro dos limites
+    if (vidaUtil >= minVida && vidaUtil <= maxVida) {
         sliderVidaUtil.value = vidaUtil;
     }
 
-    // 4. Atualizar displays de valor
-    document.getElementById('valConsumo').textContent = `${consumo} kWh`;
-    
-    const textoDias = autonomia === 1 ? 
-        (idiomaAtual === 'pt-BR' ? 'dia' : 'giorno') : 
-        (idiomaAtual === 'pt-BR' ? 'dias' : 'giorni');
-    document.getElementById('valAutonomia').textContent = `${autonomia} ${textoDias}`;
-
-    const textoAnos = vidaUtil === 1 ?
-        (idiomaAtual === 'pt-BR' ? 'ano' : 'anno') :
-        (idiomaAtual === 'pt-BR' ? 'anos' : 'anni');
-    document.getElementById('valVidaUtil').textContent = `${vidaUtil} ${textoAnos}`;
+    // 4. Atualizar displays de valor (inputs editáveis)
+    if (inputConsumo) inputConsumo.value = consumo;
+    if (inputAutonomia) inputAutonomia.value = autonomia;
+    if (inputVidaUtil) inputVidaUtil.value = Math.round(vidaUtil);
 
     // 5. Calcular DoD Alvo
     const ciclos = vidaUtil * 365;
@@ -544,9 +536,14 @@ function calcularSistema(dodAlvo) {
     // ============================================
     // PASSO 1: OBTER VALORES DA INTERFACE
     // ============================================
-    // Lê os valores dos sliders e radio buttons da interface do usuário
-    const consumoMensal = parseFloat(document.getElementById('sliderConsumo').value) || 0; // Consumo em kWh/mês
-    const autonomia = parseInt(document.getElementById('sliderAutonomia').value);           // Dias de autonomia
+    // Lê os valores dos inputs editáveis ou sliders (inputs têm prioridade)
+    const inputConsumo = document.getElementById('inputConsumo');
+    const inputAutonomia = document.getElementById('inputAutonomia');
+    const sliderConsumo = document.getElementById('sliderConsumo');
+    const sliderAutonomia = document.getElementById('sliderAutonomia');
+    
+    const consumoMensal = inputConsumo ? parseFloat(inputConsumo.value) || parseFloat(sliderConsumo.value) || 0 : parseFloat(sliderConsumo.value) || 0; // Consumo em kWh/mês
+    const autonomia = inputAutonomia ? parseInt(inputAutonomia.value) || parseInt(sliderAutonomia.value) : parseInt(sliderAutonomia.value);           // Dias de autonomia
     const tipoBateria = document.querySelector('input[name="tipoBateria"]:checked').value;  // 'litio' ou 'chumbo'
 
     // ============================================
@@ -873,9 +870,80 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 3. Configurar sliders (eventos de input)
-    ['sliderConsumo', 'sliderAutonomia', 'sliderVidaUtil'].forEach(id => {
-        document.getElementById(id).addEventListener('input', atualizarInterface);
+    const sliderConsumo = document.getElementById('sliderConsumo');
+    const sliderAutonomia = document.getElementById('sliderAutonomia');
+    const sliderVidaUtil = document.getElementById('sliderVidaUtil');
+    
+    sliderConsumo.addEventListener('input', () => {
+        const valor = parseInt(sliderConsumo.value);
+        const inputConsumo = document.getElementById('inputConsumo');
+        if (inputConsumo) inputConsumo.value = valor;
+        atualizarInterface();
     });
+    
+    sliderAutonomia.addEventListener('input', () => {
+        const valor = parseInt(sliderAutonomia.value);
+        const inputAutonomia = document.getElementById('inputAutonomia');
+        if (inputAutonomia) inputAutonomia.value = valor;
+        atualizarInterface();
+    });
+    
+    sliderVidaUtil.addEventListener('input', () => {
+        const valor = parseFloat(sliderVidaUtil.value);
+        const inputVidaUtil = document.getElementById('inputVidaUtil');
+        if (inputVidaUtil) inputVidaUtil.value = Math.round(valor);
+        atualizarInterface();
+    });
+    
+    // 3B. Configurar inputs editáveis (permitem valores fora dos limites do slider)
+    const inputConsumo = document.getElementById('inputConsumo');
+    const inputAutonomia = document.getElementById('inputAutonomia');
+    const inputVidaUtil = document.getElementById('inputVidaUtil');
+    
+    if (inputConsumo) {
+        inputConsumo.addEventListener('focus', (e) => e.target.select());
+        inputConsumo.addEventListener('input', () => {
+            const valor = parseInt(inputConsumo.value);
+            if (!isNaN(valor) && valor > 0) {
+                // Atualiza o slider apenas se estiver dentro dos limites
+                if (valor >= parseInt(sliderConsumo.min) && valor <= parseInt(sliderConsumo.max)) {
+                    sliderConsumo.value = valor;
+                }
+                // Sempre recalcula, mesmo se estiver fora dos limites
+                atualizarInterface();
+            }
+        });
+    }
+    
+    if (inputAutonomia) {
+        inputAutonomia.addEventListener('focus', (e) => e.target.select());
+        inputAutonomia.addEventListener('input', () => {
+            const valor = parseInt(inputAutonomia.value);
+            if (!isNaN(valor) && valor > 0) {
+                if (valor >= parseInt(sliderAutonomia.min) && valor <= parseInt(sliderAutonomia.max)) {
+                    sliderAutonomia.value = valor;
+                }
+                atualizarInterface();
+            }
+        });
+    }
+    
+    if (inputVidaUtil) {
+        inputVidaUtil.addEventListener('focus', (e) => e.target.select());
+        inputVidaUtil.addEventListener('input', () => {
+            const valor = parseFloat(inputVidaUtil.value);
+            if (!isNaN(valor) && valor > 0) {
+                const tipoBateria = document.querySelector('input[name="tipoBateria"]:checked')?.value || 'chumbo';
+                const minVida = tipoBateria === 'litio' ? 5 : 1;
+                const maxVida = tipoBateria === 'litio' ? 25 : 5;
+                
+                if (valor >= minVida && valor <= maxVida) {
+                    sliderVidaUtil.value = valor;
+                }
+                atualizarInterface();
+            }
+        });
+    }
 
     // 4. Configurar Radio Buttons (Tipo de Bateria)
     document.querySelectorAll('input[name="tipoBateria"]').forEach(radio => {

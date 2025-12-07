@@ -37,7 +37,8 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderConsumo" data-i18n="label-consumo">Consumo Médio Mensal</label>
-                    <span id="valConsumo" class="valor-display">150 kWh</span>
+                    <input type="text" id="inputConsumo" class="valor-display valor-input" value="150">
+                    <span>kWh</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn" data-target="sliderConsumo" data-step="-10" aria-label="Diminuir consumo">−</button>
@@ -50,7 +51,8 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderAutonomia" data-i18n="label-autonomia">Dias de Autonomia</label>
-                    <span id="valAutonomia" class="valor-display">2 dias</span>
+                    <input type="text" id="inputAutonomia" class="valor-display valor-input" value="2">
+                    <span data-i18n="unit-days">dias</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn" data-target="sliderAutonomia" data-step="-1" aria-label="Diminuir autonomia">−</button>
@@ -84,7 +86,8 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderVidaUtil" data-i18n="label-vida-util">Vida Útil Estimada</label>
-                    <span id="valVidaUtil" class="valor-display">3 anos</span>
+                    <input type="text" id="inputVidaUtil" class="valor-display valor-input" value="3">
+                    <span data-i18n="unit-years">anos</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn" data-target="sliderVidaUtil" data-step="-1" aria-label="Diminuir vida útil">−</button>
