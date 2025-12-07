@@ -8,6 +8,7 @@ Uma pequena coleção de apps web educativos para estudar conceitos práticos de
 - **⚡ Bitola** — Calculadora de bitola de fios elétricos para circuitos CC e CA, com seleção automática de bitola comercial padrão brasileiro.
 - **❄️ Ar Condicionado** — Dimensionador de ar condicionado com cálculo de BTU baseado em área, altura, número de pessoas e condições ambientais.
 - **☀️ Aquecedor Solar** — Dimensionador completo de sistemas de aquecimento solar térmico (coletores, boiler, potência) para água de consumo e aquecimento ambiente.
+- **🌾 Fazenda** — Planejador de fazenda auto-sustentável com cálculo de espaço, quantidade de plantas e animais, calendário de plantio/colheita e frequência de reprodução.
 
 ## 🎯 Características Principais
 

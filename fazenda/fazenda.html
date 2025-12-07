@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="alternate icon" href="../favicon.ico">
+    <link rel="apple-touch-icon" href="../favicon.svg">
+    
+    <!-- SEO Meta Tags -->
+    <title>Dimensionador de Fazenda Auto-Sustentável - Planejamento de Produção | Engenharia NATA</title>
+    <meta name="description" content="Planejador completo de fazenda auto-sustentável. Calcula espaço necessário, quantidade de plantas e animais, frequência de plantio/colheita e reprodução para alimentar uma família.">
+    <meta name="keywords" content="fazenda auto-sustentável, permacultura, agricultura familiar, planejamento agrícola, produção de alimentos, criação de animais, horta, pomar">
+    <meta name="author" content="Engenharia NATA">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://engnata.eu/fazenda/fazenda.html">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://engnata.eu/fazenda/fazenda.html">
+    <meta property="og:title" content="Dimensionador de Fazenda Auto-Sustentável - Engenharia NATA">
+    <meta property="og:description" content="Planejador completo de fazenda auto-sustentável com cálculo de espaço, plantas e animais necessários.">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:locale:alternate" content="it_IT">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:url" content="https://engnata.eu/fazenda/fazenda.html">
+    <meta property="twitter:title" content="Dimensionador de Fazenda Auto-Sustentável">
+    <meta property="twitter:description" content="Planejador completo de fazenda auto-sustentável com cálculo de espaço, plantas e animais necessários.">
+    
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.0">
+    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.0">
+    <link rel="stylesheet" href="fazenda-styles.css?v=1.0.0">
+</head>
+<body>
+    <div class="container">
+        <!-- ========================================== -->
+        <!-- CABEÇALHO COM SELETOR DE IDIOMA -->
+        <!-- ========================================== -->
+        <header>
+            <div class="language-selector">
+                <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">
+                    <span class="flag">🇧🇷</span>
+                    <span class="lang-text">Português</span>
+                </button>
+                <button id="btnItaliano" class="lang-btn" data-lang="it-IT">
+                    <span class="flag">🇮🇹</span>
+                    <span class="lang-text">Italiano</span>
+                </button>
+            </div>
+            <div class="dev-badge-header">
+                <span class="dev-badge-text" data-i18n="dev-badge-header">🚧 EM DESENVOLVIMENTO</span>
+            </div>
+            <h1 data-i18n="app-title">🌾 Dimensionador de Fazenda Auto-Sustentável</h1>
+            <p class="subtitulo" data-i18n="app-subtitle">Planejamento completo de produção de alimentos</p>
+        </header>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE ENTRADAS -->
+        <!-- ========================================== -->
+        <section class="card">
+            <!-- Número de Pessoas -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderPessoas" data-i18n="label-pessoas">Número de Pessoas</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputPessoas" class="valor-display valor-input" value="4">
+                        <span class="unidade" data-i18n="unit-people">pessoas</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPessoas" data-step="-1" aria-label="Diminuir pessoas">−</button>
+                    <input type="range" id="sliderPessoas" min="1" max="20" step="1" value="4">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPessoas" data-step="1" aria-label="Aumentar pessoas">+</button>
+                </div>
+            </div>
+
+            <!-- Produção Mínima de Plantas por Dia -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderConsumoPlantas" data-i18n="label-consumo-plantas">Produção Mínima de Plantas (Frutas/Verduras/Legumes)</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputConsumoPlantas" class="valor-display valor-input" value="0.5">
+                        <span class="unidade" data-i18n="unit-kg-dia-pessoa">kg/dia/pessoa</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderConsumoPlantas" data-step="-0.1" aria-label="Diminuir consumo">−</button>
+                    <input type="range" id="sliderConsumoPlantas" min="0.1" max="2.0" step="0.1" value="0.5">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderConsumoPlantas" data-step="0.1" aria-label="Aumentar consumo">+</button>
+                </div>
+                <p class="dica" data-i18n="dica-consumo-plantas">💡 Total de plantas (frutas + verduras + legumes) por pessoa por dia</p>
+            </div>
+
+            <!-- Produção Mínima de Proteínas por Dia -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderConsumoProteinas" data-i18n="label-consumo-proteinas">Produção Mínima de Proteínas (Animais)</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputConsumoProteinas" class="valor-display valor-input" value="0.5">
+                        <span class="unidade" data-i18n="unit-kg-dia-pessoa">kg/dia/pessoa</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderConsumoProteinas" data-step="-0.1" aria-label="Diminuir consumo">−</button>
+                    <input type="range" id="sliderConsumoProteinas" min="0.1" max="2.0" step="0.1" value="0.5">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderConsumoProteinas" data-step="0.1" aria-label="Aumentar consumo">+</button>
+                </div>
+                <p class="dica" data-i18n="dica-consumo-proteinas">💡 Total de proteínas (ovos, leite, carne, peixe) por pessoa por dia</p>
+            </div>
+
+            <!-- Frutas -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-frutas">🍎 Frutas</label>
+                <p class="dica" data-i18n="dica-selecao">💡 Selecione os tipos que deseja cultivar</p>
+                <div class="grupo-checkbox-grid" id="grupoFrutas">
+                    <!-- Preenchido via JavaScript -->
+                </div>
+            </div>
+
+            <!-- Verduras -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-verduras">🥬 Verduras</label>
+                <div class="grupo-checkbox-grid" id="grupoVerduras">
+                    <!-- Preenchido via JavaScript -->
+                </div>
+            </div>
+
+            <!-- Legumes -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-legumes">🥕 Legumes</label>
+                <div class="grupo-checkbox-grid" id="grupoLegumes">
+                    <!-- Preenchido via JavaScript -->
+                </div>
+            </div>
+
+            <!-- Animais -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-animais">🐔 Animais</label>
+                <p class="dica" data-i18n="dica-animais">💡 Selecione os tipos que deseja criar</p>
+                <div class="grupo-checkbox-grid" id="grupoAnimais">
+                    <!-- Preenchido via JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE RESULTADOS -->
+        <!-- ========================================== -->
+        <section class="card" id="secaoResultados" style="display: none;">
+            <h2 data-i18n="titulo-resultados">📊 Resultados do Dimensionamento</h2>
+            
+            <!-- Resumo Geral -->
+            <div class="info-group">
+                <h3 data-i18n="titulo-resumo">Resumo Geral</h3>
+                <div class="resultado-item">
+                    <span data-i18n="label-area-total">Área Total Necessária:</span>
+                    <strong id="areaTotal">-</strong>
+                </div>
+                <div class="resultado-item">
+                    <span data-i18n="label-area-plantas">Área para Plantas:</span>
+                    <strong id="areaPlantas">-</strong>
+                </div>
+                <div class="resultado-item">
+                    <span data-i18n="label-area-animais">Área para Animais:</span>
+                    <strong id="areaAnimais">-</strong>
+                </div>
+            </div>
+
+            <!-- Plantas Selecionadas -->
+            <div class="info-group" id="grupoPlantas" style="display: none;">
+                <h3 data-i18n="titulo-plantas">🌱 Plantas Selecionadas</h3>
+                <div id="detalhesPlantas"></div>
+            </div>
+
+            <!-- Animais Selecionados -->
+            <div class="info-group" id="grupoAnimaisResultado" style="display: none;">
+                <h3 data-i18n="titulo-animais-resultado">🐾 Animais Selecionados</h3>
+                <div id="detalhesAnimais"></div>
+            </div>
+
+            <!-- Calendário de Plantio -->
+            <div class="info-group" id="grupoCalendario" style="display: none;">
+                <h3 data-i18n="titulo-calendario">📅 Calendário de Plantio e Colheita</h3>
+                <div id="detalhesCalendario"></div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- FOOTER -->
+        <!-- ========================================== -->
+        <footer>
+            <p data-i18n="footer-text">Engenharia NATA © 2024 - Apps Educativos de Engenharia</p>
+        </footer>
+    </div>
+
+    <!-- Botão Home Flutuante -->
+    <a href="../index.html" class="home-button-fixed" aria-label="Voltar para a página inicial">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <!-- Marca d'água "Em Desenvolvimento" -->
+    <div class="watermark-dev" data-i18n="watermark-dev">🚧 EM DESENVOLVIMENTO</div>
+
+    <script src="fazenda-script.js?v=1.0.0"></script>
+</body>
+</html>
+

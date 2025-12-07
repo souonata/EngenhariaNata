@@ -862,7 +862,9 @@ const traducoes = {
         'rec-tubulacao': 'Usar tubulação curta (máx. 8-10 m) e diâmetro de 25mm (1")',
         'memorial-titulo': 'Memorial de Cálculo',
         'footer': 'Dimensionador de Aquecedor Solar - Engenharia Nata © 2025',
-        'aria-home': 'Voltar para a tela inicial'
+        'aria-home': 'Voltar para a tela inicial',
+        'dev-badge-header': '🚧 EM DESENVOLVIMENTO',
+        'watermark-dev': '🚧 EM DESENVOLVIMENTO'
     },
     'it-IT': {
         'app-title': '☀️ Dimensionatore Riscaldatore Solare Termico',
@@ -942,7 +944,9 @@ const traducoes = {
         'rec-tubulacao': 'Usare tubazione corta (max. 8-10 m) e diametro di 25mm (1")',
         'memorial-titulo': 'Memoriale di Calcolo',
         'footer': 'Dimensionatore Riscaldatore Solare - Engenharia Nata © 2025',
-        'aria-home': 'Torna alla schermata iniziale'
+        'aria-home': 'Torna alla schermata iniziale',
+        'dev-badge-header': '🚧 IN SVILUPPO',
+        'watermark-dev': '🚧 IN SVILUPPO'
     }
 };
 

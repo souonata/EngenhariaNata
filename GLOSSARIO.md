@@ -53,6 +53,21 @@ Este glossário ajuda visitantes não técnicos e estudantes a entender os termo
 - **BTU (British Thermal Unit)** — Unidade de capacidade de refrigeração/aquecimento. Usada para dimensionar ar condicionado. 1 BTU/h ≈ 0,293 W.
 - **Capacidade de Ar Condicionado** — Potência de refrigeração necessária para manter o ambiente na temperatura desejada, medida em BTU/h.
 
+## 🌾 Agricultura e Fazenda Auto-Sustentável
+
+- **Produção por m²/ano** — Quantidade de alimento (em kg) que pode ser produzida em um metro quadrado por ano. Varia conforme o tipo de planta.
+- **Ciclo de Plantio** — Tempo (em dias) desde o plantio até a colheita. Usado para calcular frequência de plantio para manter produção contínua.
+- **Frequência de Plantio** — Intervalo entre plantios sucessivos para manter produção contínua. Calculado como metade do ciclo para garantir sobreposição.
+- **Época de Plantio** — Período do ano mais adequado para plantar cada tipo de cultura (ex.: Primavera, Verão, Ano todo).
+- **Época de Colheita** — Período do ano em que a colheita ocorre, baseado no ciclo e época de plantio.
+- **Consumo por Pessoa** — Quantidade média de alimento (kg/ano) consumida por pessoa. Usado para calcular produção necessária.
+- **Espaço por Animal** — Área mínima (m²) necessária para cada animal, considerando bem-estar e manejo adequado.
+- **Ciclo Reprodutivo** — Tempo (em dias) entre reproduções de animais. Usado para calcular frequência de reprodução.
+- **Produção Diária** — Quantidade de produto (ovos, leite) produzida por animal por dia.
+- **Produção por Ciclo** — Quantidade de produto (carne) obtida por animal em um ciclo completo (cria até abate).
+- **Tempo de Crescimento** — Período (em dias) desde o nascimento até o animal começar a produzir ou estar pronto para abate.
+- **Auto-Sustentabilidade** — Capacidade de uma fazenda produzir todos os alimentos necessários para uma família sem depender de fontes externas.
+
 ## ☀️ Energia Solar Térmica
 
 - **Coletor Solar Térmico** — Dispositivo que capta energia solar para aquecer água ou fluido. Diferente de painel fotovoltaico (que gera eletricidade).

@@ -30,6 +30,7 @@ const traducoes = {
         'app-bitola-desc': 'Calculadora de bitola de fios',
         'app-arcondicionado-desc': 'Dimensionamento de ar condicionado',
         'app-aquecimento-desc': 'Dimensionamento solar térmico',
+        'app-fazenda-desc': 'Planejamento de fazenda auto-sustentável',
         'app-about-desc': 'Informações do projeto',
 
         'calculator-title': 'Calculadora de Empréstimos',
@@ -133,6 +134,7 @@ const traducoes = {
         'app-bitola-desc': 'Calcolatrice sezione cavi',
         'app-arcondicionado-desc': 'Dimensionamento climatizzatore',
         'app-aquecimento-desc': 'Dimensionamento riscaldatore solare',
+        'app-fazenda-desc': 'Pianificazione fattoria auto-sostenibile',
         'app-about-desc': 'Informazioni sul progetto',
 
         'calculator-title': 'Calcolatrice Prestiti',

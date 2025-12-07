@@ -92,5 +92,15 @@
         <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/aquecimento/aquecimento.html"/>
     </url>
     
+    <!-- Dimensionador de Fazenda Auto-Sustentável -->
+    <url>
+        <loc>https://engnata.eu/fazenda/fazenda.html</loc>
+        <lastmod>2024-12-20</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/fazenda/fazenda.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/fazenda/fazenda.html"/>
+    </url>
+    
 </urlset>
 

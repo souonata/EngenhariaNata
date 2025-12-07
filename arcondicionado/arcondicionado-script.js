@@ -94,7 +94,9 @@ const traducoes = {
         'resultado-btu-base': 'BTU Base (Volume):',
         'info-modelos': '💡 Modelos Comerciais Comuns:',
         'footer': 'Dimensionador de Ar Condicionado - Engenharia Nata © 2025',
-        'aria-home': 'Voltar para a tela inicial'
+        'aria-home': 'Voltar para a tela inicial',
+        'dev-badge-header': '🚧 EM DESENVOLVIMENTO',
+        'watermark-dev': '🚧 EM DESENVOLVIMENTO'
     },
     'it-IT': {
         'app-title': '❄️ Dimensionatore Climatizzatore',
@@ -126,7 +128,9 @@ const traducoes = {
         'resultado-btu-base': 'BTU Base (Volume):',
         'info-modelos': '💡 Modelli Commerciali Comuni:',
         'footer': 'Dimensionatore Climatizzatore - Engenharia Nata © 2025',
-        'aria-home': 'Torna alla schermata iniziale'
+        'aria-home': 'Torna alla schermata iniziale',
+        'dev-badge-header': '🚧 IN SVILUPPO',
+        'watermark-dev': '🚧 IN SVILUPPO'
     }
 };
 

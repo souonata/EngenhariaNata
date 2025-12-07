@@ -85,6 +85,8 @@ const traducoes = {
         'app-bitola': 'Bitola',
         'app-arcondicionado': 'Ar Condicionado',
         'app-aquecimento': 'Aquecedor Solar',
+        'app-fazenda': 'Fazenda',
+        'dev-badge': 'DEV',
         'apps-description-title': 'Aplicativos Disponíveis',
         'apps-description-subtitle': 'Ferramentas práticas para cálculos de engenharia e finanças',
         'app-mutuo-title': 'Mutuo - Calculadora de Empréstimos',
@@ -99,6 +101,8 @@ const traducoes = {
         'app-arcondicionado-description': 'Calculadora para dimensionamento de ar condicionado. Determina a capacidade necessária (BTU) baseada em área, altura, número de pessoas, equipamentos e condições ambientais. Ajuda a escolher o aparelho ideal para cada ambiente.',
         'app-aquecimento-title': 'Aquecedor Solar - Dimensionamento Térmico',
         'app-aquecimento-description': 'Dimensionador completo de sistemas de aquecimento solar térmico. Calcula área de coletores, volume do boiler, número de painéis e potência necessária. Suporta aquecimento de água de consumo e aquecimento ambiente, considerando classes energéticas e dias de autonomia.',
+        'app-fazenda-title': 'Fazenda - Dimensionamento Auto-Sustentável',
+        'app-fazenda-description': 'Planejador completo de fazenda auto-sustentável. Calcula espaço necessário, quantidade de plantas (frutas, verduras, legumes) e animais necessários para alimentar uma família. Inclui calendário de plantio/colheita e frequência de reprodução dos animais para manter produção contínua.',
         'app-link-use': 'Usar calculadora →',
         
         // Dias da semana por extenso (minúscula)
@@ -136,6 +140,8 @@ const traducoes = {
         'app-bitola': 'Sezione Cavi',
         'app-arcondicionado': 'Climatizzatore',
         'app-aquecimento': 'Riscaldatore Solare',
+        'app-fazenda': 'Fattoria',
+        'dev-badge': 'DEV',
         'apps-description-title': 'Applicazioni Disponibili',
         'apps-description-subtitle': 'Strumenti pratici per calcoli di ingegneria e finanza',
         'app-mutuo-title': 'Mutuo - Calcolatrice di Prestiti',
@@ -150,6 +156,8 @@ const traducoes = {
         'app-arcondicionado-description': 'Calcolatrice per il dimensionamento del climatizzatore. Determina la capacità necessaria (BTU) basata su area, altezza, numero di persone, apparecchiature e condizioni ambientali. Aiuta a scegliere l\'apparecchio ideale per ogni ambiente.',
         'app-aquecimento-title': 'Riscaldatore Solare - Dimensionamento Termico',
         'app-aquecimento-description': 'Dimensionatore completo di sistemi di riscaldamento solare termico. Calcola l\'area dei collettori, volume del boiler, numero di pannelli e potenza necessaria. Supporta riscaldamento dell\'acqua sanitaria e riscaldamento ambiente, considerando classi energetiche e giorni di autonomia.',
+        'app-fazenda-title': 'Fattoria - Dimensionamento Auto-Sostenibile',
+        'app-fazenda-description': 'Pianificatore completo di fattoria auto-sostenibile. Calcola lo spazio necessario, quantità di piante (frutta, verdura, legumi) e animali necessari per nutrire una famiglia. Include calendario di semina/raccolta e frequenza di riproduzione degli animali per mantenere produzione continua.',
         'app-link-use': 'Usa calcolatrice →',
         
         // Dias da semana por extenso em italiano (minúscula)

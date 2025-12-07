@@ -1,0 +1,264 @@
+/* fazenda-styles.css - Estilos específicos do app Fazenda */
+
+:root {
+    --accent-color: #8b6f47;
+    --accent-secondary: #a67c52;
+    --site-bg: #6b8e5a;
+    --site-bottom-padding: 110px;
+}
+
+body {
+    background: var(--site-bg);
+    padding-bottom: var(--site-bottom-padding);
+    position: relative;
+}
+
+.container {
+    position: relative;
+    z-index: 10;
+}
+
+/* Badge "Em Desenvolvimento" no cabeçalho */
+.dev-badge-header {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.dev-badge-text {
+    display: inline-block;
+    background: #ff6b35;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid white;
+}
+
+@media (max-width: 480px) {
+    .dev-badge-text {
+        font-size: 0.65rem;
+        padding: 5px 10px;
+    }
+}
+
+/* Garantir centralização dos títulos dos grupos */
+.grupo-entrada > label {
+    text-align: center !important;
+    display: block;
+    width: 100%;
+}
+
+/* Grid de checkboxes para seleção de alimentos */
+.grupo-checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.opcao-checkbox {
+    display: block;
+    cursor: pointer;
+}
+
+.cartao-checkbox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 8px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    transition: all 0.3s ease;
+    text-align: center;
+    min-height: 80px;
+}
+
+.opcao-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.opcao-checkbox input[type="checkbox"]:checked + .cartao-checkbox {
+    border-color: var(--accent-color);
+    background: #f5e6d3;
+    box-shadow: 0 4px 10px rgba(139, 111, 71, 0.2);
+}
+
+.icone-produto {
+    font-size: 1.8rem;
+    display: block;
+    margin-bottom: 4px;
+    line-height: 1;
+}
+
+.rotulo-checkbox {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.descricao-checkbox {
+    font-size: 0.75rem;
+    color: #666;
+}
+
+/* Resultados */
+.resultado-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.resultado-item:last-child {
+    border-bottom: none;
+}
+
+.resultado-item strong {
+    color: var(--accent-color);
+    font-size: 1.1rem;
+}
+
+/* Detalhes de plantas e animais */
+.detalhe-item {
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border-left: 4px solid var(--accent-color);
+}
+
+.detalhe-item h4 {
+    margin: 0 0 8px 0;
+    color: var(--accent-color);
+    font-size: 1rem;
+}
+
+.detalhe-item p {
+    margin: 4px 0;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.detalhe-item .valor-destaque {
+    font-weight: bold;
+    color: var(--accent-secondary);
+}
+
+/* Calendário */
+.calendario-item {
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border-left: 4px solid #4caf50;
+}
+
+.calendario-item h4 {
+    margin: 0 0 6px 0;
+    color: #2e7d32;
+    font-size: 0.95rem;
+}
+
+.calendario-item p {
+    margin: 3px 0;
+    font-size: 0.85rem;
+    color: #555;
+}
+
+/* Ajuste de largura para inputs */
+#inputPessoas {
+    min-width: 40px;
+    max-width: 50px;
+    width: 50px;
+}
+
+#inputConsumoPlantas,
+#inputConsumoProteinas {
+    min-width: 50px;
+    max-width: 60px;
+    width: 60px;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+    .grupo-checkbox-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 8px;
+    }
+    
+    .cartao-checkbox {
+        min-height: 70px;
+        padding: 10px 6px;
+    }
+    
+    .rotulo-checkbox {
+        font-size: 0.85rem;
+    }
+    
+    .descricao-checkbox {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .grupo-checkbox-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    opacity: 0.9;
+    margin-top: 20px;
+}
+
+footer p {
+    margin: 0;
+    font-size: 0.85rem;
+}
+
+/* Marca d'água "Em Desenvolvimento" */
+.watermark-dev {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 4rem;
+    font-weight: bold;
+    color: rgba(255, 107, 53, 0.4);
+    z-index: 0;
+    pointer-events: none;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 12px;
+    user-select: none;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+@media (max-width: 768px) {
+    .watermark-dev {
+        font-size: 3rem;
+        letter-spacing: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .watermark-dev {
+        font-size: 2.5rem;
+        letter-spacing: 6px;
+    }
+}
+
