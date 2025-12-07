@@ -1,0 +1,304 @@
+/* ============================================
+   ESTILOS DO APP AQUECEDOR SOLAR
+   ============================================ */
+
+/* Variáveis CSS para personalização do tema */
+:root { 
+    --home-bg: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%); 
+    --home-shadow: rgba(102, 126, 234, 0.4); 
+    --home-size: 50px; 
+    --home-size-mobile: 40px;
+    --accent-color: #2d9fa3ff;
+    --control-accent: #2d9fa3ff;
+    --control-accent-secondary: #667eea;
+    --lang-btn-bg: rgba(255,255,255,0.2); 
+    --lang-btn-border: rgba(255,255,255,0.3); 
+    --lang-btn-hover: rgba(255,255,255,0.3); 
+}
+
+/* ============================================
+   RESET E CONFIGURAÇÕES GLOBAIS
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    overflow-x: hidden;
+    width: 100%;
+    touch-action: pan-y;
+}
+
+body {
+    /* Cor de fundo do tema Aquecedor Solar (padrão) */
+    background: var(--site-bg, #4e7262);
+    min-height: 100vh;
+    padding: 8px;
+    padding-bottom: var(--site-bottom-padding, 110px);
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+}
+
+/* ============================================
+   CONTAINER PRINCIPAL
+   ============================================ */
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 12px;
+}
+
+/* ============================================
+   CABEÇALHO
+   ============================================ */
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 12px;
+    padding: 8px 0;
+}
+
+header h1 {
+    font-size: 1.5rem;
+    margin: 8px 0 4px 0;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.subtitulo {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card h2 {
+    font-size: 1.1rem;
+    color: #2d9fa3ff;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+/* ============================================
+   RESULTADOS
+   ============================================ */
+.resultados {
+    background: white;
+}
+
+.valor-resultado {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2d9fa3ff;
+}
+
+.resultado-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.resultado-item:last-child {
+    border-bottom: none;
+}
+
+.resultado-item.destaque {
+    background: linear-gradient(135deg, #2d9fa3ff 0%, #1e7e82 100%);
+    color: white;
+    padding: 16px;
+    border-radius: 8px;
+    margin: 12px 0;
+    border-bottom: none;
+}
+
+.label-resultado {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.resultado-item.destaque .label-resultado {
+    color: white;
+    font-weight: 600;
+}
+
+.resultado-item.destaque .valor-resultado {
+    color: white;
+}
+
+.valor-resultado-grande {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d9fa3ff;
+}
+
+.resultado-item.destaque .valor-resultado-grande {
+    color: white;
+    font-size: 1.8rem;
+}
+
+/* ============================================
+   INFO BOX
+   ============================================ */
+.info-box {
+    background: #e0f7fa;
+    border-left: 4px solid #2d9fa3ff;
+    padding: 12px;
+    margin-top: 16px;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.85rem;
+}
+
+.info-box p {
+    margin: 0 0 8px 0;
+    color: #2d9fa3ff;
+    font-weight: 600;
+}
+
+.info-box ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #333;
+}
+
+.info-box li {
+    margin-bottom: 4px;
+}
+
+/* ============================================
+   ESTILOS ESPECÍFICOS PARA MODELO DE COLETOR
+   ============================================ */
+.modelo-referencia {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.cartao-modelo-referencia {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    min-width: 0;
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    border: 2px solid var(--accent-color, #2d9fa3ff);
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(45, 159, 163, 0.15);
+}
+
+.modelo-imagem {
+    width: 100%;
+    height: 120px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.modelo-imagem svg {
+    width: 100%;
+    height: 100%;
+    max-width: 200px;
+    max-height: 120px;
+}
+
+.opcao-radio input:checked + .cartao-radio-modelo .modelo-imagem {
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+    border-color: var(--accent-color, #2d9fa3ff);
+}
+
+.modelo-header {
+    text-align: center;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.modelo-detalhes {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.detalhe-linha {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+.detalhe-label {
+    color: #666;
+    font-weight: 500;
+}
+
+.detalhe-valor {
+    color: #333;
+    font-weight: 600;
+}
+
+.opcao-radio input:checked + .cartao-radio-modelo {
+    border-color: var(--accent-color, #2d9fa3ff);
+    background-color: #e0f7fa;
+    box-shadow: 0 4px 10px rgba(45, 159, 163, 0.2);
+}
+
+.opcao-radio input:checked + .cartao-radio-modelo .modelo-header {
+    border-bottom-color: rgba(45, 159, 163, 0.3);
+}
+
+.opcao-radio input:checked + .cartao-radio-modelo .detalhe-valor {
+    color: var(--accent-color, #2d9fa3ff);
+}
+
+/* Layout responsivo - em telas maiores, mostrar lado a lado */
+@media (min-width: 600px) {
+    .grupo-radio-modelos {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: stretch;
+    }
+    
+    .opcao-radio-modelo {
+        flex: 1;
+        min-width: 180px;
+        max-width: 280px;
+    }
+}
+
+/* Ajustes para telas muito pequenas */
+@media (max-width: 400px) {
+    .cartao-radio-modelo {
+        padding: 10px;
+    }
+    
+    .detalhe-linha {
+        font-size: 0.8rem;
+    }
+}
+
+/* Typography moved to shared-styles.css */
+

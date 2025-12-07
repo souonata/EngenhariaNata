@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <title>Dimensionador de Ar Condicionado</title>
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.0">
+    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.0">
+    <link rel="stylesheet" href="arcondicionado-styles.css?v=1.0.0">
+</head>
+<body>
+    <div class="container">
+        <!-- ========================================== -->
+        <!-- CABEÇALHO COM SELETOR DE IDIOMA -->
+        <!-- ========================================== -->
+        <header>
+            <div class="language-selector">
+                <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">
+                    <span class="flag">🇧🇷</span>
+                    <span class="lang-text">Português</span>
+                </button>
+                <button id="btnItaliano" class="lang-btn" data-lang="it-IT">
+                    <span class="flag">🇮🇹</span>
+                    <span class="lang-text">Italiano</span>
+                </button>
+            </div>
+            <h1 data-i18n="app-title">❄️ Dimensionador de Ar Condicionado</h1>
+            <p class="subtitulo" data-i18n="app-subtitle">Cálculo de BTU para Ambientes Residenciais</p>
+        </header>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE ENTRADAS -->
+        <!-- ========================================== -->
+        <section class="card">
+            <!-- Área do Ambiente -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderArea" data-i18n="label-area">Área do Ambiente</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputArea" class="valor-display valor-input" value="20">
+                        <span class="unidade" data-i18n="unit-m2">m²</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderArea" data-step="-1" aria-label="Diminuir área">−</button>
+                    <input type="range" id="sliderArea" min="5" max="100" step="1" value="20">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderArea" data-step="1" aria-label="Aumentar área">+</button>
+                </div>
+            </div>
+
+            <!-- Altura do Pé Direito -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderAltura" data-i18n="label-altura">Altura do Pé Direito</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputAltura" class="valor-display valor-input" value="2,7">
+                        <span class="unidade" data-i18n="unit-meter">m</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderAltura" data-step="-0.1" aria-label="Diminuir altura">−</button>
+                    <input type="range" id="sliderAltura" min="2.0" max="4.0" step="0.1" value="2.7">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderAltura" data-step="0.1" aria-label="Aumentar altura">+</button>
+                </div>
+                <p class="dica" data-i18n="dica-altura">💡 Altura padrão residencial: 2,7m</p>
+            </div>
+
+            <!-- Número de Pessoas -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderPessoas" data-i18n="label-pessoas">Número de Pessoas</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputPessoas" class="valor-display valor-input" value="2">
+                        <span class="unidade" data-i18n="unit-people">pessoas</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPessoas" data-step="-1" aria-label="Diminuir pessoas">−</button>
+                    <input type="range" id="sliderPessoas" min="1" max="10" step="1" value="2">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPessoas" data-step="1" aria-label="Aumentar pessoas">+</button>
+                </div>
+            </div>
+
+            <!-- Equipamentos Elétricos -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderEquipamentos" data-i18n="label-equipamentos">Equipamentos Elétricos</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputEquipamentos" class="valor-display valor-input" value="2">
+                        <span class="unidade" data-i18n="unit-devices">unidades</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderEquipamentos" data-step="-1" aria-label="Diminuir equipamentos">−</button>
+                    <input type="range" id="sliderEquipamentos" min="0" max="10" step="1" value="2">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderEquipamentos" data-step="1" aria-label="Aumentar equipamentos">+</button>
+                </div>
+                <p class="dica" data-i18n="dica-equipamentos">💡 TV, computador, geladeira, etc. (cada um conta como 1 unidade)</p>
+            </div>
+
+            <!-- Insolação -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-insolacao">Insolação (Exposição ao Sol)</label>
+                <div class="grupo-radio">
+                    <label class="opcao-radio">
+                        <input type="radio" name="insolacao" value="baixa" checked>
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opt-baixa">Baixa</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="insolacao" value="media">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opt-media">Média</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="insolacao" value="alta">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opt-alta">Alta</span>
+                        </div>
+                    </label>
+                </div>
+                <p class="dica" data-i18n="dica-insolacao">💡 Alta = muitas janelas voltadas para o sol; Baixa = pouca exposição solar</p>
+            </div>
+
+            <!-- Isolamento Térmico -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-isolamento">Isolamento Térmico</label>
+                <div class="grupo-radio">
+                    <label class="opcao-radio">
+                        <input type="radio" name="isolamento" value="ruim">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opt-ruim">Ruim</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="isolamento" value="medio" checked>
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opt-medio">Médio</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="isolamento" value="bom">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opt-bom">Bom</span>
+                        </div>
+                    </label>
+                </div>
+                <p class="dica" data-i18n="dica-isolamento">💡 Bom = isolamento adequado; Ruim = sem isolamento ou muitas aberturas</p>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE RESULTADOS -->
+        <!-- ========================================== -->
+        <section class="card resultados">
+            <h2 data-i18n="resultados-title">📊 Resultados</h2>
+            
+            <div class="resultado-item destaque">
+                <span class="label-resultado" data-i18n="resultado-btu">Capacidade Recomendada:</span>
+                <span class="valor-resultado-grande" id="btuRecomendado">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-potencia">Potência Equivalente:</span>
+                <span class="valor-resultado" id="potenciaKw">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-volume">Volume do Ambiente:</span>
+                <span class="valor-resultado" id="volumeAmbiente">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-btu-base">BTU Base (Volume):</span>
+                <span class="valor-resultado" id="btuBase">-</span>
+            </div>
+
+            <div class="info-box">
+                <p data-i18n="info-modelos">💡 <strong>Modelos Comerciais Comuns:</strong></p>
+                <ul id="modelosComerciais">
+                    <li>7.000 BTU - até 10 m²</li>
+                    <li>9.000 BTU - até 15 m²</li>
+                    <li>12.000 BTU - até 20 m²</li>
+                    <li>18.000 BTU - até 30 m²</li>
+                    <li>24.000 BTU - até 40 m²</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p data-i18n="footer">Dimensionador de Ar Condicionado - Engenharia Nata © 2025</p>
+    </footer>
+
+    <!-- Botão de retorno à tela inicial -->
+    <a href="../index.html" class="home-button-fixed" aria-label="Voltar à tela inicial">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <!-- Scripts -->
+    <script src="../assets/js/site-config.js?v=1.0.0"></script>
+    <script src="arcondicionado-script.js?v=1.0.0"></script>
+</body>
+</html>
+

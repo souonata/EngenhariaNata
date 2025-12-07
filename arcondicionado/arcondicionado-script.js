@@ -1,0 +1,599 @@
+// ============================================
+// DIMENSIONADOR DE AR CONDICIONADO RESIDENCIAL
+// ============================================
+//
+// Comentários didáticos em Português - Visão geral do algoritmo
+// -------------------------------------------------------------
+// Objetivo: calcular a capacidade necessária de ar condicionado (em BTU)
+// para um ambiente residencial baseado em vários fatores:
+//  - Volume do ambiente (área × altura)
+//  - Número de pessoas
+//  - Equipamentos elétricos
+//  - Insolação (exposição ao sol)
+//  - Isolamento térmico
+//
+// Fórmula base:
+// BTU = (Volume × 600) + (Pessoas × 600) + (Equipamentos × 600)
+// BTU Final = BTU Base × Fator Insolação × Fator Isolamento
+//
+// Fatores:
+// - Insolação: Baixa (1.0), Média (1.15), Alta (1.3)
+// - Isolamento: Bom (0.8), Médio (1.0), Ruim (1.2)
+
+// ============================================
+// CONFIGURAÇÃO DE CHAVES E SELETORES
+// ============================================
+const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
+const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
+let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
+
+// ============================================
+// CONSTANTES DO SISTEMA
+// ============================================
+
+// BTU por metro cúbico (base para cálculo de volume)
+const BTU_POR_M3 = 600;
+
+// BTU por pessoa
+const BTU_POR_PESSOA = 600;
+
+// BTU por equipamento elétrico
+const BTU_POR_EQUIPAMENTO = 600;
+
+// Fatores de insolação
+const FATORES_INSOLACAO = {
+    baixa: 1.0,    // Pouca exposição solar
+    media: 1.15,   // Exposição solar moderada
+    alta: 1.3      // Muita exposição solar
+};
+
+// Fatores de isolamento térmico
+const FATORES_ISOLAMENTO = {
+    bom: 0.8,      // Bom isolamento (reduz necessidade)
+    medio: 1.0,    // Isolamento médio (padrão)
+    ruim: 1.2      // Isolamento ruim (aumenta necessidade)
+};
+
+// Modelos comerciais de ar condicionado (BTU)
+const MODELOS_COMERCIAIS = [7000, 9000, 12000, 18000, 24000, 30000, 36000, 48000, 60000];
+
+// Conversão BTU para kW (1 BTU/h ≈ 0.000293 kW)
+const BTU_PARA_KW = 0.000293;
+
+// ============================================
+// DICIONÁRIO DE TRADUÇÕES
+// ============================================
+const traducoes = {
+    'pt-BR': {
+        'app-title': '❄️ Dimensionador de Ar Condicionado',
+        'app-subtitle': 'Cálculo de BTU para Ambientes Residenciais',
+        'label-area': 'Área do Ambiente',
+        'label-altura': 'Altura do Pé Direito',
+        'label-pessoas': 'Número de Pessoas',
+        'label-equipamentos': 'Equipamentos Elétricos',
+        'label-insolacao': 'Insolação (Exposição ao Sol)',
+        'label-isolamento': 'Isolamento Térmico',
+        'unit-m2': 'm²',
+        'unit-meter': 'm',
+        'unit-people': 'pessoas',
+        'unit-devices': 'unidades',
+        'opt-baixa': 'Baixa',
+        'opt-media': 'Média',
+        'opt-alta': 'Alta',
+        'opt-ruim': 'Ruim',
+        'opt-medio': 'Médio',
+        'opt-bom': 'Bom',
+        'dica-altura': '💡 Altura padrão residencial: 2,7m',
+        'dica-equipamentos': '💡 TV, computador, geladeira, etc. (cada um conta como 1 unidade)',
+        'dica-insolacao': '💡 Alta = muitas janelas voltadas para o sol; Baixa = pouca exposição solar',
+        'dica-isolamento': '💡 Bom = isolamento adequado; Ruim = sem isolamento ou muitas aberturas',
+        'resultados-title': '📊 Resultados',
+        'resultado-btu': 'Capacidade Recomendada:',
+        'resultado-potencia': 'Potência Equivalente:',
+        'resultado-volume': 'Volume do Ambiente:',
+        'resultado-btu-base': 'BTU Base (Volume):',
+        'info-modelos': '💡 Modelos Comerciais Comuns:',
+        'footer': 'Dimensionador de Ar Condicionado - Engenharia Nata © 2025',
+        'aria-home': 'Voltar para a tela inicial'
+    },
+    'it-IT': {
+        'app-title': '❄️ Dimensionatore Climatizzatore',
+        'app-subtitle': 'Calcolo BTU per Ambienti Residenziali',
+        'label-area': 'Area Ambiente',
+        'label-altura': 'Altezza Soffitto',
+        'label-pessoas': 'Numero Persone',
+        'label-equipamentos': 'Apparecchi Elettrici',
+        'label-insolacao': 'Insolazione (Esposizione Sole)',
+        'label-isolamento': 'Isolamento Termico',
+        'unit-m2': 'm²',
+        'unit-meter': 'm',
+        'unit-people': 'persone',
+        'unit-devices': 'unità',
+        'opt-baixa': 'Bassa',
+        'opt-media': 'Media',
+        'opt-alta': 'Alta',
+        'opt-ruim': 'Scarso',
+        'opt-medio': 'Medio',
+        'opt-bom': 'Buono',
+        'dica-altura': '💡 Altezza standard residenziale: 2,7m',
+        'dica-equipamentos': '💡 TV, computer, frigorifero, ecc. (ognuno conta come 1 unità)',
+        'dica-insolacao': '💡 Alta = molte finestre esposte al sole; Bassa = poca esposizione solare',
+        'dica-isolamento': '💡 Buono = isolamento adeguato; Scarso = senza isolamento o molte aperture',
+        'resultados-title': '📊 Risultati',
+        'resultado-btu': 'Capacità Consigliata:',
+        'resultado-potencia': 'Potenza Equivalente:',
+        'resultado-volume': 'Volume Ambiente:',
+        'resultado-btu-base': 'BTU Base (Volume):',
+        'info-modelos': '💡 Modelli Commerciali Comuni:',
+        'footer': 'Dimensionatore Climatizzatore - Engenharia Nata © 2025',
+        'aria-home': 'Torna alla schermata iniziale'
+    }
+};
+
+// ============================================
+// FUNÇÕES DE CÁLCULO
+// ============================================
+
+/**
+ * Calcula o BTU necessário para o ambiente
+ * @param {number} area - Área do ambiente em m²
+ * @param {number} altura - Altura do pé direito em metros
+ * @param {number} pessoas - Número de pessoas
+ * @param {number} equipamentos - Número de equipamentos elétricos
+ * @param {string} insolacao - Nível de insolação ('baixa', 'media', 'alta')
+ * @param {string} isolamento - Nível de isolamento ('bom', 'medio', 'ruim')
+ * @returns {Object} Objeto com BTU recomendado, potência em kW, volume e BTU base
+ */
+function calcularBTU(area, altura, pessoas, equipamentos, insolacao, isolamento) {
+    // PASSO 1: Calcular volume do ambiente
+    const volume = area * altura; // m³
+    
+    // PASSO 2: Calcular BTU base (volume × 600 BTU/m³)
+    const btuVolume = volume * BTU_POR_M3;
+    
+    // PASSO 3: Adicionar BTU por pessoas
+    const btuPessoas = pessoas * BTU_POR_PESSOA;
+    
+    // PASSO 4: Adicionar BTU por equipamentos
+    const btuEquipamentos = equipamentos * BTU_POR_EQUIPAMENTO;
+    
+    // PASSO 5: Calcular BTU base total (antes dos fatores)
+    const btuBase = btuVolume + btuPessoas + btuEquipamentos;
+    
+    // PASSO 6: Aplicar fatores de insolação e isolamento
+    const fatorInsolacao = FATORES_INSOLACAO[insolacao] || 1.0;
+    const fatorIsolamento = FATORES_ISOLAMENTO[isolamento] || 1.0;
+    
+    // PASSO 7: Calcular BTU final
+    const btuFinal = btuBase * fatorInsolacao * fatorIsolamento;
+    
+    // PASSO 8: Selecionar modelo comercial mais próximo (arredondar para cima)
+    const btuRecomendado = selecionarModeloComercial(btuFinal);
+    
+    // PASSO 9: Converter para kW
+    const potenciaKw = btuRecomendado * BTU_PARA_KW;
+    
+    return {
+        btuRecomendado: btuRecomendado,
+        potenciaKw: potenciaKw,
+        volume: volume,
+        btuBase: btuBase
+    };
+}
+
+/**
+ * Seleciona o modelo comercial de ar condicionado mais próximo
+ * Sempre arredonda para cima (modelo maior ou igual)
+ * @param {number} btuNecessario - BTU necessário calculado
+ * @returns {number} BTU do modelo comercial recomendado
+ */
+function selecionarModeloComercial(btuNecessario) {
+    // Percorre os modelos comerciais do menor para o maior
+    // Retorna o primeiro que seja maior ou igual ao necessário
+    for (let i = 0; i < MODELOS_COMERCIAIS.length; i++) {
+        if (MODELOS_COMERCIAIS[i] >= btuNecessario) {
+            return MODELOS_COMERCIAIS[i];
+        }
+    }
+    
+    // Se nenhum modelo atender, retorna o maior disponível
+    return MODELOS_COMERCIAIS[MODELOS_COMERCIAIS.length - 1];
+}
+
+/**
+ * Converte string numérica para número, aceitando tanto ponto quanto vírgula como decimal
+ * @param {string} valorTexto - Valor como string (pode ter ponto ou vírgula)
+ * @returns {number} Valor numérico
+ */
+function converterParaNumero(valorTexto) {
+    if (!valorTexto) return NaN;
+    // Substitui vírgula por ponto para parseFloat funcionar
+    const valorLimpo = valorTexto.toString().replace(',', '.');
+    return parseFloat(valorLimpo);
+}
+
+/**
+ * Formata número com separador de milhares
+ * @param {number} valor - Valor numérico
+ * @returns {string} Valor formatado
+ */
+function formatarNumero(valor) {
+    if (isNaN(valor) || valor === null || valor === undefined) return '-';
+    // Usa 'pt-BR' para garantir vírgula como separador decimal
+    return valor.toLocaleString('pt-BR', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    });
+}
+
+/**
+ * Formata número com casas decimais
+ * Sempre usa vírgula como separador decimal (padrão brasileiro)
+ * @param {number} valor - Valor numérico
+ * @param {number} decimais - Número de casas decimais
+ * @returns {string} Valor formatado com vírgula
+ */
+function formatarDecimal(valor, decimais = 1) {
+    if (isNaN(valor) || valor === null || valor === undefined) return '-';
+    // Usa 'pt-BR' para garantir vírgula como separador decimal
+    const formatado = valor.toLocaleString('pt-BR', {
+        minimumFractionDigits: decimais,
+        maximumFractionDigits: decimais
+    });
+    return formatado;
+}
+
+/**
+ * Atualiza os resultados na interface
+ */
+function atualizarResultados() {
+    // Obtém valores dos inputs ou sliders
+    const inputArea = document.getElementById('inputArea');
+    const inputAltura = document.getElementById('inputAltura');
+    const inputPessoas = document.getElementById('inputPessoas');
+    const inputEquipamentos = document.getElementById('inputEquipamentos');
+    
+    const sliderArea = document.getElementById('sliderArea');
+    const sliderAltura = document.getElementById('sliderAltura');
+    const sliderPessoas = document.getElementById('sliderPessoas');
+    const sliderEquipamentos = document.getElementById('sliderEquipamentos');
+    
+    // Lê valores dos inputs ou sliders (inputs têm prioridade se válidos)
+    let area = parseFloat(sliderArea.value);
+    if (inputArea && inputArea.value) {
+        const valorConvertido = converterParaNumero(inputArea.value);
+        if (!isNaN(valorConvertido) && valorConvertido > 0) {
+            area = valorConvertido;
+        }
+    }
+    
+    let altura = parseFloat(sliderAltura.value);
+    if (inputAltura && inputAltura.value) {
+        const valorConvertido = converterParaNumero(inputAltura.value);
+        if (!isNaN(valorConvertido) && valorConvertido > 0) {
+            altura = valorConvertido;
+        }
+    }
+    
+    let pessoas = parseInt(sliderPessoas.value);
+    if (inputPessoas && inputPessoas.value && !isNaN(parseInt(inputPessoas.value))) {
+        pessoas = parseInt(inputPessoas.value);
+    }
+    
+    let equipamentos = parseInt(sliderEquipamentos.value);
+    if (inputEquipamentos && inputEquipamentos.value && !isNaN(parseInt(inputEquipamentos.value))) {
+        equipamentos = parseInt(inputEquipamentos.value);
+    }
+    
+    // Obtém valores dos radio buttons
+    const insolacao = document.querySelector('input[name="insolacao"]:checked')?.value || 'media';
+    const isolamento = document.querySelector('input[name="isolamento"]:checked')?.value || 'medio';
+    
+    // Calcula o BTU
+    const resultado = calcularBTU(area, altura, pessoas, equipamentos, insolacao, isolamento);
+    
+    // Atualiza os displays
+    document.getElementById('btuRecomendado').textContent = formatarNumero(resultado.btuRecomendado) + ' BTU';
+    document.getElementById('potenciaKw').textContent = formatarDecimal(resultado.potenciaKw, 2) + ' kW';
+    document.getElementById('volumeAmbiente').textContent = formatarDecimal(resultado.volume, 1) + ' m³';
+    document.getElementById('btuBase').textContent = formatarNumero(Math.round(resultado.btuBase)) + ' BTU';
+    
+    // Atualiza lista de modelos comerciais com destaque para o recomendado
+    atualizarModelosComerciais(resultado.btuRecomendado);
+}
+
+/**
+ * Atualiza a lista de modelos comerciais destacando o recomendado
+ * @param {number} btuRecomendado - BTU do modelo recomendado
+ */
+function atualizarModelosComerciais(btuRecomendado) {
+    const lista = document.getElementById('modelosComerciais');
+    if (!lista) return;
+    
+    lista.innerHTML = '';
+    
+    const modelosTexto = {
+        'pt-BR': {
+            7000: '7.000 BTU - até 10 m²',
+            9000: '9.000 BTU - até 15 m²',
+            12000: '12.000 BTU - até 20 m²',
+            18000: '18.000 BTU - até 30 m²',
+            24000: '24.000 BTU - até 40 m²',
+            30000: '30.000 BTU - até 50 m²',
+            36000: '36.000 BTU - até 60 m²',
+            48000: '48.000 BTU - até 80 m²',
+            60000: '60.000 BTU - até 100 m²'
+        },
+        'it-IT': {
+            7000: '7.000 BTU - fino a 10 m²',
+            9000: '9.000 BTU - fino a 15 m²',
+            12000: '12.000 BTU - fino a 20 m²',
+            18000: '18.000 BTU - fino a 30 m²',
+            24000: '24.000 BTU - fino a 40 m²',
+            30000: '30.000 BTU - fino a 50 m²',
+            36000: '36.000 BTU - fino a 60 m²',
+            48000: '48.000 BTU - fino a 80 m²',
+            60000: '60.000 BTU - fino a 100 m²'
+        }
+    };
+    
+    const textos = modelosTexto[idiomaAtual] || modelosTexto['pt-BR'];
+    
+    MODELOS_COMERCIAIS.forEach(modelo => {
+        const li = document.createElement('li');
+        const texto = textos[modelo] || `${formatarNumero(modelo)} BTU`;
+        
+        if (modelo === btuRecomendado) {
+            li.innerHTML = `<strong style="color: #1976D2;">${texto} ✅ Recomendado</strong>`;
+        } else {
+            li.textContent = texto;
+        }
+        
+        lista.appendChild(li);
+    });
+}
+
+/**
+ * Troca o idioma da interface
+ * @param {string} novoIdioma - Código do idioma ('pt-BR' ou 'it-IT')
+ */
+function trocarIdioma(novoIdioma) {
+    idiomaAtual = novoIdioma;
+    localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
+    document.documentElement.lang = novoIdioma;
+    
+    // Atualiza textos traduzidos
+    document.querySelectorAll('[data-i18n]').forEach(elemento => {
+        const chave = elemento.getAttribute('data-i18n');
+        if (traducoes[novoIdioma][chave]) {
+            elemento.textContent = traducoes[novoIdioma][chave];
+        }
+    });
+    
+    // Atualiza botões de idioma
+    document.querySelectorAll(SITE_SEL.LANG_BTN).forEach(btn => {
+        if (btn.getAttribute('data-lang') === novoIdioma) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    
+    // Atualiza modelos comerciais
+    const inputArea = document.getElementById('inputArea');
+    const area = inputArea ? parseFloat(inputArea.value) || parseFloat(document.getElementById('sliderArea').value) : parseFloat(document.getElementById('sliderArea').value);
+    const altura = parseFloat(document.getElementById('sliderAltura').value);
+    const pessoas = parseInt(document.getElementById('sliderPessoas').value);
+    const equipamentos = parseInt(document.getElementById('sliderEquipamentos').value);
+    const insolacao = document.querySelector('input[name="insolacao"]:checked')?.value || 'media';
+    const isolamento = document.querySelector('input[name="isolamento"]:checked')?.value || 'medio';
+    const resultado = calcularBTU(area, altura, pessoas, equipamentos, insolacao, isolamento);
+    atualizarModelosComerciais(resultado.btuRecomendado);
+    
+    // Atualiza aria-label do botão home
+    const homeLabel = traducoes[novoIdioma]['aria-home'] || 'Home';
+    document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
+}
+
+/**
+ * Ajusta o valor de um slider usando botões de seta
+ * @param {string} targetId - ID do slider
+ * @param {number} step - Valor do incremento/decremento
+ */
+function ajustarValor(targetId, step) {
+    const slider = document.getElementById(targetId);
+    if (!slider) return;
+    
+    let valor = parseFloat(slider.value) || 0;
+    const min = parseFloat(slider.min) || 0;
+    const max = parseFloat(slider.max) || 100;
+    const stepAttr = parseFloat(slider.step) || 1;
+    
+    valor += step;
+    valor = Math.round(valor / stepAttr) * stepAttr;
+    valor = Math.max(min, Math.min(max, valor));
+    
+    slider.value = valor;
+    slider.dispatchEvent(new Event('input'));
+}
+
+// Controle para botões de seta (repetição ao segurar)
+let intervalId = null;
+let timeoutId = null;
+
+// ============================================
+// INICIALIZAÇÃO
+// ============================================
+document.addEventListener('DOMContentLoaded', function() {
+    // Configurar botões de idioma
+    document.getElementById('btnPortugues')?.addEventListener('click', () => trocarIdioma('pt-BR'));
+    document.getElementById('btnItaliano')?.addEventListener('click', () => trocarIdioma('it-IT'));
+    
+    // Inicializar idioma
+    trocarIdioma(idiomaAtual);
+    
+    // Configurar sliders
+    const sliderArea = document.getElementById('sliderArea');
+    const sliderAltura = document.getElementById('sliderAltura');
+    const sliderPessoas = document.getElementById('sliderPessoas');
+    const sliderEquipamentos = document.getElementById('sliderEquipamentos');
+    
+    sliderArea.addEventListener('input', () => {
+        const valor = parseFloat(sliderArea.value);
+        const inputArea = document.getElementById('inputArea');
+        if (inputArea) inputArea.value = Math.round(valor);
+        atualizarResultados();
+    });
+    
+    sliderAltura.addEventListener('input', () => {
+        const valor = parseFloat(sliderAltura.value);
+        const inputAltura = document.getElementById('inputAltura');
+        if (inputAltura) {
+            // Formata com vírgula usando formatarDecimal
+            inputAltura.value = formatarDecimal(valor, 1);
+        }
+        atualizarResultados();
+    });
+    
+    sliderPessoas.addEventListener('input', () => {
+        const valor = parseInt(sliderPessoas.value);
+        const inputPessoas = document.getElementById('inputPessoas');
+        if (inputPessoas) inputPessoas.value = valor;
+        atualizarResultados();
+    });
+    
+    sliderEquipamentos.addEventListener('input', () => {
+        const valor = parseInt(sliderEquipamentos.value);
+        const inputEquipamentos = document.getElementById('inputEquipamentos');
+        if (inputEquipamentos) inputEquipamentos.value = valor;
+        atualizarResultados();
+    });
+    
+    // Configurar inputs editáveis
+    const inputArea = document.getElementById('inputArea');
+    const inputAltura = document.getElementById('inputAltura');
+    const inputPessoas = document.getElementById('inputPessoas');
+    const inputEquipamentos = document.getElementById('inputEquipamentos');
+    
+    if (inputArea) {
+        inputArea.addEventListener('focus', (e) => e.target.select());
+        inputArea.addEventListener('input', () => {
+            const valor = parseFloat(inputArea.value);
+            if (!isNaN(valor) && valor > 0) {
+                const slider = document.getElementById('sliderArea');
+                if (valor >= parseFloat(slider.min) && valor <= parseFloat(slider.max)) {
+                    slider.value = valor;
+                }
+                atualizarResultados();
+            }
+        });
+    }
+    
+    if (inputAltura) {
+        inputAltura.addEventListener('focus', (e) => e.target.select());
+        inputAltura.addEventListener('input', () => {
+            // Aceita tanto ponto quanto vírgula
+            const valor = converterParaNumero(inputAltura.value);
+            if (!isNaN(valor) && valor > 0) {
+                const slider = document.getElementById('sliderAltura');
+                if (valor >= parseFloat(slider.min) && valor <= parseFloat(slider.max)) {
+                    slider.value = valor;
+                }
+                // Sempre exibe com vírgula
+                inputAltura.value = formatarDecimal(valor, 1);
+                atualizarResultados();
+            }
+        });
+        // Ao perder o foco, garante formatação correta
+        inputAltura.addEventListener('blur', () => {
+            const valor = converterParaNumero(inputAltura.value);
+            if (!isNaN(valor) && valor > 0) {
+                inputAltura.value = formatarDecimal(valor, 1);
+            }
+        });
+    }
+    
+    if (inputPessoas) {
+        inputPessoas.addEventListener('focus', (e) => e.target.select());
+        inputPessoas.addEventListener('input', () => {
+            const valor = parseInt(inputPessoas.value);
+            if (!isNaN(valor) && valor > 0) {
+                const slider = document.getElementById('sliderPessoas');
+                if (valor >= parseInt(slider.min) && valor <= parseInt(slider.max)) {
+                    slider.value = valor;
+                }
+                atualizarResultados();
+            }
+        });
+    }
+    
+    if (inputEquipamentos) {
+        inputEquipamentos.addEventListener('focus', (e) => e.target.select());
+        inputEquipamentos.addEventListener('input', () => {
+            const valor = parseInt(inputEquipamentos.value);
+            if (!isNaN(valor) && valor >= 0) {
+                const slider = document.getElementById('sliderEquipamentos');
+                if (valor >= parseInt(slider.min) && valor <= parseInt(slider.max)) {
+                    slider.value = valor;
+                }
+                atualizarResultados();
+            }
+        });
+    }
+    
+    // Configurar radio buttons
+    document.querySelectorAll('input[name="insolacao"]').forEach(radio => {
+        radio.addEventListener('change', atualizarResultados);
+    });
+    
+    document.querySelectorAll('input[name="isolamento"]').forEach(radio => {
+        radio.addEventListener('change', atualizarResultados);
+    });
+    
+    // Configurar botões de seta
+    document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
+        const targetId = btn.getAttribute('data-target');
+        const step = parseFloat(btn.getAttribute('data-step'));
+        
+        const startRepeating = () => {
+            ajustarValor(targetId, step);
+            timeoutId = setTimeout(() => {
+                intervalId = setInterval(() => {
+                    ajustarValor(targetId, step);
+                }, 100);
+            }, 500);
+        };
+        
+        const stopRepeating = () => {
+            clearTimeout(timeoutId);
+            clearInterval(intervalId);
+        };
+        
+        btn.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            startRepeating();
+        });
+        btn.addEventListener('mouseup', stopRepeating);
+        btn.addEventListener('mouseleave', stopRepeating);
+        
+        btn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startRepeating();
+        });
+        btn.addEventListener('touchend', stopRepeating);
+        btn.addEventListener('touchcancel', stopRepeating);
+    });
+    
+    // Formatar valor inicial da altura com vírgula
+    const inputAlturaInicial = document.getElementById('inputAltura');
+    if (inputAlturaInicial) {
+        const valorInicial = converterParaNumero(inputAlturaInicial.value);
+        if (!isNaN(valorInicial)) {
+            inputAlturaInicial.value = formatarDecimal(valorInicial, 1);
+        }
+    }
+    
+    // Calcular resultados iniciais
+    atualizarResultados();
+});
+

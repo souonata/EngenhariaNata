@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <title>Dimensionador de Aquecedor Solar</title>
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.0">
+    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.0">
+    <link rel="stylesheet" href="aquecimento-styles.css?v=1.0.0">
+</head>
+<body>
+    <div class="container">
+        <!-- ========================================== -->
+        <!-- CABEÇALHO COM SELETOR DE IDIOMA -->
+        <!-- ========================================== -->
+        <header>
+            <div class="language-selector">
+                <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">
+                    <span class="flag">🇧🇷</span>
+                    <span class="lang-text">Português</span>
+                </button>
+                <button id="btnItaliano" class="lang-btn" data-lang="it-IT">
+                    <span class="flag">🇮🇹</span>
+                    <span class="lang-text">Italiano</span>
+                </button>
+            </div>
+            <h1 data-i18n="app-title">☀️ Dimensionador de Aquecedor Solar Térmico</h1>
+            <p class="subtitulo" data-i18n="app-subtitle">Cálculo para Sistema Termossifão com Tubos a Vácuo</p>
+        </header>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE ENTRADAS -->
+        <!-- ========================================== -->
+        <section class="card">
+            <!-- Número de Pessoas -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderPessoas" data-i18n="label-pessoas">Número de Pessoas</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputPessoas" class="valor-display valor-input" value="4">
+                        <span class="unidade" data-i18n="unit-people">pessoas</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPessoas" data-step="-1" aria-label="Diminuir pessoas">−</button>
+                    <input type="range" id="sliderPessoas" min="1" max="10" step="1" value="4">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPessoas" data-step="1" aria-label="Aumentar pessoas">+</button>
+                </div>
+            </div>
+
+            <!-- Tipo de Uso -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-tipo-uso">Padrão de Consumo</label>
+                <div class="grupo-radio">
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoUso" value="Economico">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opt-economico">Econômico</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoUso" value="Padrao" checked>
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opt-padrao">Padrão</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoUso" value="Alto">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opt-alto">Alto</span>
+                        </div>
+                    </label>
+                </div>
+                <p class="dica" data-i18n="dica-tipo-uso">💡 Econômico: 30L/pessoa/dia | Padrão: 40L/pessoa/dia | Alto: 60L/pessoa/dia</p>
+            </div>
+
+            <!-- Latitude -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderLatitude" data-i18n="label-latitude">Latitude</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputLatitude" class="valor-display valor-input" value="-23,5" data-default-pt="-23,5" data-default-it="41,9">
+                        <span class="unidade" data-i18n="unit-degrees">°</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderLatitude" data-step="-0.5" aria-label="Diminuir latitude">−</button>
+                    <input type="range" id="sliderLatitude" min="-35" max="-5" step="0.5" value="-23.5">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderLatitude" data-step="0.5" aria-label="Aumentar latitude">+</button>
+                </div>
+                <p class="dica" data-i18n="dica-latitude">💡 Exemplo: São Paulo ≈ -23,5° | Rio de Janeiro ≈ -22,9° | Porto Alegre ≈ -30,0°</p>
+            </div>
+
+            <!-- Altitude -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderAltitude" data-i18n="label-altitude">Altitude</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputAltitude" class="valor-display valor-input" value="800">
+                        <span class="unidade" data-i18n="unit-meter">m</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderAltitude" data-step="-50" aria-label="Diminuir altitude">−</button>
+                    <input type="range" id="sliderAltitude" min="0" max="2000" step="50" value="800">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderAltitude" data-step="50" aria-label="Aumentar altitude">+</button>
+                </div>
+                <p class="dica" data-i18n="dica-altitude">💡 Altitude do local de instalação em metros acima do nível do mar</p>
+            </div>
+
+            <!-- Seção: Aquecimento da Casa -->
+            <div class="grupo-entrada" style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
+                <h3 style="text-align: center; color: #2d9fa3ff; margin-bottom: 16px; font-size: 1.1rem;" data-i18n="secao-aquecimento-casa">🏠 Aquecimento da Casa</h3>
+            </div>
+
+            <!-- Área da Casa -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderAreaCasa" data-i18n="label-area-casa">Área da Casa</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputAreaCasa" class="valor-display valor-input" value="100">
+                        <span class="unidade" data-i18n="unit-m2">m²</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderAreaCasa" data-step="-5" aria-label="Diminuir área">−</button>
+                    <input type="range" id="sliderAreaCasa" min="30" max="500" step="5" value="100">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderAreaCasa" data-step="5" aria-label="Aumentar área">+</button>
+                </div>
+            </div>
+
+            <!-- Altura do Pé Direito -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderAlturaCasa" data-i18n="label-altura-casa">Altura do Pé Direito</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputAlturaCasa" class="valor-display valor-input" value="2,7">
+                        <span class="unidade" data-i18n="unit-meter">m</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderAlturaCasa" data-step="-0.1" aria-label="Diminuir altura">−</button>
+                    <input type="range" id="sliderAlturaCasa" min="2.0" max="4.0" step="0.1" value="2.7">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderAlturaCasa" data-step="0.1" aria-label="Aumentar altura">+</button>
+                </div>
+                <p class="dica" data-i18n="dica-altura-casa">💡 Altura padrão residencial: 2,7m</p>
+            </div>
+
+            <!-- Classe Energética -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-classe-energetica">Classe Energética</label>
+                <div class="grupo-radio">
+                    <label class="opcao-radio">
+                        <input type="radio" name="classeEnergetica" value="A">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">A</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="classeEnergetica" value="B">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">B</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="classeEnergetica" value="C">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">C</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="classeEnergetica" value="D" checked>
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">D</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="classeEnergetica" value="E">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">E</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="classeEnergetica" value="F">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">F</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="classeEnergetica" value="G">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">G</span>
+                        </div>
+                    </label>
+                </div>
+                <p class="dica" data-i18n="dica-classe-energetica">💡 A = melhor isolamento | G = pior isolamento</p>
+            </div>
+
+            <!-- Modelo de Coletor -->
+            <div class="grupo-entrada" style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
+                <label data-i18n="label-modelo-coletor">Modelo de Coletor</label>
+                <div class="modelo-referencia">
+                    <div class="cartao-modelo-referencia">
+                        <div class="modelo-imagem">
+                            <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="10" y="20" width="180" height="80" fill="#1a237e" rx="4"/>
+                                <rect x="20" y="30" width="160" height="60" fill="#283593"/>
+                                <!-- Tubos a vácuo (15 tubos) -->
+                                <line x1="40" y1="35" x2="40" y2="85" stroke="#ffd700" stroke-width="3"/>
+                                <line x1="60" y1="35" x2="60" y2="85" stroke="#ffd700" stroke-width="3"/>
+                                <line x1="80" y1="35" x2="80" y2="85" stroke="#ffd700" stroke-width="3"/>
+                                <line x1="100" y1="35" x2="100" y2="85" stroke="#ffd700" stroke-width="3"/>
+                                <line x1="120" y1="35" x2="120" y2="85" stroke="#ffd700" stroke-width="3"/>
+                                <line x1="140" y1="35" x2="140" y2="85" stroke="#ffd700" stroke-width="3"/>
+                                <line x1="160" y1="35" x2="160" y2="85" stroke="#ffd700" stroke-width="3"/>
+                                <!-- Estrutura -->
+                                <rect x="15" y="15" width="170" height="5" fill="#424242"/>
+                                <rect x="15" y="100" width="170" height="5" fill="#424242"/>
+                            </svg>
+                        </div>
+                        <div class="modelo-header">
+                            <span class="rotulo-radio" data-i18n="opt-modelo-b">Modelo B</span>
+                        </div>
+                        <div class="modelo-detalhes">
+                            <div class="detalhe-linha">
+                                <span class="detalhe-label" data-i18n="detalhe-tubos">Tubos:</span>
+                                <span class="detalhe-valor">15</span>
+                            </div>
+                            <div class="detalhe-linha">
+                                <span class="detalhe-label" data-i18n="detalhe-area">Área:</span>
+                                <span class="detalhe-valor">1,5 m²</span>
+                            </div>
+                            <div class="detalhe-linha">
+                                <span class="detalhe-label" data-i18n="detalhe-eficiencia">Eficiência:</span>
+                                <span class="detalhe-valor">70%</span>
+                            </div>
+                            <div class="detalhe-linha">
+                                <span class="detalhe-label" data-i18n="detalhe-perda">Perda Linear:</span>
+                                <span class="detalhe-valor">1,8 W/m²K</span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="modeloColetor" value="Modelo_B">
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE RESULTADOS -->
+        <!-- ========================================== -->
+        <section class="card resultados">
+            <h2 data-i18n="resultados-title">📊 Resultados do Dimensionamento</h2>
+            
+            <div class="resultado-item destaque">
+                <span class="label-resultado" data-i18n="resultado-area-coletor">Área de Coletores:</span>
+                <span class="valor-resultado-grande" id="areaColetor">-</span>
+            </div>
+
+            <div class="resultado-item destaque">
+                <span class="label-resultado" data-i18n="resultado-paineis">Número de Painéis:</span>
+                <span class="valor-resultado-grande" id="numeroPaineis">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-demanda-total">Demanda Total (Água + Casa):</span>
+                <span class="valor-resultado" id="demandaTotal">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-demanda-agua">Demanda Água (Banho/Pias):</span>
+                <span class="valor-resultado" id="demandaEnergia">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-demanda-casa">Demanda Aquecimento Casa:</span>
+                <span class="valor-resultado" id="demandaCasa">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-volume-boiler">Volume do Boiler:</span>
+                <span class="valor-resultado" id="volumeBoiler">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-volume-casa">Volume da Casa:</span>
+                <span class="valor-resultado" id="volumeCasa">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-potencia-casa">Potência Necessária Casa:</span>
+                <span class="valor-resultado" id="potenciaCasa">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-eficiencia">Eficiência do Coletor:</span>
+                <span class="valor-resultado" id="eficienciaColetor">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-consumo-diario">Consumo Diário:</span>
+                <span class="valor-resultado" id="consumoDiario">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-temp-agua-fria">Temp. Água Fria (ajustada):</span>
+                <span class="valor-resultado" id="tempAguaFria">-</span>
+            </div>
+
+            <div class="info-box">
+                <p data-i18n="info-recomendacoes">💡 <strong>Recomendações de Instalação:</strong></p>
+                <ul id="recomendacoes">
+                    <li data-i18n="rec-altura">O fundo do boiler deve estar a pelo menos 0,20 m acima do topo dos coletores</li>
+                    <li data-i18n="rec-orientacao">Orientar coletores para o Norte geográfico (azimute 0°)</li>
+                    <li data-i18n="rec-inclinacao">Inclinação recomendada: Latitude + 10° a 15°</li>
+                    <li data-i18n="rec-tubulacao">Usar tubulação curta (máx. 8-10 m) e diâmetro de 25mm (1")</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p data-i18n="footer">Dimensionador de Aquecedor Solar - Engenharia Nata © 2025</p>
+    </footer>
+
+    <!-- Botão de retorno à tela inicial -->
+    <a href="../index.html" class="home-button-fixed" aria-label="Voltar à tela inicial">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <!-- Scripts -->
+    <script src="../assets/js/site-config.js?v=1.0.0"></script>
+    <script src="aquecimento-script.js?v=1.0.0"></script>
+</body>
+</html>
+

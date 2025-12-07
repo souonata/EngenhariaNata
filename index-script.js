@@ -83,6 +83,8 @@ const traducoes = {
         'app-mutuo': 'Financiamento',
         'app-solar': 'Solar',
         'app-bitola': 'Bitola',
+        'app-arcondicionado': 'Ar Condicionado',
+        'app-aquecimento': 'Aquecedor Solar',
         
         // Dias da semana por extenso (minúscula)
         'dia-dom': 'domingo',
@@ -117,6 +119,8 @@ const traducoes = {
         'app-mutuo': 'Mutuo',
         'app-solar': 'Solare',
         'app-bitola': 'Sezione Cavi',
+        'app-arcondicionado': 'Climatizzatore',
+        'app-aquecimento': 'Riscaldatore Solare',
         
         // Dias da semana por extenso em italiano (minúscula)
         'dia-dom': 'domenica',

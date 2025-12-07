@@ -352,6 +352,15 @@ input[type="range"]::-moz-range-thumb:active {
     text-align: center;
 }
 
+.rotulo-detalhe {
+    font-weight: 400;
+    font-size: 0.7rem;
+    color: #666;
+    text-align: center;
+    display: block;
+    margin-top: 2px;
+}
+
 .opcao-radio-compacto {
     position: relative;
     width: auto;
