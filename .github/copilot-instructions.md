@@ -52,9 +52,8 @@ A calculadora usa sistema custom de tradução PT-BR/IT-IT:
 
 IMPORTANT NOTE: The project uses a single, standardized localStorage key for language persistence: `idiomaPreferido`. Avoid creating per-app language keys (e.g. `idiomaSolar`).
 
-Accessibility & Tests:
+Accessibility:
 - Decorative SVG icons should include `aria-hidden="true"` and meaningful images (logos) should include `role="img"` + a `<title>`.
-- Small, dependency-free tests were added under `tests/` to validate numeric parsing and language key usage. These can be run with Node.js (example: `node tests/run-tests.js`).
 
 ### Formatação de Números
 - Português: `100.000,50` (ponto = milhares, vírgula = decimal)
