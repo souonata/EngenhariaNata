@@ -386,9 +386,22 @@ function atualizarLimitesVelocidade(unidadeAnterior = null) {
     // Busca o radio button marcado com name="unidadeVelocidade" e pega seu valor
     const unidadeVelocidade = document.querySelector('input[name="unidadeVelocidade"]:checked').value;
     
-    // PASSO 2: Obtém referências ao slider e seu valor atual
+    // PASSO 2: Obtém referências ao slider e input, e pega o valor atual
     const slider = document.getElementById('sliderVelocidade');
-    const valorAtual = parseFloat(slider.value); // Valor atual do slider na unidade anterior
+    const inputVelocidadeEl = document.getElementById('inputVelocidade');
+    
+    // Prioriza o valor do input (o que o usuário vê), senão usa o slider
+    let valorAtual;
+    if (inputVelocidadeEl && inputVelocidadeEl.value) {
+        const valorInput = parseFloat(inputVelocidadeEl.value);
+        if (!isNaN(valorInput) && valorInput > 0) {
+            valorAtual = valorInput; // Usa o valor do input (na unidade anterior)
+        } else {
+            valorAtual = parseFloat(slider.value); // Fallback para o slider
+        }
+    } else {
+        valorAtual = parseFloat(slider.value); // Fallback para o slider
+    }
     
     // PASSO 3: Converte o valor atual para nós (unidade base) para manter a equivalência
     // Se houver uma unidade anterior, converte dela. Caso contrário, assume que já está na unidade atual.
@@ -437,12 +450,15 @@ function atualizarLimitesVelocidade(unidadeAnterior = null) {
     
     // Formata o valor: nós sem decimais, outras unidades com 1 decimal
     const valorFormatado = novoValor.toFixed(unidadeVelocidade === 'knots' ? 0 : 1);
+    const valorNumerico = parseFloat(valorFormatado);
     
     // Atualiza o valor do slider
-    slider.value = parseFloat(valorFormatado);
+    slider.value = valorNumerico;
     
-    // PASSO 8: Atualiza o display do valor (texto ao lado do slider)
-    document.getElementById('valorVelocidade').textContent = valorFormatado;
+    // PASSO 8: Atualiza o display do valor (input ao lado do slider)
+    if (inputVelocidadeEl) {
+        inputVelocidadeEl.value = valorFormatado;
+    }
 }
 
 /**
@@ -463,8 +479,17 @@ function atualizarResultado() {
     // PASSO 1: OBTER UNIDADES SELECIONADAS
     // ============================================
     // Obtém as unidades de velocidade e passo selecionadas pelo usuário
-    const unidadeVelocidade = document.querySelector('input[name="unidadeVelocidade"]:checked').value;
-    const unidadePasso = document.querySelector('input[name="unidadePasso"]:checked').value;
+    const unidadeVelocidadeRadio = document.querySelector('input[name="unidadeVelocidade"]:checked');
+    const unidadePassoRadio = document.querySelector('input[name="unidadePasso"]:checked');
+    
+    // Verifica se os elementos existem antes de acessar .value
+    if (!unidadeVelocidadeRadio || !unidadePassoRadio) {
+        console.error('Erro: Unidades não encontradas');
+        return;
+    }
+    
+    const unidadeVelocidade = unidadeVelocidadeRadio.value;
+    const unidadePasso = unidadePassoRadio.value;
     
     // ============================================
     // PASSO 2: OBTER VALORES DOS INPUTS OU SLIDERS
@@ -518,6 +543,7 @@ function atualizarResultado() {
     // PASSO 3: CONVERTER VELOCIDADE PARA NÓS
     // ============================================
     // Converte a velocidade para nós (unidade base para cálculos)
+    // velocidadeInput já está na unidade selecionada (do slider ou input)
     const velocidadeKnots = converterVelocidadeParaKnots(velocidadeInput, unidadeVelocidade);
     
     // ============================================
@@ -860,12 +886,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const sliderSlip = document.getElementById('sliderSlip');
     
     sliderVelocidade.addEventListener('input', () => {
-        const valor = parseFloat(sliderVelocidade.value);
+        const valorSlider = parseFloat(sliderVelocidade.value);
         const inputVelocidade = document.getElementById('inputVelocidade');
         if (inputVelocidade) {
             const unidadeVelocidade = document.querySelector('input[name="unidadeVelocidade"]:checked')?.value || 'knots';
-            // Atualiza o input para corresponder ao slider
-            inputVelocidade.value = valor.toFixed(unidadeVelocidade === 'knots' ? 0 : 1);
+            // O slider já está na unidade selecionada (após atualizarLimitesVelocidade)
+            // Então apenas atualiza o input com o valor do slider
+            inputVelocidade.value = valorSlider.toFixed(unidadeVelocidade === 'knots' ? 0 : 1);
         }
         // Chama atualizarResultado que vai ler do slider (já que o input foi atualizado)
         atualizarResultado();

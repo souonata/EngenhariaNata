@@ -4,92 +4,92 @@
     
     <!-- Página Principal -->
     <url>
-        <loc>https://engenharianata.github.io/</loc>
+        <loc>https://engnata.eu/</loc>
         <lastmod>2024-12-20</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engenharianata.github.io/"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engenharianata.github.io/"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/"/>
     </url>
     
     <!-- Página Sobre -->
     <url>
-        <loc>https://engenharianata.github.io/sobre/sobre.html</loc>
+        <loc>https://engnata.eu/sobre/sobre.html</loc>
         <lastmod>2024-12-20</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engenharianata.github.io/sobre/sobre.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engenharianata.github.io/sobre/sobre.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/sobre/sobre.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/sobre/sobre.html"/>
     </url>
     
     <!-- Calculadora de Empréstimos -->
     <url>
-        <loc>https://engenharianata.github.io/mutuo/mutuo.html</loc>
+        <loc>https://engnata.eu/mutuo/mutuo.html</loc>
         <lastmod>2024-12-20</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engenharianata.github.io/mutuo/mutuo.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engenharianata.github.io/mutuo/mutuo.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/mutuo/mutuo.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/mutuo/mutuo.html"/>
     </url>
     
     <!-- Calculadora de Hélice -->
     <url>
-        <loc>https://engenharianata.github.io/helice/helice.html</loc>
+        <loc>https://engnata.eu/helice/helice.html</loc>
         <lastmod>2024-12-20</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engenharianata.github.io/helice/helice.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engenharianata.github.io/helice/helice.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/helice/helice.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/helice/helice.html"/>
     </url>
     
     <!-- Dimensionamento Solar -->
     <url>
-        <loc>https://engenharianata.github.io/solar/solar.html</loc>
+        <loc>https://engnata.eu/solar/solar.html</loc>
         <lastmod>2024-12-20</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engenharianata.github.io/solar/solar.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engenharianata.github.io/solar/solar.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/solar/solar.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/solar/solar.html"/>
     </url>
     
     <!-- Configuração Solar -->
     <url>
-        <loc>https://engenharianata.github.io/solar/config.html</loc>
+        <loc>https://engnata.eu/solar/config.html</loc>
         <lastmod>2024-12-20</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engenharianata.github.io/solar/config.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engenharianata.github.io/solar/config.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/solar/config.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/solar/config.html"/>
     </url>
     
     <!-- Calculadora de Bitola -->
     <url>
-        <loc>https://engenharianata.github.io/bitola/bitola.html</loc>
+        <loc>https://engnata.eu/bitola/bitola.html</loc>
         <lastmod>2024-12-20</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engenharianata.github.io/bitola/bitola.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engenharianata.github.io/bitola/bitola.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/bitola/bitola.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/bitola/bitola.html"/>
     </url>
     
     <!-- Dimensionador de Ar Condicionado -->
     <url>
-        <loc>https://engenharianata.github.io/arcondicionado/arcondicionado.html</loc>
+        <loc>https://engnata.eu/arcondicionado/arcondicionado.html</loc>
         <lastmod>2024-12-20</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engenharianata.github.io/arcondicionado/arcondicionado.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engenharianata.github.io/arcondicionado/arcondicionado.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/arcondicionado/arcondicionado.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/arcondicionado/arcondicionado.html"/>
     </url>
     
     <!-- Dimensionador de Aquecedor Solar -->
     <url>
-        <loc>https://engenharianata.github.io/aquecimento/aquecimento.html</loc>
+        <loc>https://engnata.eu/aquecimento/aquecimento.html</loc>
         <lastmod>2024-12-20</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engenharianata.github.io/aquecimento/aquecimento.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engenharianata.github.io/aquecimento/aquecimento.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/aquecimento/aquecimento.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/aquecimento/aquecimento.html"/>
     </url>
     
 </urlset>

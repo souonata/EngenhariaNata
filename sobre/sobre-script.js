@@ -28,6 +28,8 @@ const traducoes = {
         'app-helice-desc': 'Calculadora de passo de hélice',
         'app-solar-desc': 'Dimensionamento fotovoltaico',
         'app-bitola-desc': 'Calculadora de bitola de fios',
+        'app-arcondicionado-desc': 'Dimensionamento de ar condicionado',
+        'app-aquecimento-desc': 'Dimensionamento solar térmico',
         'app-about-desc': 'Informações do projeto',
 
         'calculator-title': 'Calculadora de Empréstimos',
@@ -42,6 +44,12 @@ const traducoes = {
 
         'bitola-title': 'Calculadora de Bitola de Fios',
         'bitola-description': 'Calcula a área de seção mínima de fios elétricos para circuitos CC e CA, considerando queda de tensão e selecionando a bitola comercial adequada.',
+
+        'arcondicionado-title': 'Dimensionador de Ar Condicionado',
+        'arcondicionado-description': 'Calculadora para dimensionamento de ar condicionado. Determina a capacidade necessária (BTU) baseada em área, altura, número de pessoas, equipamentos e condições ambientais.',
+
+        'aquecimento-title': 'Dimensionador de Aquecedor Solar',
+        'aquecimento-description': 'Dimensionador completo de sistemas de aquecimento solar térmico. Calcula área de coletores, volume do boiler, número de painéis e potência necessária. Suporta água de consumo e aquecimento ambiente.',
 
         'feature-pitch-title': 'Cálculo de Passo',
         'feature-pitch-desc': 'Determina o passo aproximado para a hélice',
@@ -63,6 +71,20 @@ const traducoes = {
         'feature-queda-tensao-desc': 'Recomenda 4% de queda de tensão para projetos residenciais no Brasil (padrão mais utilizado).',
         'feature-potencia-title': 'Potência Flexível',
         'feature-potencia-desc': 'Steps dinâmicos: 1W (1-10W), 10W (100-1000W), 50W (1000-3000W) com formatação automática em "k" para valores >= 1000W.',
+
+        'feature-btu-title': 'Cálculo de BTU',
+        'feature-btu-desc': 'Determina a capacidade necessária em BTU baseada em múltiplos fatores ambientais',
+        'feature-fatores-title': 'Múltiplos Fatores',
+        'feature-fatores-desc': 'Considera área, altura, número de pessoas, equipamentos e condições climáticas',
+
+        'feature-agua-casa-title': 'Água e Casa',
+        'feature-agua-casa-desc': 'Suporta aquecimento de água de consumo e aquecimento ambiente separadamente ou combinados',
+        'feature-classe-energetica-title': 'Classe Energética',
+        'feature-classe-energetica-desc': 'Considera classes energéticas (A4 a G) com consumo específico real em kWh/m²·ano',
+        'feature-autonomia-title': 'Dias de Autonomia',
+        'feature-autonomia-desc': 'Configura dias de autonomia para água e casa, dimensionando o boiler adequadamente',
+        'feature-memorial-title': 'Memorial de Cálculo',
+        'feature-memorial-desc': 'Exibe detalhamento completo de todos os cálculos realizados para transparência',
 
         'feature-bilingual-title': 'Bilíngue',
         'feature-bilingual-desc': 'Troca entre Português e Italiano e exibe a moeda correspondente.',
@@ -109,6 +131,8 @@ const traducoes = {
         'app-helice-desc': 'Calcolatrice passo elica',
         'app-solar-desc': 'Dimensionamento fotovoltaico',
         'app-bitola-desc': 'Calcolatrice sezione cavi',
+        'app-arcondicionado-desc': 'Dimensionamento climatizzatore',
+        'app-aquecimento-desc': 'Dimensionamento riscaldatore solare',
         'app-about-desc': 'Informazioni sul progetto',
 
         'calculator-title': 'Calcolatrice Prestiti',
@@ -123,6 +147,12 @@ const traducoes = {
 
         'bitola-title': 'Calcolatrice Sezione Cavi',
         'bitola-description': 'Calcola l\'area di sezione minima dei cavi elettrici per circuiti CC e CA, considerando la caduta di tensione e selezionando la sezione commerciale adeguata.',
+
+        'arcondicionado-title': 'Dimensionatore Climatizzatore',
+        'arcondicionado-description': 'Calcolatrice per il dimensionamento del climatizzatore. Determina la capacità necessaria (BTU) basata su area, altezza, numero di persone, apparecchiature e condizioni ambientali.',
+
+        'aquecimento-title': 'Dimensionatore Riscaldatore Solare',
+        'aquecimento-description': 'Dimensionatore completo di sistemi di riscaldamento solare termico. Calcola l\'area dei collettori, volume del boiler, numero di pannelli e potenza necessaria. Supporta riscaldamento dell\'acqua sanitaria e riscaldamento ambiente.',
 
         'feature-pitch-title': 'Calcolo del Passo',
         'feature-pitch-desc': 'Stima il passo dell\'elica',
@@ -144,6 +174,20 @@ const traducoes = {
         'feature-queda-tensao-desc': 'Raccomanda 4% di caduta di tensione per progetti residenziali in Brasile (standard più utilizzato).',
         'feature-potencia-title': 'Potenza Flessibile',
         'feature-potencia-desc': 'Step dinamici: 1W (1-10W), 10W (100-1000W), 50W (1000-3000W) con formattazione automatica in "k" per valori >= 1000W.',
+
+        'feature-btu-title': 'Calcolo BTU',
+        'feature-btu-desc': 'Determina la capacità necessaria in BTU basata su multipli fattori ambientali',
+        'feature-fatores-title': 'Multipli Fattori',
+        'feature-fatores-desc': 'Considera area, altezza, numero di persone, apparecchiature e condizioni climatiche',
+
+        'feature-agua-casa-title': 'Acqua e Casa',
+        'feature-agua-casa-desc': 'Supporta riscaldamento dell\'acqua sanitaria e riscaldamento ambiente separatamente o combinati',
+        'feature-classe-energetica-title': 'Classe Energetica',
+        'feature-classe-energetica-desc': 'Considera classi energetiche (A4 a G) con consumo specifico reale in kWh/m²·anno',
+        'feature-autonomia-title': 'Giorni di Autonomia',
+        'feature-autonomia-desc': 'Configura giorni di autonomia per acqua e casa, dimensionando il boiler adeguatamente',
+        'feature-memorial-title': 'Memoriale di Calcolo',
+        'feature-memorial-desc': 'Mostra dettaglio completo di tutti i calcoli eseguiti per trasparenza',
 
         'feature-bilingual-title': 'Bilingue',
         'feature-bilingual-desc': 'Cambia tra Portoghese e Italiano e mostra la valuta corrispondente.',

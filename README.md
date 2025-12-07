@@ -6,6 +6,8 @@ Uma pequena coleção de apps web educativos para estudar conceitos práticos de
 - **🚤 Helice** — Calculadora de passo de hélice para barcos de lazer, com análise de slip e gráficos de relação velocidade × passo.
 - **☀️ Solar** — Dimensionamento fotovoltaico off-grid (painéis, baterias AGM/LiFePO4, inversor) com página de configuração personalizável.
 - **⚡ Bitola** — Calculadora de bitola de fios elétricos para circuitos CC e CA, com seleção automática de bitola comercial padrão brasileiro.
+- **❄️ Ar Condicionado** — Dimensionador de ar condicionado com cálculo de BTU baseado em área, altura, número de pessoas e condições ambientais.
+- **☀️ Aquecedor Solar** — Dimensionador completo de sistemas de aquecimento solar térmico (coletores, boiler, potência) para água de consumo e aquecimento ambiente.
 
 ## 🎯 Características Principais
 
@@ -15,9 +17,15 @@ Uma pequena coleção de apps web educativos para estudar conceitos práticos de
 - **Mobile-First** — Design responsivo que funciona perfeitamente em celular, tablet e desktop
 - **Educacional** — Focado em ensinar conceitos práticos através de código bem documentado
 
+## 🌐 Site Online
+
+O site está disponível em:
+- **https://engnata.eu** (domínio principal)
+- **https://engnata.infinityfree.me** (domínio alternativo)
+
 ## 🚀 Como Usar
 
-1. **Abra `index.html`** no seu navegador (clique duas vezes) ou use Live Server no VS Code.
+1. **Acesse o site** em https://engnata.eu ou abra `index.html` localmente no seu navegador.
 2. **Escolha o app** que quer testar na tela inicial.
 3. **Troque o idioma** usando o seletor no topo (Português 🇧🇷 / Italiano 🇮🇹).
 
@@ -34,6 +42,8 @@ As configurações são salvas automaticamente em `localStorage` sob a chave `co
 
 - **`GLOSSARIO.md`** — Glossário completo com termos técnicos explicados de forma simples
 - **`sobre/sobre.html`** — Informações detalhadas sobre cada app e tecnologias usadas
+- **`sitemap.xml`** — Mapa do site para indexação em mecanismos de busca
+- **`robots.txt`** — Instruções para bots de busca
 - **`.github/copilot-instructions.md`** — Documentação técnica completa para desenvolvedores
 
 ## 💡 Para Estudantes

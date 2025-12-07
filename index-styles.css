@@ -24,6 +24,7 @@ body {
     
     /* Ocupa toda a altura da janela */
     min-height: 100vh;
+    height: auto; /* Ajusta altura conforme conteúdo */
     
     /* Layout em coluna: seletor de idioma acima do celular */
     display: flex;
@@ -31,11 +32,12 @@ body {
     align-items: center;      /* Centraliza horizontalmente */
     gap: 15px;                /* Espaço mínimo entre seletor e celular */
     
-    /* Padding mínimo apenas no topo e laterais */
-    padding: 15px 20px 20px 20px;
+    /* Padding mínimo apenas no topo e laterais - reduzido para telas menores */
+    padding: 15px 10px 20px 10px;
     
-    /* BLOQUEIA scroll horizontal e zoom indesejado */
+    /* BLOQUEIA scroll horizontal, permite vertical apenas se necessário */
     overflow-x: hidden;
+    overflow-y: auto;
     width: 100%;
     position: relative;
     
@@ -50,13 +52,16 @@ body {
    DEVICE-SCREEN - Simula a tela de um celular
    ============================================ */
 .device-screen {
-    /* Tamanho reduzido para caber melhor na tela (70% da altura original) */
-     /* Increased a bit so a 3x3 grid with longer app names fits comfortably.
-         Use min() + aspect-ratio so the 'device' scales down (zoom-out) on
-         narrow viewports rather than overflowing — keeps appearance consistent.
-     */
-     width: min(420px, calc(100vw - 40px));
-     aspect-ratio: 420 / 660; /* keeps correct proportions and scales automatically */
+    /* Largura mínima para 2 apps por linha (2 ícones + gap) */
+    /* Cada ícone tem ~60px + gap de 20px = ~80px por app */
+    /* 2 apps = ~160px + padding lateral 30px = ~190px mínimo */
+    width: min(420px, calc(100vw - 20px)); /* Reduzido padding lateral de 40px para 20px */
+    min-width: 220px; /* Permite telas muito pequenas, ainda cabe 2 apps */
+    
+    /* Altura automática baseada no conteúdo, sem aspect-ratio fixo */
+    min-height: 400px; /* Altura mínima inicial */
+    height: auto; /* Ajusta automaticamente ao conteúdo */
+    max-height: none; /* Remove limite máximo para permitir crescimento */
     
     /* Fundo escuro com mais contraste - quase preto para destacar os ícones coloridos */
     background: linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 100%);
@@ -67,8 +72,8 @@ body {
     /* Sombra forte para dar profundidade */
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     
-    /* Espaçamento interno */
-    padding: 15px;
+    /* Espaçamento interno - reduzido para telas menores */
+    padding: 12px;
     
     /* Layout em coluna (status bar em cima, conteúdo embaixo) */
     display: flex;
@@ -77,22 +82,11 @@ body {
     /* Necessário para absolute positioning */
     position: relative;
     
-    /* Esconde conteúdo que sair dos limites */
-    overflow: hidden;
+    /* Sem overflow - o conteúdo ajusta a altura do container */
+    overflow: visible;
 }
 
-/* ============================================
-   RESPONSIVE - Telas maiores (tablets)
-   ============================================ */
-/* Se a tela for maior que 768px (tablet), aumenta o dispositivo */
-@media (min-width: 768px) {
-    .device-screen {
-        width: min(768px, calc(100vw - 40px));      /* Tamanho de iPad (but never overflow viewport) */
-        aspect-ratio: 768 / 800;     /* preserve the intended aspect-ratio */
-        border-radius: 50px;  /* Cantos mais arredondados */
-        padding: 20px;        /* Mais espaço interno */
-    }
-}
+/* Responsividade já tratada acima com as media queries */
 
 /* ============================================
    BARRA DE STATUS - Barra do topo (horário)
@@ -183,36 +177,62 @@ body {
    TELA INICIAL - Área principal com os apps
    ============================================ */
 .home-screen {
-    /* Ocupa todo espaço restante */
-    flex: 1;
+    /* Ocupa todo espaço restante e ajusta altura automaticamente */
+    flex: 1 1 auto;
     
     padding: 20px;
     
-    /* Permite rolar se tiver muitos apps */
-    overflow-y: auto;
+    /* Sem scroll - o conteúdo ajusta a altura do container */
+    overflow: visible;
+    
+    /* Garante que o conteúdo não ultrapasse os limites */
+    min-height: 0;
+    
+    /* Permite que a altura seja determinada pelo conteúdo */
+    height: auto;
 }
 
 /* ============================================
    APPS GRID - Grade de ícones dos aplicativos
    ============================================ */
 .apps-grid {
-    /* Grade com 3 colunas para mobile (antes era 4) */
-    /* Isso faz o 4º app pular para a próxima linha */
+    /* Grade com 2 colunas para mobile - largura mínima */
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     
     /* Centraliza os ícones horizontalmente em suas células */
     justify-items: center;
     
-    gap: 25px;      /* Espaço entre os ícones */
+    gap: 15px;      /* Espaço reduzido entre os ícones para telas menores */
     padding: 20px 0;
+    
+    /* Permite que a grade cresça verticalmente conforme necessário */
+    flex: 0 1 auto; /* Não cresce além do necessário, mas pode encolher */
 }
 
-/* Em telas maiores (tablet), aumenta para 6 colunas */
+/* Em telas maiores (tablet), aumenta para 3 colunas */
 @media (min-width: 768px) {
+    .device-screen {
+        width: min(600px, calc(100vw - 40px));
+        min-width: 550px;
+    }
+    
     .apps-grid {
-        grid-template-columns: repeat(6, 1fr);  /* 6 colunas */
-        gap: 35px;  /* Mais espaço entre ícones */
+        grid-template-columns: repeat(3, 1fr);  /* 3 colunas em tablets */
+        gap: 30px;
+    }
+}
+
+/* Em telas muito grandes (desktop), aumenta para 4 colunas */
+@media (min-width: 1024px) {
+    .device-screen {
+        width: min(800px, calc(100vw - 40px));
+        min-width: 700px;
+    }
+    
+    .apps-grid {
+        grid-template-columns: repeat(4, 1fr);  /* 4 colunas em desktop */
+        gap: 35px;
     }
 }
 
@@ -321,13 +341,16 @@ body {
     /* Visual arredondado */
     border-radius: 25px;
     padding: 15px 20px;
-    margin: 10px 0;
+    margin: 10px 0 0 0; /* Remove margem inferior para evitar espaço extra */
     
     /* Centraliza conteúdo */
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 70px;  /* Altura mínima */
+    
+    /* Não cresce além do necessário */
+    flex: 0 0 auto;
 }
 
 /* Recipiente da logo */

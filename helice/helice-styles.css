@@ -276,3 +276,34 @@ footer p {
 /* Estilos de radio buttons movidos para assets/css/controls-styles.css */
 /* Os estilos globais de .grupo-radio, .opcao-radio, .cartao-radio estão em controls-styles.css */
 /* Mantendo apenas estilos específicos do Helice se necessário */
+
+/* ============================================
+   AJUSTES DE LARGURA DOS INPUTS
+   ============================================ */
+/* Velocidade: máximo 4 caracteres (99.9) + 2-3 caracteres extras = ~7 caracteres */
+#inputVelocidade {
+    min-width: 60px;
+    max-width: 65px;
+    width: 65px;
+}
+
+/* Redução: máximo 4 caracteres (3.50) + 2-3 caracteres extras = ~7 caracteres */
+#inputReducao {
+    min-width: 60px;
+    max-width: 65px;
+    width: 65px;
+}
+
+/* RPM: máximo 4 dígitos (7000) + 2-3 caracteres extras = ~7 caracteres */
+#inputRPM {
+    min-width: 60px;
+    max-width: 65px;
+    width: 65px;
+}
+
+/* Slip: máximo 2 dígitos (20) + 2-3 caracteres extras = ~5 caracteres */
+#inputSlip {
+    min-width: 40px;
+    max-width: 45px;
+    width: 45px;
+}

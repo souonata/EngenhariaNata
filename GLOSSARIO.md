@@ -48,6 +48,22 @@ Este glossário ajuda visitantes não técnicos e estudantes a entender os termo
 - **Redução da Rabeta** — Relação entre a rotação do motor e a rotação da hélice. Exemplo: 2:1 significa que o motor gira 2 vezes para a hélice girar 1 vez.
 - **Nós (knots)** — Unidade de velocidade náutica. 1 nó = 1.852 km/h.
 
+## ❄️ Climatização
+
+- **BTU (British Thermal Unit)** — Unidade de capacidade de refrigeração/aquecimento. Usada para dimensionar ar condicionado. 1 BTU/h ≈ 0,293 W.
+- **Capacidade de Ar Condicionado** — Potência de refrigeração necessária para manter o ambiente na temperatura desejada, medida em BTU/h.
+
+## ☀️ Energia Solar Térmica
+
+- **Coletor Solar Térmico** — Dispositivo que capta energia solar para aquecer água ou fluido. Diferente de painel fotovoltaico (que gera eletricidade).
+- **Boiler (Acumulador)** — Tanque que armazena água quente aquecida pelos coletores solares. Volume medido em litros (L).
+- **Eficiência do Coletor (η)** — Percentual de energia solar captada que é convertida em calor útil. Depende da eficiência ótica e das perdas térmicas.
+- **Classe Energética** — Classificação de eficiência energética de edificações (A4, A3, A2, A1, B, C, D, E, F, G). A4 é a mais eficiente. Medida em kWh/m²·ano.
+- **Consumo Específico** — Consumo de energia por metro quadrado por ano (kWh/m²·ano). Usado para classificar a eficiência energética de edificações.
+- **Dias de Autonomia** — Número de dias que o sistema deve manter a casa aquecida ou água quente disponível sem receber energia solar.
+- **Temperatura de Conforto** — Temperatura ambiente desejada para aquecimento. Padrão: 22°C.
+- **Período de Aquecimento** — Número de dias do ano em que o aquecimento é necessário. Padrão: 150 dias (inverno).
+
 ## 💻 Programação Web
 
 - **localStorage** — Pequena área de armazenamento no navegador que persiste dados entre sessões. O projeto usa:
