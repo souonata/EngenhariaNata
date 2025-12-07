@@ -16,49 +16,25 @@ html {
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     /* Verde Engenharia Nata */
-    background: #4e7262;
+    background: var(--site-bg, #4e7262);
     color: #333;
     line-height: 1.4;
     min-height: 100vh;
     padding: 8px;
-    padding-bottom: 80px; /* Espaço para botão home */
+    /* Use unified site bottom padding to keep the home button clear of footer */
+    padding-bottom: var(--site-bottom-padding, 110px);
     overflow-x: hidden;
     width: 100%;
     position: relative;
 }
 
-/* ============================================
-   BOTÃO HOME FIXO
-   ============================================ */
-.home-button-fixed {
-    position: fixed;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 50px;
-    height: 50px;
-    /* Gradiente Azul/Teal Padrão */
-    background: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-    transition: all 0.3s ease;
-    z-index: 1000;
-    text-decoration: none;
-    color: white;
-}
-
-.home-button-fixed:hover {
-    transform: translateX(-50%) scale(1.15);
-    box-shadow: 0 12px 30px rgba(91, 243, 172, 0.6);
-}
-
-.home-button-fixed svg {
-    width: 22px;
-    height: 22px;
-    fill: white;
+/* Home button moved to shared-styles.css — per-page overrides below */
+:root { 
+    --home-bg: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%); 
+    --home-shadow: rgba(102,126,234,0.4); 
+    --home-size: 50px; 
+    --home-size-mobile: 40px;
+    --accent-color: #2d9fa3ff;  /* Cor do tema Solar para botões ativos */
 }
 
 /* ============================================
@@ -82,49 +58,15 @@ header {
     padding: 8px 0;
 }
 
-.seletor-idioma {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 8px;
-}
+/* language selector layout centralized in assets/css/shared-styles.css */
 
-.btn-idioma {
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 20px;
-    padding: 6px 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: white;
-    font-size: 0.85rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    user-select: none;
-}
 
-.btn-idioma:hover {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: translateY(-2px);
-}
+/* flag and language text styling centralized in assets/css/shared-styles.css */
 
-.btn-idioma.ativo {
-    background: white;
-    color: #4e7262; /* Verde do fundo para contraste */
-    border-color: white;
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
-}
-
-.flag {
-    font-size: 1.1rem;
-}
-
-.texto-idioma {
-    font-size: 0.8rem;
-}
+/* language button visuals centralized in assets/css/shared-styles.css
+   this file kept only page-level variables (eg. --home-bg) and layout.
+   Solar used .btn-idioma/.texto-idioma — shared-styles provides aliases so
+   markup remains compatible without per-page duplication. */
 
 header h1 {
     font-size: 1.4rem;
@@ -133,7 +75,7 @@ header h1 {
 }
 
 .subtitulo {
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     opacity: 0.9;
 }
 
@@ -206,38 +148,8 @@ header h1 {
     margin-top: 4px;
 }
 
-.arrow-btn {
-    width: 30px;
-    height: 30px;
-    border: 2px solid #2d9fa3ff;
-    background: white;
-    color: #2d9fa3ff;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    flex-shrink: 0;
-}
-
-.arrow-btn:hover {
-    background: #2d9fa3ff;
-    color: white;
-    transform: scale(1.1);
-}
-
-.arrow-btn:active {
-    transform: scale(0.95);
-    background: #237a7d;
-    color: white;
-}
+/* arrow-btn base moved to assets/css/shared-styles.css — per-page variables below */
+:root { --arrow-border: #2d9fa3ff; --arrow-bg: white; --arrow-hover-bg: #2d9fa3ff; --arrow-hover-color: white; }
 
 /* Slider Range */
 input[type="range"] {
@@ -301,6 +213,10 @@ input[type="range"]::-moz-range-thumb {
     min-width: 70px;
     text-align: center;
 }
+
+/* Ripple moved to shared file ripple-styles.css
+   Preserve the page's ripple color via the CSS variable. */
+:root { --ripple-color: rgba(255,255,255,0.18); }
 
 
 /* Radio Buttons Customizados */

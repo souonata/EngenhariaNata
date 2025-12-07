@@ -23,7 +23,7 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     
     /* Fundo verde estilo Windows 98/2000 (igual tela inicial) */
-    background: #4e7262;
+    background: var(--site-bg, #4e7262);
     
     /* Cor do texto */
     color: #333;
@@ -36,10 +36,10 @@ body {
     min-height: 100vh;
     
     /* Padding pequeno nas bordas (otimizado para economizar espaço) */
-    padding: 5px;
+    padding: 8px;
     
-    /* Espaço extra no final para o botão home (60px botão + 25px margem + 25px espaço) */
-    padding-bottom: 110px;
+    /* Use unified site bottom padding to keep the home button clear of footer */
+    padding-bottom: var(--site-bottom-padding, 110px);
     
     /* BLOQUEIA scroll horizontal e zoom indesejado */
     overflow-x: hidden;
@@ -64,80 +64,24 @@ body {
 header {
     text-align: center;
     color: white;
-    
-    /* Margem inferior pequena (8px) - otimização de espaço */
-    margin-bottom: 8px;
-    padding: 5px 0;
-    
-    /* Necessário para posicionar elementos dentro */
-    position: relative;
+    margin-bottom: 12px;
+    padding: 8px 0;
 }
 
 /* ============================================
    LANGUAGE SELECTOR - Botões de português/italiano
    ============================================ */
-.language-selector {
-    /* Botões lado a lado, centralizados */
-    display: flex;
-    justify-content: center;
-    gap: 8px;  /* 8px de espaço entre os botões */
-    margin-bottom: 8px;
-}
+/* language selector layout centralized in assets/css/shared-styles.css */
 
-/* Estilo de cada botão de idioma */
-.lang-btn {
-    /* Layout flex para ícone da bandeira e texto */
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    
-    /* Espaçamento interno */
-    padding: 8px 16px;
-    
-    /* Borda semi-transparente */
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    
-    /* Fundo levemente transparente */
-    background: rgba(255, 255, 255, 0.1);
-    
-    color: white;
-    
-    /* Cantos bem arredondados (forma de pílula) */
-    border-radius: 25px;
-    
-    /* Mostra que é clicável */
-    cursor: pointer;
-    
-    /* Transições suaves de todas as mudanças */
-    transition: all 0.3s ease;
-    
-    font-size: 15px;
-    font-weight: 500;
-}
+/* lang button styles moved to assets/css/shared-styles.css — per-page variables below */
+:root { --lang-btn-bg: rgba(255,255,255,0.1); --lang-btn-border: rgba(255,255,255,0.3); --lang-btn-hover: rgba(255,255,255,0.18); }
 
-/* Quando passa o mouse: fica mais visível e levanta */
-.lang-btn:hover {
-    background: rgba(255, 255, 255, 0.2);  /* Mais opaco */
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: translateY(-2px);  /* Move 2px para cima */
-}
+/* language button appearance moved to assets/css/shared-styles.css
+   Per-page variables (eg. --lang-btn-bg) may still be used to tune colors */
 
-/* Botão ativo (idioma selecionado): fundo branco sólido */
-.lang-btn.active {
-    background: white;
-    color: #4A90E2;  /* Texto roxo */
-    border-color: white;
-}
-
-/* Bandeira (emoji) - tamanho maior */
-.lang-btn .flag {
-    font-size: 24px;
-}
-
-/* Texto do idioma - negrito */
-.lang-btn .lang-text {
-    font-weight: 600;
-}
+/* Ripple moved to shared file ripple-styles.css
+   Per-page ripple color preserved via CSS variable. */
+:root { --ripple-color: rgba(45,159,163,0.18); }
 
 /* ============================================
    TÍTULO E SUBTÍTULO
@@ -160,10 +104,10 @@ header h1 {
    ============================================ */
 .card {
     background: white;
-    border-radius: 12px; /* slightly smaller corners */
-    padding: 12px;       /* compact padding */
-    margin-bottom: 10px; /* consistent with Solar */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.10); /* lighter shadow to reduce visual weight */
+    border-radius: 12px;
+    padding: 12px 15px;  /* consistent with Solar */
+    margin-bottom: 10px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);  /* consistent with Solar */
     animation: fadeIn 0.45s ease-in;
 }
 
@@ -182,11 +126,12 @@ header h1 {
 }
 
 .card h2 {
-    color: #4A90E2;
+    color: #2d9fa3ff;
     margin-bottom: 8px;
     font-size: 1rem; /* compact */
-    border-bottom: 2px solid #4A90E2;
+    border-bottom: 2px solid #2d9fa3ff;
     padding-bottom: 6px;
+    text-align: center;
 }
 
 .form-group {
@@ -195,9 +140,10 @@ header h1 {
 
 .form-group label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
     font-weight: 600;
-    color: #555;
+    color: #333;
+    font-size: 0.85rem;
 }
 
 .form-group input,
@@ -213,8 +159,8 @@ header h1 {
 .form-group input:focus,
 .form-group select:focus {
     outline: none;
-    border-color: #4A90E2;
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    border-color: #2d9fa3ff;
+    box-shadow: 0 0 0 3px rgba(45, 159, 163, 0.1);
 }
 
 .radio-group {
@@ -241,8 +187,8 @@ header h1 {
 }
 
 .radio-label:hover {
-    border-color: #4A90E2;
-    background: #f5f7ff;
+    border-color: #2d9fa3ff;
+    background: #e0f7fa;
 }
 
 .radio-label input[type="radio"] {
@@ -252,15 +198,15 @@ header h1 {
 .radio-custom {
     width: 20px;
     height: 20px;
-    border: 2px solid #4A90E2;
+    border: 2px solid #2d9fa3ff;
     border-radius: 50%;
     position: relative;
     transition: all 0.3s ease;
 }
 
 .radio-label input[type="radio"]:checked + .radio-custom {
-    background: #4A90E2;
-    border-color: #4A90E2;
+    background: #2d9fa3ff;
+    border-color: #2d9fa3ff;
 }
 
 .radio-label input[type="radio"]:checked + .radio-custom::after {
@@ -277,7 +223,7 @@ header h1 {
 
 .radio-label input[type="radio"]:checked ~ .radio-text {
     font-weight: 700;
-    color: #4A90E2;
+    color: #2d9fa3ff;
 }
 
 .radio-text {
@@ -301,8 +247,8 @@ header h1 {
 }
 
 .tabela-sistemas thead {
-    background: rgba(74, 144, 226, 0.15);
-    color: #4A90E2;
+    background: rgba(45, 159, 163, 0.15);
+    color: #2d9fa3ff;
 }
 
 .tabela-sistemas th {
@@ -352,23 +298,23 @@ header h1 {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #4A90E2 0%, #2E5C8A 100%);
+    background: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%);
     color: white;
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(74, 144, 226, 0.4);
+    box-shadow: 0 5px 20px rgba(45, 159, 163, 0.4);
 }
 
 .btn-secondary {
     background: #f5f5f5;
-    color: #4A90E2;
-    border: 2px solid #4A90E2;
+    color: #2d9fa3ff;
+    border: 2px solid #2d9fa3ff;
 }
 
 .btn-secondary:hover {
-    background: #4A90E2;
+    background: #2d9fa3ff;
     color: white;
 }
 
@@ -387,7 +333,7 @@ header h1 {
 }
 
 .btn-fechar-exemplos {
-    background: #4A90E2;
+    background: #2d9fa3ff;
     color: white;
     border: none;
     padding: 8px 16px;
@@ -400,13 +346,13 @@ header h1 {
 }
 
 .btn-fechar-exemplos:hover {
-    background: #5568d3;
+    background: #667eea;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(74, 144, 226, 0.3);
+    box-shadow: 0 4px 8px rgba(45, 159, 163, 0.3);
 }
 
 .btn-voltar-exemplo {
-    background: #4A90E2;
+    background: #2d9fa3ff;
     color: white;
     border: none;
     padding: 8px 16px;
@@ -421,9 +367,9 @@ header h1 {
 }
 
 .btn-voltar-exemplo:hover {
-    background: #5568d3;
+    background: #667eea;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(74, 144, 226, 0.3);
+    box-shadow: 0 4px 8px rgba(45, 159, 163, 0.3);
 }
 
 .exemplo-item {
@@ -431,13 +377,14 @@ header h1 {
     padding: 10px;
     margin-bottom: 8px;
     border-radius: 10px;
-    border-left: 5px solid #4A90E2;
+    border-left: 5px solid #2d9fa3ff;
 }
 
 .exemplo-item h3 {
-    color: #4A90E2;
+    color: #2d9fa3ff;
     margin-bottom: 8px;
     font-size: 1rem;
+    text-align: center;
 }
 
 .exemplo-item p {
@@ -467,7 +414,7 @@ header h1 {
     content: "→";
     position: absolute;
     left: 0;
-    color: #4A90E2;
+    color: #2d9fa3ff;
     font-weight: bold;
 }
 
@@ -488,8 +435,9 @@ header h1 {
 }
 
 .comparacao h3 {
-    color: #4A90E2;
+    color: #2d9fa3ff;
     margin-bottom: 15px;
+    text-align: center;
 }
 
 .table-scroll-wrapper {
@@ -511,7 +459,7 @@ header h1 {
 }
 
 .comparacao th {
-    background: #4A90E2;
+    background: #2d9fa3ff;
     color: white;
     font-weight: 600;
 }
@@ -580,16 +528,16 @@ header h1 {
 }
 
 .controles-rapidos {
-    background: #f0f4ff;
+    background: #e0f7fa;
     padding: 10px;
     border-radius: 10px;
     margin-bottom: 8px;
     margin-top: 0;
-    border: 2px solid #4A90E2;
+    border: 2px solid #2d9fa3ff;
 }
 
 .controles-rapidos h3 {
-    color: #4A90E2;
+    color: #2d9fa3ff;
     margin-bottom: 5px;
     text-align: center;
 }
@@ -660,38 +608,17 @@ header h1 {
     gap: 6px; /* slightly larger spacing but compact overall */
 }
 
-/* Compact arrow buttons (circular) same approach as solar */
-.arrow-btn {
-    width: 30px;
-    height: 30px;
-    border: 2px solid #4A90E2;
-    background: white;
-    color: #4A90E2;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    flex-shrink: 0;
-}
-
-.arrow-btn:hover { background: #4A90E2; color: white; transform: scale(1.08); }
-.arrow-btn:active { transform: scale(0.95); background: #355fa8; color: white; }
+/* Arrow button core style moved to assets/css/shared-styles.css
+   Per-page color/size overrides available via --arrow-* variables. */
+:root { --arrow-border: #2d9fa3ff; --arrow-bg: white; --arrow-hover-bg: #2d9fa3ff; --arrow-hover-color: white; }
 
 /* Slider with +/- buttons used in solar for compact controls */
 .slider-com-botoes { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
 
 input[type="range"] { flex: 1; height: 6px; background: #e0e0e0; border-radius: 3px; outline: none; cursor: pointer; -webkit-appearance: none; appearance: none; }
-input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: linear-gradient(135deg, #4A90E2 0%, #6a9df2 100%); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: transform 0.2s; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: linear-gradient(135deg, #2d9fa3ff 0%, #667eea 100%); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 4px rgba(45, 159, 163, 0.4); transition: transform 0.2s; }
 input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); }
-input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; background: linear-gradient(135deg, #4A90E2 0%, #6a9df2 100%); border-radius: 50%; border: none; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; background: linear-gradient(135deg, #2d9fa3ff 0%, #667eea 100%); border-radius: 50%; border: none; cursor: pointer; box-shadow: 0 2px 4px rgba(45, 159, 163, 0.4); }
 
 .controle-item-horizontal input {
     padding: 2px 4px;
@@ -721,14 +648,17 @@ input[type="number"] {
     width: 60px;
 }
 
+/* Increased width to allow daily rates with 3 decimals (e.g. 0,123)
+   Keep responsive behaviour: the default is wider but it still fits mobile. */
 #taxaRapida {
-    width: 60px;
+    width: 120px;
+    min-width: 80px;
 }
 
 .controle-item-horizontal input:focus {
     outline: none;
-    border-color: #4A90E2;
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    border-color: #2d9fa3ff;
+    box-shadow: 0 0 0 3px rgba(45, 159, 163, 0.1);
 }
 
 .controle-taxa-periodo {
@@ -798,7 +728,7 @@ input[type="number"] {
 .radio-label-inline .radio-custom {
     width: 14px;
     height: 14px;
-    border: 2px solid #4A90E2;
+    border: 2px solid #2d9fa3ff;
     border-radius: 50%;
     position: relative;
     transition: all 0.2s ease;
@@ -806,7 +736,7 @@ input[type="number"] {
 }
 
 .radio-label-inline input[type="radio"]:checked + .radio-custom {
-    background-color: #4A90E2;
+    background-color: #2d9fa3ff;
 }
 
 .radio-label-inline input[type="radio"]:checked + .radio-custom::after {
@@ -828,7 +758,7 @@ input[type="number"] {
 }
 
 .radio-label-inline:hover .radio-custom {
-    border-color: #5568d3;
+    border-color: #667eea;
 }
 
 .texto-ao {
@@ -843,7 +773,7 @@ input[type="number"] {
     border: 2px solid #e0e0e0;
     border-radius: 10px;
     padding: 10px;
-    background: rgba(74, 144, 226, 0.02);
+    background: rgba(45, 159, 163, 0.02);
     width: 100%;
     max-width: 600px;
 }
@@ -916,7 +846,7 @@ input[type="number"] {
 .btn-help {
     background: transparent;
     border: none;
-    color: #4A90E2;
+    color: #2d9fa3ff;
     cursor: pointer;
     padding: 6px 12px;
     display: flex;
@@ -930,7 +860,7 @@ input[type="number"] {
 }
 
 .btn-help:hover {
-    background: #4A90E2;
+    background: #2d9fa3ff;
     color: white;
     transform: scale(1.05);
 }
@@ -940,7 +870,7 @@ input[type="number"] {
     font-weight: 700;
     letter-spacing: 0.5px;
     transform: rotate(-3deg);
-    text-shadow: 2px 2px 4px rgba(74, 144, 226, 0.3);
+    text-shadow: 2px 2px 4px rgba(45, 159, 163, 0.3);
     white-space: nowrap;
 }
 
@@ -1024,12 +954,12 @@ input[type="number"] {
 .controle-item input:focus,
 .controle-item select:focus {
     outline: none;
-    border-color: #4A90E2;
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    border-color: #2d9fa3ff;
+    box-shadow: 0 0 0 3px rgba(45, 159, 163, 0.1);
 }
 
 .parcelas-info h3 {
-    color: #4A90E2;
+    color: #2d9fa3ff;
     margin-bottom: 8px;
     text-align: center;
 }
@@ -1056,7 +986,7 @@ input[type="number"] {
     width: 36px;  /* Aumentado de 20px para 36px - botão maior */
     height: 36px; /* Aumentado de 20px para 36px */
     border-radius: 50%;
-    background: #4A90E2;
+    background: linear-gradient(135deg, #2d9fa3ff 0%, #667eea 100%);
     cursor: grab;
     box-shadow: 0 3px 8px rgba(0,0,0,0.3); /* Sombra mais forte */
     border: 3px solid white; /* Borda branca para destacar */
@@ -1077,7 +1007,7 @@ input[type="number"] {
     width: 36px;  /* Aumentado de 20px para 36px */
     height: 36px; /* Aumentado de 20px para 36px */
     border-radius: 50%;
-    background: #4A90E2;
+    background: linear-gradient(135deg, #2d9fa3ff 0%, #667eea 100%);
     cursor: grab;
     border: 3px solid white;
     box-shadow: 0 3px 8px rgba(0,0,0,0.3);
@@ -1122,7 +1052,7 @@ input[type="number"] {
     display: inline-block;
     font-size: 1.2rem;
     font-weight: bold;
-    color: #4A90E2;
+    color: #2d9fa3ff;
     line-height: 1;
     margin: 0;
 }
@@ -1164,7 +1094,7 @@ input[type="number"] {
 }
 
 .graficos-container h3 {
-    color: #4A90E2;
+    color: #2d9fa3ff;
     margin-bottom: 8px;
     text-align: center;
 }
@@ -1174,6 +1104,8 @@ input[type="number"] {
     padding: 8px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    opacity: 1;
+    /* Transição será controlada via JavaScript para fade out/in rápido */
 }
 
 .grafico-unico canvas {
@@ -1197,21 +1129,32 @@ input[type="number"] {
     background: white;
     padding: 10px;
     border-radius: 10px;
+    /* center table and header inside the card */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .tabela-container h3 {
-    color: #4A90E2;
+    color: #2d9fa3ff;
     margin-bottom: 8px;
+    text-align: center;
+    width: 100%;
 }
 
 .tabela-scroll {
     overflow-x: auto;
     overflow-y: auto;
     max-height: 300px;
+    width: 100%;
+    display: flex;
+    justify-content: center; /* center the table horizontally */
 }
 
 #tabelaAmortizacao {
-    width: 100%;
+    /* fit to content when possible but never overflow its container */
+    width: auto;
+    max-width: 100%;
     border-collapse: collapse;
 }
 
@@ -1228,7 +1171,7 @@ input[type="number"] {
 }
 
 #tabelaAmortizacao th {
-    background: #4A90E2;
+    background: #2d9fa3ff;
     color: white;
     font-weight: 600;
     position: sticky;
@@ -1242,9 +1185,14 @@ input[type="number"] {
 footer {
     text-align: center;
     color: white;
-    margin-top: 20px;
-    padding: 15px 0;
+    margin-top: 12px;
+    padding: 8px 0;
     opacity: 0.9;
+    font-size: 0.75rem;
+}
+
+footer p {
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
 }
 
 /* Responsive */
@@ -1273,7 +1221,7 @@ footer {
 @media (max-width: 480px) {
     body {
         padding: 10px;
-        padding-bottom: 110px;
+        padding-bottom: var(--site-bottom-padding, 110px);
     }
     
     header h1 {
@@ -1291,55 +1239,12 @@ footer {
     }
 }
 
-/* Botão HOME fixo - Padrão com gradiente azul */
-.home-button-fixed {
-    position: fixed;
-    bottom: 15px;       /* compact like Solar */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 50px;
-    height: 50px;
-    
-    /* Fundo com gradiente azul igual aos outros apps */
-    background: linear-gradient(135deg, #4A90E2 0%, #2E5C8A 100%);
-    
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    /* Sombra colorida para dar profundidade */
-    box-shadow: 0 8px 20px rgba(74, 144, 226, 0.4);
-    
-    transition: all 0.3s ease;
-    z-index: 1000;
-    text-decoration: none;
-    
-    /* Cor branca para o ícone */
-    color: white;
-}
-
-.home-button-fixed:hover {
-    transform: translateX(-50%) scale(1.1);
-    box-shadow: 0 12px 30px rgba(74, 144, 226, 0.6);
-}
-
-.home-button-fixed svg {
-    width: 28px;
-    height: 28px;
-    fill: white;
-}
-
-@media (max-width: 768px) {
-    .home-button-fixed {
-        bottom: 15px;       /* compact */
-        width: 46px;
-        height: 46px;
-    }
-    
-    .home-button-fixed svg {
-        width: 24px;
-        height: 24px;
-    }
+/* Home button moved to `assets/css/shared-styles.css`
+   Per-page overrides (colors/sizes) retained here via CSS variables. */
+:root {
+    --home-bg: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%);
+    --home-shadow: rgba(45, 159, 163, 0.4);
+    --home-size: 50px;
+    --home-size-mobile: 46px;
 }
 

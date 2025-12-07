@@ -1,0 +1,137 @@
+/* assets/css/shared-styles.css — shared UI components and helpers
+   Centralized common styles used by apps to reduce duplication.
+
+   Pages may override variables below to tune colors/sizes per-app.
+*/
+
+:root {
+    /* Defaults — pages can override */
+    --home-bg: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%);
+    /* Site background used across app pages (defaults to the established green) */
+    --site-bg: #4e7262;
+    /* Default bottom spacing to keep the floating home button from covering footer text */
+    --site-bottom-padding: 110px;
+    --home-shadow: rgba(102, 126, 234, 0.4);
+    --home-size: 60px;
+    --home-size-mobile: 50px;
+
+    --lang-btn-bg: rgba(255,255,255,0.2);
+    --lang-btn-border: rgba(255,255,255,0.3);
+    --lang-btn-hover: rgba(255,255,255,0.3);
+
+    --arrow-border: #2d9fa3ff;
+    --arrow-bg: white;
+    --arrow-hover-bg: #2d9fa3ff;
+    --arrow-hover-color: white;
+}
+
+/* Ensure page-level scrollbar space is always reserved so layouts don't shift
+   when a vertical scrollbar appears/disappears. This improves visual
+   consistency between pages (no horizontal jump).
+*/
+html {
+    /* always reserve vertical scroll space */
+    overflow-y: scroll;
+    /* reserve a stable gutter for scrollbar when internal scroll areas toggle */
+    scrollbar-gutter: stable both-edges;
+}
+
+/* For elements that create their own scrollbars (eg. inside the simulated
+   device), reserve stable gutter so scroll toggles won't change width */
+.home-screen, .tabela-scroll {
+    scrollbar-gutter: stable both-edges;
+}
+
+/* Home (floating) button — consistent across apps */
+.home-button-fixed {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--home-size);
+    height: var(--home-size);
+    background: var(--home-bg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px var(--home-shadow);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    text-decoration: none;
+    color: white;
+}
+
+.home-button-fixed:hover { transform: translateX(-50%) scale(1.08); }
+.home-button-fixed svg { width: calc(var(--home-size) * 0.45); height: calc(var(--home-size) * 0.45); fill: white; }
+
+@media (max-width: 480px){
+    .home-button-fixed { bottom: 20px; width: var(--home-size-mobile); height: var(--home-size-mobile); }
+    .home-button-fixed svg { width: calc(var(--home-size-mobile) * 0.5); height: calc(var(--home-size-mobile) * 0.5); }
+}
+
+/* Language selector buttons — use the Solar page size & style as global default
+   This also accepts per-page variables (like --lang-btn-bg / --lang-btn-border)
+   and provides fallbacks so changing this in one place affects all apps. */
+.btn-idioma, .lang-btn {
+    background: var(--lang-btn-bg, rgba(255,255,255,0.2));
+    border: 2px solid var(--lang-btn-border, rgba(255,255,255,0.3));
+    border-radius: 20px;         /* match Solar's shape */
+    padding: 6px 14px;          /* smaller, compact */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--lang-btn-color, white);
+    font-size: 0.85rem;         /* same scale used by Solar */
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    user-select: none;
+}
+
+.btn-idioma:hover, .lang-btn:hover {
+    background: var(--lang-btn-hover, rgba(255,255,255,0.3));
+    border-color: var(--lang-btn-border-hover, rgba(255,255,255,0.5));
+    transform: translateY(-2px);
+}
+
+.btn-idioma.active, .lang-btn.active {
+    background: white;
+    color: var(--accent-color, #2d9fa3ff); /* per-page accent controls color - defaults to Solar theme */
+    border-color: white;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+}
+
+/* Global container rule for language selector so all pages use identical
+   spacing and positioning. Pages can override variables if needed. */
+.language-selector, .seletor-idioma {
+    display: flex;
+    justify-content: center;               /* always centered horizontally */
+    gap: var(--lang-selector-gap, 8px);    /* consistent spacing between buttons */
+    margin: var(--lang-selector-margin, 10px auto 8px auto); /* top/right/bottom/left */
+    z-index: 100;                          /* ensure it's above device visuals */
+    width: 100%;                           /* helps centering inside containers */
+}
+/* Small helpers scoped for language buttons */
+.btn-idioma .flag, .lang-btn .flag { font-size: 1.1rem; }
+.btn-idioma .lang-text, .lang-btn .lang-text, .btn-idioma .texto-idioma, .lang-btn .texto-idioma { font-size: 0.8rem; font-weight: 600; }
+
+/* App icons on the home grid */
+.app-icon { display: inline-block; text-decoration: none; color: inherit; }
+.app-icon .icon { display:block; width: 60px; height: 60px; border-radius: 12px; overflow: hidden; }
+.app-icon .app-name { display:block; text-align:center; margin-top:6px; font-size:0.95rem; }
+
+/* Arrow increment/decrement buttons next to inputs/sliders */
+.arrow-btn{
+    width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content:center;
+    border: 2px solid var(--arrow-border); background: var(--arrow-bg); color: var(--arrow-border);
+    cursor: pointer; transition: all 0.15s ease; user-select:none; touch-action: manipulation;
+}
+.arrow-btn:hover{ background: var(--arrow-hover-bg); color: var(--arrow-hover-color); transform: scale(1.05); }
+.arrow-btn:active{ transform: scale(.98); }
+
+/* Standard action buttons used cross-site */
+.btn-acao { padding: 10px 14px; border-radius: 10px; cursor: pointer; border: none; display: inline-flex; align-items:center; gap:8px; }
+
+/* Small helpers */
+.input-with-arrows { display:flex; align-items:center; gap:8px; }

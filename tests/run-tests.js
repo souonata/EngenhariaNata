@@ -4,6 +4,10 @@ console.log('Running tests...');
 
 const tests = [
   'mutuo_parsing_test.js',
+  'mutuo_valorrapido_test.js',
+  'mutuo_tax_conversion_test.js',
+  'check-ripple.js',
+  'check-site-config.js',
   'home_button_i18n_test.js',
   'solar_gargalos_test.js',
   'solar_locale_test.js',

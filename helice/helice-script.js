@@ -5,12 +5,67 @@
 /**
  * Idioma atual - carrega do localStorage ou usa português como padrão
  */
-let idiomaAtual = localStorage.getItem('idiomaPreferido') || 'pt-BR';
+const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
+const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
+let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
 
 /**
- * Constantes para cálculo de hélice
+ * Constantes e explicação do método
+ * ---------------------------------
+ * A constante 1056 é usada para converter velocidade em nós e rotações
+ * por minuto em uma unidade compatível com o passo (polegadas/minuto).
+ *
+ * Fórmula utilizada (no código):
+ *  Passo (em polegadas) = (Velocidade_nós × 1056 × Redução) / (RPM_motor × (1 - Slip))
+ *
+ * Onde:
+ *  - Velocidade_nós: velocidade desejada da embarcação em nós
+ *  - Redução: relação de redução externo (ex: 2.0 representa 2:1)
+ *  - RPM_motor: rotação máxima do motor (por minuto)
+ *  - Slip: percentual de deslizamento (0.10 = 10%) que reduz
+ *    a velocidade teórica conseguida pela hélice.
+ *
+ * Interpretação intuitiva:
+ *  - Se não houvesse slip, a hélice avançaria exatamente `passo` polegadas
+ *    por rotação. Na prática, o slip diminui essa eficiência, usando (1 - slip)
+ *    como divisor para compensar a perda.
  */
 const CONSTANTE_CONVERSAO = 1056; // Conversão de nós para polegadas/minuto
+
+// Fatores de conversão de velocidade
+const CONVERSAO_VELOCIDADE = {
+    knots: 1,           // Nós (unidade base)
+    mph: 0.868976,      // Milhas por hora para nós
+    kmh: 0.539957       // Quilômetros por hora para nós
+};
+
+// Fatores de conversão de passo
+const CONVERSAO_PASSO = {
+    inches: 1,          // Polegadas (unidade base)
+    mm: 25.4            // Milímetros por polegada
+};
+
+/**
+ * Converte velocidade para nós (unidade base para cálculos)
+ */
+function converterVelocidadeParaKnots(valor, unidade) {
+    return valor * CONVERSAO_VELOCIDADE[unidade];
+}
+
+/**
+ * Converte nós para a unidade desejada
+ */
+function converterKnotsParaUnidade(valor, unidade) {
+    return valor / CONVERSAO_VELOCIDADE[unidade];
+}
+
+/**
+ * Converte passo de polegadas para a unidade desejada
+ */
+function converterPassoParaUnidade(valor, unidade) {
+    if (unidade === 'inches') return valor;
+    return valor * CONVERSAO_PASSO.mm; // Converte para mm
+}
 
 /**
  * Variáveis globais para gráfico
@@ -24,13 +79,18 @@ const traducoes = {
     'pt-BR': {
         'app-title': '🚤 Calculadora de Passo de Hélice',
         'app-subtitle': 'Para barcos de lazer',
-        'label-velocidade': 'Velocidade Desejada (nós)',
+        'label-unidade-velocidade': 'Unidade de Velocidade',
+        'label-velocidade': 'Velocidade Desejada',
         'label-reducao': 'Redução da Rabeta',
         'label-rpm': 'RPM Máximo do Motor',
         'label-slip': 'Slip Estimado',
+        'unidade-mph': 'mph',
+        'unidade-kmh': 'km/h',
+        'unidade-mm': 'mm',
         'info-slip': 'Valor típico para barcos de lazer: 10-20%. Representa a perda de eficiência da hélice.',
-        'resultado-titulo': '📐 Passo Recomendado',
+        'resultado-titulo': 'Resultados',
         'unidade-polegadas': 'polegadas',
+        'unidade-polegadas-compacto': 'pol',
         'unidade-nos': 'nós',
         'rpm-helice': 'RPM na Hélice:',
         'velocidade-teorica': 'Velocidade Teórica:',
@@ -53,13 +113,18 @@ const traducoes = {
     'it-IT': {
         'app-title': '🚤 Calcolatore Passo Elica',
         'app-subtitle': 'Per barche da diporto',
-        'label-velocidade': 'Velocità Desiderata (nodi)',
+        'label-unidade-velocidade': 'Unità di Velocità',
+        'label-velocidade': 'Velocità Desiderata',
         'label-reducao': 'Riduzione Piede Poppiero',
         'label-rpm': 'RPM Massimo Motore',
         'label-slip': 'Slip Stimato',
+        'unidade-mph': 'mph',
+        'unidade-kmh': 'km/h',
+        'unidade-mm': 'mm',
         'info-slip': 'Valore tipico per barche da diporto: 10-20%. Rappresenta la perdita di efficienza dell\'elica.',
-        'resultado-titulo': '📐 Passo Consigliato',
+        'resultado-titulo': 'Risultati',
         'unidade-polegadas': 'pollici',
+        'unidade-polegadas-compacto': 'pol',
         'unidade-nos': 'nodi',
         'rpm-helice': 'RPM Elica:',
         'velocidade-teorica': 'Velocità Teorica:',
@@ -89,7 +154,7 @@ function trocarIdioma(novoIdioma) {
     idiomaAtual = novoIdioma;
     
     // Salva no localStorage para manter entre páginas
-    localStorage.setItem('idiomaPreferido', novoIdioma);
+    localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
     
     // Atualiza o atributo lang do HTML
     document.documentElement.lang = novoIdioma;
@@ -103,7 +168,7 @@ function trocarIdioma(novoIdioma) {
     });
     
     // Atualiza botões ativos/inativos
-    document.querySelectorAll('.lang-btn').forEach(btn => {
+    document.querySelectorAll(SITE_SEL.LANG_BTN).forEach(btn => {
         if (btn.getAttribute('data-lang') === novoIdioma) {
             btn.classList.add('active');
         } else {
@@ -116,8 +181,42 @@ function trocarIdioma(novoIdioma) {
 
     // Atualiza aria-label do botão home
     const homeLabel = traducoes[novoIdioma]['aria-home'] || 'Home';
-    document.querySelectorAll('.home-button-fixed').forEach(el => el.setAttribute('aria-label', homeLabel));
+    document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
 }
+
+/**
+ * Ajusta o valor de um slider usando botões de seta
+ * @param {string} targetId - ID do slider a ser ajustado
+ * @param {number} step - Valor do incremento/decremento
+ */
+function ajustarValor(targetId, step) {
+    const slider = document.getElementById(targetId);
+    if (!slider) return;
+    
+    const valorAtual = parseFloat(slider.value) || 0;
+    const min = parseFloat(slider.min) || 0;
+    const max = parseFloat(slider.max) || 100;
+    const stepAttr = parseFloat(slider.step) || 1;
+    
+    // Calcula novo valor
+    let novoValor = valorAtual + step;
+    
+    // Ajusta para o step mais próximo
+    novoValor = Math.round(novoValor / stepAttr) * stepAttr;
+    
+    // Limita entre min e max
+    novoValor = Math.max(min, Math.min(max, novoValor));
+    
+    // Atualiza o slider
+    slider.value = novoValor;
+    
+    // Dispara evento input para atualizar a interface
+    slider.dispatchEvent(new Event('input'));
+}
+
+// Controle para os botões de seta
+let intervalId = null;
+let timeoutId = null;
 
 /**
  * Calcula o passo da hélice baseado nos parâmetros
@@ -126,6 +225,20 @@ function trocarIdioma(novoIdioma) {
  * @param {number} rpmMotor - RPM máximo do motor
  * @param {number} slip - Percentual de slip (0.15 = 15%)
  * @returns {object} - Objeto com passo, rpmHelice e velocidadeTeorica
+ */
+/**
+ * calcularPasso
+ * -------------
+ * Função que aplica a fórmula acima e retorna:
+ *  - passo recomendado (em polegadas)
+ *  - rpm efetivo da hélice
+ *  - velocidade teórica (sem slip)
+ *
+ * Explicação didática:
+ * 1) Calculamos a rotação da hélice dividindo o RPM do motor pela redução.
+ * 2) Aplicamos a fórmula do passo compensando o slip (dividindo por (1 - slip)).
+ * 3) Calculamos a velocidade teórica que seria obtida com o passo escolhido
+ *    se não existisse slip, para referência e comparação.
  */
 function calcularPasso(velocidade, reducao, rpmMotor, slip) {
     // RPM na hélice = RPM do motor / Redução
@@ -145,28 +258,100 @@ function calcularPasso(velocidade, reducao, rpmMotor, slip) {
 }
 
 /**
+ * Atualiza os limites do slider de velocidade baseado na unidade selecionada
+ * @param {string} unidadeAnterior - Unidade anterior (para conversão correta do valor)
+ */
+function atualizarLimitesVelocidade(unidadeAnterior = null) {
+    const unidadeVelocidade = document.querySelector('input[name="unidadeVelocidade"]:checked').value;
+    const slider = document.getElementById('sliderVelocidade');
+    const valorAtual = parseFloat(slider.value);
+    
+    // Se temos unidade anterior, converte da unidade anterior para nós, senão assume que já está na unidade atual
+    let valorEmKnots;
+    if (unidadeAnterior) {
+        valorEmKnots = converterVelocidadeParaKnots(valorAtual, unidadeAnterior);
+    } else {
+        valorEmKnots = converterVelocidadeParaKnots(valorAtual, unidadeVelocidade);
+    }
+    
+    // Define limites baseados na unidade
+    let min, max;
+    if (unidadeVelocidade === 'knots') {
+        min = 5;
+        max = 60;
+    } else if (unidadeVelocidade === 'mph') {
+        min = 6;  // ~5.8 nós
+        max = 70; // ~60.5 nós
+    } else { // kmh
+        min = 9;  // ~5.4 nós
+        max = 112; // ~60.5 nós
+    }
+    
+    slider.min = min;
+    slider.max = max;
+    // Atualiza labels de range se existirem
+    const rangeMin = document.getElementById('rangeMinVelocidade');
+    const rangeMax = document.getElementById('rangeMaxVelocidade');
+    if (rangeMin) rangeMin.textContent = min;
+    if (rangeMax) rangeMax.textContent = max;
+    
+    // Converte valor em nós para a nova unidade e atualiza
+    const novoValor = converterKnotsParaUnidade(valorEmKnots, unidadeVelocidade);
+    const valorFormatado = novoValor.toFixed(unidadeVelocidade === 'knots' ? 0 : 1);
+    slider.value = parseFloat(valorFormatado);
+    
+    // Atualiza o display do valor imediatamente (mantém formatação)
+    document.getElementById('valorVelocidade').textContent = valorFormatado;
+    
+    // Unidade de velocidade não precisa ser atualizada no display, pois está nos radio buttons
+}
+
+/**
  * Atualiza a interface com os resultados calculados
  */
 function atualizarResultado() {
+    // Pega unidade selecionada
+    const unidadeVelocidade = document.querySelector('input[name="unidadeVelocidade"]:checked').value;
+    const unidadePasso = document.querySelector('input[name="unidadePasso"]:checked').value;
+    
     // Pega valores dos sliders
-    const velocidade = parseFloat(document.getElementById('sliderVelocidade').value);
+    const velocidadeInput = parseFloat(document.getElementById('sliderVelocidade').value);
     const reducao = parseFloat(document.getElementById('sliderReducao').value);
     const rpmMotor = parseFloat(document.getElementById('sliderRPM').value);
     const slipPercent = parseFloat(document.getElementById('sliderSlip').value);
     
-    // Atualiza displays dos sliders
-    document.getElementById('valorVelocidade').textContent = velocidade;
+    // Converte velocidade para nós (unidade base para cálculos)
+    const velocidadeKnots = converterVelocidadeParaKnots(velocidadeInput, unidadeVelocidade);
+    
+    // Atualiza displays dos sliders (formatados conforme necessário)
+    document.getElementById('valorVelocidade').textContent = velocidadeInput.toFixed(unidadeVelocidade === 'knots' ? 0 : 1);
     document.getElementById('valorReducao').textContent = reducao.toFixed(2);
     document.getElementById('valorRPM').textContent = rpmMotor;
     document.getElementById('valorSlip').textContent = slipPercent;
     
+    // Unidade de velocidade não precisa ser atualizada no display, pois está nos radio buttons
+    
     // Calcula resultado (convertendo slip de % para decimal)
-    const resultado = calcularPasso(velocidade, reducao, rpmMotor, slipPercent / 100);
+    // Usa velocidade em nós para o cálculo
+    const resultado = calcularPasso(velocidadeKnots, reducao, rpmMotor, slipPercent / 100);
+    
+    // Converte passo para unidade selecionada
+    const passoConvertido = converterPassoParaUnidade(resultado.passo, unidadePasso);
+    const unidadePassoText = {
+        'inches': traducoes[idiomaAtual]['unidade-polegadas'],
+        'mm': traducoes[idiomaAtual]['unidade-mm']
+    }[unidadePasso];
     
     // Atualiza resultado principal
-    document.getElementById('resultadoPasso').textContent = resultado.passo;
+    document.getElementById('resultadoPasso').textContent = passoConvertido.toFixed(unidadePasso === 'mm' ? 0 : 1);
+    // Unidade não precisa ser atualizada no display, pois está nos radio buttons
     document.getElementById('rpmHelice').textContent = resultado.rpmHelice;
-    document.getElementById('velocidadeTeorica').textContent = resultado.velocidadeTeorica;
+    
+    // Converte velocidade teórica para unidade selecionada
+    const velocidadeTeoricaConvertida = converterKnotsParaUnidade(resultado.velocidadeTeorica, unidadeVelocidade);
+    document.getElementById('velocidadeTeorica').textContent = velocidadeTeoricaConvertida.toFixed(1);
+    // Atualiza unidade da velocidade teórica
+    document.getElementById('unidadeVelocidadeTeorica').textContent = unidadeVelocidadeText;
     
     // Atualiza gráfico
     atualizarGrafico();
@@ -176,19 +361,25 @@ function atualizarResultado() {
  * Cria/atualiza o gráfico de relação Passo × Velocidade
  */
 function atualizarGrafico() {
-    const velocidade = parseFloat(document.getElementById('sliderVelocidade').value);
+    const unidadeVelocidade = document.querySelector('input[name="unidadeVelocidade"]:checked').value;
+    const unidadePasso = document.querySelector('input[name="unidadePasso"]:checked').value;
     const reducao = parseFloat(document.getElementById('sliderReducao').value);
     const rpmMotor = parseFloat(document.getElementById('sliderRPM').value);
     const slipPercent = parseFloat(document.getElementById('sliderSlip').value);
     
-    // Gera dados para o gráfico (velocidades de 5 a 60 nós)
+    // Gera dados para o gráfico (velocidades de 5 a 60 nós, depois converte)
     const velocidades = [];
     const passos = [];
     
-    for (let v = 5; v <= 60; v += 5) {
-        velocidades.push(v);
-        const resultado = calcularPasso(v, reducao, rpmMotor, slipPercent / 100);
-        passos.push(resultado.passo);
+    for (let vKnots = 5; vKnots <= 60; vKnots += 5) {
+        // Converte velocidade para unidade selecionada
+        const vConvertida = converterKnotsParaUnidade(vKnots, unidadeVelocidade);
+        velocidades.push(Math.round(vConvertida));
+        
+        // Calcula passo em polegadas, depois converte
+        const resultado = calcularPasso(vKnots, reducao, rpmMotor, slipPercent / 100);
+        const passoConvertido = converterPassoParaUnidade(resultado.passo, unidadePasso);
+        passos.push(passoConvertido);
     }
     
     const ctx = document.getElementById('graficoHelice').getContext('2d');
@@ -204,21 +395,28 @@ function atualizarGrafico() {
         data: {
             labels: velocidades,
             datasets: [{
-                label: traducoes[idiomaAtual]['grafico-label'],
+                label: (() => {
+                    const unidadePasso = document.querySelector('input[name="unidadePasso"]:checked').value;
+                    const unidadeText = unidadePasso === 'inches' 
+                        ? traducoes[idiomaAtual]['unidade-polegadas'] 
+                        : traducoes[idiomaAtual]['unidade-mm'];
+                    return `${idiomaAtual === 'pt-BR' ? 'Passo' : 'Passo'} (${unidadeText})`;
+                })(),
                 data: passos,
-                borderColor: '#4A90E2',
-                backgroundColor: 'rgba(74, 144, 226, 0.1)',
+                borderColor: '#2d9fa3ff',
+                backgroundColor: 'rgba(45, 159, 163, 0.1)',
                 borderWidth: 3,
-                fill: true,
+                fill: false, // Sem preenchimento, apenas pontos e linha
                 tension: 0.4,
                 pointRadius: 6,
                 pointHoverRadius: 8,
-                pointBackgroundColor: '#4A90E2',
+                pointBackgroundColor: '#2d9fa3ff',
                 pointBorderColor: '#fff',
                 pointBorderWidth: 2
             }]
         },
         options: {
+            animation: false, // Atualização instantânea (padrão Mutuo)
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
@@ -243,7 +441,14 @@ function atualizarGrafico() {
                     padding: 12,
                     callbacks: {
                         label: function(context) {
-                            return `${context.parsed.y} ${traducoes[idiomaAtual]['unidade-polegadas']}`;
+                            const unidadePasso = document.querySelector('input[name="unidadePasso"]:checked').value;
+                            const unidadeText = unidadePasso === 'inches' 
+                                ? traducoes[idiomaAtual]['unidade-polegadas'] 
+                                : traducoes[idiomaAtual]['unidade-mm'];
+                            const valor = unidadePasso === 'mm' 
+                                ? Math.round(context.parsed.y) 
+                                : context.parsed.y.toFixed(1);
+                            return `${valor} ${unidadeText}`;
                         }
                     }
                 }
@@ -252,7 +457,15 @@ function atualizarGrafico() {
                 x: {
                     title: {
                         display: true,
-                        text: traducoes[idiomaAtual]['grafico-eixo-x'],
+                        text: (() => {
+                            const unidadeVelocidade = document.querySelector('input[name="unidadeVelocidade"]:checked').value;
+                            const unidadeText = {
+                                'knots': traducoes[idiomaAtual]['unidade-nos'],
+                                'mph': traducoes[idiomaAtual]['unidade-mph'],
+                                'kmh': traducoes[idiomaAtual]['unidade-kmh']
+                            }[unidadeVelocidade];
+                            return `${idiomaAtual === 'pt-BR' ? 'Velocidade' : 'Velocità'} (${unidadeText})`;
+                        })(),
                         font: {
                             size: 14,
                             weight: 'bold'
@@ -265,7 +478,13 @@ function atualizarGrafico() {
                 y: {
                     title: {
                         display: true,
-                        text: traducoes[idiomaAtual]['grafico-eixo-y'],
+                        text: (() => {
+                            const unidadePasso = document.querySelector('input[name="unidadePasso"]:checked').value;
+                            const unidadeText = unidadePasso === 'inches' 
+                                ? traducoes[idiomaAtual]['unidade-polegadas'] 
+                                : traducoes[idiomaAtual]['unidade-mm'];
+                            return `${idiomaAtual === 'pt-BR' ? 'Passo' : 'Passo'} (${unidadeText})`;
+                        })(),
                         font: {
                             size: 14,
                             weight: 'bold'
@@ -299,6 +518,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializa com o idioma salvo
     trocarIdioma(idiomaAtual);
+
+    // Ripple helper is provided by /ripple.js (global attachRippleTo)
+    // ripple attachments centralized in ripple-init.js
     
     // Event listeners para botões de idioma
     document.getElementById('btnPortugues').addEventListener('click', () => trocarIdioma('pt-BR'));
@@ -309,6 +531,79 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('sliderReducao').addEventListener('input', atualizarResultado);
     document.getElementById('sliderRPM').addEventListener('input', atualizarResultado);
     document.getElementById('sliderSlip').addEventListener('input', atualizarResultado);
+    
+    // Event listeners para botões de seta (padrão Solar)
+    document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
+        const targetId = btn.getAttribute('data-target');
+        const step = parseFloat(btn.getAttribute('data-step'));
+        
+        // Função para iniciar a repetição
+        const startRepeating = () => {
+            ajustarValor(targetId, step); // Primeiro clique imediato
+            
+            timeoutId = setTimeout(() => {
+                intervalId = setInterval(() => {
+                    ajustarValor(targetId, step);
+                }, 100); // Repete a cada 100ms
+            }, 500); // Espera 500ms antes de começar a repetir
+        };
+        
+        // Função para parar a repetição
+        const stopRepeating = () => {
+            clearTimeout(timeoutId);
+            clearInterval(intervalId);
+        };
+        
+        // Eventos de Mouse (PC)
+        btn.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            startRepeating();
+        });
+        btn.addEventListener('mouseup', stopRepeating);
+        btn.addEventListener('mouseleave', stopRepeating);
+        
+        // Eventos de Toque (Mobile)
+        btn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startRepeating();
+        });
+        btn.addEventListener('touchend', stopRepeating);
+        btn.addEventListener('touchcancel', stopRepeating);
+    });
+    
+    // Event listeners para seletores de unidade
+    // Armazena a unidade anterior para conversão correta
+    let unidadeVelocidadeAnterior = 'knots'; // Valor padrão inicial
+    
+    // Inicializa a unidade anterior com o valor padrão selecionado
+    document.querySelectorAll('input[name="unidadeVelocidade"]').forEach(radio => {
+        if (radio.checked) {
+            unidadeVelocidadeAnterior = radio.value;
+        }
+    });
+    
+    document.querySelectorAll('input[name="unidadeVelocidade"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            // Captura a unidade anterior antes de mudar
+            const unidadeAnterior = unidadeVelocidadeAnterior;
+            // Atualiza a unidade anterior para a próxima mudança
+            unidadeVelocidadeAnterior = radio.value;
+            // Converte o valor antes de mudar a unidade
+            atualizarLimitesVelocidade(unidadeAnterior);
+            // Atualiza o resultado com o novo valor convertido
+            atualizarResultado();
+        });
+    });
+    
+    document.querySelectorAll('input[name="unidadePasso"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            // A conversão do passo já é feita automaticamente em atualizarResultado
+            atualizarResultado();
+        });
+    });
+    
+    // Inicializa limites de velocidade
+    atualizarLimitesVelocidade();
     
     // Calcula resultado inicial
     atualizarResultado();

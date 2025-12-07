@@ -41,7 +41,7 @@ body {
     
     /* Fundo verde estilo Windows 98/2000 - verde musgo suave e nostalgico */
     /* Esse tom era famoso por ser relaxante aos olhos e dar sensação de profundidade */
-    background: #4e7262;
+    background: var(--site-bg, #4e7262);
     /* Alternativa com gradiente sutil para dar profundidade: */
     /* background: linear-gradient(135deg, #3a6351 0%, #2d4f3f 100%); */
 }
@@ -51,8 +51,12 @@ body {
    ============================================ */
 .device-screen {
     /* Tamanho reduzido para caber melhor na tela (70% da altura original) */
-    width: 375px;
-    height: 500px;
+     /* Increased a bit so a 3x3 grid with longer app names fits comfortably.
+         Use min() + aspect-ratio so the 'device' scales down (zoom-out) on
+         narrow viewports rather than overflowing — keeps appearance consistent.
+     */
+     width: min(420px, calc(100vw - 40px));
+     aspect-ratio: 420 / 660; /* keeps correct proportions and scales automatically */
     
     /* Fundo escuro com mais contraste - quase preto para destacar os ícones coloridos */
     background: linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 100%);
@@ -83,8 +87,8 @@ body {
 /* Se a tela for maior que 768px (tablet), aumenta o dispositivo */
 @media (min-width: 768px) {
     .device-screen {
-        width: 768px;      /* Tamanho de iPad */
-        height: 800px;     /* Reduzido ainda mais para caber melhor na tela */
+        width: min(768px, calc(100vw - 40px));      /* Tamanho de iPad (but never overflow viewport) */
+        aspect-ratio: 768 / 800;     /* preserve the intended aspect-ratio */
         border-radius: 50px;  /* Cantos mais arredondados */
         padding: 20px;        /* Mais espaço interno */
     }
@@ -114,66 +118,22 @@ body {
 /* Botões para trocar entre PT-BR e IT-IT */
 /* Fica FORA do celular, sobre o fundo */
 /* ========================================== */
-.language-selector {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    z-index: 100;  /* Fica acima do celular */
-}
+/* language selector layout centralized in assets/css/shared-styles.css
+   per-page variable overrides still supported via CSS variables.
+*/
 
-.lang-btn {
-    /* Remove estilo padrão de botão */
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 25px;
-    padding: 10px 20px;
-    
-    /* Cursor de ponteiro ao passar o mouse */
-    cursor: pointer;
-    
-    /* Transição suave de todas as mudanças */
-    transition: all 0.3s ease;
-    
-    /* Cor do texto */
-    color: white;
-    
-    /* Fonte e tamanho */
-    font-size: 0.95rem;
-    font-weight: 600;
-    
-    /* Centraliza conteúdo */
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    
-    /* Remove seleção do texto */
-    user-select: none;
-}
+/* Language button moved to assets/css/shared-styles.css
+   Per-page color overrides available via CSS variables if desired. */
+:root { --lang-btn-bg: rgba(255,255,255,0.2); --lang-btn-border: rgba(255,255,255,0.3); --lang-btn-hover: rgba(255,255,255,0.3); }
 
-/* Efeito ao passar o mouse */
-.lang-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: translateY(-2px);
-}
 
-/* Botão ativo (idioma selecionado) */
-.lang-btn.active {
-    background: white;
-    color: #4e7262;  /* Verde do fundo */
-    border-color: white;
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
-}
+/* Language button visuals moved to assets/css/shared-styles.css —
+   per-page colors can be tuned through CSS variables (eg. --accent-color).
+   Removing duplicate rules so Solar style becomes the global default. */
 
-/* Bandeira (emoji) dentro do botão */
-.flag {
-    font-size: 1.3rem;
-}
-
-/* Texto do idioma */
-.lang-text {
-    font-size: 0.9rem;
-}
+/* Ripple moved to shared file ripple-styles.css
+   Keep a page-specific color so this page keeps the same look. */
+:root { --ripple-color: rgba(255,255,255,0.18); }
 
 /* ============================================
    HORÁRIO - Estilo display LED/LCD vintage
@@ -330,7 +290,7 @@ body {
     text-align: center;
     
     /* Limita largura para não ficar muito largo */
-    max-width: 75px;
+    max-width: 100px;
     
     /* Altura da linha menor para texto compacto */
     line-height: 1.2;
@@ -347,8 +307,8 @@ body {
     }
     
     .app-name {
-        font-size: 13px;
-        max-width: 90px;
+        font-size: 11px;
+        max-width: 120px;
     }
 }
 

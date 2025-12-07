@@ -1,7 +1,26 @@
 // ============================================
-// RELÓGIO DA BARRA DE STATUS
-// Atualiza o horário exibido em tempo real
+// RELÓGIO DA BARRA DE STATUS & SISTEMA DE I18N
+// Atualiza o horário exibido em tempo real e fornece internacionalização
 // ============================================
+//
+// Visão geral - internacionalização (i18n) e relógio
+// -------------------------------------------------
+// Esta página funciona como a 'launcher' do portfólio e fornece duas
+// funcionalidades interligadas:
+// 1) Sistema simples de i18n: elementos que precisam ser traduzidos usam
+//    o atributo `data-i18n` com uma chave. O dicionário `traducoes` mapeia
+//    cada idioma para o texto correspondente. A função trocarIdioma atualiza
+//    todos os elementos com essa chave, salva a preferência em localStorage
+//    e também atualiza atributos de acessibilidade (ex.: aria-labels).
+// 2) Relógio: atualiza horas, minutos, segundos e uma data humanizada usando
+//    as traduções para dias/meses. O relógio é atualizado a cada segundo via
+//    setInterval, e usa padStart/formatting para manter a exibição estável.
+//
+// Observações:
+// - A chave de idioma é padronizada via SiteConfig.LOCAL_STORAGE quando
+//   disponível (garante consistência entre páginas do portfólio).
+// - A função atualizarHorario usa arrays traduzidos de dias/meses para
+//   apresentar uma data localizada (ex: 'segunda 7 dezembro').
 
 // ============================================
 // SISTEMA DE INTERNACIONALIZAÇÃO (i18n)
@@ -12,7 +31,10 @@
  * Idioma ativo no momento
  * Tenta carregar do localStorage, senão usa português como padrão
  */
-let idiomaAtual = localStorage.getItem('idiomaPreferido') || 'pt-BR';
+// Support centralized keys if SiteConfig is present
+const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
+const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
+let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
 
 /**
  * Dicionário de traduções
@@ -24,7 +46,7 @@ const traducoes = {
         'app-about': 'Sobre mim',
         'app-helice': 'Hélice',
         'app-mutuo': 'Financiamento',
-        'app-solar': 'Solar Off-Grid',
+        'app-solar': 'Solar',
         
         // Dias da semana por extenso (minúscula)
         'dia-dom': 'domingo',
@@ -54,10 +76,10 @@ const traducoes = {
     },
     'it-IT': {
         // Nomes dos aplicativos em italiano
-        'app-about': 'Su di Me',
+        'app-about': 'Su di me',
         'app-helice': 'Elica',
         'app-mutuo': 'Mutuo',
-        'app-solar': 'Solare Off-Grid',
+        'app-solar': 'Solare',
         
         // Dias da semana por extenso em italiano (minúscula)
         'dia-dom': 'domenica',
@@ -96,7 +118,7 @@ function trocarIdioma(novoIdioma) {
     idiomaAtual = novoIdioma;
     
     // Salva no localStorage para manter entre páginas
-    localStorage.setItem('idiomaPreferido', novoIdioma);
+    localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
     
     // Atualiza o atributo lang do HTML (boas práticas de acessibilidade)
     document.documentElement.lang = novoIdioma;
@@ -118,7 +140,7 @@ function trocarIdioma(novoIdioma) {
     });
     
     // Atualiza os botões de idioma (destaca o ativo)
-    document.querySelectorAll('.lang-btn').forEach(botao => {
+    document.querySelectorAll(SITE_SEL.LANG_BTN).forEach(botao => {
         if (botao.getAttribute('data-lang') === novoIdioma) {
             botao.classList.add('active');
         } else {
@@ -131,7 +153,7 @@ function trocarIdioma(novoIdioma) {
 
     // Update home button aria-labels (accessibility)
     const homeLabel = traducoes[novoIdioma]['aria-home'] || 'Home';
-    document.querySelectorAll('.home-button-fixed').forEach(el => el.setAttribute('aria-label', homeLabel));
+    document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
 }
 
 /**
@@ -218,18 +240,6 @@ document.addEventListener('DOMContentLoaded', function() {
 // EFEITO DE TOQUE NOS ÍCONES (Mobile)
 // ============================================
 
-// Pega TODOS os ícones de aplicativo na tela
-document.querySelectorAll('.app-icon').forEach(icone => {
-    
-    // Quando o usuário TOCA no ícone (em tela touch)
-    icone.addEventListener('touchstart', function() {
-        // Diminui o tamanho para 95% (efeito de "apertar")
-        this.style.transform = 'scale(0.95)';
-    });
-    
-    // Quando o usuário SOLTA o toque
-    icone.addEventListener('touchend', function() {
-        // Volta ao tamanho normal (100%)
-        this.style.transform = 'scale(1)';
-    });
-});
+// Ripple helper is now shared in /ripple.js (attachRippleTo is global)
+// Attach ripples to common interactive elements in the launcher
+// ripple attachments are centralized in ripple-init.js; no per-page attach needed here

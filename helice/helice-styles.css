@@ -7,65 +7,28 @@
     box-sizing: border-box;
 }
 
-/* Bloqueia scroll horizontal em TODA a página */
-html {
-    overflow-x: hidden;
-    width: 100%;
-    touch-action: pan-y;
-}
-
+/* Ensure the page uses the unified site background color (not white) */
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background: #4e7262;
+    background: var(--site-bg, #4e7262);
     color: #333;
-    line-height: 1.6;
-    min-height: 100vh;
-    padding: 15px;
-    padding-bottom: 110px; /* Espaço para botão home */
-    overflow-x: hidden;
-    width: 100%;
-    position: relative;
+    line-height: 1.4;
+    /* keep room at the end for the fixed home button */
+    padding-bottom: var(--site-bottom-padding, 110px);
 }
 
-/* ============================================
-   BOTÃO HOME FIXO
-   ============================================ */
-.home-button-fixed {
-    position: fixed;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #4A90E2 0%, #2E5C8A 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 8px 20px rgba(74, 144, 226, 0.4);
-    transition: all 0.3s ease;
-    z-index: 1000;
-    text-decoration: none;
-    color: white;
-}
+/* Per-page shared-styles overrides */
+:root { --lang-btn-bg: rgba(255,255,255,0.2); --lang-btn-border: rgba(255,255,255,0.3); --lang-btn-hover: rgba(255,255,255,0.3); --ripple-color: rgba(74,144,226,0.18); }
 
-.home-button-fixed:hover {
-    transform: translateX(-50%) scale(1.15);
-    box-shadow: 0 12px 30px rgba(74, 144, 226, 0.6);
-}
-
-.home-button-fixed svg {
-    width: 28px;
-    height: 28px;
-    fill: white;
-}
+/* Home button presentation is controlled in assets/css/shared-styles.css */
 
 /* ============================================
    CONTAINER PRINCIPAL
    ============================================ */
 .container {
     width: 100%;
-    margin: 0;
+    max-width: 900px;
+    margin: 0 auto;
 }
 
 /* ============================================
@@ -74,54 +37,19 @@ body {
 header {
     text-align: center;
     color: white;
-    margin-bottom: 10px; /* compact spacing */
+    margin-bottom: 12px;
     padding: 8px 0;
 }
 
 /* Seletor de idioma */
-.language-selector {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 8px;
-}
+/* language selector layout centralized in assets/css/shared-styles.css */
 
-.lang-btn {
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 25px;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: white;
-    font-size: 0.95rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    user-select: none;
-}
+/* Language button styling moved to assets/css/shared-styles.css (use --lang-btn-* variables to override) */
 
-.lang-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: translateY(-2px);
-}
+/* Language button visual sizing is centralized in assets/css/shared-styles.css */
 
-.lang-btn.active {
-    background: white;
-    color: #4A90E2;
-    border-color: white;
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
-}
-
-.flag {
-    font-size: 1.3rem;
-}
-
-.lang-text {
-    font-size: 0.9rem;
-}
+/* Ripple moved to shared file ripple-styles.css */
+:root { --ripple-color: rgba(45,159,163,0.18); }
 
 header h1 {
     font-size: 1.4rem; /* compact */
@@ -130,115 +58,119 @@ header h1 {
 }
 
 .subtitle {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     opacity: 0.9;
 }
 
 /* ============================================
-   SEÇÃO DE CONTROLES
+   SEÇÃO DE CONTROLES (usando padrão Solar - .cartao)
    ============================================ */
-.controles {
+.cartao {
     background: white;
     border-radius: 12px;
-    padding: 12px; /* compact */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 12px 15px;  /* consistent with Solar */
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);  /* consistent with Solar */
+    margin-bottom: 10px;  /* consistent with Solar */
+}
+
+/* Grupo de entrada (padrão Solar) */
+.grupo-entrada {
     margin-bottom: 12px;
 }
 
-/* compact spacing handled below */
+.grupo-entrada:last-child {
+    margin-bottom: 0;
+}
 
-.input-group label {
+.grupo-entrada > label {
     display: block;
     font-weight: 600;
     color: #333;
-    margin-bottom: 10px;
-    font-size: 1rem;
+    margin-bottom: 4px;
+    font-size: 0.85rem;
+    text-align: center;  /* Centralizado */
 }
 
-/* Display do valor do slider */
-    .input-group {
-        margin-bottom: 12px;
-    }
-    .input-group:last-child {
-        margin-bottom: 0;
-    }
-.slider-display {
+/* Cabeçalho do Controle centralizado (padrão Solar) */
+.cabecalho-controle {
     display: flex;
-    align-items: baseline;
-    gap: 5px;
-    margin-bottom: 10px;
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #4A90E2;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.cabecalho-controle label {
+    font-size: 0.85rem;
+    color: #2d9fa3ff;
+    font-weight: 600;
 }
 
 .valor-display {
-    min-width: 80px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #333;
+    background: #f0f0f0;
+    padding: 3px 10px;
+    border-radius: 15px;
+    min-width: 70px;
+    text-align: center;
 }
 
-/* Estilos do slider (input range) */
+/* Container para valor com unidades compactas */
+.valor-com-unidades {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Slider com botões (padrão Solar) */
+.slider-com-botoes {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+/* Arrow button variables (padrão Solar) */
+:root { --arrow-border: #2d9fa3ff; --arrow-bg: white; --arrow-hover-bg: #2d9fa3ff; --arrow-hover-color: white; }
+
+/* Slider Range (padrão Solar) */
 input[type="range"] {
-    width: 100%;
-    height: 16px;
-    border-radius: 8px;
+    flex: 1;
+    height: 6px;
     background: #e0e0e0;
+    border-radius: 3px;
     outline: none;
+    cursor: pointer;
     -webkit-appearance: none;
     appearance: none;
-    cursor: pointer;
 }
 
 input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
-    appearance: none;
-    width: 36px;
-    height: 36px;
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, #2d9fa3ff 0%, #667eea 100%);
     border-radius: 50%;
-    background: #4A90E2;
-    cursor: grab;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-    border: 3px solid white;
-    transition: all 0.2s ease;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(45, 159, 163, 0.4);
+    transition: transform 0.2s;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
     transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-}
-
-input[type="range"]::-webkit-slider-thumb:active {
-    cursor: grabbing;
-    transform: scale(1.15);
 }
 
 input[type="range"]::-moz-range-thumb {
-    width: 36px;
-    height: 36px;
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, #2d9fa3ff 0%, #667eea 100%);
     border-radius: 50%;
-    background: #4A90E2;
-    cursor: grab;
-    border: 3px solid white;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-    transition: all 0.2s ease;
-}
-
-input[type="range"]::-moz-range-thumb:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-}
-
-input[type="range"]::-moz-range-thumb:active {
-    cursor: grabbing;
-    transform: scale(1.15);
-}
-
-/* Labels dos limites do range */
-.range-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    color: #666;
-    margin-top: 5px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(45, 159, 163, 0.4);
 }
 
 /* Grupo de informação (somente leitura) */
@@ -246,7 +178,7 @@ input[type="range"]::-moz-range-thumb:active {
     background: #f5f5f5;
     padding: 15px;
     border-radius: 10px;
-    border-left: 4px solid #4A90E2;
+    border-left: 4px solid #2d9fa3ff;
 }
 
 .info-text {
@@ -260,11 +192,10 @@ input[type="range"]::-moz-range-thumb:active {
    SEÇÃO DE RESULTADO
    ============================================ */
 .resultado {
-    background: linear-gradient(135deg, #4A90E2 0%, #2E5C8A 100%);
-    color: white;
+    background: white;
     border-radius: 12px;
     padding: 12px;
-    box-shadow: 0 6px 18px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
     margin-bottom: 12px;
     text-align: center;
 }
@@ -272,50 +203,74 @@ input[type="range"]::-moz-range-thumb:active {
 .resultado h2 {
     font-size: 1.1rem;
     margin-bottom: 8px;
+    color: #333;
 }
 
-.resultado-principal {
+/* Grade de resultados (3 colunas) */
+.grade-resultados {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+}
+
+.item-resultado {
+    background: #f9f9f9;
+    padding: 8px;
+    border-radius: 8px;
+    text-align: center;
+    border-bottom: 3px solid #2d9fa3ff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Primeiro item (Passo Recomendado) com mais padding para título e seletor */
+.item-resultado:first-child {
+    padding: 12px 8px;
+}
+
+/* Linha horizontal com ícone + valor + unidade */
+.linha-resultado {
     display: flex;
     align-items: baseline;
     justify-content: center;
-    gap: 8px;
-    margin-bottom: 12px;
+    gap: 5px;
 }
 
-.valor-grande {
-    font-size: 2.2rem;
-    font-weight: bold;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.18);
-}
-
-/* Detalhes adicionais */
-.detalhes {
+/* Linha de resultado com unidades compactas na mesma linha */
+.linha-resultado-com-unidades {
     display: flex;
-    flex-direction: column;
-    gap: 8px; /* tighter */
-    background: rgba(255, 255, 255, 0.1);
-    padding: 12px; /* compact */
-    border-radius: 10px;
-}
-
-.detalhe-item {
-    display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: nowrap;
 }
 
-.detalhe-label {
-    font-weight: 600;
-    font-size: 0.95rem;
+.icone-resultado {
+    font-size: 1rem;
+    display: inline;
 }
 
-.detalhe-valor {
-    font-size: 1.3rem;
+.valor-resultado {
+    display: inline;
+    font-size: 1.1rem;
     font-weight: bold;
-    margin-right: 5px;
+    color: #333;
+}
+
+.rotulo-resultado {
+    font-size: 0.75rem;
+    color: #666;
+    display: inline;
+}
+
+/* Responsividade para grade de resultados */
+@media (max-width: 600px) {
+    .grade-resultados {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
 }
 
 /* ============================================
@@ -362,11 +317,11 @@ input[type="range"]::-moz-range-thumb:active {
     padding: 10px;
     border-radius: 8px;
     margin-bottom: 10px;
-    border-left: 4px solid #4A90E2;
+    border-left: 4px solid #2d9fa3ff;
 }
 
 .info-card h4 {
-    color: #4A90E2;
+    color: #2d9fa3ff;
     margin-bottom: 10px;
     font-size: 1.1rem;
 }
@@ -413,9 +368,14 @@ input[type="range"]::-moz-range-thumb:active {
 footer {
     text-align: center;
     color: white;
-    margin-top: 20px;
-    padding: 15px 0;
+    margin-top: 12px;
+    padding: 8px 0;
     opacity: 0.9;
+    font-size: 0.75rem;
+}
+
+footer p {
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
 }
 
 /* ============================================
@@ -435,4 +395,91 @@ footer {
     .chart-container {
         height: 400px;
     }
+}
+
+/* Radio Buttons Customizados (padrão Solar) */
+.grupo-radio {
+    display: flex;
+    gap: 10px;
+    justify-content: center; /* Centraliza os botões */
+}
+
+/* Radio Buttons Compactos (para unidade de passo na mesma linha) */
+.grupo-radio-compacto {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    align-items: center;
+}
+
+.opcao-radio-compacto {
+    position: relative;
+    width: auto;
+}
+
+.opcao-radio-compacto input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.cartao-radio-compacto {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 6px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-width: 35px;
+    font-size: 0.7rem;
+}
+
+.opcao-radio-compacto input:checked + .cartao-radio-compacto {
+    border-color: #2d9fa3ff;
+    background-color: #e0f7fa;
+    box-shadow: 0 2px 6px rgba(45, 159, 163, 0.2);
+}
+
+.opcao-radio-compacto .rotulo-radio {
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-align: center;
+}
+
+.opcao-radio {
+    flex: 0 0 auto; /* Não expande, apenas o tamanho necessário */
+    position: relative;
+}
+
+.opcao-radio input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.cartao-radio {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.opcao-radio input:checked + .cartao-radio {
+    border-color: #2d9fa3ff;
+    background-color: #e0f7fa;
+    box-shadow: 0 4px 10px rgba(45, 159, 163, 0.2);
+}
+
+.rotulo-radio {
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-align: center;
 }

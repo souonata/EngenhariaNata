@@ -4,7 +4,7 @@ Uma pequena coleção de apps web para estudar conceitos práticos:
 
 - Mutuo — calculadora de empréstimos (SAC, Price, Americano) com gráficos simples.
 - Helice — calculadora de passo de hélice para barcos de lazer.
-- Solar — dimensionamento fotovoltaico off-grid (painéis, baterias, inversor) com página de configuração.
+- Solar — dimensionamento fotovoltaico (painéis, baterias, inversor) com página de configuração.
 
 Tudo em HTML, CSS e JavaScript puro — fácil de abrir e usar localmente.
 

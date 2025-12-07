@@ -1,10 +1,70 @@
 // ============================================
 // CALCULADORA SOLAR
 // ============================================
+//
+// Comentários didáticos em Português - Visão geral do algoritmo
+// -------------------------------------------------------------
+// Objetivo: dado um consumo médio mensal (kWh), dias de autonomia e
+// uma escolha de tecnologia de bateria (AGM ou LiFePO4), calcular um
+// sistema fotovoltaico off-grid recomendado contendo:
+//  - número de baterias (e sua capacidade total instalada, em kWh),
+//  - número de painéis solares (quantidade × potência por painel),
+//  - potência do inversor (kW),
+//  - estimativa de custo baseada em preços unitários.
+//
+// Entrada (UI):
+//  - consumo médio mensal (kWh)
+//  - dias de autonomia (quantos dias o sistema deve suprir sem sol)
+//  - vida útil desejada (anos) → traduzido em ciclos por ano → usado
+//    para calcular um DoD (Depth of Discharge) alvo aceitável para
+//    proteger a bateria e alcançar a vida útil desejada.
+//  - escolha do tipo de bateria (AGM / Litio)
+//  - configuração do fabricante (potência do painel, capacidade/peso/valor das baterias)
+//
+// Passo-a-passo do cálculo (resumido):
+// 1) Determinar energia diária média = consumo mensal / 30 (kWh/dia).
+// 2) A partir da vida útil desejada (anos) determinamos ciclos aproximados
+//    = anos × 365. A partir de tabelas de ciclos vs DoD escolhemos um DoD
+//    diário alvo (ex: 50%). DoD menor → mais capacidade nominal necessária.
+// 3) Capacidade nominal necessária (kWh): calcula-se tanto pelo critério
+//    "vida útil" (energia diária ÷ DoD) quanto pelo critério "autonomia"
+//    (energia diária × dias de autonomia ÷ DoD). O requisito final é o
+//    máximo desses dois (para atender ambos os critérios).
+// 4) Determina-se energia entregue por uma unidade de bateria (kWh). Se
+//    a bateria estiver configurada em Ah (retrocompatibilidade), convertendo
+//    via tensão (V × Ah / 1000 → kWh). Em seguida: número de módulos =
+//    ceil(capacidadeNecessária / kWhPorBateria). Para tensões 24/48 preferimos
+//    números pares (paridade) — por isso incrementamos se necessário.
+// 5) Capacidade real instalada = qtdBaterias × energiaPorBateria.
+// 6) Energia utilizável do banco = capacidadeReal × DoD (kWh).
+// 7) Necessidade de geração diária dos painéis = energiaUtilizavelBanco / eficiênciaSistema
+//    (considerando perdas). Com Horas de Sol Pleno (HSP) conhecidas, calcula-se
+//    a potência requerida em Watts e o número de painéis (ceil(potenciaNecessaria / W_por_painel)).
+// 8) Inversor: dimensionamos com base na potência necessária dos painéis em kW
+//    (mínimo 1 kW), e usamos uma tabela com preços por faixa para estimativa
+//    do custo do inversor (interpolando quando necessário).
+// 9) Custos: soma dos painéis (quantidade × preço por painel), baterias
+//    (qtd × preço unitário), e inversor. Para visualização, convertemos para
+//    a moeda do idioma (BRL/€) usando TAXA_BRL_EUR quando necessário.
+//
+// Observações de design e compatibilidade:
+// - Mantemos compatibilidade com configurações antigas que guardavam
+//   capacidade em Ah (por exemplo 100 Ah); nestes casos o código converte
+//   Ah → kWh usando a tensão informada.
+// - O algoritmo tenta ser conservador: arredonda para cima (ceil) e
+//   garante paridade física (pareamento para tensões mais altas) para facilitar
+//   montagem prática do banco de baterias.
+// - As tabelas CICLOS_AGM e CICLOS_LITIO mapeiam cycles → DoD com interpolação
+//   linear quando necessário (veja obterDoDPorCiclos / obterCiclosPorDoD).
+//
+// O arquivo preserva a lógica existente mas adiciona documentação para facilitar
+// entendimento por estudantes e colaboradores.
 
 // Variável que guarda o idioma atual (Português ou Italiano)
 // Padroniza a chave localStorage para o mesmo usado pelo restante do projeto
-let idiomaAtual = localStorage.getItem('idiomaPreferido') || 'pt-BR';
+const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
+const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
+let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
 
 // ============================================
 // CONSTANTES DO SISTEMA (Valores Fixos)
@@ -13,8 +73,8 @@ let idiomaAtual = localStorage.getItem('idiomaPreferido') || 'pt-BR';
 const HSP = 5.0; // Horas de Sol Pleno
 const EFICIENCIA_SISTEMA = 0.80; // Eficiência global (perdas de 20%)
 
-// Taxa de conversão BRL → EUR (aproximada, baseada em preços de referência 2024)
-const TAXA_BRL_EUR = 6.19;
+// Taxa de conversão BRL → EUR (aproximada, can be centralized in SiteConfig)
+const TAXA_BRL_EUR = (typeof SiteConfig !== 'undefined' && SiteConfig.DEFAULTS && SiteConfig.DEFAULTS.TAXA_BRL_EUR) ? SiteConfig.DEFAULTS.TAXA_BRL_EUR : 6.19;
 
 // ============================================
 // VALORES PADRÃO DOS COMPONENTES (em BRL)
@@ -28,19 +88,23 @@ const VALORES_PADRAO = {
     precoPainel: 1200,
     // AGM defaults (12 V, capacity in kWh)
     tensaoAGM: 12,
-    capacidadeAGM: 1.2,   // kWh (12 V × 100 Ah ≈ 1.2 kWh)
+        capacidadeAGM: (typeof SiteConfig !== 'undefined' && SiteConfig.DEFAULTS && SiteConfig.DEFAULTS.BATTERY && typeof SiteConfig.DEFAULTS.BATTERY.DEFAULT_AGM_KWH === 'number')
+            ? SiteConfig.DEFAULTS.BATTERY.DEFAULT_AGM_KWH
+            : 1.2,   // kWh (12 V × 100 Ah ≈ 1.2 kWh)
     precoAGM: 420,
     pesoAGM: 30,
     // Lithium defaults (48 V, capacity in kWh)
     tensaoLitio: 48,
-    capacidadeLitio: 4.8, // kWh (48 V × 100 Ah ≈ 4.8 kWh) — common modular pack
+        capacidadeLitio: (typeof SiteConfig !== 'undefined' && SiteConfig.DEFAULTS && SiteConfig.DEFAULTS.BATTERY && typeof SiteConfig.DEFAULTS.BATTERY.DEFAULT_LFP_KWH === 'number')
+            ? SiteConfig.DEFAULTS.BATTERY.DEFAULT_LFP_KWH
+            : 4.8, // kWh (48 V × 100 Ah ≈ 4.8 kWh) — common modular pack
     precoLitio: 12000,     // approximate BRL price for a 48V 100Ah LiFePO4 module
     pesoLitio: 60
 };
 
 // Função para obter configuração atual (customizada ou padrão)
 function obterConfig() {
-    const configSalva = localStorage.getItem('configSolar');
+    const configSalva = localStorage.getItem(SITE_LS.SOLAR_CONFIG_KEY);
     return configSalva ? JSON.parse(configSalva) : VALORES_PADRAO;
 }
 
@@ -79,6 +143,14 @@ const PRECOS_INVERSOR_EUR = [
 ];
 
 // Função para calcular preço do inversor por interpolação
+// ------------------------------------------------------
+// Explicação deste algoritmo:
+// Recebe uma potência em kW e retorna um preço estimado consultando
+// uma tabela de pontos (kw, preco). Se a potência estiver fora dos
+// limites da tabela, fazemos extrapolação linear na extremidade.
+// Se estiver entre dois pontos, interpolamos linearmente. Isso fornece
+// um valor razoável para potências intermediárias sem precisar de uma
+// tabela completa para cada possível kW.
 function calcularPrecoInversor(potenciaKw, moeda) {
     const tabela = moeda === 'BRL' ? PRECOS_INVERSOR_BRL : PRECOS_INVERSOR_EUR;
     
@@ -177,7 +249,7 @@ let timeoutId = null;
 function trocarIdioma(novoIdioma) {
     idiomaAtual = novoIdioma;
     // Persiste a preferência de idioma usando a chave padronizada do projeto
-    localStorage.setItem('idiomaPreferido', novoIdioma);
+        localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
     document.documentElement.lang = novoIdioma;
     
     document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -189,9 +261,9 @@ function trocarIdioma(novoIdioma) {
 
     document.querySelectorAll('.btn-idioma').forEach(btn => {
         if (btn.getAttribute('data-lang') === novoIdioma) {
-            btn.classList.add('ativo');
+            btn.classList.add('active');
         } else {
-            btn.classList.remove('ativo');
+            btn.classList.remove('active');
         }
     });
 
@@ -199,12 +271,16 @@ function trocarIdioma(novoIdioma) {
 
     // Atualiza aria-label do botão home
     const homeLabel = traducoes[novoIdioma]['aria-home'] || 'Home';
-    document.querySelectorAll('.home-button-fixed').forEach(el => el.setAttribute('aria-label', homeLabel));
+    document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
 }
 
 // ============================================
 // FUNÇÃO: CALCULAR DESCARGA PERMITIDA (DoD)
 // ============================================
+// O objetivo aqui é derivar um DoD diário aceitável a partir do número
+// de ciclos que queremos obter da bateria. As tabelas (CICLOS_AGM,
+// CICLOS_LITIO) ligam ciclo → DoD. A função faz interpolação linear
+// entre pontos da tabela para um resultado suave.
 function obterDoDPorCiclos(ciclos, tipo) {
     const dados = tipo === 'litio' ? CICLOS_LITIO : CICLOS_AGM;
     
@@ -226,6 +302,10 @@ function obterDoDPorCiclos(ciclos, tipo) {
 // ============================================
 // FUNÇÃO: CALCULAR CICLOS POR DoD (inversa)
 // ============================================
+// Esta função é a inversa da anterior: recebe um DoD (%) e retorna
+// o número aproximado de ciclos esperados. Também usa interpolação
+// linear entre pontos da tabela. É útil para mostrar como alterar o
+// DoD afeta a vida útil (ciclos) estimada.
 function obterCiclosPorDoD(dod, tipo) {
     const dados = tipo === 'litio' ? CICLOS_LITIO : CICLOS_AGM;
     
@@ -250,6 +330,12 @@ function obterCiclosPorDoD(dod, tipo) {
 // ============================================
 // FUNÇÃO: AJUSTAR VALORES (Botões de Seta)
 // ============================================
+// ============================================
+// FUNÇÃO: AJUSTAR VALORES (Botões de Seta)
+// ============================================
+// Os botões +/- da interface chamam esta função para aumentar ou diminuir
+// um valor ligado a um ID de slider/text input. Aqui aplicamos limites,
+// arredondamento e atualizamos a interface para refletir a mudança.
 function ajustarValor(targetId, step) {
     const slider = document.getElementById(targetId);
     let valor = parseFloat(slider.value) || 0;
@@ -272,6 +358,12 @@ function ajustarValor(targetId, step) {
 // ============================================
 // FUNÇÃO: ATUALIZAR INTERFACE (UI)
 // ============================================
+// Coleta estado atual dos controles (sliders e rádios) e atualiza todos
+// os textos da tela. Calcula o DoD alvo com base na vida útil pedida e
+// invoca a função principal de cálculo (calcularSistema) passando o
+// DoD convertido para fração (ex: 50% → 0.5).
+// Além disso, garante limites corretos para sliders e corrige valores
+// fora dos limites (por exemplo, vida útil máx/mín).
 function atualizarInterface() {
     // 1. Ler valores dos sliders
     const sliderConsumo = document.getElementById('sliderConsumo');
@@ -334,6 +426,22 @@ function atualizarInterface() {
 // ============================================
 // FUNÇÃO PRINCIPAL: CALCULAR O SISTEMA
 // ============================================
+// Esta é a função central do algoritmo que, dado um DoD alvo (fração),
+// monta toda a configuração do sistema. As etapas implementadas são:
+// 1) Ler valores da UI (consumo, autonomia, tipo de bateria).
+// 2) Ler config customizada (ou defaults) — suporta formatos antigos
+//    (capacidade em Ah) convertendo para kWh quando necessário.
+// 3) Calcular capacidade necessária por dois critérios: vida útil e
+//    autonomia; escolher o máximo dos dois.
+// 4) Calcular número de baterias (ceil) e ajustar paridade prática.
+// 5) Calcular painéis necessários considerando eficiência do sistema
+//    e horas de sol pleno (HSP).
+// 6) Dimensionar inversor e estimar custos. Finalmente preenche o DOM
+//    com os resultados formatados para o idioma atual.
+//
+// A função tenta ser transparente: também gera frases explicativas
+// (motivos) para cada dimensão (baterias, painéis, inversor), que são
+// mostradas na UI para educar o usuário sobre o porquê dos números.
 function calcularSistema(dodAlvo) {
     const consumoMensal = parseFloat(document.getElementById('sliderConsumo').value) || 0;
     const autonomia = parseInt(document.getElementById('sliderAutonomia').value);
@@ -524,7 +632,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 2. Configurar botões de seta (Arrow Buttons)
-    document.querySelectorAll('.arrow-btn').forEach(btn => {
+    document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
         const targetId = btn.getAttribute('data-target');
         const step = parseFloat(btn.getAttribute('data-step'));
 
@@ -574,4 +682,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 5. Inicializar
     trocarIdioma(idiomaAtual);
+
+    // Ripple helper is provided by /ripple.js (global attachRippleTo)
+    // ripple attachments centralized in ripple-init.js
 });

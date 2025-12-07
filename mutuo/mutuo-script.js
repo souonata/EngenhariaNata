@@ -1,6 +1,33 @@
 // ============================================
 // VARIÁVEIS GLOBAIS (acessíveis em todo o código)
 // ============================================
+//
+// Comentários didáticos - Visão geral do algoritmo de amortização
+// ---------------------------------------------------------------
+// Objetivo: calcular parcelas, gerar uma tabela de amortização e
+// produzir gráficos que mostrem a evolução de juros e amortização
+// ao longo do tempo para diferentes sistemas de amortização:
+//   1) SAC (Sistema de Amortização Constante) - amortização fixa
+//      todo mês; juros decrescentes → parcelas que começam maiores e
+//      diminuem com o tempo.
+//   2) Price (Tabela Price / Sistema Francês) - parcela fixa (PMT)
+//      calculada com a fórmula de anuidades; no começo paga-se mais
+//      juros e pouca amortização, com inversão ao longo do prazo.
+//   3) Americano - paga-se apenas juros durante todo o período e o
+//      principal é pago integralmente na última parcela.
+//
+// Processo principal (função calcularEmprestimo):
+// - Ler valores de entrada (valor, taxa, prazo, periodicidade)
+// - Converter taxas para base mensal quando necessário
+// - Calcular o fluxo de caixa conforme o sistema escolhido
+// - Popular a tabela de amortização (parcelas, amortização, juros,
+//   saldo devedor) e os indicadores (total pago, juros totais)
+// - Atualizar UI e gráficos
+//
+// O código contém funções utilitárias para tratar entradas formatadas,
+// manipular eventos da UI (botões +/- com repetição) e gerar a tabela
+// passo a passo. Os trechos matemáticos importantes (PMT / SAC / Americano)
+// estão comentados onde são calculados.
 
 // Armazena os valores originais dos inputs quando o usuário começa a editar
 // Útil para restaurar o valor se o usuário apertar ESC
@@ -13,8 +40,10 @@ let tabelaAmortizacaoAtual = [];
 // Armazena os dados do empréstimo atual (valor, taxa, prazo, etc)
 let dadosEmprestimo = {};
 
-// Idioma atual da aplicação - carrega do localStorage ou usa português como padrão
-let idiomaAtual = localStorage.getItem('idiomaPreferido') || 'pt-BR';
+// Idioma atual da aplicação - prefer using site-wide keys when available
+const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
+const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
+let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
 
 // Moeda atual (BRL para português, EUR para italiano)
 let moedaAtual = idiomaAtual === 'pt-BR' ? 'BRL' : 'EUR';
@@ -54,17 +83,43 @@ function ajustarValor(targetId, step) {
     // Verifica qual campo está sendo ajustado e aplica regras específicas
     if (targetId === 'valorRapido') {
         // CAMPO DE VALOR EMPRESTADO
-        
-        // Converte o texto formatado (ex: "100.000") para número (100000)
-        let valor = obterValorNumericoFormatado(input.value);
-        
-        // Adiciona o step e garante que fica entre 0 e MAX_VALOR
-        // Math.max(0, ...) garante que não fica negativo
-        // Math.min(MAX_VALOR, ...) garante que não passa do máximo
-        valor = Math.max(0, Math.min(MAX_VALOR, valor + step));
-        
-        // Formata de volta para o padrão brasileiro (ex: 100000 vira "100.000")
-        input.value = valor.toLocaleString(idiomaAtual);
+        // Normaliza para valores inteiros (sem centavos) e padroniza o step
+        // para incrementos / decrementos de 10.000.
+
+        // Garante que obtemos um número inteiro limpo do campo
+        let valor = Math.round(obterValorNumericoFormatado(input.value) || 0);
+
+        // Calcula o passo efetivo a partir do atributo data-step.
+        // Queremos que o passo seja um múltiplo de 10.000. Se o botão
+            // informar um valor diferente, usamos um passo dinâmico:
+            // - Se o valor atual for menor que 10.000 usamos passos de 1.000.
+            // - Se o valor atual for >= 10.000 usamos passos de 10.000.
+            // O botão pode passar um data-step qualquer — nós respeitamos apenas
+            // o sinal do step e escolhemos o tamanho de passo adequado para o
+            // intervalo atual (1k ou 10k).
+            // If user is decreasing from exactly 10k, prefer 1k step so 10k -> 9k
+            const stepSign = (typeof step === 'number' && !isNaN(step) && step !== 0) ? Math.sign(step) : 1;
+            let baseStep;
+            if (stepSign < 0) {
+                // For decrements: values <= 10k step by 1k, else 10k
+                baseStep = (valor <= 10000) ? 1000 : 10000;
+            } else {
+                // For increments: values < 10k step by 1k, else 10k
+                baseStep = (valor < 10000) ? 1000 : 10000;
+            }
+            const stepVal = stepSign * baseStep;
+
+        // Adiciona o step e garante que fica entre 10.000 e MAX_VALOR
+        // Agora o valor mínimo do empréstimo é 10.000 (não chega a zero)
+            valor = Math.max(1000, Math.min(MAX_VALOR, valor + stepVal));
+
+        // Assegura que não teremos centavos (apenas inteiros) e formata sem casas decimais
+        valor = Math.round(valor);
+        input.value = valor.toLocaleString(idiomaAtual, { 
+            useGrouping: true,           // Usa agrupamento (separa os milhares)
+            minimumFractionDigits: 0, 
+            maximumFractionDigits: 0 
+        });
         
     } else if (targetId === 'taxaRapida') {
         // CAMPO DE TAXA DE JUROS
@@ -72,13 +127,21 @@ function ajustarValor(targetId, step) {
         // Converte texto com vírgula (ex: "10,5") para número JavaScript (10.5)
         let taxa = parseFloat(input.value.replace(',', '.')) || 0;
         
+        // Determine step size dynamically: if user currently selected 'dia'
+        // we allow steps of 0.001 (three decimals), otherwise steps passed
+        // in data-step (typically 0.1) are used.
+        const periodoAtual = (document.querySelector('input[name="periodoRapido"]:checked') || {}).value || 'ano';
+        const stepEffective = periodoAtual === 'dia' ? Math.sign(step) * 0.001 : step;
         // Adiciona o step e limita entre 0 e 100%
-        taxa = Math.max(0, Math.min(MAX_TAXA, taxa + step));
+        taxa = Math.max(0, Math.min(MAX_TAXA, taxa + stepEffective));
         
         // Formata com 1 casa decimal e troca ponto por vírgula
         // toFixed(1) garante uma casa decimal: 10.5
         // replace('.', ',') converte para padrão brasileiro: 10,5
-        input.value = taxa.toFixed(1).replace('.', ',');
+        // if the current period is 'dia' keep three decimals for readability
+        const periodSelected = (document.querySelector('input[name="periodoRapido"]:checked') || {}).value || 'ano';
+        const decimalsToShow = periodSelected === 'dia' ? 3 : 1;
+        input.value = taxa.toFixed(decimalsToShow).replace('.', ',');
         
     } else if (targetId === 'prazoRapido') {
         // CAMPO DE PRAZO EM ANOS
@@ -124,21 +187,37 @@ function formatarValorInput(e) {
     // \D significa "qualquer coisa que não seja dígito"
     valor = valor.replace(/\D/g, '');
     
-    // Se o campo ficou vazio, não faz nada
+    // Se o campo ficou vazio, não faz nada (mas no blur vamos forçar o mínimo)
     if (valor === '') {
         e.target.value = '';
         return;
     }
     
-    // Converte o texto para número inteiro
+    // Converte o texto para número inteiro (sem centavos)
     let numero = parseInt(valor);
     
     // Se passar do limite, corta no máximo
     if (numero > MAX_VALOR) {
         numero = MAX_VALOR;
     }
+
+    // Se chamado por 'blur' (o usuário terminou de editar) aplicamos regras:
+    // - mínimo absoluto = 1.000
+    // - se o número for < 10.000 → arredonda para múltiplos de 1.000
+    // - se o número for >= 10.000 → arredonda para múltiplos de 10.000
+    if (e.type === 'blur') {
+        if (numero < 1000) numero = 1000;
+        if (numero < 10000) {
+            numero = Math.round(numero / 1000) * 1000; // snap to 1k
+        } else {
+            numero = Math.round(numero / 10000) * 10000; // snap to 10k
+        }
+        // Garanta que o arredondamento não quebre o limite máximo
+        if (numero > MAX_VALOR) numero = MAX_VALOR;
+    }
     
     // Formata com separador de milhares no padrão do idioma atual
+    // Sem casas decimais (não mostramos centavos neste campo)
     // Ex: 100000 vira "100.000" em PT ou "100,000" em EN
     e.target.value = numero.toLocaleString(idiomaAtual, {
         useGrouping: true,           // Usa agrupamento (separa os milhares)
@@ -233,9 +312,17 @@ function obterValorNumericoFormatado(valorFormatado) {
         v = v.replace(/\./g, '');      // remove separador de milhares
         v = v.replace(',', '.');        // converte decimal para ponto
     } else {
-        // Caso apenas ',' exista, converte para ponto (10,5 => 10.5)
-        // Caso apenas '.' exista, mantemos (1234.56)
-        v = v.replace(/,/g, '.');
+        // Caso apenas ',' exista (ex: 10,5) -> converte para ponto: 10.5
+        // Caso apenas '.' exista (formato PT/IT como 100.000) -> trata como separador
+        // de milhares e remove todos os pontos para produzir 100000.
+        if (v.indexOf(',') !== -1) {
+            // Has comma -> treat comma as decimal separator
+            v = v.replace(/\./g, ''); // remove any stray thousands separators
+            v = v.replace(',', '.');
+        } else {
+            // Only dots present: treat them as thousands separators and remove them
+            v = v.replace(/\./g, '');
+        }
     }
 
     // Remove qualquer caractere que não seja dígito, ponto ou sinal de menos
@@ -525,10 +612,10 @@ function trocarIdioma(idioma) {
     moedaAtual = idioma === 'pt-BR' ? 'BRL' : 'EUR';
     
     // Salva no localStorage para manter entre páginas
-    localStorage.setItem('idiomaPreferido', idioma);
+    localStorage.setItem(SITE_LS.LANGUAGE_KEY, idioma);
     
     // Atualizar botões ativos usando data-lang (mais confiável)
-    document.querySelectorAll('.lang-btn').forEach(btn => {
+    document.querySelectorAll(SITE_SEL.LANG_BTN).forEach(btn => {
         if (btn.getAttribute('data-lang') === idioma) {
             btn.classList.add('active');
         } else {
@@ -559,10 +646,20 @@ function trocarIdioma(idioma) {
 
     // Atualiza o aria-label do botão home (acessibilidade)
     const homeLabel = traducoes[idioma]['aria-home'] || 'Home';
-    document.querySelectorAll('.home-button-fixed').forEach(el => el.setAttribute('aria-label', homeLabel));
+    document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
 }
 
 // Função para converter taxa de juros para mensal
+// ---------------------------------------------
+// Recebe uma taxa numérica e o período em que ela é informada ('ano'|'mes'|'dia')
+// e retorna a taxa equivalente por mês (em decimal, ex: 0.01 = 1%).
+// Explicação:
+// - Se a taxa é anual (ex: 12% a.a.), convertemos para mensal usando juros compostos:
+//     taxa_mensal = (1 + taxa_anual)^(1/12) - 1
+//   Isso respeita capitalização composta (não é simplesmente taxa / 12).
+// - Se a taxa é mensal, dividimos por 100 (para transformar em decimal).
+// - Se a taxa é diária assumimos 30 dias por mês e aplicamos composição:
+//     taxa_mensal = (1 + taxa_diaria)^(30) - 1
 function converterTaxaParaMensal(taxa, periodo) {
     switch(periodo) {
         case 'ano':
@@ -578,8 +675,45 @@ function converterTaxaParaMensal(taxa, periodo) {
     }
 }
 
-// Sistema Price / Ammortamento alla Francese (Juros Compostos - Parcelas Fixas)
-// Usado: Brasil (empréstimos pessoais, consignados) e Itália (mutui)
+    /**
+     * Converte uma taxa percentual de um período para outro preservando equivalência
+     * Ex: converterTaxaBetweenPeriods(12, 'ano', 'mes') -> ~0.95 (12% a.a. => ~0.95% a.m.)
+     * @param {number} taxaPercent - taxa no período 'from' como percentual (ex: 12 -> 12%)
+     * @param {'ano'|'mes'|'dia'} from - período de origem
+     * @param {'ano'|'mes'|'dia'} to - período destino
+     * @returns {number} taxa no período destino como percentual (ex: 0.95 => 0.95%)
+     */
+    function converterTaxaBetweenPeriods(taxaPercent, from, to) {
+        // Converte o valor informado para taxa mensal (decimal) e depois converte
+        // para o período destino. Trabalhamos em decimais nas operações e devolvemos
+        // como percentual (multiplicamos por 100 no final).
+        const mensalDecimal = converterTaxaParaMensal(taxaPercent, from); // decimal
+
+        let targetDecimal;
+        if (to === 'mes') {
+            targetDecimal = mensalDecimal;
+        } else if (to === 'ano') {
+            // (1 + r_ano)^(1/12) - 1 = r_mes  => r_ano = (1 + r_mes)^12 - 1
+            targetDecimal = Math.pow(1 + mensalDecimal, 12) - 1;
+        } else if (to === 'dia') {
+            // (1 + r_mes) = (1 + r_dia)^30  => r_dia = (1 + r_mes)^(1/30) - 1
+            targetDecimal = Math.pow(1 + mensalDecimal, 1 / 30) - 1;
+        } else {
+            // fallback: return same as input
+            targetDecimal = mensalDecimal;
+        }
+
+        return targetDecimal * 100; // percentual
+    }
+
+// Sistema Price / Tabela Price (Parcelas fixas - Anuidade)
+// -------------------------------------------------------
+// Neste sistema a parcela (PMT) é constante durante todo o prazo.
+// A fórmula do PMT garante que o valor presente (PV) das parcelas
+// descontadas pela taxa i resulte no valor emprestado. O algoritmo
+// calcula a parcela fixa (usando a fórmula de anuidade) e depois,
+// para cada período, separa a parcela em juros (saldo × i) e amortização
+// (PMT - juros). O saldo diminui pela amortização até zerar no fim.
 // Fórmula: PMT = PV × [i × (1+i)^n] / [(1+i)^n - 1]
 function calcularPrice(valorEmprestimo, taxaMensal, numeroParcelas) {
     const tabela = [];
@@ -649,10 +783,12 @@ function calcularSAC(valorEmprestimo, taxaMensal, numeroParcelas) {
     return tabela;
 }
 
-// Sistema Alemão/Tedesco (Pagamento de Juros + Principal no Final)
-// Usado: Raro no Brasil, ocasional na Itália
-// Parcelas 1 a n-1: Apenas juros = PV × taxa
-// Última parcela: PV + juros
+// Sistema Americano (Juros periódicos + principal no final)
+// --------------------------------------------------------
+// Também conhecido por "sistema americano" ou "Alemão" no repositório.
+// Neste sistema pagam-se juros (constantes) durante os períodos 1..n-1
+// e na última parcela paga-se o principal + juros finais. Útil para
+// investidores ou operações em que o principal é devolvido no final.
 function calcularAlemao(valorEmprestimo, taxaMensal, numeroParcelas) {
     const tabela = [];
     const jurosMensal = valorEmprestimo * taxaMensal;
@@ -685,15 +821,26 @@ function calcularAlemao(valorEmprestimo, taxaMensal, numeroParcelas) {
 // Função principal de cálculo
 function calcularEmprestimo() {
     // Obter valores dos controles rápidos
-    const valorEmprestimo = obterValorNumericoFormatado(valorRapido.value);
+    // Use let because we may clamp the value to a minimum later
+    let valorEmprestimo = obterValorNumericoFormatado(valorRapido.value);
     const periodoJuros = document.querySelector('input[name="periodoRapido"]:checked').value;
     const taxaJuros = parseFloat(taxaRapida.value.replace(',', '.')) || 0;
     const prazoAnos = parseInt(prazoRapido.value) || 0;
     const tipoCalculo = document.querySelector('input[name="sistemaRapido"]:checked').value;
     
     // Validações
-    if (!valorEmprestimo || valorEmprestimo <= 0) {
-        return;
+    // Se o valor informado é menor que 1.000, forçamos 1.000 (não abortamos)
+    if (!valorEmprestimo || valorEmprestimo < 1000) {
+        // Atualiza o input para o mínimo aceitável para manter consistência
+        if (valorRapido) {
+            valorRapido.value = (1000).toLocaleString(idiomaAtual, { 
+                useGrouping: true,           // Usa agrupamento (separa os milhares)
+                minimumFractionDigits: 0, 
+                maximumFractionDigits: 0 
+            });
+        }
+        // Use o valor mínimo para os cálculos
+        valorEmprestimo = 1000;
     }
     
     if (taxaJuros < 0) {
@@ -934,6 +1081,7 @@ function obterTextoPeriodicidade(periodo) {
 // Formatar número sem símbolo de moeda
 function formatarNumero(valor) {
     return new Intl.NumberFormat(idiomaAtual, {
+        useGrouping: true,           // Usa agrupamento (separa os milhares)
         minimumFractionDigits: 0,
         maximumFractionDigits: 0
     }).format(valor);
@@ -1004,7 +1152,7 @@ function atualizarGraficos() {
         graficoEvolutivo.destroy();
     }
     
-    // Criar gráfico unificado
+    // Criar gráfico unificado (atualização instantânea)
     const ctx = document.getElementById('graficoEvolutivo').getContext('2d');
     
     graficoEvolutivo = new Chart(ctx, {
@@ -1033,6 +1181,8 @@ function atualizarGraficos() {
             ]
         },
         options: {
+            // Desabilitar animações padrão do Chart.js
+            animation: false,
             responsive: true,
             maintainAspectRatio: true,
             aspectRatio: 1.2,
@@ -1108,9 +1258,12 @@ document.addEventListener('DOMContentLoaded', function() {
     prazoRapido = document.getElementById('prazoRapido');
     
     // Event Listeners para botões de seta
-    document.querySelectorAll('.arrow-btn').forEach(btn => {
+    document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
         const targetId = btn.getAttribute('data-target');
         const step = parseFloat(btn.getAttribute('data-step'));
+        // Temporizadores locais para este botão — evita colisão entre botões
+        let btnTimeoutId = null;
+        let btnIntervalId = null;
         
         // Função para executar um step imediatamente
         const executarStep = function() {
@@ -1122,9 +1275,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Executa IMEDIATAMENTE no primeiro toque/clique
             executarStep();
             
-            // Depois de 500ms, começa a repetir
-            timeoutId = setTimeout(() => {
-                intervalId = setInterval(() => {
+            // Depois de 500ms, começa a repetir (guardado em variáveis locais)
+            btnTimeoutId = setTimeout(() => {
+                btnIntervalId = setInterval(() => {
                     ajustarValor(targetId, step);
                 }, 100);
             }, 500);
@@ -1132,13 +1285,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Função para parar repetição
         const stopRepeat = function() {
-            if (timeoutId) {
-                clearTimeout(timeoutId);
-                timeoutId = null;
+            if (btnTimeoutId) {
+                clearTimeout(btnTimeoutId);
+                btnTimeoutId = null;
             }
-            if (intervalId) {
-                clearInterval(intervalId);
-                intervalId = null;
+            if (btnIntervalId) {
+                clearInterval(btnIntervalId);
+                btnIntervalId = null;
             }
         };
         
@@ -1184,8 +1337,31 @@ document.addEventListener('DOMContentLoaded', function() {
     prazoRapido.addEventListener('keydown', tratarTeclasRapido);
     
     // Radio buttons dos controles rápidos
+    // Mantemos o período atual e quando o usuário mudar o período
+    // convertemos a taxa mostrada para o novo período antes de recalcular
+    let periodoRapidoAtual = (document.querySelector('input[name="periodoRapido"]:checked') || {}).value || 'ano';
     document.querySelectorAll('input[name="periodoRapido"]').forEach(radio => {
-        radio.addEventListener('change', calcularEmprestimo);
+        radio.addEventListener('change', (e) => {
+            const novoPeriodo = e.target.value;
+            if (novoPeriodo && novoPeriodo !== periodoRapidoAtual) {
+                // Ler taxa atual como número (usar ponto decimal)
+                const raw = taxaRapida && taxaRapida.value ? taxaRapida.value : '';
+                const taxaAtual = parseFloat(String(raw).replace(',', '.')) || 0;
+
+                // Converter de periodoRapidoAtual -> novoPeriodo
+                const taxaConvertida = converterTaxaBetweenPeriods(taxaAtual, periodoRapidoAtual, novoPeriodo);
+
+                // Formata com 3 casas se 'dia', caso contrário 1 casa
+                const decimals = novoPeriodo === 'dia' ? 3 : 1;
+                taxaRapida.value = taxaConvertida.toFixed(decimals).replace('.', ',');
+
+                // Atualiza estado
+                periodoRapidoAtual = novoPeriodo;
+            }
+
+            // Recalcula com o novo período
+            calcularEmprestimo();
+        });
     });
     
     document.querySelectorAll('input[name="sistemaRapido"]').forEach(radio => {
@@ -1198,6 +1374,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializa com o idioma salvo no localStorage
     trocarIdioma(idiomaAtual);
+
+    // Ripple helper is provided by /ripple.js (global attachRippleTo)
+    // ripple attachments centralized in ripple-init.js
     
     // Event listener para o botão de exemplos
     if (btnExemplos) {

@@ -7,7 +7,9 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Configurações - Solar</title>
-    <link rel="stylesheet" href="solar-styles.css?v=1.1.1">
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.0">
+    <link rel="stylesheet" href="solar-styles.css?v=1.1.2">
+    <link rel="stylesheet" href="../assets/css/ripple-styles.css?v=1.0.1">
     <style>
         /* Estilos específicos da página de config */
         .info-box {
@@ -23,6 +25,7 @@
             color: #2d9fa3ff;
             margin-bottom: 8px;
             font-size: 0.9rem;
+            text-align: center;
         }
         .info-box ul {
             margin: 0;
@@ -46,6 +49,7 @@
             margin-bottom: 12px;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
         }
         .btn-acao {
@@ -262,6 +266,10 @@
         </svg>
     </a>
 
-    <script src="config-script.js?v=1.0.5"></script>
+    <!-- Shared ripple helper -->
+    <script src="../ripple.js?v=1.0.0"></script>
+    <script src="../ripple-init.js?v=1.0.0"></script>
+    <script src="../assets/js/site-config.js?v=1.0.0"></script>
+    <script src="config-script.js?v=1.0.8"></script>
 </body>
 </html>

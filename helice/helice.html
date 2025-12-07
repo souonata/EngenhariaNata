@@ -13,7 +13,9 @@
     <title>Calculadora de Hélice</title>
     
     <!-- Carrega o arquivo CSS com controle de versão -->
-    <link rel="stylesheet" href="helice-styles.css?v=1.5.6">
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.0">
+    <link rel="stylesheet" href="helice-styles.css?v=1.5.7">
+    <link rel="stylesheet" href="../assets/css/ripple-styles.css?v=1.0.1">
     
     <!-- Chart.js para gráficos interativos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -44,62 +46,84 @@
         <!-- ========================================== -->
         <!-- CONTROLES DE ENTRADA -->
         <!-- ========================================== -->
-        <section class="controles">
+        <section class="cartao">
             <!-- Velocidade desejada -->
-            <div class="input-group">
-                <label for="sliderVelocidade" data-i18n="label-velocidade">Velocidade Desejada (nós)</label>
-                <div class="slider-display">
-                    <span id="valorVelocidade" class="valor-display">25</span>
-                    <span data-i18n="unidade-nos">nós</span>
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderVelocidade" data-i18n="label-velocidade">Velocidade Desejada</label>
+                    <div class="valor-com-unidades">
+                        <span id="valorVelocidade" class="valor-display">25</span>
+                        <!-- Seletor de unidade de velocidade (compacto) -->
+                        <div class="grupo-radio-compacto">
+                            <label class="opcao-radio-compacto">
+                                <input type="radio" name="unidadeVelocidade" value="knots" checked>
+                                <div class="cartao-radio-compacto">
+                                    <span class="rotulo-radio" data-i18n="unidade-nos">nós</span>
+                                </div>
+                            </label>
+                            <label class="opcao-radio-compacto">
+                                <input type="radio" name="unidadeVelocidade" value="mph">
+                                <div class="cartao-radio-compacto">
+                                    <span class="rotulo-radio" data-i18n="unidade-mph">mph</span>
+                                </div>
+                            </label>
+                            <label class="opcao-radio-compacto">
+                                <input type="radio" name="unidadeVelocidade" value="kmh">
+                                <div class="cartao-radio-compacto">
+                                    <span class="rotulo-radio" data-i18n="unidade-kmh">km/h</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
                 </div>
-                <input type="range" id="sliderVelocidade" min="5" max="60" step="1" value="25">
-                <div class="range-labels">
-                    <span>5</span>
-                    <span>60</span>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn" data-target="sliderVelocidade" data-step="-1" aria-label="Diminuir velocidade">−</button>
+                    <input type="range" id="sliderVelocidade" min="5" max="60" step="1" value="25">
+                    <button type="button" class="arrow-btn" data-target="sliderVelocidade" data-step="1" aria-label="Aumentar velocidade">+</button>
                 </div>
             </div>
 
             <!-- Redução da rabeta -->
-            <div class="input-group">
-                <label for="sliderReducao" data-i18n="label-reducao">Redução da Rabeta</label>
-                <div class="slider-display">
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderReducao" data-i18n="label-reducao">Redução da Rabeta</label>
                     <span id="valorReducao" class="valor-display">2.00</span>
                     <span>:1</span>
                 </div>
-                <input type="range" id="sliderReducao" min="1.00" max="3.50" step="0.01" value="2.00">
-                <div class="range-labels">
-                    <span>1.00:1</span>
-                    <span>3.50:1</span>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn" data-target="sliderReducao" data-step="-0.1" aria-label="Diminuir redução">−</button>
+                    <input type="range" id="sliderReducao" min="1.00" max="3.50" step="0.01" value="2.00">
+                    <button type="button" class="arrow-btn" data-target="sliderReducao" data-step="0.1" aria-label="Aumentar redução">+</button>
                 </div>
             </div>
 
             <!-- RPM máximo do motor -->
-            <div class="input-group">
-                <label for="sliderRPM" data-i18n="label-rpm">RPM Máximo do Motor</label>
-                <div class="slider-display">
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderRPM" data-i18n="label-rpm">RPM Máximo do Motor</label>
                     <span id="valorRPM" class="valor-display">5000</span>
                     <span>rpm</span>
                 </div>
-                <input type="range" id="sliderRPM" min="4000" max="7000" step="100" value="5000">
-                <div class="range-labels">
-                    <span>3000</span>
-                    <span>7000</span>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn" data-target="sliderRPM" data-step="-100" aria-label="Diminuir RPM">−</button>
+                    <input type="range" id="sliderRPM" min="4000" max="7000" step="100" value="5000">
+                    <button type="button" class="arrow-btn" data-target="sliderRPM" data-step="100" aria-label="Aumentar RPM">+</button>
                 </div>
             </div>
 
             <!-- Slip ajustável -->
-            <div class="input-group">
-                <label for="sliderSlip" data-i18n="label-slip">Slip Estimado</label>
-                <div class="slider-display">
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderSlip" data-i18n="label-slip">Slip Estimado</label>
                     <span id="valorSlip" class="valor-display">15</span>
                     <span>%</span>
                 </div>
-                <input type="range" id="sliderSlip" min="10" max="20" step="1" value="15">
-                <div class="range-labels">
-                    <span>10%</span>
-                    <span>20%</span>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn" data-target="sliderSlip" data-step="-1" aria-label="Diminuir slip">−</button>
+                    <input type="range" id="sliderSlip" min="10" max="20" step="1" value="15">
+                    <button type="button" class="arrow-btn" data-target="sliderSlip" data-step="1" aria-label="Aumentar slip">+</button>
                 </div>
-                <p class="info-text" data-i18n="info-slip">Valor típico para barcos de lazer: 10-15%. Representa a perda de eficiência da hélice.</p>
+                <p class="info-text" style="text-align: center; margin-top: 8px;" data-i18n="info-slip">Valor típico para barcos de lazer: 10-15%. Representa a perda de eficiência da hélice.</p>
             </div>
         </section>
 
@@ -107,23 +131,51 @@
         <!-- RESULTADO -->
         <!-- ========================================== -->
         <section class="resultado">
-            <h2 data-i18n="resultado-titulo">📐 Passo Recomendado</h2>
-            <div class="resultado-principal">
-                <span id="resultadoPasso" class="valor-grande">18</span>
-                <span data-i18n="unidade-polegadas">polegadas</span>
-            </div>
-            
-            <!-- Detalhes adicionais -->
-            <div class="detalhes">
-                <div class="detalhe-item">
-                    <span class="detalhe-label" data-i18n="rpm-helice">RPM na Hélice:</span>
-                    <span id="rpmHelice" class="detalhe-valor">2500</span>
-                    <span>rpm</span>
+            <h2 data-i18n="resultado-titulo">Resultados</h2>
+            <!-- Grade de resultados: Passo, RPM, Velocidade -->
+            <div class="grade-resultados">
+                <!-- Passo Recomendado -->
+                <div class="item-resultado">
+                    <div class="linha-resultado-com-unidades">
+                        <span class="icone-resultado">📐</span>
+                        <span class="valor-resultado" id="resultadoPasso">18</span>
+                        <!-- Seletor de unidade de passo (horizontal, compacto) -->
+                        <div class="grupo-radio-compacto">
+                            <label class="opcao-radio-compacto">
+                                <input type="radio" name="unidadePasso" value="inches" checked>
+                                <div class="cartao-radio-compacto">
+                                    <span class="rotulo-radio" data-i18n="unidade-polegadas-compacto">pol</span>
+                                </div>
+                            </label>
+                            <label class="opcao-radio-compacto">
+                                <input type="radio" name="unidadePasso" value="mm">
+                                <div class="cartao-radio-compacto">
+                                    <span class="rotulo-radio" data-i18n="unidade-mm">mm</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="rotulo-resultado" data-i18n="label-passo">Passo</div>
                 </div>
-                <div class="detalhe-item">
-                    <span class="detalhe-label" data-i18n="velocidade-teorica">Velocidade Teórica:</span>
-                    <span id="velocidadeTeorica" class="detalhe-valor">29.4</span>
-                    <span data-i18n="unidade-nos">nós</span>
+                
+                <!-- RPM na Hélice -->
+                <div class="item-resultado">
+                    <div class="linha-resultado">
+                        <span class="icone-resultado">⚙️</span>
+                        <span class="valor-resultado" id="rpmHelice">2500</span>
+                        <span class="rotulo-resultado">rpm</span>
+                    </div>
+                    <div class="rotulo-resultado" data-i18n="rpm-helice">RPM na Hélice</div>
+                </div>
+                
+                <!-- Velocidade Teórica -->
+                <div class="item-resultado">
+                    <div class="linha-resultado">
+                        <span class="icone-resultado">⚡</span>
+                        <span class="valor-resultado" id="velocidadeTeorica">29.4</span>
+                        <span class="rotulo-resultado" id="unidadeVelocidadeTeorica" data-i18n="unidade-nos">nós</span>
+                    </div>
+                    <div class="rotulo-resultado" data-i18n="velocidade-teorica">Velocidade Teórica</div>
                 </div>
             </div>
         </section>
@@ -178,7 +230,11 @@
         </svg>
     </a>
 
+    <!-- Shared ripple helper -->
+    <script src="../ripple.js?v=1.0.0"></script>
+    <script src="../ripple-init.js?v=1.0.0"></script>
+    <script src="../assets/js/site-config.js?v=1.0.0"></script>
     <!-- Carrega o JavaScript -->
-    <script src="helice-script.js?v=1.4.0"></script>
+    <script src="helice-script.js?v=1.4.2"></script>
 </body>
 </html>

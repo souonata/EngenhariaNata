@@ -7,7 +7,12 @@ function obterValorNumericoFormatado(valorFormatado) {
         v = v.replace(/\./g, '');
         v = v.replace(',', '.');
     } else {
-        v = v.replace(/,/g, '.');
+        if (v.indexOf(',') !== -1) {
+            v = v.replace(/\./g, '');
+            v = v.replace(',', '.');
+        } else {
+            v = v.replace(/\./g, '');
+        }
     }
     v = v.replace(/[^0-9.\-]/g, '');
     return parseFloat(v) || 0;

@@ -14,7 +14,9 @@
     
     <!-- Carrega o arquivo CSS com controle de versão -->
     <!-- Mude ?v=1.0.0 para ?v=1.0.1 quando atualizar o CSS -->
-    <link rel="stylesheet" href="sobre-styles.css?v=1.5.7">
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.0">
+    <link rel="stylesheet" href="sobre-styles.css?v=1.5.8">
+    <link rel="stylesheet" href="../assets/css/ripple-styles.css?v=1.0.1">
 </head>
 <body>
     <!-- Container principal que limita a largura máxima -->
@@ -42,7 +44,7 @@
 
         <!-- CARTÃO 1: VISÃO GERAL -->
         <div class="card card-expansivel">
-            <div class="card-header card-header-clicavel" onclick="alternarSecao(this)">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
                 <span class="icon">🎯</span>
                 <h2 data-i18n="overview-title">Visão Geral</h2>
                 <span class="seta-expansao">▼</span>
@@ -53,7 +55,7 @@
                 <ul class="tech-list">
                     <li><strong>💰 Mutuo</strong> - <span data-i18n="app-mutuo-desc">Calculadora de amortização bilíngue</span></li>
                     <li><strong>🚤 Helice</strong> - <span data-i18n="app-helice-desc">Calculadora de passo de hélice</span></li>
-                    <li><strong>☀️ Solar</strong> - <span data-i18n="app-solar-desc">Dimensionamento fotovoltaico off-grid</span></li>
+                    <li><strong>☀️ Solar</strong> - <span data-i18n="app-solar-desc">Dimensionamento fotovoltaico</span></li>
                     <li><strong>📖 Sobre mim</strong> - <span data-i18n="app-about-desc">Informações do projeto</span></li>
                 </ul>
             </div>
@@ -64,7 +66,7 @@
         <!-- Cartão destacado (classe highlight) com descrição completa do app -->
         <!-- ========================================== -->
         <div class="card highlight card-expansivel">
-            <div class="card-header card-header-clicavel" onclick="alternarSecao(this)">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
                 <span class="icon">💰</span>
                 <h2 data-i18n="calculator-title">Calculadora de Empréstimos BR/IT</h2>
                 <span class="seta-expansao">▼</span>
@@ -128,7 +130,7 @@
         <!-- CARTÃO 3: CALCULADORA DE HÉLICE -->
         <!-- ========================================== -->
         <div class="card highlight card-expansivel">
-            <div class="card-header card-header-clicavel" onclick="alternarSecao(this)">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
                 <span class="icon">🚤</span>
                 <h2 data-i18n="helice-title">Calculadora de Hélice</h2>
                 <span class="seta-expansao">▼</span>
@@ -157,14 +159,14 @@
         <!-- CARTÃO 3B: CALCULADORA SOLAR -->
         <!-- ========================================== -->
         <div class="card highlight card-expansivel">
-            <div class="card-header card-header-clicavel" onclick="alternarSecao(this)">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
                 <span class="icon">☀️</span>
                 <h2 data-i18n="solar-title">Dimensionamento Solar</h2>
                 <span class="seta-expansao">▼</span>
             </div>
             <div class="card-content conteudo-expansivel">
                 <p class="app-description">
-                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="solar-description">Ajuda a estimar painéis, baterias e inversor para sistemas off-grid de forma simplificada.</span>
+                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="solar-description">Ajuda a estimar painéis, baterias e inversor para sistemas fotovoltaicos de forma simplificada.</span>
                 </p>
                 
                 <div class="features-grid">
@@ -187,7 +189,7 @@
         <!-- ========================================== -->
         <!-- CARTÃO 4: RECURSOS ESPECIAIS -->
         <div class="card card-expansivel">
-            <div class="card-header card-header-clicavel" onclick="alternarSecao(this)">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
                 <span class="icon">✨</span>
                 <h2 data-i18n="features-title">Recursos Principais</h2>
                 <span class="seta-expansao">▼</span>
@@ -219,7 +221,7 @@
 
         <!-- CARTÃO 5: TECNOLOGIAS -->
         <div class="card card-expansivel">
-            <div class="card-header card-header-clicavel" onclick="alternarSecao(this)">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
                 <span class="icon">📚</span>
                 <h2 data-i18n="tech-title">Tecnologias Usadas</h2>
                 <span class="seta-expansao">▼</span>
@@ -261,8 +263,11 @@
 
     <!-- ========================================== -->
     <!-- SCRIPT PARA ACCORDION (EXPANSÃO/RETRAÇÃO) -->
-    <!-- A lógica está no arquivo sobre-script.js -->
+    <!-- Usamos o helper compartilhado ripple.js para efeitos táteis -->
     <!-- ========================================== -->
-    <script src="sobre-script.js?v=1.3.0"></script>
+    <script src="../ripple.js?v=1.0.0"></script>
+    <script src="../ripple-init.js?v=1.0.0"></script>
+    <script src="../assets/js/site-config.js?v=1.0.0"></script>
+    <script src="sobre-script.js?v=1.3.4"></script>
 </body>
 </html>

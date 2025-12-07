@@ -8,257 +8,237 @@
 /* Tradução PT-BR ↔ IT-IT */
 /* ========================================== */
 
-// Idioma atual - carrega do localStorage ou usa português como padrão
-let idiomaAtual = localStorage.getItem('idiomaPreferido') || 'pt-BR';
+// Prefer site-wide config keys when available
+const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
+const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
+let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
 
-// Dicionário de traduções
+// Replaced file content: cleaned translations and minimal accordion logic
+// This file sets up translations (pt-BR / it-IT) and enables a simple accordion
+// behavior so card headers expand/collapse on click and keyboard (Enter / Space).
+
 const traducoes = {
     'pt-BR': {
         'page-title': '📱 Sobre o Projeto',
         'page-subtitle': 'Portfólio de apps web',
         'overview-title': 'Visão Geral',
-            'overview-description': 'Pequeno portfólio com apps educativos que demonstram conceitos práticos de forma simples.',
-        'app-mutuo-desc': 'Calculadora de amortização bilíngue',
+        'overview-description': 'Pequeno portfólio com apps educativos que demonstram conceitos práticos de forma simples.',
+
+        'app-mutuo-desc': 'Calculadora de amortização',
         'app-helice-desc': 'Calculadora de passo de hélice',
-        'app-solar-desc': 'Dimensionamento fotovoltaico off-grid',
+        'app-solar-desc': 'Dimensionamento fotovoltaico',
         'app-about-desc': 'Informações do projeto',
-        'calculator-title': 'Calculadora de Empréstimos BR/IT',
+
+        'calculator-title': 'Calculadora de Empréstimos',
         'what-it-does': 'O que faz:',
-        'calculator-description': 'Compara 3 sistemas de amortização de empréstimos: SAC, Price e Americano. Ajuda pessoas a entenderem qual sistema é melhor para sua situação financeira.',
-            'calculator-description': 'Compara sistemas de amortização e mostra parcelas e gráficos para facilitar comparações.',
+        'calculator-description': 'Compara sistemas de amortização e mostra parcelas e gráficos para facilitar comparações.',
+
         'helice-title': 'Calculadora de Hélice',
-        'helice-description': 'Calcula o passo ideal da hélice para barcos de lazer, considerando RPM, redução e slip.',
+        'helice-description': 'Calcula o passo estimado da hélice para ajudar na escolha.',
+
         'solar-title': 'Dimensionamento Solar',
-        'solar-description': 'Dimensiona sistemas fotovoltaicos off-grid, calculando painéis, baterias e inversor necessários.',
-            'solar-description': 'Ajuda a estimar painéis, baterias e inversor para sistemas off-grid de forma simplificada.',
+        'solar-description': 'Ajuda a estimar painéis, baterias e inversor para sistemas fotovoltaicos de forma simplificada.',
+
         'feature-pitch-title': 'Cálculo de Passo',
-        'feature-pitch-desc': 'Determina o passo correto para atingir o RPM máximo',
+        'feature-pitch-desc': 'Determina o passo aproximado para a hélice',
         'feature-slip-title': 'Análise de Slip',
-        'feature-slip-desc': 'Considera a eficiência e o deslizamento na água',
-        'feature-battery-title': 'Baterias AGM/Lítio',
-        'feature-battery-desc': 'Compara chumbo-ácido e LiFePO₄ com tabelas de vida útil',
-        'feature-battery-note': 'As configurações permitem ajustar kWh/Ah, tensão, preço e peso (sliders até 180 kg).',
+        'feature-slip-desc': 'Considera eficiência e deslizamento',
+
+        'feature-battery-title': 'Baterias AGM / LiFePO₄',
+        'feature-battery-desc': 'Compara tecnologias e vida útil de baterias',
+        'feature-battery-note': 'Ajuste kWh/Ah, tensão, preço e peso (sliders até 180 kg).',
+
         'feature-config-title': 'Configurável',
-        'feature-config-desc': 'Customize preços, potências e especificações das baterias — mudanças salvas em localStorage (chave configSolar)',
+        'feature-config-desc': 'Customize preços e especificações; mudanças salvas em localStorage (configSolar).',
+
         'feature-bilingual-title': 'Bilíngue',
-        'feature-bilingual-desc': 'Português e Italiano com troca instantânea',
-            'feature-bilingual-desc': 'Troca entre Português e Italiano e exibe moeda correspondente.',
+        'feature-bilingual-desc': 'Troca entre Português e Italiano e exibe a moeda correspondente.',
+
         'feature-charts-title': 'Gráficos',
-        'feature-charts-desc': 'Visualização da evolução dos juros e amortização',
+        'feature-charts-desc': 'Gráficos simples para visualizar valores ao longo do tempo',
+
         'feature-responsive-title': 'Responsivo',
-        'feature-responsive-desc': 'Funciona perfeitamente em celular, tablet e desktop',
+        'feature-responsive-desc': 'Projetado para funcionar bem em dispositivos móveis e desktop',
+
         'feature-fast-title': 'Rápido',
-        'feature-fast-desc': 'Cálculos instantâneos ao mudar valores',
+        'feature-fast-desc': 'Cálculos instantâneos ao ajustar valores',
+
         'stat-html': 'linhas HTML',
         'stat-js': 'linhas JavaScript',
         'stat-css': 'linhas CSS',
+
         'features-title': 'Recursos Principais',
         'resource-bilingual-title': '🌍 Bilíngue',
-        'resource-bilingual-desc': 'Troca entre Português e Italiano em 1 clique. Moeda muda automaticamente (R$ ↔ €).',
+        'resource-bilingual-desc': 'Troca de idioma e moeda associada',
         'resource-charts-title': '📊 Gráficos Interativos',
-        'resource-charts-desc': 'Visualize a evolução dos juros e amortização ao longo do tempo.',
+        'resource-charts-desc': 'Visualização simples dos dados',
         'resource-mobile-title': '📱 Mobile-First',
-        'resource-mobile-desc': 'Funciona perfeitamente em celulares, tablets e computadores.',
+        'resource-mobile-desc': 'Compatível com celulares e computadores',
+
         'tech-title': 'Tecnologias Usadas',
         'tech-html': 'Estrutura das páginas',
         'tech-css': 'Estilos e animações',
-        'tech-js': 'Sem frameworks',
-        'tech-chart': 'Gráficos interativos',
-        'footer-text': '💻 Portfólio Engenharia NATA'
-        , 'aria-home': 'Voltar para a tela inicial'
-            'feature-responsive-desc': 'Desenvolvido para funcionar bem em dispositivos móveis e desktops',
+        'tech-js': 'JavaScript puro',
+        'tech-chart': 'Gráficos (Chart.js)',
+
+        'footer-text': '💻 Portfólio Engenharia NATA',
+        'aria-home': 'Voltar para a tela inicial'
     },
+
     'it-IT': {
         'page-title': '📱 Sul Progetto',
         'page-subtitle': 'Portfolio di app web',
         'overview-title': 'Panoramica',
-            'overview-description': 'Portfolio con app educativi che mostrano concetti pratici in modo semplice.',
-        'app-mutuo-desc': 'Calcolatrice di ammortamento bilingue',
-        // Dicionário de traduções (limpo e consistente)
-        const traducoes = {
-            'pt-BR': {
-                'page-title': '📱 Sobre o Projeto',
-                'page-subtitle': 'Portfólio de apps web',
-                'overview-title': 'Visão Geral',
-                'overview-description': 'Pequeno portfólio com apps educativos que demonstram conceitos práticos de forma simples.',
+        'overview-description': 'Piccolo portfolio con app didattiche che mostrano concetti pratici in modo semplice.',
 
-                'app-mutuo-desc': 'Calculadora de amortização',
-                'app-helice-desc': 'Calculadora de passo de hélice',
-                'app-solar-desc': 'Dimensionamento fotovoltaico off-grid',
-                'app-about-desc': 'Informações do projeto',
+        'app-mutuo-desc': 'Calcolatrice di ammortamento',
+        'app-helice-desc': 'Calcolatrice passo elica',
+        'app-solar-desc': 'Dimensionamento fotovoltaico',
+        'app-about-desc': 'Informazioni sul progetto',
 
-                'calculator-title': 'Calculadora de Empréstimos',
-                'what-it-does': 'O que faz:',
-                'calculator-description': 'Compara sistemas de amortização e mostra parcelas e gráficos para facilitar comparações.',
+        'calculator-title': 'Calcolatrice Prestiti',
+        'what-it-does': 'Cosa fa:',
+        'calculator-description': 'Confronta sistemi di ammortamento e mostra rate e grafici per facilitare i confronti.',
 
-                'helice-title': 'Calculadora de Hélice',
-                'helice-description': 'Calcula o passo estimado da hélice para ajudar na escolha.',
+        'helice-title': 'Calcolatore Elica',
+        'helice-description': "Calcola il passo stimato dell'elica per aiutare nella scelta.",
 
-                'solar-title': 'Dimensionamento Solar',
-                'solar-description': 'Ajuda a estimar painéis, baterias e inversor para sistemas off-grid de forma simplificada.',
+        'solar-title': 'Dimensionamento Solare',
+        'solar-description': 'Aiuta a stimare pannelli, batterie e inverter per sistemi fotovoltaici in modo semplificato.',
 
-                'feature-pitch-title': 'Cálculo de Passo',
-                'feature-pitch-desc': 'Determina o passo aproximado para a hélice',
-                'feature-slip-title': 'Análise de Slip',
-                'feature-slip-desc': 'Considera eficiência e deslizamento',
+        'feature-pitch-title': 'Calcolo del Passo',
+        'feature-pitch-desc': 'Stima il passo dell\'elica',
+        'feature-slip-title': 'Analisi dello Slip',
+        'feature-slip-desc': 'Considera efficienza e scivolamento',
 
-                'feature-battery-title': 'Baterias AGM / LiFePO₄',
-                'feature-battery-desc': 'Compara tecnologias e vida útil de baterias',
-                'feature-battery-note': 'Ajuste kWh/Ah, tensão, preço e peso (sliders até 180 kg).',
+        'feature-battery-title': 'Batterie AGM / LiFePO₄',
+        'feature-battery-desc': 'Confronta tecnologie e vita utile delle batterie',
+        'feature-battery-note': 'Regola kWh/Ah, tensione, prezzo e peso (slider fino a 180 kg).',
 
-                'feature-config-title': 'Configurável',
-                'feature-config-desc': 'Customize preços e especificações; mudanças salvas em localStorage (configSolar).',
+        'feature-config-title': 'Configurabile',
+        'feature-config-desc': 'Personalizza prezzi e specifiche; impostazioni salvate in localStorage (configSolar).',
 
-                'feature-bilingual-title': 'Bilíngue',
-                'feature-bilingual-desc': 'Troca entre Português e Italiano e exibe a moeda correspondente.',
+        'feature-bilingual-title': 'Bilingue',
+        'feature-bilingual-desc': 'Cambia tra Portoghese e Italiano e mostra la valuta corrispondente.',
 
-                'feature-charts-title': 'Gráficos',
-                'feature-charts-desc': 'Gráficos simples para visualizar valores ao longo do tempo',
+        'feature-charts-title': 'Grafici',
+        'feature-charts-desc': 'Grafici semplici per visualizzare i dati nel tempo',
 
-                'feature-responsive-title': 'Responsivo',
-                'feature-responsive-desc': 'Projetado para funcionar bem em dispositivos móveis e desktop',
+        'feature-responsive-title': 'Responsive',
+        'feature-responsive-desc': 'Progettato per dispositivi mobili e desktop',
 
-                'feature-fast-title': 'Rápido',
-                'feature-fast-desc': 'Cálculos instantâneos ao ajustar valores',
+        'feature-fast-title': 'Veloce',
+        'feature-fast-desc': 'Calcoli istantanei al cambiare dei valori',
 
-                'stat-html': 'linhas HTML',
-                'stat-js': 'linhas JavaScript',
-                'stat-css': 'linhas CSS',
+        'stat-html': 'righe HTML',
+        'stat-js': 'righe JavaScript',
+        'stat-css': 'righe CSS',
 
-                'features-title': 'Recursos Principais',
-                'resource-bilingual-title': '🌍 Bilíngue',
-                'resource-bilingual-desc': 'Troca de idioma e moeda associada',
-                'resource-charts-title': '📊 Gráficos Interativos',
-                'resource-charts-desc': 'Visualização simples dos dados',
-                'resource-mobile-title': '📱 Mobile-First',
-                'resource-mobile-desc': 'Compatível com celulares e computadores',
+        'features-title': 'Caratteristiche Principali',
+        'resource-bilingual-title': '🌍 Bilingue',
+        'resource-bilingual-desc': 'Cambio lingua e valuta',
+        'resource-charts-title': '📊 Grafici Interattivi',
+        'resource-charts-desc': 'Visualizzazione semplice dei dati',
+        'resource-mobile-title': '📱 Mobile-First',
+        'resource-mobile-desc': 'Compatibile con dispositivi mobili e computer',
 
-                'tech-title': 'Tecnologias Usadas',
-                'tech-html': 'Estrutura das páginas',
-                'tech-css': 'Estilos e animações',
-                'tech-js': 'JavaScript puro',
-                'tech-chart': 'Gráficos (Chart.js)',
+        'tech-title': 'Tecnologie Utilizzate',
+        'tech-html': 'Struttura delle pagine',
+        'tech-css': 'Stili e animazioni',
+        'tech-js': 'JavaScript puro',
+        'tech-chart': 'Grafici (Chart.js)',
 
-                'footer-text': '💻 Portfólio Engenharia NATA',
-                'aria-home': 'Voltar para a tela inicial'
-            },
+        'footer-text': '💻 Portfolio Ingegneria NATA',
+        'aria-home': 'Torna alla schermata iniziale'
+    }
+};
 
-            'it-IT': {
-                'page-title': '📱 Sul Progetto',
-                'page-subtitle': 'Portfolio di app web',
-                'overview-title': 'Panoramica',
-                'overview-description': 'Piccolo portfolio con app didattiche che mostrano concetti pratici in modo semplice.',
+// -------------------------------------------------------------
+// Funções de UI (idioma, accordion) — explicação didática
+// -------------------------------------------------------------
+// Este arquivo combina duas responsabilidades simples:
+// 1) Internacionalização: troca do idioma mostrando textos armazenados
+//    no dicionário `traducoes` para elementos marcados com data-i18n.
+// 2) Accordion: lógica de expansão/retração de seções.
+//
+// A estratégia do accordion é baseada em animação CSS manipulando
+// `max-height` para permitir transições suaves e também atualizando
+// atributos de acessibilidade `aria-expanded`. Click ou teclas (Enter/Space)
+// disparam alternarSecao, que configura o estilo e o estado.
 
-                'app-mutuo-desc': 'Calcolatrice di ammortamento',
-                'app-helice-desc': 'Calcolatrice passo elica',
-                'app-solar-desc': 'Dimensionamento fotovoltaico off-grid',
-                'app-about-desc': 'Informazioni sul progetto',
+function trocarIdioma(novoIdioma) {
+    idiomaAtual = novoIdioma;
+    localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
+    document.documentElement.lang = novoIdioma;
 
-                'calculator-title': 'Calcolatrice Prestiti',
-                'what-it-does': 'Cosa fa:',
-                'calculator-description': 'Confronta sistemi di ammortamento e mostra rate e grafici per facilitare i confronti.',
-
-                'helice-title': 'Calcolatore Elica',
-                'helice-description': "Calcola il passo stimato dell'elica per aiutare nella scelta.",
-
-                'solar-title': 'Dimensionamento Solare',
-                'solar-description': 'Aiuta a stimare pannelli, batterie e inverter per sistemi off-grid in modo semplificato.',
-
-                'feature-pitch-title': 'Calcolo del Passo',
-                'feature-pitch-desc': 'Stima il passo dell\'elica',
-                'feature-slip-title': 'Analisi dello Slip',
-                'feature-slip-desc': 'Considera efficienza e scivolamento',
-
-                'feature-battery-title': 'Batterie AGM / LiFePO₄',
-                'feature-battery-desc': 'Confronta tecnologie e vita utile delle batterie',
-                'feature-battery-note': 'Regola kWh/Ah, tensione, prezzo e peso (slider fino a 180 kg).',
-
-                'feature-config-title': 'Configurabile',
-                'feature-config-desc': 'Personalizza prezzi e specifiche; impostazioni salvate in localStorage (configSolar).',
-
-                'feature-bilingual-title': 'Bilingue',
-                'feature-bilingual-desc': 'Cambia tra Portoghese e Italiano e mostra la valuta corrispondente.',
-
-                'feature-charts-title': 'Grafici',
-                'feature-charts-desc': 'Grafici semplici per visualizzare i dati nel tempo',
-
-                'feature-responsive-title': 'Responsive',
-                'feature-responsive-desc': 'Progettato per dispositivi mobili e desktop',
-
-                'feature-fast-title': 'Veloce',
-                'feature-fast-desc': 'Calcoli istantanei al cambiare dei valori',
-
-                'stat-html': 'righe HTML',
-                'stat-js': 'righe JavaScript',
-                'stat-css': 'righe CSS',
-
-                'features-title': 'Caratteristiche Principali',
-                'resource-bilingual-title': '🌍 Bilingue',
-                'resource-bilingual-desc': 'Cambio lingua e valuta',
-                'resource-charts-title': '📊 Grafici Interattivi',
-                'resource-charts-desc': 'Visualizzazione semplice dei dati',
-                'resource-mobile-title': '📱 Mobile-First',
-                'resource-mobile-desc': 'Compatibile con dispositivi mobili e computer',
-
-                'tech-title': 'Tecnologie Utilizzate',
-                'tech-html': 'Struttura delle pagine',
-                'tech-css': 'Stili e animazioni',
-                'tech-js': 'JavaScript puro',
-                'tech-chart': 'Grafici (Chart.js)',
-
-                'footer-text': '💻 Portfolio Ingegneria NATA',
-                'aria-home': 'Torna alla schermata iniziale'
-            }
-        };
-        // Gira a seta para cima (180 graus)
-        if (seta) {
-            seta.style.transform = 'rotate(180deg)';
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const chave = el.getAttribute('data-i18n');
+        if (traducoes[novoIdioma] && traducoes[novoIdioma][chave]) {
+            el.textContent = traducoes[novoIdioma][chave];
         }
+    });
+
+    document.querySelectorAll(SITE_SEL.LANG_BTN).forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-lang') === novoIdioma);
+    });
+
+    const homeLabel = traducoes[novoIdioma]['aria-home'] || 'Home';
+    document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
+}
+
+function alternarSecao(cabecalho) {
+    const card = cabecalho.closest('.card-expansivel');
+    if (!card) return;
+    const conteudo = card.querySelector('.conteudo-expansivel');
+    const seta = cabecalho.querySelector('.seta-expansao');
+
+    card.classList.toggle('expandido');
+
+    if (card.classList.contains('expandido')) {
+        conteudo.style.maxHeight = conteudo.scrollHeight + 'px';
+        if (seta) seta.style.transform = 'rotate(180deg)';
+        // accessibility state
+        cabecalho.setAttribute('aria-expanded', 'true');
     } else {
-        // Retrai: esconde o conteúdo
         conteudo.style.maxHeight = '0';
-        
-        // Volta a seta para baixo (0 graus)
-        if (seta) {
-            seta.style.transform = 'rotate(0deg)';
-        }
+        if (seta) seta.style.transform = 'rotate(0deg)';
+        cabecalho.setAttribute('aria-expanded', 'false');
     }
 }
 
-/**
- * Inicializa todas as seções como retraídas ao carregar a página
- * Define altura inicial como 0 para todos os conteúdos expansíveis
- */
-document.addEventListener('DOMContentLoaded', function() {
-    // Inicializa com o idioma salvo no localStorage ou português como padrão
+document.addEventListener('DOMContentLoaded', () => {
     trocarIdioma(idiomaAtual);
-    
-    // Adiciona event listeners nos botões de idioma
-    document.getElementById('btnPortugues').addEventListener('click', () => trocarIdioma('pt-BR'));
-    document.getElementById('btnItaliano').addEventListener('click', () => trocarIdioma('it-IT'));
-    
-    // Pega todos os conteúdos expansíveis
-    const conteudos = document.querySelectorAll('.conteudo-expansivel');
-    
-    // Define altura inicial como 0 (retraído)
-    conteudos.forEach(conteudo => {
-        conteudo.style.maxHeight = '0';
-        conteudo.style.overflow = 'hidden';
-        conteudo.style.transition = 'max-height 0.4s ease';
-    });
-});
 
-/**
- * Adiciona funcionalidade de teclado (acessibilidade)
- * Permite expandir/retrair seções usando Enter ou Espaço
- */
-document.addEventListener('keydown', function(e) {
-    // Verifica se o elemento focado é um cabeçalho clicável
-    if (e.target.classList.contains('card-header-clicavel')) {
-        // Enter ou Espaço expandem/retraem
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            alternarSecao(e.target);
-        }
-    }
+    const btnP = document.getElementById('btnPortugues');
+    const btnI = document.getElementById('btnItaliano');
+    if (btnP) btnP.addEventListener('click', () => trocarIdioma('pt-BR'));
+    if (btnI) btnI.addEventListener('click', () => trocarIdioma('it-IT'));
+
+    // ensure all accordions start collapsed
+    document.querySelectorAll('.conteudo-expansivel').forEach(el => {
+        el.style.maxHeight = '0';
+        el.style.overflow = 'hidden';
+        el.style.transition = 'max-height 0.4s ease';
+    });
+
+    // attach touch/click-friendly handlers to headers
+    document.querySelectorAll('.card-header-clicavel').forEach(h => {
+            // We use the shared attachRippleTo helper (ripple.js) to provide
+            // consistent tap highlight behavior across the site. The visual
+            // effect is still removed after a short timeout by the shared helper.
+
+        // click toggles the accordion
+        h.addEventListener('click', () => alternarSecao(h));
+        // ensure keyboard access
+        h.setAttribute('tabindex', '0');
+        h.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                alternarSecao(h);
+            }
+        });
+    });
+
+    // ripple attachments centralized in ripple-init.js
 });
+// end of file - accordion and i18n logic implemented above

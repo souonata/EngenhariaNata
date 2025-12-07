@@ -6,108 +6,44 @@
     margin: 0;           /* Remove margem de TODOS os elementos */
     padding: 0;          /* Remove padding de TODOS os elementos */
     box-sizing: border-box;  /* Faz width incluir border e padding */
-}
-
-/* Bloqueia scroll horizontal em TODA a página */
-html {
-    overflow-x: hidden;
-    width: 100%;
-    /* Desabilita zoom com pinch (dois dedos) no iOS */
-    touch-action: pan-y;
-}
-
-body {
-    /* Fonte do sistema (igual iPhone/Android) */
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    
-    /* Fundo verde estilo Windows 98/2000 (igual tela inicial) */
-    background: #4e7262;
-    
-    /* Cor do texto */
-    color: #333;
-    
-    /* Altura da linha (espaçamento entre linhas de texto) */
-    line-height: 1.6;
-    
-    /* Altura mínima = altura total da janela do navegador */
-    min-height: 100vh;
-    
-    /* Espaçamento interno de 20px em todos os lados */
-    padding: 15px;
-    
-    /* Espaço extra no final para o botão home (60px botão + 25px margem + 25px espaço) */
-    padding-bottom: 110px;
-    
-    /* BLOQUEIA scroll horizontal e zoom indesejado */
-    overflow-x: hidden;
-    width: 100%;
     position: relative;
+}
+
+/* Language button styles moved to shared-styles.css */
+:root { 
+    --lang-btn-bg: rgba(255,255,255,0.2); 
+    --lang-btn-border: rgba(255,255,255,0.3); 
+    --lang-btn-hover: rgba(255,255,255,0.3); 
+    --home-size:50px; 
+    --home-size-mobile:46px;
+    --accent-color: #2d9fa3ff;
+    --accent-hover-bg: rgba(45, 159, 163, 0.05);
+    --accent-active-bg: rgba(45, 159, 163, 0.1);
+    --accent-shadow: rgba(45, 159, 163, 0.3);
+}
+
+/* Use the shared site background so the page matches the rest of the site */
+body {
+    background: var(--site-bg, #4e7262);
+    /* make room for the floating home button so it doesn't cover footer */
+    padding-bottom: var(--site-bottom-padding, 110px);
 }
 
 /* ============================================
    BOTÃO INÍCIO FIXO
    Botão redondo que fica sempre visível no rodapé
    ============================================ */
-.home-button-fixed {
-    position: fixed;    /* Fica fixo na tela (não rola com a página) */
-    bottom: 15px;       /* compact like Solar */
-    left: 50%;          /* Começa no meio (50%) */
-    transform: translateX(-50%);  /* Move metade da largura para esquerda (centraliza) */
-    
-    /* Tamanho do botão circular */
-    width: 50px;
-    height: 50px;
-    
-    /* Fundo com gradiente azul igual aos outros apps */
-    background: linear-gradient(135deg, #4A90E2 0%, #2E5C8A 100%);
-    
-    /* Circular (50% = metade da largura/altura) */
-    border-radius: 50%;
-    
-    /* Centraliza o ícone dentro do botão */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    /* Sombra colorida para dar profundidade */
-    box-shadow: 0 8px 20px rgba(74, 144, 226, 0.4);
-    
-    /* Transições suaves de todas as mudanças */
-    transition: all 0.3s ease;
-    
-    /* z-index alto para ficar acima de tudo */
-    z-index: 1000;
-    
-    /* Remove sublinhado de link */
-    text-decoration: none;
-    
-    /* Cor branca para o ícone (contraste com gradiente) */
-    color: white;
-}
-
-/* Quando passa o mouse: aumenta 10% e sombra mais forte */
-.home-button-fixed:hover {
-    transform: translateX(-50%) scale(1.15);  /* Mantém centralizado e aumenta */
-    box-shadow: 0 12px 30px rgba(78, 114, 98, 0.6);
-}
-
-/* Tamanho do ícone SVG dentro do botão */
-.home-button-fixed svg {
-    width: 22px;
-    height: 22px;
-    fill: white;  /* Branco para contrastar com o gradiente */
-}
+/* Home button styling moved to assets/css/shared-styles.css
+   Per-page variables are defined at the top of this file. */
 
 /* ============================================
    RECIPIENTE PRINCIPAL
    Envolve todo o conteúdo ocupando toda a largura disponível
    ============================================ */
 .container {
-    /* Remove limite de largura para ocupar toda a tela */
     width: 100%;
-    
-    /* Remove margem auto para permitir largura completa */
-    margin: 0;
+    max-width: 900px;
+    margin: 0 auto;
 }
 
 /* ============================================
@@ -116,7 +52,7 @@ body {
 header {
     text-align: center;  /* Centraliza todo o texto */
     color: white;
-    margin-bottom: 10px; /* compact */
+    margin-bottom: 12px;
     padding: 8px 0;
 }
 
@@ -124,63 +60,9 @@ header {
 /* SELETOR DE IDIOMA */
 /* Botões para trocar entre PT-BR e IT-IT */
 /* ========================================== */
-.language-selector {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 8px;
-}
+/* language selector layout centralized in assets/css/shared-styles.css */
 
-.lang-btn {
-    /* Remove estilo padrão de botão */
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 25px;
-    padding: 10px 20px;
-    
-    /* Cursor de ponteiro ao passar o mouse */
-    cursor: pointer;
-    
-    /* Transição suave de todas as mudanças */
-    transition: all 0.3s ease;
-    
-    /* Cor do texto */
-    color: white;
-    
-    /* Fonte e tamanho */
-    font-size: 0.95rem;
-    font-weight: 600;
-    
-    /* Centraliza conteúdo */
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* Efeito ao passar o mouse */
-.lang-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: translateY(-2px);
-}
-
-/* Botão ativo (idioma selecionado) */
-.lang-btn.active {
-    background: white;
-    color: #4A90E2;
-    border-color: white;
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
-}
-
-/* Bandeira (emoji) dentro do botão */
-.flag {
-    font-size: 1.3rem;
-}
-
-/* Texto do idioma */
-.lang-text {
-    font-size: 0.9rem;
-}
+/* Language button visuals centralized in assets/css/shared-styles.css */
 
 /* Título principal (H1) */
 header h1 {
@@ -191,7 +73,7 @@ header h1 {
 
 /* Subtítulo (texto menor abaixo do título) */
 .subtitle {
-    font-size: 1.1rem;  /* 17.6px */
+    font-size: 0.95rem;
     opacity: 0.9;       /* Levemente transparente (90% opaco) */
 }
 
@@ -200,21 +82,22 @@ header h1 {
    Cada seção da página está dentro de um card branco
    ============================================ */
 .card {
-    background: white;       /* Fundo branco */
-    border-radius: 12px;     /* slightly smaller corners */
-    padding: 12px;           /* compact padding */
-    margin-bottom: 12px;     /* compact spacing */
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    background: white;
+    border-radius: 12px;
+    padding: 12px 15px;  /* consistent with Solar */
+    margin-bottom: 10px;  /* consistent with Solar */
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);  /* consistent with Solar */
     animation: fadeInUp 0.55s ease;
 }
 
 /* Card destacado (com fundo especial e borda) */
 .card.highlight {
     /* Fundo com gradiente cinza claro */
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    
-    /* Borda roxa grossa */
-    border: 3px solid #4A90E2;
+    /* Prefer the shared theme variable if present; keep original as fallback */
+    background: var(--card-highlight-bg, linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%));
+
+    /* Borda grosa — prefer the global accent color */
+    border: 3px solid var(--accent-color, #2d9fa3ff);
 }
 
 /* Cabeçalho do card (título + ícone) */
@@ -226,8 +109,8 @@ header h1 {
     margin-bottom: 8px;
     padding-bottom: 8px;
     
-    /* Linha roxa embaixo do cabeçalho */
-    border-bottom: 3px solid #4A90E2;
+    /* Linha de separação — prefer the global accent color */
+    border-bottom: 3px solid var(--accent-color, #2d9fa3ff);
 }
 
 /* Cabeçalho clicável (para accordion) */
@@ -238,21 +121,28 @@ header h1 {
     padding: 10px;
     margin: -10px;  /* Compensa o padding para não aumentar o espaço */
     border-radius: 8px;
+    /* For ripple effect */
+    position: relative;
+    overflow: hidden;
 }
 
 .card-header-clicavel:hover {
-    background: rgba(74, 144, 226, 0.05);  /* Fundo roxo claro ao passar o mouse */
+    /* Hover background should use theme hover variable if present */
+    background: var(--accent-hover-bg, rgba(45, 159, 163, 0.05));
 }
 
 .card-header-clicavel:active {
-    background: rgba(74, 144, 226, 0.1);  /* Fundo roxo mais escuro ao clicar */
+    background: var(--accent-active-bg, rgba(45, 159, 163, 0.1));
 }
+
+/* Ripple moved to shared file ripple-styles.css */
+:root { --ripple-color: rgba(74,144,226,0.18); }
 
 /* Seta indicadora de expansão */
 .seta-expansao {
     margin-left: auto;  /* Empurra a seta para a direita */
     font-size: 1.2rem;
-    color: #4A90E2;
+    color: var(--accent-color, #2d9fa3ff);
     transition: transform 0.3s ease;  /* Animação suave da rotação */
 }
 
@@ -275,7 +165,7 @@ header h1 {
 
 /* Título H2 do card */
 .card-header h2 {
-    color: #4A90E2;     /* Roxo */
+    color: var(--accent-color, #2d9fa3ff);     /* Roxo */
     font-size: 1rem;  /* compact */
 }
 
@@ -299,23 +189,24 @@ header h1 {
     padding: 10px 15px;
     margin-bottom: 8px;
     
-    /* Fundo azul claro */
-    background: #f0f4ff;
+    /* Fundo azul claro — prefer theme variable when available */
+    background: var(--feature-bg, #f0f4ff);
     
     border-radius: 8px;  /* Cantos arredondados */
     
-    /* Barra roxa na borda esquerda */
-    border-left: 4px solid #4A90E2;
+    /* Barra na borda esquerda — prefer global accent color */
+    border-left: 4px solid var(--accent-color, #2d9fa3ff);
 }
 
 /* Caixa de descrição do aplicativo (amarela) */
 .app-description {
-    background: #fff3cd;  /* Amarelo claro */
+    /* Caixa de descrição com cor de aviso — prefer theme variable */
+    background: var(--warning-bg, #fff3cd);  /* Amarelo claro */
     padding: 15px;
     border-radius: 10px;
     
-    /* Barra amarela na borda esquerda */
-    border-left: 5px solid #ffc107;
+    /* Barra na borda esquerda — prefer theme warning color */
+    border-left: 5px solid var(--warning-color, #ffc107);
     
     margin-bottom: 8px;
     font-size: 1.1rem;
@@ -353,7 +244,7 @@ header h1 {
 /* Quando passa o mouse: levanta 5px e aumenta sombra */
 .feature:hover {
     transform: translateY(-5px);  /* Move 5px para cima */
-    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
+    box-shadow: 0 6px 20px var(--accent-shadow, rgba(45, 159, 163, 0.3));
 }
 
 /* Ícone emoji da feature */
@@ -365,7 +256,7 @@ header h1 {
 
 /* Título da feature (H4) */
 .feature h4 {
-    color: #4A90E2;  /* Roxo */
+    color: var(--accent-color, #2d9fa3ff);  /* Roxo */
     margin-bottom: 8px;
     font-size: 1.2rem;  /* 19.2px */
 }
@@ -373,7 +264,7 @@ header h1 {
 /* Texto descritivo da feature */
 .feature p {
     font-size: 0.95rem;  /* 15.2px - um pouco menor */
-    color: #666;         /* Cinza escuro */
+    color: var(--muted-text, #666);         /* Cinza escuro */
 }
 
 /* ============================================
@@ -399,7 +290,7 @@ header h1 {
     display: block;
     font-size: 1.8rem;   /* smaller for compact layout */
     font-weight: bold;
-    color: #4A90E2;      /* Roxo */
+    color: var(--accent-color, #2d9fa3ff);      /* Roxo */
     margin-bottom: 5px;
 }
 
@@ -407,7 +298,7 @@ header h1 {
 .stat-label {
     display: block;
     font-size: 0.9rem;  /* 14.4px - pequeno */
-    color: #666;        /* Cinza */
+    color: var(--muted-text, #666);        /* Cinza */
 }
 
 /* ============================================
@@ -417,13 +308,14 @@ header h1 {
 footer {
     text-align: center;
     color: white;
-    margin-top: 20px;
-    padding: 15px 0;
+    margin-top: 12px;
+    padding: 8px 0;
     opacity: 0.9;
+    font-size: 0.75rem;
 }
 
 footer p {
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
 }
 
 /* ============================================
@@ -451,21 +343,10 @@ footer p {
     /* Reduz padding no body, mas mantém espaço inferior para botão home */
     body {
         padding: 10px;
-        padding-bottom: 110px;
+        padding-bottom: var(--site-bottom-padding, 110px);
     }
 
-    /* Botão HOME menor no mobile */
-    .home-button-fixed {
-        bottom: 15px;  /* compact */
-        width: 46px;   /* slightly smaller on mobile */
-        height: 46px;
-    }
-    
-    /* Ícone menor dentro do botão HOME */
-    .home-button-fixed svg {
-        width: 20px;   /* smaller mobile icon */
-        height: 20px;
-    }
+    /* Mobile sizes are handled by shared-styles.css using --home-size-mobile. */
 
     /* Título principal menor */
     header h1 {

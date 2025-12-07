@@ -1,7 +1,28 @@
 // ============================================
 // CONFIGURAÇÕES SOLAR - SCRIPT
-// Permite customizar valores de componentes
+// Permite customizar valores de componentes (UI de administração)
 // ============================================
+//
+// Comentários didáticos em Português - Objetivo do arquivo
+// -------------------------------------------------------
+// Esta página permite que um usuário (ou mantenedor) ajuste os valores
+// padrão usados pela calculadora solar: potência/preço de painéis,
+// tensão, capacidade, peso e preço das baterias (AGM / LiFePO4).
+//
+// Propósito das funções principais:
+//  - carregarValores(): lê a configuração salva em localStorage
+//    (chave padronizada) ou usa VALORES_PADRAO; aplica valores aos sliders
+//    da interface e atualiza as labels.
+//  - salvarValores(): serializa os valores atuais dos sliders e salva em
+//    localStorage para serem usados pela calculadora principal (solar.html).
+//  - restaurarPadroes(): remove a configuração salva, voltando aos defaults
+//    (útil para testes e para restaurar comportamento original).
+//
+// Observações:
+//  - O arquivo aceita defaults do SiteConfig (se presente) para manter
+//    consistência com configurações globais do site.
+//  - Mantém compatibilidade entre unidades: capacidade agora é medida
+//    em kWh, mas a UI e calculadora ainda aceitam conversões quando necessário.
 
 // Valores padrão (referência 2024)
 const VALORES_PADRAO = {
@@ -19,9 +40,14 @@ const VALORES_PADRAO = {
     pesoLitio: 60
 };
 
+// Allow site-level defaults (SiteConfig) to override some battery defaults
+const BATTERY_DEFAULTS = (typeof SiteConfig !== 'undefined' && SiteConfig.DEFAULTS && SiteConfig.DEFAULTS.BATTERY) ? SiteConfig.DEFAULTS.BATTERY : { DEFAULT_LFP_KWH: 4.8, DEFAULT_AGM_KWH: 1.2, LFP_MAX_KG: 180, AGM_MAX_KG: 180 };
+
 // Idioma atual (herda do localStorage)
-// Usa a chave padronizada para compartilhar preferência entre apps
-let idiomaAtual = localStorage.getItem('idiomaPreferido') || 'pt-BR';
+// Prefer centralized keys via SiteConfig if available
+const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
+const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
+let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
 
 // ============================================
 // DICIONÁRIO DE TRADUÇÃO
@@ -85,8 +111,8 @@ const traducoes = {
 
 function trocarIdioma(idioma) {
     idiomaAtual = idioma;
-    // Persiste a escolha de idioma para todo o portfólio
-    localStorage.setItem('idiomaPreferido', idioma);
+    // Persiste a escolha de idioma para todo o portfólio (centralized key)
+    localStorage.setItem(SITE_LS.LANGUAGE_KEY, idioma);
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const chave = el.getAttribute('data-i18n');
         if (traducoes[idioma] && traducoes[idioma][chave]) {
@@ -97,7 +123,7 @@ function trocarIdioma(idioma) {
 
     // Ajusta aria-label do botão home para o idioma selecionado (acessibilidade)
     const homeLabel = traducoes[idioma]['aria-home'] || 'Home';
-    document.querySelectorAll('.home-button-fixed').forEach(el => el.setAttribute('aria-label', homeLabel));
+    document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
 }
 
 function atualizarDisplays() {
@@ -146,7 +172,7 @@ function ajustarValor(targetId, step) {
 }
 
 function carregarValores() {
-    const configSalva = localStorage.getItem('configSolar');
+    const configSalva = localStorage.getItem(SITE_LS.SOLAR_CONFIG_KEY);
     const config = configSalva ? JSON.parse(configSalva) : VALORES_PADRAO;
     
     // Aplicar valores aos sliders
@@ -154,12 +180,12 @@ function carregarValores() {
     document.getElementById('sliderPrecoPainel').value = config.precoPainel || VALORES_PADRAO.precoPainel;
     
     document.getElementById('sliderTensaoAGM').value = config.tensaoAGM || VALORES_PADRAO.tensaoAGM;
-    document.getElementById('sliderCapacidadeAGM').value = config.capacidadeAGM || VALORES_PADRAO.capacidadeAGM;
+    document.getElementById('sliderCapacidadeAGM').value = config.capacidadeAGM || BATTERY_DEFAULTS.DEFAULT_AGM_KWH || VALORES_PADRAO.capacidadeAGM;
     document.getElementById('sliderPrecoAGM').value = config.precoAGM || VALORES_PADRAO.precoAGM;
     document.getElementById('sliderPesoAGM').value = config.pesoAGM || VALORES_PADRAO.pesoAGM;
     
     document.getElementById('sliderTensaoLitio').value = config.tensaoLitio || VALORES_PADRAO.tensaoLitio;
-    document.getElementById('sliderCapacidadeLitio').value = config.capacidadeLitio || VALORES_PADRAO.capacidadeLitio;
+    document.getElementById('sliderCapacidadeLitio').value = config.capacidadeLitio || BATTERY_DEFAULTS.DEFAULT_LFP_KWH || VALORES_PADRAO.capacidadeLitio;
     document.getElementById('sliderPrecoLitio').value = config.precoLitio || VALORES_PADRAO.precoLitio;
     document.getElementById('sliderPesoLitio').value = config.pesoLitio || VALORES_PADRAO.pesoLitio;
     
@@ -180,12 +206,12 @@ function salvarValores() {
         pesoLitio: parseInt(document.getElementById('sliderPesoLitio').value)
     };
     
-    localStorage.setItem('configSolar', JSON.stringify(config));
+    localStorage.setItem(SITE_LS.SOLAR_CONFIG_KEY, JSON.stringify(config));
     window.location.href = 'solar.html';
 }
 
 function restaurarPadroes() {
-    localStorage.removeItem('configSolar');
+    localStorage.removeItem(SITE_LS.SOLAR_CONFIG_KEY);
     carregarValores();
 }
 
@@ -197,6 +223,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Carregar idioma e valores salvos
     trocarIdioma(idiomaAtual);
     carregarValores();
+    // Apply centralized battery max limits from SiteConfig if available
+    const batteryDefaults = (typeof SiteConfig !== 'undefined' && SiteConfig.DEFAULTS && SiteConfig.DEFAULTS.BATTERY) ? SiteConfig.DEFAULTS.BATTERY : { LFP_MAX_KG: 180, AGM_MAX_KG: 180, DEFAULT_LFP_KWH: 4.8, DEFAULT_AGM_KWH: 1.2 };
+    const sPesoAGM = document.getElementById('sliderPesoAGM');
+    const sPesoLitio = document.getElementById('sliderPesoLitio');
+    if (sPesoAGM) sPesoAGM.max = batteryDefaults.AGM_MAX_KG;
+    if (sPesoLitio) sPesoLitio.max = batteryDefaults.LFP_MAX_KG;
     
     // Listeners para todos os sliders
     const sliders = document.querySelectorAll('input[type="range"]');
@@ -205,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Listeners para botões +/-
-    document.querySelectorAll('.arrow-btn').forEach(btn => {
+    document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
         let intervalId = null;
         let timeoutId = null;
         
@@ -244,4 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Botão Restaurar
     document.getElementById('btnResetar').addEventListener('click', restaurarPadroes);
+
+    // Ripple helper is provided by /ripple.js (global attachRippleTo)
+    // ripple attachments centralized in ripple-init.js
 });

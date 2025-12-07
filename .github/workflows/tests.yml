@@ -1,0 +1,29 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  node-tests:
+    name: Node test runner
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Run Node tests
+        run: node tests/run-tests.js
+
+  pwsh-smoke:
+    name: PowerShell smoke checks (Windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run PowerShell checks
+        shell: pwsh
+        run: |
+          pwsh -NoProfile -ExecutionPolicy Bypass -File .\tests\check-site-config.ps1
+          pwsh -NoProfile -ExecutionPolicy Bypass -File .\tests\check-ripple.ps1
