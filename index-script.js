@@ -82,6 +82,7 @@ const traducoes = {
         'app-helice': 'Hélice',
         'app-mutuo': 'Financiamento',
         'app-solar': 'Solar',
+        'app-bitola': 'Bitola',
         
         // Dias da semana por extenso (minúscula)
         'dia-dom': 'domingo',
@@ -115,6 +116,7 @@ const traducoes = {
         'app-helice': 'Elica',
         'app-mutuo': 'Mutuo',
         'app-solar': 'Solare',
+        'app-bitola': 'Sezione Cavi',
         
         // Dias da semana por extenso em italiano (minúscula)
         'dia-dom': 'domenica',

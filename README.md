@@ -5,6 +5,7 @@ Uma pequena coleção de apps web educativos para estudar conceitos práticos de
 - **💰 Mutuo** — Calculadora de empréstimos (SAC, Price, Americano) com gráficos interativos e tabela de amortização completa.
 - **🚤 Helice** — Calculadora de passo de hélice para barcos de lazer, com análise de slip e gráficos de relação velocidade × passo.
 - **☀️ Solar** — Dimensionamento fotovoltaico off-grid (painéis, baterias AGM/LiFePO4, inversor) com página de configuração personalizável.
+- **⚡ Bitola** — Calculadora de bitola de fios elétricos para circuitos CC e CA, com seleção automática de bitola comercial padrão brasileiro.
 
 ## 🎯 Características Principais
 

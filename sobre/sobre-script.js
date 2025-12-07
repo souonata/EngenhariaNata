@@ -27,6 +27,7 @@ const traducoes = {
         'app-mutuo-desc': 'Calculadora de amortização',
         'app-helice-desc': 'Calculadora de passo de hélice',
         'app-solar-desc': 'Dimensionamento fotovoltaico',
+        'app-bitola-desc': 'Calculadora de bitola de fios',
         'app-about-desc': 'Informações do projeto',
 
         'calculator-title': 'Calculadora de Empréstimos',
@@ -39,6 +40,9 @@ const traducoes = {
         'solar-title': 'Dimensionamento Solar',
         'solar-description': 'Ajuda a estimar painéis, baterias e inversor para sistemas fotovoltaicos de forma simplificada.',
 
+        'bitola-title': 'Calculadora de Bitola de Fios',
+        'bitola-description': 'Calcula a área de seção mínima de fios elétricos para circuitos CC e CA, considerando queda de tensão e selecionando a bitola comercial adequada.',
+
         'feature-pitch-title': 'Cálculo de Passo',
         'feature-pitch-desc': 'Determina o passo aproximado para a hélice',
         'feature-slip-title': 'Análise de Slip',
@@ -50,6 +54,15 @@ const traducoes = {
 
         'feature-config-title': 'Configurável',
         'feature-config-desc': 'Customize preços e especificações; mudanças salvas em localStorage (configSolar).',
+
+        'feature-cc-ca-title': 'CC e CA',
+        'feature-cc-ca-desc': 'Suporta corrente contínua (CC) e alternada (CA) com tensões típicas e valores personalizados.',
+        'feature-bitola-comercial-title': 'Bitola Comercial',
+        'feature-bitola-comercial-desc': 'Seleciona automaticamente a bitola comercial padrão brasileiro (NBR 5410) que atende aos requisitos.',
+        'feature-queda-tensao-title': 'Queda de Tensão',
+        'feature-queda-tensao-desc': 'Recomenda 4% de queda de tensão para projetos residenciais no Brasil (padrão mais utilizado).',
+        'feature-potencia-title': 'Potência Flexível',
+        'feature-potencia-desc': 'Steps dinâmicos: 1W (1-10W), 10W (100-1000W), 50W (1000-3000W) com formatação automática em "k" para valores >= 1000W.',
 
         'feature-bilingual-title': 'Bilíngue',
         'feature-bilingual-desc': 'Troca entre Português e Italiano e exibe a moeda correspondente.',
@@ -95,6 +108,7 @@ const traducoes = {
         'app-mutuo-desc': 'Calcolatrice di ammortamento',
         'app-helice-desc': 'Calcolatrice passo elica',
         'app-solar-desc': 'Dimensionamento fotovoltaico',
+        'app-bitola-desc': 'Calcolatrice sezione cavi',
         'app-about-desc': 'Informazioni sul progetto',
 
         'calculator-title': 'Calcolatrice Prestiti',
@@ -107,6 +121,9 @@ const traducoes = {
         'solar-title': 'Dimensionamento Solare',
         'solar-description': 'Aiuta a stimare pannelli, batterie e inverter per sistemi fotovoltaici in modo semplificato.',
 
+        'bitola-title': 'Calcolatrice Sezione Cavi',
+        'bitola-description': 'Calcola l\'area di sezione minima dei cavi elettrici per circuiti CC e CA, considerando la caduta di tensione e selezionando la sezione commerciale adeguata.',
+
         'feature-pitch-title': 'Calcolo del Passo',
         'feature-pitch-desc': 'Stima il passo dell\'elica',
         'feature-slip-title': 'Analisi dello Slip',
@@ -118,6 +135,15 @@ const traducoes = {
 
         'feature-config-title': 'Configurabile',
         'feature-config-desc': 'Personalizza prezzi e specifiche; impostazioni salvate in localStorage (configSolar).',
+
+        'feature-cc-ca-title': 'CC e CA',
+        'feature-cc-ca-desc': 'Supporta corrente continua (CC) e alternata (CA) con tensioni tipiche e valori personalizzati.',
+        'feature-bitola-comercial-title': 'Sezione Commerciale',
+        'feature-bitola-comercial-desc': 'Seleziona automaticamente la sezione commerciale standard brasiliana (NBR 5410) che soddisfa i requisiti.',
+        'feature-queda-tensao-title': 'Caduta di Tensione',
+        'feature-queda-tensao-desc': 'Raccomanda 4% di caduta di tensione per progetti residenziali in Brasile (standard più utilizzato).',
+        'feature-potencia-title': 'Potenza Flessibile',
+        'feature-potencia-desc': 'Step dinamici: 1W (1-10W), 10W (100-1000W), 50W (1000-3000W) con formattazione automatica in "k" per valori >= 1000W.',
 
         'feature-bilingual-title': 'Bilingue',
         'feature-bilingual-desc': 'Cambia tra Portoghese e Italiano e mostra la valuta corrispondente.',

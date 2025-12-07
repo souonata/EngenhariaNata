@@ -8,6 +8,12 @@ Este glossário ajuda visitantes não técnicos e estudantes a entender os termo
 - **W (Watt)** — Unidade de potência. Exemplo: um painel solar de 400W pode gerar até 400 watts de energia quando exposto ao sol.
 - **kW (quilowatt)** — 1000 watts. Usado para medir potência de inversores e sistemas maiores.
 - **Ah (Ampère-hora)** — Unidade de capacidade de bateria. Pode ser convertida para kWh multiplicando pela tensão: kWh = (V × Ah) / 1000. Exemplo: 48V × 100Ah = 4.8 kWh.
+- **CC (Corrente Contínua)** — Tipo de corrente elétrica onde o fluxo de elétrons é constante em uma direção. Usada em baterias, painéis solares e sistemas de baixa tensão (12V, 24V, 48V).
+- **CA (Corrente Alternada)** — Tipo de corrente elétrica onde o fluxo de elétrons inverte direção periodicamente. Usada na rede elétrica residencial (110V, 220V).
+- **Bitola de Fio** — Área de seção transversal do condutor elétrico, medida em milímetros quadrados (mm²). Determina a capacidade de corrente que o fio pode transportar.
+- **Queda de Tensão** — Redução da tensão elétrica ao longo do circuito devido à resistência do condutor. Em projetos residenciais no Brasil, recomenda-se máximo de 4% de queda.
+- **Resistividade do Cobre** — Propriedade do cobre que determina sua resistência elétrica. Valor padrão: 0.0175 Ω·mm²/m a 20°C.
+- **Bitola Comercial** — Valores padronizados de bitolas disponíveis no mercado brasileiro conforme norma NBR 5410: 1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240 mm².
 
 ## ☀️ Energia Solar
 

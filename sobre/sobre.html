@@ -56,6 +56,7 @@
                     <li><strong>💰 Mutuo</strong> - <span data-i18n="app-mutuo-desc">Calculadora de amortização bilíngue</span></li>
                     <li><strong>🚤 Helice</strong> - <span data-i18n="app-helice-desc">Calculadora de passo de hélice</span></li>
                     <li><strong>☀️ Solar</strong> - <span data-i18n="app-solar-desc">Dimensionamento fotovoltaico</span></li>
+                    <li><strong>⚡ Bitola</strong> - <span data-i18n="app-bitola-desc">Calculadora de bitola de fios</span></li>
                     <li><strong>📖 Sobre mim</strong> - <span data-i18n="app-about-desc">Informações do projeto</span></li>
                 </ul>
             </div>
@@ -186,6 +187,45 @@
                         <span class="feature-icon">⚙️</span>
                         <h4 data-i18n="feature-config-title">Configurável</h4>
                         <p data-i18n="feature-config-desc">Customize preços, potências e especificações das baterias — mudanças salvas em `localStorage` (chave `configSolar`).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- CARTÃO 3C: CALCULADORA DE BITOLA DE FIOS -->
+        <!-- ========================================== -->
+        <div class="card highlight card-expansivel">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                <span class="icon">⚡</span>
+                <h2 data-i18n="bitola-title">Calculadora de Bitola de Fios</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <p class="app-description">
+                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="bitola-description">Calcula a área de seção mínima de fios elétricos para circuitos CC e CA, considerando queda de tensão e selecionando a bitola comercial adequada.</span>
+                </p>
+                
+                <div class="features-grid">
+                    <div class="feature">
+                        <span class="feature-icon">🔋</span>
+                        <h4 data-i18n="feature-cc-ca-title">CC e CA</h4>
+                        <p data-i18n="feature-cc-ca-desc">Suporta corrente contínua (CC) e alternada (CA) com tensões típicas e valores personalizados.</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📏</span>
+                        <h4 data-i18n="feature-bitola-comercial-title">Bitola Comercial</h4>
+                        <p data-i18n="feature-bitola-comercial-desc">Seleciona automaticamente a bitola comercial padrão brasileiro (NBR 5410) que atende aos requisitos.</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📊</span>
+                        <h4 data-i18n="feature-queda-tensao-title">Queda de Tensão</h4>
+                        <p data-i18n="feature-queda-tensao-desc">Recomenda 4% de queda de tensão para projetos residenciais no Brasil (padrão mais utilizado).</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">⚡</span>
+                        <h4 data-i18n="feature-potencia-title">Potência Flexível</h4>
+                        <p data-i18n="feature-potencia-desc">Steps dinâmicos: 1W (1-10W), 10W (100-1000W), 50W (1000-3000W) com formatação automática em "k" para valores >= 1000W.</p>
                     </div>
                 </div>
             </div>

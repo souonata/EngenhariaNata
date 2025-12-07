@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <title>Calculadora de Bitola de Fios</title>
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.0">
+    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.0">
+    <link rel="stylesheet" href="bitola-styles.css?v=1.0.0">
+    <link rel="stylesheet" href="../assets/css/ripple-styles.css?v=1.0.1">
+</head>
+<body>
+    <div class="container">
+        <!-- ========================================== -->
+        <!-- CABEÇALHO COM SELETOR DE IDIOMA -->
+        <!-- ========================================== -->
+        <header>
+            <div class="language-selector">
+                <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">
+                    <span class="flag">🇧🇷</span>
+                    <span class="lang-text">Português</span>
+                </button>
+                <button id="btnItaliano" class="lang-btn" data-lang="it-IT">
+                    <span class="flag">🇮🇹</span>
+                    <span class="lang-text">Italiano</span>
+                </button>
+            </div>
+            <h1 data-i18n="app-title">⚡ Calculadora de Bitola de Fios</h1>
+            <p class="subtitulo" data-i18n="app-subtitle">Área de Seção Mínima para Circuitos CC e CA</p>
+        </header>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE ENTRADAS -->
+        <!-- ========================================== -->
+        <section class="card">
+            <!-- Tipo de Corrente (CC ou CA) -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-tipo-corrente">Tipo de Corrente</label>
+                <div class="grupo-radio">
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoCorrente" value="cc" checked>
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" style="font-size: 1.8rem;" title="Corrente Contínua">🔋</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoCorrente" value="ca">
+                        <div class="cartao-radio cartao-radio-ca">
+                            <span class="rotulo-radio" style="font-size: 1.8rem;" title="Corrente Alternada">🔌</span>
+                            <!-- Tensão CA aparece ao lado da tomada quando selecionada -->
+                            <div id="tensaoCAInline" class="tensao-inline" style="display: none;">
+                                <div class="grupo-radio-compacto">
+                                    <label class="opcao-radio-compacto">
+                                        <input type="radio" name="tensaoCA" value="110" checked>
+                                        <div class="cartao-radio-compacto">
+                                            <span class="rotulo-radio">110V</span>
+                                        </div>
+                                    </label>
+                                    <label class="opcao-radio-compacto">
+                                        <input type="radio" name="tensaoCA" value="220">
+                                        <div class="cartao-radio-compacto">
+                                            <span class="rotulo-radio">220V</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Potência Máxima Nominal -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderPotencia" data-i18n="label-potencia">Potência Máxima Nominal</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputPotencia" class="valor-display valor-input" value="1000">
+                        <span class="unidade" data-i18n="unit-watt">W</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPotencia" data-step="-dynamic" aria-label="Diminuir potência">−</button>
+                    <input type="range" id="sliderPotencia" min="1" max="10000" step="1" value="1000">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPotencia" data-step="dynamic" aria-label="Aumentar potência">+</button>
+                </div>
+            </div>
+
+            <!-- Comprimento Total do Circuito -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderComprimento" data-i18n="label-comprimento">Distância do Circuito</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputComprimento" class="valor-display valor-input" value="20">
+                        <span class="unidade" data-i18n="unit-meter">m</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderComprimento" data-step="-1" aria-label="Diminuir comprimento">−</button>
+                    <input type="range" id="sliderComprimento" min="1" max="200" step="1" value="20">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderComprimento" data-step="1" aria-label="Aumentar comprimento">+</button>
+                </div>
+                <p class="dica" data-i18n="dica-comprimento">💡 Distância entre a fonte e a carga<br>(o cálculo considera automaticamente ida e volta)</p>
+            </div>
+
+            <!-- Tensão (diferente para CC e CA) -->
+            <!-- Para CA: botões 110V e 220V agora aparecem ao lado da tomada -->
+            <!-- Seção removida - valores agora aparecem inline no cartão da tomada -->
+
+            <!-- Para CC: slider com valores típicos -->
+            <div id="secaoTensaoCC" class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderTensaoCC" data-i18n="label-tensao">Tensão</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputTensaoCC" class="valor-display valor-input" value="12">
+                        <span class="unidade" data-i18n="unit-volt">V</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderTensaoCC" data-step="-1" aria-label="Diminuir tensão">−</button>
+                    <input type="range" id="sliderTensaoCC" min="0" max="10" step="1" value="4">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderTensaoCC" data-step="1" aria-label="Aumentar tensão">+</button>
+                </div>
+                <p class="dica" data-i18n="dica-tensao-cc">💡 Valores típicos: 3.3V, 5V, 9V, 12V, 24V, 36V, 48V, 60V, 72V, 96V</p>
+            </div>
+
+            <!-- Queda de Tensão -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderQuedaTensao" data-i18n="label-queda-tensao">Queda de Tensão Máxima</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputQuedaTensao" class="valor-display valor-input" value="4">
+                        <span class="unidade">%</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderQuedaTensao" data-step="-0.5" aria-label="Diminuir queda de tensão">−</button>
+                    <input type="range" id="sliderQuedaTensao" min="1" max="10" step="0.5" value="4">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderQuedaTensao" data-step="0.5" aria-label="Aumentar queda de tensão">+</button>
+                </div>
+                <p class="dica-recomendacao" data-i18n="dica-queda-tensao">✅ <strong>Recomendado para projetos residenciais no Brasil: 4%</strong> (padrão mais utilizado)</p>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE RESULTADOS -->
+        <!-- ========================================== -->
+        <section class="card resultados">
+            <h2 data-i18n="resultados-title">📊 Resultados</h2>
+            
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-area-minima">Área de Seção Mínima:</span>
+                <span class="valor-resultado" id="areaMinima">-</span>
+            </div>
+
+            <div class="resultado-item destaque">
+                <span class="label-resultado" data-i18n="resultado-bitola-comercial">Bitola Comercial Recomendada:</span>
+                <span class="valor-resultado-grande" id="bitolaComercial">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-corrente">Corrente do Circuito:</span>
+                <span class="valor-resultado" id="correnteCircuito">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-queda-real">Queda de Tensão Real:</span>
+                <span class="valor-resultado" id="quedaReal">-</span>
+            </div>
+
+            <div class="resultado-item destaque">
+                <span class="label-resultado" data-i18n="resultado-disjuntor">Disjuntor Comercial Recomendado:</span>
+                <span class="valor-resultado-grande" id="disjuntorComercial">-</span>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p data-i18n="footer">Calculadora de Bitola de Fios - Engenharia Nata © 2025</p>
+    </footer>
+
+    <!-- Botão de retorno à tela inicial -->
+    <a href="../index.html" class="home-button-fixed" aria-label="Voltar à tela inicial">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <!-- Scripts -->
+    <script src="../ripple.js?v=1.0.0"></script>
+    <script src="../ripple-init.js?v=1.0.0"></script>
+    <script src="../assets/js/site-config.js?v=1.0.0"></script>
+    <script src="bitola-script.js?v=1.0.0"></script>
+</body>
+</html>
+
