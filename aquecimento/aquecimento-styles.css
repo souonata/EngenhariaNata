@@ -298,6 +298,343 @@ header h1 {
     .detalhe-linha {
         font-size: 0.8rem;
     }
+  }
+  
+/* ============================================
+   CLASSES ENERGÉTICAS COM GRADIENTE DE CORES
+   ============================================ */
+.classe-energetica .cartao-radio {
+    position: relative;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 60px;
+}
+
+.classe-energetica .rotulo-radio {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.classe-energetica .rotulo-consumo {
+    font-size: 0.7rem;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+/* Gradiente de cores: Azul (A eficiente) a Vermelho (G ruim) */
+/* Classe A4 - Mais eficiente (azul mais escuro) */
+.classe-A4 .cartao-radio {
+    background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%);
+    color: white;
+    border-color: #0D47A1;
+}
+
+.classe-A4 input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #0277BD 0%, #0D47A1 100%);
+    border-color: #01579B;
+    box-shadow: 0 4px 12px rgba(13, 71, 161, 0.5);
+}
+
+/* Classe A3 */
+.classe-A3 .cartao-radio {
+    background: linear-gradient(135deg, #1565C0 0%, #1976D2 100%);
+    color: white;
+    border-color: #1565C0;
+}
+
+.classe-A3 input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%);
+    border-color: #0277BD;
+    box-shadow: 0 4px 12px rgba(21, 101, 192, 0.5);
+}
+
+/* Classe A2 */
+.classe-A2 .cartao-radio {
+    background: linear-gradient(135deg, #1976D2 0%, #2196F3 100%);
+    color: white;
+    border-color: #1976D2;
+}
+
+.classe-A2 input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #1565C0 0%, #1976D2 100%);
+    border-color: #0D47A1;
+    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.5);
+}
+
+/* Classe A1 */
+.classe-A1 .cartao-radio {
+    background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+    color: white;
+    border-color: #1976D2;
+}
+
+.classe-A1 input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #1976D2 0%, #2196F3 100%);
+    border-color: #1565C0;
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+}
+
+.classe-B .cartao-radio {
+    background: linear-gradient(135deg, #42A5F5 0%, #64B5F6 100%);
+    color: white;
+    border-color: #2196F3;
+}
+
+.classe-B input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+    border-color: #1976D2;
+    box-shadow: 0 4px 12px rgba(66, 165, 245, 0.4);
+}
+
+.classe-C .cartao-radio {
+    background: linear-gradient(135deg, #66BB6A 0%, #81C784 100%);
+    color: white;
+    border-color: #4CAF50;
+}
+
+.classe-C input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+    border-color: #43A047;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+.classe-D .cartao-radio {
+    background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+    color: #333;
+    border-color: #FFA000;
+}
+
+.classe-D input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #FFA000 0%, #FFC107 100%);
+    border-color: #FF8F00;
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+}
+
+.classe-E .cartao-radio {
+    background: linear-gradient(135deg, #FF9800 0%, #FFB74D 100%);
+    color: white;
+    border-color: #F57C00;
+}
+
+.classe-E input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #F57C00 0%, #FF9800 100%);
+    border-color: #EF6C00;
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+}
+
+.classe-F .cartao-radio {
+    background: linear-gradient(135deg, #FF5722 0%, #FF8A65 100%);
+    color: white;
+    border-color: #E64A19;
+}
+
+.classe-F input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #E64A19 0%, #FF5722 100%);
+    border-color: #D84315;
+    box-shadow: 0 4px 12px rgba(255, 87, 34, 0.4);
+}
+
+.classe-G .cartao-radio {
+    background: linear-gradient(135deg, #F44336 0%, #EF5350 100%);
+    color: white;
+    border-color: #D32F2F;
+}
+
+.classe-G input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #D32F2F 0%, #F44336 100%);
+    border-color: #C62828;
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+}
+
+/* ============================================
+   RESPONSIVIDADE - CLASSES ENERGÉTICAS
+   ============================================ */
+/* Em telas pequenas, permitir quebra em duas linhas */
+@media (max-width: 600px) {
+    /* Quando há elementos com classe-energetica, aplicar flex-wrap */
+    .grupo-entrada:has(.classe-energetica) .grupo-radio {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    /* Cada opção ocupa 50% da largura (menos o gap) */
+    .grupo-entrada:has(.classe-energetica) .opcao-radio {
+        flex: 0 0 calc(50% - 5px);
+        min-width: calc(50% - 5px);
+        max-width: calc(50% - 5px);
+    }
+    
+    .classe-energetica .cartao-radio {
+        width: 100%;
+    }
+}
+
+/* Em telas muito pequenas, ajustar tamanhos */
+@media (max-width: 400px) {
+    .classe-energetica .rotulo-radio {
+        font-size: 1rem;
+    }
+    
+    .classe-energetica .rotulo-consumo {
+        font-size: 0.65rem;
+    }
+    
+    .classe-energetica .cartao-radio {
+        min-height: 55px;
+        padding: 8px 6px;
+    }
+}
+
+/* ============================================
+   DICAS MULTILINHA
+   ============================================ */
+.dica-multilinha {
+    line-height: 1.6;
+    margin-top: 8px;
+}
+
+.dica-multilinha strong {
+    font-weight: 600;
+    color: #333;
+}
+
+/* ============================================
+   NOTA DE REFERÊNCIA
+   ============================================ */
+.nota-referencia {
+    font-size: 0.75rem;
+    color: #666;
+    font-style: italic;
+    margin-top: -8px;
+    margin-bottom: 16px;
+    padding-left: 8px;
+    border-left: 3px solid #2d9fa3ff;
+}
+
+/* ============================================
+   CHECKBOXES DE TIPO DE SISTEMA
+   ============================================ */
+.grupo-checkbox {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.opcao-checkbox {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.opcao-checkbox input[type="checkbox"] {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    cursor: pointer;
+    accent-color: var(--accent-color, #2d9fa3ff);
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.cartao-checkbox {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    transition: all 0.3s;
+    cursor: pointer;
+    flex: 1;
+}
+
+.opcao-checkbox:hover .cartao-checkbox {
+    border-color: var(--accent-color, #2d9fa3ff);
+    background-color: #f5f5f5;
+}
+
+.opcao-checkbox input:checked + .cartao-checkbox {
+    border-color: var(--accent-color, #2d9fa3ff);
+    background: linear-gradient(135deg, #e0f7fa 0%, #f5f5f5 100%);
+    box-shadow: 0 4px 10px rgba(45, 159, 163, 0.2);
+}
+
+.rotulo-checkbox {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.descricao-checkbox {
+    font-size: 0.8rem;
+    color: #666;
+    font-style: italic;
+}
+
+.opcao-checkbox input:checked + .cartao-checkbox .rotulo-checkbox {
+    color: var(--accent-color, #2d9fa3ff);
+}
+
+.opcao-checkbox input:checked + .cartao-checkbox .descricao-checkbox {
+    color: #555;
+}
+
+/* ============================================
+   TAMANHOS ESPECÍFICOS DOS INPUTS
+   ============================================ */
+/* Ajustar tamanho dos inputs baseado no maior valor possível + 2-3 caracteres */
+#inputPessoas {
+    min-width: 45px;
+    max-width: 50px;
+}
+
+#inputLatitude {
+    min-width: 65px;
+    max-width: 70px;
+}
+
+#inputAltitude {
+    min-width: 60px;
+    max-width: 65px;
+}
+
+#inputAreaCasa {
+    min-width: 50px;
+    max-width: 55px;
+}
+
+#inputAlturaCasa {
+    min-width: 50px;
+    max-width: 55px;
+}
+
+#inputDiasAutonomia {
+    min-width: 35px;
+    max-width: 40px;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+footer {
+    text-align: center;
+    color: white;
+    margin-top: 12px;
+    padding: 8px 0;
+    opacity: 0.9;
+    font-size: 0.75rem;
+}
+
+footer p {
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
 }
 
 /* Typography moved to shared-styles.css */

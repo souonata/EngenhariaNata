@@ -36,6 +36,28 @@
         <!-- SEÇÃO DE ENTRADAS -->
         <!-- ========================================== -->
         <section class="card">
+            <!-- Tipo de Sistema -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-tipo-sistema">Tipo de Sistema</label>
+                <p class="dica" data-i18n="dica-tipo-sistema">💡 Selecione um ou ambos os tipos de sistema</p>
+                <div class="grupo-checkbox">
+                    <label class="opcao-checkbox">
+                        <input type="checkbox" id="checkboxAgua" name="tipoSistema" value="agua" checked>
+                        <div class="cartao-checkbox">
+                            <span class="rotulo-checkbox" data-i18n="opt-agua-consumo">💧 Água de Consumo</span>
+                            <span class="descricao-checkbox" data-i18n="desc-agua-consumo">Banho, pias, etc.</span>
+                        </div>
+                    </label>
+                    <label class="opcao-checkbox">
+                        <input type="checkbox" id="checkboxCasa" name="tipoSistema" value="casa" checked>
+                        <div class="cartao-checkbox">
+                            <span class="rotulo-checkbox" data-i18n="opt-aquecimento-casa">🏠 Aquecimento da Casa</span>
+                            <span class="descricao-checkbox" data-i18n="desc-aquecimento-casa">Aquecimento ambiente</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
             <!-- Número de Pessoas -->
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
@@ -75,7 +97,11 @@
                         </div>
                     </label>
                 </div>
-                <p class="dica" data-i18n="dica-tipo-uso">💡 Econômico: 30L/pessoa/dia | Padrão: 40L/pessoa/dia | Alto: 60L/pessoa/dia</p>
+                <p class="dica dica-multilinha" data-i18n="dica-tipo-uso">
+                    💡 <strong>Econômico:</strong> 30L/pessoa/dia<br>
+                    💡 <strong>Padrão:</strong> 40L/pessoa/dia<br>
+                    💡 <strong>Alto:</strong> 60L/pessoa/dia
+                </p>
             </div>
 
             <!-- Latitude -->
@@ -92,7 +118,11 @@
                     <input type="range" id="sliderLatitude" min="-35" max="-5" step="0.5" value="-23.5">
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderLatitude" data-step="0.5" aria-label="Aumentar latitude">+</button>
                 </div>
-                <p class="dica" data-i18n="dica-latitude">💡 Exemplo: São Paulo ≈ -23,5° | Rio de Janeiro ≈ -22,9° | Porto Alegre ≈ -30,0°</p>
+                <p class="dica dica-multilinha" data-i18n="dica-latitude">
+                    💡 <strong>São Paulo:</strong> ≈ -23,5°<br>
+                    💡 <strong>Rio de Janeiro:</strong> ≈ -22,9°<br>
+                    💡 <strong>Porto Alegre:</strong> ≈ -30,0°
+                </p>
             </div>
 
             <!-- Altitude -->
@@ -128,7 +158,7 @@
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderAreaCasa" data-step="-5" aria-label="Diminuir área">−</button>
-                    <input type="range" id="sliderAreaCasa" min="30" max="500" step="5" value="100">
+                    <input type="range" id="sliderAreaCasa" min="20" max="200" step="5" value="100">
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderAreaCasa" data-step="5" aria-label="Aumentar área">+</button>
                 </div>
             </div>
@@ -150,103 +180,103 @@
                 <p class="dica" data-i18n="dica-altura-casa">💡 Altura padrão residencial: 2,7m</p>
             </div>
 
+            <!-- Dias de Autonomia -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderDiasAutonomia" data-i18n="label-dias-autonomia">Dias de Autonomia</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputDiasAutonomia" class="valor-display valor-input" value="3">
+                        <span class="unidade" data-i18n="unit-dias">dias</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderDiasAutonomia" data-step="-1" aria-label="Diminuir dias">−</button>
+                    <input type="range" id="sliderDiasAutonomia" min="1" max="7" step="1" value="3">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderDiasAutonomia" data-step="1" aria-label="Aumentar dias">+</button>
+                </div>
+                <p class="dica" data-i18n="dica-dias-autonomia">💡 Número de dias sem sol que o sistema deve manter a casa aquecida</p>
+            </div>
+
             <!-- Classe Energética -->
             <div class="grupo-entrada">
                 <label data-i18n="label-classe-energetica">Classe Energética</label>
                 <div class="grupo-radio">
-                    <label class="opcao-radio">
-                        <input type="radio" name="classeEnergetica" value="A">
+                    <label class="opcao-radio classe-energetica classe-A classe-A4">
+                        <input type="radio" name="classeEnergetica" value="A4">
                         <div class="cartao-radio">
-                            <span class="rotulo-radio">A</span>
+                            <span class="rotulo-radio">A4</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-a4">≤0,40</span>
                         </div>
                     </label>
-                    <label class="opcao-radio">
+                    <label class="opcao-radio classe-energetica classe-A classe-A3">
+                        <input type="radio" name="classeEnergetica" value="A3">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">A3</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-a3">0,40-0,60</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio classe-energetica classe-A classe-A2">
+                        <input type="radio" name="classeEnergetica" value="A2">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">A2</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-a2">0,60-0,80</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio classe-energetica classe-A classe-A1">
+                        <input type="radio" name="classeEnergetica" value="A1">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">A1</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-a1">0,80-1,00</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio classe-energetica classe-B">
                         <input type="radio" name="classeEnergetica" value="B">
                         <div class="cartao-radio">
                             <span class="rotulo-radio">B</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-b">1,00-1,20</span>
                         </div>
                     </label>
-                    <label class="opcao-radio">
+                    <label class="opcao-radio classe-energetica classe-C">
                         <input type="radio" name="classeEnergetica" value="C">
                         <div class="cartao-radio">
                             <span class="rotulo-radio">C</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-c">1,20-1,50</span>
                         </div>
                     </label>
-                    <label class="opcao-radio">
+                    <label class="opcao-radio classe-energetica classe-D">
                         <input type="radio" name="classeEnergetica" value="D" checked>
                         <div class="cartao-radio">
                             <span class="rotulo-radio">D</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-d">1,50-2,00</span>
                         </div>
                     </label>
-                    <label class="opcao-radio">
+                    <label class="opcao-radio classe-energetica classe-E">
                         <input type="radio" name="classeEnergetica" value="E">
                         <div class="cartao-radio">
                             <span class="rotulo-radio">E</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-e">2,00-2,60</span>
                         </div>
                     </label>
-                    <label class="opcao-radio">
+                    <label class="opcao-radio classe-energetica classe-F">
                         <input type="radio" name="classeEnergetica" value="F">
                         <div class="cartao-radio">
                             <span class="rotulo-radio">F</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-f">2,60-3,50</span>
                         </div>
                     </label>
-                    <label class="opcao-radio">
+                    <label class="opcao-radio classe-energetica classe-G">
                         <input type="radio" name="classeEnergetica" value="G">
                         <div class="cartao-radio">
                             <span class="rotulo-radio">G</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-g">>3,50</span>
                         </div>
                     </label>
                 </div>
-                <p class="dica" data-i18n="dica-classe-energetica">💡 A = melhor isolamento | G = pior isolamento</p>
+                <p class="dica dica-multilinha" data-i18n="dica-classe-energetica" style="text-align: center;">
+                    <span style="font-size: 0.85em; color: #666;">* Valores em kWh/m²·ano</span>
+                </p>
             </div>
 
-            <!-- Modelo de Coletor -->
-            <div class="grupo-entrada" style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
-                <label data-i18n="label-modelo-coletor">Modelo de Coletor</label>
-                <div class="modelo-referencia">
-                    <div class="cartao-modelo-referencia">
-                        <div class="modelo-imagem">
-                            <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-                                <rect x="10" y="20" width="180" height="80" fill="#1a237e" rx="4"/>
-                                <rect x="20" y="30" width="160" height="60" fill="#283593"/>
-                                <!-- Tubos a vácuo (15 tubos) -->
-                                <line x1="40" y1="35" x2="40" y2="85" stroke="#ffd700" stroke-width="3"/>
-                                <line x1="60" y1="35" x2="60" y2="85" stroke="#ffd700" stroke-width="3"/>
-                                <line x1="80" y1="35" x2="80" y2="85" stroke="#ffd700" stroke-width="3"/>
-                                <line x1="100" y1="35" x2="100" y2="85" stroke="#ffd700" stroke-width="3"/>
-                                <line x1="120" y1="35" x2="120" y2="85" stroke="#ffd700" stroke-width="3"/>
-                                <line x1="140" y1="35" x2="140" y2="85" stroke="#ffd700" stroke-width="3"/>
-                                <line x1="160" y1="35" x2="160" y2="85" stroke="#ffd700" stroke-width="3"/>
-                                <!-- Estrutura -->
-                                <rect x="15" y="15" width="170" height="5" fill="#424242"/>
-                                <rect x="15" y="100" width="170" height="5" fill="#424242"/>
-                            </svg>
-                        </div>
-                        <div class="modelo-header">
-                            <span class="rotulo-radio" data-i18n="opt-modelo-b">Modelo B</span>
-                        </div>
-                        <div class="modelo-detalhes">
-                            <div class="detalhe-linha">
-                                <span class="detalhe-label" data-i18n="detalhe-tubos">Tubos:</span>
-                                <span class="detalhe-valor">15</span>
-                            </div>
-                            <div class="detalhe-linha">
-                                <span class="detalhe-label" data-i18n="detalhe-area">Área:</span>
-                                <span class="detalhe-valor">1,5 m²</span>
-                            </div>
-                            <div class="detalhe-linha">
-                                <span class="detalhe-label" data-i18n="detalhe-eficiencia">Eficiência:</span>
-                                <span class="detalhe-valor">70%</span>
-                            </div>
-                            <div class="detalhe-linha">
-                                <span class="detalhe-label" data-i18n="detalhe-perda">Perda Linear:</span>
-                                <span class="detalhe-valor">1,8 W/m²K</span>
-                            </div>
-                        </div>
-                    </div>
-                    <input type="hidden" name="modeloColetor" value="Modelo_B">
-                </div>
-            </div>
         </section>
 
         <!-- ========================================== -->
@@ -264,6 +294,7 @@
                 <span class="label-resultado" data-i18n="resultado-paineis">Número de Painéis:</span>
                 <span class="valor-resultado-grande" id="numeroPaineis">-</span>
             </div>
+            <p class="nota-referencia" data-i18n="nota-painel-referencia">* Baseado no painel de referência Modelo B (1,5 m², 15 tubos, eficiência 70%)</p>
 
             <div class="resultado-item">
                 <span class="label-resultado" data-i18n="resultado-demanda-total">Demanda Total (Água + Casa):</span>
@@ -318,6 +349,16 @@
                     <li data-i18n="rec-inclinacao">Inclinação recomendada: Latitude + 10° a 15°</li>
                     <li data-i18n="rec-tubulacao">Usar tubulação curta (máx. 8-10 m) e diâmetro de 25mm (1")</li>
                 </ul>
+            </div>
+
+            <div class="info-box" style="margin-top: 20px;">
+                <p style="cursor: pointer; user-select: none;" onclick="toggleMemorial()">
+                    📋 <strong data-i18n="memorial-titulo">Memorial de Cálculo</strong> 
+                    <span id="memorial-toggle" style="float: right;">▼</span>
+                </p>
+                <div id="memorial-calculo" style="display: none; margin-top: 12px;">
+                    <div id="memorial-conteudo"></div>
+                </div>
             </div>
         </section>
     </div>
