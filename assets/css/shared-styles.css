@@ -23,6 +23,10 @@
     --arrow-bg: white;
     --arrow-hover-bg: #2d9fa3ff;
     --arrow-hover-color: white;
+    
+    /* Accent colors for sliders and UI elements */
+    --accent-color: #2d9fa3ff;
+    --accent-secondary: #667eea;
 }
 
 /* Ensure page-level scrollbar space is always reserved so layouts don't shift
@@ -135,3 +139,251 @@ html {
 
 /* Small helpers */
 .input-with-arrows { display:flex; align-items:center; gap:8px; }
+
+/* ============================================
+   GLOBAL TYPOGRAPHY & FONTS
+   ============================================ */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    color: #333;
+    line-height: 1.4;
+}
+
+header h1 {
+    font-size: 1.4rem;
+    margin-bottom: 2px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.subtitle, .subtitulo {
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+
+/* ============================================
+   GLOBAL INPUT GROUPS & CONTROLS
+   ============================================ */
+.grupo-entrada, .input-group {
+    margin-bottom: 12px;
+}
+
+.grupo-entrada:last-child, .input-group:last-child {
+    margin-bottom: 0;
+}
+
+.grupo-entrada > label, .input-group > label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+/* Control header (centered label with value display) */
+.cabecalho-controle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.cabecalho-controle label {
+    font-size: 0.85rem;
+    color: var(--accent-color, #2d9fa3ff);
+    font-weight: 600;
+}
+
+/* Value display (shows current slider/input value) */
+.valor-display {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #333;
+    background: #f0f0f0;
+    padding: 3px 10px;
+    border-radius: 15px;
+    min-width: 70px;
+    text-align: center;
+}
+
+.valor-com-unidades {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ============================================
+   GLOBAL SLIDER STYLES
+   ============================================ */
+.slider-com-botoes {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+/* Range slider base styles */
+input[type="range"] {
+    flex: 1;
+    height: 16px; /* Barra mais alta - mesmo tamanho do slider de parcelas */
+    background: #e0e0e0;
+    border-radius: 8px;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 36px;  /* Botão maior - mesmo tamanho do slider de parcelas */
+    height: 36px; /* Botão maior - mesmo tamanho do slider de parcelas */
+    background: linear-gradient(135deg, var(--accent-color, #2d9fa3ff) 0%, var(--accent-secondary, #667eea) 100%);
+    border-radius: 50%;
+    cursor: grab;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3); /* Sombra mais forte */
+    border: 3px solid white; /* Borda branca para destacar */
+    transition: all 0.2s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1); /* Aumenta 10% ao passar mouse */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+    cursor: grabbing;
+    transform: scale(1.15); /* Aumenta mais ao clicar */
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 36px;  /* Botão maior - mesmo tamanho do slider de parcelas */
+    height: 36px; /* Botão maior - mesmo tamanho do slider de parcelas */
+    background: linear-gradient(135deg, var(--accent-color, #2d9fa3ff) 0%, var(--accent-secondary, #667eea) 100%);
+    border-radius: 50%;
+    border: 3px solid white; /* Borda branca para destacar */
+    cursor: grab;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    transition: all 0.2s ease;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+input[type="range"]::-moz-range-thumb:active {
+    cursor: grabbing;
+    transform: scale(1.15);
+}
+
+/* ============================================
+   GLOBAL CARD/CONTAINER STYLES
+   ============================================ */
+.cartao, .card {
+    background: white;
+    border-radius: 12px;
+    padding: 12px 15px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+}
+
+/* ============================================
+   GLOBAL INFO GROUP STYLES
+   ============================================ */
+.info-group {
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 4px solid var(--accent-color, #2d9fa3ff);
+}
+
+/* ============================================
+   GLOBAL RADIO BUTTON STYLES (Helice style)
+   ============================================ */
+.grupo-radio {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.grupo-radio-compacto {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    align-items: center;
+}
+
+.opcao-radio {
+    flex: 0 0 auto;
+    position: relative;
+}
+
+.opcao-radio input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.cartao-radio {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.opcao-radio input:checked + .cartao-radio {
+    border-color: var(--accent-color, #2d9fa3ff);
+    background-color: #e0f7fa;
+    box-shadow: 0 4px 10px rgba(45, 159, 163, 0.2);
+}
+
+.rotulo-radio {
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.opcao-radio-compacto {
+    position: relative;
+    width: auto;
+}
+
+.opcao-radio-compacto input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.cartao-radio-compacto {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 6px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-width: 35px;
+    font-size: 0.7rem;
+}
+
+.opcao-radio-compacto input:checked + .cartao-radio-compacto {
+    border-color: var(--accent-color, #2d9fa3ff);
+    background-color: #e0f7fa;
+    box-shadow: 0 2px 6px rgba(45, 159, 163, 0.2);
+}
+
+.opcao-radio-compacto .rotulo-radio {
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-align: center;
+}

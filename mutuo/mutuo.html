@@ -55,6 +55,41 @@
                 </button>
             </div>
             
+            <!-- Tabela comparativa dos sistemas -->
+            <div class="comparacao" style="margin-bottom: 20px;">
+                <h3 data-i18n="comparison-title">🔍 Comparação dos Sistemas</h3>
+                <table class="tabela-sistemas">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th data-i18n="system-sac-short">SAC</th>
+                            <th data-i18n="system-price-short">Price</th>
+                            <th data-i18n="system-german-short">Alemão</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-i18n="table-interest">Juros</td>
+                            <td data-i18n="table-interest-balance">saldo devedor</td>
+                            <td data-i18n="table-interest-balance">saldo devedor</td>
+                            <td data-i18n="table-interest-fixed">Fixos</td>
+                        </tr>
+                        <tr>
+                            <td data-i18n="table-installment">Parcela</td>
+                            <td data-i18n="table-installment-variable">Variável</td>
+                            <td data-i18n="table-installment-fixed">Fixa</td>
+                            <td data-i18n="table-installment-fixed">Fixa</td>
+                        </tr>
+                        <tr>
+                            <td data-i18n="table-amortization">Amortização</td>
+                            <td data-i18n="table-amortization-fixed">Fixa</td>
+                            <td data-i18n="table-amortization-variable">Variável</td>
+                            <td data-i18n="table-amortization-last">última parcela</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
             <!-- EXEMPLO 1: Sistema SAC -->
             <div class="exemplo-item">
                 <h3 data-i18n="example-sac-title">1. Sistema SAC - Amortização Constante</h3>
@@ -142,11 +177,11 @@
                 <span data-i18n="back">← Voltar</span>
             </button>
 
-            <div class="comparacao">
+            <div class="comparacao comparacao-valores">
                 <h3 data-i18n="comparison-title">🔍 Comparação dos Sistemas</h3>
                 <p id="comparison-subtitle"><strong>Para R$ 100.000 a 10% ao ano por 120 meses:</strong></p>
                 <div class="table-scroll-wrapper">
-                    <table>
+                    <table id="tabelaComparacaoValores">
                     <thead>
                         <tr>
                             <th data-i18n="table-system">Sistema</th>
@@ -201,143 +236,121 @@
                                     <span class="texto-saiba-mais" data-i18n="learn-more">SAIBA MAIS!</span>
                                 </button>
                             </div>
-                            <div class="radio-group radio-group-compact">
-                                <label class="radio-label">
+                            <div class="grupo-radio">
+                                <label class="opcao-radio">
                                     <input type="radio" name="sistemaRapido" value="sac" checked tabindex="7">
-                                    <span class="radio-custom"></span>
-                                    <span class="radio-text" data-i18n="system-sac-short">SAC</span>
+                                    <div class="cartao-radio">
+                                        <span class="rotulo-radio" data-i18n="system-sac-short">SAC</span>
+                                    </div>
                                 </label>
-                                <label class="radio-label">
+                                <label class="opcao-radio">
                                     <input type="radio" name="sistemaRapido" value="price" tabindex="8">
-                                    <span class="radio-custom"></span>
-                                    <span class="radio-text" data-i18n="system-price-short">Price</span>
+                                    <div class="cartao-radio">
+                                        <span class="rotulo-radio" data-i18n="system-price-short">Price</span>
+                                    </div>
                                 </label>
-                                <label class="radio-label">
+                                <label class="opcao-radio">
                                     <input type="radio" name="sistemaRapido" value="alemao" tabindex="9">
-                                    <span class="radio-custom"></span>
-                                    <span class="radio-text" data-i18n="system-german-short">Alemão</span>
+                                    <div class="cartao-radio">
+                                        <span class="rotulo-radio" data-i18n="system-german-short">Alemão</span>
+                                    </div>
                                 </label>
                             </div>
-                            <table class="tabela-sistemas">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th data-i18n="system-sac-short">SAC</th>
-                                        <th data-i18n="system-price-short">Price</th>
-                                        <th data-i18n="system-german-short">Alemão</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td data-i18n="table-interest">Juros</td>
-                                        <td data-i18n="table-interest-balance">saldo devedor</td>
-                                        <td data-i18n="table-interest-balance">saldo devedor</td>
-                                        <td data-i18n="table-interest-fixed">Fixos</td>
-                                    </tr>
-                                    <tr>
-                                        <td data-i18n="table-installment">Parcela</td>
-                                        <td data-i18n="table-installment-variable">Variável</td>
-                                        <td data-i18n="table-installment-fixed">Fixa</td>
-                                        <td data-i18n="table-installment-fixed">Fixa</td>
-                                    </tr>
-                                    <tr>
-                                        <td data-i18n="table-amortization">Amortização</td>
-                                        <td data-i18n="table-amortization-fixed">Fixa</td>
-                                        <td data-i18n="table-amortization-variable">Variável</td>
-                                        <td data-i18n="table-amortization-last">última parcela</td>
-                                    </tr>
-                                </tbody>
-                            </table>
                         </div>
                     </div>
                     
                     <div class="controles-primeira-linha">
                         <div class="controles-coluna-esquerda">
-                            <div class="controle-item-horizontal">
-                                <label for="valorRapido" data-i18n="loan-amount">Valor Emprestado</label>
-                                <div class="input-with-arrows">
-                                    <button type="button" class="arrow-btn arrow-down" data-target="valorRapido" data-step="-10000" aria-label="Diminuir valor em 10.000">−</button>
-                                    <input type="text" id="valorRapido" value="100.000" inputmode="numeric" tabindex="1">
-                                    <button type="button" class="arrow-btn arrow-up" data-target="valorRapido" data-step="10000" aria-label="Aumentar valor em 10.000">+</button>
+                            <div class="grupo-entrada">
+                                <div class="cabecalho-controle">
+                                    <label for="inputValor" data-i18n="loan-amount">Valor Emprestado</label>
+                                    <input type="text" id="inputValor" class="valor-display valor-input" value="100.000" tabindex="1">
+                                </div>
+                                <div class="slider-com-botoes">
+                                    <button type="button" class="arrow-btn arrow-down" data-target="sliderValor" data-step="-10000" aria-label="Diminuir valor em 10.000">−</button>
+                                    <input type="range" id="sliderValor" min="1000" max="1000000" step="1000" value="100000">
+                                    <button type="button" class="arrow-btn arrow-up" data-target="sliderValor" data-step="10000" aria-label="Aumentar valor em 10.000">+</button>
                                 </div>
                             </div>
                             
-                            <div class="controle-item-horizontal">
-                                <label for="prazoRapido" data-i18n="loan-term">Prazo (anos)</label>
-                                <div class="input-with-arrows">
-                                    <button type="button" class="arrow-btn arrow-down" data-target="prazoRapido" data-step="-1" aria-label="Diminuir prazo em 1 ano">−</button>
-                                    <input type="text" id="prazoRapido" value="10" inputmode="numeric" tabindex="2">
-                                    <button type="button" class="arrow-btn arrow-up" data-target="prazoRapido" data-step="1" aria-label="Aumentar prazo em 1 ano">+</button>
+                            <div class="grupo-entrada">
+                                <div class="cabecalho-controle">
+                                    <label for="inputPrazo" data-i18n="loan-term">Prazo (anos)</label>
+                                    <input type="text" id="inputPrazo" class="valor-display valor-input" value="10" tabindex="2">
+                                </div>
+                                <div class="slider-com-botoes">
+                                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPrazo" data-step="-1" aria-label="Diminuir prazo em 1 ano">−</button>
+                                    <input type="range" id="sliderPrazo" min="1" max="50" step="1" value="10">
+                                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPrazo" data-step="1" aria-label="Aumentar prazo em 1 ano">+</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
                     <div class="controle-taxa-periodo">
-                        <div class="controle-item-horizontal taxa-input">
-                            <div class="taxa-label-row">
-                                <label for="taxaRapida">
+                        <div class="grupo-entrada">
+                            <div class="cabecalho-controle">
+                                <label for="sliderTaxa">
                                     <span data-i18n="interest-rate">Taxa de Juros</span>
                                 </label>
-                                <div class="periodo-radios-inline">
-                                    <label class="radio-label-inline">
-                                        <input type="radio" name="periodoRapido" value="ano" checked tabindex="4">
-                                        <span class="radio-custom"></span>
-                                        <span class="radio-text" data-i18n="period-year-short">Ano</span>
-                                    </label>
-                                    <label class="radio-label-inline">
-                                        <input type="radio" name="periodoRapido" value="mes" tabindex="5">
-                                        <span class="radio-custom"></span>
-                                        <span class="radio-text" data-i18n="period-month-short">Mês</span>
-                                    </label>
-                                    <label class="radio-label-inline">
-                                        <input type="radio" name="periodoRapido" value="dia" tabindex="6">
-                                        <span class="radio-custom"></span>
-                                        <span class="radio-text" data-i18n="period-day-short">Dia</span>
-                                    </label>
+                                <div class="valor-com-unidades">
+                                    <input type="text" id="inputTaxa" class="valor-display valor-input" value="10,0" tabindex="3">
+                                    <div class="grupo-radio-compacto">
+                                        <label class="opcao-radio-compacto">
+                                            <input type="radio" name="periodoRapido" value="ano" checked tabindex="4">
+                                            <div class="cartao-radio-compacto">
+                                                <span class="rotulo-radio" data-i18n="period-year-short">Ano</span>
+                                            </div>
+                                        </label>
+                                        <label class="opcao-radio-compacto">
+                                            <input type="radio" name="periodoRapido" value="mes" tabindex="5">
+                                            <div class="cartao-radio-compacto">
+                                                <span class="rotulo-radio" data-i18n="period-month-short">Mês</span>
+                                            </div>
+                                        </label>
+                                        <label class="opcao-radio-compacto">
+                                            <input type="radio" name="periodoRapido" value="dia" tabindex="6">
+                                            <div class="cartao-radio-compacto">
+                                                <span class="rotulo-radio" data-i18n="period-day-short">Dia</span>
+                                            </div>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="input-with-arrows">
-                                <button type="button" class="arrow-btn arrow-down" data-target="taxaRapida" data-step="-0.1" aria-label="Diminuir taxa em 0.1%">−</button>
-                                <input type="text" id="taxaRapida" value="10,0" inputmode="decimal" tabindex="3">
-                                <button type="button" class="arrow-btn arrow-up" data-target="taxaRapida" data-step="0.1" aria-label="Aumentar taxa em 0.1%">+</button>
+                            <div class="slider-com-botoes">
+                                <button type="button" class="arrow-btn arrow-down" data-target="sliderTaxa" data-step="-0.1" aria-label="Diminuir taxa em 0.1%">−</button>
+                                <input type="range" id="sliderTaxa" min="0" max="20" step="0.1" value="10" tabindex="3">
+                                <button type="button" class="arrow-btn arrow-up" data-target="sliderTaxa" data-step="0.1" aria-label="Aumentar taxa em 0.1%">+</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div class="resumo-grid">
-                <div class="resumo-item">
-                    <span class="label" data-i18n="loan-amount-result">Valor Emprestado</span>
-                    <span class="value destaque-emprestado" id="resValorEmprestado">-</span>
-                </div>
-                <div class="resumo-item">
-                    <span class="label" data-i18n="total-payment">Total a Pagar</span>
-                    <span class="value destaque-total" id="resTotalPagar">-</span>
-                </div>
-                <div class="resumo-item">
-                    <span class="label" data-i18n="total-interest-pct">% Total de Juros</span>
-                    <span class="value destaque-percentual" id="resPorcentagemJuros">-</span>
-                </div>
-                <div class="resumo-item">
-                    <span class="label" data-i18n="total-interest">Total de Juros</span>
-                    <span class="value destaque-juros" id="resTotalJuros">-</span>
+            <div class="graficos-container">
+                <h3 data-i18n="evolution-charts">📊 Evolução ao Longo do Tempo</h3>
+                <div class="grafico-unico">
+                    <canvas id="graficoEvolutivo"></canvas>
                 </div>
             </div>
 
             <div class="parcelas-info">
-                <h3><span data-i18n="selected-installment">Parcela Selecionada</span>: <span id="numeroParcela">1</span> <span data-i18n="of">de</span> <span id="totalParcelas">-</span></h3>
-                
-                <div class="slider-container">
-                    <input type="range" id="sliderParcelas" min="1" max="120" value="1" step="1">
-                </div>
-
                 <div class="parcela-detalhes">
                     <div class="detalhe-item-horizontal">
                         <span class="label-parcela" data-i18n="installment-value">Valor da Parcela</span>
                         <span class="value-grande" id="valorParcela">-</span>
                     </div>
+                </div>
+                
+                <h3><span data-i18n="selected-installment">Parcela Selecionada</span>: <span id="numeroParcela">1</span> <span data-i18n="of">de</span> <span id="totalParcelas">-</span></h3>
+                
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderParcelas" data-step="-1" aria-label="Diminuir parcela em 1">−</button>
+                    <input type="range" id="sliderParcelas" min="1" max="120" value="1" step="1">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderParcelas" data-step="1" aria-label="Aumentar parcela em 1">+</button>
+                </div>
+
+                <div class="parcela-detalhes">
                     <div class="parcela-composicao">
                         <div class="composicao-item">
                             <span class="label-small" data-i18n="amortization">Amortização</span>
@@ -355,10 +368,22 @@
                 </div>
             </div>
 
-            <div class="graficos-container">
-                <h3 data-i18n="evolution-charts">📊 Evolução ao Longo do Tempo</h3>
-                <div class="grafico-unico">
-                    <canvas id="graficoEvolutivo"></canvas>
+            <div class="resumo-grid">
+                <div class="resumo-item">
+                    <span class="label" data-i18n="loan-amount-result">Valor Emprestado</span>
+                    <span class="value destaque-emprestado" id="resValorEmprestado">-</span>
+                </div>
+                <div class="resumo-item">
+                    <span class="label" data-i18n="total-payment">Total a Pagar</span>
+                    <span class="value destaque-total" id="resTotalPagar">-</span>
+                </div>
+                <div class="resumo-item">
+                    <span class="label" data-i18n="total-interest-pct">% Total de Juros</span>
+                    <span class="value destaque-percentual" id="resPorcentagemJuros">-</span>
+                </div>
+                <div class="resumo-item">
+                    <span class="label" data-i18n="total-interest">Total de Juros</span>
+                    <span class="value destaque-juros" id="resTotalJuros">-</span>
                 </div>
             </div>
 

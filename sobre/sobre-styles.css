@@ -1,44 +1,33 @@
 /* ============================================
    RESET E CONFIGURAÇÕES GLOBAIS
-   Remove estilos padrão do navegador para começar limpo
    ============================================ */
 * {
-    margin: 0;           /* Remove margem de TODOS os elementos */
-    padding: 0;          /* Remove padding de TODOS os elementos */
-    box-sizing: border-box;  /* Faz width incluir border e padding */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     position: relative;
 }
 
-/* Language button styles moved to shared-styles.css */
 :root { 
     --lang-btn-bg: rgba(255,255,255,0.2); 
     --lang-btn-border: rgba(255,255,255,0.3); 
     --lang-btn-hover: rgba(255,255,255,0.3); 
-    --home-size:50px; 
-    --home-size-mobile:46px;
+    --home-size: 50px; 
+    --home-size-mobile: 46px;
     --accent-color: #2d9fa3ff;
     --accent-hover-bg: rgba(45, 159, 163, 0.05);
     --accent-active-bg: rgba(45, 159, 163, 0.1);
     --accent-shadow: rgba(45, 159, 163, 0.3);
 }
 
-/* Use the shared site background so the page matches the rest of the site */
 body {
     background: var(--site-bg, #4e7262);
-    /* make room for the floating home button so it doesn't cover footer */
     padding-bottom: var(--site-bottom-padding, 110px);
 }
 
-/* ============================================
-   BOTÃO INÍCIO FIXO
-   Botão redondo que fica sempre visível no rodapé
-   ============================================ */
-/* Home button styling moved to assets/css/shared-styles.css
-   Per-page variables are defined at the top of this file. */
 
 /* ============================================
-   RECIPIENTE PRINCIPAL
-   Envolve todo o conteúdo ocupando toda a largura disponível
+   CONTAINER PRINCIPAL
    ============================================ */
 .container {
     width: 100%;
@@ -47,87 +36,60 @@ body {
 }
 
 /* ============================================
-   CABEÇALHO - Cabeçalho da página
+   CABEÇALHO
    ============================================ */
 header {
-    text-align: center;  /* Centraliza todo o texto */
+    text-align: center;
     color: white;
     margin-bottom: 12px;
     padding: 8px 0;
 }
 
-/* ========================================== */
-/* SELETOR DE IDIOMA */
-/* Botões para trocar entre PT-BR e IT-IT */
-/* ========================================== */
-/* language selector layout centralized in assets/css/shared-styles.css */
-
-/* Language button visuals centralized in assets/css/shared-styles.css */
-
-/* Título principal (H1) */
 header h1 {
-    font-size: 1.4rem;  /* compact */
+    font-size: 1.4rem;
     margin-bottom: 2px;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.12);
 }
 
-/* Subtítulo (texto menor abaixo do título) */
 .subtitle {
     font-size: 0.95rem;
-    opacity: 0.9;       /* Levemente transparente (90% opaco) */
+    opacity: 0.9;
 }
 
 /* ============================================
-   CARDS - Caixas de conteúdo
-   Cada seção da página está dentro de um card branco
+   CARDS
    ============================================ */
+/* Card base styles moved to shared-styles.css */
 .card {
-    background: white;
-    border-radius: 12px;
-    padding: 12px 15px;  /* consistent with Solar */
-    margin-bottom: 10px;  /* consistent with Solar */
-    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);  /* consistent with Solar */
-    animation: fadeInUp 0.55s ease;
+    animation: fadeInUp 0.55s ease; /* Sobre-specific animation */
 }
 
-/* Card destacado (com fundo especial e borda) */
 .card.highlight {
-    /* Fundo com gradiente cinza claro */
-    /* Prefer the shared theme variable if present; keep original as fallback */
     background: var(--card-highlight-bg, linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%));
-
-    /* Borda grosa — prefer the global accent color */
     border: 3px solid var(--accent-color, #2d9fa3ff);
 }
 
-/* Cabeçalho do card (título + ícone) */
 .card-header {
-    /* Layout flex para colocar ícone e texto lado a lado */
     display: flex;
-    align-items: center;     /* Alinha verticalmente */
-    gap: 15px;               /* Espaço de 15px entre ícone e título */
+    align-items: center;
+    gap: 15px;
     margin-bottom: 8px;
     padding-bottom: 8px;
-    
-    /* Linha de separação — prefer the global accent color */
     border-bottom: 3px solid var(--accent-color, #2d9fa3ff);
 }
 
-/* Cabeçalho clicável (para accordion) */
 .card-header-clicavel {
-    cursor: pointer;  /* Mostra que é clicável */
-    user-select: none;  /* Impede seleção de texto ao clicar */
+    cursor: pointer;
+    user-select: none;
     transition: background 0.2s ease;
     padding: 10px;
-    margin: -10px;  /* Compensa o padding para não aumentar o espaço */
+    margin: -10px;
     border-radius: 8px;
-    /* For ripple effect */
     position: relative;
     overflow: hidden;
 }
 
 .card-header-clicavel:hover {
-    /* Hover background should use theme hover variable if present */
     background: var(--accent-hover-bg, rgba(45, 159, 163, 0.05));
 }
 
@@ -135,175 +97,137 @@ header h1 {
     background: var(--accent-active-bg, rgba(45, 159, 163, 0.1));
 }
 
-/* Ripple moved to shared file ripple-styles.css */
 :root { --ripple-color: rgba(74,144,226,0.18); }
 
-/* Seta indicadora de expansão */
 .seta-expansao {
-    margin-left: auto;  /* Empurra a seta para a direita */
+    margin-left: auto;
     font-size: 1.2rem;
     color: var(--accent-color, #2d9fa3ff);
-    transition: transform 0.3s ease;  /* Animação suave da rotação */
+    transition: transform 0.3s ease;
 }
 
-/* Conteúdo expansível (accordion) */
 .conteudo-expansivel {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.4s ease;
 }
 
-/* Card expansível quando está expandido */
 .card-expansivel.expandido .conteudo-expansivel {
-    margin-top: 12px;  /* Adiciona espaço compacta quando expandido */
+    margin-top: 12px;
 }
 
-/* Ícone emoji no cabeçalho */
 .card-header .icon {
-    font-size: 1.6rem;  /* compact icon */
+    font-size: 1.6rem;
 }
 
-/* Título H2 do card */
 .card-header h2 {
-    color: var(--accent-color, #2d9fa3ff);     /* Roxo */
-    font-size: 1rem;  /* compact */
+    color: var(--accent-color, #2d9fa3ff);
+    font-size: 1rem;
 }
 
-/* Conteúdo dentro do card */
 .card-content {
-    font-size: 1.05rem;  /* 16.8px - um pouco maior que o padrão */
+    font-size: 1.05rem;
 }
 
 /* ============================================
    LISTAS E TEXTOS
-   Estilos para listas de tecnologias e descrições
    ============================================ */
 .tech-list {
-    list-style: none;  /* Remove marcadores padrão da lista */
+    list-style: none;
     padding: 0;
     margin-top: 15px;
 }
 
-/* Cada item da lista de tecnologias */
 .tech-list li {
     padding: 10px 15px;
     margin-bottom: 8px;
-    
-    /* Fundo azul claro — prefer theme variable when available */
     background: var(--feature-bg, #f0f4ff);
-    
-    border-radius: 8px;  /* Cantos arredondados */
-    
-    /* Barra na borda esquerda — prefer global accent color */
+    border-radius: 8px;
     border-left: 4px solid var(--accent-color, #2d9fa3ff);
 }
 
-/* Caixa de descrição do aplicativo (amarela) */
 .app-description {
-    /* Caixa de descrição com cor de aviso — prefer theme variable */
-    background: var(--warning-bg, #fff3cd);  /* Amarelo claro */
+    background: var(--warning-bg, #fff3cd);
     padding: 15px;
     border-radius: 10px;
-    
-    /* Barra na borda esquerda — prefer theme warning color */
     border-left: 5px solid var(--warning-color, #ffc107);
-    
     margin-bottom: 8px;
     font-size: 1.1rem;
 }
 
 /* ============================================
    GRID DE FEATURES
-   Grade responsiva que mostra funcionalidades do app
    ============================================ */
 .features-grid {
     display: grid;
-    
-    /* Cria colunas automáticas: mínimo 200px, máximo divide igualmente (1fr) */
-    /* auto-fit faz com que os itens se reorganizem automaticamente */
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    
-    gap: 12px;       /* compact spacing */
+    gap: 12px;
     margin: 12px 0;
 }
 
-/* Cada caixa de funcionalidade */
 .feature {
     text-align: center;
-    padding: 12px; /* compact */
+    padding: 12px;
     background: white;
     border-radius: 12px;
-    
-    /* Sombra leve */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    
-    /* Transição suave ao passar o mouse */
     transition: transform 0.3s ease;
 }
 
-/* Quando passa o mouse: levanta 5px e aumenta sombra */
 .feature:hover {
-    transform: translateY(-5px);  /* Move 5px para cima */
+    transform: translateY(-5px);
     box-shadow: 0 6px 20px var(--accent-shadow, rgba(45, 159, 163, 0.3));
 }
 
-/* Ícone emoji da feature */
 .feature-icon {
-    font-size: 2rem;  /* compact icon */
+    font-size: 2rem;
     display: block;
     margin-bottom: 10px;
 }
 
-/* Título da feature (H4) */
 .feature h4 {
-    color: var(--accent-color, #2d9fa3ff);  /* Roxo */
+    color: var(--accent-color, #2d9fa3ff);
     margin-bottom: 8px;
-    font-size: 1.2rem;  /* 19.2px */
+    font-size: 1.2rem;
 }
 
-/* Texto descritivo da feature */
 .feature p {
-    font-size: 0.95rem;  /* 15.2px - um pouco menor */
-    color: var(--muted-text, #666);         /* Cinza escuro */
+    font-size: 0.95rem;
+    color: var(--muted-text, #666);
 }
 
 /* ============================================
    ESTATÍSTICAS
-   Mostra números grandes (linhas de código, etc)
    ============================================ */
 .stats {
     display: flex;
-    justify-content: space-around;  /* Distribui igualmente no espaço */
+    justify-content: space-around;
     margin-top: 12px;
     padding: 12px;
     background: white;
     border-radius: 12px;
 }
 
-/* Cada estatística individual */
 .stat {
     text-align: center;
 }
 
-/* Número grande da estatística */
 .stat-number {
     display: block;
-    font-size: 1.8rem;   /* smaller for compact layout */
+    font-size: 1.8rem;
     font-weight: bold;
-    color: var(--accent-color, #2d9fa3ff);      /* Roxo */
+    color: var(--accent-color, #2d9fa3ff);
     margin-bottom: 5px;
 }
 
-/* Texto descritivo embaixo do número */
 .stat-label {
     display: block;
-    font-size: 0.9rem;  /* 14.4px - pequeno */
-    color: var(--muted-text, #666);        /* Cinza */
+    font-size: 0.9rem;
+    color: var(--muted-text, #666);
 }
 
 /* ============================================
    FOOTER
-   Rodapé da página
    ============================================ */
 footer {
     text-align: center;
@@ -320,68 +244,55 @@ footer p {
 
 /* ============================================
    ANIMAÇÕES
-   Definições de animações CSS usadas na página
    ============================================ */
-/* Animação: aparecer subindo (fade in + slide up) */
 @keyframes fadeInUp {
     from {
-        opacity: 0;                  /* Começa invisível */
-        transform: translateY(30px);  /* 30px abaixo da posição final */
+        opacity: 0;
+        transform: translateY(30px);
     }
     to {
-        opacity: 1;                  /* Termina visível */
-        transform: translateY(0);     /* Na posição correta */
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
 /* ============================================
    RESPONSIVIDADE MOBILE
-   Ajustes para telas pequenas (celulares e tablets)
-   Só aplica quando a largura da tela é menor que 768px
    ============================================ */
 @media (max-width: 768px) {
-    /* Reduz padding no body, mas mantém espaço inferior para botão home */
     body {
         padding: 10px;
         padding-bottom: var(--site-bottom-padding, 110px);
     }
 
-    /* Mobile sizes are handled by shared-styles.css using --home-size-mobile. */
-
-    /* Título principal menor */
     header h1 {
-        font-size: 1.8rem;  /* 28.8px - menor que 2.5rem do desktop */
+        font-size: 1.8rem;
     }
 
-    /* Cards com menos padding */
     .card {
-        padding: 12px;  /* Menor que 30px do desktop - compact */
+        padding: 12px;
     }
 
-    /* Títulos dos cards menores */
     .card-header h2 {
-        font-size: 1.4rem;  /* 22.4px - menor que 1.8rem do desktop */
+        font-size: 1.4rem;
     }
 
-    /* Todas as grades viram coluna única (1 item por linha) */
     .features-grid,
     .system-cards,
     .test-scenarios,
     .learning-topics {
-        grid-template-columns: 1fr;  /* 1fr = uma coluna de largura total */
+        grid-template-columns: 1fr;
     }
 
-    /* Estatísticas em coluna (uma embaixo da outra) */
     .stats {
-        flex-direction: column;  /* Vertical ao invés de horizontal */
-        gap: 15px;               /* Espaço entre cada estatística */
+        flex-direction: column;
+        gap: 15px;
     }
 
-    /* Princípios em coluna, centralizados */
     .design-principles .principle {
-        flex-direction: column;  /* Número em cima, texto embaixo */
-        align-items: center;     /* Centraliza tudo */
-        text-align: center;      /* Texto centralizado */
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
     }
 }
 

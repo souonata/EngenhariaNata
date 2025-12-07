@@ -7,20 +7,17 @@
     box-sizing: border-box;
 }
 
-/* Ensure the page uses the unified site background color (not white) */
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background: var(--site-bg, #4e7262);
-    color: #333;
-    line-height: 1.4;
-    /* keep room at the end for the fixed home button */
     padding-bottom: var(--site-bottom-padding, 110px);
 }
 
-/* Per-page shared-styles overrides */
-:root { --lang-btn-bg: rgba(255,255,255,0.2); --lang-btn-border: rgba(255,255,255,0.3); --lang-btn-hover: rgba(255,255,255,0.3); --ripple-color: rgba(74,144,226,0.18); }
-
-/* Home button presentation is controlled in assets/css/shared-styles.css */
+:root { 
+    --lang-btn-bg: rgba(255,255,255,0.2); 
+    --lang-btn-border: rgba(255,255,255,0.3); 
+    --lang-btn-hover: rgba(255,255,255,0.3); 
+    --ripple-color: rgba(74,144,226,0.18); 
+}
 
 /* ============================================
    CONTAINER PRINCIPAL
@@ -41,145 +38,20 @@ header {
     padding: 8px 0;
 }
 
-/* Seletor de idioma */
-/* language selector layout centralized in assets/css/shared-styles.css */
-
-/* Language button styling moved to assets/css/shared-styles.css (use --lang-btn-* variables to override) */
-
-/* Language button visual sizing is centralized in assets/css/shared-styles.css */
-
-/* Ripple moved to shared file ripple-styles.css */
 :root { --ripple-color: rgba(45,159,163,0.18); }
 
-header h1 {
-    font-size: 1.4rem; /* compact */
-    margin-bottom: 2px;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.12);
-}
-
-.subtitle {
-    font-size: 0.95rem;
-    opacity: 0.9;
-}
+/* Typography moved to shared-styles.css */
 
 /* ============================================
-   SEÇÃO DE CONTROLES (usando padrão Solar - .cartao)
+   SEÇÃO DE CONTROLES
    ============================================ */
-.cartao {
-    background: white;
-    border-radius: 12px;
-    padding: 12px 15px;  /* consistent with Solar */
-    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);  /* consistent with Solar */
-    margin-bottom: 10px;  /* consistent with Solar */
-}
+/* Card styles moved to shared-styles.css */
 
-/* Grupo de entrada (padrão Solar) */
-.grupo-entrada {
-    margin-bottom: 12px;
-}
+/* Input groups, controls, sliders moved to shared-styles.css */
 
-.grupo-entrada:last-child {
-    margin-bottom: 0;
-}
+/* Slider styles moved to shared-styles.css */
 
-.grupo-entrada > label {
-    display: block;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 4px;
-    font-size: 0.85rem;
-    text-align: center;  /* Centralizado */
-}
-
-/* Cabeçalho do Controle centralizado (padrão Solar) */
-.cabecalho-controle {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 2px;
-}
-
-.cabecalho-controle label {
-    font-size: 0.85rem;
-    color: #2d9fa3ff;
-    font-weight: 600;
-}
-
-.valor-display {
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: #333;
-    background: #f0f0f0;
-    padding: 3px 10px;
-    border-radius: 15px;
-    min-width: 70px;
-    text-align: center;
-}
-
-/* Container para valor com unidades compactas */
-.valor-com-unidades {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* Slider com botões (padrão Solar) */
-.slider-com-botoes {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 4px;
-}
-
-/* Arrow button variables (padrão Solar) */
-:root { --arrow-border: #2d9fa3ff; --arrow-bg: white; --arrow-hover-bg: #2d9fa3ff; --arrow-hover-color: white; }
-
-/* Slider Range (padrão Solar) */
-input[type="range"] {
-    flex: 1;
-    height: 6px;
-    background: #e0e0e0;
-    border-radius: 3px;
-    outline: none;
-    cursor: pointer;
-    -webkit-appearance: none;
-    appearance: none;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
-    background: linear-gradient(135deg, #2d9fa3ff 0%, #667eea 100%);
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(45, 159, 163, 0.4);
-    transition: transform 0.2s;
-}
-
-input[type="range"]::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
-}
-
-input[type="range"]::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    background: linear-gradient(135deg, #2d9fa3ff 0%, #667eea 100%);
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(45, 159, 163, 0.4);
-}
-
-/* Grupo de informação (somente leitura) */
-.info-group {
-    background: #f5f5f5;
-    padding: 15px;
-    border-radius: 10px;
-    border-left: 4px solid #2d9fa3ff;
-}
+/* Info group styles moved to shared-styles.css */
 
 .info-text {
     font-size: 0.9rem;
@@ -225,12 +97,10 @@ input[type="range"]::-moz-range-thumb {
     gap: 4px;
 }
 
-/* Primeiro item (Passo Recomendado) com mais padding para título e seletor */
 .item-resultado:first-child {
     padding: 12px 8px;
 }
 
-/* Linha horizontal com ícone + valor + unidade */
 .linha-resultado {
     display: flex;
     align-items: baseline;
@@ -238,7 +108,6 @@ input[type="range"]::-moz-range-thumb {
     gap: 5px;
 }
 
-/* Linha de resultado com unidades compactas na mesma linha */
 .linha-resultado-com-unidades {
     display: flex;
     align-items: center;
@@ -265,7 +134,6 @@ input[type="range"]::-moz-range-thumb {
     display: inline;
 }
 
-/* Responsividade para grade de resultados */
 @media (max-width: 600px) {
     .grade-resultados {
         grid-template-columns: 1fr;
@@ -286,7 +154,7 @@ input[type="range"]::-moz-range-thumb {
 
 .grafico-section h3 {
     color: #333;
-    margin-bottom: 8px; /* compact */
+    margin-bottom: 8px;
     font-size: 1.1rem;
 }
 
@@ -302,7 +170,7 @@ input[type="range"]::-moz-range-thumb {
 .info-educativa {
     background: white;
     border-radius: 12px;
-    padding: 12px; /* compact */
+    padding: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
@@ -397,14 +265,12 @@ footer p {
     }
 }
 
-/* Radio Buttons Customizados (padrão Solar) */
 .grupo-radio {
     display: flex;
     gap: 10px;
-    justify-content: center; /* Centraliza os botões */
+    justify-content: center;
 }
 
-/* Radio Buttons Compactos (para unidade de passo na mesma linha) */
 .grupo-radio-compacto {
     display: flex;
     flex-direction: row;
@@ -449,7 +315,7 @@ footer p {
 }
 
 .opcao-radio {
-    flex: 0 0 auto; /* Não expande, apenas o tamanho necessário */
+    flex: 0 0 auto;
     position: relative;
 }
 

@@ -14,11 +14,8 @@ html {
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     /* Verde Engenharia Nata */
     background: var(--site-bg, #4e7262);
-    color: #333;
-    line-height: 1.4;
     min-height: 100vh;
     padding: 8px;
     /* Use unified site bottom padding to keep the home button clear of footer */
@@ -82,29 +79,9 @@ header h1 {
 /* ============================================
    SEÇÃO DE CONTROLES
    ============================================ */
-.cartao {
-    background: white;
-    border-radius: 12px;
-    padding: 12px 15px;
-    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
-    margin-bottom: 10px;
-}
+/* Card styles moved to shared-styles.css */
 
-.grupo-entrada {
-    margin-bottom: 12px;
-}
-
-.grupo-entrada:last-child {
-    margin-bottom: 0;
-}
-
-.grupo-entrada label {
-    display: block;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 4px;
-    font-size: 0.85rem;
-}
+/* Input groups moved to shared-styles.css */
 
 /* Input numérico estilizado */
 .wrapper-numero {
@@ -137,82 +114,7 @@ header h1 {
     font-weight: 600;
 }
 
-/* ============================================
-   SLIDER COM BOTÕES (+ e -)
-   ============================================ */
-.slider-com-botoes {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 4px;
-}
-
-/* arrow-btn base moved to assets/css/shared-styles.css — per-page variables below */
-:root { --arrow-border: #2d9fa3ff; --arrow-bg: white; --arrow-hover-bg: #2d9fa3ff; --arrow-hover-color: white; }
-
-/* Slider Range */
-input[type="range"] {
-    flex: 1;
-    height: 6px;
-    background: #e0e0e0;
-    border-radius: 3px;
-    outline: none;
-    cursor: pointer;
-    -webkit-appearance: none;
-    appearance: none;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
-    background: linear-gradient(135deg, #2d9fa3ff 0%, #667eea 100%);
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(45, 159, 163, 0.4);
-    transition: transform 0.2s;
-}
-
-input[type="range"]::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
-}
-
-input[type="range"]::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    background: linear-gradient(135deg, #2d9fa3ff 0%, #667eea 100%);
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(45, 159, 163, 0.4);
-}
-
-/* Cabeçalho do Controle centralizado */
-.cabecalho-controle {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 2px;
-}
-
-.cabecalho-controle label {
-    font-size: 0.85rem;
-    color: #2d9fa3ff;
-    font-weight: 600;
-}
-
-.valor-display {
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: #333;
-    background: #f0f0f0;
-    padding: 3px 10px;
-    border-radius: 15px;
-    min-width: 70px;
-    text-align: center;
-}
+/* Sliders, controls, and value displays moved to shared-styles.css */
 
 /* Ripple moved to shared file ripple-styles.css
    Preserve the page's ripple color via the CSS variable. */

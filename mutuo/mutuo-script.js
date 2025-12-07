@@ -52,7 +52,7 @@ let moedaAtual = idiomaAtual === 'pt-BR' ? 'BRL' : 'EUR';
 // Declarados aqui mas inicializados DEPOIS que o HTML carregar (no DOMContentLoaded)
 let btnExemplos, exemplosSection, resultados, sliderParcelas;
 let btnPortugues, btnItaliano;
-let valorRapido, taxaRapida, prazoRapido;
+let sliderValor, sliderTaxa, sliderPrazo; // Sliders substituindo os inputs de texto
 
 // Controle para os botões de seta (aumentar/diminuir valores)
 // intervalId - controla a repetição contínua quando segura o botão
@@ -72,95 +72,129 @@ let timeoutId = null;
  * Exemplo: ajustarValor('valorRapido', 10000) adiciona 10.000 ao valor
  *          ajustarValor('taxaRapida', -0.1) subtrai 0,1% da taxa
  */
+// Função para obter o máximo do slider baseado no idioma
+function obterMaxValorSlider() {
+    return idiomaAtual === 'it-IT' ? 500000 : 1000000; // 500 mil euros para italiano, 1 milhão para português
+}
+
 function ajustarValor(targetId, step) {
-    // Pega o elemento HTML pelo ID
-    const input = document.getElementById(targetId);
+    // Pega o elemento HTML pelo ID (agora é um slider)
+    const slider = document.getElementById(targetId);
+    if (!slider) return;
     
     // Limites máximos de segurança
-    const MAX_VALOR = 100000000; // 100 milhões - não deixa passar disso
-    const MAX_TAXA = 100; // 100% - taxa máxima permitida
+    const MAX_VALOR_SLIDER = obterMaxValorSlider(); // Máximo do slider baseado no idioma
+    const MAX_VALOR_INPUT = 10000000; // 10 milhões - máximo para inputs manuais
+    const MAX_TAXA_ANO = 20; // 20% ao ano - taxa máxima permitida
     
     // Verifica qual campo está sendo ajustado e aplica regras específicas
-    if (targetId === 'valorRapido') {
+    if (targetId === 'sliderValor') {
         // CAMPO DE VALOR EMPRESTADO
-        // Normaliza para valores inteiros (sem centavos) e padroniza o step
-        // para incrementos / decrementos de 10.000.
+        // Steps dinâmicos baseados no valor atual:
+        // - Entre 1.000 e 10.000: step de 1.000
+        // - Entre 10.000 e 1.000.000: step de 10.000
 
-        // Garante que obtemos um número inteiro limpo do campo
-        let valor = Math.round(obterValorNumericoFormatado(input.value) || 0);
-
-        // Calcula o passo efetivo a partir do atributo data-step.
-        // Queremos que o passo seja um múltiplo de 10.000. Se o botão
-            // informar um valor diferente, usamos um passo dinâmico:
-            // - Se o valor atual for menor que 10.000 usamos passos de 1.000.
-            // - Se o valor atual for >= 10.000 usamos passos de 10.000.
-            // O botão pode passar um data-step qualquer — nós respeitamos apenas
-            // o sinal do step e escolhemos o tamanho de passo adequado para o
-            // intervalo atual (1k ou 10k).
-            // If user is decreasing from exactly 10k, prefer 1k step so 10k -> 9k
-            const stepSign = (typeof step === 'number' && !isNaN(step) && step !== 0) ? Math.sign(step) : 1;
-            let baseStep;
-            if (stepSign < 0) {
-                // For decrements: values <= 10k step by 1k, else 10k
-                baseStep = (valor <= 10000) ? 1000 : 10000;
-            } else {
-                // For increments: values < 10k step by 1k, else 10k
-                baseStep = (valor < 10000) ? 1000 : 10000;
-            }
-            const stepVal = stepSign * baseStep;
-
-        // Adiciona o step e garante que fica entre 10.000 e MAX_VALOR
-        // Agora o valor mínimo do empréstimo é 10.000 (não chega a zero)
-            valor = Math.max(1000, Math.min(MAX_VALOR, valor + stepVal));
-
-        // Assegura que não teremos centavos (apenas inteiros) e formata sem casas decimais
+        // Obtém o valor atual do slider (já é um número)
+        let valor = parseFloat(slider.value) || 0;
+        
+        // Calcula o passo efetivo baseado no valor atual
+        const stepSign = (typeof step === 'number' && !isNaN(step) && step !== 0) ? Math.sign(step) : 1;
+        let baseStep;
+        
+        const maxSlider = obterMaxValorSlider();
+        if (valor < 10000) {
+            // Entre 1.000 e 10.000: step de 1.000
+            baseStep = 1000;
+        } else if (valor < maxSlider) {
+            // Entre 10.000 e o máximo do slider: step de 10.000
+            baseStep = 10000;
+        } else {
+            // Acima do máximo do slider: step de 100.000 (para valores manuais)
+            baseStep = 100000;
+        }
+        
+        const stepVal = stepSign * baseStep;
+        
+        // Adiciona o step e garante que fica entre 1000 e MAX_VALOR_SLIDER (limite do slider)
+        valor = Math.max(1000, Math.min(MAX_VALOR_SLIDER, valor + stepVal));
         valor = Math.round(valor);
-        input.value = valor.toLocaleString(idiomaAtual, { 
-            useGrouping: true,           // Usa agrupamento (separa os milhares)
-            minimumFractionDigits: 0, 
-            maximumFractionDigits: 0 
-        });
         
-    } else if (targetId === 'taxaRapida') {
-        // CAMPO DE TAXA DE JUROS
+        // Atualiza o slider
+        slider.value = valor;
         
-        // Converte texto com vírgula (ex: "10,5") para número JavaScript (10.5)
-        let taxa = parseFloat(input.value.replace(',', '.')) || 0;
+        // Atualiza display e recalcula
+        if (window.atualizarDisplayValor) window.atualizarDisplayValor();
+        calcularEmprestimo();
         
-        // Determine step size dynamically: if user currently selected 'dia'
-        // we allow steps of 0.001 (three decimals), otherwise steps passed
-        // in data-step (typically 0.1) are used.
+    } else if (targetId === 'sliderTaxa') {
+        // CAMPO DE TAXA DE JUROS (slider)
+        let taxa = parseFloat(slider.value) || 0;
+        
+        // Determina o step size dinamicamente baseado no período atual
         const periodoAtual = (document.querySelector('input[name="periodoRapido"]:checked') || {}).value || 'ano';
-        const stepEffective = periodoAtual === 'dia' ? Math.sign(step) * 0.001 : step;
-        // Adiciona o step e limita entre 0 e 100%
-        taxa = Math.max(0, Math.min(MAX_TAXA, taxa + stepEffective));
+        let stepEffective;
         
-        // Formata com 1 casa decimal e troca ponto por vírgula
-        // toFixed(1) garante uma casa decimal: 10.5
-        // replace('.', ',') converte para padrão brasileiro: 10,5
-        // if the current period is 'dia' keep three decimals for readability
-        const periodSelected = (document.querySelector('input[name="periodoRapido"]:checked') || {}).value || 'ano';
-        const decimalsToShow = periodSelected === 'dia' ? 3 : 1;
-        input.value = taxa.toFixed(decimalsToShow).replace('.', ',');
+        // Step baseado no período: 0.1 para ano, 0.01 para mês, 0.001 para dia
+        if (periodoAtual === 'dia') {
+            stepEffective = Math.sign(step) * 0.001;
+        } else if (periodoAtual === 'mes') {
+            stepEffective = Math.sign(step) * 0.01;
+        } else {
+            // ano
+            stepEffective = Math.sign(step) * 0.1;
+        }
         
-    } else if (targetId === 'prazoRapido') {
-        // CAMPO DE PRAZO EM ANOS
+        // Obter limite máximo baseado no período
+        const maxTaxa = obterLimiteMaximoTaxa(periodoAtual);
         
-        // Converte para número inteiro (sem decimais)
-        let prazo = parseInt(input.value) || 0;
+        // Adiciona o step e limita entre 0 e o máximo do período
+        taxa = Math.max(0, Math.min(maxTaxa, taxa + stepEffective));
+        
+        // Arredonda para o step apropriado para evitar erros de precisão
+        if (periodoAtual === 'dia') {
+            taxa = Math.round(taxa * 1000) / 1000; // 3 casas decimais
+        } else if (periodoAtual === 'mes') {
+            taxa = Math.round(taxa * 100) / 100; // 2 casas decimais
+        } else {
+            taxa = Math.round(taxa * 10) / 10; // 1 casa decimal
+        }
+        
+        // Atualiza o slider
+        slider.value = taxa;
+        
+        // Atualiza display e recalcula
+        if (window.atualizarDisplayTaxa) window.atualizarDisplayTaxa();
+        calcularEmprestimo();
+        
+    } else if (targetId === 'sliderPrazo') {
+        // CAMPO DE PRAZO EM ANOS (slider)
+        let prazo = parseInt(slider.value) || 0;
         
         // Adiciona o step e limita entre 1 e 50 anos
         prazo = Math.max(1, Math.min(50, prazo + step));
         
-        // Prazo não precisa formatação, é só o número
-        input.value = prazo;
+        // Atualiza o slider
+        slider.value = prazo;
+        
+        // Atualiza display e recalcula
+        if (window.atualizarDisplayPrazo) window.atualizarDisplayPrazo();
+        calcularEmprestimo();
+        
+    } else if (targetId === 'sliderParcelas') {
+        // CAMPO DE PARCELA SELECIONADA (slider)
+        let parcela = parseInt(slider.value) || 1;
+        const maxParcelas = parseInt(slider.max) || 120;
+        
+        // Adiciona o step e limita entre 1 e o máximo de parcelas
+        parcela = Math.max(1, Math.min(maxParcelas, parcela + step));
+        
+        // Atualiza o slider
+        slider.value = parcela;
+        
+        // Atualiza exibição da parcela
+        if (window.atualizarParcelaExibida) window.atualizarParcelaExibida();
     }
     
-    // Recalcula o empréstimo automaticamente após ajustar o valor
-    // Mas só se a página já terminou de carregar (valorRapido existe)
-    if (valorRapido) {
-        calcularEmprestimo();
-    }
 }
 
 // ============================================
@@ -181,7 +215,7 @@ function selecionarConteudo(e) {
  */
 function formatarValorInput(e) {
     let valor = e.target.value;
-    const MAX_VALOR = 100000000; // 100 milhões
+    const MAX_VALOR = 10000000; // 10 milhões
     
     // Remove TUDO que não é número (letras, pontos, vírgulas, etc)
     // \D significa "qualquer coisa que não seja dígito"
@@ -203,27 +237,56 @@ function formatarValorInput(e) {
 
     // Se chamado por 'blur' (o usuário terminou de editar) aplicamos regras:
     // - mínimo absoluto = 1.000
-    // - se o número for < 10.000 → arredonda para múltiplos de 1.000
-    // - se o número for >= 10.000 → arredonda para múltiplos de 10.000
+    // - Arredonda para múltiplos do step apropriado baseado no valor
     if (e.type === 'blur') {
         if (numero < 1000) numero = 1000;
+        
+        // Determina o step baseado no valor
+        let step;
+        const maxSlider = obterMaxValorSlider();
         if (numero < 10000) {
-            numero = Math.round(numero / 1000) * 1000; // snap to 1k
+            step = 1000; // Entre 1.000 e 10.000: step de 1.000
+        } else if (numero < maxSlider) {
+            step = 10000; // Entre 10.000 e o máximo do slider: step de 10.000
         } else {
-            numero = Math.round(numero / 10000) * 10000; // snap to 10k
+            step = 100000; // Acima do máximo do slider: step de 100.000
         }
+        
+        // Arredonda para o múltiplo mais próximo do step
+        numero = Math.round(numero / step) * step;
+        
         // Garanta que o arredondamento não quebre o limite máximo
         if (numero > MAX_VALOR) numero = MAX_VALOR;
     }
     
-    // Formata com separador de milhares no padrão do idioma atual
-    // Sem casas decimais (não mostramos centavos neste campo)
-    // Ex: 100000 vira "100.000" em PT ou "100,000" em EN
-    e.target.value = numero.toLocaleString(idiomaAtual, {
+    // Se não for blur, apenas atualiza o valor enquanto digita (sem recalcular)
+    if (e.type !== 'blur') {
+        // Formata com separador de milhares enquanto digita
+        const valorFormatado = numero.toLocaleString(idiomaAtual, {
+            useGrouping: true,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+        e.target.value = valorFormatado;
+        return;
+    }
+    
+    // No blur, formata e recalcula
+    const valorFormatado = numero.toLocaleString(idiomaAtual, {
         useGrouping: true,           // Usa agrupamento (separa os milhares)
         minimumFractionDigits: 0,    // Não mostra decimais
         maximumFractionDigits: 0     // Não permite decimais
     });
+    e.target.value = valorFormatado;
+    
+    // Sincronizar slider
+    const slider = document.getElementById('sliderValor');
+    if (slider) {
+        // Permitir valores acima do máximo do slider para inputs manuais
+        // O slider será limitado ao máximo baseado no idioma, mas o input pode ir até 10 milhões
+        const maxSlider = obterMaxValorSlider();
+        slider.value = Math.min(maxSlider, numero); // Limita slider ao máximo do idioma
+    }
     
     // Recalcula automaticamente quando o usuário muda o valor
     calcularEmprestimo();
@@ -235,7 +298,6 @@ function formatarValorInput(e) {
  */
 function formatarTaxaInput(e) {
     let valor = e.target.value;
-    const MAX_TAXA = 100; // 100%
     
     // Remove tudo EXCETO números e vírgula
     // [^\d,] significa "qualquer coisa que não seja dígito ou vírgula"
@@ -252,14 +314,32 @@ function formatarTaxaInput(e) {
         valor = partes[0] + ',' + partes.slice(1).join('');
     }
     
-    // Valida o limite máximo de 100%
+    // Obter limite máximo baseado no período atual
+    const periodoAtual = (document.querySelector('input[name="periodoRapido"]:checked') || {}).value || 'ano';
+    const MAX_TAXA = obterLimiteMaximoTaxa(periodoAtual);
+    
+    // Valida o limite máximo
     const taxaNum = parseFloat(valor.replace(',', '.')); // Converte para número
     if (!isNaN(taxaNum) && taxaNum > MAX_TAXA) {
-        // Se passou de 100%, força o valor máximo
-        valor = MAX_TAXA.toFixed(1).replace('.', ',');
+        // Se passou do limite, força o valor máximo
+        const decimalsToShow = periodoAtual === 'dia' ? 3 : periodoAtual === 'mes' ? 2 : 1;
+        valor = MAX_TAXA.toFixed(decimalsToShow).replace('.', ',');
     }
     
     e.target.value = valor;
+    
+    // Se não for blur, apenas atualiza enquanto digita (sem recalcular)
+    if (e.type !== 'blur') {
+        return;
+    }
+    
+    // No blur, sincroniza slider e recalcula
+    const slider = document.getElementById('sliderTaxa');
+    if (slider) {
+        const taxaNum = parseFloat(valor.replace(',', '.')) || 0;
+        slider.value = Math.max(0, Math.min(MAX_TAXA, taxaNum));
+    }
+    
     calcularEmprestimo();
 }
 
@@ -283,7 +363,19 @@ function formatarPrazoInput(e) {
     const numero = parseInt(valor);
     
     // Limita entre 1 (mínimo) e 50 (máximo) anos
-    e.target.value = Math.max(1, Math.min(50, numero));
+    const prazoFinal = Math.max(1, Math.min(50, numero));
+    e.target.value = prazoFinal;
+    
+    // Se não for blur, apenas atualiza enquanto digita (sem recalcular)
+    if (e.type !== 'blur') {
+        return;
+    }
+    
+    // No blur, sincroniza slider e recalcula
+    const slider = document.getElementById('sliderPrazo');
+    if (slider) {
+        slider.value = prazoFinal;
+    }
     
     calcularEmprestimo();
 }
@@ -385,7 +477,7 @@ const traducoes = {
         'loan-data': 'Dados do Empréstimo',
         'loan-amount': 'Valor Empréstimo (R$)',
         'interest-period': 'Período dos Juros',
-        'interest-rate': 'Taxa de Juros (% ao)',
+        'interest-rate': 'Juros (% ao)',
         'loan-term': 'Prazo (anos)',
         'amortization-system': 'Sistema de Amortização',
         'period-year': 'Ao Ano (%)',
@@ -497,7 +589,7 @@ const traducoes = {
         'loan-data': 'Dati del Mutuo',
         'loan-amount': 'Valore Mutuo (€)',
         'interest-period': 'Periodo degli Interessi',
-        'interest-rate': 'Tasso di Interesse (% al)',
+        'interest-rate': 'Interesse (% al)',
         'loan-term': 'Durata (anni)',
         'amortization-system': 'Sistema di Ammortamento',
         'period-year': 'Annuo (%)',
@@ -614,6 +706,17 @@ function trocarIdioma(idioma) {
     // Salva no localStorage para manter entre páginas
     localStorage.setItem(SITE_LS.LANGUAGE_KEY, idioma);
     
+    // Atualizar máximo do slider de valor baseado no idioma
+    if (sliderValor) {
+        const maxSlider = obterMaxValorSlider();
+        const valorAtual = parseFloat(sliderValor.value) || 100000;
+        sliderValor.max = maxSlider;
+        // Se o valor atual for maior que o novo máximo, ajustar para o máximo
+        if (valorAtual > maxSlider) {
+            sliderValor.value = maxSlider;
+        }
+    }
+    
     // Atualizar botões ativos usando data-lang (mais confiável)
     document.querySelectorAll(SITE_SEL.LANG_BTN).forEach(btn => {
         if (btn.getAttribute('data-lang') === idioma) {
@@ -705,6 +808,31 @@ function converterTaxaParaMensal(taxa, periodo) {
 
         return targetDecimal * 100; // percentual
     }
+
+/**
+ * Obtém o limite máximo da taxa de juros baseado no período
+ * Limite base: 20% ao ano
+ * @param {'ano'|'mes'|'dia'} periodo - Período da taxa
+ * @returns {number} Limite máximo em percentual
+ */
+function obterLimiteMaximoTaxa(periodo) {
+    const MAX_TAXA_ANO = 20; // 20% ao ano
+    
+    switch(periodo) {
+        case 'ano':
+            return MAX_TAXA_ANO;
+        case 'mes':
+            // Converte 20% ao ano para mensal equivalente
+            // (1.20^(1/12) - 1) * 100
+            return (Math.pow(1 + MAX_TAXA_ANO / 100, 1/12) - 1) * 100;
+        case 'dia':
+            // Converte 20% ao ano para diária equivalente
+            // (1.20^(1/365) - 1) * 100
+            return (Math.pow(1 + MAX_TAXA_ANO / 100, 1/365) - 1) * 100;
+        default:
+            return MAX_TAXA_ANO;
+    }
+}
 
 // Sistema Price / Tabela Price (Parcelas fixas - Anuidade)
 // -------------------------------------------------------
@@ -820,24 +948,33 @@ function calcularAlemao(valorEmprestimo, taxaMensal, numeroParcelas) {
 
 // Função principal de cálculo
 function calcularEmprestimo() {
-    // Obter valores dos controles rápidos
-    // Use let because we may clamp the value to a minimum later
-    let valorEmprestimo = obterValorNumericoFormatado(valorRapido.value);
+    // Obter valores dos sliders e inputs
+    // Para valor emprestado, verificar se há valor no input acima do limite do slider
+    let valorEmprestimo = parseFloat(sliderValor.value) || 0;
+    
+    // Se houver input manual com valor acima do máximo do slider, usar esse valor
+    const inputValor = document.getElementById('inputValor');
+    if (inputValor) {
+        const valorInputTexto = inputValor.value.replace(/\./g, '').replace(',', '.');
+        const valorInput = parseFloat(valorInputTexto) || 0;
+        const maxSlider = obterMaxValorSlider();
+        if (valorInput > maxSlider && valorInput <= 10000000) {
+            valorEmprestimo = valorInput;
+        }
+    }
+    
     const periodoJuros = document.querySelector('input[name="periodoRapido"]:checked').value;
-    const taxaJuros = parseFloat(taxaRapida.value.replace(',', '.')) || 0;
-    const prazoAnos = parseInt(prazoRapido.value) || 0;
+    const taxaJuros = parseFloat(sliderTaxa.value) || 0;
+    const prazoAnos = parseInt(sliderPrazo.value) || 0;
     const tipoCalculo = document.querySelector('input[name="sistemaRapido"]:checked').value;
     
     // Validações
     // Se o valor informado é menor que 1.000, forçamos 1.000 (não abortamos)
     if (!valorEmprestimo || valorEmprestimo < 1000) {
-        // Atualiza o input para o mínimo aceitável para manter consistência
-        if (valorRapido) {
-            valorRapido.value = (1000).toLocaleString(idiomaAtual, { 
-                useGrouping: true,           // Usa agrupamento (separa os milhares)
-                minimumFractionDigits: 0, 
-                maximumFractionDigits: 0 
-            });
+        // Atualiza o slider para o mínimo aceitável para manter consistência
+        if (sliderValor) {
+            sliderValor.value = 1000;
+            atualizarDisplayValor();
         }
         // Use o valor mínimo para os cálculos
         valorEmprestimo = 1000;
@@ -904,6 +1041,9 @@ function calcularEmprestimo() {
     // Atualizar gráficos
     atualizarGraficos();
     
+    // Atualizar exemplos com valores atuais (para quando o usuário abrir "Saiba Mais")
+    atualizarExemplosComValores();
+    
     // Mostrar seção de resultados (sem scroll automático)
     resultados.style.display = 'block';
     // resultados.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -918,7 +1058,7 @@ function exibirResultados(valorEmprestimo, totalJuros, totalPagar, porcentagemJu
 }
 
 // Atualizar exibição da parcela selecionada no slider
-function atualizarParcelaExibida() {
+window.atualizarParcelaExibida = function() {
     const indiceParcela = parseInt(sliderParcelas.value) - 1;
     const parcela = tabelaAmortizacaoAtual[indiceParcela];
     
@@ -953,6 +1093,15 @@ function preencherTabelaAmortizacao() {
         
         tbody.appendChild(tr);
     }
+    
+    // Garantir que o scroll da tabela inicie à esquerda (mostrando a primeira coluna)
+    const tabelaScroll = document.querySelector('.tabela-scroll');
+    if (tabelaScroll) {
+        // Usar setTimeout para garantir que o DOM foi atualizado
+        setTimeout(() => {
+            tabelaScroll.scrollLeft = 0;
+        }, 0);
+    }
 }
 
 // Toggle exemplos
@@ -975,13 +1124,12 @@ function toggleExemplos() {
     }
 }
 
-// Atualizar exemplos com valores dos inputs
+// Atualizar exemplos com valores dos sliders
 function atualizarExemplosComValores() {
-    // Usar valores dos controles rápidos
-    const valorEmprestimoInput = valorRapido.value;
-    const valorEmprestimo = obterValorNumericoFormatado(valorEmprestimoInput);
-    const taxaJuros = parseFloat(taxaRapida.value.replace(',', '.'));
-    const prazoAnos = parseInt(prazoRapido.value);
+    // Usar valores dos sliders
+    const valorEmprestimo = parseFloat(sliderValor.value) || 0;
+    const taxaJuros = parseFloat(sliderTaxa.value) || 0;
+    const prazoAnos = parseInt(sliderPrazo.value) || 0;
     const periodoJuros = document.querySelector('input[name="periodoRapido"]:checked').value;
     
     // Validar valores
@@ -1048,24 +1196,27 @@ function atualizarExemplosComValores() {
     document.getElementById('example-american-result-3').textContent = 
         `Total de juros: ${formatarMoeda(totalJurosAlemao)}`;
     
-    // Tabela comparativa
+    // Tabela comparativa com valores calculados
     document.getElementById('comparison-subtitle').textContent = 
         `Para ${simboloMoeda} ${formatarNumero(valorEmprestimo)} a ${taxaTexto} por ${numeroParcelas} meses:`;
     
-    // Atualizar valores da tabela
-    const tabelaLinhas = document.querySelectorAll('.comparacao tbody tr');
-    if (tabelaLinhas.length >= 3) {
-        tabelaLinhas[0].children[1].textContent = formatarMoeda(totalJurosSAC);
-        tabelaLinhas[0].children[2].textContent = formatarMoeda(tabelaSAC[0].valorParcela);
-        tabelaLinhas[0].children[3].textContent = formatarMoeda(tabelaSAC[numeroParcelas-1].valorParcela);
-        
-        tabelaLinhas[1].children[1].textContent = formatarMoeda(totalJurosPrice);
-        tabelaLinhas[1].children[2].textContent = formatarMoeda(tabelaPrice[0].valorParcela);
-        tabelaLinhas[1].children[3].textContent = formatarMoeda(tabelaPrice[numeroParcelas-1].valorParcela);
-        
-        tabelaLinhas[2].children[1].textContent = formatarMoeda(totalJurosAlemao);
-        tabelaLinhas[2].children[2].textContent = formatarMoeda(tabelaAlemao[0].valorParcela);
-        tabelaLinhas[2].children[3].textContent = formatarMoeda(tabelaAlemao[numeroParcelas-1].valorParcela);
+    // Atualizar valores da tabela (apenas a tabela de comparação com valores)
+    const tabelaComparacao = document.getElementById('tabelaComparacaoValores');
+    if (tabelaComparacao) {
+        const tabelaLinhas = tabelaComparacao.querySelectorAll('tbody tr');
+        if (tabelaLinhas.length >= 3) {
+            tabelaLinhas[0].children[1].textContent = formatarMoeda(totalJurosSAC);
+            tabelaLinhas[0].children[2].textContent = formatarMoeda(tabelaSAC[0].valorParcela);
+            tabelaLinhas[0].children[3].textContent = formatarMoeda(tabelaSAC[numeroParcelas-1].valorParcela);
+            
+            tabelaLinhas[1].children[1].textContent = formatarMoeda(totalJurosPrice);
+            tabelaLinhas[1].children[2].textContent = formatarMoeda(tabelaPrice[0].valorParcela);
+            tabelaLinhas[1].children[3].textContent = formatarMoeda(tabelaPrice[numeroParcelas-1].valorParcela);
+            
+            tabelaLinhas[2].children[1].textContent = formatarMoeda(totalJurosAlemao);
+            tabelaLinhas[2].children[2].textContent = formatarMoeda(tabelaAlemao[0].valorParcela);
+            tabelaLinhas[2].children[3].textContent = formatarMoeda(tabelaAlemao[numeroParcelas-1].valorParcela);
+        }
     }
 }
 
@@ -1161,7 +1312,7 @@ function atualizarGraficos() {
             labels: labels,
             datasets: [
                 {
-                    label: idiomaAtual === 'pt-BR' ? 'Amortização Acumulada' : 'Ammortamento Accumulato',
+                    label: idiomaAtual === 'pt-BR' ? 'Amortização' : 'Ammortamento',
                     data: dadosAmortizacao,
                     borderColor: '#66bb6a',
                     backgroundColor: 'rgba(102, 187, 106, 0.1)',
@@ -1170,7 +1321,7 @@ function atualizarGraficos() {
                     borderWidth: 2
                 },
                 {
-                    label: idiomaAtual === 'pt-BR' ? 'Juros Acumulados' : 'Interessi Accumulati',
+                    label: idiomaAtual === 'pt-BR' ? 'Juros' : 'Interessi',
                     data: dadosJuros,
                     borderColor: '#f44336',
                     backgroundColor: 'rgba(244, 67, 54, 0.1)',
@@ -1193,7 +1344,7 @@ function atualizarGraficos() {
             plugins: {
                 legend: {
                     display: true,
-                    position: 'top',
+                    position: 'bottom',
                     labels: {
                         usePointStyle: true,
                         padding: 15,
@@ -1253,9 +1404,127 @@ document.addEventListener('DOMContentLoaded', function() {
     sliderParcelas = document.getElementById('sliderParcelas');
     btnPortugues = document.getElementById('btnPortugues');
     btnItaliano = document.getElementById('btnItaliano');
-    valorRapido = document.getElementById('valorRapido');
-    taxaRapida = document.getElementById('taxaRapida');
-    prazoRapido = document.getElementById('prazoRapido');
+    sliderValor = document.getElementById('sliderValor');
+    sliderTaxa = document.getElementById('sliderTaxa');
+    sliderPrazo = document.getElementById('sliderPrazo');
+    
+    // Inicializar máximo do slider de valor baseado no idioma
+    if (sliderValor) {
+        sliderValor.max = obterMaxValorSlider();
+    }
+    
+    // Inicializar limites e step do slider de taxa baseado no período inicial
+    if (sliderTaxa) {
+        const periodoInicial = (document.querySelector('input[name="periodoRapido"]:checked') || {}).value || 'ano';
+        const maxTaxa = obterLimiteMaximoTaxa(periodoInicial);
+        sliderTaxa.max = maxTaxa;
+        
+        // Definir step inicial baseado no período
+        if (periodoInicial === 'dia') {
+            sliderTaxa.step = '0.001';
+        } else if (periodoInicial === 'mes') {
+            sliderTaxa.step = '0.01';
+        } else {
+            sliderTaxa.step = '0.1';
+        }
+    }
+    
+    // Referências aos inputs de texto editáveis
+    const inputValor = document.getElementById('inputValor');
+    const inputPrazo = document.getElementById('inputPrazo');
+    const inputTaxa = document.getElementById('inputTaxa');
+    
+    // Funções para atualizar inputs de texto quando sliders mudam
+    window.atualizarDisplayValor = function() {
+        if (inputValor && sliderValor && document.activeElement !== inputValor) {
+            // Se o input tem um valor acima do máximo do slider, usa o input
+            // Caso contrário, usa o slider
+            const valorInput = parseFloat(inputValor.value.replace(/\./g, '').replace(',', '.')) || 0;
+            const valorSlider = parseFloat(sliderValor.value) || 0;
+            
+            // Se o input tem valor válido e está acima do limite do slider, usa o input
+            // Caso contrário, sincroniza com o slider
+            const maxSlider = obterMaxValorSlider();
+        if (valorInput > maxSlider && valorInput <= 10000000) {
+                // Mantém o valor do input (já está formatado)
+                return;
+            } else {
+                // Sincroniza com o slider
+                inputValor.value = valorSlider.toLocaleString(idiomaAtual, {
+                    useGrouping: true,
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                });
+            }
+        }
+    };
+    
+    window.atualizarDisplayTaxa = function() {
+        if (inputTaxa && sliderTaxa && document.activeElement !== inputTaxa) {
+            const taxa = parseFloat(sliderTaxa.value) || 0;
+            const periodoAtual = (document.querySelector('input[name="periodoRapido"]:checked') || {}).value || 'ano';
+            const decimalsToShow = periodoAtual === 'dia' ? 3 : periodoAtual === 'mes' ? 2 : 1;
+            inputTaxa.value = taxa.toFixed(decimalsToShow).replace('.', ',');
+        }
+    };
+    
+    window.atualizarDisplayPrazo = function() {
+        if (inputPrazo && sliderPrazo && document.activeElement !== inputPrazo) {
+            inputPrazo.value = sliderPrazo.value;
+        }
+    };
+    
+    // Função para selecionar todo o texto quando o input recebe foco
+    function selecionarTextoAoFocar(e) {
+        e.target.select();
+    }
+    
+    // Função para sincronizar input de texto com slider
+    function sincronizarInputParaSlider(inputId, sliderId, formatarFuncao) {
+        const input = document.getElementById(inputId);
+        const slider = document.getElementById(sliderId);
+        if (!input || !slider) return;
+        
+        input.addEventListener('focus', selecionarTextoAoFocar);
+        input.addEventListener('blur', function(e) {
+            formatarFuncao(e);
+            // Sincronizar slider com o valor formatado
+            if (inputId === 'inputValor') {
+                const valor = obterValorNumericoFormatado(e.target.value);
+                // Limitar slider ao máximo baseado no idioma, mas permitir input manual até 10 milhões
+                const maxSlider = obterMaxValorSlider();
+                slider.value = Math.max(1000, Math.min(maxSlider, valor)); // Slider limitado ao máximo do idioma
+                calcularEmprestimo();
+            } else if (inputId === 'inputPrazo') {
+                const prazo = parseInt(e.target.value) || 1;
+                slider.value = Math.max(1, Math.min(50, prazo));
+                calcularEmprestimo();
+            } else if (inputId === 'inputTaxa') {
+                const taxa = parseFloat(e.target.value.replace(',', '.')) || 0;
+                const periodoAtual = (document.querySelector('input[name="periodoRapido"]:checked') || {}).value || 'ano';
+                const maxTaxa = obterLimiteMaximoTaxa(periodoAtual);
+                slider.value = Math.max(0, Math.min(maxTaxa, taxa));
+                calcularEmprestimo();
+            }
+        });
+        input.addEventListener('input', formatarFuncao);
+    }
+    
+    // Inicializar displays
+    atualizarDisplayValor();
+    atualizarDisplayTaxa();
+    atualizarDisplayPrazo();
+    
+    // Sincronizar inputs de texto com sliders
+    if (inputValor && sliderValor) {
+        sincronizarInputParaSlider('inputValor', 'sliderValor', formatarValorInput);
+    }
+    if (inputPrazo && sliderPrazo) {
+        sincronizarInputParaSlider('inputPrazo', 'sliderPrazo', formatarPrazoInput);
+    }
+    if (inputTaxa && sliderTaxa) {
+        sincronizarInputParaSlider('inputTaxa', 'sliderTaxa', formatarTaxaInput);
+    }
     
     // Event Listeners para botões de seta
     document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
@@ -1318,23 +1587,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Event Listeners para inputs
+    // Event Listeners para sliders
     sliderParcelas.addEventListener('input', atualizarParcelaExibida);
-    valorRapido.addEventListener('input', formatarValorInput);
-    valorRapido.addEventListener('blur', formatarValorInput);
-    valorRapido.addEventListener('change', calcularEmprestimo);
-    valorRapido.addEventListener('focus', iniciarEdicao);
-    valorRapido.addEventListener('keydown', tratarTeclasRapido);
     
-    taxaRapida.addEventListener('input', formatarTaxaInput);
-    taxaRapida.addEventListener('change', calcularEmprestimo);
-    taxaRapida.addEventListener('focus', iniciarEdicao);
-    taxaRapida.addEventListener('keydown', tratarTeclasRapido);
+    if (sliderValor) {
+        sliderValor.addEventListener('input', function() {
+            atualizarDisplayValor();
+            calcularEmprestimo();
+        });
+    }
     
-    prazoRapido.addEventListener('input', formatarPrazoInput);
-    prazoRapido.addEventListener('change', calcularEmprestimo);
-    prazoRapido.addEventListener('focus', iniciarEdicao);
-    prazoRapido.addEventListener('keydown', tratarTeclasRapido);
+    if (sliderTaxa) {
+        sliderTaxa.addEventListener('input', function() {
+            atualizarDisplayTaxa();
+            calcularEmprestimo();
+        });
+    }
+    
+    if (sliderPrazo) {
+        sliderPrazo.addEventListener('input', function() {
+            atualizarDisplayPrazo();
+            calcularEmprestimo();
+        });
+    }
     
     // Radio buttons dos controles rápidos
     // Mantemos o período atual e quando o usuário mudar o período
@@ -1344,16 +1619,61 @@ document.addEventListener('DOMContentLoaded', function() {
         radio.addEventListener('change', (e) => {
             const novoPeriodo = e.target.value;
             if (novoPeriodo && novoPeriodo !== periodoRapidoAtual) {
-                // Ler taxa atual como número (usar ponto decimal)
-                const raw = taxaRapida && taxaRapida.value ? taxaRapida.value : '';
-                const taxaAtual = parseFloat(String(raw).replace(',', '.')) || 0;
+                // Ler taxa atual do slider (já é número)
+                const taxaAtual = parseFloat(sliderTaxa.value) || 0;
 
                 // Converter de periodoRapidoAtual -> novoPeriodo
                 const taxaConvertida = converterTaxaBetweenPeriods(taxaAtual, periodoRapidoAtual, novoPeriodo);
 
-                // Formata com 3 casas se 'dia', caso contrário 1 casa
-                const decimals = novoPeriodo === 'dia' ? 3 : 1;
-                taxaRapida.value = taxaConvertida.toFixed(decimals).replace('.', ',');
+                // Atualizar limites do slider baseado no novo período
+                const maxTaxa = obterLimiteMaximoTaxa(novoPeriodo);
+                sliderTaxa.max = maxTaxa;
+                
+                // Atualizar o step do slider baseado no período
+                // Valores diários são muito pequenos, precisam de step menor
+                if (novoPeriodo === 'dia') {
+                    sliderTaxa.step = '0.001'; // Step de 0.001% para valores diários
+                } else if (novoPeriodo === 'mes') {
+                    sliderTaxa.step = '0.01'; // Step de 0.01% para valores mensais
+                } else {
+                    sliderTaxa.step = '0.1'; // Step de 0.1% para valores anuais
+                }
+                
+                // Garantir que o valor convertido não exceda o novo limite
+                let taxaLimitada = Math.min(taxaConvertida, maxTaxa);
+                
+                // Garantir que valores muito pequenos não sejam zerados
+                // Se a taxa original não era zero e a convertida é positiva, preservar
+                if (taxaAtual > 0 && taxaConvertida > 0) {
+                    // Para valores diários, garantir que valores muito pequenos sejam preservados
+                    if (novoPeriodo === 'dia' && taxaLimitada < 0.001) {
+                        // Se o valor convertido for menor que o step mínimo, usar o valor convertido original
+                        // mas garantir que seja pelo menos 0.0001 para não zerar
+                        taxaLimitada = Math.max(taxaConvertida, 0.0001);
+                    }
+                }
+                
+                // Atualiza o slider com o valor limitado
+                // Para valores diários, usar mais precisão e garantir que não seja zero
+                if (novoPeriodo === 'dia') {
+                    // Arredondar para o step mais próximo (0.001), mas preservar valores menores
+                    if (taxaLimitada >= 0.001) {
+                        taxaLimitada = Math.round(taxaLimitada * 1000) / 1000;
+                    } else {
+                        // Para valores menores que 0.001, preservar com mais precisão
+                        taxaLimitada = Math.round(taxaLimitada * 10000) / 10000;
+                    }
+                    // Garantir que não seja zero se havia um valor antes
+                    if (taxaAtual > 0 && taxaLimitada === 0) {
+                        taxaLimitada = taxaConvertida; // Usar o valor convertido original
+                    }
+                    sliderTaxa.value = taxaLimitada;
+                } else {
+                    sliderTaxa.value = taxaLimitada;
+                }
+                
+                // Atualiza display
+                atualizarDisplayTaxa();
 
                 // Atualiza estado
                 periodoRapidoAtual = novoPeriodo;

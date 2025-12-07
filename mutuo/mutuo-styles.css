@@ -19,18 +19,8 @@ html {
    BODY - Estilo da página principal
    ============================================ */
 body {
-    /* Fonte do sistema (mesma do iPhone/Android) */
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    
     /* Fundo verde estilo Windows 98/2000 (igual tela inicial) */
     background: var(--site-bg, #4e7262);
-    
-    /* Cor do texto */
-    color: #333;
-    
-    /* Altura da linha (espaço entre linhas de texto) */
-    /* 1.4 = mais compacto, economiza espaço vertical */
-    line-height: 1.4;
     
     /* Altura mínima = altura total da janela */
     min-height: 100vh;
@@ -102,13 +92,9 @@ header h1 {
 /* ============================================
    CARTÃO - Caixas brancas que contém conteúdo
    ============================================ */
+/* Card base styles moved to shared-styles.css */
 .card {
-    background: white;
-    border-radius: 12px;
-    padding: 12px 15px;  /* consistent with Solar */
-    margin-bottom: 10px;
-    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);  /* consistent with Solar */
-    animation: fadeIn 0.45s ease-in;
+    animation: fadeIn 0.45s ease-in; /* Mutuo-specific animation */
 }
 
 /* ============================================
@@ -232,6 +218,42 @@ header h1 {
     color: #555;
     transition: all 0.3s ease;
     text-align: center;
+}
+
+/* Input editável que substitui o display */
+.valor-input {
+    border: 2px solid transparent;
+    outline: none;
+    cursor: text;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.valor-input:hover {
+    border-color: rgba(45, 159, 163, 0.3);
+    background: #f5f5f5;
+}
+
+.valor-input:focus {
+    border-color: var(--accent-color, #2d9fa3ff);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(45, 159, 163, 0.1);
+}
+
+/* Ajustes específicos por campo - tamanhos mínimos para valores máximos formatados */
+#inputValor {
+    max-width: 110px; /* Para valores até 99.999.999 (11 caracteres + 2 de margem) */
+    min-width: 70px;
+}
+
+#inputPrazo {
+    max-width: 45px; /* Para valores até 99 (2 caracteres + 2 de margem) */
+    min-width: 30px;
+}
+
+#inputTaxa {
+    max-width: 75px; /* Para valores diários com 3 casas decimais (ex: 0,009 ou 1,234) */
+    min-width: 50px;
 }
 
 .tabela-sistemas {
@@ -528,12 +550,11 @@ header h1 {
 }
 
 .controles-rapidos {
-    background: #e0f7fa;
+    background: white;
     padding: 10px;
     border-radius: 10px;
     margin-bottom: 8px;
     margin-top: 0;
-    border: 2px solid #2d9fa3ff;
 }
 
 .controles-rapidos h3 {
@@ -564,18 +585,31 @@ header h1 {
 }
 
 .controles-primeira-linha {
-    display: grid;
-    grid-template-columns: max-content max-content;
+    display: flex;
+    flex-direction: column;
     gap: 15px;
-    align-items: start;
-    justify-content: center;
     width: 100%;
+    margin-bottom: 15px;
 }
 
 .controles-coluna-esquerda {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
+    width: 100%;
+    min-width: 0; /* Permite que o flex item encolha abaixo do tamanho do conteúdo */
+}
+
+.controles-coluna-esquerda .grupo-entrada {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.controles-coluna-esquerda .slider-com-botoes {
+    width: 100%;
+    min-width: 0;
 }
 
 .controles-grid-vertical > .controle-item:last-child {
@@ -587,7 +621,7 @@ header h1 {
     min-width: 200px;
 }
 
-/* Item de controle com layout horizontal (label ao lado do input) */
+/* Item de controle com layout horizontal (label ao lado do input) - mantido para compatibilidade */
 .controle-item-horizontal {
     display: grid;
     grid-template-columns: 180px auto;
@@ -602,6 +636,82 @@ header h1 {
     text-align: right;
 }
 
+/* Estilos para inputs no estilo Helice */
+.controles-rapidos .grupo-entrada {
+    margin-bottom: 15px;
+}
+
+.controles-rapidos .grupo-entrada:last-child {
+    margin-bottom: 0;
+}
+
+.controles-rapidos .input-with-arrows {
+    margin-top: 4px;
+}
+
+.controles-rapidos .input-with-arrows input {
+    flex: 1;
+    padding: 8px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.controles-rapidos .input-with-arrows input:focus {
+    outline: none;
+    border-color: var(--accent-color, #2d9fa3ff);
+    box-shadow: 0 0 0 3px rgba(45, 159, 163, 0.1);
+}
+
+.controles-rapidos .periodo-radios-inline {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.controles-rapidos .radio-label-inline {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.controles-rapidos .radio-label-inline .radio-custom {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 50%;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.controles-rapidos .radio-label-inline input[type="radio"]:checked + .radio-custom {
+    border-color: var(--accent-color, #2d9fa3ff);
+    background: var(--accent-color, #2d9fa3ff);
+}
+
+.controles-rapidos .radio-label-inline input[type="radio"]:checked + .radio-custom::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+}
+
+.controles-rapidos .radio-label-inline .radio-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #555;
+}
+
 .input-with-arrows {
     display: flex;
     align-items: center;
@@ -613,12 +723,7 @@ header h1 {
 :root { --arrow-border: #2d9fa3ff; --arrow-bg: white; --arrow-hover-bg: #2d9fa3ff; --arrow-hover-color: white; }
 
 /* Slider with +/- buttons used in solar for compact controls */
-.slider-com-botoes { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
-
-input[type="range"] { flex: 1; height: 6px; background: #e0e0e0; border-radius: 3px; outline: none; cursor: pointer; -webkit-appearance: none; appearance: none; }
-input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: linear-gradient(135deg, #2d9fa3ff 0%, #667eea 100%); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 4px rgba(45, 159, 163, 0.4); transition: transform 0.2s; }
-input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); }
-input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; background: linear-gradient(135deg, #2d9fa3ff 0%, #667eea 100%); border-radius: 50%; border: none; cursor: pointer; box-shadow: 0 2px 4px rgba(45, 159, 163, 0.4); }
+/* Slider styles moved to shared-styles.css */
 
 .controle-item-horizontal input {
     padding: 2px 4px;
@@ -640,17 +745,18 @@ input[type="number"] {
     -moz-appearance: textfield;
 }
 
-#valorRapido {
+/* Larguras específicas dos inputs - mantidas para compatibilidade */
+.controles-rapidos #valorRapido {
     width: 105px;
 }
 
-#prazoRapido {
+.controles-rapidos #prazoRapido {
     width: 60px;
 }
 
 /* Increased width to allow daily rates with 3 decimals (e.g. 0,123)
    Keep responsive behaviour: the default is wider but it still fits mobile. */
-#taxaRapida {
+.controles-rapidos #taxaRapida {
     width: 120px;
     min-width: 80px;
 }
@@ -663,10 +769,17 @@ input[type="number"] {
 
 .controle-taxa-periodo {
     display: flex;
+    flex-direction: column;
     gap: 0px;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     width: 100%;
+    margin-top: 0;
+}
+
+.controle-taxa-periodo .grupo-entrada {
+    width: 100%;
+    margin-bottom: 0;
 }
 
 .taxa-input {
@@ -1147,14 +1260,22 @@ input[type="number"] {
     overflow-y: auto;
     max-height: 300px;
     width: 100%;
-    display: flex;
-    justify-content: center; /* center the table horizontally */
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    /* Garantir que o scroll inicie à esquerda */
+    direction: ltr;
+    /* Reservar espaço para a barra de scroll vertical para não cobrir a última coluna */
+    scrollbar-gutter: stable;
+    /* Adicionar padding à direita para evitar que a última coluna seja coberta pela barra de scroll vertical */
+    padding-right: 17px; /* Largura aproximada da barra de scroll vertical */
 }
 
 #tabelaAmortizacao {
     /* fit to content when possible but never overflow its container */
     width: auto;
     max-width: 100%;
+    /* Adicionar padding à direita para evitar que a última coluna seja coberta pela barra de scroll */
+    margin-right: 0;
     border-collapse: collapse;
 }
 

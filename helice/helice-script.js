@@ -198,19 +198,11 @@ function ajustarValor(targetId, step) {
     const max = parseFloat(slider.max) || 100;
     const stepAttr = parseFloat(slider.step) || 1;
     
-    // Calcula novo valor
     let novoValor = valorAtual + step;
-    
-    // Ajusta para o step mais próximo
     novoValor = Math.round(novoValor / stepAttr) * stepAttr;
-    
-    // Limita entre min e max
     novoValor = Math.max(min, Math.min(max, novoValor));
     
-    // Atualiza o slider
     slider.value = novoValor;
-    
-    // Dispara evento input para atualizar a interface
     slider.dispatchEvent(new Event('input'));
 }
 
@@ -266,7 +258,6 @@ function atualizarLimitesVelocidade(unidadeAnterior = null) {
     const slider = document.getElementById('sliderVelocidade');
     const valorAtual = parseFloat(slider.value);
     
-    // Se temos unidade anterior, converte da unidade anterior para nós, senão assume que já está na unidade atual
     let valorEmKnots;
     if (unidadeAnterior) {
         valorEmKnots = converterVelocidadeParaKnots(valorAtual, unidadeAnterior);
@@ -274,7 +265,6 @@ function atualizarLimitesVelocidade(unidadeAnterior = null) {
         valorEmKnots = converterVelocidadeParaKnots(valorAtual, unidadeVelocidade);
     }
     
-    // Define limites baseados na unidade
     let min, max;
     if (unidadeVelocidade === 'knots') {
         min = 5;
@@ -300,60 +290,44 @@ function atualizarLimitesVelocidade(unidadeAnterior = null) {
     const valorFormatado = novoValor.toFixed(unidadeVelocidade === 'knots' ? 0 : 1);
     slider.value = parseFloat(valorFormatado);
     
-    // Atualiza o display do valor imediatamente (mantém formatação)
     document.getElementById('valorVelocidade').textContent = valorFormatado;
-    
-    // Unidade de velocidade não precisa ser atualizada no display, pois está nos radio buttons
 }
 
 /**
  * Atualiza a interface com os resultados calculados
  */
 function atualizarResultado() {
-    // Pega unidade selecionada
     const unidadeVelocidade = document.querySelector('input[name="unidadeVelocidade"]:checked').value;
     const unidadePasso = document.querySelector('input[name="unidadePasso"]:checked').value;
     
-    // Pega valores dos sliders
     const velocidadeInput = parseFloat(document.getElementById('sliderVelocidade').value);
     const reducao = parseFloat(document.getElementById('sliderReducao').value);
     const rpmMotor = parseFloat(document.getElementById('sliderRPM').value);
     const slipPercent = parseFloat(document.getElementById('sliderSlip').value);
     
-    // Converte velocidade para nós (unidade base para cálculos)
     const velocidadeKnots = converterVelocidadeParaKnots(velocidadeInput, unidadeVelocidade);
     
-    // Atualiza displays dos sliders (formatados conforme necessário)
     document.getElementById('valorVelocidade').textContent = velocidadeInput.toFixed(unidadeVelocidade === 'knots' ? 0 : 1);
     document.getElementById('valorReducao').textContent = reducao.toFixed(2);
     document.getElementById('valorRPM').textContent = rpmMotor;
     document.getElementById('valorSlip').textContent = slipPercent;
     
-    // Unidade de velocidade não precisa ser atualizada no display, pois está nos radio buttons
-    
-    // Calcula resultado (convertendo slip de % para decimal)
-    // Usa velocidade em nós para o cálculo
     const resultado = calcularPasso(velocidadeKnots, reducao, rpmMotor, slipPercent / 100);
     
-    // Converte passo para unidade selecionada
     const passoConvertido = converterPassoParaUnidade(resultado.passo, unidadePasso);
-    const unidadePassoText = {
-        'inches': traducoes[idiomaAtual]['unidade-polegadas'],
-        'mm': traducoes[idiomaAtual]['unidade-mm']
-    }[unidadePasso];
-    
-    // Atualiza resultado principal
     document.getElementById('resultadoPasso').textContent = passoConvertido.toFixed(unidadePasso === 'mm' ? 0 : 1);
-    // Unidade não precisa ser atualizada no display, pois está nos radio buttons
     document.getElementById('rpmHelice').textContent = resultado.rpmHelice;
     
-    // Converte velocidade teórica para unidade selecionada
     const velocidadeTeoricaConvertida = converterKnotsParaUnidade(resultado.velocidadeTeorica, unidadeVelocidade);
     document.getElementById('velocidadeTeorica').textContent = velocidadeTeoricaConvertida.toFixed(1);
-    // Atualiza unidade da velocidade teórica
+    
+    const unidadeVelocidadeText = {
+        'knots': traducoes[idiomaAtual]['unidade-nos'],
+        'mph': traducoes[idiomaAtual]['unidade-mph'],
+        'kmh': traducoes[idiomaAtual]['unidade-kmh']
+    }[unidadeVelocidade];
     document.getElementById('unidadeVelocidadeTeorica').textContent = unidadeVelocidadeText;
     
-    // Atualiza gráfico
     atualizarGrafico();
 }
 
@@ -372,11 +346,9 @@ function atualizarGrafico() {
     const passos = [];
     
     for (let vKnots = 5; vKnots <= 60; vKnots += 5) {
-        // Converte velocidade para unidade selecionada
         const vConvertida = converterKnotsParaUnidade(vKnots, unidadeVelocidade);
         velocidades.push(Math.round(vConvertida));
         
-        // Calcula passo em polegadas, depois converte
         const resultado = calcularPasso(vKnots, reducao, rpmMotor, slipPercent / 100);
         const passoConvertido = converterPassoParaUnidade(resultado.passo, unidadePasso);
         passos.push(passoConvertido);
@@ -384,12 +356,10 @@ function atualizarGrafico() {
     
     const ctx = document.getElementById('graficoHelice').getContext('2d');
     
-    // Destrói gráfico anterior se existir
     if (graficoHelice) {
         graficoHelice.destroy();
     }
     
-    // Cria novo gráfico
     graficoHelice = new Chart(ctx, {
         type: 'line',
         data: {
@@ -406,7 +376,7 @@ function atualizarGrafico() {
                 borderColor: '#2d9fa3ff',
                 backgroundColor: 'rgba(45, 159, 163, 0.1)',
                 borderWidth: 3,
-                fill: false, // Sem preenchimento, apenas pontos e linha
+                fill: false,
                 tension: 0.4,
                 pointRadius: 6,
                 pointHoverRadius: 8,
@@ -416,7 +386,7 @@ function atualizarGrafico() {
             }]
         },
         options: {
-            animation: false, // Atualização instantânea (padrão Mutuo)
+            animation: false,
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
@@ -500,11 +470,7 @@ function atualizarGrafico() {
     });
 }
 
-/**
- * Inicialização quando a página carrega
- */
 document.addEventListener('DOMContentLoaded', function() {
-    // Verifica se todos os elementos existem
     const elementos = {
         sliderVelocidade: document.getElementById('sliderVelocidade'),
         sliderReducao: document.getElementById('sliderReducao'),
@@ -516,45 +482,35 @@ document.addEventListener('DOMContentLoaded', function() {
         valorSlip: document.getElementById('valorSlip')
     };
     
-    // Inicializa com o idioma salvo
     trocarIdioma(idiomaAtual);
-
-    // Ripple helper is provided by /ripple.js (global attachRippleTo)
-    // ripple attachments centralized in ripple-init.js
     
-    // Event listeners para botões de idioma
     document.getElementById('btnPortugues').addEventListener('click', () => trocarIdioma('pt-BR'));
     document.getElementById('btnItaliano').addEventListener('click', () => trocarIdioma('it-IT'));
     
-    // Event listeners para os sliders
     document.getElementById('sliderVelocidade').addEventListener('input', atualizarResultado);
     document.getElementById('sliderReducao').addEventListener('input', atualizarResultado);
     document.getElementById('sliderRPM').addEventListener('input', atualizarResultado);
     document.getElementById('sliderSlip').addEventListener('input', atualizarResultado);
     
-    // Event listeners para botões de seta (padrão Solar)
     document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
         const targetId = btn.getAttribute('data-target');
         const step = parseFloat(btn.getAttribute('data-step'));
         
-        // Função para iniciar a repetição
         const startRepeating = () => {
-            ajustarValor(targetId, step); // Primeiro clique imediato
+            ajustarValor(targetId, step);
             
             timeoutId = setTimeout(() => {
                 intervalId = setInterval(() => {
                     ajustarValor(targetId, step);
-                }, 100); // Repete a cada 100ms
-            }, 500); // Espera 500ms antes de começar a repetir
+                }, 100);
+            }, 500);
         };
         
-        // Função para parar a repetição
         const stopRepeating = () => {
             clearTimeout(timeoutId);
             clearInterval(intervalId);
         };
         
-        // Eventos de Mouse (PC)
         btn.addEventListener('mousedown', (e) => {
             e.preventDefault();
             startRepeating();
@@ -562,7 +518,6 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('mouseup', stopRepeating);
         btn.addEventListener('mouseleave', stopRepeating);
         
-        // Eventos de Toque (Mobile)
         btn.addEventListener('touchstart', (e) => {
             e.preventDefault();
             startRepeating();
@@ -571,11 +526,8 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('touchcancel', stopRepeating);
     });
     
-    // Event listeners para seletores de unidade
-    // Armazena a unidade anterior para conversão correta
-    let unidadeVelocidadeAnterior = 'knots'; // Valor padrão inicial
+    let unidadeVelocidadeAnterior = 'knots';
     
-    // Inicializa a unidade anterior com o valor padrão selecionado
     document.querySelectorAll('input[name="unidadeVelocidade"]').forEach(radio => {
         if (radio.checked) {
             unidadeVelocidadeAnterior = radio.value;
@@ -584,27 +536,19 @@ document.addEventListener('DOMContentLoaded', function() {
     
     document.querySelectorAll('input[name="unidadeVelocidade"]').forEach(radio => {
         radio.addEventListener('change', () => {
-            // Captura a unidade anterior antes de mudar
             const unidadeAnterior = unidadeVelocidadeAnterior;
-            // Atualiza a unidade anterior para a próxima mudança
             unidadeVelocidadeAnterior = radio.value;
-            // Converte o valor antes de mudar a unidade
             atualizarLimitesVelocidade(unidadeAnterior);
-            // Atualiza o resultado com o novo valor convertido
             atualizarResultado();
         });
     });
     
     document.querySelectorAll('input[name="unidadePasso"]').forEach(radio => {
         radio.addEventListener('change', () => {
-            // A conversão do passo já é feita automaticamente em atualizarResultado
             atualizarResultado();
         });
     });
     
-    // Inicializa limites de velocidade
     atualizarLimitesVelocidade();
-    
-    // Calcula resultado inicial
     atualizarResultado();
 });
