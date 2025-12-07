@@ -97,7 +97,6 @@ header h1 {
     background: var(--accent-active-bg, rgba(45, 159, 163, 0.1));
 }
 
-:root { --ripple-color: rgba(74,144,226,0.18); }
 
 .seta-expansao {
     margin-left: auto;

@@ -131,9 +131,6 @@ body {
    per-page colors can be tuned through CSS variables (eg. --accent-color).
    Removing duplicate rules so Solar style becomes the global default. */
 
-/* Ripple moved to shared file ripple-styles.css
-   Keep a page-specific color so this page keeps the same look. */
-:root { --ripple-color: rgba(255,255,255,0.18); }
 
 /* ============================================
    HORÁRIO - Estilo display LED/LCD vintage

@@ -61,10 +61,6 @@
 
         // UI: Configurações da interface do usuário
         UI: {
-            RIPPLE: { 
-                durationMs: 700,                  // Quanto tempo o efeito ripple dura (0.7 segundos)
-                sizePct: 0.9                      // Tamanho do efeito: 90% do elemento
-            }
         }
     };
 

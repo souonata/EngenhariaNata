@@ -79,9 +79,6 @@ header {
 /* language button appearance moved to assets/css/shared-styles.css
    Per-page variables (eg. --lang-btn-bg) may still be used to tune colors */
 
-/* Ripple moved to shared file ripple-styles.css
-   Per-page ripple color preserved via CSS variable. */
-:root { --ripple-color: rgba(45,159,163,0.18); }
 
 /* ============================================
    TÍTULO E SUBTÍTULO

@@ -276,7 +276,4 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Botão Restaurar
     document.getElementById('btnResetar').addEventListener('click', restaurarPadroes);
-
-    // Ripple helper is provided by /ripple.js (global attachRippleTo)
-    // ripple attachments centralized in ripple-init.js
 });

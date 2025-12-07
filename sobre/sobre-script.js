@@ -251,10 +251,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // attach touch/click-friendly handlers to headers
     document.querySelectorAll('.card-header-clicavel').forEach(h => {
-            // We use the shared attachRippleTo helper (ripple.js) to provide
-            // consistent tap highlight behavior across the site. The visual
-            // effect is still removed after a short timeout by the shared helper.
-
         // click toggles the accordion
         h.addEventListener('click', () => alternarSecao(h));
         // ensure keyboard access
@@ -266,7 +262,5 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-
-    // ripple attachments centralized in ripple-init.js
 });
 // end of file - accordion and i18n logic implemented above

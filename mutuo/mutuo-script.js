@@ -2020,9 +2020,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializa com o idioma salvo no localStorage
     trocarIdioma(idiomaAtual);
-
-    // Ripple helper is provided by /ripple.js (global attachRippleTo)
-    // ripple attachments centralized in ripple-init.js
     
     // Event listener para o botão de exemplos
     if (btnExemplos) {

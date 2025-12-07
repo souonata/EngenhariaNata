@@ -884,7 +884,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 5. Inicializar
     trocarIdioma(idiomaAtual);
-
-    // Ripple helper is provided by /ripple.js (global attachRippleTo)
-    // ripple attachments centralized in ripple-init.js
 });

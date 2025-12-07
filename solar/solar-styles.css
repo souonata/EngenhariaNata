@@ -126,9 +126,6 @@ header h1 {
 
 /* Sliders, controls, and value displays moved to shared-styles.css */
 
-/* Ripple moved to shared file ripple-styles.css
-   Preserve the page's ripple color via the CSS variable. */
-:root { --ripple-color: rgba(255,255,255,0.18); }
 
 
 /* Estilos de radio buttons movidos para assets/css/controls-styles.css */

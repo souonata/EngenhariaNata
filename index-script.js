@@ -340,6 +340,3 @@ document.addEventListener('DOMContentLoaded', function() {
 // EFEITO DE TOQUE NOS ÍCONES (Mobile)
 // ============================================
 
-// Ripple helper is now shared in /ripple.js (attachRippleTo is global)
-// Attach ripples to common interactive elements in the launcher
-// ripple attachments are centralized in ripple-init.js; no per-page attach needed here
