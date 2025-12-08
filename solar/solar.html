@@ -100,9 +100,16 @@
                     <p><strong>DoD Alvo = f(Ciclos Totais, Tipo de Bateria)</strong></p>
                 </div>
                 <p data-i18n="memorial-passo2-explicacao">O DoD (Depth of Discharge) determina quanto da capacidade da bateria pode ser usada diariamente. Quanto maior a vida útil desejada, menor deve ser o DoD para preservar a bateria.</p>
-                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-dod">Vida útil de 5 anos → 5 × 365 = 1825 ciclos → DoD ≈ 60% (LiFePO4)</span></p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-dod">Vida útil de 20 anos → 20 × 365 = 7300 ciclos → DoD ≈ 50-60% (LiFePO4)</span></p>
                 <div class="info-box">
                     <p><strong data-i18n="memorial-tip">💡 Dica:</strong> <span data-i18n="memorial-dod-tip">Baterias LiFePO4 permitem DoD maiores (50-80%) que baterias AGM (30-50%) para a mesma vida útil.</span></p>
+                    <p style="margin-top: 10px;"><strong>📊 Valores de referência:</strong></p>
+                    <ul>
+                        <li>O app usa tabelas de ciclos vs DoD baseadas em dados de fabricantes e normas técnicas</li>
+                        <li>Para LiFePO4: ~5000-10000 ciclos com DoD de 25-50%</li>
+                        <li>Para AGM: ~500-1500 ciclos com DoD de 30-50%</li>
+                        <li>O DoD é calculado automaticamente interpolando entre os valores da tabela</li>
+                    </ul>
                 </div>
             </div>
 
@@ -144,11 +151,13 @@
                 <p data-i18n="memorial-passo5-explicacao">Os painéis precisam gerar energia suficiente para recarregar as baterias, considerando perdas do sistema (cabo, MPPT, inversor). Usamos HSP (Horas de Sol Pleno) para estimar a geração diária.</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-paineis">17.3 kWh utilizáveis, eficiência 80%, HSP 5h → 17.3÷0.8 = 21.6 kWh/dia → 21.6×1000÷5 = 4320W → 4320÷400W = 10.8 → 11 painéis</span></p>
                 <div class="info-box">
-                    <p><strong data-i18n="memorial-constants">Constantes usadas:</strong></p>
+                    <p><strong data-i18n="memorial-constants">Valores de referência usados:</strong></p>
                     <ul>
-                        <li data-i18n="memorial-hsp">HSP (Horas de Sol Pleno) = 5 horas/dia (padrão para Brasil)</li>
-                        <li data-i18n="memorial-eficiencia">Eficiência do Sistema = 80% (considera perdas de 20% em cabos, MPPT e inversor)</li>
+                        <li data-i18n="memorial-hsp">HSP (Horas de Sol Pleno) = 5 horas/dia — Valor médio conservador para o Brasil. Representa o número médio de horas por dia que o sol fornece energia equivalente ao pico (1000 W/m²).</li>
+                        <li data-i18n="memorial-eficiencia">Eficiência do Sistema = 80% (perdas de 20%) — Considera perdas em cabos DC (2-3%), MPPT (2-5%), inversor (5-10%), baterias (5-10%), temperatura dos painéis (5-10%) e sujeira (2-5%).</li>
                     </ul>
+                    <p style="margin-top: 10px;"><strong>⚛️ Lei Física Aplicada — Conservação de Energia:</strong></p>
+                    <p style="margin-top: 5px;">A energia não pode ser criada nem destruída, apenas transformada. Os painéis transformam luz solar em eletricidade, mas parte dessa energia se perde durante o processo (como calor, atrito, etc.). Por isso, precisamos gerar mais energia do que consumimos para compensar essas perdas.</p>
                 </div>
             </div>
 
@@ -163,6 +172,13 @@
                 </div>
                 <p data-i18n="memorial-passo6-explicacao">O inversor converte DC das baterias para AC da casa. Deve ter capacidade para o consumo de pico típico de uma residência, não precisa ter a capacidade total dos painéis. O fator de pico de 5x considera que o consumo não é constante ao longo do dia.</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-inversor">Consumo diário 5 kWh → 5÷24 = 0.21 kW/h × 5 = 1.05 kW pico → Inversor de 2 kW</span></p>
+                <div class="info-box">
+                    <p><strong>📊 Valor de referência usado:</strong></p>
+                    <ul>
+                        <li><strong>Fator de Pico = 5.0</strong> — O consumo de pico é aproximadamente 5 vezes maior que o consumo médio horário. Baseado em práticas da indústria e normas técnicas para dimensionamento de inversores.</li>
+                        <li><strong>Inversor mínimo = 1 kW</strong> — Garante capacidade mínima para atender cargas básicas mesmo em sistemas pequenos.</li>
+                    </ul>
+                </div>
             </div>
 
             <!-- Passo 7: MPPT -->
@@ -239,12 +255,12 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderConsumo" data-i18n="label-consumo">Consumo Médio Mensal</label>
-                    <input type="text" id="inputConsumo" class="valor-display valor-input" value="150">
+                    <input type="text" id="inputConsumo" class="valor-display valor-input" value="200">
                     <span>kWh</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn" data-target="sliderConsumo" data-step="-10" aria-label="Diminuir consumo">−</button>
-                    <input type="range" id="sliderConsumo" min="10" max="9999" step="10" value="150">
+                    <input type="range" id="sliderConsumo" min="10" max="9999" step="10" value="200">
                     <button type="button" class="arrow-btn" data-target="sliderConsumo" data-step="10" aria-label="Aumentar consumo">+</button>
                 </div>
             </div>
@@ -253,12 +269,12 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderAutonomia" data-i18n="label-autonomia">Dias de Autonomia</label>
-                    <input type="text" id="inputAutonomia" class="valor-display valor-input" value="2">
+                    <input type="text" id="inputAutonomia" class="valor-display valor-input" value="1">
                     <span data-i18n="unit-days">dias</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn" data-target="sliderAutonomia" data-step="-1" aria-label="Diminuir autonomia">−</button>
-                    <input type="range" id="sliderAutonomia" min="1" max="10" step="1" value="2">
+                    <input type="range" id="sliderAutonomia" min="1" max="10" step="1" value="1">
                     <button type="button" class="arrow-btn" data-target="sliderAutonomia" data-step="1" aria-label="Aumentar autonomia">+</button>
                 </div>
             </div>
@@ -268,7 +284,7 @@
                 <label data-i18n="label-tipo-bateria">Tipo de Bateria</label>
                 <div class="grupo-radio">
                     <label class="opcao-radio">
-                        <input type="radio" name="tipoBateria" value="chumbo" checked>
+                        <input type="radio" name="tipoBateria" value="chumbo">
                         <div class="cartao-radio">
                             <span class="icone-radio">🔋</span>
                             <div class="rotulo-radio-container">
@@ -282,7 +298,7 @@
                         </div>
                     </label>
                     <label class="opcao-radio">
-                        <input type="radio" name="tipoBateria" value="litio">
+                        <input type="radio" name="tipoBateria" value="litio" checked>
                         <div class="cartao-radio">
                             <span class="icone-radio">⚡</span>
                             <div class="rotulo-radio-container">
@@ -302,12 +318,12 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderVidaUtil" data-i18n="label-vida-util">Vida Útil Estimada</label>
-                    <input type="text" id="inputVidaUtil" class="valor-display valor-input" value="3">
+                    <input type="text" id="inputVidaUtil" class="valor-display valor-input" value="20">
                     <span data-i18n="unit-years">anos</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn" data-target="sliderVidaUtil" data-step="-1" aria-label="Diminuir vida útil">−</button>
-                    <input type="range" id="sliderVidaUtil" min="1" max="5" step="1" value="3">
+                    <input type="range" id="sliderVidaUtil" min="1" max="25" step="1" value="20">
                     <button type="button" class="arrow-btn" data-target="sliderVidaUtil" data-step="1" aria-label="Aumentar vida útil">+</button>
                 </div>
                 <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">

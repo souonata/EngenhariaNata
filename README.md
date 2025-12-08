@@ -1,16 +1,16 @@
 # Engenharia NATA — Portfólio de Apps Web
 
-Uma coleção de aplicativos web educativos para estudar conceitos práticos de engenharia e finanças, desenvolvidos com JavaScript puro, sem frameworks.
+Uma coleção de aplicativos web educativos para estudar conceitos práticos de engenharia e finanças, desenvolvidos com JavaScript puro, sem frameworks. Todos os apps incluem memoriais de cálculo completos que explicam passo a passo os cálculos realizados, incluindo fórmulas, valores de referência, leis físicas aplicadas e exemplos práticos.
 
 ## 📱 Aplicativos Disponíveis
 
-- **💰 Mutuo** — Calculadora de empréstimos (SAC, Price, Americano) com gráficos interativos e tabela de amortização completa.
-- **🚤 Helice** — Calculadora de passo de hélice para barcos de lazer, com análise de slip e gráficos de relação velocidade × passo.
-- **🔋 Energia Solar** — Dimensionamento fotovoltaico off-grid (painéis, baterias AGM/LiFePO4, inversor) com página de configuração personalizável e memorial de cálculo didático.
-- **🔌 Bitola** — Calculadora de bitola de fios elétricos para circuitos CC e CA, com seleção automática de bitola comercial padrão brasileiro.
-- **❄️ Ar Condicionado** — Dimensionador de ar condicionado com cálculo de BTU baseado em área, altura, número de pessoas e condições ambientais.
-- **☀️ Aquecedor Solar** — Dimensionador completo de sistemas de aquecimento solar térmico (coletores, boiler, potência) para água de consumo e aquecimento ambiente.
-- **🌾 Fazenda** — Planejador de fazenda auto-sustentável com cálculo de espaço, quantidade de plantas e animais, calendário de plantio/colheita e frequência de reprodução.
+- **💰 Mutuo** — Calculadora de empréstimos (SAC, Tabela Price, Sistema Americano) com gráficos interativos, tabela de amortização completa e memorial de cálculo explicando as fórmulas financeiras utilizadas. Bilíngue PT/IT com nomes corretos: SAC/Italiana, Tabela Price/Francese, Sistema Americano/Tedesco.
+- **🚤 Helice** — Calculadora de passo de hélice para barcos de lazer, com análise de slip, gráficos de relação velocidade × passo e memorial explicando a constante de conversão 1056 e os princípios de propulsão náutica.
+- **🔋 Energia Solar** — Dimensionamento fotovoltaico off-grid (painéis, baterias AGM/LiFePO4, inversor, MPPT) com página de configuração personalizável e memorial de cálculo completo explicando DoD, ciclos de vida, HSP e eficiência do sistema. **Valores iniciais:** 200 kWh/mês, 1 dia autonomia, bateria lítio, 20 anos vida útil.
+- **🔌 Bitola** — Calculadora de bitola de fios elétricos para circuitos CC e CA, com seleção automática de bitola comercial padrão brasileiro (NBR 5410) e memorial explicando a Lei de Ohm, resistividade do cobre e queda de tensão.
+- **❄️ Ar Condicionado** — Dimensionador de ar condicionado com cálculo de BTU baseado em área, altura, número de pessoas, equipamentos e condições ambientais. Memorial explica os fatores de insolação e isolamento térmico, além das constantes ASHRAE utilizadas.
+- **☀️ Aquecedor Solar** — Dimensionador completo de sistemas de aquecimento solar térmico (coletores, boiler, potência) para água de consumo e aquecimento ambiente. Memorial explica classes energéticas, cálculo de HSP baseado em latitude, e princípios de transferência de calor.
+- **🌾 Fazenda** — Planejador de fazenda auto-sustentável com cálculo de espaço, quantidade de plantas e animais, calendário de plantio/colheita e frequência de reprodução. Memorial explica os cálculos de produção mínima, distribuição proporcional e ciclos de plantio.
 
 ## 🎯 Características Principais
 
@@ -128,11 +128,32 @@ O app Energia Solar inclui um **Memorial de Cálculo** completo (botão "SAIBA M
 
 ## 📚 Documentação
 
-- **`GLOSSARIO.md`** — Glossário completo com termos técnicos explicados de forma simples
-- **`sobre/sobre.html`** — Informações detalhadas sobre cada app e tecnologias usadas
+- **`GLOSSARIO.md`** — Glossário completo com termos técnicos, leis físicas e constantes explicadas de forma simples e didática
+- **`sobre/sobre.html`** — Informações detalhadas sobre cada app, funcionalidades, tecnologias usadas e características principais
+- **`.github/copilot-instructions.md`** — Instruções completas para desenvolvedores sobre padrões de código, estrutura do projeto e boas práticas
 - **`sitemap.xml`** — Mapa do site para indexação em mecanismos de busca
 - **`robots.txt`** — Instruções para bots de busca
 - **`REVISAO_APPS.md`** — Revisão técnica dos cálculos e memoriais de cada app
+
+## 📖 Memoriais de Cálculo
+
+Todos os apps educativos incluem **Memoriais de Cálculo** completos (acessíveis via botão "SAIBA MAIS!") que explicam:
+
+- **Fórmulas utilizadas** — Todas as fórmulas matemáticas e físicas aplicadas
+- **Valores de referência** — Constantes físicas, fatores de segurança e valores arbitrados utilizados
+- **Leis físicas** — Explicações leigas das leis físicas aplicadas (Lei de Ohm, conservação de energia, transferência de calor, etc.)
+- **Exemplos práticos** — Cálculos passo a passo com os valores atuais do usuário
+- **Resumo dos resultados** — Valores calculados organizados de forma clara
+
+### Apps com Memorial de Cálculo:
+
+1. ✅ **Energia Solar** — Explica DoD, ciclos de vida, HSP, eficiência do sistema, dimensionamento de painéis, baterias, inversor e MPPT
+2. ✅ **Ar Condicionado** — Explica cálculo de BTU, fatores de insolação e isolamento, constantes ASHRAE
+3. ✅ **Aquecedor Solar** — Explica classes energéticas, cálculo de HSP por latitude, transferência de calor, dimensionamento de coletores e boiler
+4. ✅ **Bitola** — Explica Lei de Ohm, resistividade do cobre, queda de tensão, bitolas comerciais NBR 5410
+5. ✅ **Hélice** — Explica constante de conversão 1056, slip, redução de rabeta, princípios de propulsão náutica
+6. ✅ **Fazenda** — Explica cálculos de produção mínima, distribuição proporcional, ciclos de plantio e reprodução
+7. ✅ **Mutuo** — Explica fórmulas dos sistemas SAC (Sistema de Amortização Constante), Tabela Price (Sistema Francês) e Sistema Americano, com exemplos educacionais detalhados e indicação do sistema selecionado no memorial
 
 ## 💡 Para Estudantes
 
@@ -141,8 +162,10 @@ Este projeto foi desenvolvido com foco educacional. Todo o código está **compl
 - Por que cada decisão foi tomada
 - Conceitos de programação web (DOM, eventos, localStorage, i18n)
 - Padrões de código e organização de projetos
+- **Leis físicas aplicadas** — Explicações leigas de conceitos como Lei de Ohm, conservação de energia, transferência de calor, etc.
+- **Valores de referência** — Todas as constantes físicas, fatores de segurança e valores arbitrados são documentados e explicados
 
-Ideal para quem está aprendendo JavaScript, HTML e CSS e quer ver exemplos práticos e bem documentados.
+Ideal para quem está aprendendo JavaScript, HTML, CSS, engenharia e finanças, querendo ver exemplos práticos e bem documentados com explicações didáticas das leis físicas e fórmulas utilizadas.
 
 ## 🛠️ Tecnologias
 

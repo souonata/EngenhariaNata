@@ -531,10 +531,10 @@ const traducoes = {
         'period-day-short': 'Dia',
         'at': '% ao',
         'system-sac': 'SAC - Sistema de Amortização Constante (Brasil/Itália)',
-        'system-price': 'Price - Tabela Price / Francese (Brasil/Itália)',
-        'system-german': 'Americano - Juros Periódicos + Principal no Final',
+        'system-price': 'Tabela Price - Sistema Francês (Brasil/Itália)',
+        'system-german': 'Sistema Americano - Juros Periódicos + Principal no Final',
         'system-sac-short': 'SAC',
-        'system-price-short': 'Price',
+        'system-price-short': 'Tabela Price',
         'system-german-short': 'Americano',
         'btn-calculate': 'Calcular',
         'btn-examples': 'Ver Exemplos',
@@ -628,7 +628,7 @@ const traducoes = {
         'table-amortization-last': 'última parcela',
         'memorial-title': '📚 Memorial de Cálculo - Sistemas de Amortização',
         'memorial-intro-title': '🎯 Objetivo do Cálculo',
-        'memorial-intro-text': 'Este memorial explica passo a passo como são calculados os sistemas de amortização (SAC, Price e Americano), incluindo as fórmulas matemáticas utilizadas e exemplos práticos com os valores atuais.',
+        'memorial-intro-text': 'Este memorial explica passo a passo como são calculados os sistemas de amortização (SAC, Tabela Price e Sistema Americano), incluindo as fórmulas matemáticas utilizadas e exemplos práticos com os valores atuais.',
         'memorial-formula': 'Fórmula:',
         'memorial-example': 'Exemplo:',
         'memorial-resumo-title': '📊 Resumo Calculado',
@@ -654,16 +654,16 @@ const traducoes = {
         'memorial-sac-passo2-title': 'SAC - Passo 2: Calcular Juros e Parcela',
         'memorial-sac-passo2-formula': 'Juros = Saldo Devedor × Taxa Mensal\nParcela = Amortização + Juros',
         'memorial-sac-passo2-explicacao': 'Os juros são calculados sobre o saldo devedor, que diminui a cada parcela. Por isso, os juros e as parcelas diminuem com o tempo.',
-        'memorial-price-passo1-title': 'Price - Passo 1: Calcular Parcela Fixa (PMT)',
+        'memorial-price-passo1-title': 'Tabela Price - Passo 1: Calcular Parcela Fixa (PMT)',
         'memorial-price-passo1-formula': 'PMT = PV × [i × (1+i)^n] ÷ [(1+i)^n - 1]',
         'memorial-price-passo1-explicacao': 'Esta fórmula calcula o valor da parcela fixa que será paga em todas as parcelas. Onde: PV = valor presente (emprestado), i = taxa mensal, n = número de parcelas.',
-        'memorial-price-passo2-title': 'Price - Passo 2: Calcular Juros e Amortização',
+        'memorial-price-passo2-title': 'Tabela Price - Passo 2: Calcular Juros e Amortização',
         'memorial-price-passo2-formula': 'Juros = Saldo Devedor × Taxa Mensal\nAmortização = PMT - Juros',
         'memorial-price-passo2-explicacao': 'A parcela é fixa, mas a composição muda: no início, mais juros e menos amortização; no final, menos juros e mais amortização.',
-        'memorial-americano-passo1-title': 'Americano - Passo 1: Calcular Juros Mensais',
+        'memorial-americano-passo1-title': 'Sistema Americano - Passo 1: Calcular Juros Mensais',
         'memorial-americano-passo1-formula': 'Juros = Valor Emprestado × Taxa Mensal',
         'memorial-americano-passo1-explicacao': 'Os juros são sempre calculados sobre o valor total emprestado, pois não há amortização intermediária.',
-        'memorial-americano-passo2-title': 'Americano - Passo 2: Calcular Parcelas',
+        'memorial-americano-passo2-title': 'Sistema Americano - Passo 2: Calcular Parcelas',
         'memorial-americano-passo2-formula': 'Parcelas 1 a n-1: Apenas Juros\nÚltima Parcela: Juros + Valor Emprestado',
         'memorial-americano-passo2-explicacao': 'Durante todo o período, paga-se apenas os juros. O valor principal é pago integralmente na última parcela.'
     },
@@ -682,11 +682,11 @@ const traducoes = {
         'period-month-short': 'Mese',
         'period-day-short': 'Giorno',
         'at': '% al',
-        'system-sac': 'SAC - Ammortamento Costante (Brasile/Italia)',
-        'system-price': 'Price - Tabella Price / Francese (Brasile/Italia)',
+        'system-sac': 'Ammortamento all\'Italiana - Ammortamento Costante (Brasile/Italia)',
+        'system-price': 'Ammortamento alla Francese - Tabella Price / Francese (Brasile/Italia)',
         'system-german': 'Tedesco - Interessi Periodici + Capitale alla Fine',
-        'system-sac-short': 'SAC',
-        'system-price-short': 'Price',
+        'system-sac-short': 'Italiana',
+        'system-price-short': 'Francese',
         'system-german-short': 'Tedesco',
         'btn-calculate': 'Calcola',
         'btn-examples': 'Vedi Esempi',
@@ -716,7 +716,7 @@ const traducoes = {
         'accumulated-interest': 'Interessi Accumulati',
         'accumulated-amortization': 'Ammortamento Accumulato',
         'examples-title': '📚 Capire i Sistemi di Ammortamento',
-        'example-sac-title': '1. Sistema SAC - Ammortamento Costante',
+        'example-sac-title': '1. Ammortamento all\'Italiana - Ammortamento Costante',
         'used-in': 'Usato in:',
         'example-sac-usage': 'Brasile (mutuo ipotecario) e Italia (Ammortamento all\'Italiana)',
         'how-it-works': 'Come funziona:',
@@ -733,7 +733,7 @@ const traducoes = {
         'example-sac-result-4': 'Mese 120: € 833,33 + € 8 interessi = € 841,33',
         'example-sac-result-5': 'Totale interessi: € 60.500',
         'example-sac-advantage': '✅ Migliore per: Chi può pagare di più all\'inizio e vuole pagare meno interessi totali',
-        'example-price-title': '2. Tabella Price (Sistema Francese)',
+        'example-price-title': '2. Ammortamento alla Francese (Sistema Francese)',
         'example-price-usage': 'Brasile (prestiti personali, prestiti garantiti) e Italia (Ammortamento alla Francese - più comune)',
         'example-price-description': 'Rate uguali dall\'inizio alla fine. All\'inizio, paghi più interessi e meno ammortamento. Col tempo, si inverte: paghi meno interessi e più ammortamento.',
         'formula-payment': 'Formula della Rata (PMT):',
@@ -780,7 +780,7 @@ const traducoes = {
         'table-amortization-last': 'ultima rata',
         'memorial-title': '📚 Memoriale di Calcolo - Sistemi di Ammortamento',
         'memorial-intro-title': '🎯 Obiettivo del Calcolo',
-        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come vengono calcolati i sistemi di ammortamento (SAC, Price e Tedesco), incluse le formule matematiche utilizzate ed esempi pratici con i valori attuali.',
+        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come vengono calcolati i sistemi di ammortamento (Ammortamento all\'Italiana, Ammortamento alla Francese e Tedesco), incluse le formule matematiche utilizzate ed esempi pratici con i valori attuali.',
         'memorial-formula': 'Formula:',
         'memorial-example': 'Esempio:',
         'memorial-resumo-title': '📊 Riepilogo Calcolato',
@@ -800,16 +800,16 @@ const traducoes = {
         'memorial-passo2-explicacao': 'Il numero di rate viene calcolato moltiplicando la durata in anni per 12 (mesi per anno).',
         'memorial-passo3-title': '3️⃣ Passo 3: Calcolare la Tabella di Ammortamento',
         'memorial-passo3-explicacao': 'La tabella viene calcolata secondo il sistema selezionato, utilizzando le formule specifiche di ogni metodo.',
-        'memorial-sac-passo1-title': 'SAC - Passo 1: Calcolare Ammortamento Costante',
+        'memorial-sac-passo1-title': 'Ammortamento all\'Italiana - Passo 1: Calcolare Ammortamento Costante',
         'memorial-sac-passo1-formula': 'Ammortamento = Valore Finanziato ÷ Numero di Rate',
         'memorial-sac-passo1-explicacao': 'L\'ammortamento è sempre lo stesso in tutte le rate.',
-        'memorial-sac-passo2-title': 'SAC - Passo 2: Calcolare Interessi e Rata',
+        'memorial-sac-passo2-title': 'Ammortamento all\'Italiana - Passo 2: Calcolare Interessi e Rata',
         'memorial-sac-passo2-formula': 'Interessi = Debito Residuo × Tasso Mensile\nRata = Ammortamento + Interessi',
         'memorial-sac-passo2-explicacao': 'Gli interessi vengono calcolati sul debito residuo, che diminuisce ad ogni rata. Per questo, gli interessi e le rate diminuiscono nel tempo.',
-        'memorial-price-passo1-title': 'Price - Passo 1: Calcolare Rata Fissa (PMT)',
+        'memorial-price-passo1-title': 'Ammortamento alla Francese - Passo 1: Calcolare Rata Fissa (PMT)',
         'memorial-price-passo1-formula': 'PMT = PV × [i × (1+i)^n] ÷ [(1+i)^n - 1]',
         'memorial-price-passo1-explicacao': 'Questa formula calcola il valore della rata fissa che verrà pagata in tutte le rate. Dove: PV = valore presente (finanziato), i = tasso mensile, n = numero di rate.',
-        'memorial-price-passo2-title': 'Price - Passo 2: Calcolare Interessi e Ammortamento',
+        'memorial-price-passo2-title': 'Ammortamento alla Francese - Passo 2: Calcolare Interessi e Ammortamento',
         'memorial-price-passo2-formula': 'Interessi = Debito Residuo × Tasso Mensile\nAmmortamento = PMT - Interessi',
         'memorial-price-passo2-explicacao': 'La rata è fissa, ma la composizione cambia: all\'inizio, più interessi e meno ammortamento; alla fine, meno interessi e più ammortamento.',
         'memorial-americano-passo1-title': 'Tedesco - Passo 1: Calcolare Interessi Mensili',
@@ -825,9 +825,8 @@ const traducoes = {
 function trocarIdioma(idioma) {
     idiomaAtual = idioma;
     moedaAtual = idioma === 'pt-BR' ? 'BRL' : 'EUR';
-    
-    // Salva no localStorage para manter entre páginas
     localStorage.setItem(SITE_LS.LANGUAGE_KEY, idioma);
+    document.documentElement.lang = idioma;
     
     // Atualizar máximo do slider de valor baseado no idioma
     if (sliderValor) {
@@ -852,7 +851,7 @@ function trocarIdioma(idioma) {
     // Atualizar textos com data-i18n
     document.querySelectorAll('[data-i18n]').forEach(element => {
         const chave = element.getAttribute('data-i18n');
-        if (traducoes[idioma][chave]) {
+        if (traducoes[idioma] && traducoes[idioma][chave]) {
             element.textContent = traducoes[idioma][chave];
         }
     });
@@ -1718,6 +1717,33 @@ function atualizarMemorialComValores() {
     
     let htmlConteudo = '';
     
+    // Adicionar indicação do sistema selecionado
+    const textoSistemaSelecionado = idiomaAtual === 'it-IT' 
+        ? 'Sistema selezionato:'
+        : 'Sistema selecionado:';
+    
+    // Explicação do significado da sigla/nome do sistema
+    let explicacaoSistema = '';
+    if (sistemaSelecionado === 'sac') {
+        explicacaoSistema = idiomaAtual === 'it-IT'
+            ? ' (Sistema di Ammortamento Costante)'
+            : ' (Sistema de Amortização Constante)';
+    } else if (sistemaSelecionado === 'price') {
+        explicacaoSistema = idiomaAtual === 'it-IT'
+            ? ' (Sistema Francese)'
+            : ' (Sistema Francês)';
+    } else if (sistemaSelecionado === 'alemao') {
+        explicacaoSistema = idiomaAtual === 'it-IT'
+            ? ' (Sistema Tedesco)'
+            : ' (Sistema Americano)';
+    }
+    
+    htmlConteudo += `
+        <div class="memorial-item" style="background: rgba(45, 159, 163, 0.1); padding: 15px; border-left: 4px solid #2d9fa3ff; border-radius: 4px; margin-bottom: 20px;">
+            <p style="margin: 0; font-size: 1.1em;"><strong>${textoSistemaSelecionado}</strong> <span style="color: #2d9fa3ff; font-weight: bold;">${nomeSistema}${explicacaoSistema}</span></p>
+        </div>
+    `;
+    
     // Passo 1: Converter Taxa
     htmlConteudo += `
         <div class="memorial-item">
@@ -1755,11 +1781,12 @@ function atualizarMemorialComValores() {
         const jurosUltima = amortizacao * taxaMensal;
         const parcelaUltima = amortizacao + jurosUltima;
         
+        const nomeSistemaSAC = idiomaAtual === 'it-IT' ? 'Ammortamento all\'Italiana' : 'SAC';
         htmlConteudo += `
             <div class="memorial-item">
-                <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Calcular Tabela de Amortização (SAC)</h3>
+                <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Calcular Tabela de Amortização (${nomeSistemaSAC})</h3>
                 <div class="memorial-item">
-                    <h4 data-i18n="memorial-sac-passo1-title">SAC - Passo 1: Calcular Amortização Constante</h4>
+                    <h4 data-i18n="memorial-sac-passo1-title">${nomeSistemaSAC} - Passo 1: Calcular Amortização Constante</h4>
                     <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                     <div class="formula-box">
                         <p><strong data-i18n="memorial-sac-passo1-formula">Amortização = Valor Emprestado ÷ Número de Parcelas</strong></p>
@@ -1768,7 +1795,7 @@ function atualizarMemorialComValores() {
                     <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-sac-amortizacao">${formatarValor(valorEmprestimo)} ÷ ${numeroParcelas} = ${formatarValor(amortizacao)}</span></p>
                 </div>
                 <div class="memorial-item">
-                    <h4 data-i18n="memorial-sac-passo2-title">SAC - Passo 2: Calcular Juros e Parcela</h4>
+                    <h4 data-i18n="memorial-sac-passo2-title">${nomeSistemaSAC} - Passo 2: Calcular Juros e Parcela</h4>
                     <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                     <div class="formula-box">
                         <p><strong data-i18n="memorial-sac-passo2-formula">Juros = Saldo Devedor × Taxa Mensal<br>Parcela = Amortização + Juros</strong></p>
@@ -1802,11 +1829,12 @@ function atualizarMemorialComValores() {
         const amortizacaoUltima = ultimaParcela.amortizacao;
         const saldoUltima = ultimaParcela.saldoDevedor + ultimaParcela.amortizacao; // Saldo antes do pagamento
         
+        const nomeSistemaPrice = idiomaAtual === 'it-IT' ? 'Ammortamento alla Francese' : 'Tabela Price';
         htmlConteudo += `
             <div class="memorial-item">
-                <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Calcular Tabela de Amortização (Price)</h3>
+                <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Calcular Tabela de Amortização (${nomeSistemaPrice})</h3>
                 <div class="memorial-item">
-                    <h4 data-i18n="memorial-price-passo1-title">Price - Passo 1: Calcular Parcela Fixa (PMT)</h4>
+                    <h4 data-i18n="memorial-price-passo1-title">${nomeSistemaPrice} - Passo 1: Calcular Parcela Fixa (PMT)</h4>
                     <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                     <div class="formula-box">
                         <p><strong data-i18n="memorial-price-passo1-formula">PMT = PV × [i × (1+i)^n] ÷ [(1+i)^n - 1]</strong></p>
@@ -1815,7 +1843,7 @@ function atualizarMemorialComValores() {
                     <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-price-pmt">PMT = ${formatarValor(valorEmprestimo)} × [${formatarPercentual(taxaMensal * 100)} × (1+${formatarPercentual(taxaMensal * 100)})^${numeroParcelas}] ÷ [(1+${formatarPercentual(taxaMensal * 100)})^${numeroParcelas} - 1] = ${formatarValor(parcelaFixa)}</span></p>
                 </div>
                 <div class="memorial-item">
-                    <h4 data-i18n="memorial-price-passo2-title">Price - Passo 2: Calcular Juros e Amortização</h4>
+                    <h4 data-i18n="memorial-price-passo2-title">${nomeSistemaPrice} - Passo 2: Calcular Juros e Amortização</h4>
                     <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                     <div class="formula-box">
                         <p><strong data-i18n="memorial-price-passo2-formula">Juros = Saldo Devedor × Taxa Mensal<br>Amortização = PMT - Juros</strong></p>
@@ -1833,12 +1861,13 @@ function atualizarMemorialComValores() {
     } else if (sistemaSelecionado === 'alemao') {
         const jurosMensal = valorEmprestimo * taxaMensal;
         const ultimaParcela = valorEmprestimo + jurosMensal;
+        const nomeSistemaAmericano = idiomaAtual === 'it-IT' ? 'Tedesco' : 'Sistema Americano';
         
         htmlConteudo += `
             <div class="memorial-item">
-                <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Calcular Tabela de Amortização (Americano)</h3>
+                <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Calcular Tabela de Amortização (${nomeSistemaAmericano})</h3>
                 <div class="memorial-item">
-                    <h4 data-i18n="memorial-americano-passo1-title">Americano - Passo 1: Calcular Juros Mensais</h4>
+                    <h4 data-i18n="memorial-americano-passo1-title">${nomeSistemaAmericano} - Passo 1: Calcular Juros Mensais</h4>
                     <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                     <div class="formula-box">
                         <p><strong data-i18n="memorial-americano-passo1-formula">Juros = Valor Emprestado × Taxa Mensal</strong></p>
@@ -1847,7 +1876,7 @@ function atualizarMemorialComValores() {
                     <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-americano-juros">Juros = ${formatarValor(valorEmprestimo)} × ${formatarPercentual(taxaMensal * 100)} = ${formatarValor(jurosMensal)} por mês</span></p>
                 </div>
                 <div class="memorial-item">
-                    <h4 data-i18n="memorial-americano-passo2-title">Americano - Passo 2: Calcular Parcelas</h4>
+                    <h4 data-i18n="memorial-americano-passo2-title">${nomeSistemaAmericano} - Passo 2: Calcular Parcelas</h4>
                     <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                     <div class="formula-box">
                         <p><strong data-i18n="memorial-americano-passo2-formula">Parcelas 1 a n-1: Apenas Juros<br>Última Parcela: Juros + Valor Emprestado</strong></p>

@@ -303,11 +303,11 @@ document.addEventListener('DOMContentLoaded', function() {
     trocarIdioma(idiomaAtual);
     
     // Adiciona event listeners nos botões de idioma
-    document.getElementById('btnPT').addEventListener('click', function() {
+    document.getElementById('btnPortugues').addEventListener('click', function() {
         trocarIdioma('pt-BR');
     });
     
-    document.getElementById('btnIT').addEventListener('click', function() {
+    document.getElementById('btnItaliano').addEventListener('click', function() {
         trocarIdioma('it-IT');
     });
     

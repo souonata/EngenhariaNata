@@ -336,34 +336,78 @@
                 </div>
                 <p data-i18n="memorial-passo1-explicacao">A energia necessária para aquecer a água depende do consumo diário, da diferença de temperatura e das propriedades físicas da água.</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-agua">4 pessoas × 50 L/pessoa = 200 L/dia, ΔT = 40°C → 200 × 1.0 × 1.163 × 40 ÷ 1000 = 9.3 kWh/dia</span></p>
+                <div class="info-box">
+                    <p><strong>📊 Valores de referência usados:</strong></p>
+                    <ul>
+                        <li><strong>Densidade da água:</strong> 1.0 kg/L — Constante física que permite converter volume (litros) em massa (kg)</li>
+                        <li><strong>Calor específico da água:</strong> 1.163 Wh/kg°C (ou 4.186 kJ/kg°C) — Quantidade de energia necessária para elevar 1 kg de água em 1°C. Este valor é uma propriedade física da água.</li>
+                        <li><strong>Consumo por pessoa:</strong> Econômico (30 L/dia), Padrão (40 L/dia), Alto (60 L/dia) — Valores baseados em padrões de consumo residencial</li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong>⚛️ Lei Física Aplicada — Transferência de Calor:</strong></p>
+                    <p style="margin-top: 5px;">O calor sempre flui do corpo mais quente para o mais frio. Os coletores solares captam calor do sol e transferem para a água. A quantidade de energia necessária para aquecer a água é calculada usando o calor específico: quanto maior a diferença de temperatura e a quantidade de água, mais energia é necessária.</p>
+                </div>
             </div>
 
             <div class="memorial-item">
                 <h3 data-i18n="memorial-passo2-title">2️⃣ Passo 2: Calcular Potência e Demanda para Aquecimento da Casa</h3>
-                <p><strong data-i18n="memorial-formula">Fórmula de Potência (para dimensionamento de radiadores):</strong></p>
-                <div class="formula-box">
-                    <p><strong>Volume Casa (m³) = Área (m²) × Altura (m)</strong></p>
-                    <p><strong>ΔT = Temperatura Conforto (21°C) - Temperatura Externa Inverno</strong></p>
-                    <p><strong>Potência (W) = Volume × Coeficiente Perda (W/m³·K) × ΔT × 1.15</strong></p>
-                </div>
                 <p><strong>Fórmula de Demanda Diária (para dimensionamento de coletores):</strong></p>
                 <div class="formula-box">
-                    <p><strong>Consumo Anual Total = Consumo Específico (kWh/m²·ano) × Área × Fator Altura</strong></p>
+                    <p><strong>Consumo Anual Total = Consumo Específico (kWh/m²·ano) × Área (m²) × Fator Altura</strong></p>
                     <p><strong>Consumo Anual Aquecimento = Consumo Anual Total × Fração Aquecimento (60-70%)</strong></p>
-                    <p><strong>Demanda Diária = Consumo Anual Aquecimento ÷ 150 dias</strong></p>
+                    <p><strong>Demanda Diária (kWh/dia) = Consumo Anual Aquecimento ÷ Dias de Aquecimento (150 dias)</strong></p>
                 </div>
-                <p data-i18n="memorial-passo2-explicacao">A potência necessária (em Watts) é calculada usando o método de dimensionamento de radiadores, considerando volume, classe energética e diferença de temperatura. Esta é a potência INSTANTÂNEA contínua necessária para manter a casa aquecida (compensar as perdas térmicas). A demanda diária (em kWh/dia) é usada para dimensionar os coletores solares e representa a energia total necessária por dia.</p>
-                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-casa">100 m² × 2.7m = 270 m³, classe D (coef. 2.0 W/m³·K), ΔT = 10°C → Potência = 270 × 2.0 × 10 × 1.15 = 6210 W</span></p>
+                <p><strong>Fórmula de Potência (para dimensionamento de termossifões):</strong></p>
+                <div class="formula-box">
+                    <p><strong>Potência (W) = (Demanda Diária (kWh/dia) ÷ Horas de Aquecimento por Dia) × 1000 × 1.15</strong></p>
+                    <p><em>Nota: O aquecimento residencial geralmente é necessário durante as horas mais frias (noite e manhã), aproximadamente 16 horas por dia. Durante o dia (8 horas), o sol pode ajudar a aquecer naturalmente.</em></p>
+                </div>
+                <p data-i18n="memorial-passo2-explicacao">A demanda diária de energia (em kWh/dia) é calculada a partir do consumo específico anual por área (kWh/m²·ano), considerando a área da casa, fator de altura e fração de energia usada para aquecimento. A potência necessária (em Watts) é calculada a partir da demanda diária dividida pelas horas de aquecimento ativo por dia (16 horas), representando a potência INSTANTÂNEA necessária para manter a casa aquecida (compensar as perdas térmicas).</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-casa">Área: 100 m², classe D (1.75 kWh/m²·ano), fator altura: 1.00 → Consumo anual aquecimento: 262.5 kWh/ano → Demanda Diária: 262.5 ÷ 150 dias = 1.75 kWh/dia → Potência: 1.75 kWh/dia ÷ 16h × 1000 × 1.15 = 126 W</span></p>
+                <div class="info-box">
+                    <p><strong>📊 Valores de referência usados:</strong></p>
+                    <ul>
+                        <li><strong>Temperatura de Conforto:</strong> 22°C — Temperatura interna desejada para conforto térmico</li>
+                        <li><strong>Consumo Específico por Classe Energética (kWh/m²·ano):</strong> A4 (0.35), A3 (0.50), A2 (0.70), A1 (0.90), B (1.10), C (1.35), D (1.75), E (2.30), F (3.05), G (4.0) — Representam o consumo anual de energia por metro quadrado de área construída. Valores baseados nas normas europeias de eficiência energética.</li>
+                        <li><strong>Fator de Altura:</strong> Ajuste para pé direito acima de 2,7m (padrão). Para cada 0,1m acima de 2,7m, aumenta 10% no consumo.</li>
+                        <li><strong>Fração de Aquecimento:</strong> 60-70% do consumo total é usado para aquecimento (70% em climas muito frios, 60% em climas moderados).</li>
+                        <li><strong>Dias de Aquecimento:</strong> 150 dias/ano — Período aproximado em que o aquecimento é necessário (aproximadamente 5 meses de inverno).</li>
+                        <li><strong>Fator de Segurança (1.15):</strong> Margem de 15% para perdas adicionais (portas, janelas, infiltrações, etc.)</li>
+                        <li><strong>Horas de Aquecimento por Dia:</strong> 16 horas — O aquecimento residencial geralmente é necessário durante as horas mais frias (noite e manhã). Durante o dia (8 horas), o sol pode ajudar a aquecer naturalmente, reduzindo a necessidade de aquecimento ativo.</li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong>⚛️ Lei Física Aplicada — Transferência de Calor:</strong></p>
+                    <p style="margin-top: 5px;">O calor sempre flui do ambiente mais quente para o mais frio. A casa perde calor continuamente para o ambiente externo através das paredes, telhado, janelas e portas. O consumo específico anual (kWh/m²·ano) representa a perda de calor anual por metro quadrado de área construída. A demanda diária é calculada dividindo o consumo anual pelo número de dias de aquecimento, e a potência necessária é calculada para compensar essas perdas térmicas e manter a temperatura interna constante durante as horas de uso.</p>
+                </div>
             </div>
 
             <div class="memorial-item">
                 <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Dimensionar Volume do Boiler</h3>
-                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <p><strong data-i18n="memorial-formula">Fórmula para Água de Consumo:</strong></p>
                 <div class="formula-box">
-                    <p><strong>Volume Boiler (L) = Consumo Diário (L) × Dias de Autonomia</strong></p>
+                    <p><strong>Volume Boiler Água (L) = Consumo Diário (L) × Dias de Autonomia</strong></p>
                 </div>
                 <p data-i18n="memorial-passo3-explicacao">O volume do boiler deve ser suficiente para armazenar água quente para os dias sem sol (autonomia).</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-boiler">200 L/dia × 3 dias = 600 L</span></p>
+                
+                <p style="margin-top: 15px;"><strong>Fórmula para Aquecimento da Casa:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Energia Total Autonomia (kWh) = Demanda Diária (kWh/dia) × Dias de Autonomia</strong></p>
+                    <p><strong>ΔT Utilizável = Temperatura Armazenamento Inicial - Temperatura Mínima Termossifão</strong></p>
+                    <p><strong>Volume Teórico (L) = Energia Total (Wh) ÷ (Calor Específico × ΔT Utilizável × Densidade)</strong></p>
+                    <p><strong>Volume Boiler Casa (L) = Volume Teórico ÷ Fator de Estratificação</strong></p>
+                    <p><strong>Volume Útil (L) = Volume Boiler Casa × Fator de Estratificação</strong></p>
+                </div>
+                <p style="margin-top: 10px;"><strong>Exemplo:</strong> <span id="memorial-exemplo-boiler-casa">-</span></p>
+                <div class="info-box">
+                    <p><strong>📊 Valores de referência usados:</strong></p>
+                    <ul>
+                        <li><strong>Temperatura Mínima Termossifão:</strong> 40°C — Temperatura mínima necessária para os termossifões (radiadores) funcionarem adequadamente. Abaixo desta temperatura, o termossifão não consegue transferir calor suficiente para o ambiente.</li>
+                        <li><strong>Temperatura Armazenamento Inicial:</strong> 65°C — Temperatura máxima que a água atinge quando o sistema solar carrega o boiler completamente.</li>
+                        <li><strong>ΔT Utilizável:</strong> 25°C (65°C - 40°C) — Faixa de temperatura que pode ser utilizada pelos termossifões. A água precisa estar acima de 40°C até o último dia de autonomia.</li>
+                        <li><strong>Fator de Estratificação:</strong> 0.65 (65%) — Devido à estratificação térmica no boiler, apenas 65% do volume (parte superior) mantém água quente suficiente. A água quente fica em cima e a fria embaixo, então precisamos de um volume maior para garantir que a parte superior tenha água quente suficiente.</li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong>⚛️ Princípio Físico Aplicado — Estratificação Térmica:</strong></p>
+                    <p style="margin-top: 5px;">A água quente é menos densa que a água fria, então ela "flutua" para cima no boiler. Isso cria camadas: água quente em cima e fria embaixo. Os termossifões são conectados na parte superior do boiler, então apenas a água quente (parte superior) é utilizada. Por isso, precisamos de um volume maior de boiler para garantir que mesmo no último dia de autonomia, a parte superior ainda tenha água acima de 40°C.</p>
+                </div>
             </div>
 
             <div class="memorial-item">
@@ -375,17 +419,42 @@
                 </div>
                 <p data-i18n="memorial-passo4-explicacao">A eficiência do coletor varia com a temperatura de operação e as condições ambientais. Quanto maior a diferença de temperatura, menor a eficiência.</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-eficiencia">Temperatura média 42°C, ambiente 18°C, irradiação 800 W/m² → eficiência ≈ 65%</span></p>
+                <div class="info-box">
+                    <p><strong>📊 Valores de referência usados:</strong></p>
+                    <ul>
+                        <li><strong>Eficiência ótica (η₀):</strong> Varia conforme o modelo de referência (72-75%) — Eficiência máxima do coletor quando não há perdas térmicas. Valores típicos para coletores com tubos a vácuo.</li>
+                        <li><strong>Coeficiente de perda linear (a₁):</strong> Varia conforme o modelo (1.4-1.6 W/m²·K) — Representa as perdas térmicas do coletor. Quanto maior este valor, mais o coletor perde calor para o ambiente. Coletores com tubos a vácuo têm valores menores (melhor isolamento).</li>
+                        <li><strong>Irradiação horária de pico média:</strong> 800 W/m² — Valor médio de irradiação solar durante as horas de sol pleno. Usado para calcular o parâmetro de perda térmica.</li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong>⚛️ Lei Física Aplicada — Transferência de Calor e Eficiência:</strong></p>
+                    <p style="margin-top: 5px;">A eficiência do coletor diminui quando a diferença de temperatura entre o coletor e o ambiente aumenta. Isso acontece porque o calor "escapa" mais rapidamente do coletor quente para o ambiente mais frio (transferência de calor). Por isso, em dias muito frios ou quando a água está muito quente, o coletor é menos eficiente. Os coletores com tubos a vácuo têm melhor isolamento térmico, reduzindo essas perdas.</p>
+                </div>
             </div>
 
             <div class="memorial-item">
                 <h3 data-i18n="memorial-passo5-title">5️⃣ Passo 5: Calcular Área de Coletores</h3>
                 <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                 <div class="formula-box">
-                    <p><strong>Para Água: Área (m²) = Demanda Diária (kWh/dia) ÷ (HSP × Eficiência)</strong></p>
-                    <p><strong>Para Casa: Área (m²) = (Demanda Diária × Dias de Autonomia) ÷ (HSP × Eficiência)</strong></p>
+                    <p><strong>Para Água: Área (m²) = (Demanda Diária (kWh/dia) × Fator Segurança) ÷ (HSP × Eficiência)</strong></p>
+                    <p><strong>Para Casa:</strong></p>
+                    <p><strong>Energia para Aquecer Boiler = Volume Boiler Casa (L) × Densidade × Calor Específico × (65°C - Temp. Ambiente)</strong></p>
+                    <p><strong>Energia para Autonomia = Demanda Diária Casa (kWh/dia) × Dias de Autonomia</strong></p>
+                    <p><strong>Energia Total = Energia Aquecer Boiler + Energia Autonomia</strong></p>
+                    <p><strong>Área (m²) = (Energia Total × Fator Segurança) ÷ (HSP × Eficiência)</strong></p>
                 </div>
-                <p data-i18n="memorial-passo5-explicacao">A área de coletores necessária depende da demanda total de energia, das horas de sol pico (HSP) disponíveis e da eficiência do coletor. Para aquecimento da casa, o sistema precisa captar em 1 dia energia suficiente para os dias de autonomia (ex: se autonomia = 5 dias, precisa captar em 1 dia energia para 5 dias e noites). A energia capturada por m² de painel é calculada considerando 1 hora de sol pico (1000 W/m²) multiplicada pelo número de horas de sol pico do dia.</p>
-                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-area">10.5 kWh/dia ÷ (4.0 kWh/m² × 0.65) = 4.0 m²</span></p>
+                <p data-i18n="memorial-passo5-explicacao">A área de coletores necessária depende da demanda total de energia, das horas de sol pico (HSP) disponíveis e da eficiência do coletor. Para aquecimento da casa, o sistema precisa captar em 1 dia energia suficiente para: (1) aquecer todo o volume do boiler até 65°C, e (2) fornecer energia para os dias de autonomia. A energia capturada por m² de painel é calculada considerando 1 hora de sol pico (1000 W/m²) multiplicada pelo número de horas de sol pico do dia.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-area">Água: 4.00 kWh/dia ÷ (4.0 HSP × 0.68) = 1.47 m²; Casa: (10.5 kWh + 3.70 kWh/dia × 3 dias) ÷ (4.0 HSP × 0.68) = 8.0 m²; Total: 9.47 m²</span></p>
+                <div class="info-box">
+                    <p><strong>📊 Valores de referência usados:</strong></p>
+                    <ul>
+                        <li><strong>HSP (Horas de Sol Pleno):</strong> Calculado dinamicamente baseado na latitude usando interpolação linear. Valores de referência: Latitude 0° (~5.5 HSP), 15° (~4.5 HSP), 30° (~3.5 HSP), 45° (~2.5 HSP), 60° (~1.5 HSP). Quanto mais longe do equador, menos horas de sol no inverno.</li>
+                        <li><strong>Irradiação de pico:</strong> 1000 W/m² — Valor padrão usado para definir "1 hora de sol pleno". Representa a irradiação solar máxima típica.</li>
+                        <li><strong>Fator de Segurança:</strong> 1.3 (30%) — Margem de segurança para compensar dias nublados, perdas no sistema e variações climáticas</li>
+                        <li><strong>Gradiente adiabático:</strong> 6.5°C por 1000m para ar ambiente — Usado para ajustar temperaturas base ao nível do mar conforme a altitude do local. A temperatura diminui aproximadamente 6.5°C a cada 1000m de altitude.</li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong>⚛️ Lei Física Aplicada — Conservação de Energia:</strong></p>
+                    <p style="margin-top: 5px;">A energia captada pelos coletores deve ser suficiente para atender a demanda. A energia solar captada (irradiação × área × eficiência × HSP) deve ser igual ou maior que a energia necessária. Para sistemas com autonomia, a energia captada em <strong>apenas 1 dia de sol</strong> deve ser suficiente para: (1) aquecer todo o volume do boiler da temperatura ambiente até 65°C, e (2) fornecer energia para os dias de autonomia. Isso garante que mesmo após vários dias sem sol, o sistema ainda tenha água quente suficiente acima de 40°C para os termossifões funcionarem.</p>
+                </div>
             </div>
 
             <div class="memorial-item">
@@ -403,7 +472,7 @@
                 <p><strong data-i18n="memorial-formula">Método:</strong></p>
                 <div class="formula-box">
                     <p><strong>1. Estimar número de ambientes baseado na área da casa</strong></p>
-                    <p><strong>2. Calcular potência por ambiente: P = Volume × Coeficiente × ΔT × 1.15</strong></p>
+                    <p><strong>2. Calcular potência por ambiente usando consumo específico por área (kWh/m²·ano)</strong></p>
                     <p><strong>3. Selecionar termossifão adequado para cada ambiente</strong></p>
                 </div>
                 <p data-i18n="memorial-passo7-explicacao">Os termossifões são dimensionados individualmente para cada ambiente da casa, garantindo aquecimento adequado em todos os cômodos.</p>
@@ -506,12 +575,7 @@
             <div class="nota-referencia" id="notaPainelReferencia"></div>
 
             <div class="resultado-item">
-                <span class="label-resultado" data-i18n="resultado-demanda-total">Demanda Total (Água + Casa):</span>
-                <span class="valor-resultado" id="demandaTotal">-</span>
-            </div>
-
-            <div class="resultado-item">
-                <span class="label-resultado" data-i18n="resultado-demanda-agua">Demanda Água (Banho/Pias):</span>
+                <span class="label-resultado" data-i18n="resultado-demanda-agua">Demanda Aquecimento Água:</span>
                 <span class="valor-resultado" id="demandaEnergia">-</span>
             </div>
 
@@ -526,28 +590,13 @@
             </div>
 
             <div class="resultado-item">
-                <span class="label-resultado" data-i18n="resultado-volume-casa">Volume da Casa:</span>
-                <span class="valor-resultado" id="volumeCasa">-</span>
-            </div>
-
-            <div class="resultado-item">
-                <span class="label-resultado" data-i18n="resultado-potencia-casa">Potência Necessária Casa:</span>
+                <span class="label-resultado" data-i18n="resultado-potencia-casa">Perda de Calor para Ambiente:</span>
                 <span class="valor-resultado" id="potenciaCasa">-</span>
             </div>
 
-            <div class="resultado-item">
-                <span class="label-resultado" data-i18n="resultado-eficiencia">Eficiência do Coletor:</span>
-                <span class="valor-resultado" id="eficienciaColetor">-</span>
-            </div>
-
-            <div class="resultado-item">
-                <span class="label-resultado" data-i18n="resultado-consumo-diario">Consumo Diário:</span>
-                <span class="valor-resultado" id="consumoDiario">-</span>
-            </div>
-
-            <div class="resultado-item">
-                <span class="label-resultado" data-i18n="resultado-temp-agua-fria">Temp. Água Fria (ajustada):</span>
-                <span class="valor-resultado" id="tempAguaFria">-</span>
+            <div class="resultado-item" id="resultadoTermossifoes" style="display: none;">
+                <span class="label-resultado" data-i18n="resultado-termossifoes">Termossifões Necessários:</span>
+                <span class="valor-resultado" id="termossifoesDetalhes">-</span>
             </div>
 
             <div class="info-box">

@@ -147,9 +147,10 @@ Calculadora usa Chart.js 3.x para gráficos de linha/área:
 
 ## Fórmulas Financeiras dos Sistemas de Amortização
 
-### Sistema Price (Tabela Price / Ammortamento alla Francese)
+### Tabela Price (Sistema Francês / Ammortamento alla Francese)
 **Uso**: Brasil (empréstimos pessoais, consignados), Itália (mutui - mais comum)
 **Característica**: Parcelas fixas (PMT constante)
+**Nomes usados no app**: "Tabela Price" (PT) / "Francese" (IT)
 
 ```javascript
 // Fórmula da parcela fixa (PMT)
@@ -164,9 +165,10 @@ saldoDevedor -= amortizacao;
 
 **Comportamento**: No início, paga mais juros e menos amortização. Com o tempo inverte: menos juros, mais amortização.
 
-### Sistema SAC (Ammortamento all'Italiana)
-**Uso**: Brasil (financiamento imobiliário Caixa), Itália
+### SAC (Sistema de Amortização Constante / Ammortamento all'Italiana)
+**Uso**: Brasil (financiamento imobiliário), Itália
 **Característica**: Amortização constante
+**Nomes usados no app**: "SAC" (PT) / "Italiana" (IT)
 
 ```javascript
 // Amortização fixa
@@ -180,9 +182,10 @@ saldoDevedor -= amortizacaoConstante;
 
 **Comportamento**: Parcelas começam altas e diminuem ao longo do tempo. Paga menos juros no total.
 
-### Sistema Americano (Alemão)
+### Sistema Americano (Alemão / Tedesco)
 **Uso**: Raro no Brasil, ocasional na Itália para investidores
 **Característica**: Paga só juros durante o período, principal no final
+**Nomes usados no app**: "Sistema Americano" (PT) / "Tedesco" (IT)
 
 ```javascript
 const jurosMensal = valorEmprestimo * taxaMensal;
@@ -342,7 +345,20 @@ novo-app/
 16. **Documentação**: Mantenha README.md, GLOSSARIO.md e copilot-instructions.md atualizados
 17. **Badges DEV**: Apps em desenvolvimento devem ter badge "DEV" no ícone (classe `icon-dev`) e marca d'água dentro do app (`.watermark-dev` e `.dev-badge-header`)
 18. **Apps com badge DEV**: Ar Condicionado, Aquecedor Solar, Fazenda (em desenvolvimento)
-19. **Memorial de Cálculo**: Apps educativos podem incluir seção de memorial didático (ex.: Mutuo "Saiba Mais", Solar "Memorial de Cálculo") que explica passo a passo os cálculos realizados, com fórmulas, exemplos práticos e resumo dos valores. Implementar com seção escondida (`display: none`), botão "SAIBA MAIS!" e funções `toggleMemorial()` e `atualizarMemorialComValores()`.
+19. **Memorial de Cálculo**: Todos os apps educativos devem incluir seção de memorial didático que explica passo a passo os cálculos realizados. O memorial deve incluir:
+    - **Fórmulas utilizadas** — Todas as fórmulas matemáticas e físicas aplicadas
+    - **Valores de referência** — Constantes físicas, fatores de segurança e valores arbitrados utilizados (ex.: resistividade do cobre 0.0175 Ω·mm²/m, HSP 5h, eficiência 80%, etc.)
+    - **Leis físicas** — Explicações leigas das leis físicas aplicadas (Lei de Ohm, conservação de energia, transferência de calor, etc.)
+    - **Exemplos práticos** — Cálculos passo a passo com os valores atuais do usuário
+    - **Resumo dos resultados** — Valores calculados organizados de forma clara
+    - Implementar com seção escondida (`display: none`), botão "SAIBA MAIS!" e funções `toggleMemorial()` e `atualizarMemorialComValores()`
+20. **Valores de Referência**: Sempre documente valores arbitrados ou de referência usados nos cálculos. Exemplos:
+    - Resistividade do cobre: 0.0175 Ω·mm²/m (constante física)
+    - HSP (Horas de Sol Pleno): 5h/dia (valor médio para Brasil)
+    - Eficiência do sistema solar: 80% (considera perdas de 20%)
+    - BTU por m³: 600 BTU/m³ (padrão ASHRAE)
+    - Constante de conversão hélice: 1056 (padrão indústria náutica)
+21. **Leis Físicas**: Sempre explique de forma leiga as leis físicas aplicadas nos cálculos. Consulte `GLOSSARIO.md` para explicações padrão de Lei de Ohm, Conservação de Energia, Transferência de Calor, etc.
 
 ## Versões Atuais dos Arquivos
 

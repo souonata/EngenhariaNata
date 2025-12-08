@@ -307,7 +307,7 @@ function trocarIdioma(novoIdioma) {
         
         // Verifica se existe uma tradução para a chave no idioma selecionado
         // Se existir, substitui o texto interno do elemento pela tradução
-        if (traducoes[novoIdioma][chave]) {
+        if (traducoes[novoIdioma] && traducoes[novoIdioma][chave]) {
             elemento.textContent = traducoes[novoIdioma][chave];
         }
     });

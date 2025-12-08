@@ -357,44 +357,18 @@ function selecionarModeloComercial(btuNecessario) {
 
 /**
  * Converte string numérica para número, aceitando tanto ponto quanto vírgula como decimal
+ * Usa a função global converterValorFormatadoParaNumero do site-config.js
  * @param {string} valorTexto - Valor como string (pode ter ponto ou vírgula)
  * @returns {number} Valor numérico
  */
 function converterParaNumero(valorTexto) {
     if (!valorTexto) return NaN;
-    let valor = valorTexto.toString().trim();
-    
-    // Se tem vírgula e ponto, assume formato brasileiro (1.234,56)
-    if (valor.indexOf('.') !== -1 && valor.indexOf(',') !== -1) {
-        valor = valor.replace(/\./g, ''); // Remove pontos (milhares)
-        valor = valor.replace(',', '.');   // Troca vírgula por ponto
-    }
-    // Se tem apenas vírgula, assume formato brasileiro (12,5)
-    else if (valor.indexOf(',') !== -1) {
-        valor = valor.replace(/\./g, ''); // Remove pontos se houver
-        valor = valor.replace(',', '.');   // Troca vírgula por ponto
-    }
-    // Se tem apenas pontos ou nenhum, remove pontos (assume milhares)
-    else {
-        valor = valor.replace(/\./g, '');
-    }
-    
-    return parseFloat(valor) || NaN;
+    const resultado = converterValorFormatadoParaNumero(valorTexto);
+    return isNaN(resultado) ? NaN : resultado;
 }
 
-/**
- * Formata número com separador de milhares
- * @param {number} valor - Valor numérico
- * @returns {string} Valor formatado
- */
-function formatarNumero(valor) {
-    if (isNaN(valor) || valor === null || valor === undefined) return '-';
-    // Usa 'pt-BR' para garantir vírgula como separador decimal
-    return valor.toLocaleString('pt-BR', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    });
-}
+// Função formatarNumero agora está em assets/js/site-config.js
+// Usa diretamente a função global formatarNumero(valor, casasDecimais = 0)
 
 /**
  * Formata BTU para exibição com notação "k" quando >= 1000
@@ -424,19 +398,14 @@ function formatarBTU(valor) {
 
 /**
  * Formata número com casas decimais
+ * Usa a função global formatarNumeroDecimal do site-config.js
  * Sempre usa vírgula como separador decimal (padrão brasileiro)
  * @param {number} valor - Valor numérico
  * @param {number} decimais - Número de casas decimais
  * @returns {string} Valor formatado com vírgula
  */
 function formatarDecimal(valor, decimais = 1) {
-    if (isNaN(valor) || valor === null || valor === undefined) return '-';
-    // Usa 'pt-BR' para garantir vírgula como separador decimal
-    const formatado = valor.toLocaleString('pt-BR', {
-        minimumFractionDigits: decimais,
-        maximumFractionDigits: decimais
-    });
-    return formatado;
+    return formatarNumeroDecimal(valor, decimais);
 }
 
 /**
@@ -571,15 +540,15 @@ function trocarIdioma(novoIdioma) {
     localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
     document.documentElement.lang = novoIdioma;
     
-    // Atualiza textos traduzidos
+    // Atualiza todos os elementos com data-i18n
     document.querySelectorAll('[data-i18n]').forEach(elemento => {
         const chave = elemento.getAttribute('data-i18n');
-        if (traducoes[novoIdioma][chave]) {
+        if (traducoes[novoIdioma] && traducoes[novoIdioma][chave]) {
             elemento.textContent = traducoes[novoIdioma][chave];
         }
     });
     
-    // Atualiza botões de idioma
+    // Atualiza botões de idioma (ativação visual)
     document.querySelectorAll(SITE_SEL.LANG_BTN).forEach(btn => {
         if (btn.getAttribute('data-lang') === novoIdioma) {
             btn.classList.add('active');

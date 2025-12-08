@@ -210,11 +210,14 @@
                 <p data-i18n="memorial-passo2-explicacao">A área mínima é calculada considerando a resistividade do cobre, a distância (multiplicada por 2 para ida e volta), a corrente e a queda de tensão máxima permitida.</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-area">(2 × 0.0175 × 20m × 4.55A) ÷ 8.8V = 0.36 mm²</span></p>
                 <div class="info-box">
-                    <p><strong data-i18n="memorial-constants">Constantes usadas:</strong></p>
+                    <p><strong data-i18n="memorial-constants">Valores de referência usados:</strong></p>
                     <ul>
-                        <li data-i18n="memorial-resistividade">ρ (resistividade do cobre) = 0.0175 Ω·mm²/m a 20°C</li>
-                        <li data-i18n="memorial-fator-2">Fator 2 = considera ida e volta do circuito (dois condutores)</li>
+                        <li data-i18n="memorial-resistividade">ρ (resistividade do cobre) = 0.0175 Ω·mm²/m a 20°C — Constante física que representa a resistência elétrica específica do cobre puro. Este valor é uma propriedade do material e varia ligeiramente com a temperatura.</li>
+                        <li data-i18n="memorial-fator-2">Fator 2 = considera ida e volta do circuito (dois condutores) — O circuito elétrico precisa de dois fios: um para levar a corrente até a carga e outro para retornar. Por isso, a distância total percorrida pela corrente é 2 × distância entre fonte e carga.</li>
+                        <li><strong>Queda de tensão recomendada:</strong> 4% — Padrão mais utilizado para projetos residenciais no Brasil, conforme normas técnicas.</li>
                     </ul>
+                    <p style="margin-top: 10px;"><strong>⚛️ Lei Física Aplicada — Lei de Ohm:</strong></p>
+                    <p style="margin-top: 5px;">A Lei de Ohm relaciona tensão (V), corrente (I) e resistência (R): V = I × R. No cálculo de bitola, usamos esta lei para determinar a queda de tensão: quanto maior a corrente e a resistência do fio, maior a queda de tensão. A resistência do fio depende da resistividade do material (cobre), do comprimento e da área da seção transversal (bitola).</p>
                 </div>
             </div>
 

@@ -275,7 +275,7 @@
 .classe-A4 input:checked + .cartao-radio {
     background: linear-gradient(135deg, #0277BD 0%, #0D47A1 100%);
     border-color: #01579B;
-    box-shadow: 0 4px 12px rgba(13, 71, 161, 0.5);
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(13, 71, 161, 0.5);
 }
 
 /* Classe A3 */
@@ -288,7 +288,7 @@
 .classe-A3 input:checked + .cartao-radio {
     background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%);
     border-color: #0277BD;
-    box-shadow: 0 4px 12px rgba(21, 101, 192, 0.5);
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(21, 101, 192, 0.5);
 }
 
 /* Classe A2 */
@@ -301,7 +301,7 @@
 .classe-A2 input:checked + .cartao-radio {
     background: linear-gradient(135deg, #1565C0 0%, #1976D2 100%);
     border-color: #0D47A1;
-    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.5);
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(25, 118, 210, 0.5);
 }
 
 /* Classe A1 */
@@ -314,7 +314,7 @@
 .classe-A1 input:checked + .cartao-radio {
     background: linear-gradient(135deg, #1976D2 0%, #2196F3 100%);
     border-color: #1565C0;
-    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(33, 150, 243, 0.4);
 }
 
 .classe-B .cartao-radio {
@@ -326,7 +326,7 @@
 .classe-B input:checked + .cartao-radio {
     background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
     border-color: #1976D2;
-    box-shadow: 0 4px 12px rgba(66, 165, 245, 0.4);
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(66, 165, 245, 0.4);
 }
 
 .classe-C .cartao-radio {
@@ -338,7 +338,7 @@
 .classe-C input:checked + .cartao-radio {
     background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
     border-color: #43A047;
-    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(76, 175, 80, 0.4);
 }
 
 .classe-D .cartao-radio {
@@ -350,7 +350,7 @@
 .classe-D input:checked + .cartao-radio {
     background: linear-gradient(135deg, #FFA000 0%, #FFC107 100%);
     border-color: #FF8F00;
-    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(255, 193, 7, 0.4);
 }
 
 .classe-E .cartao-radio {
@@ -362,7 +362,7 @@
 .classe-E input:checked + .cartao-radio {
     background: linear-gradient(135deg, #F57C00 0%, #FF9800 100%);
     border-color: #EF6C00;
-    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(255, 152, 0, 0.4);
 }
 
 .classe-F .cartao-radio {
@@ -374,7 +374,7 @@
 .classe-F input:checked + .cartao-radio {
     background: linear-gradient(135deg, #E64A19 0%, #FF5722 100%);
     border-color: #D84315;
-    box-shadow: 0 4px 12px rgba(255, 87, 34, 0.4);
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(255, 87, 34, 0.4);
 }
 
 .classe-G .cartao-radio {
@@ -386,7 +386,7 @@
 .classe-G input:checked + .cartao-radio {
     background: linear-gradient(135deg, #D32F2F 0%, #F44336 100%);
     border-color: #C62828;
-    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(244, 67, 54, 0.4);
 }
 
 /* ============================================

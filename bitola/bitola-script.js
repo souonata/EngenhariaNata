@@ -853,9 +853,8 @@ function atualizarMemorialComValores() {
  */
 function trocarIdioma(novoIdioma) {
     idiomaAtual = novoIdioma;
-    
-    // Salva a preferência no localStorage
     localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
+    document.documentElement.lang = novoIdioma;
     
     // Atualiza todos os elementos com data-i18n
     document.querySelectorAll('[data-i18n]').forEach(elemento => {
@@ -883,6 +882,10 @@ function trocarIdioma(novoIdioma) {
             btn.classList.remove('active');
         }
     });
+    
+    // Atualiza aria-label do botão home
+    const homeLabel = traducoes[novoIdioma]['aria-home'] || 'Home';
+    document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
     
     // Recalcula resultados para atualizar formatação numérica
     atualizarResultados();

@@ -881,17 +881,22 @@ function aplicarTraducoes() {
 
 function trocarIdioma(novoIdioma) {
     idiomaAtual = novoIdioma;
-    // Salvar preferência no localStorage
     localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
+    document.documentElement.lang = novoIdioma;
     aplicarTraducoes();
     
-    // Atualizar botões de idioma
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.lang === novoIdioma) {
+    // Atualizar botões de idioma (ativação visual)
+    document.querySelectorAll(SITE_SEL.LANG_BTN).forEach(btn => {
+        if (btn.getAttribute('data-lang') === novoIdioma) {
             btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
         }
     });
+    
+    // Atualiza aria-label do botão home
+    const homeLabel = traducoes[novoIdioma]?.['aria-home'] || 'Home';
+    document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
     
     atualizarResultados();
 }

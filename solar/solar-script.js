@@ -495,17 +495,19 @@ let timeoutId = null;
 function trocarIdioma(novoIdioma) {
     idiomaAtual = novoIdioma;
     // Persiste a preferência de idioma usando a chave padronizada do projeto
-        localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
+    localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
     document.documentElement.lang = novoIdioma;
     
+    // Atualiza todos os elementos com data-i18n
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (traducoes[novoIdioma][key]) {
+        if (traducoes[novoIdioma] && traducoes[novoIdioma][key]) {
             el.textContent = traducoes[novoIdioma][key];
         }
     });
 
-    document.querySelectorAll('.lang-btn').forEach(btn => {
+    // Atualiza botões de idioma (ativação visual)
+    document.querySelectorAll(SITE_SEL.LANG_BTN).forEach(btn => {
         if (btn.getAttribute('data-lang') === novoIdioma) {
             btn.classList.add('active');
         } else {
