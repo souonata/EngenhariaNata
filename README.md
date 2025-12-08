@@ -4,7 +4,7 @@ Uma pequena coleção de apps web educativos para estudar conceitos práticos de
 
 - **💰 Mutuo** — Calculadora de empréstimos (SAC, Price, Americano) com gráficos interativos e tabela de amortização completa.
 - **🚤 Helice** — Calculadora de passo de hélice para barcos de lazer, com análise de slip e gráficos de relação velocidade × passo.
-- **☀️ Solar** — Dimensionamento fotovoltaico off-grid (painéis, baterias AGM/LiFePO4, inversor) com página de configuração personalizável.
+- **☀️ Solar** — Dimensionamento fotovoltaico off-grid (painéis, baterias AGM/LiFePO4, inversor) com página de configuração personalizável e memorial de cálculo didático.
 - **⚡ Bitola** — Calculadora de bitola de fios elétricos para circuitos CC e CA, com seleção automática de bitola comercial padrão brasileiro.
 - **❄️ Ar Condicionado** — Dimensionador de ar condicionado com cálculo de BTU baseado em área, altura, número de pessoas e condições ambientais.
 - **☀️ Aquecedor Solar** — Dimensionador completo de sistemas de aquecimento solar térmico (coletores, boiler, potência) para água de consumo e aquecimento ambiente.
@@ -38,6 +38,8 @@ A página `solar/config.html` permite ajustar:
 - Limites: peso máximo de 180 kg por bateria, inversor mínimo de 1 kW
 
 As configurações são salvas automaticamente em `localStorage` sob a chave `configSolar`.
+
+O app Solar inclui um **Memorial de Cálculo** completo (botão "SAIBA MAIS!") que explica passo a passo como são calculados todos os componentes do sistema, com fórmulas, exemplos práticos e resumo dos cálculos atuais.
 
 ## 📚 Documentação
 

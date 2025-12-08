@@ -74,6 +74,8 @@ const traducoes = {
 
         'feature-config-title': 'Configurável',
         'feature-config-desc': 'Customize preços e especificações; mudanças salvas em localStorage (configSolar).',
+        'feature-memorial-title': 'Memorial de Cálculo',
+        'feature-memorial-desc': 'Memorial didático completo que explica passo a passo todos os cálculos realizados, com fórmulas, exemplos práticos e resumo dos valores calculados.',
 
         'feature-cc-ca-title': 'CC e CA',
         'feature-cc-ca-desc': 'Suporta corrente contínua (CC) e alternada (CA) com tensões típicas e valores personalizados.',
@@ -189,6 +191,8 @@ const traducoes = {
 
         'feature-config-title': 'Configurabile',
         'feature-config-desc': 'Personalizza prezzi e specifiche; impostazioni salvate in localStorage (configSolar).',
+        'feature-memorial-title': 'Memoriale di Calcolo',
+        'feature-memorial-desc': 'Memoriale didattico completo che spiega passo dopo passo tutti i calcoli eseguiti, con formule, esempi pratici e riepilogo dei valori calcolati.',
 
         'feature-cc-ca-title': 'CC e CA',
         'feature-cc-ca-desc': 'Supporta corrente continua (CC) e alternata (CA) con tensioni tipiche e valori personalizzati.',

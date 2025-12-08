@@ -268,9 +268,233 @@ footer p {
     text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
 }
 
+/* ============================================
+   MEMORIAL DE CÁLCULO
+   ============================================ */
+.memorial-section {
+    background: #f9f9f9;
+}
+
+.memorial-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.memorial-header h2 {
+    color: #2d9fa3ff;
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.btn-fechar-memorial {
+    background: #2d9fa3ff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-fechar-memorial:hover {
+    background: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(45, 159, 163, 0.3);
+}
+
+.btn-voltar-memorial {
+    background: #2d9fa3ff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin: 12px 0;
+    display: block;
+    width: fit-content;
+}
+
+.btn-voltar-memorial:hover {
+    background: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(45, 159, 163, 0.3);
+}
+
+.memorial-item {
+    background: white;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    border-left: 5px solid #2d9fa3ff;
+}
+
+.memorial-item h3 {
+    color: #2d9fa3ff;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.memorial-item p {
+    margin-bottom: 10px;
+    line-height: 1.8;
+    color: #333;
+}
+
+.formula-box {
+    background: #f0f4ff;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 12px 0;
+    border: 2px solid #2d9fa3ff;
+}
+
+.formula-box p {
+    margin: 5px 0;
+    font-family: 'Courier New', monospace;
+    color: #1a237e;
+}
+
+.info-box {
+    background: #e8f5e9;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 12px;
+    border-left: 4px solid #4caf50;
+}
+
+.info-box p {
+    margin: 5px 0;
+    color: #2e7d32;
+}
+
+.info-box ul {
+    margin: 8px 0;
+    padding-left: 20px;
+    color: #2e7d32;
+}
+
+.info-box li {
+    margin: 5px 0;
+}
+
+.resumo-calculado {
+    background: #f0f4ff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 12px;
+}
+
+.resumo-item-calc {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.resumo-item-calc:last-child {
+    border-bottom: none;
+}
+
+.resumo-item-calc span:first-child {
+    font-weight: 600;
+    color: #555;
+}
+
+.resumo-item-calc span:last-child {
+    font-weight: bold;
+    color: #2d9fa3ff;
+    font-size: 1.1rem;
+}
+
+.btn-help {
+    background: transparent;
+    border: none;
+    color: #2d9fa3ff;
+    cursor: pointer;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.btn-help:hover {
+    background: #2d9fa3ff;
+    color: white;
+    transform: scale(1.05);
+}
+
+.texto-saiba-mais {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transform: rotate(-3deg);
+    text-shadow: 2px 2px 4px rgba(45, 159, 163, 0.3);
+    white-space: nowrap;
+}
+
 /* Responsividade */
 @media (max-width: 480px) {
     .grade-resultados {
         grid-template-columns: 1fr;
     }
+    
+    .memorial-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .memorial-item {
+        padding: 12px;
+    }
+    
+    .formula-box {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
 }
+
+/* ============================================
+   BADGE "EM DESENVOLVIMENTO" NO CABEÇALHO
+   ============================================ */
+.dev-badge-header {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.dev-badge-text {
+    display: inline-block;
+    background: #ff6b35;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid white;
+}
+
+@media (max-width: 480px) {
+    .dev-badge-text {
+        font-size: 0.65rem;
+        padding: 5px 10px;
+    }
+}
+

@@ -91,6 +91,7 @@ Este glossário ajuda visitantes não técnicos e estudantes a entender os termo
 - **i18n (Internacionalização)** — Sistema para traduzir aplicações para múltiplos idiomas. No projeto, implementado com atributos `data-i18n` e dicionários JavaScript.
 - **DOM (Document Object Model)** — Representação da estrutura HTML em JavaScript, permitindo manipular elementos da página.
 - **Event Listener** — Função que "escuta" eventos do usuário (cliques, mudanças de slider, etc.) e executa código em resposta.
+- **Memorial de Cálculo** — Seção educativa que explica passo a passo como são realizados os cálculos de um app. Inclui fórmulas, exemplos práticos com valores reais e resumo dos resultados. Implementado nos apps Mutuo (Saiba Mais) e Solar (Memorial de Cálculo).
 
 ## 📝 Funções JavaScript Comuns
 

@@ -72,6 +72,7 @@ let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConf
 
 const HSP = 5.0; // Horas de Sol Pleno
 const EFICIENCIA_SISTEMA = 0.80; // Eficiência global (perdas de 20%)
+const FATOR_PICO_CONSUMO = 5.0; // Fator de pico para consumo residencial (5x o consumo médio horário)
 
 // Taxa de conversão BRL → EUR (aproximada, can be centralized in SiteConfig)
 const TAXA_BRL_EUR = (typeof SiteConfig !== 'undefined' && SiteConfig.DEFAULTS && SiteConfig.DEFAULTS.TAXA_BRL_EUR) ? SiteConfig.DEFAULTS.TAXA_BRL_EUR : 6.19;
@@ -141,6 +142,61 @@ const PRECOS_INVERSOR_EUR = [
     { kw: 2, preco: 250 },
     { kw: 5, preco: 404 }
 ];
+
+// ============================================
+// PREÇOS DE MPPT (Controlador de Carga)
+// ============================================
+// Preços baseados na corrente máxima (A) que o MPPT pode suportar
+
+const PRECOS_MPPT_BRL = [
+    { a: 20, preco: 800 },
+    { a: 40, preco: 1200 },
+    { a: 60, preco: 1800 },
+    { a: 100, preco: 2800 }
+];
+const PRECOS_MPPT_EUR = [
+    { a: 20, preco: 129 },
+    { a: 40, preco: 194 },
+    { a: 60, preco: 291 },
+    { a: 100, preco: 452 }
+];
+
+/**
+ * Calcula o preço estimado de um MPPT (controlador de carga) baseado na corrente máxima
+ * 
+ * O MPPT precisa suportar a corrente máxima dos painéis. A corrente é calculada como:
+ * Corrente (A) = Potência Total dos Painéis (W) / Tensão do Banco de Baterias (V)
+ * 
+ * @param {number} correnteA - Corrente máxima em ampères (A)
+ * @param {string} moeda - Moeda desejada ('BRL' para Real ou 'EUR' para Euro)
+ * @returns {number} Preço estimado do MPPT na moeda especificada
+ */
+function calcularPrecoMPPT(correnteA, moeda) {
+    const tabela = moeda === 'BRL' ? PRECOS_MPPT_BRL : PRECOS_MPPT_EUR;
+    
+    if (correnteA <= tabela[0].a) {
+        return tabela[0].preco;
+    }
+    
+    if (correnteA >= tabela[tabela.length - 1].a) {
+        const ultimo = tabela[tabela.length - 1];
+        const penultimo = tabela[tabela.length - 2];
+        const precoPorA = (ultimo.preco - penultimo.preco) / (ultimo.a - penultimo.a);
+        return ultimo.preco + (correnteA - ultimo.a) * precoPorA;
+    }
+    
+    for (let i = 0; i < tabela.length - 1; i++) {
+        const p1 = tabela[i];
+        const p2 = tabela[i + 1];
+        
+        if (correnteA >= p1.a && correnteA <= p2.a) {
+            const razao = (correnteA - p1.a) / (p2.a - p1.a);
+            return p1.preco + razao * (p2.preco - p1.preco);
+        }
+    }
+    
+    return tabela[tabela.length - 1].preco;
+}
 
 /**
  * Calcula o preço estimado de um inversor baseado na potência desejada
@@ -234,6 +290,7 @@ const traducoes = {
         'res-placas': 'Placas Solares',
         'res-baterias': 'Baterias',
         'res-inversor': 'Inversor',
+        'res-mppt': 'MPPT',
         'res-onda-pura': 'Onda Senoidal Pura',
         'res-peso': 'Peso das Baterias',
         'res-estimativa': 'Estimativa de Custo',
@@ -244,8 +301,48 @@ const traducoes = {
         'dia': 'dia',
         'anos': 'anos',
         'ano': 'ano',
-        'moeda': 'R$'
-        , 'aria-home': 'Voltar para a tela inicial'
+        'moeda': 'R$',
+        'aria-home': 'Voltar para a tela inicial',
+        'dev-badge-header': '🚧 EM DESENVOLVIMENTO',
+        'watermark-dev': '🚧 EM DESENVOLVIMENTO',
+        'learn-more': 'SAIBA MAIS!',
+        'back': '← Voltar',
+        'back-to-calculator': 'Voltar para a Calculadora',
+        'btn-memorial': 'Ver Memorial de Cálculo',
+        'memorial-title': '📚 Memorial de Cálculo - Dimensionamento Solar',
+        'memorial-intro-title': '🎯 Objetivo do Dimensionamento',
+        'memorial-intro-text': 'Este memorial explica passo a passo como são calculados os componentes de um sistema fotovoltaico off-grid: número de painéis solares, capacidade de baterias, potência do inversor, corrente do MPPT e estimativa de custos.',
+        'memorial-passo1-title': '1️⃣ Passo 1: Calcular Energia Diária Necessária',
+        'memorial-passo2-title': '2️⃣ Passo 2: Determinar DoD (Profundidade de Descarga) pela Vida Útil',
+        'memorial-passo3-title': '3️⃣ Passo 3: Calcular Capacidade Necessária de Baterias',
+        'memorial-passo4-title': '4️⃣ Passo 4: Calcular Número de Baterias',
+        'memorial-passo5-title': '5️⃣ Passo 5: Calcular Número de Painéis Solares',
+        'memorial-passo6-title': '6️⃣ Passo 6: Dimensionar o Inversor',
+        'memorial-passo7-title': '7️⃣ Passo 7: Dimensionar o MPPT (Controlador de Carga)',
+        'memorial-passo8-title': '8️⃣ Passo 8: Calcular Custo Total Estimado',
+        'memorial-resumo-title': '📊 Resumo dos Cálculos Atuais',
+        'memorial-formula': 'Fórmula:',
+        'memorial-example': 'Exemplo:',
+        'memorial-tip': '💡 Dica:',
+        'memorial-constants': 'Constantes usadas:',
+        'memorial-hsp': 'HSP (Horas de Sol Pleno) = 5 horas/dia (padrão para Brasil)',
+        'memorial-eficiencia': 'Eficiência do Sistema = 80% (considera perdas de 20% em cabos, MPPT e inversor)',
+        'memorial-passo1-explicacao': 'Esta é a quantidade de energia que o sistema precisa fornecer todos os dias para atender ao consumo médio.',
+        'memorial-passo2-explicacao': 'O DoD (Depth of Discharge) determina quanto da capacidade da bateria pode ser usada diariamente. Quanto maior a vida útil desejada, menor deve ser o DoD para preservar a bateria.',
+        'memorial-dod-tip': 'Baterias LiFePO4 permitem DoD maiores (50-80%) que baterias AGM (30-50%) para a mesma vida útil.',
+        'memorial-passo3-explicacao': 'Calculamos a capacidade necessária por dois critérios e escolhemos o maior: um para garantir a vida útil desejada e outro para garantir os dias de autonomia sem sol.',
+        'memorial-passo4-explicacao': 'Arredondamos para cima para garantir que temos capacidade suficiente. Para tensões 24V e 48V, garantimos número par de baterias para facilitar a montagem em série/paralelo.',
+        'memorial-passo5-explicacao': 'Os painéis precisam gerar energia suficiente para recarregar as baterias, considerando perdas do sistema (cabo, MPPT, inversor). Usamos HSP (Horas de Sol Pleno) para estimar a geração diária.',
+        'memorial-passo6-explicacao': 'O inversor converte DC das baterias para AC da casa. Deve ter capacidade para o consumo de pico típico de uma residência, não precisa ter a capacidade total dos painéis. O fator de pico de 5x considera que o consumo não é constante ao longo do dia.',
+        'memorial-passo7-explicacao': 'O MPPT (Maximum Power Point Tracking) controla o carregamento das baterias pelos painéis. Precisa suportar a corrente máxima de todos os painéis operando no pico. Valores comerciais comuns: 20A, 40A, 60A, 100A.',
+        'memorial-passo8-explicacao': 'Os preços podem ser personalizados na página de configurações. Os valores são convertidos automaticamente para a moeda do idioma selecionado (R$ para português, € para italiano).',
+        'memorial-resumo-energia-diaria': 'Energia Diária:',
+        'memorial-resumo-dod': 'DoD Alvo:',
+        'memorial-resumo-capacidade': 'Capacidade Necessária:',
+        'memorial-resumo-baterias': 'Baterias Instaladas:',
+        'memorial-resumo-paineis': 'Painéis Solares:',
+        'memorial-resumo-inversor': 'Inversor:',
+        'memorial-resumo-mppt': 'MPPT:'
     },
     'it-IT': {
         'app-title': '☀️ Solare',
@@ -260,6 +357,7 @@ const traducoes = {
         'res-placas': 'Pannelli Solari',
         'res-baterias': 'Batterie',
         'res-inversor': 'Inverter',
+        'res-mppt': 'MPPT',
         'res-onda-pura': 'Onda Sinusoidale Pura',
         'res-peso': 'Peso Batterie',
         'res-estimativa': 'Costo Stimato',
@@ -270,8 +368,48 @@ const traducoes = {
         'dia': 'giorno',
         'anos': 'anni',
         'ano': 'anno',
-        'moeda': '€'
-        , 'aria-home': 'Torna alla schermata iniziale'
+        'moeda': '€',
+        'aria-home': 'Torna alla schermata iniziale',
+        'dev-badge-header': '🚧 IN SVILUPPO',
+        'watermark-dev': '🚧 IN SVILUPPO',
+        'learn-more': 'SAVERE DI PIÙ!',
+        'back': '← Indietro',
+        'back-to-calculator': 'Torna alla Calcolatrice',
+        'btn-memorial': 'Vedi Memoriale di Calcolo',
+        'memorial-title': '📚 Memoriale di Calcolo - Dimensionamento Solare',
+        'memorial-intro-title': '🎯 Obiettivo del Dimensionamento',
+        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come vengono calcolati i componenti di un sistema fotovoltaico off-grid: numero di pannelli solari, capacità delle batterie, potenza dell\'inverter, corrente del MPPT e stima dei costi.',
+        'memorial-passo1-title': '1️⃣ Passo 1: Calcolare Energia Giornaliera Necessaria',
+        'memorial-passo2-title': '2️⃣ Passo 2: Determinare DoD (Profondità di Scarica) dalla Vita Utile',
+        'memorial-passo3-title': '3️⃣ Passo 3: Calcolare Capacità Necessaria delle Batterie',
+        'memorial-passo4-title': '4️⃣ Passo 4: Calcolare Numero di Batterie',
+        'memorial-passo5-title': '5️⃣ Passo 5: Calcolare Numero di Pannelli Solari',
+        'memorial-passo6-title': '6️⃣ Passo 6: Dimensionare l\'Inverter',
+        'memorial-passo7-title': '7️⃣ Passo 7: Dimensionare il MPPT (Controller di Carica)',
+        'memorial-passo8-title': '8️⃣ Passo 8: Calcolare Costo Totale Stimato',
+        'memorial-resumo-title': '📊 Riepilogo dei Calcoli Attuali',
+        'memorial-formula': 'Formula:',
+        'memorial-example': 'Esempio:',
+        'memorial-tip': '💡 Suggerimento:',
+        'memorial-constants': 'Costanti utilizzate:',
+        'memorial-hsp': 'HSP (Ore di Sole Pieno) = 5 ore/giorno (standard per il Brasile)',
+        'memorial-eficiencia': 'Efficienza del Sistema = 80% (considera perdite del 20% in cavi, MPPT e inverter)',
+        'memorial-passo1-explicacao': 'Questa è la quantità di energia che il sistema deve fornire ogni giorno per soddisfare il consumo medio.',
+        'memorial-passo2-explicacao': 'Il DoD (Depth of Discharge) determina quanto della capacità della batteria può essere utilizzato quotidianamente. Maggiore è la vita utile desiderata, minore deve essere il DoD per preservare la batteria.',
+        'memorial-dod-tip': 'Le batterie LiFePO4 consentono DoD maggiori (50-80%) rispetto alle batterie AGM (30-50%) per la stessa vita utile.',
+        'memorial-passo3-explicacao': 'Calcoliamo la capacità necessaria con due criteri e scegliamo il maggiore: uno per garantire la vita utile desiderata e l\'altro per garantire i giorni di autonomia senza sole.',
+        'memorial-passo4-explicacao': 'Arrotondiamo per eccesso per garantire di avere capacità sufficiente. Per tensioni 24V e 48V, garantiamo un numero pari di batterie per facilitare il montaggio in serie/parallelo.',
+        'memorial-passo5-explicacao': 'I pannelli devono generare energia sufficiente per ricaricare le batterie, considerando le perdite del sistema (cavo, MPPT, inverter). Usiamo HSP (Ore di Sole Pieno) per stimare la generazione giornaliera.',
+        'memorial-passo6-explicacao': 'L\'inverter converte DC delle batterie in AC della casa. Deve avere capacità per il consumo di picco tipico di una residenza, non deve avere la capacità totale dei pannelli. Il fattore di picco di 5x considera che il consumo non è costante durante il giorno.',
+        'memorial-passo7-explicacao': 'Il MPPT (Maximum Power Point Tracking) controlla la ricarica delle batterie da parte dei pannelli. Deve supportare la corrente massima di tutti i pannelli operanti al picco. Valori commerciali comuni: 20A, 40A, 60A, 100A.',
+        'memorial-passo8-explicacao': 'I prezzi possono essere personalizzati nella pagina delle impostazioni. I valori vengono convertiti automaticamente nella valuta della lingua selezionata (R$ per portoghese, € per italiano).',
+        'memorial-resumo-energia-diaria': 'Energia Giornaliera:',
+        'memorial-resumo-dod': 'DoD Obiettivo:',
+        'memorial-resumo-capacidade': 'Capacità Necessaria:',
+        'memorial-resumo-baterias': 'Batterie Installate:',
+        'memorial-resumo-paineis': 'Pannelli Solari:',
+        'memorial-resumo-inversor': 'Inverter:',
+        'memorial-resumo-mppt': 'MPPT:'
     }
 };
 
@@ -600,11 +738,13 @@ function calcularSistema(dodAlvo) {
     // Se o consumo for inválido (zero ou negativo), zera todos os resultados e sai da função
     if (consumoMensal <= 0) {
         // Zera todos os campos de resultado na interface
-        ['resQtdPlacas', 'resQtdBaterias', 'resPotenciaInversor', 'resPesoBaterias'].forEach(id => {
-            document.getElementById(id).textContent = '0';
+        ['resQtdPlacas', 'resQtdBaterias', 'resPotenciaInversor', 'resCorrenteMPPT', 'resPesoBaterias'].forEach(id => {
+            const elemento = document.getElementById(id);
+            if (elemento) elemento.textContent = '0';
         });
         // Zera o preço estimado
-        document.getElementById('resPrecoEstimado').textContent = `${traducoes[idiomaAtual]['moeda']} 0`;
+        const precoElemento = document.getElementById('resPrecoEstimado');
+        if (precoElemento) precoElemento.textContent = `${traducoes[idiomaAtual]['moeda']} 0`;
         return; // Interrompe a execução da função
     }
 
@@ -685,7 +825,7 @@ function calcularSistema(dodAlvo) {
     const energiaUtilizavelBanco = capacidadeRealKWh * dodAlvo;
     
     // Calcula a energia que os painéis devem gerar por dia
-    // Considera as perdas do sistema (cabo, controlador, inversor, etc.)
+    // Considera as perdas do sistema (cabo, MPPT, inversor, etc.)
     // Fórmula: energiaGerar = energiaUtilizavel / eficienciaSistema
     // Exemplo: se energiaUtilizavel = 33.6 kWh e eficiencia = 80% (0.8):
     // energiaTotalGerar = 33.6 / 0.8 = 42 kWh/dia
@@ -707,15 +847,52 @@ function calcularSistema(dodAlvo) {
     // ============================================
     // PASSO 9: DIMENSIONAMENTO DO INVERSOR
     // ============================================
-    // O inversor deve aguentar a potência dos painéis + margem para picos
-    // Mínimo de 1 kW (requisito prático para sistemas off-grid)
-    // Fórmula: potenciaInversor = max(1kW, ceil(potenciaSolar / 1000))
-    // Exemplo: se potenciaSolar = 8400 W:
-    // potenciaInversor = max(1, ceil(8.4)) = max(1, 9) = 9 kW
-    const potenciaInversor = Math.max(1, Math.ceil(potenciaSolarNecessaria / 1000)); // Mínimo 1kW
+    // O inversor converte DC das baterias para AC da casa
+    // Deve ter capacidade para o consumo de pico típico de uma residência
+    // Consumo de pico = consumo médio horário × fator de pico
+    // Fórmula: consumoMedioHorario = energiaDiaria / 24 horas
+    //          consumoPico = consumoMedioHorario × FATOR_PICO_CONSUMO
+    //          potenciaInversor = max(1kW, consumoPico)
+    // Exemplo: se energiaDiaria = 5 kWh/dia e FATOR_PICO = 5:
+    //          consumoMedioHorario = 5 / 24 = 0.208 kW
+    //          consumoPico = 0.208 × 5 = 1.04 kW
+    //          potenciaInversor = max(1, 1.04) = 1.04 kW → arredonda para 2 kW
+    const consumoMedioHorario = energiaDiaria / 24; // kW (consumo médio por hora)
+    const consumoPico = consumoMedioHorario * FATOR_PICO_CONSUMO; // kW (pico de consumo)
+    const potenciaInversor = Math.max(1, Math.ceil(consumoPico)); // Mínimo 1kW, arredonda para cima
     
     // ============================================
-    // PASSO 10: CALCULAR PESO E CUSTOS
+    // PASSO 10: DIMENSIONAMENTO DO MPPT
+    // ============================================
+    // O MPPT (controlador de carga) precisa suportar a corrente máxima dos painéis
+    // Corrente = Potência Total dos Painéis / Tensão do Banco de Baterias
+    // Fórmula: potenciaTotalPaineis = qtdPaineis × POTENCIA_PAINEL (W)
+    //          correnteMaxima = potenciaTotalPaineis / tensaoBanco (V)
+    //          correnteMPPT = ceil(correnteMaxima) (arredonda para cima)
+    // Exemplo: se temos 11 painéis de 400W e banco de 48V:
+    //          potenciaTotal = 11 × 400 = 4400 W
+    //          correnteMaxima = 4400 / 48 = 91.67 A
+    //          correnteMPPT = ceil(91.67) = 92 A → escolhe MPPT de 100A
+    const potenciaTotalPaineis = qtdPaineis * POTENCIA_PAINEL; // Watts
+    const tensaoBanco = batSpec.v; // Volts (tensão do banco de baterias)
+    const correnteMaxima = potenciaTotalPaineis / tensaoBanco; // Ampères
+    // Arredonda para cima e garante mínimo de 20A
+    let correnteMPPT = Math.max(20, Math.ceil(correnteMaxima));
+    // Arredonda para valores comerciais comuns (20, 40, 60, 100, 150, 200...)
+    if (correnteMPPT > 100) {
+        correnteMPPT = Math.ceil(correnteMPPT / 50) * 50; // Arredonda para múltiplos de 50 acima de 100A
+    } else if (correnteMPPT > 60) {
+        correnteMPPT = 100; // Próximo valor comercial
+    } else if (correnteMPPT > 40) {
+        correnteMPPT = 60; // Próximo valor comercial
+    } else if (correnteMPPT > 20) {
+        correnteMPPT = 40; // Próximo valor comercial
+    } else {
+        correnteMPPT = 20; // Mínimo
+    }
+    
+    // ============================================
+    // PASSO 11: CALCULAR PESO E CUSTOS
     // ============================================
     // Calcula o peso total das baterias
     // Exemplo: se temos 14 baterias de 60 kg cada:
@@ -742,10 +919,12 @@ function calcularSistema(dodAlvo) {
     const custoBaterias = qtdBaterias * precoBateriaConvertido;
     // O preço do inversor é calculado por interpolação baseado na potência
     const custoInversor = calcularPrecoInversor(potenciaInversor, moedaCalculo);
+    // O preço do MPPT é calculado por interpolação baseado na corrente máxima
+    const custoMPPT = calcularPrecoMPPT(correnteMPPT, moedaCalculo);
     
     // Calcula o custo total do sistema
-    // Exemplo: custoTotal = 25200 + 168000 + 2500 = 195700 BRL
-    const custoTotal = custoPaineis + custoBaterias + custoInversor;
+    // Exemplo: custoTotal = 25200 + 168000 + 2500 + 1200 = 196900 BRL
+    const custoTotal = custoPaineis + custoBaterias + custoInversor + custoMPPT;
 
     // 6. Exibir Resultados
     document.getElementById('resQtdPlacas').textContent = `${qtdPaineis} x ${POTENCIA_PAINEL}W`;
@@ -753,6 +932,7 @@ function calcularSistema(dodAlvo) {
     const unidadeKWh = (typeof batSpec.kwh === 'number' ? batSpec.kwh.toFixed(1) : (batSpec.ah ? ((batSpec.v * batSpec.ah)/1000).toFixed(1) : '0.0'));
     document.getElementById('resQtdBaterias').textContent = `${qtdBaterias} x ${unidadeKWh} kWh (${batSpec.v}V)`;
     document.getElementById('resPotenciaInversor').textContent = `${potenciaInversor} kW`;
+    document.getElementById('resCorrenteMPPT').textContent = `${correnteMPPT} A`;
     document.getElementById('resPesoBaterias').textContent = `${pesoTotal} kg`;
     
     const moeda = traducoes[idiomaAtual]['moeda'];
@@ -763,6 +943,7 @@ function calcularSistema(dodAlvo) {
     document.getElementById('custoPaineis').textContent = formatarPreco(custoPaineis);
     document.getElementById('custoBaterias').textContent = formatarPreco(custoBaterias);
     document.getElementById('custoInversor').textContent = formatarPreco(custoInversor);
+    document.getElementById('custoMPPT').textContent = formatarPreco(custoMPPT);
     
     // Motivo do dimensionamento das BATERIAS — explicita parâmetros que geraram o gargalo
     // Ex: autonomia X dias × consumoDiario Y kWh → utilizável necessário Z kWh → DoD alvo W% → capacidade nominal necessária T kWh → módulos M × S kWh
@@ -799,24 +980,28 @@ function calcularSistema(dodAlvo) {
     }
     document.getElementById('resMotivoPaineis').textContent = motivoPaineis;
     
-    // Motivo do dimensionamento do INVERSOR — mostra se é limite mínimo ou potência dos painéis
-    const potenciaPaineisKw = (qtdPaineis * POTENCIA_PAINEL) / 1000;
-    const potenciaMinimaKw = 1;
+    // Motivo do dimensionamento do INVERSOR — baseado no consumo de pico
     let motivoInversor = '';
-    if (potenciaInversor === potenciaMinimaKw && potenciaPaineisKw < potenciaMinimaKw) {
-        if (idiomaAtual === 'pt-BR') {
-            motivoInversor = `(gargalo: mínimo 1kW) potência dos painéis ${potenciaPaineisKw.toFixed(2)} kW < mínimo exigido ${potenciaMinimaKw} kW`;
-        } else {
-            motivoInversor = `(limite: minimo 1kW) potenza pannelli ${potenciaPaineisKw.toFixed(2)} kW < minimo richiesto ${potenciaMinimaKw} kW`;
-        }
+    if (idiomaAtual === 'pt-BR') {
+        motivoInversor = `(consumo de pico) consumo médio ${consumoMedioHorario.toFixed(2)} kW/h × fator pico ${FATOR_PICO_CONSUMO} = ${consumoPico.toFixed(2)} kW → inversor ${potenciaInversor} kW`;
     } else {
-        if (idiomaAtual === 'pt-BR') {
-            motivoInversor = `(gargalo: potência painéis) painéis fornecem ${potenciaPaineisKw.toFixed(2)} kW → inversor dimensionado ${potenciaInversor} kW`;
-        } else {
-            motivoInversor = `(limite: potenza pannelli) pannelli forniscono ${potenciaPaineisKw.toFixed(2)} kW → inverter dimensionado ${potenciaInversor} kW`;
-        }
+        motivoInversor = `(consumo di picco) consumo medio ${consumoMedioHorario.toFixed(2)} kW/h × fattore picco ${FATOR_PICO_CONSUMO} = ${consumoPico.toFixed(2)} kW → inverter ${potenciaInversor} kW`;
     }
     document.getElementById('resMotivoInversor').textContent = motivoInversor;
+    
+    // Motivo do dimensionamento do MPPT — baseado na corrente máxima dos painéis
+    let motivoMPPT = '';
+    if (idiomaAtual === 'pt-BR') {
+        motivoMPPT = `(corrente máxima) ${qtdPaineis} painéis × ${POTENCIA_PAINEL}W = ${potenciaTotalPaineis}W ÷ ${tensaoBanco}V = ${correnteMaxima.toFixed(1)}A → MPPT ${correnteMPPT}A`;
+    } else {
+        motivoMPPT = `(corrente massima) ${qtdPaineis} pannelli × ${POTENCIA_PAINEL}W = ${potenciaTotalPaineis}W ÷ ${tensaoBanco}V = ${correnteMaxima.toFixed(1)}A → MPPT ${correnteMPPT}A`;
+    }
+    document.getElementById('resMotivoMPPT').textContent = motivoMPPT;
+    
+    // Atualiza o memorial se estiver visível
+    if (typeof atualizarMemorialComValores === 'function') {
+        atualizarMemorialComValores();
+    }
 }
 
 // ============================================
@@ -895,7 +1080,34 @@ document.addEventListener('DOMContentLoaded', () => {
         atualizarInterface();
     });
     
-    // 3B. Configurar inputs editáveis (permitem valores fora dos limites do slider)
+    // 3B. Configurar botão do memorial
+    const btnMemorial = document.getElementById('btnMemorial');
+    const memorialSection = document.getElementById('memorialSection');
+    const resultadosSection = document.querySelector('.cartao:last-of-type');
+    
+    if (btnMemorial && memorialSection) {
+        btnMemorial.addEventListener('click', () => {
+            toggleMemorial();
+        });
+    }
+    
+    // Configurar botões de fechar o memorial
+    const btnFecharMemorial = document.getElementById('btnFecharMemorial');
+    const botoesVoltarMemorial = document.querySelectorAll('.btn-voltar-memorial');
+    
+    if (btnFecharMemorial) {
+        btnFecharMemorial.addEventListener('click', () => {
+            toggleMemorial();
+        });
+    }
+    
+    botoesVoltarMemorial.forEach(btn => {
+        btn.addEventListener('click', () => {
+            toggleMemorial();
+        });
+    });
+    
+    // 3C. Configurar inputs editáveis (permitem valores fora dos limites do slider)
     const inputConsumo = document.getElementById('inputConsumo');
     const inputAutonomia = document.getElementById('inputAutonomia');
     const inputVidaUtil = document.getElementById('inputVidaUtil');
@@ -952,4 +1164,184 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 5. Inicializar
     trocarIdioma(idiomaAtual);
+    
+    // 6. Calcular valores iniciais
+    atualizarInterface();
 });
+
+// ============================================
+// FUNÇÕES DO MEMORIAL DE CÁLCULO
+// ============================================
+
+/**
+ * Alterna a exibição do memorial de cálculo
+ * Esconde a seção de resultados e mostra o memorial, ou vice-versa
+ */
+function toggleMemorial() {
+    const memorialSection = document.getElementById('memorialSection');
+    const resultadosSection = document.querySelector('.cartao:last-of-type');
+    
+    if (!memorialSection) {
+        console.error('memorialSection não encontrado');
+        return;
+    }
+    
+    if (memorialSection.style.display === 'none' || memorialSection.style.display === '') {
+        // Atualizar memorial com valores atuais
+        atualizarMemorialComValores();
+        memorialSection.style.display = 'block';
+        if (resultadosSection) resultadosSection.style.display = 'none';
+        // Rolar para o topo da página
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        memorialSection.style.display = 'none';
+        if (resultadosSection) resultadosSection.style.display = 'block';
+    }
+}
+
+/**
+ * Atualiza o memorial de cálculo com os valores atuais dos cálculos
+ * Preenche os exemplos e o resumo com os valores reais calculados
+ */
+function atualizarMemorialComValores() {
+    // Obter valores atuais
+    const inputConsumo = document.getElementById('inputConsumo');
+    const inputAutonomia = document.getElementById('inputAutonomia');
+    const inputVidaUtil = document.getElementById('inputVidaUtil');
+    const sliderConsumo = document.getElementById('sliderConsumo');
+    const sliderAutonomia = document.getElementById('sliderAutonomia');
+    const sliderVidaUtil = document.getElementById('sliderVidaUtil');
+    const tipoBateria = document.querySelector('input[name="tipoBateria"]:checked')?.value || 'litio';
+    
+    const consumoMensal = inputConsumo ? parseFloat(inputConsumo.value) || parseFloat(sliderConsumo.value) || 0 : parseFloat(sliderConsumo.value) || 0;
+    const autonomia = inputAutonomia ? parseInt(inputAutonomia.value) || parseInt(sliderAutonomia.value) : parseInt(sliderAutonomia.value);
+    const vidaUtil = inputVidaUtil ? parseFloat(inputVidaUtil.value) || parseFloat(sliderVidaUtil.value) : parseFloat(sliderVidaUtil.value);
+    
+    if (consumoMensal <= 0) return;
+    
+    // Calcular valores
+    const energiaDiaria = consumoMensal / 30;
+    const ciclos = vidaUtil * 365;
+    const dodAlvo = obterDoDPorCiclos(ciclos, tipoBateria);
+    const dodDecimal = dodAlvo / 100;
+    
+    const config = obterConfig();
+    const batSpec = (tipoBateria === 'litio')
+        ? { v: config.tensaoLitio, kwh: config.capacidadeLitio, price_brl: config.precoLitio, weight: config.pesoLitio }
+        : { v: config.tensaoAGM, kwh: config.capacidadeAGM, price_brl: config.precoAGM, weight: config.pesoAGM };
+    
+    const energiaPorBateria = batSpec.kwh || 0;
+    const capVidaUtil = energiaDiaria / dodDecimal;
+    const capAutonomia = (energiaDiaria * autonomia) / dodDecimal;
+    const capacidadeNecessariaKWh = Math.max(capVidaUtil, capAutonomia);
+    
+    let qtdBaterias = Math.ceil(capacidadeNecessariaKWh / energiaPorBateria);
+    if (qtdBaterias % 2 !== 0 && qtdBaterias > 1) qtdBaterias++;
+    
+    const capacidadeRealKWh = qtdBaterias * energiaPorBateria;
+    const energiaUtilizavelBanco = capacidadeRealKWh * dodDecimal;
+    const energiaGerar = energiaUtilizavelBanco / EFICIENCIA_SISTEMA;
+    const potenciaNecessariaW = (energiaGerar * 1000) / HSP;
+    const qtdPaineis = Math.ceil(potenciaNecessariaW / config.potenciaPainel);
+    
+    // Calcular inversor baseado no consumo de pico
+    const consumoMedioHorario = energiaDiaria / 24;
+    const consumoPico = consumoMedioHorario * FATOR_PICO_CONSUMO;
+    const potenciaInversor = Math.max(1, Math.ceil(consumoPico));
+    
+    // Calcular MPPT baseado na corrente máxima dos painéis
+    const potenciaTotalPaineis = qtdPaineis * config.potenciaPainel;
+    const tensaoBanco = batSpec.v;
+    const correnteMaxima = potenciaTotalPaineis / tensaoBanco;
+    let correnteMPPT = Math.max(20, Math.ceil(correnteMaxima));
+    // Arredonda para valores comerciais
+    if (correnteMPPT > 100) {
+        correnteMPPT = Math.ceil(correnteMPPT / 50) * 50;
+    } else if (correnteMPPT > 60) {
+        correnteMPPT = 100;
+    } else if (correnteMPPT > 40) {
+        correnteMPPT = 60;
+    } else if (correnteMPPT > 20) {
+        correnteMPPT = 40;
+    } else {
+        correnteMPPT = 20;
+    }
+    
+    // Formatação
+    const moeda = traducoes[idiomaAtual]['moeda'];
+    const formatarNumero = (num) => num.toLocaleString(idiomaAtual, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+    const formatarMoeda = (num) => num.toLocaleString(idiomaAtual, { style: 'currency', currency: moeda === 'R$' ? 'BRL' : 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    
+    // Atualizar exemplos
+    const exemploEnergiaDiaria = document.getElementById('memorial-exemplo-energia-diaria');
+    if (exemploEnergiaDiaria) {
+        exemploEnergiaDiaria.textContent = `Consumo de ${consumoMensal} kWh/mês → ${consumoMensal} ÷ 30 = ${formatarNumero(energiaDiaria)} kWh/dia`;
+    }
+    
+    const exemploDod = document.getElementById('memorial-exemplo-dod');
+    if (exemploDod) {
+        exemploDod.textContent = `Vida útil de ${vidaUtil} anos → ${vidaUtil} × 365 = ${ciclos} ciclos → DoD ≈ ${Math.round(dodAlvo)}% (${tipoBateria === 'litio' ? 'LiFePO4' : 'AGM'})`;
+    }
+    
+    const exemploCapacidade = document.getElementById('memorial-exemplo-capacidade');
+    if (exemploCapacidade) {
+        exemploCapacidade.textContent = `${formatarNumero(energiaDiaria)} kWh/dia, DoD ${Math.round(dodAlvo)}%, ${autonomia} dias autonomia → Máximo(${formatarNumero(energiaDiaria)}÷${(dodDecimal).toFixed(2)}=${formatarNumero(capVidaUtil)} kWh, ${formatarNumero(energiaDiaria)}×${autonomia}÷${(dodDecimal).toFixed(2)}=${formatarNumero(capAutonomia)} kWh) = ${formatarNumero(capacidadeNecessariaKWh)} kWh`;
+    }
+    
+    const exemploBaterias = document.getElementById('memorial-exemplo-baterias');
+    if (exemploBaterias) {
+        exemploBaterias.textContent = `${formatarNumero(capacidadeNecessariaKWh)} kWh necessários, baterias de ${formatarNumero(energiaPorBateria)} kWh → ${formatarNumero(capacidadeNecessariaKWh)}÷${formatarNumero(energiaPorBateria)} = ${formatarNumero(capacidadeNecessariaKWh / energiaPorBateria)} → ${qtdBaterias} baterias → ${qtdBaterias}×${formatarNumero(energiaPorBateria)} = ${formatarNumero(capacidadeRealKWh)} kWh instalados → ${formatarNumero(capacidadeRealKWh)}×${(dodDecimal).toFixed(2)} = ${formatarNumero(energiaUtilizavelBanco)} kWh utilizáveis`;
+    }
+    
+    const exemploPaineis = document.getElementById('memorial-exemplo-paineis');
+    if (exemploPaineis) {
+        exemploPaineis.textContent = `${formatarNumero(energiaUtilizavelBanco)} kWh utilizáveis, eficiência 80%, HSP ${HSP}h → ${formatarNumero(energiaUtilizavelBanco)}÷0.8 = ${formatarNumero(energiaGerar)} kWh/dia → ${formatarNumero(energiaGerar)}×1000÷${HSP} = ${formatarNumero(potenciaNecessariaW)}W → ${formatarNumero(potenciaNecessariaW)}÷${config.potenciaPainel}W = ${formatarNumero(potenciaNecessariaW / config.potenciaPainel)} → ${qtdPaineis} painéis`;
+    }
+    
+    const exemploInversor = document.getElementById('memorial-exemplo-inversor');
+    if (exemploInversor) {
+        exemploInversor.textContent = `Consumo diário ${formatarNumero(energiaDiaria)} kWh → ${formatarNumero(energiaDiaria)}÷24 = ${formatarNumero(consumoMedioHorario)} kW/h × ${FATOR_PICO_CONSUMO} = ${formatarNumero(consumoPico)} kW pico → Inversor de ${potenciaInversor} kW`;
+    }
+    
+    const exemploMPPT = document.getElementById('memorial-exemplo-mppt');
+    if (exemploMPPT) {
+        exemploMPPT.textContent = `${qtdPaineis} painéis × ${config.potenciaPainel}W = ${potenciaTotalPaineis}W ÷ ${tensaoBanco}V = ${formatarNumero(correnteMaxima)}A → MPPT de ${correnteMPPT}A`;
+    }
+    
+    const exemploCustos = document.getElementById('memorial-exemplo-custos');
+    if (exemploCustos) {
+        // Converter preços para a moeda do idioma
+        const fatorConversao = idiomaAtual === 'pt-BR' ? 1 : 1 / TAXA_BRL_EUR;
+        const precoPainelConvertido = config.precoPainel * fatorConversao;
+        const precoBateriaConvertido = batSpec.price_brl * fatorConversao;
+        const moedaCalculo = moeda === 'R$' ? 'BRL' : 'EUR';
+        const custoPaineis = qtdPaineis * precoPainelConvertido;
+        const custoBaterias = qtdBaterias * precoBateriaConvertido;
+        const custoInversor = calcularPrecoInversor(potenciaInversor, moedaCalculo);
+        const custoMPPT = calcularPrecoMPPT(correnteMPPT, moedaCalculo);
+        const custoTotal = custoPaineis + custoBaterias + custoInversor + custoMPPT;
+        exemploCustos.textContent = `${qtdPaineis} painéis × ${formatarMoeda(precoPainelConvertido)} + ${qtdBaterias} baterias × ${formatarMoeda(precoBateriaConvertido)} + inversor ${formatarMoeda(custoInversor)} + MPPT ${formatarMoeda(custoMPPT)} = ${formatarMoeda(custoPaineis)} + ${formatarMoeda(custoBaterias)} + ${formatarMoeda(custoInversor)} + ${formatarMoeda(custoMPPT)} = ${formatarMoeda(custoTotal)}`;
+    }
+    
+    // Atualizar resumo
+    const resumoEnergiaDiaria = document.getElementById('resumo-energia-diaria');
+    if (resumoEnergiaDiaria) resumoEnergiaDiaria.textContent = `${formatarNumero(energiaDiaria)} kWh/dia`;
+    
+    const resumoDod = document.getElementById('resumo-dod');
+    if (resumoDod) resumoDod.textContent = `${Math.round(dodAlvo)}%`;
+    
+    const resumoCapacidade = document.getElementById('resumo-capacidade');
+    if (resumoCapacidade) resumoCapacidade.textContent = `${formatarNumero(capacidadeNecessariaKWh)} kWh`;
+    
+    const resumoBaterias = document.getElementById('resumo-baterias');
+    if (resumoBaterias) resumoBaterias.textContent = `${qtdBaterias} × ${formatarNumero(energiaPorBateria)} kWh = ${formatarNumero(capacidadeRealKWh)} kWh`;
+    
+    const resumoPaineis = document.getElementById('resumo-paineis');
+    if (resumoPaineis) resumoPaineis.textContent = `${qtdPaineis} × ${config.potenciaPainel}W = ${formatarNumero((qtdPaineis * config.potenciaPainel) / 1000)} kW`;
+    
+    const resumoInversor = document.getElementById('resumo-inversor');
+    if (resumoInversor) resumoInversor.textContent = `${potenciaInversor} kW`;
+    
+    const resumoMPPT = document.getElementById('resumo-mppt');
+    if (resumoMPPT) resumoMPPT.textContent = `${correnteMPPT} A`;
+}

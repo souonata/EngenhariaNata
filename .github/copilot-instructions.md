@@ -342,6 +342,7 @@ novo-app/
 16. **Documentação**: Mantenha README.md, GLOSSARIO.md e copilot-instructions.md atualizados
 17. **Badges DEV**: Apps em desenvolvimento devem ter badge "DEV" no ícone (classe `icon-dev`) e marca d'água dentro do app (`.watermark-dev` e `.dev-badge-header`)
 18. **Apps com badge DEV**: Ar Condicionado, Aquecedor Solar, Fazenda (em desenvolvimento)
+19. **Memorial de Cálculo**: Apps educativos podem incluir seção de memorial didático (ex.: Mutuo "Saiba Mais", Solar "Memorial de Cálculo") que explica passo a passo os cálculos realizados, com fórmulas, exemplos práticos e resumo dos valores. Implementar com seção escondida (`display: none`), botão "SAIBA MAIS!" e funções `toggleMemorial()` e `atualizarMemorialComValores()`.
 
 ## Versões Atuais dos Arquivos
 
@@ -358,8 +359,8 @@ mutuo/mutuo.html                     → mutuo-styles.css?v=1.2.5
 helice/helice.html                   → helice-styles.css?v=1.5.6
                                      → helice-script.js?v=1.4.0 (1094 linhas, totalmente comentado)
 
-solar/solar.html                     → solar-styles.css?v=1.1.1
-                                     → solar-script.js?v=1.1.4 (890 linhas, totalmente comentado)
+solar/solar.html                     → solar-styles.css?v=1.2.0
+                                     → solar-script.js?v=1.2.0 (com memorial de cálculo didático)
 
 solar/config.html                    → config-script.js?v=1.0.5
 
