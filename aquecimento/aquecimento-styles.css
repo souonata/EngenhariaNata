@@ -453,28 +453,41 @@ header h1 {
 /* ============================================
    RESPONSIVIDADE - CLASSES ENERGÉTICAS
    ============================================ */
-/* Em telas pequenas, permitir quebra em duas linhas */
-@media (max-width: 600px) {
-    /* Quando há elementos com classe-energetica, aplicar flex-wrap */
+/* Grid responsivo para classes energéticas */
+.grupo-entrada:has(.classe-energetica) .grupo-radio {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 8px;
+    width: 100%;
+}
+
+/* Em telas médias, 5 colunas */
+@media (min-width: 600px) and (max-width: 900px) {
     .grupo-entrada:has(.classe-energetica) .grupo-radio {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    /* Cada opção ocupa 50% da largura (menos o gap) */
-    .grupo-entrada:has(.classe-energetica) .opcao-radio {
-        flex: 0 0 calc(50% - 5px);
-        min-width: calc(50% - 5px);
-        max-width: calc(50% - 5px);
-    }
-    
-    .classe-energetica .cartao-radio {
-        width: 100%;
+        grid-template-columns: repeat(5, 1fr);
     }
 }
 
-/* Em telas muito pequenas, ajustar tamanhos */
+/* Em telas grandes, todas em uma linha */
+@media (min-width: 900px) {
+    .grupo-entrada:has(.classe-energetica) .grupo-radio {
+        grid-template-columns: repeat(10, 1fr);
+    }
+}
+
+/* Em telas pequenas, 3 colunas */
+@media (max-width: 600px) {
+    .grupo-entrada:has(.classe-energetica) .grupo-radio {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Em telas muito pequenas, 2 colunas */
 @media (max-width: 400px) {
+    .grupo-entrada:has(.classe-energetica) .grupo-radio {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
     .classe-energetica .rotulo-radio {
         font-size: 1rem;
     }
@@ -487,6 +500,16 @@ header h1 {
         min-height: 55px;
         padding: 8px 6px;
     }
+}
+
+/* Garantir que cada opção ocupe o espaço do grid */
+.grupo-entrada:has(.classe-energetica) .opcao-radio {
+    width: 100%;
+    margin: 0;
+}
+
+.classe-energetica .cartao-radio {
+    width: 100%;
 }
 
 /* ============================================

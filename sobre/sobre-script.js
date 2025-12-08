@@ -47,7 +47,7 @@ const traducoes = {
         'bitola-description': 'Calcula a área de seção mínima de fios elétricos para circuitos CC e CA, considerando queda de tensão e selecionando a bitola comercial adequada.',
 
         'arcondicionado-title': 'Dimensionador de Ar Condicionado',
-        'arcondicionado-description': 'Calculadora para dimensionamento de ar condicionado. Determina a capacidade necessária (BTU) baseada em área, altura, número de pessoas, equipamentos e condições ambientais.',
+        'arcondicionado-description': 'Calculadora para dimensionamento de ar condicionado. Determina a capacidade necessária (BTU) baseada em área (mínimo 2 m²), altura, número de pessoas, equipamentos e condições ambientais. Seleciona automaticamente o modelo comercial adequado (5.000 a 60.000 BTU).',
 
         'aquecimento-title': 'Dimensionador de Aquecedor Solar',
         'aquecimento-description': 'Dimensionador completo de sistemas de aquecimento solar térmico. Calcula área de coletores, volume do boiler, número de painéis e potência necessária. Suporta água de consumo e aquecimento ambiente.',
@@ -91,7 +91,9 @@ const traducoes = {
         'feature-btu-title': 'Cálculo de BTU',
         'feature-btu-desc': 'Determina a capacidade necessária em BTU baseada em múltiplos fatores ambientais',
         'feature-fatores-title': 'Múltiplos Fatores',
-        'feature-fatores-desc': 'Considera área, altura, número de pessoas, equipamentos e condições climáticas',
+        'feature-fatores-desc': 'Considera área (2-100 m²), altura, número de pessoas, equipamentos e condições climáticas',
+        'feature-modelos-title': 'Modelos Comerciais',
+        'feature-modelos-desc': 'Seleciona automaticamente o modelo comercial adequado: 5.000, 7.000, 9.000, 12.000, 18.000, 24.000, 30.000, 36.000, 48.000 ou 60.000 BTU',
 
         'feature-agua-casa-title': 'Água e Casa',
         'feature-agua-casa-desc': 'Suporta aquecimento de água de consumo e aquecimento ambiente separadamente ou combinados',
@@ -100,7 +102,9 @@ const traducoes = {
         'feature-autonomia-title': 'Dias de Autonomia',
         'feature-autonomia-desc': 'Configura dias de autonomia para água e casa, dimensionando o boiler adequadamente',
         'feature-memorial-title': 'Memorial de Cálculo',
-        'feature-memorial-desc': 'Exibe detalhamento completo de todos os cálculos realizados para transparência',
+        'feature-memorial-desc': 'Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado',
+        'feature-grid-title': 'Grid Responsivo',
+        'feature-grid-desc': 'Classes energéticas organizadas em grid responsivo que se adapta à largura da tela',
 
         'feature-bilingual-title': 'Bilíngue',
         'feature-bilingual-desc': 'Troca entre Português e Italiano e exibe a moeda correspondente.',
@@ -166,7 +170,7 @@ const traducoes = {
         'bitola-description': 'Calcola l\'area di sezione minima dei cavi elettrici per circuiti CC e CA, considerando la caduta di tensione e selezionando la sezione commerciale adeguata.',
 
         'arcondicionado-title': 'Dimensionatore Climatizzatore',
-        'arcondicionado-description': 'Calcolatrice per il dimensionamento del climatizzatore. Determina la capacità necessaria (BTU) basata su area, altezza, numero di persone, apparecchiature e condizioni ambientali.',
+        'arcondicionado-description': 'Calcolatrice per il dimensionamento del climatizzatore. Determina la capacità necessaria (BTU) basata su area (minimo 2 m²), altezza, numero di persone, apparecchiature e condizioni ambientali. Seleziona automaticamente il modello commerciale adeguato (5.000 a 60.000 BTU).',
 
         'aquecimento-title': 'Dimensionatore Riscaldatore Solare',
         'aquecimento-description': 'Dimensionatore completo di sistemi di riscaldamento solare termico. Calcola l\'area dei collettori, volume del boiler, numero di pannelli e potenza necessaria. Supporta riscaldamento dell\'acqua sanitaria e riscaldamento ambiente.',
@@ -210,7 +214,9 @@ const traducoes = {
         'feature-btu-title': 'Calcolo BTU',
         'feature-btu-desc': 'Determina la capacità necessaria in BTU basata su multipli fattori ambientali',
         'feature-fatores-title': 'Multipli Fattori',
-        'feature-fatores-desc': 'Considera area, altezza, numero di persone, apparecchiature e condizioni climatiche',
+        'feature-fatores-desc': 'Considera area (2-100 m²), altezza, numero di persone, apparecchiature e condizioni climatiche',
+        'feature-modelos-title': 'Modelli Commerciali',
+        'feature-modelos-desc': 'Seleziona automaticamente il modello commerciale adeguato: 5.000, 7.000, 9.000, 12.000, 18.000, 24.000, 30.000, 36.000, 48.000 o 60.000 BTU',
 
         'feature-agua-casa-title': 'Acqua e Casa',
         'feature-agua-casa-desc': 'Supporta riscaldamento dell\'acqua sanitaria e riscaldamento ambiente separatamente o combinati',
@@ -219,7 +225,9 @@ const traducoes = {
         'feature-autonomia-title': 'Giorni di Autonomia',
         'feature-autonomia-desc': 'Configura giorni di autonomia per acqua e casa, dimensionando il boiler adeguatamente',
         'feature-memorial-title': 'Memoriale di Calcolo',
-        'feature-memorial-desc': 'Mostra dettaglio completo di tutti i calcoli eseguiti per trasparenza',
+        'feature-memorial-desc': 'Mostra dettaglio completo di tutti i calcoli eseguiti per trasparenza e apprendimento',
+        'feature-grid-title': 'Griglia Responsiva',
+        'feature-grid-desc': 'Classi energetiche organizzate in griglia responsiva che si adatta alla larghezza dello schermo',
 
         'feature-bilingual-title': 'Bilingue',
         'feature-bilingual-desc': 'Cambia tra Portoghese e Italiano e mostra la valuta corrispondente.',

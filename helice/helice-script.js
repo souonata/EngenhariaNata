@@ -94,6 +94,50 @@ function converterKnotsParaUnidade(valor, unidade) {
 }
 
 /**
+ * Formata número com vírgula como separador decimal e ponto como separador de milhares
+ * Sempre usa formatação brasileira (pt-BR) independente do idioma da interface
+ * @param {number} valor - Valor numérico a formatar
+ * @param {number} casasDecimais - Número de casas decimais (padrão: 0)
+ * @returns {string} Valor formatado (ex: "1.234,56" ou "12,5")
+ */
+function formatarNumeroBR(valor, casasDecimais = 0) {
+    if (isNaN(valor) || valor === null || valor === undefined) return '-';
+    return valor.toLocaleString('pt-BR', {
+        minimumFractionDigits: casasDecimais,
+        maximumFractionDigits: casasDecimais,
+        useGrouping: true
+    });
+}
+
+/**
+ * Converte valor formatado (com vírgula decimal) de volta para número
+ * Aceita tanto formato brasileiro (1.234,56) quanto formato internacional (1234.56)
+ * @param {string} valorFormatado - Valor formatado como string
+ * @returns {number} Valor numérico
+ */
+function converterValorFormatadoParaNumero(valorFormatado) {
+    if (!valorFormatado) return 0;
+    let valorTexto = String(valorFormatado).trim();
+    
+    // Se tem vírgula e ponto, assume formato brasileiro (1.234,56)
+    if (valorTexto.indexOf('.') !== -1 && valorTexto.indexOf(',') !== -1) {
+        valorTexto = valorTexto.replace(/\./g, ''); // Remove pontos (milhares)
+        valorTexto = valorTexto.replace(',', '.');   // Troca vírgula por ponto
+    }
+    // Se tem apenas vírgula, assume formato brasileiro (12,5)
+    else if (valorTexto.indexOf(',') !== -1) {
+        valorTexto = valorTexto.replace(/\./g, ''); // Remove pontos se houver
+        valorTexto = valorTexto.replace(',', '.');   // Troca vírgula por ponto
+    }
+    // Se tem apenas pontos ou nenhum, remove pontos (assume milhares)
+    else {
+        valorTexto = valorTexto.replace(/\./g, '');
+    }
+    
+    return parseFloat(valorTexto) || 0;
+}
+
+/**
  * Converte o passo da hélice de polegadas para outra unidade (milímetros)
  * 
  * O passo é calculado internamente em polegadas (unidade padrão na indústria náutica),
@@ -443,7 +487,7 @@ function atualizarLimitesVelocidade(unidadeAnterior = null) {
     // Prioriza o valor do input (o que o usuário vê), senão usa o slider
     let valorAtual;
     if (inputVelocidadeEl && inputVelocidadeEl.value) {
-        const valorInput = parseFloat(inputVelocidadeEl.value);
+        const valorInput = converterValorFormatadoParaNumero(inputVelocidadeEl.value);
         if (!isNaN(valorInput) && valorInput > 0) {
             valorAtual = valorInput; // Usa o valor do input (na unidade anterior)
         } else {
@@ -499,11 +543,12 @@ function atualizarLimitesVelocidade(unidadeAnterior = null) {
     const novoValor = converterKnotsParaUnidade(valorEmKnots, unidadeVelocidade);
     
     // Formata o valor: nós sem decimais, outras unidades com 1 decimal
-    const valorFormatado = novoValor.toFixed(unidadeVelocidade === 'knots' ? 0 : 1);
-    const valorNumerico = parseFloat(valorFormatado);
+    const valorFormatado = formatarNumeroBR(novoValor, unidadeVelocidade === 'knots' ? 0 : 1);
+    // O slider usa o valor numérico original (sem formatação)
+    // A formatação é apenas para exibição no input
     
-    // Atualiza o valor do slider
-    slider.value = valorNumerico;
+    // Atualiza o valor do slider (usa o valor numérico original)
+    slider.value = novoValor;
     
     // PASSO 8: Atualiza o display do valor (input ao lado do slider)
     if (inputVelocidadeEl) {
@@ -559,7 +604,7 @@ function atualizarResultado() {
     // Se o input tiver um valor válido (número > 0), usa ele; caso contrário, usa o slider
     let velocidadeInput = parseFloat(sliderVelocidade.value);
     if (inputVelocidade && inputVelocidade.value) {
-        const valorInput = parseFloat(inputVelocidade.value);
+        const valorInput = converterValorFormatadoParaNumero(inputVelocidade.value);
         if (!isNaN(valorInput) && valorInput > 0) {
             velocidadeInput = valorInput;
         }
@@ -567,7 +612,7 @@ function atualizarResultado() {
     
     let reducao = parseFloat(sliderReducao.value);
     if (inputReducao && inputReducao.value) {
-        const valorInput = parseFloat(inputReducao.value);
+        const valorInput = converterValorFormatadoParaNumero(inputReducao.value);
         if (!isNaN(valorInput) && valorInput > 0) {
             reducao = valorInput;
         }
@@ -575,7 +620,7 @@ function atualizarResultado() {
     
     let rpmMotor = parseFloat(sliderRPM.value);
     if (inputRPM && inputRPM.value) {
-        const valorInput = parseFloat(inputRPM.value);
+        const valorInput = converterValorFormatadoParaNumero(inputRPM.value);
         if (!isNaN(valorInput) && valorInput > 0) {
             rpmMotor = valorInput;
         }
@@ -583,7 +628,7 @@ function atualizarResultado() {
     
     let slipPercent = parseFloat(sliderSlip.value);
     if (inputSlip && inputSlip.value) {
-        const valorInput = parseFloat(inputSlip.value);
+        const valorInput = converterValorFormatadoParaNumero(inputSlip.value);
         if (!isNaN(valorInput) && valorInput > 0) {
             slipPercent = valorInput;
         }
@@ -601,10 +646,10 @@ function atualizarResultado() {
     // ============================================
     // Atualiza os inputs ao lado dos sliders para mostrar os valores atuais
     // Formata velocidade: nós sem decimais, outras unidades com 1 decimal
-    if (inputVelocidade) inputVelocidade.value = velocidadeInput.toFixed(unidadeVelocidade === 'knots' ? 0 : 1);
-    if (inputReducao) inputReducao.value = reducao.toFixed(2);     // Redução com 2 decimais (ex: 2.00)
-    if (inputRPM) inputRPM.value = Math.round(rpmMotor);           // RPM como número inteiro
-    if (inputSlip) inputSlip.value = Math.round(slipPercent);      // Slip como número inteiro (percentual)
+    if (inputVelocidade) inputVelocidade.value = formatarNumeroBR(velocidadeInput, unidadeVelocidade === 'knots' ? 0 : 1);
+    if (inputReducao) inputReducao.value = formatarNumeroBR(reducao, 2);     // Redução com 2 decimais (ex: 2,32)
+    if (inputRPM) inputRPM.value = formatarNumeroBR(Math.round(rpmMotor), 0);           // RPM como número inteiro
+    if (inputSlip) inputSlip.value = formatarNumeroBR(Math.round(slipPercent), 0);      // Slip como número inteiro (percentual)
     
     // ============================================
     // PASSO 5: CALCULAR O PASSO DA HÉLICE
@@ -619,15 +664,15 @@ function atualizarResultado() {
     // Converte o passo para a unidade selecionada (polegadas ou milímetros)
     const passoConvertido = converterPassoParaUnidade(resultado.passo, unidadePasso);
     // Formata: milímetros sem decimais, polegadas com 1 decimal
-    document.getElementById('resultadoPasso').textContent = passoConvertido.toFixed(unidadePasso === 'mm' ? 0 : 1);
+    document.getElementById('resultadoPasso').textContent = formatarNumeroBR(passoConvertido, unidadePasso === 'mm' ? 0 : 1);
     
     // Exibe o RPM efetivo na hélice (já é um número inteiro)
-    document.getElementById('rpmHelice').textContent = resultado.rpmHelice;
+    document.getElementById('rpmHelice').textContent = formatarNumeroBR(resultado.rpmHelice, 0);
     
     // Converte a velocidade teórica de nós para a unidade selecionada
     const velocidadeTeoricaConvertida = converterKnotsParaUnidade(resultado.velocidadeTeorica, unidadeVelocidade);
     // Exibe com 1 casa decimal
-    document.getElementById('velocidadeTeorica').textContent = velocidadeTeoricaConvertida.toFixed(1);
+    document.getElementById('velocidadeTeorica').textContent = formatarNumeroBR(velocidadeTeoricaConvertida, 1);
     
     // ============================================
     // PASSO 7: ATUALIZAR UNIDADE DE VELOCIDADE NO DISPLAY
@@ -651,6 +696,77 @@ function atualizarResultado() {
     if (typeof atualizarMemorialComValores === 'function') {
         atualizarMemorialComValores();
     }
+}
+
+/**
+ * Alterna a exibição do memorial de cálculo
+ * Esconde a seção de resultados e mostra o memorial, ou vice-versa
+ */
+function toggleMemorial() {
+    const memorialSection = document.getElementById('memorialSection');
+    const resultadosSection = document.getElementById('resultadosSection');
+    
+    if (!memorialSection) {
+        console.error('memorialSection não encontrado');
+        return;
+    }
+    
+    if (memorialSection.style.display === 'none' || memorialSection.style.display === '') {
+        // Atualizar memorial com valores atuais
+        if (typeof atualizarMemorialComValores === 'function') {
+            atualizarMemorialComValores();
+        }
+        memorialSection.style.display = 'block';
+        if (resultadosSection) resultadosSection.style.display = 'none';
+        // Rolar para o topo da página
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        memorialSection.style.display = 'none';
+        if (resultadosSection) resultadosSection.style.display = 'block';
+    }
+}
+
+/**
+ * Atualiza o memorial de cálculo com os valores atuais dos cálculos
+ */
+function atualizarMemorialComValores() {
+    // Obter valores atuais
+    const reducao = parseFloat(document.getElementById('sliderReducao').value);
+    const rpmMotor = parseFloat(document.getElementById('sliderRPM').value);
+    const slipPercent = parseFloat(document.getElementById('sliderSlip').value);
+    const inputVelocidade = document.getElementById('inputVelocidade');
+    const sliderVelocidade = document.getElementById('sliderVelocidade');
+    const unidadeVelocidade = document.querySelector('input[name="unidadeVelocidade"]:checked')?.value || 'knots';
+    
+    let velocidadeInput = parseFloat(sliderVelocidade.value);
+    if (inputVelocidade && inputVelocidade.value) {
+        const valorInput = converterValorFormatadoParaNumero(inputVelocidade.value);
+        if (!isNaN(valorInput) && valorInput > 0) {
+            velocidadeInput = valorInput;
+        }
+    }
+    
+    const velocidadeKnots = converterVelocidadeParaKnots(velocidadeInput, unidadeVelocidade);
+    const resultado = calcularPasso(velocidadeKnots, reducao, rpmMotor, slipPercent / 100);
+    
+    // Atualizar exemplos
+    const rpmHelice = resultado.rpmHelice;
+    const passo = resultado.passo;
+    const velocidadeTeorica = resultado.velocidadeTeorica;
+    
+    document.getElementById('memorial-exemplo-rpm').textContent = 
+        `Motor ${formatarNumeroBR(rpmMotor, 0)} RPM, redução ${formatarNumeroBR(reducao, 2)}:1 → ${formatarNumeroBR(rpmMotor, 0)} ÷ ${formatarNumeroBR(reducao, 2)} = ${formatarNumeroBR(rpmHelice, 0)} RPM na hélice`;
+    
+    document.getElementById('memorial-exemplo-passo').textContent = 
+        `${formatarNumeroBR(velocidadeKnots, 0)} nós, redução ${formatarNumeroBR(reducao, 2)}:1, ${formatarNumeroBR(rpmMotor, 0)} RPM, slip ${formatarNumeroBR(slipPercent, 0)}% → (${formatarNumeroBR(velocidadeKnots, 0)} × 1056 × ${formatarNumeroBR(reducao, 2)}) ÷ (${formatarNumeroBR(rpmMotor, 0)} × ${formatarNumeroBR(1 - slipPercent/100, 2)}) = ${formatarNumeroBR(passo, 1)} polegadas`;
+    
+    document.getElementById('memorial-exemplo-velocidade').textContent = 
+        `Passo ${formatarNumeroBR(passo, 1)}", ${formatarNumeroBR(rpmMotor, 0)} RPM, redução ${formatarNumeroBR(reducao, 2)}:1 → (${formatarNumeroBR(passo, 1)} × ${formatarNumeroBR(rpmMotor, 0)}) ÷ (1056 × ${formatarNumeroBR(reducao, 2)}) = ${formatarNumeroBR(velocidadeTeorica, 1)} nós`;
+    
+    // Atualizar resumo
+    document.getElementById('resumo-rpm-helice').textContent = formatarNumeroBR(rpmHelice, 0) + ' rpm';
+    document.getElementById('resumo-passo').textContent = formatarNumeroBR(passo, 1) + '"';
+    document.getElementById('resumo-velocidade-teorica').textContent = formatarNumeroBR(velocidadeTeorica, 1) + ' nós';
 }
 
 /**
@@ -820,9 +936,9 @@ function atualizarGrafico() {
                                 : traducoes[idiomaAtual]['unidade-mm'];
                             // Formata o valor: milímetros sem decimais, polegadas com 1 decimal
                             const valor = unidadePasso === 'mm' 
-                                ? Math.round(context.parsed.y)  // Arredonda para inteiro
-                                : context.parsed.y.toFixed(1);  // 1 casa decimal
-                            // Retorna o texto formatado: "12.5 polegadas" ou "317 mm"
+                                ? formatarNumeroBR(Math.round(context.parsed.y), 0)  // Arredonda para inteiro
+                                : formatarNumeroBR(context.parsed.y, 1);  // 1 casa decimal
+                            // Retorna o texto formatado: "12,5 polegadas" ou "317 mm"
                             return `${valor} ${unidadeText}`;
                         }
                     }
@@ -947,7 +1063,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const unidadeVelocidade = document.querySelector('input[name="unidadeVelocidade"]:checked')?.value || 'knots';
             // O slider já está na unidade selecionada (após atualizarLimitesVelocidade)
             // Então apenas atualiza o input com o valor do slider
-            inputVelocidade.value = valorSlider.toFixed(unidadeVelocidade === 'knots' ? 0 : 1);
+            inputVelocidade.value = formatarNumeroBR(valorSlider, unidadeVelocidade === 'knots' ? 0 : 1);
         }
         // Chama atualizarResultado que vai ler do slider (já que o input foi atualizado)
         atualizarResultado();
@@ -958,7 +1074,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const inputReducao = document.getElementById('inputReducao');
         if (inputReducao) {
             // Atualiza o input para corresponder ao slider
-            inputReducao.value = valor.toFixed(2);
+            inputReducao.value = formatarNumeroBR(valor, 2);
         }
         atualizarResultado();
     });
@@ -968,7 +1084,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const inputRPM = document.getElementById('inputRPM');
         if (inputRPM) {
             // Atualiza o input para corresponder ao slider
-            inputRPM.value = Math.round(valor);
+            inputRPM.value = formatarNumeroBR(Math.round(valor), 0);
         }
         atualizarResultado();
     });
@@ -978,7 +1094,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const inputSlip = document.getElementById('inputSlip');
         if (inputSlip) {
             // Atualiza o input para corresponder ao slider
-            inputSlip.value = Math.round(valor);
+            inputSlip.value = formatarNumeroBR(Math.round(valor), 0);
         }
         atualizarResultado();
     });
@@ -995,7 +1111,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (inputVelocidadeEl) {
         inputVelocidadeEl.addEventListener('focus', (e) => e.target.select());
         inputVelocidadeEl.addEventListener('input', () => {
-            const valor = parseFloat(inputVelocidadeEl.value);
+            const valor = converterValorFormatadoParaNumero(inputVelocidadeEl.value);
             if (!isNaN(valor) && valor > 0) {
                 // Atualiza o slider apenas se estiver dentro dos limites
                 const slider = document.getElementById('sliderVelocidade');
@@ -1011,7 +1127,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (inputReducaoEl) {
         inputReducaoEl.addEventListener('focus', (e) => e.target.select());
         inputReducaoEl.addEventListener('input', () => {
-            const valor = parseFloat(inputReducaoEl.value);
+            const valor = converterValorFormatadoParaNumero(inputReducaoEl.value);
             if (!isNaN(valor) && valor > 0) {
                 const slider = document.getElementById('sliderReducao');
                 if (valor >= parseFloat(slider.min) && valor <= parseFloat(slider.max)) {
@@ -1025,7 +1141,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (inputRPMEl) {
         inputRPMEl.addEventListener('focus', (e) => e.target.select());
         inputRPMEl.addEventListener('input', () => {
-            const valor = parseFloat(inputRPMEl.value);
+            const valor = converterValorFormatadoParaNumero(inputRPMEl.value);
             if (!isNaN(valor) && valor > 0) {
                 const slider = document.getElementById('sliderRPM');
                 if (valor >= parseFloat(slider.min) && valor <= parseFloat(slider.max)) {
@@ -1039,7 +1155,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (inputSlipEl) {
         inputSlipEl.addEventListener('focus', (e) => e.target.select());
         inputSlipEl.addEventListener('input', () => {
-            const valor = parseFloat(inputSlipEl.value);
+            const valor = converterValorFormatadoParaNumero(inputSlipEl.value);
             if (!isNaN(valor) && valor > 0) {
                 const slider = document.getElementById('sliderSlip');
                 if (valor >= parseFloat(slider.min) && valor <= parseFloat(slider.max)) {

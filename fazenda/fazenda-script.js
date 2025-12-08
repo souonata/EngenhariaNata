@@ -1,6 +1,26 @@
 // fazenda-script.js - Lógica do Dimensionador de Fazenda Auto-Sustentável
 
 // ============================================
+// FUNÇÕES DE FORMATAÇÃO
+// ============================================
+
+/**
+ * Formata número com casas decimais usando formatação brasileira
+ * Sempre usa vírgula como separador decimal e ponto como separador de milhares
+ * @param {number} valor - Valor numérico
+ * @param {number} casasDecimais - Número de casas decimais
+ * @returns {string} Valor formatado (ex: "12,5" ou "1.234,56")
+ */
+function formatarNumeroDecimal(valor, casasDecimais = 1) {
+    if (isNaN(valor) || valor === null || valor === undefined) return '-';
+    return valor.toLocaleString('pt-BR', {
+        minimumFractionDigits: casasDecimais,
+        maximumFractionDigits: casasDecimais,
+        useGrouping: true
+    });
+}
+
+// ============================================
 // ÍCONES DOS PRODUTOS
 // ============================================
 
@@ -576,9 +596,9 @@ function atualizarResultados() {
     
     // Atualizar resumo
     const areaTotal = areaTotalPlantas + areaTotalAnimais;
-    document.getElementById('areaTotal').textContent = areaTotal.toFixed(1) + ' m²';
-    document.getElementById('areaPlantas').textContent = areaTotalPlantas.toFixed(1) + ' m²';
-    document.getElementById('areaAnimais').textContent = areaTotalAnimais.toFixed(1) + ' m²';
+    document.getElementById('areaTotal').textContent = formatarNumeroDecimal(areaTotal, 1) + ' m²';
+    document.getElementById('areaPlantas').textContent = formatarNumeroDecimal(areaTotalPlantas, 1) + ' m²';
+    document.getElementById('areaAnimais').textContent = formatarNumeroDecimal(areaTotalAnimais, 1) + ' m²';
     
     // Atualizar detalhes de plantas
     if (detalhesPlantas.length > 0) {
@@ -589,10 +609,10 @@ function atualizarResultados() {
             return `
             <div class="detalhe-item">
                 <h4>${icone} ${traduzir(p.nome)}</h4>
-                <p><span data-i18n="area-necessaria">Área Necessária:</span> <span class="valor-destaque">${p.area.toFixed(1)} m²</span></p>
+                <p><span data-i18n="area-necessaria">Área Necessária:</span> <span class="valor-destaque">${formatarNumeroDecimal(p.area, 1)} m²</span></p>
                 <p><span data-i18n="quantidade-plantas">Quantidade de Plantas:</span> <span class="valor-destaque">${p.quantidade} ${traduzir('unidades')}</span></p>
-                <p><span data-i18n="producao-anual">Produção Anual:</span> <span class="valor-destaque">${p.producaoAnual.toFixed(1)} kg</span></p>
-                <p><span data-i18n="consumo-diario-pessoa">Consumo por Pessoa/Dia:</span> <span class="valor-destaque">${p.consumoDiarioPorPessoa.toFixed(3)} kg</span></p>
+                <p><span data-i18n="producao-anual">Produção Anual:</span> <span class="valor-destaque">${formatarNumeroDecimal(p.producaoAnual, 1)} kg</span></p>
+                <p><span data-i18n="consumo-diario-pessoa">Consumo por Pessoa/Dia:</span> <span class="valor-destaque">${formatarNumeroDecimal(p.consumoDiarioPorPessoa, 3)} kg</span></p>
                 <p><span data-i18n="ciclo-dias">Ciclo (dias):</span> ${p.ciclo} ${traduzir('dias')}</p>
                 <p><span data-i18n="plantio">Época de Plantio:</span> ${p.plantio}</p>
                 <p><span data-i18n="colheita">Época de Colheita:</span> ${p.colheita}</p>
@@ -621,9 +641,9 @@ function atualizarResultados() {
                 <div class="detalhe-item">
                     <h4>${icone} ${traduzir(a.nome)}</h4>
                     <p><span data-i18n="quantidade-animais">Quantidade de Animais:</span> <span class="valor-destaque">${a.quantidade} ${traduzir('unidades')}</span></p>
-                    <p><span data-i18n="area-necessaria">Área Necessária:</span> <span class="valor-destaque">${a.area.toFixed(1)} m²</span></p>
+                    <p><span data-i18n="area-necessaria">Área Necessária:</span> <span class="valor-destaque">${formatarNumeroDecimal(a.area, 1)} m²</span></p>
                     ${producaoTexto}
-                    <p><span data-i18n="consumo-diario-pessoa">Consumo por Pessoa/Dia:</span> <span class="valor-destaque">${a.consumoDiarioPorPessoa.toFixed(3)} kg</span></p>
+                    <p><span data-i18n="consumo-diario-pessoa">Consumo por Pessoa/Dia:</span> <span class="valor-destaque">${formatarNumeroDecimal(a.consumoDiarioPorPessoa, 3)} kg</span></p>
                     <p><span data-i18n="espaco-animal">Espaço por Animal:</span> ${a.dados.espaco} m²</p>
                     <p><span data-i18n="ciclo-reprodutivo">Ciclo Reprodutivo:</span> ${a.dados.cicloReprodutivo} ${traduzir('dias')}</p>
                     <p><span data-i18n="frequencia-reproducao">Frequência de Reprodução:</span> <span class="valor-destaque">${a.freqReprod} ${traduzir('vezes-ano')}</span></p>
@@ -663,8 +683,11 @@ function atualizarMemorialComValores() {
     const textos = traducoes[idiomaAtual] || traducoes['pt-BR'];
     
     const quantidadePessoas = parseInt(document.getElementById('inputPessoas').value) || 4;
-    const consumoPlantasDiario = parseFloat(document.getElementById('inputConsumoPlantas').value) || 0.5;
-    const consumoProteinasDiario = parseFloat(document.getElementById('inputConsumoProteinas').value) || 0.5;
+    // Converter valores formatados para números (remove formatação brasileira)
+    const inputConsumoPlantas = document.getElementById('inputConsumoPlantas');
+    const inputConsumoProteinas = document.getElementById('inputConsumoProteinas');
+    const consumoPlantasDiario = inputConsumoPlantas ? parseFloat(inputConsumoPlantas.value.replace(/\./g, '').replace(',', '.')) || 0.5 : 0.5;
+    const consumoProteinasDiario = inputConsumoProteinas ? parseFloat(inputConsumoProteinas.value.replace(/\./g, '').replace(',', '.')) || 0.5 : 0.5;
     
     // Coletar plantas selecionadas
     const plantasSelecionadas = {
@@ -743,7 +766,7 @@ function atualizarMemorialComValores() {
     const consumoAnualProteinas = consumoProteinasDiario * quantidadePessoas * 365;
     
     // Atualizar exemplos no memorial
-    const exemploConsumo = `${consumoPlantasDiario.toFixed(1)} kg/dia/pessoa × ${quantidadePessoas} pessoas × 365 dias = ${consumoAnualPlantas.toFixed(0)} kg/ano`;
+    const exemploConsumo = `${formatarNumeroDecimal(consumoPlantasDiario, 1)} kg/dia/pessoa × ${quantidadePessoas} pessoas × 365 dias = ${formatarNumeroDecimal(consumoAnualPlantas, 0)} kg/ano`;
     
     // Exemplo de área (usar primeira planta selecionada se houver)
     let exemploArea = '-';
@@ -753,7 +776,7 @@ function atualizarMemorialComValores() {
         const dados = DADOS_PLANTAS[tipoPrimeira][primeiraPlanta];
         const consumoAnualItem = consumoDiarioPorItemPlanta * quantidadePessoas * 365;
         const areaItem = consumoAnualItem / dados.producao;
-        exemploArea = `${consumoAnualItem.toFixed(0)} kg/ano ÷ ${dados.producao} kg/m²·ano = ${areaItem.toFixed(1)} m²`;
+        exemploArea = `${formatarNumeroDecimal(consumoAnualItem, 0)} kg/ano ÷ ${dados.producao} kg/m²·ano = ${formatarNumeroDecimal(areaItem, 1)} m²`;
     }
     
     // Exemplo de quantidade de plantas
@@ -766,7 +789,7 @@ function atualizarMemorialComValores() {
         const areaItem = Math.max(consumoAnualItem / dados.producao, dados.areaMin);
         const quantidadeItem = calcularQuantidadePlantas(tipoPrimeira, primeiraPlanta, areaItem);
         const densidade = tipoPrimeira === 'frutas' ? (1 / dados.areaMin) : 4;
-        exemploQuantidade = `${areaItem.toFixed(1)} m² × ${densidade} plantas/m² = ${quantidadeItem} plantas`;
+        exemploQuantidade = `${formatarNumeroDecimal(areaItem, 1)} m² × ${densidade} plantas/m² = ${quantidadeItem} plantas`;
     }
     
     // Exemplo de animais
@@ -775,7 +798,7 @@ function atualizarMemorialComValores() {
         const ovosPorDiaTotal = 2 * quantidadePessoas;
         const ovosPorDiaPorGalinha = dadosGalinha.producaoDiaria;
         const quantidadeGalinhas = Math.ceil(ovosPorDiaTotal / ovosPorDiaPorGalinha);
-        exemploAnimais = `Para ${2} ovos/dia/pessoa: ${ovosPorDiaTotal} ovos/dia ÷ ${ovosPorDiaPorGalinha.toFixed(1)} ovos/dia/galinha = ${quantidadeGalinhas} galinhas`;
+        exemploAnimais = `Para ${2} ovos/dia/pessoa: ${ovosPorDiaTotal} ovos/dia ÷ ${formatarNumeroDecimal(ovosPorDiaPorGalinha, 1)} ovos/dia/galinha = ${quantidadeGalinhas} galinhas`;
     } else if (totalOutrosAnimais > 0) {
         const primeiroAnimal = outrosAnimais[0];
         const dados = DADOS_ANIMAIS[primeiroAnimal];
@@ -783,11 +806,11 @@ function atualizarMemorialComValores() {
         if (dados.producaoDiaria > 0) {
             const producaoDiariaPorAnimal = dados.producaoDiaria * dados.producaoPorUnidade;
             const quantidade = Math.ceil((consumoDiarioPorItemAnimal * quantidadePessoas) / producaoDiariaPorAnimal);
-            exemploAnimais = `${(consumoDiarioPorItemAnimal * quantidadePessoas).toFixed(2)} kg/dia ÷ ${producaoDiariaPorAnimal.toFixed(2)} kg/dia/animal = ${quantidade} ${primeiroAnimal}`;
+            exemploAnimais = `${formatarNumeroDecimal(consumoDiarioPorItemAnimal * quantidadePessoas, 2)} kg/dia ÷ ${formatarNumeroDecimal(producaoDiariaPorAnimal, 2)} kg/dia/animal = ${quantidade} ${primeiroAnimal}`;
         } else {
             const producaoAnual = dados.producaoCiclo * (365 / dados.cicloReprodutivo);
             const quantidade = Math.ceil(consumoAnualItem / producaoAnual);
-            exemploAnimais = `${consumoAnualItem.toFixed(0)} kg/ano ÷ ${producaoAnual.toFixed(0)} kg/ano/animal = ${quantidade} ${primeiroAnimal}`;
+            exemploAnimais = `${formatarNumeroDecimal(consumoAnualItem, 0)} kg/ano ÷ ${formatarNumeroDecimal(producaoAnual, 0)} kg/ano/animal = ${quantidade} ${primeiroAnimal}`;
         }
     }
     
@@ -809,9 +832,9 @@ function atualizarMemorialComValores() {
     document.getElementById('memorial-exemplo-frequencia').textContent = exemploFrequencia;
     
     // Atualizar resumo
-    document.getElementById('resumo-area-plantas').textContent = areaTotalPlantas.toFixed(1) + ' m²';
-    document.getElementById('resumo-area-animais').textContent = areaTotalAnimais.toFixed(1) + ' m²';
-    document.getElementById('resumo-area-total').textContent = areaTotal.toFixed(1) + ' m²';
+    document.getElementById('resumo-area-plantas').textContent = formatarNumeroDecimal(areaTotalPlantas, 1) + ' m²';
+    document.getElementById('resumo-area-animais').textContent = formatarNumeroDecimal(areaTotalAnimais, 1) + ' m²';
+    document.getElementById('resumo-area-total').textContent = formatarNumeroDecimal(areaTotal, 1) + ' m²';
 }
 
 function toggleMemorial() {
@@ -824,6 +847,8 @@ function toggleMemorial() {
         if (entradasSection) entradasSection.style.display = 'none';
         if (resultadosSection) resultadosSection.style.display = 'none';
         atualizarMemorialComValores();
+        // Rolar para o topo da página
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
         memorialSection.style.display = 'none';
         if (entradasSection) entradasSection.style.display = 'block';
@@ -913,14 +938,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputConsumoPlantas = document.getElementById('inputConsumoPlantas');
     
     sliderConsumoPlantas.addEventListener('input', () => {
-        inputConsumoPlantas.value = parseFloat(sliderConsumoPlantas.value).toFixed(1);
+        inputConsumoPlantas.value = formatarNumeroDecimal(parseFloat(sliderConsumoPlantas.value), 1);
         atualizarResultados();
     });
     
     inputConsumoPlantas.addEventListener('input', () => {
-        let valor = parseFloat(inputConsumoPlantas.value) || 0.1;
+        let valor = parseFloat(inputConsumoPlantas.value.replace(',', '.')) || 0.1;
         valor = Math.max(0.1, Math.min(2.0, valor));
-        inputConsumoPlantas.value = valor.toFixed(1);
+        inputConsumoPlantas.value = formatarNumeroDecimal(valor, 1);
         sliderConsumoPlantas.value = valor;
         atualizarResultados();
     });
@@ -930,14 +955,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputConsumoProteinas = document.getElementById('inputConsumoProteinas');
     
     sliderConsumoProteinas.addEventListener('input', () => {
-        inputConsumoProteinas.value = parseFloat(sliderConsumoProteinas.value).toFixed(1);
+        inputConsumoProteinas.value = formatarNumeroDecimal(parseFloat(sliderConsumoProteinas.value), 1);
         atualizarResultados();
     });
     
     inputConsumoProteinas.addEventListener('input', () => {
-        let valor = parseFloat(inputConsumoProteinas.value) || 0.1;
+        let valor = parseFloat(inputConsumoProteinas.value.replace(',', '.')) || 0.1;
         valor = Math.max(0.1, Math.min(2.0, valor));
-        inputConsumoProteinas.value = valor.toFixed(1);
+        inputConsumoProteinas.value = formatarNumeroDecimal(valor, 1);
         sliderConsumoProteinas.value = valor;
         atualizarResultados();
     });
@@ -957,9 +982,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (target.id === 'sliderPessoas') {
                 inputPessoas.value = valorLimitado;
             } else if (target.id === 'sliderConsumoPlantas') {
-                inputConsumoPlantas.value = valorLimitado.toFixed(1);
+                inputConsumoPlantas.value = formatarNumeroDecimal(valorLimitado, 1);
             } else if (target.id === 'sliderConsumoProteinas') {
-                inputConsumoProteinas.value = valorLimitado.toFixed(1);
+                inputConsumoProteinas.value = formatarNumeroDecimal(valorLimitado, 1);
             }
             
             atualizarResultados();

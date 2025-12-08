@@ -125,9 +125,24 @@ const TEMPERATURA_CONFORTO_CASA = 22.0; // °C
  */
 function converterParaNumero(valorTexto) {
     if (!valorTexto) return NaN;
-    // Substitui vírgula por ponto para parseFloat funcionar
-    const valorLimpo = valorTexto.toString().replace(',', '.');
-    return parseFloat(valorLimpo);
+    let valor = valorTexto.toString().trim();
+    
+    // Se tem vírgula e ponto, assume formato brasileiro (1.234,56)
+    if (valor.indexOf('.') !== -1 && valor.indexOf(',') !== -1) {
+        valor = valor.replace(/\./g, ''); // Remove pontos (milhares)
+        valor = valor.replace(',', '.');   // Troca vírgula por ponto
+    }
+    // Se tem apenas vírgula, assume formato brasileiro (12,5)
+    else if (valor.indexOf(',') !== -1) {
+        valor = valor.replace(/\./g, ''); // Remove pontos se houver
+        valor = valor.replace(',', '.');   // Troca vírgula por ponto
+    }
+    // Se tem apenas pontos ou nenhum, remove pontos (assume milhares)
+    else {
+        valor = valor.replace(/\./g, '');
+    }
+    
+    return parseFloat(valor) || NaN;
 }
 
 /**
@@ -551,7 +566,7 @@ function atualizarResultados() {
     
     let altitude = sliderAltitude ? parseFloat(sliderAltitude.value) : 800;
     if (inputAltitude && inputAltitude.value) {
-        const valorConvertido = parseFloat(inputAltitude.value);
+        const valorConvertido = converterParaNumero(inputAltitude.value);
         if (!isNaN(valorConvertido) && valorConvertido >= 0) {
             altitude = valorConvertido;
         }
@@ -565,7 +580,7 @@ function atualizarResultados() {
         }
     }
     if (inputAreaCasa && inputAreaCasa.value) {
-        const valorConvertido = parseFloat(inputAreaCasa.value);
+        const valorConvertido = converterParaNumero(inputAreaCasa.value);
         if (!isNaN(valorConvertido) && valorConvertido > 0) {
             areaCasa = valorConvertido;
         }
@@ -684,8 +699,7 @@ function toggleMemorial() {
         atualizarMemorialComValores();
         memorialSection.style.display = 'block';
         if (resultadosSection) resultadosSection.style.display = 'none';
-        // Rolar para o topo da página
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Não rolar - manter posição atual
     } else {
         memorialSection.style.display = 'none';
         if (resultadosSection) resultadosSection.style.display = 'block';
@@ -1273,7 +1287,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (inputAreaCasa) {
         inputAreaCasa.addEventListener('focus', (e) => e.target.select());
         inputAreaCasa.addEventListener('input', () => {
-            const valor = parseFloat(inputAreaCasa.value);
+            const valor = converterParaNumero(inputAreaCasa.value);
             if (!isNaN(valor) && valor > 0) {
                 const slider = document.getElementById('sliderAreaCasa');
                 if (valor >= parseFloat(slider.min) && valor <= parseFloat(slider.max)) {

@@ -230,9 +230,11 @@ function obterValorNumericoFormatado(valorFormatado) {
  */
 function formatarNumero(valor, casasDecimais = 2) {
     if (isNaN(valor) || valor === null || valor === undefined) return '-';
-    return valor.toLocaleString(idiomaAtual, {
+    // Sempre usa formatação brasileira (vírgula decimal, ponto milhares)
+    return valor.toLocaleString('pt-BR', {
         minimumFractionDigits: casasDecimais,
-        maximumFractionDigits: casasDecimais
+        maximumFractionDigits: casasDecimais,
+        useGrouping: true
     });
 }
 
@@ -650,8 +652,7 @@ function toggleMemorial() {
         atualizarMemorialComValores();
         memorialSection.style.display = 'block';
         if (resultadosSection) resultadosSection.style.display = 'none';
-        // Rolar para o topo da página
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Não rolar - manter posição atual
     } else {
         memorialSection.style.display = 'none';
         if (resultadosSection) resultadosSection.style.display = 'block';

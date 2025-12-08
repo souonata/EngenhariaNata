@@ -60,6 +60,22 @@ const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) 
 const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
 let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
 
+/**
+ * Formata número com casas decimais usando formatação brasileira
+ * Sempre usa vírgula como separador decimal e ponto como separador de milhares
+ * @param {number} valor - Valor numérico
+ * @param {number} casasDecimais - Número de casas decimais
+ * @returns {string} Valor formatado (ex: "12,5" ou "1.234,56")
+ */
+function formatarNumeroDecimal(valor, casasDecimais = 1) {
+    if (isNaN(valor) || valor === null || valor === undefined) return '-';
+    return valor.toLocaleString('pt-BR', {
+        minimumFractionDigits: casasDecimais,
+        maximumFractionDigits: casasDecimais,
+        useGrouping: true
+    });
+}
+
 // ============================================
 // CONSTANTES DO SISTEMA (Valores Fixos)
 // ============================================
@@ -957,7 +973,7 @@ function calcularSistema(dodAlvo) {
     // 6. Exibir Resultados
     document.getElementById('resQtdPlacas').textContent = `${qtdPaineis} x ${POTENCIA_PAINEL}W`;
     // Exibe quantas unidades do módulo escolhido (kWh e tensão)
-    const unidadeKWh = (typeof batSpec.kwh === 'number' ? batSpec.kwh.toFixed(1) : (batSpec.ah ? ((batSpec.v * batSpec.ah)/1000).toFixed(1) : '0.0'));
+    const unidadeKWh = (typeof batSpec.kwh === 'number' ? formatarNumeroDecimal(batSpec.kwh, 1) : (batSpec.ah ? formatarNumeroDecimal((batSpec.v * batSpec.ah)/1000, 1) : '0,0'));
     document.getElementById('resQtdBaterias').textContent = `${qtdBaterias} x ${unidadeKWh} kWh (${batSpec.v}V)`;
     document.getElementById('resPotenciaInversor').textContent = `${potenciaInversor} kW`;
     document.getElementById('resCorrenteMPPT').textContent = `${correnteMPPT} A`;
@@ -984,19 +1000,19 @@ function calcularSistema(dodAlvo) {
     if (autonomia > 1) {
         if (idiomaAtual === 'pt-BR') {
             motivoBateriasGargalo = '(gargalo: autonomia)';
-            motivoBateriasDetalhes = `${autonomia} dia(s) × ${consumoDiario.toFixed(3)} kWh/dia<br>→ utilizável necessário ${energiaAutonomia.toFixed(3)} kWh<br>→ DoD alvo ${Math.round(dodAlvo * 100)}%<br>→ capacidade nominal necessária ${capNecessariaRounded} kWh<br>→ ${qtdBaterias} × ${energiaPorBatRounded} kWh`;
+            motivoBateriasDetalhes = `${autonomia} dia(s) × ${formatarNumeroDecimal(consumoDiario, 3)} kWh/dia<br>→ utilizável necessário ${formatarNumeroDecimal(energiaAutonomia, 3)} kWh<br>→ DoD alvo ${Math.round(dodAlvo * 100)}%<br>→ capacidade nominal necessária ${formatarNumeroDecimal(capNecessariaRounded, 2)} kWh<br>→ ${qtdBaterias} × ${formatarNumeroDecimal(energiaPorBatRounded, 2)} kWh`;
         } else {
             motivoBateriasGargalo = '(limite: autonomia)';
-            motivoBateriasDetalhes = `${autonomia} giorno(i) × ${consumoDiario.toFixed(3)} kWh/giorno<br>→ utilizzabile necessario ${energiaAutonomia.toFixed(3)} kWh<br>→ DoD target ${Math.round(dodAlvo * 100)}%<br>→ capacità nominale necessaria ${capNecessariaRounded} kWh<br>→ ${qtdBaterias} × ${energiaPorBatRounded} kWh`;
+            motivoBateriasDetalhes = `${autonomia} giorno(i) × ${formatarNumeroDecimal(consumoDiario, 3)} kWh/giorno<br>→ utilizzabile necessario ${formatarNumeroDecimal(energiaAutonomia, 3)} kWh<br>→ DoD target ${Math.round(dodAlvo * 100)}%<br>→ capacità nominale necessaria ${formatarNumeroDecimal(capNecessariaRounded, 2)} kWh<br>→ ${qtdBaterias} × ${formatarNumeroDecimal(energiaPorBatRounded, 2)} kWh`;
         }
     } else {
         // Quando autonomia === 1, o dimensionamento vem da vida útil / DoD desejado
         if (idiomaAtual === 'pt-BR') {
             motivoBateriasGargalo = '(gargalo: vida útil)';
-            motivoBateriasDetalhes = `DoD alvo ${Math.round(dodAlvo * 100)}%<br>→ energia diária ${consumoDiario.toFixed(3)} kWh<br>→ capacidade nominal necessária ${capNecessariaRounded} kWh<br>→ ${qtdBaterias} × ${energiaPorBatRounded} kWh`;
+            motivoBateriasDetalhes = `DoD alvo ${Math.round(dodAlvo * 100)}%<br>→ energia diária ${formatarNumeroDecimal(consumoDiario, 3)} kWh<br>→ capacidade nominal necessária ${formatarNumeroDecimal(capNecessariaRounded, 2)} kWh<br>→ ${qtdBaterias} × ${formatarNumeroDecimal(energiaPorBatRounded, 2)} kWh`;
         } else {
             motivoBateriasGargalo = '(limite: vita utile)';
-            motivoBateriasDetalhes = `DoD target ${Math.round(dodAlvo * 100)}%<br>→ energia giornaliera ${consumoDiario.toFixed(3)} kWh<br>→ capacità nominale necessaria ${capNecessariaRounded} kWh<br>→ ${qtdBaterias} × ${energiaPorBatRounded} kWh`;
+            motivoBateriasDetalhes = `DoD target ${Math.round(dodAlvo * 100)}%<br>→ energia giornaliera ${formatarNumeroDecimal(consumoDiario, 3)} kWh<br>→ capacità nominale necessaria ${formatarNumeroDecimal(capNecessariaRounded, 2)} kWh<br>→ ${qtdBaterias} × ${formatarNumeroDecimal(energiaPorBatRounded, 2)} kWh`;
         }
     }
     document.getElementById('resMotivoBaterias').innerHTML = `${motivoBateriasGargalo}<br>${motivoBateriasDetalhes}`;
@@ -1021,10 +1037,10 @@ function calcularSistema(dodAlvo) {
     let motivoInversorDetalhes = '';
     if (idiomaAtual === 'pt-BR') {
         motivoInversorGargalo = '(gargalo: consumo de pico)';
-        motivoInversorDetalhes = `consumo médio ${consumoMedioHorario.toFixed(2)} kW/h × fator pico ${FATOR_PICO_CONSUMO}<br>→ ${consumoPico.toFixed(2)} kW<br>→ inversor ${potenciaInversor} kW`;
+        motivoInversorDetalhes = `consumo médio ${formatarNumeroDecimal(consumoMedioHorario, 2)} kW/h × fator pico ${FATOR_PICO_CONSUMO}<br>→ ${formatarNumeroDecimal(consumoPico, 2)} kW<br>→ inversor ${potenciaInversor} kW`;
     } else {
         motivoInversorGargalo = '(limite: consumo di picco)';
-        motivoInversorDetalhes = `consumo medio ${consumoMedioHorario.toFixed(2)} kW/h × fattore picco ${FATOR_PICO_CONSUMO}<br>→ ${consumoPico.toFixed(2)} kW<br>→ inverter ${potenciaInversor} kW`;
+        motivoInversorDetalhes = `consumo medio ${formatarNumeroDecimal(consumoMedioHorario, 2)} kW/h × fattore picco ${FATOR_PICO_CONSUMO}<br>→ ${formatarNumeroDecimal(consumoPico, 2)} kW<br>→ inverter ${potenciaInversor} kW`;
     }
     document.getElementById('resMotivoInversor').innerHTML = `${motivoInversorGargalo}<br>${motivoInversorDetalhes}`;
     
@@ -1033,10 +1049,10 @@ function calcularSistema(dodAlvo) {
     let motivoMPPTDetalhes = '';
     if (idiomaAtual === 'pt-BR') {
         motivoMPPTGargalo = '(gargalo: corrente máxima)';
-        motivoMPPTDetalhes = `${qtdPaineis} painéis × ${POTENCIA_PAINEL}W<br>→ ${potenciaTotalPaineis}W ÷ ${tensaoBanco}V<br>→ ${correnteMaxima.toFixed(1)}A<br>→ MPPT ${correnteMPPT}A`;
+        motivoMPPTDetalhes = `${qtdPaineis} painéis × ${POTENCIA_PAINEL}W<br>→ ${potenciaTotalPaineis}W ÷ ${tensaoBanco}V<br>→ ${formatarNumeroDecimal(correnteMaxima, 1)}A<br>→ MPPT ${correnteMPPT}A`;
     } else {
         motivoMPPTGargalo = '(limite: corrente massima)';
-        motivoMPPTDetalhes = `${qtdPaineis} pannelli × ${POTENCIA_PAINEL}W<br>→ ${potenciaTotalPaineis}W ÷ ${tensaoBanco}V<br>→ ${correnteMaxima.toFixed(1)}A<br>→ MPPT ${correnteMPPT}A`;
+        motivoMPPTDetalhes = `${qtdPaineis} pannelli × ${POTENCIA_PAINEL}W<br>→ ${potenciaTotalPaineis}W ÷ ${tensaoBanco}V<br>→ ${formatarNumeroDecimal(correnteMaxima, 1)}A<br>→ MPPT ${correnteMPPT}A`;
     }
     document.getElementById('resMotivoMPPT').innerHTML = `${motivoMPPTGargalo}<br>${motivoMPPTDetalhes}`;
     
@@ -1359,7 +1375,7 @@ function atualizarMemorialComValores() {
     
     // Formatação
     const moeda = traducoes[idiomaAtual]['moeda'];
-    const formatarNumero = (num) => num.toLocaleString(idiomaAtual, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+    const formatarNumero = (num) => num.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 2, useGrouping: true });
     const formatarMoeda = (num) => num.toLocaleString(idiomaAtual, { style: 'currency', currency: moeda === 'R$' ? 'BRL' : 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
     
     // Atualizar exemplos

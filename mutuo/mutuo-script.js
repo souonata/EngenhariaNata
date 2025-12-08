@@ -330,7 +330,7 @@ function formatarTaxaInput(e) {
     if (!isNaN(taxaNum) && taxaNum > MAX_TAXA) {
         // Se passou do limite, força o valor máximo
         const decimalsToShow = periodoAtual === 'dia' ? 3 : periodoAtual === 'mes' ? 2 : 1;
-        valor = MAX_TAXA.toFixed(decimalsToShow).replace('.', ',');
+        valor = formatarNumeroDecimal(MAX_TAXA, decimalsToShow);
     }
     
     e.target.value = valor;
@@ -1338,7 +1338,7 @@ function exibirResultados(valorEmprestimo, totalJuros, totalPagar, porcentagemJu
     document.getElementById('resValorEmprestado').textContent = formatarMoedaSemDecimal(valorEmprestimo);
     document.getElementById('resTotalJuros').textContent = formatarMoedaSemDecimal(totalJuros);
     document.getElementById('resTotalPagar').textContent = formatarMoedaSemDecimal(totalPagar);
-    document.getElementById('resPorcentagemJuros').textContent = porcentagemJuros.toFixed(1) + '%';
+    document.getElementById('resPorcentagemJuros').textContent = formatarNumeroDecimal(porcentagemJuros, 1) + '%';
 }
 
 // Atualizar exibição da parcela selecionada no slider
@@ -1437,7 +1437,7 @@ function atualizarExemplosComValores() {
     
     // Atualizar textos dos exemplos
     const simboloMoeda = moedaAtual === 'BRL' ? 'R$' : '€';
-    const taxaTexto = `${taxaJuros.toFixed(2)}% ${obterTextoPeriodicidade(periodoJuros)}`;
+    const taxaTexto = `${formatarNumeroDecimal(taxaJuros, 2)}% ${obterTextoPeriodicidade(periodoJuros)}`;
     const amortizacaoFixa = valorEmprestimo / numeroParcelas;
     
     // SAC
@@ -1524,12 +1524,27 @@ function obterTextoPeriodicidade(periodo) {
  */
 function formatarNumero(valor) {
     // Intl.NumberFormat = API do JavaScript para formatar números
-    // idiomaAtual = 'pt-BR' ou 'it-IT' (define o formato regional)
-    return new Intl.NumberFormat(idiomaAtual, {
-        useGrouping: true,           // Ativa separador de milhares (pontos ou espaços)
+    // Sempre usa 'pt-BR' para garantir vírgula decimal e ponto milhares
+    return new Intl.NumberFormat('pt-BR', {
+        useGrouping: true,           // Ativa separador de milhares (pontos)
         minimumFractionDigits: 0,    // Mínimo de casas decimais: 0 (não mostra decimais)
         maximumFractionDigits: 0     // Máximo de casas decimais: 0 (não permite decimais)
     }).format(valor);                // .format() aplica a formatação ao número
+}
+
+/**
+ * Formata número com casas decimais usando formatação brasileira
+ * @param {number} valor - Valor numérico
+ * @param {number} casasDecimais - Número de casas decimais
+ * @returns {string} Valor formatado (ex: "12,5" ou "1.234,56")
+ */
+function formatarNumeroDecimal(valor, casasDecimais = 1) {
+    if (isNaN(valor) || valor === null || valor === undefined) return '-';
+    return valor.toLocaleString('pt-BR', {
+        minimumFractionDigits: casasDecimais,
+        maximumFractionDigits: casasDecimais,
+        useGrouping: true
+    });
 }
 
 /**
@@ -1804,7 +1819,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const taxa = parseFloat(sliderTaxa.value) || 0;
             const periodoAtual = (document.querySelector('input[name="periodoRapido"]:checked') || {}).value || 'ano';
             const decimalsToShow = periodoAtual === 'dia' ? 3 : periodoAtual === 'mes' ? 2 : 1;
-            inputTaxa.value = taxa.toFixed(decimalsToShow).replace('.', ',');
+            inputTaxa.value = formatarNumeroDecimal(taxa, decimalsToShow);
         }
     };
     

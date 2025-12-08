@@ -55,7 +55,8 @@ const FATORES_ISOLAMENTO = {
 };
 
 // Modelos comerciais de ar condicionado (BTU)
-const MODELOS_COMERCIAIS = [7000, 9000, 12000, 18000, 24000, 30000, 36000, 48000, 60000];
+// Inclui 5000 BTU para áreas muito pequenas (até 2 m²)
+const MODELOS_COMERCIAIS = [5000, 7000, 9000, 12000, 18000, 24000, 30000, 36000, 48000, 60000];
 
 // Conversão BTU para kW (1 BTU/h ≈ 0.000293 kW)
 const BTU_PARA_KW = 0.000293;
@@ -117,7 +118,7 @@ const traducoes = {
         'memorial-passo4-title': '4️⃣ Passo 4: Selecionar Modelo Comercial',
         'memorial-passo4-explicacao': 'O BTU calculado é arredondado para cima para o modelo comercial mais próximo disponível no mercado.',
         'memorial-modelos-title': 'Modelos comerciais disponíveis:',
-        'memorial-modelos-lista': '7.000, 9.000, 12.000, 18.000, 24.000, 30.000, 36.000, 48.000, 60.000 BTU',
+        'memorial-modelos-lista': '5.000, 7.000, 9.000, 12.000, 18.000, 24.000, 30.000, 36.000, 48.000, 60.000 BTU',
         'memorial-passo5-title': '5️⃣ Passo 5: Converter para Potência (kW)',
         'memorial-passo5-explicacao': 'A conversão para kW é útil para comparar com outros equipamentos elétricos e estimar consumo de energia.',
         'memorial-resumo-title': '📊 Resumo Calculado',
@@ -179,7 +180,7 @@ const traducoes = {
         'memorial-passo4-title': '4️⃣ Passo 4: Selezionare Modello Commerciale',
         'memorial-passo4-explicacao': 'Il BTU calcolato viene arrotondato per eccesso al modello commerciale più vicino disponibile sul mercato.',
         'memorial-modelos-title': 'Modelli commerciali disponibili:',
-        'memorial-modelos-lista': '7.000, 9.000, 12.000, 18.000, 24.000, 30.000, 36.000, 48.000, 60.000 BTU',
+        'memorial-modelos-lista': '5.000, 7.000, 9.000, 12.000, 18.000, 24.000, 30.000, 36.000, 48.000, 60.000 BTU',
         'memorial-passo5-title': '5️⃣ Passo 5: Convertire in Potenza (kW)',
         'memorial-passo5-explicacao': 'La conversione in kW è utile per confrontare con altri apparecchi elettrici e stimare il consumo di energia.',
         'memorial-resumo-title': '📊 Riepilogo Calcolato',
@@ -267,9 +268,24 @@ function selecionarModeloComercial(btuNecessario) {
  */
 function converterParaNumero(valorTexto) {
     if (!valorTexto) return NaN;
-    // Substitui vírgula por ponto para parseFloat funcionar
-    const valorLimpo = valorTexto.toString().replace(',', '.');
-    return parseFloat(valorLimpo);
+    let valor = valorTexto.toString().trim();
+    
+    // Se tem vírgula e ponto, assume formato brasileiro (1.234,56)
+    if (valor.indexOf('.') !== -1 && valor.indexOf(',') !== -1) {
+        valor = valor.replace(/\./g, ''); // Remove pontos (milhares)
+        valor = valor.replace(',', '.');   // Troca vírgula por ponto
+    }
+    // Se tem apenas vírgula, assume formato brasileiro (12,5)
+    else if (valor.indexOf(',') !== -1) {
+        valor = valor.replace(/\./g, ''); // Remove pontos se houver
+        valor = valor.replace(',', '.');   // Troca vírgula por ponto
+    }
+    // Se tem apenas pontos ou nenhum, remove pontos (assume milhares)
+    else {
+        valor = valor.replace(/\./g, '');
+    }
+    
+    return parseFloat(valor) || NaN;
 }
 
 /**
@@ -379,6 +395,7 @@ function atualizarModelosComerciais(btuRecomendado) {
     
     const modelosTexto = {
         'pt-BR': {
+            5000: '5.000 BTU - até 8 m²',
             7000: '7.000 BTU - até 10 m²',
             9000: '9.000 BTU - até 15 m²',
             12000: '12.000 BTU - até 20 m²',
@@ -390,6 +407,7 @@ function atualizarModelosComerciais(btuRecomendado) {
             60000: '60.000 BTU - até 100 m²'
         },
         'it-IT': {
+            5000: '5.000 BTU - fino a 8 m²',
             7000: '7.000 BTU - fino a 10 m²',
             9000: '9.000 BTU - fino a 15 m²',
             12000: '12.000 BTU - fino a 20 m²',
@@ -446,7 +464,7 @@ function trocarIdioma(novoIdioma) {
     
     // Atualiza modelos comerciais
     const inputArea = document.getElementById('inputArea');
-    const area = inputArea ? parseFloat(inputArea.value) || parseFloat(document.getElementById('sliderArea').value) : parseFloat(document.getElementById('sliderArea').value);
+    const area = inputArea ? (converterParaNumero(inputArea.value) || parseFloat(document.getElementById('sliderArea').value)) : parseFloat(document.getElementById('sliderArea').value);
     const altura = parseFloat(document.getElementById('sliderAltura').value);
     const pessoas = parseInt(document.getElementById('sliderPessoas').value);
     const equipamentos = parseInt(document.getElementById('sliderEquipamentos').value);
@@ -543,7 +561,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (inputArea) {
         inputArea.addEventListener('focus', (e) => e.target.select());
         inputArea.addEventListener('input', () => {
-            const valor = parseFloat(inputArea.value);
+            const valor = converterParaNumero(inputArea.value);
             if (!isNaN(valor) && valor > 0) {
                 const slider = document.getElementById('sliderArea');
                 if (valor >= parseFloat(slider.min) && valor <= parseFloat(slider.max)) {
@@ -678,4 +696,78 @@ document.addEventListener('DOMContentLoaded', function() {
     // Calcular resultados iniciais
     atualizarResultados();
 });
+
+/**
+ * Alterna a exibição do memorial de cálculo
+ * Esconde a seção de resultados e mostra o memorial, ou vice-versa
+ */
+function toggleMemorial() {
+    const memorialSection = document.getElementById('memorialSection');
+    const resultadosSection = document.getElementById('resultadosSection');
+    
+    if (!memorialSection) {
+        console.error('memorialSection não encontrado');
+        return;
+    }
+    
+    if (memorialSection.style.display === 'none' || memorialSection.style.display === '') {
+        // Atualizar memorial com valores atuais
+        if (typeof atualizarMemorialComValores === 'function') {
+            atualizarMemorialComValores();
+        }
+        memorialSection.style.display = 'block';
+        if (resultadosSection) resultadosSection.style.display = 'none';
+        // Rolar para o topo da página
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        memorialSection.style.display = 'none';
+        if (resultadosSection) resultadosSection.style.display = 'block';
+    }
+}
+
+/**
+ * Atualiza o memorial de cálculo com os valores atuais dos cálculos
+ */
+function atualizarMemorialComValores() {
+    const area = parseFloat(document.getElementById('sliderArea').value);
+    const altura = parseFloat(document.getElementById('sliderAltura').value);
+    const pessoas = parseInt(document.getElementById('sliderPessoas').value);
+    const equipamentos = parseInt(document.getElementById('sliderEquipamentos').value);
+    const insolacao = document.querySelector('input[name="insolacao"]:checked')?.value || 'media';
+    const isolamento = document.querySelector('input[name="isolamento"]:checked')?.value || 'medio';
+    
+    const resultado = calcularBTU(area, altura, pessoas, equipamentos, insolacao, isolamento);
+    
+    const volume = area * altura;
+    const btuBase = resultado.btuBase;
+    const btuFinal = resultado.btuFinal;
+    const potenciaKw = resultado.potenciaKw;
+    
+    document.getElementById('memorial-exemplo-volume').textContent = 
+        `${formatarNumero(area, 0)} m² × ${formatarDecimal(altura, 1)} m = ${formatarNumero(volume, 0)} m³`;
+    
+    document.getElementById('memorial-exemplo-btu-base').textContent = 
+        `${formatarNumero(volume, 0)} m³ × 600 = ${formatarNumero(volume * 600, 0)} BTU + ${pessoas} pessoas × 600 = ${formatarNumero(pessoas * 600, 0)} BTU + ${equipamentos} equipamentos × 600 = ${formatarNumero(equipamentos * 600, 0)} BTU = ${formatarNumero(btuBase, 0)} BTU`;
+    
+    const fatorInsolacao = insolacao === 'baixa' ? 1.0 : insolacao === 'media' ? 1.15 : 1.3;
+    const fatorIsolamento = isolamento === 'bom' ? 0.8 : isolamento === 'medio' ? 1.0 : 1.2;
+    
+    document.getElementById('memorial-exemplo-fatores').textContent = 
+        `${formatarNumero(btuBase, 0)} BTU × ${formatarDecimal(fatorInsolacao, 2)} (insolação ${insolacao}) × ${formatarDecimal(fatorIsolamento, 2)} (isolamento ${isolamento}) = ${formatarNumero(btuFinal, 0)} BTU`;
+    
+    const modelos = MODELOS_COMERCIAIS;
+    const modeloComercial = modelos.find(m => m >= btuFinal) || modelos[modelos.length - 1];
+    
+    document.getElementById('memorial-exemplo-modelo').textContent = 
+        `${formatarNumero(btuFinal, 0)} BTU → Modelo comercial: ${formatarNumero(modeloComercial, 0)} BTU`;
+    
+    document.getElementById('memorial-exemplo-potencia').textContent = 
+        `${formatarNumero(modeloComercial, 0)} BTU × 0.000293 = ${formatarDecimal(potenciaKw, 2)} kW`;
+    
+    // Atualizar resumo
+    document.getElementById('resumo-volume').textContent = formatarNumero(volume, 0) + ' m³';
+    document.getElementById('resumo-btu-base').textContent = formatarNumero(btuBase, 0) + ' BTU';
+    document.getElementById('resumo-btu-final').textContent = formatarNumero(modeloComercial, 0) + ' BTU';
+    document.getElementById('resumo-potencia').textContent = formatarDecimal(potenciaKw, 2) + ' kW';
+}
 
