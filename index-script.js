@@ -122,7 +122,9 @@ const traducoes = {
         'mes-dez': 'dezembro'
         ,
         // Aria label for the home button
-        'aria-home': 'Voltar para a tela inicial'
+        'aria-home': 'Voltar para a tela inicial',
+        // Footer
+        'footer': '💻 Portfólio Engenharia NATA @ 2025'
     },
     'it-IT': {
         // Nomes dos aplicativos em italiano
@@ -177,7 +179,9 @@ const traducoes = {
         'mes-dez': 'dicembre'
         ,
         // Aria label for the home button
-        'aria-home': 'Torna alla schermata iniziale'
+        'aria-home': 'Torna alla schermata iniziale',
+        // Footer
+        'footer': '💻 Portafoglio Ingegneria NATA @ 2025'
     }
 };
 

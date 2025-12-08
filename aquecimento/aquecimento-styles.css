@@ -802,32 +802,7 @@ footer p {
     font-size: 1.1rem;
 }
 
-.btn-help {
-    background: transparent;
-    border: none;
-    color: #2d9fa3ff;
-    cursor: pointer;
-    padding: 6px 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    position: relative;
-    z-index: 10;
-    flex-shrink: 0;
-}
-
-.btn-help:hover {
-    background: #2d9fa3ff;
-    color: white;
-    transform: scale(1.05);
-}
-
-.texto-saiba-mais {
-    font-weight: 600;
-    font-size: 0.85rem;
-}
+/* .btn-help and .texto-saiba-mais styles moved to assets/css/shared-styles.css */
 
 @media (max-width: 600px) {
     .memorial-header {

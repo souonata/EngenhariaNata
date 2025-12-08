@@ -226,18 +226,23 @@
             </div>
 
             <div class="memorial-item">
-                <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Aplicar Fatores de Ajuste</h3>
+                <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Aplicar Fatores de Ajuste (Insolação e Isolamento)</h3>
                 <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                 <div class="formula-box">
                     <p><strong>BTU Final = BTU Base × Fator Insolação × Fator Isolamento</strong></p>
                 </div>
-                <p data-i18n="memorial-passo3-explicacao">Os fatores de insolação e isolamento ajustam a capacidade necessária baseado nas condições do ambiente.</p>
+                <p data-i18n="memorial-passo3-explicacao">Os fatores de insolação e isolamento ajustam a capacidade necessária baseado nas condições do ambiente. Estes são fatores multiplicadores que refletem o impacto real das condições ambientais na carga térmica.</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-fatores">34.800 BTU × 1.15 (insolação média) × 1.0 (isolamento médio) = 40.020 BTU</span></p>
                 <div class="info-box">
                     <p><strong data-i18n="memorial-fatores-title">Fatores utilizados:</strong></p>
                     <ul>
                         <li data-i18n="memorial-fatores-insolacao">Insolação: Baixa (1.0), Média (1.15), Alta (1.3)</li>
                         <li data-i18n="memorial-fatores-isolamento">Isolamento: Bom (0.8), Médio (1.0), Ruim (1.2)</li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong>💡 Como os fatores afetam o cálculo:</strong></p>
+                    <ul>
+                        <li><strong>Insolação:</strong> Ambientes com maior exposição solar recebem mais calor, aumentando a necessidade de refrigeração. Alta insolação pode aumentar a carga térmica em até 30%.</li>
+                        <li><strong>Isolamento:</strong> Bom isolamento reduz a transferência de calor entre o ambiente interno e externo, diminuindo a necessidade de refrigeração em até 20%. Isolamento ruim pode aumentar a necessidade em até 20%.</li>
                     </ul>
                 </div>
             </div>
@@ -273,7 +278,11 @@
                     <span id="resumo-btu-base">-</span>
                 </div>
                 <div class="resumo-item-calc">
-                    <span data-i18n="memorial-resumo-btu-final">BTU Recomendado:</span>
+                    <span data-i18n="memorial-resumo-btu-final-calc">BTU Final (após fatores):</span>
+                    <span id="resumo-btu-final-calc">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-btu-final">BTU Recomendado (modelo comercial):</span>
                     <span id="resumo-btu-final">-</span>
                 </div>
                 <div class="resumo-item-calc">
@@ -291,8 +300,8 @@
         <!-- SEÇÃO DE RESULTADOS -->
         <!-- ========================================== -->
         <section class="card resultados" id="resultadosSection">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h2 style="flex: 1;" data-i18n="resultados-title">📊 Resultados</h2>
+            <div class="resultados-header-com-ajuda">
+                <h2 data-i18n="resultados-title">📊 Resultados</h2>
                 <button id="btnMemorial" class="btn-help" title="Ver Memorial de Cálculo" data-i18n-title="btn-memorial" tabindex="10">
                     <span class="texto-saiba-mais" data-i18n="learn-more">SAIBA MAIS!</span>
                 </button>
@@ -314,8 +323,13 @@
             </div>
 
             <div class="resultado-item">
-                <span class="label-resultado" data-i18n="resultado-btu-base">BTU Base (Volume):</span>
+                <span class="label-resultado" data-i18n="resultado-btu-base">BTU Base (Volume + Pessoas + Equipamentos):</span>
                 <span class="valor-resultado" id="btuBase">-</span>
+            </div>
+            
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-btu-final">BTU Final (após fatores de insolação e isolamento):</span>
+                <span class="valor-resultado" id="btuFinal">-</span>
             </div>
 
             <div class="info-box">

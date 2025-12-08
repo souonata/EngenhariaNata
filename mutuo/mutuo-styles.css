@@ -697,14 +697,7 @@
     transform: scale(1.05);
 }
 
-.texto-saiba-mais {
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    transform: rotate(-3deg);
-    text-shadow: 2px 2px 4px rgba(45, 159, 163, 0.3);
-    white-space: nowrap;
-}
+/* .texto-saiba-mais styles moved to assets/css/shared-styles.css */
 
 .controle-sistema-wrapper .radio-group {
     display: flex;

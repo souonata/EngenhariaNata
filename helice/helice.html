@@ -81,17 +81,17 @@
                 <div class="cabecalho-controle">
                     <label for="sliderVelocidade" data-i18n="label-velocidade">Velocidade Desejada</label>
                     <div class="valor-com-unidades">
-                        <input type="text" id="inputVelocidade" class="valor-display valor-input" value="25">
+                        <input type="text" id="inputVelocidade" class="valor-display valor-input" value="40">
                         <!-- Seletor de unidade de velocidade (compacto) -->
                         <div class="grupo-radio-compacto">
                             <label class="opcao-radio-compacto">
-                                <input type="radio" name="unidadeVelocidade" value="knots" checked>
+                                <input type="radio" name="unidadeVelocidade" value="knots">
                                 <div class="cartao-radio-compacto">
                                     <span class="rotulo-radio" data-i18n="unidade-nos">nós</span>
                                 </div>
                             </label>
                             <label class="opcao-radio-compacto">
-                                <input type="radio" name="unidadeVelocidade" value="mph">
+                                <input type="radio" name="unidadeVelocidade" value="mph" checked>
                                 <div class="cartao-radio-compacto">
                                     <span class="rotulo-radio" data-i18n="unidade-mph">mph</span>
                                 </div>
@@ -107,7 +107,7 @@
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn" data-target="sliderVelocidade" data-step="-1" aria-label="Diminuir velocidade">−</button>
-                    <input type="range" id="sliderVelocidade" min="5" max="60" step="1" value="25">
+                    <input type="range" id="sliderVelocidade" min="5" max="60" step="1" value="40">
                     <button type="button" class="arrow-btn" data-target="sliderVelocidade" data-step="1" aria-label="Aumentar velocidade">+</button>
                 </div>
             </div>
@@ -243,8 +243,8 @@
         <!-- RESULTADO -->
         <!-- ========================================== -->
         <section class="resultado" id="resultadosSection">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h2 style="flex: 1;" data-i18n="resultado-titulo">Resultados</h2>
+            <div class="resultados-header-com-ajuda">
+                <h2 data-i18n="resultado-titulo">Resultados</h2>
                 <button id="btnMemorial" class="btn-help" title="Ver Memorial de Cálculo" data-i18n-title="btn-memorial" tabindex="10">
                     <span class="texto-saiba-mais" data-i18n="learn-more">SAIBA MAIS!</span>
                 </button>

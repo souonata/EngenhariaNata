@@ -849,8 +849,27 @@ input[type="range"]::-moz-range-thumb:active {
 }
 
 .texto-saiba-mais {
-    font-weight: 600;
     font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transform: rotate(-3deg);
+    text-shadow: 2px 2px 4px rgba(45, 159, 163, 0.3);
+    white-space: nowrap;
+}
+
+/* Header de resultados com botão SAIBA MAIS - alinhado e próximo ao título */
+.resultados-header-com-ajuda {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.resultados-header-com-ajuda h2 {
+    margin: 0;
+    flex: 0 1 auto;
 }
 
 /* Responsive adjustments for memorial */

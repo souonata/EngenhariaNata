@@ -109,18 +109,26 @@ const BTU_POR_PESSOA = 600; // BTU por pessoa
  */
 const BTU_POR_EQUIPAMENTO = 600; // BTU por equipamento elétrico
 
-// Fatores de insolação
+// Fatores de insolação (exposição solar)
+// Baseado em normas técnicas e práticas de engenharia:
+// - Baixa: ambientes com pouca ou nenhuma exposição solar direta (0% de aumento)
+// - Média: ambientes com exposição solar moderada (15% de aumento)
+// - Alta: ambientes com muita exposição solar direta, muitas janelas voltadas para o sol (30% de aumento)
 const FATORES_INSOLACAO = {
-    baixa: 1.0,    // Pouca exposição solar
-    media: 1.15,   // Exposição solar moderada
-    alta: 1.3      // Muita exposição solar
+    baixa: 1.0,    // Pouca exposição solar (sem aumento)
+    media: 1.15,   // Exposição solar moderada (+15%)
+    alta: 1.3      // Muita exposição solar (+30%)
 };
 
 // Fatores de isolamento térmico
+// Baseado em normas técnicas e práticas de engenharia:
+// - Bom: isolamento adequado (lã de vidro, EPS, etc.) reduz transferência de calor (-20%)
+// - Médio: isolamento padrão, sem isolamento especial (sem alteração)
+// - Ruim: sem isolamento ou muitas aberturas aumenta transferência de calor (+20%)
 const FATORES_ISOLAMENTO = {
-    bom: 0.8,      // Bom isolamento (reduz necessidade)
-    medio: 1.0,    // Isolamento médio (padrão)
-    ruim: 1.2      // Isolamento ruim (aumenta necessidade)
+    bom: 0.8,      // Bom isolamento (reduz necessidade em 20%)
+    medio: 1.0,    // Isolamento médio (padrão, sem alteração)
+    ruim: 1.2      // Isolamento ruim (aumenta necessidade em 20%)
 };
 
 // Modelos comerciais de ar condicionado (BTU)
@@ -161,7 +169,8 @@ const traducoes = {
         'resultado-btu': 'Capacidade Recomendada:',
         'resultado-potencia': 'Potência Equivalente:',
         'resultado-volume': 'Volume do Ambiente:',
-        'resultado-btu-base': 'BTU Base (Volume):',
+        'resultado-btu-base': 'BTU Base (Volume + Pessoas + Equipamentos):',
+        'resultado-btu-final': 'BTU Final (após fatores de insolação e isolamento):',
         'info-modelos': '💡 Modelos Comerciais Comuns:',
         'footer': 'Dimensionador de Ar Condicionado - Engenharia Nata @ 2025',
         'aria-home': 'Voltar para a tela inicial',
@@ -177,11 +186,17 @@ const traducoes = {
         'memorial-example': 'Exemplo:',
         'memorial-passo2-title': '2️⃣ Passo 2: Calcular BTU Base',
         'memorial-passo2-explicacao': 'Cada pessoa e equipamento elétrico gera calor que precisa ser removido pelo ar condicionado.',
-        'memorial-passo3-title': '3️⃣ Passo 3: Aplicar Fatores de Ajuste',
-        'memorial-passo3-explicacao': 'Os fatores de insolação e isolamento ajustam a capacidade necessária baseado nas condições do ambiente.',
+        'memorial-passo3-title': '3️⃣ Passo 3: Aplicar Fatores de Ajuste (Insolação e Isolamento)',
+        'memorial-passo3-explicacao': 'Os fatores de insolação e isolamento ajustam a capacidade necessária baseado nas condições do ambiente. Estes são fatores multiplicadores que refletem o impacto real das condições ambientais na carga térmica.',
         'memorial-fatores-title': 'Fatores utilizados:',
         'memorial-fatores-insolacao': 'Insolação: Baixa (1.0), Média (1.15), Alta (1.3)',
         'memorial-fatores-isolamento': 'Isolamento: Bom (0.8), Médio (1.0), Ruim (1.2)',
+        'fator-insolacao-baixa': 'Baixa',
+        'fator-insolacao-media': 'Média',
+        'fator-insolacao-alta': 'Alta',
+        'fator-isolamento-bom': 'Bom',
+        'fator-isolamento-medio': 'Médio',
+        'fator-isolamento-ruim': 'Ruim',
         'memorial-passo4-title': '4️⃣ Passo 4: Selecionar Modelo Comercial',
         'memorial-passo4-explicacao': 'O BTU calculado é arredondado para cima para o modelo comercial mais próximo disponível no mercado.',
         'memorial-modelos-title': 'Modelos comerciais disponíveis:',
@@ -191,7 +206,8 @@ const traducoes = {
         'memorial-resumo-title': '📊 Resumo Calculado',
         'memorial-resumo-volume': 'Volume do Ambiente:',
         'memorial-resumo-btu-base': 'BTU Base:',
-        'memorial-resumo-btu-final': 'BTU Recomendado:',
+        'memorial-resumo-btu-final-calc': 'BTU Final (após fatores):',
+        'memorial-resumo-btu-final': 'BTU Recomendado (modelo comercial):',
         'memorial-resumo-potencia': 'Potência (kW):'
     },
     'it-IT': {
@@ -221,7 +237,8 @@ const traducoes = {
         'resultado-btu': 'Capacità Consigliata:',
         'resultado-potencia': 'Potenza Equivalente:',
         'resultado-volume': 'Volume Ambiente:',
-        'resultado-btu-base': 'BTU Base (Volume):',
+        'resultado-btu-base': 'BTU Base (Volume + Persone + Apparecchi):',
+        'resultado-btu-final': 'BTU Finale (dopo fattori insolazione e isolamento):',
         'info-modelos': '💡 Modelli Commerciali Comuni:',
         'footer': 'Dimensionatore Climatizzatore - Engenharia Nata @ 2025',
         'aria-home': 'Torna alla schermata iniziale',
@@ -238,11 +255,17 @@ const traducoes = {
         'memorial-example': 'Esempio:',
         'memorial-passo2-title': '2️⃣ Passo 2: Calcolare BTU Base',
         'memorial-passo2-explicacao': 'Ogni persona e apparecchio elettrico genera calore che deve essere rimosso dal climatizzatore.',
-        'memorial-passo3-title': '3️⃣ Passo 3: Applicare Fattori di Aggiustamento',
-        'memorial-passo3-explicacao': 'I fattori di insolazione e isolamento aggiustano la capacità necessaria in base alle condizioni dell\'ambiente.',
+        'memorial-passo3-title': '3️⃣ Passo 3: Applicare Fattori di Aggiustamento (Insolazione e Isolamento)',
+        'memorial-passo3-explicacao': 'I fattori di insolazione e isolamento aggiustano la capacità necessaria in base alle condizioni dell\'ambiente. Questi sono fattori moltiplicatori che riflettono l\'impatto reale delle condizioni ambientali sul carico termico.',
         'memorial-fatores-title': 'Fattori utilizzati:',
         'memorial-fatores-insolacao': 'Insolazione: Bassa (1.0), Media (1.15), Alta (1.3)',
         'memorial-fatores-isolamento': 'Isolamento: Buono (0.8), Medio (1.0), Scarso (1.2)',
+        'fator-insolacao-baixa': 'Bassa',
+        'fator-insolacao-media': 'Media',
+        'fator-insolacao-alta': 'Alta',
+        'fator-isolamento-bom': 'Buono',
+        'fator-isolamento-medio': 'Medio',
+        'fator-isolamento-ruim': 'Scarso',
         'memorial-passo4-title': '4️⃣ Passo 4: Selezionare Modello Commerciale',
         'memorial-passo4-explicacao': 'Il BTU calcolato viene arrotondato per eccesso al modello commerciale più vicino disponibile sul mercato.',
         'memorial-modelos-title': 'Modelli commerciali disponibili:',
@@ -252,7 +275,8 @@ const traducoes = {
         'memorial-resumo-title': '📊 Riepilogo Calcolato',
         'memorial-resumo-volume': 'Volume Ambiente:',
         'memorial-resumo-btu-base': 'BTU Base:',
-        'memorial-resumo-btu-final': 'BTU Consigliato:',
+        'memorial-resumo-btu-final-calc': 'BTU Finale (dopo fattori):',
+        'memorial-resumo-btu-final': 'BTU Consigliato (modello commerciale):',
         'memorial-resumo-potencia': 'Potenza (kW):'
     }
 };
@@ -288,10 +312,13 @@ function calcularBTU(area, altura, pessoas, equipamentos, insolacao, isolamento)
     const btuBase = btuVolume + btuPessoas + btuEquipamentos;
     
     // PASSO 6: Aplicar fatores de insolação e isolamento
+    // Estes fatores são multiplicadores que ajustam a carga térmica baseada nas condições ambientais
     const fatorInsolacao = FATORES_INSOLACAO[insolacao] || 1.0;
     const fatorIsolamento = FATORES_ISOLAMENTO[isolamento] || 1.0;
     
     // PASSO 7: Calcular BTU final
+    // Multiplica o BTU base pelos fatores de insolação e isolamento
+    // Exemplo: 20.000 BTU × 1.15 (insolação média) × 0.8 (isolamento bom) = 18.400 BTU
     const btuFinal = btuBase * fatorInsolacao * fatorIsolamento;
     
     // PASSO 8: Selecionar modelo comercial mais próximo (arredondar para cima)
@@ -304,7 +331,8 @@ function calcularBTU(area, altura, pessoas, equipamentos, insolacao, isolamento)
         btuRecomendado: btuRecomendado,
         potenciaKw: potenciaKw,
         volume: volume,
-        btuBase: btuBase
+        btuBase: btuBase,
+        btuFinal: btuFinal  // BTU após aplicar fatores, antes do arredondamento
     };
 }
 
@@ -366,6 +394,32 @@ function formatarNumero(valor) {
         minimumFractionDigits: 0,
         maximumFractionDigits: 0
     });
+}
+
+/**
+ * Formata BTU para exibição com notação "k" quando >= 1000
+ * Exemplos: 999 → "999 BTU", 5000 → "5k BTU", 12000 → "12k BTU", 24000 → "24k BTU"
+ * @param {number} valor - Valor em BTU
+ * @returns {string} Valor formatado com "BTU"
+ */
+function formatarBTU(valor) {
+    if (isNaN(valor) || valor === null || valor === undefined) return '-';
+    
+    // Se o valor for menor que 1000, formata normalmente
+    if (valor < 1000) {
+        return formatarNumero(valor) + ' BTU';
+    }
+    
+    // Se for >= 1000, divide por 1000 e adiciona "k"
+    const valorK = valor / 1000;
+    
+    // Se for um número inteiro (ex: 5k, 12k, 24k), não mostra decimais
+    if (valorK % 1 === 0) {
+        return valorK + 'k BTU';
+    }
+    
+    // Caso contrário, mostra uma casa decimal (ex: 1,5k, 2,5k)
+    return formatarNumeroDecimal(valorK, 1) + 'k BTU';
 }
 
 /**
@@ -435,10 +489,16 @@ function atualizarResultados() {
     const resultado = calcularBTU(area, altura, pessoas, equipamentos, insolacao, isolamento);
     
     // Atualiza os displays
-    document.getElementById('btuRecomendado').textContent = formatarNumero(resultado.btuRecomendado) + ' BTU';
+    document.getElementById('btuRecomendado').textContent = formatarBTU(resultado.btuRecomendado);
     document.getElementById('potenciaKw').textContent = formatarDecimal(resultado.potenciaKw, 2) + ' kW';
     document.getElementById('volumeAmbiente').textContent = formatarDecimal(resultado.volume, 1) + ' m³';
-    document.getElementById('btuBase').textContent = formatarNumero(Math.round(resultado.btuBase)) + ' BTU';
+    document.getElementById('btuBase').textContent = formatarBTU(Math.round(resultado.btuBase));
+    
+    // Mostrar BTU final (após aplicar fatores de insolação e isolamento)
+    const btuFinalElement = document.getElementById('btuFinal');
+    if (btuFinalElement && resultado.btuFinal) {
+        btuFinalElement.textContent = formatarBTU(Math.round(resultado.btuFinal));
+    }
     
     // Atualiza lista de modelos comerciais com destaque para o recomendado
     atualizarModelosComerciais(resultado.btuRecomendado);
@@ -461,28 +521,28 @@ function atualizarModelosComerciais(btuRecomendado) {
     
     const modelosTexto = {
         'pt-BR': {
-            5000: '5.000 BTU - até 8 m²',
-            7000: '7.000 BTU - até 10 m²',
-            9000: '9.000 BTU - até 15 m²',
-            12000: '12.000 BTU - até 20 m²',
-            18000: '18.000 BTU - até 30 m²',
-            24000: '24.000 BTU - até 40 m²',
-            30000: '30.000 BTU - até 50 m²',
-            36000: '36.000 BTU - até 60 m²',
-            48000: '48.000 BTU - até 80 m²',
-            60000: '60.000 BTU - até 100 m²'
+            5000: '5k BTU - até 8 m²',
+            7000: '7k BTU - até 10 m²',
+            9000: '9k BTU - até 15 m²',
+            12000: '12k BTU - até 20 m²',
+            18000: '18k BTU - até 30 m²',
+            24000: '24k BTU - até 40 m²',
+            30000: '30k BTU - até 50 m²',
+            36000: '36k BTU - até 60 m²',
+            48000: '48k BTU - até 80 m²',
+            60000: '60k BTU - até 100 m²'
         },
         'it-IT': {
-            5000: '5.000 BTU - fino a 8 m²',
-            7000: '7.000 BTU - fino a 10 m²',
-            9000: '9.000 BTU - fino a 15 m²',
-            12000: '12.000 BTU - fino a 20 m²',
-            18000: '18.000 BTU - fino a 30 m²',
-            24000: '24.000 BTU - fino a 40 m²',
-            30000: '30.000 BTU - fino a 50 m²',
-            36000: '36.000 BTU - fino a 60 m²',
-            48000: '48.000 BTU - fino a 80 m²',
-            60000: '60.000 BTU - fino a 100 m²'
+            5000: '5k BTU - fino a 8 m²',
+            7000: '7k BTU - fino a 10 m²',
+            9000: '9k BTU - fino a 15 m²',
+            12000: '12k BTU - fino a 20 m²',
+            18000: '18k BTU - fino a 30 m²',
+            24000: '24k BTU - fino a 40 m²',
+            30000: '30k BTU - fino a 50 m²',
+            36000: '36k BTU - fino a 60 m²',
+            48000: '48k BTU - fino a 80 m²',
+            60000: '60k BTU - fino a 100 m²'
         }
     };
     
@@ -490,7 +550,7 @@ function atualizarModelosComerciais(btuRecomendado) {
     
     MODELOS_COMERCIAIS.forEach(modelo => {
         const li = document.createElement('li');
-        const texto = textos[modelo] || `${formatarNumero(modelo)} BTU`;
+        const texto = textos[modelo] || formatarBTU(modelo);
         
         if (modelo === btuRecomendado) {
             li.innerHTML = `<strong style="color: #1976D2;">${texto} ✅ Recomendado</strong>`;
@@ -830,36 +890,55 @@ function atualizarMemorialComValores() {
     const volume = area * altura;
     const btuBase = resultado.btuBase;
     
-    // Calcular btuFinal aplicando os fatores (não retornado pela função calcularBTU)
+    // Usar btuFinal retornado pela função calcularBTU
     const fatorInsolacao = FATORES_INSOLACAO[insolacao] || 1.0;
     const fatorIsolamento = FATORES_ISOLAMENTO[isolamento] || 1.0;
-    const btuFinal = btuBase * fatorInsolacao * fatorIsolamento;
+    const btuFinal = resultado.btuFinal || (btuBase * fatorInsolacao * fatorIsolamento);
     
     const potenciaKw = resultado.potenciaKw;
+    
+    // Traduzir nomes dos fatores para exibição
+    const nomesInsolacao = {
+        'baixa': traducoes[idiomaAtual]?.['fator-insolacao-baixa'] || 'Baixa',
+        'media': traducoes[idiomaAtual]?.['fator-insolacao-media'] || 'Média',
+        'alta': traducoes[idiomaAtual]?.['fator-insolacao-alta'] || 'Alta'
+    };
+    const nomesIsolamento = {
+        'bom': traducoes[idiomaAtual]?.['fator-isolamento-bom'] || 'Bom',
+        'medio': traducoes[idiomaAtual]?.['fator-isolamento-medio'] || 'Médio',
+        'ruim': traducoes[idiomaAtual]?.['fator-isolamento-ruim'] || 'Ruim'
+    };
+    
+    const textoPessoas = idiomaAtual === 'pt-BR' ? 'pessoas' : 'persone';
+    const textoEquipamentos = idiomaAtual === 'pt-BR' ? 'equipamentos' : 'apparecchi';
+    const textoInsolacao = idiomaAtual === 'pt-BR' ? 'insolação' : 'insolazione';
+    const textoIsolamento = idiomaAtual === 'pt-BR' ? 'isolamento' : 'isolamento';
     
     document.getElementById('memorial-exemplo-volume').textContent = 
         `${formatarNumero(area, 0)} m² × ${formatarDecimal(altura, 1)} m = ${formatarNumero(volume, 0)} m³`;
     
     document.getElementById('memorial-exemplo-btu-base').textContent = 
-        `${formatarNumero(volume, 0)} m³ × 600 = ${formatarNumero(volume * 600, 0)} BTU + ${pessoas} pessoas × 600 = ${formatarNumero(pessoas * 600, 0)} BTU + ${equipamentos} equipamentos × 600 = ${formatarNumero(equipamentos * 600, 0)} BTU = ${formatarNumero(btuBase, 0)} BTU`;
+        `${formatarNumero(volume, 0)} m³ × 600 = ${formatarBTU(volume * 600)} + ${pessoas} ${textoPessoas} × 600 = ${formatarBTU(pessoas * 600)} + ${equipamentos} ${textoEquipamentos} × 600 = ${formatarBTU(equipamentos * 600)} = ${formatarBTU(btuBase)}`;
     
     document.getElementById('memorial-exemplo-fatores').textContent = 
-        `${formatarNumero(btuBase, 0)} BTU × ${formatarDecimal(fatorInsolacao, 2)} (insolação ${insolacao}) × ${formatarDecimal(fatorIsolamento, 2)} (isolamento ${isolamento}) = ${formatarNumero(btuFinal, 0)} BTU`;
+        `${formatarBTU(btuBase)} × ${formatarDecimal(fatorInsolacao, 2)} (${textoInsolacao} ${nomesInsolacao[insolacao] || insolacao}) × ${formatarDecimal(fatorIsolamento, 2)} (${textoIsolamento} ${nomesIsolamento[isolamento] || isolamento}) = ${formatarBTU(btuFinal)}`;
     
     const modelos = MODELOS_COMERCIAIS;
     const modeloComercial = selecionarModeloComercial(btuFinal);
     const potenciaKwModelo = modeloComercial * BTU_PARA_KW;
     
     document.getElementById('memorial-exemplo-modelo').textContent = 
-        `${formatarNumero(btuFinal, 0)} BTU → Modelo comercial: ${formatarNumero(modeloComercial, 0)} BTU`;
+        `${formatarBTU(btuFinal)} → Modelo comercial: ${formatarBTU(modeloComercial)}`;
     
     document.getElementById('memorial-exemplo-potencia').textContent = 
-        `${formatarNumero(modeloComercial, 0)} BTU × 0.000293 = ${formatarDecimal(potenciaKwModelo, 2)} kW`;
+        `${formatarBTU(modeloComercial)} × 0.000293 = ${formatarDecimal(potenciaKwModelo, 2)} kW`;
     
     // Atualizar resumo
     document.getElementById('resumo-volume').textContent = formatarNumero(volume, 0) + ' m³';
-    document.getElementById('resumo-btu-base').textContent = formatarNumero(btuBase, 0) + ' BTU';
-    document.getElementById('resumo-btu-final').textContent = formatarNumero(modeloComercial, 0) + ' BTU';
+    document.getElementById('resumo-btu-base').textContent = formatarBTU(btuBase);
+    const resumoBtuFinalCalc = document.getElementById('resumo-btu-final-calc');
+    if (resumoBtuFinalCalc) resumoBtuFinalCalc.textContent = formatarBTU(btuFinal);
+    document.getElementById('resumo-btu-final').textContent = formatarBTU(modeloComercial);
     document.getElementById('resumo-potencia').textContent = formatarDecimal(potenciaKwModelo, 2) + ' kW';
 }
 
