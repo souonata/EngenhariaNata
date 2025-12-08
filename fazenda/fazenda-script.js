@@ -223,7 +223,7 @@ const traducoes = {
         'label-area-total': 'Área Total Necessária:',
         'label-area-plantas': 'Área para Plantas:',
         'label-area-animais': 'Área para Animais:',
-        'footer-text': 'Engenharia NATA © 2024 - Apps Educativos de Engenharia',
+        'footer-text': 'Engenharia NATA @ 2025 - Apps Educativos de Engenharia',
         'watermark-dev': '🚧 EM DESENVOLVIMENTO',
         'dev-badge-header': '🚧 EM DESENVOLVIMENTO',
         // Nomes de plantas e animais
@@ -307,7 +307,7 @@ const traducoes = {
         'label-area-total': 'Area Totale Necessaria:',
         'label-area-plantas': 'Area per Piante:',
         'label-area-animais': 'Area per Animali:',
-        'footer-text': 'Engenharia NATA © 2024 - App Educativi di Ingegneria',
+        'footer-text': 'Engenharia NATA @ 2025 - App Educativi di Ingegneria',
         'watermark-dev': '🚧 IN SVILUPPO',
         'dev-badge-header': '🚧 IN SVILUPPO',
         // Nomes de plantas e animais (italiano)
@@ -839,19 +839,32 @@ function atualizarMemorialComValores() {
 
 function toggleMemorial() {
     const memorialSection = document.getElementById('memorialSection');
-    const entradasSection = document.querySelector('section.card:not(.memorial-section)');
+    const entradasSection = document.getElementById('secaoEntradas');
     const resultadosSection = document.getElementById('secaoResultados');
     
+    if (!memorialSection) {
+        console.error('memorialSection não encontrado');
+        return;
+    }
+    
     if (memorialSection.style.display === 'none' || memorialSection.style.display === '') {
+        // Abrir memorial
         memorialSection.style.display = 'block';
         if (entradasSection) entradasSection.style.display = 'none';
         if (resultadosSection) resultadosSection.style.display = 'none';
         atualizarMemorialComValores();
-        // Rolar para o topo da página
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Rolar para o topo da seção do memorial
+        setTimeout(() => {
+            memorialSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
     } else {
+        // Fechar memorial
         memorialSection.style.display = 'none';
-        if (entradasSection) entradasSection.style.display = 'block';
+        // Sempre mostrar a seção de entradas quando fechar o memorial
+        if (entradasSection) {
+            entradasSection.style.display = 'block';
+        }
+        // Mostrar resultados apenas se tiver conteúdo
         if (resultadosSection && resultadosSection.innerHTML.trim() !== '') {
             resultadosSection.style.display = 'block';
         }
@@ -882,6 +895,8 @@ function aplicarTraducoes() {
 
 function trocarIdioma(novoIdioma) {
     idiomaAtual = novoIdioma;
+    // Salvar preferência no localStorage
+    localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
     aplicarTraducoes();
     
     // Atualizar botões de idioma
@@ -900,6 +915,13 @@ function trocarIdioma(novoIdioma) {
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Carregar idioma salvo do localStorage
+    const idiomaSalvo = localStorage.getItem(SITE_LS.LANGUAGE_KEY);
+    if (idiomaSalvo && (idiomaSalvo === 'pt-BR' || idiomaSalvo === 'it-IT')) {
+        idiomaAtual = idiomaSalvo;
+        trocarIdioma(idiomaSalvo);
+    }
+    
     // Criar checkboxes de plantas
     Object.keys(DADOS_PLANTAS.frutas).forEach(nome => {
         document.getElementById('grupoFrutas').appendChild(criarCheckboxPlantas('frutas', nome));
@@ -922,10 +944,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     sliderPessoas.addEventListener('input', () => {
         inputPessoas.value = sliderPessoas.value;
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
         atualizarResultados();
     });
     
     inputPessoas.addEventListener('input', () => {
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
         let valor = parseInt(inputPessoas.value) || 1;
         valor = Math.max(1, Math.min(20, valor));
         inputPessoas.value = valor;
@@ -939,10 +963,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     sliderConsumoPlantas.addEventListener('input', () => {
         inputConsumoPlantas.value = formatarNumeroDecimal(parseFloat(sliderConsumoPlantas.value), 1);
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoPlantas);
         atualizarResultados();
     });
     
     inputConsumoPlantas.addEventListener('input', () => {
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoPlantas);
         let valor = parseFloat(inputConsumoPlantas.value.replace(',', '.')) || 0.1;
         valor = Math.max(0.1, Math.min(2.0, valor));
         inputConsumoPlantas.value = formatarNumeroDecimal(valor, 1);
@@ -956,10 +982,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     sliderConsumoProteinas.addEventListener('input', () => {
         inputConsumoProteinas.value = formatarNumeroDecimal(parseFloat(sliderConsumoProteinas.value), 1);
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoProteinas);
         atualizarResultados();
     });
     
     inputConsumoProteinas.addEventListener('input', () => {
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoProteinas);
         let valor = parseFloat(inputConsumoProteinas.value.replace(',', '.')) || 0.1;
         valor = Math.max(0.1, Math.min(2.0, valor));
         inputConsumoProteinas.value = formatarNumeroDecimal(valor, 1);
@@ -981,10 +1009,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // Atualizar o input correspondente
             if (target.id === 'sliderPessoas') {
                 inputPessoas.value = valorLimitado;
+                if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
             } else if (target.id === 'sliderConsumoPlantas') {
                 inputConsumoPlantas.value = formatarNumeroDecimal(valorLimitado, 1);
+                if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoPlantas);
             } else if (target.id === 'sliderConsumoProteinas') {
                 inputConsumoProteinas.value = formatarNumeroDecimal(valorLimitado, 1);
+                if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoProteinas);
             }
             
             atualizarResultados();
@@ -1012,5 +1043,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Aplicar traduções iniciais
     aplicarTraducoes();
     document.getElementById('btnPortugues').classList.add('active');
+    
+    // Garantir que a seção de entradas esteja visível no carregamento
+    const entradasSection = document.getElementById('secaoEntradas');
+    if (entradasSection) {
+        entradasSection.style.display = 'block';
+    }
+    
+    // Garantir que o memorial esteja escondido no carregamento
+    const memorialSection = document.getElementById('memorialSection');
+    if (memorialSection) {
+        memorialSection.style.display = 'none';
+    }
 });
 

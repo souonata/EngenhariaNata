@@ -35,10 +35,12 @@ body {
     /* Cor de fundo do tema Aquecedor Solar (padrão) */
     background: var(--site-bg, #4e7262);
     min-height: 100vh;
-    padding-top: 8px;
-    padding-right: 8px;
-    padding-bottom: var(--site-bottom-padding, 110px);
-    padding-left: 0;
+    /* Layout em coluna: seletor de idioma acima do container */
+    display: flex;
+    flex-direction: column;
+    align-items: center;      /* Centraliza horizontalmente */
+    gap: 15px;                /* Espaço mínimo entre seletor e container */
+    padding: 15px 0 110px 0;  /* Padding topo/baixo, sem lateral */
     overflow-x: hidden;
     width: 100%;
     position: relative;
@@ -529,13 +531,28 @@ header h1 {
    NOTA DE REFERÊNCIA
    ============================================ */
 .nota-referencia {
-    font-size: 0.75rem;
-    color: #666;
-    font-style: italic;
-    margin-top: -8px;
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: 12px;
     margin-bottom: 16px;
-    padding-left: 8px;
+    padding: 12px;
+    background: #f8f9fa;
     border-left: 3px solid #2d9fa3ff;
+    border-radius: 4px;
+    line-height: 1.6;
+}
+
+.nota-referencia a {
+    color: #2d9fa3ff;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid #2d9fa3ff;
+    transition: all 0.2s;
+}
+
+.nota-referencia a:hover {
+    color: #1e7e82;
+    border-bottom-color: #1e7e82;
 }
 
 /* ============================================
@@ -691,38 +708,6 @@ footer p {
     }
 }
 
-/* Marca d'água "Em Desenvolvimento" */
-.watermark-dev {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-45deg);
-    font-size: 4rem;
-    font-weight: bold;
-    color: rgba(255, 107, 53, 0.4);
-    z-index: 0;
-    pointer-events: none;
-    white-space: nowrap;
-    text-transform: uppercase;
-    letter-spacing: 12px;
-    user-select: none;
-    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-}
-
-@media (max-width: 768px) {
-    .watermark-dev {
-        font-size: 3rem;
-        letter-spacing: 8px;
-    }
-}
-
-@media (max-width: 480px) {
-    .watermark-dev {
-        font-size: 2.5rem;
-        letter-spacing: 6px;
-    }
-}
 
 /* Typography moved to shared-styles.css */
 

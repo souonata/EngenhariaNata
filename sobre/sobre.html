@@ -43,25 +43,29 @@
     <link rel="stylesheet" href="sobre-styles.css?v=1.5.8">
 </head>
 <body>
+    <!-- ========================================== -->
+    <!-- SELETOR DE IDIOMA (PADRÃO GLOBAL - FORA DO CONTAINER) -->
+    <!-- ========================================== -->
+    <div class="language-selector">
+        <!-- Botão para português (ativo definido pelo JavaScript) -->
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">
+            <span class="flag">🇧🇷</span>
+            <span class="lang-text">PT</span>
+        </button>
+        <!-- Botão para italiano -->
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT">
+            <span class="flag">🇮🇹</span>
+            <span class="lang-text">IT</span>
+        </button>
+    </div>
+
     <!-- Container principal que limita a largura máxima -->
     <div class="container">
         
         <!-- ========================================== -->
-        <!-- CABEÇALHO COM SELETOR DE IDIOMA -->
+        <!-- CABEÇALHO -->
         <!-- ========================================== -->
         <header>
-            <div class="language-selector">
-                <!-- Botão para português (ativo definido pelo JavaScript) -->
-                <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">
-                    <span class="flag">🇧🇷</span>
-                    <span class="lang-text">Português</span>
-                </button>
-                <!-- Botão para italiano -->
-                <button id="btnItaliano" class="lang-btn" data-lang="it-IT">
-                    <span class="flag">🇮🇹</span>
-                    <span class="lang-text">Italiano</span>
-                </button>
-            </div>
             <h1 data-i18n="page-title">📱 Sobre o Projeto</h1>
             <p class="subtitle" data-i18n="page-subtitle">Portfólio de apps web</p>
         </header>
@@ -74,29 +78,269 @@
                 <span class="seta-expansao">▼</span>
             </div>
             <div class="card-content conteudo-expansivel">
-                <p data-i18n="overview-description">Portfólio de apps web educativos para engenharia e finanças. Desenvolvido com JavaScript puro, bilíngue (PT/IT) e mobile-first. Alguns apps estão em desenvolvimento e marcados com badge "DEV".</p>
+                <p data-i18n="overview-description">Portfólio de apps web educativos para engenharia e finanças. Desenvolvido com JavaScript puro, bilíngue (PT/IT) e mobile-first.</p>
                 
                 <ul class="tech-list">
-                    <li><strong>📖 Sobre mim</strong> - <span data-i18n="app-about-desc">Informações do projeto</span></li>
-                    <li><strong>❄️ Ar Condicionado</strong> <span style="background: #ff6b35; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; margin-left: 5px;">DEV</span> - <span data-i18n="app-arcondicionado-desc">Dimensionamento de ar condicionado</span></li>
-                    <li><strong>☀️ Aquecedor Solar</strong> <span style="background: #ff6b35; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; margin-left: 5px;">DEV</span> - <span data-i18n="app-aquecimento-desc">Dimensionamento solar térmico</span></li>
-                    <li><strong>🔌 Bitola</strong> - <span data-i18n="app-bitola-desc">Calculadora de bitola de fios</span></li>
-                    <li><strong>🔋 Energia Solar</strong> <span style="background: #ff6b35; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; margin-left: 5px;">DEV</span> - <span data-i18n="app-solar-desc">Dimensionamento fotovoltaico</span></li>
-                    <li><strong>🌾 Fazenda</strong> <span style="background: #ff6b35; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; margin-left: 5px;">DEV</span> - <span data-i18n="app-fazenda-desc">Planejamento de fazenda auto-sustentável</span></li>
-                    <li><strong>🚤 Hélice</strong> - <span data-i18n="app-helice-desc">Calculadora de passo de hélice</span></li>
-                    <li><strong>💰 Mutuo</strong> - <span data-i18n="app-mutuo-desc">Calculadora de amortização bilíngue</span></li>
+                    <li><strong data-i18n="app-about">Sobre mim</strong> 📖 - <span data-i18n="app-about-desc">Informações do projeto</span></li>
+                    <li><strong data-i18n="app-arcondicionado">Ar Condicionado</strong> ❄️ - <span data-i18n="app-arcondicionado-desc">Dimensionamento de ar condicionado</span></li>
+                    <li><strong data-i18n="app-aquecimento">Aquecedor Solar</strong> ☀️ - <span data-i18n="app-aquecimento-desc">Dimensionamento solar térmico</span></li>
+                    <li><strong data-i18n="app-bitola">Bitola</strong> 🔌 - <span data-i18n="app-bitola-desc">Calculadora de bitola de fios</span></li>
+                    <li><strong data-i18n="app-solar">Energia Solar</strong> 🔋 - <span data-i18n="app-solar-desc">Dimensionamento fotovoltaico</span></li>
+                    <li><strong data-i18n="app-fazenda">Fazenda</strong> 🌾 <span style="background: #ff6b35; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; margin-left: 5px;">DEV</span> - <span data-i18n="app-fazenda-desc">Planejamento de fazenda auto-sustentável</span></li>
+                    <li><strong data-i18n="app-helice">Hélice</strong> ⚓ - <span data-i18n="app-helice-desc">Calculadora de passo de hélice</span></li>
+                    <li><strong data-i18n="app-mutuo">Mutuo</strong> 💰 - <span data-i18n="app-mutuo-desc">Calculadora de amortização bilíngue</span></li>
                 </ul>
             </div>
         </div>
 
         <!-- ========================================== -->
-        <!-- CARTÃO 2: CALCULADORA DE EMPRÉSTIMOS -->
+        <!-- CARTÃO 2: DIMENSIONADOR DE AR CONDICIONADO -->
+        <!-- ========================================== -->
+        <div class="card highlight card-expansivel">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                <span class="icon">❄️</span>
+                <h2 data-i18n="app-arcondicionado">Ar Condicionado</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <p class="app-description">
+                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="arcondicionado-description">Calculadora para dimensionamento de ar condicionado. Determina a capacidade necessária (BTU) baseada em área (mínimo 2 m²), altura, número de pessoas, equipamentos e condições ambientais. Seleciona automaticamente o modelo comercial adequado (5.000 a 60.000 BTU).</span>
+                </p>
+                
+                <div class="features-grid">
+                    <div class="feature">
+                        <span class="feature-icon">🌡️</span>
+                        <h4 data-i18n="feature-btu-title">Cálculo de BTU</h4>
+                        <p data-i18n="feature-btu-desc">Determina a capacidade necessária em BTU baseada em múltiplos fatores ambientais</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📐</span>
+                        <h4 data-i18n="feature-fatores-title">Múltiplos Fatores</h4>
+                        <p data-i18n="feature-fatores-desc">Considera área (2-100 m²), altura, número de pessoas, equipamentos e condições climáticas</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🔧</span>
+                        <h4 data-i18n="feature-modelos-title">Modelos Comerciais</h4>
+                        <p data-i18n="feature-modelos-desc">Seleciona automaticamente o modelo comercial adequado: 5.000, 7.000, 9.000, 12.000, 18.000, 24.000, 30.000, 36.000, 48.000 ou 60.000 BTU</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📚</span>
+                        <h4 data-i18n="feature-memorial-title">Memorial de Cálculo</h4>
+                        <p data-i18n="feature-memorial-desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- CARTÃO 3: DIMENSIONADOR DE AQUECEDOR SOLAR -->
+        <!-- ========================================== -->
+        <div class="card highlight card-expansivel">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                <span class="icon">☀️</span>
+                <h2 data-i18n="app-aquecimento">Aquecedor Solar</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <p class="app-description">
+                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="aquecimento-description">Dimensionador completo de sistemas de aquecimento solar térmico. Calcula área de coletores, volume do boiler, número de painéis e potência necessária. Suporta água de consumo e aquecimento ambiente.</span>
+                </p>
+                
+                <div class="features-grid">
+                    <div class="feature">
+                        <span class="feature-icon">💧</span>
+                        <h4 data-i18n="feature-agua-casa-title">Água e Casa</h4>
+                        <p data-i18n="feature-agua-casa-desc">Suporta aquecimento de água de consumo e aquecimento ambiente separadamente ou combinados</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🏠</span>
+                        <h4 data-i18n="feature-classe-energetica-title">Classe Energética</h4>
+                        <p data-i18n="feature-classe-energetica-desc">Considera classes energéticas (A4 a G) com consumo específico real em kWh/m²·ano</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📅</span>
+                        <h4 data-i18n="feature-autonomia-title">Dias de Autonomia</h4>
+                        <p data-i18n="feature-autonomia-desc">Configura dias de autonomia para água e casa, dimensionando o boiler adequadamente</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📋</span>
+                        <h4 data-i18n="feature-memorial-title">Memorial de Cálculo</h4>
+                        <p data-i18n="feature-memorial-desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- CARTÃO 4: CALCULADORA DE BITOLA DE FIOS -->
+        <!-- ========================================== -->
+        <div class="card highlight card-expansivel">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                <span class="icon">🔌</span>
+                <h2 data-i18n="app-bitola">Bitola</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <p class="app-description">
+                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="bitola-description">Calcula a área de seção mínima de fios elétricos para circuitos CC e CA, considerando queda de tensão e selecionando a bitola comercial adequada.</span>
+                </p>
+                
+                <div class="features-grid">
+                    <div class="feature">
+                        <span class="feature-icon">🔋🔌</span>
+                        <h4 data-i18n="feature-cc-ca-title">CC e CA</h4>
+                        <p data-i18n="feature-cc-ca-desc">Suporta corrente contínua (CC) e alternada (CA) com tensões típicas e valores personalizados.</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📏</span>
+                        <h4 data-i18n="feature-bitola-comercial-title">Bitola Comercial</h4>
+                        <p data-i18n="feature-bitola-comercial-desc">Seleciona automaticamente a bitola comercial padrão brasileiro (NBR 5410) que atende aos requisitos.</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📊</span>
+                        <h4 data-i18n="feature-queda-tensao-title">Queda de Tensão</h4>
+                        <p data-i18n="feature-queda-tensao-desc">Recomenda 4% de queda de tensão para projetos residenciais no Brasil (padrão mais utilizado).</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">⚡</span>
+                        <h4 data-i18n="feature-potencia-title">Potência Flexível</h4>
+                        <p data-i18n="feature-potencia-desc">Steps dinâmicos: 1W (1-10W), 10W (100-1000W), 50W (1000-3000W) com formatação automática em "k" para valores >= 1000W.</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📚</span>
+                        <h4 data-i18n="feature-memorial-title">Memorial de Cálculo</h4>
+                        <p data-i18n="feature-memorial-desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- CARTÃO 5: DIMENSIONADOR DE SISTEMA FOTOVOLTAICO -->
+        <!-- ========================================== -->
+        <div class="card highlight card-expansivel">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                <span class="icon">🔋</span>
+                <h2 data-i18n="app-solar">Energia Solar</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <p class="app-description">
+                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="solar-description">Dimensionamento completo de sistemas fotovoltaicos off-grid. Calcula número de painéis solares, capacidade de baterias (AGM e LiFePO4), inversor necessário, controlador MPPT e autonomia do sistema.</span>
+                </p>
+                
+                <div class="features-grid">
+                    <div class="feature">
+                        <span class="feature-icon">🔋</span>
+                        <h4 data-i18n="feature-battery-title">Baterias AGM/Lítio</h4>
+                        <p data-i18n="feature-battery-desc">Compara chumbo-ácido e LiFePO₄ usando capacidade em <strong>kWh</strong>, tabelas de vida útil e parâmetros configuráveis.</p>
+                        <p class="small-note" data-i18n="feature-battery-note">As configurações permitem ajustar kWh/Ah, tensão, preço e peso (sliders até 180 kg).</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">⚙️</span>
+                        <h4 data-i18n="feature-config-title">Configurável</h4>
+                        <p data-i18n="feature-config-desc">Customize preços, potências e especificações das baterias — mudanças salvas em `localStorage` (chave `configSolar`).</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🔌</span>
+                        <h4 data-i18n="feature-inverter-mppt-title">Inversor e MPPT</h4>
+                        <p data-i18n="feature-inverter-mppt-desc">Dimensiona inversor baseado no consumo típico de pico e controlador MPPT com capacidade para carregar todo o banco de baterias e suportar o pico de todos os painéis.</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📚</span>
+                        <h4 data-i18n="feature-memorial-title">Memorial de Cálculo</h4>
+                        <p data-i18n="feature-memorial-desc">Memorial didático completo que explica passo a passo todos os cálculos realizados, com fórmulas, exemplos práticos e resumo dos valores calculados.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- CARTÃO 6: DIMENSIONADOR DE FAZENDA AUTO-SUSTENTÁVEL -->
+        <!-- ========================================== -->
+        <div class="card highlight card-expansivel">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                <span class="icon">🌾</span>
+                <h2 data-i18n="app-fazenda">Fazenda</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <p class="app-description">
+                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="fazenda-description">Planejador completo de fazenda auto-sustentável. Calcula espaço necessário, quantidade de plantas (frutas, verduras, legumes) e animais necessários para alimentar uma família. Inclui calendário de plantio/colheita e frequência de reprodução dos animais para manter produção contínua.</span>
+                </p>
+                
+                <div class="features-grid">
+                    <div class="feature">
+                        <span class="feature-icon">🌱</span>
+                        <h4 data-i18n="feature-plantas-title">Plantas e Animais</h4>
+                        <p data-i18n="feature-plantas-desc">Seleção de frutas, verduras, legumes e animais com cálculo proporcional de produção mínima</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📊</span>
+                        <h4 data-i18n="feature-producao-minima-title">Produção Mínima</h4>
+                        <p data-i18n="feature-producao-minima-desc">Sliders ajustáveis para definir produção mínima diária de plantas e proteínas por pessoa</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📅</span>
+                        <h4 data-i18n="feature-calendario-title">Calendário</h4>
+                        <p data-i18n="feature-calendario-desc">Calendário completo de plantio, colheita e reprodução animal para manter produção contínua</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📏</span>
+                        <h4 data-i18n="feature-espaco-title">Dimensionamento</h4>
+                        <p data-i18n="feature-espaco-desc">Calcula área necessária, quantidade de plantas/animais e consumo diário por pessoa</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📚</span>
+                        <h4 data-i18n="feature-memorial-title">Memorial de Cálculo</h4>
+                        <p data-i18n="feature-memorial-desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- CARTÃO 7: CALCULADORA DE HÉLICE -->
+        <!-- ========================================== -->
+        <div class="card highlight card-expansivel">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                <span class="icon">⚓</span>
+                <h2 data-i18n="app-helice">Hélice</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <p class="app-description">
+                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="helice-description">Calcula o passo estimado da hélice para ajudar na escolha.</span>
+                </p>
+                
+                <div class="features-grid">
+                    <div class="feature">
+                        <span class="feature-icon">📐</span>
+                        <h4 data-i18n="feature-pitch-title">Cálculo de Passo</h4>
+                        <p data-i18n="feature-pitch-desc">Determina o passo correto para atingir o RPM máximo</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🌊</span>
+                        <h4 data-i18n="feature-slip-title">Análise de Slip</h4>
+                        <p data-i18n="feature-slip-desc">Considera a eficiência e o deslizamento na água</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📚</span>
+                        <h4 data-i18n="feature-memorial-title">Memorial de Cálculo</h4>
+                        <p data-i18n="feature-memorial-desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- CARTÃO 8: CALCULADORA DE EMPRÉSTIMOS -->
         <!-- Cartão destacado (classe highlight) com descrição completa do app -->
         <!-- ========================================== -->
         <div class="card highlight card-expansivel">
             <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
                 <span class="icon">💰</span>
-                <h2 data-i18n="calculator-title">Calculadora de Empréstimos BR/IT</h2>
+                <h2 data-i18n="app-mutuo">Mutuo</h2>
                 <span class="seta-expansao">▼</span>
             </div>
             <div class="card-content conteudo-expansivel">
@@ -160,252 +404,7 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- CARTÃO 3: CALCULADORA DE HÉLICE -->
-        <!-- ========================================== -->
-        <div class="card highlight card-expansivel">
-            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
-                <span class="icon">🚤</span>
-                <h2 data-i18n="helice-title">Calculadora de Hélice</h2>
-                <span class="seta-expansao">▼</span>
-            </div>
-            <div class="card-content conteudo-expansivel">
-                <p class="app-description">
-                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="helice-description">Calcula o passo estimado da hélice para ajudar na escolha.</span>
-                </p>
-                
-                <div class="features-grid">
-                    <div class="feature">
-                        <span class="feature-icon">📐</span>
-                        <h4 data-i18n="feature-pitch-title">Cálculo de Passo</h4>
-                        <p data-i18n="feature-pitch-desc">Determina o passo correto para atingir o RPM máximo</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">🌊</span>
-                        <h4 data-i18n="feature-slip-title">Análise de Slip</h4>
-                        <p data-i18n="feature-slip-desc">Considera a eficiência e o deslizamento na água</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📚</span>
-                        <h4 data-i18n="feature-memorial-title">Memorial de Cálculo</h4>
-                        <p data-i18n="feature-memorial-desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- CARTÃO 3B: CALCULADORA SOLAR -->
-        <!-- ========================================== -->
-        <div class="card highlight card-expansivel">
-            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
-                <span class="icon">🔋</span>
-                <h2 data-i18n="solar-title">Energia Solar - Dimensionamento Fotovoltaico</h2>
-                <span class="seta-expansao">▼</span>
-            </div>
-            <div class="card-content conteudo-expansivel">
-                <p class="app-description">
-                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="solar-description">Dimensionamento completo de sistemas fotovoltaicos off-grid. Calcula número de painéis solares, capacidade de baterias (AGM e LiFePO4), inversor necessário, controlador MPPT e autonomia do sistema.</span>
-                </p>
-                
-                <div class="features-grid">
-                    <div class="feature">
-                        <span class="feature-icon">🔋</span>
-                        <h4 data-i18n="feature-battery-title">Baterias AGM/Lítio</h4>
-                        <p data-i18n="feature-battery-desc">Compara chumbo-ácido e LiFePO₄ usando capacidade em <strong>kWh</strong>, tabelas de vida útil e parâmetros configuráveis.</p>
-                        <p class="small-note" data-i18n="feature-battery-note">As configurações permitem ajustar kWh/Ah, tensão, preço e peso (sliders até 180 kg).</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">⚙️</span>
-                        <h4 data-i18n="feature-config-title">Configurável</h4>
-                        <p data-i18n="feature-config-desc">Customize preços, potências e especificações das baterias — mudanças salvas em `localStorage` (chave `configSolar`).</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">🔌</span>
-                        <h4 data-i18n="feature-inverter-mppt-title">Inversor e MPPT</h4>
-                        <p data-i18n="feature-inverter-mppt-desc">Dimensiona inversor baseado no consumo típico de pico e controlador MPPT com capacidade para carregar todo o banco de baterias e suportar o pico de todos os painéis.</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📚</span>
-                        <h4 data-i18n="feature-memorial-title">Memorial de Cálculo</h4>
-                        <p data-i18n="feature-memorial-desc">Memorial didático completo que explica passo a passo todos os cálculos realizados, com fórmulas, exemplos práticos e resumo dos valores calculados.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- CARTÃO 3C: CALCULADORA DE BITOLA DE FIOS -->
-        <!-- ========================================== -->
-        <div class="card highlight card-expansivel">
-            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
-                <span class="icon">🔌</span>
-                <h2 data-i18n="bitola-title">Calculadora de Bitola de Fios</h2>
-                <span class="seta-expansao">▼</span>
-            </div>
-            <div class="card-content conteudo-expansivel">
-                <p class="app-description">
-                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="bitola-description">Calcula a área de seção mínima de fios elétricos para circuitos CC e CA, considerando queda de tensão e selecionando a bitola comercial adequada.</span>
-                </p>
-                
-                <div class="features-grid">
-                    <div class="feature">
-                        <span class="feature-icon">🔋</span>
-                        <h4 data-i18n="feature-cc-ca-title">CC e CA</h4>
-                        <p data-i18n="feature-cc-ca-desc">Suporta corrente contínua (CC) e alternada (CA) com tensões típicas e valores personalizados.</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📏</span>
-                        <h4 data-i18n="feature-bitola-comercial-title">Bitola Comercial</h4>
-                        <p data-i18n="feature-bitola-comercial-desc">Seleciona automaticamente a bitola comercial padrão brasileiro (NBR 5410) que atende aos requisitos.</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📊</span>
-                        <h4 data-i18n="feature-queda-tensao-title">Queda de Tensão</h4>
-                        <p data-i18n="feature-queda-tensao-desc">Recomenda 4% de queda de tensão para projetos residenciais no Brasil (padrão mais utilizado).</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">🔌</span>
-                        <h4 data-i18n="feature-potencia-title">Potência Flexível</h4>
-                        <p data-i18n="feature-potencia-desc">Steps dinâmicos: 1W (1-10W), 10W (100-1000W), 50W (1000-3000W) com formatação automática em "k" para valores >= 1000W.</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📚</span>
-                        <h4 data-i18n="feature-memorial-title">Memorial de Cálculo</h4>
-                        <p data-i18n="feature-memorial-desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- CARTÃO 3D: DIMENSIONADOR DE AR CONDICIONADO -->
-        <!-- ========================================== -->
-        <div class="card highlight card-expansivel">
-            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
-                <span class="icon">❄️</span>
-                <h2 data-i18n="arcondicionado-title">Dimensionador de Ar Condicionado</h2>
-                <span class="seta-expansao">▼</span>
-            </div>
-            <div class="card-content conteudo-expansivel">
-                <p class="app-description">
-                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="arcondicionado-description">Calculadora para dimensionamento de ar condicionado. Determina a capacidade necessária (BTU) baseada em área (mínimo 2 m²), altura, número de pessoas, equipamentos e condições ambientais. Seleciona automaticamente o modelo comercial adequado (5.000 a 60.000 BTU).</span>
-                </p>
-                
-                <div class="features-grid">
-                    <div class="feature">
-                        <span class="feature-icon">🌡️</span>
-                        <h4 data-i18n="feature-btu-title">Cálculo de BTU</h4>
-                        <p data-i18n="feature-btu-desc">Determina a capacidade necessária em BTU baseada em múltiplos fatores ambientais</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📐</span>
-                        <h4 data-i18n="feature-fatores-title">Múltiplos Fatores</h4>
-                        <p data-i18n="feature-fatores-desc">Considera área (2-100 m²), altura, número de pessoas, equipamentos e condições climáticas</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">🔧</span>
-                        <h4 data-i18n="feature-modelos-title">Modelos Comerciais</h4>
-                        <p data-i18n="feature-modelos-desc">Seleciona automaticamente o modelo comercial adequado: 5.000, 7.000, 9.000, 12.000, 18.000, 24.000, 30.000, 36.000, 48.000 ou 60.000 BTU</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📚</span>
-                        <h4 data-i18n="feature-memorial-title">Memorial de Cálculo</h4>
-                        <p data-i18n="feature-memorial-desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- CARTÃO 3E: DIMENSIONADOR DE AQUECEDOR SOLAR -->
-        <!-- ========================================== -->
-        <div class="card highlight card-expansivel">
-            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
-                <span class="icon">☀️</span>
-                <h2 data-i18n="aquecimento-title">Dimensionador de Aquecedor Solar</h2>
-                <span class="seta-expansao">▼</span>
-            </div>
-            <div class="card-content conteudo-expansivel">
-                <p class="app-description">
-                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="aquecimento-description">Dimensionador completo de sistemas de aquecimento solar térmico. Calcula área de coletores, volume do boiler, número de painéis e potência necessária. Suporta água de consumo e aquecimento ambiente.</span>
-                </p>
-                
-                <div class="features-grid">
-                    <div class="feature">
-                        <span class="feature-icon">💧</span>
-                        <h4 data-i18n="feature-agua-casa-title">Água e Casa</h4>
-                        <p data-i18n="feature-agua-casa-desc">Suporta aquecimento de água de consumo e aquecimento ambiente separadamente ou combinados</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">🏠</span>
-                        <h4 data-i18n="feature-classe-energetica-title">Classe Energética</h4>
-                        <p data-i18n="feature-classe-energetica-desc">Considera classes energéticas (A4 a G) com consumo específico real em kWh/m²·ano</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📅</span>
-                        <h4 data-i18n="feature-autonomia-title">Dias de Autonomia</h4>
-                        <p data-i18n="feature-autonomia-desc">Configura dias de autonomia para água e casa, dimensionando o boiler adequadamente</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📋</span>
-                        <h4 data-i18n="feature-memorial-title">Memorial de Cálculo</h4>
-                        <p data-i18n="feature-memorial-desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📱</span>
-                        <h4 data-i18n="feature-grid-title">Grid Responsivo</h4>
-                        <p data-i18n="feature-grid-desc">Classes energéticas organizadas em grid responsivo que se adapta à largura da tela</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- CARTÃO 3F: DIMENSIONADOR DE FAZENDA AUTO-SUSTENTÁVEL -->
-        <!-- ========================================== -->
-        <div class="card highlight card-expansivel">
-            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
-                <span class="icon">🌾</span>
-                <h2 data-i18n="fazenda-title">Dimensionador de Fazenda Auto-Sustentável</h2>
-                <span class="seta-expansao">▼</span>
-            </div>
-            <div class="card-content conteudo-expansivel">
-                <p class="app-description">
-                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="fazenda-description">Planejador completo de fazenda auto-sustentável. Calcula espaço necessário, quantidade de plantas (frutas, verduras, legumes) e animais necessários para alimentar uma família. Inclui calendário de plantio/colheita e frequência de reprodução dos animais para manter produção contínua.</span>
-                </p>
-                
-                <div class="features-grid">
-                    <div class="feature">
-                        <span class="feature-icon">🌱</span>
-                        <h4 data-i18n="feature-plantas-title">Plantas e Animais</h4>
-                        <p data-i18n="feature-plantas-desc">Seleção de frutas, verduras, legumes e animais com cálculo proporcional de produção mínima</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📊</span>
-                        <h4 data-i18n="feature-producao-minima-title">Produção Mínima</h4>
-                        <p data-i18n="feature-producao-minima-desc">Sliders ajustáveis para definir produção mínima diária de plantas e proteínas por pessoa</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📅</span>
-                        <h4 data-i18n="feature-calendario-title">Calendário</h4>
-                        <p data-i18n="feature-calendario-desc">Calendário completo de plantio, colheita e reprodução animal para manter produção contínua</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📏</span>
-                        <h4 data-i18n="feature-espaco-title">Dimensionamento</h4>
-                        <p data-i18n="feature-espaco-desc">Calcula área necessária, quantidade de plantas/animais e consumo diário por pessoa</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📚</span>
-                        <h4 data-i18n="feature-memorial-title">Memorial de Cálculo</h4>
-                        <p data-i18n="feature-memorial-desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- CARTÃO 4: RECURSOS ESPECIAIS -->
+        <!-- CARTÃO 9: RECURSOS ESPECIAIS -->
         <div class="card card-expansivel">
             <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
                 <span class="icon">✨</span>
@@ -437,7 +436,7 @@
 
 
 
-        <!-- CARTÃO 5: TECNOLOGIAS -->
+        <!-- CARTÃO 10: TECNOLOGIAS -->
         <div class="card card-expansivel">
             <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
                 <span class="icon">📚</span>

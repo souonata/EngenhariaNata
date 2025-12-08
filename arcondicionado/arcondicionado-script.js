@@ -31,14 +31,83 @@ let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConf
 // CONSTANTES DO SISTEMA
 // ============================================
 
-// BTU por metro cúbico (base para cálculo de volume)
-const BTU_POR_M3 = 600;
+/**
+ * ============================================
+ * CONSTANTES DE DIMENSIONAMENTO
+ * ============================================
+ */
 
-// BTU por pessoa
-const BTU_POR_PESSOA = 600;
+/**
+ * BTU_POR_M3 - BTU necessário por metro cúbico de volume
+ * 
+ * Representa a capacidade de refrigeração necessária para resfriar
+ * 1 metro cúbico de ar em um ambiente residencial típico.
+ * 
+ * Este valor considera:
+ * - Remoção de calor sensível (temperatura do ar)
+ * - Remoção de calor latente (umidade)
+ * - Renovação de ar necessária
+ * - Perdas térmicas através de paredes, teto e piso
+ * 
+ * O valor de 600 BTU/m³ é um padrão amplamente aceito na indústria
+ * para dimensionamento de ar condicionado residencial.
+ * 
+ * FÓRMULA: BTU_Volume = Volume (m³) × 600
+ * 
+ * FONTE: Normas técnicas e práticas da indústria de refrigeração
+ */
+const BTU_POR_M3 = 600; // BTU por metro cúbico
 
-// BTU por equipamento elétrico
-const BTU_POR_EQUIPAMENTO = 600;
+/**
+ * BTU_POR_PESSOA - BTU adicional necessário por pessoa
+ * 
+ * Representa o calor metabólico gerado por uma pessoa em repouso
+ * ou em atividade leve, que precisa ser removido pelo ar condicionado.
+ * 
+ * O calor gerado por uma pessoa varia conforme:
+ * - Atividade física (repouso: ~100 W, atividade leve: ~150 W)
+ * - Metabolismo individual
+ * - Umidade expirada
+ * 
+ * O valor de 600 BTU/pessoa é uma média conservadora que considera:
+ * - Calor sensível: ~400 BTU/h
+ * - Calor latente (umidade): ~200 BTU/h
+ * - Total: ~600 BTU/h por pessoa
+ * 
+ * FÓRMULA: BTU_Pessoas = Número de Pessoas × 600
+ * 
+ * FONTE: Normas técnicas ASHRAE e práticas da indústria
+ */
+const BTU_POR_PESSOA = 600; // BTU por pessoa
+
+/**
+ * BTU_POR_EQUIPAMENTO - BTU adicional necessário por equipamento elétrico
+ * 
+ * Representa o calor gerado por equipamentos elétricos que precisa
+ * ser removido pelo ar condicionado.
+ * 
+ * Equipamentos elétricos geram calor porque:
+ * - Toda energia elétrica consumida é convertida em calor (lei da conservação)
+ * - Eficiência dos equipamentos: parte da energia vira trabalho útil,
+ *   mas a maior parte vira calor residual
+ * 
+ * Exemplos de equipamentos e seu calor gerado:
+ * - TV LED 50": ~100-150 W → ~350-500 BTU/h
+ * - Computador desktop: ~150-300 W → ~500-1000 BTU/h
+ * - Geladeira: ~100-200 W → ~350-700 BTU/h
+ * - Lâmpadas incandescentes: ~60-100 W → ~200-350 BTU/h
+ * 
+ * O valor de 600 BTU/equipamento é uma média conservadora que considera
+ * equipamentos típicos de uma residência.
+ * 
+ * FÓRMULA: BTU_Equipamentos = Número de Equipamentos × 600
+ * 
+ * NOTA: Para equipamentos de alta potência (forno, secadora, etc.),
+ * pode ser necessário considerar valores maiores ou cálculos específicos.
+ * 
+ * FONTE: Normas técnicas e práticas da indústria
+ */
+const BTU_POR_EQUIPAMENTO = 600; // BTU por equipamento elétrico
 
 // Fatores de insolação
 const FATORES_INSOLACAO = {
@@ -94,10 +163,8 @@ const traducoes = {
         'resultado-volume': 'Volume do Ambiente:',
         'resultado-btu-base': 'BTU Base (Volume):',
         'info-modelos': '💡 Modelos Comerciais Comuns:',
-        'footer': 'Dimensionador de Ar Condicionado - Engenharia Nata © 2025',
+        'footer': 'Dimensionador de Ar Condicionado - Engenharia Nata @ 2025',
         'aria-home': 'Voltar para a tela inicial',
-        'dev-badge-header': '🚧 EM DESENVOLVIMENTO',
-        'watermark-dev': '🚧 EM DESENVOLVIMENTO',
         'learn-more': 'SAIBA MAIS!',
         'back': '← Voltar',
         'btn-memorial': 'Ver Memorial de Cálculo',
@@ -156,11 +223,10 @@ const traducoes = {
         'resultado-volume': 'Volume Ambiente:',
         'resultado-btu-base': 'BTU Base (Volume):',
         'info-modelos': '💡 Modelli Commerciali Comuni:',
-        'footer': 'Dimensionatore Climatizzatore - Engenharia Nata © 2025',
+        'footer': 'Dimensionatore Climatizzatore - Engenharia Nata @ 2025',
         'aria-home': 'Torna alla schermata iniziale',
-        'dev-badge-header': '🚧 IN SVILUPPO',
         'watermark-dev': '🚧 IN SVILUPPO',
-        'learn-more': 'SAVERE DI PIÙ!',
+        'learn-more': 'SCOPRI DI PIÙ!',
         'back': '← Indietro',
         'btn-memorial': 'Vedi Memoriale di Calcolo',
         'memorial-title': '📚 Memoriale di Calcolo - Dimensionamento Climatizzatore',
@@ -524,7 +590,10 @@ document.addEventListener('DOMContentLoaded', function() {
     sliderArea.addEventListener('input', () => {
         const valor = parseFloat(sliderArea.value);
         const inputArea = document.getElementById('inputArea');
-        if (inputArea) inputArea.value = Math.round(valor);
+        if (inputArea) {
+            inputArea.value = Math.round(valor);
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputArea);
+        }
         atualizarResultados();
     });
     
@@ -534,6 +603,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (inputAltura) {
             // Formata com vírgula usando formatarDecimal
             inputAltura.value = formatarDecimal(valor, 1);
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAltura);
         }
         atualizarResultados();
     });
@@ -541,14 +611,20 @@ document.addEventListener('DOMContentLoaded', function() {
     sliderPessoas.addEventListener('input', () => {
         const valor = parseInt(sliderPessoas.value);
         const inputPessoas = document.getElementById('inputPessoas');
-        if (inputPessoas) inputPessoas.value = valor;
+        if (inputPessoas) {
+            inputPessoas.value = valor;
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
+        }
         atualizarResultados();
     });
     
     sliderEquipamentos.addEventListener('input', () => {
         const valor = parseInt(sliderEquipamentos.value);
         const inputEquipamentos = document.getElementById('inputEquipamentos');
-        if (inputEquipamentos) inputEquipamentos.value = valor;
+        if (inputEquipamentos) {
+            inputEquipamentos.value = valor;
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputEquipamentos);
+        }
         atualizarResultados();
     });
     
@@ -561,6 +637,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (inputArea) {
         inputArea.addEventListener('focus', (e) => e.target.select());
         inputArea.addEventListener('input', () => {
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputArea);
             const valor = converterParaNumero(inputArea.value);
             if (!isNaN(valor) && valor > 0) {
                 const slider = document.getElementById('sliderArea');
@@ -584,6 +661,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 // Sempre exibe com vírgula
                 inputAltura.value = formatarDecimal(valor, 1);
+                if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAltura);
                 atualizarResultados();
             }
         });
@@ -592,6 +670,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const valor = converterParaNumero(inputAltura.value);
             if (!isNaN(valor) && valor > 0) {
                 inputAltura.value = formatarDecimal(valor, 1);
+                if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAltura);
             }
         });
     }
@@ -717,8 +796,10 @@ function toggleMemorial() {
         }
         memorialSection.style.display = 'block';
         if (resultadosSection) resultadosSection.style.display = 'none';
-        // Rolar para o topo da página
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Rolar para o topo da seção do memorial
+        setTimeout(() => {
+            memorialSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
     } else {
         memorialSection.style.display = 'none';
         if (resultadosSection) resultadosSection.style.display = 'block';
@@ -740,7 +821,12 @@ function atualizarMemorialComValores() {
     
     const volume = area * altura;
     const btuBase = resultado.btuBase;
-    const btuFinal = resultado.btuFinal;
+    
+    // Calcular btuFinal aplicando os fatores (não retornado pela função calcularBTU)
+    const fatorInsolacao = FATORES_INSOLACAO[insolacao] || 1.0;
+    const fatorIsolamento = FATORES_ISOLAMENTO[isolamento] || 1.0;
+    const btuFinal = btuBase * fatorInsolacao * fatorIsolamento;
+    
     const potenciaKw = resultado.potenciaKw;
     
     document.getElementById('memorial-exemplo-volume').textContent = 
@@ -749,25 +835,23 @@ function atualizarMemorialComValores() {
     document.getElementById('memorial-exemplo-btu-base').textContent = 
         `${formatarNumero(volume, 0)} m³ × 600 = ${formatarNumero(volume * 600, 0)} BTU + ${pessoas} pessoas × 600 = ${formatarNumero(pessoas * 600, 0)} BTU + ${equipamentos} equipamentos × 600 = ${formatarNumero(equipamentos * 600, 0)} BTU = ${formatarNumero(btuBase, 0)} BTU`;
     
-    const fatorInsolacao = insolacao === 'baixa' ? 1.0 : insolacao === 'media' ? 1.15 : 1.3;
-    const fatorIsolamento = isolamento === 'bom' ? 0.8 : isolamento === 'medio' ? 1.0 : 1.2;
-    
     document.getElementById('memorial-exemplo-fatores').textContent = 
         `${formatarNumero(btuBase, 0)} BTU × ${formatarDecimal(fatorInsolacao, 2)} (insolação ${insolacao}) × ${formatarDecimal(fatorIsolamento, 2)} (isolamento ${isolamento}) = ${formatarNumero(btuFinal, 0)} BTU`;
     
     const modelos = MODELOS_COMERCIAIS;
-    const modeloComercial = modelos.find(m => m >= btuFinal) || modelos[modelos.length - 1];
+    const modeloComercial = selecionarModeloComercial(btuFinal);
+    const potenciaKwModelo = modeloComercial * BTU_PARA_KW;
     
     document.getElementById('memorial-exemplo-modelo').textContent = 
         `${formatarNumero(btuFinal, 0)} BTU → Modelo comercial: ${formatarNumero(modeloComercial, 0)} BTU`;
     
     document.getElementById('memorial-exemplo-potencia').textContent = 
-        `${formatarNumero(modeloComercial, 0)} BTU × 0.000293 = ${formatarDecimal(potenciaKw, 2)} kW`;
+        `${formatarNumero(modeloComercial, 0)} BTU × 0.000293 = ${formatarDecimal(potenciaKwModelo, 2)} kW`;
     
     // Atualizar resumo
     document.getElementById('resumo-volume').textContent = formatarNumero(volume, 0) + ' m³';
     document.getElementById('resumo-btu-base').textContent = formatarNumero(btuBase, 0) + ' BTU';
     document.getElementById('resumo-btu-final').textContent = formatarNumero(modeloComercial, 0) + ' BTU';
-    document.getElementById('resumo-potencia').textContent = formatarDecimal(potenciaKw, 2) + ' kW';
+    document.getElementById('resumo-potencia').textContent = formatarDecimal(potenciaKwModelo, 2) + ' kW';
 }
 

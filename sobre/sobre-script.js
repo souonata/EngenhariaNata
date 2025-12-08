@@ -22,8 +22,16 @@ const traducoes = {
         'page-title': '📱 Sobre o Projeto',
         'page-subtitle': 'Portfólio de apps web',
         'overview-title': 'Visão Geral',
-        'overview-description': 'Portfólio de apps web educativos para engenharia e finanças. Desenvolvido com JavaScript puro, bilíngue (PT/IT) e mobile-first. Alguns apps estão em desenvolvimento e marcados com badge "DEV".',
+        'overview-description': 'Portfólio de apps web educativos para engenharia e finanças. Desenvolvido com JavaScript puro, bilíngue (PT/IT) e mobile-first.',
 
+        'app-about': 'Sobre mim',
+        'app-arcondicionado': 'Ar Condicionado',
+        'app-aquecimento': 'Aquecedor Solar',
+        'app-bitola': 'Bitola',
+        'app-solar': 'Energia Solar',
+        'app-fazenda': 'Fazenda',
+        'app-helice': 'Hélice',
+        'app-mutuo': 'Mutuo',
         'app-mutuo-desc': 'Calculadora de amortização',
         'app-helice-desc': 'Calculadora de passo de hélice',
         'app-solar-desc': 'Dimensionamento fotovoltaico',
@@ -40,7 +48,7 @@ const traducoes = {
         'helice-title': 'Calculadora de Hélice',
         'helice-description': 'Calcula o passo estimado da hélice para ajudar na escolha.',
 
-        'solar-title': 'Energia Solar - Dimensionamento Fotovoltaico',
+        'solar-title': 'Dimensionador de Sistema Fotovoltaico Off-Grid - Energia Solar',
         'solar-description': 'Dimensionamento completo de sistemas fotovoltaicos off-grid. Calcula número de painéis solares, capacidade de baterias (AGM e LiFePO4), inversor necessário, controlador MPPT e autonomia do sistema.',
 
         'bitola-title': 'Calculadora de Bitola de Fios',
@@ -103,8 +111,6 @@ const traducoes = {
         'feature-autonomia-desc': 'Configura dias de autonomia para água e casa, dimensionando o boiler adequadamente',
         'feature-memorial-title': 'Memorial de Cálculo',
         'feature-memorial-desc': 'Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado',
-        'feature-grid-title': 'Grid Responsivo',
-        'feature-grid-desc': 'Classes energéticas organizadas em grid responsivo que se adapta à largura da tela',
 
         'feature-bilingual-title': 'Bilíngue',
         'feature-bilingual-desc': 'Troca entre Português e Italiano e exibe a moeda correspondente.',
@@ -145,8 +151,16 @@ const traducoes = {
         'page-title': '📱 Sul Progetto',
         'page-subtitle': 'Portfolio di app web',
         'overview-title': 'Panoramica',
-        'overview-description': 'Portfolio di app web didattiche per ingegneria e finanza. Sviluppato con JavaScript puro, bilingue (PT/IT) e mobile-first. Alcune app sono in sviluppo e contrassegnate con badge "DEV".',
+        'overview-description': 'Portfolio di app web didattiche per ingegneria e finanza. Sviluppato con JavaScript puro, bilingue (PT/IT) e mobile-first.',
 
+        'app-about': 'Su di me',
+        'app-arcondicionado': 'Climatizzatore',
+        'app-aquecimento': 'Riscaldatore Solare',
+        'app-bitola': 'Sezione Cavi',
+        'app-solar': 'Energia Solare',
+        'app-fazenda': 'Fattoria',
+        'app-helice': 'Elica',
+        'app-mutuo': 'Mutuo',
         'app-mutuo-desc': 'Calcolatrice di ammortamento',
         'app-helice-desc': 'Calcolatrice passo elica',
         'app-solar-desc': 'Dimensionamento fotovoltaico',
@@ -163,7 +177,7 @@ const traducoes = {
         'helice-title': 'Calcolatore Elica',
         'helice-description': "Calcola il passo stimato dell'elica per aiutare nella scelta.",
 
-        'solar-title': 'Energia Solare - Dimensionamento Fotovoltaico',
+        'solar-title': 'Dimensionatore Sistema Fotovoltaico Off-Grid - Energia Solare',
         'solar-description': 'Dimensionamento completo di sistemi fotovoltaici off-grid. Calcola numero di pannelli solari, capacità delle batterie (AGM e LiFePO4), inverter necessario, controller MPPT e autonomia del sistema.',
 
         'bitola-title': 'Calcolatrice Sezione Cavi',
@@ -226,8 +240,6 @@ const traducoes = {
         'feature-autonomia-desc': 'Configura giorni di autonomia per acqua e casa, dimensionando il boiler adeguatamente',
         'feature-memorial-title': 'Memoriale di Calcolo',
         'feature-memorial-desc': 'Mostra dettaglio completo di tutti i calcoli eseguiti per trasparenza e apprendimento',
-        'feature-grid-title': 'Griglia Responsiva',
-        'feature-grid-desc': 'Classi energetiche organizzate in griglia responsiva che si adatta alla larghezza dello schermo',
 
         'feature-bilingual-title': 'Bilingue',
         'feature-bilingual-desc': 'Cambia tra Portoghese e Italiano e mostra la valuta corrispondente.',

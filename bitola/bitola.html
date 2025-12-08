@@ -38,21 +38,25 @@
     <link rel="stylesheet" href="bitola-styles.css?v=1.0.0">
 </head>
 <body>
+    <!-- ========================================== -->
+    <!-- SELETOR DE IDIOMA (PADRÃO GLOBAL - FORA DO CONTAINER) -->
+    <!-- ========================================== -->
+    <div class="language-selector">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">
+            <span class="flag">🇧🇷</span>
+            <span class="lang-text">PT</span>
+        </button>
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT">
+            <span class="flag">🇮🇹</span>
+            <span class="lang-text">IT</span>
+        </button>
+    </div>
+
     <div class="container">
         <!-- ========================================== -->
-        <!-- CABEÇALHO COM SELETOR DE IDIOMA -->
+        <!-- CABEÇALHO -->
         <!-- ========================================== -->
         <header>
-            <div class="language-selector">
-                <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">
-                    <span class="flag">🇧🇷</span>
-                    <span class="lang-text">Português</span>
-                </button>
-                <button id="btnItaliano" class="lang-btn" data-lang="it-IT">
-                    <span class="flag">🇮🇹</span>
-                    <span class="lang-text">Italiano</span>
-                </button>
-            </div>
             <h1 data-i18n="app-title">🔌 Calculadora de Bitola de Fios</h1>
             <p class="subtitulo" data-i18n="app-subtitle">Área de Seção Mínima para Circuitos CC e CA</p>
         </header>
@@ -308,7 +312,7 @@
     </div>
 
     <footer>
-        <p data-i18n="footer">Calculadora de Bitola de Fios - Engenharia Nata © 2025</p>
+        <p data-i18n="footer">Calculadora de Bitola de Fios - Engenharia Nata @ 2025</p>
     </footer>
 
     <!-- Botão de retorno à tela inicial -->

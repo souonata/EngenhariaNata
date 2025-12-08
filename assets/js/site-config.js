@@ -77,3 +77,52 @@
     // Agora o objeto está disponível globalmente como window.SiteConfig
     // Outros arquivos podem usar: SiteConfig.PADROES.idioma, etc.
 })(window);
+
+// ============================================
+// FUNÇÃO GLOBAL: AJUSTAR TAMANHO DINÂMICO DE INPUTS
+// ============================================
+/**
+ * Ajusta dinamicamente a largura de um input baseado no seu conteúdo
+ * Adiciona 2 caracteres de folga ao tamanho atual do texto
+ * @param {HTMLElement|string} input - Elemento input ou ID do input
+ * @param {number} folgaCaracteres - Número de caracteres de folga (padrão: 2)
+ */
+function ajustarTamanhoInput(input, folgaCaracteres = 2) {
+    // Se recebeu string (ID), busca o elemento
+    if (typeof input === 'string') {
+        input = document.getElementById(input);
+    }
+    
+    // Verifica se o elemento existe e é um input
+    if (!input || input.tagName !== 'INPUT') {
+        return;
+    }
+    
+    // Cria um elemento temporário para medir o texto
+    const medida = document.createElement('span');
+    medida.style.visibility = 'hidden';
+    medida.style.position = 'absolute';
+    medida.style.whiteSpace = 'pre';
+    medida.style.font = window.getComputedStyle(input).font;
+    medida.style.padding = window.getComputedStyle(input).padding;
+    medida.style.border = window.getComputedStyle(input).border;
+    medida.style.boxSizing = window.getComputedStyle(input).boxSizing;
+    
+    // Adiciona o texto atual + caracteres de folga
+    const textoAtual = input.value || input.placeholder || '';
+    const caracteresFolga = 'M'.repeat(folgaCaracteres); // 'M' é geralmente o caractere mais largo
+    medida.textContent = textoAtual + caracteresFolga;
+    
+    // Adiciona temporariamente ao DOM para medir
+    document.body.appendChild(medida);
+    
+    // Calcula a largura necessária
+    const larguraNecessaria = medida.offsetWidth;
+    
+    // Remove o elemento temporário
+    document.body.removeChild(medida);
+    
+    // Aplica a largura ao input (com mínimo de 50px para não ficar muito pequeno)
+    const larguraMinima = 50;
+    input.style.width = Math.max(larguraNecessaria, larguraMinima) + 'px';
+}

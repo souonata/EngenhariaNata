@@ -36,8 +36,15 @@
 html {
     /* always reserve vertical scroll space */
     overflow-y: scroll;
-    /* reserve a stable gutter for scrollbar when internal scroll areas toggle */
-    scrollbar-gutter: stable both-edges;
+    /* reserve a stable gutter for scrollbar only on the right edge */
+    scrollbar-gutter: stable;
+}
+
+/* Em telas pequenas, remove o scrollbar-gutter para evitar espaços laterais */
+@media (max-width: 768px) {
+    html {
+        scrollbar-gutter: auto;
+    }
 }
 
 /* For elements that create their own scrollbars (eg. inside the simulated
@@ -81,7 +88,7 @@ html {
     background: var(--lang-btn-bg, rgba(255,255,255,0.2));
     border: 2px solid var(--lang-btn-border, rgba(255,255,255,0.3));
     border-radius: 20px;         /* match Solar's shape */
-    padding: 6px 14px;          /* smaller, compact */
+    padding: 8px 16px;          /* tamanho padronizado */
     cursor: pointer;
     transition: all 0.3s ease;
     color: var(--lang-btn-color, white);
@@ -89,8 +96,12 @@ html {
     font-weight: 600;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     user-select: none;
+    min-width: 60px;            /* largura mínima padronizada */
+    height: 36px;               /* altura fixa para consistência */
+    box-sizing: border-box;
 }
 
 .btn-idioma:hover, .lang-btn:hover {
@@ -112,13 +123,19 @@ html {
     display: flex;
     justify-content: center;               /* always centered horizontally */
     gap: var(--lang-selector-gap, 8px);    /* consistent spacing between buttons */
-    margin: var(--lang-selector-margin, 10px auto 8px auto); /* top/right/bottom/left */
+    margin: var(--lang-selector-margin, 15px auto 15px auto); /* top/right/bottom/left - espaçamento fixo */
     z-index: 100;                          /* ensure it's above device visuals */
     width: 100%;                           /* helps centering inside containers */
+    position: relative;                    /* permite posicionamento consistente */
 }
 /* Small helpers scoped for language buttons */
 .btn-idioma .flag, .lang-btn .flag { font-size: 1.1rem; }
-.btn-idioma .lang-text, .lang-btn .lang-text, .btn-idioma .texto-idioma, .lang-btn .texto-idioma { font-size: 0.8rem; font-weight: 600; }
+.btn-idioma .lang-text, .lang-btn .lang-text, .btn-idioma .texto-idioma, .lang-btn .texto-idioma { 
+    font-size: 0.85rem; 
+    font-weight: 600; 
+    min-width: 20px;                       /* garante tamanho consistente */
+    text-align: center;
+}
 
 /* App icons on the home grid */
 .app-icon { display: inline-block; text-decoration: none; color: inherit; }

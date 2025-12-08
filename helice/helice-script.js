@@ -10,27 +10,48 @@ const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? S
 let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
 
 /**
- * Constantes e explicação do método
- * ---------------------------------
- * A constante 1056 é usada para converter velocidade em nós e rotações
- * por minuto em uma unidade compatível com o passo (polegadas/minuto).
- *
- * Fórmula utilizada (no código):
- *  Passo (em polegadas) = (Velocidade_nós × 1056 × Redução) / (RPM_motor × (1 - Slip))
+ * ============================================
+ * CONSTANTES E EXPLICAÇÃO DO MÉTODO
+ * ============================================
+ * 
+ * CONSTANTE DE CONVERSÃO (1056):
+ * A constante 1056 é amplamente utilizada na indústria náutica para converter
+ * velocidade em nós para polegadas por minuto, permitindo o cálculo do passo da hélice.
+ * 
+ * Derivação da constante:
+ * - 1 nó = 1,852 km/h (definição internacional)
+ * - 1 nó = 1,852 × 1000 m/h = 1,852,000 m/h
+ * - 1 nó = 1,852,000 × 100 cm/h = 185,200,000 cm/h
+ * - 1 nó = 185,200,000 ÷ 60 min/h = 3,086,666.67 cm/min
+ * - 1 nó = 3,086,666.67 ÷ 2.54 cm/pol = 1,215,222.31 pol/min
+ * 
+ * A constante 1056 é uma aproximação prática e amplamente aceita na indústria,
+ * que simplifica os cálculos mantendo precisão suficiente para aplicações práticas.
+ * 
+ * FÓRMULA PRINCIPAL:
+ *  Passo (polegadas) = (Velocidade_nós × 1056 × Redução) / (RPM_motor × (1 - Slip))
  *
  * Onde:
- *  - Velocidade_nós: velocidade desejada da embarcação em nós
- *  - Redução: relação de redução externo (ex: 2.0 representa 2:1)
- *  - RPM_motor: rotação máxima do motor (por minuto)
- *  - Slip: percentual de deslizamento (0.10 = 10%) que reduz
- *    a velocidade teórica conseguida pela hélice.
+ *  - Velocidade_nós: velocidade desejada da embarcação em nós (1 nó = 1,852 km/h)
+ *  - Redução: relação de redução da rabeta (ex: 2.0 = redução 2:1)
+ *    → Se redução = 2.0, o motor gira 2 vezes para a hélice girar 1 vez
+ *  - RPM_motor: rotação máxima do motor em rotações por minuto
+ *  - Slip: percentual de deslizamento (0.10 = 10%, 0.15 = 15%, etc.)
+ *    → Representa a perda de eficiência entre a hélice e a água
+ *    → Valores típicos: 10-20% para barcos de lazer
  *
- * Interpretação intuitiva:
- *  - Se não houvesse slip, a hélice avançaria exatamente `passo` polegadas
- *    por rotação. Na prática, o slip diminui essa eficiência, usando (1 - slip)
- *    como divisor para compensar a perda.
+ * INTERPRETAÇÃO FÍSICA:
+ *  - O passo é a distância teórica (em polegadas) que a hélice avançaria
+ *    em uma rotação completa, sem considerar o deslizamento
+ *  - O slip reduz a eficiência: se slip = 15%, apenas 85% da eficiência teórica é alcançada
+ *  - A fórmula usa (1 - Slip) no denominador para compensar essa perda
+ *  - Exemplo: slip de 15% (0.15) → usa 85% (0.85) da eficiência teórica
+ * 
+ * FONTE:
+ * Esta fórmula é baseada em métodos padrão da indústria náutica para dimensionamento
+ * de hélices para embarcações de lazer e comerciais.
  */
-const CONSTANTE_CONVERSAO = 1056; // Conversão de nós para polegadas/minuto
+const CONSTANTE_CONVERSAO = 1056; // Constante de conversão: nós → polegadas/minuto (padrão da indústria náutica)
 
 // Fatores de conversão de velocidade
 const CONVERSAO_VELOCIDADE = {
@@ -129,10 +150,31 @@ function converterValorFormatadoParaNumero(valorFormatado) {
         valorTexto = valorTexto.replace(/\./g, ''); // Remove pontos se houver
         valorTexto = valorTexto.replace(',', '.');   // Troca vírgula por ponto
     }
-    // Se tem apenas pontos ou nenhum, remove pontos (assume milhares)
-    else {
-        valorTexto = valorTexto.replace(/\./g, '');
+    // Se tem apenas um ponto, verifica se é decimal ou milhares
+    else if (valorTexto.indexOf('.') !== -1) {
+        const partes = valorTexto.split('.');
+        // Se há mais de 2 partes, é formato com milhares (ex: 1.234.567)
+        if (partes.length > 2) {
+            valorTexto = valorTexto.replace(/\./g, ''); // Remove todos os pontos (milhares)
+        }
+        // Se há 2 partes
+        else if (partes.length === 2) {
+            // Se a segunda parte tem exatamente 3 dígitos, provavelmente é milhares (ex: 5.800, 1.234)
+            if (partes[1].length === 3) {
+                valorTexto = valorTexto.replace(/\./g, ''); // Remove o ponto (milhares)
+            }
+            // Se a segunda parte tem 1-2 dígitos, provavelmente é decimal (ex: 2.32, 12.5)
+            else if (partes[1].length <= 2) {
+                // Mantém o ponto como separador decimal (já está no formato correto)
+                // Não precisa fazer nada, parseFloat já entende
+            }
+            // Caso contrário (mais de 3 dígitos na segunda parte), remove o ponto
+            else {
+                valorTexto = valorTexto.replace(/\./g, '');
+            }
+        }
     }
+    // Se não tem nem vírgula nem ponto, já está no formato correto
     
     return parseFloat(valorTexto) || 0;
 }
@@ -197,7 +239,7 @@ const traducoes = {
         'info-slip-texto': 'Deslizamento entre a hélice e a água. Barcos de lazer típicos têm 10-20% de slip. Quanto menor o slip, mais eficiente a hélice.',
         'formula-titulo': '📐 Fórmula Utilizada',
         'formula-explicacao': 'Onde 1056 é a constante de conversão de nós para polegadas/minuto',
-        'footer': 'Calculadora de Hélice - Engenharia Nata © 2025',
+        'footer': 'Calculadora de Hélice - Engenharia Nata @ 2025',
         'grafico-label': 'Passo (polegadas)',
         'grafico-eixo-x': 'Velocidade (nós)',
         'grafico-eixo-y': 'Passo Recomendado (pol)',
@@ -256,12 +298,12 @@ const traducoes = {
         'info-slip-texto': "Scivolamento tra l'elica e l'acqua. Barche da diporto tipiche hanno 10-20% di slip. Minore è lo slip, più efficiente è l'elica.",
         'formula-titulo': '📐 Formula Utilizzata',
         'formula-explicacao': 'Dove 1056 è la costante di conversione da nodi a pollici/minuto',
-        'footer': 'Calcolatore Elica - Engenharia Nata © 2025',
+        'footer': 'Calcolatore Elica - Engenharia Nata @ 2025',
         'grafico-label': 'Passo (pollici)',
         'grafico-eixo-x': 'Velocità (nodi)',
         'grafico-eixo-y': 'Passo Consigliato (pol)',
         'aria-home': 'Torna alla schermata iniziale',
-        'learn-more': 'SAVERE DI PIÙ!',
+        'learn-more': 'SCOPRI DI PIÙ!',
         'back': '← Indietro',
         'btn-memorial': 'Vedi Memoriale di Calcolo',
         'memorial-title': '📚 Memoriale di Calcolo - Passo Elica',
@@ -394,72 +436,112 @@ let intervalId = null;
 let timeoutId = null;
 
 /**
- * Calcula o passo da hélice baseado nos parâmetros
- * @param {number} velocidade - Velocidade desejada em nós
- * @param {number} reducao - Redução da rabeta (ex: 2.0 para 2:1)
- * @param {number} rpmMotor - RPM máximo do motor
- * @param {number} slip - Percentual de slip (0.15 = 15%)
- * @returns {object} - Objeto com passo, rpmHelice e velocidadeTeorica
- */
-/**
- * Calcula o passo recomendado da hélice
+ * ============================================
+ * FUNÇÃO PRINCIPAL: CALCULAR PASSO DA HÉLICE
+ * ============================================
  * 
- * Esta é a função principal da calculadora. Ela usa a fórmula de passo de hélice
- * para determinar qual passo é necessário para atingir a velocidade desejada.
+ * Calcula o passo ideal da hélice para uma embarcação baseado em:
+ * - Velocidade desejada
+ * - RPM do motor
+ * - Redução da rabeta
+ * - Slip estimado
  * 
- * @param {number} velocidade - Velocidade desejada em nós (unidade base)
- * @param {number} reducao - Redução da rabeta (ex: 2.0 para 2:1)
- * @param {number} rpmMotor - RPM máximo do motor
- * @param {number} slip - Percentual de slip em decimal (ex: 0.15 = 15%)
- * @returns {Object} Objeto com passo, rpmHelice e velocidadeTeorica
+ * @param {number} velocidade - Velocidade desejada em nós (já convertida)
+ * @param {number} reducao - Relação de redução da rabeta (ex: 2.0 = 2:1)
+ * @param {number} rpmMotor - Rotação máxima do motor em RPM
+ * @param {number} slip - Percentual de slip como decimal (ex: 0.15 = 15%)
+ * @returns {Object} Objeto contendo:
+ *   - passo: Passo recomendado em polegadas (1 casa decimal)
+ *   - rpmHelice: RPM efetivo na hélice (inteiro)
+ *   - velocidadeTeorica: Velocidade teórica sem slip em nós (1 casa decimal)
  * 
- * Fórmula utilizada:
- * Passo (polegadas) = (Velocidade × 1056 × Redução) / (RPM × (1 - Slip))
- * 
- * Onde 1056 é uma constante de conversão de nós para polegadas/minuto.
+ * EXEMPLO DE USO:
+ *   const resultado = calcularPasso(25, 2.0, 5000, 0.15);
+ *   // resultado = { passo: 12.4, rpmHelice: 2500, velocidadeTeorica: 29.4 }
  */
 function calcularPasso(velocidade, reducao, rpmMotor, slip) {
-    // PASSO 1: Calcula o RPM efetivo na hélice
-    // A rabeta reduz a rotação: se a redução é 2:1, a hélice gira 2x mais devagar
-    // Exemplo: motor a 5000 RPM com redução 2:1 → hélice a 2500 RPM
+    // ============================================
+    // PASSO 1: CALCULAR RPM EFETIVO NA HÉLICE
+    // ============================================
+    // A rabeta (lower unit) reduz a rotação do motor antes de chegar à hélice.
+    // Se a redução é 2:1, significa que o motor gira 2 vezes para a hélice girar 1 vez.
+    // Isso aumenta o torque disponível na hélice, permitindo hélices maiores e mais eficientes.
+    // 
+    // Fórmula: RPM_hélice = RPM_motor / Redução
+    // 
+    // Exemplo prático:
+    // - Motor: 5000 RPM
+    // - Redução: 2.0 (2:1)
+    // - RPM na hélice: 5000 / 2.0 = 2500 RPM
     const rpmHelice = rpmMotor / reducao;
     
-    // PASSO 2: Calcula o passo recomendado usando a fórmula
-    // Fórmula: Passo = (Velocidade × 1056 × Redução) / (RPM × (1 - Slip))
+    // ============================================
+    // PASSO 2: CALCULAR PASSO RECOMENDADO
+    // ============================================
+    // Fórmula principal: Passo = (Velocidade × 1056 × Redução) / (RPM × (1 - Slip))
     //
-    // Explicação da fórmula:
-    // - Velocidade × 1056 = converte velocidade em nós para polegadas/minuto
-    // - × Redução = ajusta pela redução da rabeta
-    // - ÷ (RPM × (1 - Slip)) = divide pelo RPM efetivo, compensando o slip
-    // - (1 - slip) = se slip é 15% (0.15), usa 85% (0.85) da eficiência
+    // Explicação detalhada de cada termo:
+    // 
+    // 1. Velocidade × 1056:
+    //    - Converte velocidade em nós para polegadas por minuto
+    //    - 1056 é a constante padrão da indústria náutica
+    //    - Exemplo: 25 nós × 1056 = 26,400 pol/min
     //
-    // Exemplo prático:
-    // - Velocidade: 25 nós
-    // - Redução: 2.0
-    // - RPM: 5000
-    // - Slip: 15% (0.15)
+    // 2. × Redução:
+    //    - Ajusta pela redução da rabeta
+    //    - A redução afeta tanto o RPM quanto a relação de transmissão
+    //    - Exemplo: 26,400 × 2.0 = 52,800
+    //
+    // 3. ÷ (RPM × (1 - Slip)):
+    //    - Divide pelo RPM do motor (não da hélice, pois a redução já foi considerada)
+    //    - (1 - Slip) compensa a perda de eficiência devido ao deslizamento
+    //    - Se slip = 15% (0.15), então (1 - 0.15) = 0.85 = 85% de eficiência
+    //    - Exemplo: 5000 × 0.85 = 4,250
+    //
+    // Cálculo completo do exemplo:
     // Passo = (25 × 1056 × 2.0) / (5000 × (1 - 0.15))
-    //       = 52800 / 4250
-    //       = 12.42 polegadas
+    //       = 52,800 / 4,250
+    //       = 12.423... polegadas
+    //       ≈ 12.4 polegadas (arredondado)
     const passo = (velocidade * CONSTANTE_CONVERSAO * reducao) / (rpmMotor * (1 - slip));
     
-    // PASSO 3: Calcula a velocidade teórica (sem considerar slip)
-    // Isso mostra qual velocidade seria obtida se não houvesse perdas
-    // É útil para comparar com a velocidade desejada
+    // ============================================
+    // PASSO 3: CALCULAR VELOCIDADE TEÓRICA
+    // ============================================
+    // A velocidade teórica mostra qual velocidade seria obtida se não houvesse slip.
+    // É calculada usando a fórmula inversa, assumindo slip = 0.
+    // 
     // Fórmula inversa: Velocidade = (Passo × RPM) / (1056 × Redução)
+    // 
+    // Esta velocidade é útil para:
+    // - Comparar com a velocidade desejada
+    // - Verificar se o passo calculado é razoável
+    // - Entender a eficiência do sistema (diferença entre teórica e real)
+    //
+    // Exemplo:
+    // Velocidade Teórica = (12.4 × 5000) / (1056 × 2.0)
+    //                    = 62,000 / 2,112
+    //                    = 29.36 nós
+    //                    ≈ 29.4 nós (arredondado)
     const velocidadeTeorica = (passo * rpmMotor) / (CONSTANTE_CONVERSAO * reducao);
     
-    // Retorna um objeto com todos os resultados calculados
+    // ============================================
+    // RETORNAR RESULTADOS
+    // ============================================
     return {
-        // Passo arredondado para 1 casa decimal (ex: 12.4 polegadas)
-        // Math.round(passo * 10) / 10 = arredonda para 1 decimal
-        // Exemplo: 12.423 → 12.4
+        // Passo arredondado para 1 casa decimal
+        // Precisão de 0.1 polegadas é suficiente para seleção de hélices comerciais
+        // Exemplo: 12.423 → 12.4 polegadas
         passo: Math.round(passo * 10) / 10,
         
-        // RPM da hélice arredondado para número inteiro (ex: 2500 RPM)
+        // RPM da hélice arredondado para número inteiro
+        // RPM é sempre um valor inteiro na prática
+        // Exemplo: 2500.3 → 2500 RPM
         rpmHelice: Math.round(rpmHelice),
         
-        // Velocidade teórica arredondada para 1 casa decimal (ex: 29.4 nós)
+        // Velocidade teórica arredondada para 1 casa decimal
+        // Precisão de 0.1 nós é suficiente para comparações práticas
+        // Exemplo: 29.36 → 29.4 nós
         velocidadeTeorica: Math.round(velocidadeTeorica * 10) / 10
     };
 }
@@ -646,10 +728,22 @@ function atualizarResultado() {
     // ============================================
     // Atualiza os inputs ao lado dos sliders para mostrar os valores atuais
     // Formata velocidade: nós sem decimais, outras unidades com 1 decimal
-    if (inputVelocidade) inputVelocidade.value = formatarNumeroBR(velocidadeInput, unidadeVelocidade === 'knots' ? 0 : 1);
-    if (inputReducao) inputReducao.value = formatarNumeroBR(reducao, 2);     // Redução com 2 decimais (ex: 2,32)
-    if (inputRPM) inputRPM.value = formatarNumeroBR(Math.round(rpmMotor), 0);           // RPM como número inteiro
-    if (inputSlip) inputSlip.value = formatarNumeroBR(Math.round(slipPercent), 0);      // Slip como número inteiro (percentual)
+    if (inputVelocidade) {
+        inputVelocidade.value = formatarNumeroBR(velocidadeInput, unidadeVelocidade === 'knots' ? 0 : 1);
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputVelocidade);
+    }
+    if (inputReducao) {
+        inputReducao.value = formatarNumeroBR(reducao, 2);     // Redução com 2 decimais (ex: 2,32)
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputReducao);
+    }
+    if (inputRPM) {
+        inputRPM.value = formatarNumeroBR(Math.round(rpmMotor), 0);           // RPM como número inteiro
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputRPM);
+    }
+    if (inputSlip) {
+        inputSlip.value = formatarNumeroBR(Math.round(slipPercent), 0);      // Slip como número inteiro (percentual)
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputSlip);
+    }
     
     // ============================================
     // PASSO 5: CALCULAR O PASSO DA HÉLICE
@@ -1276,6 +1370,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================
     // PASSO 9: INICIALIZAR A INTERFACE
     // ============================================
+    // Formata os valores iniciais dos inputs para o formato brasileiro
+    const inputReducaoInicial = document.getElementById('inputReducao');
+    if (inputReducaoInicial && inputReducaoInicial.value) {
+        const valorNumerico = parseFloat(inputReducaoInicial.value);
+        if (!isNaN(valorNumerico)) {
+            inputReducaoInicial.value = formatarNumeroBR(valorNumerico, 2);
+        }
+    }
+    const inputRPMInicial = document.getElementById('inputRPM');
+    if (inputRPMInicial && inputRPMInicial.value) {
+        const valorNumerico = parseFloat(inputRPMInicial.value);
+        if (!isNaN(valorNumerico)) {
+            inputRPMInicial.value = formatarNumeroBR(Math.round(valorNumerico), 0);
+        }
+    }
+    
     // Atualiza os limites do slider de velocidade com os valores padrão
     atualizarLimitesVelocidade();
     // Calcula e exibe os resultados iniciais

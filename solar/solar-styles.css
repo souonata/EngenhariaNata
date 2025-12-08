@@ -25,10 +25,12 @@ body {
     /* Verde Engenharia Nata */
     background: var(--site-bg, #4e7262);
     min-height: 100vh;
-    padding-top: 8px;
-    padding-right: 8px;
-    padding-bottom: var(--site-bottom-padding, 110px);
-    padding-left: 0;
+    /* Layout em coluna: seletor de idioma acima do container */
+    display: flex;
+    flex-direction: column;
+    align-items: center;      /* Centraliza horizontalmente */
+    gap: 15px;                /* Espaço mínimo entre seletor e container */
+    padding: 15px 0 110px 0;  /* Padding topo/baixo, sem lateral */
     overflow-x: hidden;
     width: 100%;
     position: relative;
@@ -46,10 +48,10 @@ body {
 /* ============================================
    AJUSTES DE LARGURA DOS CAMPOS DE INPUT
    ============================================ */
-/* Largura dos campos de input baseada no valor máximo do slider + 2 caracteres */
-/* sliderConsumo: max=9999 (4 caracteres) → 6 caracteres */
+/* Largura dos campos de input baseada no valor máximo do slider + 1 caractere de folga */
+/* sliderConsumo: max=9999 (4 caracteres) → 5 caracteres + 1 folga = 6 caracteres */
 #inputConsumo {
-    max-width: 6ch; /* 6 caracteres */
+    max-width: 6ch; /* 6 caracteres (9999 + 1 de folga) */
     min-width: 4ch;
     width: 6ch;
 }

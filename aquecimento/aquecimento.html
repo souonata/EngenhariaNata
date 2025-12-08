@@ -38,24 +38,25 @@
     <link rel="stylesheet" href="aquecimento-styles.css?v=1.0.0">
 </head>
 <body>
+    <!-- ========================================== -->
+    <!-- SELETOR DE IDIOMA (PADRÃO GLOBAL - FORA DO CONTAINER) -->
+    <!-- ========================================== -->
+    <div class="language-selector">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">
+            <span class="flag">🇧🇷</span>
+            <span class="lang-text">PT</span>
+        </button>
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT">
+            <span class="flag">🇮🇹</span>
+            <span class="lang-text">IT</span>
+        </button>
+    </div>
+
     <div class="container">
         <!-- ========================================== -->
-        <!-- CABEÇALHO COM SELETOR DE IDIOMA -->
+        <!-- CABEÇALHO -->
         <!-- ========================================== -->
         <header>
-            <div class="language-selector">
-                <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">
-                    <span class="flag">🇧🇷</span>
-                    <span class="lang-text">Português</span>
-                </button>
-                <button id="btnItaliano" class="lang-btn" data-lang="it-IT">
-                    <span class="flag">🇮🇹</span>
-                    <span class="lang-text">Italiano</span>
-                </button>
-            </div>
-            <div class="dev-badge-header">
-                <span class="dev-badge-text" data-i18n="dev-badge-header">🚧 EM DESENVOLVIMENTO</span>
-            </div>
             <h1 data-i18n="app-title">☀️ Dimensionador de Aquecedor Solar Térmico</h1>
             <p class="subtitulo" data-i18n="app-subtitle">Cálculo para Sistema Termossifão com Tubos a Vácuo</p>
         </header>
@@ -186,7 +187,7 @@
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderAreaCasa" data-step="-5" aria-label="Diminuir área">−</button>
-                    <input type="range" id="sliderAreaCasa" min="20" max="200" step="5" value="100">
+                    <input type="range" id="sliderAreaCasa" min="20" max="300" step="5" value="100">
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderAreaCasa" data-step="5" aria-label="Aumentar área">+</button>
                 </div>
             </div>
@@ -338,16 +339,21 @@
             </div>
 
             <div class="memorial-item">
-                <h3 data-i18n="memorial-passo2-title">2️⃣ Passo 2: Calcular Demanda de Energia para Aquecimento da Casa</h3>
-                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <h3 data-i18n="memorial-passo2-title">2️⃣ Passo 2: Calcular Potência e Demanda para Aquecimento da Casa</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula de Potência (para dimensionamento de radiadores):</strong></p>
                 <div class="formula-box">
                     <p><strong>Volume Casa (m³) = Área (m²) × Altura (m)</strong></p>
-                    <p><strong>Consumo Anual Total = Consumo Específico (kWh/m²·ano) × Área × Fator Altura</strong></p>
-                    <p><strong>Consumo Anual Aquecimento = Consumo Anual Total × Fração Aquecimento</strong></p>
-                    <p><strong>Demanda Diária = Consumo Anual Aquecimento ÷ Dias de Aquecimento</strong></p>
+                    <p><strong>ΔT = Temperatura Conforto (21°C) - Temperatura Externa Inverno</strong></p>
+                    <p><strong>Potência (W) = Volume × Coeficiente Perda (W/m³·K) × ΔT × 1.15</strong></p>
                 </div>
-                <p data-i18n="memorial-passo2-explicacao">A demanda de aquecimento da casa é calculada baseada na classe energética, área, altura e condições climáticas locais.</p>
-                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-casa">100 m², classe D (1.75 kWh/m²·ano), altura 2.7m → consumo anual 175 kWh → demanda diária 1.17 kWh/dia</span></p>
+                <p><strong>Fórmula de Demanda Diária (para dimensionamento de coletores):</strong></p>
+                <div class="formula-box">
+                    <p><strong>Consumo Anual Total = Consumo Específico (kWh/m²·ano) × Área × Fator Altura</strong></p>
+                    <p><strong>Consumo Anual Aquecimento = Consumo Anual Total × Fração Aquecimento (60-70%)</strong></p>
+                    <p><strong>Demanda Diária = Consumo Anual Aquecimento ÷ 150 dias</strong></p>
+                </div>
+                <p data-i18n="memorial-passo2-explicacao">A potência necessária (em Watts) é calculada usando o método de dimensionamento de radiadores, considerando volume, classe energética e diferença de temperatura. Esta é a potência INSTANTÂNEA contínua necessária para manter a casa aquecida (compensar as perdas térmicas). A demanda diária (em kWh/dia) é usada para dimensionar os coletores solares e representa a energia total necessária por dia.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-casa">100 m² × 2.7m = 270 m³, classe D (coef. 2.0 W/m³·K), ΔT = 10°C → Potência = 270 × 2.0 × 10 × 1.15 = 6210 W</span></p>
             </div>
 
             <div class="memorial-item">
@@ -375,9 +381,10 @@
                 <h3 data-i18n="memorial-passo5-title">5️⃣ Passo 5: Calcular Área de Coletores</h3>
                 <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                 <div class="formula-box">
-                    <p><strong>Área Coletor (m²) = Demanda Total (kWh/dia) ÷ (Irradiação Diária (kWh/m²) × Eficiência)</strong></p>
+                    <p><strong>Para Água: Área (m²) = Demanda Diária (kWh/dia) ÷ (HSP × Eficiência)</strong></p>
+                    <p><strong>Para Casa: Área (m²) = (Demanda Diária × Dias de Autonomia) ÷ (HSP × Eficiência)</strong></p>
                 </div>
-                <p data-i18n="memorial-passo5-explicacao">A área de coletores necessária depende da demanda total de energia, da irradiação solar disponível e da eficiência do coletor.</p>
+                <p data-i18n="memorial-passo5-explicacao">A área de coletores necessária depende da demanda total de energia, das horas de sol pico (HSP) disponíveis e da eficiência do coletor. Para aquecimento da casa, o sistema precisa captar em 1 dia energia suficiente para os dias de autonomia (ex: se autonomia = 5 dias, precisa captar em 1 dia energia para 5 dias e noites). A energia capturada por m² de painel é calculada considerando 1 hora de sol pico (1000 W/m²) multiplicada pelo número de horas de sol pico do dia.</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-area">10.5 kWh/dia ÷ (4.0 kWh/m² × 0.65) = 4.0 m²</span></p>
             </div>
 
@@ -389,6 +396,18 @@
                 </div>
                 <p data-i18n="memorial-passo6-explicacao">O número de painéis é calculado dividindo a área total necessária pela área de cada painel, arredondando para cima.</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-paineis">4.0 m² ÷ 2.0 m²/painel = 2 painéis</span></p>
+            </div>
+
+            <div class="memorial-item" id="memorial-item-termossifoes" style="display: none;">
+                <h3 data-i18n="memorial-passo7-title">7️⃣ Passo 7: Dimensionar Termossifões por Ambiente</h3>
+                <p><strong data-i18n="memorial-formula">Método:</strong></p>
+                <div class="formula-box">
+                    <p><strong>1. Estimar número de ambientes baseado na área da casa</strong></p>
+                    <p><strong>2. Calcular potência por ambiente: P = Volume × Coeficiente × ΔT × 1.15</strong></p>
+                    <p><strong>3. Selecionar termossifão adequado para cada ambiente</strong></p>
+                </div>
+                <p data-i18n="memorial-passo7-explicacao">Os termossifões são dimensionados individualmente para cada ambiente da casa, garantindo aquecimento adequado em todos os cômodos.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-termossifoes">-</span></p>
             </div>
 
             <div class="resumo-calculado">
@@ -431,6 +450,50 @@
                 </button>
             </div>
             
+            <!-- Seção de Custos - PRIMEIRO -->
+            <div style="margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #2d9fa3ff;">
+                <h3 style="margin-bottom: 15px; color: #2d9fa3ff;" data-i18n="custos-title">💰 Estimativa de Custos</h3>
+                
+                <!-- Custo Total em destaque no topo -->
+                <div class="resultado-item destaque" style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #2d9fa3ff;">
+                    <span class="label-resultado" data-i18n="custo-total">Custo Total Estimado:</span>
+                    <span class="valor-resultado-grande" id="custoTotal">-</span>
+                </div>
+                
+                <!-- Detalhamento dos custos -->
+                <div style="margin-top: 15px;">
+                    <h4 style="margin-bottom: 10px; color: #666; font-size: 0.95rem; font-weight: 600;" data-i18n="custos-detalhamento">Detalhamento:</h4>
+                    
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="custo-paineis">Custo dos Painéis:</span>
+                        <span class="valor-resultado" id="custoPaineis">-</span>
+                    </div>
+
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="custo-acumuladores">Custo dos Acumuladores (Boiler):</span>
+                        <span class="valor-resultado" id="custoAcumuladores">-</span>
+                    </div>
+
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="custo-tubulacoes">Tubulações e Conexões:</span>
+                        <span class="valor-resultado" id="custoTubulacoes">-</span>
+                    </div>
+
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="custo-isolantes">Isolantes Térmicos:</span>
+                        <span class="valor-resultado" id="custoIsolantes">-</span>
+                    </div>
+
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="custo-termossifoes">Termossifões (Radiadores):</span>
+                        <span class="valor-resultado" id="custoTermossifoes" title="">-</span>
+                    </div>
+                </div>
+
+                <p class="nota-referencia" style="margin-top: 15px;" data-i18n="nota-custos">* Valores aproximados baseados em preços médios do mercado. Podem variar conforme região e fornecedor.</p>
+            </div>
+
+            <!-- Resultados do Dimensionamento - DEPOIS -->
             <div class="resultado-item destaque">
                 <span class="label-resultado" data-i18n="resultado-area-coletor">Área de Coletores:</span>
                 <span class="valor-resultado-grande" id="areaColetor">-</span>
@@ -440,7 +503,7 @@
                 <span class="label-resultado" data-i18n="resultado-paineis">Número de Painéis:</span>
                 <span class="valor-resultado-grande" id="numeroPaineis">-</span>
             </div>
-            <p class="nota-referencia" data-i18n="nota-painel-referencia">* Baseado no painel de referência Modelo B (1,5 m², 15 tubos, eficiência 70%)</p>
+            <div class="nota-referencia" id="notaPainelReferencia"></div>
 
             <div class="resultado-item">
                 <span class="label-resultado" data-i18n="resultado-demanda-total">Demanda Total (Água + Casa):</span>
@@ -497,20 +560,11 @@
                 </ul>
             </div>
 
-            <div class="info-box" style="margin-top: 20px;">
-                <p style="cursor: pointer; user-select: none;" onclick="toggleMemorial()">
-                    📋 <strong data-i18n="memorial-titulo">Memorial de Cálculo</strong> 
-                    <span id="memorial-toggle" style="float: right;">▼</span>
-                </p>
-                <div id="memorial-calculo" style="display: none; margin-top: 12px;">
-                    <div id="memorial-conteudo"></div>
-                </div>
-            </div>
         </section>
     </div>
 
     <footer>
-        <p data-i18n="footer">Dimensionador de Aquecedor Solar - Engenharia Nata © 2025</p>
+        <p data-i18n="footer">Dimensionador de Aquecedor Solar - Engenharia Nata @ 2025</p>
     </footer>
 
     <!-- Botão de retorno à tela inicial -->
@@ -519,9 +573,6 @@
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
         </svg>
     </a>
-
-    <!-- Marca d'água "Em Desenvolvimento" -->
-    <div class="watermark-dev" data-i18n="watermark-dev">🚧 EM DESENVOLVIMENTO</div>
 
     <!-- Scripts -->
     <script src="../assets/js/site-config.js?v=1.0.0"></script>

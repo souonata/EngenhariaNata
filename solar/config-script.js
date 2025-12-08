@@ -68,7 +68,7 @@ const traducoes = {
         'config-peso-bat': 'Peso',
         'config-salvar': '💾 Salvar e Voltar',
         'config-resetar': '🔄 Restaurar Padrões',
-        'footer': 'Solar - Engenharia NATA © 2025',
+        'footer': 'Solar - Engenharia NATA @ 2025',
         'moeda': 'R$'
         , 'aria-home': 'Voltar para a tela inicial'
     },
@@ -93,7 +93,7 @@ const traducoes = {
         'config-peso-bat': 'Peso',
         'config-salvar': '💾 Salva e Torna',
         'config-resetar': '🔄 Ripristina Predefiniti',
-        'footer': 'Solare - Engenharia NATA © 2025',
+        'footer': 'Solare - Engenharia NATA @ 2025',
         'moeda': '€'
         , 'aria-home': 'Torna alla schermata iniziale'
     }

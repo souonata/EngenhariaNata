@@ -39,24 +39,25 @@
     
 </head>
 <body>
+    <!-- ========================================== -->
+    <!-- SELETOR DE IDIOMA (PADRÃO GLOBAL - FORA DO CONTAINER) -->
+    <!-- ========================================== -->
+    <div class="language-selector">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">
+            <span class="flag">🇧🇷</span>
+            <span class="lang-text">PT</span>
+        </button>
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT">
+            <span class="flag">🇮🇹</span>
+            <span class="lang-text">IT</span>
+        </button>
+    </div>
+
     <div class="conteiner-principal">
         <!-- Cabeçalho -->
         <header>
-            <div class="seletor-idioma">
-                <button id="btnPortugues" class="btn-idioma" data-lang="pt-BR">
-                    <span class="flag">🇧🇷</span>
-                    <span class="texto-idioma">Português</span>
-                </button>
-                <button id="btnItaliano" class="btn-idioma" data-lang="it-IT">
-                    <span class="flag">🇮🇹</span>
-                    <span class="texto-idioma">Italiano</span>
-                </button>
-            </div>
             <h1 data-i18n="app-title">🔋 Energia Solar</h1>
             <p class="subtitulo" data-i18n="app-subtitle">Dimensionamento de Sistema Fotovoltaico</p>
-            <div class="dev-badge-header">
-                <span class="dev-badge-text" data-i18n="dev-badge-header">🚧 EM DESENVOLVIMENTO</span>
-            </div>
         </header>
 
         <!-- ========================================== -->
@@ -243,7 +244,7 @@
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn" data-target="sliderConsumo" data-step="-10" aria-label="Diminuir consumo">−</button>
-                    <input type="range" id="sliderConsumo" min="10" max="1000" step="10" value="150">
+                    <input type="range" id="sliderConsumo" min="10" max="9999" step="10" value="150">
                     <button type="button" class="arrow-btn" data-target="sliderConsumo" data-step="10" aria-label="Aumentar consumo">+</button>
                 </div>
             </div>
@@ -390,7 +391,7 @@
     </div>
 
     <footer>
-        <p data-i18n="footer">Energia Solar - Engenharia NATA © 2025</p>
+        <p data-i18n="footer">Energia Solar - Engenharia NATA @ 2025</p>
     </footer>
 
     <a href="../index.html" class="home-button-fixed" aria-label="Voltar à tela inicial">

@@ -38,24 +38,25 @@
     <link rel="stylesheet" href="arcondicionado-styles.css?v=1.0.0">
 </head>
 <body>
+    <!-- ========================================== -->
+    <!-- SELETOR DE IDIOMA (PADRÃO GLOBAL - FORA DO CONTAINER) -->
+    <!-- ========================================== -->
+    <div class="language-selector">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">
+            <span class="flag">🇧🇷</span>
+            <span class="lang-text">PT</span>
+        </button>
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT">
+            <span class="flag">🇮🇹</span>
+            <span class="lang-text">IT</span>
+        </button>
+    </div>
+
     <div class="container">
         <!-- ========================================== -->
-        <!-- CABEÇALHO COM SELETOR DE IDIOMA -->
+        <!-- CABEÇALHO -->
         <!-- ========================================== -->
         <header>
-            <div class="language-selector">
-                <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">
-                    <span class="flag">🇧🇷</span>
-                    <span class="lang-text">Português</span>
-                </button>
-                <button id="btnItaliano" class="lang-btn" data-lang="it-IT">
-                    <span class="flag">🇮🇹</span>
-                    <span class="lang-text">Italiano</span>
-                </button>
-            </div>
-            <div class="dev-badge-header">
-                <span class="dev-badge-text" data-i18n="dev-badge-header">🚧 EM DESENVOLVIMENTO</span>
-            </div>
             <h1 data-i18n="app-title">❄️ Dimensionador de Ar Condicionado</h1>
             <p class="subtitulo" data-i18n="app-subtitle">Cálculo de BTU para Ambientes Residenciais</p>
         </header>
@@ -331,7 +332,7 @@
     </div>
 
     <footer>
-        <p data-i18n="footer">Dimensionador de Ar Condicionado - Engenharia Nata © 2025</p>
+        <p data-i18n="footer">Dimensionador de Ar Condicionado - Engenharia Nata @ 2025</p>
     </footer>
 
     <!-- Botão de retorno à tela inicial -->
@@ -340,9 +341,6 @@
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
         </svg>
     </a>
-
-    <!-- Marca d'água "Em Desenvolvimento" -->
-    <div class="watermark-dev" data-i18n="watermark-dev">🚧 EM DESENVOLVIMENTO</div>
 
     <!-- Scripts -->
     <script src="../assets/js/site-config.js?v=1.0.0"></script>

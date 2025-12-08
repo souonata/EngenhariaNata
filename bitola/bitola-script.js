@@ -49,9 +49,32 @@ let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConf
 // CONSTANTES DO SISTEMA
 // ============================================
 
-// Resistividade do cobre a 20°C (Ω·mm²/m)
-// Este valor é usado para calcular a resistência elétrica do condutor
-const RESISTIVIDADE_COBRE = 0.0175;
+/**
+ * ============================================
+ * CONSTANTE: RESISTIVIDADE DO COBRE
+ * ============================================
+ * 
+ * Resistividade do cobre a 20°C: 0.0175 Ω·mm²/m
+ * 
+ * Esta constante representa a resistência elétrica específica do cobre puro
+ * a uma temperatura de 20°C. É usada para calcular a resistência de condutores
+ * elétricos baseado em sua área de seção transversal e comprimento.
+ * 
+ * Fórmula da resistência: R = ρ × L / S
+ * Onde:
+ *   R = resistência elétrica (Ω)
+ *   ρ = resistividade (Ω·mm²/m) = 0.0175 para cobre a 20°C
+ *   L = comprimento do condutor (m)
+ *   S = área de seção transversal (mm²)
+ * 
+ * NOTA: A resistividade varia com a temperatura. Para cálculos mais precisos
+ * em temperaturas diferentes, seria necessário aplicar um fator de correção.
+ * Para aplicações práticas em instalações elétricas residenciais, 0.0175 é
+ * um valor padrão amplamente aceito.
+ * 
+ * FONTE: Valores baseados em normas técnicas (NBR 5410 no Brasil, CEI na Itália)
+ */
+const RESISTIVIDADE_COBRE = 0.0175; // Ω·mm²/m (cobre a 20°C)
 
 // Bitolas comerciais padrão brasileiro (mm²)
 // Ordenadas do menor para o maior
@@ -265,52 +288,135 @@ function formatarPotencia(valor) {
 }
 
 /**
- * Calcula a corrente do circuito
- * @param {number} potencia - Potência em watts (W)
- * @param {number} tensao - Tensão em volts (V)
- * @returns {number} - Corrente em amperes (A)
+ * ============================================
+ * FUNÇÃO: CALCULAR CORRENTE DO CIRCUITO
+ * ============================================
+ * 
+ * Calcula a corrente elétrica necessária para alimentar uma carga
+ * com determinada potência em uma tensão específica.
+ * 
+ * @param {number} potencia - Potência elétrica em watts (W)
+ * @param {number} tensao - Tensão de operação em volts (V)
+ * @returns {number} Corrente elétrica em amperes (A)
+ * 
+ * FÓRMULA:
+ *   I = P / V
+ * 
+ * Onde:
+ *   I = corrente (A)
+ *   P = potência (W)
+ *   V = tensão (V)
+ * 
+ * OBSERVAÇÕES:
+ * - Para corrente contínua (CC): a fórmula é direta
+ * - Para corrente alternada (CA): assume-se fator de potência unitário (cos φ = 1)
+ *   para simplificação. Em circuitos com cargas reativas (motores, etc.),
+ *   seria necessário considerar: I = P / (V × cos φ)
+ * 
+ * EXEMPLO:
+ *   Potência: 2200 W
+ *   Tensão: 220 V
+ *   Corrente: 2200 / 220 = 10 A
+ * 
+ * VALIDAÇÃO:
+ * - Se tensão = 0, retorna 0 para evitar divisão por zero
  */
 function calcularCorrente(potencia, tensao) {
-    // Fórmula básica: I = P / V
-    // Para CA com fator de potência unitário, a fórmula é a mesma
+    // Proteção contra divisão por zero
     if (tensao === 0) return 0;
+    
+    // Fórmula básica: I = P / V
+    // Para CA com fator de potência unitário (cos φ = 1), a fórmula é a mesma
+    // Para cargas reativas, seria necessário: I = P / (V × cos φ)
     return potencia / tensao;
 }
 
 /**
- * Calcula a área de seção mínima necessária
- * @param {number} comprimento - Distância do circuito em metros (m) - apenas a distância (não a soma)
+ * ============================================
+ * FUNÇÃO: CALCULAR ÁREA DE SEÇÃO MÍNIMA
+ * ============================================
+ * 
+ * Calcula a área de seção transversal mínima necessária para um condutor
+ * elétrico que atenda aos requisitos de queda de tensão máxima permitida.
+ * 
+ * @param {number} comprimento - Distância do circuito em metros (m)
+ *   IMPORTANTE: Este é o comprimento de UM condutor (distância entre fonte e carga),
+ *   não a soma dos dois condutores. A fórmula já multiplica por 2 para considerar
+ *   ida e volta.
  * @param {number} corrente - Corrente do circuito em amperes (A)
- * @param {number} tensao - Tensão em volts (V)
- * @param {number} quedaPercentual - Queda de tensão máxima em percentual (%)
- * @returns {number} - Área de seção mínima em milímetros quadrados (mm²)
+ * @param {number} tensao - Tensão de operação em volts (V)
+ * @param {number} quedaPercentual - Queda de tensão máxima permitida em percentual (%)
+ *   Valores típicos: 4% para instalações residenciais (Brasil), 3-5% para outros usos
+ * @returns {number} Área de seção mínima em milímetros quadrados (mm²)
  * 
- * IMPORTANTE: O comprimento informado é a DISTÂNCIA entre fonte e carga
- * (não a soma dos condutores). A fórmula multiplica por 2 para considerar ida e volta.
+ * DEDUÇÃO DA FÓRMULA:
  * 
- * Fórmula correta para queda de tensão em circuito com dois condutores:
- * ΔV = 2 × R × I
- * Onde R = ρ × L / S (resistência de um condutor)
+ * 1. Queda de tensão em um circuito com dois condutores (ida e volta):
+ *    ΔV = 2 × R × I
  * 
- * Isolando S:
- * S = (2 × ρ × L × I) / ΔV
+ * 2. Resistência de um condutor: R = ρ × L / S
+ *    Onde:
+ *      R = resistência (Ω)
+ *      ρ = resistividade do cobre (0.0175 Ω·mm²/m)
+ *      L = comprimento do condutor (m)
+ *      S = área de seção transversal (mm²)
+ * 
+ * 3. Substituindo R na fórmula de queda de tensão:
+ *    ΔV = 2 × (ρ × L / S) × I
+ *    ΔV = (2 × ρ × L × I) / S
+ * 
+ * 4. Isolando S (área de seção):
+ *    S = (2 × ρ × L × I) / ΔV
  * 
  * Onde:
- *   S = área de seção (mm²)
- *   ρ = resistividade do cobre (0.0175 Ω·mm²/m)
- *   L = distância (m) - apenas a distância, multiplica por 2 para ida e volta
- *   I = corrente (A)
- *   ΔV = queda de tensão em volts = (queda% / 100) × V
+ *   S = área de seção mínima (mm²)
+ *   ρ = resistividade do cobre = 0.0175 Ω·mm²/m
+ *   L = distância entre fonte e carga (m) - apenas um condutor
+ *   I = corrente do circuito (A)
+ *   ΔV = queda de tensão máxima em volts = (queda% / 100) × V
+ * 
+ * EXEMPLO PRÁTICO:
+ *   Potência: 2200 W
+ *   Tensão: 220 V
+ *   Corrente: 10 A (calculada como 2200 / 220)
+ *   Distância: 30 m
+ *   Queda máxima: 4%
+ *   
+ *   ΔV = (4 / 100) × 220 = 8.8 V
+ *   S = (2 × 0.0175 × 30 × 10) / 8.8
+ *   S = 10.5 / 8.8
+ *   S = 1.19 mm²
+ *   
+ *   Bitola comercial mínima: 2.5 mm² (com fator de segurança)
+ * 
+ * VALIDAÇÃO:
+ * - Se quedaVolts = 0, retorna Infinity (evita divisão por zero)
  */
 function calcularAreaMinima(comprimento, corrente, tensao, quedaPercentual) {
-    // Converte queda percentual para volts
+    // ============================================
+    // PASSO 1: CONVERTER QUEDA PERCENTUAL PARA VOLTS
+    // ============================================
+    // A queda de tensão é especificada em percentual (ex: 4%),
+    // mas a fórmula precisa do valor em volts.
+    // Exemplo: 4% de 220V = 8.8V
     const quedaVolts = (quedaPercentual / 100) * tensao;
     
-    // Se a queda de tensão for zero, retorna um valor muito grande
+    // Proteção contra divisão por zero
+    // Se a queda permitida for zero, nenhuma bitola seria suficiente
     if (quedaVolts === 0) return Infinity;
     
-    // Fórmula correta: S = (2 × ρ × L × I) / ΔV
-    // Multiplica por 2 porque a queda de tensão ocorre nos dois condutores (ida e volta)
+    // ============================================
+    // PASSO 2: CALCULAR ÁREA MÍNIMA
+    // ============================================
+    // Fórmula: S = (2 × ρ × L × I) / ΔV
+    // 
+    // O fator 2 considera que a queda de tensão ocorre em ambos os condutores:
+    // - Condutor de ida (fase/positivo): perde ΔV/2
+    // - Condutor de volta (neutro/negativo): perde ΔV/2
+    // - Total: ΔV = 2 × (queda em um condutor)
+    // 
+    // O comprimento L é a distância entre fonte e carga (não a soma dos dois condutores),
+    // pois a fórmula já multiplica por 2 para considerar ida e volta.
     const areaMinima = (2 * RESISTIVIDADE_COBRE * comprimento * corrente) / quedaVolts;
     
     return areaMinima;
@@ -366,28 +472,81 @@ function selecionarDisjuntorComercial(corrente) {
 }
 
 /**
- * Calcula a queda de tensão real com uma bitola específica
- * @param {number} comprimento - Distância do circuito em metros (m) - apenas a distância (não a soma)
+ * ============================================
+ * FUNÇÃO: CALCULAR QUEDA DE TENSÃO REAL
+ * ============================================
+ * 
+ * Calcula a queda de tensão real que ocorrerá em um circuito usando
+ * uma bitola comercial específica. Esta função é usada para verificar
+ * se a bitola selecionada atende aos requisitos de queda de tensão.
+ * 
+ * @param {number} comprimento - Distância do circuito em metros (m)
+ *   IMPORTANTE: Este é o comprimento de UM condutor (distância entre fonte e carga),
+ *   não a soma dos dois condutores. A fórmula já multiplica por 2 para considerar
+ *   ida e volta.
  * @param {number} corrente - Corrente do circuito em amperes (A)
- * @param {number} tensao - Tensão em volts (V)
+ * @param {number} tensao - Tensão de operação em volts (V)
  * @param {number} bitola - Bitola comercial em milímetros quadrados (mm²)
- * @returns {number} - Queda de tensão real em percentual (%)
+ *   Exemplos: 1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240
+ * @returns {number} Queda de tensão real em percentual (%)
  * 
- * IMPORTANTE: O comprimento informado é a DISTÂNCIA entre fonte e carga
- * (não a soma dos condutores). A fórmula multiplica por 2 para considerar ida e volta.
+ * DEDUÇÃO DA FÓRMULA:
  * 
- * Fórmula: ΔV = 2 × R × I
- * Onde R = ρ × L / S
- * Então: ΔV = (2 × ρ × L × I) / S
+ * 1. Resistência de um condutor: R = ρ × L / S
+ * 
+ * 2. Queda de tensão em um circuito com dois condutores:
+ *    ΔV = 2 × R × I
+ * 
+ * 3. Substituindo R:
+ *    ΔV = 2 × (ρ × L / S) × I
+ *    ΔV = (2 × ρ × L × I) / S
+ * 
+ * 4. Convertendo para percentual:
+ *    ΔV% = (ΔV / V) × 100
+ * 
+ * Onde:
+ *   ΔV = queda de tensão em volts
+ *   ρ = resistividade do cobre = 0.0175 Ω·mm²/m
+ *   L = distância entre fonte e carga (m) - apenas um condutor
+ *   I = corrente do circuito (A)
+ *   S = área de seção do condutor (mm²) = bitola
+ *   V = tensão de operação (V)
+ * 
+ * EXEMPLO PRÁTICO:
+ *   Corrente: 10 A
+ *   Tensão: 220 V
+ *   Distância: 30 m
+ *   Bitola: 2.5 mm²
+ *   
+ *   ΔV = (2 × 0.0175 × 30 × 10) / 2.5
+ *   ΔV = 10.5 / 2.5
+ *   ΔV = 4.2 V
+ *   
+ *   ΔV% = (4.2 / 220) × 100 = 1.91%
+ *   
+ *   Resultado: 1.91% (dentro do limite de 4% recomendado)
+ * 
+ * VALIDAÇÃO:
+ * - Se tensão = 0 ou bitola = 0, retorna 0 para evitar divisão por zero
  */
 function calcularQuedaReal(comprimento, corrente, tensao, bitola) {
+    // Proteção contra divisão por zero
     if (tensao === 0 || bitola === 0) return 0;
     
-    // Fórmula correta: ΔV = (2 × ρ × L × I) / S
-    // Multiplica por 2 porque a queda de tensão ocorre nos dois condutores (ida e volta)
+    // ============================================
+    // PASSO 1: CALCULAR QUEDA DE TENSÃO EM VOLTS
+    // ============================================
+    // Fórmula: ΔV = (2 × ρ × L × I) / S
+    // 
+    // O fator 2 considera que a queda ocorre em ambos os condutores (ida e volta).
+    // O comprimento L é a distância entre fonte e carga (não a soma dos condutores).
     const quedaVolts = (2 * RESISTIVIDADE_COBRE * comprimento * corrente) / bitola;
     
-    // Converte para percentual
+    // ============================================
+    // PASSO 2: CONVERTER PARA PERCENTUAL
+    // ============================================
+    // A queda de tensão é expressa como percentual da tensão nominal
+    // para facilitar a comparação com limites recomendados (ex: 4%)
     const quedaPercentual = (quedaVolts / tensao) * 100;
     
     return quedaPercentual;
@@ -484,6 +643,7 @@ function atualizarTensaoCC() {
     const indice = parseInt(sliderTensaoCC.value) || 0;
     const tensao = TENSOES_CC_TIPICAS[indice] || 12;
     inputTensaoCC.value = formatarNumero(tensao, 1);
+    if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputTensaoCC);
     atualizarResultados();
 }
 
@@ -544,7 +704,7 @@ const traducoes = {
         'resultado-corrente': 'Corrente do Circuito:',
         'resultado-queda-real': 'Queda de Tensão Real:',
         'resultado-disjuntor': 'Disjuntor Comercial Recomendado:',
-        'footer': 'Calculadora de Bitola de Fios - Engenharia Nata © 2025',
+        'footer': 'Calculadora de Bitola de Fios - Engenharia Nata @ 2025',
         'aria-home': 'Voltar para a tela inicial',
         'learn-more': 'SAIBA MAIS!',
         'back': '← Voltar',
@@ -596,9 +756,9 @@ const traducoes = {
         'resultado-corrente': 'Corrente del Circuito:',
         'resultado-queda-real': 'Caduta di Tensione Reale:',
         'resultado-disjuntor': 'Interruttore Commerciale Consigliato:',
-        'footer': 'Calcolatrice Sezione Cavi - Engenharia Nata © 2025',
+        'footer': 'Calcolatrice Sezione Cavi - Engenharia Nata @ 2025',
         'aria-home': 'Torna alla schermata iniziale',
-        'learn-more': 'SAVERE DI PIÙ!',
+        'learn-more': 'SCOPRI DI PIÙ!',
         'back': '← Indietro',
         'btn-memorial': 'Vedi Memoriale di Calcolo',
         'memorial-title': '📚 Memoriale di Calcolo - Sezione Cavi',
@@ -814,11 +974,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Atualiza o slider com o valor ajustado
         sliderPotencia.value = valor;
         inputPotencia.value = formatarPotencia(valor);
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPotencia);
         atualizarResultados();
     });
     
     sliderComprimento.addEventListener('input', () => {
         inputComprimento.value = formatarNumero(parseFloat(sliderComprimento.value), 0);
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputComprimento);
         atualizarResultados();
     });
     
@@ -826,6 +988,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     sliderQuedaTensao.addEventListener('input', () => {
         inputQuedaTensao.value = formatarNumero(parseFloat(sliderQuedaTensao.value), 1);
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputQuedaTensao);
         atualizarResultados();
     });
     
@@ -858,6 +1021,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Sempre atualiza o input com a formatação correta, mesmo se estiver fora dos limites
             inputPotencia.value = formatarPotencia(valor);
         }
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPotencia);
         atualizarResultados();
     });
     
@@ -866,6 +1030,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     inputComprimento.addEventListener('input', () => {
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputComprimento);
         const valor = obterValorNumericoFormatado(inputComprimento.value);
         // Permite qualquer valor positivo
         if (valor > 0) {
@@ -881,6 +1046,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     inputTensaoCC.addEventListener('input', () => {
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputTensaoCC);
         const valor = obterValorNumericoFormatado(inputTensaoCC.value);
         
         // Valida que o valor está dentro do limite permitido (0 a 96V)
@@ -922,6 +1088,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     inputQuedaTensao.addEventListener('input', () => {
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputQuedaTensao);
         const valor = obterValorNumericoFormatado(inputQuedaTensao.value);
         // Permite qualquer valor positivo
         if (valor > 0) {

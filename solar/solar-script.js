@@ -80,9 +80,88 @@ function formatarNumeroDecimal(valor, casasDecimais = 1) {
 // CONSTANTES DO SISTEMA (Valores Fixos)
 // ============================================
 
-const HSP = 5.0; // Horas de Sol Pleno
-const EFICIENCIA_SISTEMA = 0.80; // Eficiência global (perdas de 20%)
-const FATOR_PICO_CONSUMO = 5.0; // Fator de pico para consumo residencial (5x o consumo médio horário)
+/**
+ * ============================================
+ * CONSTANTES DO SISTEMA FOTOVOLTAICO
+ * ============================================
+ */
+
+/**
+ * HSP - Horas de Sol Pleno (Horas de Sol Pico)
+ * 
+ * Representa o número médio de horas por dia em que a radiação solar
+ * atinge 1000 W/m² (condições de teste padrão dos painéis).
+ * 
+ * Este valor varia conforme:
+ * - Localização geográfica (latitude)
+ * - Estação do ano
+ * - Condições climáticas locais
+ * 
+ * Valores típicos:
+ * - Regiões tropicais (Brasil): 4-6 horas/dia
+ * - Regiões temperadas (Itália): 3-5 horas/dia
+ * - Regiões desérticas: 6-8 horas/dia
+ * 
+ * O valor de 5.0 é uma média conservadora para a maioria das regiões.
+ * Para cálculos mais precisos, deve-se usar valores específicos da localização.
+ * 
+ * FONTE: Dados de irradiação solar global (GHI - Global Horizontal Irradiance)
+ */
+const HSP = 5.0; // Horas de Sol Pleno (média conservadora)
+
+/**
+ * EFICIENCIA_SISTEMA - Eficiência Global do Sistema
+ * 
+ * Representa a eficiência total do sistema fotovoltaico, considerando
+ * todas as perdas que ocorrem desde a geração até o consumo:
+ * 
+ * Perdas consideradas:
+ * - Perdas em cabos DC (2-3%)
+ * - Perdas no controlador MPPT (2-5%)
+ * - Perdas no inversor (5-10%)
+ * - Perdas no banco de baterias (carga/descarga) (5-10%)
+ * - Perdas por temperatura dos painéis (5-10%)
+ * - Perdas por sujeira/poeira nos painéis (2-5%)
+ * - Perdas por sombreamento parcial (variável)
+ * 
+ * Total estimado: ~20% de perdas → eficiência de 80% (0.80)
+ * 
+ * Este valor é usado para dimensionar os painéis, garantindo que
+ * gerem energia suficiente para compensar as perdas do sistema.
+ * 
+ * FÓRMULA: EnergiaGerada = EnergiaNecessaria / EFICIENCIA_SISTEMA
+ * 
+ * FONTE: Normas técnicas e práticas da indústria fotovoltaica
+ */
+const EFICIENCIA_SISTEMA = 0.80; // Eficiência global (80% = perdas de 20%)
+
+/**
+ * FATOR_PICO_CONSUMO - Fator de Pico para Dimensionamento do Inversor
+ * 
+ * Representa a relação entre o consumo médio horário e o consumo de pico
+ * em uma residência típica.
+ * 
+ * O consumo de energia em uma residência não é constante:
+ * - Durante a noite: consumo baixo (iluminação, geladeira)
+ * - Durante o dia: consumo médio (eletrodomésticos esporádicos)
+ * - Picos: consumo alto (chuveiro elétrico, forno, ar condicionado)
+ * 
+ * O fator de 5.0 significa que o consumo de pico é aproximadamente
+ * 5 vezes maior que o consumo médio horário.
+ * 
+ * Exemplo:
+ * - Consumo médio diário: 10 kWh
+ * - Consumo médio horário: 10 / 24 = 0.417 kW
+ * - Consumo de pico estimado: 0.417 × 5 = 2.085 kW
+ * - Inversor dimensionado: mínimo 2 kW (arredondado para cima)
+ * 
+ * Este fator é usado para dimensionar o inversor, garantindo que
+ * ele tenha capacidade suficiente para atender os picos de consumo
+ * sem sobrecarga.
+ * 
+ * FONTE: Práticas da indústria e normas técnicas para dimensionamento de inversores
+ */
+const FATOR_PICO_CONSUMO = 5.0; // Fator de pico (5x o consumo médio horário)
 
 // Taxa de conversão BRL → EUR
 const TAXA_BRL_EUR = (typeof SiteConfig !== 'undefined' && SiteConfig.DEFAULTS && SiteConfig.DEFAULTS.TAXA_BRL_EUR) ? SiteConfig.DEFAULTS.TAXA_BRL_EUR : 6.19;
@@ -306,15 +385,13 @@ const traducoes = {
         'res-estimativa': 'Estimativa de Custo',
         'custos-titulo': 'Detalhamento de Custos',
         'custo-total': 'Total',
-        'footer': 'Solar - Engenharia NATA © 2025',
+        'footer': 'Solar - Engenharia NATA @ 2025',
         'dias': 'dias',
         'dia': 'dia',
         'anos': 'anos',
         'ano': 'ano',
         'moeda': 'R$',
         'aria-home': 'Voltar para a tela inicial',
-        'dev-badge-header': '🚧 EM DESENVOLVIMENTO',
-        'watermark-dev': '🚧 EM DESENVOLVIMENTO',
         'learn-more': 'SAIBA MAIS!',
         'back': '← Voltar',
         'back-to-calculator': 'Voltar para a Calculadora',
@@ -373,16 +450,15 @@ const traducoes = {
         'res-estimativa': 'Costo Stimato',
         'custos-titulo': 'Dettaglio Costi',
         'custo-total': 'Totale',
-        'footer': 'Solare - Engenharia NATA © 2025',
+        'footer': 'Solare - Engenharia NATA @ 2025',
         'dias': 'giorni',
         'dia': 'giorno',
         'anos': 'anni',
         'ano': 'anno',
         'moeda': '€',
         'aria-home': 'Torna alla schermata iniziale',
-        'dev-badge-header': '🚧 IN SVILUPPO',
         'watermark-dev': '🚧 IN SVILUPPO',
-        'learn-more': 'SAVERE DI PIÙ!',
+        'learn-more': 'SCOPRI DI PIÙ!',
         'back': '← Indietro',
         'back-to-calculator': 'Torna alla Calcolatrice',
         'btn-memorial': 'Vedi Memoriale di Calcolo',
@@ -443,7 +519,7 @@ function trocarIdioma(novoIdioma) {
         }
     });
 
-    document.querySelectorAll('.btn-idioma').forEach(btn => {
+    document.querySelectorAll('.lang-btn').forEach(btn => {
         if (btn.getAttribute('data-lang') === novoIdioma) {
             btn.classList.add('active');
         } else {
@@ -654,9 +730,18 @@ function atualizarInterface() {
     }
 
     // 4. Atualizar displays de valor (inputs editáveis)
-    if (inputConsumo) inputConsumo.value = consumo;
-    if (inputAutonomia) inputAutonomia.value = autonomia;
-    if (inputVidaUtil) inputVidaUtil.value = Math.round(vidaUtil);
+    if (inputConsumo) {
+        inputConsumo.value = consumo;
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumo);
+    }
+    if (inputAutonomia) {
+        inputAutonomia.value = autonomia;
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAutonomia);
+    }
+    if (inputVidaUtil) {
+        inputVidaUtil.value = Math.round(vidaUtil);
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputVidaUtil);
+    }
 
     // 5. Calcular DoD Alvo
     const ciclos = vidaUtil * 365;
@@ -1096,7 +1181,7 @@ function atualizarEspecsBaterias() {
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Configurar botões de idioma
-    document.querySelectorAll('.btn-idioma').forEach(btn => {
+    document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             trocarIdioma(btn.getAttribute('data-lang'));
         });
@@ -1165,21 +1250,30 @@ document.addEventListener('DOMContentLoaded', () => {
     sliderConsumo.addEventListener('input', () => {
         const valor = parseInt(sliderConsumo.value);
         const inputConsumo = document.getElementById('inputConsumo');
-        if (inputConsumo) inputConsumo.value = valor;
+        if (inputConsumo) {
+            inputConsumo.value = valor;
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumo);
+        }
         atualizarInterface();
     });
     
     sliderAutonomia.addEventListener('input', () => {
         const valor = parseInt(sliderAutonomia.value);
         const inputAutonomia = document.getElementById('inputAutonomia');
-        if (inputAutonomia) inputAutonomia.value = valor;
+        if (inputAutonomia) {
+            inputAutonomia.value = valor;
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAutonomia);
+        }
         atualizarInterface();
     });
     
     sliderVidaUtil.addEventListener('input', () => {
         const valor = parseFloat(sliderVidaUtil.value);
         const inputVidaUtil = document.getElementById('inputVidaUtil');
-        if (inputVidaUtil) inputVidaUtil.value = Math.round(valor);
+        if (inputVidaUtil) {
+            inputVidaUtil.value = Math.round(valor);
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputVidaUtil);
+        }
         atualizarInterface();
     });
     

@@ -45,31 +45,101 @@
     <link rel="stylesheet" href="mutuo-styles.css?v=1.2.7">
 </head>
 <body>
+    <!-- ========================================== -->
+    <!-- SELETOR DE IDIOMA (PADRÃO GLOBAL - FORA DO CONTAINER) -->
+    <!-- ========================================== -->
+    <div class="language-selector">
+        <!-- Botão para português (ativo definido pelo JavaScript) -->
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">
+            <span class="flag">🇧🇷</span>
+            <span class="lang-text">PT</span>
+        </button>
+        <!-- Botão para italiano -->
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT">
+            <span class="flag">🇮🇹</span>
+            <span class="lang-text">IT</span>
+        </button>
+    </div>
+
     <div class="container">
         <!-- ========================================== -->
-        <!-- CABEÇALHO COM SELETOR DE IDIOMA -->
+        <!-- CABEÇALHO -->
         <!-- ========================================== -->
         <header>
-            <div class="language-selector">
-                <!-- Botão para português (ativo definido pelo JavaScript) -->
-                <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">
-                    <span class="flag">🇧🇷</span>
-                    <span class="lang-text">Português</span>
-                </button>
-                <!-- Botão para italiano -->
-                <button id="btnItaliano" class="lang-btn" data-lang="it-IT">
-                    <span class="flag">🇮🇹</span>
-                    <span class="lang-text">Italiano</span>
-                </button>
-            </div>
             <!-- Título principal - data-i18n indica que esse texto será traduzido -->
             <h1 data-i18n="app-title">📊 Calculadora de Financiamento</h1>
         </header>
 
         <!-- ========================================== -->
-        <!-- SEÇÃO DE EXEMPLOS EDUCACIONAIS -->
+        <!-- SEÇÃO DE MEMORIAL DE CÁLCULO -->
         <!-- Começa escondida (display: none) -->
         <!-- Aparece quando o usuário clica em "SAIBA MAIS" -->
+        <!-- ========================================== -->
+        <div id="memorialSection" class="card memorial-section" style="display: none;">
+            <div class="memorial-header">
+                <h2 data-i18n="memorial-title">📚 Memorial de Cálculo - Sistemas de Amortização</h2>
+                <button id="btnFecharMemorial" class="btn-fechar-memorial" data-i18n-title="back-to-calculator">
+                    <span data-i18n="back">← Voltar</span>
+                </button>
+            </div>
+            
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-intro-title">🎯 Objetivo do Cálculo</h3>
+                <p data-i18n="memorial-intro-text">Este memorial explica passo a passo como são calculados os sistemas de amortização (SAC, Price e Americano), incluindo as fórmulas matemáticas utilizadas e exemplos práticos com os valores atuais.</p>
+            </div>
+
+            <!-- Memorial dinâmico baseado no sistema selecionado -->
+            <div id="memorial-conteudo-dinamico">
+                <!-- O conteúdo será preenchido dinamicamente pelo JavaScript -->
+            </div>
+
+            <div class="resumo-calculado">
+                <h3 data-i18n="memorial-resumo-title">📊 Resumo Calculado</h3>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-valor">Valor Emprestado:</span>
+                    <span id="resumo-valor">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-taxa">Taxa de Juros:</span>
+                    <span id="resumo-taxa">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-prazo">Prazo:</span>
+                    <span id="resumo-prazo">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-sistema">Sistema:</span>
+                    <span id="resumo-sistema">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-parcela">Valor da Parcela:</span>
+                    <span id="resumo-parcela">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-total-juros">Total de Juros:</span>
+                    <span id="resumo-total-juros">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-total-pago">Total Pago:</span>
+                    <span id="resumo-total-pago">-</span>
+                </div>
+            </div>
+
+            <div class="info-box" style="margin-top: 20px; padding: 15px; background: rgba(45, 159, 163, 0.1); border-left: 4px solid #2d9fa3ff; border-radius: 4px;">
+                <p><strong data-i18n="memorial-exemplos-link">💡 Quer entender melhor os sistemas?</strong></p>
+                <p data-i18n="memorial-exemplos-text">Veja exemplos educacionais detalhados de cada sistema de amortização clicando no botão abaixo.</p>
+                <button id="btnVerExemplos" class="btn-help" style="margin-top: 10px;" data-i18n="btn-ver-exemplos">Ver Exemplos Educacionais</button>
+            </div>
+
+            <button class="btn-voltar-memorial" data-i18n-title="back-to-calculator">
+                <span data-i18n="back">← Voltar</span>
+            </button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE EXEMPLOS EDUCACIONAIS -->
+        <!-- Começa escondida (display: none) -->
+        <!-- Pode ser aberta a partir do memorial -->
         <!-- ========================================== -->
         <div id="exemplosSection" class="card exemplos-section" style="display: none;">
             <div class="exemplos-header">
@@ -434,7 +504,7 @@
     </div>
 
     <footer>
-        <p data-i18n="footer">Calculadora de Empréstimos - Engenharia Nata © 2025</p>
+        <p data-i18n="footer">Calculadora de Empréstimos - Engenharia Nata @ 2025</p>
     </footer>
 
     <!-- Botão de retorno à tela inicial (fixo centralizado no rodapé) -->

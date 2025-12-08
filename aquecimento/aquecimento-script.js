@@ -83,13 +83,47 @@ const MATRIZ_CONSUMO = {
     "Alto": { consumo_por_pessoa: 60.0, T_desejada: 50.0, fator_autonomia: 2.0 }
 };
 
-// Matriz de Especificações do Coletor (Tubos a Vácuo)
-// [M_coletor] : [Eficiencia_Otica (η0), Coef_Perda_Linear (a1 - W/m²K), Area_Painel (A_painel - m²)]
-const MATRIZ_COLETOR = {
-    "Modelo_A": { eficiencia_optica: 0.75, coef_perda_linear: 1.5, area_painel: 1.8 },  // 20 tubos
-    "Modelo_B": { eficiencia_optica: 0.70, coef_perda_linear: 1.8, area_painel: 1.5 },  // 15 tubos
-    "Modelo_C": { eficiencia_optica: 0.78, coef_perda_linear: 1.2, area_painel: 2.2 }   // 25 tubos
+// Modelo de Referência do Coletor Solar Térmico
+// Baseado em produtos reais disponíveis nos fornecedores indicados
+const MODELO_REFERENCIA = {
+    'pt-BR': {
+        nome: 'Módulo Aquecimento Solar a Vácuo 15 Tubos Inox 316 BP',
+        especificacoes: {
+            area_m2: 1.8,           // Área útil aproximada do coletor (15 tubos de 58mm)
+            numero_tubos: 15,       // Número de tubos a vácuo
+            eficiencia_optica: 0.72, // Eficiência óptica típica para tubos a vácuo (72%)
+            coef_perda_linear: 1.6,  // Coeficiente de perda linear (W/m²K)
+            potencia_termica_kW: 1.3, // Potência térmica nominal (~1.3 kW sob irradiação de 1000 W/m²)
+            preco: 2298.51,         // Preço em R$ (Enertech)
+            dimensoes: '~2000 x 1800 x 120 mm (L x A x P)'
+        },
+        link: {
+            url: 'https://www.enertech.com.br/aquecimento-banho/placas-e-coletores/tubos-a-vacuo',
+            texto: 'Enertech Brasil'
+        }
+    },
+    'it-IT': {
+        nome: 'Collettore Solare Termico Pressurizzato con 15 Tubi HP con Riflettori',
+        especificacoes: {
+            area_m2: 1.8,           // Área útil aproximada do coletor (15 tubi Heat Pipe)
+            numero_tubos: 15,       // Número de tubi Heat Pipe
+            eficiencia_optica: 0.75, // Eficiência óptica para Heat Pipe com riflettori (75%)
+            coef_perda_linear: 1.4,  // Coeficiente de perda linear (W/m²K)
+            potencia_termica_kW: 1.35, // Potência térmica nominal (~1.35 kW sob irradiação de 1000 W/m²)
+            preco: 685.0,           // Preço em € (estimado para 15 tubi, baseado em 10 tubi = €457)
+            dimensoes: '~2000 x 1800 x 120 mm (L x A x P)'
+        },
+        link: {
+            url: 'https://www.pss-italy.com/categoria-prodotto/pannello-solare-termico-circolazione-naturale/',
+            texto: 'PSS-Italy'
+        }
+    }
 };
+
+// Função para obter o modelo de referência baseado no idioma
+function obterModeloReferencia() {
+    return MODELO_REFERENCIA[idiomaAtual] || MODELO_REFERENCIA['pt-BR'];
+}
 
 // Constantes para cálculo de aquecimento da casa
 // Potência necessária por metro cúbico (W/m³) - base para cálculo de volume
@@ -152,8 +186,9 @@ function converterParaNumero(valorTexto) {
  */
 function formatarNumero(valor) {
     if (isNaN(valor) || valor === null || valor === undefined) return '-';
-    // Usa 'pt-BR' para garantir vírgula como separador decimal
-    return valor.toLocaleString('pt-BR', {
+    // Usa locale baseado no idioma atual para formatação correta
+    const locale = idiomaAtual === 'it-IT' ? 'it-IT' : 'pt-BR';
+    return valor.toLocaleString(locale, {
         minimumFractionDigits: 0,
         maximumFractionDigits: 0
     });
@@ -213,6 +248,48 @@ function obterFaixaLatitude(latitude, idioma) {
  */
 function obterMatrizClima(idioma) {
     return idioma === 'it-IT' ? MATRIZ_CLIMA_ITALIA : MATRIZ_CLIMA_BRASIL;
+}
+
+/**
+ * Calcula as Horas de Sol Pico (HSP) no inverno baseado na latitude
+ * As HSP variam com a latitude: quanto mais longe do equador, menos horas de sol no inverno
+ * @param {number} latitude - Latitude do local (negativa para Sul, positiva para Norte)
+ * @returns {number} Horas de Sol Pico (HSP) no inverno (kWh/m²/dia)
+ */
+function calcularHorasSolPicoInverno(latitude) {
+    // Converter latitude para valor absoluto para cálculos
+    const latAbs = Math.abs(latitude);
+    
+    // Valores de referência de HSP no inverno baseados em dados climáticos
+    // Hemisfério Sul: inverno em junho/julho
+    // Hemisfério Norte: inverno em dezembro/janeiro
+    // Interpolação linear entre pontos conhecidos:
+    // Latitude 0°: ~5.5 HSP (equador, menor variação sazonal)
+    // Latitude 15°: ~4.5 HSP
+    // Latitude 30°: ~3.5 HSP
+    // Latitude 45°: ~2.5 HSP
+    // Latitude 60°: ~1.5 HSP
+    
+    let hsp;
+    if (latAbs <= 15) {
+        // Interpolação linear entre 0° e 15°
+        hsp = 5.5 - (latAbs / 15) * 1.0; // De 5.5 a 4.5
+    } else if (latAbs <= 30) {
+        // Interpolação linear entre 15° e 30°
+        hsp = 4.5 - ((latAbs - 15) / 15) * 1.0; // De 4.5 a 3.5
+    } else if (latAbs <= 45) {
+        // Interpolação linear entre 30° e 45°
+        hsp = 3.5 - ((latAbs - 30) / 15) * 1.0; // De 3.5 a 2.5
+    } else if (latAbs <= 60) {
+        // Interpolação linear entre 45° e 60°
+        hsp = 2.5 - ((latAbs - 45) / 15) * 1.0; // De 2.5 a 1.5
+    } else {
+        // Para latitudes acima de 60°, usar valor mínimo
+        hsp = Math.max(1.0, 1.5 - ((latAbs - 60) / 15) * 0.5);
+    }
+    
+    // Garantir valores mínimos e máximos razoáveis
+    return Math.max(1.0, Math.min(6.0, hsp));
 }
 
 /**
@@ -304,12 +381,19 @@ function calcularAquecimentoCasa(areaCasa, alturaCasa, classeEnergetica, T_ambie
     const fracaoNoite = 0.6; // 60% da demanda ocorre durante a noite (16 horas)
     const demandaCasa_noite_kWh = demandaCasa_kWh * fracaoNoite;
     
-    // Calcular potência necessária baseada na demanda diária
-    // A potência necessária deve considerar que o sistema precisa fornecer energia suficiente
-    // para manter a temperatura durante o período de maior demanda (noite)
-    // Usamos a demanda noturna dividida pelas horas noturnas (16 horas) como referência
-    const horasNoite = 16; // horas noturnas (sem sol)
-    const potenciaNecessaria_W = (demandaCasa_noite_kWh * 1000) / horasNoite;
+    // Calcular potência necessária usando método de dimensionamento de radiadores
+    // Método correto: P = Volume × Coeficiente × Delta_T
+    // Este método é mais preciso que usar consumo anual médio
+    const coeficientesPerda = {
+        "A4": 0.5, "A3": 0.7, "A2": 0.9, "A1": 1.1,
+        "B": 1.3, "C": 1.6, "D": 2.0, "E": 2.5, "F": 3.0, "G": 3.5
+    };
+    const coefPerda = coeficientesPerda[classeEnergetica] || coeficientesPerda["D"];
+    
+    // Potência necessária = Volume × Coeficiente × Delta_T
+    // Adiciona 15% de margem para perdas adicionais (portas, janelas, infiltrações, etc.)
+    const potenciaBase_W = volumeCasa * coefPerda * Delta_T_casa;
+    const potenciaNecessaria_W = potenciaBase_W * 1.15;
     
     return {
         volumeCasa_m3: volumeCasa,
@@ -331,7 +415,7 @@ function calcularAquecimentoCasa(areaCasa, alturaCasa, classeEnergetica, T_ambie
  * @param {string} tipoUso - Tipo de uso (Economico, Padrao, Alto)
  * @param {number} latitude - Latitude do local
  * @param {number} altitude - Altitude do local
- * @param {string} modeloColetor - Modelo do coletor
+ * @param {string|null} modeloColetor - Modelo do coletor (deprecated, usa modelo de referência baseado no idioma)
  * @param {number} areaCasa - Área da casa em m²
  * @param {number} alturaCasa - Altura do pé direito em m
  * @param {string} classeEnergetica - Classe energética (A a G)
@@ -346,7 +430,13 @@ function calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, mod
     const matrizClima = obterMatrizClima(idiomaAtual);
     const faixaLatitude = obterFaixaLatitude(latitude, idiomaAtual);
     const dadosClimaBase = matrizClima[faixaLatitude] || matrizClima["OUTRAS"];
-    const dadosColetor = MATRIZ_COLETOR[modeloColetor] || MATRIZ_COLETOR["Modelo_B"];
+    // Usar modelo de referência baseado no idioma
+    const modeloRef = obterModeloReferencia();
+    const dadosColetor = {
+        eficiencia_optica: modeloRef.especificacoes.eficiencia_optica,
+        coef_perda_linear: modeloRef.especificacoes.coef_perda_linear,
+        area_painel: modeloRef.especificacoes.area_m2
+    };
 
     // Calcular temperaturas ajustadas pela altitude
     const T_agua_fria = calcularTemperaturaComAltitude(
@@ -358,9 +448,24 @@ function calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, mod
         altitude
     );
     
+    // Calcular Horas de Sol Pico (HSP) no inverno baseado na latitude
+    // Isso substitui o valor fixo da matriz por um cálculo dinâmico
+    let horasSolPicoInverno;
+    try {
+        horasSolPicoInverno = calcularHorasSolPicoInverno(latitude);
+        // Verificar se o valor é válido
+        if (!isFinite(horasSolPicoInverno) || horasSolPicoInverno <= 0) {
+            console.warn('HSP calculado inválido, usando valor da matriz:', horasSolPicoInverno);
+            horasSolPicoInverno = dadosClimaBase.H_g_diaria; // Fallback para valor da matriz
+        }
+    } catch (error) {
+        console.error('Erro ao calcular HSP:', error);
+        horasSolPicoInverno = dadosClimaBase.H_g_diaria; // Fallback para valor da matriz
+    }
+    
     // Criar objeto dadosClima com valores ajustados
     const dadosClima = {
-        H_g_diaria: dadosClimaBase.H_g_diaria,
+        H_g_diaria: horasSolPicoInverno, // Usar HSP calculado baseado na latitude
         T_agua_fria: T_agua_fria,
         T_ambiente_inverno: T_ambiente_inverno
     };
@@ -410,30 +515,47 @@ function calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, mod
     const demandaTotal_kWh = E_nec_kWh + resultadoCasa.demandaCasa_kWh;
     
     // 4.6. DIMENSIONAMENTO DA ÁREA DO COLETOR (A_col)
-    // IMPORTANTE: A lógica é diferente para água e casa:
-    // - ÁGUA: Pode ser aquecida ao longo do dia, não precisa de fator temporal restritivo
-    // - CASA: Precisa captar toda a energia durante o dia para usar à noite (fator temporal crítico)
+    // IMPORTANTE: Usa Horas de Sol Pico (HSP) para calcular a energia capturada pelos painéis
+    // HSP = H_g_diaria (já está em kWh/m²/dia, equivalente a horas de sol pico)
+    // Energia capturada por m² de painel = HSP × Potência térmica do painel (kW/m²) × Eficiência
+    // Potência térmica do painel em condições de pico (1000 W/m²) = eficiência_óptica × 1 kW/m²
     
-    const horasSolEfetivo = 6.5; // horas de sol efetivo por dia no inverno
     const fatorSeguranca = 1.3; // Fator de segurança para dias nublados e perdas
+    const horasSolPico = dadosClima.H_g_diaria; // Horas de Sol Pico (HSP) - já em kWh/m²/dia
+    
+    // Potência térmica do painel em condições de pico (1000 W/m² = 1 kW/m²)
+    // Energia capturada por m² de painel em 1 hora de sol pico = eficiência × 1 kWh/m²
+    // Energia capturada por m² de painel por dia = HSP × eficiência × 1 kWh/m²
+    let energiaCapturadaPorM2_kWh = horasSolPico * eficiencia_coletor_final;
+    
+    // Verificar se a energia capturada é válida (evitar divisão por zero)
+    if (!isFinite(energiaCapturadaPorM2_kWh) || energiaCapturadaPorM2_kWh <= 0) {
+        console.error('Erro: energiaCapturadaPorM2_kWh inválida:', energiaCapturadaPorM2_kWh, 'horasSolPico:', horasSolPico, 'eficiencia_coletor_final:', eficiencia_coletor_final);
+        // Usar valor padrão mínimo para evitar erro
+        energiaCapturadaPorM2_kWh = 0.1; // Valor mínimo de segurança
+    }
     
     // Calcular área necessária para cada sistema separadamente
     let areaAgua_m2 = 0;
     let areaCasa_m2 = 0;
     
-    // ÁREA PARA ÁGUA: Usa irradiação diária total (água pode ser aquecida ao longo do dia)
-    if (incluirAgua && E_nec_kWh > 0) {
-        // Para água, consideramos que pode ser aquecida ao longo do dia
-        // Aplicamos apenas fator de segurança
-        areaAgua_m2 = (E_nec_kWh * fatorSeguranca) / (dadosClima.H_g_diaria * eficiencia_coletor_final);
+    // ÁREA PARA ÁGUA: Usa energia capturada considerando horas de sol pico
+    if (incluirAgua && E_nec_kWh > 0 && energiaCapturadaPorM2_kWh > 0) {
+        // Área = Demanda / (Energia capturada por m²)
+        areaAgua_m2 = (E_nec_kWh * fatorSeguranca) / energiaCapturadaPorM2_kWh;
     }
     
-    // ÁREA PARA CASA: Precisa captar toda energia durante o dia (fator temporal crítico)
-    if (incluirCasa && resultadoCasa.demandaCasa_kWh > 0) {
-        // Para casa, toda energia precisa ser captada durante as horas de sol
-        // Fator temporal = horas_sol / 24
-        const fatorTemporal = horasSolEfetivo / 24.0;
-        areaCasa_m2 = (resultadoCasa.demandaCasa_kWh * fatorSeguranca) / (dadosClima.H_g_diaria * eficiencia_coletor_final * fatorTemporal);
+    // ÁREA PARA CASA: Usa energia capturada considerando horas de sol pico
+    // IMPORTANTE: O sistema precisa captar em 1 dia energia suficiente para os dias de autonomia
+    // Se autonomia = 5 dias, precisa captar em 1 dia energia para 5 dias e noites
+    if (incluirCasa && resultadoCasa.demandaCasa_kWh > 0 && energiaCapturadaPorM2_kWh > 0) {
+        // Calcular demanda total considerando dias de autonomia
+        // O sistema precisa captar em 1 dia energia para N dias de autonomia
+        const demandaCasaComAutonomia_kWh = resultadoCasa.demandaCasa_kWh * diasAutonomia;
+        
+        // Área = (Demanda × Dias de Autonomia) / (Energia capturada por m²)
+        // Isso garante que em 1 dia de sol, o sistema capte energia suficiente para N dias
+        areaCasa_m2 = (demandaCasaComAutonomia_kWh * fatorSeguranca) / energiaCapturadaPorM2_kWh;
     }
     
     // Área total necessária
@@ -485,14 +607,347 @@ function calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, mod
         areaCasa_m2: areaCasa_m2,
         numeroPaineis: N_paineis_final,
         H_g_diaria: dadosClima.H_g_diaria,
-        horasSolEfetivo: horasSolEfetivo,
+        horasSolEfetivo: horasSolPico, // Usar horasSolPico (HSP) como horas sol efetivo
         fatorSeguranca: fatorSeguranca,
-        areaPainel_m2: dadosColetor.area_painel,
+        areaPainel_m2: dadosColetor.area_painel, // Área do painel de referência
         T_agua_fria: T_agua_fria, // Temperatura da água fria calculada
         T_ambiente_inverno: T_ambiente_inverno, // Temperatura ambiente de inverno calculada
         volumeCasa_m3: resultadoCasa.volumeCasa_m3,
         potenciaCasa_W: resultadoCasa.potenciaNecessaria_W,
-        volumeBoilerAgua_L: V_boiler_agua_L
+        volumeBoilerAgua_L: V_boiler_agua_L,
+        volumeBoilerCasa_L: V_boiler_casa_L // Volume do boiler para aquecimento da casa (considera dias de autonomia)
+    };
+}
+
+// Matriz de Termossifões (Radiadores) para Aquecimento de Ambientes
+// Valores baseados em preços médios do mercado (Brasil em R$ e Itália em €) - 2024/2025
+// Matriz de Termossifões (Radiadores) para Aquecimento de Ambientes
+// Valores baseados em preços médios do mercado (Brasil em R$ e Itália em €) - 2024/2025
+// Preços atualizados com base em pesquisas de mercado
+const MATRIZ_TERMOSSIFOES = {
+    'pt-BR': [
+        { tamanho: 'Pequeno', potencia_W: 500, comprimento_cm: 60, altura_cm: 40, preco: 480.0, descricao: '60x40cm - 500W' },
+        { tamanho: 'Médio', potencia_W: 800, comprimento_cm: 80, altura_cm: 50, preco: 680.0, descricao: '80x50cm - 800W' },
+        { tamanho: 'Grande', potencia_W: 1200, comprimento_cm: 100, altura_cm: 60, preco: 920.0, descricao: '100x60cm - 1200W' },
+        { tamanho: 'Extra Grande', potencia_W: 1800, comprimento_cm: 120, altura_cm: 60, preco: 1300.0, descricao: '120x60cm - 1800W' },
+        { tamanho: 'Duplo', potencia_W: 2400, comprimento_cm: 150, altura_cm: 60, preco: 1650.0, descricao: '150x60cm - 2400W' }
+    ],
+    'it-IT': [
+        { tamanho: 'Piccolo', potencia_W: 500, comprimento_cm: 60, altura_cm: 40, preco: 80.0, descricao: '60x40cm - 500W' },
+        { tamanho: 'Medio', potencia_W: 800, comprimento_cm: 80, altura_cm: 50, preco: 120.0, descricao: '80x50cm - 800W' },
+        { tamanho: 'Grande', potencia_W: 1200, comprimento_cm: 100, altura_cm: 60, preco: 160.0, descricao: '100x60cm - 1200W' },
+        { tamanho: 'Extra Grande', potencia_W: 1800, comprimento_cm: 120, altura_cm: 60, preco: 220.0, descricao: '120x60cm - 1800W' },
+        { tamanho: 'Doppio', potencia_W: 2400, comprimento_cm: 150, altura_cm: 60, preco: 280.0, descricao: '150x60cm - 2400W' }
+    ]
+};
+
+/**
+ * Estima o número e tipos de ambientes de uma casa baseado na área
+ * @param {number} areaCasa - Área total da casa em m²
+ * @returns {Array} Array de objetos com tipo e área estimada de cada ambiente
+ */
+function estimarAmbientes(areaCasa) {
+    const ambientes = [];
+    
+    // Estimativa baseada em padrões arquitetônicos típicos
+    // Sala de estar: ~20-30 m²
+    // Quartos: ~12-18 m² cada
+    // Cozinha: ~10-15 m²
+    // Banheiros: ~4-6 m² cada
+    
+    if (areaCasa < 50) {
+        // Casa pequena: 1-2 ambientes
+        ambientes.push({ tipo: 'Sala/Quarto', area_m2: areaCasa * 0.6 });
+        ambientes.push({ tipo: 'Cozinha/Banheiro', area_m2: areaCasa * 0.4 });
+    } else if (areaCasa < 80) {
+        // Casa pequena-média: 2-3 ambientes
+        ambientes.push({ tipo: 'Sala', area_m2: Math.min(25, areaCasa * 0.35) });
+        ambientes.push({ tipo: 'Quarto', area_m2: Math.min(15, areaCasa * 0.35) });
+        ambientes.push({ tipo: 'Cozinha/Banheiro', area_m2: areaCasa * 0.3 });
+    } else if (areaCasa < 120) {
+        // Casa média: 3-4 ambientes
+        ambientes.push({ tipo: 'Sala', area_m2: Math.min(30, areaCasa * 0.25) });
+        ambientes.push({ tipo: 'Quarto 1', area_m2: Math.min(15, areaCasa * 0.2) });
+        ambientes.push({ tipo: 'Quarto 2', area_m2: Math.min(15, areaCasa * 0.2) });
+        ambientes.push({ tipo: 'Cozinha/Banheiro', area_m2: areaCasa * 0.35 });
+    } else if (areaCasa < 200) {
+        // Casa média-grande: 4-6 ambientes
+        ambientes.push({ tipo: 'Sala', area_m2: Math.min(35, areaCasa * 0.18) });
+        ambientes.push({ tipo: 'Quarto 1', area_m2: Math.min(18, areaCasa * 0.15) });
+        ambientes.push({ tipo: 'Quarto 2', area_m2: Math.min(18, areaCasa * 0.15) });
+        ambientes.push({ tipo: 'Quarto 3', area_m2: Math.min(15, areaCasa * 0.12) });
+        ambientes.push({ tipo: 'Cozinha', area_m2: Math.min(15, areaCasa * 0.12) });
+        ambientes.push({ tipo: 'Banheiros', area_m2: areaCasa * 0.28 });
+    } else {
+        // Casa grande: 6+ ambientes
+        ambientes.push({ tipo: 'Sala', area_m2: Math.min(40, areaCasa * 0.15) });
+        ambientes.push({ tipo: 'Quarto 1', area_m2: Math.min(20, areaCasa * 0.12) });
+        ambientes.push({ tipo: 'Quarto 2', area_m2: Math.min(20, areaCasa * 0.12) });
+        ambientes.push({ tipo: 'Quarto 3', area_m2: Math.min(18, areaCasa * 0.1) });
+        ambientes.push({ tipo: 'Quarto 4', area_m2: Math.min(15, areaCasa * 0.08) });
+        ambientes.push({ tipo: 'Cozinha', area_m2: Math.min(18, areaCasa * 0.1) });
+        ambientes.push({ tipo: 'Banheiros', area_m2: areaCasa * 0.33 });
+    }
+    
+    return ambientes;
+}
+
+/**
+ * Calcula a potência necessária para aquecer um ambiente
+ * @param {number} areaAmbiente - Área do ambiente em m²
+ * @param {number} alturaCasa - Altura do pé direito em m
+ * @param {number} T_externa - Temperatura externa de inverno em °C
+ * @param {string} classeEnergetica - Classe energética da casa
+ * @returns {number} Potência necessária em Watts
+ */
+function calcularPotenciaAmbiente(areaAmbiente, alturaCasa, T_externa, classeEnergetica) {
+    // Temperatura confortável interna (20-22°C durante todo o dia e noite)
+    const T_conforto = 21.0; // °C (média entre 20 e 22)
+    
+    // Volume do ambiente
+    const volumeAmbiente = areaAmbiente * alturaCasa; // m³
+    
+    // Diferença de temperatura
+    const Delta_T = T_conforto - T_externa;
+    
+    // Coeficiente de perda térmica por m³ (W/m³·K) baseado na classe energética
+    // Valores típicos: A4=0.5, A3=0.7, A2=0.9, A1=1.1, B=1.3, C=1.6, D=2.0, E=2.5, F=3.0, G=3.5
+    const coeficientesPerda = {
+        "A4": 0.5, "A3": 0.7, "A2": 0.9, "A1": 1.1,
+        "B": 1.3, "C": 1.6, "D": 2.0, "E": 2.5, "F": 3.0, "G": 3.5
+    };
+    const coefPerda = coeficientesPerda[classeEnergetica] || coeficientesPerda["D"];
+    
+    // Potência necessária = Volume × Coeficiente × Delta_T
+    // Adiciona 15% de margem para perdas adicionais (portas, janelas, etc.)
+    const potenciaBase_W = volumeAmbiente * coefPerda * Delta_T;
+    const potenciaNecessaria_W = potenciaBase_W * 1.15;
+    
+    return Math.max(0, potenciaNecessaria_W);
+}
+
+/**
+ * Seleciona o termossifão mais adequado para uma potência necessária
+ * @param {number} potenciaNecessaria_W - Potência necessária em Watts
+ * @param {Array} matrizTermossifoes - Matriz de termossifões disponíveis
+ * @returns {Object} Termossifão selecionado ou null
+ */
+function selecionarTermossifao(potenciaNecessaria_W, matrizTermossifoes) {
+    // Ordenar por potência (menor para maior)
+    const termossifoesOrdenados = [...matrizTermossifoes].sort((a, b) => a.potencia_W - b.potencia_W);
+    
+    // Encontrar o termossifão com potência igual ou superior à necessária
+    // Com margem de 20% para garantir capacidade adequada
+    const potenciaComMargem = potenciaNecessaria_W * 1.2;
+    
+    for (const termossifao of termossifoesOrdenados) {
+        if (termossifao.potencia_W >= potenciaComMargem) {
+            return termossifao;
+        }
+    }
+    
+    // Se nenhum termossifão individual atende, usar o maior disponível
+    // Pode ser necessário mais de um em ambientes muito grandes
+    return termossifoesOrdenados[termossifoesOrdenados.length - 1];
+}
+
+/**
+ * Calcula a quantidade e custo de termossifões necessários para aquecer a casa
+ * Considera cada ambiente individualmente com termossifão apropriado
+ * @param {number} areaCasa - Área total da casa em m²
+ * @param {number} alturaCasa - Altura do pé direito em m
+ * @param {number} T_ambiente_inverno - Temperatura externa de inverno em °C
+ * @param {string} classeEnergetica - Classe energética da casa
+ * @returns {Object} Objeto com quantidade, detalhes e custo dos termossifões
+ */
+function calcularTermossifoes(areaCasa, alturaCasa, T_ambiente_inverno, classeEnergetica) {
+    if (areaCasa <= 0 || alturaCasa <= 0) {
+        return {
+            quantidade: 0,
+            termossifoes: [],
+            custoTotal: 0,
+            potenciaTotal: 0,
+            detalhes: '',
+            ambientes: []
+        };
+    }
+    
+    // Obter matriz de termossifões baseada no idioma atual
+    const matrizTermossifoes = MATRIZ_TERMOSSIFOES[idiomaAtual] || MATRIZ_TERMOSSIFOES['pt-BR'];
+    
+    // Estimar ambientes da casa
+    const ambientes = estimarAmbientes(areaCasa);
+    
+    // Calcular termossifões para cada ambiente
+    const termossifoesPorAmbiente = [];
+    const termossifoesSelecionados = [];
+    const detalhes = [];
+    
+    for (const ambiente of ambientes) {
+        // Calcular potência necessária para este ambiente
+        const potenciaAmbiente_W = calcularPotenciaAmbiente(
+            ambiente.area_m2,
+            alturaCasa,
+            T_ambiente_inverno,
+            classeEnergetica
+        );
+        
+        if (potenciaAmbiente_W > 0) {
+            // Selecionar termossifão adequado
+            const termossifaoSelecionado = selecionarTermossifao(potenciaAmbiente_W, matrizTermossifoes);
+            
+            // Verificar se precisa de mais de um termossifão
+            const potenciaComMargem = potenciaAmbiente_W * 1.2;
+            const quantidadeNecessaria = Math.ceil(potenciaComMargem / termossifaoSelecionado.potencia_W);
+            const quantidadeFinal = Math.min(quantidadeNecessaria, 2); // Máximo 2 por ambiente
+            
+            // Adicionar ao array de termossifões
+            const jaExiste = termossifoesSelecionados.find(t => 
+                t.tamanho === termossifaoSelecionado.tamanho
+            );
+            
+            if (jaExiste) {
+                jaExiste.quantidade += quantidadeFinal;
+            } else {
+                termossifoesSelecionados.push({
+                    ...termossifaoSelecionado,
+                    quantidade: quantidadeFinal
+                });
+            }
+            
+            // Adicionar detalhes
+            const textoAmbiente = idiomaAtual === 'it-IT' 
+                ? `${quantidadeFinal}x ${termossifaoSelecionado.descricao} (${ambiente.tipo})`
+                : `${quantidadeFinal}x ${termossifaoSelecionado.descricao} (${ambiente.tipo})`;
+            detalhes.push(textoAmbiente);
+            
+            termossifoesPorAmbiente.push({
+                ambiente: ambiente.tipo,
+                area_m2: ambiente.area_m2,
+                potenciaNecessaria_W: potenciaAmbiente_W,
+                termossifao: termossifaoSelecionado,
+                quantidade: quantidadeFinal
+            });
+        }
+    }
+    
+    // Calcular custo total
+    const custoTotal = termossifoesSelecionados.reduce((total, t) => total + (t.preco * t.quantidade), 0);
+    const potenciaTotal = termossifoesSelecionados.reduce((total, t) => total + (t.potencia_W * t.quantidade), 0);
+    const quantidadeTotal = termossifoesSelecionados.reduce((total, t) => total + t.quantidade, 0);
+    
+    return {
+        quantidade: quantidadeTotal,
+        termossifoes: termossifoesSelecionados,
+        custoTotal: custoTotal,
+        potenciaTotal: potenciaTotal,
+        detalhes: detalhes.join('; '),
+        ambientes: termossifoesPorAmbiente
+    };
+}
+
+/**
+ * Calcula os custos estimados do sistema de aquecimento solar
+ * @param {number} numeroPaineis - Número de painéis necessários
+ * @param {number} areaColetor_m2 - Área total de coletores em m²
+ * @param {number} volumeBoiler_L - Volume do boiler em litros
+ * @param {number} areaCasa - Área da casa em m² (para cálculo de termossifões)
+ * @param {number} alturaCasa - Altura do pé direito em m (para cálculo de termossifões)
+ * @param {number} T_ambiente_inverno - Temperatura externa de inverno em °C (para cálculo de termossifões)
+ * @param {string} classeEnergetica - Classe energética da casa (para cálculo de termossifões)
+ * @param {boolean} incluirCasa - Se o sistema inclui aquecimento da casa
+ * @returns {Object} Objeto com os custos calculados
+ */
+function calcularCustos(numeroPaineis, areaColetor_m2, volumeBoiler_L, areaCasa = 0, alturaCasa = 2.7, T_ambiente_inverno = 10, classeEnergetica = 'D', incluirCasa = false) {
+    // Preços médios do mercado baseados em pesquisas 2024/2025
+    // Valores em R$ para Brasil (pt-BR) e € para Itália (it-IT)
+    const PRECOS = {
+        'pt-BR': {
+            // Custo por painel (inclui tubos a vácuo, estrutura, etc.)
+            // Baseado em: Módulo Aquecimento Solar a Vácuo 15 Tubos Inox 316 BP - Enertech
+            // Fonte: https://www.enertech.com.br/aquecimento-banho/placas-e-coletores/tubos-a-vacuo
+            painel_por_unidade: 2298.51, // R$ por painel (Modelo B - 1,5 m², 15 tubos)
+            painel_por_m2: 1532.34, // R$ por m² de área de coletor (R$ 2298,51 / 1,5 m²)
+            
+            // Custo do boiler/acumulador por litro
+            // Baseado em boilers de aço inox para sistemas solares (estimativa média de mercado)
+            boiler_por_litro: 15.0, // R$ por litro de capacidade
+            
+            // Custo de tubulações e conexões por metro
+            // Considera tubo de cobre 25mm (1"), conexões, válvulas, etc.
+            tubulacao_por_metro: 60.0, // R$ por metro de tubulação completa
+            comprimento_tubulacao_medio: 10.0, // metros (estimativa média)
+            
+            // Custo de isolante térmico por metro
+            // Isolante de espuma ou lã de rocha para tubulações
+            isolante_por_metro: 18.0 // R$ por metro de isolante térmico
+        },
+        'it-IT': {
+            // Custo por painel (inclui tubos a vácuo, estrutura, etc.)
+            // Baseado em: Collettore solare termico pressurizzato c/10 tubi HP = €457
+            // Estimativa para 15 tubi: ~€685 (proporcional)
+            // Fonte: https://www.pss-italy.com/categoria-prodotto/pannello-solare-termico-circolazione-naturale/
+            painel_por_unidade: 685.0, // € por painel (15 tubi, ~1,8 m²)
+            painel_por_m2: 380.56, // € por m² de área de coletor (€ 685 / 1,8 m²)
+            
+            // Custo do boiler/acumulador por litro
+            // Baseado em: Pannello 200 litri 15 tubi = €1.425,99
+            // Estimativa: (€1.425,99 - €685 coletor) / 200L = ~€3,70/L
+            boiler_por_litro: 3.7, // € por litro de capacidade
+            
+            // Custo de tubulações e conexões por metro
+            // Considera tubo de cobre 25mm (1"), conexões, válvulas, etc.
+            tubulacao_por_metro: 12.0, // € por metro de tubulação completa
+            comprimento_tubulacao_medio: 10.0, // metros (estimativa média)
+            
+            // Custo de isolante térmico por metro
+            // Isolante de espuma ou lã de rocha para tubulações
+            isolante_por_metro: 3.0 // € por metro de isolante térmico
+        }
+    };
+    
+    // Selecionar preços baseado no idioma atual
+    const precos = PRECOS[idiomaAtual] || PRECOS['pt-BR'];
+    
+    // Calcular custos
+    const custoPaineis = numeroPaineis * precos.painel_por_unidade;
+    
+    // Custo do boiler (acumulador)
+    const custoAcumuladores = volumeBoiler_L * precos.boiler_por_litro;
+    
+    // Custo de tubulações e conexões
+    // Estimativa baseada em comprimento médio + 20% de margem para conexões
+    const comprimentoTubulacao = precos.comprimento_tubulacao_medio;
+    const custoTubulacoes = comprimentoTubulacao * precos.tubulacao_por_metro * 1.2; // +20% para conexões
+    
+    // Custo de isolantes térmicos
+    // Mesmo comprimento das tubulações
+    const custoIsolantes = comprimentoTubulacao * precos.isolante_por_metro;
+    
+    // Custo de termossifões (apenas para aquecimento da casa)
+    let custoTermossifoes = 0;
+    let detalhesTermossifoes = '';
+    let quantidadeTermossifoes = 0;
+    
+    if (incluirCasa && areaCasa > 0) {
+        const calculoTermossifoes = calcularTermossifoes(areaCasa, alturaCasa, T_ambiente_inverno, classeEnergetica);
+        custoTermossifoes = calculoTermossifoes.custoTotal;
+        detalhesTermossifoes = calculoTermossifoes.detalhes;
+        quantidadeTermossifoes = calculoTermossifoes.quantidade;
+    }
+    
+    // Custo total
+    const custoTotal = custoPaineis + custoAcumuladores + custoTubulacoes + custoIsolantes + custoTermossifoes;
+    
+    return {
+        custoPaineis: custoPaineis,
+        custoAcumuladores: custoAcumuladores,
+        custoTubulacoes: custoTubulacoes,
+        custoIsolantes: custoIsolantes,
+        custoTermossifoes: custoTermossifoes,
+        quantidadeTermossifoes: quantidadeTermossifoes,
+        detalhesTermossifoes: detalhesTermossifoes,
+        custoTotal: custoTotal
     };
 }
 
@@ -546,6 +1001,7 @@ function atualizarResultados() {
     const sliderAltitude = document.getElementById('sliderAltitude');
     const sliderAreaCasa = document.getElementById('sliderAreaCasa');
     const sliderAlturaCasa = document.getElementById('sliderAlturaCasa');
+    const sliderDiasAutonomia = document.getElementById('sliderDiasAutonomia');
     
     // Lê valores dos inputs ou sliders (inputs têm prioridade se válidos)
     let numeroPessoas = sliderPessoas ? parseInt(sliderPessoas.value) : 4;
@@ -603,8 +1059,8 @@ function atualizarResultados() {
     // Obtém valores dos radio buttons
     const tipoUso = document.querySelector('input[name="tipoUso"]:checked')?.value || 'Padrao';
     const classeEnergetica = document.querySelector('input[name="classeEnergetica"]:checked')?.value || 'D';
-    // Modelo B é sempre usado (único modelo de referência)
-    const modeloColetor = 'Modelo_B';
+    // Usar modelo de referência baseado no idioma (não há mais Modelo_B)
+    const modeloRef = obterModeloReferencia();
     
     // Obtém valores dos checkboxes de tipo de sistema
     const checkboxAgua = document.getElementById('checkboxAgua');
@@ -634,24 +1090,52 @@ function atualizarResultados() {
         }
     }
     
-    // Calcula o dimensionamento
-    const resultado = calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, modeloColetor, areaCasa, alturaCasa, classeEnergetica, diasAutonomia, incluirAgua, incluirCasa);
+    // Calcula o dimensionamento (modeloColetor não é mais usado, usa modelo de referência baseado no idioma)
+    let resultado;
+    try {
+        resultado = calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, null, areaCasa, alturaCasa, classeEnergetica, diasAutonomia, incluirAgua, incluirCasa);
+    } catch (error) {
+        console.error('Erro ao calcular dimensionamento:', error);
+        // Mostrar mensagem de erro ou valores padrão
+        const secaoResultados = document.querySelector('.resultados');
+        if (secaoResultados) {
+            secaoResultados.style.display = 'block';
+        }
+        return; // Sair da função se houver erro
+    }
     
     // Atualiza os displays
     const textos = traducoes[idiomaAtual] || traducoes['pt-BR'];
     const textoPainel = resultado.numeroPaineis === 1 ? (textos['unit-painel-singular'] || 'painel') : (textos['unit-painel-plural'] || 'paineis');
     
-    document.getElementById('areaColetor').textContent = formatarDecimal(resultado.areaColetor_m2, 2) + ' m²';
-    document.getElementById('numeroPaineis').textContent = resultado.numeroPaineis + ' ' + textoPainel;
+    // Verificar se os elementos existem antes de atualizar
+    const elementoAreaColetor = document.getElementById('areaColetor');
+    if (elementoAreaColetor) {
+        elementoAreaColetor.textContent = formatarDecimal(resultado.areaColetor_m2 || 0, 2) + ' m²';
+    }
+    
+    // Exibir número de painéis (apenas o número, sem informações extras)
+    const elementoNumeroPaineis = document.getElementById('numeroPaineis');
+    if (elementoNumeroPaineis) {
+        elementoNumeroPaineis.textContent = (resultado.numeroPaineis || 0) + ' ' + textoPainel;
+    }
     
     // Mostrar/ocultar resultados baseado no tipo de sistema selecionado
-    const resultadoAgua = document.getElementById('demandaEnergia').closest('.resultado-item');
-    const resultadoCasa = document.getElementById('demandaCasa').closest('.resultado-item');
-    const resultadoVolumeBoiler = document.getElementById('volumeBoiler').closest('.resultado-item');
-    const resultadoConsumoDiario = document.getElementById('consumoDiario').closest('.resultado-item');
-    const resultadoTempAgua = document.getElementById('tempAguaFria').closest('.resultado-item');
-    const resultadoVolumeCasa = document.getElementById('volumeCasa').closest('.resultado-item');
-    const resultadoPotenciaCasa = document.getElementById('potenciaCasa').closest('.resultado-item');
+    const elementoDemandaEnergia = document.getElementById('demandaEnergia');
+    const elementoDemandaCasa = document.getElementById('demandaCasa');
+    const elementoVolumeBoiler = document.getElementById('volumeBoiler');
+    const elementoConsumoDiario = document.getElementById('consumoDiario');
+    const elementoTempAgua = document.getElementById('tempAguaFria');
+    const elementoVolumeCasa = document.getElementById('volumeCasa');
+    const elementoPotenciaCasa = document.getElementById('potenciaCasa');
+    
+    const resultadoAgua = elementoDemandaEnergia ? elementoDemandaEnergia.closest('.resultado-item') : null;
+    const resultadoCasa = elementoDemandaCasa ? elementoDemandaCasa.closest('.resultado-item') : null;
+    const resultadoVolumeBoiler = elementoVolumeBoiler ? elementoVolumeBoiler.closest('.resultado-item') : null;
+    const resultadoConsumoDiario = elementoConsumoDiario ? elementoConsumoDiario.closest('.resultado-item') : null;
+    const resultadoTempAgua = elementoTempAgua ? elementoTempAgua.closest('.resultado-item') : null;
+    const resultadoVolumeCasa = elementoVolumeCasa ? elementoVolumeCasa.closest('.resultado-item') : null;
+    const resultadoPotenciaCasa = elementoPotenciaCasa ? elementoPotenciaCasa.closest('.resultado-item') : null;
     
     if (resultadoAgua) resultadoAgua.style.display = incluirAgua ? 'flex' : 'none';
     if (resultadoCasa) resultadoCasa.style.display = incluirCasa ? 'flex' : 'none';
@@ -661,15 +1145,134 @@ function atualizarResultados() {
     if (resultadoVolumeCasa) resultadoVolumeCasa.style.display = incluirCasa ? 'flex' : 'none';
     if (resultadoPotenciaCasa) resultadoPotenciaCasa.style.display = incluirCasa ? 'flex' : 'none';
     
-    document.getElementById('demandaEnergia').textContent = formatarDecimal(resultado.demandaEnergia_kWh, 2) + ' kWh/dia';
-    document.getElementById('demandaCasa').textContent = formatarDecimal(resultado.demandaCasa_kWh, 2) + ' kWh/dia';
-    document.getElementById('demandaTotal').textContent = formatarDecimal(resultado.demandaTotal_kWh, 2) + ' kWh/dia';
-    document.getElementById('volumeBoiler').textContent = formatarNumero(Math.round(resultado.volumeBoiler_L)) + ' L';
-    document.getElementById('eficienciaColetor').textContent = formatarDecimal(resultado.eficienciaColetor, 1) + '%';
-    document.getElementById('consumoDiario').textContent = formatarNumero(Math.round(resultado.consumoDiario_L)) + ' L/dia';
-    document.getElementById('tempAguaFria').textContent = formatarDecimal(resultado.T_agua_fria, 1) + ' °C';
-    document.getElementById('volumeCasa').textContent = formatarDecimal(resultado.volumeCasa_m3, 1) + ' m³';
-    document.getElementById('potenciaCasa').textContent = formatarNumero(Math.round(resultado.potenciaCasa_W)) + ' W';
+    // Atualizar valores dos elementos (verificando se existem)
+    if (elementoDemandaEnergia) elementoDemandaEnergia.textContent = formatarDecimal(resultado.demandaEnergia_kWh || 0, 2) + ' kWh/dia';
+    if (elementoDemandaCasa) elementoDemandaCasa.textContent = formatarDecimal(resultado.demandaCasa_kWh || 0, 2) + ' kWh/dia';
+    
+    const elementoDemandaTotal = document.getElementById('demandaTotal');
+    if (elementoDemandaTotal) elementoDemandaTotal.textContent = formatarDecimal(resultado.demandaTotal_kWh || 0, 2) + ' kWh/dia';
+    
+    if (elementoVolumeBoiler) elementoVolumeBoiler.textContent = formatarNumero(Math.round(resultado.volumeBoiler_L || 0)) + ' L';
+    
+    const elementoEficienciaColetor = document.getElementById('eficienciaColetor');
+    if (elementoEficienciaColetor) elementoEficienciaColetor.textContent = formatarDecimal(resultado.eficienciaColetor || 0, 1) + '%';
+    
+    if (elementoConsumoDiario) elementoConsumoDiario.textContent = formatarNumero(Math.round(resultado.consumoDiario_L || 0)) + ' L/dia';
+    
+    if (elementoTempAgua) elementoTempAgua.textContent = formatarDecimal(resultado.T_agua_fria || 0, 1) + ' °C';
+    
+    if (elementoVolumeCasa) elementoVolumeCasa.textContent = formatarDecimal(resultado.volumeCasa_m3 || 0, 1) + ' m³';
+    
+    if (elementoPotenciaCasa) {
+        const potencia_W = Math.round(resultado.potenciaCasa_W || 0);
+        if (potencia_W >= 1000) {
+            // Converter para kW quando >= 1000W
+            const potencia_kW = potencia_W / 1000;
+            elementoPotenciaCasa.textContent = formatarDecimal(potencia_kW, 1) + ' kW';
+        } else {
+            elementoPotenciaCasa.textContent = formatarNumero(potencia_W) + ' W';
+        }
+    }
+    
+    // Atualizar nota de referência do painel com formatação limpa
+    const notaPainelReferencia = document.getElementById('notaPainelReferencia');
+    if (notaPainelReferencia) {
+        const modeloRef = obterModeloReferencia();
+        const linkRef = modeloRef.link;
+        const nomeModelo = modeloRef.nome;
+        const especs = modeloRef.especificacoes;
+        const textoBase = idiomaAtual === 'it-IT' 
+            ? 'Modello di riferimento: ' 
+            : 'Modelo de referência: ';
+        const textoLink = idiomaAtual === 'it-IT' ? 'Vedi ' : 'Ver ';
+        const textoEficiencia = idiomaAtual === 'it-IT' ? 'efficienza' : 'eficiência';
+        const textoEspecificacoes = `${formatarDecimal(especs.area_m2, 2)} m² • ${especs.numero_tubos} ${idiomaAtual === 'it-IT' ? 'tubi' : 'tubos'} • ${(especs.eficiencia_optica * 100)}% ${textoEficiencia} • ~${formatarDecimal(especs.potencia_termica_kW, 2)} kW`;
+        
+        notaPainelReferencia.innerHTML = 
+            '<span style="font-weight: 600; color: #2d9fa3ff;">' + textoBase + '</span>' +
+            '<span style="color: #555;">' + nomeModelo + '</span>' +
+            '<span style="color: #888; margin: 0 8px;">•</span>' +
+            '<span style="color: #666; font-size: 0.9em;">' + textoEspecificacoes + '</span>' +
+            '<span style="margin-left: 12px;">' +
+            '<a href="' + linkRef.url + '" target="_blank" rel="noopener noreferrer" style="color: #2d9fa3ff; text-decoration: none; font-weight: 500; border-bottom: 1px solid #2d9fa3ff; transition: all 0.2s;">' +
+            textoLink + linkRef.texto + '</a></span>';
+    }
+    
+    // Calcular e exibir custos
+    let custos;
+    try {
+        custos = calcularCustos(
+            resultado.numeroPaineis, 
+            resultado.areaColetor_m2, 
+            resultado.volumeBoiler_L,
+            areaCasa,
+            alturaCasa,
+            resultado.T_ambiente_inverno,
+            classeEnergetica,
+            incluirCasa
+        );
+        
+        // Verificar se custos é válido
+        if (!custos || typeof custos !== 'object') {
+            console.error('Erro: custos calculados são inválidos:', custos);
+            custos = {
+                custoPaineis: 0,
+                custoAcumuladores: 0,
+                custoTubulacoes: 0,
+                custoIsolantes: 0,
+                custoTermossifoes: 0,
+                custoTotal: 0,
+                quantidadeTermossifoes: 0
+            };
+        }
+    } catch (error) {
+        console.error('Erro ao calcular custos:', error);
+        custos = {
+            custoPaineis: 0,
+            custoAcumuladores: 0,
+            custoTubulacoes: 0,
+            custoIsolantes: 0,
+            custoTermossifoes: 0,
+            custoTotal: 0,
+            quantidadeTermossifoes: 0
+        };
+    }
+    
+    // Obter símbolo de moeda baseado no idioma
+    const simboloMoeda = idiomaAtual === 'it-IT' ? '€' : 'R$';
+    const textoNaoNecessario = idiomaAtual === 'it-IT' ? ' (non necessario)' : ' (não necessário)';
+    const textoUnidade = idiomaAtual === 'it-IT' ? 'unità' : 'unidade';
+    const textoUnidades = idiomaAtual === 'it-IT' ? 'unità' : 'unidades';
+    
+    // Atualizar elementos de custo com verificações de segurança
+    const elementoCustoPaineis = document.getElementById('custoPaineis');
+    if (elementoCustoPaineis) elementoCustoPaineis.textContent = simboloMoeda + ' ' + formatarNumero(Math.round(custos.custoPaineis || 0));
+    
+    const elementoCustoAcumuladores = document.getElementById('custoAcumuladores');
+    if (elementoCustoAcumuladores) elementoCustoAcumuladores.textContent = simboloMoeda + ' ' + formatarNumero(Math.round(custos.custoAcumuladores || 0));
+    
+    const elementoCustoTubulacoes = document.getElementById('custoTubulacoes');
+    if (elementoCustoTubulacoes) elementoCustoTubulacoes.textContent = simboloMoeda + ' ' + formatarNumero(Math.round(custos.custoTubulacoes || 0));
+    
+    const elementoCustoIsolantes = document.getElementById('custoIsolantes');
+    if (elementoCustoIsolantes) elementoCustoIsolantes.textContent = simboloMoeda + ' ' + formatarNumero(Math.round(custos.custoIsolantes || 0));
+    
+    // Exibir termossifões com detalhes se houver
+    const elementoTermossifoes = document.getElementById('custoTermossifoes');
+    if (elementoTermossifoes) {
+        if (incluirCasa && custos.quantidadeTermossifoes > 0) {
+            const textoUnidadeFinal = custos.quantidadeTermossifoes > 1 ? textoUnidades : textoUnidade;
+            elementoTermossifoes.textContent = `${simboloMoeda} ${formatarNumero(Math.round(custos.custoTermossifoes))} (${custos.quantidadeTermossifoes} ${textoUnidadeFinal})`;
+            // Adicionar tooltip ou detalhes se necessário
+            elementoTermossifoes.title = custos.detalhesTermossifoes || '';
+        } else {
+            elementoTermossifoes.textContent = simboloMoeda + ' 0' + textoNaoNecessario;
+            elementoTermossifoes.title = '';
+        }
+    }
+    
+    const elementoCustoTotal = document.getElementById('custoTotal');
+    if (elementoCustoTotal) elementoCustoTotal.textContent = simboloMoeda + ' ' + formatarNumero(Math.round(custos.custoTotal || 0));
     
     // Atualizar memorial de cálculo
     if (typeof atualizarMemorialComValores === 'function') {
@@ -771,13 +1374,14 @@ function atualizarMemorialComValores() {
     
     // Obtém valores dos radio buttons e checkboxes
     const tipoUso = document.querySelector('input[name="tipoUso"]:checked')?.value || 'Padrao';
-    const modeloColetor = document.querySelector('input[name="modeloColetor"]:checked')?.value || 'Modelo_B';
+    // Usar modelo de referência baseado no idioma (não há mais seleção de modelo)
+    const modeloRef = obterModeloReferencia();
     const classeEnergetica = document.querySelector('input[name="classeEnergetica"]:checked')?.value || 'D';
     const incluirAgua = document.getElementById('checkboxAgua')?.checked || false;
     const incluirCasa = document.getElementById('checkboxCasa')?.checked || false;
     
-    // Calcula os valores
-    const resultado = calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, modeloColetor, areaCasa, alturaCasa, classeEnergetica, diasAutonomia, incluirAgua, incluirCasa);
+    // Calcula os valores (modeloColetor não é mais usado, usa modelo de referência baseado no idioma)
+    const resultado = calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, null, areaCasa, alturaCasa, classeEnergetica, diasAutonomia, incluirAgua, incluirCasa);
     const textos = traducoes[idiomaAtual] || traducoes['pt-BR'];
     
     // Atualiza exemplos no memorial
@@ -802,6 +1406,18 @@ function atualizarMemorialComValores() {
     }
     
     if (incluirCasa) {
+        // Calcular potência usando o método correto de dimensionamento de radiadores
+        const volumeCasa = areaCasa * alturaCasa;
+        const Delta_T = TEMPERATURA_CONFORTO_CASA - resultado.T_ambiente_inverno;
+        const coeficientesPerda = {
+            "A4": 0.5, "A3": 0.7, "A2": 0.9, "A1": 1.1,
+            "B": 1.3, "C": 1.6, "D": 2.0, "E": 2.5, "F": 3.0, "G": 3.5
+        };
+        const coefPerda = coeficientesPerda[classeEnergetica] || coeficientesPerda["D"];
+        const potenciaBase = volumeCasa * coefPerda * Delta_T;
+        const potenciaTotal = potenciaBase * 1.15;
+        
+        // Calcular demanda diária para dimensionamento de coletores
         const consumoEspecifico = CONSUMO_ESPECIFICO_CLASSE[classeEnergetica] || CONSUMO_ESPECIFICO_CLASSE["D"];
         const alturaPadrao = 2.7;
         let fatorAltura = 1.0;
@@ -817,7 +1433,32 @@ function atualizarMemorialComValores() {
         
         const exemploCasa = document.getElementById('memorial-exemplo-casa');
         if (exemploCasa) {
-            exemploCasa.textContent = `${formatarDecimal(areaCasa, 0)} m², classe ${classeEnergetica} (${formatarDecimal(consumoEspecifico, 2)} kWh/m²·ano), altura ${formatarDecimal(alturaCasa, 1)}m → consumo anual ${formatarDecimal(consumoAnualTotal, 0)} kWh → demanda diária ${formatarDecimal(demandaCasa, 2)} kWh/dia`;
+            const textoPotencia = idiomaAtual === 'it-IT' ? 'Potenza' : 'Potência';
+            // Formatar potência: usar kW se >= 1000W
+            let potenciaFormatada;
+            if (potenciaTotal >= 1000) {
+                const potencia_kW = potenciaTotal / 1000;
+                potenciaFormatada = formatarDecimal(potencia_kW, 1) + ' kW';
+            } else {
+                potenciaFormatada = formatarDecimal(potenciaTotal, 0) + ' W';
+            }
+            exemploCasa.textContent = `${formatarDecimal(areaCasa, 0)} m² × ${formatarDecimal(alturaCasa, 1)}m = ${formatarDecimal(volumeCasa, 0)} m³, classe ${classeEnergetica} (coef. ${coefPerda} W/m³·K), ΔT = ${formatarDecimal(Delta_T, 1)}°C → ${textoPotencia} = ${formatarDecimal(volumeCasa, 0)} × ${coefPerda} × ${formatarDecimal(Delta_T, 1)} × 1.15 = ${potenciaFormatada}`;
+        }
+        
+        // Atualizar exemplo de termossifões se disponível
+        const exemploTermossifoes = document.getElementById('memorial-exemplo-termossifoes');
+        const itemTermossifoes = document.getElementById('memorial-item-termossifoes');
+        if (exemploTermossifoes && itemTermossifoes) {
+            const calculoTermossifoes = calcularTermossifoes(areaCasa, alturaCasa, resultado.T_ambiente_inverno, classeEnergetica);
+            if (calculoTermossifoes.ambientes && calculoTermossifoes.ambientes.length > 0) {
+                itemTermossifoes.style.display = 'block';
+                const detalhesAmbientes = calculoTermossifoes.ambientes.map(a => {
+                    return `${a.quantidade}x ${a.termossifao.descricao} (${a.ambiente})`;
+                }).join('; ');
+                exemploTermossifoes.textContent = detalhesAmbientes;
+            } else {
+                itemTermossifoes.style.display = 'none';
+            }
         }
     }
     
@@ -829,7 +1470,35 @@ function atualizarMemorialComValores() {
     
     const exemploArea = document.getElementById('memorial-exemplo-area');
     if (exemploArea) {
-        exemploArea.textContent = `${formatarDecimal(resultado.demandaTotal_kWh, 2)} kWh/dia ÷ (${formatarDecimal(resultado.H_g_diaria, 1)} kWh/m² × ${formatarDecimal(resultado.eficienciaColetor/100, 2)}) = ${formatarDecimal(resultado.areaColetor_m2, 2)} m²`;
+        const energiaCapturadaPorM2 = resultado.H_g_diaria * (resultado.eficienciaColetor/100);
+        let textoExemplo = '';
+        
+        // Obter dias de autonomia para o exemplo
+        const sliderDiasAutonomia = document.getElementById('sliderDiasAutonomia');
+        const diasAutonomia = sliderDiasAutonomia ? parseInt(sliderDiasAutonomia.value) || 3 : 3;
+        
+        if (incluirAgua && incluirCasa) {
+            // Ambos selecionados: mostrar cálculo separado
+            const demandaAgua = resultado.demandaEnergia_kWh || 0;
+            const demandaCasaDiaria = resultado.demandaCasa_kWh || 0;
+            const demandaCasaComAutonomia = demandaCasaDiaria * diasAutonomia;
+            const areaAgua = resultado.areaAgua_m2 || 0;
+            const areaCasa = resultado.areaCasa_m2 || 0;
+            
+            textoExemplo = `Água: ${formatarDecimal(demandaAgua, 2)} kWh/dia ÷ (${formatarDecimal(resultado.H_g_diaria, 1)} HSP × ${formatarDecimal(resultado.eficienciaColetor/100, 2)}) = ${formatarDecimal(areaAgua, 2)} m²; `;
+            textoExemplo += `Casa: ${formatarDecimal(demandaCasaDiaria, 2)} kWh/dia × ${diasAutonomia} dias ÷ (${formatarDecimal(resultado.H_g_diaria, 1)} HSP × ${formatarDecimal(resultado.eficienciaColetor/100, 2)}) = ${formatarDecimal(areaCasa, 2)} m²; `;
+            textoExemplo += `Total: ${formatarDecimal(resultado.areaColetor_m2, 2)} m²`;
+        } else if (incluirCasa) {
+            // Apenas casa: mostrar cálculo com autonomia
+            const demandaCasaDiaria = resultado.demandaCasa_kWh || 0;
+            const demandaCasaComAutonomia = demandaCasaDiaria * diasAutonomia;
+            textoExemplo = `${formatarDecimal(demandaCasaDiaria, 2)} kWh/dia × ${diasAutonomia} dias ÷ (${formatarDecimal(resultado.H_g_diaria, 1)} HSP × ${formatarDecimal(resultado.eficienciaColetor/100, 2)}) = ${formatarDecimal(resultado.areaColetor_m2, 2)} m²`;
+        } else {
+            // Apenas água: cálculo normal
+            textoExemplo = `${formatarDecimal(resultado.demandaTotal_kWh, 2)} kWh/dia ÷ (${formatarDecimal(resultado.H_g_diaria, 1)} HSP × ${formatarDecimal(resultado.eficienciaColetor/100, 2)}) = ${formatarDecimal(resultado.areaColetor_m2, 2)} m²`;
+        }
+        
+        exemploArea.textContent = textoExemplo;
     }
     
     const exemploPaineis = document.getElementById('memorial-exemplo-paineis');
@@ -851,6 +1520,30 @@ function atualizarMemorialComValores() {
     if (resumoPaineis) {
         const textoPainel = resultado.numeroPaineis === 1 ? (textos['unit-painel-singular'] || 'painel') : (textos['unit-painel-plural'] || 'paineis');
         resumoPaineis.textContent = `${resultado.numeroPaineis} ${textoPainel}`;
+    }
+    
+    // Atualizar nota de referência do painel com formatação limpa
+    const notaPainelReferencia = document.getElementById('notaPainelReferencia');
+    if (notaPainelReferencia) {
+        const modeloRef = obterModeloReferencia();
+        const linkRef = modeloRef.link;
+        const nomeModelo = modeloRef.nome;
+        const especs = modeloRef.especificacoes;
+        const textoBase = idiomaAtual === 'it-IT' 
+            ? 'Modello di riferimento: ' 
+            : 'Modelo de referência: ';
+        const textoLink = idiomaAtual === 'it-IT' ? 'Vedi ' : 'Ver ';
+        const textoEficiencia = idiomaAtual === 'it-IT' ? 'efficienza' : 'eficiência';
+        const textoEspecificacoes = `${formatarDecimal(especs.area_m2, 2)} m² • ${especs.numero_tubos} ${idiomaAtual === 'it-IT' ? 'tubi' : 'tubos'} • ${(especs.eficiencia_optica * 100)}% ${textoEficiencia} • ~${formatarDecimal(especs.potencia_termica_kW, 2)} kW`;
+        
+        notaPainelReferencia.innerHTML = 
+            '<span style="font-weight: 600; color: #2d9fa3ff;">' + textoBase + '</span>' +
+            '<span style="color: #555;">' + nomeModelo + '</span>' +
+            '<span style="color: #888; margin: 0 8px;">•</span>' +
+            '<span style="color: #666; font-size: 0.9em;">' + textoEspecificacoes + '</span>' +
+            '<span style="margin-left: 12px;">' +
+            '<a href="' + linkRef.url + '" target="_blank" rel="noopener noreferrer" style="color: #2d9fa3ff; text-decoration: none; font-weight: 500; border-bottom: 1px solid #2d9fa3ff; transition: all 0.2s;">' +
+            textoLink + linkRef.texto + '</a></span>';
     }
     
     const resumoVolumeBoiler = document.getElementById('resumo-volume-boiler');
@@ -891,8 +1584,33 @@ const traducoes = {
         'consumo-classe-e': '2,00-2,60',
         'consumo-classe-f': '2,60-3,50',
         'consumo-classe-g': '>3,50',
-        'nota-painel-referencia': '* Baseado no painel de referência Modelo B (1,5 m², 15 tubos, eficiência 70%)',
+        'nota-painel-referencia': '* Baseado no painel de referência: Coletor Solar Térmico com Tubos a Vácuo - 15 Tubos (1,5 m², eficiência 70%, ~1,05 kW)',
         'memorial-titulo': 'Memorial de Cálculo',
+        'memorial-title': '📚 Memorial de Cálculo - Aquecedor Solar Térmico',
+        'memorial-intro-title': '🎯 Objetivo do Dimensionamento',
+        'memorial-intro-text': 'Este memorial explica passo a passo como é calculado o dimensionamento de um sistema de aquecimento solar térmico, incluindo área de coletores, volume do boiler, número de painéis e potência necessária para água de consumo e/ou aquecimento ambiente.',
+        'memorial-passo1-title': '1️⃣ Passo 1: Calcular Demanda de Energia para Água',
+        'memorial-formula': 'Fórmula:',
+        'memorial-passo1-explicacao': 'A energia necessária para aquecer a água depende do consumo diário, da diferença de temperatura e das propriedades físicas da água.',
+        'memorial-example': 'Exemplo:',
+        'memorial-passo2-title': '2️⃣ Passo 2: Calcular Potência e Demanda para Aquecimento da Casa',
+        'memorial-passo2-explicacao': 'A potência necessária (em Watts) é calculada usando o método de dimensionamento de radiadores, considerando volume, classe energética e diferença de temperatura. Esta é a potência INSTANTÂNEA contínua necessária para manter a casa aquecida (compensar as perdas térmicas). A demanda diária (em kWh/dia) é usada para dimensionar os coletores solares e representa a energia total necessária por dia.',
+        'memorial-passo3-title': '3️⃣ Passo 3: Dimensionar Volume do Boiler',
+        'memorial-passo3-explicacao': 'O volume do boiler deve ser suficiente para armazenar água quente para os dias sem sol (autonomia).',
+        'memorial-passo4-title': '4️⃣ Passo 4: Calcular Eficiência do Coletor',
+        'memorial-passo4-explicacao': 'A eficiência do coletor varia com a temperatura de operação e as condições ambientais. Quanto maior a diferença de temperatura, menor a eficiência.',
+        'memorial-passo5-title': '5️⃣ Passo 5: Calcular Área de Coletores',
+        'memorial-passo5-explicacao': 'A área de coletores necessária depende da demanda total de energia, das horas de sol pico (HSP) disponíveis e da eficiência do coletor. Para aquecimento da casa, o sistema precisa captar em 1 dia energia suficiente para os dias de autonomia (ex: se autonomia = 5 dias, precisa captar em 1 dia energia para 5 dias e noites). A energia capturada por m² de painel é calculada considerando 1 hora de sol pico (1000 W/m²) multiplicada pelo número de horas de sol pico do dia.',
+        'memorial-passo6-title': '6️⃣ Passo 6: Calcular Número de Painéis',
+        'memorial-passo6-explicacao': 'O número de painéis é calculado dividindo a área total necessária pela área de cada painel, arredondando para cima.',
+        'memorial-passo7-title': '7️⃣ Passo 7: Dimensionar Termossifões por Ambiente',
+        'memorial-passo7-explicacao': 'Os termossifões são dimensionados individualmente para cada ambiente da casa, garantindo aquecimento adequado em todos os cômodos.',
+        'memorial-resumo-title': '📊 Resumo Calculado',
+        'memorial-resumo-demanda-agua': 'Demanda Água:',
+        'memorial-resumo-demanda-casa': 'Demanda Casa:',
+        'memorial-resumo-area-coletor': 'Área Coletor:',
+        'memorial-resumo-paineis': 'Número de Painéis:',
+        'memorial-resumo-volume-boiler': 'Volume Boiler:',
         'unit-people': 'pessoas',
         'unit-degrees': '°',
         'unit-meter': 'm',
@@ -924,10 +1642,10 @@ const traducoes = {
         'resultado-demanda-casa': 'Demanda Aquecimento Casa:',
         'resultado-volume-boiler': 'Volume do Boiler:',
         'resultado-volume-casa': 'Volume da Casa:',
-        'resultado-potencia-casa': 'Potência Necessária Casa:',
+        'resultado-potencia-casa': 'Perda de Calor para Ambiente:',
         'resultado-eficiencia': 'Eficiência do Coletor:',
         'resultado-consumo-diario': 'Consumo Diário:',
-        'resultado-temp-agua-fria': 'Temp. Água Fria (ajustada):',
+        'resultado-temp-agua-fria': 'Temp. Água Fria (ajustada pela altitude):',
         'info-recomendacoes': '💡 Recomendações de Instalação:',
         'rec-altura': 'O fundo do boiler deve estar a pelo menos 0,20 m acima do topo dos coletores',
         'rec-orientacao': 'Orientar coletores para o Norte geográfico (azimute 0°)',
@@ -936,10 +1654,17 @@ const traducoes = {
         'rec-inclinacao-italia': 'Inclinazione raccomandata: |Latitude| + 10° a 15°',
         'rec-tubulacao': 'Usar tubulação curta (máx. 8-10 m) e diâmetro de 25mm (1")',
         'memorial-titulo': 'Memorial de Cálculo',
-        'footer': 'Dimensionador de Aquecedor Solar - Engenharia Nata © 2025',
+        'footer': 'Dimensionador de Aquecedor Solar - Engenharia Nata @ 2025',
         'aria-home': 'Voltar para a tela inicial',
-        'dev-badge-header': '🚧 EM DESENVOLVIMENTO',
-        'watermark-dev': '🚧 EM DESENVOLVIMENTO'
+        'custos-title': '💰 Estimativa de Custos',
+        'custo-paineis': 'Custo dos Painéis:',
+        'custo-acumuladores': 'Custo dos Acumuladores (Boiler):',
+        'custo-tubulacoes': 'Tubulações e Conexões:',
+        'custo-isolantes': 'Isolantes Térmicos:',
+        'custo-termossifoes': 'Termossifões:',
+        'custo-total': 'Custo Total Estimado:',
+        'custos-detalhamento': 'Detalhamento:',
+        'nota-custos': '* Valores aproximados baseados em preços médios do mercado. Podem variar conforme região e fornecedor.'
     },
     'it-IT': {
         'app-title': '☀️ Dimensionatore Riscaldatore Solare Termico',
@@ -974,7 +1699,7 @@ const traducoes = {
         'consumo-classe-e': '2,00-2,60',
         'consumo-classe-f': '2,60-3,50',
         'consumo-classe-g': '>3,50',
-        'nota-painel-referencia': '* Basato sul pannello di riferimento Modello B (1,5 m², 15 tubi, efficienza 70%)',
+        'nota-painel-referencia': '* Basato sul pannello di riferimento: Collettore Solare Termico con Tubi Sotto Vuoto - 15 Tubi (1,5 m², efficienza 70%, ~1,05 kW)',
         'unit-people': 'persone',
         'unit-degrees': '°',
         'unit-meter': 'm',
@@ -1006,10 +1731,10 @@ const traducoes = {
         'resultado-demanda-casa': 'Domanda Riscaldamento Casa:',
         'resultado-volume-boiler': 'Volume Boiler:',
         'resultado-volume-casa': 'Volume Casa:',
-        'resultado-potencia-casa': 'Potenza Necessaria Casa:',
+        'resultado-potencia-casa': 'Perdita di Calore per Ambiente:',
         'resultado-eficiencia': 'Efficienza Collettore:',
         'resultado-consumo-diario': 'Consumo Giornaliero:',
-        'resultado-temp-agua-fria': 'Temp. Acqua Fredda (regolata):',
+        'resultado-temp-agua-fria': 'Temp. Acqua Fredda (regolata per altitudine):',
         'info-recomendacoes': '💡 Raccomandazioni di Installazione:',
         'rec-altura': 'Il fondo del boiler deve essere almeno 0,20 m sopra la parte superiore dei collettori',
         'rec-orientacao': 'Orientare i collettori verso il Nord geografico (azimut 0°)',
@@ -1018,11 +1743,10 @@ const traducoes = {
         'rec-inclinacao-italia': 'Inclinazione raccomandata: |Latitudine| + 10° a 15°',
         'rec-tubulacao': 'Usare tubazione corta (max. 8-10 m) e diametro di 25mm (1")',
         'memorial-titulo': 'Memoriale di Calcolo',
-        'footer': 'Dimensionatore Riscaldatore Solare - Engenharia Nata © 2025',
+        'footer': 'Dimensionatore Riscaldatore Solare - Engenharia Nata @ 2025',
         'aria-home': 'Torna alla schermata iniziale',
-        'dev-badge-header': '🚧 IN SVILUPPO',
         'watermark-dev': '🚧 IN SVILUPPO',
-        'learn-more': 'SAVERE DI PIÙ!',
+        'learn-more': 'SCOPRI DI PIÙ!',
         'back': '← Indietro',
         'btn-memorial': 'Vedi Memoriale di Calcolo',
         'memorial-title': '📚 Memoriale di Calcolo - Riscaldatore Solare Termico',
@@ -1032,22 +1756,33 @@ const traducoes = {
         'memorial-formula': 'Formula:',
         'memorial-passo1-explicacao': 'L\'energia necessaria per riscaldare l\'acqua dipende dal consumo giornaliero, dalla differenza di temperatura e dalle proprietà fisiche dell\'acqua.',
         'memorial-example': 'Esempio:',
-        'memorial-passo2-title': '2️⃣ Passo 2: Calcolare Domanda di Energia per Riscaldamento Casa',
-        'memorial-passo2-explicacao': 'La domanda di riscaldamento della casa viene calcolata in base alla classe energetica, area, altezza e condizioni climatiche locali.',
+        'memorial-passo2-title': '2️⃣ Passo 2: Calcolare Potenza e Domanda per Riscaldamento Casa',
+        'memorial-passo2-explicacao': 'La potenza necessaria (in Watt) è calcolata usando il metodo di dimensionamento dei radiatori, considerando volume, classe energetica e differenza di temperatura. Questa è la potenza ISTANTANEA continua necessaria per mantenere la casa riscaldata (compensare le perdite termiche). La domanda giornaliera (in kWh/giorno) è usata per dimensionare i collettori solari e rappresenta l\'energia totale necessaria per giorno.',
         'memorial-passo3-title': '3️⃣ Passo 3: Dimensionare Volume Boiler',
         'memorial-passo3-explicacao': 'Il volume del boiler deve essere sufficiente per immagazzinare acqua calda per i giorni senza sole (autonomia).',
         'memorial-passo4-title': '4️⃣ Passo 4: Calcolare Efficienza Collettore',
         'memorial-passo4-explicacao': 'L\'efficienza del collettore varia con la temperatura di funzionamento e le condizioni ambientali. Maggiore è la differenza di temperatura, minore è l\'efficienza.',
         'memorial-passo5-title': '5️⃣ Passo 5: Calcolare Area Collettori',
-        'memorial-passo5-explicacao': 'L\'area dei collettori necessaria dipende dalla domanda totale di energia, dall\'irraggiamento solare disponibile e dall\'efficienza del collettore.',
+        'memorial-passo5-explicacao': 'L\'area dei collettori necessaria dipende dalla domanda totale di energia, dalle ore di sole di picco (HSP) disponibili e dall\'efficienza del collettore. Per il riscaldamento della casa, il sistema deve catturare in 1 giorno energia sufficiente per i giorni di autonomia (es: se autonomia = 5 giorni, deve catturare in 1 giorno energia per 5 giorni e notti). L\'energia catturata per m² di pannello è calcolata considerando 1 ora di sole di picco (1000 W/m²) moltiplicata per il numero di ore di sole di picco del giorno.',
         'memorial-passo6-title': '6️⃣ Passo 6: Calcolare Numero Pannelli',
         'memorial-passo6-explicacao': 'Il numero di pannelli viene calcolato dividendo l\'area totale necessaria per l\'area di ciascun pannello, arrotondando per eccesso.',
+        'memorial-passo7-title': '7️⃣ Passo 7: Dimensionare Termosifoni per Ambiente',
+        'memorial-passo7-explicacao': 'I termosifoni vengono dimensionati individualmente per ogni ambiente della casa, garantendo un riscaldamento adeguato in tutte le stanze.',
         'memorial-resumo-title': '📊 Riepilogo Calcolato',
         'memorial-resumo-demanda-agua': 'Domanda Acqua:',
         'memorial-resumo-demanda-casa': 'Domanda Casa:',
         'memorial-resumo-area-coletor': 'Area Collettore:',
         'memorial-resumo-paineis': 'Numero Pannelli:',
-        'memorial-resumo-volume-boiler': 'Volume Boiler:'
+        'memorial-resumo-volume-boiler': 'Volume Boiler:',
+        'custos-title': '💰 Stima dei Costi',
+        'custo-paineis': 'Costo Pannelli:',
+        'custo-acumuladores': 'Costo Accumulatori (Boiler):',
+        'custo-tubulacoes': 'Tubazioni e Connessioni:',
+        'custo-isolantes': 'Isolanti Termici:',
+        'custo-termossifoes': 'Termosifoni:',
+        'custo-total': 'Costo Totale Stimato:',
+        'custos-detalhamento': 'Dettaglio:',
+        'nota-custos': '* Valori approssimativi basati su prezzi medi di mercato. Possono variare in base alla regione e al fornitore.'
     }
 };
 
@@ -1149,7 +1884,10 @@ document.addEventListener('DOMContentLoaded', () => {
     sliderPessoas.addEventListener('input', () => {
         const valor = parseInt(sliderPessoas.value);
         const inputPessoas = document.getElementById('inputPessoas');
-        if (inputPessoas) inputPessoas.value = valor;
+        if (inputPessoas) {
+            inputPessoas.value = valor;
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
+        }
         atualizarResultados();
     });
     
@@ -1159,6 +1897,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (inputLatitude) {
             // Formata com vírgula usando formatarDecimal
             inputLatitude.value = formatarDecimal(valor, 1);
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputLatitude);
         }
         atualizarResultados();
     });
@@ -1166,14 +1905,20 @@ document.addEventListener('DOMContentLoaded', () => {
     sliderAltitude.addEventListener('input', () => {
         const valor = parseFloat(sliderAltitude.value);
         const inputAltitude = document.getElementById('inputAltitude');
-        if (inputAltitude) inputAltitude.value = Math.round(valor);
+        if (inputAltitude) {
+            inputAltitude.value = Math.round(valor);
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAltitude);
+        }
         atualizarResultados();
     });
     
     sliderAreaCasa.addEventListener('input', () => {
         const valor = parseFloat(sliderAreaCasa.value);
         const inputAreaCasa = document.getElementById('inputAreaCasa');
-        if (inputAreaCasa) inputAreaCasa.value = Math.round(valor);
+        if (inputAreaCasa) {
+            inputAreaCasa.value = Math.round(valor);
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAreaCasa);
+        }
         atualizarResultados();
     });
     
@@ -1183,6 +1928,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (inputAlturaCasa) {
             // Formata com vírgula usando formatarDecimal
             inputAlturaCasa.value = formatarDecimal(valor, 1);
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAlturaCasa);
         }
         atualizarResultados();
     });
@@ -1340,10 +2086,53 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-    // Função para mostrar/ocultar campos de entrada do aquecimento da casa
+    // Função para mostrar/ocultar campos de entrada baseado nos sistemas selecionados
     function atualizarVisibilidadeCamposCasa() {
+        const checkboxAgua = document.getElementById('checkboxAgua');
         const checkboxCasa = document.getElementById('checkboxCasa');
+        const incluirAgua = checkboxAgua ? checkboxAgua.checked : false;
         const incluirCasa = checkboxCasa ? checkboxCasa.checked : false;
+        
+        // Se nenhum sistema estiver selecionado, ocultar todos os campos
+        if (!incluirAgua && !incluirCasa) {
+            // Ocultar campos relacionados à água
+            const grupoPessoas = document.getElementById('sliderPessoas')?.closest('.grupo-entrada');
+            const grupoTipoUso = document.querySelector('.grupo-entrada:has(input[name="tipoUso"])');
+            if (grupoPessoas) grupoPessoas.style.display = 'none';
+            if (grupoTipoUso) grupoTipoUso.style.display = 'none';
+            
+            // Ocultar campos relacionados à casa
+            const secaoTituloCasa = document.querySelector('.grupo-entrada:has([data-i18n="secao-aquecimento-casa"])');
+            const grupoAreaCasa = document.getElementById('sliderAreaCasa')?.closest('.grupo-entrada');
+            const grupoAlturaCasa = document.getElementById('sliderAlturaCasa')?.closest('.grupo-entrada');
+            const grupoDiasAutonomia = document.getElementById('sliderDiasAutonomia')?.closest('.grupo-entrada');
+            const grupoClasseEnergetica = document.querySelector('.grupo-entrada:has(input[name="classeEnergetica"])');
+            if (secaoTituloCasa) secaoTituloCasa.style.display = 'none';
+            if (grupoAreaCasa) grupoAreaCasa.style.display = 'none';
+            if (grupoAlturaCasa) grupoAlturaCasa.style.display = 'none';
+            if (grupoDiasAutonomia) grupoDiasAutonomia.style.display = 'none';
+            if (grupoClasseEnergetica) grupoClasseEnergetica.style.display = 'none';
+            
+            // Ocultar campos comuns (latitude, altitude)
+            const grupoLatitude = document.getElementById('sliderLatitude')?.closest('.grupo-entrada');
+            const grupoAltitude = document.getElementById('sliderAltitude')?.closest('.grupo-entrada');
+            if (grupoLatitude) grupoLatitude.style.display = 'none';
+            if (grupoAltitude) grupoAltitude.style.display = 'none';
+            
+            return; // Sair da função, não mostrar nada
+        }
+        
+        // Mostrar campos comuns sempre que pelo menos um sistema estiver selecionado
+        const grupoLatitude = document.getElementById('sliderLatitude')?.closest('.grupo-entrada');
+        const grupoAltitude = document.getElementById('sliderAltitude')?.closest('.grupo-entrada');
+        if (grupoLatitude) grupoLatitude.style.display = 'block';
+        if (grupoAltitude) grupoAltitude.style.display = 'block';
+        
+        // Mostrar/ocultar campos relacionados à água
+        const grupoPessoas = document.getElementById('sliderPessoas')?.closest('.grupo-entrada');
+        const grupoTipoUso = document.querySelector('.grupo-entrada:has(input[name="tipoUso"])');
+        if (grupoPessoas) grupoPessoas.style.display = incluirAgua ? 'block' : 'none';
+        if (grupoTipoUso) grupoTipoUso.style.display = incluirAgua ? 'block' : 'none';
         
         // Encontrar os grupos de entrada relacionados ao aquecimento da casa
         const secaoTituloCasa = document.querySelector('.grupo-entrada:has([data-i18n="secao-aquecimento-casa"])');
@@ -1440,6 +2229,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Calcular resultados iniciais
-    atualizarResultados();
+    // Aguardar um pouco para garantir que todos os elementos estão carregados
+    setTimeout(() => {
+        atualizarResultados();
+    }, 100);
 });
 
