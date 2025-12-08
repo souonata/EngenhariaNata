@@ -235,57 +235,10 @@ function pararRepeticao() {
  * @param {string} valorFormatado - Valor formatado (ex: "1.000,50")
  * @returns {number} - Valor numérico (ex: 1000.50)
  */
-function obterValorNumericoFormatado(valorFormatado) {
-    if (!valorFormatado) return 0;
-    // Remove pontos (separadores de milhares)
-    let valor = valorFormatado.toString().replace(/\./g, '');
-    // Substitui vírgula (separador decimal) por ponto
-    valor = valor.replace(',', '.');
-    return parseFloat(valor) || 0;
-}
-
-/**
- * Formata um número para exibição
- * Usa ponto para milhares e vírgula para decimais (padrão brasileiro)
- * @param {number} valor - Valor numérico
- * @param {number} casasDecimais - Número de casas decimais (padrão: 2)
- * @returns {string} - Valor formatado
- */
-function formatarNumero(valor, casasDecimais = 2) {
-    if (isNaN(valor) || valor === null || valor === undefined) return '-';
-    // Sempre usa formatação brasileira (vírgula decimal, ponto milhares)
-    return valor.toLocaleString('pt-BR', {
-        minimumFractionDigits: casasDecimais,
-        maximumFractionDigits: casasDecimais,
-        useGrouping: true
-    });
-}
-
-/**
- * Formata potência para exibição com abreviação "k" para valores >= 1000
- * Exemplos: 999 → "999", 1000 → "1k", 2500 → "2,5k", 10000 → "10k"
- * @param {number} valor - Valor da potência em watts
- * @returns {string} - Valor formatado com "k" quando apropriado
- */
-function formatarPotencia(valor) {
-    if (isNaN(valor) || valor === null || valor === undefined) return '-';
-    
-    // Se o valor for menor que 1000, formata normalmente
-    if (valor < 1000) {
-        return formatarNumero(valor, 0);
-    }
-    
-    // Se for >= 1000, divide por 1000 e adiciona "k"
-    const valorK = valor / 1000;
-    
-    // Se for um número inteiro (ex: 1k, 2k, 10k), não mostra decimais
-    if (valorK % 1 === 0) {
-        return valorK + 'k';
-    }
-    
-    // Caso contrário, mostra uma casa decimal (ex: 1,5k, 2,5k)
-    return formatarNumero(valorK, 1) + 'k';
-}
+// Funções de formatação agora estão em assets/js/site-config.js
+// obterValorNumericoFormatado -> obterValorNumericoFormatado (global)
+// formatarNumero -> formatarNumero (global)
+// formatarPotencia -> formatarPotencia (global)
 
 /**
  * ============================================

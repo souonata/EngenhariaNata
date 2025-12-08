@@ -4,21 +4,7 @@
 // FUNÇÕES DE FORMATAÇÃO
 // ============================================
 
-/**
- * Formata número com casas decimais usando formatação brasileira
- * Sempre usa vírgula como separador decimal e ponto como separador de milhares
- * @param {number} valor - Valor numérico
- * @param {number} casasDecimais - Número de casas decimais
- * @returns {string} Valor formatado (ex: "12,5" ou "1.234,56")
- */
-function formatarNumeroDecimal(valor, casasDecimais = 1) {
-    if (isNaN(valor) || valor === null || valor === undefined) return '-';
-    return valor.toLocaleString('pt-BR', {
-        minimumFractionDigits: casasDecimais,
-        maximumFractionDigits: casasDecimais,
-        useGrouping: true
-    });
-}
+// Função formatarNumeroDecimal agora está em assets/js/site-config.js
 
 // ============================================
 // ÍCONES DOS PRODUTOS

@@ -17,34 +17,11 @@
 }
 
 /* ============================================
-   RESET E CONFIGURAÇÕES GLOBAIS
+   RESET, BODY, CONTAINER, HEADER
    ============================================ */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html {
-    overflow-x: hidden;
-    width: 100%;
-    touch-action: pan-y;
-}
-
-body {
-    /* Cor de fundo do tema Ar Condicionado (azul) */
-    background: var(--site-bg, #1976D2);
-    min-height: 100vh;
-    /* Layout em coluna: seletor de idioma acima do container */
-    display: flex;
-    flex-direction: column;
-    align-items: center;      /* Centraliza horizontalmente */
-    gap: 15px;                /* Espaço mínimo entre seletor e container */
-    padding: 15px 0 110px 0;  /* Padding topo/baixo, sem lateral */
-    overflow-x: hidden;
-    width: 100%;
-    position: relative;
-}
+/* Estilos globais movidos para assets/css/shared-styles.css */
+/* Reset, body, container, header, footer, typography estão no arquivo global */
+/* Mantendo apenas estilos específicos do Ar Condicionado */
 
 /* Badge "Em Desenvolvimento" no cabeçalho */
 .dev-badge-header {
@@ -74,9 +51,8 @@ body {
 }
 
 
-/* ============================================
-   CONTAINER PRINCIPAL
-   ============================================ */
+/* Container e header movidos para shared-styles.css */
+/* Mantendo apenas estilos específicos do Ar Condicionado */
 .container {
     width: 100%;
     max-width: 900px;
@@ -84,16 +60,6 @@ body {
     padding: 12px;
     position: relative;
     z-index: 10;
-}
-
-/* ============================================
-   CABEÇALHO
-   ============================================ */
-header {
-    text-align: center;
-    color: white;
-    margin-bottom: 12px;
-    padding: 8px 0;
 }
 
 header h1 {
@@ -134,24 +100,8 @@ header h1 {
     background: linear-gradient(135deg, #e3f2fd 0%, #f5f5f5 100%);
 }
 
-.valor-resultado {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #1976D2;
-}
-
-.resultado-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.resultado-item:last-child {
-    border-bottom: none;
-}
-
+/* Resultado styles moved to shared-styles.css */
+/* Mantendo apenas estilos específicos do Ar Condicionado */
 .resultado-item.destaque {
     background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
     color: white;

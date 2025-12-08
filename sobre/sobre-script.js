@@ -22,7 +22,7 @@ const traducoes = {
         'page-title': '📱 Sobre o Projeto',
         'page-subtitle': 'Portfólio de apps web',
         'overview-title': 'Visão Geral',
-        'overview-description': 'Portfólio de apps web educativos para engenharia e finanças. Desenvolvido com JavaScript puro, bilíngue (PT/IT) e mobile-first.',
+        'overview-description': 'Portfólio de apps web educativos para engenharia e finanças. Desenvolvido com JavaScript puro, bilíngue (PT/IT) e mobile-first. Configuração global centralizada em assets/js/site-config.js com funções compartilhadas de formatação, conversão e utilitários.',
 
         'app-about': 'Sobre mim',
         'app-arcondicionado': 'Ar Condicionado',
@@ -127,7 +127,6 @@ const traducoes = {
         'stat-html': 'linhas HTML',
         'stat-js': 'linhas JavaScript',
         'stat-css': 'linhas CSS',
-        'code-commented-note': '💡 Todo o código JavaScript está completamente comentado em português para facilitar o aprendizado!',
 
         'features-title': 'Recursos Principais',
         'resource-bilingual-title': '🌍 Bilíngue',
@@ -136,8 +135,12 @@ const traducoes = {
         'resource-charts-desc': 'Visualização simples dos dados',
         'resource-mobile-title': '📱 Mobile-First',
         'resource-mobile-desc': 'Compatível com celulares e computadores',
+        'resource-code-commented-title': '💡 Código Comentado',
+        'resource-code-commented-desc': 'Todo o código HTML, JavaScript e CSS está completamente comentado em português para facilitar o aprendizado!',
 
         'tech-title': 'Tecnologias Usadas',
+        'tech-config-title': 'Configuração Global',
+        'tech-config-desc': 'Funções e configurações compartilhadas centralizadas em assets/js/site-config.js',
         'tech-html': 'Estrutura das páginas',
         'tech-css': 'Estilos e animações',
         'tech-js': 'JavaScript puro',
@@ -256,7 +259,6 @@ const traducoes = {
         'stat-html': 'righe HTML',
         'stat-js': 'righe JavaScript',
         'stat-css': 'righe CSS',
-        'code-commented-note': '💡 Tutto il codice JavaScript è completamente commentato in portoghese per facilitare l\'apprendimento!',
 
         'features-title': 'Caratteristiche Principali',
         'resource-bilingual-title': '🌍 Bilingue',
@@ -265,11 +267,15 @@ const traducoes = {
         'resource-charts-desc': 'Visualizzazione semplice dei dati',
         'resource-mobile-title': '📱 Mobile-First',
         'resource-mobile-desc': 'Compatibile con dispositivi mobili e computer',
+        'resource-code-commented-title': '💡 Codice Commentato',
+        'resource-code-commented-desc': 'Tutto il codice HTML, JavaScript e CSS è completamente commentato in portoghese per facilitare l\'apprendimento!',
 
         'tech-title': 'Tecnologie Utilizzate',
         'tech-html': 'Struttura delle pagine',
         'tech-css': 'Stili e animazioni',
         'tech-js': 'JavaScript puro',
+        'tech-config-title': 'Configurazione Globale',
+        'tech-config-desc': 'Funzioni e configurazioni condivise centralizzate in assets/js/site-config.js',
         'tech-chart': 'Grafici (Chart.js)',
 
         'footer-text': '💻 Portfolio Ingegneria NATA',

@@ -9,37 +9,12 @@
    ============================================ */
 
 /* ============================================
-   RESET E CONFIGURAÇÕES GLOBAIS
+   RESET, BODY, CONTAINER, HEADER
    ============================================ */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html {
-    overflow-x: hidden;
-    width: 100%;
-    touch-action: pan-y;
-}
-
-body {
-    /* Cor de fundo do tema Bitola (laranja/vermelho elétrico) */
-    background: var(--site-bg, #8B4513);
-    min-height: 100vh;
-    /* Layout em coluna: seletor de idioma acima do container */
-    display: flex;
-    flex-direction: column;
-    align-items: center;      /* Centraliza horizontalmente */
-    gap: 15px;                /* Espaço mínimo entre seletor e container */
-    padding: 15px 0 110px 0;  /* Padding topo/baixo, sem lateral */
-    overflow-x: hidden;
-    width: 100%;
-    position: relative;
-}
+/* Estilos globais movidos para assets/css/shared-styles.css */
+/* Reset, body, container, header, footer, typography estão no arquivo global */
 
 /* Variáveis CSS para personalização do tema Bitola */
-/* Usa o mesmo padrão de cores dos outros apps */
 :root { 
     --home-bg: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%); 
     --home-shadow: rgba(102, 126, 234, 0.4); 
@@ -48,38 +23,7 @@ body {
     --accent-color: #2d9fa3ff;  /* Cor do tema padrão para botões ativos */
     --control-accent: #2d9fa3ff;  /* Cor dos controles */
     --control-accent-secondary: #667eea;  /* Cor secundária dos controles */
-}
-
-/* ============================================
-   CONTAINER PRINCIPAL
-   ============================================ */
-.container {
-    width: 100%;
-    margin: 0;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* ============================================
-   CABEÇALHO
-   ============================================ */
-header {
-    text-align: center;
-    color: white;
-    margin-bottom: 12px;
-    padding: 8px 0;
-}
-
-header h1 {
-    font-size: 1.4rem;
-    margin-bottom: 2px;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.subtitulo {
-    font-size: 0.95rem;
-    opacity: 0.9;
+    --site-bg: #8B4513;  /* Cor de fundo específica do Bitola */
 }
 
 /* ============================================
@@ -168,56 +112,15 @@ header h1 {
     font-size: 1.2rem;
 }
 
-.resultado-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px;
-    margin-bottom: 8px;
-    background: #f5f5f5;
-    border-radius: 8px;
-    border-left: 4px solid var(--control-accent);
-}
-
+/* Resultado styles moved to shared-styles.css */
+/* Mantendo apenas estilos específicos do Bitola */
 .resultado-item.destaque {
     background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(247, 147, 30, 0.1) 100%);
     border-left-width: 6px;
     font-weight: 600;
 }
 
-.resultado-item:last-child {
-    margin-bottom: 0;
-}
-
-.label-resultado {
-    font-size: 0.9rem;
-    color: #666;
-    font-weight: 500;
-}
-
-.valor-resultado {
-    font-size: 1rem;
-    color: #333;
-    font-weight: 600;
-}
-
-.valor-resultado-grande {
-    font-size: 1.3rem;
-    color: var(--control-accent);
-    font-weight: 700;
-}
-
-/* ============================================
-   RODAPÉ
-   ============================================ */
-footer {
-    text-align: center;
-    color: white;
-    padding: 16px 0;
-    margin-top: 24px;
-    font-size: 0.85rem;
-    opacity: 0.9;
-}
+/* Footer styles moved to shared-styles.css */
 
 /* ============================================
    RESPONSIVIDADE
@@ -252,193 +155,5 @@ footer {
 /* ============================================
    MEMORIAL DE CÁLCULO
    ============================================ */
-.memorial-section {
-    background: white;
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    margin-bottom: 12px;
-}
-
-.memorial-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 2px solid #e0e0e0;
-}
-
-.memorial-header h2 {
-    color: #2d9fa3ff;
-    font-size: 1.2rem;
-    margin: 0;
-    flex: 1;
-}
-
-.btn-fechar-memorial {
-    background: #2d9fa3ff;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-}
-
-.btn-fechar-memorial:hover {
-    background: #667eea;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(45, 159, 163, 0.3);
-}
-
-.btn-voltar-memorial {
-    background: #2d9fa3ff;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    margin: 12px 0;
-    display: block;
-    width: fit-content;
-}
-
-.btn-voltar-memorial:hover {
-    background: #667eea;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(45, 159, 163, 0.3);
-}
-
-.memorial-item {
-    background: white;
-    padding: 15px;
-    margin-bottom: 12px;
-    border-radius: 10px;
-    border-left: 5px solid #2d9fa3ff;
-}
-
-.memorial-item h3 {
-    color: #2d9fa3ff;
-    margin-bottom: 10px;
-    font-size: 1.1rem;
-}
-
-.memorial-item p {
-    margin-bottom: 10px;
-    line-height: 1.8;
-    color: #333;
-}
-
-.formula-box {
-    background: #f0f4ff;
-    padding: 12px;
-    border-radius: 8px;
-    margin: 12px 0;
-    border: 2px solid #2d9fa3ff;
-}
-
-.formula-box p {
-    margin: 5px 0;
-    font-family: 'Courier New', monospace;
-    color: #1a237e;
-}
-
-.info-box {
-    background: #e8f5e9;
-    padding: 12px;
-    border-radius: 8px;
-    margin-top: 12px;
-    border-left: 4px solid #4caf50;
-}
-
-.info-box p {
-    margin: 5px 0;
-    color: #2e7d32;
-}
-
-.info-box ul {
-    margin: 8px 0;
-    padding-left: 20px;
-    color: #2e7d32;
-}
-
-.info-box li {
-    margin: 5px 0;
-}
-
-.resumo-calculado {
-    background: #f0f4ff;
-    padding: 15px;
-    border-radius: 8px;
-    margin-top: 12px;
-}
-
-.resumo-item-calc {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.resumo-item-calc:last-child {
-    border-bottom: none;
-}
-
-.resumo-item-calc span:first-child {
-    font-weight: 600;
-    color: #555;
-}
-
-.resumo-item-calc span:last-child {
-    font-weight: bold;
-    color: #2d9fa3ff;
-    font-size: 1.1rem;
-}
-
-.btn-help {
-    background: transparent;
-    border: none;
-    color: #2d9fa3ff;
-    cursor: pointer;
-    padding: 6px 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    position: relative;
-    z-index: 10;
-    flex-shrink: 0;
-}
-
-.btn-help:hover {
-    background: #2d9fa3ff;
-    color: white;
-    transform: scale(1.05);
-}
-
-.texto-saiba-mais {
-    font-weight: 600;
-    font-size: 0.85rem;
-}
-
-@media (max-width: 600px) {
-    .memorial-header {
-        flex-direction: column;
-        gap: 10px;
-        align-items: flex-start;
-    }
-    
-    .btn-fechar-memorial {
-        width: 100%;
-    }
-}
+/* Estilos globais de memorial movidos para assets/css/shared-styles.css */
 

@@ -7,34 +7,10 @@
    ============================================ */
 
 /* ============================================
-   RESET E CONFIGURAÇÕES GLOBAIS
+   RESET, BODY, CONTAINER, HEADER
    ============================================ */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html {
-    overflow-x: hidden;
-    width: 100%;
-    touch-action: pan-y;
-}
-
-body {
-    /* Verde Engenharia Nata */
-    background: var(--site-bg, #4e7262);
-    min-height: 100vh;
-    /* Layout em coluna: seletor de idioma acima do container */
-    display: flex;
-    flex-direction: column;
-    align-items: center;      /* Centraliza horizontalmente */
-    gap: 15px;                /* Espaço mínimo entre seletor e container */
-    padding: 15px 0 110px 0;  /* Padding topo/baixo, sem lateral */
-    overflow-x: hidden;
-    width: 100%;
-    position: relative;
-}
+/* Estilos globais movidos para assets/css/shared-styles.css */
+/* Reset, body, container, header, footer, typography estão no arquivo global */
 
 /* Variáveis CSS do tema Solar */
 :root { 
@@ -70,32 +46,14 @@ body {
     width: 5ch;
 }
 
-/* ============================================
-   CONTAINER PRINCIPAL
-   ============================================ */
+/* Container e header movidos para shared-styles.css */
+/* Mantendo apenas estilos específicos do Solar */
 .conteiner-principal {
     width: 100%;
     margin: 0;
     max-width: 800px;
     margin-left: auto;
     margin-right: auto;
-}
-
-/* ============================================
-   CABEÇALHO
-   ============================================ */
-header {
-    text-align: center;
-    color: white;
-    margin-bottom: 12px;
-    padding: 8px 0;
-}
-
-
-header h1 {
-    font-size: 1.4rem;
-    margin-bottom: 2px;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .subtitulo {
@@ -221,12 +179,8 @@ header h1 {
     display: inline;
 }
 
-.valor-resultado {
-    display: inline;
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #333;
-}
+/* .valor-resultado moved to shared-styles.css */
+/* Mantendo apenas estilos específicos do Solar */
 
 .rotulo-resultado {
     font-size: 0.75rem;
@@ -321,18 +275,7 @@ footer p {
 /* ============================================
    MEMORIAL DE CÁLCULO
    ============================================ */
-.memorial-section {
-    background: #f9f9f9;
-}
-
-.memorial-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-    gap: 15px;
-    flex-wrap: wrap;
-}
+/* Memorial styles moved to shared-styles.css */
 
 .memorial-header h2 {
     color: #2d9fa3ff;

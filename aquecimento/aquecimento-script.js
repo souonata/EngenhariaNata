@@ -157,58 +157,19 @@ const TEMPERATURA_CONFORTO_CASA = 22.0; // °C
  * @param {string} valorTexto - Valor como string (pode ter ponto ou vírgula)
  * @returns {number} Valor numérico
  */
+// Funções de formatação agora estão em assets/js/site-config.js
+// converterParaNumero -> converterValorFormatadoParaNumero (global)
+// formatarNumero -> formatarNumero (global)
+// formatarDecimal -> formatarNumeroDecimal (global)
+
+// Alias para compatibilidade com código existente
 function converterParaNumero(valorTexto) {
-    if (!valorTexto) return NaN;
-    let valor = valorTexto.toString().trim();
-    
-    // Se tem vírgula e ponto, assume formato brasileiro (1.234,56)
-    if (valor.indexOf('.') !== -1 && valor.indexOf(',') !== -1) {
-        valor = valor.replace(/\./g, ''); // Remove pontos (milhares)
-        valor = valor.replace(',', '.');   // Troca vírgula por ponto
-    }
-    // Se tem apenas vírgula, assume formato brasileiro (12,5)
-    else if (valor.indexOf(',') !== -1) {
-        valor = valor.replace(/\./g, ''); // Remove pontos se houver
-        valor = valor.replace(',', '.');   // Troca vírgula por ponto
-    }
-    // Se tem apenas pontos ou nenhum, remove pontos (assume milhares)
-    else {
-        valor = valor.replace(/\./g, '');
-    }
-    
-    return parseFloat(valor) || NaN;
+    const resultado = converterValorFormatadoParaNumero(valorTexto);
+    return isNaN(resultado) ? NaN : resultado;
 }
 
-/**
- * Formata número com separador de milhares
- * @param {number} valor - Valor numérico
- * @returns {string} Valor formatado
- */
-function formatarNumero(valor) {
-    if (isNaN(valor) || valor === null || valor === undefined) return '-';
-    // Usa locale baseado no idioma atual para formatação correta
-    const locale = idiomaAtual === 'it-IT' ? 'it-IT' : 'pt-BR';
-    return valor.toLocaleString(locale, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    });
-}
-
-/**
- * Formata número com casas decimais
- * Sempre usa vírgula como separador decimal (padrão brasileiro)
- * @param {number} valor - Valor numérico
- * @param {number} decimais - Número de casas decimais
- * @returns {string} Valor formatado com vírgula
- */
 function formatarDecimal(valor, decimais = 1) {
-    if (isNaN(valor) || valor === null || valor === undefined) return '-';
-    // Usa 'pt-BR' para garantir vírgula como separador decimal
-    const formatado = valor.toLocaleString('pt-BR', {
-        minimumFractionDigits: decimais,
-        maximumFractionDigits: decimais
-    });
-    return formatado;
+    return formatarNumeroDecimal(valor, decimais);
 }
 
 /**
@@ -1164,14 +1125,7 @@ function atualizarResultados() {
     if (elementoVolumeCasa) elementoVolumeCasa.textContent = formatarDecimal(resultado.volumeCasa_m3 || 0, 1) + ' m³';
     
     if (elementoPotenciaCasa) {
-        const potencia_W = Math.round(resultado.potenciaCasa_W || 0);
-        if (potencia_W >= 1000) {
-            // Converter para kW quando >= 1000W
-            const potencia_kW = potencia_W / 1000;
-            elementoPotenciaCasa.textContent = formatarDecimal(potencia_kW, 1) + ' kW';
-        } else {
-            elementoPotenciaCasa.textContent = formatarNumero(potencia_W) + ' W';
-        }
+        elementoPotenciaCasa.textContent = formatarPotenciaWkW(resultado.potenciaCasa_W || 0);
     }
     
     // Atualizar nota de referência do painel com formatação limpa
@@ -1435,13 +1389,7 @@ function atualizarMemorialComValores() {
         if (exemploCasa) {
             const textoPotencia = idiomaAtual === 'it-IT' ? 'Potenza' : 'Potência';
             // Formatar potência: usar kW se >= 1000W
-            let potenciaFormatada;
-            if (potenciaTotal >= 1000) {
-                const potencia_kW = potenciaTotal / 1000;
-                potenciaFormatada = formatarDecimal(potencia_kW, 1) + ' kW';
-            } else {
-                potenciaFormatada = formatarDecimal(potenciaTotal, 0) + ' W';
-            }
+            const potenciaFormatada = formatarPotenciaWkW(potenciaTotal);
             exemploCasa.textContent = `${formatarDecimal(areaCasa, 0)} m² × ${formatarDecimal(alturaCasa, 1)}m = ${formatarDecimal(volumeCasa, 0)} m³, classe ${classeEnergetica} (coef. ${coefPerda} W/m³·K), ΔT = ${formatarDecimal(Delta_T, 1)}°C → ${textoPotencia} = ${formatarDecimal(volumeCasa, 0)} × ${coefPerda} × ${formatarDecimal(Delta_T, 1)} × 1.15 = ${potenciaFormatada}`;
         }
         

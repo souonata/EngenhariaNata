@@ -60,21 +60,7 @@ const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) 
 const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
 let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
 
-/**
- * Formata número com casas decimais usando formatação brasileira
- * Sempre usa vírgula como separador decimal e ponto como separador de milhares
- * @param {number} valor - Valor numérico
- * @param {number} casasDecimais - Número de casas decimais
- * @returns {string} Valor formatado (ex: "12,5" ou "1.234,56")
- */
-function formatarNumeroDecimal(valor, casasDecimais = 1) {
-    if (isNaN(valor) || valor === null || valor === undefined) return '-';
-    return valor.toLocaleString('pt-BR', {
-        minimumFractionDigits: casasDecimais,
-        maximumFractionDigits: casasDecimais,
-        useGrouping: true
-    });
-}
+// Função formatarNumeroDecimal agora está em assets/js/site-config.js
 
 // ============================================
 // CONSTANTES DO SISTEMA (Valores Fixos)

@@ -7,19 +7,12 @@
     --site-bottom-padding: 110px;
 }
 
-body {
-    background: var(--site-bg);
-    min-height: 100vh;
-    /* Layout em coluna: seletor de idioma acima do container */
-    display: flex;
-    flex-direction: column;
-    align-items: center;      /* Centraliza horizontalmente */
-    gap: 15px;                /* Espaço mínimo entre seletor e container */
-    padding: 15px 0 110px 0;  /* Padding topo/baixo, sem lateral */
-    overflow-x: hidden;
-    width: 100%;
-    position: relative;
-}
+/* ============================================
+   RESET, BODY, CONTAINER, HEADER
+   ============================================ */
+/* Estilos globais movidos para assets/css/shared-styles.css */
+/* Reset, body, container, header, footer, typography estão no arquivo global */
+/* Mantendo apenas estilos específicos do Fazenda */
 
 .container {
     position: relative;
@@ -68,29 +61,8 @@ body {
     margin-top: 10px;
 }
 
-.opcao-checkbox {
-    display: block;
-    cursor: pointer;
-}
-
-.cartao-checkbox {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 8px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    background: white;
-    transition: all 0.3s ease;
-    text-align: center;
-    min-height: 80px;
-}
-
-.opcao-checkbox input[type="checkbox"] {
-    display: none;
-}
-
+/* Checkbox styles moved to shared-styles.css */
+/* Mantendo apenas estilos específicos do Fazenda */
 .opcao-checkbox input[type="checkbox"]:checked + .cartao-checkbox {
     border-color: var(--accent-color);
     background: #f5e6d3;
@@ -116,19 +88,8 @@ body {
     color: #666;
 }
 
-/* Resultados */
-.resultado-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-.resultado-item:last-child {
-    border-bottom: none;
-}
-
+/* Resultado styles moved to shared-styles.css */
+/* Mantendo apenas estilos específicos do Fazenda */
 .resultado-item strong {
     color: var(--accent-color);
     font-size: 1.1rem;
@@ -222,190 +183,8 @@ body {
     }
 }
 
-/* Footer */
-footer {
-    text-align: center;
-    padding: 20px;
-    color: white;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-    opacity: 0.9;
-    margin-top: 20px;
-}
+/* Footer and Memorial styles moved to shared-styles.css */
 
-footer p {
-    margin: 0;
-    font-size: 0.85rem;
-}
-
-
-/* ============================================
-   MEMORIAL DE CÁLCULO
-   ============================================ */
-.memorial-section {
-    background: white;
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.memorial-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #eee;
-}
-
-.memorial-header h2 {
-    font-size: 1.2rem;
-    color: var(--accent-color);
-    margin: 0;
-}
-
-.btn-fechar-memorial, .btn-voltar-memorial {
-    background: var(--accent-color);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-}
-
-.btn-fechar-memorial:hover, .btn-voltar-memorial:hover {
-    background: var(--accent-secondary);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(139, 111, 71, 0.3);
-}
-
-.memorial-item {
-    background: #f9f9f9;
-    padding: 15px;
-    margin-bottom: 12px;
-    border-radius: 10px;
-    border-left: 5px solid var(--accent-color);
-}
-
-.memorial-item h3 {
-    color: var(--accent-color);
-    margin-bottom: 10px;
-    font-size: 1.1rem;
-}
-
-.memorial-item p {
-    margin-bottom: 10px;
-    line-height: 1.8;
-    color: #333;
-}
-
-.formula-box {
-    background: #f5e6d3;
-    padding: 12px;
-    border-radius: 8px;
-    margin: 12px 0;
-    border: 2px solid var(--accent-color);
-}
-
-.formula-box p {
-    margin: 5px 0;
-    font-family: 'Courier New', monospace;
-    color: #1a237e;
-}
-
-.info-box {
-    background: #e8f5e9;
-    padding: 12px;
-    border-radius: 8px;
-    margin-top: 12px;
-    border-left: 4px solid #4caf50;
-}
-
-.info-box p {
-    margin: 5px 0;
-    color: #2e7d32;
-}
-
-.info-box ul {
-    margin: 8px 0;
-    padding-left: 20px;
-    color: #2e7d32;
-}
-
-.info-box li {
-    margin: 5px 0;
-}
-
-.resumo-calculado {
-    background: #f0f4ff;
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 16px;
-    border: 2px solid var(--accent-color);
-}
-
-.resumo-calculado h3 {
-    color: var(--accent-color);
-    margin-bottom: 12px;
-    font-size: 1.1rem;
-}
-
-.resumo-item-calc {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid #ddd;
-}
-
-.resumo-item-calc:last-child {
-    border-bottom: none;
-}
-
-.resumo-item-calc span:last-child {
-    font-weight: bold;
-    color: var(--accent-color);
-}
-
-.btn-help {
-    background: transparent;
-    border: none;
-    color: var(--accent-color);
-    cursor: pointer;
-    padding: 6px 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    position: relative;
-    z-index: 10;
-    flex-shrink: 0;
-}
-
-.btn-help:hover {
-    background: var(--accent-color);
-    color: white;
-    transform: scale(1.05);
-}
-
-.texto-saiba-mais {
-    font-weight: 600;
-    font-size: 0.85rem;
-}
-
-@media (max-width: 600px) {
-    .memorial-header {
-        flex-direction: column;
-        gap: 10px;
-        align-items: flex-start;
-    }
-    
-    .btn-fechar-memorial {
-        width: 100%;
-    }
-}
+/* Memorial item, formula-box, info-box, resumo-calculado, btn-help styles moved to shared-styles.css */
+/* Mantendo apenas estilos específicos do Fazenda se necessário */
 

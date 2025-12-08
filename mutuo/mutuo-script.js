@@ -1994,106 +1994,12 @@ function obterTextoPeriodicidade(periodo) {
  * @param {number} valor - Número a ser formatado
  * @returns {string} Número formatado como texto
  */
-function formatarNumero(valor) {
-    // Intl.NumberFormat = API do JavaScript para formatar números
-    // Sempre usa 'pt-BR' para garantir vírgula decimal e ponto milhares
-    return new Intl.NumberFormat('pt-BR', {
-        useGrouping: true,           // Ativa separador de milhares (pontos)
-        minimumFractionDigits: 0,    // Mínimo de casas decimais: 0 (não mostra decimais)
-        maximumFractionDigits: 0     // Máximo de casas decimais: 0 (não permite decimais)
-    }).format(valor);                // .format() aplica a formatação ao número
-}
-
-/**
- * Formata número com casas decimais usando formatação brasileira
- * @param {number} valor - Valor numérico
- * @param {number} casasDecimais - Número de casas decimais
- * @returns {string} Valor formatado (ex: "12,5" ou "1.234,56")
- */
-function formatarNumeroDecimal(valor, casasDecimais = 1) {
-    if (isNaN(valor) || valor === null || valor === undefined) return '-';
-    return valor.toLocaleString('pt-BR', {
-        minimumFractionDigits: casasDecimais,
-        maximumFractionDigits: casasDecimais,
-        useGrouping: true
-    });
-}
-
-/**
- * Formata números de forma compacta para gráficos
- * 
- * Usa abreviações para números grandes:
- * - 1.500.000 → "1,5M" (milhões)
- * - 150.000 → "150k" (milhares)
- * - 500 → "500" (sem abreviação)
- * 
- * Isso deixa os gráficos mais legíveis quando os valores são muito grandes.
- * 
- * @param {number} valor - Número a ser formatado
- * @returns {string} Número formatado de forma compacta
- */
-function formatarNumeroCompacto(valor) {
-    // Se o valor é maior ou igual a 1 milhão
-    if (valor >= 1000000) {
-        // Divide por 1 milhão, arredonda para 1 casa decimal
-        // Exemplo: 1.500.000 / 1.000.000 = 1.5
-        const valorEmMilhoes = (valor / 1000000).toFixed(1);
-        // Troca ponto por vírgula (formato brasileiro/italiano)
-        // Exemplo: "1.5" → "1,5"
-        // Adiciona "M" no final
-        return valorEmMilhoes.replace('.', ',') + 'M';
-    } 
-    // Se o valor é maior ou igual a 1 mil (mas menor que 1 milhão)
-    else if (valor >= 1000) {
-        // Divide por 1 mil, arredonda para número inteiro
-        // Exemplo: 150.000 / 1.000 = 150
-        const valorEmMilhares = (valor / 1000).toFixed(0);
-        // Adiciona "k" no final
-        return valorEmMilhares + 'k';
-    }
-    // Se o valor é menor que 1 mil, retorna como está (sem abreviação)
-    return valor.toString();
-}
-
-/**
- * Formata valores monetários com 2 casas decimais
- * 
- * Formata números como moeda (R$ ou €) com centavos.
- * Exemplo: 1234.56 → "R$ 1.234,56" (pt-BR) ou "€ 1.234,56" (it-IT)
- * 
- * @param {number} valor - Valor a ser formatado
- * @returns {string} Valor formatado como moeda
- */
-function formatarMoeda(valor) {
-    // Intl.NumberFormat com style: 'currency' formata como moeda
-    return new Intl.NumberFormat(idiomaAtual, {
-        style: 'currency',           // Formata como moeda (adiciona R$ ou €)
-        currency: moedaAtual,        // moedaAtual = 'BRL' ou 'EUR'
-        minimumFractionDigits: 2,    // Sempre mostra 2 casas decimais (centavos)
-        maximumFractionDigits: 2     // Máximo de 2 casas decimais
-    }).format(valor);
-}
-
-/**
- * Formata valores monetários sem casas decimais
- * 
- * Formata números como moeda (R$ ou €) sem centavos.
- * Exemplo: 1234.56 → "R$ 1.235" (arredondado, pt-BR)
- * 
- * Usado para valores grandes onde centavos não são relevantes.
- * 
- * @param {number} valor - Valor a ser formatado
- * @returns {string} Valor formatado como moeda sem decimais
- */
-function formatarMoedaSemDecimal(valor) {
-    // Intl.NumberFormat com style: 'currency' formata como moeda
-    return new Intl.NumberFormat(idiomaAtual, {
-        style: 'currency',           // Formata como moeda (adiciona R$ ou €)
-        currency: moedaAtual,        // moedaAtual = 'BRL' ou 'EUR'
-        minimumFractionDigits: 0,    // Não mostra decimais
-        maximumFractionDigits: 0     // Não permite decimais
-    }).format(valor);
-}
+// Funções de formatação agora estão em assets/js/site-config.js
+// formatarNumero -> formatarNumero (global, usa 0 decimais por padrão)
+// formatarNumeroDecimal -> formatarNumeroDecimal (global)
+// formatarNumeroCompacto -> formatarNumeroCompacto (global)
+// formatarMoeda -> formatarMoeda (global, recebe idioma como parâmetro)
+// formatarMoedaSemDecimal -> formatarMoedaSemDecimal (global, recebe idioma como parâmetro)
 
 // Inicialização
 // Variáveis globais para os gráficos
