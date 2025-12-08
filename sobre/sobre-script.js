@@ -312,7 +312,7 @@ function trocarIdioma(novoIdioma) {
         btn.classList.toggle('active', btn.getAttribute('data-lang') === novoIdioma);
     });
 
-    const homeLabel = traducoes[novoIdioma]['aria-home'] || 'Home';
+    const homeLabel = traducoes[novoIdioma]?.['aria-home'] || 'Home';
     document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
 }
 

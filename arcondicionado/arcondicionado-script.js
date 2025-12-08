@@ -569,7 +569,7 @@ function trocarIdioma(novoIdioma) {
     atualizarModelosComerciais(resultado.btuRecomendado);
     
     // Atualiza aria-label do botão home
-    const homeLabel = traducoes[novoIdioma]['aria-home'] || 'Home';
+    const homeLabel = traducoes[novoIdioma]?.['aria-home'] || 'Home';
     document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
 }
 

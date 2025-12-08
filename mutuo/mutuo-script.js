@@ -870,7 +870,7 @@ function trocarIdioma(idioma) {
     }
 
     // Atualiza o aria-label do botão home (acessibilidade)
-    const homeLabel = traducoes[idioma]['aria-home'] || 'Home';
+    const homeLabel = traducoes[idioma]?.['aria-home'] || 'Home';
     document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
 }
 

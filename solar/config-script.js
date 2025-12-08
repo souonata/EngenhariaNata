@@ -116,7 +116,7 @@ function trocarIdioma(idioma) {
     atualizarDisplays();
 
     // Ajusta aria-label do botão home para o idioma selecionado (acessibilidade)
-    const homeLabel = traducoes[idioma]['aria-home'] || 'Home';
+    const homeLabel = traducoes[idioma]?.['aria-home'] || 'Home';
     document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
 }
 

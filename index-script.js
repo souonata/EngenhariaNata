@@ -229,7 +229,7 @@ function trocarIdioma(novoIdioma) {
     
     // Atualiza o relógio e rótulos de acessibilidade
     atualizarHorario();
-    const homeLabel = traducoes[novoIdioma]['aria-home'] || 'Home';
+    const homeLabel = traducoes[novoIdioma]?.['aria-home'] || 'Home';
     document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(function(elemento) {
         elemento.setAttribute('aria-label', homeLabel);
     });

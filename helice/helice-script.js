@@ -328,7 +328,7 @@ function trocarIdioma(novoIdioma) {
 
     // PASSO 7: Atualiza os atributos `aria-label` para botões de navegação (ex: botão "Home")
     // Isso melhora a acessibilidade para usuários de leitores de tela
-    const homeLabel = traducoes[novoIdioma]['aria-home'] || 'Home'; // Pega a tradução ou usa 'Home' como fallback
+    const homeLabel = traducoes[novoIdioma]?.['aria-home'] || 'Home'; // Pega a tradução ou usa 'Home' como fallback
     document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
 }
 
