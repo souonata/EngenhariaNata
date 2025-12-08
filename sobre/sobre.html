@@ -74,17 +74,17 @@
                 <span class="seta-expansao">▼</span>
             </div>
             <div class="card-content conteudo-expansivel">
-                <p data-i18n="overview-description">Pequeno portfólio com apps educativos que demonstram cálculos e conceitos práticos de forma simples.</p>
+                <p data-i18n="overview-description">Portfólio de apps web educativos para engenharia e finanças. Desenvolvido com JavaScript puro, bilíngue (PT/IT) e mobile-first. Alguns apps estão em desenvolvimento e marcados com badge "DEV".</p>
                 
                 <ul class="tech-list">
-                    <li><strong>💰 Mutuo</strong> - <span data-i18n="app-mutuo-desc">Calculadora de amortização bilíngue</span></li>
-                    <li><strong>🚤 Helice</strong> - <span data-i18n="app-helice-desc">Calculadora de passo de hélice</span></li>
-                    <li><strong>☀️ Solar</strong> - <span data-i18n="app-solar-desc">Dimensionamento fotovoltaico</span></li>
-                    <li><strong>⚡ Bitola</strong> - <span data-i18n="app-bitola-desc">Calculadora de bitola de fios</span></li>
-                    <li><strong>❄️ Ar Condicionado</strong> - <span data-i18n="app-arcondicionado-desc">Dimensionamento de ar condicionado</span></li>
-                    <li><strong>☀️ Aquecedor Solar</strong> - <span data-i18n="app-aquecimento-desc">Dimensionamento solar térmico</span></li>
-                    <li><strong>🌾 Fazenda</strong> - <span data-i18n="app-fazenda-desc">Planejamento de fazenda auto-sustentável</span></li>
                     <li><strong>📖 Sobre mim</strong> - <span data-i18n="app-about-desc">Informações do projeto</span></li>
+                    <li><strong>❄️ Ar Condicionado</strong> <span style="background: #ff6b35; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; margin-left: 5px;">DEV</span> - <span data-i18n="app-arcondicionado-desc">Dimensionamento de ar condicionado</span></li>
+                    <li><strong>☀️ Aquecedor Solar</strong> <span style="background: #ff6b35; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; margin-left: 5px;">DEV</span> - <span data-i18n="app-aquecimento-desc">Dimensionamento solar térmico</span></li>
+                    <li><strong>🔌 Bitola</strong> - <span data-i18n="app-bitola-desc">Calculadora de bitola de fios</span></li>
+                    <li><strong>🔋 Energia Solar</strong> <span style="background: #ff6b35; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; margin-left: 5px;">DEV</span> - <span data-i18n="app-solar-desc">Dimensionamento fotovoltaico</span></li>
+                    <li><strong>🌾 Fazenda</strong> <span style="background: #ff6b35; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; margin-left: 5px;">DEV</span> - <span data-i18n="app-fazenda-desc">Planejamento de fazenda auto-sustentável</span></li>
+                    <li><strong>🚤 Hélice</strong> - <span data-i18n="app-helice-desc">Calculadora de passo de hélice</span></li>
+                    <li><strong>💰 Mutuo</strong> - <span data-i18n="app-mutuo-desc">Calculadora de amortização bilíngue</span></li>
                 </ul>
             </div>
         </div>
@@ -184,6 +184,11 @@
                         <h4 data-i18n="feature-slip-title">Análise de Slip</h4>
                         <p data-i18n="feature-slip-desc">Considera a eficiência e o deslizamento na água</p>
                     </div>
+                    <div class="feature">
+                        <span class="feature-icon">📚</span>
+                        <h4 data-i18n="feature-memorial-title">Memorial de Cálculo</h4>
+                        <p data-i18n="feature-memorial-desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -193,20 +198,19 @@
         <!-- ========================================== -->
         <div class="card highlight card-expansivel">
             <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
-                <span class="icon">☀️</span>
-                <h2 data-i18n="solar-title">Dimensionamento Solar</h2>
+                <span class="icon">🔋</span>
+                <h2 data-i18n="solar-title">Energia Solar - Dimensionamento Fotovoltaico</h2>
                 <span class="seta-expansao">▼</span>
             </div>
             <div class="card-content conteudo-expansivel">
                 <p class="app-description">
-                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="solar-description">Ajuda a estimar painéis, baterias e inversor para sistemas fotovoltaicos de forma simplificada.</span>
+                    <strong data-i18n="what-it-does">O que faz:</strong> <span data-i18n="solar-description">Dimensionamento completo de sistemas fotovoltaicos off-grid. Calcula número de painéis solares, capacidade de baterias (AGM e LiFePO4), inversor necessário, controlador MPPT e autonomia do sistema.</span>
                 </p>
                 
                 <div class="features-grid">
                     <div class="feature">
                         <span class="feature-icon">🔋</span>
                         <h4 data-i18n="feature-battery-title">Baterias AGM/Lítio</h4>
-                        <!-- Atualizado: explica capacidade em kWh e limitações de peso/config -->
                         <p data-i18n="feature-battery-desc">Compara chumbo-ácido e LiFePO₄ usando capacidade em <strong>kWh</strong>, tabelas de vida útil e parâmetros configuráveis.</p>
                         <p class="small-note" data-i18n="feature-battery-note">As configurações permitem ajustar kWh/Ah, tensão, preço e peso (sliders até 180 kg).</p>
                     </div>
@@ -214,6 +218,11 @@
                         <span class="feature-icon">⚙️</span>
                         <h4 data-i18n="feature-config-title">Configurável</h4>
                         <p data-i18n="feature-config-desc">Customize preços, potências e especificações das baterias — mudanças salvas em `localStorage` (chave `configSolar`).</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🔌</span>
+                        <h4 data-i18n="feature-inverter-mppt-title">Inversor e MPPT</h4>
+                        <p data-i18n="feature-inverter-mppt-desc">Dimensiona inversor baseado no consumo típico de pico e controlador MPPT com capacidade para carregar todo o banco de baterias e suportar o pico de todos os painéis.</p>
                     </div>
                     <div class="feature">
                         <span class="feature-icon">📚</span>
@@ -229,7 +238,7 @@
         <!-- ========================================== -->
         <div class="card highlight card-expansivel">
             <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
-                <span class="icon">⚡</span>
+                <span class="icon">🔌</span>
                 <h2 data-i18n="bitola-title">Calculadora de Bitola de Fios</h2>
                 <span class="seta-expansao">▼</span>
             </div>
@@ -255,9 +264,14 @@
                         <p data-i18n="feature-queda-tensao-desc">Recomenda 4% de queda de tensão para projetos residenciais no Brasil (padrão mais utilizado).</p>
                     </div>
                     <div class="feature">
-                        <span class="feature-icon">⚡</span>
+                        <span class="feature-icon">🔌</span>
                         <h4 data-i18n="feature-potencia-title">Potência Flexível</h4>
                         <p data-i18n="feature-potencia-desc">Steps dinâmicos: 1W (1-10W), 10W (100-1000W), 50W (1000-3000W) com formatação automática em "k" para valores >= 1000W.</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📚</span>
+                        <h4 data-i18n="feature-memorial-title">Memorial de Cálculo</h4>
+                        <p data-i18n="feature-memorial-desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
                     </div>
                 </div>
             </div>
@@ -287,6 +301,11 @@
                         <span class="feature-icon">📐</span>
                         <h4 data-i18n="feature-fatores-title">Múltiplos Fatores</h4>
                         <p data-i18n="feature-fatores-desc">Considera área, altura, número de pessoas, equipamentos e condições climáticas</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📚</span>
+                        <h4 data-i18n="feature-memorial-title">Memorial de Cálculo</h4>
+                        <p data-i18n="feature-memorial-desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
                     </div>
                 </div>
             </div>

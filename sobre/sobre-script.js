@@ -22,7 +22,7 @@ const traducoes = {
         'page-title': '📱 Sobre o Projeto',
         'page-subtitle': 'Portfólio de apps web',
         'overview-title': 'Visão Geral',
-        'overview-description': 'Pequeno portfólio com apps educativos que demonstram conceitos práticos de forma simples.',
+        'overview-description': 'Portfólio de apps web educativos para engenharia e finanças. Desenvolvido com JavaScript puro, bilíngue (PT/IT) e mobile-first. Alguns apps estão em desenvolvimento e marcados com badge "DEV".',
 
         'app-mutuo-desc': 'Calculadora de amortização',
         'app-helice-desc': 'Calculadora de passo de hélice',
@@ -40,8 +40,8 @@ const traducoes = {
         'helice-title': 'Calculadora de Hélice',
         'helice-description': 'Calcula o passo estimado da hélice para ajudar na escolha.',
 
-        'solar-title': 'Dimensionamento Solar',
-        'solar-description': 'Ajuda a estimar painéis, baterias e inversor para sistemas fotovoltaicos de forma simplificada.',
+        'solar-title': 'Energia Solar - Dimensionamento Fotovoltaico',
+        'solar-description': 'Dimensionamento completo de sistemas fotovoltaicos off-grid. Calcula número de painéis solares, capacidade de baterias (AGM e LiFePO4), inversor necessário, controlador MPPT e autonomia do sistema.',
 
         'bitola-title': 'Calculadora de Bitola de Fios',
         'bitola-description': 'Calcula a área de seção mínima de fios elétricos para circuitos CC e CA, considerando queda de tensão e selecionando a bitola comercial adequada.',
@@ -76,6 +76,8 @@ const traducoes = {
         'feature-config-desc': 'Customize preços e especificações; mudanças salvas em localStorage (configSolar).',
         'feature-memorial-title': 'Memorial de Cálculo',
         'feature-memorial-desc': 'Memorial didático completo que explica passo a passo todos os cálculos realizados, com fórmulas, exemplos práticos e resumo dos valores calculados.',
+        'feature-inverter-mppt-title': 'Inversor e MPPT',
+        'feature-inverter-mppt-desc': 'Dimensiona inversor baseado no consumo típico de pico e controlador MPPT com capacidade para carregar todo o banco de baterias e suportar o pico de todos os painéis.',
 
         'feature-cc-ca-title': 'CC e CA',
         'feature-cc-ca-desc': 'Suporta corrente contínua (CC) e alternada (CA) com tensões típicas e valores personalizados.',
@@ -139,7 +141,7 @@ const traducoes = {
         'page-title': '📱 Sul Progetto',
         'page-subtitle': 'Portfolio di app web',
         'overview-title': 'Panoramica',
-        'overview-description': 'Piccolo portfolio con app didattiche che mostrano concetti pratici in modo semplice.',
+        'overview-description': 'Portfolio di app web didattiche per ingegneria e finanza. Sviluppato con JavaScript puro, bilingue (PT/IT) e mobile-first. Alcune app sono in sviluppo e contrassegnate con badge "DEV".',
 
         'app-mutuo-desc': 'Calcolatrice di ammortamento',
         'app-helice-desc': 'Calcolatrice passo elica',
@@ -157,8 +159,8 @@ const traducoes = {
         'helice-title': 'Calcolatore Elica',
         'helice-description': "Calcola il passo stimato dell'elica per aiutare nella scelta.",
 
-        'solar-title': 'Dimensionamento Solare',
-        'solar-description': 'Aiuta a stimare pannelli, batterie e inverter per sistemi fotovoltaici in modo semplificato.',
+        'solar-title': 'Energia Solare - Dimensionamento Fotovoltaico',
+        'solar-description': 'Dimensionamento completo di sistemi fotovoltaici off-grid. Calcola numero di pannelli solari, capacità delle batterie (AGM e LiFePO4), inverter necessario, controller MPPT e autonomia del sistema.',
 
         'bitola-title': 'Calcolatrice Sezione Cavi',
         'bitola-description': 'Calcola l\'area di sezione minima dei cavi elettrici per circuiti CC e CA, considerando la caduta di tensione e selezionando la sezione commerciale adeguata.',
@@ -193,6 +195,8 @@ const traducoes = {
         'feature-config-desc': 'Personalizza prezzi e specifiche; impostazioni salvate in localStorage (configSolar).',
         'feature-memorial-title': 'Memoriale di Calcolo',
         'feature-memorial-desc': 'Memoriale didattico completo che spiega passo dopo passo tutti i calcoli eseguiti, con formule, esempi pratici e riepilogo dei valori calcolati.',
+        'feature-inverter-mppt-title': 'Inverter e MPPT',
+        'feature-inverter-mppt-desc': 'Dimensiona inverter basato sul consumo tipico di picco e controller MPPT con capacità di caricare l\'intero banco batterie e supportare il picco di tutti i pannelli.',
 
         'feature-cc-ca-title': 'CC e CA',
         'feature-cc-ca-desc': 'Supporta corrente continua (CC) e alternata (CA) con tensioni tipiche e valori personalizzati.',

@@ -68,10 +68,10 @@
     // Se der erro (navegadores antigos), usa o objeto normal
     try { 
         // Object.freeze() impede que o objeto seja modificado
-        global.SiteConfig = Object.freeze(ConfiguracaoSite); 
+        global.SiteConfig = Object.freeze(SiteConfig); 
     } catch(erro){ 
         // Se der erro, usa o objeto sem proteção (compatibilidade)
-        global.SiteConfig = ConfiguracaoSite; 
+        global.SiteConfig = SiteConfig; 
     }
     
     // Agora o objeto está disponível globalmente como window.SiteConfig

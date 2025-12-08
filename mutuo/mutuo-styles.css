@@ -2,10 +2,8 @@
    MUTUO - Estilos Específicos da Calculadora de Empréstimos
    ============================================
    
-   NOTA: Os estilos padrão de controles (sliders, inputs, botões, radio buttons)
-   foram movidos para assets/css/controls-styles.css para reutilização em outras páginas.
-   
-   Este arquivo contém apenas estilos específicos do Mutuo que não são genéricos.
+   Estilos padrão de controles estão em assets/css/controls-styles.css.
+   Este arquivo contém apenas estilos específicos do Mutuo.
    ============================================ */
 
 /* ============================================
@@ -456,8 +454,7 @@ header h1 {
     margin-bottom: 8px;
 }
 
-/* Estilos de controles movidos para assets/css/controls-styles.css */
-/* Mantendo apenas estilos específicos do Mutuo abaixo */
+/* Estilos de controles estão em assets/css/controls-styles.css */
 
 .controles-primeira-linha {
     display: flex;
