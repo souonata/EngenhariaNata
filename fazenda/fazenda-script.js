@@ -1041,5 +1041,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (memorialSection) {
         memorialSection.style.display = 'none';
     }
+    
+    // Ajustar tamanho inicial de todos os inputs
+    if (typeof ajustarTamanhoInput === 'function') {
+        const inputPessoas = document.getElementById('inputPessoas');
+        const inputConsumoPlantas = document.getElementById('inputConsumoPlantas');
+        const inputConsumoProteinas = document.getElementById('inputConsumoProteinas');
+        if (inputPessoas) ajustarTamanhoInput(inputPessoas);
+        if (inputConsumoPlantas) ajustarTamanhoInput(inputConsumoPlantas);
+        if (inputConsumoProteinas) ajustarTamanhoInput(inputConsumoProteinas);
+    }
 });
 

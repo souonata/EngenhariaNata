@@ -1137,6 +1137,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicializa a formatação da potência
     inputPotencia.value = formatarPotencia(parseFloat(sliderPotencia.value));
     
+    // Ajustar tamanho inicial de todos os inputs
+    if (typeof ajustarTamanhoInput === 'function') {
+        if (inputPotencia) ajustarTamanhoInput(inputPotencia);
+        if (inputComprimento) ajustarTamanhoInput(inputComprimento);
+        if (inputTensaoCC) ajustarTamanhoInput(inputTensaoCC);
+        if (inputQuedaTensao) ajustarTamanhoInput(inputQuedaTensao);
+    }
+    
     // Calcula resultados iniciais
     atualizarResultados();
 });

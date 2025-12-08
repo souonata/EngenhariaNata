@@ -1351,7 +1351,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // 6. Atualizar especificações das baterias nos botões
     atualizarEspecsBaterias();
     
-    // 7. Calcular valores iniciais
+    // 7. Ajustar tamanho inicial de todos os inputs
+    if (typeof ajustarTamanhoInput === 'function') {
+        const inputConsumo = document.getElementById('inputConsumo');
+        const inputAutonomia = document.getElementById('inputAutonomia');
+        const inputVidaUtil = document.getElementById('inputVidaUtil');
+        if (inputConsumo) ajustarTamanhoInput(inputConsumo);
+        if (inputAutonomia) ajustarTamanhoInput(inputAutonomia);
+        if (inputVidaUtil) ajustarTamanhoInput(inputVidaUtil);
+    }
+    
+    // 8. Calcular valores iniciais
     atualizarInterface();
 });
 

@@ -2176,6 +2176,22 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', toggleMemorial);
     });
     
+    // Ajustar tamanho inicial de todos os inputs
+    if (typeof ajustarTamanhoInput === 'function') {
+        const inputPessoas = document.getElementById('inputPessoas');
+        const inputLatitude = document.getElementById('inputLatitude');
+        const inputAltitude = document.getElementById('inputAltitude');
+        const inputAreaCasa = document.getElementById('inputAreaCasa');
+        const inputAlturaCasa = document.getElementById('inputAlturaCasa');
+        const inputDiasAutonomia = document.getElementById('inputDiasAutonomia');
+        if (inputPessoas) ajustarTamanhoInput(inputPessoas);
+        if (inputLatitude) ajustarTamanhoInput(inputLatitude);
+        if (inputAltitude) ajustarTamanhoInput(inputAltitude);
+        if (inputAreaCasa) ajustarTamanhoInput(inputAreaCasa);
+        if (inputAlturaCasa) ajustarTamanhoInput(inputAlturaCasa);
+        if (inputDiasAutonomia) ajustarTamanhoInput(inputDiasAutonomia);
+    }
+    
     // Calcular resultados iniciais
     // Aguardar um pouco para garantir que todos os elementos estão carregados
     setTimeout(() => {

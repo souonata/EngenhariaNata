@@ -755,6 +755,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Ajustar tamanho inicial de todos os inputs
+    if (typeof ajustarTamanhoInput === 'function') {
+        if (inputArea) ajustarTamanhoInput(inputArea);
+        if (inputAltura) ajustarTamanhoInput(inputAltura);
+        if (inputPessoas) ajustarTamanhoInput(inputPessoas);
+        if (inputEquipamentos) ajustarTamanhoInput(inputEquipamentos);
+    }
+    
     // Configurar memorial de cálculo
     const btnMemorial = document.getElementById('btnMemorial');
     const btnFecharMemorial = document.getElementById('btnFecharMemorial');

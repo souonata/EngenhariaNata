@@ -316,7 +316,16 @@ function trocarIdioma(novoIdioma) {
     document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
 }
 
-function alternarSecao(cabecalho) {
+function alternarSecao(cabecalho, evento) {
+    // Prevenir comportamento padrão que pode causar scroll
+    if (evento) {
+        evento.preventDefault();
+        evento.stopPropagation();
+    }
+    
+    // Salvar posição atual do scroll antes de alterar o conteúdo
+    const scrollAtual = window.pageYOffset || document.documentElement.scrollTop;
+    
     const card = cabecalho.closest('.card-expansivel');
     if (!card) return;
     const conteudo = card.querySelector('.conteudo-expansivel');
@@ -333,6 +342,14 @@ function alternarSecao(cabecalho) {
         conteudo.style.maxHeight = '0';
         if (seta) seta.style.transform = 'rotate(0deg)';
         cabecalho.setAttribute('aria-expanded', 'false');
+        
+        // Restaurar posição do scroll após recolher (usar setTimeout para garantir que o DOM foi atualizado)
+        setTimeout(() => {
+            window.scrollTo({
+                top: scrollAtual,
+                behavior: 'instant' // 'instant' para não ter animação de scroll
+            });
+        }, 0);
     }
 }
 
@@ -353,14 +370,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // attach touch/click-friendly handlers to headers
     document.querySelectorAll('.card-header-clicavel').forEach(h => {
-        // click toggles the accordion
-        h.addEventListener('click', () => alternarSecao(h));
+        // click toggles the accordion - passar evento para prevenir scroll
+        h.addEventListener('click', (e) => alternarSecao(h, e));
         // ensure keyboard access
         h.setAttribute('tabindex', '0');
         h.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                alternarSecao(h);
+                alternarSecao(h, e);
             }
         });
     });

@@ -1334,6 +1334,19 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Atualiza os limites do slider de velocidade com os valores padrão
     atualizarLimitesVelocidade();
+    
+    // Ajustar tamanho inicial de todos os inputs
+    if (typeof ajustarTamanhoInput === 'function') {
+        const inputVelocidade = document.getElementById('inputVelocidade');
+        const inputReducao = document.getElementById('inputReducao');
+        const inputRPM = document.getElementById('inputRPM');
+        const inputSlip = document.getElementById('inputSlip');
+        if (inputVelocidade) ajustarTamanhoInput(inputVelocidade);
+        if (inputReducao) ajustarTamanhoInput(inputReducao);
+        if (inputRPM) ajustarTamanhoInput(inputRPM);
+        if (inputSlip) ajustarTamanhoInput(inputSlip);
+    }
+    
     // Calcula e exibe os resultados iniciais
     atualizarResultado();
 });

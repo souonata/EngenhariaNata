@@ -23,7 +23,7 @@
     --accent-color: #2d9fa3ff;  /* Cor do tema padrão para botões ativos */
     --control-accent: #2d9fa3ff;  /* Cor dos controles */
     --control-accent-secondary: #667eea;  /* Cor secundária dos controles */
-    --site-bg: #8B4513;  /* Cor de fundo específica do Bitola */
+    /* --site-bg removido para usar o padrão global (#4e7262 - verde Engenharia Nata) */
 }
 
 /* ============================================
@@ -102,6 +102,7 @@
    SEÇÃO DE RESULTADOS
    ============================================ */
 .resultados {
+    background: white;
     margin-top: 16px;
 }
 
@@ -113,12 +114,7 @@
 }
 
 /* Resultado styles moved to shared-styles.css */
-/* Mantendo apenas estilos específicos do Bitola */
-.resultado-item.destaque {
-    background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(247, 147, 30, 0.1) 100%);
-    border-left-width: 6px;
-    font-weight: 600;
-}
+/* Usando o padrão global para .resultado-item.destaque */
 
 /* Footer styles moved to shared-styles.css */
 
