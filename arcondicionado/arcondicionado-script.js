@@ -96,7 +96,35 @@ const traducoes = {
         'footer': 'Dimensionador de Ar Condicionado - Engenharia Nata © 2025',
         'aria-home': 'Voltar para a tela inicial',
         'dev-badge-header': '🚧 EM DESENVOLVIMENTO',
-        'watermark-dev': '🚧 EM DESENVOLVIMENTO'
+        'watermark-dev': '🚧 EM DESENVOLVIMENTO',
+        'learn-more': 'SAIBA MAIS!',
+        'back': '← Voltar',
+        'btn-memorial': 'Ver Memorial de Cálculo',
+        'memorial-title': '📚 Memorial de Cálculo - Dimensionamento de Ar Condicionado',
+        'memorial-intro-title': '🎯 Objetivo do Dimensionamento',
+        'memorial-intro-text': 'Este memorial explica passo a passo como é calculada a capacidade necessária de ar condicionado (em BTU) para um ambiente residencial, considerando volume, pessoas, equipamentos, insolação e isolamento térmico.',
+        'memorial-passo1-title': '1️⃣ Passo 1: Calcular Volume do Ambiente',
+        'memorial-formula': 'Fórmula:',
+        'memorial-passo1-explicacao': 'O volume determina a quantidade de ar que precisa ser resfriado no ambiente.',
+        'memorial-example': 'Exemplo:',
+        'memorial-passo2-title': '2️⃣ Passo 2: Calcular BTU Base',
+        'memorial-passo2-explicacao': 'Cada pessoa e equipamento elétrico gera calor que precisa ser removido pelo ar condicionado.',
+        'memorial-passo3-title': '3️⃣ Passo 3: Aplicar Fatores de Ajuste',
+        'memorial-passo3-explicacao': 'Os fatores de insolação e isolamento ajustam a capacidade necessária baseado nas condições do ambiente.',
+        'memorial-fatores-title': 'Fatores utilizados:',
+        'memorial-fatores-insolacao': 'Insolação: Baixa (1.0), Média (1.15), Alta (1.3)',
+        'memorial-fatores-isolamento': 'Isolamento: Bom (0.8), Médio (1.0), Ruim (1.2)',
+        'memorial-passo4-title': '4️⃣ Passo 4: Selecionar Modelo Comercial',
+        'memorial-passo4-explicacao': 'O BTU calculado é arredondado para cima para o modelo comercial mais próximo disponível no mercado.',
+        'memorial-modelos-title': 'Modelos comerciais disponíveis:',
+        'memorial-modelos-lista': '7.000, 9.000, 12.000, 18.000, 24.000, 30.000, 36.000, 48.000, 60.000 BTU',
+        'memorial-passo5-title': '5️⃣ Passo 5: Converter para Potência (kW)',
+        'memorial-passo5-explicacao': 'A conversão para kW é útil para comparar com outros equipamentos elétricos e estimar consumo de energia.',
+        'memorial-resumo-title': '📊 Resumo Calculado',
+        'memorial-resumo-volume': 'Volume do Ambiente:',
+        'memorial-resumo-btu-base': 'BTU Base:',
+        'memorial-resumo-btu-final': 'BTU Recomendado:',
+        'memorial-resumo-potencia': 'Potência (kW):'
     },
     'it-IT': {
         'app-title': '❄️ Dimensionatore Climatizzatore',
@@ -130,7 +158,35 @@ const traducoes = {
         'footer': 'Dimensionatore Climatizzatore - Engenharia Nata © 2025',
         'aria-home': 'Torna alla schermata iniziale',
         'dev-badge-header': '🚧 IN SVILUPPO',
-        'watermark-dev': '🚧 IN SVILUPPO'
+        'watermark-dev': '🚧 IN SVILUPPO',
+        'learn-more': 'SAVERE DI PIÙ!',
+        'back': '← Indietro',
+        'btn-memorial': 'Vedi Memoriale di Calcolo',
+        'memorial-title': '📚 Memoriale di Calcolo - Dimensionamento Climatizzatore',
+        'memorial-intro-title': '🎯 Obiettivo del Dimensionamento',
+        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come viene calcolata la capacità necessaria del climatizzatore (in BTU) per un ambiente residenziale, considerando volume, persone, apparecchi, insolazione e isolamento termico.',
+        'memorial-passo1-title': '1️⃣ Passo 1: Calcolare Volume Ambiente',
+        'memorial-formula': 'Formula:',
+        'memorial-passo1-explicacao': 'Il volume determina la quantità di aria che deve essere raffreddata nell\'ambiente.',
+        'memorial-example': 'Esempio:',
+        'memorial-passo2-title': '2️⃣ Passo 2: Calcolare BTU Base',
+        'memorial-passo2-explicacao': 'Ogni persona e apparecchio elettrico genera calore che deve essere rimosso dal climatizzatore.',
+        'memorial-passo3-title': '3️⃣ Passo 3: Applicare Fattori di Aggiustamento',
+        'memorial-passo3-explicacao': 'I fattori di insolazione e isolamento aggiustano la capacità necessaria in base alle condizioni dell\'ambiente.',
+        'memorial-fatores-title': 'Fattori utilizzati:',
+        'memorial-fatores-insolacao': 'Insolazione: Bassa (1.0), Media (1.15), Alta (1.3)',
+        'memorial-fatores-isolamento': 'Isolamento: Buono (0.8), Medio (1.0), Scarso (1.2)',
+        'memorial-passo4-title': '4️⃣ Passo 4: Selezionare Modello Commerciale',
+        'memorial-passo4-explicacao': 'Il BTU calcolato viene arrotondato per eccesso al modello commerciale più vicino disponibile sul mercato.',
+        'memorial-modelos-title': 'Modelli commerciali disponibili:',
+        'memorial-modelos-lista': '7.000, 9.000, 12.000, 18.000, 24.000, 30.000, 36.000, 48.000, 60.000 BTU',
+        'memorial-passo5-title': '5️⃣ Passo 5: Convertire in Potenza (kW)',
+        'memorial-passo5-explicacao': 'La conversione in kW è utile per confrontare con altri apparecchi elettrici e stimare il consumo di energia.',
+        'memorial-resumo-title': '📊 Riepilogo Calcolato',
+        'memorial-resumo-volume': 'Volume Ambiente:',
+        'memorial-resumo-btu-base': 'BTU Base:',
+        'memorial-resumo-btu-final': 'BTU Consigliato:',
+        'memorial-resumo-potencia': 'Potenza (kW):'
     }
 };
 
@@ -304,6 +360,11 @@ function atualizarResultados() {
     
     // Atualiza lista de modelos comerciais com destaque para o recomendado
     atualizarModelosComerciais(resultado.btuRecomendado);
+    
+    // Atualiza o memorial se estiver visível
+    if (typeof atualizarMemorialComValores === 'function') {
+        atualizarMemorialComValores();
+    }
 }
 
 /**
@@ -596,6 +657,23 @@ document.addEventListener('DOMContentLoaded', function() {
             inputAlturaInicial.value = formatarDecimal(valorInicial, 1);
         }
     }
+    
+    // Configurar memorial de cálculo
+    const btnMemorial = document.getElementById('btnMemorial');
+    const btnFecharMemorial = document.getElementById('btnFecharMemorial');
+    const btnVoltarMemorial = document.querySelectorAll('.btn-voltar-memorial');
+    
+    if (btnMemorial) {
+        btnMemorial.addEventListener('click', toggleMemorial);
+    }
+    
+    if (btnFecharMemorial) {
+        btnFecharMemorial.addEventListener('click', toggleMemorial);
+    }
+    
+    btnVoltarMemorial.forEach(btn => {
+        btn.addEventListener('click', toggleMemorial);
+    });
     
     // Calcular resultados iniciais
     atualizarResultados();

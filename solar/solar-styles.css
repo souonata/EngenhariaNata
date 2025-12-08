@@ -2,10 +2,8 @@
    SOLAR - Estilos Específicos do Dimensionamento Solar
    ============================================
    
-   NOTA: Os estilos padrão de controles (sliders, inputs, botões, radio buttons)
-   foram movidos para assets/css/controls-styles.css para reutilização.
-   
-   Este arquivo contém apenas estilos específicos do Solar que não são genéricos.
+   Este arquivo contém estilos específicos do Solar.
+   Estilos padrão de controles estão em assets/css/controls-styles.css.
    ============================================ */
 
 /* ============================================
@@ -27,21 +25,47 @@ body {
     /* Verde Engenharia Nata */
     background: var(--site-bg, #4e7262);
     min-height: 100vh;
-    padding: 8px;
-    /* Use unified site bottom padding to keep the home button clear of footer */
+    padding-top: 8px;
+    padding-right: 8px;
     padding-bottom: var(--site-bottom-padding, 110px);
+    padding-left: 0;
     overflow-x: hidden;
     width: 100%;
     position: relative;
 }
 
-/* Home button moved to shared-styles.css — per-page overrides below */
+/* Variáveis CSS do tema Solar */
 :root { 
     --home-bg: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%); 
     --home-shadow: rgba(102,126,234,0.4); 
     --home-size: 50px; 
     --home-size-mobile: 40px;
     --accent-color: #2d9fa3ff;  /* Cor do tema Solar para botões ativos */
+}
+
+/* ============================================
+   AJUSTES DE LARGURA DOS CAMPOS DE INPUT
+   ============================================ */
+/* Largura dos campos de input baseada no valor máximo do slider + 2 caracteres */
+/* sliderConsumo: max=9999 (4 caracteres) → 6 caracteres */
+#inputConsumo {
+    max-width: 6ch; /* 6 caracteres */
+    min-width: 4ch;
+    width: 6ch;
+}
+
+/* sliderAutonomia: max=10 (2 caracteres) → 5 caracteres */
+#inputAutonomia {
+    max-width: 5ch; /* 5 caracteres */
+    min-width: 3ch;
+    width: 5ch;
+}
+
+/* sliderVidaUtil: max=25 (2 caracteres para litio) → 5 caracteres */
+#inputVidaUtil {
+    max-width: 5ch; /* 5 caracteres */
+    min-width: 3ch;
+    width: 5ch;
 }
 
 /* ============================================
@@ -65,15 +89,6 @@ header {
     padding: 8px 0;
 }
 
-/* language selector layout centralized in assets/css/shared-styles.css */
-
-
-/* flag and language text styling centralized in assets/css/shared-styles.css */
-
-/* language button visuals centralized in assets/css/shared-styles.css
-   this file kept only page-level variables (eg. --home-bg) and layout.
-   Solar used .btn-idioma/.texto-idioma — shared-styles provides aliases so
-   markup remains compatible without per-page duplication. */
 
 header h1 {
     font-size: 1.4rem;
@@ -89,9 +104,6 @@ header h1 {
 /* ============================================
    SEÇÃO DE CONTROLES
    ============================================ */
-/* Card styles moved to shared-styles.css */
-
-/* Input groups moved to shared-styles.css */
 
 /* Input numérico estilizado */
 .wrapper-numero {
@@ -124,11 +136,9 @@ header h1 {
     font-weight: 600;
 }
 
-/* Sliders, controls, and value displays moved to shared-styles.css */
 
 
 
-/* Estilos de radio buttons movidos para assets/css/controls-styles.css */
 /* Os estilos globais de .grupo-radio, .opcao-radio, .cartao-radio estão em controls-styles.css */
 /* Mantendo apenas estilos específicos do Solar se necessário */
 
@@ -136,6 +146,44 @@ header h1 {
 .icone-radio {
     font-size: 1.2rem;
     margin-bottom: 0;
+}
+
+/* Container para rótulo de bateria com múltiplas linhas */
+.rotulo-radio-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+
+.rotulo-radio-nome {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #333;
+    line-height: 1.2;
+}
+
+.rotulo-radio-tipo {
+    font-size: 0.85rem;
+    color: #666;
+    line-height: 1.2;
+}
+
+.rotulo-radio-especs {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    margin-top: 4px;
+    font-size: 0.65rem;
+    color: #999;
+    line-height: 1.1;
+    font-weight: 400;
+}
+
+.espec-item {
+    font-weight: 400;
 }
 
 /* ============================================

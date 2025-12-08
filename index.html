@@ -17,25 +17,57 @@
     
     <!-- SEO Meta Tags -->
     <title>Engenharia NATA - Apps Web Educativos de Engenharia e Finanças</title>
-    <meta name="description" content="Portfólio de apps web educativos: calculadora de empréstimos, dimensionamento solar, cálculo de hélice, bitola de fios, ar condicionado e aquecedor solar. 100% JavaScript puro, bilíngue (PT/IT), mobile-first.">
-    <meta name="keywords" content="engenharia, calculadora, empréstimos, solar, fotovoltaico, hélice, bitola, fios elétricos, ar condicionado, aquecedor solar, JavaScript, apps web, educação">
+    <meta name="description" content="Portfólio de apps web educativos: calculadora de empréstimos, dimensionamento de energia solar, cálculo de hélice, bitola de fios, ar condicionado e aquecedor solar. 100% JavaScript puro, bilíngue (PT/IT), mobile-first.">
+    <meta name="keywords" content="engenharia, calculadora, empréstimos, energia solar, fotovoltaico, hélice, bitola, fios elétricos, ar condicionado, aquecedor solar, JavaScript, apps web, educação">
     <meta name="author" content="Engenharia NATA">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://engnata.eu/">
+    <meta name="language" content="Portuguese, Italian">
+    <meta name="revisit-after" content="7 days">
+    <link rel="canonical" href="https://engnata.infinityfree.me/">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://engnata.eu/">
+    <meta property="og:url" content="https://engnata.infinityfree.me/">
     <meta property="og:title" content="Engenharia NATA - Apps Web Educativos">
     <meta property="og:description" content="Portfólio de apps web educativos para engenharia e finanças. Calculadoras práticas e interativas.">
     <meta property="og:locale" content="pt_BR">
     <meta property="og:locale:alternate" content="it_IT">
+    <meta property="og:site_name" content="Engenharia NATA">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://engnata.eu/">
+    <meta property="twitter:url" content="https://engnata.infinityfree.me/">
     <meta property="twitter:title" content="Engenharia NATA - Apps Web Educativos">
     <meta property="twitter:description" content="Portfólio de apps web educativos para engenharia e finanças. Calculadoras práticas e interativas.">
+    
+    <!-- Structured Data (JSON-LD) para SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Engenharia NATA",
+        "url": "https://engnata.infinityfree.me/",
+        "alternateName": "engnata.eu",
+        "description": "Portfólio de apps web educativos para engenharia e finanças",
+        "inLanguage": ["pt-BR", "it-IT"],
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://engnata.infinityfree.me/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Engenharia NATA",
+        "url": "https://engnata.eu/",
+        "logo": "https://engnata.infinityfree.me/favicon.svg",
+        "description": "Apps web educativos de engenharia e finanças",
+        "sameAs": []
+    }
+    </script>
     
     <!-- Carrega o arquivo CSS com controle de versão -->
     <!-- Mude ?v=1.0.0 para ?v=1.0.1 quando atualizar o CSS -->
@@ -144,7 +176,7 @@
                     <span class="app-name" data-i18n="app-mutuo">Mutuo</span>
                 </a>
 
-                <!-- Ícone do aplicativo Solar -->
+                <!-- Ícone do aplicativo Energia Solar -->
                 <a href="solar/solar.html" class="app-icon">
                     <div class="icon icon-dev">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -155,11 +187,11 @@
                                 </linearGradient>
                             </defs>
                             <rect width="60" height="60" rx="12" fill="url(#gradient-solar)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">☀️</text>
+                            <text x="30" y="40" font-size="28" text-anchor="middle">🔋</text>
                         </svg>
                         <span class="dev-badge" data-i18n="dev-badge">DEV</span>
                     </div>
-                    <span class="app-name" data-i18n="app-solar">Solar</span>
+                    <span class="app-name" data-i18n="app-solar">Energia Solar</span>
                 </a>
 
                 <!-- Ícone do aplicativo Bitola -->
@@ -173,7 +205,7 @@
                                 </linearGradient>
                             </defs>
                             <rect width="60" height="60" rx="12" fill="url(#gradient-bitola)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">⚡</text>
+                            <text x="30" y="40" font-size="28" text-anchor="middle">🔌</text>
                         </svg>
                     </div>
                     <span class="app-name" data-i18n="app-bitola">Bitola</span>
@@ -277,11 +309,11 @@
                 <a href="helice/helice.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
             </div>
             
-            <!-- App: Solar -->
+            <!-- App: Energia Solar -->
             <div class="app-card">
                 <div class="app-card-header">
-                    <span class="app-icon-large">☀️</span>
-                    <h3><a href="solar/solar.html" data-i18n="app-solar-title">Solar - Dimensionamento Fotovoltaico</a></h3>
+                    <span class="app-icon-large">🔋</span>
+                    <h3><a href="solar/solar.html" data-i18n="app-solar-title">Energia Solar - Dimensionamento Fotovoltaico</a></h3>
                 </div>
                 <p class="app-description" data-i18n="app-solar-description">Dimensionamento completo de sistemas fotovoltaicos off-grid. Calcula número de painéis solares, capacidade de baterias (AGM e LiFePO4), inversor necessário e autonomia do sistema. Inclui página de configuração personalizável para ajustar preços e especificações técnicas.</p>
                 <a href="solar/solar.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
@@ -290,7 +322,7 @@
             <!-- App: Bitola -->
             <div class="app-card">
                 <div class="app-card-header">
-                    <span class="app-icon-large">⚡</span>
+                    <span class="app-icon-large">🔌</span>
                     <h3><a href="bitola/bitola.html" data-i18n="app-bitola-title">Bitola - Calculadora de Fios Elétricos</a></h3>
                 </div>
                 <p class="app-description" data-i18n="app-bitola-description">Calculadora de bitola de fios elétricos para circuitos CC e CA. Considera queda de tensão, corrente e distância. Seleciona automaticamente a bitola comercial padrão brasileiro (NBR 5410) que atende aos requisitos de segurança e eficiência.</p>

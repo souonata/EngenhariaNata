@@ -237,7 +237,31 @@ const traducoes = {
         'kg': 'kg',
         'unidades': 'unidades',
         'dias': 'dias',
-        'vezes-ano': 'vezes/ano'
+        'vezes-ano': 'vezes/ano',
+        // Memorial
+        'memorial-title': '📚 Memorial de Cálculo - Fazenda Auto-Sustentável',
+        'btn-memorial': 'Ver Memorial de Cálculo',
+        'memorial-intro-title': '🎯 Objetivo do Dimensionamento',
+        'memorial-intro-text': 'Este memorial explica passo a passo como é calculado o dimensionamento de uma fazenda auto-sustentável, incluindo área necessária, quantidade de plantas e animais, frequência de plantio/colheita e reprodução para alimentar uma família.',
+        'memorial-passo1-title': '1️⃣ Passo 1: Calcular Consumo Total',
+        'memorial-formula': 'Fórmula:',
+        'memorial-passo1-explicacao': 'O consumo total é calculado multiplicando o consumo diário por pessoa pelo número de pessoas e pelos dias do ano.',
+        'memorial-example': 'Exemplo:',
+        'memorial-passo2-title': '2️⃣ Passo 2: Calcular Área Necessária para Plantas',
+        'memorial-passo2-explicacao': 'A área necessária é calculada dividindo o consumo anual total pela produção anual por metro quadrado de cada tipo de planta.',
+        'memorial-passo3-title': '3️⃣ Passo 3: Calcular Quantidade de Plantas',
+        'memorial-passo3-explicacao': 'A quantidade de plantas é calculada multiplicando a área necessária pela densidade de plantio específica de cada tipo de planta.',
+        'memorial-passo4-title': '4️⃣ Passo 4: Calcular Quantidade de Animais',
+        'memorial-passo4-explicacao': 'A quantidade de animais é calculada baseada no tipo de produção: diária (ovos, leite) ou por ciclo (carne).',
+        'memorial-passo5-title': '5️⃣ Passo 5: Calcular Frequência de Plantio',
+        'memorial-passo5-explicacao': 'A frequência de plantio é determinada pelo ciclo de crescimento de cada tipo de planta para manter produção contínua.',
+        'memorial-resumo-title': '📊 Resumo Calculado',
+        'memorial-resumo-area-plantas': 'Área Total Plantas:',
+        'memorial-resumo-area-animais': 'Área Total Animais:',
+        'memorial-resumo-area-total': 'Área Total:',
+        'learn-more': 'SAIBA MAIS!',
+        'back': '← Voltar',
+        'back-to-calculator': 'Voltar para a Calculadora'
     },
     'it-IT': {
         'app-title': '🌾 Dimensionatore di Fattoria Auto-Sostenibile',
@@ -297,7 +321,31 @@ const traducoes = {
         'kg': 'kg',
         'unidades': 'unità',
         'dias': 'giorni',
-        'vezes-ano': 'volte/anno'
+        'vezes-ano': 'volte/anno',
+        // Memorial
+        'memorial-title': '📚 Memoriale di Calcolo - Fattoria Auto-Sostenibile',
+        'btn-memorial': 'Vedi Memoriale di Calcolo',
+        'memorial-intro-title': '🎯 Obiettivo del Dimensionamento',
+        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come viene calcolato il dimensionamento di una fattoria auto-sostenibile, inclusa l\'area necessaria, la quantità di piante e animali, la frequenza di semina/raccolta e riproduzione per nutrire una famiglia.',
+        'memorial-passo1-title': '1️⃣ Passo 1: Calcolare Consumo Totale',
+        'memorial-formula': 'Formula:',
+        'memorial-passo1-explicacao': 'Il consumo totale viene calcolato moltiplicando il consumo giornaliero per persona per il numero di persone e per i giorni dell\'anno.',
+        'memorial-example': 'Esempio:',
+        'memorial-passo2-title': '2️⃣ Passo 2: Calcolare Area Necessaria per Piante',
+        'memorial-passo2-explicacao': 'L\'area necessaria viene calcolata dividendo il consumo annuale totale per la produzione annuale per metro quadrato di ogni tipo di pianta.',
+        'memorial-passo3-title': '3️⃣ Passo 3: Calcolare Quantità di Piante',
+        'memorial-passo3-explicacao': 'La quantità di piante viene calcolata moltiplicando l\'area necessaria per la densità di semina specifica di ogni tipo di pianta.',
+        'memorial-passo4-title': '4️⃣ Passo 4: Calcolare Quantità di Animali',
+        'memorial-passo4-explicacao': 'La quantità di animali viene calcolata in base al tipo di produzione: giornaliera (uova, latte) o per ciclo (carne).',
+        'memorial-passo5-title': '5️⃣ Passo 5: Calcolare Frequenza di Semina',
+        'memorial-passo5-explicacao': 'La frequenza di semina è determinata dal ciclo di crescita di ogni tipo di pianta per mantenere una produzione continua.',
+        'memorial-resumo-title': '📊 Riepilogo Calcolato',
+        'memorial-resumo-area-plantas': 'Area Totale Piante:',
+        'memorial-resumo-area-animais': 'Area Totale Animali:',
+        'memorial-resumo-area-total': 'Area Totale:',
+        'learn-more': 'SAIBA MAIS!',
+        'back': '← Indietro',
+        'back-to-calculator': 'Torna al Calcolatore'
     }
 };
 
@@ -608,6 +656,184 @@ function atualizarResultados() {
 }
 
 // ============================================
+// MEMORIAL DE CÁLCULO
+// ============================================
+
+function atualizarMemorialComValores() {
+    const textos = traducoes[idiomaAtual] || traducoes['pt-BR'];
+    
+    const quantidadePessoas = parseInt(document.getElementById('inputPessoas').value) || 4;
+    const consumoPlantasDiario = parseFloat(document.getElementById('inputConsumoPlantas').value) || 0.5;
+    const consumoProteinasDiario = parseFloat(document.getElementById('inputConsumoProteinas').value) || 0.5;
+    
+    // Coletar plantas selecionadas
+    const plantasSelecionadas = {
+        frutas: [],
+        verduras: [],
+        legumes: []
+    };
+    
+    document.querySelectorAll('.checkbox-planta:checked').forEach(cb => {
+        const tipo = cb.dataset.tipo;
+        const nome = cb.dataset.nome;
+        plantasSelecionadas[tipo].push(nome);
+    });
+    
+    // Coletar animais selecionados
+    const animaisSelecionados = [];
+    document.querySelectorAll('.checkbox-animal:checked').forEach(cb => {
+        animaisSelecionados.push(cb.dataset.nome);
+    });
+    
+    const temPlantas = plantasSelecionadas.frutas.length > 0 || 
+                       plantasSelecionadas.verduras.length > 0 || 
+                       plantasSelecionadas.legumes.length > 0;
+    const temAnimais = animaisSelecionados.length > 0;
+    
+    if (!temPlantas && !temAnimais) {
+        return;
+    }
+    
+    // Calcular áreas
+    let areaTotalPlantas = 0;
+    let areaTotalAnimais = 0;
+    
+    const totalItensPlantas = plantasSelecionadas.frutas.length + 
+                              plantasSelecionadas.verduras.length + 
+                              plantasSelecionadas.legumes.length;
+    
+    const temGalinhas = animaisSelecionados.includes('galinha');
+    const outrosAnimais = animaisSelecionados.filter(a => a !== 'galinha');
+    const totalOutrosAnimais = outrosAnimais.length;
+    
+    const consumoDiarioPorItemPlanta = totalItensPlantas > 0 ? consumoPlantasDiario / totalItensPlantas : 0;
+    
+    const dadosGalinha = temGalinhas ? DADOS_ANIMAIS['galinha'] : null;
+    const consumoGalinhaPorPessoa = temGalinhas ? 2 * dadosGalinha.producaoPorUnidade : 0;
+    const consumoRestanteProteina = Math.max(0, consumoProteinasDiario - consumoGalinhaPorPessoa);
+    const consumoDiarioPorItemAnimal = totalOutrosAnimais > 0 ? consumoRestanteProteina / totalOutrosAnimais : 0;
+    
+    // Calcular plantas
+    Object.keys(plantasSelecionadas).forEach(tipo => {
+        plantasSelecionadas[tipo].forEach(nome => {
+            const area = calcularAreaNecessaria(tipo, nome, quantidadePessoas, consumoDiarioPorItemPlanta);
+            areaTotalPlantas += area;
+        });
+    });
+    
+    // Calcular animais
+    animaisSelecionados.forEach(nome => {
+        let consumoDiarioPorPessoa;
+        
+        if (nome === 'galinha') {
+            consumoDiarioPorPessoa = consumoGalinhaPorPessoa;
+        } else {
+            consumoDiarioPorPessoa = consumoDiarioPorItemAnimal;
+        }
+        
+        const quantidade = calcularAnimaisNecessarios(nome, quantidadePessoas, consumoDiarioPorPessoa);
+        const area = calcularAreaAnimais(nome, quantidade);
+        areaTotalAnimais += area;
+    });
+    
+    const areaTotal = areaTotalPlantas + areaTotalAnimais;
+    
+    // Calcular consumo anual total
+    const consumoAnualPlantas = consumoPlantasDiario * quantidadePessoas * 365;
+    const consumoAnualProteinas = consumoProteinasDiario * quantidadePessoas * 365;
+    
+    // Atualizar exemplos no memorial
+    const exemploConsumo = `${consumoPlantasDiario.toFixed(1)} kg/dia/pessoa × ${quantidadePessoas} pessoas × 365 dias = ${consumoAnualPlantas.toFixed(0)} kg/ano`;
+    
+    // Exemplo de área (usar primeira planta selecionada se houver)
+    let exemploArea = '-';
+    if (totalItensPlantas > 0) {
+        const primeiraPlanta = plantasSelecionadas.frutas[0] || plantasSelecionadas.verduras[0] || plantasSelecionadas.legumes[0];
+        const tipoPrimeira = plantasSelecionadas.frutas[0] ? 'frutas' : (plantasSelecionadas.verduras[0] ? 'verduras' : 'legumes');
+        const dados = DADOS_PLANTAS[tipoPrimeira][primeiraPlanta];
+        const consumoAnualItem = consumoDiarioPorItemPlanta * quantidadePessoas * 365;
+        const areaItem = consumoAnualItem / dados.producao;
+        exemploArea = `${consumoAnualItem.toFixed(0)} kg/ano ÷ ${dados.producao} kg/m²·ano = ${areaItem.toFixed(1)} m²`;
+    }
+    
+    // Exemplo de quantidade de plantas
+    let exemploQuantidade = '-';
+    if (totalItensPlantas > 0) {
+        const primeiraPlanta = plantasSelecionadas.frutas[0] || plantasSelecionadas.verduras[0] || plantasSelecionadas.legumes[0];
+        const tipoPrimeira = plantasSelecionadas.frutas[0] ? 'frutas' : (plantasSelecionadas.verduras[0] ? 'verduras' : 'legumes');
+        const dados = DADOS_PLANTAS[tipoPrimeira][primeiraPlanta];
+        const consumoAnualItem = consumoDiarioPorItemPlanta * quantidadePessoas * 365;
+        const areaItem = Math.max(consumoAnualItem / dados.producao, dados.areaMin);
+        const quantidadeItem = calcularQuantidadePlantas(tipoPrimeira, primeiraPlanta, areaItem);
+        const densidade = tipoPrimeira === 'frutas' ? (1 / dados.areaMin) : 4;
+        exemploQuantidade = `${areaItem.toFixed(1)} m² × ${densidade} plantas/m² = ${quantidadeItem} plantas`;
+    }
+    
+    // Exemplo de animais
+    let exemploAnimais = '-';
+    if (temGalinhas) {
+        const ovosPorDiaTotal = 2 * quantidadePessoas;
+        const ovosPorDiaPorGalinha = dadosGalinha.producaoDiaria;
+        const quantidadeGalinhas = Math.ceil(ovosPorDiaTotal / ovosPorDiaPorGalinha);
+        exemploAnimais = `Para ${2} ovos/dia/pessoa: ${ovosPorDiaTotal} ovos/dia ÷ ${ovosPorDiaPorGalinha.toFixed(1)} ovos/dia/galinha = ${quantidadeGalinhas} galinhas`;
+    } else if (totalOutrosAnimais > 0) {
+        const primeiroAnimal = outrosAnimais[0];
+        const dados = DADOS_ANIMAIS[primeiroAnimal];
+        const consumoAnualItem = consumoDiarioPorItemAnimal * quantidadePessoas * 365;
+        if (dados.producaoDiaria > 0) {
+            const producaoDiariaPorAnimal = dados.producaoDiaria * dados.producaoPorUnidade;
+            const quantidade = Math.ceil((consumoDiarioPorItemAnimal * quantidadePessoas) / producaoDiariaPorAnimal);
+            exemploAnimais = `${(consumoDiarioPorItemAnimal * quantidadePessoas).toFixed(2)} kg/dia ÷ ${producaoDiariaPorAnimal.toFixed(2)} kg/dia/animal = ${quantidade} ${primeiroAnimal}`;
+        } else {
+            const producaoAnual = dados.producaoCiclo * (365 / dados.cicloReprodutivo);
+            const quantidade = Math.ceil(consumoAnualItem / producaoAnual);
+            exemploAnimais = `${consumoAnualItem.toFixed(0)} kg/ano ÷ ${producaoAnual.toFixed(0)} kg/ano/animal = ${quantidade} ${primeiroAnimal}`;
+        }
+    }
+    
+    // Exemplo de frequência
+    let exemploFrequencia = '-';
+    if (totalItensPlantas > 0) {
+        const primeiraPlanta = plantasSelecionadas.frutas[0] || plantasSelecionadas.verduras[0] || plantasSelecionadas.legumes[0];
+        const tipoPrimeira = plantasSelecionadas.frutas[0] ? 'frutas' : (plantasSelecionadas.verduras[0] ? 'verduras' : 'legumes');
+        const dados = DADOS_PLANTAS[tipoPrimeira][primeiraPlanta];
+        const freq = calcularFrequenciaPlantio(dados.ciclo);
+        exemploFrequencia = `Ciclo de ${dados.ciclo} dias → plantio a cada ${freq.frequencia} dias → ${freq.vezesAno} vezes por ano`;
+    }
+    
+    // Atualizar HTML do memorial
+    document.getElementById('memorial-exemplo-consumo').textContent = exemploConsumo;
+    document.getElementById('memorial-exemplo-area-plantas').textContent = exemploArea;
+    document.getElementById('memorial-exemplo-quantidade-plantas').textContent = exemploQuantidade;
+    document.getElementById('memorial-exemplo-animais').textContent = exemploAnimais;
+    document.getElementById('memorial-exemplo-frequencia').textContent = exemploFrequencia;
+    
+    // Atualizar resumo
+    document.getElementById('resumo-area-plantas').textContent = areaTotalPlantas.toFixed(1) + ' m²';
+    document.getElementById('resumo-area-animais').textContent = areaTotalAnimais.toFixed(1) + ' m²';
+    document.getElementById('resumo-area-total').textContent = areaTotal.toFixed(1) + ' m²';
+}
+
+function toggleMemorial() {
+    const memorialSection = document.getElementById('memorialSection');
+    const entradasSection = document.querySelector('section.card:not(.memorial-section)');
+    const resultadosSection = document.getElementById('secaoResultados');
+    
+    if (memorialSection.style.display === 'none' || memorialSection.style.display === '') {
+        memorialSection.style.display = 'block';
+        if (entradasSection) entradasSection.style.display = 'none';
+        if (resultadosSection) resultadosSection.style.display = 'none';
+        atualizarMemorialComValores();
+    } else {
+        memorialSection.style.display = 'none';
+        if (entradasSection) entradasSection.style.display = 'block';
+        if (resultadosSection && resultadosSection.innerHTML.trim() !== '') {
+            resultadosSection.style.display = 'block';
+        }
+    }
+}
+
+// ============================================
 // TRADUÇÃO
 // ============================================
 
@@ -750,6 +976,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Botões de idioma
     document.getElementById('btnPortugues').addEventListener('click', () => trocarIdioma('pt-BR'));
     document.getElementById('btnItaliano').addEventListener('click', () => trocarIdioma('it-IT'));
+    
+    // Event listeners para o memorial de cálculo
+    document.getElementById('btnMemorial')?.addEventListener('click', toggleMemorial);
+    document.getElementById('btnFecharMemorial')?.addEventListener('click', toggleMemorial);
+    document.querySelectorAll('.btn-voltar-memorial').forEach(btn => {
+        btn.addEventListener('click', toggleMemorial);
+    });
     
     // Aplicar traduções iniciais
     aplicarTraducoes();

@@ -18,11 +18,11 @@
     <meta name="keywords" content="aquecedor solar, dimensionamento solar térmico, coletores solares, boiler solar, aquecimento água, energia solar térmica, classes energéticas">
     <meta name="author" content="Engenharia NATA">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://engnata.eu/aquecimento/aquecimento.html">
+    <link rel="canonical" href="https://engnata.infinityfree.me/aquecimento/aquecimento.html">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://engnata.eu/aquecimento/aquecimento.html">
+    <meta property="og:url" content="https://engnata.infinityfree.me/aquecimento/aquecimento.html">
     <meta property="og:title" content="Dimensionador de Aquecedor Solar Térmico - Engenharia NATA">
     <meta property="og:description" content="Dimensionador completo de sistemas de aquecimento solar térmico com cálculo de coletores, boiler e potência necessária.">
     <meta property="og:locale" content="pt_BR">
@@ -30,7 +30,7 @@
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary">
-    <meta property="twitter:url" content="https://engnata.eu/aquecimento/aquecimento.html">
+    <meta property="twitter:url" content="https://engnata.infinityfree.me/aquecimento/aquecimento.html">
     <meta property="twitter:title" content="Dimensionador de Aquecedor Solar Térmico">
     <meta property="twitter:description" content="Dimensionador completo de sistemas de aquecimento solar térmico com cálculo de coletores, boiler e potência necessária.">
     <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.0">
@@ -308,10 +308,128 @@
         </section>
 
         <!-- ========================================== -->
+        <!-- SEÇÃO DE MEMORIAL DE CÁLCULO -->
+        <!-- Começa escondida (display: none) -->
+        <!-- Aparece quando o usuário clica em "SAIBA MAIS" -->
+        <!-- ========================================== -->
+        <div id="memorialSection" class="card memorial-section" style="display: none;">
+            <div class="memorial-header">
+                <h2 data-i18n="memorial-title">📚 Memorial de Cálculo - Aquecedor Solar Térmico</h2>
+                <button id="btnFecharMemorial" class="btn-fechar-memorial" data-i18n-title="back-to-calculator">
+                    <span data-i18n="back">← Voltar</span>
+                </button>
+            </div>
+            
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-intro-title">🎯 Objetivo do Dimensionamento</h3>
+                <p data-i18n="memorial-intro-text">Este memorial explica passo a passo como é calculado o dimensionamento de um sistema de aquecimento solar térmico, incluindo área de coletores, volume do boiler, número de painéis e potência necessária para água de consumo e/ou aquecimento ambiente.</p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo1-title">1️⃣ Passo 1: Calcular Demanda de Energia para Água</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Consumo Diário (L) = Número de Pessoas × Consumo por Pessoa</strong></p>
+                    <p><strong>ΔT = Temperatura Desejada - Temperatura Água Fria</strong></p>
+                    <p><strong>Energia Necessária (kWh) = Volume (L) × Densidade (kg/L) × Calor Específico (Wh/kg°C) × ΔT ÷ 1000</strong></p>
+                </div>
+                <p data-i18n="memorial-passo1-explicacao">A energia necessária para aquecer a água depende do consumo diário, da diferença de temperatura e das propriedades físicas da água.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-agua">4 pessoas × 50 L/pessoa = 200 L/dia, ΔT = 40°C → 200 × 1.0 × 1.163 × 40 ÷ 1000 = 9.3 kWh/dia</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo2-title">2️⃣ Passo 2: Calcular Demanda de Energia para Aquecimento da Casa</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Volume Casa (m³) = Área (m²) × Altura (m)</strong></p>
+                    <p><strong>Consumo Anual Total = Consumo Específico (kWh/m²·ano) × Área × Fator Altura</strong></p>
+                    <p><strong>Consumo Anual Aquecimento = Consumo Anual Total × Fração Aquecimento</strong></p>
+                    <p><strong>Demanda Diária = Consumo Anual Aquecimento ÷ Dias de Aquecimento</strong></p>
+                </div>
+                <p data-i18n="memorial-passo2-explicacao">A demanda de aquecimento da casa é calculada baseada na classe energética, área, altura e condições climáticas locais.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-casa">100 m², classe D (1.75 kWh/m²·ano), altura 2.7m → consumo anual 175 kWh → demanda diária 1.17 kWh/dia</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Dimensionar Volume do Boiler</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Volume Boiler (L) = Consumo Diário (L) × Dias de Autonomia</strong></p>
+                </div>
+                <p data-i18n="memorial-passo3-explicacao">O volume do boiler deve ser suficiente para armazenar água quente para os dias sem sol (autonomia).</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-boiler">200 L/dia × 3 dias = 600 L</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo4-title">4️⃣ Passo 4: Calcular Eficiência do Coletor</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Parâmetro Perda = (Temperatura Média Fluido - Temperatura Ambiente) ÷ Irradiação Pico</strong></p>
+                    <p><strong>Eficiência = Eficiência Óptica - (Coeficiente Perda Linear × Parâmetro Perda)</strong></p>
+                </div>
+                <p data-i18n="memorial-passo4-explicacao">A eficiência do coletor varia com a temperatura de operação e as condições ambientais. Quanto maior a diferença de temperatura, menor a eficiência.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-eficiencia">Temperatura média 42°C, ambiente 18°C, irradiação 800 W/m² → eficiência ≈ 65%</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo5-title">5️⃣ Passo 5: Calcular Área de Coletores</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Área Coletor (m²) = Demanda Total (kWh/dia) ÷ (Irradiação Diária (kWh/m²) × Eficiência)</strong></p>
+                </div>
+                <p data-i18n="memorial-passo5-explicacao">A área de coletores necessária depende da demanda total de energia, da irradiação solar disponível e da eficiência do coletor.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-area">10.5 kWh/dia ÷ (4.0 kWh/m² × 0.65) = 4.0 m²</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo6-title">6️⃣ Passo 6: Calcular Número de Painéis</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Número de Painéis = Arredondar para Cima(Área Coletor ÷ Área por Painel)</strong></p>
+                </div>
+                <p data-i18n="memorial-passo6-explicacao">O número de painéis é calculado dividindo a área total necessária pela área de cada painel, arredondando para cima.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-paineis">4.0 m² ÷ 2.0 m²/painel = 2 painéis</span></p>
+            </div>
+
+            <div class="resumo-calculado">
+                <h3 data-i18n="memorial-resumo-title">📊 Resumo Calculado</h3>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-demanda-agua">Demanda Água:</span>
+                    <span id="resumo-demanda-agua">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-demanda-casa">Demanda Casa:</span>
+                    <span id="resumo-demanda-casa">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-area-coletor">Área Coletor:</span>
+                    <span id="resumo-area-coletor">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-paineis">Número de Painéis:</span>
+                    <span id="resumo-paineis">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-volume-boiler">Volume Boiler:</span>
+                    <span id="resumo-volume-boiler">-</span>
+                </div>
+            </div>
+
+            <button class="btn-voltar-memorial" data-i18n-title="back-to-calculator">
+                <span data-i18n="back">← Voltar</span>
+            </button>
+        </div>
+
+        <!-- ========================================== -->
         <!-- SEÇÃO DE RESULTADOS -->
         <!-- ========================================== -->
-        <section class="card resultados">
-            <h2 data-i18n="resultados-title">📊 Resultados do Dimensionamento</h2>
+        <section class="card resultados" id="resultadosSection">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h2 style="flex: 1;" data-i18n="resultados-title">📊 Resultados do Dimensionamento</h2>
+                <button id="btnMemorial" class="btn-help" title="Ver Memorial de Cálculo" data-i18n-title="btn-memorial" tabindex="10">
+                    <span class="texto-saiba-mais" data-i18n="learn-more">SAIBA MAIS!</span>
+                </button>
+            </div>
             
             <div class="resultado-item destaque">
                 <span class="label-resultado" data-i18n="resultado-area-coletor">Área de Coletores:</span>

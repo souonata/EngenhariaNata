@@ -4,8 +4,8 @@ Uma pequena coleção de apps web educativos para estudar conceitos práticos de
 
 - **💰 Mutuo** — Calculadora de empréstimos (SAC, Price, Americano) com gráficos interativos e tabela de amortização completa.
 - **🚤 Helice** — Calculadora de passo de hélice para barcos de lazer, com análise de slip e gráficos de relação velocidade × passo.
-- **☀️ Solar** — Dimensionamento fotovoltaico off-grid (painéis, baterias AGM/LiFePO4, inversor) com página de configuração personalizável e memorial de cálculo didático.
-- **⚡ Bitola** — Calculadora de bitola de fios elétricos para circuitos CC e CA, com seleção automática de bitola comercial padrão brasileiro.
+- **🔋 Energia Solar** — Dimensionamento fotovoltaico off-grid (painéis, baterias AGM/LiFePO4, inversor) com página de configuração personalizável e memorial de cálculo didático.
+- **🔌 Bitola** — Calculadora de bitola de fios elétricos para circuitos CC e CA, com seleção automática de bitola comercial padrão brasileiro.
 - **❄️ Ar Condicionado** — Dimensionador de ar condicionado com cálculo de BTU baseado em área, altura, número de pessoas e condições ambientais.
 - **☀️ Aquecedor Solar** — Dimensionador completo de sistemas de aquecimento solar térmico (coletores, boiler, potência) para água de consumo e aquecimento ambiente.
 - **🌾 Fazenda** — Planejador de fazenda auto-sustentável com cálculo de espaço, quantidade de plantas e animais, calendário de plantio/colheita e frequência de reprodução.
@@ -20,13 +20,15 @@ Uma pequena coleção de apps web educativos para estudar conceitos práticos de
 
 ## 🌐 Site Online
 
-O site está disponível em:
-- **https://engnata.eu** (domínio principal)
-- **https://engnata.infinityfree.me** (domínio alternativo)
+O site está disponível online em:
+- **https://engnata.eu** (domínio principal - redireciona para o hosting)
+- **https://engnata.infinityfree.me** (endereço de hosting onde o site está hospedado)
+
+**Nota:** O domínio `engnata.eu` aponta para o servidor de hosting `engnata.infinityfree.me`. Ambos os endereços funcionam, mas o domínio principal é `engnata.eu`.
 
 ## 🚀 Como Usar
 
-1. **Acesse o site** em https://engnata.eu ou abra `index.html` localmente no seu navegador.
+1. **Acesse o site** em https://engnata.eu (ou https://engnata.infinityfree.me) ou abra `index.html` localmente no seu navegador.
 2. **Escolha o app** que quer testar na tela inicial.
 3. **Troque o idioma** usando o seletor no topo (Português 🇧🇷 / Italiano 🇮🇹).
 
@@ -39,7 +41,7 @@ A página `solar/config.html` permite ajustar:
 
 As configurações são salvas automaticamente em `localStorage` sob a chave `configSolar`.
 
-O app Solar inclui um **Memorial de Cálculo** completo (botão "SAIBA MAIS!") que explica passo a passo como são calculados todos os componentes do sistema, com fórmulas, exemplos práticos e resumo dos cálculos atuais.
+O app Energia Solar inclui um **Memorial de Cálculo** completo (botão "SAIBA MAIS!") que explica passo a passo como são calculados todos os componentes do sistema, com fórmulas, exemplos práticos e resumo dos cálculos atuais.
 
 ## 📚 Documentação
 

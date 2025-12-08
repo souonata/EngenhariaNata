@@ -3,48 +3,42 @@
 // Permite customizar valores de componentes (UI de administração)
 // ============================================
 //
-// Comentários didáticos em Português - Objetivo do arquivo
-// -------------------------------------------------------
-// Esta página permite que um usuário (ou mantenedor) ajuste os valores
-// padrão usados pela calculadora solar: potência/preço de painéis,
-// tensão, capacidade, peso e preço das baterias (AGM / LiFePO4).
+// Esta página permite ajustar os valores padrão usados pela calculadora solar:
+// potência/preço de painéis, tensão, capacidade, peso e preço das baterias (AGM / LiFePO4).
 //
-// Propósito das funções principais:
-//  - carregarValores(): lê a configuração salva em localStorage
-//    (chave padronizada) ou usa VALORES_PADRAO; aplica valores aos sliders
-//    da interface e atualiza as labels.
-//  - salvarValores(): serializa os valores atuais dos sliders e salva em
-//    localStorage para serem usados pela calculadora principal (solar.html).
-//  - restaurarPadroes(): remove a configuração salva, voltando aos defaults
-//    (útil para testes e para restaurar comportamento original).
+// Funções principais:
+//  - carregarValores(): lê a configuração salva em localStorage ou usa VALORES_PADRAO;
+//    aplica valores aos sliders da interface e atualiza as labels.
+//  - salvarValores(): serializa os valores atuais dos sliders e salva em localStorage
+//    para serem usados pela calculadora principal (solar.html).
+//  - restaurarPadroes(): remove a configuração salva, voltando aos valores padrão.
 //
 // Observações:
 //  - O arquivo aceita defaults do SiteConfig (se presente) para manter
 //    consistência com configurações globais do site.
-//  - Mantém compatibilidade entre unidades: capacidade agora é medida
-//    em kWh, mas a UI e calculadora ainda aceitam conversões quando necessário.
+//  - Capacidade é medida em kWh, mas a UI e calculadora aceitam conversões
+//    de Ah para kWh quando necessário.
 
-// Valores padrão (referência 2024)
+// Valores padrão
 const VALORES_PADRAO = {
     potenciaPainel: 400,
     precoPainel: 1200,
-    // AGM (Chumbo-Ácido) - capacity expressed in kWh now
+    // AGM (Chumbo-Ácido) - capacidade em kWh
     tensaoAGM: 12,
     capacidadeAGM: 1.2,   // kWh (~12V x 100Ah)
     precoAGM: 420,
     pesoAGM: 30,
-    // LiFePO4 (Lítio) - common modular off-grid pack: 48V x 100Ah ≈ 4.8 kWh
+    // LiFePO4 (Lítio) - módulo off-grid comum: 48V x 100Ah ≈ 4.8 kWh
     tensaoLitio: 48,
     capacidadeLitio: 4.8, // kWh
     precoLitio: 12000,
     pesoLitio: 60
 };
 
-// Allow site-level defaults (SiteConfig) to override some battery defaults
+// Permite que defaults do SiteConfig sobrescrevam alguns valores padrão de baterias
 const BATTERY_DEFAULTS = (typeof SiteConfig !== 'undefined' && SiteConfig.DEFAULTS && SiteConfig.DEFAULTS.BATTERY) ? SiteConfig.DEFAULTS.BATTERY : { DEFAULT_LFP_KWH: 4.8, DEFAULT_AGM_KWH: 1.2, LFP_MAX_KG: 180, AGM_MAX_KG: 180 };
 
 // Idioma atual (herda do localStorage)
-// Prefer centralized keys via SiteConfig if available
 const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
 const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
 let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');

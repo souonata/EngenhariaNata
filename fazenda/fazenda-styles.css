@@ -262,3 +262,174 @@ footer p {
     }
 }
 
+/* ============================================
+   MEMORIAL DE CÁLCULO
+   ============================================ */
+.memorial-section {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.memorial-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.memorial-header h2 {
+    font-size: 1.2rem;
+    color: var(--accent-color);
+    margin: 0;
+}
+
+.btn-fechar-memorial, .btn-voltar-memorial {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-fechar-memorial:hover, .btn-voltar-memorial:hover {
+    background: var(--accent-secondary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(139, 111, 71, 0.3);
+}
+
+.memorial-item {
+    background: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    border-left: 5px solid var(--accent-color);
+}
+
+.memorial-item h3 {
+    color: var(--accent-color);
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.memorial-item p {
+    margin-bottom: 10px;
+    line-height: 1.8;
+    color: #333;
+}
+
+.formula-box {
+    background: #f5e6d3;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 12px 0;
+    border: 2px solid var(--accent-color);
+}
+
+.formula-box p {
+    margin: 5px 0;
+    font-family: 'Courier New', monospace;
+    color: #1a237e;
+}
+
+.info-box {
+    background: #e8f5e9;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 12px;
+    border-left: 4px solid #4caf50;
+}
+
+.info-box p {
+    margin: 5px 0;
+    color: #2e7d32;
+}
+
+.info-box ul {
+    margin: 8px 0;
+    padding-left: 20px;
+    color: #2e7d32;
+}
+
+.info-box li {
+    margin: 5px 0;
+}
+
+.resumo-calculado {
+    background: #f0f4ff;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 16px;
+    border: 2px solid var(--accent-color);
+}
+
+.resumo-calculado h3 {
+    color: var(--accent-color);
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+}
+
+.resumo-item-calc {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.resumo-item-calc:last-child {
+    border-bottom: none;
+}
+
+.resumo-item-calc span:last-child {
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+.btn-help {
+    background: transparent;
+    border: none;
+    color: var(--accent-color);
+    cursor: pointer;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.btn-help:hover {
+    background: var(--accent-color);
+    color: white;
+    transform: scale(1.05);
+}
+
+.texto-saiba-mais {
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 600px) {
+    .memorial-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .btn-fechar-memorial {
+        width: 100%;
+    }
+}
+

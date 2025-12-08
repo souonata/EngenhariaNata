@@ -21,11 +21,11 @@
     <meta name="keywords" content="calculadora hélice, passo hélice, barco, náutica, RPM, slip, velocidade barco, propulsão náutica">
     <meta name="author" content="Engenharia NATA">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://engnata.eu/helice/helice.html">
+    <link rel="canonical" href="https://engnata.infinityfree.me/helice/helice.html">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://engnata.eu/helice/helice.html">
+    <meta property="og:url" content="https://engnata.infinityfree.me/helice/helice.html">
     <meta property="og:title" content="Calculadora de Hélice - Engenharia NATA">
     <meta property="og:description" content="Calculadora de passo de hélice para barcos de lazer com análise de slip e gráficos interativos.">
     <meta property="og:locale" content="pt_BR">
@@ -33,7 +33,7 @@
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary">
-    <meta property="twitter:url" content="https://engnata.eu/helice/helice.html">
+    <meta property="twitter:url" content="https://engnata.infinityfree.me/helice/helice.html">
     <meta property="twitter:title" content="Calculadora de Hélice">
     <meta property="twitter:description" content="Calculadora de passo de hélice para barcos de lazer com análise de slip e gráficos interativos.">
     
@@ -153,10 +153,98 @@
         </section>
 
         <!-- ========================================== -->
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE MEMORIAL DE CÁLCULO -->
+        <!-- Começa escondida (display: none) -->
+        <!-- Aparece quando o usuário clica em "SAIBA MAIS" -->
+        <!-- ========================================== -->
+        <div id="memorialSection" class="card memorial-section" style="display: none;">
+            <div class="memorial-header">
+                <h2 data-i18n="memorial-title">📚 Memorial de Cálculo - Passo de Hélice</h2>
+                <button id="btnFecharMemorial" class="btn-fechar-memorial" data-i18n-title="back-to-calculator">
+                    <span data-i18n="back">← Voltar</span>
+                </button>
+            </div>
+            
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-intro-title">🎯 Objetivo do Cálculo</h3>
+                <p data-i18n="memorial-intro-text">Este memorial explica passo a passo como é calculado o passo ideal da hélice para barcos de lazer, considerando velocidade desejada, RPM do motor, redução da rabeta e slip.</p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo1-title">1️⃣ Passo 1: Calcular RPM Efetivo na Hélice</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>RPM Hélice = RPM Motor ÷ Redução</strong></p>
+                </div>
+                <p data-i18n="memorial-passo1-explicacao">A rabeta reduz a rotação do motor. Se a redução é 2:1, a hélice gira 2 vezes mais devagar que o motor.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-rpm">Motor 5000 RPM, redução 2:1 → 5000 ÷ 2 = 2500 RPM na hélice</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo2-title">2️⃣ Passo 2: Calcular Passo da Hélice</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Passo (polegadas) = (Velocidade × 1056 × Redução) ÷ (RPM × (1 - Slip))</strong></p>
+                </div>
+                <p data-i18n="memorial-passo2-explicacao">O passo é a distância teórica que a hélice avançaria em uma rotação completa. O slip reduz a eficiência, então usamos (1 - Slip) para compensar.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-passo">25 nós, redução 2:1, 5000 RPM, slip 15% → (25 × 1056 × 2) ÷ (5000 × 0.85) = 12.4 polegadas</span></p>
+                <div class="info-box">
+                    <p><strong data-i18n="memorial-constants">Constantes usadas:</strong></p>
+                    <ul>
+                        <li data-i18n="memorial-constante-1056">1056 = constante de conversão de nós para polegadas/minuto</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Calcular Velocidade Teórica</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Velocidade Teórica (nós) = (Passo × RPM) ÷ (1056 × Redução)</strong></p>
+                </div>
+                <p data-i18n="memorial-passo3-explicacao">A velocidade teórica mostra qual velocidade seria obtida se não houvesse slip. É útil para comparar com a velocidade desejada.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-velocidade">Passo 12.4", 5000 RPM, redução 2:1 → (12.4 × 5000) ÷ (1056 × 2) = 29.4 nós</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-conceitos-title">📖 Conceitos Importantes</h3>
+                <p><strong data-i18n="memorial-slip-title">Slip (Deslizamento):</strong></p>
+                <p data-i18n="memorial-slip-text">O slip é a perda de eficiência entre a hélice e a água. Barcos de lazer típicos têm 10-20% de slip. Quanto menor o slip, mais eficiente a hélice.</p>
+                <p><strong data-i18n="memorial-reducao-title">Redução da Rabeta:</strong></p>
+                <p data-i18n="memorial-reducao-text">Relação entre a rotação do motor e a rotação da hélice. Ex: 2:1 significa que o motor gira 2 vezes para a hélice girar 1 vez. Isso aumenta o torque disponível na hélice.</p>
+            </div>
+
+            <div class="resumo-calculado">
+                <h3 data-i18n="memorial-resumo-title">📊 Resumo Calculado</h3>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-rpm">RPM na Hélice:</span>
+                    <span id="resumo-rpm-helice">2500 rpm</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-passo">Passo Recomendado:</span>
+                    <span id="resumo-passo">12.4"</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-velocidade">Velocidade Teórica:</span>
+                    <span id="resumo-velocidade-teorica">29.4 nós</span>
+                </div>
+            </div>
+
+            <button class="btn-voltar-memorial" data-i18n-title="back-to-calculator">
+                <span data-i18n="back">← Voltar</span>
+            </button>
+        </div>
+
         <!-- RESULTADO -->
         <!-- ========================================== -->
-        <section class="resultado">
-            <h2 data-i18n="resultado-titulo">Resultados</h2>
+        <section class="resultado" id="resultadosSection">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h2 style="flex: 1;" data-i18n="resultado-titulo">Resultados</h2>
+                <button id="btnMemorial" class="btn-help" title="Ver Memorial de Cálculo" data-i18n-title="btn-memorial" tabindex="10">
+                    <span class="texto-saiba-mais" data-i18n="learn-more">SAIBA MAIS!</span>
+                </button>
+            </div>
             <!-- Grade de resultados: Passo, RPM, Velocidade -->
             <div class="grade-resultados">
                 <!-- Passo Recomendado -->

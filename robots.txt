@@ -5,5 +5,5 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://engnata.eu/sitemap.xml
+Sitemap: https://engnata.infinityfree.me/sitemap.xml
 

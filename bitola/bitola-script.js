@@ -466,6 +466,11 @@ function atualizarResultados() {
     correnteCircuito.textContent = formatarNumero(corrente, 2) + ' A';
     quedaReal.textContent = formatarNumero(quedaRealPercentual, 2) + ' %';
     disjuntorComercial.textContent = formatarNumero(disjuntor, 0) + ' A';
+    
+    // Atualiza o memorial se estiver visível
+    if (typeof atualizarMemorialComValores === 'function') {
+        atualizarMemorialComValores();
+    }
 }
 
 /**
@@ -518,7 +523,7 @@ function alternarTipoCorrente() {
  */
 const traducoes = {
     'pt-BR': {
-        'app-title': '⚡ Calculadora de Bitola de Fios',
+        'app-title': '🔌 Calculadora de Bitola de Fios',
         'app-subtitle': 'Área de Seção Mínima para Circuitos CC e CA',
         'label-tipo-corrente': 'Tipo de Corrente',
         'label-potencia': 'Potência Máxima Nominal',
@@ -538,10 +543,39 @@ const traducoes = {
         'resultado-queda-real': 'Queda de Tensão Real:',
         'resultado-disjuntor': 'Disjuntor Comercial Recomendado:',
         'footer': 'Calculadora de Bitola de Fios - Engenharia Nata © 2025',
-        'aria-home': 'Voltar para a tela inicial'
+        'aria-home': 'Voltar para a tela inicial',
+        'learn-more': 'SAIBA MAIS!',
+        'back': '← Voltar',
+        'btn-memorial': 'Ver Memorial de Cálculo',
+        'memorial-title': '📚 Memorial de Cálculo - Bitola de Fios',
+        'memorial-intro-title': '🎯 Objetivo do Cálculo',
+        'memorial-intro-text': 'Este memorial explica passo a passo como é calculada a bitola mínima de fios elétricos para circuitos CC e CA, considerando potência, distância, tensão e queda de tensão máxima permitida.',
+        'memorial-passo1-title': '1️⃣ Passo 1: Calcular Corrente do Circuito',
+        'memorial-formula': 'Fórmula:',
+        'memorial-passo1-explicacao': 'A corrente é calculada dividindo a potência pela tensão. Esta é a corrente que o circuito precisa transportar.',
+        'memorial-example': 'Exemplo:',
+        'memorial-passo2-title': '2️⃣ Passo 2: Calcular Área de Seção Mínima',
+        'memorial-passo2-explicacao': 'A área mínima é calculada considerando a resistividade do cobre, a distância (multiplicada por 2 para ida e volta), a corrente e a queda de tensão máxima permitida.',
+        'memorial-constants': 'Constantes usadas:',
+        'memorial-resistividade': 'ρ (resistividade do cobre) = 0.0175 Ω·mm²/m a 20°C',
+        'memorial-fator-2': 'Fator 2 = considera ida e volta do circuito (dois condutores)',
+        'memorial-passo3-title': '3️⃣ Passo 3: Selecionar Bitola Comercial',
+        'memorial-passo3-explicacao': 'A área mínima calculada é multiplicada por um fator de segurança de 1.25 (25% de margem) e então selecionamos a bitola comercial padrão brasileiro (NBR 5410) que atende ao requisito.',
+        'memorial-bitolas': 'Bitolas comerciais disponíveis:',
+        'memorial-bitolas-lista': '1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240 mm²',
+        'memorial-passo4-title': '4️⃣ Passo 4: Verificar Queda de Tensão Real',
+        'memorial-passo4-explicacao': 'Recalculamos a queda de tensão com a bitola comercial escolhida para verificar se está dentro do limite permitido.',
+        'memorial-passo5-title': '5️⃣ Passo 5: Selecionar Disjuntor Comercial',
+        'memorial-passo5-explicacao': 'O disjuntor é selecionado com base na corrente do circuito, aplicando um fator de segurança de 1.25 e escolhendo o disjuntor comercial padrão que atende ao requisito.',
+        'memorial-resumo-title': '📊 Resumo Calculado',
+        'memorial-resumo-corrente': 'Corrente do Circuito:',
+        'memorial-resumo-area': 'Área Mínima:',
+        'memorial-resumo-bitola': 'Bitola Comercial:',
+        'memorial-resumo-queda': 'Queda Real:',
+        'memorial-resumo-disjuntor': 'Disjuntor:'
     },
     'it-IT': {
-        'app-title': '⚡ Calcolatrice Sezione Cavi',
+        'app-title': '🔌 Calcolatrice Sezione Cavi',
         'app-subtitle': 'Area di Sezione Minima per Circuiti CC e CA',
         'label-tipo-corrente': 'Tipo di Corrente',
         'label-potencia': 'Potenza Massima Nominale',
@@ -561,9 +595,143 @@ const traducoes = {
         'resultado-queda-real': 'Caduta di Tensione Reale:',
         'resultado-disjuntor': 'Interruttore Commerciale Consigliato:',
         'footer': 'Calcolatrice Sezione Cavi - Engenharia Nata © 2025',
-        'aria-home': 'Torna alla schermata iniziale'
+        'aria-home': 'Torna alla schermata iniziale',
+        'learn-more': 'SAVERE DI PIÙ!',
+        'back': '← Indietro',
+        'btn-memorial': 'Vedi Memoriale di Calcolo',
+        'memorial-title': '📚 Memoriale di Calcolo - Sezione Cavi',
+        'memorial-intro-title': '🎯 Obiettivo del Calcolo',
+        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come viene calcolata la sezione minima dei cavi elettrici per circuiti CC e CA, considerando potenza, distanza, tensione e caduta di tensione massima consentita.',
+        'memorial-passo1-title': '1️⃣ Passo 1: Calcolare Corrente del Circuito',
+        'memorial-formula': 'Formula:',
+        'memorial-passo1-explicacao': 'La corrente viene calcolata dividendo la potenza per la tensione. Questa è la corrente che il circuito deve trasportare.',
+        'memorial-example': 'Esempio:',
+        'memorial-passo2-title': '2️⃣ Passo 2: Calcolare Area di Sezione Minima',
+        'memorial-passo2-explicacao': 'L\'area minima viene calcolata considerando la resistività del rame, la distanza (moltiplicata per 2 per andata e ritorno), la corrente e la caduta di tensione massima consentita.',
+        'memorial-constants': 'Costanti utilizzate:',
+        'memorial-resistividade': 'ρ (resistività del rame) = 0.0175 Ω·mm²/m a 20°C',
+        'memorial-fator-2': 'Fattore 2 = considera andata e ritorno del circuito (due conduttori)',
+        'memorial-passo3-title': '3️⃣ Passo 3: Selezionare Sezione Commerciale',
+        'memorial-passo3-explicacao': 'L\'area minima calcolata viene moltiplicata per un fattore di sicurezza di 1.25 (25% di margine) e quindi selezioniamo la sezione commerciale standard brasiliana (NBR 5410) che soddisfa il requisito.',
+        'memorial-bitolas': 'Sezioni commerciali disponibili:',
+        'memorial-bitolas-lista': '1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240 mm²',
+        'memorial-passo4-title': '4️⃣ Passo 4: Verificare Caduta di Tensione Reale',
+        'memorial-passo4-explicacao': 'Ricalcoliamo la caduta di tensione con la sezione commerciale scelta per verificare se è entro il limite consentito.',
+        'memorial-passo5-title': '5️⃣ Passo 5: Selezionare Interruttore Commerciale',
+        'memorial-passo5-explicacao': 'L\'interruttore viene selezionato in base alla corrente del circuito, applicando un fattore di sicurezza di 1.25 e scegliendo l\'interruttore commerciale standard che soddisfa il requisito.',
+        'memorial-resumo-title': '📊 Riepilogo Calcolato',
+        'memorial-resumo-corrente': 'Corrente del Circuito:',
+        'memorial-resumo-area': 'Area Minima:',
+        'memorial-resumo-bitola': 'Sezione Commerciale:',
+        'memorial-resumo-queda': 'Caduta Reale:',
+        'memorial-resumo-disjuntor': 'Interruttore:'
     }
 };
+
+// ============================================
+// FUNÇÕES DO MEMORIAL DE CÁLCULO
+// ============================================
+
+/**
+ * Alterna a exibição do memorial de cálculo
+ * Esconde a seção de resultados e mostra o memorial, ou vice-versa
+ */
+function toggleMemorial() {
+    const memorialSection = document.getElementById('memorialSection');
+    const resultadosSection = document.getElementById('resultadosSection');
+    
+    if (!memorialSection) {
+        console.error('memorialSection não encontrado');
+        return;
+    }
+    
+    if (memorialSection.style.display === 'none' || memorialSection.style.display === '') {
+        // Atualizar memorial com valores atuais
+        atualizarMemorialComValores();
+        memorialSection.style.display = 'block';
+        if (resultadosSection) resultadosSection.style.display = 'none';
+        // Rolar para o topo da página
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        memorialSection.style.display = 'none';
+        if (resultadosSection) resultadosSection.style.display = 'block';
+    }
+}
+
+/**
+ * Atualiza o memorial de cálculo com os valores atuais dos cálculos
+ * Preenche os exemplos e o resumo com os valores reais calculados
+ */
+function atualizarMemorialComValores() {
+    // Obter valores atuais
+    let valorPotenciaTexto = inputPotencia.value.toString().trim();
+    let multiplicadorPotencia = 1;
+    if (valorPotenciaTexto.toLowerCase().endsWith('k')) {
+        valorPotenciaTexto = valorPotenciaTexto.slice(0, -1).trim();
+        multiplicadorPotencia = 1000;
+    }
+    const potencia = obterValorNumericoFormatado(valorPotenciaTexto) * multiplicadorPotencia;
+    const comprimento = obterValorNumericoFormatado(inputComprimento.value);
+    const tensao = obterTensaoAtual();
+    const quedaPercentual = obterValorNumericoFormatado(inputQuedaTensao.value);
+    
+    // Validação básica
+    if (potencia <= 0 || comprimento <= 0 || tensao <= 0 || quedaPercentual <= 0) {
+        return;
+    }
+    
+    // Calcula os valores
+    const corrente = calcularCorrente(potencia, tensao);
+    const areaMin = calcularAreaMinima(comprimento, corrente, tensao, quedaPercentual);
+    const bitola = selecionarBitolaComercial(areaMin);
+    const quedaRealPercentual = calcularQuedaReal(comprimento, corrente, tensao, bitola);
+    const disjuntor = selecionarDisjuntorComercial(corrente);
+    
+    // Atualiza exemplos no memorial
+    const exemploCorrente = document.getElementById('memorial-exemplo-corrente');
+    if (exemploCorrente) {
+        exemploCorrente.textContent = `${formatarNumero(potencia, 0)}W ÷ ${formatarNumero(tensao, 0)}V = ${formatarNumero(corrente, 2)}A`;
+    }
+    
+    const exemploArea = document.getElementById('memorial-exemplo-area');
+    if (exemploArea) {
+        const quedaVolts = (quedaPercentual / 100) * tensao;
+        exemploArea.textContent = `(2 × 0.0175 × ${formatarNumero(comprimento, 0)}m × ${formatarNumero(corrente, 2)}A) ÷ ${formatarNumero(quedaVolts, 2)}V = ${formatarNumero(areaMin, 2)} mm²`;
+    }
+    
+    const exemploBitola = document.getElementById('memorial-exemplo-bitola');
+    if (exemploBitola) {
+        const areaComSeguranca = areaMin * 1.25;
+        exemploBitola.textContent = `Área mínima ${formatarNumero(areaMin, 2)} mm² × 1.25 = ${formatarNumero(areaComSeguranca, 2)} mm² → Bitola comercial: ${formatarNumero(bitola, 1)} mm²`;
+    }
+    
+    const exemploQueda = document.getElementById('memorial-exemplo-queda');
+    if (exemploQueda) {
+        exemploQueda.textContent = `Com bitola ${formatarNumero(bitola, 1)} mm² → queda real = ${formatarNumero(quedaRealPercentual, 2)}% (dentro do limite de ${formatarNumero(quedaPercentual, 1)}%)`;
+    }
+    
+    const exemploDisjuntor = document.getElementById('memorial-exemplo-disjuntor');
+    if (exemploDisjuntor) {
+        const correnteComSeguranca = corrente * 1.25;
+        exemploDisjuntor.textContent = `Corrente ${formatarNumero(corrente, 2)}A × 1.25 = ${formatarNumero(correnteComSeguranca, 2)}A → Disjuntor comercial: ${formatarNumero(disjuntor, 0)}A`;
+    }
+    
+    // Atualiza resumo calculado
+    const resumoCorrente = document.getElementById('resumo-corrente');
+    if (resumoCorrente) resumoCorrente.textContent = `${formatarNumero(corrente, 2)} A`;
+    
+    const resumoArea = document.getElementById('resumo-area');
+    if (resumoArea) resumoArea.textContent = `${formatarNumero(areaMin, 2)} mm²`;
+    
+    const resumoBitola = document.getElementById('resumo-bitola');
+    if (resumoBitola) resumoBitola.textContent = `${formatarNumero(bitola, 1)} mm²`;
+    
+    const resumoQueda = document.getElementById('resumo-queda');
+    if (resumoQueda) resumoQueda.textContent = `${formatarNumero(quedaRealPercentual, 2)}%`;
+    
+    const resumoDisjuntor = document.getElementById('resumo-disjuntor');
+    if (resumoDisjuntor) resumoDisjuntor.textContent = `${formatarNumero(disjuntor, 0)} A`;
+}
 
 /**
  * Troca o idioma da interface
@@ -821,6 +989,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event listeners para botões de idioma
     document.getElementById('btnPortugues')?.addEventListener('click', () => trocarIdioma('pt-BR'));
     document.getElementById('btnItaliano')?.addEventListener('click', () => trocarIdioma('it-IT'));
+    
+    // Configurar memorial de cálculo
+    const btnMemorial = document.getElementById('btnMemorial');
+    const btnFecharMemorial = document.getElementById('btnFecharMemorial');
+    const btnVoltarMemorial = document.querySelectorAll('.btn-voltar-memorial');
+    
+    if (btnMemorial) {
+        btnMemorial.addEventListener('click', toggleMemorial);
+    }
+    
+    if (btnFecharMemorial) {
+        btnFecharMemorial.addEventListener('click', toggleMemorial);
+    }
+    
+    btnVoltarMemorial.forEach(btn => {
+        btn.addEventListener('click', toggleMemorial);
+    });
     
     // Inicializa o idioma
     trocarIdioma(idiomaAtual);

@@ -13,24 +13,24 @@
     <link rel="apple-touch-icon" href="../favicon.svg">
     
     <!-- SEO Meta Tags -->
-    <title>Dimensionamento Solar Fotovoltaico Off-Grid - Painéis e Baterias | Engenharia NATA</title>
-    <meta name="description" content="Dimensionamento completo de sistemas fotovoltaicos off-grid. Calcula número de painéis solares, capacidade de baterias (AGM e LiFePO4), inversor necessário e autonomia do sistema.">
+    <title>Energia Solar - Dimensionamento Fotovoltaico Off-Grid - Painéis e Baterias | Engenharia NATA</title>
+    <meta name="description" content="Dimensionamento completo de sistemas de energia solar fotovoltaicos off-grid. Calcula número de painéis solares, capacidade de baterias (AGM e LiFePO4), inversor necessário e autonomia do sistema.">
     <meta name="keywords" content="dimensionamento solar, fotovoltaico, painéis solares, baterias AGM, LiFePO4, inversor, off-grid, energia solar, autonomia">
     <meta name="author" content="Engenharia NATA">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://engnata.eu/solar/solar.html">
+    <link rel="canonical" href="https://engnata.infinityfree.me/solar/solar.html">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://engnata.eu/solar/solar.html">
-    <meta property="og:title" content="Dimensionamento Solar Fotovoltaico - Engenharia NATA">
+    <meta property="og:url" content="https://engnata.infinityfree.me/solar/solar.html">
+    <meta property="og:title" content="Energia Solar - Dimensionamento Fotovoltaico - Engenharia NATA">
     <meta property="og:description" content="Dimensionamento completo de sistemas fotovoltaicos off-grid com cálculo de painéis, baterias e inversor.">
     <meta property="og:locale" content="pt_BR">
     <meta property="og:locale:alternate" content="it_IT">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary">
-    <meta property="twitter:url" content="https://engnata.eu/solar/solar.html">
+    <meta property="twitter:url" content="https://engnata.infinityfree.me/solar/solar.html">
     <meta property="twitter:title" content="Dimensionamento Solar Fotovoltaico">
     <meta property="twitter:description" content="Dimensionamento completo de sistemas fotovoltaicos off-grid com cálculo de painéis, baterias e inversor.">
         <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.0">
@@ -52,7 +52,7 @@
                     <span class="texto-idioma">Italiano</span>
                 </button>
             </div>
-            <h1 data-i18n="app-title">☀️ Solar</h1>
+            <h1 data-i18n="app-title">🔋 Energia Solar</h1>
             <p class="subtitulo" data-i18n="app-subtitle">Dimensionamento de Sistema Fotovoltaico</p>
             <div class="dev-badge-header">
                 <span class="dev-badge-text" data-i18n="dev-badge-header">🚧 EM DESENVOLVIMENTO</span>
@@ -66,7 +66,7 @@
         <!-- ========================================== -->
         <div id="memorialSection" class="card memorial-section" style="display: none;">
             <div class="memorial-header">
-                <h2 data-i18n="memorial-title">📚 Memorial de Cálculo - Dimensionamento Solar</h2>
+                <h2 data-i18n="memorial-title">📚 Memorial de Cálculo - Energia Solar</h2>
                 <!-- Botão para fechar o memorial e voltar para a calculadora -->
                 <button id="btnFecharMemorial" class="btn-fechar-memorial" data-i18n-title="back-to-calculator">
                     <span data-i18n="back">← Voltar</span>
@@ -140,13 +140,13 @@
                     <p><strong>Potência Necessária (W) = Energia a Gerar (kWh/dia) × 1000 ÷ HSP (horas de sol pleno)</strong></p>
                     <p><strong>Número de Painéis = Arredondar para Cima(Potência Necessária ÷ Potência por Painel)</strong></p>
                 </div>
-                <p data-i18n="memorial-passo5-explicacao">Os painéis precisam gerar energia suficiente para recarregar as baterias, considerando perdas do sistema (cabo, controlador, inversor). Usamos HSP (Horas de Sol Pleno) para estimar a geração diária.</p>
+                <p data-i18n="memorial-passo5-explicacao">Os painéis precisam gerar energia suficiente para recarregar as baterias, considerando perdas do sistema (cabo, MPPT, inversor). Usamos HSP (Horas de Sol Pleno) para estimar a geração diária.</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-paineis">17.3 kWh utilizáveis, eficiência 80%, HSP 5h → 17.3÷0.8 = 21.6 kWh/dia → 21.6×1000÷5 = 4320W → 4320÷400W = 10.8 → 11 painéis</span></p>
                 <div class="info-box">
                     <p><strong data-i18n="memorial-constants">Constantes usadas:</strong></p>
                     <ul>
                         <li data-i18n="memorial-hsp">HSP (Horas de Sol Pleno) = 5 horas/dia (padrão para Brasil)</li>
-                        <li data-i18n="memorial-eficiencia">Eficiência do Sistema = 80% (considera perdas de 20% em cabos, controlador e inversor)</li>
+                        <li data-i18n="memorial-eficiencia">Eficiência do Sistema = 80% (considera perdas de 20% em cabos, MPPT e inversor)</li>
                     </ul>
                 </div>
             </div>
@@ -270,14 +270,28 @@
                         <input type="radio" name="tipoBateria" value="chumbo" checked>
                         <div class="cartao-radio">
                             <span class="icone-radio">🔋</span>
-                            <span class="rotulo-radio" data-i18n="opt-chumbo">Chumbo-Ácido</span>
+                            <div class="rotulo-radio-container">
+                                <span class="rotulo-radio-nome">AGM</span>
+                                <span class="rotulo-radio-tipo" data-i18n="opt-chumbo">Chumbo-Ácido</span>
+                                <div class="rotulo-radio-especs" id="especsAGM">
+                                    <span class="espec-item">12V & 100Ah</span>
+                                    <span class="espec-item">1.2 kWh</span>
+                                </div>
+                            </div>
                         </div>
                     </label>
                     <label class="opcao-radio">
                         <input type="radio" name="tipoBateria" value="litio">
                         <div class="cartao-radio">
                             <span class="icone-radio">⚡</span>
-                            <span class="rotulo-radio" data-i18n="opt-litio">Lítio (LiFePO4)</span>
+                            <div class="rotulo-radio-container">
+                                <span class="rotulo-radio-nome">LiFePO4</span>
+                                <span class="rotulo-radio-tipo" data-i18n="opt-litio">Lítio</span>
+                                <div class="rotulo-radio-especs" id="especsLitio">
+                                    <span class="espec-item">48V & 100Ah</span>
+                                    <span class="espec-item">4.8 kWh</span>
+                                </div>
+                            </div>
                         </div>
                     </label>
                 </div>
@@ -311,6 +325,14 @@
             </div>
             
             <div class="grade-resultados">
+                <!-- Preço Total -->
+                <div class="item-resultado estimativa-preco">
+                    <span class="icone-resultado">💰</span>
+                    <span class="rotulo-resultado" data-i18n="res-estimativa">Custo Total</span>
+                    <span id="resPrecoEstimado" class="valor-resultado">R$ 15.000</span>
+                    <a href="config.html" class="icone-info" title="Configurações de preços">ⓘ</a>
+                </div>
+
                 <!-- Placas -->
                 <div class="item-resultado">
                     <div class="linha-resultado">
@@ -363,20 +385,12 @@
                     </div>
                     <span class="rotulo-resultado" data-i18n="res-peso">Peso Estimado</span>
                 </div>
-
-                <!-- Preço Total -->
-                <div class="item-resultado estimativa-preco">
-                    <span class="icone-resultado">💰</span>
-                    <span class="rotulo-resultado" data-i18n="res-estimativa">Custo Total</span>
-                    <span id="resPrecoEstimado" class="valor-resultado">R$ 15.000</span>
-                    <a href="config.html" class="icone-info" title="Configurações de preços">ⓘ</a>
-                </div>
             </div>
         </section>
     </div>
 
     <footer>
-        <p data-i18n="footer">Solar - Engenharia NATA © 2025</p>
+        <p data-i18n="footer">Energia Solar - Engenharia NATA © 2025</p>
     </footer>
 
     <a href="../index.html" class="home-button-fixed" aria-label="Voltar à tela inicial">

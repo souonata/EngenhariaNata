@@ -657,65 +657,117 @@ function atualizarResultados() {
     document.getElementById('potenciaCasa').textContent = formatarNumero(Math.round(resultado.potenciaCasa_W)) + ' W';
     
     // Atualizar memorial de cálculo
-    atualizarMemorial(resultado, numeroPessoas, tipoUso, latitude, altitude, areaCasa, alturaCasa, classeEnergetica, incluirAgua, incluirCasa);
+    if (typeof atualizarMemorialComValores === 'function') {
+        atualizarMemorialComValores();
+    }
 }
 
 // ============================================
-// MEMORIAL DE CÁLCULO
+// FUNÇÕES DO MEMORIAL DE CÁLCULO
 // ============================================
+
+/**
+ * Alterna a exibição do memorial de cálculo
+ * Esconde a seção de resultados e mostra o memorial, ou vice-versa
+ */
 function toggleMemorial() {
-    const memorial = document.getElementById('memorial-calculo');
-    const toggle = document.getElementById('memorial-toggle');
-    if (memorial.style.display === 'none') {
-        memorial.style.display = 'block';
-        toggle.textContent = '▲';
+    const memorialSection = document.getElementById('memorialSection');
+    const resultadosSection = document.getElementById('resultadosSection');
+    
+    if (!memorialSection) {
+        console.error('memorialSection não encontrado');
+        return;
+    }
+    
+    if (memorialSection.style.display === 'none' || memorialSection.style.display === '') {
+        // Atualizar memorial com valores atuais
+        atualizarMemorialComValores();
+        memorialSection.style.display = 'block';
+        if (resultadosSection) resultadosSection.style.display = 'none';
+        // Rolar para o topo da página
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-        memorial.style.display = 'none';
-        toggle.textContent = '▼';
+        memorialSection.style.display = 'none';
+        if (resultadosSection) resultadosSection.style.display = 'block';
     }
 }
 
-function atualizarMemorial(resultado, numeroPessoas, tipoUso, latitude, altitude, areaCasa, alturaCasa, classeEnergetica, incluirAgua, incluirCasa) {
+/**
+ * Atualiza o memorial de cálculo com os valores atuais dos cálculos
+ * Preenche os exemplos e o resumo com os valores reais calculados
+ */
+function atualizarMemorialComValores() {
+    // Obter valores atuais
+    const inputPessoas = document.getElementById('inputPessoas');
+    const inputLatitude = document.getElementById('inputLatitude');
+    const inputAltitude = document.getElementById('inputAltitude');
+    const inputAreaCasa = document.getElementById('inputAreaCasa');
+    const inputAlturaCasa = document.getElementById('inputAlturaCasa');
+    const inputDiasAutonomia = document.getElementById('inputDiasAutonomia');
+    
+    const sliderPessoas = document.getElementById('sliderPessoas');
+    const sliderLatitude = document.getElementById('sliderLatitude');
+    const sliderAltitude = document.getElementById('sliderAltitude');
+    const sliderAreaCasa = document.getElementById('sliderAreaCasa');
+    const sliderAlturaCasa = document.getElementById('sliderAlturaCasa');
+    const sliderDiasAutonomia = document.getElementById('sliderDiasAutonomia');
+    
+    // Lê valores dos inputs ou sliders
+    let numeroPessoas = parseInt(sliderPessoas.value) || 4;
+    if (inputPessoas && inputPessoas.value && !isNaN(parseInt(inputPessoas.value))) {
+        numeroPessoas = parseInt(inputPessoas.value);
+    }
+    
+    let latitude = parseFloat(sliderLatitude.value) || -23.5;
+    if (inputLatitude && inputLatitude.value) {
+        const valorConvertido = converterParaNumero(inputLatitude.value);
+        if (!isNaN(valorConvertido)) {
+            latitude = valorConvertido;
+        }
+    }
+    
+    let altitude = parseFloat(sliderAltitude.value) || 0;
+    if (inputAltitude && inputAltitude.value) {
+        const valorConvertido = converterParaNumero(inputAltitude.value);
+        if (!isNaN(valorConvertido)) {
+            altitude = valorConvertido;
+        }
+    }
+    
+    let areaCasa = parseFloat(sliderAreaCasa.value) || 100;
+    if (inputAreaCasa && inputAreaCasa.value) {
+        const valorConvertido = converterParaNumero(inputAreaCasa.value);
+        if (!isNaN(valorConvertido) && valorConvertido > 0) {
+            areaCasa = valorConvertido;
+        }
+    }
+    
+    let alturaCasa = parseFloat(sliderAlturaCasa.value) || 2.7;
+    if (inputAlturaCasa && inputAlturaCasa.value) {
+        const valorConvertido = converterParaNumero(inputAlturaCasa.value);
+        if (!isNaN(valorConvertido) && valorConvertido > 0) {
+            alturaCasa = valorConvertido;
+        }
+    }
+    
+    let diasAutonomia = parseInt(sliderDiasAutonomia.value) || 3;
+    if (inputDiasAutonomia && inputDiasAutonomia.value && !isNaN(parseInt(inputDiasAutonomia.value))) {
+        diasAutonomia = parseInt(inputDiasAutonomia.value);
+    }
+    
+    // Obtém valores dos radio buttons e checkboxes
+    const tipoUso = document.querySelector('input[name="tipoUso"]:checked')?.value || 'Padrao';
+    const modeloColetor = document.querySelector('input[name="modeloColetor"]:checked')?.value || 'Modelo_B';
+    const classeEnergetica = document.querySelector('input[name="classeEnergetica"]:checked')?.value || 'D';
+    const incluirAgua = document.getElementById('checkboxAgua')?.checked || false;
+    const incluirCasa = document.getElementById('checkboxCasa')?.checked || false;
+    
+    // Calcula os valores
+    const resultado = calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, modeloColetor, areaCasa, alturaCasa, classeEnergetica, diasAutonomia, incluirAgua, incluirCasa);
     const textos = traducoes[idiomaAtual] || traducoes['pt-BR'];
-    const memorialDiv = document.getElementById('memorial-conteudo');
     
-    if (!memorialDiv) return;
-    
-    let html = '<div style="font-size: 0.85rem; line-height: 1.6;">';
-    
-    // Dados de entrada
-    html += '<h3 style="color: #2d9fa3ff; margin-top: 0; font-size: 1rem;">📥 Dados de Entrada</h3>';
-    html += '<ul style="margin: 8px 0; padding-left: 20px;">';
+    // Atualiza exemplos no memorial
     if (incluirAgua) {
-        html += `<li>Número de pessoas: ${numeroPessoas}</li>`;
-        html += `<li>Tipo de uso: ${tipoUso}</li>`;
-    }
-    html += `<li>Latitude: ${formatarDecimal(latitude, 1)}°</li>`;
-    html += `<li>Altitude: ${formatarNumero(Math.round(altitude))} m</li>`;
-    if (incluirCasa) {
-        html += `<li>Área da casa: ${formatarDecimal(areaCasa, 1)} m²</li>`;
-        html += `<li>Altura do pé direito: ${formatarDecimal(alturaCasa, 1)} m</li>`;
-        html += `<li>Classe energética: ${classeEnergetica}</li>`;
-    }
-    if (incluirAgua || incluirCasa) {
-        html += `<li>Dias de autonomia: ${diasAutonomia} dias</li>`;
-    }
-    html += '</ul>';
-    
-    // Constantes físicas
-    html += '<h3 style="color: #2d9fa3ff; margin-top: 16px; font-size: 1rem;">⚙️ Constantes Físicas</h3>';
-    html += '<ul style="margin: 8px 0; padding-left: 20px;">';
-    html += `<li>Densidade da água: ${CONSTANTS.densidade_agua} kg/L</li>`;
-    html += `<li>Calor específico da água: ${CONSTANTS.calor_especifico_agua} Wh/kg°C</li>`;
-    html += `<li>Irradiação horária pico média: ${CONSTANTS.irradiacao_horaria_pico_media} W/m²</li>`;
-    html += `<li>Irradiação solar diária (H_g): ${formatarDecimal(resultado.H_g_diaria, 2)} kWh/m²/dia</li>`;
-    html += `<li>Horas de sol efetivo: ${resultado.horasSolEfetivo} h/dia</li>`;
-    html += `<li>Fator de segurança: ${resultado.fatorSeguranca}</li>`;
-    html += '</ul>';
-    
-    // Cálculo para água
-    if (incluirAgua) {
-        html += '<h3 style="color: #2d9fa3ff; margin-top: 16px; font-size: 1rem;">💧 Cálculo - Água de Consumo</h3>';
         const dadosConsumo = MATRIZ_CONSUMO[tipoUso] || MATRIZ_CONSUMO["Padrao"];
         const consumoPorPessoa = dadosConsumo.consumo_por_pessoa;
         const T_desejada = dadosConsumo.T_desejada;
@@ -724,18 +776,18 @@ function atualizarMemorial(resultado, numeroPessoas, tipoUso, latitude, altitude
         const E_nec_Wh = V_diario * CONSTANTS.densidade_agua * CONSTANTS.calor_especifico_agua * Delta_T_agua;
         const E_nec_kWh_calc = E_nec_Wh / 1000.0;
         
-        html += '<ul style="margin: 8px 0; padding-left: 20px;">';
-        html += `<li>Consumo diário: ${numeroPessoas} × ${consumoPorPessoa} L/pessoa = ${formatarDecimal(V_diario, 1)} L/dia</li>`;
-        html += `<li>ΔT água: ${formatarDecimal(T_desejada, 1)}°C - ${formatarDecimal(resultado.T_agua_fria, 1)}°C = ${formatarDecimal(Delta_T_agua, 1)}°C</li>`;
-        html += `<li>E_nec = ${formatarDecimal(V_diario, 1)} × ${CONSTANTS.densidade_agua} × ${CONSTANTS.calor_especifico_agua} × ${formatarDecimal(Delta_T_agua, 1)} = ${formatarDecimal(E_nec_kWh_calc, 2)} kWh/dia</li>`;
-        html += `<li>Área coletor (água): A = (${formatarDecimal(E_nec_kWh_calc, 2)} × ${resultado.fatorSeguranca}) / (${formatarDecimal(resultado.H_g_diaria, 2)} × ${formatarDecimal(resultado.eficienciaColetor/100, 2)}) = ${formatarDecimal(resultado.areaAgua_m2, 2)} m²</li>`;
-        html += `<li>Volume boiler (água): ${formatarDecimal(V_diario, 1)} L/dia × ${diasAutonomia} dias = ${formatarDecimal(resultado.volumeBoilerAgua_L, 1)} L</li>`;
-        html += '</ul>';
+        const exemploAgua = document.getElementById('memorial-exemplo-agua');
+        if (exemploAgua) {
+            exemploAgua.textContent = `${numeroPessoas} pessoas × ${formatarDecimal(consumoPorPessoa, 0)} L/pessoa = ${formatarDecimal(V_diario, 0)} L/dia, ΔT = ${formatarDecimal(Delta_T_agua, 1)}°C → ${formatarDecimal(V_diario, 0)} × 1.0 × 1.163 × ${formatarDecimal(Delta_T_agua, 1)} ÷ 1000 = ${formatarDecimal(E_nec_kWh_calc, 2)} kWh/dia`;
+        }
+        
+        const exemploBoiler = document.getElementById('memorial-exemplo-boiler');
+        if (exemploBoiler) {
+            exemploBoiler.textContent = `${formatarDecimal(V_diario, 0)} L/dia × ${diasAutonomia} dias = ${formatarDecimal(resultado.volumeBoilerAgua_L, 0)} L`;
+        }
     }
     
-    // Cálculo para casa
     if (incluirCasa) {
-        html += '<h3 style="color: #2d9fa3ff; margin-top: 16px; font-size: 1rem;">🏠 Cálculo - Aquecimento da Casa</h3>';
         const consumoEspecifico = CONSUMO_ESPECIFICO_CLASSE[classeEnergetica] || CONSUMO_ESPECIFICO_CLASSE["D"];
         const alturaPadrao = 2.7;
         let fatorAltura = 1.0;
@@ -748,38 +800,47 @@ function atualizarMemorial(resultado, numeroPessoas, tipoUso, latitude, altitude
         const consumoAnualAquecimento = consumoAnualTotal * fracaoAquecimento;
         const diasAquecimento = 150;
         const demandaCasa = consumoAnualAquecimento / diasAquecimento;
-        const fatorTemporal = resultado.horasSolEfetivo / 24.0;
         
-        html += '<ul style="margin: 8px 0; padding-left: 20px;">';
-        const labelClasseMemorial = classeEnergetica.startsWith('A') ? `A${classeEnergetica.slice(1)}` : classeEnergetica;
-        html += `<li>Consumo específico (classe ${labelClasseMemorial}): ${formatarDecimal(consumoEspecifico, 2)} kWh/m²·ano</li>`;
-        if (fatorAltura > 1.0) {
-            html += `<li>Fator altura (${formatarDecimal(alturaCasa, 1)}m > ${alturaPadrao}m): ${formatarDecimal(fatorAltura, 2)}</li>`;
+        const exemploCasa = document.getElementById('memorial-exemplo-casa');
+        if (exemploCasa) {
+            exemploCasa.textContent = `${formatarDecimal(areaCasa, 0)} m², classe ${classeEnergetica} (${formatarDecimal(consumoEspecifico, 2)} kWh/m²·ano), altura ${formatarDecimal(alturaCasa, 1)}m → consumo anual ${formatarDecimal(consumoAnualTotal, 0)} kWh → demanda diária ${formatarDecimal(demandaCasa, 2)} kWh/dia`;
         }
-        html += `<li>Consumo anual total: ${formatarDecimal(consumoEspecifico, 2)} × ${formatarDecimal(areaCasa, 1)} × ${formatarDecimal(fatorAltura, 2)} = ${formatarDecimal(consumoAnualTotal, 2)} kWh/ano</li>`;
-        html += `<li>Fração para aquecimento (${(fracaoAquecimento * 100).toFixed(0)}%): ${formatarDecimal(consumoAnualTotal, 2)} × ${formatarDecimal(fracaoAquecimento, 2)} = ${formatarDecimal(consumoAnualAquecimento, 2)} kWh/ano</li>`;
-        html += `<li>Demanda diária: ${formatarDecimal(consumoAnualAquecimento, 2)} / ${diasAquecimento} dias = ${formatarDecimal(demandaCasa, 2)} kWh/dia</li>`;
-        html += `<li>Fator temporal (${resultado.horasSolEfetivo}h/24h): ${formatarDecimal(fatorTemporal, 3)}</li>`;
-        html += `<li>Área coletor (casa): A = (${formatarDecimal(demandaCasa, 2)} × ${resultado.fatorSeguranca}) / (${formatarDecimal(resultado.H_g_diaria, 2)} × ${formatarDecimal(resultado.eficienciaColetor/100, 2)} × ${formatarDecimal(fatorTemporal, 3)}) = ${formatarDecimal(resultado.areaCasa_m2, 2)} m²</li>`;
-        html += '</ul>';
     }
     
-    // Resultado final
-    html += '<h3 style="color: #2d9fa3ff; margin-top: 16px; font-size: 1rem;">📊 Resultado Final</h3>';
-    html += '<ul style="margin: 8px 0; padding-left: 20px;">';
-    if (incluirAgua && incluirCasa) {
-        html += `<li>Área total: ${formatarDecimal(resultado.areaAgua_m2, 2)} m² (água) + ${formatarDecimal(resultado.areaCasa_m2, 2)} m² (casa) = ${formatarDecimal(resultado.areaColetor_m2, 2)} m²</li>`;
-    } else if (incluirAgua) {
-        html += `<li>Área total: ${formatarDecimal(resultado.areaAgua_m2, 2)} m²</li>`;
-    } else {
-        html += `<li>Área total: ${formatarDecimal(resultado.areaCasa_m2, 2)} m²</li>`;
+    const exemploEficiencia = document.getElementById('memorial-exemplo-eficiencia');
+    if (exemploEficiencia) {
+        const T_media_fluido = incluirAgua ? (resultado.T_agua_fria + 20) : resultado.T_ambiente_inverno;
+        exemploEficiencia.textContent = `Temperatura média ${formatarDecimal(T_media_fluido, 1)}°C, ambiente ${formatarDecimal(resultado.T_ambiente_inverno, 1)}°C, irradiação 800 W/m² → eficiência ≈ ${formatarDecimal(resultado.eficienciaColetor, 0)}%`;
     }
-    html += `<li>Número de painéis: ${formatarDecimal(resultado.areaColetor_m2, 2)} / ${formatarDecimal(resultado.areaPainel_m2, 2)} = ${formatarDecimal(resultado.areaColetor_m2 / resultado.areaPainel_m2, 2)} → ${resultado.numeroPaineis} painéis</li>`;
-    html += `<li>Eficiência do coletor: ${formatarDecimal(resultado.eficienciaColetor, 1)}%</li>`;
-    html += '</ul>';
     
-    html += '</div>';
-    memorialDiv.innerHTML = html;
+    const exemploArea = document.getElementById('memorial-exemplo-area');
+    if (exemploArea) {
+        exemploArea.textContent = `${formatarDecimal(resultado.demandaTotal_kWh, 2)} kWh/dia ÷ (${formatarDecimal(resultado.H_g_diaria, 1)} kWh/m² × ${formatarDecimal(resultado.eficienciaColetor/100, 2)}) = ${formatarDecimal(resultado.areaColetor_m2, 2)} m²`;
+    }
+    
+    const exemploPaineis = document.getElementById('memorial-exemplo-paineis');
+    if (exemploPaineis) {
+        exemploPaineis.textContent = `${formatarDecimal(resultado.areaColetor_m2, 2)} m² ÷ ${formatarDecimal(resultado.areaPainel_m2, 2)} m²/painel = ${formatarDecimal(resultado.areaColetor_m2 / resultado.areaPainel_m2, 1)} → ${resultado.numeroPaineis} painéis`;
+    }
+    
+    // Atualiza resumo calculado
+    const resumoDemandaAgua = document.getElementById('resumo-demanda-agua');
+    if (resumoDemandaAgua) resumoDemandaAgua.textContent = incluirAgua ? `${formatarDecimal(resultado.demandaEnergia_kWh, 2)} kWh/dia` : '-';
+    
+    const resumoDemandaCasa = document.getElementById('resumo-demanda-casa');
+    if (resumoDemandaCasa) resumoDemandaCasa.textContent = incluirCasa ? `${formatarDecimal(resultado.demandaCasa_kWh, 2)} kWh/dia` : '-';
+    
+    const resumoAreaColetor = document.getElementById('resumo-area-coletor');
+    if (resumoAreaColetor) resumoAreaColetor.textContent = `${formatarDecimal(resultado.areaColetor_m2, 2)} m²`;
+    
+    const resumoPaineis = document.getElementById('resumo-paineis');
+    if (resumoPaineis) {
+        const textoPainel = resultado.numeroPaineis === 1 ? (textos['unit-painel-singular'] || 'painel') : (textos['unit-painel-plural'] || 'paineis');
+        resumoPaineis.textContent = `${resultado.numeroPaineis} ${textoPainel}`;
+    }
+    
+    const resumoVolumeBoiler = document.getElementById('resumo-volume-boiler');
+    if (resumoVolumeBoiler) resumoVolumeBoiler.textContent = `${formatarNumero(Math.round(resultado.volumeBoiler_L))} L`;
 }
 
 // ============================================
@@ -946,7 +1007,33 @@ const traducoes = {
         'footer': 'Dimensionatore Riscaldatore Solare - Engenharia Nata © 2025',
         'aria-home': 'Torna alla schermata iniziale',
         'dev-badge-header': '🚧 IN SVILUPPO',
-        'watermark-dev': '🚧 IN SVILUPPO'
+        'watermark-dev': '🚧 IN SVILUPPO',
+        'learn-more': 'SAVERE DI PIÙ!',
+        'back': '← Indietro',
+        'btn-memorial': 'Vedi Memoriale di Calcolo',
+        'memorial-title': '📚 Memoriale di Calcolo - Riscaldatore Solare Termico',
+        'memorial-intro-title': '🎯 Obiettivo del Dimensionamento',
+        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come viene calcolato il dimensionamento di un sistema di riscaldamento solare termico, inclusa l\'area dei collettori, il volume del boiler, il numero di pannelli e la potenza necessaria per acqua di consumo e/o riscaldamento ambiente.',
+        'memorial-passo1-title': '1️⃣ Passo 1: Calcolare Domanda di Energia per Acqua',
+        'memorial-formula': 'Formula:',
+        'memorial-passo1-explicacao': 'L\'energia necessaria per riscaldare l\'acqua dipende dal consumo giornaliero, dalla differenza di temperatura e dalle proprietà fisiche dell\'acqua.',
+        'memorial-example': 'Esempio:',
+        'memorial-passo2-title': '2️⃣ Passo 2: Calcolare Domanda di Energia per Riscaldamento Casa',
+        'memorial-passo2-explicacao': 'La domanda di riscaldamento della casa viene calcolata in base alla classe energetica, area, altezza e condizioni climatiche locali.',
+        'memorial-passo3-title': '3️⃣ Passo 3: Dimensionare Volume Boiler',
+        'memorial-passo3-explicacao': 'Il volume del boiler deve essere sufficiente per immagazzinare acqua calda per i giorni senza sole (autonomia).',
+        'memorial-passo4-title': '4️⃣ Passo 4: Calcolare Efficienza Collettore',
+        'memorial-passo4-explicacao': 'L\'efficienza del collettore varia con la temperatura di funzionamento e le condizioni ambientali. Maggiore è la differenza di temperatura, minore è l\'efficienza.',
+        'memorial-passo5-title': '5️⃣ Passo 5: Calcolare Area Collettori',
+        'memorial-passo5-explicacao': 'L\'area dei collettori necessaria dipende dalla domanda totale di energia, dall\'irraggiamento solare disponibile e dall\'efficienza del collettore.',
+        'memorial-passo6-title': '6️⃣ Passo 6: Calcolare Numero Pannelli',
+        'memorial-passo6-explicacao': 'Il numero di pannelli viene calcolato dividendo l\'area totale necessaria per l\'area di ciascun pannello, arrotondando per eccesso.',
+        'memorial-resumo-title': '📊 Riepilogo Calcolato',
+        'memorial-resumo-demanda-agua': 'Domanda Acqua:',
+        'memorial-resumo-demanda-casa': 'Domanda Casa:',
+        'memorial-resumo-area-coletor': 'Area Collettore:',
+        'memorial-resumo-paineis': 'Numero Pannelli:',
+        'memorial-resumo-volume-boiler': 'Volume Boiler:'
     }
 };
 
@@ -1320,6 +1407,23 @@ document.addEventListener('DOMContentLoaded', () => {
             inputLatitudeInicial.value = formatarDecimal(valorInicial, 1);
         }
     }
+    
+    // Configurar memorial de cálculo
+    const btnMemorial = document.getElementById('btnMemorial');
+    const btnFecharMemorial = document.getElementById('btnFecharMemorial');
+    const btnVoltarMemorial = document.querySelectorAll('.btn-voltar-memorial');
+    
+    if (btnMemorial) {
+        btnMemorial.addEventListener('click', toggleMemorial);
+    }
+    
+    if (btnFecharMemorial) {
+        btnFecharMemorial.addEventListener('click', toggleMemorial);
+    }
+    
+    btnVoltarMemorial.forEach(btn => {
+        btn.addEventListener('click', toggleMemorial);
+    });
     
     // Calcular resultados iniciais
     atualizarResultados();

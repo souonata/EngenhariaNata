@@ -32,8 +32,8 @@ body {
     align-items: center;      /* Centraliza horizontalmente */
     gap: 15px;                /* Espaço mínimo entre seletor e celular */
     
-    /* Padding mínimo apenas no topo e laterais - reduzido para telas menores */
-    padding: 15px 10px 20px 10px;
+    /* Padding mínimo no topo, direita e embaixo - sem padding à esquerda para aproveitar toda a largura */
+    padding: 15px 10px 20px 0;
     
     /* BLOQUEIA scroll horizontal, permite vertical apenas se necessário */
     overflow-x: hidden;

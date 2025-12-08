@@ -18,11 +18,11 @@
     <meta name="keywords" content="dimensionamento ar condicionado, calculadora BTU, capacidade ar condicionado, cálculo BTU, climatização, refrigeração">
     <meta name="author" content="Engenharia NATA">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://engnata.eu/arcondicionado/arcondicionado.html">
+    <link rel="canonical" href="https://engnata.infinityfree.me/arcondicionado/arcondicionado.html">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://engnata.eu/arcondicionado/arcondicionado.html">
+    <meta property="og:url" content="https://engnata.infinityfree.me/arcondicionado/arcondicionado.html">
     <meta property="og:title" content="Dimensionador de Ar Condicionado - Engenharia NATA">
     <meta property="og:description" content="Calculadora para dimensionamento de ar condicionado com cálculo de BTU baseado em área, altura e condições ambientais.">
     <meta property="og:locale" content="pt_BR">
@@ -30,7 +30,7 @@
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary">
-    <meta property="twitter:url" content="https://engnata.eu/arcondicionado/arcondicionado.html">
+    <meta property="twitter:url" content="https://engnata.infinityfree.me/arcondicionado/arcondicionado.html">
     <meta property="twitter:title" content="Dimensionador de Ar Condicionado">
     <meta property="twitter:description" content="Calculadora para dimensionamento de ar condicionado com cálculo de BTU baseado em área, altura e condições ambientais.">
     <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.0">
@@ -184,10 +184,118 @@
         </section>
 
         <!-- ========================================== -->
+        <!-- SEÇÃO DE MEMORIAL DE CÁLCULO -->
+        <!-- Começa escondida (display: none) -->
+        <!-- Aparece quando o usuário clica em "SAIBA MAIS" -->
+        <!-- ========================================== -->
+        <div id="memorialSection" class="card memorial-section" style="display: none;">
+            <div class="memorial-header">
+                <h2 data-i18n="memorial-title">📚 Memorial de Cálculo - Dimensionamento de Ar Condicionado</h2>
+                <button id="btnFecharMemorial" class="btn-fechar-memorial" data-i18n-title="back-to-calculator">
+                    <span data-i18n="back">← Voltar</span>
+                </button>
+            </div>
+            
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-intro-title">🎯 Objetivo do Dimensionamento</h3>
+                <p data-i18n="memorial-intro-text">Este memorial explica passo a passo como é calculada a capacidade necessária de ar condicionado (em BTU) para um ambiente residencial, considerando volume, pessoas, equipamentos, insolação e isolamento térmico.</p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo1-title">1️⃣ Passo 1: Calcular Volume do Ambiente</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Volume (m³) = Área (m²) × Altura (m)</strong></p>
+                </div>
+                <p data-i18n="memorial-passo1-explicacao">O volume determina a quantidade de ar que precisa ser resfriado no ambiente.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-volume">20 m² × 2.7 m = 54 m³</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo2-title">2️⃣ Passo 2: Calcular BTU Base</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>BTU Volume = Volume (m³) × 600 BTU/m³</strong></p>
+                    <p><strong>BTU Pessoas = Número de Pessoas × 600 BTU/pessoa</strong></p>
+                    <p><strong>BTU Equipamentos = Número de Equipamentos × 600 BTU/equipamento</strong></p>
+                    <p><strong>BTU Base = BTU Volume + BTU Pessoas + BTU Equipamentos</strong></p>
+                </div>
+                <p data-i18n="memorial-passo2-explicacao">Cada pessoa e equipamento elétrico gera calor que precisa ser removido pelo ar condicionado.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-btu-base">54 m³ × 600 = 32.400 BTU + 2 pessoas × 600 = 1.200 BTU + 2 equipamentos × 600 = 1.200 BTU = 34.800 BTU</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Aplicar Fatores de Ajuste</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>BTU Final = BTU Base × Fator Insolação × Fator Isolamento</strong></p>
+                </div>
+                <p data-i18n="memorial-passo3-explicacao">Os fatores de insolação e isolamento ajustam a capacidade necessária baseado nas condições do ambiente.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-fatores">34.800 BTU × 1.15 (insolação média) × 1.0 (isolamento médio) = 40.020 BTU</span></p>
+                <div class="info-box">
+                    <p><strong data-i18n="memorial-fatores-title">Fatores utilizados:</strong></p>
+                    <ul>
+                        <li data-i18n="memorial-fatores-insolacao">Insolação: Baixa (1.0), Média (1.15), Alta (1.3)</li>
+                        <li data-i18n="memorial-fatores-isolamento">Isolamento: Bom (0.8), Médio (1.0), Ruim (1.2)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo4-title">4️⃣ Passo 4: Selecionar Modelo Comercial</h3>
+                <p data-i18n="memorial-passo4-explicacao">O BTU calculado é arredondado para cima para o modelo comercial mais próximo disponível no mercado.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-modelo">40.020 BTU → Modelo comercial: 48.000 BTU</span></p>
+                <div class="info-box">
+                    <p><strong data-i18n="memorial-modelos-title">Modelos comerciais disponíveis:</strong></p>
+                    <p data-i18n="memorial-modelos-lista">7.000, 9.000, 12.000, 18.000, 24.000, 30.000, 36.000, 48.000, 60.000 BTU</p>
+                </div>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo5-title">5️⃣ Passo 5: Converter para Potência (kW)</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Potência (kW) = BTU × 0.000293</strong></p>
+                </div>
+                <p data-i18n="memorial-passo5-explicacao">A conversão para kW é útil para comparar com outros equipamentos elétricos e estimar consumo de energia.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-potencia">48.000 BTU × 0.000293 = 14.06 kW</span></p>
+            </div>
+
+            <div class="resumo-calculado">
+                <h3 data-i18n="memorial-resumo-title">📊 Resumo Calculado</h3>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-volume">Volume do Ambiente:</span>
+                    <span id="resumo-volume">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-btu-base">BTU Base:</span>
+                    <span id="resumo-btu-base">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-btu-final">BTU Recomendado:</span>
+                    <span id="resumo-btu-final">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-potencia">Potência (kW):</span>
+                    <span id="resumo-potencia">-</span>
+                </div>
+            </div>
+
+            <button class="btn-voltar-memorial" data-i18n-title="back-to-calculator">
+                <span data-i18n="back">← Voltar</span>
+            </button>
+        </div>
+
+        <!-- ========================================== -->
         <!-- SEÇÃO DE RESULTADOS -->
         <!-- ========================================== -->
-        <section class="card resultados">
-            <h2 data-i18n="resultados-title">📊 Resultados</h2>
+        <section class="card resultados" id="resultadosSection">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h2 style="flex: 1;" data-i18n="resultados-title">📊 Resultados</h2>
+                <button id="btnMemorial" class="btn-help" title="Ver Memorial de Cálculo" data-i18n-title="btn-memorial" tabindex="10">
+                    <span class="texto-saiba-mais" data-i18n="learn-more">SAIBA MAIS!</span>
+                </button>
+            </div>
             
             <div class="resultado-item destaque">
                 <span class="label-resultado" data-i18n="resultado-btu">Capacidade Recomendada:</span>

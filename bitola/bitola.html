@@ -18,11 +18,11 @@
     <meta name="keywords" content="calculadora bitola, fios elétricos, bitola fio, queda tensão, NBR 5410, corrente elétrica, dimensionamento fios, circuito CC, circuito CA">
     <meta name="author" content="Engenharia NATA">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://engnata.eu/bitola/bitola.html">
+    <link rel="canonical" href="https://engnata.infinityfree.me/bitola/bitola.html">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://engnata.eu/bitola/bitola.html">
+    <meta property="og:url" content="https://engnata.infinityfree.me/bitola/bitola.html">
     <meta property="og:title" content="Calculadora de Bitola de Fios Elétricos - Engenharia NATA">
     <meta property="og:description" content="Calculadora de bitola de fios elétricos para circuitos CC e CA com seleção automática da bitola comercial padrão brasileiro.">
     <meta property="og:locale" content="pt_BR">
@@ -30,7 +30,7 @@
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary">
-    <meta property="twitter:url" content="https://engnata.eu/bitola/bitola.html">
+    <meta property="twitter:url" content="https://engnata.infinityfree.me/bitola/bitola.html">
     <meta property="twitter:title" content="Calculadora de Bitola de Fios Elétricos">
     <meta property="twitter:description" content="Calculadora de bitola de fios elétricos para circuitos CC e CA com seleção automática da bitola comercial padrão brasileiro.">
     <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.0">
@@ -53,7 +53,7 @@
                     <span class="lang-text">Italiano</span>
                 </button>
             </div>
-            <h1 data-i18n="app-title">⚡ Calculadora de Bitola de Fios</h1>
+            <h1 data-i18n="app-title">🔌 Calculadora de Bitola de Fios</h1>
             <p class="subtitulo" data-i18n="app-subtitle">Área de Seção Mínima para Circuitos CC e CA</p>
         </header>
 
@@ -170,10 +170,115 @@
         </section>
 
         <!-- ========================================== -->
+        <!-- SEÇÃO DE MEMORIAL DE CÁLCULO -->
+        <!-- Começa escondida (display: none) -->
+        <!-- Aparece quando o usuário clica em "SAIBA MAIS" -->
+        <!-- ========================================== -->
+        <div id="memorialSection" class="card memorial-section" style="display: none;">
+            <div class="memorial-header">
+                <h2 data-i18n="memorial-title">📚 Memorial de Cálculo - Bitola de Fios</h2>
+                <button id="btnFecharMemorial" class="btn-fechar-memorial" data-i18n-title="back-to-calculator">
+                    <span data-i18n="back">← Voltar</span>
+                </button>
+            </div>
+            
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-intro-title">🎯 Objetivo do Cálculo</h3>
+                <p data-i18n="memorial-intro-text">Este memorial explica passo a passo como é calculada a bitola mínima de fios elétricos para circuitos CC e CA, considerando potência, distância, tensão e queda de tensão máxima permitida.</p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo1-title">1️⃣ Passo 1: Calcular Corrente do Circuito</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Corrente (A) = Potência (W) ÷ Tensão (V)</strong></p>
+                </div>
+                <p data-i18n="memorial-passo1-explicacao">A corrente é calculada dividindo a potência pela tensão. Esta é a corrente que o circuito precisa transportar.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-corrente">1000W ÷ 220V = 4.55A</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo2-title">2️⃣ Passo 2: Calcular Área de Seção Mínima</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Área (mm²) = (2 × ρ × L × I) ÷ ΔV</strong></p>
+                </div>
+                <p data-i18n="memorial-passo2-explicacao">A área mínima é calculada considerando a resistividade do cobre, a distância (multiplicada por 2 para ida e volta), a corrente e a queda de tensão máxima permitida.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-area">(2 × 0.0175 × 20m × 4.55A) ÷ 8.8V = 0.36 mm²</span></p>
+                <div class="info-box">
+                    <p><strong data-i18n="memorial-constants">Constantes usadas:</strong></p>
+                    <ul>
+                        <li data-i18n="memorial-resistividade">ρ (resistividade do cobre) = 0.0175 Ω·mm²/m a 20°C</li>
+                        <li data-i18n="memorial-fator-2">Fator 2 = considera ida e volta do circuito (dois condutores)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Selecionar Bitola Comercial</h3>
+                <p data-i18n="memorial-passo3-explicacao">A área mínima calculada é multiplicada por um fator de segurança de 1.25 (25% de margem) e então selecionamos a bitola comercial padrão brasileiro (NBR 5410) que atende ao requisito.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-bitola">Área mínima 0.36 mm² × 1.25 = 0.45 mm² → Bitola comercial: 1.5 mm²</span></p>
+                <div class="info-box">
+                    <p><strong data-i18n="memorial-bitolas">Bitolas comerciais disponíveis:</strong></p>
+                    <p data-i18n="memorial-bitolas-lista">1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240 mm²</p>
+                </div>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo4-title">4️⃣ Passo 4: Verificar Queda de Tensão Real</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Queda Real (%) = ((2 × ρ × L × I) ÷ S) ÷ Tensão × 100</strong></p>
+                </div>
+                <p data-i18n="memorial-passo4-explicacao">Recalculamos a queda de tensão com a bitola comercial escolhida para verificar se está dentro do limite permitido.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-queda">Com bitola 1.5 mm² → queda real = 1.06% (dentro do limite de 4%)</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo5-title">5️⃣ Passo 5: Selecionar Disjuntor Comercial</h3>
+                <p data-i18n="memorial-passo5-explicacao">O disjuntor é selecionado com base na corrente do circuito, aplicando um fator de segurança de 1.25 e escolhendo o disjuntor comercial padrão que atende ao requisito.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-disjuntor">Corrente 4.55A × 1.25 = 5.69A → Disjuntor comercial: 10A</span></p>
+            </div>
+
+            <div class="resumo-calculado">
+                <h3 data-i18n="memorial-resumo-title">📊 Resumo Calculado</h3>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-corrente">Corrente do Circuito:</span>
+                    <span id="resumo-corrente">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-area">Área Mínima:</span>
+                    <span id="resumo-area">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-bitola">Bitola Comercial:</span>
+                    <span id="resumo-bitola">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-queda">Queda Real:</span>
+                    <span id="resumo-queda">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-disjuntor">Disjuntor:</span>
+                    <span id="resumo-disjuntor">-</span>
+                </div>
+            </div>
+
+            <button class="btn-voltar-memorial" data-i18n-title="back-to-calculator">
+                <span data-i18n="back">← Voltar</span>
+            </button>
+        </div>
+
+        <!-- ========================================== -->
         <!-- SEÇÃO DE RESULTADOS -->
         <!-- ========================================== -->
-        <section class="card resultados">
-            <h2 data-i18n="resultados-title">📊 Resultados</h2>
+        <section class="card resultados" id="resultadosSection">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h2 style="flex: 1;" data-i18n="resultados-title">📊 Resultados</h2>
+                <button id="btnMemorial" class="btn-help" title="Ver Memorial de Cálculo" data-i18n-title="btn-memorial" tabindex="10">
+                    <span class="texto-saiba-mais" data-i18n="learn-more">SAIBA MAIS!</span>
+                </button>
+            </div>
             
             <div class="resultado-item">
                 <span class="label-resultado" data-i18n="resultado-area-minima">Área de Seção Mínima:</span>

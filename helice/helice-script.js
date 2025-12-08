@@ -156,8 +156,33 @@ const traducoes = {
         'footer': 'Calculadora de Hélice - Engenharia Nata © 2025',
         'grafico-label': 'Passo (polegadas)',
         'grafico-eixo-x': 'Velocidade (nós)',
-        'grafico-eixo-y': 'Passo Recomendado (pol)'
-        , 'aria-home': 'Voltar para a tela inicial'
+        'grafico-eixo-y': 'Passo Recomendado (pol)',
+        'aria-home': 'Voltar para a tela inicial',
+        'learn-more': 'SAIBA MAIS!',
+        'back': '← Voltar',
+        'btn-memorial': 'Ver Memorial de Cálculo',
+        'memorial-title': '📚 Memorial de Cálculo - Passo de Hélice',
+        'memorial-intro-title': '🎯 Objetivo do Cálculo',
+        'memorial-intro-text': 'Este memorial explica passo a passo como é calculado o passo ideal da hélice para barcos de lazer, considerando velocidade desejada, RPM do motor, redução da rabeta e slip.',
+        'memorial-passo1-title': '1️⃣ Passo 1: Calcular RPM Efetivo na Hélice',
+        'memorial-formula': 'Fórmula:',
+        'memorial-passo1-explicacao': 'A rabeta reduz a rotação do motor. Se a redução é 2:1, a hélice gira 2 vezes mais devagar que o motor.',
+        'memorial-example': 'Exemplo:',
+        'memorial-passo2-title': '2️⃣ Passo 2: Calcular Passo da Hélice',
+        'memorial-passo2-explicacao': 'O passo é a distância teórica que a hélice avançaria em uma rotação completa. O slip reduz a eficiência, então usamos (1 - Slip) para compensar.',
+        'memorial-constants': 'Constantes usadas:',
+        'memorial-constante-1056': '1056 = constante de conversão de nós para polegadas/minuto',
+        'memorial-passo3-title': '3️⃣ Passo 3: Calcular Velocidade Teórica',
+        'memorial-passo3-explicacao': 'A velocidade teórica mostra qual velocidade seria obtida se não houvesse slip. É útil para comparar com a velocidade desejada.',
+        'memorial-conceitos-title': '📖 Conceitos Importantes',
+        'memorial-slip-title': 'Slip (Deslizamento):',
+        'memorial-slip-text': 'O slip é a perda de eficiência entre a hélice e a água. Barcos de lazer típicos têm 10-20% de slip. Quanto menor o slip, mais eficiente a hélice.',
+        'memorial-reducao-title': 'Redução da Rabeta:',
+        'memorial-reducao-text': 'Relação entre a rotação do motor e a rotação da hélice. Ex: 2:1 significa que o motor gira 2 vezes para a hélice girar 1 vez. Isso aumenta o torque disponível na hélice.',
+        'memorial-resumo-title': '📊 Resumo Calculado',
+        'memorial-resumo-rpm': 'RPM na Hélice:',
+        'memorial-resumo-passo': 'Passo Recomendado:',
+        'memorial-resumo-velocidade': 'Velocidade Teórica:'
     },
     'it-IT': {
         'app-title': '🚤 Calcolatore Passo Elica',
@@ -190,8 +215,33 @@ const traducoes = {
         'footer': 'Calcolatore Elica - Engenharia Nata © 2025',
         'grafico-label': 'Passo (pollici)',
         'grafico-eixo-x': 'Velocità (nodi)',
-        'grafico-eixo-y': 'Passo Consigliato (pol)'
-        , 'aria-home': 'Torna alla schermata iniziale'
+        'grafico-eixo-y': 'Passo Consigliato (pol)',
+        'aria-home': 'Torna alla schermata iniziale',
+        'learn-more': 'SAVERE DI PIÙ!',
+        'back': '← Indietro',
+        'btn-memorial': 'Vedi Memoriale di Calcolo',
+        'memorial-title': '📚 Memoriale di Calcolo - Passo Elica',
+        'memorial-intro-title': '🎯 Obiettivo del Calcolo',
+        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come viene calcolato il passo ideale dell\'elica per barche da diporto, considerando velocità desiderata, RPM del motore, riduzione del piede poppiero e slip.',
+        'memorial-passo1-title': '1️⃣ Passo 1: Calcolare RPM Effettivo nell\'Elica',
+        'memorial-formula': 'Formula:',
+        'memorial-passo1-explicacao': 'Il piede poppiero riduce la rotazione del motore. Se la riduzione è 2:1, l\'elica gira 2 volte più lenta del motore.',
+        'memorial-example': 'Esempio:',
+        'memorial-passo2-title': '2️⃣ Passo 2: Calcolare Passo dell\'Elica',
+        'memorial-passo2-explicacao': 'Il passo è la distanza teorica che l\'elica avanzerebbe in una rotazione completa. Lo slip riduce l\'efficienza, quindi usiamo (1 - Slip) per compensare.',
+        'memorial-constants': 'Costanti utilizzate:',
+        'memorial-constante-1056': '1056 = costante di conversione da nodi a pollici/minuto',
+        'memorial-passo3-title': '3️⃣ Passo 3: Calcolare Velocità Teorica',
+        'memorial-passo3-explicacao': 'La velocità teorica mostra quale velocità sarebbe ottenuta se non ci fosse slip. È utile per confrontare con la velocità desiderata.',
+        'memorial-conceitos-title': '📖 Concetti Importanti',
+        'memorial-slip-title': 'Slip (Scivolamento):',
+        'memorial-slip-text': 'Lo slip è la perdita di efficienza tra l\'elica e l\'acqua. Barche da diporto tipiche hanno 10-20% di slip. Minore è lo slip, più efficiente è l\'elica.',
+        'memorial-reducao-title': 'Riduzione Piede Poppiero:',
+        'memorial-reducao-text': 'Rapporto tra la rotazione del motore e la rotazione dell\'elica. Es: 2:1 significa che il motore gira 2 volte per 1 giro dell\'elica. Questo aumenta la coppia disponibile nell\'elica.',
+        'memorial-resumo-title': '📊 Riepilogo Calcolato',
+        'memorial-resumo-rpm': 'RPM nell\'Elica:',
+        'memorial-resumo-passo': 'Passo Consigliato:',
+        'memorial-resumo-velocidade': 'Velocità Teorica:'
     }
 };
 
@@ -596,6 +646,11 @@ function atualizarResultado() {
     // ============================================
     // Atualiza o gráfico de relação Passo × Velocidade com os novos dados
     atualizarGrafico();
+    
+    // Atualiza o memorial se estiver visível
+    if (typeof atualizarMemorialComValores === 'function') {
+        atualizarMemorialComValores();
+    }
 }
 
 /**
@@ -1084,7 +1139,26 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // ============================================
-    // PASSO 8: INICIALIZAR A INTERFACE
+    // PASSO 8: CONFIGURAR MEMORIAL DE CÁLCULO
+    // ============================================
+    const btnMemorial = document.getElementById('btnMemorial');
+    const btnFecharMemorial = document.getElementById('btnFecharMemorial');
+    const btnVoltarMemorial = document.querySelectorAll('.btn-voltar-memorial');
+    
+    if (btnMemorial) {
+        btnMemorial.addEventListener('click', toggleMemorial);
+    }
+    
+    if (btnFecharMemorial) {
+        btnFecharMemorial.addEventListener('click', toggleMemorial);
+    }
+    
+    btnVoltarMemorial.forEach(btn => {
+        btn.addEventListener('click', toggleMemorial);
+    });
+    
+    // ============================================
+    // PASSO 9: INICIALIZAR A INTERFACE
     // ============================================
     // Atualiza os limites do slider de velocidade com os valores padrão
     atualizarLimitesVelocidade();

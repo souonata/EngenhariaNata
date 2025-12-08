@@ -35,8 +35,10 @@ body {
     /* Cor de fundo do tema Ar Condicionado (azul) */
     background: var(--site-bg, #1976D2);
     min-height: 100vh;
-    padding: 8px;
+    padding-top: 8px;
+    padding-right: 8px;
     padding-bottom: var(--site-bottom-padding, 110px);
+    padding-left: 0;
     overflow-x: hidden;
     width: 100%;
     position: relative;
@@ -244,4 +246,197 @@ header h1 {
 }
 
 /* Typography moved to shared-styles.css */
+
+/* ============================================
+   MEMORIAL DE CÁLCULO
+   ============================================ */
+.memorial-section {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 12px;
+}
+
+.memorial-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.memorial-header h2 {
+    color: #1976D2;
+    font-size: 1.2rem;
+    margin: 0;
+    flex: 1;
+}
+
+.btn-fechar-memorial {
+    background: #1976D2;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-fechar-memorial:hover {
+    background: #1565C0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(25, 118, 210, 0.3);
+}
+
+.btn-voltar-memorial {
+    background: #1976D2;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin: 12px 0;
+    display: block;
+    width: fit-content;
+}
+
+.btn-voltar-memorial:hover {
+    background: #1565C0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(25, 118, 210, 0.3);
+}
+
+.memorial-item {
+    background: white;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    border-left: 5px solid #1976D2;
+}
+
+.memorial-item h3 {
+    color: #1976D2;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.memorial-item p {
+    margin-bottom: 10px;
+    line-height: 1.8;
+    color: #333;
+}
+
+.formula-box {
+    background: #e3f2fd;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 12px 0;
+    border: 2px solid #1976D2;
+}
+
+.formula-box p {
+    margin: 5px 0;
+    font-family: 'Courier New', monospace;
+    color: #0d47a1;
+}
+
+.info-box {
+    background: #e8f5e9;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 12px;
+    border-left: 4px solid #4caf50;
+}
+
+.info-box p {
+    margin: 5px 0;
+    color: #2e7d32;
+}
+
+.info-box ul {
+    margin: 8px 0;
+    padding-left: 20px;
+    color: #2e7d32;
+}
+
+.info-box li {
+    margin: 5px 0;
+}
+
+.resumo-calculado {
+    background: #e3f2fd;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 12px;
+}
+
+.resumo-item-calc {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.resumo-item-calc:last-child {
+    border-bottom: none;
+}
+
+.resumo-item-calc span:first-child {
+    font-weight: 600;
+    color: #555;
+}
+
+.resumo-item-calc span:last-child {
+    font-weight: bold;
+    color: #1976D2;
+    font-size: 1.1rem;
+}
+
+.btn-help {
+    background: transparent;
+    border: none;
+    color: #1976D2;
+    cursor: pointer;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.btn-help:hover {
+    background: #1976D2;
+    color: white;
+    transform: scale(1.05);
+}
+
+.texto-saiba-mais {
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 600px) {
+    .memorial-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .btn-fechar-memorial {
+        width: 100%;
+    }
+}
 
