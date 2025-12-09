@@ -356,7 +356,18 @@ body {
 .logo-highlight {
     color: #00ff88;
     font-weight: 900;
-    text-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+    text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+    animation: pulseText 2s ease-in-out infinite;
+}
+
+/* Animação de pulsação no texto NATA (mesma do ícone) */
+@keyframes pulseText {
+    0%, 100% {
+        text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+    }
+    50% {
+        text-shadow: 0 0 12px rgba(0, 255, 136, 0.8);
+    }
 }
 
 /* Animação de pulsação no ícone */

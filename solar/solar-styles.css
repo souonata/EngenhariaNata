@@ -25,9 +25,9 @@
    AJUSTES DE LARGURA DOS CAMPOS DE INPUT
    ============================================ */
 /* Largura dos campos de input baseada no valor máximo do slider + 1 caractere de folga */
-/* sliderConsumo: max=9999 (4 caracteres) → 5 caracteres + 1 folga = 6 caracteres */
+/* sliderConsumo: max=999 (3 caracteres) → 4 caracteres + 1 folga = 5 caracteres */
 #inputConsumo {
-    max-width: 6ch; /* 6 caracteres (9999 + 1 de folga) */
+    max-width: 5ch; /* 5 caracteres (999 + 1 de folga) */
     min-width: 4ch;
     width: 6ch;
 }

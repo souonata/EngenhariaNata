@@ -324,6 +324,15 @@ footer p {
     gap: 8px;
 }
 
+/* Unidade sempre visível ao lado do input */
+.valor-com-unidades .unidade {
+    display: inline-block;
+    font-weight: 600;
+    color: #555;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
 /* ============================================
    GLOBAL SLIDER STYLES
    ============================================ */

@@ -11,6 +11,7 @@ Uma coleção de aplicativos web educativos para estudar conceitos práticos de 
 - **❄️ Ar Condicionado** — Dimensionador de sistema multi-split com cálculo de BTU baseado em área (700 BTU/m²), altura, número de ambientes (1-8), pessoas, equipamentos e condições ambientais. Dimensiona unidades internas (até 60k BTU cada) e externas (até 180k BTU cada) com cálculo de custo estimado. Memorial explica os fatores de insolação e isolamento térmico, além das constantes ASHRAE utilizadas.
 - **☀️ Aquecedor Solar** — Dimensionador completo de sistemas de aquecimento solar térmico (coletores, boiler, potência) para água de consumo e aquecimento ambiente. Calcula baseado em área (m²) e classe energética (A4-G), considera temperatura mínima para termossifões (48°C) e estratificação térmica do boiler (65% útil). Memorial explica classes energéticas, cálculo de HSP baseado em latitude, e princípios de transferência de calor.
 - **🌾 Fazenda** — Planejador de fazenda auto-sustentável com cálculo de espaço, quantidade de plantas e animais, calendário de plantio/colheita e frequência de reprodução. Memorial explica os cálculos de produção mínima, distribuição proporcional e ciclos de plantio.
+- **🐛 Reportar Bug** — Formulário integrado com Google Forms para reportar bugs e problemas encontrados nos apps. Permite envio de descrição detalhada e contato opcional para resposta.
 
 ## 🎯 Características Principais
 
@@ -54,6 +55,7 @@ EngenhariaNata/
 ├── arcondicionado/                # App Ar Condicionado
 ├── aquecimento/                   # App Aquecedor Solar
 ├── fazenda/                       # App Fazenda
+├── bugs/                          # App Reportar Bug
 ├── sobre/                         # Página "Sobre o Projeto"
 ├── index.html                     # Página inicial
 ├── README.md                      # Este arquivo

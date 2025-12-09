@@ -252,6 +252,144 @@ function formatarPotenciaWkW(valor_W) {
 }
 
 /**
+ * Formata números com sufixos k (kilo), M (mega) ou m (mili) quando apropriado
+ * Usa abreviações para números grandes e pequenos:
+ * - >= 1.000.000 → "M" (mega): 1.500.000 → "1,5M"
+ * - >= 1.000 → "k" (kilo): 1.500 → "1,5k", 7.500 → "7,5k"
+ * - < 1 e >= 0.001 → "m" (mili): 0.005 → "5m", 0.5 → "500m"
+ * - < 0.001 → mantém formato decimal: 0.0005 → "0,0005"
+ * - Entre 1 e 999 → sem sufixo: 500 → "500"
+ * @param {number} valor - Número a ser formatado
+ * @param {number} casasDecimais - Número de casas decimais (padrão: 1 para k/M, 0 para m)
+ * @returns {string} Número formatado com sufixo quando apropriado
+ */
+function formatarNumeroComSufixo(valor, casasDecimais = 1) {
+    if (isNaN(valor) || valor === null || valor === undefined) return '-';
+    
+    const absValor = Math.abs(valor);
+    const sinal = valor < 0 ? '-' : '';
+    
+    // Mega (M) - valores >= 1.000.000
+    if (absValor >= 1000000) {
+        const valorM = absValor / 1000000;
+        // Se for inteiro, não mostra decimais
+        if (valorM % 1 === 0) {
+            return sinal + valorM + 'M';
+        }
+        return sinal + formatarNumeroDecimal(valorM, casasDecimais) + 'M';
+    }
+    
+    // Kilo (k) - valores >= 1.000
+    if (absValor >= 1000) {
+        const valorK = absValor / 1000;
+        // Se for inteiro, não mostra decimais
+        if (valorK % 1 === 0) {
+            return sinal + valorK + 'k';
+        }
+        return sinal + formatarNumeroDecimal(valorK, casasDecimais) + 'k';
+    }
+    
+    // Mili (m) - valores < 1 e >= 0.001
+    if (absValor < 1 && absValor >= 0.001) {
+        const valorM = absValor * 1000;
+        // Para mili, geralmente não precisa de decimais, mas permite se especificado
+        if (casasDecimais === 0 || valorM % 1 === 0) {
+            return sinal + Math.round(valorM) + 'm';
+        }
+        return sinal + formatarNumeroDecimal(valorM, casasDecimais) + 'm';
+    }
+    
+    // Valores entre 1 e 999 - sem sufixo
+    if (absValor >= 1) {
+        return sinal + formatarNumero(absValor, casasDecimais);
+    }
+    
+    // Valores < 0.001 - mantém formato decimal
+    return sinal + formatarNumeroDecimal(absValor, Math.max(casasDecimais, 3));
+}
+
+/**
+ * Converte valor formatado com sufixos (k/M/m) de volta para número
+ * Aceita tanto ponto quanto vírgula como separador decimal
+ * Aceita números puros (sem sufixo) que serão interpretados como valores diretos
+ * Exemplos: "1,5k" → 1500, "7.5k" → 7500, "2M" → 2000000, "500m" → 0.5, "10000" → 10000
+ * @param {string} valorFormatado - Valor formatado com possível sufixo
+ * @returns {number} Valor numérico convertido
+ */
+function obterValorNumericoComSufixo(valorFormatado) {
+    if (!valorFormatado || typeof valorFormatado !== 'string') return 0;
+    
+    const valor = valorFormatado.toString().trim();
+    if (valor === '' || valor === '-') return 0;
+    
+    // Remove espaços e converte para minúsculo para verificar sufixos
+    const valorLower = valor.toLowerCase();
+    
+    // Verifica se termina com sufixo
+    let multiplicador = 1;
+    let valorSemSufixo = valor;
+    let temSufixo = false;
+    
+    // Verifica sufixos na ordem: M (mega), k (kilo), m (mili)
+    // M (mega) - maiúsculo
+    if (valor.endsWith('M')) {
+        multiplicador = 1000000;
+        valorSemSufixo = valor.slice(0, -1).trim();
+        temSufixo = true;
+    } 
+    // k (kilo) - minúsculo
+    else if (valorLower.endsWith('k')) {
+        multiplicador = 1000;
+        valorSemSufixo = valor.slice(0, -1).trim();
+        temSufixo = true;
+    } 
+    // m (mili) - minúsculo (só se não for mega)
+    else if (valorLower.endsWith('m') && valor.length > 1) {
+        // Para distinguir M (mega) de m (mili), verifica o valor numérico antes do sufixo
+        const valorTeste = valor.slice(0, -1).trim();
+        // Normaliza separador decimal para verificar o valor
+        const valorTesteNormalizado = valorTeste.replace(',', '.');
+        const valorNum = parseFloat(valorTesteNormalizado);
+        
+        // Se o valor antes do sufixo for >= 1, provavelmente é mega (M maiúsculo)
+        // Mas se termina com 'm' minúsculo e valor >= 1, pode ser erro, mas tratamos como mili
+        // Se valor < 1, é definitivamente mili
+        if (!isNaN(valorNum) && valorNum < 1) {
+            multiplicador = 0.001;
+            valorSemSufixo = valorTeste;
+            temSufixo = true;
+        } else if (!isNaN(valorNum) && valorNum >= 1) {
+            // Se valor >= 1 e termina com 'm', pode ser erro de digitação, mas tratamos como mili
+            // Ou pode ser que o usuário quis dizer mega mas digitou 'm' minúsculo
+            // Por segurança, assumimos mili se termina com 'm' minúsculo
+            multiplicador = 0.001;
+            valorSemSufixo = valorTeste;
+            temSufixo = true;
+        }
+    }
+    
+    // Se não tem sufixo, é um número puro
+    if (!temSufixo) {
+        // Normaliza separador decimal (aceita tanto ponto quanto vírgula)
+        valorSemSufixo = valor;
+    }
+    
+    // Normaliza separador decimal: converte vírgula para ponto
+    const valorNormalizado = valorSemSufixo.replace(',', '.');
+    
+    // Remove qualquer caractere que não seja número, ponto ou sinal negativo
+    const valorLimpo = valorNormalizado.replace(/[^\d.-]/g, '');
+    
+    // Converte para número
+    const valorNumerico = parseFloat(valorLimpo);
+    
+    // Se não conseguiu converter, retorna 0
+    if (isNaN(valorNumerico)) return 0;
+    
+    return valorNumerico * multiplicador;
+}
+
+/**
  * Formata números de forma compacta para gráficos
  * Usa abreviações para números grandes:
  * - 1.500.000 → "1,5M" (milhões)

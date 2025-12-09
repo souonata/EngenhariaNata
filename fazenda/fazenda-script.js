@@ -618,9 +618,9 @@ function atualizarResultados() {
     
     // Atualizar resumo
     const areaTotal = areaTotalPlantas + areaTotalAnimais;
-    document.getElementById('areaTotal').textContent = formatarNumeroDecimal(areaTotal, 1) + ' m²';
-    document.getElementById('areaPlantas').textContent = formatarNumeroDecimal(areaTotalPlantas, 1) + ' m²';
-    document.getElementById('areaAnimais').textContent = formatarNumeroDecimal(areaTotalAnimais, 1) + ' m²';
+    document.getElementById('areaTotal').textContent = formatarNumeroComSufixo(areaTotal, 1) + ' m²';
+    document.getElementById('areaPlantas').textContent = formatarNumeroComSufixo(areaTotalPlantas, 1) + ' m²';
+    document.getElementById('areaAnimais').textContent = formatarNumeroComSufixo(areaTotalAnimais, 1) + ' m²';
     
     // Atualizar detalhes de plantas
     if (detalhesPlantas.length > 0) {
@@ -854,9 +854,9 @@ function atualizarMemorialComValores() {
     document.getElementById('memorial-exemplo-frequencia').textContent = exemploFrequencia;
     
     // Atualizar resumo
-    document.getElementById('resumo-area-plantas').textContent = formatarNumeroDecimal(areaTotalPlantas, 1) + ' m²';
-    document.getElementById('resumo-area-animais').textContent = formatarNumeroDecimal(areaTotalAnimais, 1) + ' m²';
-    document.getElementById('resumo-area-total').textContent = formatarNumeroDecimal(areaTotal, 1) + ' m²';
+    document.getElementById('resumo-area-plantas').textContent = formatarNumeroComSufixo(areaTotalPlantas, 1) + ' m²';
+    document.getElementById('resumo-area-animais').textContent = formatarNumeroComSufixo(areaTotalAnimais, 1) + ' m²';
+    document.getElementById('resumo-area-total').textContent = formatarNumeroComSufixo(areaTotal, 1) + ' m²';
 }
 
 function toggleMemorial() {

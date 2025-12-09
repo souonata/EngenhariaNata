@@ -1251,7 +1251,7 @@ function atualizarResultados() {
     // Verificar se os elementos existem antes de atualizar
     const elementoAreaColetor = document.getElementById('areaColetor');
     if (elementoAreaColetor) {
-        elementoAreaColetor.textContent = formatarDecimal(resultado.areaColetor_m2 || 0, 2) + ' m²';
+        elementoAreaColetor.textContent = formatarNumeroComSufixo(resultado.areaColetor_m2 || 0, 2) + ' m²';
     }
     
     // Exibir número de painéis (apenas o número, sem informações extras)
@@ -1282,10 +1282,10 @@ function atualizarResultados() {
     if (elementoDemandaEnergia) elementoDemandaEnergia.textContent = formatarDecimal(resultado.demandaEnergia_kWh || 0, 2) + ' kWh/dia';
     if (elementoDemandaCasa) elementoDemandaCasa.textContent = formatarDecimal(resultado.demandaCasa_kWh || 0, 2) + ' kWh/dia';
     
-    if (elementoVolumeBoiler) elementoVolumeBoiler.textContent = formatarNumero(Math.round(resultado.volumeBoiler_L || 0)) + ' L';
+    if (elementoVolumeBoiler) elementoVolumeBoiler.textContent = formatarNumeroComSufixo(Math.round(resultado.volumeBoiler_L || 0), 0) + ' L';
     
     if (elementoPotenciaCasa) {
-        elementoPotenciaCasa.textContent = formatarPotenciaWkW(resultado.potenciaCasa_W || 0);
+        elementoPotenciaCasa.textContent = formatarNumeroComSufixo(resultado.potenciaCasa_W || 0, 0) + ' W';
     }
     
     // Atualizar termossifões se casa estiver selecionada
@@ -1663,7 +1663,7 @@ function atualizarMemorialComValores() {
     if (resumoDemandaCasa) resumoDemandaCasa.textContent = incluirCasa ? `${formatarDecimal(resultado.demandaCasa_kWh, 2)} kWh/dia` : '-';
     
     const resumoAreaColetor = document.getElementById('resumo-area-coletor');
-    if (resumoAreaColetor) resumoAreaColetor.textContent = `${formatarDecimal(resultado.areaColetor_m2, 2)} m²`;
+    if (resumoAreaColetor) resumoAreaColetor.textContent = formatarNumeroComSufixo(resultado.areaColetor_m2, 2) + ' m²';
     
     const resumoPaineis = document.getElementById('resumo-paineis');
     if (resumoPaineis) {
@@ -1696,7 +1696,7 @@ function atualizarMemorialComValores() {
     }
     
     const resumoVolumeBoiler = document.getElementById('resumo-volume-boiler');
-    if (resumoVolumeBoiler) resumoVolumeBoiler.textContent = `${formatarNumero(Math.round(resultado.volumeBoiler_L))} L`;
+    if (resumoVolumeBoiler) resumoVolumeBoiler.textContent = formatarNumeroComSufixo(Math.round(resultado.volumeBoiler_L), 0) + ' L';
 }
 
 // ============================================

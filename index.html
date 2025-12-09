@@ -261,6 +261,23 @@
                     <!-- Nome do aplicativo que aparece abaixo do ícone -->
                     <span class="app-name" data-i18n="app-mutuo">Mutuo</span>
                 </a>
+
+                <!-- Ícone do aplicativo Reportar Bug (sempre por último) -->
+                <a href="bugs/bugs.html" class="app-icon">
+                    <div class="icon">
+                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="gradient-bugs" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#C92A2A;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <rect width="60" height="60" rx="12" fill="url(#gradient-bugs)"/>
+                            <text x="30" y="40" font-size="28" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">🐛</text>
+                        </svg>
+                    </div>
+                    <span class="app-name" data-i18n="app-bugs">Reportar Bug</span>
+                </a>
             </div>
         </div>
         
@@ -286,6 +303,27 @@
         <p class="section-subtitle" data-i18n="apps-description-subtitle">Ferramentas práticas para cálculos de engenharia e finanças</p>
         
         <div class="apps-list">
+            <!-- App: Sobre -->
+            <div class="app-card">
+                <div class="app-card-header">
+                    <a href="sobre/sobre.html" aria-label="Sobre mim">
+                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
+                            <defs>
+                                <linearGradient id="gradient-about-desc" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#bca147;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#a0a21f;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <rect width="60" height="60" rx="12" fill="url(#gradient-about-desc)"/>
+                            <text x="30" y="40" font-size="28" text-anchor="middle">📖</text>
+                        </svg>
+                    </a>
+                    <h3><a href="sobre/sobre.html" data-i18n="app-about-title">Sobre mim</a></h3>
+                </div>
+                <p class="app-description" data-i18n="app-about-description">Informações sobre o projeto Engenharia NATA, tecnologias utilizadas, estatísticas do código e objetivos educacionais. Conheça mais sobre os apps e o desenvolvimento deste portfólio.</p>
+                <a href="sobre/sobre.html" class="app-link" data-i18n="app-link-view">Ver página →</a>
+            </div>
+            
             <!-- App: Ar Condicionado -->
             <div class="app-card">
                 <div class="app-card-header">
@@ -431,6 +469,27 @@
                 </div>
                 <p class="app-description" data-i18n="app-mutuo-description">Calculadora bilíngue (PT/IT) de sistemas de amortização: SAC, Price e Americano. Inclui gráficos interativos, tabela de amortização completa e comparação de juros totais. Ideal para planejamento financeiro e análise de empréstimos.</p>
                 <a href="mutuo/mutuo.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
+            </div>
+            
+            <!-- App: Reportar Bug -->
+            <div class="app-card">
+                <div class="app-card-header">
+                    <a href="bugs/bugs.html" aria-label="Reportar Bug">
+                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
+                            <defs>
+                                <linearGradient id="gradient-bugs-desc" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#C92A2A;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <rect width="60" height="60" rx="12" fill="url(#gradient-bugs-desc)"/>
+                            <text x="30" y="40" font-size="28" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">🐛</text>
+                        </svg>
+                    </a>
+                    <h3><a href="bugs/bugs.html" data-i18n="app-bugs-title">Reportar Bug</a></h3>
+                </div>
+                <p class="app-description" data-i18n="app-bugs-description">Formulário para reportar bugs e problemas encontrados nos aplicativos. Ajude-nos a melhorar reportando erros, sugestões ou problemas de usabilidade. Informações de contato opcional para resposta.</p>
+                <a href="bugs/bugs.html" class="app-link" data-i18n="app-link-use-form">Usar formulário →</a>
             </div>
         </div>
     </div>

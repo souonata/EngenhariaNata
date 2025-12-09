@@ -1104,13 +1104,13 @@ function calcularSistema(dodAlvo) {
     const custoTotal = custoPaineis + custoBaterias + custoInversor + custoMPPT;
 
     // 6. Exibir Resultados
-    document.getElementById('resQtdPlacas').textContent = `${qtdPaineis} x ${POTENCIA_PAINEL}W`;
+    document.getElementById('resQtdPlacas').textContent = `${qtdPaineis} x ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W`;
     // Exibe quantas unidades do módulo escolhido (kWh e tensão)
     const unidadeKWh = (typeof batSpec.kwh === 'number' ? formatarNumeroDecimal(batSpec.kwh, 1) : (batSpec.ah ? formatarNumeroDecimal((batSpec.v * batSpec.ah)/1000, 1) : '0,0'));
     document.getElementById('resQtdBaterias').textContent = `${qtdBaterias} x ${unidadeKWh} kWh (${batSpec.v}V)`;
     document.getElementById('resPotenciaInversor').textContent = `${potenciaInversor} kW`;
-    document.getElementById('resCorrenteMPPT').textContent = `${correnteMPPT} A`;
-    document.getElementById('resPesoBaterias').textContent = `${pesoTotal} kg`;
+    document.getElementById('resCorrenteMPPT').textContent = formatarNumeroComSufixo(correnteMPPT, 0) + ' A';
+    document.getElementById('resPesoBaterias').textContent = formatarNumeroComSufixo(pesoTotal, 1) + ' kg';
     
     const moeda = traducoes[idiomaAtual]?.['moeda'] || 'R$';
     const formatarPreco = (valor) => `${moeda} ${valor.toLocaleString(idiomaAtual, {minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: true})}`;
@@ -1182,10 +1182,10 @@ function calcularSistema(dodAlvo) {
     let motivoMPPTDetalhes = '';
     if (idiomaAtual === 'pt-BR') {
         motivoMPPTGargalo = '(gargalo: corrente máxima)';
-        motivoMPPTDetalhes = `${qtdPaineis} painéis × ${POTENCIA_PAINEL}W<br>→ ${potenciaTotalPaineis}W ÷ ${tensaoBanco}V<br>→ ${formatarNumeroDecimal(correnteMaxima, 1)}A<br>→ MPPT ${correnteMPPT}A`;
+        motivoMPPTDetalhes = `${qtdPaineis} painéis × ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W<br>→ ${formatarNumeroComSufixo(potenciaTotalPaineis, 0)}W ÷ ${tensaoBanco}V<br>→ ${formatarNumeroComSufixo(correnteMaxima, 1)}A<br>→ MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)}A`;
     } else {
         motivoMPPTGargalo = '(limite: corrente massima)';
-        motivoMPPTDetalhes = `${qtdPaineis} pannelli × ${POTENCIA_PAINEL}W<br>→ ${potenciaTotalPaineis}W ÷ ${tensaoBanco}V<br>→ ${formatarNumeroDecimal(correnteMaxima, 1)}A<br>→ MPPT ${correnteMPPT}A`;
+        motivoMPPTDetalhes = `${qtdPaineis} pannelli × ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W<br>→ ${formatarNumeroComSufixo(potenciaTotalPaineis, 0)}W ÷ ${tensaoBanco}V<br>→ ${formatarNumeroComSufixo(correnteMaxima, 1)}A<br>→ MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)}A`;
     }
     document.getElementById('resMotivoMPPT').innerHTML = `${motivoMPPTGargalo}<br>${motivoMPPTDetalhes}`;
     
@@ -1594,7 +1594,7 @@ function atualizarMemorialComValores() {
     
     const exemploPaineis = document.getElementById('memorial-exemplo-paineis');
     if (exemploPaineis) {
-        exemploPaineis.textContent = `${formatarNumero(energiaUtilizavelBanco)} kWh utilizáveis, eficiência 80%, HSP ${HSP}h → ${formatarNumero(energiaUtilizavelBanco)}÷0.8 = ${formatarNumero(energiaGerar)} kWh/dia → ${formatarNumero(energiaGerar)}×1000÷${HSP} = ${formatarNumero(potenciaNecessariaW)}W → ${formatarNumero(potenciaNecessariaW)}÷${config.potenciaPainel}W = ${formatarNumero(potenciaNecessariaW / config.potenciaPainel)} → ${qtdPaineis} painéis`;
+        exemploPaineis.textContent = `${formatarNumero(energiaUtilizavelBanco)} kWh utilizáveis, eficiência 80%, HSP ${HSP}h → ${formatarNumero(energiaUtilizavelBanco)}÷0.8 = ${formatarNumero(energiaGerar)} kWh/dia → ${formatarNumero(energiaGerar)}×1000÷${HSP} = ${formatarNumeroComSufixo(potenciaNecessariaW, 0)}W → ${formatarNumeroComSufixo(potenciaNecessariaW, 0)}÷${formatarNumeroComSufixo(config.potenciaPainel, 0)}W = ${formatarNumeroComSufixo(potenciaNecessariaW / config.potenciaPainel, 1)} → ${qtdPaineis} painéis`;
     }
     
     const exemploInversor = document.getElementById('memorial-exemplo-inversor');
@@ -1604,7 +1604,7 @@ function atualizarMemorialComValores() {
     
     const exemploMPPT = document.getElementById('memorial-exemplo-mppt');
     if (exemploMPPT) {
-        exemploMPPT.textContent = `${qtdPaineis} painéis × ${config.potenciaPainel}W = ${potenciaTotalPaineis}W ÷ ${tensaoBanco}V = ${formatarNumero(correnteMaxima)}A → MPPT de ${correnteMPPT}A`;
+        exemploMPPT.textContent = `${qtdPaineis} painéis × ${formatarNumeroComSufixo(config.potenciaPainel, 0)}W = ${formatarNumeroComSufixo(potenciaTotalPaineis, 0)}W ÷ ${tensaoBanco}V = ${formatarNumeroComSufixo(correnteMaxima, 1)}A → MPPT de ${formatarNumeroComSufixo(correnteMPPT, 0)}A`;
     }
     
     const exemploCustos = document.getElementById('memorial-exemplo-custos');
@@ -1636,11 +1636,11 @@ function atualizarMemorialComValores() {
     if (resumoBaterias) resumoBaterias.textContent = `${qtdBaterias} × ${formatarNumero(energiaPorBateria)} kWh = ${formatarNumero(capacidadeRealKWh)} kWh`;
     
     const resumoPaineis = document.getElementById('resumo-paineis');
-    if (resumoPaineis) resumoPaineis.textContent = `${qtdPaineis} × ${config.potenciaPainel}W = ${formatarNumero((qtdPaineis * config.potenciaPainel) / 1000)} kW`;
+    if (resumoPaineis) resumoPaineis.textContent = `${qtdPaineis} × ${formatarNumeroComSufixo(config.potenciaPainel, 0)}W = ${formatarNumero((qtdPaineis * config.potenciaPainel) / 1000)} kW`;
     
     const resumoInversor = document.getElementById('resumo-inversor');
     if (resumoInversor) resumoInversor.textContent = `${potenciaInversor} kW`;
     
     const resumoMPPT = document.getElementById('resumo-mppt');
-    if (resumoMPPT) resumoMPPT.textContent = `${correnteMPPT} A`;
+    if (resumoMPPT) resumoMPPT.textContent = formatarNumeroComSufixo(correnteMPPT, 0) + ' A';
 }

@@ -72,8 +72,9 @@ const traducoes = {
     'pt-BR': {
         // Nomes dos aplicativos
         'app-about': 'Sobre mim',
+        'app-bugs': 'Reportar Bug',
         'app-helice': 'Hélice',
-        'app-mutuo': 'Financiamento',
+        'app-mutuo': 'Mutuo',
         'app-solar': 'Energia Solar',
         'app-bitola': 'Bitola',
         'app-arcondicionado': 'Ar Condicionado',
@@ -82,6 +83,8 @@ const traducoes = {
         'dev-badge': 'DEV',
         'apps-description-title': 'Aplicativos Disponíveis',
         'apps-description-subtitle': 'Ferramentas práticas para cálculos de engenharia e finanças',
+        'app-about-title': 'Sobre mim',
+        'app-about-description': 'Informações sobre o projeto Engenharia NATA, tecnologias utilizadas, estatísticas do código e objetivos educacionais. Conheça mais sobre os apps e o desenvolvimento deste portfólio.',
         'app-mutuo-title': 'Mutuo - Calculadora de Empréstimos',
         'app-mutuo-description': 'Calculadora bilíngue (PT/IT) de sistemas de amortização: SAC, Price e Americano. Inclui gráficos interativos, tabela de amortização completa e comparação de juros totais. Ideal para planejamento financeiro e análise de empréstimos.',
         'app-helice-title': 'Hélice - Calculadora de Passo',
@@ -96,7 +99,10 @@ const traducoes = {
         'app-aquecimento-description': 'Dimensionador completo de sistemas de aquecimento solar térmico. Calcula área de coletores, volume do boiler, número de painéis e potência necessária baseado em área (m²) e classe energética. Suporta aquecimento de água de consumo e aquecimento ambiente separadamente ou combinados, considerando temperatura mínima para termossifões (48°C) e estratificação térmica.',
         'app-fazenda-title': 'Fazenda - Dimensionamento Auto-Sustentável',
         'app-fazenda-description': 'Planejador completo de fazenda auto-sustentável. Calcula espaço necessário, quantidade de plantas (frutas, verduras, legumes) e animais necessários para alimentar uma família. Inclui calendário de plantio/colheita e frequência de reprodução dos animais para manter produção contínua.',
+        'app-bugs-title': 'Reportar Bug',
+        'app-bugs-description': 'Formulário para reportar bugs e problemas encontrados nos aplicativos. Ajude-nos a melhorar reportando erros, sugestões ou problemas de usabilidade. Informações de contato opcional para resposta.',
         'app-link-use': 'Usar calculadora →',
+        'app-link-use-form': 'Usar formulário →',
         
         // Dias da semana por extenso (minúscula)
         'dia-dom': 'domingo',
@@ -129,6 +135,7 @@ const traducoes = {
     'it-IT': {
         // Nomes dos aplicativos em italiano
         'app-about': 'Su di me',
+        'app-bugs': 'Segnala Bug',
         'app-helice': 'Elica',
         'app-mutuo': 'Mutuo',
         'app-solar': 'Energia Solare',
@@ -139,6 +146,8 @@ const traducoes = {
         'dev-badge': 'DEV',
         'apps-description-title': 'Applicazioni Disponibili',
         'apps-description-subtitle': 'Strumenti pratici per calcoli di ingegneria e finanza',
+        'app-about-title': 'Su di me',
+        'app-about-description': 'Informazioni sul progetto Engenharia NATA, tecnologie utilizzate, statistiche del codice e obiettivi educativi. Scopri di più sulle app e lo sviluppo di questo portafoglio.',
         'app-mutuo-title': 'Mutuo - Calcolatrice di Prestiti',
         'app-mutuo-description': 'Calcolatrice bilingue (PT/IT) di sistemi di ammortamento: SAC, Francese e Americano. Include grafici interattivi, tabella di ammortamento completa e confronto degli interessi totali. Ideale per pianificazione finanziaria e analisi di prestiti.',
         'app-helice-title': 'Elica - Calcolatrice del Passo',
@@ -153,7 +162,11 @@ const traducoes = {
         'app-aquecimento-description': 'Dimensionatore completo di sistemi di riscaldamento solare termico. Calcola l\'area dei collettori, volume del boiler, numero di pannelli e potenza necessaria basato su area (m²) e classe energetica. Supporta riscaldamento dell\'acqua sanitaria e riscaldamento ambiente separatamente o combinati, considerando temperatura minima per termosifoni (48°C) e stratificazione termica.',
         'app-fazenda-title': 'Fattoria - Dimensionamento Auto-Sostenibile',
         'app-fazenda-description': 'Pianificatore completo di fattoria auto-sostenibile. Calcola lo spazio necessario, quantità di piante (frutta, verdura, legumi) e animali necessari per nutrire una famiglia. Include calendario di semina/raccolta e frequenza di riproduzione degli animali per mantenere produzione continua.',
+        'app-bugs-title': 'Segnala Bug',
+        'app-bugs-description': 'Modulo per segnalare bug e problemi riscontrati nelle applicazioni. Aiutaci a migliorare segnalando errori, suggerimenti o problemi di usabilità. Informazioni di contatto opzionali per risposta.',
         'app-link-use': 'Usa calcolatrice →',
+        'app-link-use-form': 'Usa modulo →',
+        'app-link-view': 'Vedi pagina →',
         
         // Dias da semana por extenso em italiano (minúscula)
         'dia-dom': 'domenica',

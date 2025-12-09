@@ -707,7 +707,7 @@ function atualizarResultado() {
     document.getElementById('resultadoPasso').textContent = formatarNumero(passoConvertido, unidadePasso === 'mm' ? 0 : 1);
     
     // Exibe o RPM efetivo na hélice (já é um número inteiro)
-    document.getElementById('rpmHelice').textContent = formatarNumero(resultado.rpmHelice, 0);
+    document.getElementById('rpmHelice').textContent = formatarNumeroComSufixo(resultado.rpmHelice, 0);
     
     // Converte a velocidade teórica de nós para a unidade selecionada
     const velocidadeTeoricaConvertida = converterKnotsParaUnidade(resultado.velocidadeTeorica, unidadeVelocidade);
@@ -804,7 +804,7 @@ function atualizarMemorialComValores() {
         `Passo ${formatarNumero(passo, 1)}", ${formatarNumero(rpmMotor, 0)} RPM, redução ${formatarNumero(reducao, 2)}:1 → (${formatarNumero(passo, 1)} × ${formatarNumero(rpmMotor, 0)}) ÷ (1056 × ${formatarNumero(reducao, 2)}) = ${formatarNumero(velocidadeTeorica, 1)} nós`;
     
     // Atualizar resumo
-    document.getElementById('resumo-rpm-helice').textContent = formatarNumero(rpmHelice, 0) + ' rpm';
+    document.getElementById('resumo-rpm-helice').textContent = formatarNumeroComSufixo(rpmHelice, 0) + ' rpm';
     document.getElementById('resumo-passo').textContent = formatarNumero(passo, 1) + '"';
     document.getElementById('resumo-velocidade-teorica').textContent = formatarNumero(velocidadeTeorica, 1) + ' nós';
 }

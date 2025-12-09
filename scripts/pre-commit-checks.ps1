@@ -68,7 +68,7 @@ if ($semCacheBusting) {
 
 # 4. Verificar estrutura de arquivos dos apps
 Write-Host "`n4. Verificando estrutura dos apps..." -ForegroundColor Cyan
-$apps = @("mutuo", "helice", "solar", "bitola", "arcondicionado", "aquecimento", "fazenda")
+$apps = @("mutuo", "helice", "solar", "bitola", "arcondicionado", "aquecimento", "fazenda", "bugs")
 $appsIncompletos = @()
 foreach ($app in $apps) {
     $html = "$app\$app.html"

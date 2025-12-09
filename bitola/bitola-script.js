@@ -536,14 +536,8 @@ function obterTensaoAtual() {
  */
 function atualizarResultados() {
     // Obtém os valores dos inputs
-    // Para potência, precisa tratar o "k" se presente
-    let valorPotenciaTexto = inputPotencia.value.toString().trim();
-    let multiplicadorPotencia = 1;
-    if (valorPotenciaTexto.toLowerCase().endsWith('k')) {
-        valorPotenciaTexto = valorPotenciaTexto.slice(0, -1).trim();
-        multiplicadorPotencia = 1000;
-    }
-    const potencia = obterValorNumericoFormatado(valorPotenciaTexto) * multiplicadorPotencia;
+    // Para potência, converte valor com sufixos (k/M/m) para número
+    const potencia = obterValorNumericoComSufixo(inputPotencia.value);
     
     const comprimento = obterValorNumericoFormatado(inputComprimento.value);
     const tensao = obterTensaoAtual();
@@ -575,11 +569,11 @@ function atualizarResultados() {
     const disjuntor = selecionarDisjuntorComercial(corrente);
     
     // Atualiza a interface
-    areaMinima.textContent = formatarNumero(areaMin, 2) + ' mm²';
-    bitolaComercial.textContent = formatarNumero(bitola, 1) + ' mm²';
-    correnteCircuito.textContent = formatarNumero(corrente, 2) + ' A';
+    areaMinima.textContent = formatarNumeroComSufixo(areaMin, 2) + ' mm²';
+    bitolaComercial.textContent = formatarNumeroComSufixo(bitola, 1) + ' mm²';
+    correnteCircuito.textContent = formatarNumeroComSufixo(corrente, 2) + ' A';
     quedaReal.textContent = formatarNumero(quedaRealPercentual, 2) + ' %';
-    disjuntorComercial.textContent = formatarNumero(disjuntor, 0) + ' A';
+    disjuntorComercial.textContent = formatarNumeroComSufixo(disjuntor, 0) + ' A';
     
     // Atualiza o memorial se estiver visível
     if (typeof atualizarMemorialComValores === 'function') {
@@ -778,13 +772,7 @@ function toggleMemorial() {
  */
 function atualizarMemorialComValores() {
     // Obter valores atuais
-    let valorPotenciaTexto = inputPotencia.value.toString().trim();
-    let multiplicadorPotencia = 1;
-    if (valorPotenciaTexto.toLowerCase().endsWith('k')) {
-        valorPotenciaTexto = valorPotenciaTexto.slice(0, -1).trim();
-        multiplicadorPotencia = 1000;
-    }
-    const potencia = obterValorNumericoFormatado(valorPotenciaTexto) * multiplicadorPotencia;
+    const potencia = obterValorNumericoComSufixo(inputPotencia.value);
     const comprimento = obterValorNumericoFormatado(inputComprimento.value);
     const tensao = obterTensaoAtual();
     const quedaPercentual = obterValorNumericoFormatado(inputQuedaTensao.value);
@@ -804,47 +792,47 @@ function atualizarMemorialComValores() {
     // Atualiza exemplos no memorial
     const exemploCorrente = document.getElementById('memorial-exemplo-corrente');
     if (exemploCorrente) {
-        exemploCorrente.textContent = `${formatarNumero(potencia, 0)}W ÷ ${formatarNumero(tensao, 0)}V = ${formatarNumero(corrente, 2)}A`;
+        exemploCorrente.textContent = `${formatarNumeroComSufixo(potencia, 0)}W ÷ ${formatarNumeroComSufixo(tensao, 0)}V = ${formatarNumeroComSufixo(corrente, 2)}A`;
     }
     
     const exemploArea = document.getElementById('memorial-exemplo-area');
     if (exemploArea) {
         const quedaVolts = (quedaPercentual / 100) * tensao;
-        exemploArea.textContent = `(2 × 0.0175 × ${formatarNumero(comprimento, 0)}m × ${formatarNumero(corrente, 2)}A) ÷ ${formatarNumero(quedaVolts, 2)}V = ${formatarNumero(areaMin, 2)} mm²`;
+        exemploArea.textContent = `(2 × 0.0175 × ${formatarNumeroComSufixo(comprimento, 0)}m × ${formatarNumeroComSufixo(corrente, 2)}A) ÷ ${formatarNumeroComSufixo(quedaVolts, 2)}V = ${formatarNumeroComSufixo(areaMin, 2)} mm²`;
     }
     
     const exemploBitola = document.getElementById('memorial-exemplo-bitola');
     if (exemploBitola) {
         const areaComSeguranca = areaMin * 1.25;
-        exemploBitola.textContent = `Área mínima ${formatarNumero(areaMin, 2)} mm² × 1.25 = ${formatarNumero(areaComSeguranca, 2)} mm² → Bitola comercial: ${formatarNumero(bitola, 1)} mm²`;
+        exemploBitola.textContent = `Área mínima ${formatarNumeroComSufixo(areaMin, 2)} mm² × 1.25 = ${formatarNumeroComSufixo(areaComSeguranca, 2)} mm² → Bitola comercial: ${formatarNumeroComSufixo(bitola, 1)} mm²`;
     }
     
     const exemploQueda = document.getElementById('memorial-exemplo-queda');
     if (exemploQueda) {
-        exemploQueda.textContent = `Com bitola ${formatarNumero(bitola, 1)} mm² → queda real = ${formatarNumero(quedaRealPercentual, 2)}% (dentro do limite de ${formatarNumero(quedaPercentual, 1)}%)`;
+        exemploQueda.textContent = `Com bitola ${formatarNumeroComSufixo(bitola, 1)} mm² → queda real = ${formatarNumero(quedaRealPercentual, 2)}% (dentro do limite de ${formatarNumero(quedaPercentual, 1)}%)`;
     }
     
     const exemploDisjuntor = document.getElementById('memorial-exemplo-disjuntor');
     if (exemploDisjuntor) {
         const correnteComSeguranca = corrente * 1.25;
-        exemploDisjuntor.textContent = `Corrente ${formatarNumero(corrente, 2)}A × 1.25 = ${formatarNumero(correnteComSeguranca, 2)}A → Disjuntor comercial: ${formatarNumero(disjuntor, 0)}A`;
+        exemploDisjuntor.textContent = `Corrente ${formatarNumeroComSufixo(corrente, 2)}A × 1.25 = ${formatarNumeroComSufixo(correnteComSeguranca, 2)}A → Disjuntor comercial: ${formatarNumeroComSufixo(disjuntor, 0)}A`;
     }
     
     // Atualiza resumo calculado
     const resumoCorrente = document.getElementById('resumo-corrente');
-    if (resumoCorrente) resumoCorrente.textContent = `${formatarNumero(corrente, 2)} A`;
+    if (resumoCorrente) resumoCorrente.textContent = `${formatarNumeroComSufixo(corrente, 2)} A`;
     
     const resumoArea = document.getElementById('resumo-area');
-    if (resumoArea) resumoArea.textContent = `${formatarNumero(areaMin, 2)} mm²`;
+    if (resumoArea) resumoArea.textContent = `${formatarNumeroComSufixo(areaMin, 2)} mm²`;
     
     const resumoBitola = document.getElementById('resumo-bitola');
-    if (resumoBitola) resumoBitola.textContent = `${formatarNumero(bitola, 1)} mm²`;
+    if (resumoBitola) resumoBitola.textContent = `${formatarNumeroComSufixo(bitola, 1)} mm²`;
     
     const resumoQueda = document.getElementById('resumo-queda');
     if (resumoQueda) resumoQueda.textContent = `${formatarNumero(quedaRealPercentual, 2)}%`;
     
     const resumoDisjuntor = document.getElementById('resumo-disjuntor');
-    if (resumoDisjuntor) resumoDisjuntor.textContent = `${formatarNumero(disjuntor, 0)} A`;
+    if (resumoDisjuntor) resumoDisjuntor.textContent = `${formatarNumeroComSufixo(disjuntor, 0)} A`;
 }
 
 /**
@@ -929,7 +917,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Atualiza o slider com o valor ajustado
         sliderPotencia.value = valor;
-        inputPotencia.value = formatarPotencia(valor);
+        inputPotencia.value = formatarNumeroComSufixo(valor, 1);
         if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPotencia);
         atualizarResultados();
     });
@@ -954,19 +942,11 @@ document.addEventListener('DOMContentLoaded', () => {
         e.target.select();
     });
     
-    inputPotencia.addEventListener('input', () => {
-        // Remove "k" se presente e converte para número
-        let valorTexto = inputPotencia.value.toString().trim();
-        let multiplicador = 1;
-        
-        // Se terminar com "k", remove e multiplica por 1000
-        if (valorTexto.toLowerCase().endsWith('k')) {
-            valorTexto = valorTexto.slice(0, -1).trim();
-            multiplicador = 1000;
-        }
-        
-        // Converte o valor numérico
-        const valor = obterValorNumericoFormatado(valorTexto) * multiplicador;
+    // Função para formatar o valor de potência (usada em blur, Enter e Tab)
+    function formatarValorPotencia() {
+        // Converte valor com sufixos (k/M/m) ou número puro para número
+        // Aceita: "7,5k", "7.5k", "7500", "10000", etc.
+        const valor = obterValorNumericoComSufixo(inputPotencia.value);
         
         // Permite qualquer valor positivo (não limita aos limites do slider)
         if (valor > 0) {
@@ -974,11 +954,45 @@ document.addEventListener('DOMContentLoaded', () => {
             if (valor >= parseFloat(sliderPotencia.min) && valor <= parseFloat(sliderPotencia.max)) {
                 sliderPotencia.value = valor;
             }
-            // Sempre atualiza o input com a formatação correta, mesmo se estiver fora dos limites
-            inputPotencia.value = formatarPotencia(valor);
+            // Aplica a formatação com sufixos (k/M) quando >= 1000
+            // Números puros como 10000 serão formatados como 10k
+            inputPotencia.value = formatarNumeroComSufixo(valor, 1);
+        } else if (inputPotencia.value.trim() === '') {
+            // Se o campo estiver vazio, mantém vazio
+            inputPotencia.value = '';
         }
         if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPotencia);
         atualizarResultados();
+    }
+    
+    // Durante a digitação, não formata - apenas atualiza slider e recalcula
+    // Permite digitar: números puros, números com ponto/vírgula, números com sufixos k/M/m
+    inputPotencia.addEventListener('input', () => {
+        // Converte valor com sufixos (k/M/m) ou número puro para número
+        const valor = obterValorNumericoComSufixo(inputPotencia.value);
+        
+        // Permite qualquer valor positivo (não limita aos limites do slider)
+        if (valor > 0) {
+            // Atualiza o slider apenas se estiver dentro dos limites
+            if (valor >= parseFloat(sliderPotencia.min) && valor <= parseFloat(sliderPotencia.max)) {
+                sliderPotencia.value = valor;
+            }
+            // NÃO formata durante a digitação - mantém o que o usuário digitou
+            // Permite digitar: "7500", "7,5k", "7.5k", "10k", etc.
+            // A formatação será aplicada em blur, Enter ou Tab
+        }
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPotencia);
+        atualizarResultados();
+    });
+    
+    // Formata quando o campo perde o foco (blur)
+    inputPotencia.addEventListener('blur', formatarValorPotencia);
+    
+    // Formata quando pressiona Enter ou Tab
+    inputPotencia.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === 'Tab') {
+            formatarValorPotencia();
+        }
     });
     
     inputComprimento.addEventListener('focus', (e) => {
@@ -1138,7 +1152,7 @@ document.addEventListener('DOMContentLoaded', () => {
     atualizarTensaoCC();
     
     // Inicializa a formatação da potência
-    inputPotencia.value = formatarPotencia(parseFloat(sliderPotencia.value));
+    inputPotencia.value = formatarNumeroComSufixo(parseFloat(sliderPotencia.value), 1);
     
     // Ajustar tamanho inicial de todos os inputs
     if (typeof ajustarTamanhoInput === 'function') {

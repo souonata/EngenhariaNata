@@ -536,22 +536,8 @@ function converterParaNumero(valorTexto) {
  */
 function formatarBTU(valor) {
     if (isNaN(valor) || valor === null || valor === undefined) return '-';
-    
-    // Se o valor for menor que 1000, formata normalmente
-    if (valor < 1000) {
-        return formatarNumero(valor) + ' BTU';
-    }
-    
-    // Se for >= 1000, divide por 1000 e adiciona "k"
-    const valorK = valor / 1000;
-    
-    // Se for um número inteiro (ex: 5k, 12k, 24k), não mostra decimais
-    if (valorK % 1 === 0) {
-        return valorK + 'k BTU';
-    }
-    
-    // Caso contrário, mostra uma casa decimal (ex: 1,5k, 2,5k)
-    return formatarNumeroDecimal(valorK, 1) + 'k BTU';
+    // Usa a função genérica formatarNumeroComSufixo para consistência
+    return formatarNumeroComSufixo(valor, 1) + ' BTU';
 }
 
 /**

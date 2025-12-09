@@ -223,75 +223,83 @@ function selecionarConteudo(e) {
 }
 
 /**
- * Formata o valor emprestado enquanto o usuário digita
+ * Formata o valor emprestado quando o usuário termina de editar (blur/Enter/Tab)
  * Adiciona pontos como separador de milhares (ex: 100.000)
+ * Durante a digitação, não formata para permitir inserção completa do valor
  */
 function formatarValorInput(e) {
-    let valor = e.target.value;
     const MAX_VALOR = 10000000; // 10 milhões
     
-    // Remove TUDO que não é número (letras, pontos, vírgulas, etc)
-    // \D significa "qualquer coisa que não seja dígito"
-    valor = valor.replace(/\D/g, '');
+    // Converte valor com sufixos (k/M/m) ou número puro para número
+    // Aceita: "7,5k", "7.5k", "7500", "10000", "1.5M", etc.
+    let numero = obterValorNumericoComSufixo(e.target.value);
     
     // Se o campo ficou vazio, não faz nada (mas no blur vamos forçar o mínimo)
-    if (valor === '') {
-        e.target.value = '';
+    if (isNaN(numero) || numero === 0) {
+        if (e.type === 'blur') {
+            numero = 1000;
+            e.target.value = formatarNumeroComSufixo(numero, 1);
+            const slider = document.getElementById('sliderValor');
+            if (slider) {
+                slider.value = 1000;
+                calcularEmprestimo();
+            }
+        } else {
+            e.target.value = '';
+        }
         return;
     }
-    
-    // Converte o texto para número inteiro (sem centavos)
-    let numero = parseInt(valor);
     
     // Se passar do limite, corta no máximo
     if (numero > MAX_VALOR) {
         numero = MAX_VALOR;
     }
 
-    // Se chamado por 'blur' (o usuário terminou de editar) aplicamos regras:
-    // - mínimo absoluto = 1.000
-    // - Arredonda para múltiplos do step apropriado baseado no valor
-    if (e.type === 'blur') {
-        if (numero < 1000) numero = 1000;
-        
-        // Determina o step baseado no valor
-        let step;
-        const maxSlider = obterMaxValorSlider();
-        if (numero < 10000) {
-            step = 1000; // Entre 1.000 e 10.000: step de 1.000
-        } else if (numero < maxSlider) {
-            step = 10000; // Entre 10.000 e o máximo do slider: step de 10.000
-        } else {
-            step = 100000; // Acima do máximo do slider: step de 100.000
-        }
-        
-        // Arredonda para o múltiplo mais próximo do step
-        numero = Math.round(numero / step) * step;
-        
-        // Garanta que o arredondamento não quebre o limite máximo
-        if (numero > MAX_VALOR) numero = MAX_VALOR;
-    }
-    
-    // Se não for blur, apenas atualiza o valor enquanto digita (sem recalcular)
+    // Durante a digitação (input), não formata - apenas atualiza slider se necessário
+    // Permite digitar: números puros, números com ponto/vírgula, números com sufixos k/M/m
     if (e.type !== 'blur') {
-        // Formata com separador de milhares enquanto digita
-        const valorFormatado = numero.toLocaleString(idiomaAtual, {
-            useGrouping: true,
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        });
-        e.target.value = valorFormatado;
+        // Atualiza o slider apenas se estiver dentro dos limites
+        const slider = document.getElementById('sliderValor');
+        if (slider && numero > 0) {
+            const maxSlider = obterMaxValorSlider();
+            if (numero >= 1000 && numero <= maxSlider) {
+                slider.value = numero;
+            }
+        }
+        // Mantém o valor digitado sem formatação (mas permite sufixos k/M/m)
+        // Não formata durante a digitação para permitir inserção completa
+        // Exemplos permitidos: "7500", "7,5k", "7.5k", "10000", "1.5M"
         if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(e.target);
+        // Recalcula durante a digitação para feedback em tempo real
+        calcularEmprestimo();
         return;
     }
     
-    // No blur, formata e recalcula
-    const valorFormatado = numero.toLocaleString(idiomaAtual, {
-        useGrouping: true,           // Usa agrupamento (separa os milhares)
-        minimumFractionDigits: 0,    // Não mostra decimais
-        maximumFractionDigits: 0     // Não permite decimais
-    });
-    e.target.value = valorFormatado;
+    // Se chamado por 'blur' (o usuário terminou de editar) aplicamos regras:
+    // - mínimo absoluto = 1.000
+    // - Arredonda para múltiplos do step apropriado baseado no valor
+    if (numero < 1000) numero = 1000;
+    
+    // Determina o step baseado no valor
+    let step;
+    const maxSlider = obterMaxValorSlider();
+    if (numero < 10000) {
+        step = 1000; // Entre 1.000 e 10.000: step de 1.000
+    } else if (numero < maxSlider) {
+        step = 10000; // Entre 10.000 e o máximo do slider: step de 10.000
+    } else {
+        step = 100000; // Acima do máximo do slider: step de 100.000
+    }
+    
+    // Arredonda para o múltiplo mais próximo do step
+    numero = Math.round(numero / step) * step;
+    
+    // Garanta que o arredondamento não quebre o limite máximo
+    if (numero > MAX_VALOR) numero = MAX_VALOR;
+    
+    // No blur, formata e recalcula usando sufixos k/M
+    // Números puros como 10000 serão formatados como 10k
+    e.target.value = formatarNumeroComSufixo(numero, 1);
     if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(e.target);
     
     // Sincronizar slider
@@ -299,7 +307,6 @@ function formatarValorInput(e) {
     if (slider) {
         // Permitir valores acima do máximo do slider para inputs manuais
         // O slider será limitado ao máximo baseado no idioma, mas o input pode ir até 10 milhões
-        const maxSlider = obterMaxValorSlider();
         slider.value = Math.min(maxSlider, numero); // Limita slider ao máximo do idioma
     }
     
@@ -1374,11 +1381,8 @@ function calcularEmprestimo() {
     // Isso permite valores acima do limite do slider (até 10 milhões)
     const inputValor = document.getElementById('inputValor');
     if (inputValor) {
-        // Remove pontos (separadores de milhares) e troca vírgula por ponto
-        // Exemplo: "100.000" → "100000", "1.500,50" → "1500.50"
-        const valorInputTexto = inputValor.value.replace(/\./g, '').replace(',', '.');
-        // Converte para número
-        const valorInput = parseFloat(valorInputTexto) || 0;
+        // Converte valor com sufixos (k/M/m) para número
+        const valorInput = obterValorNumericoComSufixo(inputValor.value);
         // Pega o máximo permitido pelo slider (depende do idioma)
         const maxSlider = obterMaxValorSlider();
         // Se o valor digitado está acima do slider mas dentro do limite (10 milhões)
@@ -2213,7 +2217,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (inputValor && sliderValor && document.activeElement !== inputValor) {
             // Se o input tem um valor acima do máximo do slider, usa o input
             // Caso contrário, usa o slider
-            const valorInput = parseFloat(inputValor.value.replace(/\./g, '').replace(',', '.')) || 0;
+            const valorInput = obterValorNumericoComSufixo(inputValor.value);
             const valorSlider = parseFloat(sliderValor.value) || 0;
             
             // Se o input tem valor válido e está acima do limite do slider, usa o input
@@ -2223,12 +2227,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Mantém o valor do input (já está formatado)
                 return;
             } else {
-                // Sincroniza com o slider
-                inputValor.value = valorSlider.toLocaleString(idiomaAtual, {
-                    useGrouping: true,
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0
-                });
+                // Sincroniza com o slider usando formatação com sufixos
+                inputValor.value = formatarNumeroComSufixo(valorSlider, 1);
                 if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputValor);
             }
         }
@@ -2284,6 +2284,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 calcularEmprestimo();
             }
         });
+        // Para inputValor, adiciona suporte para Enter e Tab para formatar
+        if (inputId === 'inputValor') {
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === 'Tab') {
+                    formatarFuncao(e);
+                    // Sincronizar slider
+                    const valor = obterValorNumericoFormatado(e.target.value);
+                    const maxSlider = obterMaxValorSlider();
+                    slider.value = Math.max(1000, Math.min(maxSlider, valor));
+                    calcularEmprestimo();
+                }
+            });
+        }
         input.addEventListener('input', formatarFuncao);
     }
     
