@@ -1720,6 +1720,9 @@ const traducoes = {
         'dica-tipo-sistema': '💡 Selecione um ou ambos os tipos de sistema',
         'label-area-casa': 'Área da Casa',
         'label-altura-casa': 'Altura do Pé Direito',
+        'label-dias-autonomia': 'Dias de Autonomia',
+        'dica-dias-autonomia': '💡 Número de dias sem sol que o sistema deve manter a casa aquecida',
+        'unit-dias': 'dias',
         'label-classe-energetica': 'Classe Energética',
         'dica-altura-casa': '💡 Altura padrão residencial: 2,7m',
         'dica-classe-energetica': '<span style="font-size: 0.85em; color: #666;">* Valores em kWh/m²·ano</span>',
@@ -1810,7 +1813,11 @@ const traducoes = {
         'custo-termossifoes': 'Termossifões:',
         'custo-total': 'Custo Total Estimado:',
         'custos-detalhamento': 'Detalhamento:',
-        'nota-custos': '* Valores aproximados baseados em preços médios do mercado. Podem variar conforme região e fornecedor.'
+        'nota-custos': '* Valores aproximados baseados em preços médios do mercado. Podem variar conforme região e fornecedor.',
+        'watermark-dev': '🚧 EM DESENVOLVIMENTO',
+        'learn-more': 'SAIBA MAIS!',
+        'back': '← Voltar',
+        'btn-memorial': 'Ver Memorial de Cálculo'
     },
     'it-IT': {
         'app-title': '☀️ Dimensionatore Riscaldatore Solare Termico',
@@ -2022,7 +2029,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const sliderAreaCasa = document.getElementById('sliderAreaCasa');
     const sliderAlturaCasa = document.getElementById('sliderAlturaCasa');
     
-    sliderPessoas.addEventListener('input', () => {
+    // Aplica throttle nos sliders para melhorar performance durante o arraste
+    sliderPessoas.addEventListener('input', throttle(() => {
         const valor = parseInt(sliderPessoas.value);
         const inputPessoas = document.getElementById('inputPessoas');
         if (inputPessoas) {
@@ -2030,9 +2038,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
         }
         atualizarResultados();
-    });
+    }, 100));
     
-    sliderLatitude.addEventListener('input', () => {
+    sliderLatitude.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderLatitude.value);
         const inputLatitude = document.getElementById('inputLatitude');
         if (inputLatitude) {
@@ -2041,9 +2049,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputLatitude);
         }
         atualizarResultados();
-    });
+    }, 100));
     
-    sliderAltitude.addEventListener('input', () => {
+    sliderAltitude.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderAltitude.value);
         const inputAltitude = document.getElementById('inputAltitude');
         if (inputAltitude) {
@@ -2051,9 +2059,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAltitude);
         }
         atualizarResultados();
-    });
+    }, 100));
     
-    sliderAreaCasa.addEventListener('input', () => {
+    sliderAreaCasa.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderAreaCasa.value);
         const inputAreaCasa = document.getElementById('inputAreaCasa');
         if (inputAreaCasa) {
@@ -2061,9 +2069,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAreaCasa);
         }
         atualizarResultados();
-    });
+    }, 100));
     
-    sliderAlturaCasa.addEventListener('input', () => {
+    sliderAlturaCasa.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderAlturaCasa.value);
         const inputAlturaCasa = document.getElementById('inputAlturaCasa');
         if (inputAlturaCasa) {
@@ -2072,7 +2080,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAlturaCasa);
         }
         atualizarResultados();
-    });
+    }, 100));
     
     // Event listener para slider de dias de autonomia
     const sliderDiasAutonomia = document.getElementById('sliderDiasAutonomia');

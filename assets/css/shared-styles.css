@@ -211,12 +211,28 @@ footer p {
     min-width: 60px;            /* largura mínima padronizada */
     height: 36px;               /* altura fixa para consistência */
     box-sizing: border-box;
+    touch-action: manipulation;  /* Melhora responsividade em mobile */
+}
+
+/* Garantir área mínima de toque de 44x44px em mobile */
+@media (max-width: 768px) {
+    .btn-idioma, .lang-btn {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 10px 16px;
+    }
 }
 
 .btn-idioma:hover, .lang-btn:hover {
     background: var(--lang-btn-hover, rgba(255,255,255,0.3));
     border-color: var(--lang-btn-border-hover, rgba(255,255,255,0.5));
     transform: translateY(-2px);
+}
+
+/* Melhorar acessibilidade: outline visível no foco do teclado */
+.btn-idioma:focus-visible, .lang-btn:focus-visible {
+    outline: 3px solid var(--lang-btn-color, white);
+    outline-offset: 2px;
 }
 
 .btn-idioma.active, .lang-btn.active {
@@ -256,12 +272,47 @@ footer p {
     width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content:center;
     border: 2px solid var(--arrow-border); background: var(--arrow-bg); color: var(--arrow-border);
     cursor: pointer; transition: all 0.15s ease; user-select:none; touch-action: manipulation;
+    min-width: 30px; min-height: 30px; /* Garantir tamanho mínimo */
+    outline: none; /* Remove outline padrão */
+}
+
+/* Melhorar acessibilidade: outline visível no foco do teclado */
+.arrow-btn:focus-visible {
+    outline: 3px solid var(--arrow-border);
+    outline-offset: 2px;
+}
+
+/* Garantir área mínima de toque de 44x44px em mobile */
+@media (max-width: 768px) {
+    .arrow-btn {
+        min-width: 44px;
+        min-height: 44px;
+        width: 44px;
+        height: 44px;
+    }
 }
 .arrow-btn:hover{ background: var(--arrow-hover-bg); color: var(--arrow-hover-color); transform: scale(1.05); }
 .arrow-btn:active{ transform: scale(.98); }
 
 /* Standard action buttons used cross-site */
-.btn-acao { padding: 10px 14px; border-radius: 10px; cursor: pointer; border: none; display: inline-flex; align-items:center; gap:8px; }
+.btn-acao { 
+    padding: 10px 14px; 
+    border-radius: 10px; 
+    cursor: pointer; 
+    border: none; 
+    display: inline-flex; 
+    align-items:center; 
+    gap:8px;
+    touch-action: manipulation;
+    min-height: 44px; /* Área mínima de toque */
+}
+
+@media (max-width: 768px) {
+    .btn-acao {
+        min-height: 44px;
+        padding: 12px 16px;
+    }
+}
 
 /* Small helpers */
 .input-with-arrows { display:flex; align-items:center; gap:8px; }
@@ -354,6 +405,12 @@ input[type="range"] {
     cursor: pointer;
     -webkit-appearance: none;
     appearance: none;
+}
+
+/* Melhorar acessibilidade: outline visível no foco do teclado */
+input[type="range"]:focus-visible {
+    outline: 3px solid var(--accent-color, #2d9fa3ff);
+    outline-offset: 2px;
 }
 
 input[type="range"]::-webkit-slider-thumb {

@@ -449,7 +449,12 @@ const traducoes = {
         'memorial-formula-passo8-2': 'Custo Baterias = Número de Baterias × Preço por Bateria',
         'memorial-formula-passo8-3': 'Custo Inversor = Preço do Inversor (da tabela de preços)',
         'memorial-formula-passo8-4': 'Custo MPPT = Preço do MPPT (da tabela de preços)',
-        'memorial-formula-passo8-5': 'Custo Total = Custo Painéis + Custo Baterias + Custo Inversor + Custo MPPT'
+        'memorial-formula-passo8-5': 'Custo Total = Custo Painéis + Custo Baterias + Custo Inversor + Custo MPPT',
+        'aria-home': 'Voltar para a tela inicial',
+        'watermark-dev': '🚧 EM DESENVOLVIMENTO',
+        'learn-more': 'SAIBA MAIS!',
+        'back': '← Voltar',
+        'btn-memorial': 'Ver Memorial de Cálculo'
     },
     'it-IT': {
         'app-title': '🔋 Energia Solare',
@@ -471,6 +476,11 @@ const traducoes = {
         'custos-titulo': 'Dettaglio Costi',
         'custo-total': 'Totale',
         'footer': 'Solare - Engenharia NATA @ 2025',
+        'aria-home': 'Voltar para a tela inicial',
+        'watermark-dev': '🚧 EM DESENVOLVIMENTO',
+        'learn-more': 'SAIBA MAIS!',
+        'back': '← Voltar',
+        'btn-memorial': 'Ver Memorial de Cálculo',
         'dias': 'giorni',
         'dia': 'giorno',
         'anos': 'anni',
@@ -1295,7 +1305,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const sliderAutonomia = document.getElementById('sliderAutonomia');
     const sliderVidaUtil = document.getElementById('sliderVidaUtil');
     
-    sliderConsumo.addEventListener('input', () => {
+    // Aplica throttle nos sliders para melhorar performance durante o arraste
+    sliderConsumo.addEventListener('input', throttle(() => {
         const valor = parseInt(sliderConsumo.value);
         const inputConsumo = document.getElementById('inputConsumo');
         if (inputConsumo) {
@@ -1303,9 +1314,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumo);
         }
         atualizarInterface();
-    });
+    }, 100));
     
-    sliderAutonomia.addEventListener('input', () => {
+    sliderAutonomia.addEventListener('input', throttle(() => {
         const valor = parseInt(sliderAutonomia.value);
         const inputAutonomia = document.getElementById('inputAutonomia');
         if (inputAutonomia) {
@@ -1313,9 +1324,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAutonomia);
         }
         atualizarInterface();
-    });
+    }, 100));
     
-    sliderVidaUtil.addEventListener('input', () => {
+    sliderVidaUtil.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderVidaUtil.value);
         const inputVidaUtil = document.getElementById('inputVidaUtil');
         if (inputVidaUtil) {
@@ -1323,7 +1334,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputVidaUtil);
         }
         atualizarInterface();
-    });
+    }, 100));
     
     // 3B. Configurar botão do memorial
     const btnMemorial = document.getElementById('btnMemorial');

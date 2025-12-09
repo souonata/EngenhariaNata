@@ -132,6 +132,13 @@ header h1 {
     font-weight: 600;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    outline: none; /* Remove outline padrão */
+}
+
+/* Melhorar acessibilidade: outline visível no foco do teclado */
+.btn-submit:focus-visible {
+    outline: 3px solid var(--accent-color, #2d9fa3ff);
+    outline-offset: 2px;
 }
 
 .btn-submit:hover {
@@ -163,6 +170,13 @@ header h1 {
     text-align: center;
     transition: all 0.2s ease;
     display: inline-block;
+    outline: none; /* Remove outline padrão */
+}
+
+/* Melhorar acessibilidade: outline visível no foco do teclado */
+.btn-cancel:focus-visible {
+    outline: 3px solid var(--accent-color, #2d9fa3ff);
+    outline-offset: 2px;
 }
 
 .btn-cancel:hover {

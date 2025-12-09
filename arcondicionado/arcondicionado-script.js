@@ -227,6 +227,10 @@ const traducoes = {
         'info-modelos': '💡 Modelos Comerciais Comuns:',
         'footer': 'Dimensionador de Ar Condicionado - Engenharia Nata @ 2025',
         'aria-home': 'Voltar para a tela inicial',
+        'watermark-dev': '🚧 EM DESENVOLVIMENTO',
+        'learn-more': 'SAIBA MAIS!',
+        'back': '← Voltar',
+        'btn-memorial': 'Ver Memorial de Cálculo',
         'learn-more': 'SAIBA MAIS!',
         'back': '← Voltar',
         'btn-memorial': 'Ver Memorial de Cálculo',
@@ -548,6 +552,8 @@ function formatarBTU(valor) {
  * @param {number} decimais - Número de casas decimais
  * @returns {string} Valor formatado com vírgula
  */
+// Função formatarDecimal - alias para formatarNumeroDecimal de site-config.js
+// Mantida para compatibilidade com código existente
 function formatarDecimal(valor, decimais = 1) {
     return formatarNumeroDecimal(valor, decimais);
 }
@@ -953,7 +959,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const sliderPessoas = document.getElementById('sliderPessoas');
     const sliderEquipamentos = document.getElementById('sliderEquipamentos');
     
-    sliderArea.addEventListener('input', () => {
+    // Aplica throttle nos sliders para melhorar performance durante o arraste
+    sliderArea.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderArea.value);
         const inputArea = document.getElementById('inputArea');
         if (inputArea) {
@@ -961,9 +968,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputArea);
         }
         atualizarResultados();
-    });
+    }, 100));
     
-    sliderAltura.addEventListener('input', () => {
+    sliderAltura.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderAltura.value);
         const inputAltura = document.getElementById('inputAltura');
         if (inputAltura) {
@@ -972,9 +979,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAltura);
         }
         atualizarResultados();
-    });
+    }, 100));
     
-    sliderPessoas.addEventListener('input', () => {
+    sliderPessoas.addEventListener('input', throttle(() => {
         const valor = parseInt(sliderPessoas.value);
         const inputPessoas = document.getElementById('inputPessoas');
         if (inputPessoas) {
@@ -982,9 +989,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
         }
         atualizarResultados();
-    });
+    }, 100));
     
-    sliderEquipamentos.addEventListener('input', () => {
+    sliderEquipamentos.addEventListener('input', throttle(() => {
         const valor = parseInt(sliderEquipamentos.value);
         const inputEquipamentos = document.getElementById('inputEquipamentos');
         if (inputEquipamentos) {
@@ -992,14 +999,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputEquipamentos);
         }
         atualizarResultados();
-    });
+    }, 100));
     
     // Configurar sliders do sistema multi-split
     const sliderNumAmbientes = document.getElementById('sliderNumAmbientes');
     const sliderAreaTotal = document.getElementById('sliderAreaTotal');
     
     if (sliderNumAmbientes) {
-        sliderNumAmbientes.addEventListener('input', () => {
+        sliderNumAmbientes.addEventListener('input', throttle(() => {
             const valor = parseInt(sliderNumAmbientes.value);
             const inputNumAmbientes = document.getElementById('inputNumAmbientes');
             if (inputNumAmbientes) {
@@ -1038,11 +1045,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             atualizarResultados();
-        });
+        }, 100));
     }
     
     if (sliderAreaTotal) {
-        sliderAreaTotal.addEventListener('input', () => {
+        sliderAreaTotal.addEventListener('input', throttle(() => {
             const valor = parseFloat(sliderAreaTotal.value);
             const inputAreaTotal = document.getElementById('inputAreaTotal');
             if (inputAreaTotal) {
@@ -1050,7 +1057,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAreaTotal);
             }
             atualizarResultados();
-        });
+        }, 100));
     }
     
     // Configurar inputs editáveis

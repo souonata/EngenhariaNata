@@ -424,58 +424,24 @@ function formatarPrazoInput(e) {
  * @param {string|number} valorFormatado - Valor formatado (texto ou número)
  * @returns {number} Número puro para cálculos
  */
+// Função obterValorNumericoFormatado - alias para converterValorFormatadoParaNumero de site-config.js
+// Mantida para compatibilidade com código existente
 function obterValorNumericoFormatado(valorFormatado) {
-    // Se o valor está vazio, nulo ou undefined, retorna zero
+    // Usa função global de site-config.js se disponível
+    if (typeof converterValorFormatadoParaNumero === 'function') {
+        return converterValorFormatadoParaNumero(valorFormatado);
+    }
+    // Fallback se site-config.js não estiver carregado
     if (!valorFormatado) return 0;
-
-    // Converte para texto e remove espaços no início e fim
-    // String() = converte para texto (caso seja número)
-    // .trim() = remove espaços no início e fim
     let valorTexto = String(valorFormatado).trim();
-
-    // ============================================
-    // CASO 1: Tem AMBOS ponto e vírgula
-    // ============================================
-    // Exemplo: "1.234,56"
-    // Neste caso, ponto = separador de milhares, vírgula = decimal
     if (valorTexto.indexOf('.') !== -1 && valorTexto.indexOf(',') !== -1) {
-        // Remove todos os pontos (separadores de milhares)
-        // /\./g = regex que encontra todos os pontos (g = global, todos)
-        valorTexto = valorTexto.replace(/\./g, '');
-        // Troca a vírgula por ponto (padrão JavaScript para decimais)
-        valorTexto = valorTexto.replace(',', '.');
-    } 
-    // ============================================
-    // CASO 2: Tem APENAS vírgula
-    // ============================================
-    // Exemplo: "10,5"
-    // Neste caso, vírgula = separador decimal
-    else if (valorTexto.indexOf(',') !== -1) {
-        // Remove qualquer ponto que possa existir (por segurança)
-        valorTexto = valorTexto.replace(/\./g, '');
-        // Troca vírgula por ponto
-        valorTexto = valorTexto.replace(',', '.');
-    } 
-    // ============================================
-    // CASO 3: Tem APENAS pontos (ou nenhum)
-    // ============================================
-    // Exemplo: "100.000" ou "100000"
-    // Neste caso, pontos = separadores de milhares
-    else {
-        // Remove todos os pontos
+        valorTexto = valorTexto.replace(/\./g, '').replace(',', '.');
+    } else if (valorTexto.indexOf(',') !== -1) {
+        valorTexto = valorTexto.replace(/\./g, '').replace(',', '.');
+    } else {
         valorTexto = valorTexto.replace(/\./g, '');
     }
-
-    // Remove qualquer caractere que não seja número, ponto ou sinal de menos
-    // [^0-9.\-] = regex que encontra qualquer coisa que NÃO seja:
-    // - 0-9 = dígitos
-    // - . = ponto
-    // - \- = sinal de menos (escapado)
     valorTexto = valorTexto.replace(/[^0-9.\-]/g, '');
-
-    // Converte o texto limpo para número decimal
-    // parseFloat() = converte texto para número (permite decimais)
-    // || 0 = se não conseguir converter (NaN), usa zero
     return parseFloat(valorTexto) || 0;
 }
 
@@ -2048,6 +2014,14 @@ let graficoEvolutivo = null;
 function atualizarGraficos() {
     if (tabelaAmortizacaoAtual.length === 0) return;
     
+    // Carrega Chart.js dinamicamente se ainda não estiver carregado
+    if (typeof Chart === 'undefined') {
+        carregarChartJS(() => {
+            atualizarGraficos();
+        }, ['https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation']);
+        return;
+    }
+    
     // Preparar dados acumulados
     let amortizacaoAcumulada = 0;
     let jurosAcumulados = 0;
@@ -2384,25 +2358,27 @@ document.addEventListener('DOMContentLoaded', function() {
         atualizarParcelaExibida();
     });
     
+    // Aplica throttle nos sliders para melhorar performance
+    // Throttle limita a execução de calcularEmprestimo() durante o arraste do slider
     if (sliderValor) {
-        sliderValor.addEventListener('input', function() {
+        sliderValor.addEventListener('input', throttle(function() {
             atualizarDisplayValor();
             calcularEmprestimo();
-        });
+        }, 100));
     }
     
     if (sliderTaxa) {
-        sliderTaxa.addEventListener('input', function() {
+        sliderTaxa.addEventListener('input', throttle(function() {
             atualizarDisplayTaxa();
             calcularEmprestimo();
-        });
+        }, 100));
     }
     
     if (sliderPrazo) {
-        sliderPrazo.addEventListener('input', function() {
+        sliderPrazo.addEventListener('input', throttle(function() {
             atualizarDisplayPrazo();
             calcularEmprestimo();
-        });
+        }, 100));
     }
     
     // Radio buttons dos controles rápidos

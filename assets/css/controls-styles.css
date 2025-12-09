@@ -122,6 +122,15 @@
     box-shadow: 0 0 0 3px rgba(45, 159, 163, 0.1);
 }
 
+/* Melhorar acessibilidade: outline visível no foco do teclado */
+.controle-item input:focus-visible,
+.controle-item select:focus-visible,
+.form-group input:focus-visible,
+.form-group select:focus-visible {
+    outline: 3px solid var(--control-border-focus, var(--control-accent, #2d9fa3ff));
+    outline-offset: 2px;
+}
+
 /* Input editável que substitui display (usado em Mutuo) */
 .valor-input {
     border: 2px solid transparent;

@@ -969,39 +969,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const sliderPessoas = document.getElementById('sliderPessoas');
     const inputPessoas = document.getElementById('inputPessoas');
     
-    sliderPessoas.addEventListener('input', () => {
+    // Aplica throttle nos sliders e debounce nos inputs para melhorar performance
+    sliderPessoas.addEventListener('input', throttle(() => {
         inputPessoas.value = sliderPessoas.value;
         if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
         atualizarResultados();
-    });
+    }, 100));
     
-    inputPessoas.addEventListener('input', () => {
+    inputPessoas.addEventListener('input', debounce(() => {
         if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
         let valor = parseInt(inputPessoas.value) || 1;
         valor = Math.max(1, Math.min(20, valor));
         inputPessoas.value = valor;
         sliderPessoas.value = valor;
         atualizarResultados();
-    });
+    }, 300));
     
     // Event listeners para consumo de plantas
     const sliderConsumoPlantas = document.getElementById('sliderConsumoPlantas');
     const inputConsumoPlantas = document.getElementById('inputConsumoPlantas');
     
-    sliderConsumoPlantas.addEventListener('input', () => {
+    sliderConsumoPlantas.addEventListener('input', throttle(() => {
         inputConsumoPlantas.value = formatarNumeroDecimal(parseFloat(sliderConsumoPlantas.value), 1);
         if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoPlantas);
         atualizarResultados();
-    });
+    }, 100));
     
-    inputConsumoPlantas.addEventListener('input', () => {
+    inputConsumoPlantas.addEventListener('input', debounce(() => {
         if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoPlantas);
         let valor = parseFloat(inputConsumoPlantas.value.replace(',', '.')) || 0.1;
         valor = Math.max(0.1, Math.min(2.0, valor));
         inputConsumoPlantas.value = formatarNumeroDecimal(valor, 1);
         sliderConsumoPlantas.value = valor;
         atualizarResultados();
-    });
+    }, 300));
     
     // Event listeners para consumo de proteínas
     const sliderConsumoProteinas = document.getElementById('sliderConsumoProteinas');

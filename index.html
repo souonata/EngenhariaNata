@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <!-- Meta viewport otimizada para mobile: desabilita zoom e scroll lateral -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Meta viewport otimizada para mobile: permite zoom mas limita escala máxima -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     
     <!-- Meta tags para DESABILITAR cache - sempre carrega arquivos atualizados -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -69,6 +69,10 @@
     }
     </script>
     
+    <!-- Preload de recursos críticos para melhorar performance -->
+    <link rel="preload" href="assets/css/shared-styles.css" as="style">
+    <link rel="preload" href="assets/js/site-config.js" as="script">
+    
     <!-- Carrega o arquivo CSS com controle de versão -->
     <!-- Mude ?v=1.0.0 para ?v=1.0.1 quando atualizar o CSS -->
     <link rel="stylesheet" href="assets/css/shared-styles.css?v=1.0.0">
@@ -80,13 +84,13 @@
     <!-- ========================================== -->
     <div class="language-selector">
         <!-- Botão para português (ativo definido pelo JavaScript) -->
-        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">
-            <span class="flag">🇧🇷</span>
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" aria-label="Alterar idioma para Português" title="Português">
+            <span class="flag" aria-hidden="true">🇧🇷</span>
             <span class="lang-text">PT</span>
         </button>
         <!-- Botão para italiano -->
-        <button id="btnItaliano" class="lang-btn" data-lang="it-IT">
-            <span class="flag">🇮🇹</span>
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" aria-label="Alterar idioma para Italiano" title="Italiano">
+            <span class="flag" aria-hidden="true">🇮🇹</span>
             <span class="lang-text">IT</span>
         </button>
     </div>
@@ -109,10 +113,10 @@
                 
                 <!-- Ícone do aplicativo Sobre o Projeto -->
                 <!-- Ao clicar, abre a página sobre/sobre.html -->
-                <a href="sobre/sobre.html" class="app-icon">
+                <a href="sobre/sobre.html" class="app-icon" aria-label="Sobre o projeto">
                     <!-- Ícone SVG personalizado com gradiente azul -->
                     <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img">
                             <!-- Definição do gradiente (roxo claro → roxo escuro) -->
                             <defs>
                                 <linearGradient id="gradient-about" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -131,7 +135,7 @@
                 </a>
 
                 <!-- Ícone do aplicativo Ar Condicionado -->
-                <a href="arcondicionado/arcondicionado.html" class="app-icon">
+                <a href="arcondicionado/arcondicionado.html" class="app-icon" aria-label="Ar Condicionado">
                     <div class="icon">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <defs>
@@ -148,7 +152,7 @@
                 </a>
 
                 <!-- Ícone do aplicativo Aquecedor Solar -->
-                <a href="aquecimento/aquecimento.html" class="app-icon">
+                <a href="aquecimento/aquecimento.html" class="app-icon" aria-label="Aquecedor Solar">
                     <div class="icon">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <defs>
@@ -165,7 +169,7 @@
                 </a>
 
                 <!-- Ícone do aplicativo Bitola -->
-                <a href="bitola/bitola.html" class="app-icon">
+                <a href="bitola/bitola.html" class="app-icon" aria-label="Bitola">
                     <div class="icon">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <defs>
@@ -182,7 +186,7 @@
                 </a>
 
                 <!-- Ícone do aplicativo Energia Solar -->
-                <a href="solar/solar.html" class="app-icon">
+                <a href="solar/solar.html" class="app-icon" aria-label="Energia Solar">
                     <div class="icon">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <defs>
@@ -199,7 +203,7 @@
                 </a>
 
                 <!-- Ícone do aplicativo Fazenda -->
-                <a href="fazenda/fazenda.html" class="app-icon">
+                <a href="fazenda/fazenda.html" class="app-icon" aria-label="Fazenda">
                     <div class="icon icon-dev">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <defs>
@@ -218,7 +222,7 @@
 
                 <!-- Ícone do aplicativo de cálculo de hélice -->
                 <!-- Ao clicar, abre a página helice/helice.html -->
-                <a href="helice/helice.html" class="app-icon">
+                <a href="helice/helice.html" class="app-icon" aria-label="Hélice">
                     <!-- Ícone SVG personalizado com gradiente azul-turquesa -->
                     <div class="icon">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -241,7 +245,7 @@
 
                 <!-- Ícone do aplicativo da calculadora -->
                 <!-- Ao clicar, abre a página mutuo/mutuo.html -->
-                <a href="mutuo/mutuo.html" class="app-icon">
+                <a href="mutuo/mutuo.html" class="app-icon" aria-label="Mutuo">
                     <!-- Ícone SVG personalizado com gradiente verde -->
                     <div class="icon">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -263,7 +267,7 @@
                 </a>
 
                 <!-- Ícone do aplicativo Reportar Bug (sempre por último) -->
-                <a href="bugs/bugs.html" class="app-icon">
+                <a href="bugs/bugs.html" class="app-icon" aria-label="Reportar Bug">
                     <div class="icon">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <defs>
@@ -498,8 +502,19 @@
         <p data-i18n="footer">💻 Portfólio Engenharia NATA @ 2025</p>
     </footer>
     
-    <script src="assets/js/site-config.js?v=1.0.0"></script>
+    <script src="assets/js/site-config.js?v=1.1.0"></script>
     <!-- Carrega o JavaScript que faz o relógio funcionar e adiciona efeitos -->
     <script src="index-script.js?v=1.2.2"></script>
+    
+    <!-- Registra Service Worker para cache offline -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('[SW] Service Worker registrado:', reg.scope))
+                    .catch(err => console.log('[SW] Erro ao registrar Service Worker:', err));
+            });
+        }
+    </script>
 </body>
 </html>

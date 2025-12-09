@@ -103,6 +103,7 @@ const traducoes = {
         'app-bugs-description': 'Formulário para reportar bugs e problemas encontrados nos aplicativos. Ajude-nos a melhorar reportando erros, sugestões ou problemas de usabilidade. Informações de contato opcional para resposta.',
         'app-link-use': 'Usar calculadora →',
         'app-link-use-form': 'Usar formulário →',
+        'app-link-view': 'Ver página →',
         
         // Dias da semana por extenso (minúscula)
         'dia-dom': 'domingo',

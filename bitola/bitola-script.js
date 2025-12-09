@@ -902,8 +902,8 @@ document.addEventListener('DOMContentLoaded', () => {
     quedaReal = document.getElementById('quedaReal');
     disjuntorComercial = document.getElementById('disjuntorComercial');
     
-    // Event listeners para sliders
-    sliderPotencia.addEventListener('input', () => {
+    // Event listeners para sliders com throttle para melhorar performance
+    sliderPotencia.addEventListener('input', throttle(() => {
         let valor = parseFloat(sliderPotencia.value);
         
         // Para o slider de potência, ajusta o valor para o step apropriado
@@ -920,21 +920,21 @@ document.addEventListener('DOMContentLoaded', () => {
         inputPotencia.value = formatarNumeroComSufixo(valor, 1);
         if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPotencia);
         atualizarResultados();
-    });
+    }, 100));
     
-    sliderComprimento.addEventListener('input', () => {
+    sliderComprimento.addEventListener('input', throttle(() => {
         inputComprimento.value = formatarNumero(parseFloat(sliderComprimento.value), 0);
         if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputComprimento);
         atualizarResultados();
-    });
+    }, 100));
     
-    sliderTensaoCC.addEventListener('input', atualizarTensaoCC);
+    sliderTensaoCC.addEventListener('input', throttle(atualizarTensaoCC, 100));
     
-    sliderQuedaTensao.addEventListener('input', () => {
+    sliderQuedaTensao.addEventListener('input', throttle(() => {
         inputQuedaTensao.value = formatarNumero(parseFloat(sliderQuedaTensao.value), 1);
         if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputQuedaTensao);
         atualizarResultados();
-    });
+    }, 100));
     
     // Event listeners para inputs editáveis
     // Seleciona todo o texto quando o campo recebe foco

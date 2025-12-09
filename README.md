@@ -236,6 +236,78 @@ powershell -ExecutionPolicy Bypass -File scripts\pre-commit-checks.ps1
 
 **Documentação completa:** Consulte `scripts/pre-commit-checks.md` para a checklist manual completa de verificações.
 
+#### Atualização de Cache-Busting (`scripts/update-cache-busting.ps1`)
+
+Script PowerShell para incrementar automaticamente as versões (`?v=X.Y.Z`) nos links CSS/JS de todos os arquivos HTML.
+
+**Uso:**
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\update-cache-busting.ps1
+```
+
+**O que o script faz:**
+- Incrementa automaticamente versões em todos os arquivos HTML
+- Atualiza `?v=X.Y.Z` para `?v=X.Y.Z+1` (patch) ou `?v=X.Y+1.0` (minor)
+- Garante que navegadores carreguem versões atualizadas dos arquivos
+
+**Quando usar:**
+- Após atualizar arquivos CSS ou JS
+- Para forçar atualização de cache nos navegadores dos usuários
+
+#### Validação de Traduções (`scripts/validate-translations.ps1`)
+
+Script PowerShell para verificar se todas as chaves de tradução têm tradução em PT-BR e IT-IT.
+
+**Uso:**
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\validate-translations.ps1
+```
+
+**O que o script verifica:**
+- Chaves de tradução faltando em IT-IT
+- Chaves de tradução faltando em PT-BR
+- Consistência entre idiomas
+
+**Quando usar:**
+- Após adicionar novos textos traduzíveis
+- Antes de fazer commit para garantir traduções completas
+
+#### Análise de Bundle Size (`scripts/analyze-bundle-size.ps1`)
+
+Script PowerShell para analisar o tamanho dos arquivos JS, CSS e HTML do projeto.
+
+**Uso:**
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\analyze-bundle-size.ps1
+```
+
+**O que o script faz:**
+- Lista os 10 maiores arquivos JS, CSS e HTML
+- Calcula tamanhos totais por tipo de arquivo
+- Mostra tamanho total do projeto
+
+**Quando usar:**
+- Para identificar arquivos grandes que podem ser otimizados
+- Para acompanhar o crescimento do projeto
+
+#### Otimização de SVGs (`scripts/optimize-svgs.ps1`)
+
+Script PowerShell para otimizar SVGs inline nos arquivos HTML removendo espaços desnecessários.
+
+**Uso:**
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\optimize-svgs.ps1
+```
+
+**O que o script faz:**
+- Remove espaços múltiplos dentro de tags SVG
+- Remove quebras de linha desnecessárias
+- Mantém estrutura e funcionalidade dos SVGs
+
+**Quando usar:**
+- Para reduzir tamanho dos arquivos HTML
+- Para melhorar performance de carregamento
+
 ### Adicionando um Novo App
 
 1. Crie uma pasta para o app (ex: `meuapp/`)

@@ -1,0 +1,101 @@
+// ============================================
+// SERVICE WORKER - Cache Offline
+// ============================================
+// Este Service Worker permite que o site funcione parcialmente offline
+// e carregue mais rápido em visitas subsequentes através de cache.
+//
+// Versão do cache - incrementar quando atualizar recursos
+const CACHE_VERSION = 'v1.0.0';
+const CACHE_NAME = `engenharia-nata-${CACHE_VERSION}`;
+
+// Recursos estáticos para cachear (CSS, JS, imagens)
+// NOTA: Caminhos relativos ao root do site
+const STATIC_ASSETS = [
+    './',
+    './index.html',
+    './assets/css/shared-styles.css',
+    './assets/css/controls-styles.css',
+    './assets/js/site-config.js',
+    './favicon.svg'
+];
+
+// Estratégia: Cache First (para recursos estáticos)
+// Se estiver no cache, usa do cache. Senão, busca da rede e cacheia.
+async function cacheFirst(request) {
+    const cached = await caches.match(request);
+    if (cached) {
+        return cached;
+    }
+    try {
+        const response = await fetch(request);
+        if (response.status === 200) {
+            const cache = await caches.open(CACHE_NAME);
+            cache.put(request, response.clone());
+        }
+        return response;
+    } catch (error) {
+        console.error('Erro ao buscar recurso:', error);
+        // Retorna página offline se disponível
+        const offlinePage = await caches.match('./index.html');
+        if (offlinePage) {
+            return offlinePage;
+        }
+        throw error;
+    }
+}
+
+// Instalação do Service Worker
+self.addEventListener('install', (event) => {
+    console.log('[SW] Instalando Service Worker...');
+    event.waitUntil(
+        caches.open(CACHE_NAME).then((cache) => {
+            console.log('[SW] Cacheando recursos estáticos...');
+            return cache.addAll(STATIC_ASSETS.map(url => new Request(url, { cache: 'reload' })));
+        }).then(() => {
+            // Força ativação imediata do novo Service Worker
+            return self.skipWaiting();
+        })
+    );
+});
+
+// Ativação do Service Worker
+self.addEventListener('activate', (event) => {
+    console.log('[SW] Ativando Service Worker...');
+    event.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames.map((cacheName) => {
+                    // Remove caches antigos
+                    if (cacheName !== CACHE_NAME) {
+                        console.log('[SW] Removendo cache antigo:', cacheName);
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
+        }).then(() => {
+            // Assume controle de todas as páginas imediatamente
+            return self.clients.claim();
+        })
+    );
+});
+
+// Intercepta requisições de rede
+self.addEventListener('fetch', (event) => {
+    const url = new URL(event.request.url);
+    
+    // Ignora requisições para APIs externas e Google Forms
+    if (url.origin !== self.location.origin) {
+        // Para recursos externos (CDNs, APIs), usa Network First
+        event.respondWith(fetch(event.request).catch(() => {
+            // Se falhar, tenta do cache
+            return caches.match(event.request);
+        }));
+        return;
+    }
+    
+    // Para recursos do próprio site, usa Cache First
+    if (event.request.method === 'GET') {
+        event.respondWith(cacheFirst(event.request));
+    }
+});
+

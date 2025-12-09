@@ -823,6 +823,14 @@ function atualizarMemorialComValores() {
  * - Linha: Relação entre velocidade e passo para os parâmetros atuais (redução, RPM, slip)
  */
 function atualizarGrafico() {
+    // Carrega Chart.js dinamicamente se ainda não estiver carregado
+    if (typeof Chart === 'undefined') {
+        carregarChartJS(() => {
+            atualizarGrafico();
+        });
+        return;
+    }
+    
     // ============================================
     // PASSO 1: OBTER CONFIGURAÇÕES ATUAIS
     // ============================================
@@ -1096,7 +1104,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const sliderRPM = document.getElementById('sliderRPM');
     const sliderSlip = document.getElementById('sliderSlip');
     
-    sliderVelocidade.addEventListener('input', () => {
+    // Aplica throttle nos sliders para melhorar performance durante o arraste
+    sliderVelocidade.addEventListener('input', throttle(() => {
         const valorSlider = parseFloat(sliderVelocidade.value);
         const inputVelocidade = document.getElementById('inputVelocidade');
         if (inputVelocidade) {
@@ -1107,9 +1116,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         // Chama atualizarResultado que vai ler do slider (já que o input foi atualizado)
         atualizarResultado();
-    });
+    }, 100));
     
-    sliderReducao.addEventListener('input', () => {
+    sliderReducao.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderReducao.value);
         const inputReducao = document.getElementById('inputReducao');
         if (inputReducao) {
@@ -1117,9 +1126,9 @@ document.addEventListener('DOMContentLoaded', function() {
             inputReducao.value = formatarNumero(valor, 2);
         }
         atualizarResultado();
-    });
+    }, 100));
     
-    sliderRPM.addEventListener('input', () => {
+    sliderRPM.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderRPM.value);
         const inputRPM = document.getElementById('inputRPM');
         if (inputRPM) {
@@ -1127,9 +1136,9 @@ document.addEventListener('DOMContentLoaded', function() {
             inputRPM.value = formatarNumero(Math.round(valor), 0);
         }
         atualizarResultado();
-    });
+    }, 100));
     
-    sliderSlip.addEventListener('input', () => {
+    sliderSlip.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderSlip.value);
         const inputSlip = document.getElementById('inputSlip');
         if (inputSlip) {
@@ -1137,7 +1146,7 @@ document.addEventListener('DOMContentLoaded', function() {
             inputSlip.value = formatarNumero(Math.round(valor), 0);
         }
         atualizarResultado();
-    });
+    }, 100));
     
     // ============================================
     // PASSO 4B: CONFIGURAR EVENT LISTENERS DOS INPUTS EDITÁVEIS
@@ -1149,8 +1158,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const inputSlipEl = document.getElementById('inputSlip');
     
     if (inputVelocidadeEl) {
+        // Aplica debounce nos inputs para melhorar performance durante digitação
         inputVelocidadeEl.addEventListener('focus', (e) => e.target.select());
-        inputVelocidadeEl.addEventListener('input', () => {
+        inputVelocidadeEl.addEventListener('input', debounce(() => {
             const valor = converterValorFormatadoParaNumero(inputVelocidadeEl.value);
             if (!isNaN(valor) && valor > 0) {
                 // Atualiza o slider apenas se estiver dentro dos limites
@@ -1161,12 +1171,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Sempre recalcula, mesmo se estiver fora dos limites
                 atualizarResultado();
             }
-        });
+        }, 300));
     }
     
     if (inputReducaoEl) {
         inputReducaoEl.addEventListener('focus', (e) => e.target.select());
-        inputReducaoEl.addEventListener('input', () => {
+        inputReducaoEl.addEventListener('input', debounce(() => {
             const valor = converterValorFormatadoParaNumero(inputReducaoEl.value);
             if (!isNaN(valor) && valor > 0) {
                 const slider = document.getElementById('sliderReducao');
@@ -1175,12 +1185,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 atualizarResultado();
             }
-        });
+        }, 300));
     }
     
     if (inputRPMEl) {
         inputRPMEl.addEventListener('focus', (e) => e.target.select());
-        inputRPMEl.addEventListener('input', () => {
+        inputRPMEl.addEventListener('input', debounce(() => {
             const valor = converterValorFormatadoParaNumero(inputRPMEl.value);
             if (!isNaN(valor) && valor > 0) {
                 const slider = document.getElementById('sliderRPM');
@@ -1189,12 +1199,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 atualizarResultado();
             }
-        });
+        }, 300));
     }
     
     if (inputSlipEl) {
         inputSlipEl.addEventListener('focus', (e) => e.target.select());
-        inputSlipEl.addEventListener('input', () => {
+        inputSlipEl.addEventListener('input', debounce(() => {
             const valor = converterValorFormatadoParaNumero(inputSlipEl.value);
             if (!isNaN(valor) && valor > 0) {
                 const slider = document.getElementById('sliderSlip');
@@ -1203,7 +1213,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 atualizarResultado();
             }
-        });
+        }, 300));
     }
     
     // ============================================

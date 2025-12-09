@@ -66,7 +66,9 @@
             INPUT_PADDING_CHARS: 2,               // Caracteres de folga para inputs dinâmicos
             INPUT_MIN_WIDTH: 50,                  // Largura mínima de inputs em pixels
             SCROLL_BEHAVIOR: 'smooth',            // Comportamento de scroll (smooth ou auto)
-            ANIMATION_DURATION: 300               // Duração padrão de animações em ms
+            ANIMATION_DURATION: 300,              // Duração padrão de animações em ms
+            DEBOUNCE_DELAY: 300,                  // Delay para debounce de inputs (ms)
+            THROTTLE_DELAY: 100                   // Delay para throttle de sliders (ms)
         },
 
         // FORMATTING: Configurações de formatação de números
@@ -551,4 +553,273 @@ function obterSimboloMoeda(idioma) {
         idioma = obterIdiomaAtual();
     }
     return idioma === 'pt-BR' ? SiteConfig.CURRENCY.BRL_SYMBOL : SiteConfig.CURRENCY.EUR_SYMBOL;
+}
+
+// ============================================
+// FUNÇÕES DE PERFORMANCE: DEBOUNCE E THROTTLE
+// ============================================
+
+/**
+ * Debounce: Executa a função apenas após um período de inatividade
+ * Útil para inputs de texto que disparam cálculos pesados
+ * @param {Function} func - Função a ser executada
+ * @param {number} wait - Tempo de espera em milissegundos (padrão: 300ms)
+ * @returns {Function} Função com debounce aplicado
+ */
+function debounce(func, wait) {
+    if (wait === undefined) {
+        wait = SiteConfig.UI.DEBOUNCE_DELAY;
+    }
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+/**
+ * Throttle: Executa a função no máximo uma vez por período
+ * Útil para sliders que disparam cálculos a cada movimento
+ * @param {Function} func - Função a ser executada
+ * @param {number} limit - Intervalo mínimo entre execuções em ms (padrão: 100ms)
+ * @returns {Function} Função com throttle aplicado
+ */
+function throttle(func, limit) {
+    if (limit === undefined) {
+        limit = SiteConfig.UI.THROTTLE_DELAY;
+    }
+    let inThrottle;
+    return function executedFunction(...args) {
+        if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+}
+
+// ============================================
+// CACHE DE SELETORES DOM
+// ============================================
+
+/**
+ * Cache simples de seletores DOM para evitar múltiplas consultas
+ * Armazena elementos já buscados para reutilização
+ */
+const DOMCache = {
+    _cache: new Map(),
+    
+    /**
+     * Obtém elemento do cache ou busca e armazena
+     * @param {string} selector - Seletor CSS ou ID
+     * @param {boolean} useQuerySelector - Se true, usa querySelector; senão, getElementById
+     * @returns {HTMLElement|null} Elemento encontrado ou null
+     */
+    get(selector, useQuerySelector = false) {
+        const key = useQuerySelector ? `qs:${selector}` : `id:${selector}`;
+        
+        if (this._cache.has(key)) {
+            const cached = this._cache.get(key);
+            // Verifica se o elemento ainda existe no DOM
+            if (cached && document.contains(cached)) {
+                return cached;
+            } else {
+                // Remove do cache se não existe mais
+                this._cache.delete(key);
+            }
+        }
+        
+        const element = useQuerySelector 
+            ? document.querySelector(selector)
+            : document.getElementById(selector);
+        
+        if (element) {
+            this._cache.set(key, element);
+        }
+        
+        return element;
+    },
+    
+    /**
+     * Limpa o cache (útil quando elementos são removidos do DOM)
+     */
+    clear() {
+        this._cache.clear();
+    },
+    
+    /**
+     * Remove um elemento específico do cache
+     * @param {string} selector - Seletor usado para armazenar
+     * @param {boolean} useQuerySelector - Se true, usa querySelector; senão, getElementById
+     */
+    remove(selector, useQuerySelector = false) {
+        const key = useQuerySelector ? `qs:${selector}` : `id:${selector}`;
+        this._cache.delete(key);
+    }
+};
+
+// ============================================
+// FUNÇÃO GLOBAL DE INTERNACIONALIZAÇÃO (i18n)
+// ============================================
+
+/**
+ * Função global para trocar idioma e atualizar elementos com data-i18n
+ * Centraliza a lógica de i18n que estava duplicada em cada app
+ * @param {string} novoIdioma - Novo idioma ('pt-BR' ou 'it-IT')
+ * @param {Object} traducoes - Objeto com traduções { 'pt-BR': {...}, 'it-IT': {...} }
+ * @param {Function} callback - Função opcional chamada após trocar idioma
+ */
+function trocarIdiomaGlobal(novoIdioma, traducoes, callback) {
+    if (!novoIdioma || !traducoes || !traducoes[novoIdioma]) {
+        console.warn('⚠️ Idioma ou traduções inválidos:', novoIdioma);
+        return;
+    }
+    
+    // Salva o idioma no localStorage
+    const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) 
+        ? SiteConfig.LOCAL_STORAGE 
+        : { LANGUAGE_KEY: 'idiomaPreferido' };
+    localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
+    
+    // Atualiza elementos com data-i18n
+    document.querySelectorAll('[data-i18n]').forEach(elemento => {
+        const chave = elemento.getAttribute('data-i18n');
+        if (traducoes[novoIdioma] && traducoes[novoIdioma][chave]) {
+            elemento.textContent = traducoes[novoIdioma][chave];
+        }
+    });
+    
+    // Atualiza placeholders com data-i18n-placeholder
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(elemento => {
+        const chave = elemento.getAttribute('data-i18n-placeholder');
+        if (traducoes[novoIdioma] && traducoes[novoIdioma][chave]) {
+            elemento.placeholder = traducoes[novoIdioma][chave];
+        }
+    });
+    
+    // Atualiza botões de idioma (adiciona classe 'active' ao botão do idioma atual)
+    document.querySelectorAll(SiteConfig.SELECTORS.LANG_BTN).forEach(btn => {
+        const langBtn = btn.getAttribute('data-lang');
+        if (langBtn === novoIdioma) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    
+    // Atualiza aria-label do botão home
+    const homeLabel = traducoes[novoIdioma]['aria-home'] || 'Voltar para a tela inicial';
+    document.querySelectorAll(SiteConfig.SELECTORS.HOME_BUTTON).forEach(el => {
+        el.setAttribute('aria-label', homeLabel);
+    });
+    
+    // Chama callback se fornecido (para atualizações específicas do app)
+    if (typeof callback === 'function') {
+        callback(novoIdioma);
+    }
+}
+
+// ============================================
+// INICIALIZAÇÃO PADRÃO DE EVENT LISTENERS
+// ============================================
+
+/**
+ * Inicializa event listeners padrão (botões de idioma e home)
+ * Centraliza código repetido em cada app
+ * @param {Object} traducoes - Objeto com traduções
+ * @param {Function} trocarIdiomaCallback - Função para trocar idioma (pode usar trocarIdiomaGlobal)
+ */
+function inicializarEventListenersPadrao(traducoes, trocarIdiomaCallback) {
+    // Botão Português
+    const btnPT = DOMCache.get('btnPortugues');
+    if (btnPT) {
+        btnPT.addEventListener('click', () => {
+            if (trocarIdiomaCallback) {
+                trocarIdiomaCallback('pt-BR');
+            } else if (traducoes) {
+                trocarIdiomaGlobal('pt-BR', traducoes);
+            }
+        });
+    }
+    
+    // Botão Italiano
+    const btnIT = DOMCache.get('btnItaliano');
+    if (btnIT) {
+        btnIT.addEventListener('click', () => {
+            if (trocarIdiomaCallback) {
+                trocarIdiomaCallback('it-IT');
+            } else if (traducoes) {
+                trocarIdiomaGlobal('it-IT', traducoes);
+            }
+        });
+    }
+}
+
+// ============================================
+// LAZY LOADING DE BIBLIOTECAS EXTERNAS
+// ============================================
+
+/**
+ * Carrega Chart.js dinamicamente apenas quando necessário
+ * Melhora o tempo de carregamento inicial da página
+ * @param {Function} callback - Função chamada após Chart.js ser carregado
+ * @param {Array<string>} plugins - Array opcional de plugins do Chart.js para carregar
+ * @returns {Promise} Promise que resolve quando Chart.js está carregado
+ */
+function carregarChartJS(callback, plugins = []) {
+    return new Promise((resolve, reject) => {
+        // Se Chart.js já está carregado, executa callback imediatamente
+        if (typeof Chart !== 'undefined') {
+            if (callback) callback();
+            resolve();
+            return;
+        }
+        
+        // Carrega Chart.js
+        const script = document.createElement('script');
+        script.src = SiteConfig.ASSETS.CHARTJS_CDN;
+        script.async = true;
+        
+        script.onload = () => {
+            // Carrega plugins se especificados
+            if (plugins.length > 0) {
+                let pluginsLoaded = 0;
+                plugins.forEach(pluginUrl => {
+                    const pluginScript = document.createElement('script');
+                    pluginScript.src = pluginUrl;
+                    pluginScript.async = true;
+                    pluginScript.onload = () => {
+                        pluginsLoaded++;
+                        if (pluginsLoaded === plugins.length) {
+                            if (callback) callback();
+                            resolve();
+                        }
+                    };
+                    pluginScript.onerror = () => {
+                        console.warn('⚠️ Erro ao carregar plugin do Chart.js:', pluginUrl);
+                        pluginsLoaded++;
+                        if (pluginsLoaded === plugins.length) {
+                            if (callback) callback();
+                            resolve();
+                        }
+                    };
+                    document.head.appendChild(pluginScript);
+                });
+            } else {
+                if (callback) callback();
+                resolve();
+            }
+        };
+        
+        script.onerror = () => {
+            console.error('❌ Erro ao carregar Chart.js');
+            reject(new Error('Falha ao carregar Chart.js'));
+        };
+        
+        document.head.appendChild(script);
+    });
 }

@@ -42,8 +42,7 @@
     <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.0">
     <link rel="stylesheet" href="helice-styles.css?v=1.5.8">
     
-    <!-- Chart.js para gráficos interativos -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js será carregado dinamicamente quando necessário (lazy loading) -->
 </head>
 <body>
     <!-- ========================================== -->
@@ -51,13 +50,13 @@
     <!-- ========================================== -->
     <div class="language-selector">
         <!-- Botão para português (ativo definido pelo JavaScript) -->
-        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">
-            <span class="flag">🇧🇷</span>
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" aria-label="Alterar idioma para Português" title="Português">
+            <span class="flag" aria-hidden="true">🇧🇷</span>
             <span class="lang-text">PT</span>
         </button>
         <!-- Botão para italiano -->
-        <button id="btnItaliano" class="lang-btn" data-lang="it-IT">
-            <span class="flag">🇮🇹</span>
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" aria-label="Alterar idioma para Italiano" title="Italiano">
+            <span class="flag" aria-hidden="true">🇮🇹</span>
             <span class="lang-text">IT</span>
         </button>
     </div>
@@ -350,7 +349,7 @@
         </svg>
     </a>
 
-    <script src="../assets/js/site-config.js?v=1.0.0"></script>
+    <script src="../assets/js/site-config.js?v=1.1.0"></script>
     <!-- Carrega o JavaScript -->
     <script src="helice-script.js?v=1.4.2"></script>
 </body>
