@@ -47,7 +47,7 @@
 // ============================================
 
 const ICONES_PRODUTOS = {
-    // Frutas
+    // Frutas - Brasil
     'banana': '🍌',
     'manga': '🥭',
     'laranja': '🍊',
@@ -58,7 +58,22 @@ const ICONES_PRODUTOS = {
     'maracuja': '🟣',
     'uva': '🍇',
     'acai': '🫐',
-    // Verduras
+    'jabuticaba': '🫐',
+    'pitanga': '🍒',
+    'caju': '🥭',
+    'acerola': '🍒',
+    'coco': '🥥',
+    // Frutas - Itália
+    'oliva': '🫒',
+    'figo': '🫒',
+    'pesca': '🍑',
+    'albicocca': '🍑',
+    'prugna': '🟣',
+    'pera': '🍐',
+    'mela': '🍎',
+    'kiwi': '🥝',
+    'castagna': '🌰',
+    // Verduras - Brasil
     'alface': '🥬',
     'couve': '🥬',
     'espinafre': '🥬',
@@ -69,7 +84,20 @@ const ICONES_PRODUTOS = {
     'couve-flor': '🥦',
     'acelga': '🥬',
     'salsinha': '🌿',
-    // Legumes
+    'coentro': '🌿',
+    'manjericao': '🌿',
+    // Verduras - Itália
+    'lattuga': '🥬',
+    'spinaci': '🥬',
+    'cavolo': '🥬',
+    'broccoli': '🥦',
+    'cavolfiore': '🥦',
+    'bietola': '🥬',
+    'prezzemolo': '🌿',
+    'basilico': '🌿',
+    'rosmarino': '🌿',
+    'origano': '🌿',
+    // Legumes - Brasil
     'tomate': '🍅',
     'cenoura': '🥕',
     'beterraba': '🟣',
@@ -83,127 +111,56 @@ const ICONES_PRODUTOS = {
     'batata': '🥔',
     'cebola': '🧅',
     'alho': '🧄',
-    // Animais
-    'galinha': '🐔',
+    'quiabo': '🥒',
+    'maxixe': '🥒',
+    // Legumes - Itália
+    'pomodoro': '🍅',
+    'carota': '🥕',
+    'barbabietola': '🟣',
+    'zucchina': '🥒',
+    'peperone': '🫑',
+    'melanzana': '🍆',
+    'fagioli': '🫘',
+    'ceci': '🫘',
+    'lenticchie': '🫘',
+    'cipolla': '🧅',
+    'fagiolini': '🫘',
+    // Animais - Brasil
+    'galinha-ovos': '🥚',
+    'frango-corte': '🍗',
     'porco': '🐷',
-    'vaca': '🐄',
+    'vaca-leite': '🥛',
+    'vaca-corte': '🥩',
     'cabrito': '🐐',
     'coelho': '🐰',
-    'peixe': '🐟'
+    'peixe': '🐟',
+    'patos': '🦆',
+    // Animais - Itália
+    'gallina-ovos': '🥚',
+    'pollo-corte': '🍗',
+    'maiale': '🐷',
+    'mucca-latte': '🥛',
+    'mucca-carne': '🥩',
+    'capra': '🐐',
+    'coniglio': '🐰',
+    'pecora': '🐑',
+    'anatra': '🦆'
 };
 
 // ============================================
 // DADOS DE PRODUÇÃO
 // ============================================
+// Os dados vêm EXCLUSIVAMENTE do banco de dados regional (fazenda-database.js)
+// Estas variáveis serão preenchidas dinamicamente baseadas no idioma selecionado
+// NÃO há dados hardcoded aqui - tudo vem do banco de dados
 
-const DADOS_PLANTAS = {
-    // Frutas (kg/m²/ano, ciclo em dias, época de plantio)
-    frutas: {
-        'banana': { producao: 15, ciclo: 365, plantio: 'Ano todo', colheita: 'Contínua', areaMin: 4 },
-        'manga': { producao: 8, ciclo: 730, plantio: 'Verão', colheita: 'Verão', areaMin: 16 },
-        'laranja': { producao: 12, ciclo: 1095, plantio: 'Outono', colheita: 'Inverno', areaMin: 12 },
-        'limao': { producao: 10, ciclo: 730, plantio: 'Primavera', colheita: 'Ano todo', areaMin: 9 },
-        'abacate': { producao: 6, ciclo: 1095, plantio: 'Primavera', colheita: 'Verão/Outono', areaMin: 20 },
-        'mamao': { producao: 20, ciclo: 365, plantio: 'Ano todo', colheita: 'Ano todo', areaMin: 4 },
-        'goiaba': { producao: 12, ciclo: 730, plantio: 'Primavera', colheita: 'Verão/Outono', areaMin: 9 },
-        'maracuja': { producao: 8, ciclo: 365, plantio: 'Primavera', colheita: 'Verão/Outono', areaMin: 2 },
-        'uva': { producao: 10, ciclo: 365, plantio: 'Inverno', colheita: 'Verão', areaMin: 3 },
-        'acai': { producao: 5, ciclo: 1095, plantio: 'Ano todo', colheita: 'Ano todo', areaMin: 25 }
-    },
-    // Verduras (kg/m²/ano, ciclo em dias)
-    verduras: {
-        'alface': { producao: 12, ciclo: 45, plantio: 'Ano todo', colheita: 'Ano todo', areaMin: 0.1 },
-        'couve': { producao: 8, ciclo: 60, plantio: 'Ano todo', colheita: 'Ano todo', areaMin: 0.2 },
-        'espinafre': { producao: 10, ciclo: 50, plantio: 'Outono/Inverno', colheita: 'Inverno/Primavera', areaMin: 0.1 },
-        'rucula': { producao: 15, ciclo: 40, plantio: 'Ano todo', colheita: 'Ano todo', areaMin: 0.1 },
-        'agriao': { producao: 12, ciclo: 50, plantio: 'Ano todo', colheita: 'Ano todo', areaMin: 0.1 },
-        'repolho': { producao: 6, ciclo: 90, plantio: 'Outono/Inverno', colheita: 'Inverno/Primavera', areaMin: 0.3 },
-        'brocolis': { producao: 5, ciclo: 100, plantio: 'Outono', colheita: 'Inverno', areaMin: 0.3 },
-        'couve-flor': { producao: 5, ciclo: 100, plantio: 'Outono', colheita: 'Inverno', areaMin: 0.3 },
-        'acelga': { producao: 8, ciclo: 60, plantio: 'Ano todo', colheita: 'Ano todo', areaMin: 0.2 },
-        'salsinha': { producao: 6, ciclo: 70, plantio: 'Ano todo', colheita: 'Ano todo', areaMin: 0.1 }
-    },
-    // Legumes (kg/m²/ano, ciclo em dias)
-    legumes: {
-        'tomate': { producao: 8, ciclo: 120, plantio: 'Primavera/Verão', colheita: 'Verão/Outono', areaMin: 0.3 },
-        'cenoura': { producao: 6, ciclo: 90, plantio: 'Ano todo', colheita: 'Ano todo', areaMin: 0.1 },
-        'beterraba': { producao: 5, ciclo: 80, plantio: 'Ano todo', colheita: 'Ano todo', areaMin: 0.1 },
-        'abobora': { producao: 4, ciclo: 100, plantio: 'Primavera', colheita: 'Verão/Outono', areaMin: 1 },
-        'abobrinha': { producao: 10, ciclo: 60, plantio: 'Primavera/Verão', colheita: 'Verão/Outono', areaMin: 0.5 },
-        'pepino': { producao: 12, ciclo: 70, plantio: 'Primavera/Verão', colheita: 'Verão/Outono', areaMin: 0.3 },
-        'pimentao': { producao: 6, ciclo: 120, plantio: 'Primavera', colheita: 'Verão/Outono', areaMin: 0.3 },
-        'berinjela': { producao: 5, ciclo: 120, plantio: 'Primavera', colheita: 'Verão/Outono', areaMin: 0.3 },
-        'feijao': { producao: 2, ciclo: 80, plantio: 'Ano todo', colheita: 'Ano todo', areaMin: 0.2 },
-        'milho': { producao: 1.5, ciclo: 100, plantio: 'Primavera/Verão', colheita: 'Verão/Outono', areaMin: 0.2 },
-        'batata': { producao: 4, ciclo: 100, plantio: 'Inverno/Primavera', colheita: 'Primavera/Verão', areaMin: 0.2 },
-        'cebola': { producao: 5, ciclo: 120, plantio: 'Outono/Inverno', colheita: 'Primavera/Verão', areaMin: 0.1 },
-        'alho': { producao: 3, ciclo: 150, plantio: 'Outono', colheita: 'Primavera', areaMin: 0.1 }
-    }
+let DADOS_PLANTAS = {
+    frutas: {},
+    verduras: {},
+    legumes: {}
 };
 
-const DADOS_ANIMAIS = {
-    // Animais (produção diária, espaço m²/animal, ciclo reprodutivo em dias, produção por ciclo)
-    'galinha': {
-        producaoDiaria: 0.7, // ovos/dia (média de 250-300 ovos/ano)
-        producaoUnidade: 'ovos/dia',
-        producaoPorUnidade: 0.06, // kg por ovo (peso médio de um ovo)
-        espaco: 2, // m² por animal
-        cicloReprodutivo: 365, // dias
-        producaoCiclo: 250, // ovos/ano
-        tempoCrescimento: 180, // dias até começar a produzir
-        consumoRacao: 0.12 // kg/dia
-    },
-    'porco': {
-        producaoDiaria: 0, // não produz diariamente
-        producaoUnidade: 'kg/ciclo',
-        producaoPorUnidade: 80, // kg de carne por animal
-        espaco: 10, // m² por animal
-        cicloReprodutivo: 365, // dias (1 cria/ano)
-        producaoCiclo: 80, // kg de carne
-        tempoCrescimento: 180, // dias até abate
-        consumoRacao: 2.5 // kg/dia
-    },
-    'vaca': {
-        producaoDiaria: 15, // litros de leite/dia
-        producaoUnidade: 'L/dia',
-        producaoPorUnidade: 1, // 1 litro = 1 kg
-        espaco: 50, // m² por animal
-        cicloReprodutivo: 365, // dias (1 cria/ano)
-        producaoCiclo: 0, // leite é diário
-        tempoCrescimento: 730, // dias até começar a produzir
-        consumoRacao: 25 // kg/dia
-    },
-    'cabrito': {
-        producaoDiaria: 2, // litros de leite/dia
-        producaoUnidade: 'L/dia',
-        producaoPorUnidade: 1,
-        espaco: 8, // m² por animal
-        cicloReprodutivo: 365,
-        producaoCiclo: 0,
-        tempoCrescimento: 180,
-        consumoRacao: 2 // kg/dia
-    },
-    'coelho': {
-        producaoDiaria: 0,
-        producaoUnidade: 'kg/ciclo',
-        producaoPorUnidade: 2, // kg de carne por animal
-        espaco: 1, // m² por animal
-        cicloReprodutivo: 90, // 4 crias/ano
-        producaoCiclo: 2,
-        tempoCrescimento: 90,
-        consumoRacao: 0.15 // kg/dia
-    },
-    'peixe': {
-        producaoDiaria: 0,
-        producaoUnidade: 'kg/ciclo',
-        producaoPorUnidade: 1, // kg por peixe
-        espaco: 0.5, // m² por peixe (tanque)
-        cicloReprodutivo: 180, // 2 ciclos/ano
-        producaoCiclo: 1,
-        tempoCrescimento: 180,
-        consumoRacao: 0.02 // kg/dia
-    }
-};
+let DADOS_ANIMAIS = {};
 
 // Consumo médio por pessoa (kg/ano)
 const CONSUMO_POR_PESSOA = {
@@ -248,18 +205,21 @@ const traducoes = {
         'footer-text': 'Engenharia NATA @ 2025 - Apps Educativos de Engenharia',
         'watermark-dev': '🚧 EM DESENVOLVIMENTO',
         'dev-badge-header': '🚧 EM DESENVOLVIMENTO',
-        // Nomes de plantas e animais
+        // Nomes de plantas e animais - Brasil
         'banana': 'Banana', 'manga': 'Manga', 'laranja': 'Laranja', 'limao': 'Limão',
         'abacate': 'Abacate', 'mamao': 'Mamão', 'goiaba': 'Goiaba', 'maracuja': 'Maracujá',
-        'uva': 'Uva', 'acai': 'Açaí',
+        'uva': 'Uva', 'acai': 'Açaí', 'jabuticaba': 'Jabuticaba', 'pitanga': 'Pitanga',
+        'caju': 'Caju', 'acerola': 'Acerola', 'coco': 'Coco',
         'alface': 'Alface', 'couve': 'Couve', 'espinafre': 'Espinafre', 'rucula': 'Rúcula',
         'agriao': 'Agrião', 'repolho': 'Repolho', 'brocolis': 'Brócolis', 'couve-flor': 'Couve-flor',
-        'acelga': 'Acelga', 'salsinha': 'Salsinha',
+        'acelga': 'Acelga', 'salsinha': 'Salsinha', 'coentro': 'Coentro', 'manjericao': 'Manjericão',
         'tomate': 'Tomate', 'cenoura': 'Cenoura', 'beterraba': 'Beterraba', 'abobora': 'Abóbora',
         'abobrinha': 'Abobrinha', 'pepino': 'Pepino', 'pimentao': 'Pimentão', 'berinjela': 'Berinjela',
         'feijao': 'Feijão', 'milho': 'Milho', 'batata': 'Batata', 'cebola': 'Cebola', 'alho': 'Alho',
-        'galinha': 'Galinha', 'porco': 'Porco', 'vaca': 'Vaca', 'cabrito': 'Cabrito',
-        'coelho': 'Coelho', 'peixe': 'Peixe',
+        'quiabo': 'Quiabo', 'maxixe': 'Maxixe',
+        'galinha-ovos': 'Galinha (Ovos)', 'frango-corte': 'Frango de Corte',
+        'porco': 'Porco', 'vaca-leite': 'Vaca (Leite)', 'vaca-corte': 'Vaca (Carne)', 'cabrito': 'Cabrito',
+        'coelho': 'Coelho', 'peixe': 'Peixe', 'patos': 'Patos',
         // Textos de resultado
         'area-necessaria': 'Área Necessária:',
         'quantidade-plantas': 'Quantidade de Plantas:',
@@ -303,7 +263,16 @@ const traducoes = {
         'memorial-resumo-area-total': 'Área Total:',
         'learn-more': 'SAIBA MAIS!',
         'back': '← Voltar',
-        'back-to-calculator': 'Voltar para a Calculadora'
+        'back-to-calculator': 'Voltar para a Calculadora',
+        'ver-info-tecnica': 'Ver Informações Técnicas',
+        'tecnica-cultivo': 'Técnica de Cultivo',
+        'tecnica-criacao': 'Técnica de Criação',
+        'clima': 'Clima Ideal',
+        'solo': 'Tipo de Solo',
+        'alimentacao': 'Alimentação',
+        'tempo-crescimento': 'Tempo até Produção',
+        'consumo-racao': 'Consumo de Ração',
+        'ocultar-info-tecnica': 'Ocultar Informações Técnicas'
     },
     'it-IT': {
         'app-title': '🌾 Dimensionatore di Fattoria Auto-Sostenibile',
@@ -332,18 +301,35 @@ const traducoes = {
         'footer-text': 'Engenharia NATA @ 2025 - App Educativi di Ingegneria',
         'watermark-dev': '🚧 IN SVILUPPO',
         'dev-badge-header': '🚧 IN SVILUPPO',
-        // Nomes de plantas e animais (italiano)
+        // Nomes de plantas e animais - Itália
+        'uva': 'Uva', 'oliva': 'Oliva', 'figo': 'Fico', 'pesca': 'Pesca',
+        'albicocca': 'Albicocca', 'prugna': 'Prugna', 'pera': 'Pera', 'mela': 'Mela',
+        'limone': 'Limone', 'arancia': 'Arancia', 'kiwi': 'Kiwi', 'castagna': 'Castagna',
+        'lattuga': 'Lattuga', 'spinaci': 'Spinaci', 'rucola': 'Rucola', 'cavolo': 'Cavolo',
+        'broccoli': 'Broccoli', 'cavolfiore': 'Cavolfiore', 'bietola': 'Bietola',
+        'prezzemolo': 'Prezzemolo', 'basilico': 'Basilico', 'rosmarino': 'Rosmarino', 'origano': 'Origano',
+        'pomodoro': 'Pomodoro', 'carota': 'Carota', 'barbabietola': 'Barbabietola', 'zucchina': 'Zucchina',
+        'peperone': 'Peperone', 'melanzana': 'Melanzana', 'fagioli': 'Fagioli', 'ceci': 'Ceci',
+        'lenticchie': 'Lenticchie', 'cipolla': 'Cipolla', 'aglio': 'Aglio', 'patata': 'Patata',
+        'fagiolini': 'Fagiolini',
+        'gallina-ovos': 'Gallina (Uova)', 'pollo-corte': 'Pollo da Carne',
+        'maiale': 'Maiale', 'mucca-latte': 'Mucca (Latte)', 'mucca-carne': 'Mucca (Carne)', 'capra': 'Capra',
+        'coniglio': 'Coniglio', 'pecora': 'Pecora', 'anatra': 'Anatra',
+        // Traduções para produtos brasileiros quando em italiano
         'banana': 'Banana', 'manga': 'Mango', 'laranja': 'Arancia', 'limao': 'Limone',
         'abacate': 'Avocado', 'mamao': 'Papaya', 'goiaba': 'Guava', 'maracuja': 'Maracuja',
-        'uva': 'Uva', 'acai': 'Açaí',
-        'alface': 'Lattuga', 'couve': 'Cavolo', 'espinafre': 'Spinaci', 'rucula': 'Rucola',
-        'agriao': 'Crescione', 'repolho': 'Cavolo Cappuccio', 'brocolis': 'Broccoli', 'couve-flor': 'Cavolfiore',
-        'acelga': 'Bietola', 'salsinha': 'Prezzemolo',
+        'acai': 'Açaí', 'jabuticaba': 'Jabuticaba', 'pitanga': 'Pitanga', 'caju': 'Anacardo',
+        'acerola': 'Acerola', 'coco': 'Cocco',
+        'alface': 'Lattuga', 'couve': 'Cavolo', 'espinafre': 'Spinaci', 'agriao': 'Crescione',
+        'repolho': 'Cavolo Cappuccio', 'brocolis': 'Broccoli', 'couve-flor': 'Cavolfiore',
+        'acelga': 'Bietola', 'salsinha': 'Prezzemolo', 'coentro': 'Coriandolo', 'manjericao': 'Basilico',
         'tomate': 'Pomodoro', 'cenoura': 'Carota', 'beterraba': 'Barbabietola', 'abobora': 'Zucca',
         'abobrinha': 'Zucchina', 'pepino': 'Cetriolo', 'pimentao': 'Peperone', 'berinjela': 'Melanzana',
         'feijao': 'Fagioli', 'milho': 'Mais', 'batata': 'Patata', 'cebola': 'Cipolla', 'alho': 'Aglio',
-        'galinha': 'Gallina', 'porco': 'Maiale', 'vaca': 'Mucca', 'cabrito': 'Capretto',
-        'coelho': 'Coniglio', 'peixe': 'Pesce',
+        'quiabo': 'Gombo', 'maxixe': 'Cetriolo Africano',
+        'galinha-ovos': 'Gallina (Uova)', 'frango-corte': 'Pollo da Carne',
+        'porco': 'Maiale', 'vaca-leite': 'Mucca (Latte)', 'vaca-corte': 'Mucca (Carne)', 'cabrito': 'Capretto',
+        'coelho': 'Coniglio', 'peixe': 'Pesce', 'patos': 'Anatre',
         // Textos de resultado
         'area-necessaria': 'Area Necessaria:',
         'quantidade-plantas': 'Quantità di Piante:',
@@ -387,7 +373,16 @@ const traducoes = {
         'memorial-resumo-area-total': 'Area Totale:',
         'learn-more': 'SAIBA MAIS!',
         'back': '← Indietro',
-        'back-to-calculator': 'Torna al Calcolatore'
+        'back-to-calculator': 'Torna al Calcolatore',
+        'ver-info-tecnica': 'Vedi Informazioni Tecniche',
+        'tecnica-cultivo': 'Tecnica di Coltivazione',
+        'tecnica-criacao': 'Tecnica di Allevamento',
+        'clima': 'Clima Ideale',
+        'solo': 'Tipo di Terreno',
+        'alimentacao': 'Alimentazione',
+        'tempo-crescimento': 'Tempo fino alla Produzione',
+        'consumo-racao': 'Consumo di Mangime',
+        'ocultar-info-tecnica': 'Nascondi Informazioni Tecniche'
     }
 };
 
@@ -425,17 +420,30 @@ function calcularAnimaisNecessarios(tipoAnimal, quantidadePessoas, consumoDiario
     const dados = DADOS_ANIMAIS[tipoAnimal];
     let quantidade = 0;
     
-    if (tipoAnimal === 'galinha') {
-        // Para galinhas, garantir 2 ovos/dia por pessoa (independente do consumo proporcional)
+    if (tipoAnimal === 'galinha-ovos' || tipoAnimal === 'gallina-ovos') {
+        // Para galinhas poedeiras, garantir 2 ovos/dia por pessoa (independente do consumo proporcional)
         const ovosPorDiaPorPessoa = 2; // ovos/dia/pessoa
         const ovosPorDiaTotal = ovosPorDiaPorPessoa * quantidadePessoas;
         const ovosPorDiaPorGalinha = dados.producaoDiaria; // ovos/dia por galinha (0.7 ovos/dia)
         quantidade = Math.ceil(ovosPorDiaTotal / ovosPorDiaPorGalinha);
-    } else if (tipoAnimal === 'vaca' || tipoAnimal === 'cabrito') {
+    } else if (tipoAnimal === 'frango-corte' || tipoAnimal === 'pollo-corte') {
+        // Para frangos de corte, calcular baseado no consumo de carne
+        const consumoAnualPorPessoa = consumoDiarioPorPessoa * 365;
+        const consumoAnualTotal = consumoAnualPorPessoa * quantidadePessoas;
+        const producaoAnual = dados.producaoCiclo * (365 / dados.cicloReprodutivo); // kg/ano por frango
+        quantidade = Math.ceil(consumoAnualTotal / producaoAnual);
+    } else if (tipoAnimal === 'vaca-leite' || tipoAnimal === 'mucca-latte' || tipoAnimal === 'cabrito' || tipoAnimal === 'capra' || tipoAnimal === 'pecora') {
+        // Animais que produzem leite diariamente
         // consumoDiarioPorPessoa já está em kg/dia/pessoa (proporcional)
         const consumoDiarioTotal = consumoDiarioPorPessoa * quantidadePessoas; // kg/dia total
         const producaoDiariaPorAnimal = dados.producaoDiaria * dados.producaoPorUnidade; // kg/dia por animal
         quantidade = Math.ceil(consumoDiarioTotal / producaoDiariaPorAnimal);
+    } else if (tipoAnimal === 'vaca-corte' || tipoAnimal === 'mucca-carne') {
+        // Vacas de corte - produção por ciclo
+        const consumoAnualPorPessoa = consumoDiarioPorPessoa * 365;
+        const consumoAnualTotal = consumoAnualPorPessoa * quantidadePessoas;
+        const producaoAnual = dados.producaoCiclo * (365 / dados.cicloReprodutivo); // kg/ano por animal
+        quantidade = Math.ceil(consumoAnualTotal / producaoAnual);
     } else if (tipoAnimal === 'porco' || tipoAnimal === 'coelho') {
         // consumoDiarioPorPessoa já está em kg/dia/pessoa (proporcional)
         const consumoAnualPorPessoa = consumoDiarioPorPessoa * 365;
@@ -491,11 +499,19 @@ function criarCheckboxAnimais(nome) {
 }
 
 function atualizarResultados() {
+    // Verificar se os dados foram carregados
+    if (!DADOS_PLANTAS || Object.keys(DADOS_PLANTAS.frutas).length === 0) {
+        console.warn('[Fazenda] Dados ainda não foram carregados. Aguardando...');
+        return;
+    }
+    
     const quantidadePessoas = parseInt(document.getElementById('inputPessoas').value) || 4;
     
-    // Ler valores dos sliders de consumo
-    const consumoPlantasDiario = parseFloat(document.getElementById('inputConsumoPlantas').value) || 0.5;
-    const consumoProteinasDiario = parseFloat(document.getElementById('inputConsumoProteinas').value) || 0.5;
+    // Ler valores dos sliders de consumo (remover formatação se houver)
+    const inputConsumoPlantas = document.getElementById('inputConsumoPlantas');
+    const inputConsumoProteinas = document.getElementById('inputConsumoProteinas');
+    const consumoPlantasDiario = parseFloat(inputConsumoPlantas.value.toString().replace(/\./g, '').replace(',', '.')) || 0.5;
+    const consumoProteinasDiario = parseFloat(inputConsumoProteinas.value.toString().replace(/\./g, '').replace(',', '.')) || 0.5;
     
     // Coletar plantas selecionadas
     const plantasSelecionadas = {
@@ -538,9 +554,13 @@ function atualizarResultados() {
                               plantasSelecionadas.verduras.length + 
                               plantasSelecionadas.legumes.length;
     
-    // Separar galinhas dos outros animais (galinhas têm consumo fixo de 2 ovos/dia)
-    const temGalinhas = animaisSelecionados.includes('galinha');
-    const outrosAnimais = animaisSelecionados.filter(a => a !== 'galinha');
+    // Separar galinhas poedeiras dos outros animais (galinhas poedeiras têm consumo fixo de 2 ovos/dia)
+    const temGalinhasOvos = animaisSelecionados.includes('galinha-ovos') || animaisSelecionados.includes('gallina-ovos');
+    const temFrangoCorte = animaisSelecionados.includes('frango-corte') || animaisSelecionados.includes('pollo-corte');
+    const outrosAnimais = animaisSelecionados.filter(a => 
+        a !== 'galinha-ovos' && a !== 'gallina-ovos' && 
+        a !== 'frango-corte' && a !== 'pollo-corte'
+    );
     const totalOutrosAnimais = outrosAnimais.length;
     
     // Usar valores dos sliders para consumo diário
@@ -550,25 +570,42 @@ function atualizarResultados() {
     // Calcular consumo proporcional por item
     const consumoDiarioPorItemPlanta = totalItensPlantas > 0 ? CONSUMO_PLANTAS_DIARIO / totalItensPlantas : 0;
     
-    // Para proteínas: galinhas garantem 2 ovos/dia (0.12 kg/dia), resto é distribuído
-    const dadosGalinha = temGalinhas ? DADOS_ANIMAIS['galinha'] : null;
-    const consumoGalinhaPorPessoa = temGalinhas ? 2 * dadosGalinha.producaoPorUnidade : 0; // 2 ovos × 0.06 kg = 0.12 kg/dia
-    const consumoRestanteProteina = Math.max(0, CONSUMO_PROTEINA_DIARIO - consumoGalinhaPorPessoa);
-    const consumoDiarioPorItemAnimal = totalOutrosAnimais > 0 ? consumoRestanteProteina / totalOutrosAnimais : 0;
+    // Para proteínas: galinhas poedeiras garantem 2 ovos/dia (0.12 kg/dia)
+    // Frangos de corte recebem parte proporcional do restante
+    const dadosGalinhaOvos = temGalinhasOvos ? (DADOS_ANIMAIS['galinha-ovos'] || DADOS_ANIMAIS['gallina-ovos']) : null;
+    const consumoGalinhaOvosPorPessoa = temGalinhasOvos ? 2 * dadosGalinhaOvos.producaoPorUnidade : 0; // 2 ovos × 0.06 kg = 0.12 kg/dia
+    
+    // Calcular quantos animais de corte e outros animais temos
+    const animaisCarne = temFrangoCorte ? 1 : 0;
+    const totalAnimaisCarne = animaisCarne + totalOutrosAnimais;
+    const consumoRestanteProteina = Math.max(0, CONSUMO_PROTEINA_DIARIO - consumoGalinhaOvosPorPessoa);
+    const consumoDiarioPorItemAnimal = totalAnimaisCarne > 0 ? consumoRestanteProteina / totalAnimaisCarne : 0;
     
     // Calcular plantas
     const detalhesPlantas = [];
     Object.keys(plantasSelecionadas).forEach(tipo => {
         plantasSelecionadas[tipo].forEach(nome => {
+            // Verificar se o tipo e nome existem nos dados
+            if (!DADOS_PLANTAS[tipo] || !DADOS_PLANTAS[tipo][nome]) {
+                console.warn(`[Fazenda] Planta ${tipo}/${nome} não encontrada nos dados`);
+                return;
+            }
             const area = calcularAreaNecessaria(tipo, nome, quantidadePessoas, consumoDiarioPorItemPlanta);
             areaTotalPlantas += area;
             const quantidade = calcularQuantidadePlantas(tipo, nome, area);
-            const dados = DADOS_PLANTAS[tipo][nome];
+            const dados = DADOS_PLANTAS[tipo]?.[nome];
+            if (!dados) {
+                console.warn(`[Fazenda] Dados não encontrados para ${tipo}/${nome}`);
+                return;
+            }
             const producaoAnual = area * dados.producao;
             const freq = calcularFrequenciaPlantio(dados.ciclo);
             
             // O consumo diário por pessoa já é o valor proporcional
             const consumoDiarioPorPessoa = consumoDiarioPorItemPlanta;
+            
+            // Buscar dados completos do banco de dados
+            const dadosCompletos = DADOS_COMPLETOS.plantas[tipo]?.[nome] || {};
             
             detalhesPlantas.push({
                 tipo,
@@ -580,7 +617,10 @@ function atualizarResultados() {
                 ciclo: dados.ciclo,
                 plantio: dados.plantio,
                 colheita: dados.colheita,
-                frequencia: freq
+                frequencia: freq,
+                tecnica: dadosCompletos.tecnica || '',
+                clima: dadosCompletos.clima || '',
+                solo: dadosCompletos.solo || ''
             });
         });
     });
@@ -588,15 +628,25 @@ function atualizarResultados() {
     // Calcular animais
     const detalhesAnimais = [];
     animaisSelecionados.forEach(nome => {
+        // Verificar se o animal existe nos dados
+        if (!DADOS_ANIMAIS[nome]) {
+            console.warn(`[Fazenda] Animal ${nome} não encontrado nos dados`);
+            return;
+        }
+        
         let consumoDiarioPorPessoa;
         let quantidade;
         
-        if (nome === 'galinha') {
-            // Galinhas sempre garantem 2 ovos/dia por pessoa
-            consumoDiarioPorPessoa = consumoGalinhaPorPessoa; // 0.12 kg/dia (2 ovos)
+        if (nome === 'galinha-ovos' || nome === 'gallina-ovos') {
+            // Galinhas poedeiras sempre garantem 2 ovos/dia por pessoa
+            consumoDiarioPorPessoa = consumoGalinhaOvosPorPessoa; // 0.12 kg/dia (2 ovos)
+            quantidade = calcularAnimaisNecessarios(nome, quantidadePessoas, consumoDiarioPorPessoa);
+        } else if (nome === 'frango-corte' || nome === 'pollo-corte' || nome === 'vaca-corte' || nome === 'mucca-carne') {
+            // Animais de corte (frango e vaca) recebem consumo proporcional
+            consumoDiarioPorPessoa = consumoDiarioPorItemAnimal;
             quantidade = calcularAnimaisNecessarios(nome, quantidadePessoas, consumoDiarioPorPessoa);
         } else {
-            // Outros animais recebem o consumo proporcional do restante
+            // Outros animais (leite, etc.) recebem o consumo proporcional do restante
             consumoDiarioPorPessoa = consumoDiarioPorItemAnimal;
             quantidade = calcularAnimaisNecessarios(nome, quantidadePessoas, consumoDiarioPorPessoa);
         }
@@ -604,7 +654,14 @@ function atualizarResultados() {
         const area = calcularAreaAnimais(nome, quantidade);
         areaTotalAnimais += area;
         const dados = DADOS_ANIMAIS[nome];
+        if (!dados) {
+            console.warn(`[Fazenda] Dados não encontrados para animal ${nome}`);
+            return;
+        }
         const freqReprod = Math.floor(365 / dados.cicloReprodutivo);
+        
+        // Buscar dados completos do banco de dados
+        const dadosCompletosAnimal = DADOS_COMPLETOS.animais[nome] || {};
         
         detalhesAnimais.push({
             nome,
@@ -612,7 +669,10 @@ function atualizarResultados() {
             area,
             dados,
             freqReprod,
-            consumoDiarioPorPessoa
+            consumoDiarioPorPessoa,
+            tecnica: dadosCompletosAnimal.tecnica || '',
+            clima: dadosCompletosAnimal.clima || '',
+            alimentacao: dadosCompletosAnimal.alimentacao || ''
         });
     });
     
@@ -626,19 +686,35 @@ function atualizarResultados() {
     if (detalhesPlantas.length > 0) {
         document.getElementById('grupoPlantas').style.display = 'block';
         const div = document.getElementById('detalhesPlantas');
-        div.innerHTML = detalhesPlantas.map(p => {
+        div.innerHTML = detalhesPlantas.map((p, index) => {
             const icone = ICONES_PRODUTOS[p.nome] || '🌱';
+            const idDetalhes = `detalhes-planta-${index}`;
+            const idBtn = `btn-detalhes-planta-${index}`;
+            const temInfoTecnica = p.tecnica || p.clima || p.solo;
+            
             return `
             <div class="detalhe-item">
                 <h4>${icone} ${traduzir(p.nome)}</h4>
-                <p><span data-i18n="area-necessaria">Área Necessária:</span> <span class="valor-destaque">${formatarNumeroDecimal(p.area, 1)} m²</span></p>
-                <p><span data-i18n="quantidade-plantas">Quantidade de Plantas:</span> <span class="valor-destaque">${p.quantidade} ${traduzir('unidades')}</span></p>
-                <p><span data-i18n="producao-anual">Produção Anual:</span> <span class="valor-destaque">${formatarNumeroDecimal(p.producaoAnual, 1)} kg</span></p>
-                <p><span data-i18n="consumo-diario-pessoa">Consumo por Pessoa/Dia:</span> <span class="valor-destaque">${formatarNumeroDecimal(p.consumoDiarioPorPessoa, 3)} kg</span></p>
-                <p><span data-i18n="ciclo-dias">Ciclo (dias):</span> ${p.ciclo} ${traduzir('dias')}</p>
-                <p><span data-i18n="plantio">Época de Plantio:</span> ${p.plantio}</p>
-                <p><span data-i18n="colheita">Época de Colheita:</span> ${p.colheita}</p>
-                <p><span data-i18n="frequencia-plantio">Frequência de Plantio:</span> <span class="valor-destaque">A cada ${p.frequencia.frequencia} ${traduzir('dias')} (${p.frequencia.vezesAno} ${traduzir('vezes-ano')})</span></p>
+                <div class="info-basica">
+                    <p><span data-i18n="area-necessaria">Área Necessária:</span> <span class="valor-destaque">${formatarNumeroDecimal(p.area, 1)} m²</span></p>
+                    <p><span data-i18n="quantidade-plantas">Quantidade de Plantas:</span> <span class="valor-destaque">${p.quantidade} ${traduzir('unidades')}</span></p>
+                    <p><span data-i18n="producao-anual">Produção Anual:</span> <span class="valor-destaque">${formatarNumeroDecimal(p.producaoAnual, 1)} kg</span></p>
+                    <p><span data-i18n="consumo-diario-pessoa">Consumo por Pessoa/Dia:</span> <span class="valor-destaque">${formatarNumeroDecimal(p.consumoDiarioPorPessoa, 3)} kg</span></p>
+                    <p><span data-i18n="ciclo-dias">Ciclo (dias):</span> ${p.ciclo} ${traduzir('dias')}</p>
+                    <p><span data-i18n="plantio">Época de Plantio:</span> ${p.plantio}</p>
+                    <p><span data-i18n="colheita">Época de Colheita:</span> ${p.colheita}</p>
+                    <p><span data-i18n="frequencia-plantio">Frequência de Plantio:</span> <span class="valor-destaque">A cada ${p.frequencia.frequencia} ${traduzir('dias')} (${p.frequencia.vezesAno} ${traduzir('vezes-ano')})</span></p>
+                </div>
+                ${temInfoTecnica ? `
+                <button class="btn-info-tecnica" onclick="toggleInfoTecnica('${idDetalhes}', '${idBtn}')" id="${idBtn}">
+                    <span>📖 ${traduzir('ver-info-tecnica')}</span>
+                </button>
+                <div class="info-tecnica" id="${idDetalhes}" style="display: none;">
+                    ${p.tecnica ? `<div class="info-tecnica-item"><strong>🌱 ${traduzir('tecnica-cultivo')}:</strong><p>${p.tecnica}</p></div>` : ''}
+                    ${p.clima ? `<div class="info-tecnica-item"><strong>🌡️ ${traduzir('clima')}:</strong><p>${p.clima}</p></div>` : ''}
+                    ${p.solo ? `<div class="info-tecnica-item"><strong>🌍 ${traduzir('solo')}:</strong><p>${p.solo}</p></div>` : ''}
+                </div>
+                ` : ''}
             </div>
         `;
         }).join('');
@@ -650,7 +726,7 @@ function atualizarResultados() {
     if (detalhesAnimais.length > 0) {
         document.getElementById('grupoAnimaisResultado').style.display = 'block';
         const div = document.getElementById('detalhesAnimais');
-        div.innerHTML = detalhesAnimais.map(a => {
+        div.innerHTML = detalhesAnimais.map((a, index) => {
             let producaoTexto = '';
             if (a.dados.producaoDiaria > 0) {
                 producaoTexto = `<p><span data-i18n="producao-diaria">Produção Diária:</span> <span class="valor-destaque">${a.dados.producaoDiaria} ${a.dados.producaoUnidade}</span></p>`;
@@ -659,16 +735,34 @@ function atualizarResultados() {
             }
             
             const icone = ICONES_PRODUTOS[a.nome] || '🐾';
+            const idDetalhes = `detalhes-animal-${index}`;
+            const idBtn = `btn-detalhes-animal-${index}`;
+            const temInfoTecnica = a.tecnica || a.clima || a.alimentacao;
+            
             return `
                 <div class="detalhe-item">
                     <h4>${icone} ${traduzir(a.nome)}</h4>
-                    <p><span data-i18n="quantidade-animais">Quantidade de Animais:</span> <span class="valor-destaque">${a.quantidade} ${traduzir('unidades')}</span></p>
-                    <p><span data-i18n="area-necessaria">Área Necessária:</span> <span class="valor-destaque">${formatarNumeroDecimal(a.area, 1)} m²</span></p>
-                    ${producaoTexto}
-                    <p><span data-i18n="consumo-diario-pessoa">Consumo por Pessoa/Dia:</span> <span class="valor-destaque">${formatarNumeroDecimal(a.consumoDiarioPorPessoa, 3)} kg</span></p>
-                    <p><span data-i18n="espaco-animal">Espaço por Animal:</span> ${a.dados.espaco} m²</p>
-                    <p><span data-i18n="ciclo-reprodutivo">Ciclo Reprodutivo:</span> ${a.dados.cicloReprodutivo} ${traduzir('dias')}</p>
-                    <p><span data-i18n="frequencia-reproducao">Frequência de Reprodução:</span> <span class="valor-destaque">${a.freqReprod} ${traduzir('vezes-ano')}</span></p>
+                    <div class="info-basica">
+                        <p><span data-i18n="quantidade-animais">Quantidade de Animais:</span> <span class="valor-destaque">${a.quantidade} ${traduzir('unidades')}</span></p>
+                        <p><span data-i18n="area-necessaria">Área Necessária:</span> <span class="valor-destaque">${formatarNumeroDecimal(a.area, 1)} m²</span></p>
+                        ${producaoTexto}
+                        <p><span data-i18n="consumo-diario-pessoa">Consumo por Pessoa/Dia:</span> <span class="valor-destaque">${formatarNumeroDecimal(a.consumoDiarioPorPessoa, 3)} kg</span></p>
+                        <p><span data-i18n="espaco-animal">Espaço por Animal:</span> ${a.dados.espaco} m²</p>
+                        <p><span data-i18n="ciclo-reprodutivo">Ciclo Reprodutivo:</span> ${a.dados.cicloReprodutivo} ${traduzir('dias')}</p>
+                        <p><span data-i18n="frequencia-reproducao">Frequência de Reprodução:</span> <span class="valor-destaque">${a.freqReprod} ${traduzir('vezes-ano')}</span></p>
+                        ${a.dados.tempoCrescimento ? `<p><span data-i18n="tempo-crescimento">Tempo até Produção:</span> ${a.dados.tempoCrescimento} ${traduzir('dias')}</p>` : ''}
+                        ${a.dados.consumoRacao ? `<p><span data-i18n="consumo-racao">Consumo de Ração:</span> ${a.dados.consumoRacao} kg/dia/animal</p>` : ''}
+                    </div>
+                    ${temInfoTecnica ? `
+                    <button class="btn-info-tecnica" onclick="toggleInfoTecnica('${idDetalhes}', '${idBtn}')" id="${idBtn}">
+                        <span>📖 ${traduzir('ver-info-tecnica')}</span>
+                    </button>
+                    <div class="info-tecnica" id="${idDetalhes}" style="display: none;">
+                        ${a.tecnica ? `<div class="info-tecnica-item"><strong>🐾 ${traduzir('tecnica-criacao')}:</strong><p>${a.tecnica}</p></div>` : ''}
+                        ${a.clima ? `<div class="info-tecnica-item"><strong>🌡️ ${traduzir('clima')}:</strong><p>${a.clima}</p></div>` : ''}
+                        ${a.alimentacao ? `<div class="info-tecnica-item"><strong>🌾 ${traduzir('alimentacao')}:</strong><p>${a.alimentacao}</p></div>` : ''}
+                    </div>
+                    ` : ''}
                 </div>
             `;
         }).join('');
@@ -696,6 +790,28 @@ function atualizarResultados() {
     
     aplicarTraducoes();
 }
+
+// ============================================
+// FUNÇÃO PARA TOGGLE DE INFORMAÇÕES TÉCNICAS
+// ============================================
+
+function toggleInfoTecnica(idDetalhes, idBtn) {
+    const detalhes = document.getElementById(idDetalhes);
+    const btn = document.getElementById(idBtn);
+    
+    if (detalhes && btn) {
+        if (detalhes.style.display === 'none' || detalhes.style.display === '') {
+            detalhes.style.display = 'block';
+            btn.innerHTML = `<span>📖 ${traduzir('ocultar-info-tecnica')}</span>`;
+        } else {
+            detalhes.style.display = 'none';
+            btn.innerHTML = `<span>📖 ${traduzir('ver-info-tecnica')}</span>`;
+        }
+    }
+}
+
+// Tornar função global para uso em onclick
+window.toggleInfoTecnica = toggleInfoTecnica;
 
 // ============================================
 // MEMORIAL DE CÁLCULO
@@ -747,16 +863,26 @@ function atualizarMemorialComValores() {
                               plantasSelecionadas.verduras.length + 
                               plantasSelecionadas.legumes.length;
     
-    const temGalinhas = animaisSelecionados.includes('galinha');
-    const outrosAnimais = animaisSelecionados.filter(a => a !== 'galinha');
+    const temGalinhasOvos = animaisSelecionados.includes('galinha-ovos') || animaisSelecionados.includes('gallina-ovos');
+    const temFrangoCorte = animaisSelecionados.includes('frango-corte') || animaisSelecionados.includes('pollo-corte');
+    const temVacaCorte = animaisSelecionados.includes('vaca-corte') || animaisSelecionados.includes('mucca-carne');
+    const outrosAnimais = animaisSelecionados.filter(a => 
+        a !== 'galinha-ovos' && a !== 'gallina-ovos' && 
+        a !== 'frango-corte' && a !== 'pollo-corte' &&
+        a !== 'vaca-corte' && a !== 'mucca-carne'
+    );
     const totalOutrosAnimais = outrosAnimais.length;
     
     const consumoDiarioPorItemPlanta = totalItensPlantas > 0 ? consumoPlantasDiario / totalItensPlantas : 0;
     
-    const dadosGalinha = temGalinhas ? DADOS_ANIMAIS['galinha'] : null;
-    const consumoGalinhaPorPessoa = temGalinhas ? 2 * dadosGalinha.producaoPorUnidade : 0;
-    const consumoRestanteProteina = Math.max(0, consumoProteinasDiario - consumoGalinhaPorPessoa);
-    const consumoDiarioPorItemAnimal = totalOutrosAnimais > 0 ? consumoRestanteProteina / totalOutrosAnimais : 0;
+    const dadosGalinhaOvos = temGalinhasOvos ? (DADOS_ANIMAIS['galinha-ovos'] || DADOS_ANIMAIS['gallina-ovos']) : null;
+    const consumoGalinhaOvosPorPessoa = temGalinhasOvos ? 2 * dadosGalinhaOvos.producaoPorUnidade : 0;
+    
+    // Animais de corte (frango e vaca) recebem consumo proporcional
+    const animaisCarne = (temFrangoCorte ? 1 : 0) + (temVacaCorte ? 1 : 0);
+    const totalAnimaisCarne = animaisCarne + totalOutrosAnimais;
+    const consumoRestanteProteina = Math.max(0, consumoProteinasDiario - consumoGalinhaOvosPorPessoa);
+    const consumoDiarioPorItemAnimal = totalAnimaisCarne > 0 ? consumoRestanteProteina / totalAnimaisCarne : 0;
     
     // Calcular plantas
     Object.keys(plantasSelecionadas).forEach(tipo => {
@@ -770,8 +896,10 @@ function atualizarMemorialComValores() {
     animaisSelecionados.forEach(nome => {
         let consumoDiarioPorPessoa;
         
-        if (nome === 'galinha') {
-            consumoDiarioPorPessoa = consumoGalinhaPorPessoa;
+        if (nome === 'galinha-ovos' || nome === 'gallina-ovos') {
+            consumoDiarioPorPessoa = consumoGalinhaOvosPorPessoa;
+        } else if (nome === 'frango-corte' || nome === 'pollo-corte' || nome === 'vaca-corte' || nome === 'mucca-carne') {
+            consumoDiarioPorPessoa = consumoDiarioPorItemAnimal;
         } else {
             consumoDiarioPorPessoa = consumoDiarioPorItemAnimal;
         }
@@ -816,11 +944,18 @@ function atualizarMemorialComValores() {
     
     // Exemplo de animais
     let exemploAnimais = '-';
-    if (temGalinhas) {
+    if (temGalinhasOvos) {
         const ovosPorDiaTotal = 2 * quantidadePessoas;
-        const ovosPorDiaPorGalinha = dadosGalinha.producaoDiaria;
+        const ovosPorDiaPorGalinha = dadosGalinhaOvos.producaoDiaria;
         const quantidadeGalinhas = Math.ceil(ovosPorDiaTotal / ovosPorDiaPorGalinha);
-        exemploAnimais = `Para ${2} ovos/dia/pessoa: ${ovosPorDiaTotal} ovos/dia ÷ ${formatarNumeroDecimal(ovosPorDiaPorGalinha, 1)} ovos/dia/galinha = ${quantidadeGalinhas} galinhas`;
+        exemploAnimais = `Para ${2} ovos/dia/pessoa: ${ovosPorDiaTotal} ovos/dia ÷ ${formatarNumeroDecimal(ovosPorDiaPorGalinha, 1)} ovos/dia/galinha = ${quantidadeGalinhas} galinhas poedeiras`;
+    } else if (temFrangoCorte) {
+        const primeiroAnimal = 'frango-corte';
+        const dados = DADOS_ANIMAIS[primeiroAnimal] || DADOS_ANIMAIS['pollo-corte'];
+        const consumoAnualItem = consumoDiarioPorItemAnimal * quantidadePessoas * 365;
+        const producaoAnual = dados.producaoCiclo * (365 / dados.cicloReprodutivo);
+        const quantidade = Math.ceil(consumoAnualItem / producaoAnual);
+        exemploAnimais = `Para consumo de ${formatarNumeroDecimal(consumoDiarioPorItemAnimal * quantidadePessoas, 2)} kg/dia: ${formatarNumeroDecimal(consumoAnualItem, 0)} kg/ano ÷ ${formatarNumeroDecimal(producaoAnual, 0)} kg/ano/frango = ${quantidade} frangos de corte`;
     } else if (totalOutrosAnimais > 0) {
         const primeiroAnimal = outrosAnimais[0];
         const dados = DADOS_ANIMAIS[primeiroAnimal];
@@ -894,6 +1029,125 @@ function toggleMemorial() {
 }
 
 // ============================================
+// CARREGAR DADOS DO BANCO DE DADOS
+// ============================================
+
+// Armazenar dados completos do banco de dados (incluindo informações técnicas)
+let DADOS_COMPLETOS = {
+    plantas: {
+        frutas: {},
+        verduras: {},
+        legumes: {}
+    },
+    animais: {}
+};
+
+function carregarDadosBanco(idioma) {
+    // Verificar se o banco de dados está disponível
+    if (typeof FAZENDA_DATABASE === 'undefined') {
+        console.error('ERRO: FAZENDA_DATABASE não está definido! Certifique-se de que fazenda-database.js está carregado antes de fazenda-script.js');
+        return;
+    }
+    
+    if (!FAZENDA_DATABASE[idioma]) {
+        console.warn(`Banco de dados não encontrado para idioma ${idioma}, usando pt-BR`);
+        idioma = 'pt-BR';
+    }
+    
+    const dados = FAZENDA_DATABASE[idioma];
+    
+    if (!dados) {
+        console.error('ERRO: Dados do banco de dados não encontrados!');
+        return;
+    }
+    
+    // Limpar dados anteriores
+    DADOS_PLANTAS = {
+        frutas: {},
+        verduras: {},
+        legumes: {}
+    };
+    
+    DADOS_COMPLETOS.plantas = {
+        frutas: {},
+        verduras: {},
+        legumes: {}
+    };
+    
+    // Carregar dados de plantas (com informações técnicas)
+    if (dados.plantas) {
+        if (dados.plantas.frutas) {
+            Object.keys(dados.plantas.frutas).forEach(key => {
+                const item = dados.plantas.frutas[key];
+                DADOS_PLANTAS.frutas[key] = {
+                    producao: item.producao,
+                    ciclo: item.ciclo,
+                    plantio: item.plantio,
+                    colheita: item.colheita,
+                    areaMin: item.areaMin
+                };
+                // Armazenar dados completos com informações técnicas
+                DADOS_COMPLETOS.plantas.frutas[key] = item;
+            });
+            console.log(`[Fazenda] Carregadas ${Object.keys(DADOS_PLANTAS.frutas).length} frutas do banco de dados (${idioma})`);
+        }
+        if (dados.plantas.verduras) {
+            Object.keys(dados.plantas.verduras).forEach(key => {
+                const item = dados.plantas.verduras[key];
+                DADOS_PLANTAS.verduras[key] = {
+                    producao: item.producao,
+                    ciclo: item.ciclo,
+                    plantio: item.plantio,
+                    colheita: item.colheita,
+                    areaMin: item.areaMin
+                };
+                DADOS_COMPLETOS.plantas.verduras[key] = item;
+            });
+            console.log(`[Fazenda] Carregadas ${Object.keys(DADOS_PLANTAS.verduras).length} verduras do banco de dados (${idioma})`);
+        }
+        if (dados.plantas.legumes) {
+            Object.keys(dados.plantas.legumes).forEach(key => {
+                const item = dados.plantas.legumes[key];
+                DADOS_PLANTAS.legumes[key] = {
+                    producao: item.producao,
+                    ciclo: item.ciclo,
+                    plantio: item.plantio,
+                    colheita: item.colheita,
+                    areaMin: item.areaMin
+                };
+                DADOS_COMPLETOS.plantas.legumes[key] = item;
+            });
+            console.log(`[Fazenda] Carregados ${Object.keys(DADOS_PLANTAS.legumes).length} legumes do banco de dados (${idioma})`);
+        }
+    }
+    
+    // Carregar dados de animais (com informações técnicas)
+    DADOS_ANIMAIS = {};
+    DADOS_COMPLETOS.animais = {};
+    
+    if (dados.animais) {
+        Object.keys(dados.animais).forEach(key => {
+            const item = dados.animais[key];
+            DADOS_ANIMAIS[key] = {
+                producaoDiaria: item.producaoDiaria,
+                producaoUnidade: item.producaoUnidade,
+                producaoPorUnidade: item.producaoPorUnidade,
+                espaco: item.espaco,
+                cicloReprodutivo: item.cicloReprodutivo,
+                producaoCiclo: item.producaoCiclo,
+                tempoCrescimento: item.tempoCrescimento,
+                consumoRacao: item.consumoRacao
+            };
+            // Armazenar dados completos com informações técnicas
+            DADOS_COMPLETOS.animais[key] = item;
+        });
+        console.log(`[Fazenda] Carregados ${Object.keys(DADOS_ANIMAIS).length} animais do banco de dados (${idioma})`);
+    }
+    
+    console.log(`[Fazenda] Banco de dados carregado com sucesso para ${idioma}`);
+}
+
+// ============================================
 // TRADUÇÃO
 // ============================================
 
@@ -916,9 +1170,26 @@ function aplicarTraducoes() {
 }
 
 function trocarIdioma(novoIdioma) {
+    if (!novoIdioma || (novoIdioma !== 'pt-BR' && novoIdioma !== 'it-IT')) {
+        console.warn(`[Fazenda] Idioma inválido: ${novoIdioma}, usando pt-BR`);
+        novoIdioma = 'pt-BR';
+    }
+    
+    console.log(`[Fazenda] Trocando idioma para: ${novoIdioma}`);
     idiomaAtual = novoIdioma;
+    
+    const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido' };
+    const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { LANG_BTN: '.lang-btn', HOME_BUTTON: '.home-button-fixed' };
+    
     localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
     document.documentElement.lang = novoIdioma;
+    
+    // Carregar dados do banco de dados para o novo idioma
+    carregarDadosBanco(novoIdioma);
+    
+    // Recriar checkboxes com os novos produtos
+    recriarCheckboxes();
+    
     aplicarTraducoes();
     
     // Atualizar botões de idioma (ativação visual)
@@ -934,99 +1205,289 @@ function trocarIdioma(novoIdioma) {
     const homeLabel = traducoes[novoIdioma]?.['aria-home'] || 'Home';
     document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
     
-    atualizarResultados();
+    // Limpar resultados ao trocar idioma (já que os produtos mudaram)
+    const secaoResultados = document.getElementById('secaoResultados');
+    if (secaoResultados) {
+        secaoResultados.style.display = 'none';
+    }
+}
+
+// Função para recriar checkboxes quando o idioma muda
+function recriarCheckboxes() {
+    // Verificar se os elementos existem
+    const grupoFrutas = document.getElementById('grupoFrutas');
+    const grupoVerduras = document.getElementById('grupoVerduras');
+    const grupoLegumes = document.getElementById('grupoLegumes');
+    const grupoAnimais = document.getElementById('grupoAnimais');
+    
+    if (!grupoFrutas || !grupoVerduras || !grupoLegumes || !grupoAnimais) {
+        console.error('[Fazenda] Elementos DOM não encontrados ao recriar checkboxes');
+        return;
+    }
+    
+    // Limpar checkboxes existentes
+    grupoFrutas.innerHTML = '';
+    grupoVerduras.innerHTML = '';
+    grupoLegumes.innerHTML = '';
+    grupoAnimais.innerHTML = '';
+    
+    // Verificar se os dados foram carregados
+    if (!DADOS_PLANTAS || !DADOS_ANIMAIS) {
+        console.error('[Fazenda] Dados não carregados ao recriar checkboxes');
+        return;
+    }
+    
+    // Criar checkboxes de plantas (ordenados alfabeticamente)
+    Object.keys(DADOS_PLANTAS.frutas || {}).sort((a, b) => {
+        const nomeA = traduzir(a).toLowerCase();
+        const nomeB = traduzir(b).toLowerCase();
+        return nomeA.localeCompare(nomeB, idiomaAtual);
+    }).forEach(nome => {
+        grupoFrutas.appendChild(criarCheckboxPlantas('frutas', nome));
+    });
+    Object.keys(DADOS_PLANTAS.verduras || {}).sort((a, b) => {
+        const nomeA = traduzir(a).toLowerCase();
+        const nomeB = traduzir(b).toLowerCase();
+        return nomeA.localeCompare(nomeB, idiomaAtual);
+    }).forEach(nome => {
+        grupoVerduras.appendChild(criarCheckboxPlantas('verduras', nome));
+    });
+    Object.keys(DADOS_PLANTAS.legumes || {}).sort((a, b) => {
+        const nomeA = traduzir(a).toLowerCase();
+        const nomeB = traduzir(b).toLowerCase();
+        return nomeA.localeCompare(nomeB, idiomaAtual);
+    }).forEach(nome => {
+        grupoLegumes.appendChild(criarCheckboxPlantas('legumes', nome));
+    });
+    
+    // Criar checkboxes de animais (ordenados alfabeticamente)
+    Object.keys(DADOS_ANIMAIS || {}).sort((a, b) => {
+        const nomeA = traduzir(a).toLowerCase();
+        const nomeB = traduzir(b).toLowerCase();
+        return nomeA.localeCompare(nomeB, idiomaAtual);
+    }).forEach(nome => {
+        grupoAnimais.appendChild(criarCheckboxAnimais(nome));
+    });
+    
+    // Os event listeners já estão configurados globalmente no DOMContentLoaded
+    // Não é necessário reaplicá-los aqui
 }
 
 // ============================================
 // INICIALIZAÇÃO
 // ============================================
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Carregar idioma salvo do localStorage
-    const idiomaSalvo = localStorage.getItem(SITE_LS.LANGUAGE_KEY);
-    if (idiomaSalvo && (idiomaSalvo === 'pt-BR' || idiomaSalvo === 'it-IT')) {
-        idiomaAtual = idiomaSalvo;
-        trocarIdioma(idiomaSalvo);
+// Função de inicialização que aguarda o carregamento completo
+function inicializarApp() {
+    // Verificar se o banco de dados está disponível
+    if (typeof FAZENDA_DATABASE === 'undefined') {
+        console.error('ERRO CRÍTICO: FAZENDA_DATABASE não está disponível!');
+        // Tentar novamente após um pequeno delay
+        setTimeout(inicializarApp, 100);
+        return;
     }
     
-    // Criar checkboxes de plantas
-    Object.keys(DADOS_PLANTAS.frutas).forEach(nome => {
-        document.getElementById('grupoFrutas').appendChild(criarCheckboxPlantas('frutas', nome));
+    // Carregar dados iniciais do banco de dados
+    const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido' };
+    const idiomaSalvo = localStorage.getItem(SITE_LS.LANGUAGE_KEY);
+    const idiomaInicial = (idiomaSalvo && (idiomaSalvo === 'pt-BR' || idiomaSalvo === 'it-IT')) ? idiomaSalvo : 'pt-BR';
+    idiomaAtual = idiomaInicial;
+    
+    // Carregar dados do banco de dados PRIMEIRO
+    carregarDadosBanco(idiomaInicial);
+    
+    // Verificar se os dados foram carregados
+    const totalFrutas = Object.keys(DADOS_PLANTAS.frutas || {}).length;
+    const totalVerduras = Object.keys(DADOS_PLANTAS.verduras || {}).length;
+    const totalLegumes = Object.keys(DADOS_PLANTAS.legumes || {}).length;
+    const totalAnimais = Object.keys(DADOS_ANIMAIS || {}).length;
+    
+    if (totalFrutas === 0 && totalVerduras === 0 && totalLegumes === 0 && totalAnimais === 0) {
+        console.error('ERRO: Nenhum dado foi carregado do banco de dados!');
+        console.error('FAZENDA_DATABASE:', typeof FAZENDA_DATABASE);
+        console.error('DADOS_PLANTAS:', DADOS_PLANTAS);
+        console.error('DADOS_ANIMAIS:', DADOS_ANIMAIS);
+        alert('Erro: Nenhum produto foi carregado do banco de dados. Verifique o console para mais detalhes.');
+        return;
+    }
+    
+    console.log(`[Fazenda] Inicializando com ${totalFrutas} frutas, ${totalVerduras} verduras, ${totalLegumes} legumes e ${totalAnimais} animais`);
+    
+    // Verificar se os elementos DOM existem
+    const grupoFrutas = document.getElementById('grupoFrutas');
+    const grupoVerduras = document.getElementById('grupoVerduras');
+    const grupoLegumes = document.getElementById('grupoLegumes');
+    const grupoAnimais = document.getElementById('grupoAnimais');
+    
+    if (!grupoFrutas || !grupoVerduras || !grupoLegumes || !grupoAnimais) {
+        console.error('ERRO: Elementos DOM não encontrados!');
+        return;
+    }
+    
+    // Limpar checkboxes existentes
+    grupoFrutas.innerHTML = '';
+    grupoVerduras.innerHTML = '';
+    grupoLegumes.innerHTML = '';
+    grupoAnimais.innerHTML = '';
+    
+    // Criar checkboxes de plantas (ordenados alfabeticamente)
+    console.log('[Fazenda] Criando checkboxes de frutas...');
+    const frutasKeys = Object.keys(DADOS_PLANTAS.frutas).sort((a, b) => {
+        // Ordenar por nome traduzido
+        const nomeA = traduzir(a).toLowerCase();
+        const nomeB = traduzir(b).toLowerCase();
+        return nomeA.localeCompare(nomeB, idiomaAtual);
     });
-    Object.keys(DADOS_PLANTAS.verduras).forEach(nome => {
-        document.getElementById('grupoVerduras').appendChild(criarCheckboxPlantas('verduras', nome));
-    });
-    Object.keys(DADOS_PLANTAS.legumes).forEach(nome => {
-        document.getElementById('grupoLegumes').appendChild(criarCheckboxPlantas('legumes', nome));
+    console.log(`[Fazenda] ${frutasKeys.length} frutas encontradas (ordenadas):`, frutasKeys);
+    frutasKeys.forEach(nome => {
+        const checkbox = criarCheckboxPlantas('frutas', nome);
+        grupoFrutas.appendChild(checkbox);
     });
     
-    // Criar checkboxes de animais
-    Object.keys(DADOS_ANIMAIS).forEach(nome => {
-        document.getElementById('grupoAnimais').appendChild(criarCheckboxAnimais(nome));
+    console.log('[Fazenda] Criando checkboxes de verduras...');
+    const verdurasKeys = Object.keys(DADOS_PLANTAS.verduras).sort((a, b) => {
+        // Ordenar por nome traduzido
+        const nomeA = traduzir(a).toLowerCase();
+        const nomeB = traduzir(b).toLowerCase();
+        return nomeA.localeCompare(nomeB, idiomaAtual);
     });
+    console.log(`[Fazenda] ${verdurasKeys.length} verduras encontradas (ordenadas):`, verdurasKeys);
+    verdurasKeys.forEach(nome => {
+        const checkbox = criarCheckboxPlantas('verduras', nome);
+        grupoVerduras.appendChild(checkbox);
+    });
+    
+    console.log('[Fazenda] Criando checkboxes de legumes...');
+    const legumesKeys = Object.keys(DADOS_PLANTAS.legumes).sort((a, b) => {
+        // Ordenar por nome traduzido
+        const nomeA = traduzir(a).toLowerCase();
+        const nomeB = traduzir(b).toLowerCase();
+        return nomeA.localeCompare(nomeB, idiomaAtual);
+    });
+    console.log(`[Fazenda] ${legumesKeys.length} legumes encontrados (ordenados):`, legumesKeys);
+    legumesKeys.forEach(nome => {
+        const checkbox = criarCheckboxPlantas('legumes', nome);
+        grupoLegumes.appendChild(checkbox);
+    });
+    
+    // Criar checkboxes de animais (ordenados alfabeticamente)
+    console.log('[Fazenda] Criando checkboxes de animais...');
+    const animaisKeys = Object.keys(DADOS_ANIMAIS).sort((a, b) => {
+        // Ordenar por nome traduzido
+        const nomeA = traduzir(a).toLowerCase();
+        const nomeB = traduzir(b).toLowerCase();
+        return nomeA.localeCompare(nomeB, idiomaAtual);
+    });
+    console.log(`[Fazenda] ${animaisKeys.length} animais encontrados (ordenados):`, animaisKeys);
+    animaisKeys.forEach(nome => {
+        const checkbox = criarCheckboxAnimais(nome);
+        grupoAnimais.appendChild(checkbox);
+    });
+    
+    console.log('[Fazenda] Checkboxes criados com sucesso!');
+    
+    // Aplicar traduções (incluindo os checkboxes que acabamos de criar)
+    aplicarTraducoes();
+    
+    // Atualizar botões de idioma (ativação visual)
+    const btnPortugues = document.getElementById('btnPortugues');
+    const btnItaliano = document.getElementById('btnItaliano');
+    if (btnPortugues && idiomaInicial === 'pt-BR') {
+        btnPortugues.classList.add('active');
+        btnItaliano?.classList.remove('active');
+    } else if (btnItaliano && idiomaInicial === 'it-IT') {
+        btnItaliano.classList.add('active');
+        btnPortugues?.classList.remove('active');
+    }
+    
+    // Configurar event listeners
+    configurarEventListeners();
+    
+    console.log('[Fazenda] Inicialização completa!');
+}
+
+// Função separada para configurar event listeners
+function configurarEventListeners() {
     
     // Event listeners para pessoas
     const sliderPessoas = document.getElementById('sliderPessoas');
     const inputPessoas = document.getElementById('inputPessoas');
     
-    // Aplica throttle nos sliders e debounce nos inputs para melhorar performance
-    sliderPessoas.addEventListener('input', throttle(() => {
-        inputPessoas.value = sliderPessoas.value;
-        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
-        atualizarResultados();
-    }, 100));
-    
-    inputPessoas.addEventListener('input', debounce(() => {
-        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
-        let valor = parseInt(inputPessoas.value) || 1;
-        valor = Math.max(1, Math.min(20, valor));
-        inputPessoas.value = valor;
-        sliderPessoas.value = valor;
-        atualizarResultados();
-    }, 300));
+    if (sliderPessoas && inputPessoas) {
+        // Aplica throttle nos sliders e debounce nos inputs para melhorar performance
+        const throttleFn = typeof throttle === 'function' ? throttle : (fn, delay) => fn;
+        const debounceFn = typeof debounce === 'function' ? debounce : (fn, delay) => fn;
+        
+        sliderPessoas.addEventListener('input', throttleFn(() => {
+            inputPessoas.value = sliderPessoas.value;
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
+            atualizarResultados();
+        }, 100));
+        
+        inputPessoas.addEventListener('input', debounceFn(() => {
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
+            let valor = parseInt(inputPessoas.value) || 1;
+            valor = Math.max(1, Math.min(20, valor));
+            inputPessoas.value = valor;
+            sliderPessoas.value = valor;
+            atualizarResultados();
+        }, 300));
+    }
     
     // Event listeners para consumo de plantas
     const sliderConsumoPlantas = document.getElementById('sliderConsumoPlantas');
     const inputConsumoPlantas = document.getElementById('inputConsumoPlantas');
     
-    sliderConsumoPlantas.addEventListener('input', throttle(() => {
-        inputConsumoPlantas.value = formatarNumeroDecimal(parseFloat(sliderConsumoPlantas.value), 1);
-        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoPlantas);
-        atualizarResultados();
-    }, 100));
-    
-    inputConsumoPlantas.addEventListener('input', debounce(() => {
-        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoPlantas);
-        let valor = parseFloat(inputConsumoPlantas.value.replace(',', '.')) || 0.1;
-        valor = Math.max(0.1, Math.min(2.0, valor));
-        inputConsumoPlantas.value = formatarNumeroDecimal(valor, 1);
-        sliderConsumoPlantas.value = valor;
-        atualizarResultados();
-    }, 300));
+    if (sliderConsumoPlantas && inputConsumoPlantas) {
+        const throttleFn = typeof throttle === 'function' ? throttle : (fn, delay) => fn;
+        const debounceFn = typeof debounce === 'function' ? debounce : (fn, delay) => fn;
+        
+        sliderConsumoPlantas.addEventListener('input', throttleFn(() => {
+            inputConsumoPlantas.value = formatarNumeroDecimal(parseFloat(sliderConsumoPlantas.value), 1);
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoPlantas);
+            atualizarResultados();
+        }, 100));
+        
+        inputConsumoPlantas.addEventListener('input', debounceFn(() => {
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoPlantas);
+            let valor = parseFloat(inputConsumoPlantas.value.replace(',', '.')) || 0.1;
+            valor = Math.max(0.1, Math.min(2.0, valor));
+            inputConsumoPlantas.value = formatarNumeroDecimal(valor, 1);
+            sliderConsumoPlantas.value = valor;
+            atualizarResultados();
+        }, 300));
+    }
     
     // Event listeners para consumo de proteínas
     const sliderConsumoProteinas = document.getElementById('sliderConsumoProteinas');
     const inputConsumoProteinas = document.getElementById('inputConsumoProteinas');
     
-    sliderConsumoProteinas.addEventListener('input', () => {
-        inputConsumoProteinas.value = formatarNumeroDecimal(parseFloat(sliderConsumoProteinas.value), 1);
-        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoProteinas);
-        atualizarResultados();
-    });
-    
-    inputConsumoProteinas.addEventListener('input', () => {
-        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoProteinas);
-        let valor = parseFloat(inputConsumoProteinas.value.replace(',', '.')) || 0.1;
-        valor = Math.max(0.1, Math.min(2.0, valor));
-        inputConsumoProteinas.value = formatarNumeroDecimal(valor, 1);
-        sliderConsumoProteinas.value = valor;
-        atualizarResultados();
-    });
+    if (sliderConsumoProteinas && inputConsumoProteinas) {
+        const throttleFn = typeof throttle === 'function' ? throttle : (fn, delay) => fn;
+        const debounceFn = typeof debounce === 'function' ? debounce : (fn, delay) => fn;
+        
+        sliderConsumoProteinas.addEventListener('input', throttleFn(() => {
+            inputConsumoProteinas.value = formatarNumeroDecimal(parseFloat(sliderConsumoProteinas.value), 1);
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoProteinas);
+            atualizarResultados();
+        }, 100));
+        
+        inputConsumoProteinas.addEventListener('input', debounceFn(() => {
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoProteinas);
+            let valor = parseFloat(inputConsumoProteinas.value.replace(',', '.')) || 0.1;
+            valor = Math.max(0.1, Math.min(2.0, valor));
+            inputConsumoProteinas.value = formatarNumeroDecimal(valor, 1);
+            sliderConsumoProteinas.value = valor;
+            atualizarResultados();
+        }, 300));
+    }
     
     // Botões de seta
     document.querySelectorAll('.arrow-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const target = document.getElementById(btn.dataset.target);
+            if (!target) return;
+            
             const step = parseFloat(btn.dataset.step);
             const novoValor = parseFloat(target.value) + step;
             const min = parseFloat(target.min);
@@ -1035,13 +1496,13 @@ document.addEventListener('DOMContentLoaded', () => {
             target.value = valorLimitado;
             
             // Atualizar o input correspondente
-            if (target.id === 'sliderPessoas') {
+            if (target.id === 'sliderPessoas' && inputPessoas) {
                 inputPessoas.value = valorLimitado;
                 if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
-            } else if (target.id === 'sliderConsumoPlantas') {
+            } else if (target.id === 'sliderConsumoPlantas' && inputConsumoPlantas) {
                 inputConsumoPlantas.value = formatarNumeroDecimal(valorLimitado, 1);
                 if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoPlantas);
-            } else if (target.id === 'sliderConsumoProteinas') {
+            } else if (target.id === 'sliderConsumoProteinas' && inputConsumoProteinas) {
                 inputConsumoProteinas.value = formatarNumeroDecimal(valorLimitado, 1);
                 if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoProteinas);
             }
@@ -1058,19 +1519,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Botões de idioma
-    document.getElementById('btnPortugues').addEventListener('click', () => trocarIdioma('pt-BR'));
-    document.getElementById('btnItaliano').addEventListener('click', () => trocarIdioma('it-IT'));
+    const btnPortugues = document.getElementById('btnPortugues');
+    const btnItaliano = document.getElementById('btnItaliano');
+    if (btnPortugues) btnPortugues.addEventListener('click', () => trocarIdioma('pt-BR'));
+    if (btnItaliano) btnItaliano.addEventListener('click', () => trocarIdioma('it-IT'));
     
     // Event listeners para o memorial de cálculo
-    document.getElementById('btnMemorial')?.addEventListener('click', toggleMemorial);
-    document.getElementById('btnFecharMemorial')?.addEventListener('click', toggleMemorial);
+    const btnMemorial = document.getElementById('btnMemorial');
+    const btnFecharMemorial = document.getElementById('btnFecharMemorial');
+    if (btnMemorial) btnMemorial.addEventListener('click', toggleMemorial);
+    if (btnFecharMemorial) btnFecharMemorial.addEventListener('click', toggleMemorial);
     document.querySelectorAll('.btn-voltar-memorial').forEach(btn => {
         btn.addEventListener('click', toggleMemorial);
     });
     
     // Aplicar traduções iniciais
     aplicarTraducoes();
-    document.getElementById('btnPortugues').classList.add('active');
+    if (btnPortugues) btnPortugues.classList.add('active');
     
     // Garantir que a seção de entradas esteja visível no carregamento
     const entradasSection = document.getElementById('secaoEntradas');
@@ -1093,5 +1558,53 @@ document.addEventListener('DOMContentLoaded', () => {
         if (inputConsumoPlantas) ajustarTamanhoInput(inputConsumoPlantas);
         if (inputConsumoProteinas) ajustarTamanhoInput(inputConsumoProteinas);
     }
+    
+    console.log('[Fazenda] App inicializado com sucesso!');
+}
+
+// Aguardar carregamento completo do DOM e do banco de dados
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('[Fazenda] DOM carregado, verificando dependências...');
+    
+    // Verificar se as funções necessárias estão disponíveis
+    if (typeof formatarNumeroDecimal === 'undefined') {
+        console.error('[Fazenda] ERRO: formatarNumeroDecimal não está disponível!');
+    }
+    if (typeof throttle === 'undefined') {
+        console.warn('[Fazenda] AVISO: throttle não está disponível, usando função padrão');
+    }
+    if (typeof debounce === 'undefined') {
+        console.warn('[Fazenda] AVISO: debounce não está disponível, usando função padrão');
+    }
+    
+    // Função para tentar inicializar
+    function tentarInicializar(tentativa = 0) {
+        console.log(`[Fazenda] Tentativa ${tentativa + 1} de inicialização...`);
+        
+        if (typeof FAZENDA_DATABASE !== 'undefined') {
+            console.log('[Fazenda] Banco de dados encontrado, inicializando app...');
+            try {
+                inicializarApp();
+                console.log('[Fazenda] App inicializado com sucesso!');
+            } catch (error) {
+                console.error('[Fazenda] Erro ao inicializar app:', error);
+                console.error('[Fazenda] Stack trace:', error.stack);
+                alert('Erro ao inicializar o aplicativo. Verifique o console para mais detalhes.\n\nErro: ' + error.message);
+            }
+        } else {
+            console.warn(`[Fazenda] Banco de dados ainda não disponível (tentativa ${tentativa + 1})`);
+            if (tentativa < 10) {
+                // Tentar novamente após um pequeno delay (máximo 10 tentativas = 1 segundo)
+                setTimeout(() => tentarInicializar(tentativa + 1), 100);
+            } else {
+                console.error('[Fazenda] ERRO CRÍTICO: FAZENDA_DATABASE não foi carregado após 1 segundo!');
+                console.error('[Fazenda] Verifique se fazenda-database.js está sendo carregado antes de fazenda-script.js');
+                alert('Erro: O banco de dados não foi carregado. Verifique se fazenda-database.js está sendo carregado corretamente.');
+            }
+        }
+    }
+    
+    // Iniciar tentativas
+    tentarInicializar();
 });
 

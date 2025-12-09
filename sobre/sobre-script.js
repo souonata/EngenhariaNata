@@ -38,7 +38,7 @@ const traducoes = {
         'app-bitola-desc': 'Calculadora de bitola de fios',
         'app-arcondicionado-desc': 'Dimensionamento de ar condicionado',
         'app-aquecimento-desc': 'Dimensionamento solar térmico',
-        'app-fazenda-desc': 'Planejamento de fazenda auto-sustentável',
+        'app-fazenda-desc': 'Planejamento de fazenda auto-sustentável com banco de dados regional',
         'app-about-desc': 'Informações do projeto',
 
         'calculator-title': 'Calculadora de Empréstimos',
@@ -61,7 +61,7 @@ const traducoes = {
         'aquecimento-description': 'Dimensionador completo de sistemas de aquecimento solar térmico. Calcula área de coletores, volume do boiler, número de painéis e potência necessária. Suporta água de consumo e aquecimento ambiente.',
 
         'fazenda-title': 'Dimensionador de Fazenda Auto-Sustentável',
-        'fazenda-description': 'Planejador completo de fazenda auto-sustentável. Calcula espaço necessário, quantidade de plantas (frutas, verduras, legumes) e animais necessários para alimentar uma família. Inclui calendário de plantio/colheita e frequência de reprodução dos animais para manter produção contínua.',
+        'fazenda-description': 'Planejador completo de fazenda auto-sustentável com banco de dados regional (Brasil e Itália). Calcula espaço necessário, quantidade de plantas (frutas, verduras, legumes) e animais necessários para alimentar uma família. Inclui separação de animais por produção: galinha (ovos), frango de corte, vaca (leite), vaca (carne), além de calendário de plantio/colheita, frequência de reprodução e informações técnicas detalhadas (clima, solo, técnicas de cultivo/criação).',
         'feature-plantas-title': 'Plantas e Animais',
         'feature-plantas-desc': 'Seleção de frutas, verduras, legumes e animais com cálculo proporcional de produção mínima',
         'feature-producao-minima-title': 'Produção Mínima',
@@ -170,7 +170,7 @@ const traducoes = {
         'app-bitola-desc': 'Calcolatrice sezione cavi',
         'app-arcondicionado-desc': 'Dimensionamento climatizzatore',
         'app-aquecimento-desc': 'Dimensionamento riscaldatore solare',
-        'app-fazenda-desc': 'Pianificazione fattoria auto-sostenibile',
+        'app-fazenda-desc': 'Pianificazione fattoria auto-sostenibile con database regionale',
         'app-about-desc': 'Informazioni sul progetto',
 
         'calculator-title': 'Calcolatrice Prestiti',
@@ -193,7 +193,7 @@ const traducoes = {
         'aquecimento-description': 'Dimensionatore completo di sistemi di riscaldamento solare termico. Calcola l\'area dei collettori, volume del boiler, numero di pannelli e potenza necessaria. Supporta riscaldamento dell\'acqua sanitaria e riscaldamento ambiente.',
 
         'fazenda-title': 'Dimensionatore Fattoria Auto-Sostenibile',
-        'fazenda-description': 'Pianificatore completo di fattoria auto-sostenibile. Calcola lo spazio necessario, quantità di piante (frutta, verdura, legumi) e animali necessari per nutrire una famiglia. Include calendario di semina/raccolto e frequenza di riproduzione degli animali per mantenere produzione continua.',
+        'fazenda-description': 'Pianificatore completo di fattoria auto-sostenibile con database regionale (Brasile e Italia). Calcola lo spazio necessario, quantità di piante (frutta, verdura, legumi) e animali necessari per nutrire una famiglia. Include separazione degli animali per produzione: gallina (uova), pollo da carne, mucca (latte), mucca (carne), oltre a calendario di semina/raccolta, frequenza di riproduzione e informazioni tecniche dettagliate (clima, suolo, tecniche di coltivazione/allevamento).',
         'feature-plantas-title': 'Piante e Animali',
         'feature-plantas-desc': 'Selezione di frutta, verdura, legumi e animali con calcolo proporzionale di produzione minima',
         'feature-producao-minima-title': 'Produzione Minima',
