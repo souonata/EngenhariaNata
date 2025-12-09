@@ -178,6 +178,7 @@ Ideal para quem está aprendendo JavaScript, HTML, CSS, engenharia e finanças, 
 - **JavaScript ES6+** — Lógica pura, sem dependências
 - **Chart.js** — Gráficos interativos (CDN)
 - **localStorage** — Persistência de preferências do usuário
+- **Service Worker** — Cache offline para melhor performance
 
 ## 🔧 Desenvolvimento
 
