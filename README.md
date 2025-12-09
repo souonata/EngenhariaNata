@@ -8,8 +8,8 @@ Uma coleção de aplicativos web educativos para estudar conceitos práticos de 
 - **🚤 Helice** — Calculadora de passo de hélice para barcos de lazer, com análise de slip, gráficos de relação velocidade × passo e memorial explicando a constante de conversão 1056 e os princípios de propulsão náutica.
 - **🔋 Energia Solar** — Dimensionamento fotovoltaico off-grid (painéis, baterias AGM/LiFePO4, inversor, MPPT) com página de configuração personalizável e memorial de cálculo completo explicando DoD, ciclos de vida, HSP e eficiência do sistema. **Valores iniciais:** 200 kWh/mês, 1 dia autonomia, bateria lítio, 20 anos vida útil.
 - **🔌 Bitola** — Calculadora de bitola de fios elétricos para circuitos CC e CA, com seleção automática de bitola comercial padrão brasileiro (NBR 5410) e memorial explicando a Lei de Ohm, resistividade do cobre e queda de tensão.
-- **❄️ Ar Condicionado** — Dimensionador de ar condicionado com cálculo de BTU baseado em área, altura, número de pessoas, equipamentos e condições ambientais. Memorial explica os fatores de insolação e isolamento térmico, além das constantes ASHRAE utilizadas.
-- **☀️ Aquecedor Solar** — Dimensionador completo de sistemas de aquecimento solar térmico (coletores, boiler, potência) para água de consumo e aquecimento ambiente. Memorial explica classes energéticas, cálculo de HSP baseado em latitude, e princípios de transferência de calor.
+- **❄️ Ar Condicionado** — Dimensionador de sistema multi-split com cálculo de BTU baseado em área (700 BTU/m²), altura, número de ambientes (1-8), pessoas, equipamentos e condições ambientais. Dimensiona unidades internas (até 60k BTU cada) e externas (até 180k BTU cada) com cálculo de custo estimado. Memorial explica os fatores de insolação e isolamento térmico, além das constantes ASHRAE utilizadas.
+- **☀️ Aquecedor Solar** — Dimensionador completo de sistemas de aquecimento solar térmico (coletores, boiler, potência) para água de consumo e aquecimento ambiente. Calcula baseado em área (m²) e classe energética (A4-G), considera temperatura mínima para termossifões (48°C) e estratificação térmica do boiler (65% útil). Memorial explica classes energéticas, cálculo de HSP baseado em latitude, e princípios de transferência de calor.
 - **🌾 Fazenda** — Planejador de fazenda auto-sustentável com cálculo de espaço, quantidade de plantas e animais, calendário de plantio/colheita e frequência de reprodução. Memorial explica os cálculos de produção mínima, distribuição proporcional e ciclos de plantio.
 
 ## 🎯 Características Principais
@@ -148,8 +148,8 @@ Todos os apps educativos incluem **Memoriais de Cálculo** completos (acessívei
 ### Apps com Memorial de Cálculo:
 
 1. ✅ **Energia Solar** — Explica DoD, ciclos de vida, HSP, eficiência do sistema, dimensionamento de painéis, baterias, inversor e MPPT
-2. ✅ **Ar Condicionado** — Explica cálculo de BTU, fatores de insolação e isolamento, constantes ASHRAE
-3. ✅ **Aquecedor Solar** — Explica classes energéticas, cálculo de HSP por latitude, transferência de calor, dimensionamento de coletores e boiler
+2. ✅ **Ar Condicionado** — Explica cálculo de BTU baseado em área (700 BTU/m²), fator de altura, sistema multi-split, dimensionamento de unidades internas e externas, fatores de insolação e isolamento, constantes ASHRAE
+3. ✅ **Aquecedor Solar** — Explica cálculo baseado em área e classe energética, temperatura mínima para termossifões, estratificação térmica, classes energéticas, cálculo de HSP por latitude, transferência de calor, dimensionamento de coletores e boiler
 4. ✅ **Bitola** — Explica Lei de Ohm, resistividade do cobre, queda de tensão, bitolas comerciais NBR 5410
 5. ✅ **Hélice** — Explica constante de conversão 1056, slip, redução de rabeta, princípios de propulsão náutica
 6. ✅ **Fazenda** — Explica cálculos de produção mínima, distribuição proporcional, ciclos de plantio e reprodução

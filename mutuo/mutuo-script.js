@@ -10,11 +10,17 @@
 //   1) SAC (Sistema de Amortização Constante) - amortização fixa
 //      todo mês; juros decrescentes → parcelas que começam maiores e
 //      diminuem com o tempo.
-//   2) Price (Tabela Price / Sistema Francês) - parcela fixa (PMT)
+//      - Português: "SAC" ou "Sistema de Amortização Constante"
+//      - Italiano: "Ammortamento all'Italiana" ou "Italiana"
+//   2) Tabela Price (Sistema Francês) - parcela fixa (PMT)
 //      calculada com a fórmula de anuidades; no começo paga-se mais
 //      juros e pouca amortização, com inversão ao longo do prazo.
-//   3) Americano - paga-se apenas juros durante todo o período e o
-//      principal é pago integralmente na última parcela.
+//      - Português: "Tabela Price" ou "Sistema Francês"
+//      - Italiano: "Ammortamento alla Francese" ou "Francese"
+//   3) Sistema Americano (Alemão/Tedesco) - paga-se apenas juros
+//      durante todo o período e o principal é pago integralmente na última parcela.
+//      - Português: "Sistema Americano"
+//      - Italiano: "Sistema Tedesco"
 //
 // Processo principal (função calcularEmprestimo):
 // - Ler valores de entrada (valor, taxa, prazo, periodicidade)

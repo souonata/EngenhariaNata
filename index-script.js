@@ -91,9 +91,9 @@ const traducoes = {
         'app-bitola-title': 'Bitola - Calculadora de Fios Elétricos',
         'app-bitola-description': 'Calculadora de bitola de fios elétricos para circuitos CC e CA. Considera queda de tensão, corrente e distância. Seleciona automaticamente a bitola comercial padrão brasileiro (NBR 5410) que atende aos requisitos de segurança e eficiência.',
         'app-arcondicionado-title': 'Ar Condicionado - Dimensionamento',
-        'app-arcondicionado-description': 'Calculadora para dimensionamento de ar condicionado. Determina a capacidade necessária (BTU) baseada em área, altura, número de pessoas, equipamentos e condições ambientais. Ajuda a escolher o aparelho ideal para cada ambiente.',
+        'app-arcondicionado-description': 'Dimensionador de sistema multi-split para ar condicionado. Calcula BTU baseado em área total (10-300 m²), número de ambientes (1-8), altura, pessoas, equipamentos e condições ambientais. Dimensiona unidades internas (até 60k BTU cada) e externas (até 180k BTU cada) com cálculo de custo estimado.',
         'app-aquecimento-title': 'Aquecedor Solar - Dimensionamento Térmico',
-        'app-aquecimento-description': 'Dimensionador completo de sistemas de aquecimento solar térmico. Calcula área de coletores, volume do boiler, número de painéis e potência necessária. Suporta aquecimento de água de consumo e aquecimento ambiente, considerando classes energéticas e dias de autonomia.',
+        'app-aquecimento-description': 'Dimensionador completo de sistemas de aquecimento solar térmico. Calcula área de coletores, volume do boiler, número de painéis e potência necessária baseado em área (m²) e classe energética. Suporta aquecimento de água de consumo e aquecimento ambiente separadamente ou combinados, considerando temperatura mínima para termossifões (48°C) e estratificação térmica.',
         'app-fazenda-title': 'Fazenda - Dimensionamento Auto-Sustentável',
         'app-fazenda-description': 'Planejador completo de fazenda auto-sustentável. Calcula espaço necessário, quantidade de plantas (frutas, verduras, legumes) e animais necessários para alimentar uma família. Inclui calendário de plantio/colheita e frequência de reprodução dos animais para manter produção contínua.',
         'app-link-use': 'Usar calculadora →',
@@ -148,9 +148,9 @@ const traducoes = {
         'app-bitola-title': 'Sezione Cavi - Calcolatrice di Fili Elettrici',
         'app-bitola-description': 'Calcolatrice della sezione dei fili elettrici per circuiti CC e CA. Considera caduta di tensione, corrente e distanza. Seleziona automaticamente la sezione commerciale standard che soddisfa i requisiti di sicurezza ed efficienza.',
         'app-arcondicionado-title': 'Climatizzatore - Dimensionamento',
-        'app-arcondicionado-description': 'Calcolatrice per il dimensionamento del climatizzatore. Determina la capacità necessaria (BTU) basata su area, altezza, numero di persone, apparecchiature e condizioni ambientali. Aiuta a scegliere l\'apparecchio ideale per ogni ambiente.',
+        'app-arcondicionado-description': 'Dimensionatore di sistema multi-split per climatizzatore. Calcola BTU basato su area totale (10-300 m²), numero di ambienti (1-8), altezza, persone, apparecchiature e condizioni ambientali. Dimensiona unità interne (fino a 60k BTU ciascuna) ed esterne (fino a 180k BTU ciascuna) con calcolo del costo stimato.',
         'app-aquecimento-title': 'Riscaldatore Solare - Dimensionamento Termico',
-        'app-aquecimento-description': 'Dimensionatore completo di sistemi di riscaldamento solare termico. Calcola l\'area dei collettori, volume del boiler, numero di pannelli e potenza necessaria. Supporta riscaldamento dell\'acqua sanitaria e riscaldamento ambiente, considerando classi energetiche e giorni di autonomia.',
+        'app-aquecimento-description': 'Dimensionatore completo di sistemi di riscaldamento solare termico. Calcola l\'area dei collettori, volume del boiler, numero di pannelli e potenza necessaria basato su area (m²) e classe energetica. Supporta riscaldamento dell\'acqua sanitaria e riscaldamento ambiente separatamente o combinati, considerando temperatura minima per termosifoni (48°C) e stratificazione termica.',
         'app-fazenda-title': 'Fattoria - Dimensionamento Auto-Sostenibile',
         'app-fazenda-description': 'Pianificatore completo di fattoria auto-sostenibile. Calcola lo spazio necessario, quantità di piante (frutta, verdura, legumi) e animali necessari per nutrire una famiglia. Include calendario di semina/raccolta e frequenza di riproduzione degli animali per mantenere produzione continua.',
         'app-link-use': 'Usa calcolatrice →',
@@ -259,31 +259,31 @@ function atualizarHorario() {
     // Array com nomes dos dias da semana traduzidos
     // getDay() retorna: 0=domingo, 1=segunda, 2=terça, etc.
     const diasSemana = [
-        traducoes[idiomaAtual]['dia-dom'],
-        traducoes[idiomaAtual]['dia-seg'],
-        traducoes[idiomaAtual]['dia-ter'],
-        traducoes[idiomaAtual]['dia-qua'],
-        traducoes[idiomaAtual]['dia-qui'],
-        traducoes[idiomaAtual]['dia-sex'],
-        traducoes[idiomaAtual]['dia-sab']
+        traducoes[idiomaAtual]?.['dia-dom'] || 'Dom',
+        traducoes[idiomaAtual]?.['dia-seg'] || 'Seg',
+        traducoes[idiomaAtual]?.['dia-ter'] || 'Ter',
+        traducoes[idiomaAtual]?.['dia-qua'] || 'Qua',
+        traducoes[idiomaAtual]?.['dia-qui'] || 'Qui',
+        traducoes[idiomaAtual]?.['dia-sex'] || 'Sex',
+        traducoes[idiomaAtual]?.['dia-sab'] || 'Sáb'
     ];
     const diaSemana = diasSemana[agora.getDay()];
     
     // Array com nomes dos meses traduzidos
     // getMonth() retorna: 0=janeiro, 1=fevereiro, 2=março, etc.
     const meses = [
-        traducoes[idiomaAtual]['mes-jan'],
-        traducoes[idiomaAtual]['mes-fev'],
-        traducoes[idiomaAtual]['mes-mar'],
-        traducoes[idiomaAtual]['mes-abr'],
-        traducoes[idiomaAtual]['mes-mai'],
-        traducoes[idiomaAtual]['mes-jun'],
-        traducoes[idiomaAtual]['mes-jul'],
-        traducoes[idiomaAtual]['mes-ago'],
-        traducoes[idiomaAtual]['mes-set'],
-        traducoes[idiomaAtual]['mes-out'],
-        traducoes[idiomaAtual]['mes-nov'],
-        traducoes[idiomaAtual]['mes-dez']
+        traducoes[idiomaAtual]?.['mes-jan'] || 'Jan',
+        traducoes[idiomaAtual]?.['mes-fev'] || 'Fev',
+        traducoes[idiomaAtual]?.['mes-mar'] || 'Mar',
+        traducoes[idiomaAtual]?.['mes-abr'] || 'Abr',
+        traducoes[idiomaAtual]?.['mes-mai'] || 'Mai',
+        traducoes[idiomaAtual]?.['mes-jun'] || 'Jun',
+        traducoes[idiomaAtual]?.['mes-jul'] || 'Jul',
+        traducoes[idiomaAtual]?.['mes-ago'] || 'Ago',
+        traducoes[idiomaAtual]?.['mes-set'] || 'Set',
+        traducoes[idiomaAtual]?.['mes-out'] || 'Out',
+        traducoes[idiomaAtual]?.['mes-nov'] || 'Nov',
+        traducoes[idiomaAtual]?.['mes-dez'] || 'Dez'
     ];
     const mesAbreviado = meses[agora.getMonth()];
     const dia = agora.getDate();

@@ -1,5 +1,6 @@
 // ============================================
 // CALCULADORA SOLAR
+// Dimensionamento de Sistema Fotovoltaico Off-Grid
 // ============================================
 //
 // Objetivo: dado um consumo médio mensal (kWh), dias de autonomia e
@@ -11,14 +12,24 @@
 //  - corrente do MPPT (A),
 //  - estimativa de custo baseada em preços unitários.
 //
+// Valores Iniciais Padrão:
+//  - Consumo médio mensal: 200 kWh
+//  - Dias de autonomia: 1 dia
+//  - Tipo de bateria: Lítio (LiFePO4)
+//  - Vida útil desejada: 20 anos
+//
 // Entrada (UI):
-//  - consumo médio mensal (kWh)
-//  - dias de autonomia (quantos dias o sistema deve suprir sem sol)
+//  - consumo médio mensal (kWh) - padrão: 200 kWh
+//  - dias de autonomia (quantos dias o sistema deve suprir sem sol) - padrão: 1 dia
 //  - vida útil desejada (anos) → traduzido em ciclos por ano → usado
 //    para calcular um DoD (Depth of Discharge) alvo aceitável para
-//    proteger a bateria e alcançar a vida útil desejada.
-//  - escolha do tipo de bateria (AGM / Litio)
+//    proteger a bateria e alcançar a vida útil desejada
+//    - Lítio: 5 a 25 anos (padrão: 20 anos)
+//    - Chumbo-ácido (AGM): 1 a 5 anos
+//  - escolha do tipo de bateria (AGM / Litio) - padrão: Lítio
 //  - configuração do fabricante (potência do painel, capacidade/peso/valor das baterias)
+//    - Configurável via página config.html
+//    - Salvo em localStorage na chave 'configSolar'
 //
 // Passo-a-passo do cálculo:
 // 1) Determinar energia diária média = consumo mensal / 30 (kWh/dia).
@@ -518,7 +529,7 @@ function trocarIdioma(novoIdioma) {
     atualizarInterface();
 
     // Atualiza aria-label do botão home
-    const homeLabel = traducoes[novoIdioma]['aria-home'] || 'Home';
+    const homeLabel = traducoes[novoIdioma]?.['aria-home'] || 'Home';
     document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
 }
 
@@ -861,7 +872,7 @@ function calcularSistema(dodAlvo) {
         });
         // Zera o preço
         const precoElemento = document.getElementById('resPrecoEstimado');
-        if (precoElemento) precoElemento.textContent = `${traducoes[idiomaAtual]['moeda']} 0`;
+        if (precoElemento) precoElemento.textContent = `${traducoes[idiomaAtual]?.['moeda'] || 'R$'} 0`;
         return; // Interrompe a execução da função
     }
 
@@ -1052,7 +1063,7 @@ function calcularSistema(dodAlvo) {
     document.getElementById('resCorrenteMPPT').textContent = `${correnteMPPT} A`;
     document.getElementById('resPesoBaterias').textContent = `${pesoTotal} kg`;
     
-    const moeda = traducoes[idiomaAtual]['moeda'];
+    const moeda = traducoes[idiomaAtual]?.['moeda'] || 'R$';
     const formatarPreco = (valor) => `${moeda} ${valor.toLocaleString(idiomaAtual, {minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: true})}`;
     
     // Exibir custos detalhados
@@ -1466,7 +1477,7 @@ function atualizarMemorialComValores() {
     }
     
     // Formatação
-    const moeda = traducoes[idiomaAtual]['moeda'];
+    const moeda = traducoes[idiomaAtual]?.['moeda'] || 'R$';
     const formatarNumero = (num) => num.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 2, useGrouping: true });
     const formatarMoeda = (num) => num.toLocaleString(idiomaAtual, { style: 'currency', currency: moeda === 'R$' ? 'BRL' : 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
     

@@ -2,6 +2,44 @@
 // DIMENSIONADOR DE AQUECEDOR SOLAR TÉRMICO
 // Sistema Termossifão com Tubos a Vácuo
 // ============================================
+//
+// Comentários didáticos em Português - Visão geral do algoritmo
+// -------------------------------------------------------------
+// Objetivo: dimensionar um sistema completo de aquecimento solar térmico
+// para água de consumo e/ou aquecimento ambiente, incluindo:
+//  - Área de coletores solares (m²)
+//  - Número de painéis necessários
+//  - Volume do boiler (litros)
+//  - Potência necessária para aquecimento
+//  - Número de termossifões (radiadores) para aquecimento ambiente
+//  - Custo estimado do sistema
+//
+// Sistemas Suportados:
+//  - Água de Consumo: aquecimento de água para uso doméstico
+//  - Aquecimento da Casa: aquecimento ambiente via termossifões
+//  - Sistema Combinado: ambos os sistemas simultaneamente
+//
+// Características Principais:
+//  - Cálculo baseado em área (m²) e classe energética (A4 a G)
+//  - Considera temperatura mínima para termossifões (48°C)
+//  - Considera estratificação térmica do boiler (65% do volume útil)
+//  - Calcula HSP (Horas de Sol Pleno) baseado em latitude
+//  - Ajusta temperaturas base conforme altitude (gradiente adiabático)
+//  - Dimensiona para garantir energia em 1 dia para autonomia total
+//
+// Fórmulas Principais:
+//  - Perda de Calor = Área × Consumo Específico (kWh/m²·ano) × Fator Altura
+//  - Demanda Diária = Perda de Calor × (16 horas/dia) / 365 dias
+//  - Volume Boiler = Consumo Diário × Dias de Autonomia
+//  - Área Coletores = (Energia Aquecimento Boiler + Energia Autonomia) / Energia Capturada por m²
+//
+// Valores de Referência:
+//  - Consumo Específico por Classe: A4 (0.35) a G (4.0) kWh/m²·ano
+//  - Temperatura Mínima Termossifão: 48°C
+//  - Temperatura Armazenamento: 65°C
+//  - Fator Estratificação: 0.65 (65% do volume útil)
+//  - Horas de Aquecimento por Dia: 16 horas
+//  - Calor Específico da Água: 1.163 Wh/kg°C
 
 // ============================================
 // CONFIGURAÇÃO DE CHAVES E SELETORES
@@ -151,7 +189,7 @@ const TEMPERATURA_CONFORTO_CASA = 22.0; // °C
 // Temperatura mínima de operação dos termossifões (radiadores)
 // Termossifões com termostato precisam de uma temperatura mínima para funcionar adequadamente
 // Abaixo desta temperatura, o termossifão não consegue transferir calor suficiente para o ambiente
-const TEMPERATURA_MINIMA_TERMOSSIFAO = 40.0; // °C
+const TEMPERATURA_MINIMA_TERMOSSIFAO = 48.0; // °C
 
 // Temperatura de armazenamento inicial no boiler (após carregamento solar)
 // Esta é a temperatura máxima que a água atinge quando o sistema solar carrega o boiler
@@ -407,7 +445,7 @@ function calcularAquecimentoCasa(areaCasa, alturaCasa, classeEnergetica, T_ambie
  * 2. VOLUME DO BOILER:
  *    - ÁGUA: Volume = Consumo diário × Dias de autonomia
  *    - CASA: Volume calculado para armazenar energia suficiente para os dias de autonomia,
- *            considerando temperatura mínima dos termossifões (40°C) e estratificação térmica
+ *            considerando temperatura mínima dos termossifões (48°C) e estratificação térmica
  *    - TOTAL: Soma dos volumes de água e casa
  * 
  * 3. ENERGIA PARA AQUECER O BOILER:
@@ -578,10 +616,10 @@ function calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, mod
         // IMPORTANTE: A água precisa estar acima da temperatura mínima de operação dos termossifões
         // até o último dia de autonomia. Consideramos:
         // - Temperatura inicial de armazenamento: TEMPERATURA_ARMAZENAMENTO_INICIAL (65°C)
-        // - Temperatura mínima de operação dos termossifões: TEMPERATURA_MINIMA_TERMOSSIFAO (40°C)
-        // - Delta_T_armazenamento: diferença entre temperatura inicial e temperatura mínima (25°C)
+        // - Temperatura mínima de operação dos termossifões: TEMPERATURA_MINIMA_TERMOSSIFAO (48°C)
+        // - Delta_T_armazenamento: diferença entre temperatura inicial e temperatura mínima (17°C)
         //   Esta é a faixa de temperatura utilizável para os termossifões funcionarem
-        const Delta_T_armazenamento = TEMPERATURA_ARMAZENAMENTO_INICIAL - TEMPERATURA_MINIMA_TERMOSSIFAO; // 65°C - 40°C = 25°C
+        const Delta_T_armazenamento = TEMPERATURA_ARMAZENAMENTO_INICIAL - TEMPERATURA_MINIMA_TERMOSSIFAO; // 65°C - 48°C = 17°C
         
         // Fórmula: E = m × c × ΔT → m = E / (c × ΔT) → V = m / ρ
         // Onde: E = energia (Wh), m = massa (kg), c = calor específico (Wh/kg·°C), ΔT = diferença de temperatura (°C), ρ = densidade (kg/L)

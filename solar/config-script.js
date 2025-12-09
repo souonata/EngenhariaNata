@@ -121,7 +121,7 @@ function trocarIdioma(idioma) {
 }
 
 function atualizarDisplays() {
-    const moeda = traducoes[idiomaAtual]['moeda'];
+    const moeda = traducoes[idiomaAtual]?.['moeda'] || 'R$';
     
     // Painéis
     const potenciaPainel = document.getElementById('sliderPotenciaPainel').value;

@@ -1,24 +1,46 @@
 // ============================================
 // DIMENSIONADOR DE AR CONDICIONADO RESIDENCIAL
+// Sistema Multi-Split
 // ============================================
 //
 // Comentários didáticos em Português - Visão geral do algoritmo
 // -------------------------------------------------------------
 // Objetivo: calcular a capacidade necessária de ar condicionado (em BTU)
-// para um ambiente residencial baseado em vários fatores:
-//  - Volume do ambiente (área × altura)
-//  - Número de pessoas
-//  - Equipamentos elétricos
+// para um sistema multi-split residencial baseado em vários fatores:
+//  - Área total dos ambientes (soma de todas as áreas)
+//  - Número de ambientes (1 a 8)
+//  - Altura do pé direito
+//  - Número total de pessoas
+//  - Número total de equipamentos elétricos
 //  - Insolação (exposição ao sol)
 //  - Isolamento térmico
 //
+// Sistema Multi-Split:
+// - Calcula BTU total necessário para todos os ambientes
+// - Divide BTU total pelo número de ambientes para dimensionar unidades internas
+// - Dimensiona unidade externa (condensadora) para atender o BTU total real
+// - Permite múltiplas unidades internas por ambiente (até 60k BTU cada)
+// - Permite múltiplas unidades externas (até 180k BTU cada)
+// - Calcula custo estimado baseado em faixas de preço de mercado
+//
 // Fórmula base:
-// BTU = (Volume × 600) + (Pessoas × 600) + (Equipamentos × 600)
-// BTU Final = BTU Base × Fator Insolação × Fator Isolamento
+// Fator Altura = Altura (m) ÷ 2.7 m (padrão)
+// BTU Área Total = Área Total (m²) × 700 BTU/m² × Fator Altura
+// BTU Pessoas Total = Número Total de Pessoas × 600 BTU/pessoa
+// BTU Equipamentos Total = Número Total de Equipamentos × 600 BTU/equipamento
+// BTU Base Total = BTU Área Total + BTU Pessoas Total + BTU Equipamentos Total
+// BTU Final Total = BTU Base Total × Fator Insolação × Fator Isolamento
+// BTU por Ambiente = BTU Final Total ÷ Número de Ambientes
 //
 // Fatores:
 // - Insolação: Baixa (1.0), Média (1.15), Alta (1.3)
 // - Isolamento: Bom (0.8), Médio (1.0), Ruim (1.2)
+//
+// Limites:
+// - Número de ambientes: 1 a 8
+// - Área total: 10 a 300 m²
+// - Unidades internas: até 60k BTU cada (múltiplas permitidas)
+// - Unidades externas: até 180k BTU cada (múltiplas permitidas)
 
 // ============================================
 // CONFIGURAÇÃO DE CHAVES E SELETORES
@@ -38,25 +60,35 @@ let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConf
  */
 
 /**
- * BTU_POR_M3 - BTU necessário por metro cúbico de volume
+ * BTU por metro quadrado (BTU/m²)
  * 
- * Representa a capacidade de refrigeração necessária para resfriar
- * 1 metro cúbico de ar em um ambiente residencial típico.
+ * Representa a quantidade de energia térmica necessária para resfriar
+ * 1 metro quadrado de área de piso em um ambiente residencial.
  * 
- * Este valor considera:
- * - Remoção de calor sensível (temperatura do ar)
- * - Remoção de calor latente (umidade)
- * - Renovação de ar necessária
- * - Perdas térmicas através de paredes, teto e piso
+ * Este valor é baseado em:
+ * - Normas técnicas de climatização (ASHRAE, ABNT)
+ * - Práticas da indústria de ar condicionado
+ * - Cálculos de carga térmica para ambientes residenciais
+ * - Referências da internet e fabricantes (600-800 BTU/m²)
  * 
- * O valor de 600 BTU/m³ é um padrão amplamente aceito na indústria
- * para dimensionamento de ar condicionado residencial.
+ * O valor de 700 BTU/m² é uma média que considera:
+ * - Transferência de calor através de paredes, teto e piso
+ * - Infiltração de ar externo
+ * - Ganhos solares através de janelas
+ * - Carga térmica interna (pessoas, equipamentos, iluminação)
+ * - Altura padrão de pé direito residencial (2.7m)
  * 
- * FÓRMULA: BTU_Volume = Volume (m³) × 600
+ * FÓRMULA: BTU_Área = Área (m²) × 700 BTU/m² × Fator Altura
  * 
- * FONTE: Normas técnicas e práticas da indústria de refrigeração
+ * NOTA: Este valor pode variar dependendo de:
+ * - Região climática (maior em regiões quentes)
+ * - Tipo de construção (maior em construções antigas)
+ * - Orientação solar do ambiente
+ * - Altura do pé direito (valores maiores para pé direito alto)
+ * 
+ * FONTE: Normas técnicas, práticas da indústria e referências online
  */
-const BTU_POR_M3 = 600; // BTU por metro cúbico
+const BTU_POR_M2 = 700; // BTU por metro quadrado
 
 /**
  * BTU_POR_PESSOA - BTU adicional necessário por pessoa
@@ -133,7 +165,13 @@ const FATORES_ISOLAMENTO = {
 
 // Modelos comerciais de ar condicionado (BTU)
 // Inclui 5000 BTU para áreas muito pequenas (até 2 m²)
+// Para unidades internas (splits individuais)
+// Limite máximo: 60k BTU por unidade interna
 const MODELOS_COMERCIAIS = [5000, 7000, 9000, 12000, 18000, 24000, 30000, 36000, 48000, 60000];
+
+// Modelos comerciais para unidades externas multi-split (condensadoras)
+// Inclui modelos maiores para sistemas multi-split
+const MODELOS_COMERCIAIS_EXTERNAS = [18000, 24000, 30000, 36000, 48000, 60000, 72000, 84000, 96000, 120000, 144000, 180000];
 
 // Conversão BTU para kW (1 BTU/h ≈ 0.000293 kW)
 const BTU_PARA_KW = 0.000293;
@@ -155,6 +193,21 @@ const traducoes = {
         'unit-meter': 'm',
         'unit-people': 'pessoas',
         'unit-devices': 'unidades',
+        'unit-rooms': 'ambientes',
+        'label-sistema-multisplit': '🏢 Sistema Multi-Split',
+        'label-num-ambientes': 'Número de Ambientes com Ar Condicionado',
+        'label-area-total': 'Soma das Áreas dos Ambientes',
+        'dica-num-ambientes': '💡 Número de cômodos/ambientes que terão ar condicionado',
+        'dica-area-total': '💡 Soma da área de todos os ambientes que terão ar condicionado',
+        'resultado-multisplit-title': '🏢 Sistema Multi-Split',
+        'resultado-btu-total': 'BTU Total Necessário:',
+        'resultado-unidade-externa': 'Unidade Externa (Condensadora):',
+        'resultado-unidades-internas': 'Unidades Internas (Evaporadoras):',
+        'resultado-custo-sistema': 'Custo Estimado do Sistema:',
+        'detalhamento-custos': '💰 Detalhamento dos Custos:',
+        'custo-unidade-externa': 'Unidade Externa:',
+        'custo-unidades-internas': 'Unidades Internas:',
+        'dados-tecnicos': '⚙️ Dados Técnicos:',
         'opt-baixa': 'Baixa',
         'opt-media': 'Média',
         'opt-alta': 'Alta',
@@ -208,7 +261,14 @@ const traducoes = {
         'memorial-resumo-btu-base': 'BTU Base:',
         'memorial-resumo-btu-final-calc': 'BTU Final (após fatores):',
         'memorial-resumo-btu-final': 'BTU Recomendado (modelo comercial):',
-        'memorial-resumo-potencia': 'Potência (kW):'
+        'memorial-resumo-potencia': 'Potência (kW):',
+        'memorial-passo6-title': '6️⃣ Passo 6: Calcular Custo Estimado',
+        'memorial-passo6-explicacao': 'O custo é estimado com base em faixas de preço de mercado (2024-2025) para unidades externas e internas vendidas separadamente. Os valores são médias das faixas de preço pesquisadas.',
+        'memorial-resumo-btu-por-ambiente': 'BTU por Ambiente:',
+        'memorial-resumo-unidade-interna': 'Unidade Interna (Modelo):',
+        'memorial-resumo-btu-total-real': 'BTU Total Real:',
+        'memorial-resumo-unidade-externa': 'Unidade Externa (Modelo):',
+        'memorial-resumo-custo-total': 'Custo Total Estimado:'
     },
     'it-IT': {
         'app-title': '❄️ Dimensionatore Climatizzatore',
@@ -223,6 +283,21 @@ const traducoes = {
         'unit-meter': 'm',
         'unit-people': 'persone',
         'unit-devices': 'unità',
+        'unit-rooms': 'ambienti',
+        'label-sistema-multisplit': '🏢 Sistema Multi-Split',
+        'label-num-ambientes': 'Numero Ambienti con Climatizzatore',
+        'label-area-total': 'Somma delle Aree degli Ambienti',
+        'dica-num-ambientes': '💡 Numero di stanze/ambienti che avranno climatizzatore',
+        'dica-area-total': '💡 Somma dell\'area di tutti gli ambienti che avranno climatizzatore',
+        'resultado-multisplit-title': '🏢 Sistema Multi-Split',
+        'resultado-btu-total': 'BTU Totali Necessari:',
+        'resultado-unidade-externa': 'Unità Esterna (Condensatore):',
+        'resultado-unidades-internas': 'Unità Interne (Evaporatori):',
+        'resultado-custo-sistema': 'Costo Stimato del Sistema:',
+        'detalhamento-custos': '💰 Dettaglio dei Costi:',
+        'custo-unidade-externa': 'Unità Esterna:',
+        'custo-unidades-internas': 'Unità Interne:',
+        'dados-tecnicos': '⚙️ Dati Tecnici:',
         'opt-baixa': 'Bassa',
         'opt-media': 'Media',
         'opt-alta': 'Alta',
@@ -277,7 +352,14 @@ const traducoes = {
         'memorial-resumo-btu-base': 'BTU Base:',
         'memorial-resumo-btu-final-calc': 'BTU Finale (dopo fattori):',
         'memorial-resumo-btu-final': 'BTU Consigliato (modello commerciale):',
-        'memorial-resumo-potencia': 'Potenza (kW):'
+        'memorial-resumo-potencia': 'Potenza (kW):',
+        'memorial-passo6-title': '6️⃣ Passo 6: Calcolare Costo Stimato',
+        'memorial-passo6-explicacao': 'Il costo è stimato sulla base di fasce di prezzo di mercato (2024-2025) per unità esterne e interne vendute separatamente. I valori sono medie delle fasce di prezzo ricercate.',
+        'memorial-resumo-btu-por-ambiente': 'BTU per Ambiente:',
+        'memorial-resumo-unidade-interna': 'Unità Interna (Modello):',
+        'memorial-resumo-btu-total-real': 'BTU Totali Reali:',
+        'memorial-resumo-unidade-externa': 'Unità Esterna (Modello):',
+        'memorial-resumo-custo-total': 'Costo Totale Stimato:'
     }
 };
 
@@ -296,20 +378,22 @@ const traducoes = {
  * @returns {Object} Objeto com BTU recomendado, potência em kW, volume e BTU base
  */
 function calcularBTU(area, altura, pessoas, equipamentos, insolacao, isolamento) {
-    // PASSO 1: Calcular volume do ambiente
-    const volume = area * altura; // m³
+    // PASSO 1: Calcular BTU base por área (área × 700 BTU/m²)
+    // Ajusta o BTU por m² baseado na altura do pé direito (fator de correção)
+    const fatorAltura = altura / 2.7; // Normaliza para pé direito padrão de 2.7m
+    const btuArea = area * BTU_POR_M2 * fatorAltura;
     
-    // PASSO 2: Calcular BTU base (volume × 600 BTU/m³)
-    const btuVolume = volume * BTU_POR_M3;
-    
-    // PASSO 3: Adicionar BTU por pessoas
+    // PASSO 2: Adicionar BTU por pessoas
     const btuPessoas = pessoas * BTU_POR_PESSOA;
     
-    // PASSO 4: Adicionar BTU por equipamentos
+    // PASSO 3: Adicionar BTU por equipamentos
     const btuEquipamentos = equipamentos * BTU_POR_EQUIPAMENTO;
     
-    // PASSO 5: Calcular BTU base total (antes dos fatores)
-    const btuBase = btuVolume + btuPessoas + btuEquipamentos;
+    // PASSO 4: Calcular BTU base total (antes dos fatores)
+    const btuBase = btuArea + btuPessoas + btuEquipamentos;
+    
+    // PASSO 5: Calcular volume para exibição (mantido para compatibilidade)
+    const volume = area * altura; // m³
     
     // PASSO 6: Aplicar fatores de insolação e isolamento
     // Estes fatores são multiplicadores que ajustam a carga térmica baseada nas condições ambientais
@@ -353,6 +437,80 @@ function selecionarModeloComercial(btuNecessario) {
     
     // Se nenhum modelo atender, retorna o maior disponível
     return MODELOS_COMERCIAIS[MODELOS_COMERCIAIS.length - 1];
+}
+
+/**
+ * Encontra a melhor combinação de modelos comerciais para atingir um valor alvo
+ * Versão simplificada: usa o maior modelo disponível quando necessário múltiplas unidades
+ * @param {number} valorAlvo - Valor em BTU que precisa ser atingido
+ * @param {Array<number>} modelos - Array de modelos comerciais disponíveis
+ * @param {number} maxUnidades - Número máximo de unidades a considerar (padrão: 10)
+ * @returns {Object} Objeto com {combinacao: Array<number>, total: number, quantidade: number}
+ *                   onde combinacao é o array de modelos usados, total é a soma, quantidade é o número de unidades
+ */
+function encontrarMelhorCombinacao(valorAlvo, modelos, maxUnidades = 10) {
+    // Se o valor alvo for menor ou igual ao menor modelo, retorna apenas esse modelo
+    if (valorAlvo <= modelos[0]) {
+        return {
+            combinacao: [modelos[0]],
+            total: modelos[0],
+            quantidade: 1
+        };
+    }
+    
+    // Se o valor alvo for menor ou igual ao maior modelo, retorna o modelo mais próximo
+    const maiorModelo = modelos[modelos.length - 1];
+    if (valorAlvo <= maiorModelo) {
+        for (let i = 0; i < modelos.length; i++) {
+            if (modelos[i] >= valorAlvo) {
+                return {
+                    combinacao: [modelos[i]],
+                    total: modelos[i],
+                    quantidade: 1
+                };
+            }
+        }
+    }
+    
+    // Para valores maiores que o maior modelo, usa múltiplas unidades do maior modelo
+    const numUnidades = Math.ceil(valorAlvo / maiorModelo);
+    const combinacao = Array(numUnidades).fill(maiorModelo);
+    
+    return {
+        combinacao: combinacao,
+        total: maiorModelo * numUnidades,
+        quantidade: numUnidades
+    };
+}
+
+/**
+ * Seleciona o modelo comercial de unidade externa multi-split mais próximo
+ * Sempre arredonda para cima (modelo maior ou igual)
+ * @param {number} btuNecessario - BTU necessário calculado
+ * @returns {Object} Objeto com {combinacao: Array<number>, total: number, quantidade: number}
+ */
+function selecionarModeloComercialExterna(btuNecessario) {
+    // Tenta encontrar um modelo único primeiro
+    for (let i = 0; i < MODELOS_COMERCIAIS_EXTERNAS.length; i++) {
+        if (MODELOS_COMERCIAIS_EXTERNAS[i] >= btuNecessario) {
+            return {
+                combinacao: [MODELOS_COMERCIAIS_EXTERNAS[i]],
+                total: MODELOS_COMERCIAIS_EXTERNAS[i],
+                quantidade: 1
+            };
+        }
+    }
+    
+    // Se não encontrou modelo único, usa múltiplas unidades do maior modelo
+    const maiorModelo = MODELOS_COMERCIAIS_EXTERNAS[MODELOS_COMERCIAIS_EXTERNAS.length - 1];
+    const numUnidades = Math.ceil(btuNecessario / maiorModelo);
+    const combinacao = Array(numUnidades).fill(maiorModelo);
+    
+    return {
+        combinacao: combinacao,
+        total: maiorModelo * numUnidades,
+        quantidade: numUnidades
+    };
 }
 
 /**
@@ -409,6 +567,168 @@ function formatarDecimal(valor, decimais = 1) {
 }
 
 /**
+ * Calcula o dimensionamento e custo do sistema multi-split
+ * 
+ * IMPORTANTE: Em sistemas multi-split, os componentes são vendidos separadamente:
+ * - 1 Unidade Externa (Condensadora): Serve múltiplas unidades internas, mais cara
+ * - N Unidades Internas (Evaporadoras): Uma para cada ambiente, vendidas separadamente
+ * 
+ * O custo total = Custo da Unidade Externa + (Custo de cada Unidade Interna × Quantidade)
+ * 
+ * @param {number} numAmbientes - Número de ambientes com ar condicionado
+ * @param {number} areaTotal - SOMA das áreas de todos os ambientes em m² (já é a soma total)
+ * @param {number} altura - Altura do pé direito em metros
+ * @param {number} pessoas - Número de pessoas (distribuídas entre os ambientes)
+ * @param {number} equipamentos - Número de equipamentos (distribuídos entre os ambientes)
+ * @param {string} insolacao - Nível de insolação
+ * @param {string} isolamento - Nível de isolamento
+ * @returns {Object} Objeto com BTU total, unidade externa, unidades internas e custo
+ */
+function calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equipamentos, insolacao, isolamento) {
+    // IMPORTANTE: areaTotal já é a SOMA de todas as áreas dos ambientes
+    // 
+    // LÓGICA CORRIGIDA:
+    // 1. Calcula o BTU total necessário para toda a área (considerando pessoas e equipamentos totais)
+    // 2. Divide o BTU total pelo número de ambientes para obter o BTU por ambiente
+    // 3. A unidade externa deve ter capacidade para o BTU total do sistema
+    
+    // Calcula BTU total do sistema considerando a área total
+    // Usa pessoas e equipamentos totais (não divididos) para calcular a carga térmica total
+    // Ajusta o BTU por m² baseado na altura do pé direito (fator de correção)
+    const fatorAltura = altura / 2.7; // Normaliza para pé direito padrão de 2.7m
+    const btuAreaTotal = areaTotal * BTU_POR_M2 * fatorAltura;
+    const btuPessoasTotal = pessoas * BTU_POR_PESSOA;
+    const btuEquipamentosTotal = equipamentos * BTU_POR_EQUIPAMENTO;
+    const btuBaseTotal = btuAreaTotal + btuPessoasTotal + btuEquipamentosTotal;
+    
+    // Aplica fatores de insolação e isolamento
+    const fatorInsolacao = FATORES_INSOLACAO[insolacao] || 1.0;
+    const fatorIsolamento = FATORES_ISOLAMENTO[isolamento] || 1.0;
+    const btuFinalTotal = btuBaseTotal * fatorInsolacao * fatorIsolamento;
+    
+    // BTU total necessário para o sistema (antes de dividir por ambientes)
+    const btuTotal = btuFinalTotal;
+    
+    // Calcula BTU por ambiente (divide o total pelo número de ambientes)
+    // Cada split interno será dimensionado para atender sua parte proporcional
+    const btuPorAmbienteCalculado = btuTotal / numAmbientes;
+    
+    // Encontra a melhor combinação de modelos comerciais para cada ambiente
+    // Limite máximo: 60k BTU por unidade interna
+    const combinacaoPorAmbiente = encontrarMelhorCombinacao(btuPorAmbienteCalculado, MODELOS_COMERCIAIS, 10);
+    
+    // Agrupa as unidades internas por modelo para facilitar o cálculo de custo
+    const unidadesInternasPorModelo = {};
+    combinacaoPorAmbiente.combinacao.forEach(modelo => {
+        unidadesInternasPorModelo[modelo] = (unidadesInternasPorModelo[modelo] || 0) + numAmbientes;
+    });
+    
+    // Total de unidades internas no sistema
+    const unidadesInternas = combinacaoPorAmbiente.quantidade * numAmbientes;
+    
+    // BTU total real do sistema = soma das capacidades de todas as unidades internas
+    const btuTotalReal = combinacaoPorAmbiente.total * numAmbientes;
+    
+    // Unidade externa (condensadora/máquina de fora) deve ter capacidade para o BTU total real
+    // Usa combinação inteligente de modelos quando necessário
+    const combinacaoExterna = selecionarModeloComercialExterna(btuTotalReal);
+    const numUnidadesExternas = combinacaoExterna.quantidade;
+    
+    // Faixas de preço para UNIDADES EXTERNAS MULTI-SPLIT (condensadoras)
+    // Valores baseados em condensadoras multi-split vendidas separadamente
+    // Nota: Unidades externas multi-split são mais caras que splits simples porque
+    // precisam ter capacidade para múltiplas unidades internas
+    const faixasPrecoExternas = {
+        18000: { min: 4000, max: 8000 },    // Condensadora 18k BTU multi-split
+        24000: { min: 5000, max: 10000 },   // Condensadora 24k BTU multi-split
+        30000: { min: 8000, max: 15000 },   // Condensadora 30k BTU multi-split
+        36000: { min: 10000, max: 18000 },  // Condensadora 36k BTU multi-split
+        48000: { min: 12000, max: 22000 },  // Condensadora 48k BTU multi-split
+        60000: { min: 18000, max: 35000 },  // Condensadora 60k BTU multi-split
+        72000: { min: 22000, max: 42000 },  // Condensadora 72k BTU multi-split
+        84000: { min: 28000, max: 50000 },  // Condensadora 84k BTU multi-split
+        96000: { min: 35000, max: 60000 },  // Condensadora 96k BTU multi-split
+        120000: { min: 45000, max: 75000 }, // Condensadora 120k BTU multi-split
+        144000: { min: 55000, max: 90000 }, // Condensadora 144k BTU multi-split
+        180000: { min: 70000, max: 120000 } // Condensadora 180k BTU multi-split
+    };
+    
+    // Faixas de preço para UNIDADES INTERNAS (evaporadoras) vendidas separadamente
+    // Valores baseados em evaporadoras vendidas individualmente para multi-split
+    // Nota: Unidades internas são mais baratas que splits completos porque
+    // não incluem a unidade externa
+    // Limite máximo: 60k BTU por unidade interna
+    const faixasPrecoInternas = {
+        5000: { min: 1000, max: 1800 },    // Evaporadora 5k BTU
+        7000: { min: 1100, max: 1900 },    // Evaporadora 7k BTU
+        9000: { min: 1200, max: 2000 },    // Evaporadora 9k BTU
+        12000: { min: 1500, max: 2500 },   // Evaporadora 12k BTU
+        18000: { min: 2000, max: 3500 },   // Evaporadora 18k BTU
+        24000: { min: 2500, max: 4500 },   // Evaporadora 24k BTU
+        30000: { min: 3500, max: 6000 },   // Evaporadora 30k BTU
+        36000: { min: 4000, max: 7000 },   // Evaporadora 36k BTU
+        48000: { min: 5000, max: 9000 },   // Evaporadora 48k BTU
+        60000: { min: 6500, max: 12000 }   // Evaporadora 60k BTU
+    };
+    
+    // Custo das unidades externas multi-split (condensadoras)
+    // Calcula custo considerando a combinação de modelos
+    let custoTotalUnidadesExternas = 0;
+    combinacaoExterna.combinacao.forEach(modelo => {
+        let faixaExterna = faixasPrecoExternas[modelo];
+        if (!faixaExterna) {
+            // Estimativa: R$ 300 por 1000 BTU para unidades externas multi-split
+            const estimativaMin = (modelo / 1000) * 300;
+            const estimativaMax = (modelo / 1000) * 600;
+            faixaExterna = { min: estimativaMin, max: estimativaMax };
+        }
+        const custoPorUnidade = (faixaExterna.min + faixaExterna.max) / 2;
+        custoTotalUnidadesExternas += custoPorUnidade;
+    });
+    
+    // Custo das unidades internas (evaporadoras)
+    // Calcula custo considerando a combinação de modelos por ambiente
+    let custoTotalUnidadesInternas = 0;
+    Object.keys(unidadesInternasPorModelo).forEach(modeloBTU => {
+        const modelo = parseInt(modeloBTU);
+        const quantidade = unidadesInternasPorModelo[modelo];
+        let faixaInterna = faixasPrecoInternas[modelo];
+        if (!faixaInterna) {
+            // Estimativa: R$ 150 por 1000 BTU para unidades internas
+            const estimativaMin = (modelo / 1000) * 150;
+            const estimativaMax = (modelo / 1000) * 250;
+            faixaInterna = { min: estimativaMin, max: estimativaMax };
+        }
+        const custoPorUnidade = (faixaInterna.min + faixaInterna.max) / 2;
+        custoTotalUnidadesInternas += custoPorUnidade * quantidade;
+    });
+    
+    // Custo total do sistema
+    const custoTotal = custoTotalUnidadesExternas + custoTotalUnidadesInternas;
+    
+    // Calcula custo médio por unidade externa para exibição
+    const custoPorUnidadeExterna = numUnidadesExternas > 0 
+        ? custoTotalUnidadesExternas / numUnidadesExternas 
+        : 0;
+    
+    return {
+        btuTotal: btuTotalReal, // BTU total real (soma das capacidades de todas as unidades internas)
+        btuTotalCalculado: btuTotal, // BTU total calculado (antes do arredondamento)
+        numUnidadesExternas: numUnidadesExternas,
+        combinacaoExterna: combinacaoExterna.combinacao,
+        btuTotalExterno: combinacaoExterna.total,
+        unidadesInternas: unidadesInternas,
+        unidadesInternasPorAmbiente: combinacaoPorAmbiente.quantidade,
+        combinacaoInterna: combinacaoPorAmbiente.combinacao,
+        unidadesInternasPorModelo: unidadesInternasPorModelo,
+        custoTotal: custoTotal,
+        custoTotalUnidadesExternas: custoTotalUnidadesExternas,
+        custoPorUnidadeExterna: custoPorUnidadeExterna,
+        custoTotalUnidadesInternas: custoTotalUnidadesInternas
+    };
+}
+
+/**
  * Atualiza os resultados na interface
  */
 function atualizarResultados() {
@@ -417,18 +737,70 @@ function atualizarResultados() {
     const inputAltura = document.getElementById('inputAltura');
     const inputPessoas = document.getElementById('inputPessoas');
     const inputEquipamentos = document.getElementById('inputEquipamentos');
+    const inputNumAmbientes = document.getElementById('inputNumAmbientes');
+    const inputAreaTotal = document.getElementById('inputAreaTotal');
     
     const sliderArea = document.getElementById('sliderArea');
     const sliderAltura = document.getElementById('sliderAltura');
     const sliderPessoas = document.getElementById('sliderPessoas');
     const sliderEquipamentos = document.getElementById('sliderEquipamentos');
+    const sliderNumAmbientes = document.getElementById('sliderNumAmbientes');
+    const sliderAreaTotal = document.getElementById('sliderAreaTotal');
     
-    // Lê valores dos inputs ou sliders (inputs têm prioridade se válidos)
-    let area = parseFloat(sliderArea.value);
-    if (inputArea && inputArea.value) {
-        const valorConvertido = converterParaNumero(inputArea.value);
+    // Lê valores do sistema multi-split primeiro
+    let numAmbientes = parseInt(sliderNumAmbientes?.value || 1);
+    if (inputNumAmbientes && inputNumAmbientes.value && !isNaN(parseInt(inputNumAmbientes.value))) {
+        numAmbientes = parseInt(inputNumAmbientes.value);
+    }
+    
+    let areaTotal = parseFloat(sliderAreaTotal?.value || 20);
+    if (inputAreaTotal && inputAreaTotal.value) {
+        const valorConvertido = converterParaNumero(inputAreaTotal.value);
         if (!isNaN(valorConvertido) && valorConvertido > 0) {
-            area = valorConvertido;
+            areaTotal = valorConvertido;
+        }
+    }
+    
+    // Controla visibilidade dos inputs de área
+    const grupoAreaIndividual = document.getElementById('grupoAreaIndividual');
+    const grupoAreaTotal = document.getElementById('grupoAreaTotal');
+    
+    if (grupoAreaIndividual) {
+        if (numAmbientes > 1) {
+            grupoAreaIndividual.style.display = 'none';
+        } else {
+            grupoAreaIndividual.style.display = 'block';
+        }
+    }
+    
+    if (grupoAreaTotal) {
+        if (numAmbientes > 1) {
+            grupoAreaTotal.style.display = 'block';
+        } else {
+            grupoAreaTotal.style.display = 'none';
+        }
+    }
+    
+    // Se multi-split está ativo (numAmbientes > 1), usa apenas área total
+    // Caso contrário, usa área individual
+    let area;
+    if (numAmbientes > 1) {
+        // Multi-split: usa apenas área total
+        area = areaTotal;
+    } else {
+        // Split simples: usa área individual
+        area = parseFloat(sliderArea.value);
+        if (inputArea && inputArea.value) {
+            const valorConvertido = converterParaNumero(inputArea.value);
+            if (!isNaN(valorConvertido) && valorConvertido > 0) {
+                area = valorConvertido;
+            }
+        }
+        // Sincroniza área total com área individual quando não é multi-split
+        if (areaTotal !== area) {
+            areaTotal = area;
+            if (sliderAreaTotal) sliderAreaTotal.value = area;
+            if (inputAreaTotal) inputAreaTotal.value = Math.round(area);
         }
     }
     
@@ -454,81 +826,68 @@ function atualizarResultados() {
     const insolacao = document.querySelector('input[name="insolacao"]:checked')?.value || 'media';
     const isolamento = document.querySelector('input[name="isolamento"]:checked')?.value || 'medio';
     
-    // Calcula o BTU
-    const resultado = calcularBTU(area, altura, pessoas, equipamentos, insolacao, isolamento);
+    // Calcula e atualiza sistema multi-split (sempre, mesmo para 1 ambiente)
+    const resultadoMultisplit = calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equipamentos, insolacao, isolamento);
     
-    // Atualiza os displays
-    document.getElementById('btuRecomendado').textContent = formatarBTU(resultado.btuRecomendado);
-    document.getElementById('potenciaKw').textContent = formatarDecimal(resultado.potenciaKw, 2) + ' kW';
-    document.getElementById('volumeAmbiente').textContent = formatarDecimal(resultado.volume, 1) + ' m³';
-    document.getElementById('btuBase').textContent = formatarBTU(Math.round(resultado.btuBase));
+    // Custo total em destaque
+    document.getElementById('custoSistemaMultisplit').textContent = formatarMoedaSemDecimal(resultadoMultisplit.custoTotal, idiomaAtual);
     
-    // Mostrar BTU final (após aplicar fatores de insolação e isolamento)
-    const btuFinalElement = document.getElementById('btuFinal');
-    if (btuFinalElement && resultado.btuFinal) {
-        btuFinalElement.textContent = formatarBTU(Math.round(resultado.btuFinal));
+    // Detalhamento dos custos
+    const textoUnidadesExternas = resultadoMultisplit.numUnidadesExternas > 1 
+        ? `${resultadoMultisplit.numUnidadesExternas} × ${formatarMoedaSemDecimal(resultadoMultisplit.custoPorUnidadeExterna, idiomaAtual)}`
+        : formatarMoedaSemDecimal(resultadoMultisplit.custoTotalUnidadesExternas, idiomaAtual);
+    document.getElementById('custoUnidadeExternaMultisplit').textContent = textoUnidadesExternas;
+    document.getElementById('custoUnidadesInternasMultisplit').textContent = formatarMoedaSemDecimal(resultadoMultisplit.custoTotalUnidadesInternas, idiomaAtual);
+    
+    // Dados técnicos
+    document.getElementById('btuTotalMultisplit').textContent = formatarBTU(Math.round(resultadoMultisplit.btuTotal));
+    
+    // Formata unidade(s) externa(s)
+    let textoUnidadeExterna;
+    if (resultadoMultisplit.numUnidadesExternas > 1) {
+        // Agrupa modelos iguais para exibição
+        const modelosAgrupados = {};
+        resultadoMultisplit.combinacaoExterna.forEach(modelo => {
+            modelosAgrupados[modelo] = (modelosAgrupados[modelo] || 0) + 1;
+        });
+        const partes = Object.keys(modelosAgrupados).map(modelo => {
+            const qtd = modelosAgrupados[modelo];
+            return qtd > 1 ? `${qtd} × ${formatarBTU(parseInt(modelo))}` : formatarBTU(parseInt(modelo));
+        });
+        textoUnidadeExterna = partes.join(' + ');
+    } else {
+        textoUnidadeExterna = formatarBTU(resultadoMultisplit.combinacaoExterna[0]);
     }
+    document.getElementById('unidadeExternaMultisplit').textContent = textoUnidadeExterna;
     
-    // Atualiza lista de modelos comerciais com destaque para o recomendado
-    atualizarModelosComerciais(resultado.btuRecomendado);
+    // Formata unidade(s) interna(s)
+    let textoUnidadesInternas;
+    if (resultadoMultisplit.unidadesInternasPorAmbiente > 1) {
+        // Mostra a combinação por ambiente
+        const partesCombinacao = [];
+        resultadoMultisplit.combinacaoInterna.forEach(modelo => {
+            partesCombinacao.push(formatarBTU(modelo));
+        });
+        const combinacaoTexto = partesCombinacao.join(' + ');
+        textoUnidadesInternas = `${resultadoMultisplit.unidadesInternas} unidades (${resultadoMultisplit.unidadesInternasPorAmbiente} por ambiente: ${combinacaoTexto})`;
+    } else {
+        // Agrupa modelos iguais para exibição
+        const modelosAgrupados = {};
+        Object.keys(resultadoMultisplit.unidadesInternasPorModelo).forEach(modelo => {
+            modelosAgrupados[modelo] = resultadoMultisplit.unidadesInternasPorModelo[modelo];
+        });
+        const partes = Object.keys(modelosAgrupados).map(modelo => {
+            const qtd = modelosAgrupados[modelo];
+            return qtd > 1 ? `${qtd} × ${formatarBTU(parseInt(modelo))}` : formatarBTU(parseInt(modelo));
+        });
+        textoUnidadesInternas = partes.join(' + ');
+    }
+    document.getElementById('unidadesInternasMultisplit').textContent = textoUnidadesInternas;
     
     // Atualiza o memorial se estiver visível
     if (typeof atualizarMemorialComValores === 'function') {
         atualizarMemorialComValores();
     }
-}
-
-/**
- * Atualiza a lista de modelos comerciais destacando o recomendado
- * @param {number} btuRecomendado - BTU do modelo recomendado
- */
-function atualizarModelosComerciais(btuRecomendado) {
-    const lista = document.getElementById('modelosComerciais');
-    if (!lista) return;
-    
-    lista.innerHTML = '';
-    
-    const modelosTexto = {
-        'pt-BR': {
-            5000: '5k BTU - até 8 m²',
-            7000: '7k BTU - até 10 m²',
-            9000: '9k BTU - até 15 m²',
-            12000: '12k BTU - até 20 m²',
-            18000: '18k BTU - até 30 m²',
-            24000: '24k BTU - até 40 m²',
-            30000: '30k BTU - até 50 m²',
-            36000: '36k BTU - até 60 m²',
-            48000: '48k BTU - até 80 m²',
-            60000: '60k BTU - até 100 m²'
-        },
-        'it-IT': {
-            5000: '5k BTU - fino a 8 m²',
-            7000: '7k BTU - fino a 10 m²',
-            9000: '9k BTU - fino a 15 m²',
-            12000: '12k BTU - fino a 20 m²',
-            18000: '18k BTU - fino a 30 m²',
-            24000: '24k BTU - fino a 40 m²',
-            30000: '30k BTU - fino a 50 m²',
-            36000: '36k BTU - fino a 60 m²',
-            48000: '48k BTU - fino a 80 m²',
-            60000: '60k BTU - fino a 100 m²'
-        }
-    };
-    
-    const textos = modelosTexto[idiomaAtual] || modelosTexto['pt-BR'];
-    
-    MODELOS_COMERCIAIS.forEach(modelo => {
-        const li = document.createElement('li');
-        const texto = textos[modelo] || formatarBTU(modelo);
-        
-        if (modelo === btuRecomendado) {
-            li.innerHTML = `<strong style="color: #1976D2;">${texto} ✅ Recomendado</strong>`;
-        } else {
-            li.textContent = texto;
-        }
-        
-        lista.appendChild(li);
-    });
 }
 
 /**
@@ -557,16 +916,8 @@ function trocarIdioma(novoIdioma) {
         }
     });
     
-    // Atualiza modelos comerciais
-    const inputArea = document.getElementById('inputArea');
-    const area = inputArea ? (converterParaNumero(inputArea.value) || parseFloat(document.getElementById('sliderArea').value)) : parseFloat(document.getElementById('sliderArea').value);
-    const altura = parseFloat(document.getElementById('sliderAltura').value);
-    const pessoas = parseInt(document.getElementById('sliderPessoas').value);
-    const equipamentos = parseInt(document.getElementById('sliderEquipamentos').value);
-    const insolacao = document.querySelector('input[name="insolacao"]:checked')?.value || 'media';
-    const isolamento = document.querySelector('input[name="isolamento"]:checked')?.value || 'medio';
-    const resultado = calcularBTU(area, altura, pessoas, equipamentos, insolacao, isolamento);
-    atualizarModelosComerciais(resultado.btuRecomendado);
+    // Atualiza resultados (sempre usa sistema multi-split)
+    atualizarResultados();
     
     // Atualiza aria-label do botão home
     const homeLabel = traducoes[novoIdioma]?.['aria-home'] || 'Home';
@@ -657,6 +1008,65 @@ document.addEventListener('DOMContentLoaded', function() {
         atualizarResultados();
     });
     
+    // Configurar sliders do sistema multi-split
+    const sliderNumAmbientes = document.getElementById('sliderNumAmbientes');
+    const sliderAreaTotal = document.getElementById('sliderAreaTotal');
+    
+    if (sliderNumAmbientes) {
+        sliderNumAmbientes.addEventListener('input', () => {
+            const valor = parseInt(sliderNumAmbientes.value);
+            const inputNumAmbientes = document.getElementById('inputNumAmbientes');
+            if (inputNumAmbientes) {
+                inputNumAmbientes.value = valor;
+                if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputNumAmbientes);
+            }
+            
+            // Controla visibilidade dos inputs de área
+            const grupoAreaIndividual = document.getElementById('grupoAreaIndividual');
+            const grupoAreaTotal = document.getElementById('grupoAreaTotal');
+            
+            if (grupoAreaIndividual) {
+                if (valor > 1) {
+                    grupoAreaIndividual.style.display = 'none';
+                } else {
+                    grupoAreaIndividual.style.display = 'block';
+                    // Quando volta para 1 ambiente, sincroniza área total com área individual
+                    const inputArea = document.getElementById('inputArea');
+                    const sliderArea = document.getElementById('sliderArea');
+                    if (inputArea && sliderArea) {
+                        const areaIndividual = parseFloat(sliderArea.value);
+                        const inputAreaTotal = document.getElementById('inputAreaTotal');
+                        const sliderAreaTotal = document.getElementById('sliderAreaTotal');
+                        if (inputAreaTotal) inputAreaTotal.value = Math.round(areaIndividual);
+                        if (sliderAreaTotal) sliderAreaTotal.value = areaIndividual;
+                    }
+                }
+            }
+            
+            if (grupoAreaTotal) {
+                if (valor > 1) {
+                    grupoAreaTotal.style.display = 'block';
+                } else {
+                    grupoAreaTotal.style.display = 'none';
+                }
+            }
+            
+            atualizarResultados();
+        });
+    }
+    
+    if (sliderAreaTotal) {
+        sliderAreaTotal.addEventListener('input', () => {
+            const valor = parseFloat(sliderAreaTotal.value);
+            const inputAreaTotal = document.getElementById('inputAreaTotal');
+            if (inputAreaTotal) {
+                inputAreaTotal.value = Math.round(valor);
+                if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAreaTotal);
+            }
+            atualizarResultados();
+        });
+    }
+    
     // Configurar inputs editáveis
     const inputArea = document.getElementById('inputArea');
     const inputAltura = document.getElementById('inputAltura');
@@ -732,6 +1142,61 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Configurar inputs editáveis do sistema multi-split
+    const inputNumAmbientes = document.getElementById('inputNumAmbientes');
+    const inputAreaTotal = document.getElementById('inputAreaTotal');
+    
+    if (inputNumAmbientes) {
+        inputNumAmbientes.addEventListener('focus', (e) => e.target.select());
+        inputNumAmbientes.addEventListener('input', () => {
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputNumAmbientes);
+            const valor = parseInt(inputNumAmbientes.value);
+            if (!isNaN(valor) && valor > 0) {
+                const slider = document.getElementById('sliderNumAmbientes');
+                if (slider && valor >= parseInt(slider.min) && valor <= parseInt(slider.max)) {
+                    slider.value = valor;
+                }
+                
+                // Controla visibilidade do input de área individual
+                const grupoAreaIndividual = document.getElementById('grupoAreaIndividual');
+                if (grupoAreaIndividual) {
+                    if (valor > 1) {
+                        grupoAreaIndividual.style.display = 'none';
+                    } else {
+                        grupoAreaIndividual.style.display = 'block';
+                        // Quando volta para 1 ambiente, sincroniza área total com área individual
+                        const inputArea = document.getElementById('inputArea');
+                        const sliderArea = document.getElementById('sliderArea');
+                        if (inputArea && sliderArea) {
+                            const areaIndividual = parseFloat(sliderArea.value);
+                            const inputAreaTotal = document.getElementById('inputAreaTotal');
+                            const sliderAreaTotal = document.getElementById('sliderAreaTotal');
+                            if (inputAreaTotal) inputAreaTotal.value = Math.round(areaIndividual);
+                            if (sliderAreaTotal) sliderAreaTotal.value = areaIndividual;
+                        }
+                    }
+                }
+                
+                atualizarResultados();
+            }
+        });
+    }
+    
+    if (inputAreaTotal) {
+        inputAreaTotal.addEventListener('focus', (e) => e.target.select());
+        inputAreaTotal.addEventListener('input', () => {
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAreaTotal);
+            const valor = converterParaNumero(inputAreaTotal.value);
+            if (!isNaN(valor) && valor > 0) {
+                const slider = document.getElementById('sliderAreaTotal');
+                if (slider && valor >= parseFloat(slider.min) && valor <= parseFloat(slider.max)) {
+                    slider.value = valor;
+                }
+                atualizarResultados();
+            }
+        });
+    }
+    
     // Configurar radio buttons
     document.querySelectorAll('input[name="insolacao"]').forEach(radio => {
         radio.addEventListener('change', atualizarResultados);
@@ -790,6 +1255,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (inputAltura) ajustarTamanhoInput(inputAltura);
         if (inputPessoas) ajustarTamanhoInput(inputPessoas);
         if (inputEquipamentos) ajustarTamanhoInput(inputEquipamentos);
+        if (inputNumAmbientes) ajustarTamanhoInput(inputNumAmbientes);
+        if (inputAreaTotal) ajustarTamanhoInput(inputAreaTotal);
     }
     
     // Configurar memorial de cálculo
@@ -808,6 +1275,27 @@ document.addEventListener('DOMContentLoaded', function() {
     btnVoltarMemorial.forEach(btn => {
         btn.addEventListener('click', toggleMemorial);
     });
+    
+    // Configurar visibilidade inicial dos inputs de área
+    const numAmbientesInicial = parseInt(sliderNumAmbientes?.value || 1);
+    const grupoAreaIndividual = document.getElementById('grupoAreaIndividual');
+    const grupoAreaTotal = document.getElementById('grupoAreaTotal');
+    
+    if (grupoAreaIndividual) {
+        if (numAmbientesInicial > 1) {
+            grupoAreaIndividual.style.display = 'none';
+        } else {
+            grupoAreaIndividual.style.display = 'block';
+        }
+    }
+    
+    if (grupoAreaTotal) {
+        if (numAmbientesInicial > 1) {
+            grupoAreaTotal.style.display = 'block';
+        } else {
+            grupoAreaTotal.style.display = 'none';
+        }
+    }
     
     // Calcular resultados iniciais
     atualizarResultados();
@@ -847,24 +1335,38 @@ function toggleMemorial() {
  * Atualiza o memorial de cálculo com os valores atuais dos cálculos
  */
 function atualizarMemorialComValores() {
-    const area = parseFloat(document.getElementById('sliderArea').value);
+    // Lê valores do sistema multi-split
+    const numAmbientes = parseInt(document.getElementById('sliderNumAmbientes')?.value || 1);
+    const areaTotal = parseFloat(document.getElementById('sliderAreaTotal')?.value || 20);
     const altura = parseFloat(document.getElementById('sliderAltura').value);
     const pessoas = parseInt(document.getElementById('sliderPessoas').value);
     const equipamentos = parseInt(document.getElementById('sliderEquipamentos').value);
     const insolacao = document.querySelector('input[name="insolacao"]:checked')?.value || 'media';
     const isolamento = document.querySelector('input[name="isolamento"]:checked')?.value || 'medio';
     
-    const resultado = calcularBTU(area, altura, pessoas, equipamentos, insolacao, isolamento);
+    // Calcula o sistema multi-split
+    const resultadoMultisplit = calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equipamentos, insolacao, isolamento);
     
-    const volume = area * altura;
-    const btuBase = resultado.btuBase;
+    // Calcula valores para o memorial
+    const volumeTotal = areaTotal * altura;
+    const fatorAltura = altura / 2.7; // Normaliza para pé direito padrão de 2.7m
+    const btuAreaTotal = areaTotal * BTU_POR_M2 * fatorAltura;
+    const btuPessoasTotal = pessoas * BTU_POR_PESSOA;
+    const btuEquipamentosTotal = equipamentos * BTU_POR_EQUIPAMENTO;
+    const btuBaseTotal = btuAreaTotal + btuPessoasTotal + btuEquipamentosTotal;
     
-    // Usar btuFinal retornado pela função calcularBTU
     const fatorInsolacao = FATORES_INSOLACAO[insolacao] || 1.0;
     const fatorIsolamento = FATORES_ISOLAMENTO[isolamento] || 1.0;
-    const btuFinal = resultado.btuFinal || (btuBase * fatorInsolacao * fatorIsolamento);
+    const btuFinalTotal = btuBaseTotal * fatorInsolacao * fatorIsolamento;
     
-    const potenciaKw = resultado.potenciaKw;
+    const btuPorAmbienteCalculado = btuFinalTotal / numAmbientes;
+    const unidadesInternasPorAmbiente = resultadoMultisplit.unidadesInternasPorAmbiente;
+    const combinacaoInterna = resultadoMultisplit.combinacaoInterna;
+    const unidadesInternas = resultadoMultisplit.unidadesInternas;
+    const btuTotalReal = resultadoMultisplit.btuTotal;
+    const numUnidadesExternas = resultadoMultisplit.numUnidadesExternas;
+    const combinacaoExterna = resultadoMultisplit.combinacaoExterna;
+    const btuTotalExterno = resultadoMultisplit.btuTotalExterno;
     
     // Traduzir nomes dos fatores para exibição
     const nomesInsolacao = {
@@ -882,32 +1384,113 @@ function atualizarMemorialComValores() {
     const textoEquipamentos = idiomaAtual === 'pt-BR' ? 'equipamentos' : 'apparecchi';
     const textoInsolacao = idiomaAtual === 'pt-BR' ? 'insolação' : 'insolazione';
     const textoIsolamento = idiomaAtual === 'pt-BR' ? 'isolamento' : 'isolamento';
+    const textoAmbientes = idiomaAtual === 'pt-BR' ? 'ambientes' : 'ambienti';
     
+    // Atualizar exemplos
     document.getElementById('memorial-exemplo-volume').textContent = 
-        `${formatarNumero(area, 0)} m² × ${formatarDecimal(altura, 1)} m = ${formatarNumero(volume, 0)} m³`;
+        `${formatarNumero(areaTotal, 0)} m² × ${formatarDecimal(altura, 1)} m = ${formatarNumero(volumeTotal, 1)} m³`;
     
     document.getElementById('memorial-exemplo-btu-base').textContent = 
-        `${formatarNumero(volume, 0)} m³ × 600 = ${formatarBTU(volume * 600)} + ${pessoas} ${textoPessoas} × 600 = ${formatarBTU(pessoas * 600)} + ${equipamentos} ${textoEquipamentos} × 600 = ${formatarBTU(equipamentos * 600)} = ${formatarBTU(btuBase)}`;
+        `${formatarNumero(areaTotal, 1)} m² × ${formatarNumero(BTU_POR_M2, 0)} × ${formatarDecimal(fatorAltura, 2)} (fator altura) = ${formatarBTU(btuAreaTotal)} + ${pessoas} ${textoPessoas} × 600 = ${formatarBTU(btuPessoasTotal)} + ${equipamentos} ${textoEquipamentos} × 600 = ${formatarBTU(btuEquipamentosTotal)} = ${formatarBTU(btuBaseTotal)}`;
     
     document.getElementById('memorial-exemplo-fatores').textContent = 
-        `${formatarBTU(btuBase)} × ${formatarDecimal(fatorInsolacao, 2)} (${textoInsolacao} ${nomesInsolacao[insolacao] || insolacao}) × ${formatarDecimal(fatorIsolamento, 2)} (${textoIsolamento} ${nomesIsolamento[isolamento] || isolamento}) = ${formatarBTU(btuFinal)}`;
+        `${formatarBTU(btuBaseTotal)} × ${formatarDecimal(fatorInsolacao, 2)} (${textoInsolacao} ${nomesInsolacao[insolacao] || insolacao}) × ${formatarDecimal(fatorIsolamento, 2)} (${textoIsolamento} ${nomesIsolamento[isolamento] || isolamento}) = ${formatarBTU(btuFinalTotal)}`;
     
-    const modelos = MODELOS_COMERCIAIS;
-    const modeloComercial = selecionarModeloComercial(btuFinal);
-    const potenciaKwModelo = modeloComercial * BTU_PARA_KW;
+    const elementoBtuPorAmbiente = document.getElementById('memorial-exemplo-btu-por-ambiente');
+    if (elementoBtuPorAmbiente) {
+        elementoBtuPorAmbiente.textContent = 
+            `${formatarBTU(btuFinalTotal)} ÷ ${numAmbientes} ${textoAmbientes} = ${formatarBTU(btuPorAmbienteCalculado)} por ambiente`;
+    }
     
-    document.getElementById('memorial-exemplo-modelo').textContent = 
-        `${formatarBTU(btuFinal)} → Modelo comercial: ${formatarBTU(modeloComercial)}`;
+    const elementoModelo = document.getElementById('memorial-exemplo-modelo');
+    if (elementoModelo) {
+        let textoModelo = `${formatarBTU(btuPorAmbienteCalculado)} → `;
+        if (unidadesInternasPorAmbiente > 1) {
+            const partesCombinacao = combinacaoInterna.map(m => formatarBTU(m));
+            textoModelo += `Combinação por ambiente: ${partesCombinacao.join(' + ')}. `;
+        } else {
+            textoModelo += `Modelo comercial por ambiente: ${formatarBTU(combinacaoInterna[0])}. `;
+        }
+        textoModelo += `BTU Total Real: ${formatarBTU(btuTotalReal)}. `;
+        if (numUnidadesExternas > 1) {
+            const partesExterna = combinacaoExterna.map(m => formatarBTU(m));
+            textoModelo += `Combinação Externa: ${partesExterna.join(' + ')}`;
+        } else {
+            textoModelo += `Unidade Externa: ${formatarBTU(combinacaoExterna[0])}`;
+        }
+        elementoModelo.textContent = textoModelo;
+    }
     
-    document.getElementById('memorial-exemplo-potencia').textContent = 
-        `${formatarBTU(modeloComercial)} × 0.000293 = ${formatarDecimal(potenciaKwModelo, 2)} kW`;
+    const elementoCusto = document.getElementById('memorial-exemplo-custo');
+    if (elementoCusto) {
+        let textoCusto = '';
+        if (numUnidadesExternas > 1) {
+            const partesExterna = combinacaoExterna.map(m => formatarBTU(m));
+            textoCusto += `Unidades Externas (${partesExterna.join(' + ')}): ${formatarMoedaSemDecimal(resultadoMultisplit.custoTotalUnidadesExternas, idiomaAtual)}. `;
+        } else {
+            textoCusto += `Unidade Externa ${formatarBTU(combinacaoExterna[0])}: ${formatarMoedaSemDecimal(resultadoMultisplit.custoTotalUnidadesExternas, idiomaAtual)}. `;
+        }
+        
+        // Formata unidades internas
+        const partesInternas = [];
+        Object.keys(resultadoMultisplit.unidadesInternasPorModelo).forEach(modelo => {
+            const qtd = resultadoMultisplit.unidadesInternasPorModelo[modelo];
+            partesInternas.push(`${qtd} × ${formatarBTU(parseInt(modelo))}`);
+        });
+        textoCusto += `Unidades Internas (${partesInternas.join(' + ')}): ${formatarMoedaSemDecimal(resultadoMultisplit.custoTotalUnidadesInternas, idiomaAtual)}. `;
+        textoCusto += `Custo Total: ${formatarMoedaSemDecimal(resultadoMultisplit.custoTotal, idiomaAtual)}`;
+        elementoCusto.textContent = textoCusto;
+    }
     
     // Atualizar resumo
-    document.getElementById('resumo-volume').textContent = formatarNumero(volume, 0) + ' m³';
-    document.getElementById('resumo-btu-base').textContent = formatarBTU(btuBase);
+    document.getElementById('resumo-volume').textContent = formatarNumero(volumeTotal, 1) + ' m³';
+    document.getElementById('resumo-btu-base').textContent = formatarBTU(btuBaseTotal);
     const resumoBtuFinalCalc = document.getElementById('resumo-btu-final-calc');
-    if (resumoBtuFinalCalc) resumoBtuFinalCalc.textContent = formatarBTU(btuFinal);
-    document.getElementById('resumo-btu-final').textContent = formatarBTU(modeloComercial);
-    document.getElementById('resumo-potencia').textContent = formatarDecimal(potenciaKwModelo, 2) + ' kW';
+    if (resumoBtuFinalCalc) resumoBtuFinalCalc.textContent = formatarBTU(btuFinalTotal);
+    const resumoBtuPorAmbiente = document.getElementById('resumo-btu-por-ambiente');
+    if (resumoBtuPorAmbiente) resumoBtuPorAmbiente.textContent = formatarBTU(btuPorAmbienteCalculado);
+    const resumoUnidadeInterna = document.getElementById('resumo-unidade-interna');
+    if (resumoUnidadeInterna) {
+        if (unidadesInternasPorAmbiente > 1) {
+            const partesCombinacao = combinacaoInterna.map(m => formatarBTU(m));
+            resumoUnidadeInterna.textContent = `${unidadesInternas} unidades (${unidadesInternasPorAmbiente} por ambiente: ${partesCombinacao.join(' + ')})`;
+        } else {
+            const partesInternas = [];
+            Object.keys(resultadoMultisplit.unidadesInternasPorModelo).forEach(modelo => {
+                const qtd = resultadoMultisplit.unidadesInternasPorModelo[modelo];
+                if (qtd > 1) {
+                    partesInternas.push(`${qtd} × ${formatarBTU(parseInt(modelo))}`);
+                } else {
+                    partesInternas.push(formatarBTU(parseInt(modelo)));
+                }
+            });
+            resumoUnidadeInterna.textContent = partesInternas.join(' + ');
+        }
+    }
+    const resumoBtuTotalReal = document.getElementById('resumo-btu-total-real');
+    if (resumoBtuTotalReal) resumoBtuTotalReal.textContent = formatarBTU(btuTotalReal);
+    const resumoUnidadeExterna = document.getElementById('resumo-unidade-externa');
+    if (resumoUnidadeExterna) {
+        if (numUnidadesExternas > 1) {
+            const partesExterna = [];
+            const modelosAgrupados = {};
+            combinacaoExterna.forEach(modelo => {
+                modelosAgrupados[modelo] = (modelosAgrupados[modelo] || 0) + 1;
+            });
+            Object.keys(modelosAgrupados).forEach(modelo => {
+                const qtd = modelosAgrupados[modelo];
+                if (qtd > 1) {
+                    partesExterna.push(`${qtd} × ${formatarBTU(parseInt(modelo))}`);
+                } else {
+                    partesExterna.push(formatarBTU(parseInt(modelo)));
+                }
+            });
+            resumoUnidadeExterna.textContent = partesExterna.join(' + ');
+        } else {
+            resumoUnidadeExterna.textContent = formatarBTU(combinacaoExterna[0]);
+        }
+    }
+    const resumoCustoTotal = document.getElementById('resumo-custo-total');
+    if (resumoCustoTotal) resumoCustoTotal.textContent = formatarMoedaSemDecimal(resultadoMultisplit.custoTotal, idiomaAtual);
 }
 

@@ -719,9 +719,9 @@ function atualizarResultado() {
     // ============================================
     // Obtém o texto da unidade de velocidade traduzido (nós, mph, km/h)
     const unidadeVelocidadeText = {
-        'knots': traducoes[idiomaAtual]['unidade-nos'],  // "nós" em português, "nodi" em italiano
-        'mph': traducoes[idiomaAtual]['unidade-mph'],    // "mph" (igual em ambos)
-        'kmh': traducoes[idiomaAtual]['unidade-kmh']     // "km/h" (igual em ambos)
+        'knots': traducoes[idiomaAtual]?.['unidade-nos'] || 'nós',  // "nós" em português, "nodi" em italiano
+        'mph': traducoes[idiomaAtual]?.['unidade-mph'] || 'mph',    // "mph" (igual em ambos)
+        'kmh': traducoes[idiomaAtual]?.['unidade-kmh'] || 'km/h'     // "km/h" (igual em ambos)
     }[unidadeVelocidade];
     // Atualiza o texto da unidade ao lado da velocidade teórica
     document.getElementById('unidadeVelocidadeTeorica').textContent = unidadeVelocidadeText;
@@ -896,8 +896,8 @@ function atualizarGrafico() {
                     const unidadePasso = document.querySelector('input[name="unidadePasso"]:checked').value;
                     // Obtém o texto da unidade traduzido (polegadas ou milímetros)
                     const unidadeText = unidadePasso === 'inches' 
-                        ? traducoes[idiomaAtual]['unidade-polegadas'] 
-                        : traducoes[idiomaAtual]['unidade-mm'];
+                        ? traducoes[idiomaAtual]?.['unidade-polegadas'] || 'polegadas'
+                        : traducoes[idiomaAtual]?.['unidade-mm'] || 'mm';
                     // Retorna o label traduzido: "Passo (polegadas)" ou "Passo (mm)"
                     return `${idiomaAtual === 'pt-BR' ? 'Passo' : 'Passo'} (${unidadeText})`;
                 })(),
@@ -997,9 +997,9 @@ function atualizarGrafico() {
                             const unidadeVelocidade = document.querySelector('input[name="unidadeVelocidade"]:checked').value;
                             // Obtém o texto da unidade traduzido
                             const unidadeText = {
-                                'knots': traducoes[idiomaAtual]['unidade-nos'],  // "nós" ou "nodi"
-                                'mph': traducoes[idiomaAtual]['unidade-mph'],    // "mph"
-                                'kmh': traducoes[idiomaAtual]['unidade-kmh']     // "km/h"
+                                'knots': traducoes[idiomaAtual]?.['unidade-nos'] || 'nós',  // "nós" ou "nodi"
+                                'mph': traducoes[idiomaAtual]?.['unidade-mph'] || 'mph',    // "mph"
+                                'kmh': traducoes[idiomaAtual]?.['unidade-kmh'] || 'km/h'     // "km/h"
                             }[unidadeVelocidade];
                             // Retorna o título traduzido: "Velocidade (nós)" ou "Velocità (nodi)"
                             return `${idiomaAtual === 'pt-BR' ? 'Velocidade' : 'Velocità'} (${unidadeText})`;

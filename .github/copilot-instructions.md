@@ -344,7 +344,7 @@ novo-app/
 15. **Limpeza**: Remova `console.log` e código comentado antes de finalizar
 16. **Documentação**: Mantenha README.md, GLOSSARIO.md e copilot-instructions.md atualizados
 17. **Badges DEV**: Apps em desenvolvimento devem ter badge "DEV" no ícone (classe `icon-dev`) e marca d'água dentro do app (`.watermark-dev` e `.dev-badge-header`)
-18. **Apps com badge DEV**: Ar Condicionado, Aquecedor Solar, Fazenda (em desenvolvimento)
+18. **Apps com badge DEV**: Fazenda (em desenvolvimento). Ar Condicionado e Aquecedor Solar estão completos.
 19. **Memorial de Cálculo**: Todos os apps educativos devem incluir seção de memorial didático que explica passo a passo os cálculos realizados. O memorial deve incluir:
     - **Fórmulas utilizadas** — Todas as fórmulas matemáticas e físicas aplicadas
     - **Valores de referência** — Constantes físicas, fatores de segurança e valores arbitrados utilizados (ex.: resistividade do cobre 0.0175 Ω·mm²/m, HSP 5h, eficiência 80%, etc.)
@@ -356,7 +356,10 @@ novo-app/
     - Resistividade do cobre: 0.0175 Ω·mm²/m (constante física)
     - HSP (Horas de Sol Pleno): 5h/dia (valor médio para Brasil)
     - Eficiência do sistema solar: 80% (considera perdas de 20%)
-    - BTU por m³: 600 BTU/m³ (padrão ASHRAE)
+    - BTU por m²: 700 BTU/m² (padrão ASHRAE, ajustado por fator de altura)
+    - Fator de Altura: Altura (m) ÷ 2.7 m (padrão residencial)
+    - Sistema Multi-Split: dimensiona unidades internas (até 60k BTU cada) e externas (até 180k BTU cada)
+    - Limites: 1-8 ambientes, 10-300 m² área total
     - Constante de conversão hélice: 1056 (padrão indústria náutica)
 21. **Leis Físicas**: Sempre explique de forma leiga as leis físicas aplicadas nos cálculos. Consulte `GLOSSARIO.md` para explicações padrão de Lei de Ohm, Conservação de Energia, Transferência de Calor, etc.
 

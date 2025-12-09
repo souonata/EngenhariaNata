@@ -1,4 +1,40 @@
-// fazenda-script.js - Lógica do Dimensionador de Fazenda Auto-Sustentável
+// ============================================
+// DIMENSIONADOR DE FAZENDA AUTO-SUSTENTÁVEL
+// ============================================
+//
+// Comentários didáticos em Português - Visão geral do algoritmo
+// -------------------------------------------------------------
+// Objetivo: planejar uma fazenda auto-sustentável que produza todos os
+// alimentos necessários para uma família, incluindo:
+//  - Cálculo de espaço necessário (área total em m²)
+//  - Quantidade de plantas (frutas, verduras, legumes) necessárias
+//  - Quantidade de animais necessários
+//  - Calendário de plantio e colheita
+//  - Frequência de reprodução animal
+//  - Consumo diário por pessoa
+//
+// Características Principais:
+//  - Seleção de múltiplos tipos de plantas e animais
+//  - Cálculo de produção mínima por pessoa/dia (configurável via sliders)
+//  - Distribuição proporcional da produção entre itens selecionados
+//  - Cálculo de ciclos de plantio para manter produção contínua
+//  - Consideração de épocas de plantio e colheita
+//  - Cálculo de espaço necessário por tipo de planta/animal
+//  - Consumo fixo para alguns itens (ex: ovos de galinha)
+//  - Consumo proporcional para outros itens
+//
+// Fórmulas Principais:
+//  - Produção Mínima Total = Produção por Pessoa/Dia × Número de Pessoas
+//  - Produção por Item = Produção Mínima Total ÷ Número de Itens Selecionados
+//  - Quantidade de Plantas = Produção por Item ÷ (Produção por m²/ano ÷ 365)
+//  - Área Necessária = Quantidade de Plantas × Espaço por Planta
+//  - Frequência de Plantio = Ciclo de Plantio ÷ 2 (para sobreposição)
+//
+// Observações:
+//  - Alguns itens têm consumo fixo garantido (ex: 2 ovos/pessoa/dia)
+//  - Outros itens recebem produção restante distribuída proporcionalmente
+//  - O calendário considera épocas de plantio e colheita de cada cultura
+//  - A reprodução animal é calculada para manter produção contínua
 
 // ============================================
 // FUNÇÕES DE FORMATAÇÃO
@@ -864,7 +900,7 @@ function toggleMemorial() {
 let idiomaAtual = 'pt-BR';
 
 function traduzir(chave) {
-    return traducoes[idiomaAtual][chave] || chave;
+    return traducoes[idiomaAtual]?.[chave] || chave;
 }
 
 function aplicarTraducoes() {
