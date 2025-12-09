@@ -5,15 +5,20 @@ Pequeno resumo para contribuintes e estudantes: o repositório reúne apps simpl
 Arquitetura (resumida):
 - index.html → tela inicial / launcher
 - Pastas de apps: `mutuo/`, `helice/`, `solar/`, `bitola/`, `arcondicionado/`, `aquecimento/`, `fazenda/`, `sobre/` (cada uma contém `app.html`, `app-script.js`, `app-styles.css`)
+- `scripts/count-lines.ps1` → Script PowerShell para contar linhas de código (exclui comentários), usado para atualizar estatísticas na página "Sobre o Projeto"
 
 Pontos importantes:
 - Idioma do usuário salvo em `localStorage` na chave `idiomaPreferido` (pt-BR / it-IT)
 - Configurações do Solar são salvas em `localStorage` na chave `configSolar`
 
+Scripts utilitários:
+- `scripts/count-lines.ps1` — Script PowerShell para contar linhas de código (exclui comentários e linhas vazias). Use para atualizar estatísticas na página "Sobre o Projeto" após modificações significativas no código. Execução: `powershell -ExecutionPolicy Bypass -File scripts\count-lines.ps1`
+
 Boas práticas (mínimas):
 - Use cache-busting `?v=X.Y.Z` ao atualizar CSS/JS para evitar problemas de cache.
 - Evite deixar `console.log` ou código morto no repositório público.
 - Preserve comentários que ajudem novos leitores a entender o projeto.
+- Após modificar código significativamente, execute `scripts/count-lines.ps1` para atualizar estatísticas na página "Sobre o Projeto".
 
 ## Convenções de Código
 

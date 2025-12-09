@@ -44,6 +44,8 @@ EngenhariaNata/
 │   │   └── controls-styles.css    # Estilos para controles (sliders, inputs, etc)
 │   └── js/
 │       └── site-config.js         # ⭐ Configuração global e funções compartilhadas
+├── scripts/
+│   └── count-lines.ps1            # Script PowerShell para contar linhas de código (exclui comentários)
 ├── helice/                        # App Calculadora de Hélice
 ├── bitola/                        # App Calculadora de Bitola
 ├── mutuo/                         # App Calculadora de Empréstimos
@@ -184,6 +186,30 @@ Ideal para quem está aprendendo JavaScript, HTML, CSS, engenharia e finanças, 
 - **Moeda**: Use `formatarMoeda()` ou `formatarMoedaSemDecimal()` com o idioma como parâmetro
 - **Inputs Dinâmicos**: Use `ajustarTamanhoInput()` para inputs que precisam ajustar tamanho automaticamente
 
+### Scripts Utilitários
+
+#### Contagem de Linhas de Código (`scripts/count-lines.ps1`)
+
+Script PowerShell para contar linhas de código de cada app, excluindo comentários e linhas vazias. Útil para atualizar estatísticas na página "Sobre o Projeto".
+
+**Uso:**
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\count-lines.ps1
+```
+
+**O que o script faz:**
+- Conta linhas de código HTML, JavaScript e CSS de cada app
+- Exclui linhas vazias
+- Exclui comentários HTML (`<!-- -->`)
+- Exclui comentários JavaScript (`//` e `/* */`)
+- Exclui comentários CSS (`/* */`)
+- Exibe estatísticas por app e total geral
+
+**Quando usar:**
+- Após adicionar ou modificar código significativamente
+- Para atualizar as estatísticas na página `sobre/sobre.html`
+- Para acompanhar o crescimento do projeto
+
 ### Adicionando um Novo App
 
 1. Crie uma pasta para o app (ex: `meuapp/`)
@@ -191,6 +217,7 @@ Ideal para quem está aprendendo JavaScript, HTML, CSS, engenharia e finanças, 
 3. Inclua `assets/js/site-config.js` no HTML antes do script do app
 4. Use as funções globais de formatação e configuração
 5. Adicione o app ao `index.html` e `sobre/sobre.html`
+6. Execute `scripts/count-lines.ps1` para atualizar as estatísticas
 
 ---
 
