@@ -210,6 +210,30 @@ powershell -ExecutionPolicy Bypass -File scripts\count-lines.ps1
 - Para atualizar as estatísticas na página `sobre/sobre.html`
 - Para acompanhar o crescimento do projeto
 
+#### Verificações Pré-Commit (`scripts/pre-commit-checks.ps1`)
+
+Script PowerShell para executar verificações automáticas antes de fazer commit, garantindo que o código esteja limpo e consistente.
+
+**Uso:**
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\pre-commit-checks.ps1
+```
+
+**O que o script verifica:**
+- Presença de `console.log` no código
+- Código morto/comentado
+- Cache-busting em arquivos HTML
+- Estrutura completa dos apps (HTML, JS, CSS)
+- Status do Git (arquivos modificados)
+- Existência de scripts utilitários
+
+**Quando usar:**
+- **SEMPRE** antes de fazer commit
+- Para garantir qualidade do código
+- Para evitar problemas comuns
+
+**Documentação completa:** Consulte `scripts/pre-commit-checks.md` para a checklist manual completa de verificações.
+
 ### Adicionando um Novo App
 
 1. Crie uma pasta para o app (ex: `meuapp/`)

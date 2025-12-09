@@ -85,7 +85,7 @@
                 <h3 data-i18n="memorial-passo1-title">1️⃣ Passo 1: Calcular Energia Diária Necessária</h3>
                 <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                 <div class="formula-box">
-                    <p><strong>Energia Diária (kWh/dia) = Consumo Mensal (kWh) ÷ 30 dias</strong></p>
+                    <p><strong id="memorial-formula-passo1">Energia Diária (kWh/dia) = Consumo Mensal (kWh) ÷ 30 dias</strong></p>
                 </div>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-energia-diaria">Consumo de 150 kWh/mês → 150 ÷ 30 = 5 kWh/dia</span></p>
                 <p data-i18n="memorial-passo1-explicacao">Esta é a quantidade de energia que o sistema precisa fornecer todos os dias para atender ao consumo médio.</p>
@@ -96,8 +96,8 @@
                 <h3 data-i18n="memorial-passo2-title">2️⃣ Passo 2: Determinar DoD (Profundidade de Descarga) pela Vida Útil</h3>
                 <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                 <div class="formula-box">
-                    <p><strong>Ciclos Totais = Vida Útil (anos) × 365 dias/ano</strong></p>
-                    <p><strong>DoD Alvo = f(Ciclos Totais, Tipo de Bateria)</strong></p>
+                    <p><strong id="memorial-formula-passo2-1">Ciclos Totais = Vida Útil (anos) × 365 dias/ano</strong></p>
+                    <p><strong id="memorial-formula-passo2-2">DoD Alvo = f(Ciclos Totais, Tipo de Bateria)</strong></p>
                 </div>
                 <p data-i18n="memorial-passo2-explicacao">O DoD (Depth of Discharge) determina quanto da capacidade da bateria pode ser usada diariamente. Quanto maior a vida útil desejada, menor deve ser o DoD para preservar a bateria.</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-dod">Vida útil de 20 anos → 20 × 365 = 7300 ciclos → DoD ≈ 50-60% (LiFePO4)</span></p>
@@ -118,9 +118,9 @@
                 <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Calcular Capacidade Necessária de Baterias</h3>
                 <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                 <div class="formula-box">
-                    <p><strong>Capacidade por Vida Útil = Energia Diária ÷ DoD</strong></p>
-                    <p><strong>Capacidade por Autonomia = Energia Diária × Dias de Autonomia ÷ DoD</strong></p>
-                    <p><strong>Capacidade Necessária = Máximo(por Vida Útil, por Autonomia)</strong></p>
+                    <p><strong id="memorial-formula-passo3-1">Capacidade por Vida Útil = Energia Diária ÷ DoD</strong></p>
+                    <p><strong id="memorial-formula-passo3-2">Capacidade por Autonomia = Energia Diária × Dias de Autonomia ÷ DoD</strong></p>
+                    <p><strong id="memorial-formula-passo3-3">Capacidade Necessária = Máximo(por Vida Útil, por Autonomia)</strong></p>
                 </div>
                 <p data-i18n="memorial-passo3-explicacao">Calculamos a capacidade necessária por dois critérios e escolhemos o maior: um para garantir a vida útil desejada e outro para garantir os dias de autonomia sem sol.</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-capacidade">5 kWh/dia, DoD 60%, 3 dias autonomia → Máximo(5÷0.6=8.3 kWh, 5×3÷0.6=25 kWh) = 25 kWh</span></p>
@@ -131,9 +131,9 @@
                 <h3 data-i18n="memorial-passo4-title">4️⃣ Passo 4: Calcular Número de Baterias</h3>
                 <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                 <div class="formula-box">
-                    <p><strong>Número de Baterias = Arredondar para Cima(Capacidade Necessária ÷ Capacidade por Bateria)</strong></p>
-                    <p><strong>Capacidade Real Instalada = Número de Baterias × Capacidade por Bateria</strong></p>
-                    <p><strong>Energia Utilizável = Capacidade Real × DoD</strong></p>
+                    <p><strong id="memorial-formula-passo4-1">Número de Baterias = Arredondar para Cima(Capacidade Necessária ÷ Capacidade por Bateria)</strong></p>
+                    <p><strong id="memorial-formula-passo4-2">Capacidade Real Instalada = Número de Baterias × Capacidade por Bateria</strong></p>
+                    <p><strong id="memorial-formula-passo4-3">Energia Utilizável = Capacidade Real × DoD</strong></p>
                 </div>
                 <p data-i18n="memorial-passo4-explicacao">Arredondamos para cima para garantir que temos capacidade suficiente. Para tensões 24V e 48V, garantimos número par de baterias para facilitar a montagem em série/paralelo.</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-baterias">25 kWh necessários, baterias de 4.8 kWh → 25÷4.8 = 5.2 → 6 baterias → 6×4.8 = 28.8 kWh instalados → 28.8×0.6 = 17.3 kWh utilizáveis</span></p>
@@ -144,9 +144,9 @@
                 <h3 data-i18n="memorial-passo5-title">5️⃣ Passo 5: Calcular Número de Painéis Solares</h3>
                 <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                 <div class="formula-box">
-                    <p><strong>Energia a Gerar = Energia Utilizável do Banco ÷ Eficiência do Sistema</strong></p>
-                    <p><strong>Potência Necessária (W) = Energia a Gerar (kWh/dia) × 1000 ÷ HSP (horas de sol pleno)</strong></p>
-                    <p><strong>Número de Painéis = Arredondar para Cima(Potência Necessária ÷ Potência por Painel)</strong></p>
+                    <p><strong id="memorial-formula-passo5-1">Energia a Gerar = Energia Utilizável do Banco ÷ Eficiência do Sistema</strong></p>
+                    <p><strong id="memorial-formula-passo5-2">Potência Necessária (W) = Energia a Gerar (kWh/dia) × 1000 ÷ HSP (horas de sol pleno)</strong></p>
+                    <p><strong id="memorial-formula-passo5-3">Número de Painéis = Arredondar para Cima(Potência Necessária ÷ Potência por Painel)</strong></p>
                 </div>
                 <p data-i18n="memorial-passo5-explicacao">Os painéis precisam gerar energia suficiente para recarregar as baterias, considerando perdas do sistema (cabo, MPPT, inversor). Usamos HSP (Horas de Sol Pleno) para estimar a geração diária.</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-paineis">17.3 kWh utilizáveis, eficiência 80%, HSP 5h → 17.3÷0.8 = 21.6 kWh/dia → 21.6×1000÷5 = 4320W → 4320÷400W = 10.8 → 11 painéis</span></p>
@@ -166,9 +166,9 @@
                 <h3 data-i18n="memorial-passo6-title">6️⃣ Passo 6: Dimensionar o Inversor</h3>
                 <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                 <div class="formula-box">
-                    <p><strong>Consumo Médio Horário = Energia Diária (kWh) ÷ 24 horas</strong></p>
-                    <p><strong>Consumo de Pico = Consumo Médio Horário × Fator de Pico (5x)</strong></p>
-                    <p><strong>Potência do Inversor (kW) = Máximo(Consumo de Pico, 1 kW mínimo)</strong></p>
+                    <p><strong id="memorial-formula-passo6-1">Consumo Médio Horário = Energia Diária (kWh) ÷ 24 horas</strong></p>
+                    <p><strong id="memorial-formula-passo6-2">Consumo de Pico = Consumo Médio Horário × Fator de Pico (5x)</strong></p>
+                    <p><strong id="memorial-formula-passo6-3">Potência do Inversor (kW) = Máximo(Consumo de Pico, 1 kW mínimo)</strong></p>
                 </div>
                 <p data-i18n="memorial-passo6-explicacao">O inversor converte DC das baterias para AC da casa. Deve ter capacidade para o consumo de pico típico de uma residência, não precisa ter a capacidade total dos painéis. O fator de pico de 5x considera que o consumo não é constante ao longo do dia.</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-inversor">Consumo diário 5 kWh → 5÷24 = 0.21 kW/h × 5 = 1.05 kW pico → Inversor de 2 kW</span></p>
@@ -186,9 +186,9 @@
                 <h3 data-i18n="memorial-passo7-title">7️⃣ Passo 7: Dimensionar o MPPT (Controlador de Carga)</h3>
                 <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                 <div class="formula-box">
-                    <p><strong>Potência Total dos Painéis = Número de Painéis × Potência por Painel (W)</strong></p>
-                    <p><strong>Corrente Máxima = Potência Total dos Painéis ÷ Tensão do Banco (V)</strong></p>
-                    <p><strong>Corrente do MPPT = Arredondar para Cima(Corrente Máxima) para valor comercial</strong></p>
+                    <p><strong id="memorial-formula-passo7-1">Potência Total dos Painéis = Número de Painéis × Potência por Painel (W)</strong></p>
+                    <p><strong id="memorial-formula-passo7-2">Corrente Máxima = Potência Total dos Painéis ÷ Tensão do Banco (V)</strong></p>
+                    <p><strong id="memorial-formula-passo7-3">Corrente do MPPT = Arredondar para Cima(Corrente Máxima) para valor comercial</strong></p>
                 </div>
                 <p data-i18n="memorial-passo7-explicacao">O MPPT (Maximum Power Point Tracking) controla o carregamento das baterias pelos painéis. Precisa suportar a corrente máxima de todos os painéis operando no pico. Valores comerciais comuns: 20A, 40A, 60A, 100A.</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-mppt">11 painéis × 400W = 4400W ÷ 48V = 91.7A → MPPT de 100A</span></p>
@@ -199,11 +199,11 @@
                 <h3 data-i18n="memorial-passo8-title">8️⃣ Passo 8: Calcular Custo Total Estimado</h3>
                 <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                 <div class="formula-box">
-                    <p><strong>Custo Painéis = Número de Painéis × Preço por Painel</strong></p>
-                    <p><strong>Custo Baterias = Número de Baterias × Preço por Bateria</strong></p>
-                    <p><strong>Custo Inversor = Preço do Inversor (da tabela de preços)</strong></p>
-                    <p><strong>Custo MPPT = Preço do MPPT (da tabela de preços)</strong></p>
-                <p><strong>Custo Total = Custo Painéis + Custo Baterias + Custo Inversor + Custo MPPT</strong></p>
+                    <p><strong id="memorial-formula-passo8-1">Custo Painéis = Número de Painéis × Preço por Painel</strong></p>
+                    <p><strong id="memorial-formula-passo8-2">Custo Baterias = Número de Baterias × Preço por Bateria</strong></p>
+                    <p><strong id="memorial-formula-passo8-3">Custo Inversor = Preço do Inversor (da tabela de preços)</strong></p>
+                    <p><strong id="memorial-formula-passo8-4">Custo MPPT = Preço do MPPT (da tabela de preços)</strong></p>
+                    <p><strong id="memorial-formula-passo8-5">Custo Total = Custo Painéis + Custo Baterias + Custo Inversor + Custo MPPT</strong></p>
                 </div>
                 <p data-i18n="memorial-passo8-explicacao">Os preços podem ser personalizados na página de configurações. Os valores são convertidos automaticamente para a moeda do idioma selecionado (R$ para português, € para italiano).</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-custos">11 painéis × R$ 1.200 + 6 baterias × R$ 12.000 + inversor R$ 2.500 + MPPT R$ 1.200 = R$ 13.200 + R$ 72.000 + R$ 2.500 + R$ 1.200 = R$ 88.900</span></p>

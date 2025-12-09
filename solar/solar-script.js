@@ -426,7 +426,30 @@ const traducoes = {
         'memorial-resumo-baterias': 'Baterias Instaladas:',
         'memorial-resumo-paineis': 'Painéis Solares:',
         'memorial-resumo-inversor': 'Inversor:',
-        'memorial-resumo-mppt': 'MPPT:'
+        'memorial-resumo-mppt': 'MPPT:',
+        'memorial-formula-passo1': 'Energia Diária (kWh/dia) = Consumo Mensal (kWh) ÷ 30 dias',
+        'memorial-formula-passo2-1': 'Ciclos Totais = Vida Útil (anos) × 365 dias/ano',
+        'memorial-formula-passo2-2': 'DoD Alvo = f(Ciclos Totais, Tipo de Bateria)',
+        'memorial-formula-passo3-1': 'Capacidade por Vida Útil = Energia Diária ÷ DoD',
+        'memorial-formula-passo3-2': 'Capacidade por Autonomia = Energia Diária × Dias de Autonomia ÷ DoD',
+        'memorial-formula-passo3-3': 'Capacidade Necessária = Máximo(por Vida Útil, por Autonomia)',
+        'memorial-formula-passo4-1': 'Número de Baterias = Arredondar para Cima(Capacidade Necessária ÷ Capacidade por Bateria)',
+        'memorial-formula-passo4-2': 'Capacidade Real Instalada = Número de Baterias × Capacidade por Bateria',
+        'memorial-formula-passo4-3': 'Energia Utilizável = Capacidade Real × DoD',
+        'memorial-formula-passo5-1': 'Energia a Gerar = Energia Utilizável do Banco ÷ Eficiência do Sistema',
+        'memorial-formula-passo5-2': 'Potência Necessária (W) = Energia a Gerar (kWh/dia) × 1000 ÷ HSP (horas de sol pleno)',
+        'memorial-formula-passo5-3': 'Número de Painéis = Arredondar para Cima(Potência Necessária ÷ Potência por Painel)',
+        'memorial-formula-passo6-1': 'Consumo Médio Horário = Energia Diária (kWh) ÷ 24 horas',
+        'memorial-formula-passo6-2': 'Consumo de Pico = Consumo Médio Horário × Fator de Pico (5x)',
+        'memorial-formula-passo6-3': 'Potência do Inversor (kW) = Máximo(Consumo de Pico, 1 kW mínimo)',
+        'memorial-formula-passo7-1': 'Potência Total dos Painéis = Número de Painéis × Potência por Painel (W)',
+        'memorial-formula-passo7-2': 'Corrente Máxima = Potência Total dos Painéis ÷ Tensão do Banco (V)',
+        'memorial-formula-passo7-3': 'Corrente do MPPT = Arredondar para Cima(Corrente Máxima) para valor comercial',
+        'memorial-formula-passo8-1': 'Custo Painéis = Número de Painéis × Preço por Painel',
+        'memorial-formula-passo8-2': 'Custo Baterias = Número de Baterias × Preço por Bateria',
+        'memorial-formula-passo8-3': 'Custo Inversor = Preço do Inversor (da tabela de preços)',
+        'memorial-formula-passo8-4': 'Custo MPPT = Preço do MPPT (da tabela de preços)',
+        'memorial-formula-passo8-5': 'Custo Total = Custo Painéis + Custo Baterias + Custo Inversor + Custo MPPT'
     },
     'it-IT': {
         'app-title': '🔋 Energia Solare',
@@ -492,7 +515,30 @@ const traducoes = {
         'memorial-resumo-baterias': 'Batterie Installate:',
         'memorial-resumo-paineis': 'Pannelli Solari:',
         'memorial-resumo-inversor': 'Inverter:',
-        'memorial-resumo-mppt': 'MPPT:'
+        'memorial-resumo-mppt': 'MPPT:',
+        'memorial-formula-passo1': 'Energia Giornaliera (kWh/giorno) = Consumo Mensile (kWh) ÷ 30 giorni',
+        'memorial-formula-passo2-1': 'Cicli Totali = Vita Utile (anni) × 365 giorni/anno',
+        'memorial-formula-passo2-2': 'DoD Obiettivo = f(Cicli Totali, Tipo di Batteria)',
+        'memorial-formula-passo3-1': 'Capacità per Vita Utile = Energia Giornaliera ÷ DoD',
+        'memorial-formula-passo3-2': 'Capacità per Autonomia = Energia Giornaliera × Giorni di Autonomia ÷ DoD',
+        'memorial-formula-passo3-3': 'Capacità Necessaria = Massimo(per Vita Utile, per Autonomia)',
+        'memorial-formula-passo4-1': 'Numero di Batterie = Arrotondare per Eccesso(Capacità Necessaria ÷ Capacità per Batteria)',
+        'memorial-formula-passo4-2': 'Capacità Reale Installata = Numero di Batterie × Capacità per Batteria',
+        'memorial-formula-passo4-3': 'Energia Utilizzabile = Capacità Reale × DoD',
+        'memorial-formula-passo5-1': 'Energia da Generare = Energia Utilizzabile del Banco ÷ Efficienza del Sistema',
+        'memorial-formula-passo5-2': 'Potenza Necessaria (W) = Energia da Generare (kWh/giorno) × 1000 ÷ HSP (ore di sole pieno)',
+        'memorial-formula-passo5-3': 'Numero di Pannelli = Arrotondare per Eccesso(Potenza Necessaria ÷ Potenza per Pannello)',
+        'memorial-formula-passo6-1': 'Consumo Medio Orario = Energia Giornaliera (kWh) ÷ 24 ore',
+        'memorial-formula-passo6-2': 'Consumo di Picco = Consumo Medio Orario × Fattore di Picco (5x)',
+        'memorial-formula-passo6-3': 'Potenza dell\'Inverter (kW) = Massimo(Consumo di Picco, 1 kW minimo)',
+        'memorial-formula-passo7-1': 'Potenza Totale dei Pannelli = Numero di Pannelli × Potenza per Pannello (W)',
+        'memorial-formula-passo7-2': 'Corrente Massima = Potenza Totale dei Pannelli ÷ Tensione del Banco (V)',
+        'memorial-formula-passo7-3': 'Corrente del MPPT = Arrotondare per Eccesso(Corrente Massima) per valore commerciale',
+        'memorial-formula-passo8-1': 'Costo Pannelli = Numero di Pannelli × Prezzo per Pannello',
+        'memorial-formula-passo8-2': 'Costo Batterie = Numero di Batterie × Prezzo per Batteria',
+        'memorial-formula-passo8-3': 'Costo Inverter = Prezzo dell\'Inverter (dalla tabella dei prezzi)',
+        'memorial-formula-passo8-4': 'Costo MPPT = Prezzo del MPPT (dalla tabella dei prezzi)',
+        'memorial-formula-passo8-5': 'Costo Totale = Costo Pannelli + Costo Batterie + Costo Inverter + Costo MPPT'
     }
 };
 
@@ -527,6 +573,9 @@ function trocarIdioma(novoIdioma) {
     });
 
     atualizarInterface();
+
+    // Atualiza fórmulas do memorial
+    atualizarFormulasMemorial(novoIdioma);
 
     // Atualiza aria-label do botão home
     const homeLabel = traducoes[novoIdioma]?.['aria-home'] || 'Home';
@@ -1381,6 +1430,47 @@ document.addEventListener('DOMContentLoaded', () => {
 // ============================================
 // FUNÇÕES DO MEMORIAL DE CÁLCULO
 // ============================================
+
+/**
+ * Atualiza as fórmulas do memorial de cálculo conforme o idioma selecionado
+ * @param {string} idioma - Idioma atual ('pt-BR' ou 'it-IT')
+ */
+function atualizarFormulasMemorial(idioma) {
+    // Lista de todas as chaves de fórmulas
+    const chavesFormulas = [
+        'memorial-formula-passo1',
+        'memorial-formula-passo2-1',
+        'memorial-formula-passo2-2',
+        'memorial-formula-passo3-1',
+        'memorial-formula-passo3-2',
+        'memorial-formula-passo3-3',
+        'memorial-formula-passo4-1',
+        'memorial-formula-passo4-2',
+        'memorial-formula-passo4-3',
+        'memorial-formula-passo5-1',
+        'memorial-formula-passo5-2',
+        'memorial-formula-passo5-3',
+        'memorial-formula-passo6-1',
+        'memorial-formula-passo6-2',
+        'memorial-formula-passo6-3',
+        'memorial-formula-passo7-1',
+        'memorial-formula-passo7-2',
+        'memorial-formula-passo7-3',
+        'memorial-formula-passo8-1',
+        'memorial-formula-passo8-2',
+        'memorial-formula-passo8-3',
+        'memorial-formula-passo8-4',
+        'memorial-formula-passo8-5'
+    ];
+    
+    // Atualiza cada fórmula
+    chavesFormulas.forEach(chave => {
+        const elemento = document.getElementById(chave);
+        if (elemento && traducoes[idioma] && traducoes[idioma][chave]) {
+            elemento.textContent = traducoes[idioma][chave];
+        }
+    });
+}
 
 /**
  * Alterna a exibição do memorial de cálculo

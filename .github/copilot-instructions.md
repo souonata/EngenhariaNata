@@ -13,6 +13,8 @@ Pontos importantes:
 
 Scripts utilitários:
 - `scripts/count-lines.ps1` — Script PowerShell para contar linhas de código (exclui comentários e linhas vazias). Use para atualizar estatísticas na página "Sobre o Projeto" após modificações significativas no código. Execução: `powershell -ExecutionPolicy Bypass -File scripts\count-lines.ps1`
+- `scripts/pre-commit-checks.ps1` — Script PowerShell para executar verificações automáticas antes de fazer commit (console.log, código morto, estrutura de arquivos, etc.). Execução: `powershell -ExecutionPolicy Bypass -File scripts\pre-commit-checks.ps1`
+- `scripts/pre-commit-checks.md` — Documentação completa da rotina de verificações pré-commit com checklist manual
 
 Boas práticas (mínimas):
 - Use cache-busting `?v=X.Y.Z` ao atualizar CSS/JS para evitar problemas de cache.
