@@ -583,6 +583,8 @@ function atualizarResultados() {
     
     // Calcular plantas
     const detalhesPlantas = [];
+    let somaConsumoPlantas = 0; // Para normalização
+    
     Object.keys(plantasSelecionadas).forEach(tipo => {
         plantasSelecionadas[tipo].forEach(nome => {
             // Verificar se o tipo e nome existem nos dados
@@ -603,6 +605,7 @@ function atualizarResultados() {
             
             // O consumo diário por pessoa já é o valor proporcional
             const consumoDiarioPorPessoa = consumoDiarioPorItemPlanta;
+            somaConsumoPlantas += consumoDiarioPorPessoa;
             
             // Buscar dados completos do banco de dados
             const dadosCompletos = DADOS_COMPLETOS.plantas[tipo]?.[nome] || {};
@@ -625,8 +628,18 @@ function atualizarResultados() {
         });
     });
     
+    // Normalizar consumos de plantas para que a soma seja exatamente igual ao input
+    if (totalItensPlantas > 0 && somaConsumoPlantas > 0) {
+        const fatorNormalizacao = CONSUMO_PLANTAS_DIARIO / somaConsumoPlantas;
+        detalhesPlantas.forEach(p => {
+            p.consumoDiarioPorPessoa = p.consumoDiarioPorPessoa * fatorNormalizacao;
+        });
+    }
+    
     // Calcular animais
     const detalhesAnimais = [];
+    let somaConsumoAnimais = 0; // Para normalização (excluindo galinha de ovos que tem consumo fixo)
+    
     animaisSelecionados.forEach(nome => {
         // Verificar se o animal existe nos dados
         if (!DADOS_ANIMAIS[nome]) {
@@ -636,19 +649,23 @@ function atualizarResultados() {
         
         let consumoDiarioPorPessoa;
         let quantidade;
+        const isGalinhaOvos = (nome === 'galinha-ovos' || nome === 'gallina-ovos');
         
-        if (nome === 'galinha-ovos' || nome === 'gallina-ovos') {
+        if (isGalinhaOvos) {
             // Galinhas poedeiras sempre garantem 2 ovos/dia por pessoa
             consumoDiarioPorPessoa = consumoGalinhaOvosPorPessoa; // 0.12 kg/dia (2 ovos)
             quantidade = calcularAnimaisNecessarios(nome, quantidadePessoas, consumoDiarioPorPessoa);
+            somaConsumoAnimais += consumoDiarioPorPessoa; // Incluir na soma total
         } else if (nome === 'frango-corte' || nome === 'pollo-corte' || nome === 'vaca-corte' || nome === 'mucca-carne') {
             // Animais de corte (frango e vaca) recebem consumo proporcional
             consumoDiarioPorPessoa = consumoDiarioPorItemAnimal;
             quantidade = calcularAnimaisNecessarios(nome, quantidadePessoas, consumoDiarioPorPessoa);
+            somaConsumoAnimais += consumoDiarioPorPessoa;
         } else {
             // Outros animais (leite, etc.) recebem o consumo proporcional do restante
             consumoDiarioPorPessoa = consumoDiarioPorItemAnimal;
             quantidade = calcularAnimaisNecessarios(nome, quantidadePessoas, consumoDiarioPorPessoa);
+            somaConsumoAnimais += consumoDiarioPorPessoa;
         }
         
         const area = calcularAreaAnimais(nome, quantidade);
@@ -670,11 +687,28 @@ function atualizarResultados() {
             dados,
             freqReprod,
             consumoDiarioPorPessoa,
+            isGalinhaOvos, // Flag para não normalizar galinha de ovos
             tecnica: dadosCompletosAnimal.tecnica || '',
             clima: dadosCompletosAnimal.clima || '',
             alimentacao: dadosCompletosAnimal.alimentacao || ''
         });
     });
+    
+    // Normalizar consumos de animais para que a soma seja exatamente igual ao input
+    // (exceto galinha de ovos que tem consumo fixo)
+    if (totalAnimaisCarne > 0 && somaConsumoAnimais > 0) {
+        const consumoRestanteEsperado = CONSUMO_PROTEINA_DIARIO - consumoGalinhaOvosPorPessoa;
+        const somaConsumoRestante = somaConsumoAnimais - consumoGalinhaOvosPorPessoa;
+        
+        if (somaConsumoRestante > 0) {
+            const fatorNormalizacao = consumoRestanteEsperado / somaConsumoRestante;
+            detalhesAnimais.forEach(a => {
+                if (!a.isGalinhaOvos) {
+                    a.consumoDiarioPorPessoa = a.consumoDiarioPorPessoa * fatorNormalizacao;
+                }
+            });
+        }
+    }
     
     // Atualizar resumo
     const areaTotal = areaTotalPlantas + areaTotalAnimais;
