@@ -823,3 +823,517 @@ function carregarChartJS(callback, plugins = []) {
         document.head.appendChild(script);
     });
 }
+
+// ============================================
+// FUNÇÃO GLOBAL MELHORADA: AJUSTAR VALOR DE SLIDER COM ACELERAÇÃO
+// ============================================
+
+/**
+ * Ajusta o valor de um slider usando botões de seta com aceleração variável
+ * 
+ * Esta função melhora a experiência do usuário ao:
+ * - Forçar valores min/max quando o slider está no fim do curso
+ * - Atualizar valores com maior frequência (reduz lag)
+ * - Implementar aceleração variável: lento no primeiro segundo, rápido nos outros dois
+ * - Percorrer todo o range do slider em 3 segundos quando o botão é pressionado
+ * 
+ * @param {string} targetId - ID do elemento slider a ser ajustado
+ * @param {number} step - Valor do incremento/decremento (positivo para aumentar, negativo para diminuir)
+ * @param {Object} options - Opções adicionais (opcional)
+ * @param {Function} options.onUpdate - Função chamada a cada atualização (opcional)
+ */
+function ajustarValorSlider(targetId, step, options = {}) {
+    const slider = document.getElementById(targetId);
+    if (!slider) return;
+    
+    // Usa 0 como mínimo se slider.min for 0 (importante para sliders que começam em 0)
+    const minRaw = parseFloat(slider.min);
+    const min = isNaN(minRaw) ? 1 : minRaw; // Permite 0 como mínimo válido
+    const max = parseFloat(slider.max) || 100;
+    const stepAttr = parseFloat(slider.step) || 1;
+    
+    let valorAtual = parseFloat(slider.value);
+    // Se valorAtual for NaN, usa o mínimo (pode ser 0)
+    if (isNaN(valorAtual)) {
+        valorAtual = min;
+    }
+    
+    // Se step for string (ex: "dynamic", "-dynamic"), precisa ser tratado pela função customizada
+    // Aqui assumimos que step já foi convertido para número
+    if (typeof step === 'string') {
+        console.warn('ajustarValorSlider: step deve ser número. Use função customizada para steps dinâmicos.');
+        return;
+    }
+    
+    // Calcula o novo valor
+    let novoValor = valorAtual + step;
+    
+    // Arredonda para o múltiplo mais próximo do step
+    novoValor = Math.round(novoValor / stepAttr) * stepAttr;
+    
+    // Garante que está dentro dos limites (mas permite movimento mesmo próximo dos limites)
+    novoValor = Math.max(min, Math.min(max, novoValor));
+    
+    // NÃO força valores min/max quando próximo do fim do curso
+    // Isso permite que o usuário continue ajustando mesmo quando próximo dos limites
+    // A detecção de limite é feita na função de repetição, não aqui
+    
+    // Atualiza o valor do slider
+    slider.value = novoValor;
+    
+    // Dispara evento input imediatamente (sem throttle para reduzir lag)
+    slider.dispatchEvent(new Event('input', { bubbles: true }));
+    
+    // Chama callback se fornecido
+    if (typeof options.onUpdate === 'function') {
+        options.onUpdate(novoValor);
+    }
+}
+
+/**
+ * Configura botões de seta com aceleração variável para sliders
+ * 
+ * Quando o botão é pressionado e mantido:
+ * - Primeiro segundo: ajusta lentamente (a cada 200ms)
+ * - Segundos 2-3: ajusta rapidamente (a cada 50ms, depois 30ms)
+ * - Percorre todo o range do slider em aproximadamente 3 segundos
+ * 
+ * @param {string} buttonSelector - Seletor CSS dos botões de seta (ex: '.arrow-btn')
+ * @param {Function} customAdjustFn - Função customizada de ajuste (opcional, usa ajustarValorSlider por padrão)
+ */
+function configurarBotoesSliderComAceleracao(buttonSelector, customAdjustFn = null) {
+    const buttons = document.querySelectorAll(buttonSelector);
+    
+    buttons.forEach(btn => {
+        const targetId = btn.getAttribute('data-target');
+        if (!targetId) return;
+        
+        let intervalId = null;
+        let timeoutId = null;
+        let startTime = null;
+        let isActive = false;
+        
+        const slider = document.getElementById(targetId);
+        if (!slider) return;
+        
+        // Obtém o step do atributo (pode ser número ou string como "dynamic")
+        let step = btn.getAttribute('data-step');
+        // Se não for "dynamic" ou "-dynamic", converte para número
+        if (step !== 'dynamic' && step !== '-dynamic') {
+            step = parseFloat(step) || 1;
+        }
+        
+        // Usa 0 como mínimo se slider.min for 0 (importante para sliders que começam em 0)
+        const minRaw = parseFloat(slider.min);
+        const min = isNaN(minRaw) ? 1 : minRaw; // Permite 0 como mínimo válido
+        const max = parseFloat(slider.max) || 100;
+        const range = max - min;
+        
+        // Função de ajuste (usa customizada se fornecida, senão usa a padrão)
+        const adjustFn = customAdjustFn || ((targetId, step) => {
+            ajustarValorSlider(targetId, step);
+        });
+        
+        // Função que calcula o intervalo baseado no tempo decorrido
+        // Dobra a velocidade a cada segundo (reduz o intervalo pela metade)
+        const getInterval = (elapsed) => {
+            // Intervalo inicial: 200ms (lento)
+            const intervaloInicial = 200;
+            
+            // Calcula quantos segundos se passaram
+            const segundos = Math.floor(elapsed / 1000);
+            
+            // Dobra a velocidade a cada segundo (divide o intervalo por 2^segundos)
+            // Exemplo:
+            // 0-1s: 200ms / 2^0 = 200ms
+            // 1-2s: 200ms / 2^1 = 100ms
+            // 2-3s: 200ms / 2^2 = 50ms
+            // 3-4s: 200ms / 2^3 = 25ms
+            // 4-5s: 200ms / 2^4 = 12.5ms (arredondado para 13ms)
+            // E assim por diante...
+            const intervalo = intervaloInicial / Math.pow(2, segundos);
+            
+            // Limita o intervalo mínimo a 10ms para não sobrecarregar o navegador
+            return Math.max(10, Math.round(intervalo));
+        };
+        
+        // Função que inicia o ajuste repetitivo
+        const startRepeating = () => {
+            if (isActive) return;
+            isActive = true;
+            startTime = Date.now();
+            
+            // Ajusta imediatamente (primeira vez)
+            adjustFn(targetId, step);
+            
+            // Variáveis para controle de aceleração dinâmica
+            let lastInterval = 200;
+            let lastAdjustTime = Date.now();
+            let lastSecond = 0;
+            
+            const doAdjust = () => {
+                if (!isActive) return;
+                
+                const now = Date.now();
+                const elapsed = now - startTime;
+                const currentSecond = Math.floor(elapsed / 1000);
+                const currentInterval = getInterval(elapsed);
+                
+                // Se mudou o segundo (e portanto o intervalo), reinicia o timer com novo intervalo
+                if (currentSecond !== lastSecond || currentInterval !== lastInterval) {
+                    clearInterval(intervalId);
+                    lastInterval = currentInterval;
+                    lastSecond = currentSecond;
+                    // Reinicia o intervalo com a nova velocidade
+                    intervalId = setInterval(doAdjust, currentInterval);
+                }
+                
+                // Verifica o valor antes do ajuste
+                let valorAntes = parseFloat(slider.value);
+                if (isNaN(valorAntes)) valorAntes = min;
+                
+                // Ajusta o valor
+                adjustFn(targetId, step);
+                lastAdjustTime = now;
+                
+                // Verifica o valor depois do ajuste
+                let valorDepois = parseFloat(slider.value);
+                if (isNaN(valorDepois)) valorDepois = min;
+                
+                // Para apenas se o valor não mudou E está no limite
+                // Isso permite movimento mesmo quando próximo dos limites
+                if (valorAntes === valorDepois) {
+                    // Verifica se step é positivo (aumentar) ou negativo (diminuir)
+                    const stepNum = (step === 'dynamic') ? 1 : (step === '-dynamic') ? -1 : parseFloat(step) || 1;
+                    if ((stepNum > 0 && valorDepois >= max) || (stepNum < 0 && valorDepois <= min)) {
+                        stopRepeating();
+                        return;
+                    }
+                }
+            };
+            
+            // Inicia o intervalo com o intervalo inicial (200ms)
+            intervalId = setInterval(doAdjust, 200);
+        };
+        
+        // Função que para o ajuste repetitivo
+        const stopRepeating = () => {
+            isActive = false;
+            clearTimeout(timeoutId);
+            clearInterval(intervalId);
+            startTime = null;
+        };
+        
+        // Event listeners para mouse
+        btn.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            startRepeating();
+        });
+        
+        btn.addEventListener('mouseup', stopRepeating);
+        btn.addEventListener('mouseleave', stopRepeating);
+        
+        // Event listeners para touch (mobile)
+        btn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startRepeating();
+        });
+        
+        btn.addEventListener('touchend', stopRepeating);
+        btn.addEventListener('touchcancel', stopRepeating);
+        
+        // Previne contexto menu em long press (mobile)
+        btn.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+    });
+}
+
+// ============================================
+// DETECÇÃO DE GESTOS TOUCH GLOBAL
+// ============================================
+// Esta funcionalidade diferencia scroll de interações com botões e sliders
+// em dispositivos touch, melhorando a experiência do usuário
+
+function setupGlobalTouchGestures() {
+    // Verificar se já foi inicializado
+    if (document.getElementById('global-touch-gestures-initialized')) return;
+    
+    // Verificar se o body existe
+    if (!document.body) {
+        // Tentar novamente após um pequeno delay
+        setTimeout(setupGlobalTouchGestures, 50);
+        return;
+    }
+    
+    // Marcar como inicializado
+    const marker = document.createElement('div');
+    marker.id = 'global-touch-gestures-initialized';
+    marker.style.display = 'none';
+    document.body.appendChild(marker);
+    
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTime = 0;
+    let touchTarget = null;
+    let isScrolling = false;
+    let touchMoved = false;
+    let touchMoveThreshold = 10; // pixels
+    let tapMaxDuration = 300; // ms
+    let scrollThreshold = 0.6; // 60% do movimento deve ser vertical para ser considerado scroll
+    let buttonClickTimeout = null;
+    
+    document.addEventListener('touchstart', function(e) {
+        const touch = e.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        touchStartTime = Date.now();
+        touchTarget = e.target;
+        touchMoved = false;
+        isScrolling = false;
+        
+        // Limpar timeout anterior se houver
+        if (buttonClickTimeout) {
+            clearTimeout(buttonClickTimeout);
+            buttonClickTimeout = null;
+        }
+        
+        // Se tocou em um botão e ficou parado, preparar para acionar
+        const isButton = touchTarget.tagName === 'BUTTON' || 
+                       touchTarget.classList.contains('arrow-btn') ||
+                       (touchTarget.onclick !== null && touchTarget.onclick !== undefined);
+        
+        if (isButton) {
+            // Aguardar um pouco para ver se vai mover (para scroll) ou ficar parado (para click)
+            buttonClickTimeout = setTimeout(function() {
+                if (!touchMoved && touchTarget === e.target) {
+                    // Toque parado sobre botão - acionar
+                    touchTarget.click();
+                }
+            }, 150); // Aguarda 150ms para ver se move
+        }
+    }, { passive: true });
+    
+    document.addEventListener('touchmove', function(e) {
+        const touch = e.touches[0];
+        const deltaX = Math.abs(touch.clientX - touchStartX);
+        const deltaY = Math.abs(touch.clientY - touchStartY);
+        const totalDelta = deltaX + deltaY;
+        
+        // Se moveu mais que o threshold, considera movimento
+        if (totalDelta > touchMoveThreshold) {
+            touchMoved = true;
+            
+            // Cancelar click de botão se moveu
+            if (buttonClickTimeout) {
+                clearTimeout(buttonClickTimeout);
+                buttonClickTimeout = null;
+            }
+            
+            // Determinar se é scroll (movimento majoritariamente vertical)
+            if (totalDelta > 0) {
+                const verticalRatio = deltaY / totalDelta;
+                
+                if (verticalRatio > scrollThreshold) {
+                    // Movimento majoritariamente vertical = SCROLL
+                    isScrolling = true;
+                    
+                    // Se o target é um botão ou slider, prevenir ação padrão
+                    if (touchTarget) {
+                        const isButton = touchTarget.tagName === 'BUTTON' || 
+                                       touchTarget.classList.contains('arrow-btn') ||
+                                       (touchTarget.onclick !== null && touchTarget.onclick !== undefined);
+                        const isSlider = touchTarget.tagName === 'INPUT' && 
+                                       touchTarget.type === 'range';
+                        
+                        if (isButton || isSlider) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }
+                    }
+                } else {
+                    // Movimento majoritariamente horizontal
+                    isScrolling = false;
+                    
+                    // Se for slider, permitir movimento horizontal
+                    if (touchTarget && touchTarget.tagName === 'INPUT' && touchTarget.type === 'range') {
+                        // Calcular posição do slider baseado na posição X do toque
+                        const slider = touchTarget;
+                        const rect = slider.getBoundingClientRect();
+                        const sliderWidth = rect.width;
+                        const touchX = touch.clientX - rect.left;
+                        const min = parseFloat(slider.min) || 0;
+                        const max = parseFloat(slider.max) || 100;
+                        const percentage = Math.max(0, Math.min(1, touchX / sliderWidth));
+                        const newValue = min + (max - min) * percentage;
+                        
+                        // Atualizar valor do slider
+                        slider.value = newValue;
+                        
+                        // Disparar evento input
+                        slider.dispatchEvent(new Event('input', { bubbles: true }));
+                        slider.dispatchEvent(new Event('change', { bubbles: true }));
+                        
+                        // Prevenir scroll durante movimento do slider
+                        e.preventDefault();
+                        e.stopPropagation();
+                    } else {
+                        // Para outros elementos, prevenir se for botão
+                        if (touchTarget && (touchTarget.tagName === 'BUTTON' || touchTarget.classList.contains('arrow-btn'))) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }
+                    }
+                }
+            }
+        }
+    }, { passive: false });
+    
+    document.addEventListener('touchend', function(e) {
+        // Cancelar timeout de click de botão
+        if (buttonClickTimeout) {
+            clearTimeout(buttonClickTimeout);
+            buttonClickTimeout = null;
+        }
+        
+        const touchDuration = Date.now() - touchStartTime;
+        const touch = e.changedTouches[0];
+        const deltaX = Math.abs(touch.clientX - touchStartX);
+        const deltaY = Math.abs(touch.clientY - touchStartY);
+        const totalDelta = deltaX + deltaY;
+        
+        // Determinar tipo de gesto
+        if (!touchMoved || totalDelta < touchMoveThreshold) {
+            // TAP RÁPIDO - sempre acionar (botões, sliders, etc)
+            if (touchDuration < tapMaxDuration) {
+                // Para sliders, mover para posição do toque
+                if (touchTarget && touchTarget.tagName === 'INPUT' && touchTarget.type === 'range') {
+                    const slider = touchTarget;
+                    const rect = slider.getBoundingClientRect();
+                    const sliderWidth = rect.width;
+                    const touchX = touch.clientX - rect.left;
+                    const min = parseFloat(slider.min) || 0;
+                    const max = parseFloat(slider.max) || 100;
+                    const percentage = Math.max(0, Math.min(1, touchX / sliderWidth));
+                    const newValue = min + (max - min) * percentage;
+                    
+                    slider.value = newValue;
+                    slider.dispatchEvent(new Event('input', { bubbles: true }));
+                    slider.dispatchEvent(new Event('change', { bubbles: true }));
+                    
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                // Para outros elementos, permitir ação padrão (click)
+                return;
+            }
+        } else if (touchMoved && !isScrolling) {
+            // Movimento horizontal - ação já foi tratada no touchmove
+            if (touchTarget && touchTarget.tagName === 'INPUT' && touchTarget.type === 'range') {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
+        } else if (isScrolling) {
+            // SCROLL - prevenir ações de botões/sliders
+            if (touchTarget) {
+                const isButton = touchTarget.tagName === 'BUTTON' || 
+                               touchTarget.classList.contains('arrow-btn');
+                const isSlider = touchTarget.tagName === 'INPUT' && 
+                               touchTarget.type === 'range';
+                
+                if (isButton || isSlider) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                }
+            }
+        }
+        
+        // Reset
+        touchStartX = 0;
+        touchStartY = 0;
+        touchStartTime = 0;
+        touchTarget = null;
+        touchMoved = false;
+        isScrolling = false;
+    }, { passive: false });
+    
+    document.addEventListener('touchcancel', function(e) {
+        // Reset em caso de cancelamento
+        if (buttonClickTimeout) {
+            clearTimeout(buttonClickTimeout);
+            buttonClickTimeout = null;
+        }
+        touchStartX = 0;
+        touchStartY = 0;
+        touchStartTime = 0;
+        touchTarget = null;
+        touchMoved = false;
+        isScrolling = false;
+    });
+}
+
+// Inicializar gestos touch globalmente
+// Não executar em iframes (como o preview do DevTools)
+// Também não executar na página do DevTools (devtools.html)
+(function() {
+    'use strict';
+    try {
+        // Verificar se não está em iframe
+        if (typeof window === 'undefined' || window.self !== window.top) {
+            return; // Está em iframe, não executar
+        }
+        
+        // Verificar se é a página do DevTools
+        try {
+            var location = window.location || {};
+            var pathname = location.pathname || '';
+            var href = location.href || '';
+            var title = (typeof document !== 'undefined' && document.title) ? document.title : '';
+            
+            if (pathname.indexOf('devtools.html') !== -1 || 
+                href.indexOf('devtools.html') !== -1 ||
+                title.indexOf('DevTools') !== -1) {
+                return; // É a página do DevTools, não executar
+            }
+        } catch (e) {
+            // Se houver erro ao verificar, continuar (não é DevTools)
+        }
+        
+        // Função para inicializar gestos
+        var initGestures = function() {
+            try {
+                if (typeof setupGlobalTouchGestures === 'function') {
+                    setupGlobalTouchGestures();
+                }
+            } catch (e) {
+                // Silenciosamente ignorar erros
+            }
+        };
+        
+        // Inicializar quando o DOM estiver pronto
+        if (typeof document !== 'undefined') {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initGestures);
+            } else {
+                // DOM já está pronto
+                initGestures();
+            }
+            
+            // Também tentar inicializar após um pequeno delay
+            setTimeout(function() {
+                try {
+                    if (document.body && typeof document.getElementById === 'function' && 
+                        !document.getElementById('global-touch-gestures-initialized')) {
+                        initGestures();
+                    }
+                } catch (e) {
+                    // Silenciosamente ignorar erros
+                }
+            }, 100);
+        }
+    } catch (e) {
+        // Silenciosamente ignorar todos os erros para não quebrar o carregamento
+    }
+})();

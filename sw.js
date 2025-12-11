@@ -46,10 +46,8 @@ async function cacheFirst(request) {
 
 // Instalação do Service Worker
 self.addEventListener('install', (event) => {
-    console.log('[SW] Instalando Service Worker...');
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            console.log('[SW] Cacheando recursos estáticos...');
             return cache.addAll(STATIC_ASSETS.map(url => new Request(url, { cache: 'reload' })));
         }).then(() => {
             // Força ativação imediata do novo Service Worker
@@ -60,14 +58,12 @@ self.addEventListener('install', (event) => {
 
 // Ativação do Service Worker
 self.addEventListener('activate', (event) => {
-    console.log('[SW] Ativando Service Worker...');
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map((cacheName) => {
                     // Remove caches antigos
                     if (cacheName !== CACHE_NAME) {
-                        console.log('[SW] Removendo cache antigo:', cacheName);
                         return caches.delete(cacheName);
                     }
                 })

@@ -195,9 +195,11 @@ const traducoes = {
         'btn-memorial': 'Ver Memorial de Cálculo',
         'memorial-title': '📚 Memorial de Cálculo - Passo de Hélice',
         'memorial-intro-title': '🎯 Objetivo do Cálculo',
-        'memorial-intro-text': 'Este memorial explica passo a passo como é calculado o passo ideal da hélice para barcos de lazer, considerando velocidade desejada, RPM do motor, redução da rabeta e slip.',
+        'memorial-intro-text': 'Este memorial explica passo a passo como é calculado o passo ideal da hélice para barcos de lazer, considerando velocidade desejada, RPM do motor, redução da rabeta e slip. Todas as fórmulas foram validadas através de testes automatizados.',
         'memorial-passo1-title': '1️⃣ Passo 1: Calcular RPM Efetivo na Hélice',
         'memorial-formula': 'Fórmula:',
+        'memorial-principio-fisico-titulo': '⚛️ Princípio Físico Aplicado — Propulsão Náutica:',
+        'memorial-principio-fisico-texto': 'A hélice funciona como uma "rosca" na água: quando gira, "empurra" a água para trás, e pela terceira lei de Newton (ação e reação), a água "empurra" o barco para frente. O slip ocorre porque a água não é um meio rígido, então a hélice "desliza" parcialmente, reduzindo a eficiência. Quanto maior o passo, mais distância a hélice avança por rotação, mas também requer mais torque do motor.',
         'memorial-passo1-explicacao': 'A rabeta reduz a rotação do motor. Se a redução é 2:1, a hélice gira 2 vezes mais devagar que o motor.',
         'memorial-example': 'Exemplo:',
         'memorial-passo2-title': '2️⃣ Passo 2: Calcular Passo da Hélice',
@@ -254,9 +256,11 @@ const traducoes = {
         'btn-memorial': 'Vedi Memoriale di Calcolo',
         'memorial-title': '📚 Memoriale di Calcolo - Passo Elica',
         'memorial-intro-title': '🎯 Obiettivo del Calcolo',
-        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come viene calcolato il passo ideale dell\'elica per barche da diporto, considerando velocità desiderata, RPM del motore, riduzione del piede poppiero e slip.',
+        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come viene calcolato il passo ideale dell\'elica per barche da diporto, considerando velocità desiderata, RPM del motore, riduzione del piede poppiero e slip. Tutte le formule sono state validate attraverso test automatizzati.',
         'memorial-passo1-title': '1️⃣ Passo 1: Calcolare RPM Effettivo nell\'Elica',
         'memorial-formula': 'Formula:',
+        'memorial-principio-fisico-titulo': '⚛️ Principio Fisico Applicato — Propulsione Nautica:',
+        'memorial-principio-fisico-texto': 'L\'elica funziona come una "vite" nell\'acqua: quando gira, "spinge" l\'acqua indietro, e per la terza legge di Newton (azione e reazione), l\'acqua "spinge" la barca in avanti. Lo slip si verifica perché l\'acqua non è un mezzo rigido, quindi l\'elica "scivola" parzialmente, riducendo l\'efficienza. Maggiore è il passo, maggiore è la distanza che l\'elica avanza per rotazione, ma richiede anche più coppia dal motore.',
         'memorial-passo1-explicacao': 'Il piede poppiero riduce la rotazione del motore. Se la riduzione è 2:1, l\'elica gira 2 volte più lenta del motore.',
         'memorial-example': 'Esempio:',
         'memorial-passo2-title': '2️⃣ Passo 2: Calcolare Passo dell\'Elica',
@@ -350,10 +354,14 @@ function ajustarValor(targetId, step) {
     if (!slider) return;
     
     // PASSO 2: Obtém os valores atuais e limites do slider
-    const valorAtual = parseFloat(slider.value) || 0;  // Valor atual do slider (ou 0 se inválido)
-    const min = parseFloat(slider.min) || 0;           // Valor mínimo permitido (ou 0 se não definido)
-    const max = parseFloat(slider.max) || 100;         // Valor máximo permitido (ou 100 se não definido)
-    const stepAttr = parseFloat(slider.step) || 1;     // Passo do slider (ou 1 se não definido)
+    // Usa 0 como mínimo se slider.min for 0 (importante para sliders que começam em 0)
+    const minRaw = parseFloat(slider.min);
+    const min = isNaN(minRaw) ? 0 : minRaw; // Permite 0 como mínimo válido
+    const max = parseFloat(slider.max) || 100;
+    const stepAttr = parseFloat(slider.step) || 1;
+    
+    let valorAtual = parseFloat(slider.value);
+    if (isNaN(valorAtual)) valorAtual = min;
     
     // PASSO 3: Calcula o novo valor somando o step ao valor atual
     let novoValor = valorAtual + step;
@@ -374,7 +382,7 @@ function ajustarValor(targetId, step) {
     // PASSO 7: Dispara o evento 'input' para que os listeners sejam notificados
     // Isso faz com que a função `atualizarResultado()` seja chamada automaticamente
     // para recalcular e atualizar a interface com o novo valor
-    slider.dispatchEvent(new Event('input'));
+    slider.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
 // Controle para os botões de seta
@@ -1219,51 +1227,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================
     // PASSO 5: CONFIGURAR BOTÕES DE SETA (↑ ↓)
     // ============================================
-    // Adiciona funcionalidade aos botões de seta ao lado dos sliders
-    // Esses botões permitem ajustar os valores dos sliders de forma incremental
-    document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
-        // Obtém o ID do slider alvo e o valor do incremento/decremento do atributo data-*
-        const targetId = btn.getAttribute('data-target');  // ID do slider a ser ajustado
-        const step = parseFloat(btn.getAttribute('data-step')); // Valor do passo (positivo ou negativo)
-        
-        // Função que inicia o ajuste repetitivo do valor
-        // Quando o usuário segura o botão, primeiro ajusta uma vez, depois de 500ms
-        // começa a ajustar repetidamente a cada 100ms
-        const startRepeating = () => {
-            // Ajusta o valor imediatamente (primeira vez)
+    // Usa a função global com aceleração exponencial
+    if (typeof configurarBotoesSliderComAceleracao === 'function') {
+        // Usa função de ajuste local que atualiza inputs correspondentes
+        function ajustarValorHelice(targetId, step) {
             ajustarValor(targetId, step);
-            
-            // Após 500ms, inicia o ajuste repetitivo a cada 100ms
-            timeoutId = setTimeout(() => {
-                intervalId = setInterval(() => {
-                    ajustarValor(targetId, step);
-                }, 100);  // Ajusta a cada 100 milissegundos
-            }, 500);  // Espera 500ms antes de começar a repetir
-        };
-        
-        // Função que para o ajuste repetitivo
-        // Limpa o timeout e o interval para interromper os ajustes
-        const stopRepeating = () => {
-            clearTimeout(timeoutId);   // Cancela o timeout que inicia a repetição
-            clearInterval(intervalId); // Cancela o interval que faz os ajustes repetitivos
-        };
-        
-        // Event listeners para mouse (desktop)
-        btn.addEventListener('mousedown', (e) => {
-            e.preventDefault();  // Previne comportamento padrão (ex: seleção de texto)
-            startRepeating();    // Inicia o ajuste quando o botão é pressionado
+        }
+        configurarBotoesSliderComAceleracao(SITE_SEL.ARROW_BTN, ajustarValorHelice);
+    } else {
+        // Fallback para código antigo se a função global não estiver disponível
+        document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
+            const targetId = btn.getAttribute('data-target');
+            const step = parseFloat(btn.getAttribute('data-step'));
+            btn.addEventListener('click', () => ajustarValor(targetId, step));
         });
-        btn.addEventListener('mouseup', stopRepeating);      // Para quando solta o botão
-        btn.addEventListener('mouseleave', stopRepeating);   // Para quando o mouse sai do botão
-        
-        // Event listeners para toque (mobile/tablet)
-        btn.addEventListener('touchstart', (e) => {
-            e.preventDefault();  // Previne comportamento padrão (ex: scroll)
-            startRepeating();    // Inicia o ajuste quando o botão é tocado
-        });
-        btn.addEventListener('touchend', stopRepeating);     // Para quando o toque termina
-        btn.addEventListener('touchcancel', stopRepeating);  // Para quando o toque é cancelado
-    });
+    }
     
     // ============================================
     // PASSO 6: CONFIGURAR RADIO BUTTONS DE UNIDADE DE VELOCIDADE

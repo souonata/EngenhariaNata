@@ -144,7 +144,8 @@ const ICONES_PRODUTOS = {
     'capra': '🐐',
     'coniglio': '🐰',
     'pecora': '🐑',
-    'anatra': '🦆'
+    'anatra-ovos': '🥚',
+    'anatra-corte': '🍗'
 };
 
 // ============================================
@@ -314,7 +315,7 @@ const traducoes = {
         'fagiolini': 'Fagiolini',
         'gallina-ovos': 'Gallina (Uova)', 'pollo-corte': 'Pollo da Carne',
         'maiale': 'Maiale', 'mucca-latte': 'Mucca (Latte)', 'mucca-carne': 'Mucca (Carne)', 'capra': 'Capra',
-        'coniglio': 'Coniglio', 'pecora': 'Pecora', 'anatra': 'Anatra',
+        'coniglio': 'Coniglio', 'pecora': 'Pecora (Latte)', 'anatra-ovos': 'Anatra (Uova)', 'anatra-corte': 'Anatra (Carne)',
         // Traduções para produtos brasileiros quando em italiano
         'banana': 'Banana', 'manga': 'Mango', 'laranja': 'Arancia', 'limao': 'Limone',
         'abacate': 'Avocado', 'mamao': 'Papaya', 'goiaba': 'Guava', 'maracuja': 'Maracuja',
@@ -420,12 +421,12 @@ function calcularAnimaisNecessarios(tipoAnimal, quantidadePessoas, consumoDiario
     const dados = DADOS_ANIMAIS[tipoAnimal];
     let quantidade = 0;
     
-    if (tipoAnimal === 'galinha-ovos' || tipoAnimal === 'gallina-ovos') {
-        // Para galinhas poedeiras, garantir 2 ovos/dia por pessoa (independente do consumo proporcional)
+    if (tipoAnimal === 'galinha-ovos' || tipoAnimal === 'gallina-ovos' || tipoAnimal === 'anatra-ovos') {
+        // Para galinhas e patos poedeiros, garantir 2 ovos/dia por pessoa (independente do consumo proporcional)
         const ovosPorDiaPorPessoa = 2; // ovos/dia/pessoa
         const ovosPorDiaTotal = ovosPorDiaPorPessoa * quantidadePessoas;
-        const ovosPorDiaPorGalinha = dados.producaoDiaria; // ovos/dia por galinha (0.7 ovos/dia)
-        quantidade = Math.ceil(ovosPorDiaTotal / ovosPorDiaPorGalinha);
+        const ovosPorDiaPorAnimal = dados.producaoDiaria; // ovos/dia por animal
+        quantidade = Math.ceil(ovosPorDiaTotal / ovosPorDiaPorAnimal);
     } else if (tipoAnimal === 'frango-corte' || tipoAnimal === 'pollo-corte') {
         // Para frangos de corte, calcular baseado no consumo de carne
         const consumoAnualPorPessoa = consumoDiarioPorPessoa * 365;
@@ -471,30 +472,47 @@ function calcularAreaAnimais(tipoAnimal, quantidade) {
 // ============================================
 
 function criarCheckboxPlantas(tipo, nome) {
-    const div = document.createElement('label');
+    const div = document.createElement('button');
     div.className = 'opcao-checkbox';
+    div.type = 'button';
+    div.setAttribute('data-tipo', tipo);
+    div.setAttribute('data-nome', nome);
     const icone = ICONES_PRODUTOS[nome] || '🌱';
     div.innerHTML = `
-        <input type="checkbox" class="checkbox-planta" data-tipo="${tipo}" data-nome="${nome}">
         <div class="cartao-checkbox">
             <span class="icone-produto">${icone}</span>
             <span class="rotulo-checkbox" data-i18n="${nome}">${nome}</span>
         </div>
     `;
+    
+    // Adicionar event listener para toggle de seleção
+    div.addEventListener('click', function() {
+        this.classList.toggle('selected');
+        atualizarResultados();
+    });
+    
     return div;
 }
 
 function criarCheckboxAnimais(nome) {
-    const div = document.createElement('label');
+    const div = document.createElement('button');
     div.className = 'opcao-checkbox';
+    div.type = 'button';
+    div.setAttribute('data-nome', nome);
     const icone = ICONES_PRODUTOS[nome] || '🐾';
     div.innerHTML = `
-        <input type="checkbox" class="checkbox-animal" data-nome="${nome}">
         <div class="cartao-checkbox">
             <span class="icone-produto">${icone}</span>
             <span class="rotulo-checkbox" data-i18n="${nome}">${nome}</span>
         </div>
     `;
+    
+    // Adicionar event listener para toggle de seleção
+    div.addEventListener('click', function() {
+        this.classList.toggle('selected');
+        atualizarResultados();
+    });
+    
     return div;
 }
 
@@ -520,16 +538,19 @@ function atualizarResultados() {
         legumes: []
     };
     
-    document.querySelectorAll('.checkbox-planta:checked').forEach(cb => {
-        const tipo = cb.dataset.tipo;
-        const nome = cb.dataset.nome;
+    document.querySelectorAll('.opcao-checkbox.selected[data-tipo]').forEach(btn => {
+        const tipo = btn.dataset.tipo;
+        const nome = btn.dataset.nome;
         plantasSelecionadas[tipo].push(nome);
     });
     
-    // Coletar animais selecionados
+    // Coletar animais selecionados (botões sem data-tipo são animais)
     const animaisSelecionados = [];
-    document.querySelectorAll('.checkbox-animal:checked').forEach(cb => {
-        animaisSelecionados.push(cb.dataset.nome);
+    document.querySelectorAll('.opcao-checkbox.selected').forEach(btn => {
+        // Se tem data-nome mas não tem data-tipo, é um animal
+        if (btn.dataset.nome && !btn.dataset.tipo) {
+            animaisSelecionados.push(btn.dataset.nome);
+        }
     });
     
     // Verificar se há seleções
@@ -554,12 +575,12 @@ function atualizarResultados() {
                               plantasSelecionadas.verduras.length + 
                               plantasSelecionadas.legumes.length;
     
-    // Separar galinhas poedeiras dos outros animais (galinhas poedeiras têm consumo fixo de 2 ovos/dia)
-    const temGalinhasOvos = animaisSelecionados.includes('galinha-ovos') || animaisSelecionados.includes('gallina-ovos');
-    const temFrangoCorte = animaisSelecionados.includes('frango-corte') || animaisSelecionados.includes('pollo-corte');
+    // Separar galinhas e patos poedeiros dos outros animais (têm consumo fixo de 2 ovos/dia)
+    const temGalinhasOvos = animaisSelecionados.includes('galinha-ovos') || animaisSelecionados.includes('gallina-ovos') || animaisSelecionados.includes('anatra-ovos');
+    const temFrangoCorte = animaisSelecionados.includes('frango-corte') || animaisSelecionados.includes('pollo-corte') || animaisSelecionados.includes('anatra-corte');
     const outrosAnimais = animaisSelecionados.filter(a => 
-        a !== 'galinha-ovos' && a !== 'gallina-ovos' && 
-        a !== 'frango-corte' && a !== 'pollo-corte'
+        a !== 'galinha-ovos' && a !== 'gallina-ovos' && a !== 'anatra-ovos' && 
+        a !== 'frango-corte' && a !== 'pollo-corte' && a !== 'anatra-corte'
     );
     const totalOutrosAnimais = outrosAnimais.length;
     
@@ -570,13 +591,13 @@ function atualizarResultados() {
     // Calcular consumo proporcional por item
     const consumoDiarioPorItemPlanta = totalItensPlantas > 0 ? CONSUMO_PLANTAS_DIARIO / totalItensPlantas : 0;
     
-    // Para proteínas: galinhas poedeiras garantem 2 ovos/dia (0.12 kg/dia)
-    // Frangos de corte recebem parte proporcional do restante
-    const dadosGalinhaOvos = temGalinhasOvos ? (DADOS_ANIMAIS['galinha-ovos'] || DADOS_ANIMAIS['gallina-ovos']) : null;
+    // Para proteínas: galinhas e patos poedeiros garantem 2 ovos/dia (0.12 kg/dia)
+    // Frangos e patos de corte recebem parte proporcional do restante
+    const dadosGalinhaOvos = temGalinhasOvos ? (DADOS_ANIMAIS['galinha-ovos'] || DADOS_ANIMAIS['gallina-ovos'] || DADOS_ANIMAIS['anatra-ovos']) : null;
     const consumoGalinhaOvosPorPessoa = temGalinhasOvos ? 2 * dadosGalinhaOvos.producaoPorUnidade : 0; // 2 ovos × 0.06 kg = 0.12 kg/dia
     
     // Calcular quantos animais de corte e outros animais temos
-    const animaisCarne = temFrangoCorte ? 1 : 0;
+    const animaisCarne = (temFrangoCorte ? 1 : 0);
     const totalAnimaisCarne = animaisCarne + totalOutrosAnimais;
     const consumoRestanteProteina = Math.max(0, CONSUMO_PROTEINA_DIARIO - consumoGalinhaOvosPorPessoa);
     const consumoDiarioPorItemAnimal = totalAnimaisCarne > 0 ? consumoRestanteProteina / totalAnimaisCarne : 0;
@@ -649,15 +670,15 @@ function atualizarResultados() {
         
         let consumoDiarioPorPessoa;
         let quantidade;
-        const isGalinhaOvos = (nome === 'galinha-ovos' || nome === 'gallina-ovos');
+        const isGalinhaOvos = (nome === 'galinha-ovos' || nome === 'gallina-ovos' || nome === 'anatra-ovos');
         
         if (isGalinhaOvos) {
-            // Galinhas poedeiras sempre garantem 2 ovos/dia por pessoa
+            // Galinhas e patos poedeiros sempre garantem 2 ovos/dia por pessoa
             consumoDiarioPorPessoa = consumoGalinhaOvosPorPessoa; // 0.12 kg/dia (2 ovos)
             quantidade = calcularAnimaisNecessarios(nome, quantidadePessoas, consumoDiarioPorPessoa);
             somaConsumoAnimais += consumoDiarioPorPessoa; // Incluir na soma total
-        } else if (nome === 'frango-corte' || nome === 'pollo-corte' || nome === 'vaca-corte' || nome === 'mucca-carne') {
-            // Animais de corte (frango e vaca) recebem consumo proporcional
+        } else if (nome === 'frango-corte' || nome === 'pollo-corte' || nome === 'vaca-corte' || nome === 'mucca-carne' || nome === 'anatra-corte') {
+            // Animais de corte (frango, vaca e pato) recebem consumo proporcional
             consumoDiarioPorPessoa = consumoDiarioPorItemAnimal;
             quantidade = calcularAnimaisNecessarios(nome, quantidadePessoas, consumoDiarioPorPessoa);
             somaConsumoAnimais += consumoDiarioPorPessoa;
@@ -868,16 +889,19 @@ function atualizarMemorialComValores() {
         legumes: []
     };
     
-    document.querySelectorAll('.checkbox-planta:checked').forEach(cb => {
-        const tipo = cb.dataset.tipo;
-        const nome = cb.dataset.nome;
+    document.querySelectorAll('.opcao-checkbox.selected[data-tipo]').forEach(btn => {
+        const tipo = btn.dataset.tipo;
+        const nome = btn.dataset.nome;
         plantasSelecionadas[tipo].push(nome);
     });
     
-    // Coletar animais selecionados
+    // Coletar animais selecionados (botões sem data-tipo são animais)
     const animaisSelecionados = [];
-    document.querySelectorAll('.checkbox-animal:checked').forEach(cb => {
-        animaisSelecionados.push(cb.dataset.nome);
+    document.querySelectorAll('.opcao-checkbox.selected').forEach(btn => {
+        // Se tem data-nome mas não tem data-tipo, é um animal
+        if (btn.dataset.nome && !btn.dataset.tipo) {
+            animaisSelecionados.push(btn.dataset.nome);
+        }
     });
     
     const temPlantas = plantasSelecionadas.frutas.length > 0 || 
@@ -897,22 +921,22 @@ function atualizarMemorialComValores() {
                               plantasSelecionadas.verduras.length + 
                               plantasSelecionadas.legumes.length;
     
-    const temGalinhasOvos = animaisSelecionados.includes('galinha-ovos') || animaisSelecionados.includes('gallina-ovos');
-    const temFrangoCorte = animaisSelecionados.includes('frango-corte') || animaisSelecionados.includes('pollo-corte');
+    const temGalinhasOvos = animaisSelecionados.includes('galinha-ovos') || animaisSelecionados.includes('gallina-ovos') || animaisSelecionados.includes('anatra-ovos');
+    const temFrangoCorte = animaisSelecionados.includes('frango-corte') || animaisSelecionados.includes('pollo-corte') || animaisSelecionados.includes('anatra-corte');
     const temVacaCorte = animaisSelecionados.includes('vaca-corte') || animaisSelecionados.includes('mucca-carne');
     const outrosAnimais = animaisSelecionados.filter(a => 
-        a !== 'galinha-ovos' && a !== 'gallina-ovos' && 
-        a !== 'frango-corte' && a !== 'pollo-corte' &&
+        a !== 'galinha-ovos' && a !== 'gallina-ovos' && a !== 'anatra-ovos' && 
+        a !== 'frango-corte' && a !== 'pollo-corte' && a !== 'anatra-corte' &&
         a !== 'vaca-corte' && a !== 'mucca-carne'
     );
     const totalOutrosAnimais = outrosAnimais.length;
     
     const consumoDiarioPorItemPlanta = totalItensPlantas > 0 ? consumoPlantasDiario / totalItensPlantas : 0;
     
-    const dadosGalinhaOvos = temGalinhasOvos ? (DADOS_ANIMAIS['galinha-ovos'] || DADOS_ANIMAIS['gallina-ovos']) : null;
+    const dadosGalinhaOvos = temGalinhasOvos ? (DADOS_ANIMAIS['galinha-ovos'] || DADOS_ANIMAIS['gallina-ovos'] || DADOS_ANIMAIS['anatra-ovos']) : null;
     const consumoGalinhaOvosPorPessoa = temGalinhasOvos ? 2 * dadosGalinhaOvos.producaoPorUnidade : 0;
     
-    // Animais de corte (frango e vaca) recebem consumo proporcional
+    // Animais de corte (frango, pato e vaca) recebem consumo proporcional
     const animaisCarne = (temFrangoCorte ? 1 : 0) + (temVacaCorte ? 1 : 0);
     const totalAnimaisCarne = animaisCarne + totalOutrosAnimais;
     const consumoRestanteProteina = Math.max(0, consumoProteinasDiario - consumoGalinhaOvosPorPessoa);
@@ -930,9 +954,9 @@ function atualizarMemorialComValores() {
     animaisSelecionados.forEach(nome => {
         let consumoDiarioPorPessoa;
         
-        if (nome === 'galinha-ovos' || nome === 'gallina-ovos') {
+        if (nome === 'galinha-ovos' || nome === 'gallina-ovos' || nome === 'anatra-ovos') {
             consumoDiarioPorPessoa = consumoGalinhaOvosPorPessoa;
-        } else if (nome === 'frango-corte' || nome === 'pollo-corte' || nome === 'vaca-corte' || nome === 'mucca-carne') {
+        } else if (nome === 'frango-corte' || nome === 'pollo-corte' || nome === 'vaca-corte' || nome === 'mucca-carne' || nome === 'anatra-corte') {
             consumoDiarioPorPessoa = consumoDiarioPorItemAnimal;
         } else {
             consumoDiarioPorPessoa = consumoDiarioPorItemAnimal;
@@ -1259,6 +1283,28 @@ function recriarCheckboxes() {
         return;
     }
     
+    // Salvar seleções atuais antes de recriar
+    const selecoesPlantas = {
+        frutas: [],
+        verduras: [],
+        legumes: []
+    };
+    document.querySelectorAll('.opcao-checkbox.selected[data-tipo]').forEach(btn => {
+        const tipo = btn.dataset.tipo;
+        const nome = btn.dataset.nome;
+        if (selecoesPlantas[tipo]) {
+            selecoesPlantas[tipo].push(nome);
+        }
+    });
+    
+    const selecoesAnimais = [];
+    document.querySelectorAll('.opcao-checkbox.selected').forEach(btn => {
+        // Se tem data-nome mas não tem data-tipo, é um animal
+        if (btn.dataset.nome && !btn.dataset.tipo) {
+            selecoesAnimais.push(btn.dataset.nome);
+        }
+    });
+    
     // Limpar checkboxes existentes
     grupoFrutas.innerHTML = '';
     grupoVerduras.innerHTML = '';
@@ -1277,21 +1323,36 @@ function recriarCheckboxes() {
         const nomeB = traduzir(b).toLowerCase();
         return nomeA.localeCompare(nomeB, idiomaAtual);
     }).forEach(nome => {
-        grupoFrutas.appendChild(criarCheckboxPlantas('frutas', nome));
+        const btn = criarCheckboxPlantas('frutas', nome);
+        // Restaurar seleção se estava selecionado
+        if (selecoesPlantas.frutas.indexOf(nome) !== -1) {
+            btn.classList.add('selected');
+        }
+        grupoFrutas.appendChild(btn);
     });
     Object.keys(DADOS_PLANTAS.verduras || {}).sort((a, b) => {
         const nomeA = traduzir(a).toLowerCase();
         const nomeB = traduzir(b).toLowerCase();
         return nomeA.localeCompare(nomeB, idiomaAtual);
     }).forEach(nome => {
-        grupoVerduras.appendChild(criarCheckboxPlantas('verduras', nome));
+        const btn = criarCheckboxPlantas('verduras', nome);
+        // Restaurar seleção se estava selecionado
+        if (selecoesPlantas.verduras.indexOf(nome) !== -1) {
+            btn.classList.add('selected');
+        }
+        grupoVerduras.appendChild(btn);
     });
     Object.keys(DADOS_PLANTAS.legumes || {}).sort((a, b) => {
         const nomeA = traduzir(a).toLowerCase();
         const nomeB = traduzir(b).toLowerCase();
         return nomeA.localeCompare(nomeB, idiomaAtual);
     }).forEach(nome => {
-        grupoLegumes.appendChild(criarCheckboxPlantas('legumes', nome));
+        const btn = criarCheckboxPlantas('legumes', nome);
+        // Restaurar seleção se estava selecionado
+        if (selecoesPlantas.legumes.indexOf(nome) !== -1) {
+            btn.classList.add('selected');
+        }
+        grupoLegumes.appendChild(btn);
     });
     
     // Criar checkboxes de animais (ordenados alfabeticamente)
@@ -1300,7 +1361,12 @@ function recriarCheckboxes() {
         const nomeB = traduzir(b).toLowerCase();
         return nomeA.localeCompare(nomeB, idiomaAtual);
     }).forEach(nome => {
-        grupoAnimais.appendChild(criarCheckboxAnimais(nome));
+        const btn = criarCheckboxAnimais(nome);
+        // Restaurar seleção se estava selecionado
+        if (selecoesAnimais.indexOf(nome) !== -1) {
+            btn.classList.add('selected');
+        }
+        grupoAnimais.appendChild(btn);
     });
     
     // Os event listeners já estão configurados globalmente no DOMContentLoaded
@@ -1374,8 +1440,8 @@ function inicializarApp() {
     });
     console.log(`[Fazenda] ${frutasKeys.length} frutas encontradas (ordenadas):`, frutasKeys);
     frutasKeys.forEach(nome => {
-        const checkbox = criarCheckboxPlantas('frutas', nome);
-        grupoFrutas.appendChild(checkbox);
+        const btn = criarCheckboxPlantas('frutas', nome);
+        grupoFrutas.appendChild(btn);
     });
     
     console.log('[Fazenda] Criando checkboxes de verduras...');
@@ -1387,8 +1453,8 @@ function inicializarApp() {
     });
     console.log(`[Fazenda] ${verdurasKeys.length} verduras encontradas (ordenadas):`, verdurasKeys);
     verdurasKeys.forEach(nome => {
-        const checkbox = criarCheckboxPlantas('verduras', nome);
-        grupoVerduras.appendChild(checkbox);
+        const btn = criarCheckboxPlantas('verduras', nome);
+        grupoVerduras.appendChild(btn);
     });
     
     console.log('[Fazenda] Criando checkboxes de legumes...');
@@ -1400,25 +1466,22 @@ function inicializarApp() {
     });
     console.log(`[Fazenda] ${legumesKeys.length} legumes encontrados (ordenados):`, legumesKeys);
     legumesKeys.forEach(nome => {
-        const checkbox = criarCheckboxPlantas('legumes', nome);
-        grupoLegumes.appendChild(checkbox);
+        const btn = criarCheckboxPlantas('legumes', nome);
+        grupoLegumes.appendChild(btn);
     });
     
     // Criar checkboxes de animais (ordenados alfabeticamente)
-    console.log('[Fazenda] Criando checkboxes de animais...');
     const animaisKeys = Object.keys(DADOS_ANIMAIS).sort((a, b) => {
         // Ordenar por nome traduzido
         const nomeA = traduzir(a).toLowerCase();
         const nomeB = traduzir(b).toLowerCase();
         return nomeA.localeCompare(nomeB, idiomaAtual);
     });
-    console.log(`[Fazenda] ${animaisKeys.length} animais encontrados (ordenados):`, animaisKeys);
     animaisKeys.forEach(nome => {
-        const checkbox = criarCheckboxAnimais(nome);
-        grupoAnimais.appendChild(checkbox);
+        const btn = criarCheckboxAnimais(nome);
+        grupoAnimais.appendChild(btn);
     });
     
-    console.log('[Fazenda] Checkboxes criados com sucesso!');
     
     // Aplicar traduções (incluindo os checkboxes que acabamos de criar)
     aplicarTraducoes();
@@ -1437,7 +1500,6 @@ function inicializarApp() {
     // Configurar event listeners
     configurarEventListeners();
     
-    console.log('[Fazenda] Inicialização completa!');
 }
 
 // Função separada para configurar event listeners
@@ -1456,7 +1518,7 @@ function configurarEventListeners() {
             inputPessoas.value = sliderPessoas.value;
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
             atualizarResultados();
-        }, 100));
+        }, 50)); // Reduzido para 50ms para melhor responsividade
         
         inputPessoas.addEventListener('input', debounceFn(() => {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
@@ -1476,11 +1538,12 @@ function configurarEventListeners() {
         const throttleFn = typeof throttle === 'function' ? throttle : (fn, delay) => fn;
         const debounceFn = typeof debounce === 'function' ? debounce : (fn, delay) => fn;
         
+        // Usar throttle mais curto para reduzir lag
         sliderConsumoPlantas.addEventListener('input', throttleFn(() => {
             inputConsumoPlantas.value = formatarNumeroDecimal(parseFloat(sliderConsumoPlantas.value), 1);
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoPlantas);
             atualizarResultados();
-        }, 100));
+        }, 50)); // Reduzido para 50ms para melhor responsividade
         
         inputConsumoPlantas.addEventListener('input', debounceFn(() => {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoPlantas);
@@ -1500,11 +1563,12 @@ function configurarEventListeners() {
         const throttleFn = typeof throttle === 'function' ? throttle : (fn, delay) => fn;
         const debounceFn = typeof debounce === 'function' ? debounce : (fn, delay) => fn;
         
+        // Usar throttle mais curto para reduzir lag
         sliderConsumoProteinas.addEventListener('input', throttleFn(() => {
             inputConsumoProteinas.value = formatarNumeroDecimal(parseFloat(sliderConsumoProteinas.value), 1);
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoProteinas);
             atualizarResultados();
-        }, 100));
+        }, 50)); // Reduzido para 50ms para melhor responsividade
         
         inputConsumoProteinas.addEventListener('input', debounceFn(() => {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoProteinas);
@@ -1516,41 +1580,63 @@ function configurarEventListeners() {
         }, 300));
     }
     
-    // Botões de seta
-    document.querySelectorAll('.arrow-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const target = document.getElementById(btn.dataset.target);
-            if (!target) return;
-            
-            const step = parseFloat(btn.dataset.step);
-            const novoValor = parseFloat(target.value) + step;
-            const min = parseFloat(target.min);
-            const max = parseFloat(target.max);
-            const valorLimitado = Math.max(min, Math.min(max, novoValor));
-            target.value = valorLimitado;
-            
-            // Atualizar o input correspondente
-            if (target.id === 'sliderPessoas' && inputPessoas) {
-                inputPessoas.value = valorLimitado;
-                if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
-            } else if (target.id === 'sliderConsumoPlantas' && inputConsumoPlantas) {
-                inputConsumoPlantas.value = formatarNumeroDecimal(valorLimitado, 1);
-                if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoPlantas);
-            } else if (target.id === 'sliderConsumoProteinas' && inputConsumoProteinas) {
-                inputConsumoProteinas.value = formatarNumeroDecimal(valorLimitado, 1);
-                if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoProteinas);
-            }
-            
-            atualizarResultados();
-        });
-    });
-    
-    // Checkboxes de plantas e animais
-    document.addEventListener('change', (e) => {
-        if (e.target.classList.contains('checkbox-planta') || e.target.classList.contains('checkbox-animal')) {
-            atualizarResultados();
+    // Função customizada de ajuste que atualiza inputs correspondentes
+    function ajustarValorFazenda(targetId, step) {
+        const slider = document.getElementById(targetId);
+        if (!slider) return;
+        
+        const min = parseFloat(slider.min) || 0;
+        const max = parseFloat(slider.max) || 100;
+        const stepAttr = parseFloat(slider.step) || 1;
+        
+        let valorAtual = parseFloat(slider.value) || min;
+        let novoValor = valorAtual + step;
+        
+        // Arredonda para o múltiplo mais próximo do step
+        novoValor = Math.round(novoValor / stepAttr) * stepAttr;
+        
+        // Força valores min/max quando próximo do fim do curso (dentro de 2 steps)
+        const tolerancia = stepAttr * 2;
+        if (novoValor <= min + tolerancia) {
+            novoValor = min;
+        } else if (novoValor >= max - tolerancia) {
+            novoValor = max;
+        } else {
+            novoValor = Math.max(min, Math.min(max, novoValor));
         }
-    });
+        
+        slider.value = novoValor;
+        slider.dispatchEvent(new Event('input', { bubbles: true }));
+        
+        // Atualizar o input correspondente
+        if (targetId === 'sliderPessoas' && inputPessoas) {
+            inputPessoas.value = novoValor;
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
+        } else if (targetId === 'sliderConsumoPlantas' && inputConsumoPlantas) {
+            inputConsumoPlantas.value = formatarNumeroDecimal(novoValor, 1);
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoPlantas);
+        } else if (targetId === 'sliderConsumoProteinas' && inputConsumoProteinas) {
+            inputConsumoProteinas.value = formatarNumeroDecimal(novoValor, 1);
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoProteinas);
+        }
+    }
+    
+    // Configura botões de seta com aceleração variável
+    if (typeof configurarBotoesSliderComAceleracao === 'function') {
+        configurarBotoesSliderComAceleracao('.arrow-btn', ajustarValorFazenda);
+    } else {
+        // Fallback para código antigo se a função global não estiver disponível
+        document.querySelectorAll('.arrow-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-target');
+                const step = parseFloat(btn.getAttribute('data-step'));
+                ajustarValorFazenda(targetId, step);
+            });
+        });
+    }
+    
+    // Botões de plantas e animais já têm event listeners individuais
+    // Não precisa de listener global aqui
     
     // Botões de idioma
     const btnPortugues = document.getElementById('btnPortugues');

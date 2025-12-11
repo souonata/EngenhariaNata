@@ -1036,7 +1036,7 @@ const FAZENDA_DATABASE = {
                 clima: 'Temperato e mediterraneo',
                 alimentacao: 'Pascolo, fieno, mangime, sale minerale'
             },
-            'anatra': {
+            'anatra-ovos': {
                 producaoDiaria: 0.4, // ovos/dia
                 producaoUnidade: 'ovos/dia',
                 producaoPorUnidade: 0.08, // kg por ovo
@@ -1045,9 +1045,22 @@ const FAZENDA_DATABASE = {
                 producaoCiclo: 150, // ovos/ano
                 tempoCrescimento: 180,
                 consumoRacao: 0.15, // kg/dia
-                tecnica: 'Allevare in area con accesso all\'acqua. Alimentazione con mangime, mais e verdure. Molto resistente alle malattie. Controllo predatori.',
+                tecnica: 'Allevare in area con accesso all\'acqua. Alimentazione con mangime, mais e verdure. Molto resistente alle malattie. Controllo predatori. Produzione di uova.',
                 clima: 'Temperato',
                 alimentacao: 'Mangime, mais, verdure, insetti, alghe'
+            },
+            'anatra-corte': {
+                producaoDiaria: 0, // non produce quotidianamente
+                producaoUnidade: 'kg/ciclo',
+                producaoPorUnidade: 2.2, // kg di carne per anatra (peso medio di macellazione)
+                espaco: 3, // m² per animale
+                cicloReprodutivo: 90, // 4 cicli/anno (macellazione a 90 giorni)
+                producaoCiclo: 2.2, // kg di carne per anatra
+                tempoCrescimento: 90, // giorni fino alla macellazione
+                consumoRacao: 0.18, // kg/dia
+                tecnica: 'Allevare in area con accesso all\'acqua. Alimentazione con mangime per anatre da carne. Macellazione a 90 giorni (peso medio 2.2kg). Molto resistente alle malattie. Controllo predatori.',
+                clima: 'Temperato',
+                alimentacao: 'Mangime per anatre da carne, mais, verdure, insetti'
             }
         }
     }

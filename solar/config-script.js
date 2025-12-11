@@ -154,14 +154,21 @@ function ajustarValor(targetId, step) {
     const slider = document.getElementById(targetId);
     if (!slider) return;
     
-    let valor = parseFloat(slider.value) + parseFloat(step);
-    const min = parseFloat(slider.min);
-    const max = parseFloat(slider.max);
+    // Usa 0 como mínimo se slider.min for 0 (importante para sliders que começam em 0)
+    const minRaw = parseFloat(slider.min);
+    const min = isNaN(minRaw) ? 0 : minRaw; // Permite 0 como mínimo válido
+    const max = parseFloat(slider.max) || 100;
+    const stepAttr = parseFloat(slider.step) || 1;
     
-    if (valor < min) valor = min;
-    if (valor > max) valor = max;
+    let valor = parseFloat(slider.value);
+    if (isNaN(valor)) valor = min;
+    
+    valor += parseFloat(step);
+    valor = Math.round(valor / stepAttr) * stepAttr;
+    valor = Math.max(min, Math.min(max, valor));
     
     slider.value = valor;
+    slider.dispatchEvent(new Event('input', { bubbles: true }));
     atualizarDisplays();
 }
 
@@ -230,40 +237,21 @@ document.addEventListener('DOMContentLoaded', () => {
         slider.addEventListener('input', atualizarDisplays);
     });
     
-    // Listeners para botões +/-
-    document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
-        let intervalId = null;
-        let timeoutId = null;
-        
-        const iniciarAjuste = () => {
+    // Listeners para botões +/- - usa função global com aceleração exponencial
+    if (typeof configurarBotoesSliderComAceleracao === 'function') {
+        // Usa função de ajuste local
+        function ajustarValorSolarConfig(targetId, step) {
+            ajustarValor(targetId, step);
+        }
+        configurarBotoesSliderComAceleracao(SITE_SEL.ARROW_BTN, ajustarValorSolarConfig);
+    } else {
+        // Fallback para código antigo se a função global não estiver disponível
+        document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
             const targetId = btn.getAttribute('data-target');
             const step = parseFloat(btn.getAttribute('data-step'));
-            ajustarValor(targetId, step);
-            
-            timeoutId = setTimeout(() => {
-                intervalId = setInterval(() => {
-                    ajustarValor(targetId, step);
-                }, 100);
-            }, 400);
-        };
-        
-        const pararAjuste = () => {
-            if (timeoutId) clearTimeout(timeoutId);
-            if (intervalId) clearInterval(intervalId);
-            timeoutId = null;
-            intervalId = null;
-        };
-        
-        btn.addEventListener('mousedown', iniciarAjuste);
-        btn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            iniciarAjuste();
+            btn.addEventListener('click', () => ajustarValor(targetId, step));
         });
-        btn.addEventListener('mouseup', pararAjuste);
-        btn.addEventListener('mouseleave', pararAjuste);
-        btn.addEventListener('touchend', pararAjuste);
-        btn.addEventListener('touchcancel', pararAjuste);
-    });
+    }
     
     // Botão Salvar
     document.getElementById('btnSalvar').addEventListener('click', salvarValores);

@@ -80,6 +80,7 @@ const traducoes = {
         'app-arcondicionado': 'Ar Condicionado',
         'app-aquecimento': 'Aquecedor Solar',
         'app-fazenda': 'Fazenda',
+        'app-devtools': 'DevTools',
         'dev-badge': 'DEV',
         'apps-description-title': 'Aplicativos Disponíveis',
         'apps-description-subtitle': 'Ferramentas práticas para cálculos de engenharia e finanças',
@@ -98,6 +99,8 @@ const traducoes = {
         'app-aquecimento-title': 'Aquecedor Solar - Dimensionamento Térmico',
         'app-aquecimento-description': 'Dimensionador completo de sistemas de aquecimento solar térmico. Calcula área de coletores, volume do boiler, número de painéis e potência necessária baseado em área (m²) e classe energética. Suporta aquecimento de água de consumo e aquecimento ambiente separadamente ou combinados, considerando temperatura mínima para termossifões (48°C) e estratificação térmica.',
         'app-fazenda-title': 'Fazenda - Dimensionamento Auto-Sustentável',
+        'app-devtools-title': 'DevTools - Ferramentas de Desenvolvimento',
+        'app-devtools-description': 'Ferramenta de desenvolvimento integrada para visualizar e editar código HTML, CSS e JavaScript dos apps. Inclui preview interativo, syntax highlighting, inspetor de elementos e edição temporária de código.',
         'app-fazenda-description': 'Planejador completo de fazenda auto-sustentável com banco de dados regional (Brasil e Itália). Calcula espaço necessário, quantidade de plantas (frutas, verduras, legumes) e animais necessários para alimentar uma família. Inclui separação de animais por produção: galinha (ovos), frango de corte, vaca (leite), vaca (carne), além de calendário de plantio/colheita, frequência de reprodução e informações técnicas detalhadas (clima, solo, técnicas de cultivo/criação).',
         'app-bugs-title': 'Reportar Bug',
         'app-bugs-description': 'Formulário para reportar bugs e problemas encontrados nos aplicativos. Ajude-nos a melhorar reportando erros, sugestões ou problemas de usabilidade. Informações de contato opcional para resposta.',
@@ -144,6 +147,7 @@ const traducoes = {
         'app-arcondicionado': 'Climatizzatore',
         'app-aquecimento': 'Riscaldatore Solare',
         'app-fazenda': 'Fattoria',
+        'app-devtools': 'DevTools',
         'dev-badge': 'DEV',
         'apps-description-title': 'Applicazioni Disponibili',
         'apps-description-subtitle': 'Strumenti pratici per calcoli di ingegneria e finanza',
@@ -163,6 +167,8 @@ const traducoes = {
         'app-aquecimento-description': 'Dimensionatore completo di sistemi di riscaldamento solare termico. Calcola l\'area dei collettori, volume del boiler, numero di pannelli e potenza necessaria basato su area (m²) e classe energetica. Supporta riscaldamento dell\'acqua sanitaria e riscaldamento ambiente separatamente o combinati, considerando temperatura minima per termosifoni (48°C) e stratificazione termica.',
         'app-fazenda-title': 'Fattoria - Dimensionamento Auto-Sostenibile',
         'app-fazenda-description': 'Pianificatore completo di fattoria auto-sostenibile con database regionale (Brasile e Italia). Calcola lo spazio necessario, quantità di piante (frutta, verdura, legumi) e animali necessari per nutrire una famiglia. Include separazione degli animali per produzione: gallina (uova), pollo da carne, mucca (latte), mucca (carne), oltre a calendario di semina/raccolta, frequenza di riproduzione e informazioni tecniche dettagliate (clima, suolo, tecniche di coltivazione/allevamento).',
+        'app-devtools-title': 'DevTools - Strumenti di Sviluppo',
+        'app-devtools-description': 'Strumento di sviluppo integrato per visualizzare e modificare il codice HTML, CSS e JavaScript delle app. Include anteprima interattiva, syntax highlighting, ispettore di elementi e modifica temporanea del codice.',
         'app-bugs-title': 'Segnala Bug',
         'app-bugs-description': 'Modulo per segnalare bug e problemi riscontrati nelle applicazioni. Aiutaci a migliorare segnalando errori, suggerimenti o problemi di usabilità. Informazioni di contatto opzionali per risposta.',
         'app-link-use': 'Usa calcolatrice →',
@@ -263,6 +269,12 @@ function atualizarHorario() {
     // Obtém elementos HTML e data/hora atual
     const elementoHorario = document.getElementById('horario');
     const elementoData = document.getElementById('data');
+    
+    // Se os elementos não existirem, não faz nada (evita erros)
+    if (!elementoHorario || !elementoData) {
+        return;
+    }
+    
     const agora = new Date();
     
     // Formata horas, minutos e segundos (adiciona zero à esquerda se necessário)
@@ -312,23 +324,52 @@ function atualizarHorario() {
 // ============================================
 // DOMContentLoaded = evento que acontece quando o HTML foi completamente carregado
 // Isso garante que todos os elementos existem antes de tentar usá-los
-document.addEventListener('DOMContentLoaded', function() {
+
+// Função de inicialização que pode ser chamada quando o DOM estiver pronto
+function inicializar() {
+    // Verifica se os elementos necessários existem
+    const elementoHorario = document.getElementById('horario');
+    const elementoData = document.getElementById('data');
+    const btnPortugues = document.getElementById('btnPortugues');
+    const btnItaliano = document.getElementById('btnItaliano');
+    
+    // Se os elementos não existirem, tenta novamente após um pequeno delay
+    if (!elementoHorario || !elementoData || !btnPortugues || !btnItaliano) {
+        console.warn('Elementos não encontrados, tentando novamente...');
+        setTimeout(inicializar, 100);
+        return;
+    }
+    
     // Inicializa a interface com o idioma salvo (ou português se não houver)
     trocarIdioma(idiomaAtual);
     
     // Adiciona event listeners nos botões de idioma
-    document.getElementById('btnPortugues').addEventListener('click', function() {
+    btnPortugues.addEventListener('click', function() {
         trocarIdioma('pt-BR');
     });
     
-    document.getElementById('btnItaliano').addEventListener('click', function() {
+    btnItaliano.addEventListener('click', function() {
         trocarIdioma('it-IT');
     });
     
-    // Atualiza o horário imediatamente e configura atualização automática a cada segundo
+    // Atualiza o horário imediatamente
     atualizarHorario();
-    setInterval(atualizarHorario, 1000);
-});
+    
+    // Configura atualização automática a cada segundo
+    // Usa setInterval e armazena o ID para possível limpeza futura
+    setInterval(function() {
+        atualizarHorario();
+    }, 1000);
+}
+
+// Tenta inicializar quando o DOM estiver pronto
+if (document.readyState === 'loading') {
+    // DOM ainda não carregou completamente
+    document.addEventListener('DOMContentLoaded', inicializar);
+} else {
+    // DOM já está pronto
+    inicializar();
+}
 
 // ============================================
 // EFEITO DE TOQUE NOS ÍCONES (Mobile)

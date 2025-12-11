@@ -61,9 +61,16 @@
     margin-top: 10px;
 }
 
-/* Checkbox styles moved to shared-styles.css */
-/* Mantendo apenas estilos específicos do Fazenda */
-.opcao-checkbox input[type="checkbox"]:checked + .cartao-checkbox {
+/* Estilos para botões selecionados (sem checkbox) */
+.opcao-checkbox {
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    padding: 0;
+    text-align: left;
+}
+
+.opcao-checkbox.selected .cartao-checkbox {
     border-color: var(--accent-color);
     background: #f5e6d3;
     box-shadow: 0 4px 10px rgba(139, 111, 71, 0.2);

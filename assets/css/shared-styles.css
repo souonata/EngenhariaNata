@@ -590,6 +590,11 @@ input[type="range"]::-moz-range-thumb:active {
     display: flex;
     align-items: center;
     gap: 12px;
+    border: none;
+    background: transparent;
+    padding: 0;
+    text-align: left;
+    width: 100%;
 }
 
 .opcao-checkbox input[type="checkbox"] {
@@ -614,6 +619,7 @@ input[type="range"]::-moz-range-thumb:active {
     transition: all 0.3s;
     cursor: pointer;
     flex: 1;
+    width: 100%;
 }
 
 .opcao-checkbox:hover .cartao-checkbox {
@@ -621,7 +627,8 @@ input[type="range"]::-moz-range-thumb:active {
     background-color: var(--checkbox-hover-bg, #f5f5f5);
 }
 
-.opcao-checkbox input:checked + .cartao-checkbox {
+.opcao-checkbox input:checked + .cartao-checkbox,
+.opcao-checkbox.selected .cartao-checkbox {
     border-color: var(--checkbox-checked-border, var(--accent-color, #2d9fa3ff));
     background: var(--checkbox-checked-bg, #e0f7fa);
     box-shadow: 0 4px 10px rgba(45, 159, 163, 0.2);
@@ -642,11 +649,13 @@ input[type="range"]::-moz-range-thumb:active {
     font-style: italic;
 }
 
-.opcao-checkbox input:checked + .cartao-checkbox .rotulo-checkbox {
+.opcao-checkbox input:checked + .cartao-checkbox .rotulo-checkbox,
+.opcao-checkbox.selected .cartao-checkbox .rotulo-checkbox {
     color: var(--accent-color, #2d9fa3ff);
 }
 
-.opcao-checkbox input:checked + .cartao-checkbox .descricao-checkbox {
+.opcao-checkbox input:checked + .cartao-checkbox .descricao-checkbox,
+.opcao-checkbox.selected .cartao-checkbox .descricao-checkbox {
     color: #555;
 }
 

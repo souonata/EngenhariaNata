@@ -112,14 +112,20 @@ function ajustarValor(targetId, step) {
         let baseStep;
         
         const maxSlider = obterMaxValorSlider();
+        
+        // Determina o step baseado no valor atual
+        // IMPORTANTE: Se está no máximo do slider, sempre usar step de 10.000 ao diminuir
+        // O step de 100.000 só é usado para valores MANUAIS acima do máximo do slider
         if (valor < 10000) {
             // Entre 1.000 e 10.000: step de 1.000
             baseStep = 1000;
-        } else if (valor < maxSlider) {
-            // Entre 10.000 e o máximo do slider: step de 10.000
+        } else if (valor <= maxSlider) {
+            // Entre 10.000 e o máximo do slider (inclusive): step de 10.000
+            // Mesmo quando está exatamente no máximo, usar step de 10.000
             baseStep = 10000;
         } else {
-            // Acima do máximo do slider: step de 100.000 (para valores manuais)
+            // Acima do máximo do slider: step de 100.000 (apenas para valores manuais acima do limite)
+            // Isso só acontece quando o usuário digitou manualmente um valor acima do máximo
             baseStep = 100000;
         }
         
@@ -607,7 +613,7 @@ const traducoes = {
         'table-amortization-last': 'última parcela',
         'memorial-title': '📚 Memorial de Cálculo - Sistemas de Amortização',
         'memorial-intro-title': '🎯 Objetivo do Cálculo',
-        'memorial-intro-text': 'Este memorial explica passo a passo como são calculados os sistemas de amortização (SAC, Tabela Price e Sistema Americano), incluindo as fórmulas matemáticas utilizadas e exemplos práticos com os valores atuais.',
+        'memorial-intro-text': 'Este memorial explica passo a passo como são calculados os sistemas de amortização (SAC, Tabela Price e Sistema Americano), incluindo as fórmulas matemáticas utilizadas e exemplos práticos com os valores atuais. Todas as fórmulas foram validadas através de testes automatizados.',
         'memorial-formula': 'Fórmula:',
         'memorial-example': 'Exemplo:',
         'memorial-resumo-title': '📊 Resumo Calculado',
@@ -622,7 +628,7 @@ const traducoes = {
         'memorial-exemplos-text': 'Veja exemplos educacionais detalhados de cada sistema de amortização clicando no botão abaixo.',
         'btn-ver-exemplos': 'Ver Exemplos Educacionais',
         'memorial-passo1-title': '1️⃣ Passo 1: Converter Taxa para Mensal',
-        'memorial-passo1-explicacao': 'Todos os cálculos são feitos com taxa mensal. Se a taxa for anual ou diária, ela precisa ser convertida para mensal.',
+        'memorial-passo1-explicacao': 'Todos os cálculos são feitos com taxa mensal. Se a taxa for anual ou diária, ela precisa ser convertida para mensal usando juros compostos. Taxa anual: (1 + taxa_anual)^(1/12) - 1. Taxa diária: (1 + taxa_diaria)^30 - 1 (assumindo 30 dias por mês).',
         'memorial-passo2-title': '2️⃣ Passo 2: Calcular Número de Parcelas',
         'memorial-passo2-explicacao': 'O número de parcelas é calculado multiplicando o prazo em anos por 12 (meses por ano).',
         'memorial-passo3-title': '3️⃣ Passo 3: Calcular Tabela de Amortização',
@@ -635,7 +641,7 @@ const traducoes = {
         'memorial-sac-passo2-explicacao': 'Os juros são calculados sobre o saldo devedor, que diminui a cada parcela. Por isso, os juros e as parcelas diminuem com o tempo.',
         'memorial-price-passo1-title': 'Tabela Price - Passo 1: Calcular Parcela Fixa (PMT)',
         'memorial-price-passo1-formula': 'PMT = PV × [i × (1+i)^n] ÷ [(1+i)^n - 1]',
-        'memorial-price-passo1-explicacao': 'Esta fórmula calcula o valor da parcela fixa que será paga em todas as parcelas. Onde: PV = valor presente (emprestado), i = taxa mensal, n = número de parcelas.',
+        'memorial-price-passo1-explicacao': 'Esta fórmula calcula o valor da parcela fixa que será paga em todas as parcelas. Onde: PV = valor presente (emprestado), i = taxa mensal em decimal, n = número de parcelas. Esta é a fórmula padrão de anuidades (PMT) amplamente utilizada em matemática financeira.',
         'memorial-price-passo2-title': 'Tabela Price - Passo 2: Calcular Juros e Amortização',
         'memorial-price-passo2-formula': 'Juros = Saldo Devedor × Taxa Mensal\nAmortização = PMT - Juros',
         'memorial-price-passo2-explicacao': 'A parcela é fixa, mas a composição muda: no início, mais juros e menos amortização; no final, menos juros e mais amortização.',
@@ -759,7 +765,7 @@ const traducoes = {
         'table-amortization-last': 'ultima rata',
         'memorial-title': '📚 Memoriale di Calcolo - Sistemi di Ammortamento',
         'memorial-intro-title': '🎯 Obiettivo del Calcolo',
-        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come vengono calcolati i sistemi di ammortamento (Ammortamento all\'Italiana, Ammortamento alla Francese e Tedesco), incluse le formule matematiche utilizzate ed esempi pratici con i valori attuali.',
+        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come vengono calcolati i sistemi di ammortamento (Ammortamento all\'Italiana, Ammortamento alla Francese e Tedesco), incluse le formule matematiche utilizzate ed esempi pratici con i valori attuali. Tutte le formule sono state validate attraverso test automatizzati.',
         'memorial-formula': 'Formula:',
         'memorial-example': 'Esempio:',
         'memorial-resumo-title': '📊 Riepilogo Calcolato',
@@ -774,7 +780,7 @@ const traducoes = {
         'memorial-exemplos-text': 'Vedi esempi educativi dettagliati di ogni sistema di ammortamento cliccando sul pulsante qui sotto.',
         'btn-ver-exemplos': 'Vedi Esempi Educativi',
         'memorial-passo1-title': '1️⃣ Passo 1: Convertire il Tasso in Mensile',
-        'memorial-passo1-explicacao': 'Tutti i calcoli vengono effettuati con tasso mensile. Se il tasso è annuale o giornaliero, deve essere convertito in mensile.',
+        'memorial-passo1-explicacao': 'Tutti i calcoli vengono effettuati con tasso mensile. Se il tasso è annuale o giornaliero, deve essere convertito in mensile usando interessi composti. Tasso annuale: (1 + tasso_annuale)^(1/12) - 1. Tasso giornaliero: (1 + tasso_giornaliero)^30 - 1 (assumendo 30 giorni per mese).',
         'memorial-passo2-title': '2️⃣ Passo 2: Calcolare il Numero di Rate',
         'memorial-passo2-explicacao': 'Il numero di rate viene calcolato moltiplicando la durata in anni per 12 (mesi per anno).',
         'memorial-passo3-title': '3️⃣ Passo 3: Calcolare la Tabella di Ammortamento',
@@ -787,7 +793,7 @@ const traducoes = {
         'memorial-sac-passo2-explicacao': 'Gli interessi vengono calcolati sul debito residuo, che diminuisce ad ogni rata. Per questo, gli interessi e le rate diminuiscono nel tempo.',
         'memorial-price-passo1-title': 'Ammortamento alla Francese - Passo 1: Calcolare Rata Fissa (PMT)',
         'memorial-price-passo1-formula': 'PMT = PV × [i × (1+i)^n] ÷ [(1+i)^n - 1]',
-        'memorial-price-passo1-explicacao': 'Questa formula calcola il valore della rata fissa che verrà pagata in tutte le rate. Dove: PV = valore presente (finanziato), i = tasso mensile, n = numero di rate.',
+        'memorial-price-passo1-explicacao': 'Questa formula calcola il valore della rata fissa che verrà pagata in tutte le rate. Dove: PV = valore presente (finanziato), i = tasso mensile in decimale, n = numero di rate. Questa è la formula standard delle rendite (PMT) ampiamente utilizzata in matematica finanziaria.',
         'memorial-price-passo2-title': 'Ammortamento alla Francese - Passo 2: Calcolare Interessi e Ammortamento',
         'memorial-price-passo2-formula': 'Interessi = Debito Residuo × Tasso Mensile\nAmmortamento = PMT - Interessi',
         'memorial-price-passo2-explicacao': 'La rata è fissa, ma la composizione cambia: all\'inizio, più interessi e meno ammortamento; alla fine, meno interessi e più ammortamento.',
@@ -801,6 +807,107 @@ const traducoes = {
 };
 
 // Função para trocar idioma
+/**
+ * Valida e ajusta valores dos sliders para garantir que estejam dentro dos limites
+ * após mudança de idioma ou outras alterações de configuração
+ */
+function validarEAjustarValoresSliders() {
+    // Validar slider de valor
+    if (sliderValor) {
+        // Garantir que o max está atualizado com o valor correto do idioma atual
+        const maxSlider = obterMaxValorSlider();
+        sliderValor.max = maxSlider;
+        
+        const min = parseFloat(sliderValor.min) || 1000;
+        const max = maxSlider;
+        let valorAtual = parseFloat(sliderValor.value);
+        
+        if (isNaN(valorAtual)) {
+            valorAtual = min;
+        } else if (valorAtual < min) {
+            valorAtual = min;
+        } else if (valorAtual > max) {
+            // Se o valor está acima do máximo, ajustar para o máximo
+            valorAtual = max;
+        }
+        
+        sliderValor.value = valorAtual;
+        
+        // Sincronizar input de valor se existir - FORÇAR atualização mesmo se estiver em foco
+        // pois estamos ajustando o valor programaticamente após mudança de idioma
+        const inputValor = document.getElementById('inputValor');
+        if (inputValor) {
+            // Atualizar diretamente usando a mesma formatação que a função atualizarDisplayValor
+            // mas sem verificar o foco, já que estamos ajustando programaticamente
+            if (typeof formatarNumeroComSufixo === 'function') {
+                inputValor.value = formatarNumeroComSufixo(valorAtual, 1);
+            } else if (typeof formatarNumeroCompacto === 'function') {
+                inputValor.value = formatarNumeroCompacto(valorAtual);
+            } else {
+                // Formatação simples como fallback
+                inputValor.value = valorAtual.toLocaleString(idiomaAtual, {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                });
+            }
+            // Ajustar tamanho do input se a função estiver disponível
+            if (typeof ajustarTamanhoInput === 'function') {
+                ajustarTamanhoInput(inputValor);
+            }
+        }
+    }
+    
+    // Validar slider de taxa
+    if (sliderTaxa) {
+        const min = parseFloat(sliderTaxa.min) || 0;
+        const max = parseFloat(sliderTaxa.max) || 20;
+        let valorAtual = parseFloat(sliderTaxa.value);
+        
+        if (isNaN(valorAtual)) {
+            valorAtual = min;
+        } else if (valorAtual < min) {
+            valorAtual = min;
+        } else if (valorAtual > max) {
+            valorAtual = max;
+        }
+        
+        sliderTaxa.value = valorAtual;
+        
+        // Sincronizar input de taxa se existir
+        const inputTaxa = document.getElementById('inputTaxa');
+        if (inputTaxa && document.activeElement !== inputTaxa) {
+            if (typeof atualizarDisplayTaxa === 'function') {
+                atualizarDisplayTaxa();
+            }
+        }
+    }
+    
+    // Validar slider de prazo
+    if (sliderPrazo) {
+        const min = parseFloat(sliderPrazo.min) || 1;
+        const max = parseFloat(sliderPrazo.max) || 50;
+        let valorAtual = parseFloat(sliderPrazo.value);
+        
+        if (isNaN(valorAtual)) {
+            valorAtual = min;
+        } else if (valorAtual < min) {
+            valorAtual = min;
+        } else if (valorAtual > max) {
+            valorAtual = max;
+        }
+        
+        sliderPrazo.value = valorAtual;
+        
+        // Sincronizar input de prazo se existir
+        const inputPrazo = document.getElementById('inputPrazo');
+        if (inputPrazo && document.activeElement !== inputPrazo) {
+            if (typeof atualizarDisplayPrazo === 'function') {
+                atualizarDisplayPrazo();
+            }
+        }
+    }
+}
+
 function trocarIdioma(idioma) {
     idiomaAtual = idioma;
     moedaAtual = idioma === 'pt-BR' ? 'BRL' : 'EUR';
@@ -810,13 +917,11 @@ function trocarIdioma(idioma) {
     // Atualizar máximo do slider de valor baseado no idioma
     if (sliderValor) {
         const maxSlider = obterMaxValorSlider();
-        const valorAtual = parseFloat(sliderValor.value) || 100000;
         sliderValor.max = maxSlider;
-        // Se o valor atual for maior que o novo máximo, ajustar para o máximo
-        if (valorAtual > maxSlider) {
-            sliderValor.value = maxSlider;
-        }
     }
+    
+    // Validar e ajustar todos os valores dos sliders para garantir que estejam dentro dos limites
+    validarEAjustarValoresSliders();
     
     // Atualizar botões ativos usando data-lang (mais confiável)
     document.querySelectorAll(SITE_SEL.LANG_BTN).forEach(btn => {
@@ -835,18 +940,8 @@ function trocarIdioma(idioma) {
         }
     });
     
-    // Recalcular se houver dados
-    if (tabelaAmortizacaoAtual.length > 0) {
-        const valorEmprestimo = dadosEmprestimo.valorEmprestimo;
-        const totalJuros = tabelaAmortizacaoAtual.reduce((sum, item) => sum + item.juros, 0);
-        const totalPagar = valorEmprestimo + totalJuros;
-        const porcentagemJuros = (totalJuros / valorEmprestimo) * 100;
-        
-        exibirResultados(valorEmprestimo, totalJuros, totalPagar, porcentagemJuros);
-        atualizarParcelaExibida();
-        preencherTabelaAmortizacao();
-        atualizarGraficos();
-    }
+    // Recalcular após validar valores
+    calcularEmprestimo();
 
     // Atualiza o aria-label do botão home (acessibilidade)
     const homeLabel = traducoes[idioma]?.['aria-home'] || 'Home';
@@ -1721,15 +1816,29 @@ function atualizarMemorialComValores() {
     `;
     
     // Passo 1: Converter Taxa
+    const textoPeriodo = periodoJuros === 'ano' 
+        ? (idiomaAtual === 'it-IT' ? 'Annuale' : 'Anual')
+        : periodoJuros === 'mes'
+        ? (idiomaAtual === 'it-IT' ? 'Mensile' : 'Mensal')
+        : (idiomaAtual === 'it-IT' ? 'Giornaliera' : 'Diária');
+    const textoPeriodoExemplo = periodoJuros === 'ano'
+        ? (idiomaAtual === 'it-IT' ? 'all\'anno' : 'ao ano')
+        : periodoJuros === 'mes'
+        ? (idiomaAtual === 'it-IT' ? 'al mese' : 'ao mês')
+        : (idiomaAtual === 'it-IT' ? 'al giorno' : 'ao dia');
+    const textoMensal = idiomaAtual === 'it-IT' ? 'al mese' : 'ao mês';
+    const textoAnos = idiomaAtual === 'it-IT' ? 'anni' : 'anos';
+    const textoParcelas = idiomaAtual === 'it-IT' ? 'rate' : 'parcelas';
+    
     htmlConteudo += `
         <div class="memorial-item">
             <h3 data-i18n="memorial-passo1-title">1️⃣ Passo 1: Converter Taxa para Mensal</h3>
             <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
             <div class="formula-box">
-                <p><strong>Taxa Mensal = f(Taxa ${periodoJuros === 'ano' ? 'Anual' : periodoJuros === 'mes' ? 'Mensal' : 'Diária'}, Período)</strong></p>
+                <p><strong>${idiomaAtual === 'it-IT' ? 'Tasso Mensile' : 'Taxa Mensal'} = f(${idiomaAtual === 'it-IT' ? 'Tasso' : 'Taxa'} ${textoPeriodo}, ${idiomaAtual === 'it-IT' ? 'Periodo' : 'Período'})</strong></p>
             </div>
             <p data-i18n="memorial-passo1-explicacao">Todos os cálculos são feitos com taxa mensal. Se a taxa for anual ou diária, ela precisa ser convertida para mensal.</p>
-            <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-taxa">Taxa ${formatarPercentual(taxaJuros)} ${periodoJuros === 'ano' ? 'ao ano' : periodoJuros === 'mes' ? 'ao mês' : 'ao dia'} → Taxa Mensal = ${formatarPercentual(taxaMensal * 100)} ao mês</span></p>
+            <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-taxa">${idiomaAtual === 'it-IT' ? 'Tasso' : 'Taxa'} ${formatarPercentual(taxaJuros)} ${textoPeriodoExemplo} → ${idiomaAtual === 'it-IT' ? 'Tasso Mensile' : 'Taxa Mensal'} = ${formatarPercentual(taxaMensal * 100)} ${textoMensal}</span></p>
         </div>
     `;
     
@@ -1739,10 +1848,10 @@ function atualizarMemorialComValores() {
             <h3 data-i18n="memorial-passo2-title">2️⃣ Passo 2: Calcular Número de Parcelas</h3>
             <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
             <div class="formula-box">
-                <p><strong>Número de Parcelas = Prazo (anos) × 12 meses/ano</strong></p>
+                <p><strong>${idiomaAtual === 'it-IT' ? 'Numero di Rate' : 'Número de Parcelas'} = ${idiomaAtual === 'it-IT' ? 'Durata' : 'Prazo'} (${textoAnos}) × 12 ${idiomaAtual === 'it-IT' ? 'mesi/anno' : 'meses/ano'}</strong></p>
             </div>
             <p data-i18n="memorial-passo2-explicacao">O número de parcelas é calculado multiplicando o prazo em anos por 12 (meses por ano).</p>
-            <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-parcelas">${prazoAnos} anos × 12 = ${numeroParcelas} parcelas</span></p>
+            <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-parcelas">${prazoAnos} ${textoAnos} × 12 = ${numeroParcelas} ${textoParcelas}</span></p>
         </div>
     `;
     
@@ -1779,9 +1888,9 @@ function atualizarMemorialComValores() {
                     <p data-i18n="memorial-sac-passo2-explicacao">Os juros são calculados sobre o saldo devedor, que diminui a cada parcela. Por isso, os juros e as parcelas diminuem com o tempo.</p>
                     <p><strong data-i18n="memorial-example">Exemplo:</strong></p>
                     <ul>
-                        <li id="memorial-exemplo-sac-primeira">Mês 1: Juros = ${formatarValor(valorEmprestimo)} × ${formatarPercentual(taxaMensal * 100)} = ${formatarValor(jurosPrimeira)} → Parcela = ${formatarValor(amortizacao)} + ${formatarValor(jurosPrimeira)} = ${formatarValor(parcelaPrimeira)}</li>
-                        <li id="memorial-exemplo-sac-meio">Mês ${Math.floor(numeroParcelas / 2)}: Juros = ${formatarValor(saldoMeio)} × ${formatarPercentual(taxaMensal * 100)} = ${formatarValor(jurosMeio)} → Parcela = ${formatarValor(amortizacao)} + ${formatarValor(jurosMeio)} = ${formatarValor(parcelaMeio)}</li>
-                        <li id="memorial-exemplo-sac-ultima">Mês ${numeroParcelas}: Juros = ${formatarValor(amortizacao)} × ${formatarPercentual(taxaMensal * 100)} = ${formatarValor(jurosUltima)} → Parcela = ${formatarValor(amortizacao)} + ${formatarValor(jurosUltima)} = ${formatarValor(parcelaUltima)}</li>
+                        <li id="memorial-exemplo-sac-primeira">${idiomaAtual === 'it-IT' ? 'Mese' : 'Mês'} 1: ${idiomaAtual === 'it-IT' ? 'Interessi' : 'Juros'} = ${formatarValor(valorEmprestimo)} × ${formatarPercentual(taxaMensal * 100)} = ${formatarValor(jurosPrimeira)} → ${idiomaAtual === 'it-IT' ? 'Rata' : 'Parcela'} = ${formatarValor(amortizacao)} + ${formatarValor(jurosPrimeira)} = ${formatarValor(parcelaPrimeira)}</li>
+                        <li id="memorial-exemplo-sac-meio">${idiomaAtual === 'it-IT' ? 'Mese' : 'Mês'} ${Math.floor(numeroParcelas / 2)}: ${idiomaAtual === 'it-IT' ? 'Interessi' : 'Juros'} = ${formatarValor(saldoMeio)} × ${formatarPercentual(taxaMensal * 100)} = ${formatarValor(jurosMeio)} → ${idiomaAtual === 'it-IT' ? 'Rata' : 'Parcela'} = ${formatarValor(amortizacao)} + ${formatarValor(jurosMeio)} = ${formatarValor(parcelaMeio)}</li>
+                        <li id="memorial-exemplo-sac-ultima">${idiomaAtual === 'it-IT' ? 'Mese' : 'Mês'} ${numeroParcelas}: ${idiomaAtual === 'it-IT' ? 'Interessi' : 'Juros'} = ${formatarValor(amortizacao)} × ${formatarPercentual(taxaMensal * 100)} = ${formatarValor(jurosUltima)} → ${idiomaAtual === 'it-IT' ? 'Rata' : 'Parcela'} = ${formatarValor(amortizacao)} + ${formatarValor(jurosUltima)} = ${formatarValor(parcelaUltima)}</li>
                     </ul>
                 </div>
             </div>
@@ -1827,9 +1936,9 @@ function atualizarMemorialComValores() {
                     <p data-i18n="memorial-price-passo2-explicacao">A parcela é fixa, mas a composição muda: no início, mais juros e menos amortização; no final, menos juros e mais amortização.</p>
                     <p><strong data-i18n="memorial-example">Exemplo:</strong></p>
                     <ul>
-                        <li id="memorial-exemplo-price-primeira">Mês 1: Juros = ${formatarValor(valorEmprestimo)} × ${formatarPercentual(taxaMensal * 100)} = ${formatarValor(jurosPrimeira)} → Amortização = ${formatarValor(parcelaFixa)} - ${formatarValor(jurosPrimeira)} = ${formatarValor(amortizacaoPrimeira)}</li>
-                        <li id="memorial-exemplo-price-meio">Mês ${Math.floor(numeroParcelas / 2)}: Juros = ${formatarValor(saldoMeio)} × ${formatarPercentual(taxaMensal * 100)} = ${formatarValor(jurosMeio)} → Amortização = ${formatarValor(parcelaFixa)} - ${formatarValor(jurosMeio)} = ${formatarValor(amortizacaoMeio)}</li>
-                        <li id="memorial-exemplo-price-ultima">Mês ${numeroParcelas}: Juros = ${formatarValor(saldoUltima + amortizacaoUltima)} × ${formatarPercentual(taxaMensal * 100)} = ${formatarValor(jurosUltima)} → Amortização = ${formatarValor(parcelaFixa)} - ${formatarValor(jurosUltima)} = ${formatarValor(amortizacaoUltima)}</li>
+                        <li id="memorial-exemplo-price-primeira">${idiomaAtual === 'it-IT' ? 'Mese' : 'Mês'} 1: ${idiomaAtual === 'it-IT' ? 'Interessi' : 'Juros'} = ${formatarValor(valorEmprestimo)} × ${formatarPercentual(taxaMensal * 100)} = ${formatarValor(jurosPrimeira)} → ${idiomaAtual === 'it-IT' ? 'Ammortamento' : 'Amortização'} = ${formatarValor(parcelaFixa)} - ${formatarValor(jurosPrimeira)} = ${formatarValor(amortizacaoPrimeira)}</li>
+                        <li id="memorial-exemplo-price-meio">${idiomaAtual === 'it-IT' ? 'Mese' : 'Mês'} ${Math.floor(numeroParcelas / 2)}: ${idiomaAtual === 'it-IT' ? 'Interessi' : 'Juros'} = ${formatarValor(saldoMeio)} × ${formatarPercentual(taxaMensal * 100)} = ${formatarValor(jurosMeio)} → ${idiomaAtual === 'it-IT' ? 'Ammortamento' : 'Amortização'} = ${formatarValor(parcelaFixa)} - ${formatarValor(jurosMeio)} = ${formatarValor(amortizacaoMeio)}</li>
+                        <li id="memorial-exemplo-price-ultima">${idiomaAtual === 'it-IT' ? 'Mese' : 'Mês'} ${numeroParcelas}: ${idiomaAtual === 'it-IT' ? 'Interessi' : 'Juros'} = ${formatarValor(saldoUltima + amortizacaoUltima)} × ${formatarPercentual(taxaMensal * 100)} = ${formatarValor(jurosUltima)} → ${idiomaAtual === 'it-IT' ? 'Ammortamento' : 'Amortização'} = ${formatarValor(parcelaFixa)} - ${formatarValor(jurosUltima)} = ${formatarValor(amortizacaoUltima)}</li>
                     </ul>
                 </div>
             </div>
@@ -1849,7 +1958,7 @@ function atualizarMemorialComValores() {
                         <p><strong data-i18n="memorial-americano-passo1-formula">Juros = Valor Emprestado × Taxa Mensal</strong></p>
                     </div>
                     <p data-i18n="memorial-americano-passo1-explicacao">Os juros são sempre calculados sobre o valor total emprestado, pois não há amortização intermediária.</p>
-                    <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-americano-juros">Juros = ${formatarValor(valorEmprestimo)} × ${formatarPercentual(taxaMensal * 100)} = ${formatarValor(jurosMensal)} por mês</span></p>
+                    <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-americano-juros">${idiomaAtual === 'it-IT' ? 'Interessi' : 'Juros'} = ${formatarValor(valorEmprestimo)} × ${formatarPercentual(taxaMensal * 100)} = ${formatarValor(jurosMensal)} ${idiomaAtual === 'it-IT' ? 'al mese' : 'por mês'}</span></p>
                 </div>
                 <div class="memorial-item">
                     <h4 data-i18n="memorial-americano-passo2-title">${nomeSistemaAmericano} - Passo 2: Calcular Parcelas</h4>
@@ -1860,8 +1969,8 @@ function atualizarMemorialComValores() {
                     <p data-i18n="memorial-americano-passo2-explicacao">Durante todo o período, paga-se apenas os juros. O valor principal é pago integralmente na última parcela.</p>
                     <p><strong data-i18n="memorial-example">Exemplo:</strong></p>
                     <ul>
-                        <li id="memorial-exemplo-americano-intermediarias">Parcelas 1 a ${numeroParcelas - 1}: ${formatarValor(jurosMensal)} (apenas juros, sem amortização)</li>
-                        <li id="memorial-exemplo-americano-ultima">Parcela ${numeroParcelas}: ${formatarValor(jurosMensal)} + ${formatarValor(valorEmprestimo)} = ${formatarValor(ultimaParcela)} (juros + principal)</li>
+                        <li id="memorial-exemplo-americano-intermediarias">${idiomaAtual === 'it-IT' ? 'Rate' : 'Parcelas'} 1 a ${numeroParcelas - 1}: ${formatarValor(jurosMensal)} (${idiomaAtual === 'it-IT' ? 'solo interessi, senza ammortamento' : 'apenas juros, sem amortização'})</li>
+                        <li id="memorial-exemplo-americano-ultima">${idiomaAtual === 'it-IT' ? 'Rata' : 'Parcela'} ${numeroParcelas}: ${formatarValor(jurosMensal)} + ${formatarValor(valorEmprestimo)} = ${formatarValor(ultimaParcela)} (${idiomaAtual === 'it-IT' ? 'interessi + capitale' : 'juros + principal'})</li>
                     </ul>
                 </div>
             </div>
@@ -2290,66 +2399,21 @@ document.addEventListener('DOMContentLoaded', function() {
         sincronizarInputParaSlider('inputTaxa', 'sliderTaxa', formatarTaxaInput);
     }
     
-    // Event Listeners para botões de seta
-    document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
-        const targetId = btn.getAttribute('data-target');
-        const step = parseFloat(btn.getAttribute('data-step'));
-        // Temporizadores locais para este botão — evita colisão entre botões
-        let btnTimeoutId = null;
-        let btnIntervalId = null;
-        
-        // Função para executar um step imediatamente
-        const executarStep = function() {
+    // Event Listeners para botões de seta - usa função global com aceleração exponencial
+    if (typeof configurarBotoesSliderComAceleracao === 'function') {
+        // Usa função de ajuste local que atualiza inputs correspondentes
+        function ajustarValorMutuo(targetId, step) {
             ajustarValor(targetId, step);
-        };
-        
-        // Função para iniciar repetição (após delay)
-        const startRepeat = function() {
-            // Executa IMEDIATAMENTE no primeiro toque/clique
-            executarStep();
-            
-            // Depois de 500ms, começa a repetir (guardado em variáveis locais)
-            btnTimeoutId = setTimeout(() => {
-                btnIntervalId = setInterval(() => {
-                    ajustarValor(targetId, step);
-                }, 100);
-            }, 500);
-        };
-        
-        // Função para parar repetição
-        const stopRepeat = function() {
-            if (btnTimeoutId) {
-                clearTimeout(btnTimeoutId);
-                btnTimeoutId = null;
-            }
-            if (btnIntervalId) {
-                clearInterval(btnIntervalId);
-                btnIntervalId = null;
-            }
-        };
-        
-        // Eventos MOUSE (para desktop)
-        btn.addEventListener('mousedown', function(e) {
-            e.preventDefault();
-            startRepeat();
+        }
+        configurarBotoesSliderComAceleracao(SITE_SEL.ARROW_BTN, ajustarValorMutuo);
+    } else {
+        // Fallback para código antigo se a função global não estiver disponível
+        document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
+            const targetId = btn.getAttribute('data-target');
+            const step = parseFloat(btn.getAttribute('data-step'));
+            btn.addEventListener('click', () => ajustarValor(targetId, step));
         });
-        btn.addEventListener('mouseup', stopRepeat);
-        btn.addEventListener('mouseleave', stopRepeat);
-        
-        // Eventos TOUCH (para mobile)
-        btn.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            startRepeat();
-        });
-        btn.addEventListener('touchend', function(e) {
-            e.preventDefault();
-            stopRepeat();
-        });
-        btn.addEventListener('touchcancel', function(e) {
-            e.preventDefault();
-            stopRepeat();
-        });
-    });
+    }
     
     // Event Listeners para sliders
     sliderParcelas.addEventListener('input', function() {
@@ -2421,6 +2485,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         // mas garantir que seja pelo menos 0.0001 para não zerar
                         taxaLimitada = Math.max(taxaConvertida, 0.0001);
                     }
+                }
+                
+                // Validar e ajustar valor da taxa para garantir que está dentro dos limites
+                const minTaxa = parseFloat(sliderTaxa.min) || 0;
+                if (taxaLimitada < minTaxa) {
+                    taxaLimitada = minTaxa;
+                } else if (taxaLimitada > maxTaxa) {
+                    taxaLimitada = maxTaxa;
                 }
                 
                 // Atualiza o slider com o valor limitado

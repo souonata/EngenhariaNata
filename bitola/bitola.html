@@ -128,7 +128,7 @@
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderComprimento" data-step="-1" aria-label="Diminuir comprimento">−</button>
-                    <input type="range" id="sliderComprimento" min="1" max="200" step="1" value="20">
+                    <input type="range" id="sliderComprimento" min="1" max="50" step="1" value="20">
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderComprimento" data-step="1" aria-label="Aumentar comprimento">+</button>
                 </div>
                 <p class="dica" data-i18n="dica-comprimento">💡 Distância entre a fonte e a carga<br>(o cálculo considera automaticamente ida e volta)</p>
@@ -195,7 +195,7 @@
                 <h3 data-i18n="memorial-passo1-title">1️⃣ Passo 1: Calcular Corrente do Circuito</h3>
                 <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                 <div class="formula-box">
-                    <p><strong>Corrente (A) = Potência (W) ÷ Tensão (V)</strong></p>
+                    <p><strong data-i18n="memorial-formula-corrente">Corrente (A) = Potência (W) ÷ Tensão (V)</strong></p>
                 </div>
                 <p data-i18n="memorial-passo1-explicacao">A corrente é calculada dividindo a potência pela tensão. Esta é a corrente que o circuito precisa transportar.</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-corrente">1000W ÷ 220V = 4.55A</span></p>
@@ -214,10 +214,10 @@
                     <ul>
                         <li data-i18n="memorial-resistividade">ρ (resistividade do cobre) = 0.0175 Ω·mm²/m a 20°C — Constante física que representa a resistência elétrica específica do cobre puro. Este valor é uma propriedade do material e varia ligeiramente com a temperatura.</li>
                         <li data-i18n="memorial-fator-2">Fator 2 = considera ida e volta do circuito (dois condutores) — O circuito elétrico precisa de dois fios: um para levar a corrente até a carga e outro para retornar. Por isso, a distância total percorrida pela corrente é 2 × distância entre fonte e carga.</li>
-                        <li><strong>Queda de tensão recomendada:</strong> 4% — Padrão mais utilizado para projetos residenciais no Brasil, conforme normas técnicas.</li>
+                        <li><strong data-i18n="memorial-queda-recomendada">Queda de tensão recomendada:</strong> <span data-i18n="memorial-queda-recomendada-texto">4% — Padrão mais utilizado para projetos residenciais no Brasil, conforme normas técnicas.</span></li>
                     </ul>
-                    <p style="margin-top: 10px;"><strong>⚛️ Lei Física Aplicada — Lei de Ohm:</strong></p>
-                    <p style="margin-top: 5px;">A Lei de Ohm relaciona tensão (V), corrente (I) e resistência (R): V = I × R. No cálculo de bitola, usamos esta lei para determinar a queda de tensão: quanto maior a corrente e a resistência do fio, maior a queda de tensão. A resistência do fio depende da resistividade do material (cobre), do comprimento e da área da seção transversal (bitola).</p>
+                    <p style="margin-top: 10px;"><strong data-i18n="memorial-lei-ohm-titulo">⚛️ Lei Física Aplicada — Lei de Ohm:</strong></p>
+                    <p style="margin-top: 5px;" data-i18n="memorial-lei-ohm-texto">A Lei de Ohm relaciona tensão (V), corrente (I) e resistência (R): V = I × R. No cálculo de bitola, usamos esta lei para determinar a queda de tensão: quanto maior a corrente e a resistência do fio, maior a queda de tensão. A resistência do fio depende da resistividade do material (cobre), do comprimento e da área da seção transversal (bitola).</p>
                 </div>
             </div>
 
@@ -235,7 +235,7 @@
                 <h3 data-i18n="memorial-passo4-title">4️⃣ Passo 4: Verificar Queda de Tensão Real</h3>
                 <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                 <div class="formula-box">
-                    <p><strong>Queda Real (%) = ((2 × ρ × L × I) ÷ S) ÷ Tensão × 100</strong></p>
+                    <p><strong data-i18n="memorial-formula-queda">Queda Real (%) = ((2 × ρ × L × I) ÷ S) ÷ Tensão × 100</strong></p>
                 </div>
                 <p data-i18n="memorial-passo4-explicacao">Recalculamos a queda de tensão com a bitola comercial escolhida para verificar se está dentro do limite permitido.</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-queda">Com bitola 1.5 mm² → queda real = 1.06% (dentro do limite de 4%)</span></p>

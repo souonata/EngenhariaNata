@@ -132,15 +132,24 @@ let timeoutId = null;
  * - Entre 10 e 100: usa step de 1 (transição suave)
  */
 function obterStepPotencia(valor) {
+    // Ajusta o step baseado no valor para manter velocidade consistente
+    // Steps maiores para valores baixos também, para evitar travamento
+    // A aceleração exponencial compensa steps maiores, mantendo velocidade consistente
     if (valor <= 10) {
-        // Entre 1 e 10: step de 1
+        // Entre 1 e 10: step de 1 (mantém precisão para valores muito baixos)
         return 1;
+    } else if (valor < 50) {
+        // Entre 10 e 49: step de 2 (aumenta velocidade sem perder muito controle)
+        return 2;
     } else if (valor < 100) {
-        // Entre 10 e 99: step de 1 (transição suave até 100)
-        return 1;
-    } else if (valor < 1000) {
-        // Entre 100 e 999: step de 10
+        // Entre 50 e 99: step de 5 (transição suave até 100)
+        return 5;
+    } else if (valor < 500) {
+        // Entre 100 e 499: step de 10
         return 10;
+    } else if (valor < 1000) {
+        // Entre 500 e 999: step de 25 (aumenta velocidade)
+        return 25;
     } else if (valor < 3000) {
         // Entre 1000 e 2999: step de 50
         return 50;
@@ -194,21 +203,140 @@ function ajustarValor(targetId, step) {
 }
 
 /**
- * Inicia a repetição contínua ao segurar um botão de seta
+ * Função de ajuste customizada para o Bitola que suporta steps dinâmicos
+ * Esta função recalcula o step a cada ajuste baseado no valor atual
+ * @param {string} targetId - ID do slider
+ * @param {number|string} step - Step inicial (pode ser 'dynamic' ou número)
+ */
+function ajustarValorBitolaComAceleracao(targetId, step) {
+    const slider = document.getElementById(targetId);
+    if (!slider) return;
+    
+    // Obtém o valor atual do slider
+    let valor = parseFloat(slider.value) || 0;
+    
+    // Se o step for "dynamic", calcula o step apropriado baseado no valor ATUAL
+    // Isso garante que o step seja recalculado a cada ajuste, mantendo a velocidade consistente
+    let stepEfetivo = step;
+    if (step === 'dynamic' || step === '-dynamic') {
+        const stepCalculado = obterStepPotencia(valor);
+        stepEfetivo = step === 'dynamic' ? stepCalculado : -stepCalculado;
+    }
+    
+    // Calcula o novo valor
+    let novoValor = valor + stepEfetivo;
+    
+    // Limita ao mínimo e máximo do slider
+    // Usa 0 como mínimo se slider.min for 0 (importante para sliders que começam em 0)
+    const minRaw = parseFloat(slider.min);
+    const min = isNaN(minRaw) ? 1 : minRaw; // Permite 0 como mínimo válido
+    const max = parseFloat(slider.max) || 10000;
+    
+    // Para o slider de potência, ajusta o valor para o step apropriado do NOVO valor
+    if (targetId === 'sliderPotencia') {
+        // Recalcula o step baseado no novo valor (não no valor antigo)
+        const stepApropriado = obterStepPotencia(novoValor);
+        // Arredonda para o múltiplo mais próximo do step
+        novoValor = Math.round(novoValor / stepApropriado) * stepApropriado;
+    }
+    
+    // Garante que não ultrapasse os limites (mas permite movimento mesmo próximo dos limites)
+    novoValor = Math.max(min, Math.min(max, novoValor));
+    
+    // NÃO força valores min/max quando próximo do fim do curso
+    // Isso permite que o usuário continue ajustando mesmo quando próximo dos limites
+    // A detecção de limite é feita na função iniciarRepeticao, não aqui
+    
+    // Atualiza o slider
+    slider.value = novoValor;
+    
+    // Dispara evento de input para atualizar a interface (sem throttle para reduzir lag)
+    slider.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+/**
+ * Inicia a repetição contínua ao segurar um botão de seta com aceleração exponencial
  * @param {string} targetId - ID do slider alvo
- * @param {number} step - Passo a ser aplicado
+ * @param {number|string} step - Passo a ser aplicado (pode ser 'dynamic')
  */
 function iniciarRepeticao(targetId, step) {
-    // Primeiro ajuste imediato
-    ajustarValor(targetId, step);
+    // Para qualquer repetição anterior
+    pararRepeticao();
     
-    // Atraso inicial de 500ms antes de começar a repetir
-    timeoutId = setTimeout(() => {
-        // Repete a cada 100ms enquanto o botão estiver pressionado
-        intervalId = setInterval(() => {
-            ajustarValor(targetId, step);
-        }, 100);
-    }, 500);
+    // Ajusta imediatamente (primeira vez)
+    ajustarValorBitolaComAceleracao(targetId, step);
+    
+    // Variáveis para controle de aceleração exponencial
+    let startTime = Date.now();
+    let lastInterval = 200;
+    let lastSecond = 0;
+    let isActive = true;
+    
+    // Função que calcula o intervalo baseado no tempo decorrido (dobra a velocidade a cada segundo)
+    const getInterval = (elapsed) => {
+        const intervaloInicial = 200;
+        const segundos = Math.floor(elapsed / 1000);
+        const intervalo = intervaloInicial / Math.pow(2, segundos);
+        return Math.max(10, Math.round(intervalo)); // Mínimo 10ms
+    };
+    
+    const doAdjust = () => {
+        if (!isActive) return;
+        
+        const now = Date.now();
+        const elapsed = now - startTime;
+        const currentSecond = Math.floor(elapsed / 1000);
+        const currentInterval = getInterval(elapsed);
+        
+        // Se mudou o segundo (e portanto o intervalo), reinicia o timer com novo intervalo
+        if (currentSecond !== lastSecond || currentInterval !== lastInterval) {
+            clearInterval(intervalId);
+            lastInterval = currentInterval;
+            lastSecond = currentSecond;
+            // Reinicia o intervalo com a nova velocidade
+            intervalId = setInterval(doAdjust, currentInterval);
+        }
+        
+        // Verifica o valor antes do ajuste
+        const slider = document.getElementById(targetId);
+        if (slider) {
+            const valorAntes = parseFloat(slider.value) || 0;
+            // Usa 0 como mínimo se slider.min for 0 (importante para sliders que começam em 0)
+            const minRaw = parseFloat(slider.min);
+            const min = isNaN(minRaw) ? 1 : minRaw; // Permite 0 como mínimo válido
+            const max = parseFloat(slider.max) || 10000;
+            
+            // Ajusta o valor (recalcula step dinâmico a cada ajuste)
+            ajustarValorBitolaComAceleracao(targetId, step);
+            
+            // Verifica o valor depois do ajuste
+            const valorDepois = parseFloat(slider.value) || 0;
+            
+            // Para apenas se o valor não mudou E está no limite
+            // Isso permite movimento mesmo quando próximo dos limites
+            if (valorAntes === valorDepois) {
+                if ((step === 'dynamic' || (typeof step === 'number' && step > 0)) && valorDepois >= max) {
+                    // Se está no máximo e tentando aumentar, mas o valor não mudou, para
+                    pararRepeticao();
+                    return;
+                }
+                if ((step === '-dynamic' || (typeof step === 'number' && step < 0)) && valorDepois <= min) {
+                    // Se está no mínimo e tentando diminuir, mas o valor não mudou, para
+                    pararRepeticao();
+                    return;
+                }
+            }
+        } else {
+            // Se não encontrou o slider, ajusta normalmente
+            ajustarValorBitolaComAceleracao(targetId, step);
+        }
+    };
+    
+    // Inicia o intervalo com o intervalo inicial (200ms)
+    intervalId = setInterval(doAdjust, 200);
+    
+    // Armazena referência para poder parar
+    window._bitolaRepeticao = { isActive: () => isActive, stop: () => { isActive = false; } };
 }
 
 /**
@@ -222,6 +350,10 @@ function pararRepeticao() {
     if (intervalId) {
         clearInterval(intervalId);
         intervalId = null;
+    }
+    if (window._bitolaRepeticao) {
+        window._bitolaRepeticao.stop();
+        delete window._bitolaRepeticao;
     }
 }
 
@@ -658,13 +790,13 @@ const traducoes = {
         'btn-memorial': 'Ver Memorial de Cálculo',
         'memorial-title': '📚 Memorial de Cálculo - Bitola de Fios',
         'memorial-intro-title': '🎯 Objetivo do Cálculo',
-        'memorial-intro-text': 'Este memorial explica passo a passo como é calculada a bitola mínima de fios elétricos para circuitos CC e CA, considerando potência, distância, tensão e queda de tensão máxima permitida.',
+        'memorial-intro-text': 'Este memorial explica passo a passo como é calculada a bitola mínima de fios elétricos para circuitos CC e CA, considerando potência, distância, tensão e queda de tensão máxima permitida. As fórmulas e a lógica de cálculo foram validadas por testes automatizados.',
         'memorial-passo1-title': '1️⃣ Passo 1: Calcular Corrente do Circuito',
         'memorial-formula': 'Fórmula:',
         'memorial-passo1-explicacao': 'A corrente é calculada dividindo a potência pela tensão. Esta é a corrente que o circuito precisa transportar.',
         'memorial-example': 'Exemplo:',
         'memorial-passo2-title': '2️⃣ Passo 2: Calcular Área de Seção Mínima',
-        'memorial-passo2-explicacao': 'A área mínima é calculada considerando a resistividade do cobre, a distância (multiplicada por 2 para ida e volta), a corrente e a queda de tensão máxima permitida.',
+        'memorial-passo2-explicacao': 'A área mínima é calculada usando a fórmula S = (2 × ρ × L × I) / ΔV, onde ρ é a resistividade do cobre (0.0175 Ω·mm²/m), L é a distância (multiplicada por 2 para ida e volta), I é a corrente e ΔV é a queda de tensão máxima permitida em volts (calculada como (queda% / 100) × V).',
         'memorial-constants': 'Constantes usadas:',
         'memorial-resistividade': 'ρ (resistividade do cobre) = 0.0175 Ω·mm²/m a 20°C',
         'memorial-fator-2': 'Fator 2 = considera ida e volta do circuito (dois condutores)',
@@ -673,7 +805,7 @@ const traducoes = {
         'memorial-bitolas': 'Bitolas comerciais disponíveis:',
         'memorial-bitolas-lista': '1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240 mm²',
         'memorial-passo4-title': '4️⃣ Passo 4: Verificar Queda de Tensão Real',
-        'memorial-passo4-explicacao': 'Recalculamos a queda de tensão com a bitola comercial escolhida para verificar se está dentro do limite permitido.',
+        'memorial-passo4-explicacao': 'Recalculamos a queda de tensão com a bitola comercial escolhida usando a fórmula ΔV% = ((2 × ρ × L × I) / S) / V × 100, onde S é a bitola comercial selecionada. Isso verifica se a queda real está dentro do limite permitido.',
         'memorial-passo5-title': '5️⃣ Passo 5: Selecionar Disjuntor Comercial',
         'memorial-passo5-explicacao': 'O disjuntor é selecionado com base na corrente do circuito, aplicando um fator de segurança de 1.25 e escolhendo o disjuntor comercial padrão que atende ao requisito.',
         'memorial-resumo-title': '📊 Resumo Calculado',
@@ -681,7 +813,20 @@ const traducoes = {
         'memorial-resumo-area': 'Área Mínima:',
         'memorial-resumo-bitola': 'Bitola Comercial:',
         'memorial-resumo-queda': 'Queda Real:',
-        'memorial-resumo-disjuntor': 'Disjuntor:'
+        'memorial-resumo-disjuntor': 'Disjuntor:',
+        'memorial-formula-corrente': 'Corrente (A) = Potência (W) ÷ Tensão (V)',
+        'memorial-formula-queda': 'Queda Real (%) = ((2 × ρ × L × I) ÷ S) ÷ Tensão × 100',
+        'memorial-exemplo-area-minima': 'Área mínima',
+        'memorial-exemplo-bitola-comercial': 'Bitola comercial',
+        'memorial-exemplo-com-bitola': 'Com bitola',
+        'memorial-exemplo-queda-real': 'queda real',
+        'memorial-exemplo-dentro-limite': 'dentro do limite de',
+        'memorial-exemplo-corrente-texto': 'Corrente',
+        'memorial-exemplo-disjuntor-comercial': 'Disjuntor comercial',
+        'memorial-queda-recomendada': 'Queda de tensão recomendada:',
+        'memorial-queda-recomendada-texto': '4% — Padrão mais utilizado para projetos residenciais no Brasil, conforme normas técnicas.',
+        'memorial-lei-ohm-titulo': '⚛️ Lei Física Aplicada — Lei de Ohm:',
+        'memorial-lei-ohm-texto': 'A Lei de Ohm relaciona tensão (V), corrente (I) e resistência (R): V = I × R. No cálculo de bitola, usamos esta lei para determinar a queda de tensão: quanto maior a corrente e a resistência do fio, maior a queda de tensão. A resistência do fio depende da resistividade do material (cobre), do comprimento e da área da seção transversal (bitola).'
     },
     'it-IT': {
         'app-title': '🔌 Calcolatrice Sezione Cavi',
@@ -710,13 +855,13 @@ const traducoes = {
         'btn-memorial': 'Vedi Memoriale di Calcolo',
         'memorial-title': '📚 Memoriale di Calcolo - Sezione Cavi',
         'memorial-intro-title': '🎯 Obiettivo del Calcolo',
-        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come viene calcolata la sezione minima dei cavi elettrici per circuiti CC e CA, considerando potenza, distanza, tensione e caduta di tensione massima consentita.',
+        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come viene calcolata la sezione minima dei cavi elettrici per circuiti CC e CA, considerando potenza, distanza, tensione e caduta di tensione massima consentita. Le formule e la logica di calcolo sono state validate da test automatizzati.',
         'memorial-passo1-title': '1️⃣ Passo 1: Calcolare Corrente del Circuito',
         'memorial-formula': 'Formula:',
         'memorial-passo1-explicacao': 'La corrente viene calcolata dividendo la potenza per la tensione. Questa è la corrente che il circuito deve trasportare.',
         'memorial-example': 'Esempio:',
         'memorial-passo2-title': '2️⃣ Passo 2: Calcolare Area di Sezione Minima',
-        'memorial-passo2-explicacao': 'L\'area minima viene calcolata considerando la resistività del rame, la distanza (moltiplicata per 2 per andata e ritorno), la corrente e la caduta di tensione massima consentita.',
+        'memorial-passo2-explicacao': 'L\'area minima viene calcolata utilizzando la formula S = (2 × ρ × L × I) / ΔV, dove ρ è la resistività del rame (0.0175 Ω·mm²/m), L è la distanza (moltiplicata per 2 per andata e ritorno), I è la corrente e ΔV è la caduta di tensione massima consentita in volt (calcolata come (caduta% / 100) × V).',
         'memorial-constants': 'Costanti utilizzate:',
         'memorial-resistividade': 'ρ (resistività del rame) = 0.0175 Ω·mm²/m a 20°C',
         'memorial-fator-2': 'Fattore 2 = considera andata e ritorno del circuito (due conduttori)',
@@ -725,7 +870,7 @@ const traducoes = {
         'memorial-bitolas': 'Sezioni commerciali disponibili:',
         'memorial-bitolas-lista': '1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240 mm²',
         'memorial-passo4-title': '4️⃣ Passo 4: Verificare Caduta di Tensione Reale',
-        'memorial-passo4-explicacao': 'Ricalcoliamo la caduta di tensione con la sezione commerciale scelta per verificare se è entro il limite consentito.',
+        'memorial-passo4-explicacao': 'Ricalcoliamo la caduta di tensione con la sezione commerciale scelta utilizzando la formula ΔV% = ((2 × ρ × L × I) / S) / V × 100, dove S è la sezione commerciale selezionata. Questo verifica se la caduta reale è entro il limite consentito.',
         'memorial-passo5-title': '5️⃣ Passo 5: Selezionare Interruttore Commerciale',
         'memorial-passo5-explicacao': 'L\'interruttore viene selezionato in base alla corrente del circuito, applicando un fattore di sicurezza di 1.25 e scegliendo l\'interruttore commerciale standard che soddisfa il requisito.',
         'memorial-resumo-title': '📊 Riepilogo Calcolato',
@@ -733,7 +878,20 @@ const traducoes = {
         'memorial-resumo-area': 'Area Minima:',
         'memorial-resumo-bitola': 'Sezione Commerciale:',
         'memorial-resumo-queda': 'Caduta Reale:',
-        'memorial-resumo-disjuntor': 'Interruttore:'
+        'memorial-resumo-disjuntor': 'Interruttore:',
+        'memorial-formula-corrente': 'Corrente (A) = Potenza (W) ÷ Tensione (V)',
+        'memorial-formula-queda': 'Caduta Reale (%) = ((2 × ρ × L × I) ÷ S) ÷ Tensione × 100',
+        'memorial-exemplo-area-minima': 'Area minima',
+        'memorial-exemplo-bitola-comercial': 'Sezione commerciale',
+        'memorial-exemplo-com-bitola': 'Con sezione',
+        'memorial-exemplo-queda-real': 'caduta reale',
+        'memorial-exemplo-dentro-limite': 'entro il limite di',
+        'memorial-exemplo-corrente-texto': 'Corrente',
+        'memorial-exemplo-disjuntor-comercial': 'Interruttore commerciale',
+        'memorial-queda-recomendada': 'Caduta di tensione raccomandata:',
+        'memorial-queda-recomendada-texto': '4% — Standard più utilizzato per progetti residenziali in Brasile, secondo le norme tecniche.',
+        'memorial-lei-ohm-titulo': '⚛️ Legge Fisica Applicata — Legge di Ohm:',
+        'memorial-lei-ohm-texto': 'La Legge di Ohm mette in relazione tensione (V), corrente (I) e resistenza (R): V = I × R. Nel calcolo della sezione, usiamo questa legge per determinare la caduta di tensione: maggiore è la corrente e la resistenza del filo, maggiore è la caduta di tensione. La resistenza del filo dipende dalla resistività del materiale (rame), dalla lunghezza e dall\'area della sezione trasversale (sezione).'
     }
 };
 
@@ -804,18 +962,25 @@ function atualizarMemorialComValores() {
     const exemploBitola = document.getElementById('memorial-exemplo-bitola');
     if (exemploBitola) {
         const areaComSeguranca = areaMin * 1.25;
-        exemploBitola.textContent = `Área mínima ${formatarNumeroComSufixo(areaMin, 2)} mm² × 1.25 = ${formatarNumeroComSufixo(areaComSeguranca, 2)} mm² → Bitola comercial: ${formatarNumeroComSufixo(bitola, 1)} mm²`;
+        const textoAreaMinima = traducoes[idiomaAtual]?.['memorial-exemplo-area-minima'] || 'Área mínima';
+        const textoBitolaComercial = traducoes[idiomaAtual]?.['memorial-exemplo-bitola-comercial'] || 'Bitola comercial';
+        exemploBitola.textContent = `${textoAreaMinima} ${formatarNumeroComSufixo(areaMin, 2)} mm² × 1.25 = ${formatarNumeroComSufixo(areaComSeguranca, 2)} mm² → ${textoBitolaComercial}: ${formatarNumeroComSufixo(bitola, 1)} mm²`;
     }
     
     const exemploQueda = document.getElementById('memorial-exemplo-queda');
     if (exemploQueda) {
-        exemploQueda.textContent = `Com bitola ${formatarNumeroComSufixo(bitola, 1)} mm² → queda real = ${formatarNumero(quedaRealPercentual, 2)}% (dentro do limite de ${formatarNumero(quedaPercentual, 1)}%)`;
+        const textoComBitola = traducoes[idiomaAtual]?.['memorial-exemplo-com-bitola'] || 'Com bitola';
+        const textoQuedaReal = traducoes[idiomaAtual]?.['memorial-exemplo-queda-real'] || 'queda real';
+        const textoDentroLimite = traducoes[idiomaAtual]?.['memorial-exemplo-dentro-limite'] || 'dentro do limite de';
+        exemploQueda.textContent = `${textoComBitola} ${formatarNumeroComSufixo(bitola, 1)} mm² → ${textoQuedaReal} = ${formatarNumero(quedaRealPercentual, 2)}% (${textoDentroLimite} ${formatarNumero(quedaPercentual, 1)}%)`;
     }
     
     const exemploDisjuntor = document.getElementById('memorial-exemplo-disjuntor');
     if (exemploDisjuntor) {
         const correnteComSeguranca = corrente * 1.25;
-        exemploDisjuntor.textContent = `Corrente ${formatarNumeroComSufixo(corrente, 2)}A × 1.25 = ${formatarNumeroComSufixo(correnteComSeguranca, 2)}A → Disjuntor comercial: ${formatarNumeroComSufixo(disjuntor, 0)}A`;
+        const textoCorrente = traducoes[idiomaAtual]?.['memorial-exemplo-corrente-texto'] || 'Corrente';
+        const textoDisjuntorComercial = traducoes[idiomaAtual]?.['memorial-exemplo-disjuntor-comercial'] || 'Disjuntor comercial';
+        exemploDisjuntor.textContent = `${textoCorrente} ${formatarNumeroComSufixo(corrente, 2)}A × 1.25 = ${formatarNumeroComSufixo(correnteComSeguranca, 2)}A → ${textoDisjuntorComercial}: ${formatarNumeroComSufixo(disjuntor, 0)}A`;
     }
     
     // Atualiza resumo calculado
@@ -902,7 +1067,7 @@ document.addEventListener('DOMContentLoaded', () => {
     quedaReal = document.getElementById('quedaReal');
     disjuntorComercial = document.getElementById('disjuntorComercial');
     
-    // Event listeners para sliders com throttle para melhorar performance
+    // Event listeners para sliders com throttle reduzido para melhor responsividade
     sliderPotencia.addEventListener('input', throttle(() => {
         let valor = parseFloat(sliderPotencia.value);
         
@@ -920,7 +1085,7 @@ document.addEventListener('DOMContentLoaded', () => {
         inputPotencia.value = formatarNumeroComSufixo(valor, 1);
         if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPotencia);
         atualizarResultados();
-    }, 100));
+    }, 50)); // Reduzido de 100ms para 50ms para melhor responsividade
     
     sliderComprimento.addEventListener('input', throttle(() => {
         inputComprimento.value = formatarNumero(parseFloat(sliderComprimento.value), 0);

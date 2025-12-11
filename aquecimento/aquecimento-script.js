@@ -1740,17 +1740,17 @@ const traducoes = {
         'memorial-titulo': 'Memorial de Cálculo',
         'memorial-title': '📚 Memorial de Cálculo - Aquecedor Solar Térmico',
         'memorial-intro-title': '🎯 Objetivo do Dimensionamento',
-        'memorial-intro-text': 'Este memorial explica passo a passo como é calculado o dimensionamento de um sistema de aquecimento solar térmico, incluindo área de coletores, volume do boiler, número de painéis e potência necessária para água de consumo e/ou aquecimento ambiente.',
+        'memorial-intro-text': 'Este memorial explica passo a passo como é calculado o dimensionamento de um sistema de aquecimento solar térmico, incluindo área de coletores, volume do boiler, número de painéis e potência necessária para água de consumo e/ou aquecimento ambiente. As fórmulas e a lógica de cálculo foram validadas por testes automatizados.',
         'memorial-passo1-title': '1️⃣ Passo 1: Calcular Demanda de Energia para Água',
         'memorial-formula': 'Fórmula:',
-        'memorial-passo1-explicacao': 'A energia necessária para aquecer a água depende do consumo diário, da diferença de temperatura e das propriedades físicas da água.',
+        'memorial-passo1-explicacao': 'A energia necessária para aquecer a água é calculada usando a fórmula E = (V × ρ × c × ΔT) / 1000, onde V é o volume diário (L), ρ é a densidade da água (1 kg/L), c é o calor específico (1.163 Wh/kg°C) e ΔT é a diferença entre a temperatura desejada e a temperatura da água fria.',
         'memorial-example': 'Exemplo:',
         'memorial-passo2-title': '2️⃣ Passo 2: Calcular Potência e Demanda para Aquecimento da Casa',
         'memorial-passo2-explicacao': 'A potência necessária (em Watts) é calculada usando o método de dimensionamento de radiadores, considerando volume, classe energética e diferença de temperatura. Esta é a potência INSTANTÂNEA contínua necessária para manter a casa aquecida (compensar as perdas térmicas). A demanda diária (em kWh/dia) é usada para dimensionar os coletores solares e representa a energia total necessária por dia.',
         'memorial-passo3-title': '3️⃣ Passo 3: Dimensionar Volume do Boiler',
         'memorial-passo3-explicacao': 'O volume do boiler deve ser suficiente para armazenar água quente para os dias sem sol (autonomia).',
         'memorial-passo4-title': '4️⃣ Passo 4: Calcular Eficiência do Coletor',
-        'memorial-passo4-explicacao': 'A eficiência do coletor varia com a temperatura de operação e as condições ambientais. Quanto maior a diferença de temperatura, menor a eficiência.',
+        'memorial-passo4-explicacao': 'A eficiência do coletor é calculada usando a fórmula η = η₀ - (U × (T_media - T_ambiente) / I), onde η₀ é a eficiência óptica, U é o coeficiente de perda linear, T_media é a temperatura média do fluido, T_ambiente é a temperatura ambiente e I é a irradiação solar. Quanto maior a diferença de temperatura, menor a eficiência.',
         'memorial-passo5-title': '5️⃣ Passo 5: Calcular Área de Coletores',
         'memorial-passo5-explicacao': 'A área de coletores necessária depende da demanda total de energia, das horas de sol pico (HSP) disponíveis e da eficiência do coletor. Para aquecimento da casa, o sistema precisa captar em 1 dia energia suficiente para os dias de autonomia (ex: se autonomia = 5 dias, precisa captar em 1 dia energia para 5 dias e noites). A energia capturada por m² de painel é calculada considerando 1 hora de sol pico (1000 W/m²) multiplicada pelo número de horas de sol pico do dia.',
         'memorial-passo6-title': '6️⃣ Passo 6: Calcular Número de Painéis',
@@ -1901,17 +1901,17 @@ const traducoes = {
         'btn-memorial': 'Vedi Memoriale di Calcolo',
         'memorial-title': '📚 Memoriale di Calcolo - Riscaldatore Solare Termico',
         'memorial-intro-title': '🎯 Obiettivo del Dimensionamento',
-        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come viene calcolato il dimensionamento di un sistema di riscaldamento solare termico, inclusa l\'area dei collettori, il volume del boiler, il numero di pannelli e la potenza necessaria per acqua di consumo e/o riscaldamento ambiente.',
+        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come viene calcolato il dimensionamento di un sistema di riscaldamento solare termico, inclusa l\'area dei collettori, il volume del boiler, il numero di pannelli e la potenza necessaria per acqua di consumo e/o riscaldamento ambiente. Le formule e la logica di calcolo sono state validate da test automatizzati.',
         'memorial-passo1-title': '1️⃣ Passo 1: Calcolare Domanda di Energia per Acqua',
         'memorial-formula': 'Formula:',
-        'memorial-passo1-explicacao': 'L\'energia necessaria per riscaldare l\'acqua dipende dal consumo giornaliero, dalla differenza di temperatura e dalle proprietà fisiche dell\'acqua.',
+        'memorial-passo1-explicacao': 'L\'energia necessaria per riscaldare l\'acqua viene calcolata utilizzando la formula E = (V × ρ × c × ΔT) / 1000, dove V è il volume giornaliero (L), ρ è la densità dell\'acqua (1 kg/L), c è il calore specifico (1.163 Wh/kg°C) e ΔT è la differenza tra la temperatura desiderata e la temperatura dell\'acqua fredda.',
         'memorial-example': 'Esempio:',
         'memorial-passo2-title': '2️⃣ Passo 2: Calcolare Potenza e Domanda per Riscaldamento Casa',
         'memorial-passo2-explicacao': 'La potenza necessaria (in Watt) è calcolata usando il metodo di dimensionamento dei radiatori, considerando volume, classe energetica e differenza di temperatura. Questa è la potenza ISTANTANEA continua necessaria per mantenere la casa riscaldata (compensare le perdite termiche). La domanda giornaliera (in kWh/giorno) è usata per dimensionare i collettori solari e rappresenta l\'energia totale necessaria per giorno.',
         'memorial-passo3-title': '3️⃣ Passo 3: Dimensionare Volume Boiler',
         'memorial-passo3-explicacao': 'Il volume del boiler deve essere sufficiente per immagazzinare acqua calda per i giorni senza sole (autonomia).',
         'memorial-passo4-title': '4️⃣ Passo 4: Calcolare Efficienza Collettore',
-        'memorial-passo4-explicacao': 'L\'efficienza del collettore varia con la temperatura di funzionamento e le condizioni ambientali. Maggiore è la differenza di temperatura, minore è l\'efficienza.',
+        'memorial-passo4-explicacao': 'L\'efficienza del collettore viene calcolata utilizzando la formula η = η₀ - (U × (T_media - T_ambiente) / I), dove η₀ è l\'efficienza ottica, U è il coefficiente di perdita lineare, T_media è la temperatura media del fluido, T_ambiente è la temperatura ambiente e I è l\'irradiazione solare. Maggiore è la differenza di temperatura, minore è l\'efficienza.',
         'memorial-passo5-title': '5️⃣ Passo 5: Calcolare Area Collettori',
         'memorial-passo5-explicacao': 'L\'area dei collettori necessaria dipende dalla domanda totale di energia, dalle ore di sole di picco (HSP) disponibili e dall\'efficienza del collettore. Per il riscaldamento della casa, il sistema deve catturare in 1 giorno energia sufficiente per i giorni di autonomia (es: se autonomia = 5 giorni, deve catturare in 1 giorno energia per 5 giorni e notti). L\'energia catturata per m² di pannello è calcolata considerando 1 ora di sole di picco (1000 W/m²) moltiplicata per il numero di ore di sole di picco del giorno.',
         'memorial-passo6-title': '6️⃣ Passo 6: Calcolare Numero Pannelli',
@@ -2029,7 +2029,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sliderAreaCasa = document.getElementById('sliderAreaCasa');
     const sliderAlturaCasa = document.getElementById('sliderAlturaCasa');
     
-    // Aplica throttle nos sliders para melhorar performance durante o arraste
+    // Aplica throttle reduzido nos sliders para melhor responsividade (50ms)
     sliderPessoas.addEventListener('input', throttle(() => {
         const valor = parseInt(sliderPessoas.value);
         const inputPessoas = document.getElementById('inputPessoas');
@@ -2038,7 +2038,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
         }
         atualizarResultados();
-    }, 100));
+    }, 50)); // Reduzido de 100ms para 50ms
     
     sliderLatitude.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderLatitude.value);
@@ -2049,7 +2049,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputLatitude);
         }
         atualizarResultados();
-    }, 100));
+    }, 50)); // Reduzido de 100ms para 50ms
     
     sliderAltitude.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderAltitude.value);
@@ -2059,7 +2059,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAltitude);
         }
         atualizarResultados();
-    }, 100));
+    }, 50)); // Reduzido de 100ms para 50ms
     
     sliderAreaCasa.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderAreaCasa.value);
@@ -2069,7 +2069,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAreaCasa);
         }
         atualizarResultados();
-    }, 100));
+    }, 50)); // Reduzido de 100ms para 50ms
     
     sliderAlturaCasa.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderAlturaCasa.value);
@@ -2294,52 +2294,42 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Modelo B é fixo (único modelo de referência), não precisa de listener
     
-    // Configurar botões de seta
-    document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
-        const targetId = btn.getAttribute('data-target');
-        const step = parseFloat(btn.getAttribute('data-step'));
-        
-        const startRepeating = () => {
+    // Configurar botões de seta - usa função global com aceleração exponencial
+    if (typeof configurarBotoesSliderComAceleracao === 'function') {
+        // Usa função de ajuste local que atualiza inputs correspondentes
+        function ajustarValorAquecimento(targetId, step) {
             ajustarValor(targetId, step);
-            const intervalId = setInterval(() => {
-                ajustarValor(targetId, step);
-            }, 100);
-            btn.dataset.intervalId = intervalId;
-        };
-        
-        const stopRepeating = () => {
-            if (btn.dataset.intervalId) {
-                clearInterval(btn.dataset.intervalId);
-                delete btn.dataset.intervalId;
-            }
-        };
-        
-        btn.addEventListener('mousedown', (e) => {
-            e.preventDefault();
-            startRepeating();
+        }
+        configurarBotoesSliderComAceleracao(SITE_SEL.ARROW_BTN, ajustarValorAquecimento);
+    } else {
+        // Fallback para código antigo se a função global não estiver disponível
+        document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
+            const targetId = btn.getAttribute('data-target');
+            const step = parseFloat(btn.getAttribute('data-step'));
+            btn.addEventListener('click', () => ajustarValor(targetId, step));
         });
-        btn.addEventListener('mouseup', stopRepeating);
-        btn.addEventListener('mouseleave', stopRepeating);
-        btn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            startRepeating();
-        });
-        btn.addEventListener('touchend', stopRepeating);
-        btn.addEventListener('touchcancel', stopRepeating);
-    });
+    }
     
     // Função auxiliar para ajustar valor do slider
     function ajustarValor(targetId, step) {
         const slider = document.getElementById(targetId);
         if (!slider) return;
         
-        const currentValue = parseFloat(slider.value);
-        const min = parseFloat(slider.min);
-        const max = parseFloat(slider.max);
-        const newValue = Math.max(min, Math.min(max, currentValue + step));
+        // Usa 0 como mínimo se slider.min for 0 (importante para sliders que começam em 0)
+        const minRaw = parseFloat(slider.min);
+        const min = isNaN(minRaw) ? 0 : minRaw; // Permite 0 como mínimo válido
+        const max = parseFloat(slider.max) || 100;
+        const stepAttr = parseFloat(slider.step) || 1;
+        
+        let currentValue = parseFloat(slider.value);
+        if (isNaN(currentValue)) currentValue = min;
+        
+        let newValue = currentValue + step;
+        newValue = Math.round(newValue / stepAttr) * stepAttr;
+        newValue = Math.max(min, Math.min(max, newValue));
         
         slider.value = newValue;
-        slider.dispatchEvent(new Event('input'));
+        slider.dispatchEvent(new Event('input', { bubbles: true }));
     }
     
     // Formatar valor inicial da latitude com vírgula

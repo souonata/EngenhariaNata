@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <title>DevTools - Engenharia NATA</title>
+    
+    <!-- Estilos compartilhados -->
+    <link rel="stylesheet" href="../assets/css/shared-styles.css">
+    <link rel="stylesheet" href="devtools-styles.css">
+    
+    <!-- Configuração global -->
+    <script src="../assets/js/site-config.js"></script>
+</head>
+<body>
+    <!-- Banner de Aviso File:// -->
+    <div id="fileProtocolBanner" class="file-protocol-banner" style="display: none;">
+        <div class="banner-content">
+            <span class="banner-icon">⚠️</span>
+            <span class="banner-text">Edição de código não disponível em arquivos locais. Clique aqui para iniciar um servidor local.</span>
+            <button id="btnOpenServerFromBanner" class="banner-btn">🌐 Iniciar Servidor</button>
+            <button id="btnDismissBanner" class="banner-close" title="Fechar">×</button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="app-header">
+        <h1 data-i18n="devtools-title">🛠️ DevTools</h1>
+        <div class="header-controls">
+            <select id="appSelector" class="app-selector">
+                <option value="index.html">Home</option>
+                <option value="mutuo/mutuo.html">Mutuo</option>
+                <option value="solar/solar.html">Solar</option>
+                <option value="helice/helice.html">Hélice</option>
+                <option value="bitola/bitola.html">Bitola</option>
+                <option value="arcondicionado/arcondicionado.html">Ar Condicionado</option>
+                <option value="aquecimento/aquecimento.html">Aquecimento</option>
+                <option value="fazenda/fazenda.html">Fazenda</option>
+                <option value="sobre/sobre.html">Sobre</option>
+            </select>
+            <button id="btnServer" class="btn-reload" title="Gerenciar Servidor Local">🌐</button>
+            <button id="btnReload" class="btn-reload" title="Recarregar página">🔄</button>
+        </div>
+    </header>
+
+    <!-- Modal de Servidor Local -->
+    <div id="serverModal" class="server-modal" style="display: none;">
+        <div class="server-modal-content">
+            <div class="server-modal-header">
+                <h2>🌐 Servidor Local</h2>
+                <button id="btnCloseServerModal" class="btn-close-modal" title="Fechar">×</button>
+            </div>
+            <div class="server-modal-body">
+                <p class="server-info">Para habilitar a edição de código, use o servidor virtual automático. Funciona sem instalar nada!</p>
+                
+                <!-- Servidor Virtual JavaScript -->
+                <div class="server-option server-option-featured">
+                    <div class="server-option-header">
+                        <h3>⚡ Servidor Virtual JavaScript</h3>
+                        <span id="jsServerStatus" class="server-status available">Sempre Disponível</span>
+                    </div>
+                    <div class="server-instructions">
+                        <p><strong>Funciona sem instalar nada!</strong> Carregue os arquivos diretamente do seu computador e edite em tempo real.</p>
+                        <p>Você pode arrastar e soltar os arquivos HTML, CSS e JavaScript ou clicar para selecioná-los.</p>
+                    </div>
+                    <button class="btn-open-terminal" data-type="js-virtual" title="Iniciar Servidor Virtual" onclick="if(typeof startVirtualServer === 'function') { startVirtualServer(); } else { console.error('startVirtualServer não encontrado'); }">🚀 Iniciar Servidor Virtual</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container principal dividido -->
+    <div class="devtools-container">
+        <!-- Painel superior: Visualização do site -->
+        <div class="preview-panel">
+            <div class="panel-header">
+                <span class="panel-title">📱 Preview</span>
+                <div class="panel-controls">
+                    <button id="btnToggleInspector" class="btn-toggle" title="Ativar/Desativar Inspetor">🔍</button>
+                    <button id="btnFullscreenPreview" class="btn-toggle" title="Tela cheia">⛶</button>
+                </div>
+            </div>
+            <div class="preview-content">
+                <iframe id="previewFrame" src="../index.html" frameborder="0"></iframe>
+            </div>
+        </div>
+
+        <!-- Painel inferior: Editor de código -->
+        <div class="editor-panel">
+            <div class="panel-header">
+                <div class="tabs-container">
+                    <button class="tab-btn active" data-tab="html">HTML</button>
+                    <button class="tab-btn" data-tab="css">CSS</button>
+                    <button class="tab-btn" data-tab="js">JavaScript</button>
+                </div>
+                <div class="panel-controls">
+                    <button id="btnFormat" class="btn-toggle" title="Atualizar visualização">▶️</button>
+                    <button id="btnClear" class="btn-toggle" title="Limpar alterações">🗑️</button>
+                </div>
+            </div>
+            <div class="editor-content">
+                <div id="editorHTML" class="code-editor active" contenteditable="true" spellcheck="false"></div>
+                <div id="editorCSS" class="code-editor" contenteditable="true" spellcheck="false"></div>
+                <div id="editorJS" class="code-editor" contenteditable="true" spellcheck="false"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botão Home fixo -->
+    <a href="../index.html" class="home-button-fixed" aria-label="Voltar para home">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor"/>
+        </svg>
+    </a>
+
+    <script src="devtools-script.js"></script>
+</body>
+</html>
+

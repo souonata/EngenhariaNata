@@ -395,7 +395,7 @@ const traducoes = {
         'btn-memorial': 'Ver Memorial de Cálculo',
         'memorial-title': '📚 Memorial de Cálculo - Energia Solar',
         'memorial-intro-title': '🎯 Objetivo do Dimensionamento',
-        'memorial-intro-text': 'Este memorial explica passo a passo como são calculados os componentes de um sistema fotovoltaico off-grid: número de painéis solares, capacidade de baterias, potência do inversor, corrente do MPPT e estimativa de custos.',
+        'memorial-intro-text': 'Este memorial explica passo a passo como são calculados os componentes de um sistema fotovoltaico off-grid: número de painéis solares, capacidade de baterias, potência do inversor, corrente do MPPT e estimativa de custos. As fórmulas e a lógica de cálculo foram validadas por testes automatizados.',
         'memorial-passo1-title': '1️⃣ Passo 1: Calcular Energia Diária Necessária',
         'memorial-passo2-title': '2️⃣ Passo 2: Determinar DoD (Profundidade de Descarga) pela Vida Útil',
         'memorial-passo3-title': '3️⃣ Passo 3: Calcular Capacidade Necessária de Baterias',
@@ -412,13 +412,13 @@ const traducoes = {
         'memorial-hsp': 'HSP (Horas de Sol Pleno) = 5 horas/dia (padrão para Brasil)',
         'memorial-eficiencia': 'Eficiência do Sistema = 80% (considera perdas de 20% em cabos, MPPT e inversor)',
         'memorial-passo1-explicacao': 'Esta é a quantidade de energia que o sistema precisa fornecer todos os dias para atender ao consumo médio.',
-        'memorial-passo2-explicacao': 'O DoD (Depth of Discharge) determina quanto da capacidade da bateria pode ser usada diariamente. Quanto maior a vida útil desejada, menor deve ser o DoD para preservar a bateria.',
+        'memorial-passo2-explicacao': 'O DoD (Depth of Discharge) determina quanto da capacidade da bateria pode ser usada diariamente. Quanto maior a vida útil desejada, menor deve ser o DoD para preservar a bateria. O DoD é calculado usando tabelas de ciclos vs DoD baseadas em dados de fabricantes, com interpolação linear para valores intermediários.',
         'memorial-dod-tip': 'Baterias LiFePO4 permitem DoD maiores (50-80%) que baterias AGM (30-50%) para a mesma vida útil.',
         'memorial-passo3-explicacao': 'Calculamos a capacidade necessária por dois critérios e escolhemos o maior: um para garantir a vida útil desejada e outro para garantir os dias de autonomia sem sol.',
         'memorial-passo4-explicacao': 'Arredondamos para cima para garantir que temos capacidade suficiente. Para tensões 24V e 48V, garantimos número par de baterias para facilitar a montagem em série/paralelo.',
-        'memorial-passo5-explicacao': 'Os painéis precisam gerar energia suficiente para recarregar as baterias, considerando perdas do sistema (cabo, MPPT, inversor). Usamos HSP (Horas de Sol Pleno) para estimar a geração diária.',
+        'memorial-passo5-explicacao': 'Os painéis precisam gerar energia suficiente para recarregar as baterias, considerando perdas do sistema (cabo, MPPT, inversor). A eficiência do sistema de 80% considera todas as perdas. Usamos HSP (Horas de Sol Pleno) de 5 horas/dia para estimar a geração diária, que representa o número médio de horas em que a radiação solar atinge 1000 W/m².',
         'memorial-passo6-explicacao': 'O inversor converte DC das baterias para AC da casa. Deve ter capacidade para o consumo de pico típico de uma residência, não precisa ter a capacidade total dos painéis. O fator de pico de 5x considera que o consumo não é constante ao longo do dia.',
-        'memorial-passo7-explicacao': 'O MPPT (Maximum Power Point Tracking) controla o carregamento das baterias pelos painéis. Precisa suportar a corrente máxima de todos os painéis operando no pico. Valores comerciais comuns: 20A, 40A, 60A, 100A.',
+        'memorial-passo7-explicacao': 'O MPPT (Maximum Power Point Tracking) controla o carregamento das baterias pelos painéis. Precisa suportar a corrente máxima de todos os painéis operando no pico. A corrente é calculada dividindo a potência total dos painéis pela tensão do banco de baterias. Valores comerciais comuns: 20A, 40A, 60A, 100A.',
         'memorial-passo8-explicacao': 'Os preços podem ser personalizados na página de configurações. Os valores são convertidos automaticamente para a moeda do idioma selecionado (R$ para português, € para italiano).',
         'memorial-resumo-energia-diaria': 'Energia Diária:',
         'memorial-resumo-dod': 'DoD Alvo:',
@@ -494,7 +494,7 @@ const traducoes = {
         'btn-memorial': 'Vedi Memoriale di Calcolo',
         'memorial-title': '📚 Memoriale di Calcolo - Energia Solare',
         'memorial-intro-title': '🎯 Obiettivo del Dimensionamento',
-        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come vengono calcolati i componenti di un sistema fotovoltaico off-grid: numero di pannelli solari, capacità delle batterie, potenza dell\'inverter, corrente del MPPT e stima dei costi.',
+        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come vengono calcolati i componenti di un sistema fotovoltaico off-grid: numero di pannelli solari, capacità delle batterie, potenza dell\'inverter, corrente del MPPT e stima dei costi. Le formule e la logica di calcolo sono state validate da test automatizzati.',
         'memorial-passo1-title': '1️⃣ Passo 1: Calcolare Energia Giornaliera Necessaria',
         'memorial-passo2-title': '2️⃣ Passo 2: Determinare DoD (Profondità di Scarica) dalla Vita Utile',
         'memorial-passo3-title': '3️⃣ Passo 3: Calcolare Capacità Necessaria delle Batterie',
@@ -511,13 +511,13 @@ const traducoes = {
         'memorial-hsp': 'HSP (Ore di Sole Pieno) = 5 ore/giorno (standard per il Brasile)',
         'memorial-eficiencia': 'Efficienza del Sistema = 80% (considera perdite del 20% in cavi, MPPT e inverter)',
         'memorial-passo1-explicacao': 'Questa è la quantità di energia che il sistema deve fornire ogni giorno per soddisfare il consumo medio.',
-        'memorial-passo2-explicacao': 'Il DoD (Depth of Discharge) determina quanto della capacità della batteria può essere utilizzato quotidianamente. Maggiore è la vita utile desiderata, minore deve essere il DoD per preservare la batteria.',
+        'memorial-passo2-explicacao': 'Il DoD (Depth of Discharge) determina quanto della capacità della batteria può essere utilizzato quotidianamente. Maggiore è la vita utile desiderata, minore deve essere il DoD per preservare la batteria. Il DoD viene calcolato utilizzando tabelle di cicli vs DoD basate su dati dei produttori, con interpolazione lineare per valori intermedi.',
         'memorial-dod-tip': 'Le batterie LiFePO4 consentono DoD maggiori (50-80%) rispetto alle batterie AGM (30-50%) per la stessa vita utile.',
         'memorial-passo3-explicacao': 'Calcoliamo la capacità necessaria con due criteri e scegliamo il maggiore: uno per garantire la vita utile desiderata e l\'altro per garantire i giorni di autonomia senza sole.',
         'memorial-passo4-explicacao': 'Arrotondiamo per eccesso per garantire di avere capacità sufficiente. Per tensioni 24V e 48V, garantiamo un numero pari di batterie per facilitare il montaggio in serie/parallelo.',
-        'memorial-passo5-explicacao': 'I pannelli devono generare energia sufficiente per ricaricare le batterie, considerando le perdite del sistema (cavo, MPPT, inverter). Usiamo HSP (Ore di Sole Pieno) per stimare la generazione giornaliera.',
+        'memorial-passo5-explicacao': 'I pannelli devono generare energia sufficiente per ricaricare le batterie, considerando le perdite del sistema (cavo, MPPT, inverter). L\'efficienza del sistema dell\'80% considera tutte le perdite. Usiamo HSP (Ore di Sole Pieno) di 5 ore/giorno per stimare la generazione giornaliera, che rappresenta il numero medio di ore in cui la radiazione solare raggiunge 1000 W/m².',
         'memorial-passo6-explicacao': 'L\'inverter converte DC delle batterie in AC della casa. Deve avere capacità per il consumo di picco tipico di una residenza, non deve avere la capacità totale dei pannelli. Il fattore di picco di 5x considera che il consumo non è costante durante il giorno.',
-        'memorial-passo7-explicacao': 'Il MPPT (Maximum Power Point Tracking) controlla la ricarica delle batterie da parte dei pannelli. Deve supportare la corrente massima di tutti i pannelli operanti al picco. Valori commerciali comuni: 20A, 40A, 60A, 100A.',
+        'memorial-passo7-explicacao': 'Il MPPT (Maximum Power Point Tracking) controlla la ricarica delle batterie da parte dei pannelli. Deve supportare la corrente massima di tutti i pannelli operanti al picco. La corrente viene calcolata dividendo la potenza totale dei pannelli per la tensione del banco di batterie. Valori commerciali comuni: 20A, 40A, 60A, 100A.',
         'memorial-passo8-explicacao': 'I prezzi possono essere personalizzati nella pagina delle impostazioni. I valori vengono convertiti automaticamente nella valuta della lingua selezionata (R$ per portoghese, € per italiano).',
         'memorial-resumo-energia-diaria': 'Energia Giornaliera:',
         'memorial-resumo-dod': 'DoD Obiettivo:',
@@ -695,15 +695,16 @@ function ajustarValor(targetId, step) {
         return;
     }
     
-    let valor = parseFloat(slider.value) || 0;
+    // Usa 0 como mínimo se slider.min for 0 (importante para sliders que começam em 0)
+    const minRaw = parseFloat(slider.min);
+    const min = isNaN(minRaw) ? 0 : minRaw; // Permite 0 como mínimo válido
+    const max = parseFloat(slider.max) || 100;
+    const stepAttr = parseFloat(slider.step) || 1;
+    
+    let valor = parseFloat(slider.value);
+    if (isNaN(valor)) valor = min;
+    
     valor += step;
-    
-    // Respeita os limites do slider
-    const min = parseFloat(slider.min);
-    const max = parseFloat(slider.max);
-    
-    if (valor < min) valor = min;
-    if (valor > max) valor = max;
     
     // Arredonda baseado no tipo de slider
     // Consumo e Autonomia: valores inteiros
@@ -1245,7 +1246,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 2. Configurar botões de seta (Arrow Buttons)
+    // 2. Configurar botões de seta - usa função global com aceleração exponencial
+    if (typeof configurarBotoesSliderComAceleracao === 'function') {
+        // Usa função de ajuste local que atualiza inputs correspondentes
+        function ajustarValorSolar(targetId, step) {
+            ajustarValor(targetId, step);
+        }
+        configurarBotoesSliderComAceleracao(SITE_SEL.ARROW_BTN, ajustarValorSolar);
+    } else {
+        // Fallback para código antigo se a função global não estiver disponível
+        document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
+            const targetId = btn.getAttribute('data-target');
+            const step = parseFloat(btn.getAttribute('data-step'));
+            btn.addEventListener('click', () => ajustarValor(targetId, step));
+        });
+    }
+    
+    // Código antigo removido - agora usa função global
+    /*
     document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
         const targetId = btn.getAttribute('data-target');
         const step = parseFloat(btn.getAttribute('data-step'));

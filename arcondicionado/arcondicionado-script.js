@@ -236,34 +236,34 @@ const traducoes = {
         'btn-memorial': 'Ver Memorial de Cálculo',
         'memorial-title': '📚 Memorial de Cálculo - Dimensionamento de Ar Condicionado',
         'memorial-intro-title': '🎯 Objetivo do Dimensionamento',
-        'memorial-intro-text': 'Este memorial explica passo a passo como é calculada a capacidade necessária de ar condicionado (em BTU) para um ambiente residencial, considerando volume, pessoas, equipamentos, insolação e isolamento térmico.',
-        'memorial-passo1-title': '1️⃣ Passo 1: Calcular Volume do Ambiente',
+        'memorial-intro-text': 'Este memorial explica passo a passo como é calculada a capacidade necessária de ar condicionado (em BTU) para um sistema multi-split residencial, considerando área total, altura do pé direito, número de ambientes, pessoas, equipamentos, insolação e isolamento térmico. Todas as fórmulas foram validadas através de testes automatizados.',
+        'memorial-passo1-title': '1️⃣ Passo 1: Calcular Volume Total do Sistema',
         'memorial-formula': 'Fórmula:',
-        'memorial-passo1-explicacao': 'O volume determina a quantidade de ar que precisa ser resfriado no ambiente.',
+        'memorial-passo1-explicacao': 'O volume total determina a quantidade de ar que precisa ser resfriado em todos os ambientes do sistema. A área total é a soma das áreas de todos os ambientes que terão ar condicionado.',
         'memorial-example': 'Exemplo:',
-        'memorial-passo2-title': '2️⃣ Passo 2: Calcular BTU Base',
-        'memorial-passo2-explicacao': 'Cada pessoa e equipamento elétrico gera calor que precisa ser removido pelo ar condicionado.',
+        'memorial-passo2-title': '2️⃣ Passo 2: Calcular BTU Base Total',
+        'memorial-passo2-explicacao': 'O BTU base é calculado considerando a área (ajustada pela altura do pé direito), o número total de pessoas e equipamentos elétricos. Cada pessoa e equipamento gera calor que precisa ser removido pelo ar condicionado. O fator de altura normaliza o cálculo para pé direito padrão de 2.7m.',
         'memorial-passo3-title': '3️⃣ Passo 3: Aplicar Fatores de Ajuste (Insolação e Isolamento)',
-        'memorial-passo3-explicacao': 'Os fatores de insolação e isolamento ajustam a capacidade necessária baseado nas condições do ambiente. Estes são fatores multiplicadores que refletem o impacto real das condições ambientais na carga térmica.',
+        'memorial-passo3-explicacao': 'Os fatores de insolação e isolamento ajustam a capacidade necessária baseado nas condições dos ambientes. Estes são fatores multiplicadores que refletem o impacto real das condições ambientais na carga térmica. Os fatores são aplicados multiplicando o BTU base: primeiro pela insolação, depois pelo isolamento.',
         'memorial-fatores-title': 'Fatores utilizados:',
-        'memorial-fatores-insolacao': 'Insolação: Baixa (1.0), Média (1.15), Alta (1.3)',
-        'memorial-fatores-isolamento': 'Isolamento: Bom (0.8), Médio (1.0), Ruim (1.2)',
+        'memorial-fatores-insolacao': 'Insolação: Baixa (1.0), Média (1.15), Alta (1.3) — Baseado em práticas da indústria de refrigeração',
+        'memorial-fatores-isolamento': 'Isolamento: Bom (0.8), Médio (1.0), Ruim (1.2) — Baseado em normas técnicas ASHRAE',
         'fator-insolacao-baixa': 'Baixa',
         'fator-insolacao-media': 'Média',
         'fator-insolacao-alta': 'Alta',
         'fator-isolamento-bom': 'Bom',
         'fator-isolamento-medio': 'Médio',
         'fator-isolamento-ruim': 'Ruim',
-        'memorial-passo4-title': '4️⃣ Passo 4: Selecionar Modelo Comercial',
-        'memorial-passo4-explicacao': 'O BTU calculado é arredondado para cima para o modelo comercial mais próximo disponível no mercado.',
+        'memorial-passo4-title': '4️⃣ Passo 4: Calcular BTU por Ambiente',
+        'memorial-passo4-explicacao': 'O BTU final total é dividido pelo número de ambientes para determinar a capacidade necessária de cada unidade interna (evaporadora). Cada split interno será dimensionado para atender sua parte proporcional do sistema.',
         'memorial-modelos-title': 'Modelos comerciais disponíveis:',
         'memorial-modelos-lista': '5.000, 7.000, 9.000, 12.000, 18.000, 24.000, 30.000, 36.000, 48.000, 60.000 BTU',
-        'memorial-passo5-title': '5️⃣ Passo 5: Converter para Potência (kW)',
-        'memorial-passo5-explicacao': 'A conversão para kW é útil para comparar com outros equipamentos elétricos e estimar consumo de energia.',
-        'memorial-resumo-title': '📊 Resumo Calculado',
-        'memorial-resumo-volume': 'Volume do Ambiente:',
-        'memorial-resumo-btu-base': 'BTU Base:',
-        'memorial-resumo-btu-final-calc': 'BTU Final (após fatores):',
+        'memorial-passo5-title': '5️⃣ Passo 5: Selecionar Modelos Comerciais',
+        'memorial-passo5-explicacao': 'O BTU calculado por ambiente é arredondado para cima para o modelo comercial mais próximo. Se o BTU necessário por ambiente exceder 60k BTU (maior modelo interno disponível), serão usadas múltiplas unidades internas de 60k BTU por ambiente. A unidade externa (condensadora) deve ter capacidade para o BTU total real do sistema (soma das capacidades de todas as unidades internas). Se o BTU total exceder 180k BTU (maior modelo externo disponível), serão usadas múltiplas unidades externas de 180k BTU.',
+        'memorial-resumo-title': '📊 Resumo Calculado - Sistema Multi-Split',
+        'memorial-resumo-volume': 'Volume Total:',
+        'memorial-resumo-btu-base': 'BTU Base Total:',
+        'memorial-resumo-btu-final-calc': 'BTU Final Total (após fatores):',
         'memorial-resumo-btu-final': 'BTU Recomendado (modelo comercial):',
         'memorial-resumo-potencia': 'Potência (kW):',
         'memorial-passo6-title': '6️⃣ Passo 6: Calcular Custo Estimado',
@@ -272,7 +272,25 @@ const traducoes = {
         'memorial-resumo-unidade-interna': 'Unidade Interna (Modelo):',
         'memorial-resumo-btu-total-real': 'BTU Total Real:',
         'memorial-resumo-unidade-externa': 'Unidade Externa (Modelo):',
-        'memorial-resumo-custo-total': 'Custo Total Estimado:'
+        'memorial-resumo-custo-total': 'Custo Total Estimado:',
+        'memorial-formula-volume': 'Volume Total (m³) = Área Total (m²) × Altura (m)',
+        'memorial-formula-fator-altura': 'Fator Altura = Altura (m) ÷ 2.7 m (padrão)',
+        'memorial-formula-btu-area': 'BTU Área Total = Área Total (m²) × 700 BTU/m² × Fator Altura',
+        'memorial-formula-btu-pessoas': 'BTU Pessoas Total = Número Total de Pessoas × 600 BTU/pessoa',
+        'memorial-formula-btu-equipamentos': 'BTU Equipamentos Total = Número Total de Equipamentos × 600 BTU/equipamento',
+        'memorial-formula-btu-base': 'BTU Base Total = BTU Área Total + BTU Pessoas Total + BTU Equipamentos Total',
+        'memorial-formula-btu-final': 'BTU Final Total = BTU Base Total × Fator Insolação × Fator Isolamento',
+        'memorial-btu-por-m2': 'BTU por m²:',
+        'memorial-btu-por-m2-texto': '700 BTU/m² — Valor padrão amplamente aceito na indústria para dimensionamento residencial. Este valor é multiplicado pelo fator de altura (altura ÷ 2.7m) para ajustar quando o pé direito é diferente do padrão.',
+        'memorial-btu-por-pessoa': 'BTU por Pessoa:',
+        'memorial-btu-por-pessoa-texto': '600 BTU/pessoa — Considera calor metabólico (calor sensível ~400 BTU/h + calor latente ~200 BTU/h)',
+        'memorial-btu-por-equipamento': 'BTU por Equipamento:',
+        'memorial-btu-por-equipamento-texto': '600 BTU/equipamento — Baseado na Lei da Conservação de Energia: toda energia elétrica consumida é convertida em calor',
+        'memorial-fatores-afetam-titulo': '💡 Como os fatores afetam o cálculo:',
+        'memorial-fatores-insolacao-texto': 'Insolação: Ambientes com maior exposição solar recebem mais calor, aumentando a necessidade de refrigeração. Baixa insolação (1.0) não altera o cálculo. Média insolação (1.15) aumenta em 15%. Alta insolação (1.3) aumenta em 30%.',
+        'memorial-fatores-isolamento-texto': 'Isolamento: Bom isolamento (0.8) reduz a necessidade de refrigeração em 20%, pois diminui a transferência de calor entre o ambiente interno e externo. Isolamento médio (1.0) não altera o cálculo. Isolamento ruim (1.2) aumenta a necessidade em 20%.',
+        'memorial-lei-fisica-titulo': '⚛️ Lei Física Aplicada — Conservação de Energia e Transferência de Calor:',
+        'memorial-lei-fisica-texto': 'Todo equipamento elétrico gera calor porque a energia elétrica consumida é transformada em calor (Lei da Conservação de Energia). O ar condicionado remove esse calor do ambiente interno e transfere para o ambiente externo (Transferência de Calor: calor sempre flui do mais quente para o mais frio).'
     },
     'it-IT': {
         'app-title': '❄️ Dimensionatore Climatizzatore',
@@ -327,34 +345,34 @@ const traducoes = {
         'btn-memorial': 'Vedi Memoriale di Calcolo',
         'memorial-title': '📚 Memoriale di Calcolo - Dimensionamento Climatizzatore',
         'memorial-intro-title': '🎯 Obiettivo del Dimensionamento',
-        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come viene calcolata la capacità necessaria del climatizzatore (in BTU) per un ambiente residenziale, considerando volume, persone, apparecchi, insolazione e isolamento termico.',
-        'memorial-passo1-title': '1️⃣ Passo 1: Calcolare Volume Ambiente',
+        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come viene calcolata la capacità necessaria del climatizzatore (in BTU) per un sistema multi-split residenziale, considerando area totale, altezza del soffitto, numero di ambienti, persone, apparecchi, insolazione e isolamento termico. Tutte le formule sono state validate attraverso test automatizzati.',
+        'memorial-passo1-title': '1️⃣ Passo 1: Calcolare Volume Totale del Sistema',
         'memorial-formula': 'Formula:',
-        'memorial-passo1-explicacao': 'Il volume determina la quantità di aria che deve essere raffreddata nell\'ambiente.',
+        'memorial-passo1-explicacao': 'Il volume totale determina la quantità di aria che deve essere raffreddata in tutti gli ambienti del sistema. L\'area totale è la somma delle aree di tutti gli ambienti che avranno climatizzatore.',
         'memorial-example': 'Esempio:',
-        'memorial-passo2-title': '2️⃣ Passo 2: Calcolare BTU Base',
-        'memorial-passo2-explicacao': 'Ogni persona e apparecchio elettrico genera calore che deve essere rimosso dal climatizzatore.',
+        'memorial-passo2-title': '2️⃣ Passo 2: Calcolare BTU Base Totale',
+        'memorial-passo2-explicacao': 'Il BTU base è calcolato considerando l\'area (aggiustata per l\'altezza del soffitto), il numero totale di persone e apparecchi elettrici. Ogni persona e apparecchio genera calore che deve essere rimosso dal climatizzatore. Il fattore di altezza normalizza il calcolo per un\'altezza standard del soffitto di 2.7m.',
         'memorial-passo3-title': '3️⃣ Passo 3: Applicare Fattori di Aggiustamento (Insolazione e Isolamento)',
-        'memorial-passo3-explicacao': 'I fattori di insolazione e isolamento aggiustano la capacità necessaria in base alle condizioni dell\'ambiente. Questi sono fattori moltiplicatori che riflettono l\'impatto reale delle condizioni ambientali sul carico termico.',
+        'memorial-passo3-explicacao': 'I fattori di insolazione e isolamento aggiustano la capacità necessaria in base alle condizioni degli ambienti. Questi sono fattori moltiplicatori che riflettono l\'impatto reale delle condizioni ambientali sul carico termico. I fattori sono applicati moltiplicando il BTU base: prima per l\'insolazione, poi per l\'isolamento.',
         'memorial-fatores-title': 'Fattori utilizzati:',
-        'memorial-fatores-insolacao': 'Insolazione: Bassa (1.0), Media (1.15), Alta (1.3)',
-        'memorial-fatores-isolamento': 'Isolamento: Buono (0.8), Medio (1.0), Scarso (1.2)',
+        'memorial-fatores-insolacao': 'Insolazione: Bassa (1.0), Media (1.15), Alta (1.3) — Basato su pratiche dell\'industria della refrigerazione',
+        'memorial-fatores-isolamento': 'Isolamento: Buono (0.8), Medio (1.0), Scarso (1.2) — Basato su norme tecniche ASHRAE',
         'fator-insolacao-baixa': 'Bassa',
         'fator-insolacao-media': 'Media',
         'fator-insolacao-alta': 'Alta',
         'fator-isolamento-bom': 'Buono',
         'fator-isolamento-medio': 'Medio',
         'fator-isolamento-ruim': 'Scarso',
-        'memorial-passo4-title': '4️⃣ Passo 4: Selezionare Modello Commerciale',
-        'memorial-passo4-explicacao': 'Il BTU calcolato viene arrotondato per eccesso al modello commerciale più vicino disponibile sul mercato.',
+        'memorial-passo4-title': '4️⃣ Passo 4: Calcolare BTU per Ambiente',
+        'memorial-passo4-explicacao': 'Il BTU finale totale è diviso per il numero di ambienti per determinare la capacità necessaria di ogni unità interna (evaporatore). Ogni split interno sarà dimensionato per soddisfare la sua parte proporzionale del sistema.',
         'memorial-modelos-title': 'Modelli commerciali disponibili:',
         'memorial-modelos-lista': '5.000, 7.000, 9.000, 12.000, 18.000, 24.000, 30.000, 36.000, 48.000, 60.000 BTU',
-        'memorial-passo5-title': '5️⃣ Passo 5: Convertire in Potenza (kW)',
-        'memorial-passo5-explicacao': 'La conversione in kW è utile per confrontare con altri apparecchi elettrici e stimare il consumo di energia.',
-        'memorial-resumo-title': '📊 Riepilogo Calcolato',
-        'memorial-resumo-volume': 'Volume Ambiente:',
-        'memorial-resumo-btu-base': 'BTU Base:',
-        'memorial-resumo-btu-final-calc': 'BTU Finale (dopo fattori):',
+        'memorial-passo5-title': '5️⃣ Passo 5: Selezionare Modelli Commerciali',
+        'memorial-passo5-explicacao': 'Il BTU calcolato per ambiente viene arrotondato per eccesso al modello commerciale più vicino. Se il BTU necessario per ambiente supera 60k BTU (modello interno più grande disponibile), saranno usate più unità interne da 60k BTU per ambiente. L\'unità esterna (condensatore) deve avere capacità per il BTU totale reale del sistema (somma delle capacità di tutte le unità interne). Se il BTU totale supera 180k BTU (modello esterno più grande disponibile), saranno usate più unità esterne da 180k BTU.',
+        'memorial-resumo-title': '📊 Riepilogo Calcolato - Sistema Multi-Split',
+        'memorial-resumo-volume': 'Volume Totale:',
+        'memorial-resumo-btu-base': 'BTU Base Totale:',
+        'memorial-resumo-btu-final-calc': 'BTU Finale Totale (dopo fattori):',
         'memorial-resumo-btu-final': 'BTU Consigliato (modello commerciale):',
         'memorial-resumo-potencia': 'Potenza (kW):',
         'memorial-passo6-title': '6️⃣ Passo 6: Calcolare Costo Stimato',
@@ -363,7 +381,25 @@ const traducoes = {
         'memorial-resumo-unidade-interna': 'Unità Interna (Modello):',
         'memorial-resumo-btu-total-real': 'BTU Totali Reali:',
         'memorial-resumo-unidade-externa': 'Unità Esterna (Modello):',
-        'memorial-resumo-custo-total': 'Costo Totale Stimato:'
+        'memorial-resumo-custo-total': 'Costo Totale Stimato:',
+        'memorial-formula-volume': 'Volume Totale (m³) = Area Totale (m²) × Altezza (m)',
+        'memorial-formula-fator-altura': 'Fattore Altezza = Altezza (m) ÷ 2.7 m (standard)',
+        'memorial-formula-btu-area': 'BTU Area Totale = Area Totale (m²) × 700 BTU/m² × Fattore Altezza',
+        'memorial-formula-btu-pessoas': 'BTU Persone Totale = Numero Totale di Persone × 600 BTU/persona',
+        'memorial-formula-btu-equipamentos': 'BTU Apparecchi Totale = Numero Totale di Apparecchi × 600 BTU/apparecchio',
+        'memorial-formula-btu-base': 'BTU Base Totale = BTU Area Totale + BTU Persone Totale + BTU Apparecchi Totale',
+        'memorial-formula-btu-final': 'BTU Finale Totale = BTU Base Totale × Fattore Insolazione × Fattore Isolamento',
+        'memorial-btu-por-m2': 'BTU per m²:',
+        'memorial-btu-por-m2-texto': '700 BTU/m² — Valore standard ampiamente accettato nell\'industria per il dimensionamento residenziale. Questo valore è moltiplicato per il fattore di altezza (altezza ÷ 2.7m) per aggiustare quando l\'altezza del soffitto è diversa dallo standard.',
+        'memorial-btu-por-pessoa': 'BTU per Persona:',
+        'memorial-btu-por-pessoa-texto': '600 BTU/persona — Considera calore metabolico (calore sensibile ~400 BTU/h + calore latente ~200 BTU/h)',
+        'memorial-btu-por-equipamento': 'BTU per Apparecchio:',
+        'memorial-btu-por-equipamento-texto': '600 BTU/apparecchio — Basato sulla Legge di Conservazione dell\'Energia: tutta l\'energia elettrica consumata è convertita in calore',
+        'memorial-fatores-afetam-titulo': '💡 Come i fattori influenzano il calcolo:',
+        'memorial-fatores-insolacao-texto': 'Insolazione: Ambienti con maggiore esposizione solare ricevono più calore, aumentando la necessità di raffreddamento. Insolazione bassa (1.0) non altera il calcolo. Insolazione media (1.15) aumenta del 15%. Insolazione alta (1.3) aumenta del 30%.',
+        'memorial-fatores-isolamento-texto': 'Isolamento: Buon isolamento (0.8) riduce la necessità di raffreddamento del 20%, poiché diminuisce il trasferimento di calore tra l\'ambiente interno ed esterno. Isolamento medio (1.0) non altera il calcolo. Isolamento scarso (1.2) aumenta la necessità del 20%.',
+        'memorial-lei-fisica-titulo': '⚛️ Legge Fisica Applicata — Conservazione dell\'Energia e Trasferimento di Calore:',
+        'memorial-lei-fisica-texto': 'Ogni apparecchio elettrico genera calore perché l\'energia elettrica consumata è trasformata in calore (Legge di Conservazione dell\'Energia). Il climatizzatore rimuove questo calore dall\'ambiente interno e lo trasferisce all\'ambiente esterno (Trasferimento di Calore: il calore fluisce sempre dal più caldo al più freddo).'
     }
 };
 
@@ -925,17 +961,21 @@ function ajustarValor(targetId, step) {
     const slider = document.getElementById(targetId);
     if (!slider) return;
     
-    let valor = parseFloat(slider.value) || 0;
-    const min = parseFloat(slider.min) || 0;
+    // Usa 0 como mínimo se slider.min for 0 (importante para sliders que começam em 0)
+    const minRaw = parseFloat(slider.min);
+    const min = isNaN(minRaw) ? 0 : minRaw; // Permite 0 como mínimo válido
     const max = parseFloat(slider.max) || 100;
     const stepAttr = parseFloat(slider.step) || 1;
+    
+    let valor = parseFloat(slider.value);
+    if (isNaN(valor)) valor = min;
     
     valor += step;
     valor = Math.round(valor / stepAttr) * stepAttr;
     valor = Math.max(min, Math.min(max, valor));
     
     slider.value = valor;
-    slider.dispatchEvent(new Event('input'));
+    slider.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
 // Controle para botões de seta (repetição ao segurar)
@@ -959,7 +999,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const sliderPessoas = document.getElementById('sliderPessoas');
     const sliderEquipamentos = document.getElementById('sliderEquipamentos');
     
-    // Aplica throttle nos sliders para melhorar performance durante o arraste
+    // Aplica throttle reduzido nos sliders para melhor responsividade (50ms)
     sliderArea.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderArea.value);
         const inputArea = document.getElementById('inputArea');
@@ -968,7 +1008,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputArea);
         }
         atualizarResultados();
-    }, 100));
+    }, 50)); // Reduzido de 100ms para 50ms
     
     sliderAltura.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderAltura.value);
@@ -979,7 +1019,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAltura);
         }
         atualizarResultados();
-    }, 100));
+    }, 50)); // Reduzido de 100ms para 50ms
     
     sliderPessoas.addEventListener('input', throttle(() => {
         const valor = parseInt(sliderPessoas.value);
@@ -989,7 +1029,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
         }
         atualizarResultados();
-    }, 100));
+    }, 50)); // Reduzido de 100ms para 50ms
     
     sliderEquipamentos.addEventListener('input', throttle(() => {
         const valor = parseInt(sliderEquipamentos.value);
@@ -999,7 +1039,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputEquipamentos);
         }
         atualizarResultados();
-    }, 100));
+    }, 50)); // Reduzido de 100ms para 50ms
     
     // Configurar sliders do sistema multi-split
     const sliderNumAmbientes = document.getElementById('sliderNumAmbientes');
@@ -1045,7 +1085,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             atualizarResultados();
-        }, 100));
+        }, 50)); // Reduzido de 100ms para 50ms
     }
     
     if (sliderAreaTotal) {
@@ -1057,7 +1097,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAreaTotal);
             }
             atualizarResultados();
-        }, 100));
+        }, 50)); // Reduzido de 100ms para 50ms
     }
     
     // Configurar inputs editáveis
@@ -1199,39 +1239,21 @@ document.addEventListener('DOMContentLoaded', function() {
         radio.addEventListener('change', atualizarResultados);
     });
     
-    // Configurar botões de seta
-    document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
-        const targetId = btn.getAttribute('data-target');
-        const step = parseFloat(btn.getAttribute('data-step'));
-        
-        const startRepeating = () => {
+    // Configurar botões de seta - usa função global com aceleração exponencial
+    if (typeof configurarBotoesSliderComAceleracao === 'function') {
+        // Usa função de ajuste local que atualiza inputs correspondentes
+        function ajustarValorArCondicionado(targetId, step) {
             ajustarValor(targetId, step);
-            timeoutId = setTimeout(() => {
-                intervalId = setInterval(() => {
-                    ajustarValor(targetId, step);
-                }, 100);
-            }, 500);
-        };
-        
-        const stopRepeating = () => {
-            clearTimeout(timeoutId);
-            clearInterval(intervalId);
-        };
-        
-        btn.addEventListener('mousedown', (e) => {
-            e.preventDefault();
-            startRepeating();
+        }
+        configurarBotoesSliderComAceleracao(SITE_SEL.ARROW_BTN, ajustarValorArCondicionado);
+    } else {
+        // Fallback para código antigo se a função global não estiver disponível
+        document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
+            const targetId = btn.getAttribute('data-target');
+            const step = parseFloat(btn.getAttribute('data-step'));
+            btn.addEventListener('click', () => ajustarValor(targetId, step));
         });
-        btn.addEventListener('mouseup', stopRepeating);
-        btn.addEventListener('mouseleave', stopRepeating);
-        
-        btn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            startRepeating();
-        });
-        btn.addEventListener('touchend', stopRepeating);
-        btn.addEventListener('touchcancel', stopRepeating);
-    });
+    }
     
     // Formatar valor inicial da altura com vírgula
     const inputAlturaInicial = document.getElementById('inputAltura');
