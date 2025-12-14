@@ -189,6 +189,27 @@ Ideal para quem está aprendendo JavaScript, HTML, CSS, engenharia e finanças, 
 - **Moeda**: Use `formatarMoeda()` ou `formatarMoedaSemDecimal()` com o idioma como parâmetro
 - **Inputs Dinâmicos**: Use `ajustarTamanhoInput()` para inputs que precisam ajustar tamanho automaticamente
 
+### Utilitários JS Compartilhados
+Desde dezembro de 2025, funções utilitárias JS duplicadas entre apps (ex: ajuste de sliders) devem ser extraídas para arquivos utilitários compartilhados em `assets/js/`. Todos os apps devem importar e usar essas funções, exceto quando lógica customizada for estritamente necessária.
+
+**Exemplo de uso:**
+```js
+import { ajustarValorPadrao } from '../assets/js/ajustarValorUtil.js';
+// ...
+function ajustarValor(targetId, step) {
+	ajustarValorPadrao(targetId, step);
+}
+```
+Para lógica customizada (ex: bitola com step dinâmico), mantenha apenas o necessário localmente e use o utilitário para os casos padrão.
+
+**Motivo:**
+- Reduz duplicação de código
+- Facilita manutenção e padronização
+- Garante correção e atualização centralizada
+
+**Pasta padrão:**
+- `assets/js/ajustarValorUtil.js` (e outros utilitários futuros)
+
 ### Scripts Utilitários
 
 #### Contagem de Linhas de Código (`scripts/count-lines.ps1`)

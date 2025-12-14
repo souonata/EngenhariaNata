@@ -16,14 +16,7 @@
 
 /* Variáveis CSS para personalização do tema Bitola */
 :root { 
-    --home-bg: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%); 
-    --home-shadow: rgba(102, 126, 234, 0.4); 
-    --home-size: 50px; 
-    --home-size-mobile: 40px;
-    --accent-color: #2d9fa3ff;  /* Cor do tema padrão para botões ativos */
-    --control-accent: #2d9fa3ff;  /* Cor dos controles */
-    --control-accent-secondary: #667eea;  /* Cor secundária dos controles */
-    /* --site-bg removido para usar o padrão global (#4e7262 - verde Engenharia Nata) */
+    /* Todas as variáveis de cor, espaçamento e fonte já estão centralizadas em shared-styles.css */
 }
 
 /* ============================================
@@ -56,7 +49,7 @@
 /* Dicas e informações adicionais */
 .dica {
     font-size: 0.75rem;
-    color: #666;
+    color: var(--resultado-label);
     text-align: center;
     margin-top: 4px;
     line-height: 1.3;
@@ -64,23 +57,23 @@
 
 .dica-recomendacao {
     font-size: 0.8rem;
-    color: #2d7d32;
+    color: var(--info-text);
     text-align: center;
     margin-top: 4px;
     line-height: 1.3;
-    background: rgba(45, 125, 50, 0.1);
+    background: var(--info-bg);
     padding: 6px;
     border-radius: 6px;
 }
 
 .dica-recomendacao strong {
-    color: #1b5e20;
+    color: var(--info-border);
 }
 
 /* Unidade de medida ao lado do valor */
 .unidade {
     font-size: 0.9rem;
-    color: #666;
+    color: var(--resultado-label);
     font-weight: 600;
 }
 
@@ -102,13 +95,13 @@
    SEÇÃO DE RESULTADOS
    ============================================ */
 .resultados {
-    background: white;
+    background: var(--memorial-bg);
     margin-top: 16px;
 }
 
 .resultados h2 {
     text-align: center;
-    color: #333;
+    color: var(--resultado-value);
     margin-bottom: 16px;
     font-size: 1.2rem;
 }

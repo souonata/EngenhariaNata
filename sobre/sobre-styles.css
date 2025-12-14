@@ -9,19 +9,11 @@
 }
 
 :root { 
-    --lang-btn-bg: rgba(255,255,255,0.2); 
-    --lang-btn-border: rgba(255,255,255,0.3); 
-    --lang-btn-hover: rgba(255,255,255,0.3); 
-    --home-size: 50px; 
-    --home-size-mobile: 46px;
-    --accent-color: #2d9fa3ff;
-    --accent-hover-bg: rgba(45, 159, 163, 0.05);
-    --accent-active-bg: rgba(45, 159, 163, 0.1);
-    --accent-shadow: rgba(45, 159, 163, 0.3);
+    /* Todas as variáveis globais já estão em shared-styles.css */
 }
 
 body {
-    background: var(--site-bg, #4e7262);
+    background: var(--site-bg);
     padding-bottom: var(--site-bottom-padding, 110px);
     /* Layout em coluna: seletor de idioma acima do container */
     display: flex;
@@ -46,7 +38,7 @@ body {
    ============================================ */
 header {
     text-align: center;
-    color: white;
+    color: var(--lang-btn-color, white);
     margin-bottom: 12px;
     padding: 8px 0;
 }
@@ -71,9 +63,9 @@ header h1 {
 }
 
 .card.highlight {
-    background: white;
-    border: 2px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: var(--memorial-bg, white);
+    border: 2px solid var(--memorial-border, #e0e0e0);
+    box-shadow: var(--accent-shadow, 0 4px 12px rgba(0, 0, 0, 0.1));
     position: relative;
 }
 
@@ -108,18 +100,18 @@ header h1 {
 }
 
 .card-header-clicavel:hover {
-    background: var(--accent-hover-bg, rgba(45, 159, 163, 0.05));
+    background: var(--accent-hover-bg);
 }
 
 .card-header-clicavel:active {
-    background: var(--accent-active-bg, rgba(45, 159, 163, 0.1));
+    background: var(--accent-active-bg);
 }
 
 
 .seta-expansao {
     margin-left: auto;
     font-size: 1.2rem;
-    color: var(--accent-color, #2d9fa3ff);
+    color: var(--accent-color);
     transition: transform 0.3s ease;
 }
 
@@ -142,7 +134,7 @@ header h1 {
 }
 
 .card-header h2 {
-    color: var(--accent-color, #2d9fa3ff);
+    color: var(--accent-color);
     font-size: 1rem;
 }
 

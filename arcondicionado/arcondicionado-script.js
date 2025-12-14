@@ -1,3 +1,4 @@
+import { ajustarValorPadrao } from '../assets/js/ajustarValorUtil.js';
 // ============================================
 // DIMENSIONADOR DE AR CONDICIONADO RESIDENCIAL
 // Sistema Multi-Split
@@ -958,24 +959,7 @@ function trocarIdioma(novoIdioma) {
  * @param {number} step - Valor do incremento/decremento
  */
 function ajustarValor(targetId, step) {
-    const slider = document.getElementById(targetId);
-    if (!slider) return;
-    
-    // Usa 0 como mínimo se slider.min for 0 (importante para sliders que começam em 0)
-    const minRaw = parseFloat(slider.min);
-    const min = isNaN(minRaw) ? 0 : minRaw; // Permite 0 como mínimo válido
-    const max = parseFloat(slider.max) || 100;
-    const stepAttr = parseFloat(slider.step) || 1;
-    
-    let valor = parseFloat(slider.value);
-    if (isNaN(valor)) valor = min;
-    
-    valor += step;
-    valor = Math.round(valor / stepAttr) * stepAttr;
-    valor = Math.max(min, Math.min(max, valor));
-    
-    slider.value = valor;
-    slider.dispatchEvent(new Event('input', { bubbles: true }));
+    ajustarValorPadrao(targetId, step);
 }
 
 // Controle para botões de seta (repetição ao segurar)

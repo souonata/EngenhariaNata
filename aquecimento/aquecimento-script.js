@@ -1,3 +1,4 @@
+import { ajustarValorPadrao } from '../assets/js/ajustarValorUtil.js';
 // ============================================
 // DIMENSIONADOR DE AQUECEDOR SOLAR TÉRMICO
 // Sistema Termossifão com Tubos a Vácuo
@@ -2312,24 +2313,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Função auxiliar para ajustar valor do slider
     function ajustarValor(targetId, step) {
-        const slider = document.getElementById(targetId);
-        if (!slider) return;
-        
-        // Usa 0 como mínimo se slider.min for 0 (importante para sliders que começam em 0)
-        const minRaw = parseFloat(slider.min);
-        const min = isNaN(minRaw) ? 0 : minRaw; // Permite 0 como mínimo válido
-        const max = parseFloat(slider.max) || 100;
-        const stepAttr = parseFloat(slider.step) || 1;
-        
-        let currentValue = parseFloat(slider.value);
-        if (isNaN(currentValue)) currentValue = min;
-        
-        let newValue = currentValue + step;
-        newValue = Math.round(newValue / stepAttr) * stepAttr;
-        newValue = Math.max(min, Math.min(max, newValue));
-        
-        slider.value = newValue;
-        slider.dispatchEvent(new Event('input', { bubbles: true }));
+    ajustarValorPadrao(targetId, step);
     }
     
     // Formatar valor inicial da latitude com vírgula

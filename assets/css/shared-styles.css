@@ -5,6 +5,36 @@
 */
 
 :root {
+        /* --- App-specific tokens centralizados --- */
+        --accent-hover-bg: rgba(45, 159, 163, 0.05);
+        --accent-active-bg: rgba(45, 159, 163, 0.1);
+        --accent-shadow: rgba(45, 159, 163, 0.3);
+        --accent-table-bg: rgba(45, 159, 163, 0.15);
+        --accent-table-color: #2d9fa3ff;
+        --accent-table-border: #2d9fa3ff;
+        --accent-table-header-bg: #f5f5f5;
+        --accent-table-header-color: #333;
+        --accent-table-row-alt-bg: rgba(0,0,0,0.02);
+        --accent-table-row-alt-border: rgba(0,0,0,0.1);
+        --accent-table-row-alt-color: #777;
+        --accent-table-radius: 6px;
+        --accent-table-font-size: 10px;
+        --accent-table-padding: 4px 8px;
+        --accent-table-header-font-size: 11px;
+        --accent-table-header-padding: 8px;
+        --accent-table-row-padding: 4px 8px;
+        --accent-table-row-font-size: 10px;
+        --accent-table-row-alt-font-size: 10px;
+        --accent-table-row-alt-padding: 4px 8px;
+        --accent-table-row-alt-radius: 6px;
+        --accent-table-row-alt-shadow: none;
+        --accent-table-row-alt-header-bg: #f5f5f5;
+        --accent-table-row-alt-header-color: #333;
+        --accent-table-row-alt-header-border: #2d9fa3ff;
+        --accent-table-row-alt-header-font-size: 11px;
+        --accent-table-row-alt-header-padding: 8px;
+        --accent-table-row-alt-header-radius: 6px;
+        --accent-table-row-alt-header-shadow: none;
     /* Defaults — pages can override */
     --home-bg: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%);
     /* Site background used across app pages (defaults to the established green) */
