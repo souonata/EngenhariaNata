@@ -1,3 +1,14 @@
+# Utilitários JS Compartilhados
+
+**ajustarValorPadrao**: Função utilitária centralizada (em `assets/js/ajustarValorUtil.js`) para ajuste de sliders (inputs tipo range) em todos os apps. Substitui funções duplicadas de ajuste de valor, garantindo padronização e manutenção facilitada. Deve ser usada por padrão, exceto em casos de lógica customizada (ex: bitola com step dinâmico).
+
+**Exemplo de uso:**
+```js
+import { ajustarValorPadrao } from '../assets/js/ajustarValorUtil.js';
+function ajustarValor(targetId, step) {
+   ajustarValorPadrao(targetId, step);
+}
+```
 # Glossário Completo — Termos Técnicos Explicados
 
 Este glossário ajuda visitantes não técnicos e estudantes a entender os termos usados no projeto.

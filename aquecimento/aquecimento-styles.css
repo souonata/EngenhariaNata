@@ -4,16 +4,7 @@
 
 /* Variáveis CSS para personalização do tema */
 :root { 
-    --home-bg: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%); 
-    --home-shadow: rgba(102, 126, 234, 0.4); 
-    --home-size: 50px; 
-    --home-size-mobile: 40px;
-    --accent-color: #2d9fa3ff;
-    --control-accent: #2d9fa3ff;
-    --control-accent-secondary: #667eea;
-    --lang-btn-bg: rgba(255,255,255,0.2); 
-    --lang-btn-border: rgba(255,255,255,0.3); 
-    --lang-btn-hover: rgba(255,255,255,0.3); 
+    /* Todas as variáveis de cor, espaçamento e fonte já estão centralizadas em shared-styles.css */
 }
 
 /* ============================================
@@ -38,16 +29,16 @@
    CARDS
    ============================================ */
 .card {
-    background: white;
+    background: var(--memorial-bg);
     border-radius: 12px;
     padding: 16px;
     margin-bottom: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px var(--accent-shadow);
 }
 
 .card h2 {
     font-size: 1.1rem;
-    color: #2d9fa3ff;
+    color: var(--accent-color);
     margin-bottom: 16px;
     text-align: center;
 }
@@ -56,13 +47,13 @@
    RESULTADOS
    ============================================ */
 .resultados {
-    background: white;
+    background: var(--memorial-bg);
 }
 
 /* Resultado styles moved to shared-styles.css */
 /* Mantendo apenas estilos específicos do Aquecimento */
 .resultado-item.destaque {
-    background: linear-gradient(135deg, #2d9fa3ff 0%, #1e7e82 100%);
+    background: var(--accent-color);
     color: white;
     padding: 16px;
     border-radius: 8px;
@@ -72,7 +63,7 @@
 
 .label-resultado {
     font-size: 0.9rem;
-    color: #666;
+    color: var(--resultado-label);
     font-weight: 500;
 }
 
@@ -88,7 +79,7 @@
 .valor-resultado-grande {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #2d9fa3ff;
+    color: var(--accent-color);
 }
 
 .resultado-item.destaque .valor-resultado-grande {
@@ -100,8 +91,8 @@
    INFO BOX
    ============================================ */
 .info-box {
-    background: #e0f7fa;
-    border-left: 4px solid #2d9fa3ff;
+    background: var(--info-bg);
+    border-left: 4px solid var(--accent-color);
     padding: 12px;
     margin-top: 16px;
     border-radius: 0 8px 8px 0;
@@ -110,14 +101,14 @@
 
 .info-box p {
     margin: 0 0 8px 0;
-    color: #2d9fa3ff;
+    color: var(--accent-color);
     font-weight: 600;
 }
 
 .info-box ul {
     margin: 0;
     padding-left: 20px;
-    color: #333;
+    color: var(--resultado-value);
 }
 
 .info-box li {
@@ -652,10 +643,10 @@ footer p {
    MEMORIAL DE CÁLCULO
    ============================================ */
 .memorial-section {
-    background: white;
+    background: var(--memorial-bg);
     border-radius: 12px;
     padding: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px var(--accent-shadow);
     margin-bottom: 12px;
 }
 
@@ -665,18 +656,18 @@ footer p {
     align-items: center;
     margin-bottom: 20px;
     padding-bottom: 12px;
-    border-bottom: 2px solid #e0e0e0;
+    border-bottom: 2px solid var(--memorial-border);
 }
 
 .memorial-header h2 {
-    color: #2d9fa3ff;
+    color: var(--accent-color);
     font-size: 1.2rem;
     margin: 0;
     flex: 1;
 }
 
 .btn-fechar-memorial {
-    background: #2d9fa3ff;
+    background: var(--accent-color);
     color: white;
     border: none;
     padding: 8px 16px;
@@ -689,13 +680,13 @@ footer p {
 }
 
 .btn-fechar-memorial:hover {
-    background: #1e7e82;
+    background: var(--accent-hover);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(45, 159, 163, 0.3);
+    box-shadow: 0 4px 8px var(--accent-shadow);
 }
 
 .btn-voltar-memorial {
-    background: #2d9fa3ff;
+    background: var(--accent-color);
     color: white;
     border: none;
     padding: 8px 16px;
@@ -710,21 +701,21 @@ footer p {
 }
 
 .btn-voltar-memorial:hover {
-    background: #1e7e82;
+    background: var(--accent-hover);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(45, 159, 163, 0.3);
+    box-shadow: 0 4px 8px var(--accent-shadow);
 }
 
 .memorial-item {
-    background: white;
+    background: var(--memorial-bg);
     padding: 15px;
     margin-bottom: 12px;
     border-radius: 10px;
-    border-left: 5px solid #2d9fa3ff;
+    border-left: 5px solid var(--accent-color);
 }
 
 .memorial-item h3 {
-    color: #2d9fa3ff;
+    color: var(--accent-color);
     margin-bottom: 10px;
     font-size: 1.1rem;
 }
@@ -732,40 +723,40 @@ footer p {
 .memorial-item p {
     margin-bottom: 10px;
     line-height: 1.8;
-    color: #333;
+    color: var(--resultado-value);
 }
 
 .formula-box {
-    background: #e0f7fa;
+    background: var(--info-bg);
     padding: 12px;
     border-radius: 8px;
     margin: 12px 0;
-    border: 2px solid #2d9fa3ff;
+    border: 2px solid var(--accent-color);
 }
 
 .formula-box p {
     margin: 5px 0;
     font-family: 'Courier New', monospace;
-    color: #006064;
+    color: var(--formula-text);
 }
 
 .info-box {
-    background: #e8f5e9;
+    background: var(--info-bg);
     padding: 12px;
     border-radius: 8px;
     margin-top: 12px;
-    border-left: 4px solid #4caf50;
+    border-left: 4px solid var(--info-border);
 }
 
 .info-box p {
     margin: 5px 0;
-    color: #2e7d32;
+    color: var(--info-text);
 }
 
 .info-box ul {
     margin: 8px 0;
     padding-left: 20px;
-    color: #2e7d32;
+    color: var(--info-text);
 }
 
 .info-box li {
@@ -773,7 +764,7 @@ footer p {
 }
 
 .resumo-calculado {
-    background: #e0f7fa;
+    background: var(--resumo-bg);
     padding: 15px;
     border-radius: 8px;
     margin-top: 12px;
@@ -798,7 +789,7 @@ footer p {
 
 .resumo-item-calc span:last-child {
     font-weight: bold;
-    color: #2d9fa3ff;
+    color: var(--accent-color);
     font-size: 1.1rem;
 }
 

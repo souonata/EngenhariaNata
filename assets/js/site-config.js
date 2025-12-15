@@ -1275,8 +1275,6 @@ function setupGlobalTouchGestures() {
 }
 
 // Inicializar gestos touch globalmente
-// Não executar em iframes (como o preview do DevTools)
-// Também não executar na página do DevTools (devtools.html)
 (function() {
     'use strict';
     try {
@@ -1284,23 +1282,6 @@ function setupGlobalTouchGestures() {
         if (typeof window === 'undefined' || window.self !== window.top) {
             return; // Está em iframe, não executar
         }
-        
-        // Verificar se é a página do DevTools
-        try {
-            var location = window.location || {};
-            var pathname = location.pathname || '';
-            var href = location.href || '';
-            var title = (typeof document !== 'undefined' && document.title) ? document.title : '';
-            
-            if (pathname.indexOf('devtools.html') !== -1 || 
-                href.indexOf('devtools.html') !== -1 ||
-                title.indexOf('DevTools') !== -1) {
-                return; // É a página do DevTools, não executar
-            }
-        } catch (e) {
-            // Se houver erro ao verificar, continuar (não é DevTools)
-        }
-        
         // Função para inicializar gestos
         var initGestures = function() {
             try {
@@ -1311,7 +1292,6 @@ function setupGlobalTouchGestures() {
                 // Silenciosamente ignorar erros
             }
         };
-        
         // Inicializar quando o DOM estiver pronto
         if (typeof document !== 'undefined') {
             if (document.readyState === 'loading') {
@@ -1320,7 +1300,6 @@ function setupGlobalTouchGestures() {
                 // DOM já está pronto
                 initGestures();
             }
-            
             // Também tentar inicializar após um pequeno delay
             setTimeout(function() {
                 try {

@@ -1,3 +1,4 @@
+import { ajustarValorPadrao } from '../assets/js/ajustarValorUtil.js';
 // ============================================
 // CALCULADORA DE PASSO DE HÉLICE PARA BARCOS
 // ============================================
@@ -383,6 +384,7 @@ function ajustarValor(targetId, step) {
     // Isso faz com que a função `atualizarResultado()` seja chamada automaticamente
     // para recalcular e atualizar a interface com o novo valor
     slider.dispatchEvent(new Event('input', { bubbles: true }));
+    ajustarValorPadrao(targetId, step);
 }
 
 // Controle para os botões de seta

@@ -1,3 +1,4 @@
+import { ajustarValorPadrao } from '../assets/js/ajustarValorUtil.js';
 // ============================================
 // CALCULADORA DE BITOLA DE FIOS
 // ============================================
@@ -200,6 +201,25 @@ function ajustarValor(targetId, step) {
     
     // Dispara evento de input para atualizar a interface
     slider.dispatchEvent(new Event('input'));
+    // Bitola tem step dinâmico para sliderPotencia, manter lógica customizada nesse caso
+    if (targetId === 'sliderPotencia' && (step === 'dynamic' || step === '-dynamic')) {
+        const slider = document.getElementById(targetId);
+        if (!slider) return;
+        let valor = parseFloat(slider.value) || 0;
+        const stepCalculado = obterStepPotencia(valor);
+        const stepEfetivo = step === 'dynamic' ? stepCalculado : -stepCalculado;
+        let novoValor = valor + stepEfetivo;
+        const min = parseFloat(slider.min) || 0;
+        const max = parseFloat(slider.max) || 100;
+        novoValor = Math.max(min, Math.min(max, novoValor));
+        const stepApropriado = obterStepPotencia(novoValor);
+        novoValor = Math.round(novoValor / stepApropriado) * stepApropriado;
+        novoValor = Math.max(min, Math.min(max, novoValor));
+        slider.value = novoValor;
+        slider.dispatchEvent(new Event('input'));
+    } else {
+        ajustarValorPadrao(targetId, step);
+    }
 }
 
 /**

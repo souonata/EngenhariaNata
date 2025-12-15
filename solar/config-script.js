@@ -1,3 +1,4 @@
+import { ajustarValorPadrao } from '../assets/js/ajustarValorUtil.js';
 // ============================================
 // CONFIGURAÇÕES SOLAR - SCRIPT
 // Permite customizar valores de componentes (UI de administração)
@@ -151,25 +152,7 @@ function atualizarDisplays() {
 }
 
 function ajustarValor(targetId, step) {
-    const slider = document.getElementById(targetId);
-    if (!slider) return;
-    
-    // Usa 0 como mínimo se slider.min for 0 (importante para sliders que começam em 0)
-    const minRaw = parseFloat(slider.min);
-    const min = isNaN(minRaw) ? 0 : minRaw; // Permite 0 como mínimo válido
-    const max = parseFloat(slider.max) || 100;
-    const stepAttr = parseFloat(slider.step) || 1;
-    
-    let valor = parseFloat(slider.value);
-    if (isNaN(valor)) valor = min;
-    
-    valor += parseFloat(step);
-    valor = Math.round(valor / stepAttr) * stepAttr;
-    valor = Math.max(min, Math.min(max, valor));
-    
-    slider.value = valor;
-    slider.dispatchEvent(new Event('input', { bubbles: true }));
-    atualizarDisplays();
+    ajustarValorPadrao(targetId, step, { onInput: atualizarDisplays });
 }
 
 function carregarValores() {

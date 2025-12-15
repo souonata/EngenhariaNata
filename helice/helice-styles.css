@@ -15,9 +15,7 @@
 /* Reset, body, container, header, footer, typography estão no arquivo global */
 
 :root { 
-    --lang-btn-bg: rgba(255,255,255,0.2); 
-    --lang-btn-border: rgba(255,255,255,0.3); 
-    --lang-btn-hover: rgba(255,255,255,0.3); 
+    /* Todas as variáveis de idioma já estão centralizadas em shared-styles.css */
 }
 
 /* ============================================
@@ -33,7 +31,7 @@
 
 .info-text {
     font-size: 0.9rem;
-    color: #666;
+    color: var(--resultado-label);
     margin-top: 5px;
     font-style: italic;
 }
@@ -42,10 +40,10 @@
    SEÇÃO DE RESULTADO
    ============================================ */
 .resultado {
-    background: white;
+    background: var(--memorial-bg);
     border-radius: 12px;
     padding: 12px;
-    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 3px 15px var(--accent-shadow);
     margin-bottom: 12px;
     text-align: center;
 }
@@ -53,7 +51,7 @@
 .resultado h2 {
     font-size: 1.1rem;
     margin-bottom: 8px;
-    color: #333;
+    color: var(--resultado-value);
 }
 
 /* Grade de resultados (3 colunas) */
@@ -64,11 +62,11 @@
 }
 
 .item-resultado {
-    background: #f9f9f9;
+    background: var(--resultado-bg);
     padding: 8px;
     border-radius: 8px;
     text-align: center;
-    border-bottom: 3px solid #2d9fa3ff;
+    border-bottom: 3px solid var(--accent-color);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -103,12 +101,12 @@
     display: inline;
     font-size: 1.1rem;
     font-weight: bold;
-    color: #333;
+    color: var(--resultado-value);
 }
 
 .rotulo-resultado {
     font-size: 0.75rem;
-    color: #666;
+    color: var(--resultado-label);
     display: inline;
 }
 
@@ -123,15 +121,15 @@
    SEÇÃO DE GRÁFICO
    ============================================ */
 .grafico-section {
-    background: white;
+    background: var(--memorial-bg);
     border-radius: 12px;
     padding: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px var(--accent-shadow);
     margin-bottom: 12px;
 }
 
 .grafico-section h3 {
-    color: #333;
+    color: var(--resultado-value);
     margin-bottom: 8px;
     font-size: 1.1rem;
 }
@@ -146,28 +144,28 @@
    SEÇÃO INFORMATIVA
    ============================================ */
 .info-educativa {
-    background: white;
+    background: var(--memorial-bg);
     border-radius: 12px;
     padding: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px var(--accent-shadow);
 }
 
 .info-educativa h3 {
-    color: #333;
+    color: var(--resultado-value);
     margin-bottom: 8px;
     font-size: 1.1rem;
 }
 
 .info-card {
-    background: #f8f9fa;
+    background: var(--info-bg);
     padding: 10px;
     border-radius: 8px;
     margin-bottom: 10px;
-    border-left: 4px solid #2d9fa3ff;
+    border-left: 4px solid var(--accent-color);
 }
 
 .info-card h4 {
-    color: #2d9fa3ff;
+    color: var(--accent-color);
     margin-bottom: 10px;
     font-size: 1.1rem;
 }
@@ -179,32 +177,32 @@
 
 /* Caixa de fórmula */
 .formula-box {
-    background: #fff3cd;
-    border: 2px solid #ffc107;
+    background: var(--formula-bg);
+    border: 2px solid var(--formula-border);
     border-radius: 10px;
     padding: 12px;
     margin-top: 12px;
 }
 
 .formula-box h4 {
-    color: #856404;
+    color: var(--formula-text);
     margin-bottom: 15px;
 }
 
 .formula-box code {
     display: block;
-    background: white;
+    background: var(--memorial-bg);
     padding: 15px;
     border-radius: 5px;
     font-family: 'Courier New', monospace;
     font-size: 0.9rem;
-    color: #d63384;
+    color: var(--accent-secondary);
     margin-bottom: 10px;
     overflow-x: auto;
 }
 
 .formula-box p {
-    color: #856404;
+    color: var(--formula-text);
     font-size: 0.9rem;
 }
 

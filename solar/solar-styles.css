@@ -14,11 +14,7 @@
 
 /* Variáveis CSS do tema Solar */
 :root { 
-    --home-bg: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%); 
-    --home-shadow: rgba(102,126,234,0.4); 
-    --home-size: 50px; 
-    --home-size-mobile: 40px;
-    --accent-color: #2d9fa3ff;  /* Cor do tema Solar para botões ativos */
+    /* Todas as variáveis de cor, espaçamento e fonte já estão centralizadas em shared-styles.css */
 }
 
 /* ============================================
@@ -76,17 +72,17 @@
     width: 100%;
     padding: 8px;
     padding-right: 45px;
-    border: 2px solid #e0e0e0;
+        border: 2px solid var(--checkbox-border, #e0e0e0);
     border-radius: 8px;
     font-size: 1rem;
     font-weight: bold;
-    color: #333;
+        color: var(--resultado-value, #333);
     outline: none;
     transition: border-color 0.3s;
 }
 
 .wrapper-numero input:focus {
-    border-color: #2d9fa3ff;
+    border-color: var(--accent-color, #2d9fa3ff);
 }
 
 .sufixo-input {
@@ -121,13 +117,13 @@
 .rotulo-radio-nome {
     font-weight: 600;
     font-size: 1rem;
-    color: #333;
+        color: var(--resultado-value, #333);
     line-height: 1.2;
 }
 
 .rotulo-radio-tipo {
     font-size: 0.85rem;
-    color: #666;
+        color: var(--resultado-label, #666);
     line-height: 1.2;
 }
 
@@ -156,11 +152,11 @@
 }
 
 .item-resultado {
-    background: #f9f9f9;
+    background: var(--resultado-bg, #f9f9f9);
     padding: 8px;
     border-radius: 8px;
     text-align: center;
-    border-bottom: 3px solid #2d9fa3ff;
+    border-bottom: 3px solid var(--accent-color, #2d9fa3ff);
     display: flex;
     flex-direction: column;
     align-items: center;
