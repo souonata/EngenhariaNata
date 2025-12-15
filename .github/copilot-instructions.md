@@ -1,409 +1,440 @@
-# Developer Notes — Engenharia NATA (short)
+# Instruções para GitHub Copilot - Engenharia NATA
 
-Pequeno resumo para contribuintes e estudantes: o repositório reúne apps simples em HTML/CSS/JS puro. O objetivo aqui é ser conciso — mantenha a documentação técnica separada quando precisar de detalhes.
+Este documento fornece instruções completas para o GitHub Copilot sobre o projeto **Engenharia NATA**, incluindo padrões de código, estrutura do projeto, convenções e boas práticas.
 
-Arquitetura (resumida):
-- index.html → tela inicial / launcher
-- Pastas de apps: `mutuo/`, `helice/`, `solar/`, `bitola/`, `arcondicionado/`, `aquecimento/`, `fazenda/`, `sobre/` (cada uma contém `app.html`, `app-script.js`, `app-styles.css`)
-- `scripts/count-lines.ps1` → Script PowerShell para contar linhas de código (exclui comentários), usado para atualizar estatísticas na página "Sobre o Projeto"
+## 📋 Visão Geral do Projeto
 
-Pontos importantes:
-- Idioma do usuário salvo em `localStorage` na chave `idiomaPreferido` (pt-BR / it-IT)
-- Configurações do Solar são salvas em `localStorage` na chave `configSolar`
+**Engenharia NATA** é um portfólio de aplicativos web educativos para engenharia e finanças, desenvolvido com **JavaScript puro** (sem frameworks), **bilíngue** (PT-BR/IT-IT) e **mobile-first**.
 
-Scripts utilitários:
-- `scripts/count-lines.ps1` — Script PowerShell para contar linhas de código (exclui comentários e linhas vazias). Use para atualizar estatísticas na página "Sobre o Projeto" após modificações significativas no código. Execução: `powershell -ExecutionPolicy Bypass -File scripts\count-lines.ps1`
-- `scripts/pre-commit-checks.ps1` — Script PowerShell para executar verificações automáticas antes de fazer commit (console.log, código morto, estrutura de arquivos, etc.). Execução: `powershell -ExecutionPolicy Bypass -File scripts\pre-commit-checks.ps1`
-- `scripts/pre-commit-checks.md` — Documentação completa da rotina de verificações pré-commit com checklist manual
+### Características Principais
 
-Boas práticas (mínimas):
-- Use cache-busting `?v=X.Y.Z` ao atualizar CSS/JS para evitar problemas de cache.
-- Evite deixar `console.log` ou código morto no repositório público.
-- Preserve comentários que ajudem novos leitores a entender o projeto.
-- Após modificar código significativamente, execute `scripts/count-lines.ps1` para atualizar estatísticas na página "Sobre o Projeto".
+- ✅ **100% JavaScript Puro** — Sem frameworks, fácil de entender e modificar
+- ✅ **Código Completamente Comentado** — Cada linha explicada em português para aprendizado
+- ✅ **Bilíngue** — Português (pt-BR) e Italiano (it-IT) com troca instantânea
+- ✅ **Mobile-First** — Design responsivo que funciona perfeitamente em celular, tablet e desktop
+- ✅ **Educacional** — Focado em ensinar conceitos práticos através de código bem documentado
+- ✅ **Memoriais de Cálculo** — Todos os apps incluem memoriais completos explicando fórmulas, constantes e leis físicas
 
-## Convenções de Código
+## 📁 Estrutura do Projeto
 
-### Sistema de Versionamento e Cache
-**SEMPRE** use cache busting nos links CSS/JS:
-```html
-<link rel="stylesheet" href="arquivo.css?v=1.0.0">
-<script src="arquivo.js?v=1.0.0"></script>
 ```
-Incremente `?v=X.X.X` quando modificar arquivos. Meta tags anti-cache obrigatórias em todas as páginas HTML.
+EngenhariaNata/
+├── assets/
+│   ├── css/
+│   │   ├── shared-styles.css      # Estilos compartilhados entre todos os apps
+│   │   └── controls-styles.css    # Estilos para controles (sliders, inputs, etc)
+│   └── js/
+│       └── site-config.js         # ⭐ Configuração global e funções compartilhadas
+├── scripts/
+│   ├── count-lines.ps1            # Contar linhas de código (exclui comentários)
+│   ├── pre-commit-checks.ps1      # Verificações pré-commit
+│   ├── update-cache-busting.ps1   # Atualizar versões CSS/JS
+│   ├── validate-translations.ps1  # Validar traduções PT/IT
+│   ├── analyze-bundle-size.ps1    # Analisar tamanho dos arquivos
+│   └── optimize-svgs.ps1          # Otimizar SVGs inline
+├── helice/                        # App Calculadora de Hélice
+├── bitola/                        # App Calculadora de Bitola
+├── mutuo/                         # App Calculadora de Empréstimos
+├── solar/                         # App Energia Solar
+│   └── config.html                # Página de configuração do app Solar
+├── arcondicionado/                # App Ar Condicionado
+├── aquecimento/                   # App Aquecedor Solar
+├── fazenda/                       # App Fazenda
+│   └── fazenda-database.js        # Banco de dados de plantas e animais
+├── bugs/                          # App Reportar Bug
+├── sobre/                         # Página "Sobre o Projeto"
+├── index.html                     # Página inicial
+├── README.md                      # Documentação principal
+├── REVISAO_APPS.md                # Revisão técnica dos apps
+├── GLOSSARIO.md                   # Glossário de termos técnicos
+├── SEO-INSTRUCTIONS.md            # Instruções de SEO
+└── sitemap.xml                    # Mapa do site para SEO
+```
 
-### Limpeza de Código (Clean Code)
-- **NUNCA** deixe `console.log` no código de produção.
-- **NUNCA** deixe trechos de código comentados (dead code).
-- Remova funções não utilizadas.
-- Mantenha o código limpo e legível.
+## 🎯 Apps Disponíveis
 
-### Comentários Extremamente Detalhados
-Este projeto usa **documentação inline educacional em português**. NUNCA remova comentários existentes. Ao adicionar código:
-- **TODAS as linhas devem ser comentadas** explicando o que fazem e por quê
-- Blocos de comentário `/* ========== */` para seções principais
-- Comentários linha por linha para funções complexas
-- Explique **POR QUÊ** cada decisão, não apenas O QUÊ
-- Use português claro e didático, como se estivesse ensinando um iniciante
-- Exemplo do padrão: veja `mutuo-script.js`, `helice-script.js`, `solar-script.js` - todas as funções principais têm comentários linha por linha
-- Para funções matemáticas/financeiras, explique as fórmulas e dê exemplos práticos
+1. **💰 Mutuo** — Calculadora de empréstimos (SAC, Tabela Price, Sistema Americano)
+2. **🚤 Helice** — Calculadora de passo de hélice para barcos
+3. **🔋 Energia Solar** — Dimensionamento fotovoltaico off-grid
+4. **🔌 Bitola** — Calculadora de bitola de fios elétricos
+5. **❄️ Ar Condicionado** — Dimensionador de sistema multi-split
+6. **☀️ Aquecedor Solar** — Dimensionador de sistemas de aquecimento solar térmico
+7. **🌾 Fazenda** — Planejador de fazenda auto-sustentável
+8. **🐛 Reportar Bug** — Formulário para reportar bugs
 
-### Internacionalização (i18n)
-A calculadora usa sistema custom de tradução PT-BR/IT-IT:
-- **Idioma padrão**: PT-BR (Português do Brasil)
-- **HTML**: `data-i18n="translation-key"` para texto estático
-- **JavaScript**: dicionário `traducoes` objeto com duas keys `'pt-BR'` e `'it-IT'`
-- Moeda auto-switch: BRL (pt-BR) ↔ EUR (it-IT)
-- Sempre forneça traduções completas ao adicionar texto novo
-- **Inicialização**: `trocarIdioma('pt-BR')` no DOMContentLoaded
+## ⚙️ Configuração Global (`assets/js/site-config.js`)
 
-IMPORTANT NOTE: The project uses a single, standardized localStorage key for language persistence: `idiomaPreferido`. Avoid creating per-app language keys (e.g. `idiomaSolar`).
+**SEMPRE** use as funções e configurações de `site-config.js` para garantir consistência:
 
-Accessibility:
-- Decorative SVG icons should include `aria-hidden="true"` and meaningful images (logos) should include `role="img"` + a `<title>`.
+### Funções de Formatação
 
-### Formatação de Números
-- Português: `100.000,50` (ponto = milhares, vírgula = decimal)
-- Italiano: `100.000,50` (mesmo formato)
-- Use `toLocaleString(idiomaAtual)` para formatação automática
-- Função `obterValorNumericoFormatado()` para parsing
+```javascript
+// Formatação de números
+formatarNumero(valor, casasDecimais)              // Padrão: 0 decimais
+formatarNumeroDecimal(valor, casasDecimais)       // Padrão: 1 decimal
+formatarNumeroCompacto(valor)                     // Com abreviações (k, M)
 
-### Mobile-First + Responsividade
-Base = iPhone (375×667px), escala para tablets (768×1024px):
-```css
-/* Base mobile */
-.elemento { width: 375px; }
+// Formatação de potência
+formatarPotencia(valor)                           // Ex: "1,5k"
+formatarPotenciaWkW(valor_W)                      // Ex: "999 W" ou "2,5 kW"
 
-/* Tablet+ */
-@media (min-width: 768px) {
-    .elemento { width: 768px; }
+// Formatação de moeda
+formatarMoeda(valor, idioma)                      // R$ 1.234,56 ou € 1.234,56
+formatarMoedaSemDecimal(valor, idioma)            // R$ 1.235 ou € 1.235
+
+// Conversão de valores
+converterValorFormatadoParaNumero(valorFormatado) // "1.234,56" → 1234.56
+obterValorNumericoFormatado(valorFormatado)       // Versão simplificada
+```
+
+### Utilitários
+
+```javascript
+// Idioma e moeda
+obterIdiomaAtual()                                // 'pt-BR' ou 'it-IT'
+obterMoedaPorIdioma(idioma)                       // 'BRL' ou 'EUR'
+obterSimboloMoeda(idioma)                         // 'R$' ou '€'
+
+// Interface
+ajustarTamanhoInput(input, folgaCaracteres)       // Ajusta largura de input
+configurarBotoesSliderComAceleracao(container)    // Aceleração exponencial para botões
+```
+
+### Configurações
+
+```javascript
+SiteConfig.LOCAL_STORAGE.LANGUAGE_KEY             // 'idiomaPreferido'
+SiteConfig.DEFAULTS.language                       // 'pt-BR'
+SiteConfig.DEFAULTS.TAXA_BRL_EUR                  // 6.19
+SiteConfig.SELECTORS.HOME_BUTTON                  // '.home-button-fixed'
+```
+
+## 📝 Padrões de Código
+
+### 1. Estrutura de Arquivos
+
+Cada app deve ter 3 arquivos:
+- `app-name.html` — Estrutura HTML
+- `app-name-script.js` — Lógica JavaScript
+- `app-name-styles.css` — Estilos CSS
+
+### 2. Comentários
+
+**SEMPRE** comente o código em português, explicando:
+- O que a função faz
+- Por que foi implementada dessa forma
+- Fórmulas matemáticas/físicas utilizadas
+- Valores de referência e constantes
+
+```javascript
+/**
+ * Calcula o BTU necessário para o ambiente
+ * @param {number} area - Área do ambiente em m²
+ * @param {number} altura - Altura do pé direito em metros
+ * @returns {Object} Objeto com BTU recomendado e potência em kW
+ * 
+ * Fórmula: BTU = (Área × 700 BTU/m²) × Fator Altura + Pessoas × 600 + Equipamentos × 600
+ * Constantes: 700 BTU/m² (ASHRAE), 600 BTU/pessoa, 600 BTU/equipamento
+ */
+function calcularBTU(area, altura, pessoas, equipamentos) {
+    // Implementação...
 }
 ```
 
-## Padrões Importantes
+### 3. Internacionalização (i18n)
 
-### Estrutura de App Individual
-```
-app-folder/
-  ├── app-name.html           # Página principal
-  ├── app-name-script.js      # Lógica
-  └── app-name-styles.css     # Estilos
-```
+**SEMPRE** implemente suporte bilíngue (PT-BR/IT-IT):
 
-### Links e Navegação
-Sempre use caminhos relativos da raiz: `href="mutuo/mutuo.html"` ou `href="sobre/sobre.html"`
+```javascript
+// 1. Criar objeto de traduções
+const traducoes = {
+    'pt-BR': {
+        'titulo': 'Título em Português',
+        'subtitulo': 'Subtítulo em Português'
+    },
+    'it-IT': {
+        'titulo': 'Titolo in Italiano',
+        'subtitulo': 'Sottotitolo in Italiano'
+    }
+};
 
-### Gradientes e Visual Branding
-- **Background dos Apps**: Cor sólida `#4e7262` (Verde Engenharia Nata) para padronização visual com a tela inicial.
-- **Tela Inicial**: Imagem de fundo ou gradiente conforme `index-styles.css`.
-- Logo "ENGENHARIA NATA" no dock: fonte Courier New, cor `#00ff88`, efeito glow
-- Ícones SVG com gradientes personalizados por app:
-  - Verde (`#4CAF50` → `#2E7D32`) para finanças (Mutuo)
-  - Azul claro (`#64B5F6` → `#2196F3`) para informação (About Me)
-
-### Botão Home Fixo (Padrão Universal)
-Todos os apps devem ter botão home centralizado no rodapé:
-```css
-.home-button-fixed {
-    position: fixed;
-    bottom: 30px;           /* 20px no mobile */
-    left: 50%;
-    transform: translateX(-50%);  /* Centraliza horizontalmente */
-    width: 60px;            /* 50px no mobile */
-    height: 60px;
-    background: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%);
-    border-radius: 50%;
-    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-    z-index: 1000;
+// 2. Função de tradução
+function traduzir(chave) {
+    return traducoes[idiomaAtual]?.[chave] || chave;
 }
 
-.home-button-fixed:hover {
-    transform: translateX(-50%) scale(1.1);  /* Mantém centralizado ao escalar */
-    box-shadow: 0 12px 30px rgba(91, 243, 172, 0.6);
+// 3. Aplicar traduções
+function aplicarTraducoes() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const chave = el.getAttribute('data-i18n');
+        el.textContent = traduzir(chave);
+    });
 }
 
-/* Ajuste de padding no body para não cobrir conteúdo */
-@media (max-width: 480px) {
-    body {
-        padding-bottom: 110px; /* Espaço extra para o botão home */
+// 4. HTML com atributo data-i18n
+<h2 data-i18n="titulo">Título</h2>
+```
+
+### 4. Memorial de Cálculo
+
+**TODOS** os apps educativos devem incluir um **Memorial de Cálculo** completo:
+
+```javascript
+// 1. HTML: Seção do memorial (inicialmente escondida)
+<div id="memorialSection" class="card memorial-section" style="display: none;">
+    <div class="memorial-header">
+        <h2 data-i18n="memorial-title">📚 Memorial de Cálculo</h2>
+        <button id="btnFecharMemorial" class="btn-fechar-memorial">
+            <span data-i18n="back">← Voltar</span>
+        </button>
+    </div>
+    <!-- Conteúdo do memorial -->
+</div>
+
+// 2. JavaScript: Função para atualizar memorial com valores atuais
+function atualizarMemorialComValores() {
+    // Obter valores atuais dos cálculos
+    const valor1 = parseFloat(input1.value) || 0;
+    const valor2 = parseFloat(input2.value) || 0;
+    
+    // Atualizar exemplos dinâmicos
+    document.getElementById('memorial-exemplo-1').textContent = 
+        `${valor1} × ${valor2} = ${valor1 * valor2}`;
+    
+    // Atualizar resumo dos resultados
+    document.getElementById('memorial-resumo').innerHTML = 
+        `<p>Resultado: ${formatarNumero(valor1 * valor2, 2)}</p>`;
+}
+
+// 3. Toggle do memorial
+function toggleMemorial() {
+    const memorialSection = document.getElementById('memorialSection');
+    const resultadosSection = document.getElementById('resultadosSection');
+    
+    if (memorialSection.style.display === 'none' || memorialSection.style.display === '') {
+        atualizarMemorialComValores(); // Atualizar antes de mostrar
+        memorialSection.style.display = 'block';
+        if (resultadosSection) resultadosSection.style.display = 'none';
+    } else {
+        memorialSection.style.display = 'none';
+        if (resultadosSection) resultadosSection.style.display = 'block';
     }
 }
 ```
 
-**HTML padrão:**
-```html
-<!-- Botão de retorno à tela inicial (fixo centralizado no rodapé) -->
-<!-- Fica sempre visível enquanto rola a página -->
-<a href="../index.html" class="home-button-fixed">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-    </svg>
-</a>
-```
+O memorial deve explicar:
+- ✅ **Fórmulas utilizadas** — Todas as fórmulas matemáticas e físicas
+- ✅ **Valores de referência** — Constantes físicas, fatores de segurança
+- ✅ **Leis físicas** — Explicações leigas (Lei de Ohm, conservação de energia, etc.)
+- ✅ **Exemplos práticos** — Cálculos passo a passo com valores atuais
+- ✅ **Resumo dos resultados** — Valores calculados organizados
 
-### Controles de Formulário com Setas
-Padrão de botões incrementais/decrementais (veja `mutuo-script.js`):
-- `ajustarValor(targetId, step)` com limites máximos de segurança
-- `mousedown` → inicia repetição após 500ms, depois 100ms/ciclo
-- `mouseup`/`mouseleave` → limpa intervalos
+### 5. Sliders e Inputs
 
-### Chart.js Integration
-Calculadora usa Chart.js 3.x para gráficos de linha/área:
-- Datasets: juros acumulados (vermelho), amortização (verde)
-- Sempre inclua `<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>` antes do app script
-
-## Fórmulas Financeiras dos Sistemas de Amortização
-
-### Tabela Price (Sistema Francês / Ammortamento alla Francese)
-**Uso**: Brasil (empréstimos pessoais, consignados), Itália (mutui - mais comum)
-**Característica**: Parcelas fixas (PMT constante)
-**Nomes usados no app**: "Tabela Price" (PT) / "Francese" (IT)
+**SEMPRE** sincronize sliders com inputs e vice-versa:
 
 ```javascript
-// Fórmula da parcela fixa (PMT)
-const fator = Math.pow(1 + taxaMensal, numeroParcelas);
-const parcelaFixa = valorEmprestimo * (taxaMensal * fator) / (fator - 1);
+// Sincronizar slider → input
+slider.addEventListener('input', (e) => {
+    input.value = formatarNumero(parseFloat(e.target.value), 2);
+    atualizarResultados();
+});
 
-// Para cada parcela:
-const juros = saldoDevedor * taxaMensal;
-const amortizacao = parcelaFixa - juros;
-saldoDevedor -= amortizacao;
-```
-
-**Comportamento**: No início, paga mais juros e menos amortização. Com o tempo inverte: menos juros, mais amortização.
-
-### SAC (Sistema de Amortização Constante / Ammortamento all'Italiana)
-**Uso**: Brasil (financiamento imobiliário), Itália
-**Característica**: Amortização constante
-**Nomes usados no app**: "SAC" (PT) / "Italiana" (IT)
-
-```javascript
-// Amortização fixa
-const amortizacaoConstante = valorEmprestimo / numeroParcelas;
-
-// Para cada parcela:
-const juros = saldoDevedor * taxaMensal;
-const valorParcela = amortizacaoConstante + juros;
-saldoDevedor -= amortizacaoConstante;
-```
-
-**Comportamento**: Parcelas começam altas e diminuem ao longo do tempo. Paga menos juros no total.
-
-### Sistema Americano (Alemão / Tedesco)
-**Uso**: Raro no Brasil, ocasional na Itália para investidores
-**Característica**: Paga só juros durante o período, principal no final
-**Nomes usados no app**: "Sistema Americano" (PT) / "Tedesco" (IT)
-
-```javascript
-const jurosMensal = valorEmprestimo * taxaMensal;
-
-// Parcelas 1 a n-1: apenas juros
-valorParcela = jurosMensal;
-amortizacao = 0;
-saldoDevedor = valorEmprestimo;
-
-// Última parcela: principal + juros
-valorParcela = valorEmprestimo + jurosMensal;
-amortizacao = valorEmprestimo;
-saldoDevedor = 0;
-```
-
-**Comportamento**: Maior total de juros. Requer capacidade de pagar valor integral no final.
-
-### Conversão de Taxas
-```javascript
-// Taxa anual → mensal (juros compostos)
-taxaMensal = Math.pow(1 + taxaAnual / 100, 1/12) - 1;
-
-// Taxa mensal → mensal
-taxaMensal = taxa / 100;
-
-// Taxa diária → mensal (assumindo 30 dias)
-taxaMensal = Math.pow(1 + taxaDiaria / 100, 30) - 1;
-```
-
-## Comandos e Debugging
-
-**Sem build step**: abrir `index.html` direto no navegador (Live Server recomendado no VS Code).
-
-### Testar Localmente
-```powershell
-# Abrir diretamente no navegador padrão (PowerShell)
-Start-Process "index.html"
-
-# Ou usar Live Server do VS Code (recomendado para hot reload)
-# Extensão: ritwickdey.LiveServer
-```
-
-### Testar em Mobile Real
-```powershell
-# Opção 1: ngrok (após instalar)
-npx http-server -p 8080
-ngrok http 8080
-
-# Opção 2: GitHub Pages (push para repo)
-# Acesse: https://usuario.github.io/repo-name/
-```
-
-### Browser Compatibility Testing
-- **Target browsers**: Chrome 90+, Safari 14+, Firefox 88+, Edge 90+
-- **Recursos críticos**: CSS Grid, Flexbox, `toLocaleString()`, Chart.js
-- **Fallbacks**: Não implementados (assume navegadores modernos)
-
-### Debugging i18n
-```javascript
-// Verificar traduções carregadas
-console.log(traducoes[idiomaAtual]);
-
-// Verificar elementos não traduzidos
-document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    if (!traducoes[idiomaAtual][key]) {
-        console.warn(`Missing translation: ${key} for ${idiomaAtual}`);
+// Sincronizar input → slider
+input.addEventListener('input', (e) => {
+    const valor = converterValorFormatadoParaNumero(e.target.value);
+    if (valor >= slider.min && valor <= slider.max) {
+        slider.value = valor;
+        atualizarResultados();
     }
 });
 ```
 
-## Estrutura de Adicionar Novo App
+**Use** aceleração exponencial para botões de slider:
 
-Para adicionar um novo aplicativo ao portfólio:
-
-### 1. Criar Pasta e Arquivos
-```
-novo-app/
-  ├── novo-app.html
-  ├── novo-app-script.js
-  └── novo-app-styles.css
+```javascript
+// Configurar botões de seta com aceleração
+configurarBotoesSliderComAceleracao(document.querySelector('.slider-container'));
 ```
 
-### 2. Modelo Mínimo HTML
+### 6. Performance
+
+**SEMPRE** use throttling/debouncing para eventos frequentes:
+
+```javascript
+// Throttle para sliders (executa no máximo a cada 100ms)
+let throttleTimeout;
+slider.addEventListener('input', (e) => {
+    if (!throttleTimeout) {
+        throttleTimeout = setTimeout(() => {
+            atualizarResultados();
+            throttleTimeout = null;
+        }, 100);
+    }
+});
+
+// Debounce para inputs (executa após 300ms sem digitação)
+let debounceTimeout;
+input.addEventListener('input', (e) => {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+        atualizarResultados();
+    }, 300);
+});
+```
+
+### 7. Cache-Busting
+
+**SEMPRE** use versões nos links CSS/JS:
+
 ```html
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>Novo App</title>
-    <link rel="stylesheet" href="novo-app-styles.css?v=1.0.0">
-</head>
-<body>
-    <!-- Conteúdo aqui -->
+<link rel="stylesheet" href="app-styles.css?v=1.0.0">
+<script src="app-script.js?v=1.0.0"></script>
+```
+
+**Incremente** a versão quando atualizar arquivos CSS/JS.
+
+## 🔢 Constantes e Valores de Referência
+
+### Constantes Físicas
+
+- **Resistividade do Cobre**: `0.0175 Ω·mm²/m` (a 20°C)
+- **HSP (Horas de Sol Pleno)**: `5 horas/dia` (padrão Brasil)
+- **Eficiência do Sistema Solar**: `80%` (20% de perdas)
+- **Fator de Pico de Consumo**: `5.0` (pico = 5× consumo médio)
+- **Calor Específico da Água**: `1.163 Wh/kg°C`
+- **Densidade da Água**: `1.0 kg/L`
+
+### Constantes de Cálculo
+
+- **BTU por m²**: `700 BTU/m²` (Ar Condicionado)
+- **BTU por pessoa**: `600 BTU/pessoa`
+- **BTU por equipamento**: `600 BTU/equipamento`
+- **Constante de Conversão Hélice**: `1056` (para cálculo de passo)
+- **Slip padrão hélice**: `15%` (10-20% típico)
+
+### Fatores de Segurança
+
+- **Fator de Segurança Bitola**: `1.25` (25% de margem)
+- **Fator de Segurança Solar**: `1.2` (20% de margem)
+- **Fator de Estratificação Boiler**: `0.65` (65% do volume útil)
+
+## 🧪 Testes
+
+**SEMPRE** teste os cálculos com valores conhecidos:
+
+1. Verifique fórmulas com exemplos manuais
+2. Teste limites (valores mínimos e máximos)
+3. Valide conversões de unidades
+4. Verifique formatação de números e moedas
+5. Teste troca de idioma
+
+## 📚 Documentação
+
+### Arquivos de Documentação
+
+- **`README.md`** — Documentação principal do projeto
+- **`REVISAO_APPS.md`** — Revisão técnica de cada app
+- **`GLOSSARIO.md`** — Glossário de termos técnicos
+- **`SEO-INSTRUCTIONS.md`** — Instruções de SEO
+- **`.github/copilot-instructions.md`** — Este arquivo
+
+### Atualizar Documentação
+
+**SEMPRE** atualize a documentação quando:
+- Adicionar novo app
+- Modificar fórmulas ou constantes
+- Adicionar novas funcionalidades
+- Corrigir bugs importantes
+
+## 🚫 O que NÃO fazer
+
+- ❌ **NÃO** use frameworks (React, Vue, Angular, etc.)
+- ❌ **NÃO** use bibliotecas externas além de Chart.js (via CDN)
+- ❌ **NÃO** use `console.log` em produção (remova antes de commit)
+- ❌ **NÃO** deixe código comentado sem explicação
+- ❌ **NÃO** use valores mágicos (sempre defina constantes)
+- ❌ **NÃO** ignore a internacionalização (sempre implemente PT/IT)
+- ❌ **NÃO** esqueça de atualizar o memorial de cálculo
+
+## ✅ Checklist para Novos Apps
+
+- [ ] Criar 3 arquivos: `.html`, `-script.js`, `-styles.css`
+- [ ] Incluir `site-config.js` no HTML
+- [ ] Implementar internacionalização (PT/IT)
+- [ ] Criar memorial de cálculo completo
+- [ ] Sincronizar sliders com inputs
+- [ ] Usar funções de formatação de `site-config.js`
+- [ ] Adicionar throttling/debouncing
+- [ ] Configurar aceleração exponencial para botões
+- [ ] Adicionar ao `index.html` e `sobre/sobre.html`
+- [ ] Atualizar `README.md` e `REVISAO_APPS.md`
+- [ ] Testar cálculos com valores conhecidos
+- [ ] Verificar responsividade mobile
+- [ ] Adicionar cache-busting (`?v=X.Y.Z`)
+
+## 🔍 Exemplos de Código
+
+### Exemplo 1: App Básico com Memorial
+
+```javascript
+// 1. Configuração inicial
+const SITE_LS = SiteConfig.LOCAL_STORAGE;
+let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || SiteConfig.DEFAULTS.language;
+
+// 2. Traduções
+const traducoes = {
+    'pt-BR': { 'titulo': 'Título', 'calcular': 'Calcular' },
+    'it-IT': { 'titulo': 'Titolo', 'calcular': 'Calcola' }
+};
+
+// 3. Função principal
+function calcular() {
+    const valor = parseFloat(document.getElementById('input').value) || 0;
+    const resultado = valor * 2;
     
-    <!-- Botão de retorno à tela inicial (fixo centralizado no rodapé) -->
-    <!-- Fica sempre visível enquanto rola a página -->
-    <a href="../index.html" class="home-button-fixed">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-        </svg>
-    </a>
-    
-    <script src="novo-app-script.js?v=1.0.0"></script>
-</body>
-</html>
+    document.getElementById('resultado').textContent = 
+        formatarNumero(resultado, 2);
+}
+
+// 4. Memorial
+function atualizarMemorialComValores() {
+    const valor = parseFloat(document.getElementById('input').value) || 0;
+    document.getElementById('memorial-exemplo').textContent = 
+        `${formatarNumero(valor, 2)} × 2 = ${formatarNumero(valor * 2, 2)}`;
+}
 ```
 
-### 3. Adicionar Ícone em `index.html`
-```html
-<a href="novo-app/novo-app.html" class="app-icon">
-    <div class="icon">
-        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <linearGradient id="gradient-novo" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#C44569;stop-opacity:1" />
-                </linearGradient>
-            </defs>
-            <rect width="60" height="60" rx="12" fill="url(#gradient-novo)"/>
-            <text x="30" y="40" font-size="28" text-anchor="middle">🎯</text>
-        </svg>
-    </div>
-    <span class="app-name">Novo App</span>
-</a>
+### Exemplo 2: Slider com Input Sincronizado
+
+```javascript
+const slider = document.getElementById('slider');
+const input = document.getElementById('input');
+
+// Slider → Input
+slider.addEventListener('input', (e) => {
+    input.value = formatarNumero(parseFloat(e.target.value), 2);
+    calcular();
+});
+
+// Input → Slider
+input.addEventListener('input', (e) => {
+    const valor = converterValorFormatadoParaNumero(e.target.value);
+    if (valor >= slider.min && valor <= slider.max) {
+        slider.value = valor;
+        calcular();
+    }
+});
 ```
 
-### 4. CSS Base (copiar estrutura de mutuo-styles.css)
-- Reset global (`* { margin: 0; padding: 0; box-sizing: border-box; }`)
-- Body com background `#4e7262` (Verde Engenharia Nata)
-- Recipiente centralizado (`max-width: 900px`)
-- Botão home fixo centralizado (ver seção "Botão Home Fixo")
-- Media queries para tablet (`@media (min-width: 768px)`)
-- Padding bottom extra para mobile (`padding-bottom: 110px`)
+## 📞 Referências
 
-## Regras de Edição
+- **Site Online**: https://engnata.infinityfree.me
+- **Domínio**: https://engnata.eu (redireciona para infinityfree.me)
+- **Documentação Completa**: Ver `README.md`
 
-1. **Preserve TODOS os comentários** educacionais existentes - eles são parte essencial do projeto
-2. **Ao adicionar código novo, comente CADA linha** explicando o que faz e por quê
-3. **Use português** para todos os comentários e nomes de variáveis/funções quando possível
-4. Incremente versões de cache (`?v=X.X.X`) ao modificar CSS/JS
-5. Teste em português E italiano antes de finalizar (se bilíngue)
-6. Mobile-first: valide em 375px width primeiro
-7. Mantenha acessibilidade: use labels/aria quando apropriado
-8. Limite valores com segurança (veja `ajustarValor()` - MAX_VALOR, MAX_TAXA)
-9. Use `toLocaleString(idiomaAtual)` para formatação automática de números
-10. O dimensionamento de baterias usa capacidade em kWh por padrão (ex.: 48V x 100Ah ≈ 4.8 kWh para LiFePO4)
-11. A página de configuração do Solar permite ajustar especificações — sliders de peso até **180 kg**, inversor mínimo **1 kW**
-12. Sempre destrua gráficos Chart.js antes de recriar (`chart.destroy()`)
-13. **Botão home sempre centralizado** usando `left: 50%` + `transform: translateX(-50%)`
-14. Use seletor CSS correto `.app-icon` (não `.icone-app`) para ícones na home
-15. **Limpeza**: Remova `console.log` e código comentado antes de finalizar
-16. **Documentação**: Mantenha README.md, GLOSSARIO.md e copilot-instructions.md atualizados
-17. **Badges DEV**: Apps em desenvolvimento devem ter badge "DEV" no ícone (classe `icon-dev`) e marca d'água dentro do app (`.watermark-dev` e `.dev-badge-header`)
-18. **Apps com badge DEV**: Fazenda (em desenvolvimento). Ar Condicionado e Aquecedor Solar estão completos.
-19. **Memorial de Cálculo**: Todos os apps educativos devem incluir seção de memorial didático que explica passo a passo os cálculos realizados. O memorial deve incluir:
-    - **Fórmulas utilizadas** — Todas as fórmulas matemáticas e físicas aplicadas
-    - **Valores de referência** — Constantes físicas, fatores de segurança e valores arbitrados utilizados (ex.: resistividade do cobre 0.0175 Ω·mm²/m, HSP 5h, eficiência 80%, etc.)
-    - **Leis físicas** — Explicações leigas das leis físicas aplicadas (Lei de Ohm, conservação de energia, transferência de calor, etc.)
-    - **Exemplos práticos** — Cálculos passo a passo com os valores atuais do usuário
-    - **Resumo dos resultados** — Valores calculados organizados de forma clara
-    - Implementar com seção escondida (`display: none`), botão "SAIBA MAIS!" e funções `toggleMemorial()` e `atualizarMemorialComValores()`
-20. **Valores de Referência**: Sempre documente valores arbitrados ou de referência usados nos cálculos. Exemplos:
-    - Resistividade do cobre: 0.0175 Ω·mm²/m (constante física)
-    - HSP (Horas de Sol Pleno): 5h/dia (valor médio para Brasil)
-    - Eficiência do sistema solar: 80% (considera perdas de 20%)
-    - BTU por m²: 700 BTU/m² (padrão ASHRAE, ajustado por fator de altura)
-    - Fator de Altura: Altura (m) ÷ 2.7 m (padrão residencial)
-    - Sistema Multi-Split: dimensiona unidades internas (até 60k BTU cada) e externas (até 180k BTU cada)
-    - Limites: 1-8 ambientes, 10-300 m² área total
-    - Constante de conversão hélice: 1056 (padrão indústria náutica)
-21. **Leis Físicas**: Sempre explique de forma leiga as leis físicas aplicadas nos cálculos. Consulte `GLOSSARIO.md` para explicações padrão de Lei de Ohm, Conservação de Energia, Transferência de Calor, etc.
+---
 
-## Versões Atuais dos Arquivos
+**Última atualização**: Janeiro 2025
 
-Mantenha sempre atualizado ao modificar:
-
-```
-index.html                           → index-styles.css?v=1.2.2
-                                     → index-script.js?v=1.2.0
-                                     → site-config.js?v=1.0.0
-
-mutuo/mutuo.html                     → mutuo-styles.css?v=1.2.5
-                                     → mutuo-script.js?v=1.1.1 (2055 linhas, totalmente comentado)
-
-helice/helice.html                   → helice-styles.css?v=1.5.6
-                                     → helice-script.js?v=1.4.0 (1094 linhas, totalmente comentado)
-
-solar/solar.html                     → solar-styles.css?v=1.2.0
-                                     → solar-script.js?v=1.2.0 (com memorial de cálculo didático)
-
-solar/config.html                    → config-script.js?v=1.0.5
-
-bitola/bitola.html                   → bitola-styles.css?v=1.0.0
-                                     → bitola-script.js?v=1.0.0
-
-arcondicionado/arcondicionado.html   → arcondicionado-styles.css?v=1.0.0
-                                     → arcondicionado-script.js?v=1.0.0
-
-aquecimento/aquecimento.html         → aquecimento-styles.css?v=1.0.0
-                                     → aquecimento-script.js?v=1.0.0
-
-fazenda/fazenda.html                 → fazenda-styles.css?v=1.0.0
-                                     → fazenda-script.js?v=1.0.0 (759 linhas, totalmente comentado)
-
-sobre/sobre.html                     → sobre-styles.css?v=1.5.8
-                                     → sobre-script.js?v=1.3.4
-```
-
-**Nota**: Todos os arquivos JavaScript principais foram refatorados com comentários detalhados em português para fins educacionais. O código mantém a funcionalidade original mas agora é muito mais didático e fácil de entender para iniciantes.
+**Mantido por**: Engenharia NATA

@@ -32,13 +32,9 @@
 - ✅ Resumo Calculado
 
 ### 📝 OBSERVAÇÕES:
-- ✅ Memorial completo e correto
-- ✅ Fórmulas bem explicadas
-- ✅ Exemplos dinâmicos funcionando
-- ✅ Sem correções necessárias
 
 ---
-
+### (Removido do portfólio)
 ## 🔌 APP 2: BITOLA
 
 ### ✅ INPUTS ATUAIS:

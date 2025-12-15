@@ -1,3 +1,34 @@
+// Função utilitária para formatar moeda SEM DECIMAIS, com conversão BRL→EUR se necessário
+function formatarMoedaSemDecimalComConversao(valor, idioma) {
+    if (!idioma) {
+        const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido' };
+        idioma = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
+    }
+    let valorConvertido = valor;
+    let moeda = 'BRL';
+    if (idioma === 'it-IT') {
+        // Converte de reais para euros usando taxa global
+        const taxa = (typeof SiteConfig !== 'undefined' && SiteConfig.DEFAULTS && SiteConfig.DEFAULTS.TAXA_BRL_EUR) ? SiteConfig.DEFAULTS.TAXA_BRL_EUR : 6.19;
+        valorConvertido = valor / taxa;
+        moeda = 'EUR';
+        // Força separador de milhares para it-IT
+        let partes = Math.round(valorConvertido).toString().split("");
+        let resultado = "";
+        for (let i = 0; i < partes.length; i++) {
+            if ((partes.length - i) % 3 === 0 && i !== 0) resultado += ".";
+            resultado += partes[i];
+        }
+        return resultado + " €";
+    } else {
+        moeda = 'BRL';
+        return new Intl.NumberFormat(idioma, {
+            style: 'currency',
+            currency: moeda,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(valorConvertido);
+    }
+}
 // ============================================
 // DIMENSIONADOR DE AR CONDICIONADO RESIDENCIAL
 // Sistema Multi-Split
@@ -858,14 +889,14 @@ function atualizarResultados() {
     const resultadoMultisplit = calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equipamentos, insolacao, isolamento);
     
     // Custo total em destaque
-    document.getElementById('custoSistemaMultisplit').textContent = formatarMoedaSemDecimal(resultadoMultisplit.custoTotal, idiomaAtual);
+    document.getElementById('custoSistemaMultisplit').textContent = formatarMoedaSemDecimalComConversao(resultadoMultisplit.custoTotal, idiomaAtual);
     
     // Detalhamento dos custos
     const textoUnidadesExternas = resultadoMultisplit.numUnidadesExternas > 1 
-        ? `${resultadoMultisplit.numUnidadesExternas} × ${formatarMoedaSemDecimal(resultadoMultisplit.custoPorUnidadeExterna, idiomaAtual)}`
-        : formatarMoedaSemDecimal(resultadoMultisplit.custoTotalUnidadesExternas, idiomaAtual);
+        ? `${resultadoMultisplit.numUnidadesExternas} × ${formatarMoedaSemDecimalComConversao(resultadoMultisplit.custoPorUnidadeExterna, idiomaAtual)}`
+        : formatarMoedaSemDecimalComConversao(resultadoMultisplit.custoTotalUnidadesExternas, idiomaAtual);
     document.getElementById('custoUnidadeExternaMultisplit').textContent = textoUnidadesExternas;
-    document.getElementById('custoUnidadesInternasMultisplit').textContent = formatarMoedaSemDecimal(resultadoMultisplit.custoTotalUnidadesInternas, idiomaAtual);
+    document.getElementById('custoUnidadesInternasMultisplit').textContent = formatarMoedaSemDecimalComConversao(resultadoMultisplit.custoTotalUnidadesInternas, idiomaAtual);
     
     // Dados técnicos
     document.getElementById('btuTotalMultisplit').textContent = formatarBTU(Math.round(resultadoMultisplit.btuTotal));
@@ -1441,9 +1472,9 @@ function atualizarMemorialComValores() {
         let textoCusto = '';
         if (numUnidadesExternas > 1) {
             const partesExterna = combinacaoExterna.map(m => formatarBTU(m));
-            textoCusto += `Unidades Externas (${partesExterna.join(' + ')}): ${formatarMoedaSemDecimal(resultadoMultisplit.custoTotalUnidadesExternas, idiomaAtual)}. `;
+            textoCusto += `Unidades Externas (${partesExterna.join(' + ')}): ${formatarMoedaSemDecimalComConversao(resultadoMultisplit.custoTotalUnidadesExternas, idiomaAtual)}. `;
         } else {
-            textoCusto += `Unidade Externa ${formatarBTU(combinacaoExterna[0])}: ${formatarMoedaSemDecimal(resultadoMultisplit.custoTotalUnidadesExternas, idiomaAtual)}. `;
+            textoCusto += `Unidade Externa ${formatarBTU(combinacaoExterna[0])}: ${formatarMoedaSemDecimalComConversao(resultadoMultisplit.custoTotalUnidadesExternas, idiomaAtual)}. `;
         }
         
         // Formata unidades internas
@@ -1452,8 +1483,8 @@ function atualizarMemorialComValores() {
             const qtd = resultadoMultisplit.unidadesInternasPorModelo[modelo];
             partesInternas.push(`${qtd} × ${formatarBTU(parseInt(modelo))}`);
         });
-        textoCusto += `Unidades Internas (${partesInternas.join(' + ')}): ${formatarMoedaSemDecimal(resultadoMultisplit.custoTotalUnidadesInternas, idiomaAtual)}. `;
-        textoCusto += `Custo Total: ${formatarMoedaSemDecimal(resultadoMultisplit.custoTotal, idiomaAtual)}`;
+        textoCusto += `Unidades Internas (${partesInternas.join(' + ')}): ${formatarMoedaSemDecimalComConversao(resultadoMultisplit.custoTotalUnidadesInternas, idiomaAtual)}. `;
+        textoCusto += `Custo Total: ${formatarMoedaSemDecimalComConversao(resultadoMultisplit.custoTotal, idiomaAtual)}`;
         elementoCusto.textContent = textoCusto;
     }
     
@@ -1506,6 +1537,6 @@ function atualizarMemorialComValores() {
         }
     }
     const resumoCustoTotal = document.getElementById('resumo-custo-total');
-    if (resumoCustoTotal) resumoCustoTotal.textContent = formatarMoedaSemDecimal(resultadoMultisplit.custoTotal, idiomaAtual);
+    if (resumoCustoTotal) resumoCustoTotal.textContent = formatarMoedaSemDecimalComConversao(resultadoMultisplit.custoTotal, idiomaAtual);
 }
 
