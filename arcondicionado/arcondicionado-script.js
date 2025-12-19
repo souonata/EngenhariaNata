@@ -1,5 +1,5 @@
-import { ajustarValorPadrao } from '../assets/js/ajustarValorUtil.js';
 // Função utilitária para formatar moeda SEM DECIMAIS, com conversão BRL→EUR se necessário
+// ajustarValorPadrao é carregado via script tag no HTML
 function formatarMoedaSemDecimalComConversao(valor, idioma) {
     if (!idioma) {
         const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido' };
@@ -792,6 +792,8 @@ function calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equ
  * Atualiza os resultados na interface
  */
 function atualizarResultados() {
+    console.log('[Ar Condicionado] atualizarResultados() chamado');
+    try {
     // Obtém valores dos inputs ou sliders
     const inputArea = document.getElementById('inputArea');
     const inputAltura = document.getElementById('inputAltura');
@@ -841,30 +843,26 @@ function atualizarResultados() {
         }
     }
     
-    // Se multi-split está ativo (numAmbientes > 1), usa apenas área total
-    // Caso contrário, usa área individual
-    let area;
-    if (numAmbientes > 1) {
-        // Multi-split: usa apenas área total
-        area = areaTotal;
-    } else {
-        // Split simples: usa área individual
-        area = parseFloat(sliderArea.value);
+    // Sempre usa areaTotal no cálculo (para 1 ambiente, sincroniza com área individual)
+    if (numAmbientes === 1 && sliderArea) {
+        // Quando é split simples (1 ambiente), sincroniza areaTotal com área individual
+        const areaIndividual = parseFloat(sliderArea.value) || 20;
         if (inputArea && inputArea.value) {
             const valorConvertido = converterParaNumero(inputArea.value);
             if (!isNaN(valorConvertido) && valorConvertido > 0) {
-                area = valorConvertido;
+                areaTotal = valorConvertido;
+            } else {
+                areaTotal = areaIndividual;
             }
+        } else {
+            areaTotal = areaIndividual;
         }
-        // Sincroniza área total com área individual quando não é multi-split
-        if (areaTotal !== area) {
-            areaTotal = area;
-            if (sliderAreaTotal) sliderAreaTotal.value = area;
-            if (inputAreaTotal) inputAreaTotal.value = Math.round(area);
-        }
+        // Sincroniza o sliderAreaTotal e inputAreaTotal com o valor individual
+        if (sliderAreaTotal) sliderAreaTotal.value = areaTotal;
+        if (inputAreaTotal) inputAreaTotal.value = Math.round(areaTotal);
     }
     
-    let altura = parseFloat(sliderAltura.value);
+    let altura = sliderAltura ? parseFloat(sliderAltura.value) : 2.7;
     if (inputAltura && inputAltura.value) {
         const valorConvertido = converterParaNumero(inputAltura.value);
         if (!isNaN(valorConvertido) && valorConvertido > 0) {
@@ -872,12 +870,12 @@ function atualizarResultados() {
         }
     }
     
-    let pessoas = parseInt(sliderPessoas.value);
+    let pessoas = sliderPessoas ? parseInt(sliderPessoas.value) : 2;
     if (inputPessoas && inputPessoas.value && !isNaN(parseInt(inputPessoas.value))) {
         pessoas = parseInt(inputPessoas.value);
     }
     
-    let equipamentos = parseInt(sliderEquipamentos.value);
+    let equipamentos = sliderEquipamentos ? parseInt(sliderEquipamentos.value) : 2;
     if (inputEquipamentos && inputEquipamentos.value && !isNaN(parseInt(inputEquipamentos.value))) {
         equipamentos = parseInt(inputEquipamentos.value);
     }
@@ -886,21 +884,78 @@ function atualizarResultados() {
     const insolacao = document.querySelector('input[name="insolacao"]:checked')?.value || 'media';
     const isolamento = document.querySelector('input[name="isolamento"]:checked')?.value || 'medio';
     
+    // Log dos valores de entrada
+    console.log('[Ar Condicionado] Valores de entrada:', {
+        numAmbientes,
+        areaTotal,
+        altura,
+        pessoas,
+        equipamentos,
+        insolacao,
+        isolamento
+    });
+    
     // Calcula e atualiza sistema multi-split (sempre, mesmo para 1 ambiente)
-    const resultadoMultisplit = calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equipamentos, insolacao, isolamento);
+    let resultadoMultisplit;
+    try {
+        resultadoMultisplit = calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equipamentos, insolacao, isolamento);
+        console.log('[Ar Condicionado] resultadoMultisplit calculado:', resultadoMultisplit);
+    } catch (error) {
+        console.error('[Ar Condicionado] Erro ao calcular sistema:', error);
+        resultadoMultisplit = null;
+    }
+    
+    // Verifica se o resultado é válido
+    if (!resultadoMultisplit || typeof resultadoMultisplit !== 'object') {
+        console.error('[Ar Condicionado] Erro: resultadoMultisplit inválido', resultadoMultisplit);
+        // Mesmo com erro, tenta limpar os campos
+        const elemCustoSistema = document.getElementById('custoSistemaMultisplit');
+        if (elemCustoSistema) elemCustoSistema.textContent = '-';
+        const elemBtuTotal = document.getElementById('btuTotalMultisplit');
+        if (elemBtuTotal) elemBtuTotal.textContent = '-';
+        const elemUnidadeExterna = document.getElementById('unidadeExternaMultisplit');
+        if (elemUnidadeExterna) elemUnidadeExterna.textContent = '-';
+        const elemUnidadesInternas = document.getElementById('unidadesInternasMultisplit');
+        if (elemUnidadesInternas) elemUnidadesInternas.textContent = '-';
+        return;
+    }
+    
+    // Verifica se os elementos de resultado existem
+    const elemCustoSistema = document.getElementById('custoSistemaMultisplit');
+    console.log('[Ar Condicionado] Elementos de resultado encontrados:', {
+        custoSistemaMultisplit: !!elemCustoSistema,
+        btuTotalMultisplit: !!document.getElementById('btuTotalMultisplit'),
+        unidadeExternaMultisplit: !!document.getElementById('unidadeExternaMultisplit'),
+        unidadesInternasMultisplit: !!document.getElementById('unidadesInternasMultisplit')
+    });
     
     // Custo total em destaque
-    document.getElementById('custoSistemaMultisplit').textContent = formatarMoedaSemDecimalComConversao(resultadoMultisplit.custoTotal, idiomaAtual);
+    if (elemCustoSistema) {
+        const custoFormatado = formatarMoedaSemDecimalComConversao(resultadoMultisplit.custoTotal, idiomaAtual);
+        console.log('[Ar Condicionado] Atualizando custoSistemaMultisplit:', custoFormatado);
+        elemCustoSistema.textContent = custoFormatado;
+    } else {
+        console.warn('[Ar Condicionado] Elemento custoSistemaMultisplit não encontrado!');
+    }
     
     // Detalhamento dos custos
     const textoUnidadesExternas = resultadoMultisplit.numUnidadesExternas > 1 
         ? `${resultadoMultisplit.numUnidadesExternas} × ${formatarMoedaSemDecimalComConversao(resultadoMultisplit.custoPorUnidadeExterna, idiomaAtual)}`
         : formatarMoedaSemDecimalComConversao(resultadoMultisplit.custoTotalUnidadesExternas, idiomaAtual);
-    document.getElementById('custoUnidadeExternaMultisplit').textContent = textoUnidadesExternas;
-    document.getElementById('custoUnidadesInternasMultisplit').textContent = formatarMoedaSemDecimalComConversao(resultadoMultisplit.custoTotalUnidadesInternas, idiomaAtual);
+    const elemCustoUnidadeExterna = document.getElementById('custoUnidadeExternaMultisplit');
+    if (elemCustoUnidadeExterna) {
+        elemCustoUnidadeExterna.textContent = textoUnidadesExternas;
+    }
+    const elemCustoUnidadesInternas = document.getElementById('custoUnidadesInternasMultisplit');
+    if (elemCustoUnidadesInternas) {
+        elemCustoUnidadesInternas.textContent = formatarMoedaSemDecimalComConversao(resultadoMultisplit.custoTotalUnidadesInternas, idiomaAtual);
+    }
     
     // Dados técnicos
-    document.getElementById('btuTotalMultisplit').textContent = formatarBTU(Math.round(resultadoMultisplit.btuTotal));
+    const elemBtuTotal = document.getElementById('btuTotalMultisplit');
+    if (elemBtuTotal) {
+        elemBtuTotal.textContent = formatarBTU(Math.round(resultadoMultisplit.btuTotal));
+    }
     
     // Formata unidade(s) externa(s)
     let textoUnidadeExterna;
@@ -918,7 +973,10 @@ function atualizarResultados() {
     } else {
         textoUnidadeExterna = formatarBTU(resultadoMultisplit.combinacaoExterna[0]);
     }
-    document.getElementById('unidadeExternaMultisplit').textContent = textoUnidadeExterna;
+    const elemUnidadeExterna = document.getElementById('unidadeExternaMultisplit');
+    if (elemUnidadeExterna) {
+        elemUnidadeExterna.textContent = textoUnidadeExterna;
+    }
     
     // Formata unidade(s) interna(s)
     let textoUnidadesInternas;
@@ -942,11 +1000,20 @@ function atualizarResultados() {
         });
         textoUnidadesInternas = partes.join(' + ');
     }
-    document.getElementById('unidadesInternasMultisplit').textContent = textoUnidadesInternas;
+    const elemUnidadesInternas = document.getElementById('unidadesInternasMultisplit');
+    if (elemUnidadesInternas) {
+        elemUnidadesInternas.textContent = textoUnidadesInternas;
+    }
     
     // Atualiza o memorial se estiver visível
     if (typeof atualizarMemorialComValores === 'function') {
         atualizarMemorialComValores();
+    }
+    
+    console.log('[Ar Condicionado] atualizarResultados() concluído com sucesso');
+    } catch (error) {
+        console.error('[Ar Condicionado] Erro em atualizarResultados:', error);
+        console.error('[Ar Condicionado] Stack trace:', error.stack);
     }
 }
 
@@ -1001,6 +1068,8 @@ let timeoutId = null;
 // INICIALIZAÇÃO
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('[Ar Condicionado] DOMContentLoaded iniciado');
+    
     // Configurar botões de idioma
     document.getElementById('btnPortugues')?.addEventListener('click', () => trocarIdioma('pt-BR'));
     document.getElementById('btnItaliano')?.addEventListener('click', () => trocarIdioma('it-IT'));
@@ -1014,8 +1083,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const sliderPessoas = document.getElementById('sliderPessoas');
     const sliderEquipamentos = document.getElementById('sliderEquipamentos');
     
-    // Aplica throttle reduzido nos sliders para melhor responsividade (50ms)
-    sliderArea.addEventListener('input', throttle(() => {
+    console.log('[Ar Condicionado] Sliders encontrados:', {
+        sliderArea: !!sliderArea,
+        sliderAltura: !!sliderAltura,
+        sliderPessoas: !!sliderPessoas,
+        sliderEquipamentos: !!sliderEquipamentos
+    });
+    
+    // Função auxiliar para atualizar área
+    const atualizarArea = () => {
         const valor = parseFloat(sliderArea.value);
         const inputArea = document.getElementById('inputArea');
         if (inputArea) {
@@ -1023,20 +1099,38 @@ document.addEventListener('DOMContentLoaded', function() {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputArea);
         }
         atualizarResultados();
-    }, 50)); // Reduzido de 100ms para 50ms
+    };
     
-    sliderAltura.addEventListener('input', throttle(() => {
+    // Aplica throttle reduzido nos sliders para melhor responsividade (50ms)
+    // Adiciona também listener 'change' para garantir que o valor final seja sempre atualizado
+    if (sliderArea) {
+    console.log('[Ar Condicionado] Anexando listener ao sliderArea');
+    sliderArea.addEventListener('input', throttle(() => {
+        console.log('[Ar Condicionado] sliderArea alterado:', sliderArea.value);
+        atualizarArea();
+    }, 50)); // Reduzido de 100ms para 50ms
+    // Listener 'change' garante que o valor final seja sempre atualizado quando o usuário solta o slider
+    sliderArea.addEventListener('change', atualizarArea);
+    }
+    
+    // Função auxiliar para atualizar altura
+    const atualizarAltura = () => {
         const valor = parseFloat(sliderAltura.value);
         const inputAltura = document.getElementById('inputAltura');
         if (inputAltura) {
-            // Formata com vírgula usando formatarDecimal
             inputAltura.value = formatarDecimal(valor, 1);
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAltura);
         }
         atualizarResultados();
-    }, 50)); // Reduzido de 100ms para 50ms
+    };
     
-    sliderPessoas.addEventListener('input', throttle(() => {
+    if (sliderAltura) {
+    sliderAltura.addEventListener('input', throttle(atualizarAltura, 50));
+    sliderAltura.addEventListener('change', atualizarAltura);
+    }
+    
+    // Função auxiliar para atualizar pessoas
+    const atualizarPessoas = () => {
         const valor = parseInt(sliderPessoas.value);
         const inputPessoas = document.getElementById('inputPessoas');
         if (inputPessoas) {
@@ -1044,9 +1138,15 @@ document.addEventListener('DOMContentLoaded', function() {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
         }
         atualizarResultados();
-    }, 50)); // Reduzido de 100ms para 50ms
+    };
     
-    sliderEquipamentos.addEventListener('input', throttle(() => {
+    if (sliderPessoas) {
+    sliderPessoas.addEventListener('input', throttle(atualizarPessoas, 50));
+    sliderPessoas.addEventListener('change', atualizarPessoas);
+    }
+    
+    // Função auxiliar para atualizar equipamentos
+    const atualizarEquipamentos = () => {
         const valor = parseInt(sliderEquipamentos.value);
         const inputEquipamentos = document.getElementById('inputEquipamentos');
         if (inputEquipamentos) {
@@ -1054,14 +1154,19 @@ document.addEventListener('DOMContentLoaded', function() {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputEquipamentos);
         }
         atualizarResultados();
-    }, 50)); // Reduzido de 100ms para 50ms
+    };
+    
+    if (sliderEquipamentos) {
+    sliderEquipamentos.addEventListener('input', throttle(atualizarEquipamentos, 50));
+    sliderEquipamentos.addEventListener('change', atualizarEquipamentos);
+    }
     
     // Configurar sliders do sistema multi-split
     const sliderNumAmbientes = document.getElementById('sliderNumAmbientes');
     const sliderAreaTotal = document.getElementById('sliderAreaTotal');
     
     if (sliderNumAmbientes) {
-        sliderNumAmbientes.addEventListener('input', throttle(() => {
+        const atualizarNumAmbientes = () => {
             const valor = parseInt(sliderNumAmbientes.value);
             const inputNumAmbientes = document.getElementById('inputNumAmbientes');
             if (inputNumAmbientes) {
@@ -1100,11 +1205,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             atualizarResultados();
-        }, 50)); // Reduzido de 100ms para 50ms
+        };
+        sliderNumAmbientes.addEventListener('input', throttle(atualizarNumAmbientes, 50));
+        sliderNumAmbientes.addEventListener('change', atualizarNumAmbientes);
     }
     
     if (sliderAreaTotal) {
-        sliderAreaTotal.addEventListener('input', throttle(() => {
+        const atualizarAreaTotal = () => {
             const valor = parseFloat(sliderAreaTotal.value);
             const inputAreaTotal = document.getElementById('inputAreaTotal');
             if (inputAreaTotal) {
@@ -1112,7 +1219,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAreaTotal);
             }
             atualizarResultados();
-        }, 50)); // Reduzido de 100ms para 50ms
+        };
+        sliderAreaTotal.addEventListener('input', throttle(atualizarAreaTotal, 50));
+        sliderAreaTotal.addEventListener('change', atualizarAreaTotal);
     }
     
     // Configurar inputs editáveis
@@ -1328,7 +1437,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Calcular resultados iniciais
+    console.log('[Ar Condicionado] Chamando atualizarResultados() na inicialização');
     atualizarResultados();
+    console.log('[Ar Condicionado] DOMContentLoaded concluído');
 });
 
 /**
@@ -1417,14 +1528,23 @@ function atualizarMemorialComValores() {
     const textoAmbientes = idiomaAtual === 'pt-BR' ? 'ambientes' : 'ambienti';
     
     // Atualizar exemplos
-    document.getElementById('memorial-exemplo-volume').textContent = 
-        `${formatarNumero(areaTotal, 0)} m² × ${formatarDecimal(altura, 1)} m = ${formatarNumero(volumeTotal, 1)} m³`;
+    const memorialExemploVolume = document.getElementById('memorial-exemplo-volume');
+    if (memorialExemploVolume) {
+        memorialExemploVolume.textContent = 
+            `${formatarNumero(areaTotal, 0)} m² × ${formatarDecimal(altura, 1)} m = ${formatarNumero(volumeTotal, 1)} m³`;
+    }
     
-    document.getElementById('memorial-exemplo-btu-base').textContent = 
-        `${formatarNumero(areaTotal, 1)} m² × ${formatarNumero(BTU_POR_M2, 0)} × ${formatarDecimal(fatorAltura, 2)} (fator altura) = ${formatarBTU(btuAreaTotal)} + ${pessoas} ${textoPessoas} × 600 = ${formatarBTU(btuPessoasTotal)} + ${equipamentos} ${textoEquipamentos} × 600 = ${formatarBTU(btuEquipamentosTotal)} = ${formatarBTU(btuBaseTotal)}`;
+    const memorialExemploBtuBase = document.getElementById('memorial-exemplo-btu-base');
+    if (memorialExemploBtuBase) {
+        memorialExemploBtuBase.textContent = 
+            `${formatarNumero(areaTotal, 1)} m² × ${formatarNumero(BTU_POR_M2, 0)} × ${formatarDecimal(fatorAltura, 2)} (fator altura) = ${formatarBTU(btuAreaTotal)} + ${pessoas} ${textoPessoas} × 600 = ${formatarBTU(btuPessoasTotal)} + ${equipamentos} ${textoEquipamentos} × 600 = ${formatarBTU(btuEquipamentosTotal)} = ${formatarBTU(btuBaseTotal)}`;
+    }
     
-    document.getElementById('memorial-exemplo-fatores').textContent = 
-        `${formatarBTU(btuBaseTotal)} × ${formatarDecimal(fatorInsolacao, 2)} (${textoInsolacao} ${nomesInsolacao[insolacao] || insolacao}) × ${formatarDecimal(fatorIsolamento, 2)} (${textoIsolamento} ${nomesIsolamento[isolamento] || isolamento}) = ${formatarBTU(btuFinalTotal)}`;
+    const memorialExemploFatores = document.getElementById('memorial-exemplo-fatores');
+    if (memorialExemploFatores) {
+        memorialExemploFatores.textContent = 
+            `${formatarBTU(btuBaseTotal)} × ${formatarDecimal(fatorInsolacao, 2)} (${textoInsolacao} ${nomesInsolacao[insolacao] || insolacao}) × ${formatarDecimal(fatorIsolamento, 2)} (${textoIsolamento} ${nomesIsolamento[isolamento] || isolamento}) = ${formatarBTU(btuFinalTotal)}`;
+    }
     
     const elementoBtuPorAmbiente = document.getElementById('memorial-exemplo-btu-por-ambiente');
     if (elementoBtuPorAmbiente) {
@@ -1473,8 +1593,10 @@ function atualizarMemorialComValores() {
     }
     
     // Atualizar resumo
-    document.getElementById('resumo-volume').textContent = formatarNumero(volumeTotal, 1) + ' m³';
-    document.getElementById('resumo-btu-base').textContent = formatarBTU(btuBaseTotal);
+    const resumoVolume = document.getElementById('resumo-volume');
+    if (resumoVolume) resumoVolume.textContent = formatarNumero(volumeTotal, 1) + ' m³';
+    const resumoBtuBase = document.getElementById('resumo-btu-base');
+    if (resumoBtuBase) resumoBtuBase.textContent = formatarBTU(btuBaseTotal);
     const resumoBtuFinalCalc = document.getElementById('resumo-btu-final-calc');
     if (resumoBtuFinalCalc) resumoBtuFinalCalc.textContent = formatarBTU(btuFinalTotal);
     const resumoBtuPorAmbiente = document.getElementById('resumo-btu-por-ambiente');

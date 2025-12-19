@@ -1,4 +1,4 @@
-import { ajustarValorPadrao } from '../assets/js/ajustarValorUtil.js';
+// ajustarValorPadrao é carregado via script tag no HTML
 // ============================================
 // CALCULADORA DE BITOLA DE FIOS
 // ============================================
@@ -687,6 +687,11 @@ function obterTensaoAtual() {
  * Atualiza a interface com os resultados do cálculo
  */
 function atualizarResultados() {
+    // Verifica se os elementos necessários existem
+    if (!inputPotencia || !inputComprimento || !inputQuedaTensao) {
+        return;
+    }
+    
     // Obtém os valores dos inputs
     // Para potência, converte valor com sufixos (k/M/m) para número
     const potencia = obterValorNumericoComSufixo(inputPotencia.value);
@@ -697,10 +702,10 @@ function atualizarResultados() {
     
     // Validação básica - permite qualquer valor positivo (não limita aos limites do slider)
     if (potencia <= 0 || comprimento <= 0 || tensao <= 0 || quedaPercentual <= 0) {
-        areaMinima.textContent = '-';
-        bitolaComercial.textContent = '-';
-        correnteCircuito.textContent = '-';
-        quedaReal.textContent = '-';
+        if (areaMinima) areaMinima.textContent = '-';
+        if (bitolaComercial) bitolaComercial.textContent = '-';
+        if (correnteCircuito) correnteCircuito.textContent = '-';
+        if (quedaReal) quedaReal.textContent = '-';
         if (disjuntorComercial) disjuntorComercial.textContent = '-';
         return;
     }
@@ -720,12 +725,12 @@ function atualizarResultados() {
     // Seleciona o disjuntor comercial recomendado
     const disjuntor = selecionarDisjuntorComercial(corrente);
     
-    // Atualiza a interface
-    areaMinima.textContent = formatarNumeroComSufixo(areaMin, 2) + ' mm²';
-    bitolaComercial.textContent = formatarNumeroComSufixo(bitola, 1) + ' mm²';
-    correnteCircuito.textContent = formatarNumeroComSufixo(corrente, 2) + ' A';
-    quedaReal.textContent = formatarNumero(quedaRealPercentual, 2) + ' %';
-    disjuntorComercial.textContent = formatarNumeroComSufixo(disjuntor, 0) + ' A';
+    // Atualiza a interface (verificando se os elementos existem)
+    if (areaMinima) areaMinima.textContent = formatarNumeroComSufixo(areaMin, 2) + ' mm²';
+    if (bitolaComercial) bitolaComercial.textContent = formatarNumeroComSufixo(bitola, 1) + ' mm²';
+    if (correnteCircuito) correnteCircuito.textContent = formatarNumeroComSufixo(corrente, 2) + ' A';
+    if (quedaReal) quedaReal.textContent = formatarNumero(quedaRealPercentual, 2) + ' %';
+    if (disjuntorComercial) disjuntorComercial.textContent = formatarNumeroComSufixo(disjuntor, 0) + ' A';
     
     // Atualiza o memorial se estiver visível
     if (typeof atualizarMemorialComValores === 'function') {
@@ -1088,6 +1093,7 @@ document.addEventListener('DOMContentLoaded', () => {
     disjuntorComercial = document.getElementById('disjuntorComercial');
     
     // Event listeners para sliders com throttle reduzido para melhor responsividade
+    if (sliderPotencia) {
     sliderPotencia.addEventListener('input', throttle(() => {
         let valor = parseFloat(sliderPotencia.value);
         
@@ -1102,24 +1108,31 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Atualiza o slider com o valor ajustado
         sliderPotencia.value = valor;
-        inputPotencia.value = formatarNumeroComSufixo(valor, 1);
-        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPotencia);
+        if (inputPotencia) inputPotencia.value = formatarNumeroComSufixo(valor, 1);
+        if (typeof ajustarTamanhoInput === 'function' && inputPotencia) ajustarTamanhoInput(inputPotencia);
         atualizarResultados();
     }, 50)); // Reduzido de 100ms para 50ms para melhor responsividade
+    }
     
+    if (sliderComprimento) {
     sliderComprimento.addEventListener('input', throttle(() => {
-        inputComprimento.value = formatarNumero(parseFloat(sliderComprimento.value), 0);
-        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputComprimento);
+        if (inputComprimento) inputComprimento.value = formatarNumero(parseFloat(sliderComprimento.value), 0);
+        if (typeof ajustarTamanhoInput === 'function' && inputComprimento) ajustarTamanhoInput(inputComprimento);
         atualizarResultados();
     }, 100));
+    }
     
+    if (sliderTensaoCC) {
     sliderTensaoCC.addEventListener('input', throttle(atualizarTensaoCC, 100));
+    }
     
+    if (sliderQuedaTensao) {
     sliderQuedaTensao.addEventListener('input', throttle(() => {
-        inputQuedaTensao.value = formatarNumero(parseFloat(sliderQuedaTensao.value), 1);
-        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputQuedaTensao);
+        if (inputQuedaTensao) inputQuedaTensao.value = formatarNumero(parseFloat(sliderQuedaTensao.value), 1);
+        if (typeof ajustarTamanhoInput === 'function' && inputQuedaTensao) ajustarTamanhoInput(inputQuedaTensao);
         atualizarResultados();
     }, 100));
+    }
     
     // Event listeners para inputs editáveis
     // Seleciona todo o texto quando o campo recebe foco

@@ -584,6 +584,7 @@ function debounce(func, wait) {
 /**
  * Throttle: Executa a função no máximo uma vez por período
  * Útil para sliders que disparam cálculos a cada movimento
+ * Versão melhorada que garante que o último evento seja sempre processado (trailing edge)
  * @param {Function} func - Função a ser executada
  * @param {number} limit - Intervalo mínimo entre execuções em ms (padrão: 100ms)
  * @returns {Function} Função com throttle aplicado
@@ -593,13 +594,54 @@ function throttle(func, limit) {
         limit = SiteConfig.UI.THROTTLE_DELAY;
     }
     let inThrottle;
+    let lastArgs = null;
+    let timeoutId = null;
+    
     return function executedFunction(...args) {
+        // Salva os argumentos do último evento
+        lastArgs = args;
+        
         if (!inThrottle) {
+            // Executa imediatamente o primeiro evento
             func.apply(this, args);
             inThrottle = true;
-            setTimeout(() => inThrottle = false, limit);
+            
+            // Limpa timeout anterior se existir
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+            
+            // Configura timeout para executar o último evento após o período de throttle
+            timeoutId = setTimeout(() => {
+                inThrottle = false;
+                // Se há um último evento pendente, executa agora
+                if (lastArgs !== null) {
+                    const argsToExecute = lastArgs;
+                    lastArgs = null;
+                    func.apply(this, argsToExecute);
+                }
+                timeoutId = null;
+            }, limit);
         }
     };
+}
+
+/**
+ * Configura um slider com eventos input (throttled) e change (sem throttle)
+ * Garante que o valor final seja sempre atualizado, mesmo quando o usuário move rapidamente
+ * @param {HTMLElement} slider - Elemento slider
+ * @param {Function} callback - Função a ser chamada quando o valor muda
+ * @param {number} throttleDelay - Delay do throttle em ms (padrão: 100ms)
+ */
+function configurarSliderComThrottle(slider, callback, throttleDelay = 100) {
+    if (!slider || typeof callback !== 'function') return;
+    
+    // Evento input com throttle (durante o movimento)
+    slider.addEventListener('input', throttle(callback, throttleDelay));
+    
+    // Evento change sem throttle (quando o usuário solta o slider)
+    // Garante que o valor final seja sempre atualizado
+    slider.addEventListener('change', callback);
 }
 
 // ============================================

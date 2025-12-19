@@ -1114,24 +1114,34 @@ function calcularSistema(dodAlvo) {
     // Exemplo: custoTotal = 25200 + 168000 + 2500 + 1200 = 196900 BRL
     const custoTotal = custoPaineis + custoBaterias + custoInversor + custoMPPT;
 
-    // 6. Exibir Resultados
-    document.getElementById('resQtdPlacas').textContent = `${qtdPaineis} x ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W`;
+    // 6. Exibir Resultados (verificando se os elementos existem)
+    const resQtdPlacas = document.getElementById('resQtdPlacas');
+    if (resQtdPlacas) resQtdPlacas.textContent = `${qtdPaineis} x ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W`;
     // Exibe quantas unidades do módulo escolhido (kWh e tensão)
     const unidadeKWh = (typeof batSpec.kwh === 'number' ? formatarNumeroDecimal(batSpec.kwh, 1) : (batSpec.ah ? formatarNumeroDecimal((batSpec.v * batSpec.ah)/1000, 1) : '0,0'));
-    document.getElementById('resQtdBaterias').textContent = `${qtdBaterias} x ${unidadeKWh} kWh (${batSpec.v}V)`;
-    document.getElementById('resPotenciaInversor').textContent = `${potenciaInversor} kW`;
-    document.getElementById('resCorrenteMPPT').textContent = formatarNumeroComSufixo(correnteMPPT, 0) + ' A';
-    document.getElementById('resPesoBaterias').textContent = formatarNumeroComSufixo(pesoTotal, 1) + ' kg';
+    const resQtdBaterias = document.getElementById('resQtdBaterias');
+    if (resQtdBaterias) resQtdBaterias.textContent = `${qtdBaterias} x ${unidadeKWh} kWh (${batSpec.v}V)`;
+    const resPotenciaInversor = document.getElementById('resPotenciaInversor');
+    if (resPotenciaInversor) resPotenciaInversor.textContent = `${potenciaInversor} kW`;
+    const resCorrenteMPPT = document.getElementById('resCorrenteMPPT');
+    if (resCorrenteMPPT) resCorrenteMPPT.textContent = formatarNumeroComSufixo(correnteMPPT, 0) + ' A';
+    const resPesoBaterias = document.getElementById('resPesoBaterias');
+    if (resPesoBaterias) resPesoBaterias.textContent = formatarNumeroComSufixo(pesoTotal, 1) + ' kg';
     
     const moeda = traducoes[idiomaAtual]?.['moeda'] || 'R$';
     const formatarPreco = (valor) => `${moeda} ${valor.toLocaleString(idiomaAtual, {minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: true})}`;
     
     // Exibir custos detalhados
-    document.getElementById('resPrecoEstimado').textContent = formatarPreco(custoTotal);
-    document.getElementById('custoPaineis').textContent = formatarPreco(custoPaineis);
-    document.getElementById('custoBaterias').textContent = formatarPreco(custoBaterias);
-    document.getElementById('custoInversor').textContent = formatarPreco(custoInversor);
-    document.getElementById('custoMPPT').textContent = formatarPreco(custoMPPT);
+    const resPrecoEstimado = document.getElementById('resPrecoEstimado');
+    if (resPrecoEstimado) resPrecoEstimado.textContent = formatarPreco(custoTotal);
+    const custoPaineisEl = document.getElementById('custoPaineis');
+    if (custoPaineisEl) custoPaineisEl.textContent = formatarPreco(custoPaineis);
+    const custoBateriasEl = document.getElementById('custoBaterias');
+    if (custoBateriasEl) custoBateriasEl.textContent = formatarPreco(custoBaterias);
+    const custoInversorEl = document.getElementById('custoInversor');
+    if (custoInversorEl) custoInversorEl.textContent = formatarPreco(custoInversor);
+    const custoMPPTEl = document.getElementById('custoMPPT');
+    if (custoMPPTEl) custoMPPTEl.textContent = formatarPreco(custoMPPT);
     
     // Motivo do dimensionamento das BATERIAS — explica os parâmetros que geraram o dimensionamento
     // Ex: autonomia X dias × consumoDiario Y kWh → utilizável necessário Z kWh → DoD alvo W% → capacidade nominal necessária T kWh → módulos M × S kWh
@@ -1324,6 +1334,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sliderVidaUtil = document.getElementById('sliderVidaUtil');
     
     // Aplica throttle nos sliders para melhorar performance durante o arraste
+    if (sliderConsumo) {
     sliderConsumo.addEventListener('input', throttle(() => {
         const valor = parseInt(sliderConsumo.value);
         const inputConsumo = document.getElementById('inputConsumo');
@@ -1333,7 +1344,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         atualizarInterface();
     }, 100));
+    }
     
+    if (sliderAutonomia) {
     sliderAutonomia.addEventListener('input', throttle(() => {
         const valor = parseInt(sliderAutonomia.value);
         const inputAutonomia = document.getElementById('inputAutonomia');
@@ -1343,7 +1356,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         atualizarInterface();
     }, 100));
+    }
     
+    if (sliderVidaUtil) {
     sliderVidaUtil.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderVidaUtil.value);
         const inputVidaUtil = document.getElementById('inputVidaUtil');
@@ -1353,6 +1368,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         atualizarInterface();
     }, 100));
+    }
     
     // 3B. Configurar botão do memorial
     const btnMemorial = document.getElementById('btnMemorial');

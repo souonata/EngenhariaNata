@@ -560,11 +560,13 @@ function atualizarResultados() {
     const temAnimais = animaisSelecionados.length > 0;
     
     if (!temPlantas && !temAnimais) {
-        document.getElementById('secaoResultados').style.display = 'none';
+        const secaoResultados = document.getElementById('secaoResultados');
+        if (secaoResultados) secaoResultados.style.display = 'none';
         return;
     }
     
-    document.getElementById('secaoResultados').style.display = 'block';
+    const secaoResultados = document.getElementById('secaoResultados');
+    if (secaoResultados) secaoResultados.style.display = 'block';
     
     // Calcular áreas
     let areaTotalPlantas = 0;
@@ -733,9 +735,12 @@ function atualizarResultados() {
     
     // Atualizar resumo
     const areaTotal = areaTotalPlantas + areaTotalAnimais;
-    document.getElementById('areaTotal').textContent = formatarNumeroComSufixo(areaTotal, 1) + ' m²';
-    document.getElementById('areaPlantas').textContent = formatarNumeroComSufixo(areaTotalPlantas, 1) + ' m²';
-    document.getElementById('areaAnimais').textContent = formatarNumeroComSufixo(areaTotalAnimais, 1) + ' m²';
+    const areaTotalEl = document.getElementById('areaTotal');
+    if (areaTotalEl) areaTotalEl.textContent = formatarNumeroComSufixo(areaTotal, 1) + ' m²';
+    const areaPlantasEl = document.getElementById('areaPlantas');
+    if (areaPlantasEl) areaPlantasEl.textContent = formatarNumeroComSufixo(areaTotalPlantas, 1) + ' m²';
+    const areaAnimaisEl = document.getElementById('areaAnimais');
+    if (areaAnimaisEl) areaAnimaisEl.textContent = formatarNumeroComSufixo(areaTotalAnimais, 1) + ' m²';
     
     // Atualizar detalhes de plantas
     if (detalhesPlantas.length > 0) {

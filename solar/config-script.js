@@ -1,4 +1,4 @@
-import { ajustarValorPadrao } from '../assets/js/ajustarValorUtil.js';
+// ajustarValorPadrao é carregado via script tag no HTML
 // ============================================
 // CONFIGURAÇÕES SOLAR - SCRIPT
 // Permite customizar valores de componentes (UI de administração)

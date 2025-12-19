@@ -1,4 +1,4 @@
-import { ajustarValorPadrao } from '../assets/js/ajustarValorUtil.js';
+// ajustarValorPadrao é carregado via script tag no HTML
 // ============================================
 // DIMENSIONADOR DE AQUECEDOR SOLAR TÉRMICO
 // Sistema Termossifão com Tubos a Vácuo
@@ -1295,11 +1295,12 @@ function atualizarResultados() {
             const calculoTermossifoes = calcularTermossifoes(areaCasa, alturaCasa, resultado.T_ambiente_inverno, classeEnergetica);
             if (calculoTermossifoes.ambientes && calculoTermossifoes.ambientes.length > 0) {
                 elementoTermossifoes.style.display = 'flex';
-                const detalhesAmbientes = calculoTermossifoes.ambientes.map(a => {
+                // Criar lista HTML ao invés de texto corrido
+                const listaHTML = calculoTermossifoes.ambientes.map(a => {
                     const textoAmbiente = idiomaAtual === 'it-IT' ? a.ambiente : a.ambiente;
-                    return `${a.quantidade}x ${a.termossifao.descricao} (${textoAmbiente})`;
-                }).join('; ');
-                elementoTermossifoesDetalhes.textContent = detalhesAmbientes;
+                    return `<li style="margin-bottom: 4px;">${a.quantidade}x ${a.termossifao.descricao} (${textoAmbiente})</li>`;
+                }).join('');
+                elementoTermossifoesDetalhes.innerHTML = `<ul style="margin: 0; padding-left: 24px; list-style-type: disc; line-height: 1.6;">${listaHTML}</ul>`;
             } else {
                 elementoTermossifoes.style.display = 'none';
             }
@@ -1467,12 +1468,12 @@ function atualizarMemorialComValores() {
     const sliderDiasAutonomia = document.getElementById('sliderDiasAutonomia');
     
     // Lê valores dos inputs ou sliders
-    let numeroPessoas = parseInt(sliderPessoas.value) || 4;
+    let numeroPessoas = sliderPessoas ? parseInt(sliderPessoas.value) || 4 : 4;
     if (inputPessoas && inputPessoas.value && !isNaN(parseInt(inputPessoas.value))) {
         numeroPessoas = parseInt(inputPessoas.value);
     }
     
-    let latitude = parseFloat(sliderLatitude.value) || -23.5;
+    let latitude = sliderLatitude ? parseFloat(sliderLatitude.value) || -23.5 : -23.5;
     if (inputLatitude && inputLatitude.value) {
         const valorConvertido = converterParaNumero(inputLatitude.value);
         if (!isNaN(valorConvertido)) {
@@ -1480,7 +1481,7 @@ function atualizarMemorialComValores() {
         }
     }
     
-    let altitude = parseFloat(sliderAltitude.value) || 0;
+    let altitude = sliderAltitude ? parseFloat(sliderAltitude.value) || 0 : 0;
     if (inputAltitude && inputAltitude.value) {
         const valorConvertido = converterParaNumero(inputAltitude.value);
         if (!isNaN(valorConvertido)) {
@@ -1488,7 +1489,7 @@ function atualizarMemorialComValores() {
         }
     }
     
-    let areaCasa = parseFloat(sliderAreaCasa.value) || 100;
+    let areaCasa = sliderAreaCasa ? parseFloat(sliderAreaCasa.value) || 100 : 100;
     if (inputAreaCasa && inputAreaCasa.value) {
         const valorConvertido = converterParaNumero(inputAreaCasa.value);
         if (!isNaN(valorConvertido) && valorConvertido > 0) {
@@ -2031,6 +2032,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sliderAlturaCasa = document.getElementById('sliderAlturaCasa');
     
     // Aplica throttle reduzido nos sliders para melhor responsividade (50ms)
+    if (sliderPessoas) {
     sliderPessoas.addEventListener('input', throttle(() => {
         const valor = parseInt(sliderPessoas.value);
         const inputPessoas = document.getElementById('inputPessoas');
@@ -2040,7 +2042,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         atualizarResultados();
     }, 50)); // Reduzido de 100ms para 50ms
+    }
     
+    if (sliderLatitude) {
     sliderLatitude.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderLatitude.value);
         const inputLatitude = document.getElementById('inputLatitude');
@@ -2051,7 +2055,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         atualizarResultados();
     }, 50)); // Reduzido de 100ms para 50ms
+    }
     
+    if (sliderAltitude) {
     sliderAltitude.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderAltitude.value);
         const inputAltitude = document.getElementById('inputAltitude');
@@ -2061,7 +2067,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         atualizarResultados();
     }, 50)); // Reduzido de 100ms para 50ms
+    }
     
+    if (sliderAreaCasa) {
     sliderAreaCasa.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderAreaCasa.value);
         const inputAreaCasa = document.getElementById('inputAreaCasa');
@@ -2071,7 +2079,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         atualizarResultados();
     }, 50)); // Reduzido de 100ms para 50ms
+    }
     
+    if (sliderAlturaCasa) {
     sliderAlturaCasa.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderAlturaCasa.value);
         const inputAlturaCasa = document.getElementById('inputAlturaCasa');
@@ -2082,6 +2092,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         atualizarResultados();
     }, 100));
+    }
     
     // Event listener para slider de dias de autonomia
     const sliderDiasAutonomia = document.getElementById('sliderDiasAutonomia');

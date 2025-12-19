@@ -1583,7 +1583,8 @@ function calcularEmprestimo() {
         ultimaParcelaSelecionada = numeroParcelas;
     }
     sliderParcelas.value = ultimaParcelaSelecionada;
-    document.getElementById('totalParcelas').textContent = numeroParcelas;  // Mostra o total
+    const totalParcelas = document.getElementById('totalParcelas');
+    if (totalParcelas) totalParcelas.textContent = numeroParcelas;  // Mostra o total
     
     // Atualiza a exibição da parcela selecionada
     atualizarParcelaExibida();
@@ -1605,10 +1606,14 @@ function calcularEmprestimo() {
 
 // Exibir resumo dos resultados
 function exibirResultados(valorEmprestimo, totalJuros, totalPagar, porcentagemJuros) {
-    document.getElementById('resValorEmprestado').textContent = formatarMoedaSemDecimal(valorEmprestimo);
-    document.getElementById('resTotalJuros').textContent = formatarMoedaSemDecimal(totalJuros);
-    document.getElementById('resTotalPagar').textContent = formatarMoedaSemDecimal(totalPagar);
-    document.getElementById('resPorcentagemJuros').textContent = formatarNumeroDecimal(porcentagemJuros, 1) + '%';
+    const resValorEmprestado = document.getElementById('resValorEmprestado');
+    if (resValorEmprestado) resValorEmprestado.textContent = formatarMoedaSemDecimal(valorEmprestimo);
+    const resTotalJuros = document.getElementById('resTotalJuros');
+    if (resTotalJuros) resTotalJuros.textContent = formatarMoedaSemDecimal(totalJuros);
+    const resTotalPagar = document.getElementById('resTotalPagar');
+    if (resTotalPagar) resTotalPagar.textContent = formatarMoedaSemDecimal(totalPagar);
+    const resPorcentagemJuros = document.getElementById('resPorcentagemJuros');
+    if (resPorcentagemJuros) resPorcentagemJuros.textContent = formatarNumeroDecimal(porcentagemJuros, 1) + '%';
 }
 
 // Atualizar exibição da parcela selecionada no slider
@@ -1619,11 +1624,16 @@ window.atualizarParcelaExibida = function() {
     if (!parcela) return;
     
     // Atualiza os valores na tela
-    document.getElementById('numeroParcela').textContent = parcela.parcela;
-    document.getElementById('valorParcela').textContent = formatarMoeda(parcela.valorParcela);
-    document.getElementById('valorAmortizacao').textContent = formatarMoeda(parcela.amortizacao);
-    document.getElementById('valorJurosParcela').textContent = formatarMoeda(parcela.juros);
-    document.getElementById('saldoDevedor').textContent = formatarMoeda(parcela.saldoDevedor);
+    const numeroParcela = document.getElementById('numeroParcela');
+    if (numeroParcela) numeroParcela.textContent = parcela.parcela;
+    const valorParcela = document.getElementById('valorParcela');
+    if (valorParcela) valorParcela.textContent = formatarMoeda(parcela.valorParcela);
+    const valorAmortizacao = document.getElementById('valorAmortizacao');
+    if (valorAmortizacao) valorAmortizacao.textContent = formatarMoeda(parcela.amortizacao);
+    const valorJurosParcela = document.getElementById('valorJurosParcela');
+    if (valorJurosParcela) valorJurosParcela.textContent = formatarMoeda(parcela.juros);
+    const saldoDevedor = document.getElementById('saldoDevedor');
+    if (saldoDevedor) saldoDevedor.textContent = formatarMoeda(parcela.saldoDevedor);
 }
 
 // Preencher tabela de amortização (todas as parcelas)

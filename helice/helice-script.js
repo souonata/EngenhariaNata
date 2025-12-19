@@ -1,4 +1,4 @@
-import { ajustarValorPadrao } from '../assets/js/ajustarValorUtil.js';
+// ajustarValorPadrao é carregado via script tag no HTML
 // ============================================
 // CALCULADORA DE PASSO DE HÉLICE PARA BARCOS
 // ============================================
@@ -714,15 +714,18 @@ function atualizarResultado() {
     // Converte o passo para a unidade selecionada (polegadas ou milímetros)
     const passoConvertido = converterPassoParaUnidade(resultado.passo, unidadePasso);
     // Formata: milímetros sem decimais, polegadas com 1 decimal
-    document.getElementById('resultadoPasso').textContent = formatarNumero(passoConvertido, unidadePasso === 'mm' ? 0 : 1);
+    const resultadoPassoEl = document.getElementById('resultadoPasso');
+    if (resultadoPassoEl) resultadoPassoEl.textContent = formatarNumero(passoConvertido, unidadePasso === 'mm' ? 0 : 1);
     
     // Exibe o RPM efetivo na hélice (já é um número inteiro)
-    document.getElementById('rpmHelice').textContent = formatarNumeroComSufixo(resultado.rpmHelice, 0);
+    const rpmHeliceEl = document.getElementById('rpmHelice');
+    if (rpmHeliceEl) rpmHeliceEl.textContent = formatarNumeroComSufixo(resultado.rpmHelice, 0);
     
     // Converte a velocidade teórica de nós para a unidade selecionada
     const velocidadeTeoricaConvertida = converterKnotsParaUnidade(resultado.velocidadeTeorica, unidadeVelocidade);
     // Exibe com 1 casa decimal
-    document.getElementById('velocidadeTeorica').textContent = formatarNumero(velocidadeTeoricaConvertida, 1);
+    const velocidadeTeoricaEl = document.getElementById('velocidadeTeorica');
+    if (velocidadeTeoricaEl) velocidadeTeoricaEl.textContent = formatarNumero(velocidadeTeoricaConvertida, 1);
     
     // ============================================
     // PASSO 7: ATUALIZAR UNIDADE DE VELOCIDADE NO DISPLAY
@@ -734,7 +737,8 @@ function atualizarResultado() {
         'kmh': traducoes[idiomaAtual]?.['unidade-kmh'] || 'km/h'     // "km/h" (igual em ambos)
     }[unidadeVelocidade];
     // Atualiza o texto da unidade ao lado da velocidade teórica
-    document.getElementById('unidadeVelocidadeTeorica').textContent = unidadeVelocidadeText;
+    const unidadeVelocidadeTeoricaEl = document.getElementById('unidadeVelocidadeTeorica');
+    if (unidadeVelocidadeTeoricaEl) unidadeVelocidadeTeoricaEl.textContent = unidadeVelocidadeText;
     
     // ============================================
     // PASSO 8: ATUALIZAR O GRÁFICO
@@ -1115,6 +1119,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const sliderSlip = document.getElementById('sliderSlip');
     
     // Aplica throttle nos sliders para melhorar performance durante o arraste
+    if (sliderVelocidade) {
     sliderVelocidade.addEventListener('input', throttle(() => {
         const valorSlider = parseFloat(sliderVelocidade.value);
         const inputVelocidade = document.getElementById('inputVelocidade');
@@ -1137,7 +1142,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         atualizarResultado();
     }, 100));
+    }
     
+    if (sliderRPM) {
     sliderRPM.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderRPM.value);
         const inputRPM = document.getElementById('inputRPM');
@@ -1147,7 +1154,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         atualizarResultado();
     }, 100));
+    }
     
+    if (sliderSlip) {
     sliderSlip.addEventListener('input', throttle(() => {
         const valor = parseFloat(sliderSlip.value);
         const inputSlip = document.getElementById('inputSlip');
@@ -1157,6 +1166,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         atualizarResultado();
     }, 100));
+    }
     
     // ============================================
     // PASSO 4B: CONFIGURAR EVENT LISTENERS DOS INPUTS EDITÁVEIS

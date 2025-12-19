@@ -10,7 +10,8 @@
  *   - arredondarInteiro: força arredondamento inteiro
  *   - onInput: função callback após ajuste
  */
-export function ajustarValorPadrao(targetId, step, options = {}) {
+// Exporta como função global para compatibilidade com scripts não-module
+function ajustarValorPadrao(targetId, step, options = {}) {
     // Obtém a referência do elemento slider pelo ID informado
     const slider = document.getElementById(targetId);
     // Se não encontrar o slider, interrompe a função (proteção contra erro de ID)
@@ -51,4 +52,9 @@ export function ajustarValorPadrao(targetId, step, options = {}) {
     if (typeof options.onInput === 'function') {
         options.onInput(valor);
     }
+}
+
+// Exporta também como ES6 module para compatibilidade futura
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { ajustarValorPadrao };
 }
