@@ -130,7 +130,8 @@ const traducoes = {
         // Aria label for the home button
         'aria-home': 'Voltar para a tela inicial',
         // Footer
-        'footer': '💻 Portfólio Engenharia NATA @ 2025'
+        'footer': '💻 Portfólio Engenharia NATA @ 2025',
+        'dev-badge': '🚧 EM DESENVOLVIMENTO'
     },
     'it-IT': {
         // Nomes dos aplicativos em italiano

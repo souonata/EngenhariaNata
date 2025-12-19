@@ -73,8 +73,8 @@ if ($errors.Count -eq 0 -and $warnings.Count -eq 0) {
 } else {
     if ($errors.Count -gt 0) {
         Write-Host "[ERRO] Erros encontrados:" -ForegroundColor Red
-        foreach ($error in $errors) {
-            Write-Host "  - $error" -ForegroundColor Red
+        foreach ($err in $errors) {
+            Write-Host "  - $err" -ForegroundColor Red
         }
     }
     

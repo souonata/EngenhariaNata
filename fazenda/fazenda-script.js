@@ -273,7 +273,22 @@ const traducoes = {
         'alimentacao': 'Alimentação',
         'tempo-crescimento': 'Tempo até Produção',
         'consumo-racao': 'Consumo de Ração',
-        'ocultar-info-tecnica': 'Ocultar Informações Técnicas'
+        'ocultar-info-tecnica': 'Ocultar Informações Técnicas',
+        // Placeholders para chaves presentes em IT-IT mas faltando em PT-BR
+        'oliva': 'Azeitona', 'figo': 'Figo', 'pesca': 'Pêssego', 'albicocca': 'Damasco',
+        'prugna': 'Ameixa', 'pera': 'Pera', 'mela': 'Maçã', 'limone': 'Limão',
+        'arancia': 'Laranja', 'kiwi': 'Kiwi', 'castagna': 'Castanha',
+        'lattuga': 'Alface', 'spinaci': 'Espinafre', 'rucola': 'Rúcula', 'cavolo': 'Couve',
+        'broccoli': 'Brócolis', 'cavolfiore': 'Couve-flor', 'bietola': 'Acelga',
+        'prezzemolo': 'Salsinha', 'basilico': 'Manjericão', 'rosmarino': 'Alecrim',
+        'origano': 'Orégano', 'pomodoro': 'Tomate', 'carota': 'Cenoura',
+        'barbabietola': 'Beterraba', 'zucchina': 'Abobrinha', 'peperone': 'Pimentão',
+        'melanzana': 'Berinjela', 'fagioli': 'Feijão', 'ceci': 'Grão-de-bico',
+        'lenticchie': 'Lentilhas', 'cipolla': 'Cebola', 'aglio': 'Alho', 'patata': 'Batata',
+        'fagiolini': 'Vagem',
+        'gallina-ovos': 'Galinha (Ovos)', 'pollo-corte': 'Frango de Corte', 'maiale': 'Porco',
+        'mucca-latte': 'Vaca (Leite)', 'mucca-carne': 'Vaca (Carne)', 'capra': 'Cabra',
+        'coniglio': 'Coelho', 'pecora': 'Ovelha', 'anatra-ovos': 'Pato (Ovos)', 'anatra-corte': 'Pato (Carne)'
     },
     'it-IT': {
         'app-title': '🌾 Dimensionatore di Fattoria Auto-Sostenibile',
@@ -307,6 +322,7 @@ const traducoes = {
         'albicocca': 'Albicocca', 'prugna': 'Prugna', 'pera': 'Pera', 'mela': 'Mela',
         'limone': 'Limone', 'arancia': 'Arancia', 'kiwi': 'Kiwi', 'castagna': 'Castagna',
         'lattuga': 'Lattuga', 'spinaci': 'Spinaci', 'rucola': 'Rucola', 'cavolo': 'Cavolo',
+        'rucula': 'Rucola',
         'broccoli': 'Broccoli', 'cavolfiore': 'Cavolfiore', 'bietola': 'Bietola',
         'prezzemolo': 'Prezzemolo', 'basilico': 'Basilico', 'rosmarino': 'Rosmarino', 'origano': 'Origano',
         'pomodoro': 'Pomodoro', 'carota': 'Carota', 'barbabietola': 'Barbabietola', 'zucchina': 'Zucchina',
