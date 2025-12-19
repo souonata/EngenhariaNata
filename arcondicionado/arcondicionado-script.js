@@ -792,7 +792,6 @@ function calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equ
  * Atualiza os resultados na interface
  */
 function atualizarResultados() {
-    console.log('[Ar Condicionado] atualizarResultados() chamado');
     try {
     // Obtém valores dos inputs ou sliders
     const inputArea = document.getElementById('inputArea');
@@ -884,22 +883,10 @@ function atualizarResultados() {
     const insolacao = document.querySelector('input[name="insolacao"]:checked')?.value || 'media';
     const isolamento = document.querySelector('input[name="isolamento"]:checked')?.value || 'medio';
     
-    // Log dos valores de entrada
-    console.log('[Ar Condicionado] Valores de entrada:', {
-        numAmbientes,
-        areaTotal,
-        altura,
-        pessoas,
-        equipamentos,
-        insolacao,
-        isolamento
-    });
-    
     // Calcula e atualiza sistema multi-split (sempre, mesmo para 1 ambiente)
     let resultadoMultisplit;
     try {
         resultadoMultisplit = calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equipamentos, insolacao, isolamento);
-        console.log('[Ar Condicionado] resultadoMultisplit calculado:', resultadoMultisplit);
     } catch (error) {
         console.error('[Ar Condicionado] Erro ao calcular sistema:', error);
         resultadoMultisplit = null;
@@ -920,22 +907,10 @@ function atualizarResultados() {
         return;
     }
     
-    // Verifica se os elementos de resultado existem
-    const elemCustoSistema = document.getElementById('custoSistemaMultisplit');
-    console.log('[Ar Condicionado] Elementos de resultado encontrados:', {
-        custoSistemaMultisplit: !!elemCustoSistema,
-        btuTotalMultisplit: !!document.getElementById('btuTotalMultisplit'),
-        unidadeExternaMultisplit: !!document.getElementById('unidadeExternaMultisplit'),
-        unidadesInternasMultisplit: !!document.getElementById('unidadesInternasMultisplit')
-    });
-    
     // Custo total em destaque
+    const elemCustoSistema = document.getElementById('custoSistemaMultisplit');
     if (elemCustoSistema) {
-        const custoFormatado = formatarMoedaSemDecimalComConversao(resultadoMultisplit.custoTotal, idiomaAtual);
-        console.log('[Ar Condicionado] Atualizando custoSistemaMultisplit:', custoFormatado);
-        elemCustoSistema.textContent = custoFormatado;
-    } else {
-        console.warn('[Ar Condicionado] Elemento custoSistemaMultisplit não encontrado!');
+        elemCustoSistema.textContent = formatarMoedaSemDecimalComConversao(resultadoMultisplit.custoTotal, idiomaAtual);
     }
     
     // Detalhamento dos custos
@@ -1009,8 +984,6 @@ function atualizarResultados() {
     if (typeof atualizarMemorialComValores === 'function') {
         atualizarMemorialComValores();
     }
-    
-    console.log('[Ar Condicionado] atualizarResultados() concluído com sucesso');
     } catch (error) {
         console.error('[Ar Condicionado] Erro em atualizarResultados:', error);
         console.error('[Ar Condicionado] Stack trace:', error.stack);
@@ -1068,8 +1041,6 @@ let timeoutId = null;
 // INICIALIZAÇÃO
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('[Ar Condicionado] DOMContentLoaded iniciado');
-    
     // Configurar botões de idioma
     document.getElementById('btnPortugues')?.addEventListener('click', () => trocarIdioma('pt-BR'));
     document.getElementById('btnItaliano')?.addEventListener('click', () => trocarIdioma('it-IT'));
@@ -1082,13 +1053,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const sliderAltura = document.getElementById('sliderAltura');
     const sliderPessoas = document.getElementById('sliderPessoas');
     const sliderEquipamentos = document.getElementById('sliderEquipamentos');
-    
-    console.log('[Ar Condicionado] Sliders encontrados:', {
-        sliderArea: !!sliderArea,
-        sliderAltura: !!sliderAltura,
-        sliderPessoas: !!sliderPessoas,
-        sliderEquipamentos: !!sliderEquipamentos
-    });
     
     // Função auxiliar para atualizar área
     const atualizarArea = () => {
@@ -1104,9 +1068,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Aplica throttle reduzido nos sliders para melhor responsividade (50ms)
     // Adiciona também listener 'change' para garantir que o valor final seja sempre atualizado
     if (sliderArea) {
-    console.log('[Ar Condicionado] Anexando listener ao sliderArea');
     sliderArea.addEventListener('input', throttle(() => {
-        console.log('[Ar Condicionado] sliderArea alterado:', sliderArea.value);
         atualizarArea();
     }, 50)); // Reduzido de 100ms para 50ms
     // Listener 'change' garante que o valor final seja sempre atualizado quando o usuário solta o slider
@@ -1437,9 +1399,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Calcular resultados iniciais
-    console.log('[Ar Condicionado] Chamando atualizarResultados() na inicialização');
     atualizarResultados();
-    console.log('[Ar Condicionado] DOMContentLoaded concluído');
 });
 
 /**

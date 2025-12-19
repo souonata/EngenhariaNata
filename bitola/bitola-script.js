@@ -535,6 +535,11 @@ function calcularAreaMinima(comprimento, corrente, tensao, quedaPercentual) {
  * Aplica fator de segurança de 1.25 (25% de margem) conforme prática no Brasil e Itália
  */
 function selecionarBitolaComercial(areaMinima) {
+    // Validação: se área mínima é inválida, retorna a menor bitola disponível
+    if (!isFinite(areaMinima) || areaMinima <= 0) {
+        return BITOLAS_COMERCIAIS[0];
+    }
+    
     // Aplica fator de segurança (1.25 = 25% de margem)
     // Isso garante que a bitola escolhida tenha capacidade superior à necessária
     const areaComSeguranca = areaMinima * FATOR_SEGURANCA;
@@ -547,7 +552,7 @@ function selecionarBitolaComercial(areaMinima) {
         }
     }
     
-    // Se nenhuma bitola atender, retorna a maior disponível
+    // Se nenhuma bitola atender (área muito grande), retorna a maior disponível
     return BITOLAS_COMERCIAIS[BITOLAS_COMERCIAIS.length - 1];
 }
 
@@ -726,8 +731,22 @@ function atualizarResultados() {
     const disjuntor = selecionarDisjuntorComercial(corrente);
     
     // Atualiza a interface (verificando se os elementos existem)
-    if (areaMinima) areaMinima.textContent = formatarNumeroComSufixo(areaMin, 2) + ' mm²';
-    if (bitolaComercial) bitolaComercial.textContent = formatarNumeroComSufixo(bitola, 1) + ' mm²';
+    // Para área mínima e bitola comercial, usar formatarNumero (sem sufixos k/M/m)
+    // pois valores em mm² geralmente ficam entre 0.1 e 500 mm²
+    if (areaMinima) {
+        if (isFinite(areaMin) && areaMin > 0) {
+            areaMinima.textContent = formatarNumero(areaMin, 2) + ' mm²';
+        } else {
+            areaMinima.textContent = '-';
+        }
+    }
+    if (bitolaComercial) {
+        if (isFinite(bitola) && bitola > 0) {
+            bitolaComercial.textContent = formatarNumero(bitola, 1) + ' mm²';
+        } else {
+            bitolaComercial.textContent = '-';
+        }
+    }
     if (correnteCircuito) correnteCircuito.textContent = formatarNumeroComSufixo(corrente, 2) + ' A';
     if (quedaReal) quedaReal.textContent = formatarNumero(quedaRealPercentual, 2) + ' %';
     if (disjuntorComercial) disjuntorComercial.textContent = formatarNumeroComSufixo(disjuntor, 0) + ' A';
