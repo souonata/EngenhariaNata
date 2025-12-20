@@ -58,7 +58,7 @@
         ASSETS: {
             CSS_BASE: 'assets/css/',              // Pasta onde ficam os arquivos CSS
             JS_BASE: 'assets/js/',                // Pasta onde ficam os arquivos JavaScript
-            CHARTJS_CDN: 'https://cdn.jsdelivr.net/npm/chart.js'  // URL da biblioteca de gráficos Chart.js
+            CHARTJS_CDN: 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js'  // URL da biblioteca de gráficos Chart.js (versão específica sem source maps)
         },
 
         // UI: Configurações da interface do usuário
@@ -821,10 +821,18 @@ function carregarChartJS(callback, plugins = []) {
             return;
         }
         
+        // Prevenir carregamento automático de source maps
+        // Isso evita erros de CSP quando o Chart.js tenta carregar .map files
+        const originalSourceMapSupport = window.SourceMapSupport;
+        if (typeof window.SourceMapSupport !== 'undefined') {
+            window.SourceMapSupport = undefined;
+        }
+        
         // Carrega Chart.js
         const script = document.createElement('script');
         script.src = SiteConfig.ASSETS.CHARTJS_CDN;
         script.async = true;
+        script.crossOrigin = 'anonymous'; // Permite CORS para evitar problemas
         
         script.onload = () => {
             // Carrega plugins se especificados

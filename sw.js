@@ -79,13 +79,11 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
     
-    // Ignora requisições para APIs externas e Google Forms
+    // Não intercepta requisições para recursos externos (CDNs, APIs)
+    // Deixa o navegador processar diretamente para respeitar CSP
     if (url.origin !== self.location.origin) {
-        // Para recursos externos (CDNs, APIs), usa Network First
-        event.respondWith(fetch(event.request).catch(() => {
-            // Se falhar, tenta do cache
-            return caches.match(event.request);
-        }));
+        // Para CDNs e APIs externas, não intercepta - permite que o navegador faça a requisição diretamente
+        // Isso evita problemas com Content Security Policy
         return;
     }
     

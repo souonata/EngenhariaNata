@@ -1216,14 +1216,21 @@ function atualizarGraficoAmortizacao(dados) {
     // Criar pontos de dados a cada 6 meses para melhor legibilidade
     const intervaloMeses = 6;
     
+    // Definir os anos que queremos mostrar no eixo X (0, 5, 10, 15, 20, 25, 30)
+    const anosParaMostrar = [0, 5, 10, 15, 20, 25, 30];
+    
     for (let mes = 0; mes <= mesesAnalise; mes += intervaloMeses) {
         const ano = Math.floor(mes / 12);
+        const mesNoAno = mes % 12;
         
-        // Criar labels apenas a cada 5 anos (0, 5, 10, 15, 20, 25, 30)
-        if (mes === 0) {
-            labels.push('0');
-        } else if (ano % 5 === 0 && mes % 12 === 0) {
-            labels.push(`${ano}${idiomaAtual === 'pt-BR' ? 'a' : 'a'}`);
+        // Criar labels apenas para os anos especificados (0, 5, 10, 15, 20, 25, 30)
+        // Verificar se estamos em um dos anos desejados e no início do ano (mês 0 ou próximo)
+        if (anosParaMostrar.includes(ano) && mesNoAno < intervaloMeses) {
+            if (ano === 0) {
+                labels.push('0');
+            } else {
+                labels.push(`${ano}${idiomaAtual === 'pt-BR' ? 'a' : 'a'}`);
+            }
         } else {
             labels.push(''); // Label vazio para pontos intermediários
         }
@@ -1315,6 +1322,7 @@ function atualizarGraficoAmortizacao(dados) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: false, // Desabilitar animações para atualização instantânea
             interaction: {
                 intersect: false,
                 mode: 'index'
@@ -1365,11 +1373,19 @@ function atualizarGraficoAmortizacao(dados) {
                         maxRotation: 0,
                         minRotation: 0,
                         callback: function(value, index) {
+                            // Usar diretamente o array de labels criado anteriormente
                             // Mostrar apenas labels não vazios (a cada 5 anos: 0, 5, 10, 15, 20, 25, 30)
-                            const label = this.getLabelForValue(value);
-                            return label || '';
+                            if (index >= 0 && index < labels.length) {
+                                const label = labels[index];
+                                if (label && label.trim() !== '') {
+                                    return label;
+                                }
+                            }
+                            return '';
                         },
-                        maxTicksLimit: 7 // Apenas 7 labels: 0, 5, 10, 15, 20, 25, 30
+                        maxTicksLimit: 7, // Apenas 7 labels: 0, 5, 10, 15, 20, 25, 30
+                        autoSkip: false, // Não pular labels automaticamente - queremos mostrar todos os labels não vazios
+                        includeBounds: true // Incluir os limites (0 e 30)
                     }
                 },
                 y: {
@@ -1595,6 +1611,7 @@ function atualizarGraficoSazonalidade(dados) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: false, // Desabilitar animações para atualização instantânea
             plugins: {
                 legend: {
                     display: false
