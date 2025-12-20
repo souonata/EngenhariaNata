@@ -9,7 +9,6 @@
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-    <link rel="alternate icon" href="../favicon.ico">
     <link rel="apple-touch-icon" href="../favicon.svg">
     
     <!-- SEO Meta Tags -->
@@ -160,16 +159,16 @@
                 <div class="cabecalho-controle">
                     <label for="sliderQuedaTensao" data-i18n="label-queda-tensao">Queda de Tensão Máxima</label>
                     <div class="valor-com-unidades">
-                        <input type="text" id="inputQuedaTensao" class="valor-display valor-input" value="4">
+                        <input type="text" id="inputQuedaTensao" class="valor-display valor-input" value="3">
                         <span class="unidade">%</span>
                     </div>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderQuedaTensao" data-step="-0.5" aria-label="Diminuir queda de tensão">−</button>
-                    <input type="range" id="sliderQuedaTensao" min="1" max="10" step="0.5" value="4">
+                    <input type="range" id="sliderQuedaTensao" min="1" max="10" step="0.5" value="3">
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderQuedaTensao" data-step="0.5" aria-label="Aumentar queda de tensão">+</button>
                 </div>
-                <p class="dica-recomendacao" data-i18n="dica-queda-tensao">✅ <strong>Recomendado para projetos residenciais no Brasil: 4%</strong> (padrão mais utilizado)</p>
+                <p class="dica-recomendacao" data-i18n="dica-queda-tensao">✅ <strong>Recomendado para projetos residenciais no Brasil: 3%</strong> (padrão mais utilizado)</p>
             </div>
         </section>
 
@@ -238,7 +237,7 @@
                     <p><strong data-i18n="memorial-formula-queda">Queda Real (%) = ((2 × ρ × L × I) ÷ S) ÷ Tensão × 100</strong></p>
                 </div>
                 <p data-i18n="memorial-passo4-explicacao">Recalculamos a queda de tensão com a bitola comercial escolhida para verificar se está dentro do limite permitido.</p>
-                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-queda">Com bitola 1.5 mm² → queda real = 1.06% (dentro do limite de 4%)</span></p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-queda">Com bitola 1.5 mm² → queda real = 1.06% (dentro do limite de 3%)</span></p>
             </div>
 
             <div class="memorial-item">

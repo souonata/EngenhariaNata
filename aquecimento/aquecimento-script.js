@@ -169,19 +169,22 @@ function obterModeloReferencia() {
 const POTENCIA_POR_M3 = 30; // W/m³ (aproximadamente 100 BTU/m³ convertido)
 
 // Consumo específico por classe energética (kWh/m²·ano)
-// Valores baseados nas normas europeias de eficiência energética
-// Usando valores médios de cada faixa
+// Valores baseados nas normas europeias e italianas de eficiência energética
+// Referência: Diretiva EPBD 2002/91/CE, Dlgs 192/2005 (Itália), DPR 59/2009
+// Fonte: https://www.la-certificazione-energetica.net/normative_certificazione_energetica_italia.html
+// O APE (Attestato di Prestazione Energetica) italiano utiliza classes de A4 a G
+// Usando valores médios de cada faixa conforme normativa italiana
 const CONSUMO_ESPECIFICO_CLASSE = {
-    "A4": 0.35,  // ≤ 0,40 kWh/m²·ano (média: 0,35)
+    "A4": 0.35,  // ≤ 0,40 kWh/m²·ano (média: 0,35) - Classe mais eficiente
     "A3": 0.50,  // 0,40 < Consumo ≤ 0,60 kWh/m²·ano (média: 0,50)
     "A2": 0.70,  // 0,60 < Consumo ≤ 0,80 kWh/m²·ano (média: 0,70)
     "A1": 0.90,  // 0,80 < Consumo ≤ 1,00 kWh/m²·ano (média: 0,90)
     "B": 1.10,   // 1,00 < Consumo ≤ 1,20 kWh/m²·ano (média: 1,10)
     "C": 1.35,   // 1,20 < Consumo ≤ 1,50 kWh/m²·ano (média: 1,35)
-    "D": 1.75,   // 1,50 < Consumo ≤ 2,00 kWh/m²·ano (média: 1,75)
+    "D": 1.75,   // 1,50 < Consumo ≤ 2,00 kWh/m²·ano (média: 1,75) - Padrão típico
     "E": 2.30,   // 2,00 < Consumo ≤ 2,60 kWh/m²·ano (média: 2,30)
     "F": 3.05,   // 2,60 < Consumo ≤ 3,50 kWh/m²·ano (média: 3,05)
-    "G": 4.0     // > 3,50 kWh/m²·ano (usando 4,0 como referência)
+    "G": 4.0     // > 3,50 kWh/m²·ano (usando 4,0 como referência) - Classe menos eficiente
 };
 
 // Temperatura desejada para aquecimento da casa (conforto térmico)
@@ -334,14 +337,17 @@ function calcularTemperaturaComAltitude(T_base, altitude) {
 
 /**
  * Calcula a temperatura ambiente de inverno ajustada pela altitude
+ * Variação linear de 0 até 2000m, chegando a -13°C a 2000m em relação ao nível do mar
  * @param {number} T_base - Temperatura ambiente base ao nível do mar (°C)
  * @param {number} altitude - Altitude em metros
  * @returns {number} Temperatura ambiente ajustada pela altitude (°C)
  */
 function calcularTemperaturaAmbienteComAltitude(T_base, altitude) {
-    // Gradiente adiabático padrão: ~6.5°C por 1000m
-    const variacao_altitude = (altitude - ALTITUDE_REFERENCIA) * (GRADIENTE_ADIABATICO / 1000.0);
-    const T_ajustada = T_base - variacao_altitude;
+    // Variação linear: -13°C a 2000m = -6.5°C por 1000m = -0.0065°C por metro
+    // Aplicar variação linear de 0 até 2000m
+    const altitudeLimitada = Math.max(0, Math.min(altitude, 2000));
+    const variacao_altitude = altitudeLimitada * (-13.0 / 2000.0);
+    const T_ajustada = T_base + variacao_altitude; // variacao_altitude já é negativa
     
     // Limitar temperatura mínima a -5°C (condições extremas de inverno)
     return Math.max(-5.0, T_ajustada);
@@ -745,22 +751,27 @@ function calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, mod
 // Matriz de Termossifões (Radiadores) para Aquecimento de Ambientes
 // Valores baseados em preços médios do mercado (Brasil em R$ e Itália em €) - 2024/2025
 // Matriz de Termossifões (Radiadores) para Aquecimento de Ambientes
-// Valores baseados em preços médios do mercado (Brasil em R$ e Itália em €) - 2024/2025
-// Preços atualizados com base em pesquisas de mercado
+// Valores baseados em especificações técnicas reais de radiadores termossifões
+// Potências indicadas para Delta T = 50°C (temperatura água entrada - temperatura ambiente = 50°C)
+// Exemplo: água a 60°C em ambiente a 10°C = Delta T de 50°C
+// Temperatura mínima de água para funcionamento adequado: 45-50°C (dependendo do modelo)
+// Valores baseados em catálogos de fabricantes e normas técnicas
 const MATRIZ_TERMOSSIFOES = {
     'pt-BR': [
-        { tamanho: 'Pequeno', potencia_W: 500, comprimento_cm: 60, altura_cm: 40, preco: 480.0, descricao: '60x40cm - 500W' },
-        { tamanho: 'Médio', potencia_W: 800, comprimento_cm: 80, altura_cm: 50, preco: 680.0, descricao: '80x50cm - 800W' },
-        { tamanho: 'Grande', potencia_W: 1200, comprimento_cm: 100, altura_cm: 60, preco: 920.0, descricao: '100x60cm - 1200W' },
-        { tamanho: 'Extra Grande', potencia_W: 1800, comprimento_cm: 120, altura_cm: 60, preco: 1300.0, descricao: '120x60cm - 1800W' },
-        { tamanho: 'Duplo', potencia_W: 2400, comprimento_cm: 150, altura_cm: 60, preco: 1650.0, descricao: '150x60cm - 2400W' }
+        { tamanho: 'Muito Pequeno', potencia_W: 300, comprimento_cm: 50, altura_cm: 30, preco: 380.0, descricao: '50x30cm - 300W', tempMinimaAgua: 45.0 },
+        { tamanho: 'Pequeno', potencia_W: 500, comprimento_cm: 60, altura_cm: 40, preco: 480.0, descricao: '60x40cm - 500W', tempMinimaAgua: 48.0 },
+        { tamanho: 'Médio', potencia_W: 800, comprimento_cm: 80, altura_cm: 50, preco: 680.0, descricao: '80x50cm - 800W', tempMinimaAgua: 50.0 },
+        { tamanho: 'Grande', potencia_W: 1200, comprimento_cm: 100, altura_cm: 60, preco: 920.0, descricao: '100x60cm - 1200W', tempMinimaAgua: 50.0 },
+        { tamanho: 'Extra Grande', potencia_W: 1800, comprimento_cm: 120, altura_cm: 60, preco: 1300.0, descricao: '120x60cm - 1800W', tempMinimaAgua: 50.0 },
+        { tamanho: 'Duplo', potencia_W: 2400, comprimento_cm: 150, altura_cm: 60, preco: 1650.0, descricao: '150x60cm - 2400W', tempMinimaAgua: 50.0 }
     ],
     'it-IT': [
-        { tamanho: 'Piccolo', potencia_W: 500, comprimento_cm: 60, altura_cm: 40, preco: 80.0, descricao: '60x40cm - 500W' },
-        { tamanho: 'Medio', potencia_W: 800, comprimento_cm: 80, altura_cm: 50, preco: 120.0, descricao: '80x50cm - 800W' },
-        { tamanho: 'Grande', potencia_W: 1200, comprimento_cm: 100, altura_cm: 60, preco: 160.0, descricao: '100x60cm - 1200W' },
-        { tamanho: 'Extra Grande', potencia_W: 1800, comprimento_cm: 120, altura_cm: 60, preco: 220.0, descricao: '120x60cm - 1800W' },
-        { tamanho: 'Doppio', potencia_W: 2400, comprimento_cm: 150, altura_cm: 60, preco: 280.0, descricao: '150x60cm - 2400W' }
+        { tamanho: 'Molto Piccolo', potencia_W: 300, comprimento_cm: 50, altura_cm: 30, preco: 65.0, descricao: '50x30cm - 300W', tempMinimaAgua: 45.0 },
+        { tamanho: 'Piccolo', potencia_W: 500, comprimento_cm: 60, altura_cm: 40, preco: 80.0, descricao: '60x40cm - 500W', tempMinimaAgua: 48.0 },
+        { tamanho: 'Medio', potencia_W: 800, comprimento_cm: 80, altura_cm: 50, preco: 120.0, descricao: '80x50cm - 800W', tempMinimaAgua: 50.0 },
+        { tamanho: 'Grande', potencia_W: 1200, comprimento_cm: 100, altura_cm: 60, preco: 160.0, descricao: '100x60cm - 1200W', tempMinimaAgua: 50.0 },
+        { tamanho: 'Extra Grande', potencia_W: 1800, comprimento_cm: 120, altura_cm: 60, preco: 220.0, descricao: '120x60cm - 1800W', tempMinimaAgua: 50.0 },
+        { tamanho: 'Doppio', potencia_W: 2400, comprimento_cm: 150, altura_cm: 60, preco: 280.0, descricao: '150x60cm - 2400W', tempMinimaAgua: 50.0 }
     ]
 };
 
@@ -865,12 +876,21 @@ function selecionarTermossifao(potenciaNecessaria_W, matrizTermossifoes) {
     // Ordenar por potência (menor para maior)
     const termossifoesOrdenados = [...matrizTermossifoes].sort((a, b) => a.potencia_W - b.potencia_W);
     
+    // Se a potência necessária é muito pequena (menor que 50% do menor termossifão disponível),
+    // usar o menor termossifão disponível (melhor ter capacidade extra do que insuficiente)
+    if (potenciaNecessaria_W < termossifoesOrdenados[0].potencia_W * 0.5) {
+        return termossifoesOrdenados[0];
+    }
+    
     // Encontrar o termossifão com potência igual ou superior à necessária
     // Com margem de 20% para garantir capacidade adequada
     const potenciaComMargem = potenciaNecessaria_W * 1.2;
     
     for (const termossifao of termossifoesOrdenados) {
-        if (termossifao.potencia_W >= potenciaComMargem) {
+        // Aceitar termossifão se sua potência for >= potência com margem
+        // Ou se estiver dentro de 30% da potência necessária (para evitar superdimensionamento excessivo)
+        if (termossifao.potencia_W >= potenciaComMargem || 
+            (termossifao.potencia_W >= potenciaNecessaria_W && termossifao.potencia_W <= potenciaNecessaria_W * 1.3)) {
             return termossifao;
         }
     }
@@ -1795,7 +1815,8 @@ const traducoes = {
         'resultado-demanda-agua': 'Demanda Aquecimento Água:',
         'resultado-demanda-casa': 'Demanda Aquecimento Casa:',
         'resultado-volume-boiler': 'Volume do Boiler:',
-        'resultado-potencia-casa': 'Perda de Calor para Ambiente:',
+        'resultado-potencia-casa': 'Potência Necessária para Aquecimento:',
+        'dica-potencia-casa': '💡 Potência INSTANTÂNEA contínua necessária para compensar as perdas térmicas da casa toda durante as horas de aquecimento (16h/dia). Esta é a potência total que os termossifões devem fornecer em conjunto.',
         'resultado-termossifoes': 'Termossifões Necessários:',
         'info-recomendacoes': '💡 Recomendações de Instalação:',
         'rec-altura': 'O fundo do boiler deve estar a pelo menos 0,20 m acima do topo dos coletores',
@@ -1885,7 +1906,8 @@ const traducoes = {
         'resultado-demanda-agua': 'Domanda Riscaldamento Acqua:',
         'resultado-demanda-casa': 'Domanda Riscaldamento Casa:',
         'resultado-volume-boiler': 'Volume Boiler:',
-        'resultado-potencia-casa': 'Perdita di Calore per Ambiente:',
+        'resultado-potencia-casa': 'Potenza Necessaria per Riscaldamento:',
+        'dica-potencia-casa': '💡 Potenza ISTANTANEA continua necessaria per compensare le perdite termiche dell\'intera casa durante le ore di riscaldamento (16h/giorno). Questa è la potenza totale che i termosifoni devono fornire insieme.',
         'resultado-termossifoes': 'Termosifoni Necessari:',
         'info-recomendacoes': '💡 Raccomandazioni di Installazione:',
         'rec-altura': 'Il fondo del boiler deve essere almeno 0,20 m sopra la parte superiore dei collettori',

@@ -719,7 +719,7 @@ function atualizarResultado() {
     
     // Exibe o RPM efetivo na hélice (já é um número inteiro)
     const rpmHeliceEl = document.getElementById('rpmHelice');
-    if (rpmHeliceEl) rpmHeliceEl.textContent = formatarNumeroComSufixo(resultado.rpmHelice, 0);
+    if (rpmHeliceEl) rpmHeliceEl.textContent = formatarNumero(resultado.rpmHelice, 0);
     
     // Converte a velocidade teórica de nós para a unidade selecionada
     const velocidadeTeoricaConvertida = converterKnotsParaUnidade(resultado.velocidadeTeorica, unidadeVelocidade);
@@ -818,7 +818,7 @@ function atualizarMemorialComValores() {
         `Passo ${formatarNumero(passo, 1)}", ${formatarNumero(rpmMotor, 0)} RPM, redução ${formatarNumero(reducao, 2)}:1 → (${formatarNumero(passo, 1)} × ${formatarNumero(rpmMotor, 0)}) ÷ (1056 × ${formatarNumero(reducao, 2)}) = ${formatarNumero(velocidadeTeorica, 1)} nós`;
     
     // Atualizar resumo
-    document.getElementById('resumo-rpm-helice').textContent = formatarNumeroComSufixo(rpmHelice, 0) + ' rpm';
+    document.getElementById('resumo-rpm-helice').textContent = formatarNumero(rpmHelice, 0) + ' rpm';
     document.getElementById('resumo-passo').textContent = formatarNumero(passo, 1) + '"';
     document.getElementById('resumo-velocidade-teorica').textContent = formatarNumero(velocidadeTeorica, 1) + ' nós';
 }
@@ -856,11 +856,24 @@ function atualizarGrafico() {
     const slipPercent = parseFloat(document.getElementById('sliderSlip').value);     // Slip em percentual
     
     // ============================================
-    // PASSO 2: GERAR DADOS PARA O GRÁFICO
+    // PASSO 2: OBTER VALORES ATUAIS PARA MARCADOR
+    // ============================================
+    // Obtém a velocidade atual selecionada pelo usuário
+    const sliderVelocidade = document.getElementById('sliderVelocidade');
+    const velocidadeAtual = sliderVelocidade ? parseFloat(sliderVelocidade.value) : 25;
+    const velocidadeAtualKnots = converterVelocidadeParaKnots(velocidadeAtual, unidadeVelocidade);
+    const resultadoAtual = calcularPasso(velocidadeAtualKnots, reducao, rpmMotor, slipPercent / 100);
+    const passoAtual = converterPassoParaUnidade(resultadoAtual.passo, unidadePasso);
+    const velocidadeAtualConvertida = converterKnotsParaUnidade(velocidadeAtualKnots, unidadeVelocidade);
+    
+    // ============================================
+    // PASSO 3: GERAR DADOS PARA O GRÁFICO
     // ============================================
     // Cria arrays vazios para armazenar os valores de velocidade e passo
     const velocidades = []; // Valores do eixo X (velocidades)
     const passos = [];      // Valores do eixo Y (passos)
+    const passosSlipMin = []; // Passos com slip mínimo (10%)
+    const passosSlipMax = []; // Passos com slip máximo (20%)
     
     // Loop que gera pontos do gráfico: de 5 a 60 nós, de 5 em 5 nós
     // Isso cria 12 pontos no gráfico (5, 10, 15, 20, ..., 60 nós)
@@ -878,17 +891,23 @@ function atualizarGrafico() {
         const passoConvertido = converterPassoParaUnidade(resultado.passo, unidadePasso);
         // Adiciona o passo ao array de passos
         passos.push(passoConvertido);
+        
+        // Calcula passos para zona de slip (10% e 20% - faixa típica para barcos de lazer)
+        const resultadoSlipMin = calcularPasso(vKnots, reducao, rpmMotor, 0.10); // 10% slip
+        const resultadoSlipMax = calcularPasso(vKnots, reducao, rpmMotor, 0.20); // 20% slip
+        passosSlipMin.push(converterPassoParaUnidade(resultadoSlipMin.passo, unidadePasso));
+        passosSlipMax.push(converterPassoParaUnidade(resultadoSlipMax.passo, unidadePasso));
     }
     
     // ============================================
-    // PASSO 3: OBTER O CONTEXTO DO CANVAS
+    // PASSO 4: OBTER O CONTEXTO DO CANVAS
     // ============================================
     // Obtém o elemento canvas do HTML e seu contexto 2D
     // O contexto é necessário para desenhar o gráfico
     const ctx = document.getElementById('graficoHelice').getContext('2d');
     
     // ============================================
-    // PASSO 4: DESTRUIR GRÁFICO ANTERIOR (SE EXISTIR)
+    // PASSO 5: DESTRUIR GRÁFICO ANTERIOR (SE EXISTIR)
     // ============================================
     // Se já existe um gráfico criado anteriormente, destroi-o antes de criar um novo
     // Isso evita vazamentos de memória e garante que apenas um gráfico exista por vez
@@ -897,7 +916,7 @@ function atualizarGrafico() {
     }
     
     // ============================================
-    // PASSO 5: CRIAR NOVO GRÁFICO COM CHART.JS
+    // PASSO 6: CRIAR NOVO GRÁFICO COM CHART.JS
     // ============================================
     // Cria um novo gráfico de linha usando a biblioteca Chart.js
     graficoHelice = new Chart(ctx, {
@@ -909,45 +928,80 @@ function atualizarGrafico() {
             // Labels do eixo X: valores de velocidade (na unidade selecionada)
             labels: velocidades,
             
-            // Conjunto de dados (dataset) - neste caso, apenas um conjunto (o passo)
-            datasets: [{
-                // Label da legenda: texto que aparece na legenda do gráfico
-                // Usa uma função imediatamente invocada (IIFE) para gerar o texto traduzido
-                label: (() => {
-                    // Obtém a unidade de passo selecionada
-                    const unidadePasso = document.querySelector('input[name="unidadePasso"]:checked').value;
-                    // Obtém o texto da unidade traduzido (polegadas ou milímetros)
-                    const unidadeText = unidadePasso === 'inches' 
-                        ? traducoes[idiomaAtual]?.['unidade-polegadas'] || 'polegadas'
-                        : traducoes[idiomaAtual]?.['unidade-mm'] || 'mm';
-                    // Retorna o label traduzido: "Passo (polegadas)" ou "Passo (mm)"
-                    return `${idiomaAtual === 'pt-BR' ? 'Passo' : 'Passo'} (${unidadeText})`;
-                })(),
-                
-                // Valores do eixo Y: valores de passo calculados
-                data: passos,
-                
-                // Cor da linha do gráfico (azul-turquesa)
-                borderColor: '#2d9fa3ff',
-                // Cor de fundo da área sob a linha (azul-turquesa com 10% de opacidade)
-                backgroundColor: 'rgba(45, 159, 163, 0.1)',
-                // Largura da linha em pixels
-                borderWidth: 3,
-                // Não preencher a área sob a linha (apenas mostrar a linha)
-                fill: false,
-                // Curvatura da linha (0 = reta, 1 = muito curva) - 0.4 = suavemente curva
-                tension: 0.4,
-                // Raio dos pontos no gráfico (em pixels)
-                pointRadius: 6,
-                // Raio dos pontos quando o mouse passa sobre eles (em pixels)
-                pointHoverRadius: 8,
-                // Cor de fundo dos pontos
-                pointBackgroundColor: '#2d9fa3ff',
-                // Cor da borda dos pontos
-                pointBorderColor: '#fff',
-                // Largura da borda dos pontos (em pixels)
-                pointBorderWidth: 2
-            }]
+            // Conjunto de dados (datasets) - múltiplos datasets para visualização completa
+            datasets: [
+                // Dataset 1: Zona de Slip (área sombreada entre slip mínimo e máximo)
+                {
+                    label: idiomaAtual === 'pt-BR' ? 'Zona de Slip (10-20%)' : 'Zona Slip (10-20%)',
+                    data: passosSlipMax,
+                    borderColor: 'rgba(255, 193, 7, 0.3)',
+                    backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                    borderWidth: 1,
+                    fill: '+1', // Preenche até o próximo dataset
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 0,
+                    order: 3 // Ordem de renderização (último)
+                },
+                {
+                    label: '', // Sem label para não aparecer na legenda
+                    data: passosSlipMin,
+                    borderColor: 'rgba(255, 193, 7, 0.3)',
+                    backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                    borderWidth: 1,
+                    fill: false,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 0,
+                    order: 2
+                },
+                // Dataset 2: Linha principal de Passo (com slip atual)
+                {
+                    label: (() => {
+                        const unidadePasso = document.querySelector('input[name="unidadePasso"]:checked').value;
+                        const unidadeText = unidadePasso === 'inches' 
+                            ? traducoes[idiomaAtual]?.['unidade-polegadas'] || 'polegadas'
+                            : traducoes[idiomaAtual]?.['unidade-mm'] || 'mm';
+                        return `${idiomaAtual === 'pt-BR' ? 'Passo' : 'Passo'} (${unidadeText}) - Slip ${slipPercent}%`;
+                    })(),
+                    data: passos,
+                    borderColor: '#2d9fa3ff',
+                    backgroundColor: 'rgba(45, 159, 163, 0.1)',
+                    borderWidth: 3,
+                    fill: false,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#2d9fa3ff',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    order: 1
+                },
+                // Dataset 3: Marcador do ponto atual (velocidade/passo selecionados)
+                {
+                    label: idiomaAtual === 'pt-BR' ? 'Ponto Atual' : 'Punto Attuale',
+                    data: (() => {
+                        // Encontra o índice mais próximo da velocidade atual nos labels
+                        const velocidadeArredondada = Math.round(velocidadeAtualConvertida);
+                        const indices = velocidades.map((v, i) => ({ v, i }));
+                        const maisProximo = indices.reduce((prev, curr) => 
+                            Math.abs(curr.v - velocidadeArredondada) < Math.abs(prev.v - velocidadeArredondada) ? curr : prev
+                        );
+                        // Cria array com null em todos os pontos exceto o atual
+                        const dadosMarcador = velocidades.map(() => null);
+                        // Calcula o passo para a velocidade atual exata
+                        dadosMarcador[maisProximo.i] = passoAtual;
+                        return dadosMarcador;
+                    })(),
+                    borderColor: '#ff5722',
+                    backgroundColor: '#ff5722',
+                    borderWidth: 3,
+                    pointRadius: 10,
+                    pointHoverRadius: 12,
+                    pointStyle: 'star',
+                    order: 0 // Renderiza primeiro (por cima)
+                }
+            ]
         },
         
         // Opções de configuração do gráfico

@@ -9,7 +9,6 @@
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-    <link rel="alternate icon" href="../favicon.ico">
     <link rel="apple-touch-icon" href="../favicon.svg">
     
     <!-- SEO Meta Tags -->
@@ -330,6 +329,46 @@
                     <span id="descVidaUtil">DoD Diário: --%</span>
                 </div>
             </div>
+
+            <!-- Custo do kWh -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderPrecoKWh" data-i18n="label-preco-kwh">Custo da Energia (kWh)</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputPrecoKWh" class="valor-display valor-input" value="0,75">
+                        <span class="unidade" id="unidadePrecoKWh">R$</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn" data-target="sliderPrecoKWh" data-step="-0.05" aria-label="Diminuir preço kWh">−</button>
+                    <input type="range" id="sliderPrecoKWh" min="0.19" max="3.00" step="0.05" value="0.75">
+                    <button type="button" class="arrow-btn" data-target="sliderPrecoKWh" data-step="0.05" aria-label="Aumentar preço kWh">+</button>
+                </div>
+                <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">
+                    <span data-i18n="dica-preco-kwh">💡 Ajuste para simular diferentes cenários de tarifa</span><br>
+                    <span id="notaPrecoKWh" style="font-size: 0.75rem; color: #888; font-style: italic;"></span>
+                </div>
+            </div>
+
+            <!-- Preço da Bateria por kWh -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderPrecoBateriaKWh" data-i18n="label-preco-bateria-kwh">Preço da Bateria (por kWh)</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputPrecoBateriaKWh" class="valor-display valor-input" value="3000">
+                        <span class="unidade" id="unidadePrecoBateriaKWh">R$</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn" data-target="sliderPrecoBateriaKWh" data-step="-100" aria-label="Diminuir preço bateria">−</button>
+                    <input type="range" id="sliderPrecoBateriaKWh" min="500" max="8000" step="100" value="3000">
+                    <button type="button" class="arrow-btn" data-target="sliderPrecoBateriaKWh" data-step="100" aria-label="Aumentar preço bateria">+</button>
+                </div>
+                <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">
+                    <span data-i18n="dica-preco-bateria-kwh">💡 Ajuste para simular diferentes custos de baterias</span><br>
+                    <span id="notaPrecoBateriaKWh" style="font-size: 0.75rem; color: #888; font-style: italic;"></span>
+                </div>
+            </div>
         </section>
 
         <!-- Resultados -->
@@ -403,6 +442,24 @@
                     <span class="rotulo-resultado" data-i18n="res-peso">Peso Estimado</span>
                 </div>
             </div>
+
+            <!-- Gráficos de Visualização -->
+            <div class="graficos-container" style="margin-top: 30px;">
+                <h3 style="color: #2d9fa3ff; margin-bottom: 15px;" data-i18n="graficos-title">📊 Visualizações</h3>
+                
+                <!-- Gráfico de Amortização: Retorno do Investimento -->
+                <div class="grafico-box" style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h4 style="color: #2d9fa3ff; margin-bottom: 10px; font-size: 1rem;" data-i18n="grafico-amortizacao-title">Análise de Amortização do Sistema</h4>
+                    <canvas id="graficoAmortizacao" style="height: 400px; max-height: 400px;"></canvas>
+                    <div id="infoPayback" style="margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 5px; font-size: 0.9em; text-align: center;"></div>
+                </div>
+
+                <!-- Gráfico de Sazonalidade -->
+                <div class="grafico-box" style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h4 style="color: #2d9fa3ff; margin-bottom: 10px; font-size: 1rem;" data-i18n="grafico-sazonalidade-title">Sazonalidade de Geração Solar</h4>
+                    <canvas id="graficoSazonalidade" style="height: 300px; max-height: 300px;"></canvas>
+                </div>
+            </div>
         </section>
     </div>
 
@@ -416,7 +473,8 @@
         </svg>
     </a>
 
-    <script src="../assets/js/site-config.js?v=1.1.0"></script>
-    <script src="solar-script.js?v=1.2.0"></script>
+    <script src="../assets/js/site-config.js?v=1.2.0"></script>
+    <script src="../assets/js/ajustarValorUtil.js?v=1.0.0"></script>
+    <script src="solar-script.js?v=1.20.0"></script>
 </body>
 </html>

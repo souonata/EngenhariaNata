@@ -237,6 +237,9 @@ const traducoes = {
         'resultado-unidades-internas': 'Unidades Internas (Evaporadoras):',
         'resultado-custo-sistema': 'Custo Estimado do Sistema:',
         'detalhamento-custos': '💰 Detalhamento dos Custos:',
+        'graficos-title': '📊 Visualizações',
+        'grafico-custo-title': 'Distribuição de Custos',
+        'grafico-btu-title': 'BTU por Ambiente',
         'custo-unidade-externa': 'Unidade Externa:',
         'custo-unidades-internas': 'Unidades Internas:',
         'dados-tecnicos': '⚙️ Dados Técnicos:',
@@ -349,6 +352,9 @@ const traducoes = {
         'resultado-unidades-internas': 'Unità Interne (Evaporatori):',
         'resultado-custo-sistema': 'Costo Stimato del Sistema:',
         'detalhamento-custos': '💰 Dettaglio dei Costi:',
+        'graficos-title': '📊 Visualizzazioni',
+        'grafico-custo-title': 'Distribuzione dei Costi',
+        'grafico-btu-title': 'BTU per Ambiente',
         'custo-unidade-externa': 'Unità Esterna:',
         'custo-unidades-internas': 'Unità Interne:',
         'dados-tecnicos': '⚙️ Dati Tecnici:',
@@ -984,10 +990,199 @@ function atualizarResultados() {
     if (typeof atualizarMemorialComValores === 'function') {
         atualizarMemorialComValores();
     }
+    
+    // Atualiza os gráficos
+    atualizarGraficosArCondicionado(resultadoMultisplit, numAmbientes);
     } catch (error) {
         console.error('[Ar Condicionado] Erro em atualizarResultados:', error);
         console.error('[Ar Condicionado] Stack trace:', error.stack);
     }
+}
+
+// Variáveis globais para gráficos
+let graficoCustoArCondicionado = null;
+let graficoBTUArCondicionado = null;
+
+/**
+ * Atualiza os gráficos de visualização do sistema de ar condicionado
+ * @param {Object} resultadoMultisplit - Resultado do cálculo do sistema multi-split
+ * @param {number} numAmbientes - Número de ambientes
+ */
+function atualizarGraficosArCondicionado(resultadoMultisplit, numAmbientes) {
+    if (!resultadoMultisplit) return;
+    
+    // Carrega Chart.js dinamicamente se ainda não estiver carregado
+    if (typeof Chart === 'undefined') {
+        if (typeof carregarChartJS === 'function') {
+            carregarChartJS(() => {
+                atualizarGraficosArCondicionado(resultadoMultisplit, numAmbientes);
+            });
+        }
+        return;
+    }
+    
+    // Atualiza gráfico de pizza: Distribuição de custos
+    atualizarGraficoCusto(resultadoMultisplit);
+    
+    // Atualiza gráfico de barras: BTU por ambiente
+    atualizarGraficoBTU(resultadoMultisplit, numAmbientes);
+}
+
+/**
+ * Cria ou atualiza o gráfico de pizza de distribuição de custos
+ * @param {Object} resultadoMultisplit - Resultado do cálculo
+ */
+function atualizarGraficoCusto(resultadoMultisplit) {
+    const ctx = document.getElementById('graficoCustoArCondicionado');
+    if (!ctx) return;
+    
+    // Destruir gráfico anterior se existir
+    if (graficoCustoArCondicionado) {
+        graficoCustoArCondicionado.destroy();
+    }
+    
+    const custoExterno = resultadoMultisplit.custoTotalUnidadesExternas || 0;
+    const custoInterno = resultadoMultisplit.custoTotalUnidadesInternas || 0;
+    
+    // Não criar gráfico se não houver dados
+    if (custoExterno === 0 && custoInterno === 0) return;
+    
+    graficoCustoArCondicionado = new Chart(ctx.getContext('2d'), {
+        type: 'pie',
+        data: {
+            labels: [
+                idiomaAtual === 'pt-BR' ? 'Unidade Externa' : 'Unità Esterna',
+                idiomaAtual === 'pt-BR' ? 'Unidades Internas' : 'Unità Interne'
+            ],
+            datasets: [{
+                data: [custoExterno, custoInterno],
+                backgroundColor: [
+                    'rgba(25, 118, 210, 0.8)',  // Azul para externa
+                    'rgba(255, 152, 0, 0.8)'     // Laranja para internas
+                ],
+                borderColor: [
+                    'rgba(25, 118, 210, 1)',
+                    'rgba(255, 152, 0, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        },
+                        padding: 15
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.parsed || 0;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                            const moeda = idiomaAtual === 'it-IT' ? '€' : 'R$';
+                            return `${label}: ${formatarMoedaSemDecimalComConversao(value, idiomaAtual)} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+/**
+ * Cria ou atualiza o gráfico de barras de BTU por ambiente
+ * @param {Object} resultadoMultisplit - Resultado do cálculo
+ * @param {number} numAmbientes - Número de ambientes
+ */
+function atualizarGraficoBTU(resultadoMultisplit, numAmbientes) {
+    const ctx = document.getElementById('graficoBTUArCondicionado');
+    if (!ctx) return;
+    
+    // Destruir gráfico anterior se existir
+    if (graficoBTUArCondicionado) {
+        graficoBTUArCondicionado.destroy();
+    }
+    
+    // Calcula BTU por ambiente
+    const btuPorAmbiente = resultadoMultisplit.btuTotalCalculado / numAmbientes;
+    
+    // Cria labels para cada ambiente
+    const labels = [];
+    const dados = [];
+    for (let i = 1; i <= numAmbientes; i++) {
+        labels.push(`${idiomaAtual === 'pt-BR' ? 'Ambiente' : 'Ambiente'} ${i}`);
+        dados.push(Math.round(btuPorAmbiente));
+    }
+    
+    // Não criar gráfico se não houver dados
+    if (dados.length === 0) return;
+    
+    graficoBTUArCondicionado = new Chart(ctx.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: idiomaAtual === 'pt-BR' ? 'BTU Necessário' : 'BTU Necessario',
+                data: dados,
+                backgroundColor: 'rgba(25, 118, 210, 0.6)',
+                borderColor: 'rgba(25, 118, 210, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${formatarBTU(context.parsed.y)}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: idiomaAtual === 'pt-BR' ? 'BTU' : 'BTU',
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        }
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return formatarBTU(value);
+                        }
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: idiomaAtual === 'pt-BR' ? 'Ambientes' : 'Ambienti',
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }
+        }
+    });
 }
 
 /**

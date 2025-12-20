@@ -92,7 +92,7 @@ const traducoes = {
         'feature-bitola-comercial-title': 'Bitola Comercial',
         'feature-bitola-comercial-desc': 'Seleciona automaticamente a bitola comercial padrão brasileiro (NBR 5410) que atende aos requisitos.',
         'feature-queda-tensao-title': 'Queda de Tensão',
-        'feature-queda-tensao-desc': 'Recomenda 4% de queda de tensão para projetos residenciais no Brasil (padrão mais utilizado).',
+        'feature-queda-tensao-desc': 'Recomenda 3% de queda de tensão para projetos residenciais no Brasil (padrão mais utilizado).',
         'feature-potencia-title': 'Potência Flexível',
         'feature-potencia-desc': 'Steps dinâmicos: 1W (1-10W), 10W (100-1000W), 50W (1000-3000W) com formatação automática em "k" para valores >= 1000W.',
 
@@ -224,7 +224,7 @@ const traducoes = {
         'feature-bitola-comercial-title': 'Sezione Commerciale',
         'feature-bitola-comercial-desc': 'Seleziona automaticamente la sezione commerciale standard brasiliana (NBR 5410) che soddisfa i requisiti.',
         'feature-queda-tensao-title': 'Caduta di Tensione',
-        'feature-queda-tensao-desc': 'Raccomanda 4% di caduta di tensione per progetti residenziali in Brasile (standard più utilizzato).',
+        'feature-queda-tensao-desc': 'Raccomanda 3% di caduta di tensione per progetti residenziali in Brasile (standard più utilizzato).',
         'feature-potencia-title': 'Potenza Flessibile',
         'feature-potencia-desc': 'Step dinamici: 1W (1-10W), 10W (100-1000W), 50W (1000-3000W) con formattazione automatica in "k" per valori >= 1000W.',
 

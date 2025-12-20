@@ -9,7 +9,6 @@
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-    <link rel="alternate icon" href="../favicon.ico">
     <link rel="apple-touch-icon" href="../favicon.svg">
     
     <!-- SEO Meta Tags -->
@@ -427,6 +426,23 @@
                         <span class="valor-resultado" id="unidadesInternasMultisplit">-</span>
                     </div>
                 </div>
+
+                <!-- 4. Gráficos de Visualização -->
+                <div class="graficos-container" style="margin-top: 30px;">
+                    <h3 style="color: #1976D2; margin-bottom: 15px;" data-i18n="graficos-title">📊 Visualizações</h3>
+                    
+                    <!-- Gráfico de Pizza: Proporção de Custo -->
+                    <div class="grafico-box" style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h4 style="color: #1976D2; margin-bottom: 10px; font-size: 1rem;" data-i18n="grafico-custo-title">Distribuição de Custos</h4>
+                        <canvas id="graficoCustoArCondicionado" style="max-height: 300px;"></canvas>
+                    </div>
+
+                    <!-- Gráfico de Barras: Distribuição de Carga Térmica -->
+                    <div class="grafico-box" style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h4 style="color: #1976D2; margin-bottom: 10px; font-size: 1rem;" data-i18n="grafico-btu-title">BTU por Ambiente</h4>
+                        <canvas id="graficoBTUArCondicionado" style="max-height: 300px;"></canvas>
+                    </div>
+                </div>
             </div>
         </section>
     </div>
@@ -445,7 +461,7 @@
     <!-- Scripts -->
     <script src="../assets/js/site-config.js?v=1.2.0"></script>
     <script src="../assets/js/ajustarValorUtil.js?v=1.1.0"></script>
-    <script src="arcondicionado-script.js?v=1.1.0"></script>
+    <script src="arcondicionado-script.js?v=1.2.0"></script>
 </body>
 </html>
 

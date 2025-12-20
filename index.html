@@ -12,7 +12,6 @@
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="alternate icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="favicon.svg">
     
     <!-- SEO Meta Tags -->
@@ -508,12 +507,15 @@
     
     <!-- Registra Service Worker para cache offline -->
     <script>
-        if ('serviceWorker' in navigator) {
+        // Service Workers só funcionam com HTTP/HTTPS, não com file://
+        if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.protocol === 'http:')) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
                     .then(reg => console.log('[SW] Service Worker registrado:', reg.scope))
                     .catch(err => console.log('[SW] Erro ao registrar Service Worker:', err));
             });
+        } else if ('serviceWorker' in navigator && location.protocol === 'file:') {
+            console.log('[SW] Service Worker não suportado em file://. Use um servidor HTTP local.');
         }
     </script>
 </body>

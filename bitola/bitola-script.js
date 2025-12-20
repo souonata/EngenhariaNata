@@ -36,7 +36,7 @@
 // Observações:
 // - A fórmula considera apenas a resistência ôhmica do condutor
 // - Para CA, assume-se fator de potência unitário (cos φ = 1) para simplificação
-// - A queda de tensão recomendada para projetos residenciais no Brasil é 4%
+// - A queda de tensão recomendada para projetos residenciais no Brasil é 3%
 // - Bitolas comerciais seguem a norma brasileira (NBR 5410)
 
 // ============================================
@@ -451,7 +451,7 @@ function calcularCorrente(potencia, tensao) {
  * @param {number} corrente - Corrente do circuito em amperes (A)
  * @param {number} tensao - Tensão de operação em volts (V)
  * @param {number} quedaPercentual - Queda de tensão máxima permitida em percentual (%)
- *   Valores típicos: 4% para instalações residenciais (Brasil), 3-5% para outros usos
+ *   Valores típicos: 3% para instalações residenciais (Brasil), 3-5% para outros usos
  * @returns {number} Área de seção mínima em milímetros quadrados (mm²)
  * 
  * DEDUÇÃO DA FÓRMULA:
@@ -485,12 +485,12 @@ function calcularCorrente(potencia, tensao) {
  *   Tensão: 220 V
  *   Corrente: 10 A (calculada como 2200 / 220)
  *   Distância: 30 m
- *   Queda máxima: 4%
+ *   Queda máxima: 3%
  *   
- *   ΔV = (4 / 100) × 220 = 8.8 V
- *   S = (2 × 0.0175 × 30 × 10) / 8.8
- *   S = 10.5 / 8.8
- *   S = 1.19 mm²
+ *   ΔV = (3 / 100) × 220 = 6.6 V
+ *   S = (2 × 0.0175 × 30 × 10) / 6.6
+ *   S = 10.5 / 6.6
+ *   S = 1.59 mm²
  *   
  *   Bitola comercial mínima: 2.5 mm² (com fator de segurança)
  * 
@@ -501,9 +501,9 @@ function calcularAreaMinima(comprimento, corrente, tensao, quedaPercentual) {
     // ============================================
     // PASSO 1: CONVERTER QUEDA PERCENTUAL PARA VOLTS
     // ============================================
-    // A queda de tensão é especificada em percentual (ex: 4%),
+    // A queda de tensão é especificada em percentual (ex: 3%),
     // mas a fórmula precisa do valor em volts.
-    // Exemplo: 4% de 220V = 8.8V
+    // Exemplo: 3% de 220V = 6.6V
     const quedaVolts = (quedaPercentual / 100) * tensao;
     
     // Proteção contra divisão por zero
@@ -634,7 +634,7 @@ function selecionarDisjuntorComercial(corrente) {
  *   
  *   ΔV% = (4.2 / 220) × 100 = 1.91%
  *   
- *   Resultado: 1.91% (dentro do limite de 4% recomendado)
+ *   Resultado: 1.91% (dentro do limite de 3% recomendado)
  * 
  * VALIDAÇÃO:
  * - Se tensão = 0 ou bitola = 0, retorna 0 para evitar divisão por zero
@@ -656,7 +656,7 @@ function calcularQuedaReal(comprimento, corrente, tensao, bitola) {
     // PASSO 2: CONVERTER PARA PERCENTUAL
     // ============================================
     // A queda de tensão é expressa como percentual da tensão nominal
-    // para facilitar a comparação com limites recomendados (ex: 4%)
+    // para facilitar a comparação com limites recomendados (ex: 3%)
     const quedaPercentual = (quedaVolts / tensao) * 100;
     
     return quedaPercentual;
@@ -820,7 +820,7 @@ const traducoes = {
         'unit-volt': 'V',
         'dica-comprimento': '💡 Distância entre a fonte e a carga<br>(o cálculo considera automaticamente ida e volta)',
         'dica-tensao-cc': '💡 Valores típicos: 3.3V, 5V, 9V, 12V, 24V, 36V, 48V, 60V, 72V, 96V',
-        'dica-queda-tensao': '✅ Recomendado para projetos residenciais no Brasil: 4% (padrão mais utilizado)',
+        'dica-queda-tensao': '✅ Recomendado para projetos residenciais no Brasil: 3% (padrão mais utilizado)',
         'resultados-title': '📊 Resultados',
         'resultado-area-minima': 'Área de Seção Mínima:',
         'resultado-bitola-comercial': 'Bitola Comercial Recomendada:',
@@ -868,7 +868,7 @@ const traducoes = {
         'memorial-exemplo-corrente-texto': 'Corrente',
         'memorial-exemplo-disjuntor-comercial': 'Disjuntor comercial',
         'memorial-queda-recomendada': 'Queda de tensão recomendada:',
-        'memorial-queda-recomendada-texto': '4% — Padrão mais utilizado para projetos residenciais no Brasil, conforme normas técnicas.',
+        'memorial-queda-recomendada-texto': '3% — Padrão mais utilizado para projetos residenciais no Brasil, conforme normas técnicas.',
         'memorial-lei-ohm-titulo': '⚛️ Lei Física Aplicada — Lei de Ohm:',
         'memorial-lei-ohm-texto': 'A Lei de Ohm relaciona tensão (V), corrente (I) e resistência (R): V = I × R. No cálculo de bitola, usamos esta lei para determinar a queda de tensão: quanto maior a corrente e a resistência do fio, maior a queda de tensão. A resistência do fio depende da resistividade do material (cobre), do comprimento e da área da seção transversal (bitola).'
     },
@@ -885,7 +885,7 @@ const traducoes = {
         'unit-volt': 'V',
         'dica-comprimento': '💡 Distanza tra la sorgente e il carico<br>(il calcolo considera automaticamente andata e ritorno)',
         'dica-tensao-cc': '💡 Valori tipici: 3.3V, 5V, 9V, 12V, 24V, 36V, 48V, 60V, 72V, 96V',
-        'dica-queda-tensao': '✅ Consigliato per progetti residenziali in Brasile: 4% (standard più utilizzato)',
+        'dica-queda-tensao': '✅ Consigliato per progetti residenziali in Brasile: 3% (standard più utilizzato)',
         'resultados-title': '📊 Risultati',
         'resultado-area-minima': 'Area di Sezione Minima:',
         'resultado-bitola-comercial': 'Sezione Commerciale Consigliata:',
@@ -933,7 +933,7 @@ const traducoes = {
         'memorial-exemplo-corrente-texto': 'Corrente',
         'memorial-exemplo-disjuntor-comercial': 'Interruttore commerciale',
         'memorial-queda-recomendada': 'Caduta di tensione raccomandata:',
-        'memorial-queda-recomendada-texto': '4% — Standard più utilizzato per progetti residenziali in Brasile, secondo le norme tecniche.',
+        'memorial-queda-recomendada-texto': '3% — Standard più utilizzato per progetti residenziali in Brasile, secondo le norme tecniche.',
         'memorial-lei-ohm-titulo': '⚛️ Legge Fisica Applicata — Legge di Ohm:',
         'memorial-lei-ohm-texto': 'La Legge di Ohm mette in relazione tensione (V), corrente (I) e resistenza (R): V = I × R. Nel calcolo della sezione, usiamo questa legge per determinare la caduta di tensione: maggiore è la corrente e la resistenza del filo, maggiore è la caduta di tensione. La resistenza del filo dipende dalla resistività del materiale (rame), dalla lunghezza e dall\'area della sezione trasversale (sezione).'
     }
