@@ -406,6 +406,7 @@ const traducoes = {
         'app-subtitle': 'Dimensionamento de Sistema Fotovoltaico',
         'label-consumo': 'Consumo Médio Mensal',
         'label-autonomia': 'Dias de Autonomia',
+        'tooltip-autonomia-texto': 'Os dias de autonomia representam quantos dias consecutivos o sistema deve conseguir fornecer energia sem receber luz solar. Por exemplo, se você configurar 3 dias de autonomia, o sistema será dimensionado para armazenar energia suficiente para funcionar por 3 dias mesmo sem sol, garantindo funcionamento durante períodos nublados ou chuvosos.',
         'label-tipo-bateria': 'Tipo de Bateria',
         'opt-chumbo': 'Chumbo-Ácido',
         'opt-litio': 'Lítio',
@@ -510,6 +511,7 @@ const traducoes = {
         'app-subtitle': 'Dimensionamento Impianto Fotovoltaico',
         'label-consumo': 'Consumo Medio Mensile',
         'label-autonomia': 'Giorni di Autonomia',
+        'tooltip-autonomia-texto': 'I giorni di autonomia rappresentano quanti giorni consecutivi il sistema deve essere in grado di fornire energia senza ricevere luce solare. Ad esempio, se imposti 3 giorni di autonomia, il sistema sarà dimensionato per immagazzinare energia sufficiente per funzionare per 3 giorni anche senza sole, garantendo il funzionamento durante periodi nuvolosi o piovosi.',
         'label-tipo-bateria': 'Tipo di Batteria',
         'opt-chumbo': 'Piombo-Acido',
         'opt-litio': 'Litio',
@@ -2515,6 +2517,73 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sliderAutonomia && inputAutonomia) {
         inputAutonomia.value = sliderAutonomia.value;
         if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAutonomia);
+    }
+    
+    // Tooltip de informação sobre Dias de Autonomia
+    const infoIconAutonomia = document.getElementById('infoIconAutonomia');
+    const tooltipAutonomia = document.getElementById('tooltipAutonomia');
+    let tooltipTimeout = null;
+    
+    if (infoIconAutonomia && tooltipAutonomia) {
+        const mostrarTooltip = () => {
+            // Remove timeout anterior se existir
+            if (tooltipTimeout) {
+                clearTimeout(tooltipTimeout);
+            }
+            
+            // Mostra o tooltip
+            tooltipAutonomia.classList.add('mostrar');
+            
+            // Esconde automaticamente após 8 segundos (tempo suficiente para leitura)
+            tooltipTimeout = setTimeout(() => {
+                tooltipAutonomia.classList.remove('mostrar');
+                tooltipTimeout = null;
+            }, 8000);
+        };
+        
+        const esconderTooltip = () => {
+            if (tooltipTimeout) {
+                clearTimeout(tooltipTimeout);
+                tooltipTimeout = null;
+            }
+            tooltipAutonomia.classList.remove('mostrar');
+        };
+        
+        // Mostra ao clicar
+        infoIconAutonomia.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (tooltipAutonomia.classList.contains('mostrar')) {
+                esconderTooltip();
+            } else {
+                mostrarTooltip();
+            }
+        });
+        
+        // Mostra ao pressionar Enter ou Espaço (acessibilidade)
+        infoIconAutonomia.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                if (tooltipAutonomia.classList.contains('mostrar')) {
+                    esconderTooltip();
+                } else {
+                    mostrarTooltip();
+                }
+            }
+        });
+        
+        // Esconde ao clicar fora ou pressionar Escape
+        document.addEventListener('click', (e) => {
+            if (!infoIconAutonomia.contains(e.target) && !tooltipAutonomia.contains(e.target)) {
+                esconderTooltip();
+            }
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && tooltipAutonomia.classList.contains('mostrar')) {
+                esconderTooltip();
+            }
+        });
     }
     if (sliderVidaUtil && inputVidaUtil) {
         inputVidaUtil.value = Math.round(parseFloat(sliderVidaUtil.value));

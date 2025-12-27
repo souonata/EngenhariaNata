@@ -271,6 +271,12 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderAutonomia" data-i18n="label-autonomia">Dias de Autonomia</label>
+                    <span class="info-icon-autonomia" id="infoIconAutonomia" role="button" tabindex="0" aria-label="Informação sobre dias de autonomia" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                        <span class="tooltip-autonomia" id="tooltipAutonomia" role="tooltip">
+                            <span data-i18n="tooltip-autonomia-texto">Os dias de autonomia representam quantos dias consecutivos o sistema deve conseguir fornecer energia sem receber luz solar. Por exemplo, se você configurar 3 dias de autonomia, o sistema será dimensionado para armazenar energia suficiente para funcionar por 3 dias mesmo sem sol, garantindo funcionamento durante períodos nublados ou chuvosos.</span>
+                        </span>
+                    </span>
                     <input type="text" id="inputAutonomia" class="valor-display valor-input" value="1">
                     <span data-i18n="unit-days">dias</span>
                 </div>
