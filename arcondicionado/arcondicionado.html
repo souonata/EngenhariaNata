@@ -215,6 +215,58 @@
                 </div>
                 <p class="dica" data-i18n="dica-isolamento">💡 Bom = isolamento adequado; Ruim = sem isolamento ou muitas aberturas</p>
             </div>
+
+            <!-- Classe Energética -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-classe-energetica">Classe Energética</label>
+                <div class="classe-energetica-container">
+                    <div class="classe-energetica-scale">
+                        <div class="classe-box" data-classe="A4" data-valor="0.40" title="≤0,40 kWh/m².ano">
+                            <div class="classe-label">A4</div>
+                            <div class="classe-valor">≤0,40</div>
+                        </div>
+                        <div class="classe-box" data-classe="A3" data-valor="0.50" title="0,40-0,60 kWh/m².ano">
+                            <div class="classe-label">A3</div>
+                            <div class="classe-valor">0,40-0,60</div>
+                        </div>
+                        <div class="classe-box" data-classe="A2" data-valor="0.70" title="0,60-0,80 kWh/m².ano">
+                            <div class="classe-label">A2</div>
+                            <div class="classe-valor">0,60-0,80</div>
+                        </div>
+                        <div class="classe-box" data-classe="A1" data-valor="0.90" title="0,80-1,00 kWh/m².ano">
+                            <div class="classe-label">A1</div>
+                            <div class="classe-valor">0,80-1,00</div>
+                        </div>
+                        <div class="classe-box" data-classe="B" data-valor="1.10" title="1,00-1,20 kWh/m².ano">
+                            <div class="classe-label">B</div>
+                            <div class="classe-valor">1,00-1,20</div>
+                        </div>
+                        <div class="classe-box" data-classe="C" data-valor="1.35" title="1,20-1,50 kWh/m².ano">
+                            <div class="classe-label">C</div>
+                            <div class="classe-valor">1,20-1,50</div>
+                        </div>
+                        <div class="classe-box classe-box-selected" data-classe="D" data-valor="1.75" title="1,50-2,00 kWh/m².ano">
+                            <div class="classe-label">D</div>
+                            <div class="classe-valor">1,50-2,00</div>
+                        </div>
+                        <div class="classe-box" data-classe="E" data-valor="2.30" title="2,00-2,60 kWh/m².ano">
+                            <div class="classe-label">E</div>
+                            <div class="classe-valor">2,00-2,60</div>
+                        </div>
+                        <div class="classe-box" data-classe="F" data-valor="3.05" title="2,60-3,50 kWh/m².ano">
+                            <div class="classe-label">F</div>
+                            <div class="classe-valor">2,60-3,50</div>
+                        </div>
+                        <div class="classe-box" data-classe="G" data-valor="4.00" title=">3,50 kWh/m².ano">
+                            <div class="classe-label">G</div>
+                            <div class="classe-valor">>3,50</div>
+                        </div>
+                    </div>
+                    <p class="classe-energetica-unidade" data-i18n="classe-energetica-unidade">* Valores em kWh/m².ano</p>
+                </div>
+                <input type="hidden" id="inputClasseEnergetica" value="1.75">
+                <p class="dica" data-i18n="dica-classe-energetica">💡 Classe energética da casa/edifício. Usado para calcular a perda de energia térmica para ambiente</p>
+            </div>
         </section>
 
         <!-- ========================================== -->
@@ -318,6 +370,8 @@
                     <p><strong data-i18n="memorial-modelos-title">Modelos comerciais disponíveis:</strong></p>
                     <p><strong>Unidades Internas (Evaporadoras):</strong> 5.000, 7.000, 9.000, 12.000, 18.000, 24.000, 30.000, 36.000, 48.000, 60.000 BTU (máximo por unidade)</p>
                     <p><strong>Unidades Externas (Condensadoras Multi-Split):</strong> 18.000, 24.000, 30.000, 36.000, 48.000, 60.000, 72.000, 84.000, 96.000, 120.000, 144.000, 180.000 BTU</p>
+                    <p style="margin-top: 15px;"><strong data-i18n="memorial-tabelas-precos-title">📊 Tabelas de Preços e Tamanhos:</strong></p>
+                    <p data-i18n="memorial-tabelas-precos-texto">Para informações detalhadas sobre preços médios de mercado (2025-2026) e dimensões padrões de unidades internas e externas, consulte o arquivo <strong>TABELAS_PRECOS_TAMANHOS.md</strong> na pasta do aplicativo. Os valores incluem faixas de preço por capacidade, dimensões físicas aproximadas e fatores que influenciam o custo final.</p>
                 </div>
             </div>
 
@@ -366,6 +420,35 @@
                 <div class="resumo-item-calc">
                     <span data-i18n="memorial-resumo-custo-total">Custo Total Estimado:</span>
                     <span id="resumo-custo-total">-</span>
+                </div>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-fontes-title">📚 Referências Bibliográficas e Fontes</h3>
+                <div class="info-box">
+                    <p data-i18n="memorial-fontes-intro">Os valores e fórmulas utilizados neste dimensionamento são baseados em guias técnicos especializados e normas da indústria de climatização, adaptados para as características climáticas específicas de cada região:</p>
+                    <ul style="margin-top: 10px;">
+                        <li data-i18n="memorial-fonte-brasil"><strong>Brasil (Clima Tropical/Quente):</strong> Valores baseados em práticas da indústria brasileira de refrigeração, considerando temperaturas médias elevadas e alta umidade. BTU/m²: 700 (valor fixo devido ao clima quente). BTU/pessoa adicional: 600 (apenas pessoas além das primeiras 2, pois as primeiras 1-2 já estão incluídas no cálculo base por m²). BTU/equipamento: 600.</li>
+                        <li data-i18n="memorial-fonte-italia"><strong>Itália (Clima Temperado):</strong> Valores baseados em guias técnicos italianos e normas europeias, considerando clima temperado com estações bem definidas. BTU/m²: varia conforme isolamento (300 bom, 340 médio, 400 ruim). BTU/pessoa: 200. BTU/equipamento: 300.</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong data-i18n="memorial-fontes-lista-title">Fontes consultadas:</strong></p>
+                    <ul style="margin-top: 5px;">
+                        <li>Calor System - Calcolo BTU condizionatori: <a href="https://www.calor-system.com/calcolo-btu-condizionatori/" target="_blank" rel="noopener noreferrer">calor-system.com</a></li>
+                        <li>Desivero - Come calcolare quanti BTU servono: <a href="https://www.desivero.com/modod/btu-come-sapere-quanti-servono/" target="_blank" rel="noopener noreferrer">desivero.com</a></li>
+                        <li>Rifare Casa - BTU: Come calcolarli: <a href="https://www.rifarecasa.com/dossier/riscaldamento-e-climatizzazione/climatizzazione/calcolo-btu" target="_blank" rel="noopener noreferrer">rifarecasa.com</a></li>
+                        <li>GM Termoidraulica - Guida Completa 2026: <a href="https://www.gm-termoidraulica.it/content/quale-condizionatore-scegliere-guida-completa-2026" target="_blank" rel="noopener noreferrer">gm-termoidraulica.it</a></li>
+                        <li>Risud Termoidraulica - BTU e climatizzatori: <a href="https://www.risud.it/blogs/news/btu-e-climatizzatori-come-scegliere-la-potenza-giusta-per-la-tua-casa" target="_blank" rel="noopener noreferrer">risud.it</a></li>
+                        <li>OVACEN - Air conditioning BTU calculator: <a href="https://ovacen.com/en/calculator/air-conditioning-btu/" target="_blank" rel="noopener noreferrer">ovacen.com</a></li>
+                        <li>MISHub QI - Como calcular potência em BTU: <a href="https://mishubqi.com/products/como-calcular-a-potencia-de-um-ar-condicionado-em-btu-para-uma-area-especifica" target="_blank" rel="noopener noreferrer">mishubqi.com</a></li>
+                        <li><strong>Fontes Brasileiras (Regra de Cálculo por Pessoa):</strong></li>
+                        <li style="margin-left: 20px;">Consul - Como fazer cálculo de ar-condicionado: <a href="https://www.consul.com.br/facilita-consul/ihhh-agora/calculo-de-ar-condicionado/" target="_blank" rel="noopener noreferrer">consul.com.br</a></li>
+                        <li style="margin-left: 20px;">Refrimec - Calculadora BTU's: <a href="https://refrimec.com/calculadora/" target="_blank" rel="noopener noreferrer">refrimec.com</a></li>
+                        <li style="margin-left: 20px;">Leroy Merlin - Como calcular os BTUs do ar-condicionado: <a href="https://blog.leroymerlin.com.br/aprenda-a-calcular-os-btus-do-ar-condicionado/" target="_blank" rel="noopener noreferrer">leroymerlin.com.br</a></li>
+                        <li style="margin-left: 20px;">ClimaRio - Como calcular o BTU ideal: <a href="https://www.climario.com.br/blog/post/como-calcular-o-btu-ideal-do-seu-ar-condicionado-e-acertar-na-escolha" target="_blank" rel="noopener noreferrer">climario.com.br</a></li>
+                        <li>Normas técnicas ASHRAE (American Society of Heating, Refrigerating and Air-Conditioning Engineers)</li>
+                        <li>Normas técnicas ABNT (Associação Brasileira de Normas Técnicas)</li>
+                    </ul>
+                    <p style="margin-top: 15px; font-style: italic;" data-i18n="memorial-fontes-nota">Nota: Os valores foram ajustados para refletir as diferenças climáticas naturais entre Brasil (clima tropical/quente) e Itália (clima temperado). O Brasil, por natureza mais quente, requer valores mais altos de BTU/m² para compensar as temperaturas ambientais elevadas. A Itália, com clima mais frio, utiliza valores menores conforme as guias técnicas locais.</p>
                 </div>
             </div>
 

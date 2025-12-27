@@ -342,3 +342,142 @@ footer p {
     }
 }
 
+/* ============================================
+   CLASSE ENERGÉTICA
+   ============================================ */
+.classe-energetica-container {
+    margin-top: 15px;
+}
+
+.classe-energetica-scale {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.classe-box {
+    flex: 1;
+    min-width: 70px;
+    max-width: 100px;
+    padding: 10px 8px;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.classe-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.classe-box-selected {
+    border: 3px solid #ff9800;
+    box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+    transform: scale(1.05);
+}
+
+.classe-label {
+    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 5px;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.classe-valor {
+    font-size: 0.75rem;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    font-weight: 500;
+}
+
+/* Cores das classes energéticas */
+.classe-box[data-classe="A4"] {
+    background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%);
+}
+
+.classe-box[data-classe="A3"] {
+    background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+}
+
+.classe-box[data-classe="A2"] {
+    background: linear-gradient(135deg, #1E88E5 0%, #1976D2 100%);
+}
+
+.classe-box[data-classe="A1"] {
+    background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
+}
+
+.classe-box[data-classe="B"] {
+    background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%);
+}
+
+.classe-box[data-classe="C"] {
+    background: linear-gradient(135deg, #66BB6A 0%, #43A047 100%);
+}
+
+.classe-box[data-classe="D"] {
+    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+}
+
+.classe-box[data-classe="E"] {
+    background: linear-gradient(135deg, #FF6F00 0%, #E65100 100%);
+}
+
+.classe-box[data-classe="F"] {
+    background: linear-gradient(135deg, #FF5722 0%, #D84315 100%);
+}
+
+.classe-box[data-classe="G"] {
+    background: linear-gradient(135deg, #D32F2F 0%, #B71C1C 100%);
+}
+
+.classe-energetica-unidade {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .classe-box {
+        min-width: 60px;
+        max-width: 80px;
+        padding: 8px 6px;
+    }
+    
+    .classe-label {
+        font-size: 0.9rem;
+    }
+    
+    .classe-valor {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .classe-energetica-scale {
+        gap: 5px;
+    }
+    
+    .classe-box {
+        min-width: 50px;
+        max-width: 70px;
+        padding: 6px 4px;
+    }
+    
+    .classe-label {
+        font-size: 0.8rem;
+    }
+    
+    .classe-valor {
+        font-size: 0.65rem;
+    }
+}
+

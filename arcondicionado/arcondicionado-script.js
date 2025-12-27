@@ -57,7 +57,7 @@ function formatarMoedaSemDecimalComConversao(valor, idioma) {
 //
 // Fórmula base:
 // Fator Altura = Altura (m) ÷ 2.7 m (padrão)
-// BTU Área Total = Área Total (m²) × 700 BTU/m² × Fator Altura
+// BTU Área Total = Área Total (m²) × BTU/m² × Fator Altura (700 para Brasil, 400 para Itália)
 // BTU Pessoas Total = Número Total de Pessoas × 600 BTU/pessoa
 // BTU Equipamentos Total = Número Total de Equipamentos × 600 BTU/equipamento
 // BTU Base Total = BTU Área Total + BTU Pessoas Total + BTU Equipamentos Total
@@ -103,24 +103,53 @@ let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConf
  * - Cálculos de carga térmica para ambientes residenciais
  * - Referências da internet e fabricantes (600-800 BTU/m²)
  * 
- * O valor de 700 BTU/m² é uma média que considera:
+ * O valor de BTU/m² varia conforme a região (700 para Brasil, 400 para Itália) e considera:
  * - Transferência de calor através de paredes, teto e piso
  * - Infiltração de ar externo
  * - Ganhos solares através de janelas
  * - Carga térmica interna (pessoas, equipamentos, iluminação)
  * - Altura padrão de pé direito residencial (2.7m)
  * 
- * FÓRMULA: BTU_Área = Área (m²) × 700 BTU/m² × Fator Altura
+ * FÓRMULA: BTU_Área = Área (m²) × BTU/m² × Fator Altura
  * 
  * NOTA: Este valor pode variar dependendo de:
  * - Região climática (maior em regiões quentes)
  * - Tipo de construção (maior em construções antigas)
  * - Orientação solar do ambiente
  * - Altura do pé direito (valores maiores para pé direito alto)
+ * - País/região: Brasil usa 700 BTU/m², Itália usa 400 BTU/m²
  * 
  * FONTE: Normas técnicas, práticas da indústria e referências online
  */
-const BTU_POR_M2 = 700; // BTU por metro quadrado
+/**
+ * Retorna o valor de BTU por m² baseado no idioma/região atual e isolamento
+ * @param {string} isolamento - Nível de isolamento ('bom', 'medio', 'ruim')
+ * @returns {number} BTU por metro quadrado
+ */
+function getBTUPorM2(isolamento = 'medio') {
+    // Verifica o idioma atual (pode ser definido antes de idiomaAtual estar disponível)
+    const idioma = typeof idiomaAtual !== 'undefined' ? idiomaAtual : 
+                   (localStorage.getItem(SITE_LS.LANGUAGE_KEY) || 
+                    (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR'));
+    
+    if (idioma === 'it-IT') {
+        // Itália: valores baseados em guias técnicos italianos
+        // Varia conforme o isolamento
+        switch(isolamento) {
+            case 'bom':
+                return 300; // Bom isolamento: 300 BTU/m²
+            case 'medio':
+                return 340; // Isolamento médio: 340 BTU/m²
+            case 'ruim':
+                return 400; // Isolamento ruim: 400 BTU/m²
+            default:
+                return 340; // Padrão: isolamento médio
+        }
+    } else {
+        // Brasil: 700 BTU/m² (clima tropical/quente) - valor fixo
+        return 700;
+    }
+}
 
 /**
  * BTU_POR_PESSOA - BTU adicional necessário por pessoa
@@ -142,7 +171,43 @@ const BTU_POR_M2 = 700; // BTU por metro quadrado
  * 
  * FONTE: Normas técnicas ASHRAE e práticas da indústria
  */
-const BTU_POR_PESSOA = 600; // BTU por pessoa
+/**
+ * Retorna o valor de BTU por pessoa baseado no idioma/região atual
+ * @returns {number} BTU por pessoa (600 para Brasil, 200 para Itália)
+ */
+function getBTUPorPessoa() {
+    const idioma = typeof idiomaAtual !== 'undefined' ? idiomaAtual : 
+                   (localStorage.getItem(SITE_LS.LANGUAGE_KEY) || 
+                    (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR'));
+    
+    // Brasil: 600 BTU/pessoa adicional (primeiras 1-2 pessoas já estão no cálculo base por m²)
+    // Itália: 200 BTU/pessoa (guias técnicos italianos)
+    return idioma === 'it-IT' ? 200 : 600;
+}
+
+/**
+ * Calcula BTU total para pessoas considerando regras regionais
+ * No Brasil: apenas pessoas adicionais (além das primeiras 2) contam
+ * Na Itália: todas as pessoas contam
+ * @param {number} pessoas - Número total de pessoas
+ * @returns {number} BTU total para pessoas
+ */
+function calcularBTUPessoas(pessoas) {
+    const idioma = typeof idiomaAtual !== 'undefined' ? idiomaAtual : 
+                   (localStorage.getItem(SITE_LS.LANGUAGE_KEY) || 
+                    (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR'));
+    
+    if (idioma === 'it-IT') {
+        // Itália: todas as pessoas contam
+        return pessoas * getBTUPorPessoa();
+    } else {
+        // Brasil: apenas pessoas adicionais (além das primeiras 2) contam
+        // As primeiras 1-2 pessoas já estão implícitas no cálculo base por m²
+        // Fonte: Consul, Refrimec, Leroy Merlin, ClimaRio
+        const pessoasAdicionais = Math.max(0, pessoas - 2);
+        return pessoasAdicionais * getBTUPorPessoa();
+    }
+}
 
 /**
  * BTU_POR_EQUIPAMENTO - BTU adicional necessário por equipamento elétrico
@@ -171,29 +236,77 @@ const BTU_POR_PESSOA = 600; // BTU por pessoa
  * 
  * FONTE: Normas técnicas e práticas da indústria
  */
-const BTU_POR_EQUIPAMENTO = 600; // BTU por equipamento elétrico
+/**
+ * Retorna o valor de BTU por equipamento baseado no idioma/região atual
+ * @returns {number} BTU por equipamento (600 para Brasil, 300 para Itália)
+ */
+function getBTUPorEquipamento() {
+    const idioma = typeof idiomaAtual !== 'undefined' ? idiomaAtual : 
+                   (localStorage.getItem(SITE_LS.LANGUAGE_KEY) || 
+                    (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR'));
+    
+    // Brasil: 600 BTU/equipamento
+    // Itália: 300 BTU/equipamento (guias técnicos italianos)
+    return idioma === 'it-IT' ? 300 : 600;
+}
 
-// Fatores de insolação (exposição solar)
-// Baseado em normas técnicas e práticas de engenharia:
-// - Baixa: ambientes com pouca ou nenhuma exposição solar direta (0% de aumento)
-// - Média: ambientes com exposição solar moderada (15% de aumento)
-// - Alta: ambientes com muita exposição solar direta, muitas janelas voltadas para o sol (30% de aumento)
-const FATORES_INSOLACAO = {
-    baixa: 1.0,    // Pouca exposição solar (sem aumento)
-    media: 1.15,   // Exposição solar moderada (+15%)
-    alta: 1.3      // Muita exposição solar (+30%)
-};
+/**
+ * Retorna o fator de insolação baseado no idioma/região atual
+ * @param {string} nivel - Nível de insolação ('baixa', 'media', 'alta')
+ * @returns {number} Fator de insolação
+ */
+function getFatorInsolacao(nivel) {
+    const idioma = typeof idiomaAtual !== 'undefined' ? idiomaAtual : 
+                   (localStorage.getItem(SITE_LS.LANGUAGE_KEY) || 
+                    (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR'));
+    
+    if (idioma === 'it-IT') {
+        // Itália: valores baseados em guias técnicos italianos
+        const fatores = {
+            baixa: 0.9,   // -10%
+            media: 1.0,   // Sem alteração
+            alta: 1.2     // +20%
+        };
+        return fatores[nivel] || 1.0;
+    } else {
+        // Brasil: valores originais
+        const fatores = {
+            baixa: 1.0,   // Sem aumento
+            media: 1.15,  // +15%
+            alta: 1.3     // +30%
+        };
+        return fatores[nivel] || 1.0;
+    }
+}
 
-// Fatores de isolamento térmico
-// Baseado em normas técnicas e práticas de engenharia:
-// - Bom: isolamento adequado (lã de vidro, EPS, etc.) reduz transferência de calor (-20%)
-// - Médio: isolamento padrão, sem isolamento especial (sem alteração)
-// - Ruim: sem isolamento ou muitas aberturas aumenta transferência de calor (+20%)
-const FATORES_ISOLAMENTO = {
-    bom: 0.8,      // Bom isolamento (reduz necessidade em 20%)
-    medio: 1.0,    // Isolamento médio (padrão, sem alteração)
-    ruim: 1.2      // Isolamento ruim (aumenta necessidade em 20%)
-};
+/**
+ * Retorna o fator de isolamento baseado no idioma/região atual
+ * @param {string} nivel - Nível de isolamento ('bom', 'medio', 'ruim')
+ * @returns {number} Fator de isolamento
+ */
+function getFatorIsolamento(nivel) {
+    const idioma = typeof idiomaAtual !== 'undefined' ? idiomaAtual : 
+                   (localStorage.getItem(SITE_LS.LANGUAGE_KEY) || 
+                    (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR'));
+    
+    if (idioma === 'it-IT') {
+        // Itália: valores baseados em guias técnicos italianos
+        const fatores = {
+            bom: 0.85,    // -15%
+            medio: 1.0,   // Sem alteração
+            ruim: 1.3     // +30%
+        };
+        return fatores[nivel] || 1.0;
+    } else {
+        // Brasil: valores originais
+        const fatores = {
+            bom: 0.8,     // -20%
+            medio: 1.0,   // Sem alteração
+            ruim: 1.2     // +20%
+        };
+        return fatores[nivel] || 1.0;
+    }
+}
 
 // Modelos comerciais de ar condicionado (BTU)
 // Inclui 5000 BTU para áreas muito pequenas (até 2 m²)
@@ -253,6 +366,9 @@ const traducoes = {
         'dica-equipamentos': '💡 TV, computador, geladeira, etc. (cada um conta como 1 unidade)',
         'dica-insolacao': '💡 Alta = muitas janelas voltadas para o sol; Baixa = pouca exposição solar',
         'dica-isolamento': '💡 Bom = isolamento adequado; Ruim = sem isolamento ou muitas aberturas',
+        'label-classe-energetica': 'Classe Energética',
+        'dica-classe-energetica': '💡 Classe energética da casa/edifício. Usado para calcular a perda de energia térmica para ambiente',
+        'classe-energetica-unidade': '* Valores em kWh/m².ano',
         'resultados-title': '📊 Resultados',
         'resultado-btu': 'Capacidade Recomendada:',
         'resultado-potencia': 'Potência Equivalente:',
@@ -271,15 +387,15 @@ const traducoes = {
         'btn-memorial': 'Ver Memorial de Cálculo',
         'memorial-title': '📚 Memorial de Cálculo - Dimensionamento de Ar Condicionado',
         'memorial-intro-title': '🎯 Objetivo do Dimensionamento',
-        'memorial-intro-text': 'Este memorial explica passo a passo como é calculada a capacidade necessária de ar condicionado (em BTU) para um sistema multi-split residencial, considerando área total, altura do pé direito, número de ambientes, pessoas, equipamentos, insolação e isolamento térmico. Todas as fórmulas foram validadas através de testes automatizados.',
+        'memorial-intro-text': 'Este memorial explica passo a passo como é calculada a capacidade necessária de ar condicionado (em BTU) para um sistema multi-split residencial, considerando área total, altura do pé direito, número de ambientes, pessoas, equipamentos, insolação e isolamento térmico. Os valores são adaptados conforme a região climática: Brasil (clima tropical/quente) utiliza valores mais altos, enquanto Itália (clima temperado) utiliza valores menores conforme guias técnicas locais.',
         'memorial-passo1-title': '1️⃣ Passo 1: Calcular Volume Total do Sistema',
         'memorial-formula': 'Fórmula:',
         'memorial-passo1-explicacao': 'O volume total determina a quantidade de ar que precisa ser resfriado em todos os ambientes do sistema. A área total é a soma das áreas de todos os ambientes que terão ar condicionado.',
         'memorial-example': 'Exemplo:',
         'memorial-passo2-title': '2️⃣ Passo 2: Calcular BTU Base Total',
-        'memorial-passo2-explicacao': 'O BTU base é calculado considerando a área (ajustada pela altura do pé direito), o número total de pessoas e equipamentos elétricos. Cada pessoa e equipamento gera calor que precisa ser removido pelo ar condicionado. O fator de altura normaliza o cálculo para pé direito padrão de 2.7m.',
+        'memorial-passo2-explicacao': 'O BTU base é calculado considerando a área (ajustada pela altura do pé direito), o número total de pessoas e equipamentos elétricos. Cada pessoa e equipamento gera calor que precisa ser removido pelo ar condicionado. O fator de altura normaliza o cálculo para pé direito padrão de 2.7m. Os valores de BTU por m², pessoa e equipamento variam conforme a região climática: Brasil (clima quente) requer valores mais altos, enquanto Itália (clima temperado) utiliza valores menores.',
         'memorial-passo3-title': '3️⃣ Passo 3: Aplicar Fatores de Ajuste (Insolação e Isolamento)',
-        'memorial-passo3-explicacao': 'Os fatores de insolação e isolamento ajustam a capacidade necessária baseado nas condições dos ambientes. Estes são fatores multiplicadores que refletem o impacto real das condições ambientais na carga térmica. Os fatores são aplicados multiplicando o BTU base: primeiro pela insolação, depois pelo isolamento.',
+        'memorial-passo3-explicacao': 'Os fatores de insolação e isolamento ajustam a capacidade necessária baseado nas condições dos ambientes. Estes são fatores multiplicadores que refletem o impacto real das condições ambientais na carga térmica. Os fatores são aplicados multiplicando o BTU base: primeiro pela insolação, depois pelo isolamento. Para Itália, o isolamento já está considerado no BTU/m², então não aplicamos fator adicional de isolamento.',
         'memorial-fatores-title': 'Fatores utilizados:',
         'memorial-fatores-insolacao': 'Insolação: Baixa (1.0), Média (1.15), Alta (1.3) — Baseado em práticas da indústria de refrigeração',
         'memorial-fatores-isolamento': 'Isolamento: Bom (0.8), Médio (1.0), Ruim (1.2) — Baseado em normas técnicas ASHRAE',
@@ -293,6 +409,8 @@ const traducoes = {
         'memorial-passo4-explicacao': 'O BTU final total é dividido pelo número de ambientes para determinar a capacidade necessária de cada unidade interna (evaporadora). Cada split interno será dimensionado para atender sua parte proporcional do sistema.',
         'memorial-modelos-title': 'Modelos comerciais disponíveis:',
         'memorial-modelos-lista': '5.000, 7.000, 9.000, 12.000, 18.000, 24.000, 30.000, 36.000, 48.000, 60.000 BTU',
+        'memorial-tabelas-precos-title': '📊 Tabelas de Preços e Tamanhos:',
+        'memorial-tabelas-precos-texto': 'Para informações detalhadas sobre preços médios de mercado (2025-2026) e dimensões padrões de unidades internas e externas, consulte o arquivo TABELAS_PRECOS_TAMANHOS.md na pasta do aplicativo. Os valores incluem faixas de preço por capacidade, dimensões físicas aproximadas e fatores que influenciam o custo final.',
         'memorial-passo5-title': '5️⃣ Passo 5: Selecionar Modelos Comerciais',
         'memorial-passo5-explicacao': 'O BTU calculado por ambiente é arredondado para cima para o modelo comercial mais próximo. Se o BTU necessário por ambiente exceder 60k BTU (maior modelo interno disponível), serão usadas múltiplas unidades internas de 60k BTU por ambiente. A unidade externa (condensadora) deve ter capacidade para o BTU total real do sistema (soma das capacidades de todas as unidades internas). Se o BTU total exceder 180k BTU (maior modelo externo disponível), serão usadas múltiplas unidades externas de 180k BTU.',
         'memorial-resumo-title': '📊 Resumo Calculado - Sistema Multi-Split',
@@ -302,7 +420,7 @@ const traducoes = {
         'memorial-resumo-btu-final': 'BTU Recomendado (modelo comercial):',
         'memorial-resumo-potencia': 'Potência (kW):',
         'memorial-passo6-title': '6️⃣ Passo 6: Calcular Custo Estimado',
-        'memorial-passo6-explicacao': 'O custo é estimado com base em faixas de preço de mercado (2024-2025) para unidades externas e internas vendidas separadamente. Os valores são médias das faixas de preço pesquisadas.',
+        'memorial-passo6-explicacao': 'O custo é estimado com base em faixas de preço de mercado (2025-2026) para unidades externas e internas vendidas separadamente. Os valores são médias das faixas de preço pesquisadas em catálogos de fabricantes e lojas especializadas. Para informações detalhadas, consulte TABELAS_PRECOS_TAMANHOS.md.',
         'memorial-resumo-btu-por-ambiente': 'BTU por Ambiente:',
         'memorial-resumo-unidade-interna': 'Unidade Interna (Modelo):',
         'memorial-resumo-btu-total-real': 'BTU Total Real:',
@@ -310,22 +428,28 @@ const traducoes = {
         'memorial-resumo-custo-total': 'Custo Total Estimado:',
         'memorial-formula-volume': 'Volume Total (m³) = Área Total (m²) × Altura (m)',
         'memorial-formula-fator-altura': 'Fator Altura = Altura (m) ÷ 2.7 m (padrão)',
-        'memorial-formula-btu-area': 'BTU Área Total = Área Total (m²) × 700 BTU/m² × Fator Altura',
-        'memorial-formula-btu-pessoas': 'BTU Pessoas Total = Número Total de Pessoas × 600 BTU/pessoa',
-        'memorial-formula-btu-equipamentos': 'BTU Equipamentos Total = Número Total de Equipamentos × 600 BTU/equipamento',
+        'memorial-formula-btu-area': 'BTU Área Total = Área Total (m²) × BTU/m² × Fator Altura',
+        'memorial-formula-btu-pessoas': 'BTU Pessoas Total = Pessoas Adicionais × BTU/pessoa (Brasil: apenas além das primeiras 2 pessoas, 600 BTU/pessoa adicional | Itália: todas as pessoas, 200 BTU/pessoa)',
+        'memorial-formula-btu-equipamentos': 'BTU Equipamentos Total = Número Total de Equipamentos × BTU/equipamento (600 Brasil / 300 Itália)',
         'memorial-formula-btu-base': 'BTU Base Total = BTU Área Total + BTU Pessoas Total + BTU Equipamentos Total',
         'memorial-formula-btu-final': 'BTU Final Total = BTU Base Total × Fator Insolação × Fator Isolamento',
         'memorial-btu-por-m2': 'BTU por m²:',
-        'memorial-btu-por-m2-texto': '700 BTU/m² — Valor padrão amplamente aceito na indústria para dimensionamento residencial. Este valor é multiplicado pelo fator de altura (altura ÷ 2.7m) para ajustar quando o pé direito é diferente do padrão.',
+        'memorial-btu-por-m2-texto': '700 BTU/m² (Brasil) / 300-400 BTU/m² (Itália) — Valores baseados em guias técnicos especializados e adaptados às características climáticas de cada região. Brasil: devido ao clima tropical/quente por natureza, utiliza 700 BTU/m² fixo para compensar temperaturas ambientais elevadas. Itália: clima temperado mais frio utiliza valores menores que variam conforme isolamento (300 bom, 340 médio, 400 ruim). Este valor é multiplicado pelo fator de altura (altura ÷ 2.7m) para ajustar quando o pé direito é diferente do padrão.',
         'memorial-btu-por-pessoa': 'BTU por Pessoa:',
-        'memorial-btu-por-pessoa-texto': '600 BTU/pessoa — Considera calor metabólico (calor sensível ~400 BTU/h + calor latente ~200 BTU/h)',
+        'memorial-btu-por-pessoa-texto': '600 BTU/pessoa adicional (Brasil) / 200 BTU/pessoa (Itália) — No Brasil, apenas pessoas adicionais (além das primeiras 2) contam, pois as primeiras 1-2 pessoas já estão implícitas no cálculo base por m² (600-800 BTU/m²). Cada pessoa adicional soma 600 BTU. Na Itália, todas as pessoas contam com 200 BTU/pessoa. Fonte: Consul, Refrimec, Leroy Merlin, ClimaRio.',
         'memorial-btu-por-equipamento': 'BTU por Equipamento:',
-        'memorial-btu-por-equipamento-texto': '600 BTU/equipamento — Baseado na Lei da Conservação de Energia: toda energia elétrica consumida é convertida em calor',
+        'memorial-btu-por-equipamento-texto': '600 BTU/equipamento (Brasil) / 300 BTU/equipamento (Itália) — Baseado na Lei da Conservação de Energia: toda energia elétrica consumida é convertida em calor. Brasil utiliza valores mais altos devido ao clima quente, onde o calor gerado pelos equipamentos tem maior impacto na carga térmica. Itália utiliza valores menores conforme guias técnicas locais para clima temperado.',
         'memorial-fatores-afetam-titulo': '💡 Como os fatores afetam o cálculo:',
-        'memorial-fatores-insolacao-texto': 'Insolação: Ambientes com maior exposição solar recebem mais calor, aumentando a necessidade de refrigeração. Baixa insolação (1.0) não altera o cálculo. Média insolação (1.15) aumenta em 15%. Alta insolação (1.3) aumenta em 30%.',
-        'memorial-fatores-isolamento-texto': 'Isolamento: Bom isolamento (0.8) reduz a necessidade de refrigeração em 20%, pois diminui a transferência de calor entre o ambiente interno e externo. Isolamento médio (1.0) não altera o cálculo. Isolamento ruim (1.2) aumenta a necessidade em 20%.',
+        'memorial-fatores-insolacao-texto': 'Insolação: Ambientes com maior exposição solar recebem mais calor, aumentando a necessidade de refrigeração. Brasil (clima quente): Baixa (1.0), Média (1.15, +15%), Alta (1.3, +30%) — valores mais altos devido ao impacto maior do sol em clima tropical. Itália (clima temperado): Baixa (0.9, -10%), Média (1.0), Alta (1.2, +20%) — valores menores conforme guias técnicas italianas.',
+        'memorial-fatores-isolamento-texto': 'Isolamento: Brasil (clima quente): Bom (0.8, -20%), Médio (1.0), Ruim (1.2, +20%) — fator aplicado separadamente. Itália (clima temperado): O isolamento já está considerado diretamente no BTU/m² (300 bom, 340 médio, 400 ruim), então não aplicamos fator multiplicador adicional. Esta diferença reflete as práticas de cálculo distintas entre as duas regiões climáticas.',
         'memorial-lei-fisica-titulo': '⚛️ Lei Física Aplicada — Conservação de Energia e Transferência de Calor:',
-        'memorial-lei-fisica-texto': 'Todo equipamento elétrico gera calor porque a energia elétrica consumida é transformada em calor (Lei da Conservação de Energia). O ar condicionado remove esse calor do ambiente interno e transfere para o ambiente externo (Transferência de Calor: calor sempre flui do mais quente para o mais frio).'
+        'memorial-lei-fisica-texto': 'Todo equipamento elétrico gera calor porque a energia elétrica consumida é transformada em calor (Lei da Conservação de Energia). O ar condicionado remove esse calor do ambiente interno e transfere para o ambiente externo (Transferência de Calor: calor sempre flui do mais quente para o mais frio).',
+        'memorial-fontes-title': '📚 Referências Bibliográficas e Fontes',
+        'memorial-fontes-intro': 'Os valores e fórmulas utilizados neste dimensionamento são baseados em guias técnicos especializados e normas da indústria de climatização, adaptados para as características climáticas específicas de cada região:',
+        'memorial-fonte-brasil': 'Brasil (Clima Tropical/Quente): Valores baseados em práticas da indústria brasileira de refrigeração, considerando temperaturas médias elevadas e alta umidade. BTU/m²: 700 (valor fixo devido ao clima quente). BTU/pessoa adicional: 600 (apenas pessoas além das primeiras 2, pois as primeiras 1-2 já estão incluídas no cálculo base por m²). BTU/equipamento: 600.',
+        'memorial-fonte-italia': 'Itália (Clima Temperado): Valores baseados em guias técnicos italianos e normas europeias, considerando clima temperado com estações bem definidas. BTU/m²: varia conforme isolamento (300 bom, 340 médio, 400 ruim). BTU/pessoa: 200. BTU/equipamento: 300.',
+        'memorial-fontes-lista-title': 'Fontes consultadas:',
+        'memorial-fontes-nota': 'Nota: Os valores foram ajustados para refletir as diferenças climáticas naturais entre Brasil (clima tropical/quente) e Itália (clima temperado). O Brasil, por natureza mais quente, requer valores mais altos de BTU/m² para compensar as temperaturas ambientais elevadas. A Itália, com clima mais frio, utiliza valores menores conforme as guias técnicas locais.'
     },
     'it-IT': {
         'app-title': '❄️ Dimensionatore Climatizzatore',
@@ -368,6 +492,9 @@ const traducoes = {
         'dica-equipamentos': '💡 TV, computer, frigorifero, ecc. (ognuno conta come 1 unità)',
         'dica-insolacao': '💡 Alta = molte finestre esposte al sole; Bassa = poca esposizione solare',
         'dica-isolamento': '💡 Buono = isolamento adeguato; Scarso = senza isolamento o molte aperture',
+        'label-classe-energetica': 'Classe Energetica',
+        'dica-classe-energetica': '💡 Classe energetica della casa/edificio. Utilizzato per calcolare la perdita di energia termica per ambiente',
+        'classe-energetica-unidade': '* Valori in kWh/m².anno',
         'resultados-title': '📊 Risultati',
         'resultado-btu': 'Capacità Consigliata:',
         'resultado-potencia': 'Potenza Equivalente:',
@@ -383,15 +510,15 @@ const traducoes = {
         'btn-memorial': 'Vedi Memoriale di Calcolo',
         'memorial-title': '📚 Memoriale di Calcolo - Dimensionamento Climatizzatore',
         'memorial-intro-title': '🎯 Obiettivo del Dimensionamento',
-        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come viene calcolata la capacità necessaria del climatizzatore (in BTU) per un sistema multi-split residenziale, considerando area totale, altezza del soffitto, numero di ambienti, persone, apparecchi, insolazione e isolamento termico. Tutte le formule sono state validate attraverso test automatizzati.',
+        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come viene calcolata la capacità necessaria del climatizzatore (in BTU) per un sistema multi-split residenziale, considerando area totale, altezza del soffitto, numero di ambienti, persone, apparecchi, insolazione e isolamento termico. I valori sono adattati in base alla regione climatica: Italia (clima temperato) utilizza valori minori, mentre Brasile (clima tropicale/caldo) utilizza valori più alti secondo guide tecniche locali.',
         'memorial-passo1-title': '1️⃣ Passo 1: Calcolare Volume Totale del Sistema',
         'memorial-formula': 'Formula:',
         'memorial-passo1-explicacao': 'Il volume totale determina la quantità di aria che deve essere raffreddata in tutti gli ambienti del sistema. L\'area totale è la somma delle aree di tutti gli ambienti che avranno climatizzatore.',
         'memorial-example': 'Esempio:',
         'memorial-passo2-title': '2️⃣ Passo 2: Calcolare BTU Base Totale',
-        'memorial-passo2-explicacao': 'Il BTU base è calcolato considerando l\'area (aggiustata per l\'altezza del soffitto), il numero totale di persone e apparecchi elettrici. Ogni persona e apparecchio genera calore che deve essere rimosso dal climatizzatore. Il fattore di altezza normalizza il calcolo per un\'altezza standard del soffitto di 2.7m.',
+        'memorial-passo2-explicacao': 'Il BTU base è calcolato considerando l\'area (aggiustata per l\'altezza del soffitto), il numero totale di persone e apparecchi elettrici. Ogni persona e apparecchio genera calore che deve essere rimosso dal climatizzatore. Il fattore di altezza normalizza il calcolo per un\'altezza standard del soffitto di 2.7m. I valori di BTU per m², persona e apparecchio variano in base alla regione climatica: Italia (clima temperato più freddo) utilizza valori minori, mentre Brasile (clima caldo) richiede valori più alti.',
         'memorial-passo3-title': '3️⃣ Passo 3: Applicare Fattori di Aggiustamento (Insolazione e Isolamento)',
-        'memorial-passo3-explicacao': 'I fattori di insolazione e isolamento aggiustano la capacità necessaria in base alle condizioni degli ambienti. Questi sono fattori moltiplicatori che riflettono l\'impatto reale delle condizioni ambientali sul carico termico. I fattori sono applicati moltiplicando il BTU base: prima per l\'insolazione, poi per l\'isolamento.',
+        'memorial-passo3-explicacao': 'I fattori di insolazione e isolamento aggiustano la capacità necessaria in base alle condizioni degli ambienti. Questi sono fattori moltiplicatori che riflettono l\'impatto reale delle condizioni ambientali sul carico termico. I fattori sono applicati moltiplicando il BTU base: prima per l\'insolazione, poi per l\'isolamento. Per l\'Italia, l\'isolamento è già considerato nel BTU/m², quindi non applichiamo un fattore aggiuntivo di isolamento.',
         'memorial-fatores-title': 'Fattori utilizzati:',
         'memorial-fatores-insolacao': 'Insolazione: Bassa (1.0), Media (1.15), Alta (1.3) — Basato su pratiche dell\'industria della refrigerazione',
         'memorial-fatores-isolamento': 'Isolamento: Buono (0.8), Medio (1.0), Scarso (1.2) — Basato su norme tecniche ASHRAE',
@@ -405,6 +532,8 @@ const traducoes = {
         'memorial-passo4-explicacao': 'Il BTU finale totale è diviso per il numero di ambienti per determinare la capacità necessaria di ogni unità interna (evaporatore). Ogni split interno sarà dimensionato per soddisfare la sua parte proporzionale del sistema.',
         'memorial-modelos-title': 'Modelli commerciali disponibili:',
         'memorial-modelos-lista': '5.000, 7.000, 9.000, 12.000, 18.000, 24.000, 30.000, 36.000, 48.000, 60.000 BTU',
+        'memorial-tabelas-precos-title': '📊 Tabelle Prezzi e Dimensioni:',
+        'memorial-tabelas-precos-texto': 'Per informazioni dettagliate sui prezzi medi di mercato (2025-2026) e dimensioni standard di unità interne ed esterne, consultare il file TABELAS_PRECOS_TAMANHOS.md nella cartella dell\'applicazione. I valori includono fasce di prezzo per capacità, dimensioni fisiche approssimative e fattori che influenzano il costo finale.',
         'memorial-passo5-title': '5️⃣ Passo 5: Selezionare Modelli Commerciali',
         'memorial-passo5-explicacao': 'Il BTU calcolato per ambiente viene arrotondato per eccesso al modello commerciale più vicino. Se il BTU necessario per ambiente supera 60k BTU (modello interno più grande disponibile), saranno usate più unità interne da 60k BTU per ambiente. L\'unità esterna (condensatore) deve avere capacità per il BTU totale reale del sistema (somma delle capacità di tutte le unità interne). Se il BTU totale supera 180k BTU (modello esterno più grande disponibile), saranno usate più unità esterne da 180k BTU.',
         'memorial-resumo-title': '📊 Riepilogo Calcolato - Sistema Multi-Split',
@@ -414,7 +543,7 @@ const traducoes = {
         'memorial-resumo-btu-final': 'BTU Consigliato (modello commerciale):',
         'memorial-resumo-potencia': 'Potenza (kW):',
         'memorial-passo6-title': '6️⃣ Passo 6: Calcolare Costo Stimato',
-        'memorial-passo6-explicacao': 'Il costo è stimato sulla base di fasce di prezzo di mercato (2024-2025) per unità esterne e interne vendute separatamente. I valori sono medie delle fasce di prezzo ricercate.',
+        'memorial-passo6-explicacao': 'Il costo è stimato sulla base di fasce di prezzo di mercato (2025-2026) per unità esterne e interne vendute separatamente. I valori sono medie delle fasce di prezzo ricercate in cataloghi di produttori e negozi specializzati. Per informazioni dettagliate, consultare TABELAS_PRECOS_TAMANHOS.md.',
         'memorial-resumo-btu-por-ambiente': 'BTU per Ambiente:',
         'memorial-resumo-unidade-interna': 'Unità Interna (Modello):',
         'memorial-resumo-btu-total-real': 'BTU Totali Reali:',
@@ -422,22 +551,28 @@ const traducoes = {
         'memorial-resumo-custo-total': 'Costo Totale Stimato:',
         'memorial-formula-volume': 'Volume Totale (m³) = Area Totale (m²) × Altezza (m)',
         'memorial-formula-fator-altura': 'Fattore Altezza = Altezza (m) ÷ 2.7 m (standard)',
-        'memorial-formula-btu-area': 'BTU Area Totale = Area Totale (m²) × 700 BTU/m² × Fattore Altezza',
-        'memorial-formula-btu-pessoas': 'BTU Persone Totale = Numero Totale di Persone × 600 BTU/persona',
-        'memorial-formula-btu-equipamentos': 'BTU Apparecchi Totale = Numero Totale di Apparecchi × 600 BTU/apparecchio',
+        'memorial-formula-btu-area': 'BTU Area Totale = Area Totale (m²) × BTU/m² × Fattore Altezza',
+        'memorial-formula-btu-pessoas': 'BTU Persone Totale = Numero Totale di Persone × BTU/persona (Italia: tutte le persone, 200 BTU/persona | Brasile: solo persone aggiuntive oltre le prime 2, 600 BTU/persona aggiuntiva)',
+        'memorial-formula-btu-equipamentos': 'BTU Apparecchi Totale = Numero Totale di Apparecchi × BTU/apparecchio (300 Italia / 600 Brasile)',
         'memorial-formula-btu-base': 'BTU Base Totale = BTU Area Totale + BTU Persone Totale + BTU Apparecchi Totale',
         'memorial-formula-btu-final': 'BTU Finale Totale = BTU Base Totale × Fattore Insolazione × Fattore Isolamento',
         'memorial-btu-por-m2': 'BTU per m²:',
-        'memorial-btu-por-m2-texto': '700 BTU/m² — Valore standard ampiamente accettato nell\'industria per il dimensionamento residenziale. Questo valore è moltiplicato per il fattore di altezza (altezza ÷ 2.7m) per aggiustare quando l\'altezza del soffitto è diversa dallo standard.',
+        'memorial-btu-por-m2-texto': '300-400 BTU/m² (Italia) / 700 BTU/m² (Brasile) — Valori basati su guide tecniche specializzate e adattati alle caratteristiche climatiche di ogni regione. Italia: clima temperato più freddo per natura utilizza valori minori che variano in base all\'isolamento (300 buono, 340 medio, 400 scarso). Brasile: clima tropicale/caldo per natura richiede 700 BTU/m² fisso per compensare temperature ambientali elevate. Questo valore è moltiplicato per il fattore di altezza (altezza ÷ 2.7m) per aggiustare quando l\'altezza del soffitto è diversa dallo standard.',
         'memorial-btu-por-pessoa': 'BTU per Persona:',
-        'memorial-btu-por-pessoa-texto': '600 BTU/persona — Considera calore metabolico (calore sensibile ~400 BTU/h + calore latente ~200 BTU/h)',
+        'memorial-btu-por-pessoa-texto': '200 BTU/persona (Italia) / 600 BTU/persona aggiuntiva (Brasile) — In Italia, tutte le persone contano con 200 BTU/persona. In Brasile, solo le persone aggiuntive (oltre le prime 2) contano, poiché le prime 1-2 persone sono già incluse nel calcolo base per m² (600-800 BTU/m²). Ogni persona aggiuntiva aggiunge 600 BTU. Fonte: Consul, Refrimec, Leroy Merlin, ClimaRio.',
         'memorial-btu-por-equipamento': 'BTU per Apparecchio:',
-        'memorial-btu-por-equipamento-texto': '600 BTU/apparecchio — Basato sulla Legge di Conservazione dell\'Energia: tutta l\'energia elettrica consumata è convertita in calore',
+        'memorial-btu-por-equipamento-texto': '300 BTU/apparecchio (Italia) / 600 BTU/apparecchio (Brasile) — Basato sulla Legge di Conservazione dell\'Energia: tutta l\'energia elettrica consumata è convertita in calore. Italia utilizza valori minori secondo le guide tecniche locali per clima temperato. Brasile utilizza valori più alti dovuti al clima caldo, dove il calore generato dagli apparecchi ha maggiore impatto sul carico termico.',
         'memorial-fatores-afetam-titulo': '💡 Come i fattori influenzano il calcolo:',
-        'memorial-fatores-insolacao-texto': 'Insolazione: Ambienti con maggiore esposizione solare ricevono più calore, aumentando la necessità di raffreddamento. Insolazione bassa (1.0) non altera il calcolo. Insolazione media (1.15) aumenta del 15%. Insolazione alta (1.3) aumenta del 30%.',
-        'memorial-fatores-isolamento-texto': 'Isolamento: Buon isolamento (0.8) riduce la necessità di raffreddamento del 20%, poiché diminuisce il trasferimento di calore tra l\'ambiente interno ed esterno. Isolamento medio (1.0) non altera il calcolo. Isolamento scarso (1.2) aumenta la necessità del 20%.',
+        'memorial-fatores-insolacao-texto': 'Insolazione: Ambienti con maggiore esposizione solare ricevono più calore, aumentando la necessità di raffreddamento. Italia (clima temperato): Bassa (0.9, -10%), Media (1.0), Alta (1.2, +20%) — valori minori secondo guide tecniche italiane. Brasile (clima caldo): Bassa (1.0), Media (1.15, +15%), Alta (1.3, +30%) — valori più alti dovuti all\'impatto maggiore del sole in clima tropicale.',
+        'memorial-fatores-isolamento-texto': 'Isolamento: Italia (clima temperato): L\'isolamento è già considerato direttamente nel BTU/m² (300 buono, 340 medio, 400 scarso), quindi non applichiamo un fattore moltiplicatore aggiuntivo. Brasile (clima caldo): Buono (0.8, -20%), Medio (1.0), Scarso (1.2, +20%) — fattore applicato separatamente. Questa differenza riflette le pratiche di calcolo distinte tra le due regioni climatiche.',
         'memorial-lei-fisica-titulo': '⚛️ Legge Fisica Applicata — Conservazione dell\'Energia e Trasferimento di Calore:',
-        'memorial-lei-fisica-texto': 'Ogni apparecchio elettrico genera calore perché l\'energia elettrica consumata è trasformata in calore (Legge di Conservazione dell\'Energia). Il climatizzatore rimuove questo calore dall\'ambiente interno e lo trasferisce all\'ambiente esterno (Trasferimento di Calore: il calore fluisce sempre dal più caldo al più freddo).'
+        'memorial-lei-fisica-texto': 'Ogni apparecchio elettrico genera calore perché l\'energia elettrica consumata è trasformata in calore (Legge di Conservazione dell\'Energia). Il climatizzatore rimuove questo calore dall\'ambiente interno e lo trasferisce all\'ambiente esterno (Trasferimento di Calore: il calore fluisce sempre dal più caldo al più freddo).',
+        'memorial-fontes-title': '📚 Riferimenti Bibliografici e Fonti',
+        'memorial-fontes-intro': 'I valori e le formule utilizzate in questo dimensionamento sono basati su guide tecniche specializzate e norme dell\'industria della climatizzazione, adattate alle caratteristiche climatiche specifiche di ogni regione:',
+        'memorial-fonte-brasil': 'Brasile (Clima Tropicale/Caldo): Valori basati su pratiche dell\'industria brasiliana della refrigerazione, considerando temperature medie elevate e alta umidità. BTU/m²: 700 (valore fisso dovuto al clima caldo). BTU/persona: 600. BTU/apparecchio: 600.',
+        'memorial-fonte-italia': 'Italia (Clima Temperato): Valori basati su guide tecniche italiane e norme europee, considerando clima temperato con stagioni ben definite. BTU/m²: varia in base all\'isolamento (300 buono, 340 medio, 400 scarso). BTU/persona: 200. BTU/apparecchio: 300.',
+        'memorial-fontes-lista-title': 'Fonti consultate:',
+        'memorial-fontes-nota': 'Nota: I valori sono stati adattati per riflettere le differenze climatiche naturali tra Brasile (clima tropicale/caldo) e Italia (clima temperato). Il Brasile, per natura più caldo, richiede valori più alti di BTU/m² per compensare le temperature ambientali elevate. L\'Italia, con clima più freddo, utilizza valori minori secondo le guide tecniche locali.'
     }
 };
 
@@ -456,16 +591,19 @@ const traducoes = {
  * @returns {Object} Objeto com BTU recomendado, potência em kW, volume e BTU base
  */
 function calcularBTU(area, altura, pessoas, equipamentos, insolacao, isolamento) {
-    // PASSO 1: Calcular BTU base por área (área × 700 BTU/m²)
+    // PASSO 1: Calcular BTU base por área (área × BTU/m²)
     // Ajusta o BTU por m² baseado na altura do pé direito (fator de correção)
+    // Para italiano, o BTU/m² já varia conforme o isolamento
     const fatorAltura = altura / 2.7; // Normaliza para pé direito padrão de 2.7m
-    const btuArea = area * BTU_POR_M2 * fatorAltura;
+    const btuArea = area * getBTUPorM2(isolamento) * fatorAltura;
     
     // PASSO 2: Adicionar BTU por pessoas
-    const btuPessoas = pessoas * BTU_POR_PESSOA;
+    // No Brasil: apenas pessoas adicionais (além das primeiras 2) contam
+    // Na Itália: todas as pessoas contam
+    const btuPessoas = calcularBTUPessoas(pessoas);
     
     // PASSO 3: Adicionar BTU por equipamentos
-    const btuEquipamentos = equipamentos * BTU_POR_EQUIPAMENTO;
+    const btuEquipamentos = equipamentos * getBTUPorEquipamento();
     
     // PASSO 4: Calcular BTU base total (antes dos fatores)
     const btuBase = btuArea + btuPessoas + btuEquipamentos;
@@ -475,8 +613,15 @@ function calcularBTU(area, altura, pessoas, equipamentos, insolacao, isolamento)
     
     // PASSO 6: Aplicar fatores de insolação e isolamento
     // Estes fatores são multiplicadores que ajustam a carga térmica baseada nas condições ambientais
-    const fatorInsolacao = FATORES_INSOLACAO[insolacao] || 1.0;
-    const fatorIsolamento = FATORES_ISOLAMENTO[isolamento] || 1.0;
+    // Para italiano, o isolamento já está considerado no BTU/m², então aplicamos apenas insolação
+    const fatorInsolacao = getFatorInsolacao(insolacao);
+    const idioma = typeof idiomaAtual !== 'undefined' ? idiomaAtual : 
+                   (localStorage.getItem(SITE_LS.LANGUAGE_KEY) || 
+                    (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR'));
+    
+    // Para italiano, isolamento já está no BTU/m², então não aplicamos fator adicional
+    // Para brasileiro, aplicamos o fator de isolamento normalmente
+    const fatorIsolamento = idioma === 'it-IT' ? 1.0 : getFatorIsolamento(isolamento);
     
     // PASSO 7: Calcular BTU final
     // Multiplica o BTU base pelos fatores de insolação e isolamento
@@ -648,9 +793,10 @@ function formatarDecimal(valor, decimais = 1) {
  * @param {number} equipamentos - Número de equipamentos (distribuídos entre os ambientes)
  * @param {string} insolacao - Nível de insolação
  * @param {string} isolamento - Nível de isolamento
+ * @param {number} perdaEnergia - Perda de energia da casa em kWh/m².ano (classe energética)
  * @returns {Object} Objeto com BTU total, unidade externa, unidades internas e custo
  */
-function calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equipamentos, insolacao, isolamento) {
+function calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equipamentos, insolacao, isolamento, perdaEnergia = 1.75) {
     // IMPORTANTE: areaTotal já é a SOMA de todas as áreas dos ambientes
     // 
     // LÓGICA CORRIGIDA:
@@ -661,16 +807,32 @@ function calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equ
     // Calcula BTU total do sistema considerando a área total
     // Usa pessoas e equipamentos totais (não divididos) para calcular a carga térmica total
     // Ajusta o BTU por m² baseado na altura do pé direito (fator de correção)
+    // Para italiano, o BTU/m² já varia conforme o isolamento
     const fatorAltura = altura / 2.7; // Normaliza para pé direito padrão de 2.7m
-    const btuAreaTotal = areaTotal * BTU_POR_M2 * fatorAltura;
-    const btuPessoasTotal = pessoas * BTU_POR_PESSOA;
-    const btuEquipamentosTotal = equipamentos * BTU_POR_EQUIPAMENTO;
+    const btuAreaTotal = areaTotal * getBTUPorM2(isolamento) * fatorAltura;
+    // No Brasil: apenas pessoas adicionais (além das primeiras 2) contam
+    // Na Itália: todas as pessoas contam
+    const btuPessoasTotal = calcularBTUPessoas(pessoas);
+    const btuEquipamentosTotal = equipamentos * getBTUPorEquipamento();
     const btuBaseTotal = btuAreaTotal + btuPessoasTotal + btuEquipamentosTotal;
     
     // Aplica fatores de insolação e isolamento
-    const fatorInsolacao = FATORES_INSOLACAO[insolacao] || 1.0;
-    const fatorIsolamento = FATORES_ISOLAMENTO[isolamento] || 1.0;
-    const btuFinalTotal = btuBaseTotal * fatorInsolacao * fatorIsolamento;
+    const fatorInsolacao = getFatorInsolacao(insolacao);
+    const idioma = typeof idiomaAtual !== 'undefined' ? idiomaAtual : 
+                   (localStorage.getItem(SITE_LS.LANGUAGE_KEY) || 
+                    (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR'));
+    
+    // Para italiano, isolamento já está no BTU/m², então não aplicamos fator adicional
+    // Para brasileiro, aplicamos o fator de isolamento normalmente
+    const fatorIsolamento = idioma === 'it-IT' ? 1.0 : getFatorIsolamento(isolamento);
+    
+    // Calcula fator de perda de energia baseado na classe energética
+    // A perda de energia é em kWh/m².ano, convertemos para um fator multiplicador
+    // Valores maiores de perda (classes piores) aumentam a necessidade de BTU
+    // Normalizamos usando a classe D (1.75 kWh/m².ano) como referência padrão
+    const fatorPerdaEnergia = perdaEnergia / 1.75; // 1.75 é o valor padrão da classe D
+    
+    const btuFinalTotal = btuBaseTotal * fatorInsolacao * fatorIsolamento * fatorPerdaEnergia;
     
     // BTU total necessário para o sistema (antes de dividir por ambientes)
     const btuTotal = btuFinalTotal;
@@ -701,40 +863,42 @@ function calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equ
     const numUnidadesExternas = combinacaoExterna.quantidade;
     
     // Faixas de preço para UNIDADES EXTERNAS MULTI-SPLIT (condensadoras)
-    // Valores baseados em condensadoras multi-split vendidas separadamente
+    // Valores atualizados 2025-2026 baseados em pesquisa de mercado
     // Nota: Unidades externas multi-split são mais caras que splits simples porque
     // precisam ter capacidade para múltiplas unidades internas
+    // Fonte: Pesquisa de mercado 2025-2026, catálogos de fabricantes
     const faixasPrecoExternas = {
-        18000: { min: 4000, max: 8000 },    // Condensadora 18k BTU multi-split
-        24000: { min: 5000, max: 10000 },   // Condensadora 24k BTU multi-split
-        30000: { min: 8000, max: 15000 },   // Condensadora 30k BTU multi-split
-        36000: { min: 10000, max: 18000 },  // Condensadora 36k BTU multi-split
-        48000: { min: 12000, max: 22000 },  // Condensadora 48k BTU multi-split
-        60000: { min: 18000, max: 35000 },  // Condensadora 60k BTU multi-split
-        72000: { min: 22000, max: 42000 },  // Condensadora 72k BTU multi-split
-        84000: { min: 28000, max: 50000 },  // Condensadora 84k BTU multi-split
-        96000: { min: 35000, max: 60000 },  // Condensadora 96k BTU multi-split
-        120000: { min: 45000, max: 75000 }, // Condensadora 120k BTU multi-split
-        144000: { min: 55000, max: 90000 }, // Condensadora 144k BTU multi-split
-        180000: { min: 70000, max: 120000 } // Condensadora 180k BTU multi-split
+        18000: { min: 4000, max: 8000 },    // Condensadora 18k BTU multi-split (média: R$ 6.000)
+        24000: { min: 5000, max: 10000 },   // Condensadora 24k BTU multi-split (média: R$ 7.500)
+        30000: { min: 8000, max: 15000 },   // Condensadora 30k BTU multi-split (média: R$ 11.500)
+        36000: { min: 10000, max: 18000 },  // Condensadora 36k BTU multi-split (média: R$ 14.000)
+        48000: { min: 12000, max: 22000 },  // Condensadora 48k BTU multi-split (média: R$ 17.000)
+        60000: { min: 18000, max: 35000 },  // Condensadora 60k BTU multi-split (média: R$ 26.500)
+        72000: { min: 22000, max: 42000 },  // Condensadora 72k BTU multi-split (média: R$ 32.000)
+        84000: { min: 28000, max: 50000 },  // Condensadora 84k BTU multi-split (média: R$ 39.000)
+        96000: { min: 35000, max: 60000 },  // Condensadora 96k BTU multi-split (média: R$ 47.500)
+        120000: { min: 45000, max: 75000 }, // Condensadora 120k BTU multi-split (média: R$ 60.000)
+        144000: { min: 55000, max: 90000 }, // Condensadora 144k BTU multi-split (média: R$ 72.500)
+        180000: { min: 70000, max: 120000 } // Condensadora 180k BTU multi-split (média: R$ 95.000)
     };
     
     // Faixas de preço para UNIDADES INTERNAS (evaporadoras) vendidas separadamente
-    // Valores baseados em evaporadoras vendidas individualmente para multi-split
+    // Valores atualizados 2025-2026 baseados em pesquisa de mercado
     // Nota: Unidades internas são mais baratas que splits completos porque
     // não incluem a unidade externa
     // Limite máximo: 60k BTU por unidade interna
+    // Fonte: Pesquisa de mercado 2025-2026, catálogos de fabricantes
     const faixasPrecoInternas = {
-        5000: { min: 1000, max: 1800 },    // Evaporadora 5k BTU
-        7000: { min: 1100, max: 1900 },    // Evaporadora 7k BTU
-        9000: { min: 1200, max: 2000 },    // Evaporadora 9k BTU
-        12000: { min: 1500, max: 2500 },   // Evaporadora 12k BTU
-        18000: { min: 2000, max: 3500 },   // Evaporadora 18k BTU
-        24000: { min: 2500, max: 4500 },   // Evaporadora 24k BTU
-        30000: { min: 3500, max: 6000 },   // Evaporadora 30k BTU
-        36000: { min: 4000, max: 7000 },   // Evaporadora 36k BTU
-        48000: { min: 5000, max: 9000 },   // Evaporadora 48k BTU
-        60000: { min: 6500, max: 12000 }   // Evaporadora 60k BTU
+        5000: { min: 1000, max: 1800 },    // Evaporadora 5k BTU (média: R$ 1.400)
+        7000: { min: 1100, max: 1900 },    // Evaporadora 7k BTU (média: R$ 1.500)
+        9000: { min: 1200, max: 2000 },    // Evaporadora 9k BTU (média: R$ 1.600)
+        12000: { min: 1500, max: 2500 },   // Evaporadora 12k BTU (média: R$ 2.000)
+        18000: { min: 2000, max: 3500 },   // Evaporadora 18k BTU (média: R$ 2.750)
+        24000: { min: 2500, max: 4500 },   // Evaporadora 24k BTU (média: R$ 3.500)
+        30000: { min: 3500, max: 6000 },   // Evaporadora 30k BTU (média: R$ 4.750)
+        36000: { min: 4000, max: 7000 },   // Evaporadora 36k BTU (média: R$ 5.500)
+        48000: { min: 5000, max: 9000 },   // Evaporadora 48k BTU (média: R$ 7.000)
+        60000: { min: 6500, max: 12000 }   // Evaporadora 60k BTU (média: R$ 9.250)
     };
     
     // Custo das unidades externas multi-split (condensadoras)
@@ -889,10 +1053,14 @@ function atualizarResultados() {
     const insolacao = document.querySelector('input[name="insolacao"]:checked')?.value || 'media';
     const isolamento = document.querySelector('input[name="isolamento"]:checked')?.value || 'medio';
     
+    // Obtém valor da classe energética (perda de energia em kWh/m².ano)
+    const inputClasseEnergetica = document.getElementById('inputClasseEnergetica');
+    const perdaEnergia = inputClasseEnergetica ? parseFloat(inputClasseEnergetica.value) || 1.75 : 1.75;
+    
     // Calcula e atualiza sistema multi-split (sempre, mesmo para 1 ambiente)
     let resultadoMultisplit;
     try {
-        resultadoMultisplit = calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equipamentos, insolacao, isolamento);
+        resultadoMultisplit = calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equipamentos, insolacao, isolamento, perdaEnergia);
     } catch (error) {
         console.error('[Ar Condicionado] Erro ao calcular sistema:', error);
         resultadoMultisplit = null;
@@ -1520,6 +1688,25 @@ document.addEventListener('DOMContentLoaded', function() {
         radio.addEventListener('change', atualizarResultados);
     });
     
+    // Configurar seletor de classe energética
+    const classeBoxes = document.querySelectorAll('.classe-box');
+    const inputClasseEnergetica = document.getElementById('inputClasseEnergetica');
+    
+    classeBoxes.forEach(box => {
+        box.addEventListener('click', () => {
+            // Remove seleção anterior
+            classeBoxes.forEach(b => b.classList.remove('classe-box-selected'));
+            // Adiciona seleção atual
+            box.classList.add('classe-box-selected');
+            // Atualiza valor oculto
+            if (inputClasseEnergetica) {
+                inputClasseEnergetica.value = box.getAttribute('data-valor');
+            }
+            // Atualiza resultados
+            atualizarResultados();
+        });
+    });
+    
     // Configurar botões de seta - usa função global com aceleração exponencial
     if (typeof configurarBotoesSliderComAceleracao === 'function') {
         // Usa função de ajuste local que atualiza inputs correspondentes
@@ -1646,13 +1833,18 @@ function atualizarMemorialComValores() {
     // Calcula valores para o memorial
     const volumeTotal = areaTotal * altura;
     const fatorAltura = altura / 2.7; // Normaliza para pé direito padrão de 2.7m
-    const btuAreaTotal = areaTotal * BTU_POR_M2 * fatorAltura;
-    const btuPessoasTotal = pessoas * BTU_POR_PESSOA;
-    const btuEquipamentosTotal = equipamentos * BTU_POR_EQUIPAMENTO;
+    const btuAreaTotal = areaTotal * getBTUPorM2(isolamento) * fatorAltura;
+    // No Brasil: apenas pessoas adicionais (além das primeiras 2) contam
+    // Na Itália: todas as pessoas contam
+    const btuPessoasTotal = calcularBTUPessoas(pessoas);
+    const btuEquipamentosTotal = equipamentos * getBTUPorEquipamento();
     const btuBaseTotal = btuAreaTotal + btuPessoasTotal + btuEquipamentosTotal;
     
-    const fatorInsolacao = FATORES_INSOLACAO[insolacao] || 1.0;
-    const fatorIsolamento = FATORES_ISOLAMENTO[isolamento] || 1.0;
+    const fatorInsolacao = getFatorInsolacao(insolacao);
+    const idioma = typeof idiomaAtual !== 'undefined' ? idiomaAtual : 
+                   (localStorage.getItem(SITE_LS.LANGUAGE_KEY) || 
+                    (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR'));
+    const fatorIsolamento = idioma === 'it-IT' ? 1.0 : getFatorIsolamento(isolamento);
     const btuFinalTotal = btuBaseTotal * fatorInsolacao * fatorIsolamento;
     
     const btuPorAmbienteCalculado = btuFinalTotal / numAmbientes;
@@ -1691,8 +1883,24 @@ function atualizarMemorialComValores() {
     
     const memorialExemploBtuBase = document.getElementById('memorial-exemplo-btu-base');
     if (memorialExemploBtuBase) {
+        const btuPorM2 = getBTUPorM2(isolamento);
+        const btuPorPessoa = getBTUPorPessoa();
+        const btuPorEquipamento = getBTUPorEquipamento();
+        const idioma = typeof idiomaAtual !== 'undefined' ? idiomaAtual : 
+                       (localStorage.getItem(SITE_LS.LANGUAGE_KEY) || 
+                        (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR'));
+        
+        // Ajusta texto conforme regra regional
+        let textoPessoasCalc = '';
+        if (idioma === 'pt-BR') {
+            const pessoasAdicionais = Math.max(0, pessoas - 2);
+            textoPessoasCalc = pessoasAdicionais > 0 ? `${pessoasAdicionais} ${textoPessoas} adicionais × ${btuPorPessoa}` : '0 (primeiras 2 pessoas já incluídas no cálculo base)';
+        } else {
+            textoPessoasCalc = `${pessoas} ${textoPessoas} × ${btuPorPessoa}`;
+        }
+        
         memorialExemploBtuBase.textContent = 
-            `${formatarNumero(areaTotal, 1)} m² × ${formatarNumero(BTU_POR_M2, 0)} × ${formatarDecimal(fatorAltura, 2)} (fator altura) = ${formatarBTU(btuAreaTotal)} + ${pessoas} ${textoPessoas} × 600 = ${formatarBTU(btuPessoasTotal)} + ${equipamentos} ${textoEquipamentos} × 600 = ${formatarBTU(btuEquipamentosTotal)} = ${formatarBTU(btuBaseTotal)}`;
+            `${formatarNumero(areaTotal, 1)} m² × ${formatarNumero(btuPorM2, 0)} × ${formatarDecimal(fatorAltura, 2)} (fator altura) = ${formatarBTU(btuAreaTotal)} + ${textoPessoasCalc} = ${formatarBTU(btuPessoasTotal)} + ${equipamentos} ${textoEquipamentos} × ${btuPorEquipamento} = ${formatarBTU(btuEquipamentosTotal)} = ${formatarBTU(btuBaseTotal)}`;
     }
     
     const memorialExemploFatores = document.getElementById('memorial-exemplo-fatores');

@@ -30,7 +30,8 @@
 //    IMPORTANTE: O fator 2 considera ida e volta (dois condutores)
 //                L é a distância, não a soma dos condutores
 // 3) Selecionar bitola comercial padrão brasileiro que atenda ao requisito
-//    Bitolas disponíveis: 1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240 mm²
+//    Bitolas disponíveis: 0.25, 0.5, 0.75, 1.0, 1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240 mm²
+//    (inclui bitolas finas para cabos: 0.25, 0.5, 0.75, 1.0 mm²)
 // 4) Recalcular queda de tensão real com a bitola escolhida para verificação
 //
 // Observações:
@@ -80,7 +81,8 @@ const RESISTIVIDADE_COBRE = 0.0175; // Ω·mm²/m (cobre a 20°C)
 // Bitolas comerciais padrão brasileiro (mm²)
 // Ordenadas do menor para o maior
 // Estas são as bitolas disponíveis no mercado brasileiro conforme norma NBR 5410
-const BITOLAS_COMERCIAIS = [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240];
+// Inclui bitolas finas para cabos de carregadores (0.25, 0.5, 0.75, 1.0 mm²)
+const BITOLAS_COMERCIAIS = [0.25, 0.5, 0.75, 1.0, 1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240];
 
 // Disjuntores comerciais padrão (A)
 // Valores típicos disponíveis no mercado brasileiro e italiano
@@ -92,9 +94,10 @@ const FATOR_SEGURANCA = 1.25;
 
 // Valores típicos de tensão para corrente contínua (V)
 // Usados no slider quando o tipo de corrente é CC
-// Índice do array corresponde ao valor do slider (0-10)
+// Inclui tensões padrão: 5V, 9V, 12V, 15V, 20V
+// Índice do array corresponde ao valor do slider (0-13)
 // Limite máximo: 96V
-const TENSOES_CC_TIPICAS = [3.3, 5, 9, 12, 24, 36, 48, 60, 72, 84, 96];
+const TENSOES_CC_TIPICAS = [3.3, 5, 9, 12, 15, 20, 24, 36, 48, 60, 72, 84, 96];
 
 // ============================================
 // ELEMENTOS HTML (inicializados no DOMContentLoaded)
@@ -731,18 +734,18 @@ function atualizarResultados() {
     const disjuntor = selecionarDisjuntorComercial(corrente);
     
     // Atualiza a interface (verificando se os elementos existem)
-    // Para área mínima e bitola comercial, usar formatarNumero (sem sufixos k/M/m)
-    // pois valores em mm² geralmente ficam entre 0.1 e 500 mm²
+    // Para área mínima e bitola comercial, usar formatarNumeroSemZerosDesnecessarios
+    // para remover zeros desnecessários (ex: 12,00 → 12, 16,20 → 16,2)
     if (areaMinima) {
         if (isFinite(areaMin) && areaMin > 0) {
-            areaMinima.textContent = formatarNumero(areaMin, 2) + ' mm²';
+            areaMinima.textContent = formatarNumeroSemZerosDesnecessarios(areaMin, 2) + ' mm²';
         } else {
             areaMinima.textContent = '-';
         }
     }
     if (bitolaComercial) {
         if (isFinite(bitola) && bitola > 0) {
-            bitolaComercial.textContent = formatarNumero(bitola, 1) + ' mm²';
+            bitolaComercial.textContent = formatarNumeroSemZerosDesnecessarios(bitola, 2) + ' mm²';
         } else {
             bitolaComercial.textContent = '-';
         }
@@ -758,6 +761,37 @@ function atualizarResultados() {
 }
 
 /**
+ * Formata número removendo zeros desnecessários
+ * Se o número for inteiro, mostra sem decimais
+ * Se tiver decimais significativos, mostra até 2 casas decimais
+ * @param {number} valor - Valor numérico
+ * @param {number} maxDecimais - Número máximo de casas decimais (padrão: 2)
+ * @returns {string} Valor formatado sem zeros desnecessários
+ */
+function formatarNumeroSemZerosDesnecessarios(valor, maxDecimais = 2) {
+    if (isNaN(valor) || valor === null || valor === undefined) return '-';
+    
+    // Se for inteiro, mostra sem decimais
+    if (valor % 1 === 0) {
+        return formatarNumero(valor, 0);
+    }
+    
+    // Se tiver decimais, formata com até maxDecimais casas, removendo zeros à direita
+    // Usa a mesma abordagem de formatarNumero mas com minimumFractionDigits: 0
+    const locale = (typeof SiteConfig !== 'undefined' && SiteConfig.FORMATTING) 
+        ? SiteConfig.FORMATTING.LOCALE_PT 
+        : 'pt-BR';
+    
+    const valorFormatado = valor.toLocaleString(locale, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: maxDecimais,
+        useGrouping: true
+    });
+    
+    return valorFormatado;
+}
+
+/**
  * Atualiza a exibição da tensão CC baseada no slider
  */
 function atualizarTensaoCC() {
@@ -765,7 +799,7 @@ function atualizarTensaoCC() {
     tensaoCCManual = false;
     const indice = parseInt(sliderTensaoCC.value) || 0;
     const tensao = TENSOES_CC_TIPICAS[indice] || 12;
-    inputTensaoCC.value = formatarNumero(tensao, 1);
+    inputTensaoCC.value = formatarNumeroSemZerosDesnecessarios(tensao, 2);
     if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputTensaoCC);
     atualizarResultados();
 }
@@ -819,7 +853,7 @@ const traducoes = {
         'unit-meter': 'm',
         'unit-volt': 'V',
         'dica-comprimento': '💡 Distância entre a fonte e a carga<br>(o cálculo considera automaticamente ida e volta)',
-        'dica-tensao-cc': '💡 Valores típicos: 3.3V, 5V, 9V, 12V, 24V, 36V, 48V, 60V, 72V, 96V',
+        'dica-tensao-cc': '💡 Valores típicos: 3.3V, 5V, 9V, 12V, 15V, 20V, 24V, 36V, 48V, 60V, 72V, 96V',
         'dica-queda-tensao': '✅ Recomendado para projetos residenciais no Brasil: 3% (padrão mais utilizado)',
         'resultados-title': '📊 Resultados',
         'resultado-area-minima': 'Área de Seção Mínima:',
@@ -847,7 +881,7 @@ const traducoes = {
         'memorial-passo3-title': '3️⃣ Passo 3: Selecionar Bitola Comercial',
         'memorial-passo3-explicacao': 'A área mínima calculada é multiplicada por um fator de segurança de 1.25 (25% de margem) e então selecionamos a bitola comercial padrão brasileiro (NBR 5410) que atende ao requisito.',
         'memorial-bitolas': 'Bitolas comerciais disponíveis:',
-        'memorial-bitolas-lista': '1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240 mm²',
+        'memorial-bitolas-lista': '0.25, 0.5, 0.75, 1.0, 1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240 mm²',
         'memorial-passo4-title': '4️⃣ Passo 4: Verificar Queda de Tensão Real',
         'memorial-passo4-explicacao': 'Recalculamos a queda de tensão com a bitola comercial escolhida usando a fórmula ΔV% = ((2 × ρ × L × I) / S) / V × 100, onde S é a bitola comercial selecionada. Isso verifica se a queda real está dentro do limite permitido.',
         'memorial-passo5-title': '5️⃣ Passo 5: Selecionar Disjuntor Comercial',
@@ -884,7 +918,7 @@ const traducoes = {
         'unit-meter': 'm',
         'unit-volt': 'V',
         'dica-comprimento': '💡 Distanza tra la sorgente e il carico<br>(il calcolo considera automaticamente andata e ritorno)',
-        'dica-tensao-cc': '💡 Valori tipici: 3.3V, 5V, 9V, 12V, 24V, 36V, 48V, 60V, 72V, 96V',
+        'dica-tensao-cc': '💡 Valori tipici: 3.3V, 5V, 9V, 12V, 15V, 20V, 24V, 36V, 48V, 60V, 72V, 96V',
         'dica-queda-tensao': '✅ Consigliato per progetti residenziali in Brasile: 3% (standard più utilizzato)',
         'resultados-title': '📊 Risultati',
         'resultado-area-minima': 'Area di Sezione Minima:',
@@ -912,7 +946,7 @@ const traducoes = {
         'memorial-passo3-title': '3️⃣ Passo 3: Selezionare Sezione Commerciale',
         'memorial-passo3-explicacao': 'L\'area minima calcolata viene moltiplicata per un fattore di sicurezza di 1.25 (25% di margine) e quindi selezioniamo la sezione commerciale standard brasiliana (NBR 5410) che soddisfa il requisito.',
         'memorial-bitolas': 'Sezioni commerciali disponibili:',
-        'memorial-bitolas-lista': '1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240 mm²',
+        'memorial-bitolas-lista': '0.25, 0.5, 0.75, 1.0, 1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240 mm²',
         'memorial-passo4-title': '4️⃣ Passo 4: Verificare Caduta di Tensione Reale',
         'memorial-passo4-explicacao': 'Ricalcoliamo la caduta di tensione con la sezione commerciale scelta utilizzando la formula ΔV% = ((2 × ρ × L × I) / S) / V × 100, dove S è la sezione commerciale selezionata. Questo verifica se la caduta reale è entro il limite consentito.',
         'memorial-passo5-title': '5️⃣ Passo 5: Selezionare Interruttore Commerciale',
@@ -1008,7 +1042,7 @@ function atualizarMemorialComValores() {
         const areaComSeguranca = areaMin * 1.25;
         const textoAreaMinima = traducoes[idiomaAtual]?.['memorial-exemplo-area-minima'] || 'Área mínima';
         const textoBitolaComercial = traducoes[idiomaAtual]?.['memorial-exemplo-bitola-comercial'] || 'Bitola comercial';
-        exemploBitola.textContent = `${textoAreaMinima} ${formatarNumeroComSufixo(areaMin, 2)} mm² × 1.25 = ${formatarNumeroComSufixo(areaComSeguranca, 2)} mm² → ${textoBitolaComercial}: ${formatarNumeroComSufixo(bitola, 1)} mm²`;
+        exemploBitola.textContent = `${textoAreaMinima} ${formatarNumeroComSufixo(areaMin, 2)} mm² × 1.25 = ${formatarNumeroComSufixo(areaComSeguranca, 2)} mm² → ${textoBitolaComercial}: ${formatarNumeroComSufixo(bitola, 2)} mm²`;
     }
     
     const exemploQueda = document.getElementById('memorial-exemplo-queda');
@@ -1016,7 +1050,7 @@ function atualizarMemorialComValores() {
         const textoComBitola = traducoes[idiomaAtual]?.['memorial-exemplo-com-bitola'] || 'Com bitola';
         const textoQuedaReal = traducoes[idiomaAtual]?.['memorial-exemplo-queda-real'] || 'queda real';
         const textoDentroLimite = traducoes[idiomaAtual]?.['memorial-exemplo-dentro-limite'] || 'dentro do limite de';
-        exemploQueda.textContent = `${textoComBitola} ${formatarNumeroComSufixo(bitola, 1)} mm² → ${textoQuedaReal} = ${formatarNumero(quedaRealPercentual, 2)}% (${textoDentroLimite} ${formatarNumero(quedaPercentual, 1)}%)`;
+        exemploQueda.textContent = `${textoComBitola} ${formatarNumeroComSufixo(bitola, 2)} mm² → ${textoQuedaReal} = ${formatarNumero(quedaRealPercentual, 2)}% (${textoDentroLimite} ${formatarNumero(quedaPercentual, 2)}%)`;
     }
     
     const exemploDisjuntor = document.getElementById('memorial-exemplo-disjuntor');
@@ -1035,7 +1069,7 @@ function atualizarMemorialComValores() {
     if (resumoArea) resumoArea.textContent = `${formatarNumeroComSufixo(areaMin, 2)} mm²`;
     
     const resumoBitola = document.getElementById('resumo-bitola');
-    if (resumoBitola) resumoBitola.textContent = `${formatarNumeroComSufixo(bitola, 1)} mm²`;
+    if (resumoBitola) resumoBitola.textContent = `${formatarNumeroComSufixo(bitola, 2)} mm²`;
     
     const resumoQueda = document.getElementById('resumo-queda');
     if (resumoQueda) resumoQueda.textContent = `${formatarNumero(quedaRealPercentual, 2)}%`;
@@ -1127,7 +1161,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Atualiza o slider com o valor ajustado
         sliderPotencia.value = valor;
-        if (inputPotencia) inputPotencia.value = formatarNumeroComSufixo(valor, 1);
+        if (inputPotencia) {
+            if (valor >= 1000) {
+                inputPotencia.value = formatarNumeroComSufixo(valor, 1);
+            } else {
+                inputPotencia.value = formatarNumeroSemZerosDesnecessarios(valor, 1);
+            }
+        }
         if (typeof ajustarTamanhoInput === 'function' && inputPotencia) ajustarTamanhoInput(inputPotencia);
         atualizarResultados();
     }, 50)); // Reduzido de 100ms para 50ms para melhor responsividade
@@ -1135,7 +1175,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (sliderComprimento) {
     sliderComprimento.addEventListener('input', throttle(() => {
-        if (inputComprimento) inputComprimento.value = formatarNumero(parseFloat(sliderComprimento.value), 0);
+        if (inputComprimento) inputComprimento.value = formatarNumeroSemZerosDesnecessarios(parseFloat(sliderComprimento.value), 2);
         if (typeof ajustarTamanhoInput === 'function' && inputComprimento) ajustarTamanhoInput(inputComprimento);
         atualizarResultados();
     }, 100));
@@ -1147,7 +1187,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (sliderQuedaTensao) {
     sliderQuedaTensao.addEventListener('input', throttle(() => {
-        if (inputQuedaTensao) inputQuedaTensao.value = formatarNumero(parseFloat(sliderQuedaTensao.value), 1);
+        if (inputQuedaTensao) inputQuedaTensao.value = formatarNumero(parseFloat(sliderQuedaTensao.value), 2);
         if (typeof ajustarTamanhoInput === 'function' && inputQuedaTensao) ajustarTamanhoInput(inputQuedaTensao);
         atualizarResultados();
     }, 100));
@@ -1172,8 +1212,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 sliderPotencia.value = valor;
             }
             // Aplica a formatação com sufixos (k/M) quando >= 1000
-            // Números puros como 10000 serão formatados como 10k
-            inputPotencia.value = formatarNumeroComSufixo(valor, 1);
+            // Para valores < 1000, remove zeros desnecessários
+            if (valor >= 1000) {
+                inputPotencia.value = formatarNumeroComSufixo(valor, 1);
+            } else {
+                inputPotencia.value = formatarNumeroSemZerosDesnecessarios(valor, 1);
+            }
         } else if (inputPotencia.value.trim() === '') {
             // Se o campo estiver vazio, mantém vazio
             inputPotencia.value = '';
@@ -1228,6 +1272,27 @@ document.addEventListener('DOMContentLoaded', () => {
         atualizarResultados();
     });
     
+    // Formata quando o campo de comprimento perde o foco (blur)
+    inputComprimento.addEventListener('blur', () => {
+        const valor = obterValorNumericoFormatado(inputComprimento.value);
+        if (valor > 0) {
+            // Formata o valor removendo zeros desnecessários
+            inputComprimento.value = formatarNumeroSemZerosDesnecessarios(valor, 2);
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputComprimento);
+        }
+    });
+    
+    // Formata quando pressiona Enter ou Tab no campo de comprimento
+    inputComprimento.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === 'Tab') {
+            const valor = obterValorNumericoFormatado(inputComprimento.value);
+            if (valor > 0) {
+                inputComprimento.value = formatarNumeroSemZerosDesnecessarios(valor, 2);
+                if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputComprimento);
+            }
+        }
+    });
+    
     inputTensaoCC.addEventListener('focus', (e) => {
         e.target.select();
     });
@@ -1254,6 +1319,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             // Atualiza o slider visualmente, mas o cálculo usará o valor manual
             sliderTensaoCC.value = indiceMaisProximo;
+            // Formata o valor removendo zeros desnecessários
+            inputTensaoCC.value = formatarNumeroSemZerosDesnecessarios(valor, 2);
         } else if (valor > 96) {
             // Se exceder 96V, limita a 96V
             inputTensaoCC.value = '96';
@@ -1268,6 +1335,26 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Recalcula os resultados usando o valor digitado (ou o valor limitado)
         atualizarResultados();
+    });
+    
+    // Formata quando o campo de tensão perde o foco (blur)
+    inputTensaoCC.addEventListener('blur', () => {
+        const valor = obterValorNumericoFormatado(inputTensaoCC.value);
+        if (valor > 0 && valor <= 96) {
+            inputTensaoCC.value = formatarNumeroSemZerosDesnecessarios(valor, 2);
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputTensaoCC);
+        }
+    });
+    
+    // Formata quando pressiona Enter ou Tab no campo de tensão
+    inputTensaoCC.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === 'Tab') {
+            const valor = obterValorNumericoFormatado(inputTensaoCC.value);
+            if (valor > 0 && valor <= 96) {
+                inputTensaoCC.value = formatarNumeroSemZerosDesnecessarios(valor, 2);
+                if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputTensaoCC);
+            }
+        }
     });
     
     inputQuedaTensao.addEventListener('focus', (e) => {
@@ -1369,7 +1456,12 @@ document.addEventListener('DOMContentLoaded', () => {
     atualizarTensaoCC();
     
     // Inicializa a formatação da potência
-    inputPotencia.value = formatarNumeroComSufixo(parseFloat(sliderPotencia.value), 1);
+    const valorInicialPotencia = parseFloat(sliderPotencia.value);
+    if (valorInicialPotencia >= 1000) {
+        inputPotencia.value = formatarNumeroComSufixo(valorInicialPotencia, 1);
+    } else {
+        inputPotencia.value = formatarNumeroSemZerosDesnecessarios(valorInicialPotencia, 1);
+    }
     
     // Ajustar tamanho inicial de todos os inputs
     if (typeof ajustarTamanhoInput === 'function') {

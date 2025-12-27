@@ -126,9 +126,9 @@
                     </div>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderComprimento" data-step="-1" aria-label="Diminuir comprimento">−</button>
-                    <input type="range" id="sliderComprimento" min="1" max="50" step="1" value="20">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderComprimento" data-step="1" aria-label="Aumentar comprimento">+</button>
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderComprimento" data-step="-0.1" aria-label="Diminuir comprimento">−</button>
+                    <input type="range" id="sliderComprimento" min="0.5" max="50" step="0.1" value="20">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderComprimento" data-step="0.1" aria-label="Aumentar comprimento">+</button>
                 </div>
                 <p class="dica" data-i18n="dica-comprimento">💡 Distância entre a fonte e a carga<br>(o cálculo considera automaticamente ida e volta)</p>
             </div>
@@ -148,10 +148,10 @@
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderTensaoCC" data-step="-1" aria-label="Diminuir tensão">−</button>
-                    <input type="range" id="sliderTensaoCC" min="0" max="10" step="1" value="4">
+                    <input type="range" id="sliderTensaoCC" min="0" max="12" step="1" value="3">
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderTensaoCC" data-step="1" aria-label="Aumentar tensão">+</button>
                 </div>
-                <p class="dica" data-i18n="dica-tensao-cc">💡 Valores típicos: 3.3V, 5V, 9V, 12V, 24V, 36V, 48V, 60V, 72V, 96V</p>
+                <p class="dica" data-i18n="dica-tensao-cc">💡 Valores típicos: 3.3V, 5V, 9V, 12V, 15V, 20V, 24V, 36V, 48V, 60V, 72V, 96V</p>
             </div>
 
             <!-- Queda de Tensão -->
@@ -286,14 +286,14 @@
                 </button>
             </div>
             
-            <div class="resultado-item">
-                <span class="label-resultado" data-i18n="resultado-area-minima">Área de Seção Mínima:</span>
-                <span class="valor-resultado" id="areaMinima">-</span>
-            </div>
-
             <div class="resultado-item destaque">
                 <span class="label-resultado" data-i18n="resultado-bitola-comercial">Bitola Comercial Recomendada:</span>
                 <span class="valor-resultado-grande" id="bitolaComercial">-</span>
+            </div>
+
+            <div class="resultado-item destaque">
+                <span class="label-resultado" data-i18n="resultado-area-minima">Área de Seção Mínima:</span>
+                <span class="valor-resultado-grande" id="areaMinima">-</span>
             </div>
 
             <div class="resultado-item">
@@ -306,9 +306,9 @@
                 <span class="valor-resultado" id="quedaReal">-</span>
             </div>
 
-            <div class="resultado-item destaque">
+            <div class="resultado-item">
                 <span class="label-resultado" data-i18n="resultado-disjuntor">Disjuntor Comercial Recomendado:</span>
-                <span class="valor-resultado-grande" id="disjuntorComercial">-</span>
+                <span class="valor-resultado" id="disjuntorComercial">-</span>
             </div>
         </section>
     </div>

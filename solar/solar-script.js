@@ -1227,9 +1227,9 @@ function atualizarGraficoAmortizacao(dados) {
         // Verificar se estamos em um dos anos desejados e no início do ano (mês 0 ou próximo)
         if (anosParaMostrar.includes(ano) && mesNoAno < intervaloMeses) {
             if (ano === 0) {
-                labels.push('0');
+            labels.push('0');
             } else {
-                labels.push(`${ano}${idiomaAtual === 'pt-BR' ? 'a' : 'a'}`);
+            labels.push(`${ano}${idiomaAtual === 'pt-BR' ? 'a' : 'a'}`);
             }
         } else {
             labels.push(''); // Label vazio para pontos intermediários

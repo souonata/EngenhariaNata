@@ -201,15 +201,63 @@ function converterValorFormatadoParaNumero(valorFormatado) {
 /**
  * Converte valor formatado para número (versão simplificada)
  * Remove pontos (separadores de milhares) e substitui vírgula por ponto
+ * Detecta quando ponto é separador decimal (ex: 1.5 → 1.5) vs separador de milhares (ex: 1.500 → 1500)
  * @param {string} valorFormatado - Valor formatado como string
  * @returns {number} Valor numérico
  */
 function obterValorNumericoFormatado(valorFormatado) {
     if (!valorFormatado) return 0;
-    // Remove pontos (separadores de milhares)
-    let valor = valorFormatado.toString().replace(/\./g, '');
-    // Substitui vírgula (separador decimal) por ponto
-    valor = valor.replace(',', '.');
+    
+    let valor = valorFormatado.toString().trim();
+    
+    // Se tem vírgula, trata como separador decimal brasileiro
+    if (valor.indexOf(',') !== -1) {
+        // Remove pontos (separadores de milhares) e substitui vírgula por ponto
+        valor = valor.replace(/\./g, ''); // Remove pontos de milhares
+        valor = valor.replace(',', '.');   // Substitui vírgula por ponto
+        return parseFloat(valor) || 0;
+    }
+    
+    // Se tem apenas ponto(s), precisa determinar se é decimal ou milhares
+    if (valor.indexOf('.') !== -1) {
+        const partes = valor.split('.');
+        
+        // Se há mais de 2 partes, é formato com milhares (ex: 1.234.567)
+        if (partes.length > 2) {
+            // Remove todos os pontos (milhares)
+            valor = valor.replace(/\./g, '');
+            return parseFloat(valor) || 0;
+        }
+        
+        // Se há exatamente 2 partes
+        if (partes.length === 2) {
+            // Se a segunda parte tem 1-2 dígitos, é separador decimal (ex: 1.5, 12.34, 1.50)
+            if (partes[1].length <= 2 && partes[1].match(/^\d+$/)) {
+                // Mantém o ponto como separador decimal (já está no formato correto para parseFloat)
+                return parseFloat(valor) || 0;
+            }
+            // Se a segunda parte tem 3 dígitos, precisa analisar melhor
+            if (partes[1].length === 3) {
+                // Se a primeira parte tem 1-3 dígitos e o valor total é pequeno (< 100), 
+                // provavelmente é decimal (ex: 1.500 = 1.5, 12.500 = 12.5)
+                const valorTeste = parseFloat(valor);
+                if (partes[0].length <= 3 && valorTeste < 100) {
+                    // Trata como decimal
+                    return valorTeste || 0;
+                }
+                // Se a primeira parte tem mais de 3 dígitos ou valor >= 100, 
+                // provavelmente é milhares (ex: 1500.000 = 1500000)
+                // Remove o ponto (milhares)
+                valor = valor.replace(/\./g, '');
+                return parseFloat(valor) || 0;
+            }
+            // Se a segunda parte tem mais de 3 dígitos, remove o ponto (milhares)
+            valor = valor.replace(/\./g, '');
+            return parseFloat(valor) || 0;
+        }
+    }
+    
+    // Se não tem nem vírgula nem ponto, já está no formato correto
     return parseFloat(valor) || 0;
 }
 
@@ -491,13 +539,21 @@ function ajustarTamanhoInput(input, folgaCaracteres) {
     
     // Cria um elemento temporário para medir o texto
     const medida = document.createElement('span');
+    const inputStyle = window.getComputedStyle(input);
     medida.style.visibility = 'hidden';
     medida.style.position = 'absolute';
     medida.style.whiteSpace = 'pre';
-    medida.style.font = window.getComputedStyle(input).font;
-    medida.style.padding = window.getComputedStyle(input).padding;
-    medida.style.border = window.getComputedStyle(input).border;
-    medida.style.boxSizing = window.getComputedStyle(input).boxSizing;
+    // Copia propriedades individuais de fonte ao invés da propriedade 'font' completa
+    // Isso evita problemas com CSP e fontes externas
+    medida.style.fontFamily = inputStyle.fontFamily;
+    medida.style.fontSize = inputStyle.fontSize;
+    medida.style.fontWeight = inputStyle.fontWeight;
+    medida.style.fontStyle = inputStyle.fontStyle;
+    medida.style.fontVariant = inputStyle.fontVariant;
+    medida.style.letterSpacing = inputStyle.letterSpacing;
+    medida.style.padding = inputStyle.padding;
+    medida.style.border = inputStyle.border;
+    medida.style.boxSizing = inputStyle.boxSizing;
     
     // Adiciona o texto atual + caracteres de folga
     const textoAtual = input.value || input.placeholder || '';
