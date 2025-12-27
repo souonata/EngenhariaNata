@@ -37,7 +37,7 @@
 // Observações:
 // - A fórmula considera apenas a resistência ôhmica do condutor
 // - Para CA, assume-se fator de potência unitário (cos φ = 1) para simplificação
-// - A queda de tensão recomendada para projetos residenciais no Brasil é 3%
+// - A queda de tensão máxima permitida para projetos residenciais no Brasil é 4% (NBR 5410)
 // - Bitolas comerciais seguem a norma brasileira (NBR 5410)
 
 // ============================================
@@ -56,27 +56,33 @@ let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConf
  * CONSTANTE: RESISTIVIDADE DO COBRE
  * ============================================
  * 
- * Resistividade do cobre a 20°C: 0.0175 Ω·mm²/m
+ * Resistividade do cobre a 20°C: 0.0178 Ω·mm²/m (cobre duro)
  * 
- * Esta constante representa a resistência elétrica específica do cobre puro
+ * Esta constante representa a resistência elétrica específica do cobre duro
  * a uma temperatura de 20°C. É usada para calcular a resistência de condutores
  * elétricos baseado em sua área de seção transversal e comprimento.
  * 
  * Fórmula da resistência: R = ρ × L / S
  * Onde:
  *   R = resistência elétrica (Ω)
- *   ρ = resistividade (Ω·mm²/m) = 0.0175 para cobre a 20°C
+ *   ρ = resistividade (Ω·mm²/m) = 0.0178 para cobre duro a 20°C
  *   L = comprimento do condutor (m)
  *   S = área de seção transversal (mm²)
  * 
- * NOTA: A resistividade varia com a temperatura. Para cálculos mais precisos
- * em temperaturas diferentes, seria necessário aplicar um fator de correção.
- * Para aplicações práticas em instalações elétricas residenciais, 0.0175 é
- * um valor padrão amplamente aceito.
+ * NOTA: A resistividade varia com a temperatura e com a têmpera do cobre:
+ *   - Cobre recozido (mole): 0.017241 Ω·mm²/m (NBR NM 280)
+ *   - Cobre duro: 0.0178 Ω·mm²/m (NBR 5410)
  * 
- * FONTE: Valores baseados em normas técnicas (NBR 5410 no Brasil, CEI na Itália)
+ * Para aplicações práticas em instalações elétricas residenciais, utilizamos
+ * o valor de 0.0178 Ω·mm²/m conforme especificado na NBR 5410, que é o valor
+ * mais conservador e amplamente utilizado em projetos elétricos no Brasil.
+ * 
+ * REFERÊNCIAS:
+ * - NBR 5410:2004 - Instalações elétricas de baixa tensão
+ * - NBR NM 280:2003 - Condutores elétricos de cobre
+ * - CEI 64-8 - Norma italiana para instalações elétricas
  */
-const RESISTIVIDADE_COBRE = 0.0175; // Ω·mm²/m (cobre a 20°C)
+const RESISTIVIDADE_COBRE = 0.0178; // Ω·mm²/m (cobre duro a 20°C, conforme NBR 5410)
 
 // Bitolas comerciais padrão brasileiro (mm²)
 // Ordenadas do menor para o maior
@@ -90,6 +96,11 @@ const DISJUNTORES_COMERCIAIS = [6, 10, 13, 16, 20, 25, 32, 40, 50, 63, 80, 100, 
 
 // Fator de segurança para dimensionamento de bitola
 // Usado no Brasil e Itália: 1.25 (25% de margem de segurança)
+// 
+// NOTA: Embora a NBR 5410 não especifique diretamente uma margem de segurança
+// de 25%, é uma prática comum entre profissionais da área adotar margens adicionais
+// para compensar possíveis variações nas condições operacionais e garantir maior
+// segurança. Este fator também é aplicado no dimensionamento de disjuntores.
 const FATOR_SEGURANCA = 1.25;
 
 // Valores típicos de tensão para corrente contínua (V)
@@ -488,7 +499,7 @@ function calcularCorrente(potencia, tensao) {
  *   Tensão: 220 V
  *   Corrente: 10 A (calculada como 2200 / 220)
  *   Distância: 30 m
- *   Queda máxima: 3%
+ *   Queda máxima: 4% (conforme NBR 5410)
  *   
  *   ΔV = (3 / 100) × 220 = 6.6 V
  *   S = (2 × 0.0175 × 30 × 10) / 6.6
@@ -504,7 +515,7 @@ function calcularAreaMinima(comprimento, corrente, tensao, quedaPercentual) {
     // ============================================
     // PASSO 1: CONVERTER QUEDA PERCENTUAL PARA VOLTS
     // ============================================
-    // A queda de tensão é especificada em percentual (ex: 3%),
+    // A queda de tensão é especificada em percentual (ex: 4%),
     // mas a fórmula precisa do valor em volts.
     // Exemplo: 3% de 220V = 6.6V
     const quedaVolts = (quedaPercentual / 100) * tensao;
@@ -637,7 +648,7 @@ function selecionarDisjuntorComercial(corrente) {
  *   
  *   ΔV% = (4.2 / 220) × 100 = 1.91%
  *   
- *   Resultado: 1.91% (dentro do limite de 3% recomendado)
+ *   Resultado: 1.91% (dentro do limite de 4% estabelecido pela NBR 5410)
  * 
  * VALIDAÇÃO:
  * - Se tensão = 0 ou bitola = 0, retorna 0 para evitar divisão por zero
@@ -854,7 +865,7 @@ const traducoes = {
         'unit-volt': 'V',
         'dica-comprimento': '💡 Distância entre a fonte e a carga<br>(o cálculo considera automaticamente ida e volta)',
         'dica-tensao-cc': '💡 Valores típicos: 3.3V, 5V, 9V, 12V, 15V, 20V, 24V, 36V, 48V, 60V, 72V, 96V',
-        'dica-queda-tensao': '✅ Recomendado para projetos residenciais no Brasil: 3% (padrão mais utilizado)',
+        'dica-queda-tensao': '✅ Máximo permitido para projetos residenciais no Brasil: 4% (NBR 5410)',
         'resultados-title': '📊 Resultados',
         'resultado-area-minima': 'Área de Seção Mínima:',
         'resultado-bitola-comercial': 'Bitola Comercial Recomendada:',
@@ -874,9 +885,9 @@ const traducoes = {
         'memorial-passo1-explicacao': 'A corrente é calculada dividindo a potência pela tensão. Esta é a corrente que o circuito precisa transportar.',
         'memorial-example': 'Exemplo:',
         'memorial-passo2-title': '2️⃣ Passo 2: Calcular Área de Seção Mínima',
-        'memorial-passo2-explicacao': 'A área mínima é calculada usando a fórmula S = (2 × ρ × L × I) / ΔV, onde ρ é a resistividade do cobre (0.0175 Ω·mm²/m), L é a distância (multiplicada por 2 para ida e volta), I é a corrente e ΔV é a queda de tensão máxima permitida em volts (calculada como (queda% / 100) × V).',
+        'memorial-passo2-explicacao': 'A área mínima é calculada usando a fórmula S = (2 × ρ × L × I) / ΔV, onde ρ é a resistividade do cobre (0.0178 Ω·mm²/m para cobre duro conforme NBR 5410), L é a distância (multiplicada por 2 para ida e volta), I é a corrente e ΔV é a queda de tensão máxima permitida em volts (calculada como (queda% / 100) × V).',
         'memorial-constants': 'Constantes usadas:',
-        'memorial-resistividade': 'ρ (resistividade do cobre) = 0.0175 Ω·mm²/m a 20°C',
+        'memorial-resistividade': 'ρ (resistividade do cobre) = 0.0178 Ω·mm²/m a 20°C (cobre duro, conforme NBR 5410). Para cobre recozido (mole), o valor é 0.017241 Ω·mm²/m (NBR NM 280).',
         'memorial-fator-2': 'Fator 2 = considera ida e volta do circuito (dois condutores)',
         'memorial-passo3-title': '3️⃣ Passo 3: Selecionar Bitola Comercial',
         'memorial-passo3-explicacao': 'A área mínima calculada é multiplicada por um fator de segurança de 1.25 (25% de margem) e então selecionamos a bitola comercial padrão brasileiro (NBR 5410) que atende ao requisito.',
@@ -902,7 +913,7 @@ const traducoes = {
         'memorial-exemplo-corrente-texto': 'Corrente',
         'memorial-exemplo-disjuntor-comercial': 'Disjuntor comercial',
         'memorial-queda-recomendada': 'Queda de tensão recomendada:',
-        'memorial-queda-recomendada-texto': '3% — Padrão mais utilizado para projetos residenciais no Brasil, conforme normas técnicas.',
+        'memorial-queda-recomendada-texto': '4% — Limite máximo estabelecido pela NBR 5410 para circuitos terminais em regime permanente. Este é o padrão técnico brasileiro.',
         'memorial-lei-ohm-titulo': '⚛️ Lei Física Aplicada — Lei de Ohm:',
         'memorial-lei-ohm-texto': 'A Lei de Ohm relaciona tensão (V), corrente (I) e resistência (R): V = I × R. No cálculo de bitola, usamos esta lei para determinar a queda de tensão: quanto maior a corrente e a resistência do fio, maior a queda de tensão. A resistência do fio depende da resistividade do material (cobre), do comprimento e da área da seção transversal (bitola).'
     },
@@ -919,7 +930,7 @@ const traducoes = {
         'unit-volt': 'V',
         'dica-comprimento': '💡 Distanza tra la sorgente e il carico<br>(il calcolo considera automaticamente andata e ritorno)',
         'dica-tensao-cc': '💡 Valori tipici: 3.3V, 5V, 9V, 12V, 15V, 20V, 24V, 36V, 48V, 60V, 72V, 96V',
-        'dica-queda-tensao': '✅ Consigliato per progetti residenziali in Brasile: 3% (standard più utilizzato)',
+        'dica-queda-tensao': '✅ Massimo consentito per progetti residenziali in Brasile: 4% (NBR 5410)',
         'resultados-title': '📊 Risultati',
         'resultado-area-minima': 'Area di Sezione Minima:',
         'resultado-bitola-comercial': 'Sezione Commerciale Consigliata:',
@@ -939,9 +950,9 @@ const traducoes = {
         'memorial-passo1-explicacao': 'La corrente viene calcolata dividendo la potenza per la tensione. Questa è la corrente che il circuito deve trasportare.',
         'memorial-example': 'Esempio:',
         'memorial-passo2-title': '2️⃣ Passo 2: Calcolare Area di Sezione Minima',
-        'memorial-passo2-explicacao': 'L\'area minima viene calcolata utilizzando la formula S = (2 × ρ × L × I) / ΔV, dove ρ è la resistività del rame (0.0175 Ω·mm²/m), L è la distanza (moltiplicata per 2 per andata e ritorno), I è la corrente e ΔV è la caduta di tensione massima consentita in volt (calcolata come (caduta% / 100) × V).',
+        'memorial-passo2-explicacao': 'L\'area minima viene calcolata utilizzando la formula S = (2 × ρ × L × I) / ΔV, dove ρ è la resistività del rame (0.0178 Ω·mm²/m per rame duro secondo NBR 5410), L è la distanza (moltiplicata per 2 per andata e ritorno), I è la corrente e ΔV è la caduta di tensione massima consentita in volt (calcolata come (caduta% / 100) × V).',
         'memorial-constants': 'Costanti utilizzate:',
-        'memorial-resistividade': 'ρ (resistività del rame) = 0.0175 Ω·mm²/m a 20°C',
+        'memorial-resistividade': 'ρ (resistività del rame) = 0.0178 Ω·mm²/m a 20°C (rame duro, secondo NBR 5410). Per rame ricotto (morbido), il valore è 0.017241 Ω·mm²/m (NBR NM 280).',
         'memorial-fator-2': 'Fattore 2 = considera andata e ritorno del circuito (due conduttori)',
         'memorial-passo3-title': '3️⃣ Passo 3: Selezionare Sezione Commerciale',
         'memorial-passo3-explicacao': 'L\'area minima calcolata viene moltiplicata per un fattore di sicurezza di 1.25 (25% di margine) e quindi selezioniamo la sezione commerciale standard brasiliana (NBR 5410) che soddisfa il requisito.',
@@ -967,7 +978,7 @@ const traducoes = {
         'memorial-exemplo-corrente-texto': 'Corrente',
         'memorial-exemplo-disjuntor-comercial': 'Interruttore commerciale',
         'memorial-queda-recomendada': 'Caduta di tensione raccomandata:',
-        'memorial-queda-recomendada-texto': '3% — Standard più utilizzato per progetti residenziali in Brasile, secondo le norme tecniche.',
+        'memorial-queda-recomendada-texto': '4% — Limite massimo stabilito dalla NBR 5410 per circuiti terminali in regime permanente. Questo è lo standard tecnico brasiliano.',
         'memorial-lei-ohm-titulo': '⚛️ Legge Fisica Applicata — Legge di Ohm:',
         'memorial-lei-ohm-texto': 'La Legge di Ohm mette in relazione tensione (V), corrente (I) e resistenza (R): V = I × R. Nel calcolo della sezione, usiamo questa legge per determinare la caduta di tensione: maggiore è la corrente e la resistenza del filo, maggiore è la caduta di tensione. La resistenza del filo dipende dalla resistività del materiale (rame), dalla lunghezza e dall\'area della sezione trasversale (sezione).'
     }
@@ -1034,7 +1045,7 @@ function atualizarMemorialComValores() {
     const exemploArea = document.getElementById('memorial-exemplo-area');
     if (exemploArea) {
         const quedaVolts = (quedaPercentual / 100) * tensao;
-        exemploArea.textContent = `(2 × 0.0175 × ${formatarNumeroComSufixo(comprimento, 0)}m × ${formatarNumeroComSufixo(corrente, 2)}A) ÷ ${formatarNumeroComSufixo(quedaVolts, 2)}V = ${formatarNumeroComSufixo(areaMin, 2)} mm²`;
+        exemploArea.textContent = `(2 × 0.0178 × ${formatarNumeroComSufixo(comprimento, 0)}m × ${formatarNumeroComSufixo(corrente, 2)}A) ÷ ${formatarNumeroComSufixo(quedaVolts, 2)}V = ${formatarNumeroComSufixo(areaMin, 2)} mm²`;
     }
     
     const exemploBitola = document.getElementById('memorial-exemplo-bitola');
@@ -1187,7 +1198,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (sliderQuedaTensao) {
     sliderQuedaTensao.addEventListener('input', throttle(() => {
-        if (inputQuedaTensao) inputQuedaTensao.value = formatarNumero(parseFloat(sliderQuedaTensao.value), 2);
+        if (inputQuedaTensao) inputQuedaTensao.value = formatarNumeroSemZerosDesnecessarios(parseFloat(sliderQuedaTensao.value), 2);
         if (typeof ajustarTamanhoInput === 'function' && inputQuedaTensao) ajustarTamanhoInput(inputQuedaTensao);
         atualizarResultados();
     }, 100));
@@ -1373,6 +1384,27 @@ document.addEventListener('DOMContentLoaded', () => {
         atualizarResultados();
     });
     
+    // Formata quando o campo de queda de tensão perde o foco (blur)
+    inputQuedaTensao.addEventListener('blur', () => {
+        const valor = obterValorNumericoFormatado(inputQuedaTensao.value);
+        if (valor > 0) {
+            // Formata o valor removendo zeros desnecessários
+            inputQuedaTensao.value = formatarNumeroSemZerosDesnecessarios(valor, 2);
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputQuedaTensao);
+        }
+    });
+    
+    // Formata quando pressiona Enter ou Tab no campo de queda de tensão
+    inputQuedaTensao.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === 'Tab') {
+            const valor = obterValorNumericoFormatado(inputQuedaTensao.value);
+            if (valor > 0) {
+                inputQuedaTensao.value = formatarNumeroSemZerosDesnecessarios(valor, 2);
+                if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputQuedaTensao);
+            }
+        }
+    });
+    
     // Event listeners para botões de seta
     document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
         btn.addEventListener('mousedown', (e) => {
@@ -1461,6 +1493,14 @@ document.addEventListener('DOMContentLoaded', () => {
         inputPotencia.value = formatarNumeroComSufixo(valorInicialPotencia, 1);
     } else {
         inputPotencia.value = formatarNumeroSemZerosDesnecessarios(valorInicialPotencia, 1);
+    }
+    
+    // Formata o valor inicial do campo de queda de tensão removendo zeros desnecessários
+    if (inputQuedaTensao) {
+        const valorInicialQueda = obterValorNumericoFormatado(inputQuedaTensao.value);
+        if (valorInicialQueda > 0) {
+            inputQuedaTensao.value = formatarNumeroSemZerosDesnecessarios(valorInicialQueda, 2);
+        }
     }
     
     // Ajustar tamanho inicial de todos os inputs

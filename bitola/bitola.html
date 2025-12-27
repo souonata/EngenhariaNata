@@ -159,13 +159,13 @@
                 <div class="cabecalho-controle">
                     <label for="sliderQuedaTensao" data-i18n="label-queda-tensao">Queda de Tensão Máxima</label>
                     <div class="valor-com-unidades">
-                        <input type="text" id="inputQuedaTensao" class="valor-display valor-input" value="3">
+                        <input type="text" id="inputQuedaTensao" class="valor-display valor-input" value="4">
                         <span class="unidade">%</span>
                     </div>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderQuedaTensao" data-step="-0.5" aria-label="Diminuir queda de tensão">−</button>
-                    <input type="range" id="sliderQuedaTensao" min="1" max="10" step="0.5" value="3">
+                    <input type="range" id="sliderQuedaTensao" min="1" max="5" step="0.5" value="4">
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderQuedaTensao" data-step="0.5" aria-label="Aumentar queda de tensão">+</button>
                 </div>
                 <p class="dica-recomendacao" data-i18n="dica-queda-tensao">✅ <strong>Recomendado para projetos residenciais no Brasil: 3%</strong> (padrão mais utilizado)</p>
@@ -207,11 +207,11 @@
                     <p><strong>Área (mm²) = (2 × ρ × L × I) ÷ ΔV</strong></p>
                 </div>
                 <p data-i18n="memorial-passo2-explicacao">A área mínima é calculada considerando a resistividade do cobre, a distância (multiplicada por 2 para ida e volta), a corrente e a queda de tensão máxima permitida.</p>
-                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-area">(2 × 0.0175 × 20m × 4.55A) ÷ 8.8V = 0.36 mm²</span></p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-area">(2 × 0.0178 × 20m × 4.55A) ÷ 8.8V = 0.37 mm²</span></p>
                 <div class="info-box">
                     <p><strong data-i18n="memorial-constants">Valores de referência usados:</strong></p>
                     <ul>
-                        <li data-i18n="memorial-resistividade">ρ (resistividade do cobre) = 0.0175 Ω·mm²/m a 20°C — Constante física que representa a resistência elétrica específica do cobre puro. Este valor é uma propriedade do material e varia ligeiramente com a temperatura.</li>
+                        <li data-i18n="memorial-resistividade">ρ (resistividade do cobre) = 0.0178 Ω·mm²/m a 20°C — Valor para cobre duro conforme NBR 5410. Para cobre recozido (mole), o valor é 0.017241 Ω·mm²/m (NBR NM 280). Este valor representa a resistência elétrica específica do material e varia com a temperatura e têmpera do cobre.</li>
                         <li data-i18n="memorial-fator-2">Fator 2 = considera ida e volta do circuito (dois condutores) — O circuito elétrico precisa de dois fios: um para levar a corrente até a carga e outro para retornar. Por isso, a distância total percorrida pela corrente é 2 × distância entre fonte e carga.</li>
                         <li><strong data-i18n="memorial-queda-recomendada">Queda de tensão recomendada:</strong> <span data-i18n="memorial-queda-recomendada-texto">4% — Padrão mais utilizado para projetos residenciais no Brasil, conforme normas técnicas.</span></li>
                     </ul>
@@ -237,7 +237,7 @@
                     <p><strong data-i18n="memorial-formula-queda">Queda Real (%) = ((2 × ρ × L × I) ÷ S) ÷ Tensão × 100</strong></p>
                 </div>
                 <p data-i18n="memorial-passo4-explicacao">Recalculamos a queda de tensão com a bitola comercial escolhida para verificar se está dentro do limite permitido.</p>
-                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-queda">Com bitola 1.5 mm² → queda real = 1.06% (dentro do limite de 3%)</span></p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-queda">Com bitola 1.5 mm² → queda real = 1.06% (dentro do limite de 4%)</span></p>
             </div>
 
             <div class="memorial-item">
@@ -267,6 +267,34 @@
                 <div class="resumo-item-calc">
                     <span data-i18n="memorial-resumo-disjuntor">Disjuntor:</span>
                     <span id="resumo-disjuntor">-</span>
+                </div>
+            </div>
+
+            <div class="memorial-item">
+                <h3>📚 Referências Bibliográficas e Fontes Técnicas</h3>
+                <div class="info-box">
+                    <p><strong>Normas Técnicas:</strong></p>
+                    <ul>
+                        <li><strong>NBR 5410:2004</strong> - Instalações elétricas de baixa tensão. Associação Brasileira de Normas Técnicas (ABNT). Estabelece o limite máximo de 4% para queda de tensão em circuitos terminais e especifica a resistividade do cobre duro como 0.0178 Ω·mm²/m a 20°C.</li>
+                        <li><strong>NBR NM 280:2003</strong> - Condutores elétricos de cobre. Especifica a resistividade do cobre recozido (mole) como 0.017241 Ω·mm²/m a 20°C.</li>
+                        <li><strong>CEI 64-8</strong> - Norma italiana para instalações elétricas de baixa tensão. Estabelece limite máximo de 4% para queda de tensão e fornece fórmulas para cálculo considerando fator de potência.</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>Guias e Padrões Internacionais:</strong></p>
+                    <ul>
+                        <li><strong>IEEE Std 525-2007</strong> - IEEE Guide for the Design and Installation of Cable Systems in Substations. Fornece diretrizes para cálculo de queda de tensão em condutores elétricos, incluindo fórmulas exatas e aproximadas para diferentes condições de carga.</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>Fórmulas e Fundamentos Físicos:</strong></p>
+                    <ul>
+                        <li><strong>Lei de Ohm:</strong> V = I × R, onde V é a tensão, I é a corrente e R é a resistência.</li>
+                        <li><strong>Resistência de condutores:</strong> R = ρ × L / S, onde ρ é a resistividade, L é o comprimento e S é a área da seção transversal.</li>
+                        <li><strong>Queda de tensão em circuitos monofásicos:</strong> ΔV = K × ρ × (L × I) / S, onde K = 2 para circuitos monofásicos (F+N).</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>Fontes de Consulta:</strong></p>
+                    <ul>
+                        <li>Qualyflex Fios - Dados Técnicos: <a href="https://qualyflexfios.com.br/dados-tecnicos/" target="_blank" rel="noopener">qualyflexfios.com.br</a></li>
+                        <li>Construfios - Tabelas Técnicas: <a href="https://www.construfios.com.br/area-tecnica/tabelastecnicas.pdf" target="_blank" rel="noopener">construfios.com.br</a></li>
+                        <li>IEEE Standards Association: <a href="https://ewh.ieee.org/cmte/substations/scd0/wgd2/IEEE%20525%20-%20standard/IEEE%20525-2007_accepted.pdf" target="_blank" rel="noopener">IEEE Std 525-2007</a></li>
+                    </ul>
                 </div>
             </div>
 
