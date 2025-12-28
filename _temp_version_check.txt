@@ -1,0 +1,17 @@
+=== VERIFICAÇÃO DE VERSÕES ===
+Data: 2025-01-15
+==========================================
+
+ESTADO INICIAL (config/versions.json):
+- index: html=1.0.0, css=1.2.3, js=1.3.7
+- solar: html=0.1.0, css=0.2.0, js=0.20.0 (DEV)
+- solar-config: html=1.0.0, css=1.1.3, js=1.0.9
+- bitola: html=1.0.0, css=1.0.0, js=1.2.0
+- helice: html=1.0.0, css=1.5.8, js=1.6.0
+- mutuo: html=1.0.0, css=1.2.7, js=1.2.0
+- arcondicionado: html=0.1.0, css=0.1.0, js=0.2.0 (DEV)
+- aquecimento: html=0.1.0, css=0.1.0, js=0.2.0 (DEV)
+- fazenda: html=0.1.0, css=0.1.0, js=0.1.0, database=0.1.0 (DEV)
+- bugs: html=1.0.0, css=1.0.0, js=1.0.0
+- sobre: html=1.0.0, css=1.5.8, js=1.3.4
+

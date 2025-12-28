@@ -140,6 +140,7 @@ O app Energia Solar inclui um **Memorial de Cálculo** completo (botão "SAIBA M
 - **`.cursorrules`** — Regras rápidas para assistentes de IA (Cursor AI lê automaticamente)
 - **`.ai-instructions.md`** — Referência rápida para assistentes de IA
 - **`MELHORIAS_INFRAESTRUTURA.md`** — Documento de melhorias de infraestrutura baseado em análise e pesquisa acadêmica
+- **`PLANO_ATUALIZACAO_COMPLETA.md`** — Plano detalhado de 50 passos para atualização completa do site, execução de todos os scripts e preparação para commit
 - **`config/versions.json`** — Arquivo centralizado de versionamento de todos os apps e assets
 - **`templates/`** — Templates padronizados para novos apps (.htaccess, CSP meta tags)
 - **`sitemap.xml`** — Mapa do site para indexação em mecanismos de busca
@@ -301,6 +302,52 @@ powershell -ExecutionPolicy Bypass -File scripts\validate-translations.ps1
 - Após adicionar novos textos traduzíveis
 - Antes de fazer commit para garantir traduções completas
 
+#### Sincronização de Versões (`scripts/sync-versions.ps1`)
+
+Script PowerShell para sincronizar versões entre `config/versions.json` e os arquivos HTML.
+
+**Uso:**
+```powershell
+# Ler versões dos HTMLs e atualizar versions.json (recomendado)
+powershell -ExecutionPolicy Bypass -File scripts\sync-versions.ps1 -Mode ReadHTML
+
+# Ler versions.json e atualizar HTMLs
+powershell -ExecutionPolicy Bypass -File scripts\sync-versions.ps1 -Mode ReadJSON
+
+# Ambos (sincronização bidirecional)
+powershell -ExecutionPolicy Bypass -File scripts\sync-versions.ps1 -Mode Both
+```
+
+**O que o script faz:**
+- Extrai versões (`?v=X.Y.Z`) de todos os arquivos HTML
+- Atualiza `config/versions.json` com as versões encontradas
+- Ou atualiza os HTMLs com versões do `config/versions.json`
+- Mantém sincronização entre fonte de verdade e arquivos
+
+**Quando usar:**
+- Após modificar versões manualmente nos HTMLs
+- Para garantir que `config/versions.json` está atualizado
+- Antes de fazer commit para manter versões sincronizadas
+
+#### Validação de Dependências (`scripts/validate-dependencies.ps1`)
+
+Script PowerShell para validar se todas as dependências (CSS/JS) referenciadas nos HTMLs existem.
+
+**Uso:**
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\validate-dependencies.ps1
+```
+
+**O que o script verifica:**
+- Se todos os arquivos CSS/JS referenciados nos HTMLs existem
+- Resolve caminhos relativos corretamente
+- Identifica dependências quebradas ou faltando
+
+**Quando usar:**
+- Antes de fazer commit para evitar erros 404
+- Após mover ou renomear arquivos
+- Para garantir integridade do projeto
+
 #### Análise de Bundle Size (`scripts/analyze-bundle-size.ps1`)
 
 Script PowerShell para analisar o tamanho dos arquivos JS, CSS e HTML do projeto.
@@ -345,6 +392,19 @@ powershell -ExecutionPolicy Bypass -File scripts\optimize-svgs.ps1
 4. Use as funções globais de formatação e configuração
 5. Adicione o app ao `index.html` e `sobre/sobre.html`
 6. Execute `scripts/count-lines.ps1` para atualizar as estatísticas
+7. Execute `scripts/sync-versions.ps1 -Mode ReadHTML` para atualizar `config/versions.json`
+
+### Processo de Deploy
+
+Consulte [DEPLOY.md](DEPLOY.md) para o processo completo de deploy, incluindo:
+- Checklist de verificações pré-deploy
+- Sincronização de versões
+- Atualização de Service Worker
+- Troubleshooting comum
+
+### Atualização Completa do Site
+
+Para executar uma atualização completa do site (executar todos os scripts, validar traduções e dependências, sincronizar versões, atualizar conteúdo), consulte [PLANO_ATUALIZACAO_COMPLETA.md](PLANO_ATUALIZACAO_COMPLETA.md). Este plano detalhado de 50 passos garante que todas as atualizações sejam feitas de forma segura e sistemática, mesmo quebrando em muitos passos pequenos e gerenciáveis.
 
 ---
 

@@ -510,6 +510,7 @@ const traducoes = {
         'grafico-sazonalidade-title': 'Sazonalidade de Geração Solar'
     },
     'it-IT': {
+        'dev-badge-header': '🚧 IN SVILUPPO',
         'app-title': '🔋 Energia Solare',
         'app-subtitle': 'Dimensionamento Impianto Fotovoltaico',
         'label-consumo': 'Consumo Medio Mensile',

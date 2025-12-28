@@ -320,6 +320,26 @@ body {
 }
 
 /* ============================================
+   VERSION TEXT - Texto de versão nos ícones SVG
+   ============================================ */
+.icon svg .version-text {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 8px;
+    font-weight: 500;
+    fill: rgba(255, 255, 255, 0.85);
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Em telas maiores, ajusta o tamanho da fonte da versão */
+@media (min-width: 768px) {
+    .icon svg .version-text {
+        font-size: 9px;
+    }
+}
+
+/* ============================================
    APP NAME - Nome do aplicativo
    ============================================ */
 .app-name {

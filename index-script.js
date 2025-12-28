@@ -621,6 +621,9 @@ function inicializar() {
             // Silenciosamente ignora erros para não poluir o console
         });
     }, 1000);
+    
+    // Adiciona versões nos ícones após o DOM estar pronto
+    adicionarVersoesNosIcones();
 }
 
 // Tenta inicializar quando o DOM estiver pronto
@@ -630,6 +633,80 @@ if (document.readyState === 'loading') {
 } else {
     // DOM já está pronto
     inicializar();
+}
+
+// ============================================
+// SISTEMA DE VERSÕES NOS ÍCONES
+// ============================================
+// Mapeamento de apps para versões (baseado em config/versions.json)
+// Apps em DEV usam formato 0.X.X, apps lançados usam 1.X.X
+const versoesApps = {
+    'sobre': '1.0.0',
+    'bitola': '1.2.0',
+    'helice': '1.6.0',
+    'mutuo': '1.2.0',
+    'bugs': '1.0.0',
+    'arcondicionado': '0.2.0',      // DEV
+    'aquecimento': '0.2.0',          // DEV
+    'solar': '0.20.0',               // DEV
+    'fazenda': '0.1.0'               // DEV
+};
+
+/**
+ * Adiciona texto de versão no rodapé de cada ícone SVG
+ */
+function adicionarVersoesNosIcones() {
+    // Mapeamento de href para chave de app
+    const hrefParaApp = {
+        'sobre/sobre.html': 'sobre',
+        'bitola/bitola.html': 'bitola',
+        'helice/helice.html': 'helice',
+        'mutuo/mutuo.html': 'mutuo',
+        'bugs/bugs.html': 'bugs',
+        'arcondicionado/arcondicionado.html': 'arcondicionado',
+        'aquecimento/aquecimento.html': 'aquecimento',
+        'solar/solar.html': 'solar',
+        'fazenda/fazenda.html': 'fazenda'
+    };
+    
+    // Busca todos os ícones de apps (que são links <a>)
+    const appIcons = document.querySelectorAll('.app-icon');
+    
+    appIcons.forEach(function(appIcon) {
+        // O próprio appIcon é o link <a>
+        const href = appIcon.getAttribute('href');
+        
+        if (!href) return;
+        
+        // Identifica qual app é baseado no href
+        const appKey = hrefParaApp[href];
+        if (!appKey || !versoesApps[appKey]) return;
+        
+        // Busca o SVG dentro do ícone (dentro de .icon > svg)
+        const iconDiv = appIcon.querySelector('.icon');
+        if (!iconDiv) return;
+        
+        const svg = iconDiv.querySelector('svg');
+        if (!svg) return;
+        
+        // Verifica se já tem texto de versão (evita duplicação)
+        if (svg.querySelector('.version-text')) return;
+        
+        // Cria elemento de texto SVG para a versão
+        const versionText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        versionText.setAttribute('class', 'version-text');
+        versionText.setAttribute('x', '30'); // Centro horizontal (viewBox 0 0 60 60)
+        versionText.setAttribute('y', '56'); // Próximo ao rodapé (60 - 4px de margem)
+        versionText.setAttribute('text-anchor', 'middle');
+        versionText.setAttribute('font-size', '8');
+        versionText.setAttribute('font-weight', '500');
+        versionText.setAttribute('fill', 'rgba(255, 255, 255, 0.85)');
+        versionText.setAttribute('style', 'filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6));');
+        versionText.textContent = `V. ${versoesApps[appKey]}`;
+        
+        // Adiciona o texto ao SVG
+        svg.appendChild(versionText);
+    });
 }
 
 // ============================================
