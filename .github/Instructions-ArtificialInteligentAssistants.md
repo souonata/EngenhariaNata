@@ -1,5 +1,5 @@
 # Instruções para Assistente de IA - Engenharia NATA
-
+copilot-instructions
 Este documento fornece instruções completas para **qualquer assistente de IA** (GitHub Copilot, Cursor AI, ChatGPT, Claude, etc.) sobre o projeto **Engenharia NATA**, incluindo padrões de código, estrutura do projeto, convenções e boas práticas.
 
 **IMPORTANTE**: Este arquivo deve ser lido e seguido em TODAS as interações com este projeto. Sempre consulte este documento antes de fazer alterações no código.

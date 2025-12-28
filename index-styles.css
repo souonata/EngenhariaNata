@@ -155,6 +155,47 @@ body {
 }
 
 /* ============================================
+   SÍMBOLO DE SINCRONIZAÇÃO - Indicador de atualização
+   ============================================ */
+.sync-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff8c00;
+    margin-left: 8px;
+    opacity: 0.3;
+    animation: syncFade 1.5s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+.sync-indicator svg {
+    width: 16px;
+    height: 16px;
+    filter: drop-shadow(0 0 3px rgba(255, 140, 0, 0.8));
+    animation: syncRotate 2s linear infinite;
+}
+
+/* Animação de fade in/out para o símbolo de sincronização */
+@keyframes syncFade {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Rotação contínua do símbolo de sincronização */
+@keyframes syncRotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ============================================
    TELA INICIAL - Área principal com os apps
    ============================================ */
 .home-screen {
