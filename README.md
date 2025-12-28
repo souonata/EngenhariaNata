@@ -21,6 +21,7 @@ Uma coleção de aplicativos web educativos para estudar conceitos práticos de 
 - **Mobile-First** — Design responsivo que funciona perfeitamente em celular, tablet e desktop
 - **Educacional** — Focado em ensinar conceitos práticos através de código bem documentado
 - **Configuração Global Centralizada** — Funções e configurações compartilhadas em `assets/js/site-config.js`
+- **Ícones de Informação Padronizados** — Sistema padronizado de ícones de informação (ℹ️) com descrições toggle em todos os controles de entrada, explicando o significado de cada parâmetro
 
 ## 🌐 Site Online
 
@@ -102,6 +103,7 @@ O arquivo `site-config.js` centraliza todas as configurações e funções utili
 - `obterIdiomaAtual()` — Obtém idioma atual do localStorage
 - `obterMoedaPorIdioma(idioma)` — Obtém código da moeda (BRL/EUR) por idioma
 - `obterSimboloMoeda(idioma)` — Obtém símbolo da moeda (R$/€) por idioma
+- `inicializarIconeInfo(iconId, descricaoId, opcoes)` — Inicializa ícone de informação com descrição toggle (padrão para todos os apps)
 
 ### Exemplo de Uso
 

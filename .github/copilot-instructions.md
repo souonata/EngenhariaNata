@@ -231,7 +231,49 @@ O memorial deve explicar:
 - ✅ **Exemplos práticos** — Cálculos passo a passo com valores atuais
 - ✅ **Resumo dos resultados** — Valores calculados organizados
 
-### 5. Sliders e Inputs
+### 5. Ícones de Informação Padronizados
+
+**SEMPRE** adicione ícones de informação (ℹ️) em controles de entrada importantes:
+
+```html
+<!-- Estrutura HTML padrão -->
+<div class="grupo-entrada">
+    <div class="cabecalho-controle">
+        <label for="sliderExemplo" data-i18n="label-exemplo">Exemplo</label>
+        <span class="info-icon" id="infoIconExemplo" role="button" tabindex="0" aria-label="Informação sobre exemplo" title="Clique para mais informações">
+            <span class="info-icon-symbol">ℹ️</span>
+        </span>
+        <input type="text" id="inputExemplo" class="valor-display valor-input" value="100">
+    </div>
+    <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+    <div class="descricao-info" id="descricaoExemplo" style="display: none;">
+        <span data-i18n="tooltip-exemplo-texto">Descrição detalhada do que este controle faz e como é usado nos cálculos.</span>
+    </div>
+    <div class="slider-com-botoes">
+        <!-- slider aqui -->
+    </div>
+</div>
+```
+
+```javascript
+// Inicialização no DOMContentLoaded
+if (typeof inicializarIconeInfo === 'function') {
+    inicializarIconeInfo('infoIconExemplo', 'descricaoExemplo');
+}
+```
+
+```javascript
+// Traduções (adicionar em pt-BR e it-IT)
+'tooltip-exemplo-texto': 'Descrição detalhada do que este controle faz e como é usado nos cálculos.',
+```
+
+**Padrão Visual:**
+- Ícone aparece ao lado do label, antes do input
+- Descrição aparece abaixo do label, acima do slider
+- Descrição é discreta (fonte menor, cor suave)
+- Espaçamento adequado para evitar toques indesejados
+
+### 6. Sliders e Inputs
 
 **SEMPRE** sincronize sliders com inputs e vice-versa:
 
@@ -259,7 +301,7 @@ input.addEventListener('input', (e) => {
 configurarBotoesSliderComAceleracao(document.querySelector('.slider-container'));
 ```
 
-### 6. Performance
+### 7. Performance
 
 **SEMPRE** use throttling/debouncing para eventos frequentes:
 
@@ -285,7 +327,7 @@ input.addEventListener('input', (e) => {
 });
 ```
 
-### 7. Cache-Busting
+### 8. Cache-Busting
 
 **SEMPRE** use versões nos links CSS/JS:
 
@@ -365,6 +407,7 @@ input.addEventListener('input', (e) => {
 - [ ] Incluir `site-config.js` no HTML
 - [ ] Implementar internacionalização (PT/IT)
 - [ ] Criar memorial de cálculo completo
+- [ ] Adicionar ícones de informação padronizados em controles importantes
 - [ ] Sincronizar sliders com inputs
 - [ ] Usar funções de formatação de `site-config.js`
 - [ ] Adicionar throttling/debouncing

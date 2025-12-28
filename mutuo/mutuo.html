@@ -358,7 +358,14 @@
                             <div class="grupo-entrada">
                                 <div class="cabecalho-controle">
                                     <label for="inputValor" data-i18n="loan-amount">Valor Emprestado</label>
+                                    <span class="info-icon" id="infoIconValor" role="button" tabindex="0" aria-label="Informação sobre valor emprestado" title="Clique para mais informações">
+                                        <span class="info-icon-symbol">ℹ️</span>
+                                    </span>
                                     <input type="text" id="inputValor" class="valor-display valor-input" value="100.000" tabindex="1">
+                                </div>
+                                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                                <div class="descricao-info" id="descricaoValor" style="display: none;">
+                                    <span data-i18n="tooltip-valor-texto">O valor emprestado é o montante total que você está solicitando ao banco ou instituição financeira. Este valor será usado para calcular as parcelas, juros e amortização. Valores maiores resultam em parcelas maiores e mais juros totais.</span>
                                 </div>
                                 <div class="slider-com-botoes">
                                     <button type="button" class="arrow-btn arrow-down" data-target="sliderValor" data-step="-10000" aria-label="Diminuir valor em 10.000">−</button>
@@ -370,7 +377,14 @@
                             <div class="grupo-entrada">
                                 <div class="cabecalho-controle">
                                     <label for="inputPrazo" data-i18n="loan-term">Prazo (anos)</label>
+                                    <span class="info-icon" id="infoIconPrazo" role="button" tabindex="0" aria-label="Informação sobre prazo" title="Clique para mais informações">
+                                        <span class="info-icon-symbol">ℹ️</span>
+                                    </span>
                                     <input type="text" id="inputPrazo" class="valor-display valor-input" value="10" tabindex="2">
+                                </div>
+                                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                                <div class="descricao-info" id="descricaoPrazo" style="display: none;">
+                                    <span data-i18n="tooltip-prazo-texto">O prazo é o tempo total em anos para quitar o empréstimo. Este valor é convertido automaticamente para meses (anos × 12) para os cálculos. Prazos maiores resultam em parcelas menores, mas mais juros totais ao longo do tempo.</span>
                                 </div>
                                 <div class="slider-com-botoes">
                                     <button type="button" class="arrow-btn arrow-down" data-target="sliderPrazo" data-step="-1" aria-label="Diminuir prazo em 1 ano">−</button>
@@ -387,6 +401,9 @@
                                 <label for="sliderTaxa">
                                     <span data-i18n="interest-rate">Taxa de Juros</span>
                                 </label>
+                                <span class="info-icon" id="infoIconTaxa" role="button" tabindex="0" aria-label="Informação sobre taxa de juros" title="Clique para mais informações">
+                                    <span class="info-icon-symbol">ℹ️</span>
+                                </span>
                                 <div class="valor-com-unidades">
                                     <input type="text" id="inputTaxa" class="valor-display valor-input" value="10,0" tabindex="3">
                                     <div class="grupo-radio-compacto">
@@ -410,6 +427,10 @@
                                         </label>
                                     </div>
                                 </div>
+                            </div>
+                            <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                            <div class="descricao-info" id="descricaoTaxa" style="display: none;">
+                                <span data-i18n="tooltip-taxa-texto">A taxa de juros é o percentual cobrado sobre o valor emprestado. Você pode informar a taxa em diferentes períodos (ano, mês ou dia). O sistema converte automaticamente para taxa mensal usando juros compostos. Taxas maiores resultam em parcelas maiores e mais juros totais.</span>
                             </div>
                             <div class="slider-com-botoes">
                                 <button type="button" class="arrow-btn arrow-down" data-target="sliderTaxa" data-step="-0.1" aria-label="Diminuir taxa em 0.1%">−</button>
@@ -518,6 +539,6 @@
     
     <script src="../assets/js/site-config.js?v=1.1.0"></script>
     <!-- JavaScript da calculadora -->
-    <script src="mutuo-script.js?v=1.1.4"></script>
+    <script src="mutuo-script.js?v=1.2.0"></script>
 </body>
 </html>

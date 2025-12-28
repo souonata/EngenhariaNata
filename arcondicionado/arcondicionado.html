@@ -88,27 +88,40 @@
             <div class="grupo-entrada" id="grupoAreaTotal">
                 <div class="cabecalho-controle">
                     <label for="sliderAreaTotal" data-i18n="label-area-total">Soma das Áreas dos Ambientes</label>
+                    <span class="info-icon" id="infoIconAreaTotal" role="button" tabindex="0" aria-label="Informação sobre soma das áreas" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputAreaTotal" class="valor-display valor-input" value="20">
                         <span class="unidade" data-i18n="unit-m2">m²</span>
                     </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoAreaTotal" style="display: none;">
+                    <span data-i18n="tooltip-area-total-texto">A soma das áreas é a área total de todos os ambientes que terão ar condicionado em um sistema multi-split. O cálculo divide o BTU total necessário pelo número de ambientes para dimensionar cada unidade interna proporcionalmente.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderAreaTotal" data-step="-5" aria-label="Diminuir área total">−</button>
                     <input type="range" id="sliderAreaTotal" min="10" max="300" step="5" value="20">
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderAreaTotal" data-step="5" aria-label="Aumentar área total">+</button>
                 </div>
-                <p class="dica" data-i18n="dica-area-total">💡 Soma da área de todos os ambientes que terão ar condicionado</p>
             </div>
 
             <!-- Área do Ambiente (oculto quando multi-split está ativo) -->
             <div class="grupo-entrada" id="grupoAreaIndividual">
                 <div class="cabecalho-controle">
                     <label for="sliderArea" data-i18n="label-area">Área do Ambiente</label>
+                    <span class="info-icon" id="infoIconArea" role="button" tabindex="0" aria-label="Informação sobre área do ambiente" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputArea" class="valor-display valor-input" value="20">
                         <span class="unidade" data-i18n="unit-m2">m²</span>
                     </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoArea" style="display: none;">
+                    <span data-i18n="tooltip-area-texto">A área do ambiente é medida em metros quadrados (m²) e representa o tamanho do espaço que será climatizado. O cálculo de BTU considera aproximadamente 700 BTU por m² como base, ajustado pela altura do pé direito, número de pessoas, equipamentos e condições ambientais.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderArea" data-step="-1" aria-label="Diminuir área">−</button>
@@ -121,27 +134,40 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderAltura" data-i18n="label-altura">Altura do Pé Direito</label>
+                    <span class="info-icon" id="infoIconAltura" role="button" tabindex="0" aria-label="Informação sobre altura do pé direito" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputAltura" class="valor-display valor-input" value="2,7">
                         <span class="unidade" data-i18n="unit-meter">m</span>
                     </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoAltura" style="display: none;">
+                    <span data-i18n="tooltip-altura-texto">A altura do pé direito é a distância do piso ao teto, medida em metros. Ambientes mais altos têm maior volume de ar para climatizar, aumentando a necessidade de BTU. O cálculo ajusta o BTU por m² proporcionalmente à altura, usando 2,7m como referência padrão residencial.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderAltura" data-step="-0.1" aria-label="Diminuir altura">−</button>
                     <input type="range" id="sliderAltura" min="2.0" max="4.0" step="0.1" value="2.7">
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderAltura" data-step="0.1" aria-label="Aumentar altura">+</button>
                 </div>
-                <p class="dica" data-i18n="dica-altura">💡 Altura padrão residencial: 2,7m</p>
             </div>
 
             <!-- Número de Pessoas -->
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderPessoas" data-i18n="label-pessoas">Número de Pessoas</label>
+                    <span class="info-icon" id="infoIconPessoas" role="button" tabindex="0" aria-label="Informação sobre número de pessoas" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputPessoas" class="valor-display valor-input" value="2">
                         <span class="unidade" data-i18n="unit-people">pessoas</span>
                     </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoPessoas" style="display: none;">
+                    <span data-i18n="tooltip-pessoas-texto">O número de pessoas no ambiente gera calor corporal que precisa ser removido pelo ar condicionado. Cada pessoa adiciona aproximadamente 600 BTU à carga térmica. No Brasil, apenas pessoas além das primeiras 2 são consideradas; na Itália, todas as pessoas são contabilizadas.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderPessoas" data-step="-1" aria-label="Diminuir pessoas">−</button>
@@ -154,17 +180,23 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderEquipamentos" data-i18n="label-equipamentos">Equipamentos Elétricos</label>
+                    <span class="info-icon" id="infoIconEquipamentos" role="button" tabindex="0" aria-label="Informação sobre equipamentos elétricos" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputEquipamentos" class="valor-display valor-input" value="2">
                         <span class="unidade" data-i18n="unit-devices">unidades</span>
                     </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoEquipamentos" style="display: none;">
+                    <span data-i18n="tooltip-equipamentos-texto">Equipamentos elétricos geram calor durante o funcionamento, aumentando a carga térmica do ambiente. Cada equipamento (TV, computador, geladeira, etc.) adiciona aproximadamente 600 BTU ao cálculo. Conte cada aparelho como 1 unidade.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderEquipamentos" data-step="-1" aria-label="Diminuir equipamentos">−</button>
                     <input type="range" id="sliderEquipamentos" min="0" max="10" step="1" value="2">
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderEquipamentos" data-step="1" aria-label="Aumentar equipamentos">+</button>
                 </div>
-                <p class="dica" data-i18n="dica-equipamentos">💡 TV, computador, geladeira, etc. (cada um conta como 1 unidade)</p>
             </div>
 
             <!-- Insolação -->

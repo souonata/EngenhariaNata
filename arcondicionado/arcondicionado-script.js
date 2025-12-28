@@ -450,7 +450,12 @@ const traducoes = {
         'memorial-fonte-brasil': 'Brasil (Clima Tropical/Quente): Valores baseados em práticas da indústria brasileira de refrigeração, considerando temperaturas médias elevadas e alta umidade. BTU/m²: 700 (valor fixo devido ao clima quente). BTU/pessoa adicional: 600 (apenas pessoas além das primeiras 2, pois as primeiras 1-2 já estão incluídas no cálculo base por m²). BTU/equipamento: 600.',
         'memorial-fonte-italia': 'Itália (Clima Temperado): Valores baseados em guias técnicos italianos e normas europeias, considerando clima temperado com estações bem definidas. BTU/m²: varia conforme isolamento (300 bom, 340 médio, 400 ruim). BTU/pessoa: 200. BTU/equipamento: 300.',
         'memorial-fontes-lista-title': 'Fontes consultadas:',
-        'memorial-fontes-nota': 'Nota: Os valores foram ajustados para refletir as diferenças climáticas naturais entre Brasil (clima tropical/quente) e Itália (clima temperado). O Brasil, por natureza mais quente, requer valores mais altos de BTU/m² para compensar as temperaturas ambientais elevadas. A Itália, com clima mais frio, utiliza valores menores conforme as guias técnicas locais.'
+        'memorial-fontes-nota': 'Nota: Os valores foram ajustados para refletir as diferenças climáticas naturais entre Brasil (clima tropical/quente) e Itália (clima temperado). O Brasil, por natureza mais quente, requer valores mais altos de BTU/m² para compensar as temperaturas ambientais elevadas. A Itália, com clima mais frio, utiliza valores menores conforme as guias técnicas locais.',
+        'tooltip-area-texto': 'A área do ambiente é medida em metros quadrados (m²) e representa o tamanho do espaço que será climatizado. O cálculo de BTU considera aproximadamente 700 BTU por m² como base, ajustado pela altura do pé direito, número de pessoas, equipamentos e condições ambientais.',
+        'tooltip-area-total-texto': 'A soma das áreas é a área total de todos os ambientes que terão ar condicionado em um sistema multi-split. O cálculo divide o BTU total necessário pelo número de ambientes para dimensionar cada unidade interna proporcionalmente.',
+        'tooltip-altura-texto': 'A altura do pé direito é a distância do piso ao teto, medida em metros. Ambientes mais altos têm maior volume de ar para climatizar, aumentando a necessidade de BTU. O cálculo ajusta o BTU por m² proporcionalmente à altura, usando 2,7m como referência padrão residencial.',
+        'tooltip-pessoas-texto': 'O número de pessoas no ambiente gera calor corporal que precisa ser removido pelo ar condicionado. Cada pessoa adiciona aproximadamente 600 BTU à carga térmica. No Brasil, apenas pessoas além das primeiras 2 são consideradas; na Itália, todas as pessoas são contabilizadas.',
+        'tooltip-equipamentos-texto': 'Equipamentos elétricos geram calor durante o funcionamento, aumentando a carga térmica do ambiente. Cada equipamento (TV, computador, geladeira, etc.) adiciona aproximadamente 600 BTU ao cálculo. Conte cada aparelho como 1 unidade.'
     },
     'it-IT': {
         'dev-badge-header': '🚧 IN SVILUPPO',
@@ -574,7 +579,12 @@ const traducoes = {
         'memorial-fonte-brasil': 'Brasile (Clima Tropicale/Caldo): Valori basati su pratiche dell\'industria brasiliana della refrigerazione, considerando temperature medie elevate e alta umidità. BTU/m²: 700 (valore fisso dovuto al clima caldo). BTU/persona: 600. BTU/apparecchio: 600.',
         'memorial-fonte-italia': 'Italia (Clima Temperato): Valori basati su guide tecniche italiane e norme europee, considerando clima temperato con stagioni ben definite. BTU/m²: varia in base all\'isolamento (300 buono, 340 medio, 400 scarso). BTU/persona: 200. BTU/apparecchio: 300.',
         'memorial-fontes-lista-title': 'Fonti consultate:',
-        'memorial-fontes-nota': 'Nota: I valori sono stati adattati per riflettere le differenze climatiche naturali tra Brasile (clima tropicale/caldo) e Italia (clima temperato). Il Brasile, per natura più caldo, richiede valori più alti di BTU/m² per compensare le temperature ambientali elevate. L\'Italia, con clima più freddo, utilizza valori minori secondo le guide tecniche locali.'
+        'memorial-fontes-nota': 'Nota: I valori sono stati adattati per riflettere le differenze climatiche naturali tra Brasile (clima tropicale/caldo) e Italia (clima temperato). Il Brasile, per natura più caldo, richiede valori più alti di BTU/m² per compensare le temperature ambientali elevate. L\'Italia, con clima più freddo, utilizza valori minori secondo le guide tecniche locali.',
+        'tooltip-area-texto': 'L\'area dell\'ambiente è misurata in metri quadrati (m²) e rappresenta la dimensione dello spazio che sarà climatizzato. Il calcolo dei BTU considera approssimativamente 300-400 BTU per m² come base, aggiustato per l\'altezza del soffitto, numero di persone, apparecchi e condizioni ambientali.',
+        'tooltip-area-total-texto': 'La somma delle aree è l\'area totale di tutti gli ambienti che avranno climatizzatore in un sistema multi-split. Il calcolo divide il BTU totale necessario per il numero di ambienti per dimensionare ogni unità interna proporzionalmente.',
+        'tooltip-altura-texto': 'L\'altezza del soffitto è la distanza dal pavimento al soffitto, misurata in metri. Ambienti più alti hanno un volume d\'aria maggiore da climatizzare, aumentando la necessità di BTU. Il calcolo aggiusta il BTU per m² proporzionalmente all\'altezza, usando 2,7m come riferimento standard residenziale.',
+        'tooltip-pessoas-texto': 'Il numero di persone nell\'ambiente genera calore corporeo che deve essere rimosso dal climatizzatore. Ogni persona aggiunge approssimativamente 200 BTU al carico termico. In Italia, tutte le persone sono contabilizzate nel calcolo.',
+        'tooltip-equipamentos-texto': 'Gli apparecchi elettrici generano calore durante il funzionamento, aumentando il carico termico dell\'ambiente. Ogni apparecchio (TV, computer, frigorifero, ecc.) aggiunge approssimativamente 300 BTU al calcolo. Conta ogni apparecchio come 1 unità.'
     }
 };
 
@@ -1412,6 +1422,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar idioma
     trocarIdioma(idiomaAtual);
+    
+    // Inicializar ícones de informação
+    if (typeof inicializarIconeInfo === 'function') {
+        inicializarIconeInfo('infoIconArea', 'descricaoArea');
+        inicializarIconeInfo('infoIconAreaTotal', 'descricaoAreaTotal');
+        inicializarIconeInfo('infoIconAltura', 'descricaoAltura');
+        inicializarIconeInfo('infoIconPessoas', 'descricaoPessoas');
+        inicializarIconeInfo('infoIconEquipamentos', 'descricaoEquipamentos');
+    }
     
     // Configurar sliders
     const sliderArea = document.getElementById('sliderArea');

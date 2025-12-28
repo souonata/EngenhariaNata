@@ -650,7 +650,10 @@ const traducoes = {
         'memorial-americano-passo1-explicacao': 'Os juros são sempre calculados sobre o valor total emprestado, pois não há amortização intermediária.',
         'memorial-americano-passo2-title': 'Sistema Americano - Passo 2: Calcular Parcelas',
         'memorial-americano-passo2-formula': 'Parcelas 1 a n-1: Apenas Juros\nÚltima Parcela: Juros + Valor Emprestado',
-        'memorial-americano-passo2-explicacao': 'Durante todo o período, paga-se apenas os juros. O valor principal é pago integralmente na última parcela.'
+        'memorial-americano-passo2-explicacao': 'Durante todo o período, paga-se apenas os juros. O valor principal é pago integralmente na última parcela.',
+        'tooltip-valor-texto': 'O valor emprestado é o montante total que você está solicitando ao banco ou instituição financeira. Este valor será usado para calcular as parcelas, juros e amortização. Valores maiores resultam em parcelas maiores e mais juros totais.',
+        'tooltip-prazo-texto': 'O prazo é o tempo total em anos para quitar o empréstimo. Este valor é convertido automaticamente para meses (anos × 12) para os cálculos. Prazos maiores resultam em parcelas menores, mas mais juros totais ao longo do tempo.',
+        'tooltip-taxa-texto': 'A taxa de juros é o percentual cobrado sobre o valor emprestado. Você pode informar a taxa em diferentes períodos (ano, mês ou dia). O sistema converte automaticamente para taxa mensal usando juros compostos. Taxas maiores resultam em parcelas maiores e mais juros totais.'
     },
     'it-IT': {
         'app-title': '📊 Calcolatrice di Mutui',
@@ -802,7 +805,10 @@ const traducoes = {
         'memorial-americano-passo1-explicacao': 'Gli interessi vengono sempre calcolati sul valore totale finanziato, poiché non c\'è ammortamento intermedio.',
         'memorial-americano-passo2-title': 'Tedesco - Passo 2: Calcolare le Rate',
         'memorial-americano-passo2-formula': 'Rate 1 a n-1: Solo Interessi\nUltima Rata: Interessi + Valore Finanziato',
-        'memorial-americano-passo2-explicacao': 'Durante tutto il periodo, si pagano solo gli interessi. Il valore principale viene pagato integralmente nell\'ultima rata.'
+        'memorial-americano-passo2-explicacao': 'Durante tutto il periodo, si pagano solo gli interessi. Il valore principale viene pagato integralmente nell\'ultima rata.',
+        'tooltip-valor-texto': 'Il valore del mutuo è l\'importo totale che stai richiedendo alla banca o all\'istituto finanziario. Questo valore verrà utilizzato per calcolare le rate, gli interessi e l\'ammortamento. Valori maggiori comportano rate maggiori e più interessi totali.',
+        'tooltip-prazo-texto': 'La durata è il tempo totale in anni per estinguere il mutuo. Questo valore viene convertito automaticamente in mesi (anni × 12) per i calcoli. Durate maggiori comportano rate minori, ma più interessi totali nel tempo.',
+        'tooltip-taxa-texto': 'Il tasso di interesse è la percentuale applicata sul valore del mutuo. Puoi inserire il tasso in diversi periodi (anno, mese o giorno). Il sistema converte automaticamente in tasso mensile utilizzando interessi composti. Tassi maggiori comportano rate maggiori e più interessi totali.'
     }
 };
 
@@ -2546,6 +2552,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializa com o idioma salvo no localStorage
     trocarIdioma(idiomaAtual);
+    
+    // Inicializar ícones de informação
+    if (typeof inicializarIconeInfo === 'function') {
+        inicializarIconeInfo('infoIconValor', 'descricaoValor');
+        inicializarIconeInfo('infoIconPrazo', 'descricaoPrazo');
+        inicializarIconeInfo('infoIconTaxa', 'descricaoTaxa');
+    }
     
     // Event listener para o botão de memorial (SAIBA MAIS)
     if (btnExemplos) {

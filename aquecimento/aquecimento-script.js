@@ -1841,7 +1841,14 @@ const traducoes = {
         'watermark-dev': '🚧 EM DESENVOLVIMENTO',
         'learn-more': 'SAIBA MAIS!',
         'back': '← Voltar',
-        'btn-memorial': 'Ver Memorial de Cálculo'
+        'btn-memorial': 'Ver Memorial de Cálculo',
+        'tooltip-pessoas-texto': 'O número de pessoas determina o consumo diário de água quente. O consumo por pessoa varia conforme o padrão selecionado (Econômico: 30L/dia, Padrão: 40L/dia, Alto: 60L/dia). Este valor é usado para calcular o volume necessário do boiler e a área de coletores solares.',
+        'tooltip-consumo-texto': 'O padrão de consumo define quantos litros de água quente cada pessoa utiliza por dia. Econômico (30L/pessoa/dia): uso moderado, ideal para quem economiza água. Padrão (40L/pessoa/dia): uso médio residencial. Alto (60L/pessoa/dia): uso intensivo, para residências com banhos longos ou múltiplos banhos por dia.',
+        'tooltip-latitude-texto': 'A latitude é a coordenada geográfica que indica a distância do local em relação ao Equador, medida em graus. Valores negativos indicam hemisfério sul (Brasil: -35° a -5°), valores positivos indicam hemisfério norte (Itália: 36° a 47°). A latitude afeta a intensidade e duração da radiação solar, influenciando diretamente o dimensionamento dos coletores solares.',
+        'tooltip-altitude-texto': 'A altitude é a elevação do local de instalação em relação ao nível do mar, medida em metros. Locais em maior altitude têm menor pressão atmosférica e menor temperatura média, o que pode reduzir ligeiramente a eficiência dos coletores solares. A altitude também afeta o ponto de ebulição da água, importante para sistemas de aquecimento.',
+        'tooltip-area-casa-texto': 'A área da casa é a área total construída em metros quadrados (m²) que será aquecida pelo sistema solar térmico. Este valor é usado para calcular a demanda de energia térmica necessária para aquecer o ambiente, considerando a classe energética da construção e as perdas térmicas através de paredes, teto e janelas.',
+        'tooltip-altura-casa-texto': 'A altura do pé direito é a distância do piso ao teto, medida em metros. Ambientes mais altos têm maior volume de ar para aquecer, aumentando a demanda de energia térmica. O cálculo considera o volume total (área × altura) para determinar a potência necessária do sistema de aquecimento ambiente. Altura padrão residencial: 2,7m.',
+        'tooltip-autonomia-texto': 'Os dias de autonomia representam quantos dias consecutivos sem sol o sistema deve ser capaz de manter a casa aquecida usando apenas a energia armazenada no boiler. Valores maiores aumentam o volume necessário do boiler e a área de coletores, garantindo maior segurança em períodos de baixa insolação, mas também aumentam o custo do sistema.'
     },
     'it-IT': {
         'dev-badge-header': '🚧 IN SVILUPPO',
@@ -1958,7 +1965,14 @@ const traducoes = {
         'custo-termossifoes': 'Termosifoni:',
         'custo-total': 'Costo Totale Stimato:',
         'custos-detalhamento': 'Dettaglio:',
-        'nota-custos': '* Valori approssimativi basati su prezzi medi di mercato. Possono variare in base alla regione e al fornitore.'
+        'nota-custos': '* Valori approssimativi basati su prezzi medi di mercato. Possono variare in base alla regione e al fornitore.',
+        'tooltip-pessoas-texto': 'Il numero di persone determina il consumo giornaliero di acqua calda. Il consumo per persona varia in base allo standard selezionato (Economico: 30L/giorno, Standard: 40L/giorno, Alto: 60L/giorno). Questo valore viene utilizzato per calcolare il volume necessario del boiler e l\'area dei collettori solari.',
+        'tooltip-consumo-texto': 'Lo standard di consumo definisce quanti litri di acqua calda ogni persona utilizza al giorno. Economico (30L/persona/giorno): uso moderato, ideale per chi risparmia acqua. Standard (40L/persona/giorno): uso medio residenziale. Alto (60L/persona/giorno): uso intensivo, per residenze con bagni lunghi o più bagni al giorno.',
+        'tooltip-latitude-texto': 'La latitudine è la coordinata geografica che indica la distanza del luogo rispetto all\'Equatore, misurata in gradi. Valori negativi indicano emisfero sud (Brasile: -35° a -5°), valori positivi indicano emisfero nord (Italia: 36° a 47°). La latitudine influisce sull\'intensità e durata della radiazione solare, influenzando direttamente il dimensionamento dei collettori solari.',
+        'tooltip-altitude-texto': 'L\'altitudine è l\'elevazione del luogo di installazione rispetto al livello del mare, misurata in metri. Luoghi a maggiore altitudine hanno minore pressione atmosferica e temperatura media più bassa, il che può ridurre leggermente l\'efficienza dei collettori solari. L\'altitudine influisce anche sul punto di ebollizione dell\'acqua, importante per i sistemi di riscaldamento.',
+        'tooltip-area-casa-texto': 'L\'area della casa è l\'area totale costruita in metri quadrati (m²) che sarà riscaldata dal sistema solare termico. Questo valore viene utilizzato per calcolare la domanda di energia termica necessaria per riscaldare l\'ambiente, considerando la classe energetica della costruzione e le perdite termiche attraverso pareti, tetto e finestre.',
+        'tooltip-altura-casa-texto': 'L\'altezza del soffitto è la distanza dal pavimento al soffitto, misurata in metri. Ambienti più alti hanno un volume d\'aria maggiore da riscaldare, aumentando la domanda di energia termica. Il calcolo considera il volume totale (area × altezza) per determinare la potenza necessaria del sistema di riscaldamento ambiente. Altezza standard residenziale: 2,7m.',
+        'tooltip-autonomia-texto': 'I giorni di autonomia rappresentano quanti giorni consecutivi senza sole il sistema deve essere in grado di mantenere la casa riscaldata utilizzando solo l\'energia immagazzinata nel boiler. Valori maggiori aumentano il volume necessario del boiler e l\'area dei collettori, garantendo maggiore sicurezza in periodi di bassa insolazione, ma aumentano anche il costo del sistema.'
     }
 };
 
@@ -2047,6 +2061,17 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Inicializar idioma
     trocarIdioma(idiomaAtual);
+    
+    // Inicializar ícones de informação
+    if (typeof inicializarIconeInfo === 'function') {
+        inicializarIconeInfo('infoIconPessoas', 'descricaoPessoas');
+        inicializarIconeInfo('infoIconConsumo', 'descricaoConsumo');
+        inicializarIconeInfo('infoIconLatitude', 'descricaoLatitude');
+        inicializarIconeInfo('infoIconAltitude', 'descricaoAltitude');
+        inicializarIconeInfo('infoIconAreaCasa', 'descricaoAreaCasa');
+        inicializarIconeInfo('infoIconAlturaCasa', 'descricaoAlturaCasa');
+        inicializarIconeInfo('infoIconAutonomia', 'descricaoAutonomia');
+    }
 
     // Configurar sliders e inputs
     const sliderPessoas = document.getElementById('sliderPessoas');

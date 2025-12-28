@@ -1329,10 +1329,10 @@ function atualizarGraficoAmortizacao(dados) {
             // Não substituir baterias nos anos de substituição completa do sistema (aos 25, 50, 75 anos)
             // pois já estão incluídas na substituição completa
             if (anoSubstituicao % 25 !== 0) {
-                substituicoesBaterias.push({
-                    ano: anoSubstituicao,
-                    mes: Math.round(anoSubstituicao * 12)
-                });
+            substituicoesBaterias.push({
+                ano: anoSubstituicao,
+                mes: Math.round(anoSubstituicao * 12)
+            });
             }
             anoSubstituicao += vidaUtil;
         }
@@ -1704,7 +1704,7 @@ function atualizarGraficoAmortizacao(dados) {
             if (substituicoesBaterias.length > 0 || substituicoesSistemaCompleto.length > 0) {
                 const partesInfo = [];
                 
-                if (substituicoesBaterias.length > 0) {
+            if (substituicoesBaterias.length > 0) {
                     const anosSubstBaterias = substituicoesBaterias.map(s => s.ano).join(', ');
                     partesInfo.push(`<span style="color: #FF9800;">🔋 Substituições de baterias (vida útil: ${vidaUtil} anos): <strong>${substituicoesBaterias.length} vez${substituicoesBaterias.length > 1 ? 'es' : ''}</strong> aos ${anosSubstBaterias} ano${substituicoesBaterias.length > 1 ? 's' : ''} | Custo total: <strong>${formatarMoedaComVirgula(custoTotalSubstituicoesBateriasPeriodo, moeda, 2)}</strong></span>`);
                 }
@@ -1768,7 +1768,7 @@ function atualizarGraficoAmortizacao(dados) {
             if (substituicoesBaterias.length > 0 || substituicoesSistemaCompleto.length > 0) {
                 const partiInfo = [];
                 
-                if (substituicoesBaterias.length > 0) {
+            if (substituicoesBaterias.length > 0) {
                     const anniSubstBatterie = substituicoesBaterias.map(s => s.ano).join(', ');
                     partiInfo.push(`<span style="color: #FF9800;">🔋 Sostituzioni batterie (vita utile: ${vidaUtil} anni): <strong>${substituicoesBaterias.length} volt${substituicoesBaterias.length > 1 ? 'e' : 'a'}</strong> agli ${anniSubstBatterie} anno${substituicoesBaterias.length > 1 ? 'i' : ''} | Costo totale: <strong>${formatarMoedaComVirgula(custoTotalSubstituicoesBateriasPeriodo, moeda, 2)}</strong></span>`);
                 }
@@ -2653,7 +2653,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         let valor = parseFloat(sliderPrecoKWhEl.value);
         if (isNaN(valor)) {
-            const valorPadrao = PRECO_KWH[idiomaAtual] || PRECO_KWH['pt-BR'];
+        const valorPadrao = PRECO_KWH[idiomaAtual] || PRECO_KWH['pt-BR'];
             valor = valorPadrao;
         }
         

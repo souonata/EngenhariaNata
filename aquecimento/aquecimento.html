@@ -93,10 +93,17 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderPessoas" data-i18n="label-pessoas">Número de Pessoas</label>
+                    <span class="info-icon" id="infoIconPessoas" role="button" tabindex="0" aria-label="Informação sobre número de pessoas" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputPessoas" class="valor-display valor-input" value="4">
                         <span class="unidade" data-i18n="unit-people">pessoas</span>
                     </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoPessoas" style="display: none;">
+                    <span data-i18n="tooltip-pessoas-texto">O número de pessoas determina o consumo diário de água quente. O consumo por pessoa varia conforme o padrão selecionado (Econômico: 30L/dia, Padrão: 40L/dia, Alto: 60L/dia). Este valor é usado para calcular o volume necessário do boiler e a área de coletores solares.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderPessoas" data-step="-1" aria-label="Diminuir pessoas">−</button>
@@ -107,7 +114,16 @@
 
             <!-- Tipo de Uso -->
             <div class="grupo-entrada">
-                <label data-i18n="label-tipo-uso">Padrão de Consumo</label>
+                <div class="cabecalho-controle">
+                    <label data-i18n="label-tipo-uso">Padrão de Consumo</label>
+                    <span class="info-icon" id="infoIconConsumo" role="button" tabindex="0" aria-label="Informação sobre padrão de consumo" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoConsumo" style="display: none;">
+                    <span data-i18n="tooltip-consumo-texto">O padrão de consumo define quantos litros de água quente cada pessoa utiliza por dia. Econômico (30L/pessoa/dia): uso moderado, ideal para quem economiza água. Padrão (40L/pessoa/dia): uso médio residencial. Alto (60L/pessoa/dia): uso intensivo, para residências com banhos longos ou múltiplos banhos por dia.</span>
+                </div>
                 <div class="grupo-radio">
                     <label class="opcao-radio">
                         <input type="radio" name="tipoUso" value="Economico">
@@ -128,49 +144,52 @@
                         </div>
                     </label>
                 </div>
-                <p class="dica dica-multilinha" data-i18n="dica-tipo-uso">
-                    💡 <strong>Econômico:</strong> 30L/pessoa/dia<br>
-                    💡 <strong>Padrão:</strong> 40L/pessoa/dia<br>
-                    💡 <strong>Alto:</strong> 60L/pessoa/dia
-                </p>
             </div>
 
             <!-- Latitude -->
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderLatitude" data-i18n="label-latitude">Latitude</label>
+                    <span class="info-icon" id="infoIconLatitude" role="button" tabindex="0" aria-label="Informação sobre latitude" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputLatitude" class="valor-display valor-input" value="-23,5" data-default-pt="-23,5" data-default-it="41,9">
                         <span class="unidade" data-i18n="unit-degrees">°</span>
                     </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoLatitude" style="display: none;">
+                    <span data-i18n="tooltip-latitude-texto">A latitude é a coordenada geográfica que indica a distância do local em relação ao Equador, medida em graus. Valores negativos indicam hemisfério sul (Brasil: -35° a -5°), valores positivos indicam hemisfério norte (Itália: 36° a 47°). A latitude afeta a intensidade e duração da radiação solar, influenciando diretamente o dimensionamento dos coletores solares.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderLatitude" data-step="-0.5" aria-label="Diminuir latitude">−</button>
                     <input type="range" id="sliderLatitude" min="-35" max="-5" step="0.5" value="-23.5">
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderLatitude" data-step="0.5" aria-label="Aumentar latitude">+</button>
                 </div>
-                <p class="dica dica-multilinha" data-i18n="dica-latitude">
-                    💡 <strong>São Paulo:</strong> ≈ -23,5°<br>
-                    💡 <strong>Rio de Janeiro:</strong> ≈ -22,9°<br>
-                    💡 <strong>Porto Alegre:</strong> ≈ -30,0°
-                </p>
             </div>
 
             <!-- Altitude -->
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderAltitude" data-i18n="label-altitude">Altitude</label>
+                    <span class="info-icon" id="infoIconAltitude" role="button" tabindex="0" aria-label="Informação sobre altitude" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputAltitude" class="valor-display valor-input" value="800">
                         <span class="unidade" data-i18n="unit-meter">m</span>
                     </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoAltitude" style="display: none;">
+                    <span data-i18n="tooltip-altitude-texto">A altitude é a elevação do local de instalação em relação ao nível do mar, medida em metros. Locais em maior altitude têm menor pressão atmosférica e menor temperatura média, o que pode reduzir ligeiramente a eficiência dos coletores solares. A altitude também afeta o ponto de ebulição da água, importante para sistemas de aquecimento.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderAltitude" data-step="-50" aria-label="Diminuir altitude">−</button>
                     <input type="range" id="sliderAltitude" min="0" max="2000" step="50" value="800">
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderAltitude" data-step="50" aria-label="Aumentar altitude">+</button>
                 </div>
-                <p class="dica" data-i18n="dica-altitude">💡 Altitude do local de instalação em metros acima do nível do mar</p>
             </div>
 
             <!-- Seção: Aquecimento da Casa -->
@@ -182,10 +201,17 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderAreaCasa" data-i18n="label-area-casa">Área da Casa</label>
+                    <span class="info-icon" id="infoIconAreaCasa" role="button" tabindex="0" aria-label="Informação sobre área da casa" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputAreaCasa" class="valor-display valor-input" value="100">
                         <span class="unidade" data-i18n="unit-m2">m²</span>
                     </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoAreaCasa" style="display: none;">
+                    <span data-i18n="tooltip-area-casa-texto">A área da casa é a área total construída em metros quadrados (m²) que será aquecida pelo sistema solar térmico. Este valor é usado para calcular a demanda de energia térmica necessária para aquecer o ambiente, considerando a classe energética da construção e as perdas térmicas através de paredes, teto e janelas.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderAreaCasa" data-step="-5" aria-label="Diminuir área">−</button>
@@ -198,34 +224,46 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderAlturaCasa" data-i18n="label-altura-casa">Altura do Pé Direito</label>
+                    <span class="info-icon" id="infoIconAlturaCasa" role="button" tabindex="0" aria-label="Informação sobre altura do pé direito" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputAlturaCasa" class="valor-display valor-input" value="2,7">
                         <span class="unidade" data-i18n="unit-meter">m</span>
                     </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoAlturaCasa" style="display: none;">
+                    <span data-i18n="tooltip-altura-casa-texto">A altura do pé direito é a distância do piso ao teto, medida em metros. Ambientes mais altos têm maior volume de ar para aquecer, aumentando a demanda de energia térmica. O cálculo considera o volume total (área × altura) para determinar a potência necessária do sistema de aquecimento ambiente. Altura padrão residencial: 2,7m.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderAlturaCasa" data-step="-0.1" aria-label="Diminuir altura">−</button>
                     <input type="range" id="sliderAlturaCasa" min="2.0" max="4.0" step="0.1" value="2.7">
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderAlturaCasa" data-step="0.1" aria-label="Aumentar altura">+</button>
                 </div>
-                <p class="dica" data-i18n="dica-altura-casa">💡 Altura padrão residencial: 2,7m</p>
             </div>
 
             <!-- Dias de Autonomia -->
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderDiasAutonomia" data-i18n="label-dias-autonomia">Dias de Autonomia</label>
+                    <span class="info-icon" id="infoIconAutonomia" role="button" tabindex="0" aria-label="Informação sobre dias de autonomia" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputDiasAutonomia" class="valor-display valor-input" value="3">
                         <span class="unidade" data-i18n="unit-dias">dias</span>
                     </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoAutonomia" style="display: none;">
+                    <span data-i18n="tooltip-autonomia-texto">Os dias de autonomia representam quantos dias consecutivos sem sol o sistema deve ser capaz de manter a casa aquecida usando apenas a energia armazenada no boiler. Valores maiores aumentam o volume necessário do boiler e a área de coletores, garantindo maior segurança em períodos de baixa insolação, mas também aumentam o custo do sistema.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderDiasAutonomia" data-step="-1" aria-label="Diminuir dias">−</button>
                     <input type="range" id="sliderDiasAutonomia" min="1" max="7" step="1" value="3">
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderDiasAutonomia" data-step="1" aria-label="Aumentar dias">+</button>
                 </div>
-                <p class="dica" data-i18n="dica-dias-autonomia">💡 Número de dias sem sol que o sistema deve manter a casa aquecida</p>
             </div>
 
             <!-- Classe Energética -->
@@ -629,7 +667,7 @@
     <!-- Scripts -->
     <script src="../assets/js/site-config.js?v=1.2.0"></script>
     <script src="../assets/js/ajustarValorUtil.js?v=1.1.0"></script>
-    <script src="aquecimento-script.js?v=1.1.0"></script>
+    <script src="aquecimento-script.js?v=1.2.0"></script>
 </body>
 </html>
 

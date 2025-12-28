@@ -916,6 +916,19 @@ const traducoes = {
         'memorial-queda-recomendada-texto': '4% — Limite máximo estabelecido pela NBR 5410 para circuitos terminais em regime permanente. Este é o padrão técnico brasileiro.',
         'memorial-lei-ohm-titulo': '⚛️ Lei Física Aplicada — Lei de Ohm:',
         'memorial-lei-ohm-texto': 'A Lei de Ohm relaciona tensão (V), corrente (I) e resistência (R): V = I × R. No cálculo de bitola, usamos esta lei para determinar a queda de tensão: quanto maior a corrente e a resistência do fio, maior a queda de tensão. A resistência do fio depende da resistividade do material (cobre), do comprimento e da área da seção transversal (bitola).',
+        'memorial-referencias-title': '📚 Referências Bibliográficas e Fontes Técnicas',
+        'memorial-referencias-normas-title': 'Normas Técnicas:',
+        'memorial-referencias-nbr-5410': '<strong>NBR 5410:2004</strong> - Instalações elétricas de baixa tensão. Associação Brasileira de Normas Técnicas (ABNT). Estabelece o limite máximo de 4% para queda de tensão em circuitos terminais e especifica a resistividade do cobre duro como 0.0178 Ω·mm²/m a 20°C.',
+        'memorial-referencias-nbr-nm-280': '<strong>NBR NM 280:2003</strong> - Condutores elétricos de cobre. Especifica a resistividade do cobre recozido (mole) como 0.017241 Ω·mm²/m a 20°C.',
+        'memorial-referencias-cei-64-8': '<strong>CEI 64-8</strong> - Norma italiana para instalações elétricas de baixa tensão. Estabelece limite máximo de 4% para queda de tensão e fornece fórmulas para cálculo considerando fator de potência.',
+        'memorial-referencias-guias-title': 'Guias e Padrões Internacionais:',
+        'memorial-referencias-ieee-525': '<strong>IEEE Std 525-2007</strong> - IEEE Guide for the Design and Installation of Cable Systems in Substations. Fornece diretrizes para cálculo de queda de tensão em condutores elétricos, incluindo fórmulas exatas e aproximadas para diferentes condições de carga.',
+        'memorial-referencias-formulas-title': 'Fórmulas e Fundamentos Físicos:',
+        'memorial-referencias-lei-ohm': '<strong>Lei de Ohm:</strong> V = I × R, onde V é a tensão, I é a corrente e R é a resistência.',
+        'memorial-referencias-resistencia': '<strong>Resistência de condutores:</strong> R = ρ × L / S, onde ρ é a resistividade, L é o comprimento e S é a área da seção transversal.',
+        'memorial-referencias-queda-monofasico': '<strong>Queda de tensão em circuitos monofásicos:</strong> ΔV = K × ρ × (L × I) / S, onde K = 2 para circuitos monofásicos (F+N).',
+        'memorial-referencias-fontes-title': 'Fontes de Consulta:',
+        'memorial-referencias-fontes-lista': 'Qualyflex Fios - Dados Técnicos: <a href="https://qualyflexfios.com.br/dados-tecnicos/" target="_blank" rel="noopener">qualyflexfios.com.br</a><br>Construfios - Tabelas Técnicas: <a href="https://www.construfios.com.br/area-tecnica/tabelastecnicas.pdf" target="_blank" rel="noopener">construfios.com.br</a><br>IEEE Standards Association: <a href="https://ewh.ieee.org/cmte/substations/scd0/wgd2/IEEE%20525%20-%20standard/IEEE%20525-2007_accepted.pdf" target="_blank" rel="noopener">IEEE Std 525-2007</a>',
         'tooltip-potencia-texto': 'A potência máxima nominal representa a quantidade total de energia elétrica que será consumida pelo circuito, medida em watts (W). Este valor é usado para calcular a corrente elétrica necessária. Você pode encontrar este valor nas especificações dos equipamentos que serão conectados ao circuito.',
         'tooltip-comprimento-texto': 'A distância do circuito é a distância entre a fonte de energia (disjuntor, transformador, etc.) e a carga (equipamento que consome energia). O cálculo considera automaticamente a ida e volta do circuito (dois condutores), então você deve informar apenas a distância simples entre os pontos.',
         'tooltip-tensao-cc-texto': 'A tensão é a diferença de potencial elétrico entre dois pontos do circuito, medida em volts (V). Para corrente contínua (CC), valores típicos incluem 3.3V, 5V, 9V, 12V, 15V, 20V, 24V, 36V, 48V, 60V, 72V e 96V. Este valor afeta diretamente o cálculo da corrente e da bitola necessária.',
@@ -985,10 +998,23 @@ const traducoes = {
         'memorial-queda-recomendada-texto': '4% — Limite massimo stabilito dalla NBR 5410 per circuiti terminali in regime permanente. Questo è lo standard tecnico brasiliano.',
         'memorial-lei-ohm-titulo': '⚛️ Legge Fisica Applicata — Legge di Ohm:',
         'memorial-lei-ohm-texto': 'La Legge di Ohm mette in relazione tensione (V), corrente (I) e resistenza (R): V = I × R. Nel calcolo della sezione, usiamo questa legge per determinare la caduta di tensione: maggiore è la corrente e la resistenza del filo, maggiore è la caduta di tensione. La resistenza del filo dipende dalla resistività del materiale (rame), dalla lunghezza e dall\'area della sezione trasversale (sezione).',
+        'memorial-referencias-title': '📚 Riferimenti Bibliografici e Fonti Tecniche',
+        'memorial-referencias-normas-title': 'Norme Tecniche:',
+        'memorial-referencias-nbr-5410': '<strong>CEI 64-8 (9ª edizione, 2024)</strong> - "Impianti elettrici a tensione nominale non superiore a 1 000 V in corrente alternata e a 1 500 V in corrente continua". Comitato Elettrotecnico Italiano (CEI). Stabilisce il limite massimo del 4% per la caduta di tensione nei circuiti terminali e fornisce formule per il calcolo considerando il fattore di potenza. Norma ufficiale italiana di riferimento per le installazioni elettriche di bassa tensione.',
+        'memorial-referencias-nbr-nm-280': '<strong>CEI 20-29</strong> - Conduttori elettrici di rame. Norma italiana equivalente alla IEC 60228. Specifica la resistività del rame ricotto (morbido) come 0,017241 Ω·mm²/m a 20°C (100% IACS - International Annealed Copper Standard) e del rame semi-duro come 0,017837 Ω·mm²/m a 20°C (96,66% IACS). Comitato Elettrotecnico Italiano (CEI).',
+        'memorial-referencias-cei-64-8': '<strong>IEC 60228</strong> - International Electrotechnical Commission standard per conduttori elettrici. Specifica le caratteristiche dei conduttori di rame, inclusa la resistività. Adottata come riferimento internazionale e base per le norme nazionali italiane (CEI 20-29).',
+        'memorial-referencias-guias-title': 'Guide e Standard Internazionali:',
+        'memorial-referencias-ieee-525': '<strong>IEEE Std 525-2007</strong> - IEEE Guide for the Design and Installation of Cable Systems in Substations. Fornisce linee guida per il calcolo della caduta di tensione nei conduttori elettrici, incluse formule esatte e approssimate per diverse condizioni di carico.',
+        'memorial-referencias-formulas-title': 'Formule e Fondamenti Fisici:',
+        'memorial-referencias-lei-ohm': '<strong>Legge di Ohm:</strong> V = I × R, dove V è la tensione, I è la corrente e R è la resistenza.',
+        'memorial-referencias-resistencia': '<strong>Resistenza dei conduttori:</strong> R = ρ × L / S, dove ρ è la resistività, L è la lunghezza e S è l\'area della sezione trasversale.',
+        'memorial-referencias-queda-monofasico': '<strong>Caduta di tensione nei circuiti monofase:</strong> ΔV = K × ρ × (L × I) / S, dove K = 2 per circuiti monofase (F+N).',
+        'memorial-referencias-fontes-title': 'Fonti di Consultazione:',
+        'memorial-referencias-fontes-lista': 'Comitato Elettrotecnico Italiano (CEI): <a href="https://www.ceinorme.it" target="_blank" rel="noopener">ceinorme.it</a><br>Ente Nazionale Italiano di Unificazione (UNI): <a href="https://www.uni.com" target="_blank" rel="noopener">uni.com</a><br>IEEE Standards Association: <a href="https://ewh.ieee.org/cmte/substations/scd0/wgd2/IEEE%20525%20-%20standard/IEEE%20525-2007_accepted.pdf" target="_blank" rel="noopener">IEEE Std 525-2007</a>',
         'tooltip-potencia-texto': 'La potenza massima nominale rappresenta la quantità totale di energia elettrica che sarà consumata dal circuito, misurata in watt (W). Questo valore viene utilizzato per calcolare la corrente elettrica necessaria. Puoi trovare questo valore nelle specifiche degli apparecchi che saranno collegati al circuito.',
         'tooltip-comprimento-texto': 'La distanza del circuito è la distanza tra la fonte di energia (interruttore, trasformatore, ecc.) e il carico (apparecchio che consuma energia). Il calcolo considera automaticamente andata e ritorno del circuito (due conduttori), quindi devi inserire solo la distanza semplice tra i punti.',
         'tooltip-tensao-cc-texto': 'La tensione è la differenza di potenziale elettrico tra due punti del circuito, misurata in volt (V). Per corrente continua (CC), valori tipici includono 3.3V, 5V, 9V, 12V, 15V, 20V, 24V, 36V, 48V, 60V, 72V e 96V. Questo valore influisce direttamente sul calcolo della corrente e della sezione necessaria.',
-        'tooltip-queda-tensao-texto': 'La caduta di tensione massima è la percentuale di riduzione di tensione consentita lungo il circuito. Valori minori garantiscono migliori prestazioni degli apparecchi, ma richiedono fili più spessi. Per progetti residenziali in Brasile, si raccomanda 3% a 4% secondo la NBR 5410. Valori maggiori possono causare problemi di funzionamento degli apparecchi.'
+        'tooltip-queda-tensao-texto': 'La caduta di tensione massima è la percentuale di riduzione di tensione consentita lungo il circuito. Valori minori garantiscono migliori prestazioni degli apparecchi, ma richiedono fili più spessi. Per impianti elettrici residenziali in Italia, la norma CEI 64-8 (9ª edizione, 2024) stabilisce il limite massimo del 4% per la caduta di tensione nei circuiti terminali. Valori maggiori possono causare problemi di funzionamento degli apparecchi e non sono conformi alle normative italiane.'
     }
 };
 
@@ -1110,7 +1136,8 @@ function trocarIdioma(novoIdioma) {
     document.querySelectorAll('[data-i18n]').forEach(elemento => {
         const chave = elemento.getAttribute('data-i18n');
         if (traducoes[novoIdioma] && traducoes[novoIdioma][chave]) {
-            // Usa innerHTML para permitir tags HTML como <br> nas traduções
+            // Usa innerHTML para permitir tags HTML como <br> e <a> nas traduções
+            // Especialmente importante para referências bibliográficas que contêm links
             elemento.innerHTML = traducoes[novoIdioma][chave];
         }
     });
@@ -1233,7 +1260,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Aplica a formatação com sufixos (k/M) quando >= 1000
             // Para valores < 1000, remove zeros desnecessários
             if (valor >= 1000) {
-                inputPotencia.value = formatarNumeroComSufixo(valor, 1);
+            inputPotencia.value = formatarNumeroComSufixo(valor, 1);
             } else {
                 inputPotencia.value = formatarNumeroSemZerosDesnecessarios(valor, 1);
             }
