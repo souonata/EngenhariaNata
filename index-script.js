@@ -215,13 +215,26 @@ const traducoes = {
  * 5. Destaca o botão do idioma ativo
  * 6. Atualiza o relógio com dias/meses no idioma correto
  */
-function trocarIdioma(novoIdioma) {
+async function trocarIdioma(novoIdioma) {
     // Atualiza a variável global e salva a preferência
     idiomaAtual = novoIdioma;
     localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
     
     // Atualiza o atributo lang do HTML (ajuda leitores de tela)
     document.documentElement.lang = novoIdioma;
+    
+    // Se o timezone mudou, limpa o cache para forçar nova consulta imediata
+    const novoTimezone = TIMEZONES_POR_IDIOMA[novoIdioma];
+    const timezoneMudou = horarioOficialCache.timezone !== novoTimezone;
+    
+    if (timezoneMudou) {
+        horarioOficialCache = {
+            timestampUTC: null,
+            timestampLocal: null,
+            timezone: null
+        };
+        ultimaConsultaAPI = 0;
+    }
     
     // Busca e traduz todos os elementos com data-i18n
     const elementosTraduzir = document.querySelectorAll('[data-i18n]');
@@ -242,11 +255,129 @@ function trocarIdioma(novoIdioma) {
     });
     
     // Atualiza o relógio e rótulos de acessibilidade
-    atualizarHorario();
+    // Aguarda a atualização para garantir que o horário correto seja exibido
+    await atualizarHorario();
     const homeLabel = traducoes[novoIdioma]?.['aria-home'] || 'Home';
     document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(function(elemento) {
         elemento.setAttribute('aria-label', homeLabel);
     });
+}
+
+// ============================================
+// SISTEMA DE HORÁRIO OFICIAL POR PAÍS
+// ============================================
+// Mapeamento de idioma para timezone oficial do país
+// America/Sao_Paulo = Horário de Brasília (BRT, UTC-3)
+const TIMEZONES_POR_IDIOMA = {
+    'pt-BR': 'America/Sao_Paulo',  // Brasil - Horário de Brasília (BRT)
+    'it-IT': 'Europe/Rome'          // Itália - Horário de Roma (CET/CEST)
+};
+
+// Cache do horário oficial
+let horarioOficialCache = {
+    timestampUTC: null,   // Timestamp UTC retornado pela API
+    timestampLocal: null,  // Timestamp local quando a API foi consultada
+    timezone: null         // Timezone usado
+};
+
+// Última vez que a API foi consultada (em milissegundos)
+let ultimaConsultaAPI = 0;
+const INTERVALO_CONSULTA_API = 60000; // 1 minuto
+
+/**
+ * Busca o horário oficial do país via API WorldTimeAPI
+ * @param {string} timezone - Timezone no formato IANA (ex: 'America/Sao_Paulo')
+ * @returns {Promise<Date|null>} - Data/hora oficial ou null se falhar
+ */
+async function buscarHorarioOficial(timezone) {
+    try {
+        const url = `https://worldtimeapi.org/api/timezone/${timezone}`;
+        
+        // Cria um AbortController para timeout de 5 segundos
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            },
+            signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // A API retorna unixtime (timestamp UTC em segundos)
+        // Armazenamos o timestamp UTC puro para usar com Intl.DateTimeFormat
+        const unixtime = data.unixtime; // Timestamp UTC em segundos
+        const timestampUTC = unixtime * 1000; // Converte para milissegundos
+        
+        // Cria um objeto Date para referência (mas não usamos seus métodos get*)
+        const horarioOficial = new Date(timestampUTC);
+        
+        // Armazena o timestamp UTC puro (sem offset) e o timestamp local atual
+        // Intl.DateTimeFormat aplicará o offset automaticamente quando formatarmos
+        horarioOficialCache = {
+            timestampUTC: timestampUTC,  // Timestamp UTC puro (sem offset)
+            timestampLocal: Date.now(),  // Timestamp local quando consultamos
+            timezone: timezone
+        };
+        
+        ultimaConsultaAPI = Date.now();
+        
+        return horarioOficial;
+    } catch (error) {
+        // Em caso de erro, retorna null para usar fallback
+        if (error.name !== 'AbortError') {
+            console.warn('Erro ao buscar horário oficial:', error.message);
+        }
+        return null;
+    }
+}
+
+/**
+ * Obtém o horário oficial atualizado, usando cache quando possível
+ * @returns {Promise<Date>} - Data/hora oficial ou horário local como fallback
+ */
+async function obterHorarioOficial() {
+    const timezone = TIMEZONES_POR_IDIOMA[idiomaAtual];
+    
+    if (!timezone) {
+        // Se não houver timezone mapeado, retorna null para mostrar indicador
+        return null;
+    }
+    
+    const agoraLocal = Date.now();
+    const tempoDesdeUltimaConsulta = agoraLocal - ultimaConsultaAPI;
+    
+    // Se já temos cache válido e recente para o timezone correto, retorna Date atualizado
+    if (horarioOficialCache.timestampUTC !== null && 
+        horarioOficialCache.timestampLocal !== null &&
+        horarioOficialCache.timezone === timezone &&
+        tempoDesdeUltimaConsulta < INTERVALO_CONSULTA_API) {
+        // Calcula o tempo decorrido desde a última consulta e atualiza o timestamp UTC
+        const tempoDecorrido = agoraLocal - horarioOficialCache.timestampLocal;
+        const timestampAtualizado = horarioOficialCache.timestampUTC + tempoDecorrido;
+        return new Date(timestampAtualizado);
+    }
+    
+    // Se não temos cache válido ou está desatualizado, busca da API
+    const horarioOficial = await buscarHorarioOficial(timezone);
+    
+    if (horarioOficial) {
+        // Retorna diretamente o horário oficial (já está no cache)
+        return horarioOficial;
+    }
+    
+    // NÃO usa cache de outro timezone - sempre busca o correto
+    // Se a API falhar, retorna null para indicar que precisa tentar novamente
+    return null;
 }
 
 /**
@@ -258,9 +389,10 @@ function trocarIdioma(novoIdioma) {
  * - Data formatada (Dia DD Mês) à direita
  * 
  * Tudo é traduzido para o idioma atual (português ou italiano).
+ * Usa horário oficial do país via API, mostra "..." enquanto carrega.
  */
-function atualizarHorario() {
-    // Obtém elementos HTML e data/hora atual
+async function atualizarHorario() {
+    // Obtém elementos HTML
     const elementoHorario = document.getElementById('horario');
     const elementoData = document.getElementById('data');
     
@@ -269,44 +401,72 @@ function atualizarHorario() {
         return;
     }
     
-    const agora = new Date();
+    // Busca horário oficial (com cache)
+    const agora = await obterHorarioOficial();
     
-    // Formata horas, minutos e segundos (adiciona zero à esquerda se necessário)
-    const horas = String(agora.getHours()).padStart(2, '0');
-    const minutos = String(agora.getMinutes()).padStart(2, '0');
-    const segundos = String(agora.getSeconds()).padStart(2, '0');
+    // Se não conseguiu obter horário (API falhou), mostra indicador de carregamento
+    if (!agora) {
+        elementoHorario.textContent = '...';
+        elementoData.textContent = '...';
+        return;
+    }
     
-    // Array com nomes dos dias da semana traduzidos
-    // getDay() retorna: 0=domingo, 1=segunda, 2=terça, etc.
-    const diasSemana = [
-        traducoes[idiomaAtual]?.['dia-dom'] || 'Dom',
-        traducoes[idiomaAtual]?.['dia-seg'] || 'Seg',
-        traducoes[idiomaAtual]?.['dia-ter'] || 'Ter',
-        traducoes[idiomaAtual]?.['dia-qua'] || 'Qua',
-        traducoes[idiomaAtual]?.['dia-qui'] || 'Qui',
-        traducoes[idiomaAtual]?.['dia-sex'] || 'Sex',
-        traducoes[idiomaAtual]?.['dia-sab'] || 'Sáb'
-    ];
-    const diaSemana = diasSemana[agora.getDay()];
+    // Obtém o timezone correto para formatação
+    const timezone = TIMEZONES_POR_IDIOMA[idiomaAtual];
     
-    // Array com nomes dos meses traduzidos
-    // getMonth() retorna: 0=janeiro, 1=fevereiro, 2=março, etc.
-    const meses = [
-        traducoes[idiomaAtual]?.['mes-jan'] || 'Jan',
-        traducoes[idiomaAtual]?.['mes-fev'] || 'Fev',
-        traducoes[idiomaAtual]?.['mes-mar'] || 'Mar',
-        traducoes[idiomaAtual]?.['mes-abr'] || 'Abr',
-        traducoes[idiomaAtual]?.['mes-mai'] || 'Mai',
-        traducoes[idiomaAtual]?.['mes-jun'] || 'Jun',
-        traducoes[idiomaAtual]?.['mes-jul'] || 'Jul',
-        traducoes[idiomaAtual]?.['mes-ago'] || 'Ago',
-        traducoes[idiomaAtual]?.['mes-set'] || 'Set',
-        traducoes[idiomaAtual]?.['mes-out'] || 'Out',
-        traducoes[idiomaAtual]?.['mes-nov'] || 'Nov',
-        traducoes[idiomaAtual]?.['mes-dez'] || 'Dez'
-    ];
-    const mesAbreviado = meses[agora.getMonth()];
-    const dia = agora.getDate();
+    if (!timezone) {
+        elementoHorario.textContent = '...';
+        elementoData.textContent = '...';
+        return;
+    }
+    
+    // Usa Intl.DateTimeFormat para formatar no timezone correto, independente do navegador
+    // Calcula o timestamp UTC atualizado baseado no cache
+    const timestampParaFormatar = horarioOficialCache.timestampUTC !== null && 
+                                   horarioOficialCache.timestampLocal !== null
+        ? horarioOficialCache.timestampUTC + (Date.now() - horarioOficialCache.timestampLocal)
+        : agora.getTime();
+    
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: timezone,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    });
+    
+    const partesHorario = formatter.formatToParts(timestampParaFormatar);
+    const horas = partesHorario.find(p => p.type === 'hour').value.padStart(2, '0');
+    const minutos = partesHorario.find(p => p.type === 'minute').value.padStart(2, '0');
+    const segundos = partesHorario.find(p => p.type === 'second').value.padStart(2, '0');
+    
+    // Formata data no timezone correto
+    const formatterData = new Intl.DateTimeFormat('en-US', {
+        timeZone: timezone,
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short'
+    });
+    
+    const partesData = formatterData.formatToParts(timestampParaFormatar);
+    const dia = partesData.find(p => p.type === 'day').value;
+    const mesEn = partesData.find(p => p.type === 'month').value.toLowerCase();
+    
+    // Mapeia meses em inglês para traduções
+    const mesesMap = {
+        'jan': 'mes-jan', 'feb': 'mes-fev', 'mar': 'mes-mar', 'apr': 'mes-abr',
+        'may': 'mes-mai', 'jun': 'mes-jun', 'jul': 'mes-jul', 'aug': 'mes-ago',
+        'sep': 'mes-set', 'oct': 'mes-out', 'nov': 'mes-nov', 'dec': 'mes-dez'
+    };
+    
+    const diaSemanaEn = partesData.find(p => p.type === 'weekday').value.toLowerCase();
+    const diasMap = {
+        'sun': 'dia-dom', 'mon': 'dia-seg', 'tue': 'dia-ter', 'wed': 'dia-qua',
+        'thu': 'dia-qui', 'fri': 'dia-sex', 'sat': 'dia-sab'
+    };
+    
+    const diaSemana = traducoes[idiomaAtual]?.[diasMap[diaSemanaEn]] || diaSemanaEn;
+    const mesAbreviado = traducoes[idiomaAtual]?.[mesesMap[mesEn]] || mesEn;
     
     // Atualiza o conteúdo dos elementos HTML
     elementoHorario.textContent = `${horas}:${minutos}:${segundos}`;
@@ -334,25 +494,40 @@ function inicializar() {
         return;
     }
     
+    // Limpa cache na inicialização para garantir busca imediata
+    horarioOficialCache = {
+        timestampUTC: null,
+        timestampLocal: null,
+        timezone: null
+    };
+    ultimaConsultaAPI = 0;
+    
+    // Mostra indicador de carregamento enquanto busca o horário
+    elementoHorario.textContent = '...';
+    elementoData.textContent = '...';
+    
     // Inicializa a interface com o idioma salvo (ou português se não houver)
-    trocarIdioma(idiomaAtual);
+    // Aguarda para garantir que o horário seja buscado antes de continuar
+    trocarIdioma(idiomaAtual).catch(err => {
+        console.warn('Erro ao inicializar idioma:', err);
+    });
     
     // Adiciona event listeners nos botões de idioma
-    btnPortugues.addEventListener('click', function() {
-        trocarIdioma('pt-BR');
+    btnPortugues.addEventListener('click', async function() {
+        await trocarIdioma('pt-BR');
     });
     
-    btnItaliano.addEventListener('click', function() {
-        trocarIdioma('it-IT');
+    btnItaliano.addEventListener('click', async function() {
+        await trocarIdioma('it-IT');
     });
-    
-    // Atualiza o horário imediatamente
-    atualizarHorario();
     
     // Configura atualização automática a cada segundo
     // Usa setInterval e armazena o ID para possível limpeza futura
+    // Nota: atualizarHorario é async, mas não precisamos await no setInterval
     setInterval(function() {
-        atualizarHorario();
+        atualizarHorario().catch(err => {
+            // Silenciosamente ignora erros para não poluir o console
+        });
     }, 1000);
 }
 
