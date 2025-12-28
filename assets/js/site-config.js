@@ -1422,3 +1422,165 @@ function setupGlobalTouchGestures() {
         // Silenciosamente ignorar todos os erros para não quebrar o carregamento
     }
 })();
+
+// ============================================
+// VALIDAÇÃO DE DEPENDÊNCIAS
+// ============================================
+/**
+ * Valida se dependências necessárias estão disponíveis
+ * Útil para verificar se funções/objetos globais necessários foram carregados
+ * 
+ * @param {Object} dependencias - Objeto com nomes das dependências e tipos esperados
+ * @param {Object} opcoes - Opções de validação
+ * @param {boolean} opcoes.mostrarErros - Se true, mostra erros no console (padrão: true)
+ * @param {boolean} opcoes.lancarErro - Se true, lança exceção quando dependência não encontrada (padrão: false)
+ * @returns {Object} Objeto com resultado da validação { valido: boolean, faltando: Array<string> }
+ * 
+ * @example
+ * // Validar dependências básicas
+ * const resultado = validarDependencias({
+ *     'formatarNumero': 'function',
+ *     'SiteConfig': 'object',
+ *     'Chart': 'object' // Chart.js
+ * });
+ * 
+ * if (!resultado.valido) {
+ *     console.error('Dependências faltando:', resultado.faltando);
+ * }
+ * 
+ * @example
+ * // Validar com tratamento de erro
+ * const resultado = validarDependencias({
+ *     'formatarNumero': 'function',
+ *     'FAZENDA_DATABASE': 'object'
+ * }, { lancarErro: true });
+ */
+function validarDependencias(dependencias, opcoes = {}) {
+    const config = {
+        mostrarErros: opcoes.mostrarErros !== false,
+        lancarErro: opcoes.lancarErro === true
+    };
+    
+    const faltando = [];
+    const tipoIncorreto = [];
+    
+    for (const [nome, tipoEsperado] of Object.entries(dependencias)) {
+        // Verifica se existe no escopo global
+        const existe = typeof window !== 'undefined' && nome in window;
+        
+        if (!existe) {
+            faltando.push(nome);
+            continue;
+        }
+        
+        // Verifica tipo
+        const tipoReal = typeof window[nome];
+        if (tipoReal !== tipoEsperado) {
+            tipoIncorreto.push({ nome, esperado: tipoEsperado, real: tipoReal });
+        }
+    }
+    
+    const valido = faltando.length === 0 && tipoIncorreto.length === 0;
+    
+    if (!valido && config.mostrarErros) {
+        if (faltando.length > 0) {
+            console.error(`[Validação] Dependências não encontradas: ${faltando.join(', ')}`);
+        }
+        if (tipoIncorreto.length > 0) {
+            tipoIncorreto.forEach(({ nome, esperado, real }) => {
+                console.error(`[Validação] Tipo incorreto para '${nome}': esperado '${esperado}', encontrado '${real}'`);
+            });
+        }
+    }
+    
+    if (!valido && config.lancarErro) {
+        const mensagem = [
+            faltando.length > 0 ? `Dependências não encontradas: ${faltando.join(', ')}` : '',
+            tipoIncorreto.length > 0 ? `Tipos incorretos: ${tipoIncorreto.map(t => `${t.nome} (esperado: ${t.esperado}, real: ${t.real})`).join(', ')}` : ''
+        ].filter(Boolean).join(' | ');
+        
+        throw new Error(`Validação de dependências falhou: ${mensagem}`);
+    }
+    
+    return {
+        valido,
+        faltando,
+        tipoIncorreto: tipoIncorreto.map(t => t.nome),
+        todas: Object.keys(dependencias)
+    };
+}
+
+// Exportar para uso global (se necessário)
+if (typeof window !== 'undefined') {
+    window.validarDependencias = validarDependencias;
+}
+
+// ============================================
+// INICIALIZAÇÃO DE ÍCONES DE INFORMAÇÃO
+// ============================================
+/**
+ * Inicializa um ícone de informação com descrição toggle
+ * Padroniza o comportamento de mostrar/esconder descrições em todos os apps
+ *
+ * @param {string} iconId - ID do elemento do ícone de informação
+ * @param {string} descricaoId - ID do elemento da descrição
+ * @param {Object} opcoes - Opções de configuração
+ * @param {boolean} opcoes.inicialmenteVisivel - Se true, descrição começa visível (padrão: false)
+ *
+ * @example
+ * // Inicializar ícone de informação padrão
+ * inicializarIconeInfo('infoIconAutonomia', 'descricaoAutonomia');
+ *
+ * @example
+ * // Inicializar com descrição inicialmente visível
+ * inicializarIconeInfo('infoIconConsumo', 'descricaoConsumo', { inicialmenteVisivel: true });
+ */
+function inicializarIconeInfo(iconId, descricaoId, opcoes = {}) {
+    const config = {
+        inicialmenteVisivel: opcoes.inicialmenteVisivel === true
+    };
+
+    const infoIcon = document.getElementById(iconId);
+    const descricao = document.getElementById(descricaoId);
+
+    if (!infoIcon || !descricao) {
+        if (typeof console !== 'undefined' && console.warn) {
+            console.warn(`[inicializarIconeInfo] Elementos não encontrados: iconId="${iconId}", descricaoId="${descricaoId}"`);
+        }
+        return;
+    }
+
+    // Configurar estado inicial
+    if (!config.inicialmenteVisivel) {
+        descricao.style.display = 'none';
+    }
+
+    const toggleDescricao = () => {
+        const estaVisivel = descricao.style.display !== 'none';
+        if (estaVisivel) {
+            descricao.style.display = 'none';
+        } else {
+            descricao.style.display = 'block';
+        }
+    };
+
+    // Toggle ao clicar
+    infoIcon.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleDescricao();
+    });
+
+    // Toggle ao pressionar Enter ou Espaço (acessibilidade)
+    infoIcon.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleDescricao();
+        }
+    });
+}
+
+// Exportar para uso global
+if (typeof window !== 'undefined') {
+    window.inicializarIconeInfo = inicializarIconeInfo;
+}

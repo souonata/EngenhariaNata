@@ -104,10 +104,17 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderPotencia" data-i18n="label-potencia">Potência Máxima Nominal</label>
+                    <span class="info-icon" id="infoIconPotencia" role="button" tabindex="0" aria-label="Informação sobre potência máxima nominal" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputPotencia" class="valor-display valor-input" value="1000">
                         <span class="unidade" data-i18n="unit-watt">W</span>
                     </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoPotencia" style="display: none;">
+                    <span data-i18n="tooltip-potencia-texto">A potência máxima nominal representa a quantidade total de energia elétrica que será consumida pelo circuito, medida em watts (W). Este valor é usado para calcular a corrente elétrica necessária. Você pode encontrar este valor nas especificações dos equipamentos que serão conectados ao circuito.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderPotencia" data-step="-dynamic" aria-label="Diminuir potência">−</button>
@@ -120,17 +127,23 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderComprimento" data-i18n="label-comprimento">Distância do Circuito</label>
+                    <span class="info-icon" id="infoIconComprimento" role="button" tabindex="0" aria-label="Informação sobre distância do circuito" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputComprimento" class="valor-display valor-input" value="20">
                         <span class="unidade" data-i18n="unit-meter">m</span>
                     </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoComprimento" style="display: none;">
+                    <span data-i18n="tooltip-comprimento-texto">A distância do circuito é a distância entre a fonte de energia (disjuntor, transformador, etc.) e a carga (equipamento que consome energia). O cálculo considera automaticamente a ida e volta do circuito (dois condutores), então você deve informar apenas a distância simples entre os pontos.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderComprimento" data-step="-0.1" aria-label="Diminuir comprimento">−</button>
                     <input type="range" id="sliderComprimento" min="0.5" max="50" step="0.1" value="20">
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderComprimento" data-step="0.1" aria-label="Aumentar comprimento">+</button>
                 </div>
-                <p class="dica" data-i18n="dica-comprimento">💡 Distância entre a fonte e a carga<br>(o cálculo considera automaticamente ida e volta)</p>
             </div>
 
             <!-- Tensão (diferente para CC e CA) -->
@@ -141,34 +154,46 @@
             <div id="secaoTensaoCC" class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderTensaoCC" data-i18n="label-tensao">Tensão</label>
+                    <span class="info-icon" id="infoIconTensaoCC" role="button" tabindex="0" aria-label="Informação sobre tensão" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputTensaoCC" class="valor-display valor-input" value="12">
                         <span class="unidade" data-i18n="unit-volt">V</span>
                     </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoTensaoCC" style="display: none;">
+                    <span data-i18n="tooltip-tensao-cc-texto">A tensão é a diferença de potencial elétrico entre dois pontos do circuito, medida em volts (V). Para corrente contínua (CC), valores típicos incluem 3.3V, 5V, 9V, 12V, 15V, 20V, 24V, 36V, 48V, 60V, 72V e 96V. Este valor afeta diretamente o cálculo da corrente e da bitola necessária.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderTensaoCC" data-step="-1" aria-label="Diminuir tensão">−</button>
                     <input type="range" id="sliderTensaoCC" min="0" max="12" step="1" value="3">
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderTensaoCC" data-step="1" aria-label="Aumentar tensão">+</button>
                 </div>
-                <p class="dica" data-i18n="dica-tensao-cc">💡 Valores típicos: 3.3V, 5V, 9V, 12V, 15V, 20V, 24V, 36V, 48V, 60V, 72V, 96V</p>
             </div>
 
             <!-- Queda de Tensão -->
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderQuedaTensao" data-i18n="label-queda-tensao">Queda de Tensão Máxima</label>
+                    <span class="info-icon" id="infoIconQuedaTensao" role="button" tabindex="0" aria-label="Informação sobre queda de tensão máxima" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputQuedaTensao" class="valor-display valor-input" value="4">
                         <span class="unidade">%</span>
                     </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoQuedaTensao" style="display: none;">
+                    <span data-i18n="tooltip-queda-tensao-texto">A queda de tensão máxima é o percentual de redução de tensão permitido ao longo do circuito. Valores menores garantem melhor desempenho dos equipamentos, mas exigem fios mais grossos. Para projetos residenciais no Brasil, recomenda-se 3% a 4% conforme a NBR 5410. Valores maiores podem causar problemas de funcionamento dos equipamentos.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderQuedaTensao" data-step="-0.5" aria-label="Diminuir queda de tensão">−</button>
                     <input type="range" id="sliderQuedaTensao" min="1" max="5" step="0.5" value="4">
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderQuedaTensao" data-step="0.5" aria-label="Aumentar queda de tensão">+</button>
                 </div>
-                <p class="dica-recomendacao" data-i18n="dica-queda-tensao">✅ <strong>Recomendado para projetos residenciais no Brasil: 3%</strong> (padrão mais utilizado)</p>
             </div>
         </section>
 

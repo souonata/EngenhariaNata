@@ -1726,6 +1726,7 @@ function atualizarMemorialComValores() {
 // ============================================
 const traducoes = {
     'pt-BR': {
+        'dev-badge-header': '🚧 EM DESENVOLVIMENTO',
         'app-title': '☀️ Dimensionador de Aquecedor Solar Térmico',
         'app-subtitle': 'Cálculo para Sistema Termossifão com Tubos a Vácuo',
         'label-pessoas': 'Número de Pessoas',
@@ -1843,6 +1844,7 @@ const traducoes = {
         'btn-memorial': 'Ver Memorial de Cálculo'
     },
     'it-IT': {
+        'dev-badge-header': '🚧 IN SVILUPPO',
         'app-title': '☀️ Dimensionatore Riscaldatore Solare Termico',
         'app-subtitle': 'Calcolo per Sistema Termosifone con Tubi Sottovuoto',
         'label-pessoas': 'Numero di Persone',

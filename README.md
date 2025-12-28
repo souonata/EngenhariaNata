@@ -134,7 +134,12 @@ O app Energia Solar inclui um **Memorial de Cálculo** completo (botão "SAIBA M
 
 - **`GLOSSARIO.md`** — Glossário completo com termos técnicos, leis físicas e constantes explicadas de forma simples e didática
 - **`sobre/sobre.html`** — Informações detalhadas sobre cada app, funcionalidades, tecnologias usadas e características principais
-- **`.github/copilot-instructions.md`** — Instruções completas para desenvolvedores sobre padrões de código, estrutura do projeto e boas práticas
+- **`.github/copilot-instructions.md`** — Instruções completas para assistentes de IA e desenvolvedores sobre padrões de código, estrutura do projeto e boas práticas
+- **`.cursorrules`** — Regras rápidas para assistentes de IA (Cursor AI lê automaticamente)
+- **`.ai-instructions.md`** — Referência rápida para assistentes de IA
+- **`MELHORIAS_INFRAESTRUTURA.md`** — Documento de melhorias de infraestrutura baseado em análise e pesquisa acadêmica
+- **`config/versions.json`** — Arquivo centralizado de versionamento de todos os apps e assets
+- **`templates/`** — Templates padronizados para novos apps (.htaccess, CSP meta tags)
 - **`sitemap.xml`** — Mapa do site para indexação em mecanismos de busca
 - **`robots.txt`** — Instruções para bots de busca
 - **`REVISAO_APPS.md`** — Revisão técnica dos cálculos e memoriais de cada app

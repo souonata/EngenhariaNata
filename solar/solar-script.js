@@ -253,18 +253,25 @@ const CICLOS_LITIO = [
 ];
 
 // ============================================
-// PREÇOS DE INVERSORES (Tabela fixa)
 // ============================================
-
+// PREÇOS DE INVERSORES OFF-GRID COM MPPT INTEGRADO
+// ============================================
+// Em sistemas off-grid, todos os inversores modernos já vêm com MPPT integrado
+// Valores baseados em pesquisa de mercado 2024-2025
+// Cada inversor inclui capacidade MPPT proporcional à sua potência
 const PRECOS_INVERSOR_BRL = [
-    { kw: 1, preco: 1100 },
-    { kw: 2, preco: 1550 },
-    { kw: 5, preco: 2500 }
+    { kw: 1, preco: 1800, mpptA: 40 },   // Inversor 1kW com MPPT 40A integrado
+    { kw: 2, preco: 2800, mpptA: 60 },   // Inversor 2kW com MPPT 60A integrado
+    { kw: 3, preco: 3800, mpptA: 80 },   // Inversor 3kW com MPPT 80A integrado
+    { kw: 5, preco: 5500, mpptA: 100 },  // Inversor 5kW com MPPT 100A integrado
+    { kw: 6, preco: 6500, mpptA: 120 }   // Inversor 6kW com MPPT 120A integrado
 ];
 const PRECOS_INVERSOR_EUR = [
-    { kw: 1, preco: 178 },
-    { kw: 2, preco: 250 },
-    { kw: 5, preco: 404 }
+    { kw: 1, preco: 291, mpptA: 40 },
+    { kw: 2, preco: 452, mpptA: 60 },
+    { kw: 3, preco: 614, mpptA: 80 },
+    { kw: 5, preco: 889, mpptA: 100 },
+    { kw: 6, preco: 1050, mpptA: 120 }
 ];
 
 // ============================================
@@ -286,40 +293,21 @@ const PRECOS_MPPT_EUR = [
 ];
 
 /**
- * Calcula o preço estimado de um MPPT (controlador de carga) baseado na corrente máxima
+ * Obtém a capacidade MPPT integrada de um inversor baseado na sua potência
+ * Em sistemas off-grid, todos os inversores modernos já vêm com MPPT integrado
  * 
- * O MPPT precisa suportar a corrente máxima dos painéis. A corrente é calculada como:
- * Corrente (A) = Potência Total dos Painéis (W) / Tensão do Banco de Baterias (V)
- * 
- * @param {number} correnteA - Corrente máxima em ampères (A)
- * @param {string} moeda - Moeda desejada ('BRL' para Real ou 'EUR' para Euro)
- * @returns {number} Preço estimado do MPPT na moeda especificada
+ * @param {number} potenciaKw - Potência do inversor em kW
+ * @returns {number} Capacidade MPPT em ampères (A) ou null se não encontrado
  */
-function calcularPrecoMPPT(correnteA, moeda) {
-    const tabela = moeda === 'BRL' ? PRECOS_MPPT_BRL : PRECOS_MPPT_EUR;
-    
-    if (correnteA <= tabela[0].a) {
-        return tabela[0].preco;
-    }
-    
-    if (correnteA >= tabela[tabela.length - 1].a) {
-        const ultimo = tabela[tabela.length - 1];
-        const penultimo = tabela[tabela.length - 2];
-        const precoPorA = (ultimo.preco - penultimo.preco) / (ultimo.a - penultimo.a);
-        return ultimo.preco + (correnteA - ultimo.a) * precoPorA;
-    }
-    
-    for (let i = 0; i < tabela.length - 1; i++) {
-        const p1 = tabela[i];
-        const p2 = tabela[i + 1];
-        
-        if (correnteA >= p1.a && correnteA <= p2.a) {
-            const razao = (correnteA - p1.a) / (p2.a - p1.a);
-            return p1.preco + razao * (p2.preco - p1.preco);
+function obterCapacidadeMPPTIntegrado(potenciaKw) {
+    const tabela = PRECOS_INVERSOR_BRL; // Usa qualquer tabela, ambas têm mpptA
+    for (let i = 0; i < tabela.length; i++) {
+        if (tabela[i].kw >= potenciaKw) {
+            return tabela[i].mpptA;
         }
     }
-    
-    return tabela[tabela.length - 1].preco;
+    // Se não encontrou, retorna a maior capacidade disponível
+    return tabela[tabela.length - 1].mpptA;
 }
 
 /**
@@ -402,20 +390,35 @@ function calcularPrecoInversor(potenciaKw, moeda) {
 // ============================================
 const traducoes = {
     'pt-BR': {
+        'dev-badge-header': '🚧 EM DESENVOLVIMENTO',
         'app-title': '🔋 Energia Solar',
         'app-subtitle': 'Dimensionamento de Sistema Fotovoltaico',
         'label-consumo': 'Consumo Médio Mensal',
+        'tooltip-consumo-texto': 'O consumo médio mensal representa a quantidade de energia elétrica que você utiliza por mês, medida em quilowatt-hora (kWh). Este valor é usado para calcular a energia diária necessária e dimensionar todo o sistema fotovoltaico. Você pode encontrar este valor na sua conta de luz.',
         'label-autonomia': 'Dias de Autonomia',
         'tooltip-autonomia-texto': 'Os dias de autonomia representam quantos dias consecutivos o sistema deve conseguir fornecer energia sem receber luz solar. Por exemplo, se você configurar 3 dias de autonomia, o sistema será dimensionado para armazenar energia suficiente para funcionar por 3 dias mesmo sem sol, garantindo funcionamento durante períodos nublados ou chuvosos.',
         'label-tipo-bateria': 'Tipo de Bateria',
         'opt-chumbo': 'Chumbo-Ácido',
         'opt-litio': 'Lítio',
+        'res-mppt-integrado': 'MPPT (Integrado)',
         'label-vida-util': 'Vida Útil Desejada',
+        'tooltip-vida-util-texto': 'A vida útil desejada é o número de anos que você espera que o sistema funcione antes de precisar substituir as baterias. Baterias LiFePO4 podem durar até 25 anos com uso adequado, enquanto baterias AGM (chumbo-ácido) geralmente duram de 1 a 5 anos. Quanto maior a vida útil desejada, menor será o DoD (profundidade de descarga) diário para preservar as baterias.',
         'label-preco-kwh': 'Custo da Energia (kWh)',
+        'tooltip-preco-kwh-texto': 'O custo da energia elétrica por kWh é o preço que você paga pela energia da rede elétrica. Este valor é usado para calcular a economia financeira do sistema solar ao longo do tempo. Você pode ajustar este valor para simular diferentes cenários de tarifa ou projeções futuras.',
         'dica-preco-kwh': '💡 Ajuste para simular diferentes cenários de tarifa',
         'nota-preco-kwh-pt': 'Valor padrão: R$ 0,75/kWh (média ANEEL, dez/2024)',
         'nota-preco-kwh-it': 'Valor padrão: € 0,30/kWh (média ARERA, dez/2024)',
+        'label-aumento-anual-energia': 'Aumento Anual do Custo da Energia',
+        'tooltip-aumento-anual-energia-texto': 'O aumento anual do custo da energia representa a taxa percentual de crescimento do preço da energia elétrica ao longo dos anos. Este valor é usado para calcular a economia acumulada considerando que a energia fica mais cara com o tempo. O valor padrão é baseado no histórico dos últimos 50 anos no Brasil e na Itália.',
+        'dica-aumento-anual-energia': '💡 Baseado no histórico dos últimos 50 anos',
+        'nota-aumento-anual-energia-pt': 'Valor padrão: 8%/ano (histórico Brasil 2000-2024)',
+        'nota-aumento-anual-energia-it': 'Valor padrão: 6%/ano (histórico Itália)',
+        'label-periodo-analise': 'Período de Análise do Gráfico',
+        'tooltip-periodo-analise-texto': 'O período de análise do gráfico define quantos anos serão considerados na análise financeira de amortização e lucro líquido. O período mínimo é 1x a vida útil máxima da bateria selecionada (25 anos para LiFePO4, 5 anos para AGM), e o máximo é 4x esse valor. Valores maiores permitem ver projeções de longo prazo.',
+        'dica-periodo-analise': '💡 Ajuste o período de análise do gráfico (1x a 4x vida útil máxima)',
+        'unidade-anos': 'anos',
         'label-preco-bateria-kwh': 'Preço da Bateria (por kWh)',
+        'tooltip-preco-bateria-kwh-texto': 'O preço da bateria por kWh representa o custo unitário de capacidade de armazenamento de energia. Este valor varia conforme o tipo de bateria (LiFePO4 é mais caro que AGM) e o mercado. Você pode ajustar este valor para simular diferentes custos de baterias e ver como isso afeta o custo total do sistema.',
         'dica-preco-bateria-kwh': '💡 Ajuste para simular diferentes custos de baterias',
         'nota-preco-bateria-kwh-pt': 'Valor padrão: R$ 2.000/kWh (média mercado LiFePO4, dez/2024)',
         'nota-preco-bateria-kwh-it': 'Valor padrão: € 320/kWh (média mercado LiFePO4, dez/2024)',
@@ -448,8 +451,8 @@ const traducoes = {
         'memorial-passo3-title': '3️⃣ Passo 3: Calcular Capacidade Necessária de Baterias',
         'memorial-passo4-title': '4️⃣ Passo 4: Calcular Número de Baterias',
         'memorial-passo5-title': '5️⃣ Passo 5: Calcular Número de Painéis Solares',
-        'memorial-passo6-title': '6️⃣ Passo 6: Dimensionar o Inversor',
-        'memorial-passo7-title': '7️⃣ Passo 7: Dimensionar o MPPT (Controlador de Carga)',
+        'memorial-passo6-title': '6️⃣ Passo 6: Dimensionar o Inversor com MPPT Integrado',
+        'memorial-passo7-title': '7️⃣ Passo 7: Verificar Capacidade MPPT do Inversor',
         'memorial-passo8-title': '8️⃣ Passo 8: Calcular Custo Total Estimado',
         'memorial-resumo-title': '📊 Resumo dos Cálculos Atuais',
         'memorial-formula': 'Fórmula:',
@@ -464,8 +467,8 @@ const traducoes = {
         'memorial-passo3-explicacao': 'Calculamos a capacidade necessária por dois critérios e escolhemos o maior: um para garantir a vida útil desejada e outro para garantir os dias de autonomia sem sol.',
         'memorial-passo4-explicacao': 'Arredondamos para cima para garantir que temos capacidade suficiente. Para tensões 24V e 48V, garantimos número par de baterias para facilitar a montagem em série/paralelo.',
         'memorial-passo5-explicacao': 'Os painéis precisam gerar energia suficiente para recarregar as baterias, considerando perdas do sistema (cabo, MPPT, inversor). A eficiência do sistema de 80% considera todas as perdas. Usamos HSP (Horas de Sol Pleno) de 5 horas/dia para estimar a geração diária, que representa o número médio de horas em que a radiação solar atinge 1000 W/m².',
-        'memorial-passo6-explicacao': 'O inversor converte DC das baterias para AC da casa. Deve ter capacidade para o consumo de pico típico de uma residência, não precisa ter a capacidade total dos painéis. O fator de pico de 5x considera que o consumo não é constante ao longo do dia.',
-        'memorial-passo7-explicacao': 'O MPPT (Maximum Power Point Tracking) controla o carregamento das baterias pelos painéis. Precisa suportar a corrente máxima de todos os painéis operando no pico. A corrente é calculada dividindo a potência total dos painéis pela tensão do banco de baterias. Valores comerciais comuns: 20A, 40A, 60A, 100A.',
+        'memorial-passo6-explicacao': 'Em sistemas off-grid, todos os inversores modernos já vêm com MPPT integrado. O inversor converte DC das baterias para AC da casa e deve ter capacidade para o consumo de pico típico de uma residência. O fator de pico de 5x considera que o consumo não é constante ao longo do dia. Além disso, o inversor escolhido deve ter capacidade MPPT suficiente para suportar a corrente máxima dos painéis.',
+        'memorial-passo7-explicacao': 'Verifica-se se o inversor escolhido tem capacidade MPPT integrada suficiente para os painéis. A corrente necessária é calculada dividindo a potência total dos painéis pela tensão do banco de baterias. Se o inversor inicial não tiver MPPT suficiente, escolhe-se um inversor maior até encontrar um com capacidade adequada. Isso garante que o sistema funcione corretamente sem necessidade de MPPT separado.',
         'memorial-passo8-explicacao': 'Os preços podem ser personalizados na página de configurações. Os valores são convertidos automaticamente para a moeda do idioma selecionado (R$ para português, € para italiano).',
         'memorial-resumo-energia-diaria': 'Energia Diária:',
         'memorial-resumo-dod': 'DoD Alvo:',
@@ -488,15 +491,15 @@ const traducoes = {
         'memorial-formula-passo5-3': 'Número de Painéis = Arredondar para Cima(Potência Necessária ÷ Potência por Painel)',
         'memorial-formula-passo6-1': 'Consumo Médio Horário = Energia Diária (kWh) ÷ 24 horas',
         'memorial-formula-passo6-2': 'Consumo de Pico = Consumo Médio Horário × Fator de Pico (5x)',
-        'memorial-formula-passo6-3': 'Potência do Inversor (kW) = Máximo(Consumo de Pico, 1 kW mínimo)',
+        'memorial-formula-passo6-3': 'Potência Mínima do Inversor (kW) = Máximo(Consumo de Pico, 1 kW mínimo)',
         'memorial-formula-passo7-1': 'Potência Total dos Painéis = Número de Painéis × Potência por Painel (W)',
-        'memorial-formula-passo7-2': 'Corrente Máxima = Potência Total dos Painéis ÷ Tensão do Banco (V)',
-        'memorial-formula-passo7-3': 'Corrente do MPPT = Arredondar para Cima(Corrente Máxima) para valor comercial',
+        'memorial-formula-passo7-2': 'Corrente Máxima Necessária = Potência Total dos Painéis ÷ Tensão do Banco (V)',
+        'memorial-formula-passo7-3': 'Se Capacidade MPPT do Inversor < Corrente Máxima Necessária, aumenta potência do inversor até encontrar um com MPPT adequado',
         'memorial-formula-passo8-1': 'Custo Painéis = Número de Painéis × Preço por Painel',
         'memorial-formula-passo8-2': 'Custo Baterias = Número de Baterias × Preço por Bateria',
-        'memorial-formula-passo8-3': 'Custo Inversor = Preço do Inversor (da tabela de preços)',
-        'memorial-formula-passo8-4': 'Custo MPPT = Preço do MPPT (da tabela de preços)',
-        'memorial-formula-passo8-5': 'Custo Total = Custo Painéis + Custo Baterias + Custo Inversor + Custo MPPT',
+        'memorial-formula-passo8-3': 'Custo Inversor = Preço do Inversor com MPPT Integrado (da tabela de preços)',
+        'memorial-formula-passo8-4': 'Custo MPPT = 0 (já incluído no inversor)',
+        'memorial-formula-passo8-5': 'Custo Total = Custo Painéis + Custo Baterias + Custo Inversor',
         'aria-home': 'Voltar para a tela inicial',
         'watermark-dev': '🚧 EM DESENVOLVIMENTO',
         'learn-more': 'SAIBA MAIS!',
@@ -510,17 +513,31 @@ const traducoes = {
         'app-title': '🔋 Energia Solare',
         'app-subtitle': 'Dimensionamento Impianto Fotovoltaico',
         'label-consumo': 'Consumo Medio Mensile',
+        'tooltip-consumo-texto': 'Il consumo medio mensile rappresenta la quantità di energia elettrica che utilizzi al mese, misurata in chilowattora (kWh). Questo valore viene utilizzato per calcolare l\'energia giornaliera necessaria e dimensionare l\'intero sistema fotovoltaico. Puoi trovare questo valore nella tua bolletta elettrica.',
         'label-autonomia': 'Giorni di Autonomia',
         'tooltip-autonomia-texto': 'I giorni di autonomia rappresentano quanti giorni consecutivi il sistema deve essere in grado di fornire energia senza ricevere luce solare. Ad esempio, se imposti 3 giorni di autonomia, il sistema sarà dimensionato per immagazzinare energia sufficiente per funzionare per 3 giorni anche senza sole, garantendo il funzionamento durante periodi nuvolosi o piovosi.',
         'label-tipo-bateria': 'Tipo di Batteria',
         'opt-chumbo': 'Piombo-Acido',
         'opt-litio': 'Litio',
+        'res-mppt-integrado': 'MPPT (Integrato)',
         'label-vida-util': 'Vita Utile Desiderata',
+        'tooltip-vida-util-texto': 'La vita utile desiderata è il numero di anni che ti aspetti che il sistema funzioni prima di dover sostituire le batterie. Le batterie LiFePO4 possono durare fino a 25 anni con un uso adeguato, mentre le batterie AGM (piombo-acido) generalmente durano da 1 a 5 anni. Maggiore è la vita utile desiderata, minore sarà il DoD (profondità di scarica) giornaliero per preservare le batterie.',
         'label-preco-kwh': 'Costo dell\'Energia (kWh)',
+        'tooltip-preco-kwh-texto': 'Il costo dell\'energia elettrica per kWh è il prezzo che paghi per l\'energia della rete elettrica. Questo valore viene utilizzato per calcolare il risparmio finanziario del sistema solare nel tempo. Puoi regolare questo valore per simulare diversi scenari tariffari o proiezioni future.',
         'dica-preco-kwh': '💡 Regola per simulare diversi scenari tariffari',
         'nota-preco-kwh-pt': 'Valore predefinito: R$ 0,75/kWh (media ANEEL, dic/2024)',
         'nota-preco-kwh-it': 'Valore predefinito: € 0,30/kWh (media ARERA, dic/2024)',
+        'label-aumento-anual-energia': 'Aumento Annuo del Costo dell\'Energia',
+        'tooltip-aumento-anual-energia-texto': 'L\'aumento annuo del costo dell\'energia rappresenta il tasso percentuale di crescita del prezzo dell\'energia elettrica nel corso degli anni. Questo valore viene utilizzato per calcolare il risparmio accumulato considerando che l\'energia diventa più costosa nel tempo. Il valore predefinito è basato sulla storia degli ultimi 50 anni in Brasile e in Italia.',
+        'dica-aumento-anual-energia': '💡 Basato sulla storia degli ultimi 50 anni',
+        'nota-aumento-anual-energia-pt': 'Valore predefinito: 8%/anno (storia Brasile 2000-2024)',
+        'nota-aumento-anual-energia-it': 'Valore predefinito: 6%/anno (storia Italia)',
+        'label-periodo-analise': 'Periodo di Analisi del Grafico',
+        'tooltip-periodo-analise-texto': 'Il periodo di analisi del grafico definisce quanti anni saranno considerati nell\'analisi finanziaria di ammortamento e profitto netto. Il periodo minimo è 1x la vita utile massima della batteria selezionata (25 anni per LiFePO4, 5 anni per AGM), e il massimo è 4x quel valore. Valori maggiori consentono di vedere proiezioni a lungo termine.',
+        'dica-periodo-analise': '💡 Regola il periodo di analisi del grafico (1x a 4x vita utile massima)',
+        'unidade-anos': 'anni',
         'label-preco-bateria-kwh': 'Prezzo Batteria (per kWh)',
+        'tooltip-preco-bateria-kwh-texto': 'Il prezzo della batteria per kWh rappresenta il costo unitario di capacità di accumulo di energia. Questo valore varia in base al tipo di batteria (LiFePO4 è più costosa dell\'AGM) e al mercato. Puoi regolare questo valore per simulare diversi costi delle batterie e vedere come ciò influisce sul costo totale del sistema.',
         'dica-preco-bateria-kwh': '💡 Regola per simulare diversi costi delle batterie',
         'nota-preco-bateria-kwh-pt': 'Valore predefinito: R$ 2.000/kWh (media mercato LiFePO4, dic/2024)',
         'nota-preco-bateria-kwh-it': 'Valore predefinito: € 320/kWh (media mercato LiFePO4, dic/2024)',
@@ -559,8 +576,8 @@ const traducoes = {
         'memorial-passo3-title': '3️⃣ Passo 3: Calcolare Capacità Necessaria delle Batterie',
         'memorial-passo4-title': '4️⃣ Passo 4: Calcolare Numero di Batterie',
         'memorial-passo5-title': '5️⃣ Passo 5: Calcolare Numero di Pannelli Solari',
-        'memorial-passo6-title': '6️⃣ Passo 6: Dimensionare l\'Inverter',
-        'memorial-passo7-title': '7️⃣ Passo 7: Dimensionare il MPPT (Controller di Carica)',
+        'memorial-passo6-title': '6️⃣ Passo 6: Dimensionare l\'Inverter con MPPT Integrato',
+        'memorial-passo7-title': '7️⃣ Passo 7: Verificare Capacità MPPT dell\'Inverter',
         'memorial-passo8-title': '8️⃣ Passo 8: Calcolare Costo Totale Stimato',
         'memorial-resumo-title': '📊 Riepilogo dei Calcoli Attuali',
         'memorial-formula': 'Formula:',
@@ -575,8 +592,8 @@ const traducoes = {
         'memorial-passo3-explicacao': 'Calcoliamo la capacità necessaria con due criteri e scegliamo il maggiore: uno per garantire la vita utile desiderata e l\'altro per garantire i giorni di autonomia senza sole.',
         'memorial-passo4-explicacao': 'Arrotondiamo per eccesso per garantire di avere capacità sufficiente. Per tensioni 24V e 48V, garantiamo un numero pari di batterie per facilitare il montaggio in serie/parallelo.',
         'memorial-passo5-explicacao': 'I pannelli devono generare energia sufficiente per ricaricare le batterie, considerando le perdite del sistema (cavo, MPPT, inverter). L\'efficienza del sistema dell\'80% considera tutte le perdite. Usiamo HSP (Ore di Sole Pieno) di 5 ore/giorno per stimare la generazione giornaliera, che rappresenta il numero medio di ore in cui la radiazione solare raggiunge 1000 W/m².',
-        'memorial-passo6-explicacao': 'L\'inverter converte DC delle batterie in AC della casa. Deve avere capacità per il consumo di picco tipico di una residenza, non deve avere la capacità totale dei pannelli. Il fattore di picco di 5x considera che il consumo non è costante durante il giorno.',
-        'memorial-passo7-explicacao': 'Il MPPT (Maximum Power Point Tracking) controlla la ricarica delle batterie da parte dei pannelli. Deve supportare la corrente massima di tutti i pannelli operanti al picco. La corrente viene calcolata dividendo la potenza totale dei pannelli per la tensione del banco di batterie. Valori commerciali comuni: 20A, 40A, 60A, 100A.',
+        'memorial-passo6-explicacao': 'Nei sistemi off-grid, tutti gli inverter moderni includono già MPPT integrato. L\'inverter converte DC delle batterie in AC della casa e deve avere capacità per il consumo di picco tipico di una residenza. Il fattore di picco di 5x considera che il consumo non è costante durante il giorno. Inoltre, l\'inverter scelto deve avere capacità MPPT sufficiente per supportare la corrente massima dei pannelli.',
+        'memorial-passo7-explicacao': 'Si verifica se l\'inverter scelto ha capacità MPPT integrata sufficiente per i pannelli. La corrente necessaria viene calcolata dividendo la potenza totale dei pannelli per la tensione del banco di batterie. Se l\'inverter iniziale non ha MPPT sufficiente, si sceglie un inverter più grande fino a trovarne uno con capacità adeguata. Questo garantisce che il sistema funzioni correttamente senza necessità di MPPT separato.',
         'memorial-passo8-explicacao': 'I prezzi possono essere personalizzati nella pagina delle impostazioni. I valori vengono convertiti automaticamente nella valuta della lingua selezionata (R$ per portoghese, € per italiano).',
         'memorial-resumo-energia-diaria': 'Energia Giornaliera:',
         'memorial-resumo-dod': 'DoD Obiettivo:',
@@ -599,15 +616,15 @@ const traducoes = {
         'memorial-formula-passo5-3': 'Numero di Pannelli = Arrotondare per Eccesso(Potenza Necessaria ÷ Potenza per Pannello)',
         'memorial-formula-passo6-1': 'Consumo Medio Orario = Energia Giornaliera (kWh) ÷ 24 ore',
         'memorial-formula-passo6-2': 'Consumo di Picco = Consumo Medio Orario × Fattore di Picco (5x)',
-        'memorial-formula-passo6-3': 'Potenza dell\'Inverter (kW) = Massimo(Consumo di Picco, 1 kW minimo)',
+        'memorial-formula-passo6-3': 'Potenza Minima dell\'Inverter (kW) = Massimo(Consumo di Picco, 1 kW minimo)',
         'memorial-formula-passo7-1': 'Potenza Totale dei Pannelli = Numero di Pannelli × Potenza per Pannello (W)',
-        'memorial-formula-passo7-2': 'Corrente Massima = Potenza Totale dei Pannelli ÷ Tensione del Banco (V)',
-        'memorial-formula-passo7-3': 'Corrente del MPPT = Arrotondare per Eccesso(Corrente Massima) per valore commerciale',
+        'memorial-formula-passo7-2': 'Corrente Massima Necessaria = Potenza Totale dei Pannelli ÷ Tensione del Banco (V)',
+        'memorial-formula-passo7-3': 'Se Capacità MPPT dell\'Inverter < Corrente Massima Necessaria, aumenta potenza dell\'inverter fino a trovarne uno con MPPT adeguato',
         'memorial-formula-passo8-1': 'Costo Pannelli = Numero di Pannelli × Prezzo per Pannello',
         'memorial-formula-passo8-2': 'Costo Batterie = Numero di Batterie × Prezzo per Batteria',
-        'memorial-formula-passo8-3': 'Costo Inverter = Prezzo dell\'Inverter (dalla tabella dei prezzi)',
-        'memorial-formula-passo8-4': 'Costo MPPT = Prezzo del MPPT (dalla tabella dei prezzi)',
-        'memorial-formula-passo8-5': 'Costo Totale = Costo Pannelli + Costo Batterie + Costo Inverter + Costo MPPT',
+        'memorial-formula-passo8-3': 'Costo Inverter = Prezzo dell\'Inverter con MPPT Integrato (dalla tabella dei prezzi)',
+        'memorial-formula-passo8-4': 'Costo MPPT = 0 (già incluso nell\'inverter)',
+        'memorial-formula-passo8-5': 'Costo Totale = Costo Pannelli + Costo Batterie + Costo Inverter',
         'graficos-title': '📊 Visualizzazioni',
         'grafico-amortizacao-title': 'Analisi di Ammortamento del Sistema',
         'grafico-sazonalidade-title': 'Stagionalità della Generazione Solare'
@@ -638,11 +655,38 @@ function atualizarNotasValoresPadrao() {
         notaPrecoBateriaKWh.textContent = traducoes[idiomaAtual]?.[chaveNota] || '';
     }
     
-    // Atualizar limites do slider de preço kWh (1/4 e 4x do valor padrão)
+    // Atualizar slider de aumento anual do custo da energia
+    const sliderAumentoAnualEnergia = document.getElementById('sliderAumentoAnualEnergia');
+    const inputAumentoAnualEnergia = document.getElementById('inputAumentoAnualEnergia');
+    const notaAumentoAnualEnergia = document.getElementById('notaAumentoAnualEnergia');
+    
+    if (sliderAumentoAnualEnergia) {
+        const valorPadrao = AUMENTO_ANUAL_ENERGIA[idiomaAtual] || AUMENTO_ANUAL_ENERGIA['pt-BR'];
+        // Limites: 1/5 e 5x do valor padrão
+        const minValor = valorPadrao / 5;
+        const maxValor = valorPadrao * 5;
+        // Arredondar para múltiplos de 0.1 para manter o step consistente
+        sliderAumentoAnualEnergia.min = (Math.floor(minValor / 0.1) * 0.1).toFixed(1);
+        sliderAumentoAnualEnergia.max = (Math.ceil(maxValor / 0.1) * 0.1).toFixed(1);
+        
+        // Atualizar valor atual para o padrão do idioma
+        sliderAumentoAnualEnergia.value = valorPadrao.toFixed(1);
+        if (inputAumentoAnualEnergia) {
+            inputAumentoAnualEnergia.value = formatarDecimalComVirgula(valorPadrao, 1);
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAumentoAnualEnergia);
+        }
+    }
+    
+    if (notaAumentoAnualEnergia) {
+        const chaveNota = idiomaAtual === 'pt-BR' ? 'nota-aumento-anual-energia-pt' : 'nota-aumento-anual-energia-it';
+        notaAumentoAnualEnergia.textContent = traducoes[idiomaAtual]?.[chaveNota] || '';
+    }
+    
+    // Atualizar limites do slider de preço kWh (1/20 e 4x do valor padrão)
     const sliderPrecoKWh = document.getElementById('sliderPrecoKWh');
     if (sliderPrecoKWh) {
         const valorPadrao = PRECO_KWH[idiomaAtual] || PRECO_KWH['pt-BR'];
-        const minValor = valorPadrao / 4;
+        const minValor = valorPadrao / 20;
         const maxValor = valorPadrao * 4;
         // Arredondar para múltiplos de 0.05 para manter o step consistente
         sliderPrecoKWh.min = (Math.floor(minValor / 0.05) * 0.05).toFixed(2);
@@ -675,10 +719,12 @@ function atualizarNotasValoresPadrao() {
         // Atualizar constante global para compatibilidade
         PRECO_BATERIA_KWH[idiomaAtual] = valorPadrao;
         
-        const minValor = Math.round(valorPadrao / 4);
+        // Mínimo: 1/100 do valor padrão, máximo: 4x do valor padrão
+        const minValor = Math.round(valorPadrao / 100);
         const maxValor = Math.round(valorPadrao * 4);
-        // Arredondar para múltiplos de 100 para manter o step consistente
-        sliderPrecoBateriaKWh.min = Math.floor(minValor / 100) * 100;
+        // Arredondar mínimo para múltiplos de 10 para manter consistência com o step
+        sliderPrecoBateriaKWh.min = Math.floor(minValor / 10) * 10;
+        // Máximo arredondado para múltiplos de 100 para manter o step consistente
         sliderPrecoBateriaKWh.max = Math.ceil(maxValor / 100) * 100;
         
         // Atualizar valor atual para o novo padrão do tipo de bateria
@@ -909,15 +955,27 @@ function ajustarValor(targetId, step) {
     // Arredonda baseado no tipo de slider
     // Consumo e Autonomia: valores inteiros
     // Vida Útil: pode ter decimais (arredondamos para uma casa decimal)
+    // Preço kWh: arredonda para múltiplos do step (0.05)
     if (targetId === 'sliderConsumo' || targetId === 'sliderAutonomia') {
         valor = Math.round(valor);
     } else if (targetId === 'sliderVidaUtil') {
         // Para vida útil, arredonda para inteiro se o step for inteiro
         valor = Math.round(valor);
+    } else if (targetId === 'sliderPrecoKWh') {
+        // Para preço kWh, arredonda para múltiplos do step (0.05)
+        valor = Math.round(valor / stepAttr) * stepAttr;
+        // Garante precisão de 2 casas decimais
+        valor = Math.round(valor * 100) / 100;
+    } else if (targetId === 'sliderPeriodoAnalise') {
+        // Para período de análise, arredonda para inteiro
+        valor = Math.round(valor);
     } else {
         // Para outros sliders, uma casa decimal
         valor = Math.round(valor * 10) / 10;
     }
+    
+    // Garante que o valor fique dentro dos limites
+    valor = Math.max(min, Math.min(max, valor));
     
     // Atualiza o slider
     slider.value = valor;
@@ -937,6 +995,33 @@ function ajustarValor(targetId, step) {
         if (input) {
             input.value = valor;
         }
+    } else if (targetId === 'sliderPrecoKWh') {
+        // Para slider de preço kWh, atualiza o input correspondente
+        const inputPrecoKWh = document.getElementById('inputPrecoKWh');
+        if (inputPrecoKWh) {
+            inputPrecoKWh.value = formatarDecimalComVirgula(valor, 2);
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPrecoKWh);
+        }
+        // Dispara evento input para atualizar a interface
+        slider.dispatchEvent(new Event('input', { bubbles: true }));
+    } else if (targetId === 'sliderAumentoAnualEnergia') {
+        // Para slider de aumento anual, atualiza o input correspondente
+        const inputAumentoAnualEnergia = document.getElementById('inputAumentoAnualEnergia');
+        if (inputAumentoAnualEnergia) {
+            inputAumentoAnualEnergia.value = formatarDecimalComVirgula(valor, 1);
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAumentoAnualEnergia);
+        }
+        // Dispara evento input para atualizar a interface
+        slider.dispatchEvent(new Event('input', { bubbles: true }));
+    } else if (targetId === 'sliderPeriodoAnalise') {
+        // Para slider de período de análise, atualiza o input correspondente
+        const inputPeriodoAnalise = document.getElementById('inputPeriodoAnalise');
+        if (inputPeriodoAnalise) {
+            inputPeriodoAnalise.value = Math.round(valor).toString();
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPeriodoAnalise);
+        }
+        // Dispara evento input para atualizar a interface
+        slider.dispatchEvent(new Event('input', { bubbles: true }));
     }
     
     // Dispara o evento 'input' no slider para acionar os event listeners
@@ -1067,6 +1152,18 @@ const PRECO_KWH = {
     'it-IT': 0.30   // €/kWh - Média Itália (ARERA 2024-2025)
 };
 
+// ============================================
+// AUMENTO ANUAL DO CUSTO DA ENERGIA (%)
+// ============================================
+// Valores baseados no histórico dos últimos 50 anos:
+// Brasil: ~8% ao ano (média entre 2000-2024: aumento de 1.299% em 24 anos ≈ 11.3%/ano, 
+//         2010-2024: aumento de 177% em 15 anos ≈ 7%/ano, média conservadora: 8%)
+// Itália: ~6% ao ano (histórico similar, mas geralmente um pouco menor que Brasil)
+const AUMENTO_ANUAL_ENERGIA = {
+    'pt-BR': 8.0,   // % ao ano (Brasil)
+    'it-IT': 6.0    // % ao ano (Itália)
+};
+
 // Valores padrão de preço da bateria por kWh
 // Preços de baterias LiFePO4 (Lítio)
 // Baseado em pesquisa de mercado: Brasil R$ 2.500-3.500, Itália € 500-1.000
@@ -1185,47 +1282,123 @@ function atualizarGraficoAmortizacao(dados) {
     // Calcular economia mensal (assumindo que o sistema gera 100% do consumo)
     const economiaMensal = consumoMensal * precoKWh;
     
-    // Calcular custo de substituição das baterias ao longo dos anos
-    // Se vidaUtil >= 30 anos, não há substituição necessária
-    // Caso contrário, calcula quantas substituições são necessárias em 30 anos
-    const anosAnalise = 30;
+    // Obter aumento anual do custo da energia do slider ou usar valor padrão
+    const sliderAumentoAnual = document.getElementById('sliderAumentoAnualEnergia');
+    const aumentoAnualPercentual = sliderAumentoAnual ? (parseFloat(sliderAumentoAnual.value) || AUMENTO_ANUAL_ENERGIA[idiomaAtual] || AUMENTO_ANUAL_ENERGIA['pt-BR']) : (AUMENTO_ANUAL_ENERGIA[idiomaAtual] || AUMENTO_ANUAL_ENERGIA['pt-BR']);
+    const fatorAumentoAnual = 1 + (aumentoAnualPercentual / 100);
+    
+    // Obter período de análise do slider ou usar valor padrão baseado na vida útil máxima da bateria
+    const sliderPeriodoAnalise = document.getElementById('sliderPeriodoAnalise');
+    const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
+    const tipoBateriaAtual = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
+    const vidaUtilMaxima = tipoBateriaAtual === 'litio' ? 25 : 5;
+    
+    let anosAnalise = vidaUtilMaxima; // Valor padrão: 1x vida útil máxima
+    
+    if (sliderPeriodoAnalise) {
+        // Atualizar limites do slider baseado no tipo de bateria
+        // Min: 1x vida útil máxima, Max: 4x vida útil máxima
+        sliderPeriodoAnalise.min = vidaUtilMaxima.toString();
+        sliderPeriodoAnalise.max = (vidaUtilMaxima * 4).toString();
+        
+        // Obter valor do slider
+        anosAnalise = parseInt(sliderPeriodoAnalise.value) || vidaUtilMaxima;
+        
+        // Garantir que o valor está dentro dos limites
+        const minPeriodo = vidaUtilMaxima;
+        const maxPeriodo = vidaUtilMaxima * 4;
+        anosAnalise = Math.max(minPeriodo, Math.min(maxPeriodo, anosAnalise));
+        
+        // Atualizar slider e input se necessário
+        sliderPeriodoAnalise.value = anosAnalise.toString();
+        const inputPeriodoAnalise = document.getElementById('inputPeriodoAnalise');
+        if (inputPeriodoAnalise) {
+            inputPeriodoAnalise.value = anosAnalise.toString();
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPeriodoAnalise);
+        }
+    }
+    
     const mesesAnalise = anosAnalise * 12;
     const substituicoesBaterias = [];
     
     if (vidaUtil > 0 && vidaUtil < anosAnalise && custoBaterias > 0) {
-        // Calcular quantas vezes as baterias precisam ser substituídas
-        // Exemplo: vidaUtil = 5 anos → substituições aos 5, 10, 15, 20, 25 anos (5 vezes)
+        // Calcular quantas vezes as baterias precisam ser substituídas no período de análise
+        // Exemplo: vidaUtil = 5 anos, anosAnalise = 20 → substituições aos 5, 10, 15 anos (3 vezes)
         let anoSubstituicao = vidaUtil;
         while (anoSubstituicao < anosAnalise) {
-            substituicoesBaterias.push({
-                ano: anoSubstituicao,
-                mes: Math.round(anoSubstituicao * 12)
-            });
+            // Não substituir baterias nos anos de substituição completa do sistema (aos 25, 50, 75 anos)
+            // pois já estão incluídas na substituição completa
+            if (anoSubstituicao % 25 !== 0) {
+                substituicoesBaterias.push({
+                    ano: anoSubstituicao,
+                    mes: Math.round(anoSubstituicao * 12)
+                });
+            }
             anoSubstituicao += vidaUtil;
         }
     }
     
+    // Calcular substituições completas do sistema a cada 25 anos
+    // Inclui: placas solares, inversor, baterias, cabos, etc. (custo total do sistema)
+    const substituicoesSistemaCompleto = [];
+    const intervaloSubstituicaoCompleta = 25; // Anos
+    let anoSubstituicaoCompleta = intervaloSubstituicaoCompleta;
+    while (anoSubstituicaoCompleta <= anosAnalise) {
+        substituicoesSistemaCompleto.push({
+            ano: anoSubstituicaoCompleta,
+            mes: Math.round(anoSubstituicaoCompleta * 12)
+        });
+        anoSubstituicaoCompleta += intervaloSubstituicaoCompleta;
+    }
+    
     // Calcular período de payback inicial (sem considerar substituições)
-    const paybackMeses = Math.ceil(custoTotal / economiaMensal);
+    // Considera aumento anual do custo da energia
+    // Usa aproximação: payback ocorre quando economia acumulada = custo total
+    // Como a economia aumenta anualmente, precisamos calcular iterativamente
+    let paybackMeses = null;
+    let economiaAcumuladaPayback = 0;
+    for (let mes = 0; mes <= mesesAnalise; mes++) {
+        const anoAtual = Math.floor(mes / 12);
+        const economiaMensalAtual = economiaMensal * Math.pow(fatorAumentoAnual, anoAtual);
+        economiaAcumuladaPayback += economiaMensalAtual;
+        if (economiaAcumuladaPayback >= custoTotal && paybackMeses === null) {
+            paybackMeses = mes;
+            break;
+        }
+    }
+    // Fallback: se não encontrou payback em 25 anos, usa cálculo simples
+    if (paybackMeses === null) {
+        paybackMeses = Math.ceil(custoTotal / economiaMensal);
+    }
     
     // Criar arrays de dados
     const labels = [];
     const investimentoInicial = [];
     const economiaAcumulada = [];
-    const custoSubstituicoes = [];
+    const custoSubstituicoesBaterias = [];
+    const custoSubstituicoesSistemaCompleto = [];
     const lucroPrejuizoLiquido = [];  // Uma única série que muda de cor dinamicamente
     
     // Criar pontos de dados a cada 6 meses para melhor legibilidade
     const intervaloMeses = 6;
     
-    // Definir os anos que queremos mostrar no eixo X (0, 5, 10, 15, 20, 25, 30)
-    const anosParaMostrar = [0, 5, 10, 15, 20, 25, 30];
+    // Definir os anos que queremos mostrar no eixo X dinamicamente baseado no período de análise
+    // Mostra marcas a cada 5 anos até o período máximo
+    const anosParaMostrar = [];
+    for (let ano = 0; ano <= anosAnalise; ano += 5) {
+        anosParaMostrar.push(ano);
+    }
+    // Garantir que o último ano (período de análise) seja sempre mostrado
+    if (!anosParaMostrar.includes(anosAnalise)) {
+        anosParaMostrar.push(anosAnalise);
+        anosParaMostrar.sort((a, b) => a - b);
+    }
     
     for (let mes = 0; mes <= mesesAnalise; mes += intervaloMeses) {
         const ano = Math.floor(mes / 12);
         const mesNoAno = mes % 12;
         
-        // Criar labels apenas para os anos especificados (0, 5, 10, 15, 20, 25, 30)
+        // Criar labels apenas para os anos especificados dinamicamente baseado no período de análise
         // Verificar se estamos em um dos anos desejados e no início do ano (mês 0 ou próximo)
         if (anosParaMostrar.includes(ano) && mesNoAno < intervaloMeses) {
             if (ano === 0) {
@@ -1237,20 +1410,41 @@ function atualizarGraficoAmortizacao(dados) {
             labels.push(''); // Label vazio para pontos intermediários
         }
         
-        // Calcular custo acumulado de substituições até este mês
-        let custoTotalSubstituicoesAteMes = 0;
+        // Calcular custo acumulado de substituições de baterias até este mês
+        let custoTotalSubstituicoesBateriasAteMes = 0;
         for (const subst of substituicoesBaterias) {
             if (mes >= subst.mes) {
-                custoTotalSubstituicoesAteMes += custoBaterias;
+                custoTotalSubstituicoesBateriasAteMes += custoBaterias;
+            }
+        }
+        
+        // Calcular custo acumulado de substituições completas do sistema até este mês
+        let custoTotalSubstituicoesSistemaAteMes = 0;
+        for (const subst of substituicoesSistemaCompleto) {
+            if (mes >= subst.mes) {
+                custoTotalSubstituicoesSistemaAteMes += custoTotal;
             }
         }
         
         investimentoInicial.push(-custoTotal); // Negativo para mostrar como investimento
-        const economia = economiaMensal * mes;
-        economiaAcumulada.push(economia);
-        custoSubstituicoes.push(-custoTotalSubstituicoesAteMes); // Negativo para mostrar como custo adicional
-        // Lucro/Prejuízo = economia - investimento inicial - custo de substituições
-        const lucroPrejuizo = economia - custoTotal - custoTotalSubstituicoesAteMes;
+        
+        // Calcular economia acumulada considerando aumento anual do custo da energia
+        // Usa o fatorAumentoAnual já calculado anteriormente (linha 1257)
+        // Calcular economia acumulada considerando aumento anual
+        let economiaAcumuladaTotal = 0;
+        for (let m = 0; m < mes; m++) {
+            const anoAtual = Math.floor(m / 12);
+            // A economia mensal aumenta a cada ano conforme o aumento anual
+            const economiaMensalAtual = economiaMensal * Math.pow(fatorAumentoAnual, anoAtual);
+            economiaAcumuladaTotal += economiaMensalAtual;
+        }
+        economiaAcumulada.push(economiaAcumuladaTotal);
+        custoSubstituicoesBaterias.push(-custoTotalSubstituicoesBateriasAteMes); // Negativo para mostrar como custo adicional
+        custoSubstituicoesSistemaCompleto.push(-custoTotalSubstituicoesSistemaAteMes); // Negativo para mostrar como custo adicional
+        
+        // Lucro/Prejuízo = economia acumulada - investimento inicial - custo de substituições de baterias - custo de substituições completas do sistema
+        const custoTotalSubstituicoesAteMes = custoTotalSubstituicoesBateriasAteMes + custoTotalSubstituicoesSistemaAteMes;
+        const lucroPrejuizo = economiaAcumuladaTotal - custoTotal - custoTotalSubstituicoesAteMes;
         // Uma única série com todos os valores (positivos e negativos)
         lucroPrejuizoLiquido.push(lucroPrejuizo);
     }
@@ -1286,7 +1480,7 @@ function atualizarGraficoAmortizacao(dados) {
                 },
                 {
                     label: idiomaAtual === 'pt-BR' ? 'Custo Substituições Baterias' : 'Costo Sostituzioni Batterie',
-                    data: custoSubstituicoes,
+                    data: custoSubstituicoesBaterias,
                     borderColor: 'rgba(255, 152, 0, 1)',
                     backgroundColor: 'rgba(255, 152, 0, 0.1)',
                     borderWidth: 2,
@@ -1294,6 +1488,17 @@ function atualizarGraficoAmortizacao(dados) {
                     fill: false,
                     pointRadius: 0,
                     hidden: substituicoesBaterias.length === 0 // Ocultar se não houver substituições
+                },
+                {
+                    label: idiomaAtual === 'pt-BR' ? 'Custo Substituições Sistema Completo' : 'Costo Sostituzioni Sistema Completo',
+                    data: custoSubstituicoesSistemaCompleto,
+                    borderColor: 'rgba(156, 39, 176, 1)',
+                    backgroundColor: 'rgba(156, 39, 176, 0.1)',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    fill: false,
+                    pointRadius: 0,
+                    hidden: substituicoesSistemaCompleto.length === 0 // Ocultar se não houver substituições
                 },
                 {
                     label: idiomaAtual === 'pt-BR' ? 'Prejuízo Líquido' : 'Perdita Netta',
@@ -1355,9 +1560,25 @@ function atualizarGraficoAmortizacao(dados) {
                             if (paybackIndex >= 0 && tooltipItems[0].dataIndex === paybackIndex) {
                                 const anosPaybackTooltip = Math.floor(paybackMeses / 12);
                                 const mesesPaybackTooltip = paybackMeses % 12;
-                                return idiomaAtual === 'pt-BR' 
-                                    ? `✓ Payback: ${paybackMeses} meses (${anosPaybackTooltip > 0 ? `${anosPaybackTooltip} ano${anosPaybackTooltip > 1 ? 's' : ''}` : ''}${anosPaybackTooltip > 0 && mesesPaybackTooltip > 0 ? ' e ' : ''}${mesesPaybackTooltip > 0 ? `${mesesPaybackTooltip} mês${mesesPaybackTooltip > 1 ? 'es' : ''}` : ''})`
-                                    : `✓ Payback: ${paybackMeses} mesi (${anosPaybackTooltip > 0 ? `${anosPaybackTooltip} anno${anosPaybackTooltip > 1 ? 'i' : ''}` : ''}${anosPaybackTooltip > 0 && mesesPaybackTooltip > 0 ? ' e ' : ''}${mesesPaybackTooltip > 0 ? `${mesesPaybackTooltip} mese${mesesPaybackTooltip > 1 ? 'i' : ''}` : ''})`;
+                                
+                                // Formatar apenas em anos e meses (sem mostrar meses totais)
+                                if (idiomaAtual === 'pt-BR') {
+                                    if (anosPaybackTooltip > 0 && mesesPaybackTooltip > 0) {
+                                        return `✓ Payback: ${anosPaybackTooltip} ano${anosPaybackTooltip > 1 ? 's' : ''} e ${mesesPaybackTooltip} mês${mesesPaybackTooltip > 1 ? 'es' : ''}`;
+                                    } else if (anosPaybackTooltip > 0) {
+                                        return `✓ Payback: ${anosPaybackTooltip} ano${anosPaybackTooltip > 1 ? 's' : ''}`;
+                                    } else {
+                                        return `✓ Payback: ${mesesPaybackTooltip} mês${mesesPaybackTooltip > 1 ? 'es' : ''}`;
+                                    }
+                                } else {
+                                    if (anosPaybackTooltip > 0 && mesesPaybackTooltip > 0) {
+                                        return `✓ Payback: ${anosPaybackTooltip} anno${anosPaybackTooltip > 1 ? 'i' : ''} e ${mesesPaybackTooltip} mese${mesesPaybackTooltip > 1 ? 'i' : ''}`;
+                                    } else if (anosPaybackTooltip > 0) {
+                                        return `✓ Payback: ${anosPaybackTooltip} anno${anosPaybackTooltip > 1 ? 'i' : ''}`;
+                                    } else {
+                                        return `✓ Payback: ${mesesPaybackTooltip} mese${mesesPaybackTooltip > 1 ? 'i' : ''}`;
+                                    }
+                                }
                             }
                             return '';
                         }
@@ -1376,7 +1597,7 @@ function atualizarGraficoAmortizacao(dados) {
                         minRotation: 0,
                         callback: function(value, index) {
                             // Usar diretamente o array de labels criado anteriormente
-                            // Mostrar apenas labels não vazios (a cada 5 anos: 0, 5, 10, 15, 20, 25, 30)
+                            // Mostrar apenas labels não vazios (dinamicamente baseado no período de análise)
                             if (index >= 0 && index < labels.length) {
                                 const label = labels[index];
                                 if (label && label.trim() !== '') {
@@ -1385,9 +1606,9 @@ function atualizarGraficoAmortizacao(dados) {
                             }
                             return '';
                         },
-                        maxTicksLimit: 7, // Apenas 7 labels: 0, 5, 10, 15, 20, 25, 30
+                        maxTicksLimit: anosParaMostrar.length, // Labels dinâmicos baseados no período de análise
                         autoSkip: false, // Não pular labels automaticamente - queremos mostrar todos os labels não vazios
-                        includeBounds: true // Incluir os limites (0 e 30)
+                        includeBounds: true // Incluir os limites (0 e período de análise)
                     }
                 },
                 y: {
@@ -1406,19 +1627,38 @@ function atualizarGraficoAmortizacao(dados) {
         }
     });
     
-    // Calcular custo total de substituições em 30 anos
-    const custoTotalSubstituicoes30Anos = substituicoesBaterias.length * custoBaterias;
+    // Calcular custo total de substituições no período de análise
+    const custoTotalSubstituicoesBateriasPeriodo = substituicoesBaterias.length * custoBaterias;
+    const custoTotalSubstituicoesSistemaPeriodo = substituicoesSistemaCompleto.length * custoTotal;
+    const custoTotalSubstituicoesPeriodo = custoTotalSubstituicoesBateriasPeriodo + custoTotalSubstituicoesSistemaPeriodo;
     
     // Recalcular payback considerando substituições (quando lucro líquido >= 0)
+    // Considera aumento anual do custo da energia
     let paybackMesesComSubstituicoes = null;
+    let economiaAcumuladaPaybackSubst = 0;
     for (let mes = 0; mes <= mesesAnalise; mes++) {
-        let custoSubstAteMes = 0;
+        const anoAtual = Math.floor(mes / 12);
+        const economiaMensalAtual = economiaMensal * Math.pow(fatorAumentoAnual, anoAtual);
+        economiaAcumuladaPaybackSubst += economiaMensalAtual;
+        
+        // Calcular custo de substituições de baterias até este mês
+        let custoSubstBateriasAteMes = 0;
         for (const subst of substituicoesBaterias) {
             if (mes >= subst.mes) {
-                custoSubstAteMes += custoBaterias;
+                custoSubstBateriasAteMes += custoBaterias;
             }
         }
-        const lucroAteMes = (economiaMensal * mes) - custoTotal - custoSubstAteMes;
+        
+        // Calcular custo de substituições completas do sistema até este mês
+        let custoSubstSistemaAteMes = 0;
+        for (const subst of substituicoesSistemaCompleto) {
+            if (mes >= subst.mes) {
+                custoSubstSistemaAteMes += custoTotal;
+            }
+        }
+        
+        const custoSubstAteMes = custoSubstBateriasAteMes + custoSubstSistemaAteMes;
+        const lucroAteMes = economiaAcumuladaPaybackSubst - custoTotal - custoSubstAteMes;
         if (lucroAteMes >= 0 && paybackMesesComSubstituicoes === null) {
             paybackMesesComSubstituicoes = mes;
             break;
@@ -1430,10 +1670,30 @@ function atualizarGraficoAmortizacao(dados) {
     if (infoPaybackEl) {
         const anosPayback = Math.floor(paybackMeses / 12);
         const mesesPayback = paybackMeses % 12;
+        
+        // Calcular anos e meses para payback com substituições
+        let anosPaybackComSubstituicoes = null;
+        let mesesPaybackComSubstituicoes = null;
+        if (paybackMesesComSubstituicoes && paybackMesesComSubstituicoes !== paybackMeses) {
+            anosPaybackComSubstituicoes = Math.floor(paybackMesesComSubstituicoes / 12);
+            mesesPaybackComSubstituicoes = paybackMesesComSubstituicoes % 12;
+        }
+        
+        // Calcular economia anual e total no período de análise considerando aumento anual
+        // Economia no primeiro ano (sem aumento ainda)
         const economiaAnual = economiaMensal * 12;
-        const economia30Anos = economiaAnual * 30;
-        const lucro30Anos = economia30Anos - custoTotal - custoTotalSubstituicoes30Anos;
-        const isPrejuizo = lucro30Anos < 0;
+        // Economia total no período de análise com aumento anual: soma de série geométrica
+        // Soma = a * (r^n - 1) / (r - 1), onde a = economiaAnual, r = fatorAumentoAnual, n = anosAnalise
+        let economiaTotalPeriodo = 0;
+        if (Math.abs(fatorAumentoAnual - 1) < 0.0001) {
+            // Se aumento é zero (fator = 1), economia constante
+            economiaTotalPeriodo = economiaAnual * anosAnalise;
+        } else {
+            // Série geométrica: economiaAnual * (fatorAumentoAnual^anosAnalise - 1) / (fatorAumentoAnual - 1)
+            economiaTotalPeriodo = economiaAnual * (Math.pow(fatorAumentoAnual, anosAnalise) - 1) / (fatorAumentoAnual - 1);
+        }
+        const lucroTotalPeriodo = economiaTotalPeriodo - custoTotal - custoTotalSubstituicoesPeriodo;
+        const isPrejuizo = lucroTotalPeriodo < 0;
         const labelLucroPrejuizo = isPrejuizo 
             ? (idiomaAtual === 'pt-BR' ? 'Prejuízo líquido' : 'Perdita netta')
             : (idiomaAtual === 'pt-BR' ? 'Lucro líquido' : 'Profitto netto');
@@ -1441,9 +1701,44 @@ function atualizarGraficoAmortizacao(dados) {
         
         if (idiomaAtual === 'pt-BR') {
             let infoSubstituicoes = '';
-            if (substituicoesBaterias.length > 0) {
-                const anosSubst = substituicoesBaterias.map(s => s.ano).join(', ');
-                infoSubstituicoes = `<br><span style="color: #FF9800;">🔋 Substituições de baterias (vida útil: ${vidaUtil} anos): <strong>${substituicoesBaterias.length} vez${substituicoesBaterias.length > 1 ? 'es' : ''}</strong> aos ${anosSubst} ano${substituicoesBaterias.length > 1 ? 's' : ''} | Custo total: <strong>${formatarMoedaComVirgula(custoTotalSubstituicoes30Anos, moeda, 2)}</strong></span>`;
+            if (substituicoesBaterias.length > 0 || substituicoesSistemaCompleto.length > 0) {
+                const partesInfo = [];
+                
+                if (substituicoesBaterias.length > 0) {
+                    const anosSubstBaterias = substituicoesBaterias.map(s => s.ano).join(', ');
+                    partesInfo.push(`<span style="color: #FF9800;">🔋 Substituições de baterias (vida útil: ${vidaUtil} anos): <strong>${substituicoesBaterias.length} vez${substituicoesBaterias.length > 1 ? 'es' : ''}</strong> aos ${anosSubstBaterias} ano${substituicoesBaterias.length > 1 ? 's' : ''} | Custo total: <strong>${formatarMoedaComVirgula(custoTotalSubstituicoesBateriasPeriodo, moeda, 2)}</strong></span>`);
+                }
+                
+                if (substituicoesSistemaCompleto.length > 0) {
+                    const anosSubstSistema = substituicoesSistemaCompleto.map(s => s.ano).join(', ');
+                    partesInfo.push(`<span style="color: #9C27B0;">⚙️ Substituições completas do sistema (a cada 25 anos): <strong>${substituicoesSistemaCompleto.length} vez${substituicoesSistemaCompleto.length > 1 ? 'es' : ''}</strong> aos ${anosSubstSistema} ano${substituicoesSistemaCompleto.length > 1 ? 's' : ''} | Custo total: <strong>${formatarMoedaComVirgula(custoTotalSubstituicoesSistemaPeriodo, moeda, 2)}</strong></span>`);
+                }
+                
+                if (partesInfo.length > 0) {
+                    infoSubstituicoes = '<br>' + partesInfo.join('<br>');
+                }
+            }
+            
+            // Formatar texto de payback inicial
+            let textoPaybackInicial = '';
+            if (anosPayback > 0 && mesesPayback > 0) {
+                textoPaybackInicial = `${anosPayback} ano${anosPayback > 1 ? 's' : ''} e ${mesesPayback} mês${mesesPayback > 1 ? 'es' : ''}`;
+            } else if (anosPayback > 0) {
+                textoPaybackInicial = `${anosPayback} ano${anosPayback > 1 ? 's' : ''}`;
+            } else {
+                textoPaybackInicial = `${mesesPayback} mês${mesesPayback > 1 ? 'es' : ''}`;
+            }
+            
+            // Formatar texto de payback com substituições
+            let textoPaybackComSubstituicoes = '';
+            if (anosPaybackComSubstituicoes !== null && mesesPaybackComSubstituicoes !== null) {
+                if (anosPaybackComSubstituicoes > 0 && mesesPaybackComSubstituicoes > 0) {
+                    textoPaybackComSubstituicoes = ` | Payback com substituições: <strong>${anosPaybackComSubstituicoes} ano${anosPaybackComSubstituicoes > 1 ? 's' : ''} e ${mesesPaybackComSubstituicoes} mês${mesesPaybackComSubstituicoes > 1 ? 'es' : ''}</strong>`;
+                } else if (anosPaybackComSubstituicoes > 0) {
+                    textoPaybackComSubstituicoes = ` | Payback com substituições: <strong>${anosPaybackComSubstituicoes} ano${anosPaybackComSubstituicoes > 1 ? 's' : ''}</strong>`;
+                } else {
+                    textoPaybackComSubstituicoes = ` | Payback com substituições: <strong>${mesesPaybackComSubstituicoes} mês${mesesPaybackComSubstituicoes > 1 ? 'es' : ''}</strong>`;
+                }
             }
             
             infoPaybackEl.innerHTML = `
@@ -1460,19 +1755,54 @@ function atualizarGraficoAmortizacao(dados) {
                             <td style="padding: 2px 4px; text-align: right; font-weight: bold; white-space: nowrap;">${formatarMoedaComVirgula(economiaAnual, moeda, 2)}</td>
                         </tr>
                         <tr>
-                            <td style="padding: 2px 4px; text-align: left; white-space: nowrap;">30 anos:</td>
-                            <td style="padding: 2px 4px; text-align: right; font-weight: bold; white-space: nowrap;">${formatarMoedaComVirgula(economia30Anos, moeda, 2)}</td>
+                            <td style="padding: 2px 4px; text-align: left; white-space: nowrap;">${anosAnalise} anos:</td>
+                            <td style="padding: 2px 4px; text-align: right; font-weight: bold; white-space: nowrap;">${formatarMoedaComVirgula(economiaTotalPeriodo, moeda, 2)}</td>
                         </tr>
                     </table>
                 </div>
-                <span style="color: #1976D2;">⏱️ Payback inicial: <strong>${paybackMeses} meses</strong> (${anosPayback > 0 ? `${anosPayback} ano${anosPayback > 1 ? 's' : ''}` : ''}${anosPayback > 0 && mesesPayback > 0 ? ' e ' : ''}${mesesPayback > 0 ? `${mesesPayback} mês${mesesPayback > 1 ? 'es' : ''}` : ''})${paybackMesesComSubstituicoes && paybackMesesComSubstituicoes !== paybackMeses ? ` | Payback com substituições: <strong>${paybackMesesComSubstituicoes} meses</strong>` : ''}</span>${infoSubstituicoes}<br>
-                <span style="color: ${corLucroPrejuizo};">💵 ${labelLucroPrejuizo} em 30 anos: <strong>${formatarMoedaComVirgula(Math.abs(lucro30Anos), moeda, 2)}</strong></span>
+                <span style="color: #1976D2;">⏱️ Payback inicial: <strong>${textoPaybackInicial}</strong>${textoPaybackComSubstituicoes}</span>${infoSubstituicoes}<br>
+                <span style="color: ${corLucroPrejuizo};">💵 ${labelLucroPrejuizo} em ${anosAnalise} anos: <strong>${formatarMoedaComVirgula(Math.abs(lucroTotalPeriodo), moeda, 2)}</strong></span>
             `;
         } else {
             let infoSubstituicoes = '';
-            if (substituicoesBaterias.length > 0) {
-                const anosSubst = substituicoesBaterias.map(s => s.ano).join(', ');
-                infoSubstituicoes = `<br><span style="color: #FF9800;">🔋 Sostituzioni batterie (vita utile: ${vidaUtil} anni): <strong>${substituicoesBaterias.length} volt${substituicoesBaterias.length > 1 ? 'e' : 'a'}</strong> agli ${anosSubst} anno${substituicoesBaterias.length > 1 ? 'i' : ''} | Costo totale: <strong>${formatarMoedaComVirgula(custoTotalSubstituicoes30Anos, moeda, 2)}</strong></span>`;
+            if (substituicoesBaterias.length > 0 || substituicoesSistemaCompleto.length > 0) {
+                const partiInfo = [];
+                
+                if (substituicoesBaterias.length > 0) {
+                    const anniSubstBatterie = substituicoesBaterias.map(s => s.ano).join(', ');
+                    partiInfo.push(`<span style="color: #FF9800;">🔋 Sostituzioni batterie (vita utile: ${vidaUtil} anni): <strong>${substituicoesBaterias.length} volt${substituicoesBaterias.length > 1 ? 'e' : 'a'}</strong> agli ${anniSubstBatterie} anno${substituicoesBaterias.length > 1 ? 'i' : ''} | Costo totale: <strong>${formatarMoedaComVirgula(custoTotalSubstituicoesBateriasPeriodo, moeda, 2)}</strong></span>`);
+                }
+                
+                if (substituicoesSistemaCompleto.length > 0) {
+                    const anniSubstSistema = substituicoesSistemaCompleto.map(s => s.ano).join(', ');
+                    partiInfo.push(`<span style="color: #9C27B0;">⚙️ Sostituzioni complete del sistema (ogni 25 anni): <strong>${substituicoesSistemaCompleto.length} volt${substituicoesSistemaCompleto.length > 1 ? 'e' : 'a'}</strong> agli ${anniSubstSistema} anno${substituicoesSistemaCompleto.length > 1 ? 'i' : ''} | Costo totale: <strong>${formatarMoedaComVirgula(custoTotalSubstituicoesSistemaPeriodo, moeda, 2)}</strong></span>`);
+                }
+                
+                if (partiInfo.length > 0) {
+                    infoSubstituicoes = '<br>' + partiInfo.join('<br>');
+                }
+            }
+            
+            // Formatar texto de payback inicial (italiano)
+            let testoPaybackIniziale = '';
+            if (anosPayback > 0 && mesesPayback > 0) {
+                testoPaybackIniziale = `${anosPayback} anno${anosPayback > 1 ? 'i' : ''} e ${mesesPayback} mese${mesesPayback > 1 ? 'i' : ''}`;
+            } else if (anosPayback > 0) {
+                testoPaybackIniziale = `${anosPayback} anno${anosPayback > 1 ? 'i' : ''}`;
+            } else {
+                testoPaybackIniziale = `${mesesPayback} mese${mesesPayback > 1 ? 'i' : ''}`;
+            }
+            
+            // Formatar texto de payback com substituições (italiano)
+            let testoPaybackConSostituzioni = '';
+            if (anosPaybackComSubstituicoes !== null && mesesPaybackComSubstituicoes !== null) {
+                if (anosPaybackComSubstituicoes > 0 && mesesPaybackComSubstituicoes > 0) {
+                    testoPaybackConSostituzioni = ` | Payback con sostituzioni: <strong>${anosPaybackComSubstituicoes} anno${anosPaybackComSubstituicoes > 1 ? 'i' : ''} e ${mesesPaybackComSubstituicoes} mese${mesesPaybackComSubstituicoes > 1 ? 'i' : ''}</strong>`;
+                } else if (anosPaybackComSubstituicoes > 0) {
+                    testoPaybackConSostituzioni = ` | Payback con sostituzioni: <strong>${anosPaybackComSubstituicoes} anno${anosPaybackComSubstituicoes > 1 ? 'i' : ''}</strong>`;
+                } else {
+                    testoPaybackConSostituzioni = ` | Payback con sostituzioni: <strong>${mesesPaybackComSubstituicoes} mese${mesesPaybackComSubstituicoes > 1 ? 'i' : ''}</strong>`;
+                }
             }
             
             infoPaybackEl.innerHTML = `
@@ -1489,13 +1819,13 @@ function atualizarGraficoAmortizacao(dados) {
                             <td style="padding: 2px 4px; text-align: right; font-weight: bold; white-space: nowrap;">${formatarMoedaComVirgula(economiaAnual, moeda, 2)}</td>
                         </tr>
                         <tr>
-                            <td style="padding: 2px 4px; text-align: left; white-space: nowrap;">30 anni:</td>
-                            <td style="padding: 2px 4px; text-align: right; font-weight: bold; white-space: nowrap;">${formatarMoedaComVirgula(economia30Anos, moeda, 2)}</td>
+                            <td style="padding: 2px 4px; text-align: left; white-space: nowrap;">${anosAnalise} anni:</td>
+                            <td style="padding: 2px 4px; text-align: right; font-weight: bold; white-space: nowrap;">${formatarMoedaComVirgula(economiaTotalPeriodo, moeda, 2)}</td>
                         </tr>
                     </table>
                 </div>
-                <span style="color: #1976D2;">⏱️ Payback iniziale: <strong>${paybackMeses} mesi</strong> (${anosPayback > 0 ? `${anosPayback} anno${anosPayback > 1 ? 'i' : ''}` : ''}${anosPayback > 0 && mesesPayback > 0 ? ' e ' : ''}${mesesPayback > 0 ? `${mesesPayback} mese${mesesPayback > 1 ? 'i' : ''}` : ''})${paybackMesesComSubstituicoes && paybackMesesComSubstituicoes !== paybackMeses ? ` | Payback con sostituzioni: <strong>${paybackMesesComSubstituicoes} mesi</strong>` : ''}</span>${infoSubstituicoes}<br>
-                <span style="color: ${corLucroPrejuizo};">💵 ${labelLucroPrejuizo} in 30 anni: <strong>${formatarMoedaComVirgula(Math.abs(lucro30Anos), moeda, 2)}</strong></span>
+                <span style="color: #1976D2;">⏱️ Payback iniziale: <strong>${testoPaybackIniziale}</strong>${testoPaybackConSostituzioni}</span>${infoSubstituicoes}<br>
+                <span style="color: ${corLucroPrejuizo};">💵 ${labelLucroPrejuizo} in ${anosAnalise} anni: <strong>${formatarMoedaComVirgula(Math.abs(lucroTotalPeriodo), moeda, 2)}</strong></span>
             `;
         }
     }
@@ -1888,11 +2218,13 @@ function calcularSistema(dodAlvo) {
     const qtdPaineis = Math.ceil(potenciaSolarNecessaria / POTENCIA_PAINEL);
     
     // ============================================
-    // PASSO 9: DIMENSIONAMENTO DO INVERSOR
+    // PASSO 9: DIMENSIONAMENTO DO INVERSOR COM MPPT INTEGRADO
     // ============================================
+    // Em sistemas off-grid, todos os inversores modernos já vêm com MPPT integrado
     // O inversor converte DC das baterias para AC da casa
     // Deve ter capacidade para o consumo de pico típico de uma residência
-    // Consumo de pico = consumo médio horário × fator de pico
+    // E também deve ter capacidade MPPT suficiente para os painéis
+    // 
     // Fórmula: consumoMedioHorario = energiaDiaria / 24 horas
     //          consumoPico = consumoMedioHorario × FATOR_PICO_CONSUMO
     //          potenciaInversor = max(1kW, consumoPico)
@@ -1902,37 +2234,31 @@ function calcularSistema(dodAlvo) {
     //          potenciaInversor = max(1, 1.04) = 1.04 kW → arredonda para 2 kW
     const consumoMedioHorario = energiaDiaria / 24; // kW (consumo médio por hora)
     const consumoPico = consumoMedioHorario * FATOR_PICO_CONSUMO; // kW (pico de consumo)
-    const potenciaInversor = Math.max(1, Math.ceil(consumoPico)); // Mínimo 1kW, arredonda para cima
+    let potenciaInversor = Math.max(1, Math.ceil(consumoPico)); // Mínimo 1kW, arredonda para cima
     
-    // ============================================
-    // PASSO 10: DIMENSIONAMENTO DO MPPT
-    // ============================================
-    // O MPPT (controlador de carga) precisa suportar a corrente máxima dos painéis
+    // Calcula a corrente máxima necessária para os painéis
     // Corrente = Potência Total dos Painéis / Tensão do Banco de Baterias
-    // Fórmula: potenciaTotalPaineis = qtdPaineis × POTENCIA_PAINEL (W)
-    //          correnteMaxima = potenciaTotalPaineis / tensaoBanco (V)
-    //          correnteMPPT = ceil(correnteMaxima) (arredonda para cima)
-    // Exemplo: se temos 11 painéis de 400W e banco de 48V:
-    //          potenciaTotal = 11 × 400 = 4400 W
-    //          correnteMaxima = 4400 / 48 = 91.67 A
-    //          correnteMPPT = ceil(91.67) = 92 A → escolhe MPPT de 100A
     const potenciaTotalPaineis = qtdPaineis * POTENCIA_PAINEL; // Watts
     const tensaoBanco = batSpec.v; // Volts (tensão do banco de baterias)
-    const correnteMaxima = potenciaTotalPaineis / tensaoBanco; // Ampères
-    // Arredonda para cima e garante mínimo de 20A
-    let correnteMPPT = Math.max(20, Math.ceil(correnteMaxima));
-    // Arredonda para valores comerciais comuns (20, 40, 60, 100, 150, 200...)
-    if (correnteMPPT > 100) {
-        correnteMPPT = Math.ceil(correnteMPPT / 50) * 50; // Arredonda para múltiplos de 50 acima de 100A
-    } else if (correnteMPPT > 60) {
-        correnteMPPT = 100; // Próximo valor comercial
-    } else if (correnteMPPT > 40) {
-        correnteMPPT = 60; // Próximo valor comercial
-    } else if (correnteMPPT > 20) {
-        correnteMPPT = 40; // Próximo valor comercial
-    } else {
-        correnteMPPT = 20; // Mínimo
+    const correnteMaximaNecessaria = potenciaTotalPaineis / tensaoBanco; // Ampères
+    
+    // Verifica se o inversor escolhido tem capacidade MPPT suficiente
+    // Se não tiver, aumenta a potência do inversor até encontrar um com MPPT adequado
+    let capacidadeMPPTIntegrado = obterCapacidadeMPPTIntegrado(potenciaInversor);
+    while (capacidadeMPPTIntegrado < correnteMaximaNecessaria && potenciaInversor < 10) {
+        potenciaInversor += 1; // Aumenta em 1kW
+        capacidadeMPPTIntegrado = obterCapacidadeMPPTIntegrado(potenciaInversor);
     }
+    
+    // Se ainda não encontrou inversor adequado, usa o maior disponível
+    if (capacidadeMPPTIntegrado < correnteMaximaNecessaria) {
+        const maiorInversor = PRECOS_INVERSOR_BRL[PRECOS_INVERSOR_BRL.length - 1];
+        potenciaInversor = maiorInversor.kw;
+        capacidadeMPPTIntegrado = maiorInversor.mpptA;
+    }
+    
+    // A corrente MPPT é a capacidade integrada do inversor escolhido
+    const correnteMPPT = capacidadeMPPTIntegrado;
     
     // ============================================
     // PASSO 11: CALCULAR PESO E CUSTOS
@@ -1987,14 +2313,14 @@ function calcularSistema(dodAlvo) {
     // custoPaineis = 21 × 1200 = 25200 BRL
     const custoPaineis = qtdPaineis * precoPainelConvertido;
     const custoBaterias = qtdBaterias * precoBateriaConvertido;
-    // O preço do inversor é calculado por interpolação baseado na potência
+    // O preço do inversor (com MPPT integrado) é calculado por interpolação baseado na potência
+    // Em sistemas off-grid, todos os inversores modernos já incluem MPPT integrado
     const custoInversor = calcularPrecoInversor(potenciaInversor, moedaCalculo);
-    // O preço do MPPT é calculado por interpolação baseado na corrente máxima
-    const custoMPPT = calcularPrecoMPPT(correnteMPPT, moedaCalculo);
     
     // Calcula o custo total do sistema
-    // Exemplo: custoTotal = 25200 + 168000 + 2500 + 1200 = 196900 BRL
-    const custoTotal = custoPaineis + custoBaterias + custoInversor + custoMPPT;
+    // O inversor já inclui o MPPT, então não há custo separado de MPPT
+    // Exemplo: custoTotal = 25200 + 168000 + 5500 = 198700 BRL
+    const custoTotal = custoPaineis + custoBaterias + custoInversor;
 
     // 6. Exibir Resultados (verificando se os elementos existem)
     const resQtdPlacas = document.getElementById('resQtdPlacas');
@@ -2004,9 +2330,15 @@ function calcularSistema(dodAlvo) {
     const resQtdBaterias = document.getElementById('resQtdBaterias');
     if (resQtdBaterias) resQtdBaterias.textContent = `${qtdBaterias} x ${unidadeKWh} kWh (${batSpec.v}V)`;
     const resPotenciaInversor = document.getElementById('resPotenciaInversor');
-    if (resPotenciaInversor) resPotenciaInversor.textContent = `${potenciaInversor} kW`;
+    if (resPotenciaInversor) {
+        // Mostra potência do inversor e capacidade MPPT integrada
+        resPotenciaInversor.textContent = `${potenciaInversor} kW (MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)}A)`;
+    }
     const resCorrenteMPPT = document.getElementById('resCorrenteMPPT');
-    if (resCorrenteMPPT) resCorrenteMPPT.textContent = formatarNumeroComSufixo(correnteMPPT, 0) + ' A';
+    if (resCorrenteMPPT) {
+        // Mostra apenas como informação (já está no inversor)
+        resCorrenteMPPT.textContent = formatarNumeroComSufixo(correnteMPPT, 0) + ' A';
+    }
     const resPesoBaterias = document.getElementById('resPesoBaterias');
     if (resPesoBaterias) resPesoBaterias.textContent = formatarNumeroComSufixo(pesoTotal, 1) + ' kg';
     
@@ -2021,9 +2353,15 @@ function calcularSistema(dodAlvo) {
     const custoBateriasEl = document.getElementById('custoBaterias');
     if (custoBateriasEl) custoBateriasEl.textContent = formatarPreco(custoBaterias);
     const custoInversorEl = document.getElementById('custoInversor');
-    if (custoInversorEl) custoInversorEl.textContent = formatarPreco(custoInversor);
+    if (custoInversorEl) {
+        // O custo do inversor já inclui o MPPT integrado
+        custoInversorEl.textContent = formatarPreco(custoInversor);
+    }
     const custoMPPTEl = document.getElementById('custoMPPT');
-    if (custoMPPTEl) custoMPPTEl.textContent = formatarPreco(custoMPPT);
+    if (custoMPPTEl) {
+        // MPPT está integrado no inversor, então não há custo separado
+        custoMPPTEl.textContent = '-';
+    }
     
     // Motivo do dimensionamento das BATERIAS — explica os parâmetros que geraram o dimensionamento
     // Ex: autonomia X dias × consumoDiario Y kWh → utilizável necessário Z kWh → DoD alvo W% → capacidade nominal necessária T kWh → módulos M × S kWh
@@ -2068,29 +2406,24 @@ function calcularSistema(dodAlvo) {
     }
     document.getElementById('resMotivoPaineis').innerHTML = `${motivoPaineisGargalo}<br>${motivoPaineisDetalhes}`;
     
-    // Motivo do dimensionamento do INVERSOR — baseado no consumo de pico
+    // Motivo do dimensionamento do INVERSOR COM MPPT INTEGRADO
+    // Em sistemas off-grid, todos os inversores modernos já vêm com MPPT integrado
     let motivoInversorGargalo = '';
     let motivoInversorDetalhes = '';
     if (idiomaAtual === 'pt-BR') {
-        motivoInversorGargalo = '(gargalo: consumo de pico)';
-        motivoInversorDetalhes = `consumo médio ${formatarNumeroDecimal(consumoMedioHorario, 2)} kW/h × fator pico ${FATOR_PICO_CONSUMO}<br>→ ${formatarNumeroDecimal(consumoPico, 2)} kW<br>→ inversor ${potenciaInversor} kW`;
+        motivoInversorGargalo = '(gargalo: consumo de pico + corrente MPPT)';
+        motivoInversorDetalhes = `consumo médio ${formatarNumeroDecimal(consumoMedioHorario, 2)} kW/h × fator pico ${FATOR_PICO_CONSUMO}<br>→ ${formatarNumeroDecimal(consumoPico, 2)} kW<br>→ inversor ${potenciaInversor} kW<br>→ MPPT integrado ${formatarNumeroComSufixo(correnteMPPT, 0)}A (${qtdPaineis} painéis × ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W ÷ ${tensaoBanco}V = ${formatarNumeroComSufixo(correnteMaximaNecessaria, 1)}A)`;
     } else {
-        motivoInversorGargalo = '(limite: consumo di picco)';
-        motivoInversorDetalhes = `consumo medio ${formatarNumeroDecimal(consumoMedioHorario, 2)} kW/h × fattore picco ${FATOR_PICO_CONSUMO}<br>→ ${formatarNumeroDecimal(consumoPico, 2)} kW<br>→ inverter ${potenciaInversor} kW`;
+        motivoInversorGargalo = '(limite: consumo di picco + corrente MPPT)';
+        motivoInversorDetalhes = `consumo medio ${formatarNumeroDecimal(consumoMedioHorario, 2)} kW/h × fattore picco ${FATOR_PICO_CONSUMO}<br>→ ${formatarNumeroDecimal(consumoPico, 2)} kW<br>→ inverter ${potenciaInversor} kW<br>→ MPPT integrato ${formatarNumeroComSufixo(correnteMPPT, 0)}A (${qtdPaineis} pannelli × ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W ÷ ${tensaoBanco}V = ${formatarNumeroComSufixo(correnteMaximaNecessaria, 1)}A)`;
     }
     document.getElementById('resMotivoInversor').innerHTML = `${motivoInversorGargalo}<br>${motivoInversorDetalhes}`;
     
-    // Motivo do dimensionamento do MPPT — baseado na corrente máxima dos painéis
-    let motivoMPPTGargalo = '';
-    let motivoMPPTDetalhes = '';
-    if (idiomaAtual === 'pt-BR') {
-        motivoMPPTGargalo = '(gargalo: corrente máxima)';
-        motivoMPPTDetalhes = `${qtdPaineis} painéis × ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W<br>→ ${formatarNumeroComSufixo(potenciaTotalPaineis, 0)}W ÷ ${tensaoBanco}V<br>→ ${formatarNumeroComSufixo(correnteMaxima, 1)}A<br>→ MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)}A`;
-    } else {
-        motivoMPPTGargalo = '(limite: corrente massima)';
-        motivoMPPTDetalhes = `${qtdPaineis} pannelli × ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W<br>→ ${formatarNumeroComSufixo(potenciaTotalPaineis, 0)}W ÷ ${tensaoBanco}V<br>→ ${formatarNumeroComSufixo(correnteMaxima, 1)}A<br>→ MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)}A`;
+    // MPPT está integrado no inversor, então não mostra motivo separado
+    const resMotivoMPPT = document.getElementById('resMotivoMPPT');
+    if (resMotivoMPPT) {
+        resMotivoMPPT.innerHTML = '';
     }
-    document.getElementById('resMotivoMPPT').innerHTML = `${motivoMPPTGargalo}<br>${motivoMPPTDetalhes}`;
     
     // Atualiza o memorial se estiver visível
     if (typeof atualizarMemorialComValores === 'function') {
@@ -2312,17 +2645,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const atualizarPrecoKWh = () => {
         const sliderPrecoKWhEl = document.getElementById('sliderPrecoKWh');
         if (!sliderPrecoKWhEl) return;
-        const valorPadrao = PRECO_KWH[idiomaAtual] || PRECO_KWH['pt-BR'];
-        const valor = parseFloat(sliderPrecoKWhEl.value) || valorPadrao;
-        // Garantir que o valor está dentro dos limites
-        const minValor = valorPadrao / 4;
-        const maxValor = valorPadrao * 4;
-        const valorLimitado = Math.max(minValor, Math.min(maxValor, valor));
-        sliderPrecoKWhEl.value = valorLimitado.toFixed(2);
+        
+        // Usa os limites min/max do slider (que já foram calculados dinamicamente)
+        const minVal = parseFloat(sliderPrecoKWhEl.min) || 0;
+        const maxVal = parseFloat(sliderPrecoKWhEl.max) || 3;
+        const stepVal = parseFloat(sliderPrecoKWhEl.step) || 0.05;
+        
+        let valor = parseFloat(sliderPrecoKWhEl.value);
+        if (isNaN(valor)) {
+            const valorPadrao = PRECO_KWH[idiomaAtual] || PRECO_KWH['pt-BR'];
+            valor = valorPadrao;
+        }
+        
+        // Garantir que o valor está dentro dos limites do slider
+        valor = Math.max(minVal, Math.min(maxVal, valor));
+        // Arredondar para múltiplos do step
+        valor = Math.round(valor / stepVal) * stepVal;
+        // Garantir precisão de 2 casas decimais
+        valor = Math.round(valor * 100) / 100;
+        
+        sliderPrecoKWhEl.value = valor.toFixed(2);
         
         const inputPrecoKWhEl = document.getElementById('inputPrecoKWh');
         if (inputPrecoKWhEl) {
-            inputPrecoKWhEl.value = formatarDecimalComVirgula(valorLimitado, 2);
+            inputPrecoKWhEl.value = formatarDecimalComVirgula(valor, 2);
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPrecoKWhEl);
         }
         atualizarInterface();
@@ -2332,6 +2678,33 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sliderPrecoKWhEl) {
         sliderPrecoKWhEl.addEventListener('input', throttleFn(atualizarPrecoKWh, 100));
         sliderPrecoKWhEl.addEventListener('change', atualizarPrecoKWh);
+    }
+    
+    // Função auxiliar para atualizar aumento anual do custo da energia
+    const atualizarAumentoAnualEnergia = () => {
+        const sliderAumentoAnualEnergiaEl = document.getElementById('sliderAumentoAnualEnergia');
+        if (!sliderAumentoAnualEnergiaEl) return;
+        const valorPadrao = AUMENTO_ANUAL_ENERGIA[idiomaAtual] || AUMENTO_ANUAL_ENERGIA['pt-BR'];
+        const valor = parseFloat(sliderAumentoAnualEnergiaEl.value) || valorPadrao;
+        // Garantir que o valor está dentro dos limites
+        const minValor = valorPadrao / 5;
+        const maxValor = valorPadrao * 5;
+        const valorLimitado = Math.max(minValor, Math.min(maxValor, valor));
+        // Arredondar para múltiplos de 0.1
+        sliderAumentoAnualEnergiaEl.value = Math.round(valorLimitado * 10) / 10;
+        
+        const inputAumentoAnualEnergiaEl = document.getElementById('inputAumentoAnualEnergia');
+        if (inputAumentoAnualEnergiaEl) {
+            inputAumentoAnualEnergiaEl.value = formatarDecimalComVirgula(valorLimitado, 1);
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAumentoAnualEnergiaEl);
+        }
+        atualizarInterface();
+    };
+    
+    const sliderAumentoAnualEnergiaEl = document.getElementById('sliderAumentoAnualEnergia');
+    if (sliderAumentoAnualEnergiaEl) {
+        sliderAumentoAnualEnergiaEl.addEventListener('input', throttleFn(atualizarAumentoAnualEnergia, 100));
+        sliderAumentoAnualEnergiaEl.addEventListener('change', atualizarAumentoAnualEnergia);
     }
     
     // Função auxiliar para atualizar preço bateria por kWh
@@ -2348,14 +2721,16 @@ document.addEventListener('DOMContentLoaded', () => {
         PRECO_BATERIA_KWH[idiomaAtual] = valorPadrao;
         const valor = parseFloat(sliderPrecoBateriaKWhEl.value) || valorPadrao;
         // Garantir que o valor está dentro dos limites
-        const minValor = Math.round(valorPadrao / 4);
+        // Mínimo: 1/100 do valor padrão, máximo: 4x do valor padrão
+        const minValor = Math.round(valorPadrao / 100);
         const maxValor = Math.round(valorPadrao * 4);
         const valorLimitado = Math.max(minValor, Math.min(maxValor, valor));
-        sliderPrecoBateriaKWhEl.value = Math.round(valorLimitado);
+        // Arredondar para múltiplos de 10 para manter consistência com o step
+        sliderPrecoBateriaKWhEl.value = Math.round(valorLimitado / 10) * 10;
         
         const inputPrecoBateriaKWhEl = document.getElementById('inputPrecoBateriaKWh');
         if (inputPrecoBateriaKWhEl) {
-            inputPrecoBateriaKWhEl.value = Math.round(valorLimitado);
+            inputPrecoBateriaKWhEl.value = Math.round(valorLimitado / 10) * 10;
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPrecoBateriaKWhEl);
         }
         atualizarInterface();
@@ -2485,9 +2860,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     const minVal = parseFloat(sliderPrecoBateriaKWhEl2.min);
                     const maxVal = parseFloat(sliderPrecoBateriaKWhEl2.max);
                     const valorLimitado = Math.max(minVal, Math.min(maxVal, valor));
+                    // Arredondar para múltiplos de 10 para manter consistência com o step
+                    const valorArredondado = Math.round(valorLimitado / 10) * 10;
                     
-                    if (valorLimitado >= minVal && valorLimitado <= maxVal) {
-                        sliderPrecoBateriaKWhEl2.value = Math.round(valorLimitado);
+                    if (valorArredondado >= minVal && valorArredondado <= maxVal) {
+                        sliderPrecoBateriaKWhEl2.value = valorArredondado;
                     }
                 }
                 atualizarInterface();
@@ -2500,9 +2877,129 @@ document.addEventListener('DOMContentLoaded', () => {
         radio.addEventListener('change', () => {
             // Atualizar preço da bateria e limites do slider quando o tipo mudar
             atualizarNotasValoresPadrao();
+            
+            // Atualizar limites do slider de período de análise baseado no tipo de bateria
+            const sliderPeriodoAnalise = document.getElementById('sliderPeriodoAnalise');
+            const inputPeriodoAnalise = document.getElementById('inputPeriodoAnalise');
+            if (sliderPeriodoAnalise) {
+                const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
+                const tipoBateriaAtual = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
+                const vidaUtilMaxima = tipoBateriaAtual === 'litio' ? 25 : 5;
+                
+                // Atualizar limites: min = 1x vida útil máxima, max = 4x vida útil máxima
+                sliderPeriodoAnalise.min = vidaUtilMaxima.toString();
+                sliderPeriodoAnalise.max = (vidaUtilMaxima * 4).toString();
+                
+                // Ajustar valor atual se estiver fora dos novos limites
+                const valorAtual = parseInt(sliderPeriodoAnalise.value) || vidaUtilMaxima;
+                const minPeriodo = vidaUtilMaxima;
+                const maxPeriodo = vidaUtilMaxima * 4;
+                const valorAjustado = Math.max(minPeriodo, Math.min(maxPeriodo, valorAtual));
+                
+                sliderPeriodoAnalise.value = valorAjustado.toString();
+                if (inputPeriodoAnalise) {
+                    inputPeriodoAnalise.value = valorAjustado.toString();
+                    if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPeriodoAnalise);
+                }
+            }
+            
             atualizarInterface();
         });
     });
+    
+    // 4.5. Configurar Slider e Input de Período de Análise do Gráfico
+    const sliderPeriodoAnaliseEl = document.getElementById('sliderPeriodoAnalise');
+    const inputPeriodoAnaliseEl = document.getElementById('inputPeriodoAnalise');
+    
+    if (sliderPeriodoAnaliseEl) {
+        // Função auxiliar para atualizar período de análise
+        const atualizarPeriodoAnalise = () => {
+            // Obter limites baseados no tipo de bateria
+            const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
+            const tipoBateriaAtual = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
+            const vidaUtilMaxima = tipoBateriaAtual === 'litio' ? 25 : 5;
+            const minPeriodo = vidaUtilMaxima;
+            const maxPeriodo = vidaUtilMaxima * 4;
+            
+            // Atualizar limites do slider primeiro
+            sliderPeriodoAnaliseEl.min = minPeriodo.toString();
+            sliderPeriodoAnaliseEl.max = maxPeriodo.toString();
+            
+            // Obter valor atual do slider
+            const valor = parseInt(sliderPeriodoAnaliseEl.value) || vidaUtilMaxima;
+            
+            // Garantir que o valor está dentro dos limites
+            const valorLimitado = Math.max(minPeriodo, Math.min(maxPeriodo, valor));
+            
+            // Atualizar slider e input
+            sliderPeriodoAnaliseEl.value = valorLimitado.toString();
+            if (inputPeriodoAnaliseEl) {
+                inputPeriodoAnaliseEl.value = valorLimitado.toString();
+                if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPeriodoAnaliseEl);
+            }
+            
+            // Atualizar gráfico
+            atualizarInterface();
+        };
+        
+        // Event listener para quando o slider é arrastado (input)
+        sliderPeriodoAnaliseEl.addEventListener('input', throttleFn(atualizarPeriodoAnalise, 100));
+        
+        // Event listener para quando o slider é solto (change)
+        sliderPeriodoAnaliseEl.addEventListener('change', atualizarPeriodoAnalise);
+    }
+    
+    if (inputPeriodoAnaliseEl) {
+        inputPeriodoAnaliseEl.addEventListener('focus', (e) => e.target.select());
+        
+        // Função auxiliar para processar valor do input manual
+        const processarValorInputPeriodo = () => {
+            const valor = parseInt(inputPeriodoAnaliseEl.value);
+            if (!isNaN(valor) && valor > 0) {
+                // Obter limites baseados no tipo de bateria
+                const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
+                const tipoBateriaAtual = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
+                const vidaUtilMaxima = tipoBateriaAtual === 'litio' ? 25 : 5;
+                const minPeriodo = vidaUtilMaxima;
+                const maxPeriodo = vidaUtilMaxima * 4;
+                
+                // Atualizar limites do slider primeiro
+                if (sliderPeriodoAnaliseEl) {
+                    sliderPeriodoAnaliseEl.min = minPeriodo.toString();
+                    sliderPeriodoAnaliseEl.max = maxPeriodo.toString();
+                }
+                
+                // Garantir que o valor está dentro dos limites
+                const valorLimitado = Math.max(minPeriodo, Math.min(maxPeriodo, valor));
+                
+                // Atualizar slider e input
+                if (sliderPeriodoAnaliseEl) {
+                    sliderPeriodoAnaliseEl.value = valorLimitado.toString();
+                }
+                inputPeriodoAnaliseEl.value = valorLimitado.toString();
+                if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPeriodoAnaliseEl);
+                
+                // Atualizar gráfico
+                atualizarInterface();
+            }
+        };
+        
+        inputPeriodoAnaliseEl.addEventListener('input', throttleFn(processarValorInputPeriodo, 200));
+        
+        inputPeriodoAnaliseEl.addEventListener('blur', () => {
+            const valor = parseInt(inputPeriodoAnaliseEl.value);
+            if (isNaN(valor) || valor <= 0) {
+                // Se valor inválido, restaurar valor do slider
+                if (sliderPeriodoAnaliseEl) {
+                    const valorSlider = parseInt(sliderPeriodoAnaliseEl.value) || 25;
+                    inputPeriodoAnaliseEl.value = valorSlider.toString();
+                    if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPeriodoAnaliseEl);
+                }
+            } else {
+                processarValorInputPeriodo();
+            }
+        });
+    }
 
     // 5. Sincronizar valores iniciais dos inputs com os sliders
     // Garante que os inputs exibam os valores corretos dos sliders ao carregar
@@ -2519,71 +3016,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAutonomia);
     }
     
-    // Tooltip de informação sobre Dias de Autonomia
-    const infoIconAutonomia = document.getElementById('infoIconAutonomia');
-    const tooltipAutonomia = document.getElementById('tooltipAutonomia');
-    let tooltipTimeout = null;
-    
-    if (infoIconAutonomia && tooltipAutonomia) {
-        const mostrarTooltip = () => {
-            // Remove timeout anterior se existir
-            if (tooltipTimeout) {
-                clearTimeout(tooltipTimeout);
-            }
-            
-            // Mostra o tooltip
-            tooltipAutonomia.classList.add('mostrar');
-            
-            // Esconde automaticamente após 8 segundos (tempo suficiente para leitura)
-            tooltipTimeout = setTimeout(() => {
-                tooltipAutonomia.classList.remove('mostrar');
-                tooltipTimeout = null;
-            }, 8000);
-        };
-        
-        const esconderTooltip = () => {
-            if (tooltipTimeout) {
-                clearTimeout(tooltipTimeout);
-                tooltipTimeout = null;
-            }
-            tooltipAutonomia.classList.remove('mostrar');
-        };
-        
-        // Mostra ao clicar
-        infoIconAutonomia.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (tooltipAutonomia.classList.contains('mostrar')) {
-                esconderTooltip();
-            } else {
-                mostrarTooltip();
-            }
-        });
-        
-        // Mostra ao pressionar Enter ou Espaço (acessibilidade)
-        infoIconAutonomia.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                e.stopPropagation();
-                if (tooltipAutonomia.classList.contains('mostrar')) {
-                    esconderTooltip();
-                } else {
-                    mostrarTooltip();
-                }
-            }
-        });
-        
-        // Esconde ao clicar fora ou pressionar Escape
-        document.addEventListener('click', (e) => {
-            if (!infoIconAutonomia.contains(e.target) && !tooltipAutonomia.contains(e.target)) {
-                esconderTooltip();
-            }
-        });
-        
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && tooltipAutonomia.classList.contains('mostrar')) {
-                esconderTooltip();
-            }
-        });
+    // Descrições de informação usando função padronizada
+    if (typeof inicializarIconeInfo === 'function') {
+        inicializarIconeInfo('infoIconConsumo', 'descricaoConsumo');
+        inicializarIconeInfo('infoIconAutonomia', 'descricaoAutonomia');
+        inicializarIconeInfo('infoIconVidaUtil', 'descricaoVidaUtil');
+        inicializarIconeInfo('infoIconPrecoKWh', 'descricaoPrecoKWh');
+        inicializarIconeInfo('infoIconAumentoAnualEnergia', 'descricaoAumentoAnualEnergia');
+        inicializarIconeInfo('infoIconPrecoBateriaKWh', 'descricaoPrecoBateriaKWh');
+        inicializarIconeInfo('infoIconPeriodoAnalise', 'descricaoPeriodoAnalise');
     }
     if (sliderVidaUtil && inputVidaUtil) {
         inputVidaUtil.value = Math.round(parseFloat(sliderVidaUtil.value));
@@ -2602,6 +3043,45 @@ document.addEventListener('DOMContentLoaded', () => {
     if (unidadePrecoKWhInit) {
         unidadePrecoKWhInit.textContent = idiomaAtual === 'it-IT' ? '€' : 'R$';
     }
+    
+    // Sincronizar aumento anual do custo da energia
+    const sliderAumentoAnualEnergiaInit = document.getElementById('sliderAumentoAnualEnergia');
+    const inputAumentoAnualEnergiaInit = document.getElementById('inputAumentoAnualEnergia');
+    const notaAumentoAnualEnergiaInit = document.getElementById('notaAumentoAnualEnergia');
+    if (sliderAumentoAnualEnergiaInit && inputAumentoAnualEnergiaInit) {
+        const valorPadraoAumento = AUMENTO_ANUAL_ENERGIA[idiomaAtual] || AUMENTO_ANUAL_ENERGIA['pt-BR'];
+        // Limites: 1/5 e 5x do valor padrão
+        const minValorAumento = valorPadraoAumento / 5;
+        const maxValorAumento = valorPadraoAumento * 5;
+        sliderAumentoAnualEnergiaInit.min = (Math.floor(minValorAumento / 0.1) * 0.1).toFixed(1);
+        sliderAumentoAnualEnergiaInit.max = (Math.ceil(maxValorAumento / 0.1) * 0.1).toFixed(1);
+        sliderAumentoAnualEnergiaInit.value = valorPadraoAumento.toFixed(1);
+        inputAumentoAnualEnergiaInit.value = formatarDecimalComVirgula(valorPadraoAumento, 1);
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAumentoAnualEnergiaInit);
+    }
+    if (notaAumentoAnualEnergiaInit) {
+        const chaveNota = idiomaAtual === 'pt-BR' ? 'nota-aumento-anual-energia-pt' : 'nota-aumento-anual-energia-it';
+        notaAumentoAnualEnergiaInit.textContent = traducoes[idiomaAtual]?.[chaveNota] || '';
+    }
+    
+    // Sincronizar período de análise do gráfico com valor padrão baseado no tipo de bateria
+    const sliderPeriodoAnaliseInit = document.getElementById('sliderPeriodoAnalise');
+    const inputPeriodoAnaliseInit = document.getElementById('inputPeriodoAnalise');
+    if (sliderPeriodoAnaliseInit && inputPeriodoAnaliseInit) {
+        const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
+        const tipoBateriaAtual = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
+        const vidaUtilMaxima = tipoBateriaAtual === 'litio' ? 25 : 5;
+        
+        // Limites: min = 1x vida útil máxima, max = 4x vida útil máxima
+        sliderPeriodoAnaliseInit.min = vidaUtilMaxima.toString();
+        sliderPeriodoAnaliseInit.max = (vidaUtilMaxima * 4).toString();
+        
+        // Valor padrão: 1x vida útil máxima
+        sliderPeriodoAnaliseInit.value = vidaUtilMaxima.toString();
+        inputPeriodoAnaliseInit.value = vidaUtilMaxima.toString();
+        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPeriodoAnaliseInit);
+    }
+    
     // Sincronizar preço bateria por kWh com valor padrão baseado no tipo de bateria e idioma
     const sliderPrecoBateriaKWhInit = document.getElementById('sliderPrecoBateriaKWh');
     const inputPrecoBateriaKWhInit = document.getElementById('inputPrecoBateriaKWh');
@@ -2769,28 +3249,34 @@ function atualizarMemorialComValores() {
     const potenciaNecessariaW = (energiaGerar * 1000) / HSP;
     const qtdPaineis = Math.ceil(potenciaNecessariaW / config.potenciaPainel);
     
-    // Calcular inversor baseado no consumo de pico
+    // Calcular inversor com MPPT integrado
+    // Primeiro calcula potência mínima baseada no consumo de pico
     const consumoMedioHorario = energiaDiaria / 24;
     const consumoPico = consumoMedioHorario * FATOR_PICO_CONSUMO;
-    const potenciaInversor = Math.max(1, Math.ceil(consumoPico));
+    let potenciaInversor = Math.max(1, Math.ceil(consumoPico));
     
-    // Calcular MPPT baseado na corrente máxima dos painéis
+    // Calcula corrente máxima necessária para os painéis
     const potenciaTotalPaineis = qtdPaineis * config.potenciaPainel;
     const tensaoBanco = batSpec.v;
-    const correnteMaxima = potenciaTotalPaineis / tensaoBanco;
-    let correnteMPPT = Math.max(20, Math.ceil(correnteMaxima));
-    // Arredonda para valores comerciais
-    if (correnteMPPT > 100) {
-        correnteMPPT = Math.ceil(correnteMPPT / 50) * 50;
-    } else if (correnteMPPT > 60) {
-        correnteMPPT = 100;
-    } else if (correnteMPPT > 40) {
-        correnteMPPT = 60;
-    } else if (correnteMPPT > 20) {
-        correnteMPPT = 40;
-    } else {
-        correnteMPPT = 20;
+    const correnteMaximaNecessaria = potenciaTotalPaineis / tensaoBanco;
+    
+    // Verifica se o inversor escolhido tem capacidade MPPT suficiente
+    // Se não tiver, aumenta a potência do inversor até encontrar um com MPPT adequado
+    let capacidadeMPPTIntegrado = obterCapacidadeMPPTIntegrado(potenciaInversor);
+    while (capacidadeMPPTIntegrado < correnteMaximaNecessaria && potenciaInversor < 10) {
+        potenciaInversor += 1; // Aumenta em 1kW
+        capacidadeMPPTIntegrado = obterCapacidadeMPPTIntegrado(potenciaInversor);
     }
+    
+    // Se ainda não encontrou inversor adequado, usa o maior disponível
+    if (capacidadeMPPTIntegrado < correnteMaximaNecessaria) {
+        const maiorInversor = PRECOS_INVERSOR_BRL[PRECOS_INVERSOR_BRL.length - 1];
+        potenciaInversor = maiorInversor.kw;
+        capacidadeMPPTIntegrado = maiorInversor.mpptA;
+    }
+    
+    // A corrente MPPT é a capacidade integrada do inversor escolhido
+    const correnteMPPT = capacidadeMPPTIntegrado;
     
     // Formatação
     const moeda = traducoes[idiomaAtual]?.['moeda'] || 'R$';
@@ -2825,12 +3311,17 @@ function atualizarMemorialComValores() {
     
     const exemploInversor = document.getElementById('memorial-exemplo-inversor');
     if (exemploInversor) {
-        exemploInversor.textContent = `Consumo diário ${formatarNumero(energiaDiaria)} kWh → ${formatarNumero(energiaDiaria)}÷24 = ${formatarNumero(consumoMedioHorario)} kW/h × ${FATOR_PICO_CONSUMO} = ${formatarNumero(consumoPico)} kW pico → Inversor de ${potenciaInversor} kW`;
+        // Calcula corrente máxima necessária para o exemplo
+        const potenciaTotalPaineisExemplo = qtdPaineis * config.potenciaPainel;
+        const correnteMaximaNecessariaExemplo = potenciaTotalPaineisExemplo / tensaoBanco;
+        exemploInversor.textContent = `Consumo diário ${formatarNumero(energiaDiaria)} kWh → ${formatarNumero(energiaDiaria)}÷24 = ${formatarNumero(consumoMedioHorario)} kW/h × ${FATOR_PICO_CONSUMO} = ${formatarNumero(consumoPico)} kW pico → Inversor de ${potenciaInversor} kW com MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)}A integrado`;
     }
     
     const exemploMPPT = document.getElementById('memorial-exemplo-mppt');
     if (exemploMPPT) {
-        exemploMPPT.textContent = `${qtdPaineis} painéis × ${formatarNumeroComSufixo(config.potenciaPainel, 0)}W = ${formatarNumeroComSufixo(potenciaTotalPaineis, 0)}W ÷ ${tensaoBanco}V = ${formatarNumeroComSufixo(correnteMaxima, 1)}A → MPPT de ${formatarNumeroComSufixo(correnteMPPT, 0)}A`;
+        const potenciaTotalPaineisExemplo = qtdPaineis * config.potenciaPainel;
+        const correnteMaximaNecessariaExemplo = potenciaTotalPaineisExemplo / tensaoBanco;
+        exemploMPPT.textContent = `${qtdPaineis} painéis × ${formatarNumeroComSufixo(config.potenciaPainel, 0)}W = ${formatarNumeroComSufixo(potenciaTotalPaineisExemplo, 0)}W ÷ ${tensaoBanco}V = ${formatarNumeroComSufixo(correnteMaximaNecessariaExemplo, 1)}A necessários → Inversor ${potenciaInversor}kW escolhido tem MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)}A integrado (adequado)`;
     }
     
     const exemploCustos = document.getElementById('memorial-exemplo-custos');
@@ -2866,9 +3357,9 @@ function atualizarMemorialComValores() {
         const custoPaineis = qtdPaineis * precoPainelConvertido;
         const custoBaterias = qtdBaterias * precoBateriaConvertido;
         const custoInversor = calcularPrecoInversor(potenciaInversor, moedaCalculo);
-        const custoMPPT = calcularPrecoMPPT(correnteMPPT, moedaCalculo);
-        const custoTotal = custoPaineis + custoBaterias + custoInversor + custoMPPT;
-        exemploCustos.textContent = `${qtdPaineis} painéis × ${formatarMoeda(precoPainelConvertido)} + ${qtdBaterias} baterias × ${formatarMoeda(precoBateriaConvertido)} + inversor ${formatarMoeda(custoInversor)} + MPPT ${formatarMoeda(custoMPPT)} = ${formatarMoeda(custoPaineis)} + ${formatarMoeda(custoBaterias)} + ${formatarMoeda(custoInversor)} + ${formatarMoeda(custoMPPT)} = ${formatarMoeda(custoTotal)}`;
+        // MPPT está integrado no inversor, então não há custo separado
+        const custoTotal = custoPaineis + custoBaterias + custoInversor;
+        exemploCustos.textContent = `${qtdPaineis} painéis × ${formatarMoeda(precoPainelConvertido)} + ${qtdBaterias} baterias × ${formatarMoeda(precoBateriaConvertido)} + inversor com MPPT integrado ${formatarMoeda(custoInversor)} = ${formatarMoeda(custoPaineis)} + ${formatarMoeda(custoBaterias)} + ${formatarMoeda(custoInversor)} = ${formatarMoeda(custoTotal)}`;
     }
     
     // Atualizar resumo
@@ -2888,9 +3379,15 @@ function atualizarMemorialComValores() {
     if (resumoPaineis) resumoPaineis.textContent = `${qtdPaineis} × ${formatarNumeroComSufixo(config.potenciaPainel, 0)}W = ${formatarNumero((qtdPaineis * config.potenciaPainel) / 1000)} kW`;
     
     const resumoInversor = document.getElementById('resumo-inversor');
-    if (resumoInversor) resumoInversor.textContent = `${potenciaInversor} kW`;
+    if (resumoInversor) {
+        // Mostra potência do inversor com MPPT integrado
+        resumoInversor.textContent = `${potenciaInversor} kW (MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)}A integrado)`;
+    }
     
     const resumoMPPT = document.getElementById('resumo-mppt');
-    if (resumoMPPT) resumoMPPT.textContent = formatarNumeroComSufixo(correnteMPPT, 0) + ' A';
+    if (resumoMPPT) {
+        // MPPT está integrado no inversor
+        resumoMPPT.textContent = formatarNumeroComSufixo(correnteMPPT, 0) + ' A (integrado)';
+    }
 }
 

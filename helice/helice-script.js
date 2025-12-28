@@ -217,7 +217,11 @@ const traducoes = {
         'memorial-resumo-title': '📊 Resumo Calculado',
         'memorial-resumo-rpm': 'RPM na Hélice:',
         'memorial-resumo-passo': 'Passo Recomendado:',
-        'memorial-resumo-velocidade': 'Velocidade Teórica:'
+        'memorial-resumo-velocidade': 'Velocidade Teórica:',
+        'tooltip-velocidade-texto': 'A velocidade desejada é a velocidade máxima que você quer que o barco alcance, medida em nós, mph ou km/h. Este valor é usado para calcular o passo ideal da hélice. Velocidades maiores exigem hélices com passo maior, mas também requerem mais potência do motor.',
+        'tooltip-reducao-texto': 'A redução da rabeta é a relação entre a rotação do motor e a rotação da hélice. Por exemplo, uma redução de 2:1 significa que o motor gira 2 vezes para a hélice girar 1 vez. Isso aumenta o torque disponível na hélice, permitindo hélices maiores e mais eficientes. Valores típicos variam de 1:1 a 3:1.',
+        'tooltip-rpm-texto': 'O RPM máximo do motor é a rotação máxima que o motor pode atingir, medida em rotações por minuto (rpm). Este valor é usado para calcular o RPM efetivo na hélice (dividindo pela redução) e determinar o passo ideal. Valores típicos para motores de barcos de lazer variam de 4000 a 7000 rpm.',
+        'tooltip-slip-texto': 'O slip (deslizamento) é a perda de eficiência entre a hélice e a água, expressa como percentual. Representa quanto a hélice "desliza" na água em vez de empurrá-la efetivamente. Barcos de lazer típicos têm 10-20% de slip. Quanto menor o slip, mais eficiente a hélice, mas também mais difícil de alcançar. O valor padrão de 15% é um bom equilíbrio para a maioria dos barcos.'
     },
     'it-IT': {
         'app-title': '🚤 Calcolatore Passo Elica',
@@ -278,7 +282,11 @@ const traducoes = {
         'memorial-resumo-title': '📊 Riepilogo Calcolato',
         'memorial-resumo-rpm': 'RPM nell\'Elica:',
         'memorial-resumo-passo': 'Passo Consigliato:',
-        'memorial-resumo-velocidade': 'Velocità Teorica:'
+        'memorial-resumo-velocidade': 'Velocità Teorica:',
+        'tooltip-velocidade-texto': 'La velocità desiderata è la velocità massima che vuoi che la barca raggiunga, misurata in nodi, mph o km/h. Questo valore viene utilizzato per calcolare il passo ideale dell\'elica. Velocità maggiori richiedono eliche con passo maggiore, ma richiedono anche più potenza dal motore.',
+        'tooltip-reducao-texto': 'La riduzione del piede poppiero è il rapporto tra la rotazione del motore e la rotazione dell\'elica. Ad esempio, una riduzione di 2:1 significa che il motore gira 2 volte per 1 giro dell\'elica. Questo aumenta la coppia disponibile nell\'elica, permettendo eliche più grandi e più efficienti. Valori tipici variano da 1:1 a 3:1.',
+        'tooltip-rpm-texto': 'Il RPM massimo del motore è la rotazione massima che il motore può raggiungere, misurata in rotazioni per minuto (rpm). Questo valore viene utilizzato per calcolare il RPM effettivo nell\'elica (dividendo per la riduzione) e determinare il passo ideale. Valori tipici per motori di barche da diporto variano da 4000 a 7000 rpm.',
+        'tooltip-slip-texto': 'Lo slip (scivolamento) è la perdita di efficienza tra l\'elica e l\'acqua, espressa come percentuale. Rappresenta quanto l\'elica "scivola" nell\'acqua invece di spingerla efficacemente. Barche da diporto tipiche hanno 10-20% di slip. Minore è lo slip, più efficiente è l\'elica, ma anche più difficile da raggiungere. Il valore predefinito del 15% è un buon equilibrio per la maggior parte delle barche.'
     }
 };
 
@@ -1403,4 +1411,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Calcula e exibe os resultados iniciais
     atualizarResultado();
+    
+    // Inicializar ícones de informação usando função padronizada
+    if (typeof inicializarIconeInfo === 'function') {
+        inicializarIconeInfo('infoIconVelocidade', 'descricaoVelocidade');
+        inicializarIconeInfo('infoIconReducao', 'descricaoReducao');
+        inicializarIconeInfo('infoIconRPM', 'descricaoRPM');
+        inicializarIconeInfo('infoIconSlip', 'descricaoSlip');
+    }
 });

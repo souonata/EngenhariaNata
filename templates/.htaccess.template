@@ -1,0 +1,47 @@
+# ============================================
+# TEMPLATE .htaccess PARA APPS
+# ============================================
+# Este arquivo é um template para criar .htaccess em pastas de apps
+# Copie este arquivo para a pasta do app e ajuste conforme necessário
+#
+# Quando usar:
+# - Apps que precisam de DirectoryIndex personalizado
+# - Apps que precisam de ErrorDocument personalizado
+# - Apps que precisam de configurações de cache específicas
+#
+# Quando NÃO usar:
+# - Apps simples que herdam configurações do .htaccess raiz
+# ============================================
+
+# DirectoryIndex especifica qual arquivo deve ser servido quando uma pasta é acessada
+# Substitua 'app-name.html' pelo nome do arquivo HTML do app
+DirectoryIndex app-name.html
+
+# ErrorDocument define uma página personalizada para erro 404 (página não encontrada)
+# Redireciona automaticamente para a página principal do app se um arquivo não existir
+# Substitua '/app-name/app-name.html' pelo caminho correto
+ErrorDocument 404 /app-name/app-name.html
+
+# ============================================
+# CONFIGURAÇÕES DE CACHE (OPCIONAL)
+# ============================================
+# Descomente se o app precisar de configurações de cache específicas
+# Caso contrário, herda do .htaccess raiz
+
+# Desabilitar cache para arquivos HTML, CSS e JS
+# <FilesMatch "\.(html|htm|css|js)$">
+#     FileETag None
+#     <IfModule mod_headers.c>
+#         Header unset ETag
+#         Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+#         Header set Pragma "no-cache"
+#         Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
+#     </IfModule>
+# </FilesMatch>
+
+# Permitir cache apenas para imagens (opcional)
+# <FilesMatch "\.(jpg|jpeg|png|gif|svg|ico)$">
+#     <IfModule mod_headers.c>
+#         Header set Cache-Control "max-age=2592000, public"
+#     </IfModule>
+# </FilesMatch>

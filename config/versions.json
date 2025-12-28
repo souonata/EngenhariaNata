@@ -1,0 +1,75 @@
+{
+  "project": "Engenharia NATA",
+  "lastUpdated": "2025-01-XX",
+  "versioning": {
+    "format": "semantic",
+    "description": "Versões seguem formato MAJOR.MINOR.PATCH"
+  },
+  "apps": {
+    "index": {
+      "html": "1.0.0",
+      "css": "1.2.2",
+      "js": "1.0.0"
+    },
+    "solar": {
+      "html": "1.0.0",
+      "css": "1.2.0",
+      "js": "1.0.0"
+    },
+    "bitola": {
+      "html": "1.0.0",
+      "css": "1.0.0",
+      "js": "1.0.0"
+    },
+    "helice": {
+      "html": "1.0.0",
+      "css": "1.5.8",
+      "js": "1.0.0"
+    },
+    "mutuo": {
+      "html": "1.0.0",
+      "css": "1.0.0",
+      "js": "1.0.0"
+    },
+    "arcondicionado": {
+      "html": "1.0.0",
+      "css": "1.0.0",
+      "js": "1.0.0"
+    },
+    "aquecimento": {
+      "html": "1.0.0",
+      "css": "1.0.0",
+      "js": "1.0.0"
+    },
+    "fazenda": {
+      "html": "1.0.0",
+      "css": "1.0.0",
+      "js": "1.0.0"
+    },
+    "bugs": {
+      "html": "1.0.0",
+      "css": "1.0.0",
+      "js": "1.0.0"
+    },
+    "sobre": {
+      "html": "1.0.0",
+      "css": "1.0.0",
+      "js": "1.0.0"
+    },
+    "solar-config": {
+      "html": "1.0.0",
+      "css": "1.0.0",
+      "js": "1.0.0"
+    }
+  },
+  "shared": {
+    "shared-styles": "1.0.0",
+    "controls-styles": "1.0.0",
+    "site-config": "1.0.0",
+    "ajustarValorUtil": "1.0.0"
+  },
+  "serviceWorker": {
+    "version": "1.1.0",
+    "cacheName": "engenharia-nata-v1.1.0"
+  }
+}

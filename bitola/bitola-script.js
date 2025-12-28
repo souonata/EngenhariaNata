@@ -915,7 +915,11 @@ const traducoes = {
         'memorial-queda-recomendada': 'Queda de tensão recomendada:',
         'memorial-queda-recomendada-texto': '4% — Limite máximo estabelecido pela NBR 5410 para circuitos terminais em regime permanente. Este é o padrão técnico brasileiro.',
         'memorial-lei-ohm-titulo': '⚛️ Lei Física Aplicada — Lei de Ohm:',
-        'memorial-lei-ohm-texto': 'A Lei de Ohm relaciona tensão (V), corrente (I) e resistência (R): V = I × R. No cálculo de bitola, usamos esta lei para determinar a queda de tensão: quanto maior a corrente e a resistência do fio, maior a queda de tensão. A resistência do fio depende da resistividade do material (cobre), do comprimento e da área da seção transversal (bitola).'
+        'memorial-lei-ohm-texto': 'A Lei de Ohm relaciona tensão (V), corrente (I) e resistência (R): V = I × R. No cálculo de bitola, usamos esta lei para determinar a queda de tensão: quanto maior a corrente e a resistência do fio, maior a queda de tensão. A resistência do fio depende da resistividade do material (cobre), do comprimento e da área da seção transversal (bitola).',
+        'tooltip-potencia-texto': 'A potência máxima nominal representa a quantidade total de energia elétrica que será consumida pelo circuito, medida em watts (W). Este valor é usado para calcular a corrente elétrica necessária. Você pode encontrar este valor nas especificações dos equipamentos que serão conectados ao circuito.',
+        'tooltip-comprimento-texto': 'A distância do circuito é a distância entre a fonte de energia (disjuntor, transformador, etc.) e a carga (equipamento que consome energia). O cálculo considera automaticamente a ida e volta do circuito (dois condutores), então você deve informar apenas a distância simples entre os pontos.',
+        'tooltip-tensao-cc-texto': 'A tensão é a diferença de potencial elétrico entre dois pontos do circuito, medida em volts (V). Para corrente contínua (CC), valores típicos incluem 3.3V, 5V, 9V, 12V, 15V, 20V, 24V, 36V, 48V, 60V, 72V e 96V. Este valor afeta diretamente o cálculo da corrente e da bitola necessária.',
+        'tooltip-queda-tensao-texto': 'A queda de tensão máxima é o percentual de redução de tensão permitido ao longo do circuito. Valores menores garantem melhor desempenho dos equipamentos, mas exigem fios mais grossos. Para projetos residenciais no Brasil, recomenda-se 3% a 4% conforme a NBR 5410. Valores maiores podem causar problemas de funcionamento dos equipamentos.'
     },
     'it-IT': {
         'app-title': '🔌 Calcolatrice Sezione Cavi',
@@ -980,7 +984,11 @@ const traducoes = {
         'memorial-queda-recomendada': 'Caduta di tensione raccomandata:',
         'memorial-queda-recomendada-texto': '4% — Limite massimo stabilito dalla NBR 5410 per circuiti terminali in regime permanente. Questo è lo standard tecnico brasiliano.',
         'memorial-lei-ohm-titulo': '⚛️ Legge Fisica Applicata — Legge di Ohm:',
-        'memorial-lei-ohm-texto': 'La Legge di Ohm mette in relazione tensione (V), corrente (I) e resistenza (R): V = I × R. Nel calcolo della sezione, usiamo questa legge per determinare la caduta di tensione: maggiore è la corrente e la resistenza del filo, maggiore è la caduta di tensione. La resistenza del filo dipende dalla resistività del materiale (rame), dalla lunghezza e dall\'area della sezione trasversale (sezione).'
+        'memorial-lei-ohm-texto': 'La Legge di Ohm mette in relazione tensione (V), corrente (I) e resistenza (R): V = I × R. Nel calcolo della sezione, usiamo questa legge per determinare la caduta di tensione: maggiore è la corrente e la resistenza del filo, maggiore è la caduta di tensione. La resistenza del filo dipende dalla resistività del materiale (rame), dalla lunghezza e dall\'area della sezione trasversale (sezione).',
+        'tooltip-potencia-texto': 'La potenza massima nominale rappresenta la quantità totale di energia elettrica che sarà consumata dal circuito, misurata in watt (W). Questo valore viene utilizzato per calcolare la corrente elettrica necessaria. Puoi trovare questo valore nelle specifiche degli apparecchi che saranno collegati al circuito.',
+        'tooltip-comprimento-texto': 'La distanza del circuito è la distanza tra la fonte di energia (interruttore, trasformatore, ecc.) e il carico (apparecchio che consuma energia). Il calcolo considera automaticamente andata e ritorno del circuito (due conduttori), quindi devi inserire solo la distanza semplice tra i punti.',
+        'tooltip-tensao-cc-texto': 'La tensione è la differenza di potenziale elettrico tra due punti del circuito, misurata in volt (V). Per corrente continua (CC), valori tipici includono 3.3V, 5V, 9V, 12V, 15V, 20V, 24V, 36V, 48V, 60V, 72V e 96V. Questo valore influisce direttamente sul calcolo della corrente e della sezione necessaria.',
+        'tooltip-queda-tensao-texto': 'La caduta di tensione massima è la percentuale di riduzione di tensione consentita lungo il circuito. Valori minori garantiscono migliori prestazioni degli apparecchi, ma richiedono fili più spessi. Per progetti residenziali in Brasile, si raccomanda 3% a 4% secondo la NBR 5410. Valori maggiori possono causare problemi di funzionamento degli apparecchi.'
     }
 };
 
@@ -1513,5 +1521,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Calcula resultados iniciais
     atualizarResultados();
+    
+    // Inicializar ícones de informação usando função padronizada
+    if (typeof inicializarIconeInfo === 'function') {
+        inicializarIconeInfo('infoIconPotencia', 'descricaoPotencia');
+        inicializarIconeInfo('infoIconComprimento', 'descricaoComprimento');
+        inicializarIconeInfo('infoIconTensaoCC', 'descricaoTensaoCC');
+        inicializarIconeInfo('infoIconQuedaTensao', 'descricaoQuedaTensao');
+    }
 });
 

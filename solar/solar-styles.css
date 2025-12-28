@@ -17,6 +17,33 @@
     /* Todas as variáveis de cor, espaçamento e fonte já estão centralizadas em shared-styles.css */
 }
 
+/* Badge "Em Desenvolvimento" no cabeçalho */
+.dev-badge-header {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.dev-badge-text {
+    display: inline-block;
+    background: #ff6b35;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid white;
+}
+
+@media (max-width: 480px) {
+    .dev-badge-text {
+        font-size: 0.65rem;
+        padding: 5px 10px;
+    }
+}
+
 /* ============================================
    AJUSTES DE LARGURA DOS CAMPOS DE INPUT
    ============================================ */
@@ -227,78 +254,14 @@
     margin-top: 0;
 }
 
-/* Ícone de informação para Dias de Autonomia */
+/* Ícone de informação e descrição agora usam classes padronizadas de shared-styles.css */
+/* Mantido apenas para compatibilidade com classes específicas antigas */
 .info-icon-autonomia {
-    position: relative;
-    display: inline-block;
-    margin-left: 8px;
-    cursor: pointer;
-    vertical-align: middle;
-    z-index: 10001; /* Acima do tooltip para garantir que o ícone seja clicável */
+    /* Usa .info-icon de shared-styles.css */
 }
 
-.info-icon-symbol {
-    display: inline-block;
-    font-size: 1.1rem;
-    color: #2d9fa3ff;
-    transition: transform 0.2s, opacity 0.2s;
-    user-select: none;
-}
-
-.info-icon-autonomia:hover .info-icon-symbol,
-.info-icon-autonomia:focus .info-icon-symbol {
-    transform: scale(1.2);
-    opacity: 0.8;
-}
-
-.tooltip-autonomia {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-bottom: 8px;
-    padding: 12px 16px;
-    background: #333;
-    color: #fff;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    line-height: 1.5;
-    white-space: normal;
-    width: 280px;
-    max-width: calc(100vw - 40px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
-    transform: translateX(-50%) translateY(-5px);
-    pointer-events: none;
-    z-index: 10000 !important; /* Garante que fique acima dos botões de idioma (z-index: 100) */
-    text-align: left;
-}
-
-.tooltip-autonomia::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 6px solid transparent;
-    border-top-color: #333;
-}
-
-.tooltip-autonomia.mostrar {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(0);
-    pointer-events: auto;
-}
-
-@media (max-width: 480px) {
-    .tooltip-autonomia {
-        width: 250px;
-        font-size: 0.8rem;
-        padding: 10px 14px;
-    }
+.descricao-autonomia {
+    /* Usa .descricao-info de shared-styles.css */
 }
 
 /* Ícone de informação/configurações */

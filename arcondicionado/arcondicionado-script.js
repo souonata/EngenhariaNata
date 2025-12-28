@@ -326,6 +326,7 @@ const BTU_PARA_KW = 0.000293;
 // ============================================
 const traducoes = {
     'pt-BR': {
+        'dev-badge-header': '🚧 EM DESENVOLVIMENTO',
         'app-title': '❄️ Dimensionador de Ar Condicionado',
         'app-subtitle': 'Cálculo de BTU para Ambientes Residenciais',
         'label-area': 'Área do Ambiente',
@@ -452,6 +453,7 @@ const traducoes = {
         'memorial-fontes-nota': 'Nota: Os valores foram ajustados para refletir as diferenças climáticas naturais entre Brasil (clima tropical/quente) e Itália (clima temperado). O Brasil, por natureza mais quente, requer valores mais altos de BTU/m² para compensar as temperaturas ambientais elevadas. A Itália, com clima mais frio, utiliza valores menores conforme as guias técnicas locais.'
     },
     'it-IT': {
+        'dev-badge-header': '🚧 IN SVILUPPO',
         'app-title': '❄️ Dimensionatore Climatizzatore',
         'app-subtitle': 'Calcolo BTU per Ambienti Residenziali',
         'label-area': 'Area Ambiente',

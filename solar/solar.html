@@ -58,6 +58,9 @@
     <div class="conteiner-principal">
         <!-- Cabeçalho -->
         <header>
+            <div class="dev-badge-header">
+                <span class="dev-badge-text" data-i18n="dev-badge-header">🚧 EM DESENVOLVIMENTO</span>
+            </div>
             <h1 data-i18n="app-title">🔋 Energia Solar</h1>
             <p class="subtitulo" data-i18n="app-subtitle">Dimensionamento de Sistema Fotovoltaico</p>
         </header>
@@ -163,37 +166,38 @@
                 </div>
             </div>
 
-            <!-- Passo 6: Inversor -->
+            <!-- Passo 6: Inversor com MPPT Integrado -->
             <div class="memorial-item">
-                <h3 data-i18n="memorial-passo6-title">6️⃣ Passo 6: Dimensionar o Inversor</h3>
+                <h3 data-i18n="memorial-passo6-title">6️⃣ Passo 6: Dimensionar o Inversor com MPPT Integrado</h3>
                 <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                 <div class="formula-box">
                     <p><strong id="memorial-formula-passo6-1">Consumo Médio Horário = Energia Diária (kWh) ÷ 24 horas</strong></p>
                     <p><strong id="memorial-formula-passo6-2">Consumo de Pico = Consumo Médio Horário × Fator de Pico (5x)</strong></p>
-                    <p><strong id="memorial-formula-passo6-3">Potência do Inversor (kW) = Máximo(Consumo de Pico, 1 kW mínimo)</strong></p>
+                    <p><strong id="memorial-formula-passo6-3">Potência Mínima do Inversor (kW) = Máximo(Consumo de Pico, 1 kW mínimo)</strong></p>
                 </div>
-                <p data-i18n="memorial-passo6-explicacao">O inversor converte DC das baterias para AC da casa. Deve ter capacidade para o consumo de pico típico de uma residência, não precisa ter a capacidade total dos painéis. O fator de pico de 5x considera que o consumo não é constante ao longo do dia.</p>
-                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-inversor">Consumo diário 5 kWh → 5÷24 = 0.21 kW/h × 5 = 1.05 kW pico → Inversor de 2 kW</span></p>
+                <p data-i18n="memorial-passo6-explicacao">Em sistemas off-grid, todos os inversores modernos já vêm com MPPT integrado. O inversor converte DC das baterias para AC da casa e deve ter capacidade para o consumo de pico típico de uma residência. O fator de pico de 5x considera que o consumo não é constante ao longo do dia. Além disso, o inversor escolhido deve ter capacidade MPPT suficiente para suportar a corrente máxima dos painéis.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-inversor">Consumo diário 5 kWh → 5÷24 = 0.21 kW/h × 5 = 1.05 kW pico → Inversor de 2 kW com MPPT 60A integrado</span></p>
                 <div class="info-box">
-                    <p><strong>📊 Valor de referência usado:</strong></p>
+                    <p><strong>📊 Valores de referência usados:</strong></p>
                     <ul>
                         <li><strong>Fator de Pico = 5.0</strong> — O consumo de pico é aproximadamente 5 vezes maior que o consumo médio horário. Baseado em práticas da indústria e normas técnicas para dimensionamento de inversores.</li>
                         <li><strong>Inversor mínimo = 1 kW</strong> — Garante capacidade mínima para atender cargas básicas mesmo em sistemas pequenos.</li>
+                        <li><strong>MPPT Integrado</strong> — Em sistemas off-grid modernos, todos os inversores já incluem controlador MPPT integrado, eliminando a necessidade de componente separado.</li>
                     </ul>
                 </div>
             </div>
 
-            <!-- Passo 7: MPPT -->
+            <!-- Passo 7: Verificar Capacidade MPPT -->
             <div class="memorial-item">
-                <h3 data-i18n="memorial-passo7-title">7️⃣ Passo 7: Dimensionar o MPPT (Controlador de Carga)</h3>
+                <h3 data-i18n="memorial-passo7-title">7️⃣ Passo 7: Verificar Capacidade MPPT do Inversor</h3>
                 <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                 <div class="formula-box">
                     <p><strong id="memorial-formula-passo7-1">Potência Total dos Painéis = Número de Painéis × Potência por Painel (W)</strong></p>
-                    <p><strong id="memorial-formula-passo7-2">Corrente Máxima = Potência Total dos Painéis ÷ Tensão do Banco (V)</strong></p>
-                    <p><strong id="memorial-formula-passo7-3">Corrente do MPPT = Arredondar para Cima(Corrente Máxima) para valor comercial</strong></p>
+                    <p><strong id="memorial-formula-passo7-2">Corrente Máxima Necessária = Potência Total dos Painéis ÷ Tensão do Banco (V)</strong></p>
+                    <p><strong id="memorial-formula-passo7-3">Se Capacidade MPPT do Inversor < Corrente Máxima Necessária, aumenta potência do inversor até encontrar um com MPPT adequado</strong></p>
                 </div>
-                <p data-i18n="memorial-passo7-explicacao">O MPPT (Maximum Power Point Tracking) controla o carregamento das baterias pelos painéis. Precisa suportar a corrente máxima de todos os painéis operando no pico. Valores comerciais comuns: 20A, 40A, 60A, 100A.</p>
-                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-mppt">11 painéis × 400W = 4400W ÷ 48V = 91.7A → MPPT de 100A</span></p>
+                <p data-i18n="memorial-passo7-explicacao">Verifica-se se o inversor escolhido tem capacidade MPPT integrada suficiente para os painéis. A corrente necessária é calculada dividindo a potência total dos painéis pela tensão do banco de baterias. Se o inversor inicial não tiver MPPT suficiente, escolhe-se um inversor maior até encontrar um com capacidade adequada. Isso garante que o sistema funcione corretamente sem necessidade de MPPT separado.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-mppt">11 painéis × 400W = 4400W ÷ 48V = 91.7A necessários → Inversor 2kW tem MPPT 60A (insuficiente) → Escolhe Inversor 3kW com MPPT 80A (insuficiente) → Escolhe Inversor 5kW com MPPT 100A (adequado)</span></p>
             </div>
 
             <!-- Passo 8: Custos -->
@@ -257,8 +261,15 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderConsumo" data-i18n="label-consumo">Consumo Médio Mensal</label>
+                    <span class="info-icon" id="infoIconConsumo" role="button" tabindex="0" aria-label="Informação sobre consumo médio mensal" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <input type="text" id="inputConsumo" class="valor-display valor-input" value="200">
                     <span>kWh</span>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoConsumo" style="display: none;">
+                    <span data-i18n="tooltip-consumo-texto">O consumo médio mensal representa a quantidade de energia elétrica que você utiliza por mês, medida em quilowatt-hora (kWh). Este valor é usado para calcular a energia diária necessária e dimensionar todo o sistema fotovoltaico. Você pode encontrar este valor na sua conta de luz.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn" data-target="sliderConsumo" data-step="-10" aria-label="Diminuir consumo">−</button>
@@ -271,14 +282,15 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderAutonomia" data-i18n="label-autonomia">Dias de Autonomia</label>
-                    <span class="info-icon-autonomia" id="infoIconAutonomia" role="button" tabindex="0" aria-label="Informação sobre dias de autonomia" title="Clique para mais informações">
+                    <span class="info-icon info-icon-autonomia" id="infoIconAutonomia" role="button" tabindex="0" aria-label="Informação sobre dias de autonomia" title="Clique para mais informações">
                         <span class="info-icon-symbol">ℹ️</span>
-                        <span class="tooltip-autonomia" id="tooltipAutonomia" role="tooltip">
-                            <span data-i18n="tooltip-autonomia-texto">Os dias de autonomia representam quantos dias consecutivos o sistema deve conseguir fornecer energia sem receber luz solar. Por exemplo, se você configurar 3 dias de autonomia, o sistema será dimensionado para armazenar energia suficiente para funcionar por 3 dias mesmo sem sol, garantindo funcionamento durante períodos nublados ou chuvosos.</span>
-                        </span>
                     </span>
                     <input type="text" id="inputAutonomia" class="valor-display valor-input" value="1">
                     <span data-i18n="unit-days">dias</span>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info descricao-autonomia" id="descricaoAutonomia" style="display: none;">
+                    <span data-i18n="tooltip-autonomia-texto">Os dias de autonomia representam quantos dias consecutivos o sistema deve conseguir fornecer energia sem receber luz solar. Por exemplo, se você configurar 3 dias de autonomia, o sistema será dimensionado para armazenar energia suficiente para funcionar por 3 dias mesmo sem sol, garantindo funcionamento durante períodos nublados ou chuvosos.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn" data-target="sliderAutonomia" data-step="-1" aria-label="Diminuir autonomia">−</button>
@@ -326,8 +338,15 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderVidaUtil" data-i18n="label-vida-util">Vida Útil Estimada</label>
+                    <span class="info-icon" id="infoIconVidaUtil" role="button" tabindex="0" aria-label="Informação sobre vida útil estimada" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <input type="text" id="inputVidaUtil" class="valor-display valor-input" value="20">
                     <span data-i18n="unit-years">anos</span>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoVidaUtil" style="display: none;">
+                    <span data-i18n="tooltip-vida-util-texto">A vida útil desejada é o número de anos que você espera que o sistema funcione antes de precisar substituir as baterias. Baterias LiFePO4 podem durar até 25 anos com uso adequado, enquanto baterias AGM (chumbo-ácido) geralmente duram de 1 a 5 anos. Quanto maior a vida útil desejada, menor será o DoD (profundidade de descarga) diário para preservar as baterias.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn" data-target="sliderVidaUtil" data-step="-1" aria-label="Diminuir vida útil">−</button>
@@ -343,10 +362,17 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderPrecoKWh" data-i18n="label-preco-kwh">Custo da Energia (kWh)</label>
+                    <span class="info-icon" id="infoIconPrecoKWh" role="button" tabindex="0" aria-label="Informação sobre custo da energia" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputPrecoKWh" class="valor-display valor-input" value="0,75">
                         <span class="unidade" id="unidadePrecoKWh">R$</span>
                     </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoPrecoKWh" style="display: none;">
+                    <span data-i18n="tooltip-preco-kwh-texto">O custo da energia elétrica por kWh é o preço que você paga pela energia da rede elétrica. Este valor é usado para calcular a economia financeira do sistema solar ao longo do tempo. Você pode ajustar este valor para simular diferentes cenários de tarifa ou projeções futuras.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn" data-target="sliderPrecoKWh" data-step="-0.05" aria-label="Diminuir preço kWh">−</button>
@@ -354,8 +380,33 @@
                     <button type="button" class="arrow-btn" data-target="sliderPrecoKWh" data-step="0.05" aria-label="Aumentar preço kWh">+</button>
                 </div>
                 <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">
-                    <span data-i18n="dica-preco-kwh">💡 Ajuste para simular diferentes cenários de tarifa</span><br>
                     <span id="notaPrecoKWh" style="font-size: 0.75rem; color: #888; font-style: italic;"></span>
+                </div>
+            </div>
+
+            <!-- Aumento Anual do Custo da Energia -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderAumentoAnualEnergia" data-i18n="label-aumento-anual-energia">Aumento Anual do Custo da Energia</label>
+                    <span class="info-icon" id="infoIconAumentoAnualEnergia" role="button" tabindex="0" aria-label="Informação sobre aumento anual do custo da energia" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputAumentoAnualEnergia" class="valor-display valor-input" value="8,0">
+                        <span class="unidade">%</span>
+                    </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoAumentoAnualEnergia" style="display: none;">
+                    <span data-i18n="tooltip-aumento-anual-energia-texto">O aumento anual do custo da energia representa a taxa percentual de crescimento do preço da energia elétrica ao longo dos anos. Este valor é usado para calcular a economia acumulada considerando que a energia fica mais cara com o tempo. O valor padrão é baseado no histórico dos últimos 50 anos no Brasil e na Itália.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn" data-target="sliderAumentoAnualEnergia" data-step="-0.1" aria-label="Diminuir aumento anual">−</button>
+                    <input type="range" id="sliderAumentoAnualEnergia" min="1.2" max="40.0" step="0.1" value="8.0">
+                    <button type="button" class="arrow-btn" data-target="sliderAumentoAnualEnergia" data-step="0.1" aria-label="Aumentar aumento anual">+</button>
+                </div>
+                <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">
+                    <span id="notaAumentoAnualEnergia" style="font-size: 0.75rem; color: #888; font-style: italic;"></span>
                 </div>
             </div>
 
@@ -363,18 +414,24 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderPrecoBateriaKWh" data-i18n="label-preco-bateria-kwh">Preço da Bateria (por kWh)</label>
+                    <span class="info-icon" id="infoIconPrecoBateriaKWh" role="button" tabindex="0" aria-label="Informação sobre preço da bateria" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputPrecoBateriaKWh" class="valor-display valor-input" value="3000">
                         <span class="unidade" id="unidadePrecoBateriaKWh">R$</span>
                     </div>
                 </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoPrecoBateriaKWh" style="display: none;">
+                    <span data-i18n="tooltip-preco-bateria-kwh-texto">O preço da bateria por kWh representa o custo unitário de capacidade de armazenamento de energia. Este valor varia conforme o tipo de bateria (LiFePO4 é mais caro que AGM) e o mercado. Você pode ajustar este valor para simular diferentes custos de baterias e ver como isso afeta o custo total do sistema.</span>
+                </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn" data-target="sliderPrecoBateriaKWh" data-step="-100" aria-label="Diminuir preço bateria">−</button>
-                    <input type="range" id="sliderPrecoBateriaKWh" min="500" max="8000" step="100" value="3000">
+                    <input type="range" id="sliderPrecoBateriaKWh" min="10" max="8000" step="10" value="3000">
                     <button type="button" class="arrow-btn" data-target="sliderPrecoBateriaKWh" data-step="100" aria-label="Aumentar preço bateria">+</button>
                 </div>
                 <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">
-                    <span data-i18n="dica-preco-bateria-kwh">💡 Ajuste para simular diferentes custos de baterias</span><br>
                     <span id="notaPrecoBateriaKWh" style="font-size: 0.75rem; color: #888; font-style: italic;"></span>
                 </div>
             </div>
@@ -431,15 +488,14 @@
                     <span id="custoInversor" class="sub-resultado custo-item">R$ 0</span>
                 </div>
 
-                <!-- MPPT -->
-                <div class="item-resultado">
+                <!-- MPPT (integrado no inversor) -->
+                <div class="item-resultado" style="display: none;" id="itemMPPT">
                     <div class="linha-resultado">
                         <span class="icone-resultado">⚡</span>
-                        <span class="rotulo-resultado" data-i18n="res-mppt">MPPT</span>
+                        <span class="rotulo-resultado" data-i18n="res-mppt-integrado">MPPT (Integrado)</span>
                     </div>
                     <span id="resCorrenteMPPT" class="valor-resultado">40 A</span>
                     <span id="resMotivoMPPT" class="sub-resultado gargalo"></span>
-                    <span id="custoMPPT" class="sub-resultado custo-item">R$ 0</span>
                 </div>
 
                 <!-- Peso Baterias -->
@@ -455,6 +511,29 @@
             <!-- Gráficos de Visualização -->
             <div class="graficos-container" style="margin-top: 30px;">
                 <h3 style="color: #2d9fa3ff; margin-bottom: 15px;" data-i18n="graficos-title">📊 Visualizações</h3>
+                
+                <!-- Controle do Período de Análise do Gráfico -->
+                <div class="grupo-entrada" style="margin-bottom: 20px; max-width: 400px; margin-left: auto; margin-right: auto;">
+                    <div class="cabecalho-controle">
+                        <label for="sliderPeriodoAnalise" data-i18n="label-periodo-analise">Período de Análise do Gráfico</label>
+                        <span class="info-icon" id="infoIconPeriodoAnalise" role="button" tabindex="0" aria-label="Informação sobre período de análise" title="Clique para mais informações">
+                            <span class="info-icon-symbol">ℹ️</span>
+                        </span>
+                        <div class="valor-com-unidades">
+                            <input type="text" id="inputPeriodoAnalise" class="valor-display valor-input" value="25">
+                            <span class="unidade" data-i18n="unidade-anos">anos</span>
+                        </div>
+                    </div>
+                    <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                    <div class="descricao-info" id="descricaoPeriodoAnalise" style="display: none;">
+                        <span data-i18n="tooltip-periodo-analise-texto">O período de análise do gráfico define quantos anos serão considerados na análise financeira de amortização e lucro líquido. O período mínimo é 1x a vida útil máxima da bateria selecionada (25 anos para LiFePO4, 5 anos para AGM), e o máximo é 4x esse valor. Valores maiores permitem ver projeções de longo prazo.</span>
+                    </div>
+                    <div class="slider-com-botoes">
+                        <button type="button" class="arrow-btn" data-target="sliderPeriodoAnalise" data-step="-1" aria-label="Diminuir período">−</button>
+                        <input type="range" id="sliderPeriodoAnalise" min="5" max="100" step="1" value="25">
+                        <button type="button" class="arrow-btn" data-target="sliderPeriodoAnalise" data-step="1" aria-label="Aumentar período">+</button>
+                    </div>
+                </div>
                 
                 <!-- Gráfico de Amortização: Retorno do Investimento -->
                 <div class="grafico-box" style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">

@@ -5,18 +5,31 @@
 // e carregue mais rápido em visitas subsequentes através de cache.
 //
 // Versão do cache - incrementar quando atualizar recursos
-const CACHE_VERSION = 'v1.0.0';
+// IMPORTANTE: Atualizar também em config/versions.json
+const CACHE_VERSION = 'v1.1.0';
 const CACHE_NAME = `engenharia-nata-${CACHE_VERSION}`;
 
 // Recursos estáticos para cachear (CSS, JS, imagens)
 // NOTA: Caminhos relativos ao root do site
+// IMPORTANTE: Manter sincronizado com estrutura do projeto
 const STATIC_ASSETS = [
     './',
     './index.html',
     './assets/css/shared-styles.css',
     './assets/css/controls-styles.css',
     './assets/js/site-config.js',
-    './favicon.svg'
+    './assets/js/ajustarValorUtil.js',
+    './favicon.svg',
+    // Apps principais (cachear apenas HTML inicial, assets são carregados sob demanda)
+    './solar/solar.html',
+    './bitola/bitola.html',
+    './helice/helice.html',
+    './mutuo/mutuo.html',
+    './arcondicionado/arcondicionado.html',
+    './aquecimento/aquecimento.html',
+    './fazenda/fazenda.html',
+    './bugs/bugs.html',
+    './sobre/sobre.html'
 ];
 
 // Estratégia: Cache First (para recursos estáticos)

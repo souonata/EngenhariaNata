@@ -78,6 +78,9 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderVelocidade" data-i18n="label-velocidade">Velocidade Desejada</label>
+                    <span class="info-icon" id="infoIconVelocidade" role="button" tabindex="0" aria-label="Informação sobre velocidade desejada" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputVelocidade" class="valor-display valor-input" value="40">
                         <!-- Seletor de unidade de velocidade (compacto) -->
@@ -103,6 +106,10 @@
                         </div>
                     </div>
                 </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoVelocidade" style="display: none;">
+                    <span data-i18n="tooltip-velocidade-texto">A velocidade desejada é a velocidade máxima que você quer que o barco alcance, medida em nós, mph ou km/h. Este valor é usado para calcular o passo ideal da hélice. Velocidades maiores exigem hélices com passo maior, mas também requerem mais potência do motor.</span>
+                </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn" data-target="sliderVelocidade" data-step="-1" aria-label="Diminuir velocidade">−</button>
                     <input type="range" id="sliderVelocidade" min="5" max="60" step="1" value="40">
@@ -114,8 +121,15 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderReducao" data-i18n="label-reducao">Redução da Rabeta</label>
+                    <span class="info-icon" id="infoIconReducao" role="button" tabindex="0" aria-label="Informação sobre redução da rabeta" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <input type="text" id="inputReducao" class="valor-display valor-input" value="2.32">
                     <span>:1</span>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoReducao" style="display: none;">
+                    <span data-i18n="tooltip-reducao-texto">A redução da rabeta é a relação entre a rotação do motor e a rotação da hélice. Por exemplo, uma redução de 2:1 significa que o motor gira 2 vezes para a hélice girar 1 vez. Isso aumenta o torque disponível na hélice, permitindo hélices maiores e mais eficientes. Valores típicos variam de 1:1 a 3:1.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn" data-target="sliderReducao" data-step="-0.1" aria-label="Diminuir redução">−</button>
@@ -128,8 +142,15 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderRPM" data-i18n="label-rpm">RPM Máximo do Motor</label>
+                    <span class="info-icon" id="infoIconRPM" role="button" tabindex="0" aria-label="Informação sobre RPM máximo do motor" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <input type="text" id="inputRPM" class="valor-display valor-input" value="5800">
                     <span>rpm</span>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoRPM" style="display: none;">
+                    <span data-i18n="tooltip-rpm-texto">O RPM máximo do motor é a rotação máxima que o motor pode atingir, medida em rotações por minuto (rpm). Este valor é usado para calcular o RPM efetivo na hélice (dividindo pela redução) e determinar o passo ideal. Valores típicos para motores de barcos de lazer variam de 4000 a 7000 rpm.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn" data-target="sliderRPM" data-step="-100" aria-label="Diminuir RPM">−</button>
@@ -142,15 +163,21 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderSlip" data-i18n="label-slip">Slip Estimado</label>
+                    <span class="info-icon" id="infoIconSlip" role="button" tabindex="0" aria-label="Informação sobre slip estimado" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
                     <input type="text" id="inputSlip" class="valor-display valor-input" value="15">
                     <span>%</span>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoSlip" style="display: none;">
+                    <span data-i18n="tooltip-slip-texto">O slip (deslizamento) é a perda de eficiência entre a hélice e a água, expressa como percentual. Representa quanto a hélice "desliza" na água em vez de empurrá-la efetivamente. Barcos de lazer típicos têm 10-20% de slip. Quanto menor o slip, mais eficiente a hélice, mas também mais difícil de alcançar. O valor padrão de 15% é um bom equilíbrio para a maioria dos barcos.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn" data-target="sliderSlip" data-step="-1" aria-label="Diminuir slip">−</button>
                     <input type="range" id="sliderSlip" min="10" max="20" step="1" value="15">
                     <button type="button" class="arrow-btn" data-target="sliderSlip" data-step="1" aria-label="Aumentar slip">+</button>
                 </div>
-                <p class="info-text" style="text-align: center; margin-top: 8px;" data-i18n="info-slip">Valor típico para barcos de lazer: 10-15%. Representa a perda de eficiência da hélice.</p>
             </div>
         </section>
 
