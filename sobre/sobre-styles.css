@@ -8,10 +8,6 @@
     position: relative;
 }
 
-:root { 
-    /* Todas as variáveis globais já estão em shared-styles.css */
-}
-
 body {
     background: var(--site-bg);
     padding-bottom: var(--site-bottom-padding, 110px);
@@ -135,17 +131,48 @@ header h1 {
 
 .card-header h2 {
     color: var(--accent-color);
-    font-size: 1rem;
-}
-
-.card.highlight .card-header h2 {
+    font-size: 1.1rem;
     font-weight: 700;
     text-shadow: 0 1px 2px rgba(45, 159, 163, 0.2);
-    font-size: 1.1rem;
 }
 
 .card-content {
     font-size: 1.05rem;
+}
+
+/* ============================================
+   GRADIENTES DOS ÍCONES (SOBRE)
+   ============================================ */
+#gradient-arcondicionado-sobre {
+    background: linear-gradient(135deg, #64B5F6, #1976D2);
+}
+
+#gradient-aquecimento-sobre {
+    background: linear-gradient(135deg, #FF9800, #F57C00);
+}
+
+#gradient-bitola-sobre {
+    background: linear-gradient(135deg, #8B7355, #6B5B4F);
+}
+
+#gradient-solar-sobre {
+    background: linear-gradient(135deg, #00c6ff, #0072ff);
+}
+
+#gradient-fazenda-sobre {
+    background: linear-gradient(135deg, #8B6F47, #6B8E5A);
+}
+
+#gradient-helice-sobre {
+    background: linear-gradient(135deg, #00ACC1, #006064);
+}
+
+#gradient-mutuo-sobre {
+    background: linear-gradient(135deg, #4CAF50, #2E7D32);
+}
+
+#gradient-bugs-sobre {
+    background: linear-gradient(135deg, #FF6B6B, #C92A2A);
 }
 
 /* ============================================

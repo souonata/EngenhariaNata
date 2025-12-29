@@ -557,6 +557,7 @@ body {
     text-decoration: none;
     display: inline-block;
     transition: transform 0.2s ease;
+    position: relative;
 }
 
 .app-card-header > a:hover {
