@@ -30,10 +30,8 @@ function formatarMoedaSemDecimalComConversao(valor, idioma) {
         }).format(valorConvertido);
     }
 }
-// ============================================
 // DIMENSIONADOR DE AR CONDICIONADO RESIDENCIAL
 // Sistema Multi-Split
-// ============================================
 //
 // Comentários didáticos em Português - Visão geral do algoritmo
 // -------------------------------------------------------------
@@ -73,61 +71,14 @@ function formatarMoedaSemDecimalComConversao(valor, idioma) {
 // - Área total: 10 a 300 m²
 // - Unidades internas: até 60k BTU cada (múltiplas permitidas)
 // - Unidades externas: até 180k BTU cada (múltiplas permitidas)
-
-// ============================================
 // CONFIGURAÇÃO DE CHAVES E SELETORES
-// ============================================
 const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
 const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
 let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
-
-// ============================================
 // CONSTANTES DO SISTEMA
 // ============================================
-
-/**
- * ============================================
- * CONSTANTES DE DIMENSIONAMENTO
- * ============================================
- */
-
-/**
- * BTU por metro quadrado (BTU/m²)
- * 
- * Representa a quantidade de energia térmica necessária para resfriar
- * 1 metro quadrado de área de piso em um ambiente residencial.
- * 
- * Este valor é baseado em:
- * - Normas técnicas de climatização (ASHRAE, ABNT)
- * - Práticas da indústria de ar condicionado
- * - Cálculos de carga térmica para ambientes residenciais
- * - Referências da internet e fabricantes (600-800 BTU/m²)
- * 
- * O valor de BTU/m² varia conforme a região (700 para Brasil, 400 para Itália) e considera:
- * - Transferência de calor através de paredes, teto e piso
- * - Infiltração de ar externo
- * - Ganhos solares através de janelas
- * - Carga térmica interna (pessoas, equipamentos, iluminação)
- * - Altura padrão de pé direito residencial (2.7m)
- * 
- * FÓRMULA: BTU_Área = Área (m²) × BTU/m² × Fator Altura
- * 
- * NOTA: Este valor pode variar dependendo de:
- * - Região climática (maior em regiões quentes)
- * - Tipo de construção (maior em construções antigas)
- * - Orientação solar do ambiente
- * - Altura do pé direito (valores maiores para pé direito alto)
- * - País/região: Brasil usa 700 BTU/m², Itália usa 400 BTU/m²
- * 
- * FONTE: Normas técnicas, práticas da indústria e referências online
- */
-/**
- * Retorna o valor de BTU por m² baseado no idioma/região atual e isolamento
- * @param {string} isolamento - Nível de isolamento ('bom', 'medio', 'ruim')
- * @returns {number} BTU por metro quadrado
- */
-function getBTUPorM2(isolamento = 'medio') {
-    // Verifica o idioma atual (pode ser definido antes de idiomaAtual estar disponível)
+// BTU por metro quadrado (BTU/m²) // valor de BTU por m² baseado no idioma/região atual e isolamento
+function getBTUPorM2(isolamento = 'medio') { // idioma atual (pode ser definido antes de idiomaAtual estar disponível)
     const idioma = typeof idiomaAtual !== 'undefined' ? idiomaAtual : 
                    (localStorage.getItem(SITE_LS.LANGUAGE_KEY) || 
                     (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR'));
@@ -150,31 +101,7 @@ function getBTUPorM2(isolamento = 'medio') {
         return 700;
     }
 }
-
-/**
- * BTU_POR_PESSOA - BTU adicional necessário por pessoa
- * 
- * Representa o calor metabólico gerado por uma pessoa em repouso
- * ou em atividade leve, que precisa ser removido pelo ar condicionado.
- * 
- * O calor gerado por uma pessoa varia conforme:
- * - Atividade física (repouso: ~100 W, atividade leve: ~150 W)
- * - Metabolismo individual
- * - Umidade expirada
- * 
- * O valor de 600 BTU/pessoa é uma média conservadora que considera:
- * - Calor sensível: ~400 BTU/h
- * - Calor latente (umidade): ~200 BTU/h
- * - Total: ~600 BTU/h por pessoa
- * 
- * FÓRMULA: BTU_Pessoas = Número de Pessoas × 600
- * 
- * FONTE: Normas técnicas ASHRAE e práticas da indústria
- */
-/**
- * Retorna o valor de BTU por pessoa baseado no idioma/região atual
- * @returns {number} BTU por pessoa (600 para Brasil, 200 para Itália)
- */
+// BTU_POR_PESSOA // valor de BTU por pessoa baseado no idioma/região atual
 function getBTUPorPessoa() {
     const idioma = typeof idiomaAtual !== 'undefined' ? idiomaAtual : 
                    (localStorage.getItem(SITE_LS.LANGUAGE_KEY) || 
@@ -184,14 +111,7 @@ function getBTUPorPessoa() {
     // Itália: 200 BTU/pessoa (guias técnicos italianos)
     return idioma === 'it-IT' ? 200 : 600;
 }
-
-/**
- * Calcula BTU total para pessoas considerando regras regionais
- * No Brasil: apenas pessoas adicionais (além das primeiras 2) contam
- * Na Itália: todas as pessoas contam
- * @param {number} pessoas - Número total de pessoas
- * @returns {number} BTU total para pessoas
- */
+// Calcula BTU total para pessoas considerando regras regionais
 function calcularBTUPessoas(pessoas) {
     const idioma = typeof idiomaAtual !== 'undefined' ? idiomaAtual : 
                    (localStorage.getItem(SITE_LS.LANGUAGE_KEY) || 
@@ -208,38 +128,7 @@ function calcularBTUPessoas(pessoas) {
         return pessoasAdicionais * getBTUPorPessoa();
     }
 }
-
-/**
- * BTU_POR_EQUIPAMENTO - BTU adicional necessário por equipamento elétrico
- * 
- * Representa o calor gerado por equipamentos elétricos que precisa
- * ser removido pelo ar condicionado.
- * 
- * Equipamentos elétricos geram calor porque:
- * - Toda energia elétrica consumida é convertida em calor (lei da conservação)
- * - Eficiência dos equipamentos: parte da energia vira trabalho útil,
- *   mas a maior parte vira calor residual
- * 
- * Exemplos de equipamentos e seu calor gerado:
- * - TV LED 50": ~100-150 W → ~350-500 BTU/h
- * - Computador desktop: ~150-300 W → ~500-1000 BTU/h
- * - Geladeira: ~100-200 W → ~350-700 BTU/h
- * - Lâmpadas incandescentes: ~60-100 W → ~200-350 BTU/h
- * 
- * O valor de 600 BTU/equipamento é uma média conservadora que considera
- * equipamentos típicos de uma residência.
- * 
- * FÓRMULA: BTU_Equipamentos = Número de Equipamentos × 600
- * 
- * NOTA: Para equipamentos de alta potência (forno, secadora, etc.),
- * pode ser necessário considerar valores maiores ou cálculos específicos.
- * 
- * FONTE: Normas técnicas e práticas da indústria
- */
-/**
- * Retorna o valor de BTU por equipamento baseado no idioma/região atual
- * @returns {number} BTU por equipamento (600 para Brasil, 300 para Itália)
- */
+// BTU_POR_EQUIPAMENTO // valor de BTU por equipamento baseado no idioma/região atual
 function getBTUPorEquipamento() {
     const idioma = typeof idiomaAtual !== 'undefined' ? idiomaAtual : 
                    (localStorage.getItem(SITE_LS.LANGUAGE_KEY) || 
@@ -248,13 +137,7 @@ function getBTUPorEquipamento() {
     // Brasil: 600 BTU/equipamento
     // Itália: 300 BTU/equipamento (guias técnicos italianos)
     return idioma === 'it-IT' ? 300 : 600;
-}
-
-/**
- * Retorna o fator de insolação baseado no idioma/região atual
- * @param {string} nivel - Nível de insolação ('baixa', 'media', 'alta')
- * @returns {number} Fator de insolação
- */
+} // fator de insolação baseado no idioma/região atual
 function getFatorInsolacao(nivel) {
     const idioma = typeof idiomaAtual !== 'undefined' ? idiomaAtual : 
                    (localStorage.getItem(SITE_LS.LANGUAGE_KEY) || 
@@ -277,13 +160,7 @@ function getFatorInsolacao(nivel) {
         };
         return fatores[nivel] || 1.0;
     }
-}
-
-/**
- * Retorna o fator de isolamento baseado no idioma/região atual
- * @param {string} nivel - Nível de isolamento ('bom', 'medio', 'ruim')
- * @returns {number} Fator de isolamento
- */
+} // fator de isolamento baseado no idioma/região atual
 function getFatorIsolamento(nivel) {
     const idioma = typeof idiomaAtual !== 'undefined' ? idiomaAtual : 
                    (localStorage.getItem(SITE_LS.LANGUAGE_KEY) || 
@@ -307,23 +184,17 @@ function getFatorIsolamento(nivel) {
         return fatores[nivel] || 1.0;
     }
 }
-
 // Modelos comerciais de ar condicionado (BTU)
 // Inclui 5000 BTU para áreas muito pequenas (até 2 m²)
 // Para unidades internas (splits individuais)
 // Limite máximo: 60k BTU por unidade interna
 const MODELOS_COMERCIAIS = [5000, 7000, 9000, 12000, 18000, 24000, 30000, 36000, 48000, 60000];
-
 // Modelos comerciais para unidades externas multi-split (condensadoras)
 // Inclui modelos maiores para sistemas multi-split
 const MODELOS_COMERCIAIS_EXTERNAS = [18000, 24000, 30000, 36000, 48000, 60000, 72000, 84000, 96000, 120000, 144000, 180000];
-
 // Conversão BTU para kW (1 BTU/h ≈ 0.000293 kW)
 const BTU_PARA_KW = 0.000293;
-
-// ============================================
 // DICIONÁRIO DE TRADUÇÕES
-// ============================================
 const traducoes = {
     'pt-BR': {
         'dev-badge-header': '🚧 EM DESENVOLVIMENTO',
@@ -587,21 +458,7 @@ const traducoes = {
         'tooltip-equipamentos-texto': 'Gli apparecchi elettrici generano calore durante il funzionamento, aumentando il carico termico dell\'ambiente. Ogni apparecchio (TV, computer, frigorifero, ecc.) aggiunge approssimativamente 300 BTU al calcolo. Conta ogni apparecchio come 1 unità.'
     }
 };
-
-// ============================================
-// FUNÇÕES DE CÁLCULO
-// ============================================
-
-/**
- * Calcula o BTU necessário para o ambiente
- * @param {number} area - Área do ambiente em m²
- * @param {number} altura - Altura do pé direito em metros
- * @param {number} pessoas - Número de pessoas
- * @param {number} equipamentos - Número de equipamentos elétricos
- * @param {string} insolacao - Nível de insolação ('baixa', 'media', 'alta')
- * @param {string} isolamento - Nível de isolamento ('bom', 'medio', 'ruim')
- * @returns {Object} Objeto com BTU recomendado, potência em kW, volume e BTU base
- */
+// FUNÇÕES DE CÁLCULO // BTU necessário para o ambiente
 function calcularBTU(area, altura, pessoas, equipamentos, insolacao, isolamento) {
     // PASSO 1: Calcular BTU base por área (área × BTU/m²)
     // Ajusta o BTU por m² baseado na altura do pé direito (fator de correção)
@@ -654,16 +511,9 @@ function calcularBTU(area, altura, pessoas, equipamentos, insolacao, isolamento)
         btuFinal: btuFinal  // BTU após aplicar fatores, antes do arredondamento
     };
 }
-
-/**
- * Seleciona o modelo comercial de ar condicionado mais próximo
- * Sempre arredonda para cima (modelo maior ou igual)
- * @param {number} btuNecessario - BTU necessário calculado
- * @returns {number} BTU do modelo comercial recomendado
- */
+// Seleciona o modelo comercial de ar condicionado mais próximo
 function selecionarModeloComercial(btuNecessario) {
-    // Percorre os modelos comerciais do menor para o maior
-    // Retorna o primeiro que seja maior ou igual ao necessário
+    // Percorre os modelos comerciais do menor para o maior // primeiro que seja maior ou igual ao necessário
     for (let i = 0; i < MODELOS_COMERCIAIS.length; i++) {
         if (MODELOS_COMERCIAIS[i] >= btuNecessario) {
             return MODELOS_COMERCIAIS[i];
@@ -673,27 +523,15 @@ function selecionarModeloComercial(btuNecessario) {
     // Se nenhum modelo atender, retorna o maior disponível
     return MODELOS_COMERCIAIS[MODELOS_COMERCIAIS.length - 1];
 }
-
-/**
- * Encontra a melhor combinação de modelos comerciais para atingir um valor alvo
- * Versão simplificada: usa o maior modelo disponível quando necessário múltiplas unidades
- * @param {number} valorAlvo - Valor em BTU que precisa ser atingido
- * @param {Array<number>} modelos - Array de modelos comerciais disponíveis
- * @param {number} maxUnidades - Número máximo de unidades a considerar (padrão: 10)
- * @returns {Object} Objeto com {combinacao: Array<number>, total: number, quantidade: number}
- *                   onde combinacao é o array de modelos usados, total é a soma, quantidade é o número de unidades
- */
-function encontrarMelhorCombinacao(valorAlvo, modelos, maxUnidades = 10) {
-    // Se o valor alvo for menor ou igual ao menor modelo, retorna apenas esse modelo
+// Encontra a melhor combinação de modelos comerciais para atingir um valor alvo
+function encontrarMelhorCombinacao(valorAlvo, modelos, maxUnidades = 10) { // Se valor alvo for menor ou igual ao menor modelo, retorna apenas esse modelo
     if (valorAlvo <= modelos[0]) {
         return {
             combinacao: [modelos[0]],
             total: modelos[0],
             quantidade: 1
         };
-    }
-    
-    // Se o valor alvo for menor ou igual ao maior modelo, retorna o modelo mais próximo
+    } // Se valor alvo for menor ou igual ao maior modelo, retorna o modelo mais próximo
     const maiorModelo = modelos[modelos.length - 1];
     if (valorAlvo <= maiorModelo) {
         for (let i = 0; i < modelos.length; i++) {
@@ -717,13 +555,7 @@ function encontrarMelhorCombinacao(valorAlvo, modelos, maxUnidades = 10) {
         quantidade: numUnidades
     };
 }
-
-/**
- * Seleciona o modelo comercial de unidade externa multi-split mais próximo
- * Sempre arredonda para cima (modelo maior ou igual)
- * @param {number} btuNecessario - BTU necessário calculado
- * @returns {Object} Objeto com {combinacao: Array<number>, total: number, quantidade: number}
- */
+// Seleciona o modelo comercial de unidade externa multi
 function selecionarModeloComercialExterna(btuNecessario) {
     // Tenta encontrar um modelo único primeiro
     for (let i = 0; i < MODELOS_COMERCIAIS_EXTERNAS.length; i++) {
@@ -747,70 +579,28 @@ function selecionarModeloComercialExterna(btuNecessario) {
         quantidade: numUnidades
     };
 }
-
-/**
- * Converte string numérica para número, aceitando tanto ponto quanto vírgula como decimal
- * Usa a função global converterValorFormatadoParaNumero do site-config.js
- * @param {string} valorTexto - Valor como string (pode ter ponto ou vírgula)
- * @returns {number} Valor numérico
- */
+// Converte string numérica para número, aceitando tanto ponto quanto vírgula como decimal
 function converterParaNumero(valorTexto) {
     if (!valorTexto) return NaN;
     const resultado = converterValorFormatadoParaNumero(valorTexto);
     return isNaN(resultado) ? NaN : resultado;
 }
-
 // Função formatarNumero agora está em assets/js/site-config.js
 // Usa diretamente a função global formatarNumero(valor, casasDecimais = 0)
-
-/**
- * Formata BTU para exibição com notação "k" quando >= 1000
- * Exemplos: 999 → "999 BTU", 5000 → "5k BTU", 12000 → "12k BTU", 24000 → "24k BTU"
- * @param {number} valor - Valor em BTU
- * @returns {string} Valor formatado com "BTU"
- */
+// Formata BTU para exibição com notação "k" quando >= 1000
 function formatarBTU(valor) {
     if (isNaN(valor) || valor === null || valor === undefined) return '-';
     // Usa a função genérica formatarNumeroComSufixo para consistência
     return formatarNumeroComSufixo(valor, 1) + ' BTU';
 }
-
-/**
- * Formata número com casas decimais
- * Usa a função global formatarNumeroDecimal do site-config.js
- * Sempre usa vírgula como separador decimal (padrão brasileiro)
- * @param {number} valor - Valor numérico
- * @param {number} decimais - Número de casas decimais
- * @returns {string} Valor formatado com vírgula
- */
+// Formata número com casas decimais
 // Função formatarDecimal - alias para formatarNumeroDecimal de site-config.js
 // Mantida para compatibilidade com código existente
 function formatarDecimal(valor, decimais = 1) {
     return formatarNumeroDecimal(valor, decimais);
-}
-
-/**
- * Calcula o dimensionamento e custo do sistema multi-split
- * 
- * IMPORTANTE: Em sistemas multi-split, os componentes são vendidos separadamente:
- * - 1 Unidade Externa (Condensadora): Serve múltiplas unidades internas, mais cara
- * - N Unidades Internas (Evaporadoras): Uma para cada ambiente, vendidas separadamente
- * 
- * O custo total = Custo da Unidade Externa + (Custo de cada Unidade Interna × Quantidade)
- * 
- * @param {number} numAmbientes - Número de ambientes com ar condicionado
- * @param {number} areaTotal - SOMA das áreas de todos os ambientes em m² (já é a soma total)
- * @param {number} altura - Altura do pé direito em metros
- * @param {number} pessoas - Número de pessoas (distribuídas entre os ambientes)
- * @param {number} equipamentos - Número de equipamentos (distribuídos entre os ambientes)
- * @param {string} insolacao - Nível de insolação
- * @param {string} isolamento - Nível de isolamento
- * @param {number} perdaEnergia - Perda de energia da casa em kWh/m².ano (classe energética)
- * @returns {Object} Objeto com BTU total, unidade externa, unidades internas e custo
- */
+} // dimensionamento e custo do sistema multi
 function calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equipamentos, insolacao, isolamento, perdaEnergia = 1.75) {
-    // IMPORTANTE: areaTotal já é a SOMA de todas as áreas dos ambientes
-    // 
+        // 
     // LÓGICA CORRIGIDA:
     // 1. Calcula o BTU total necessário para toda a área (considerando pessoas e equipamentos totais)
     // 2. Divide o BTU total pelo número de ambientes para obter o BTU por ambiente
@@ -876,8 +666,7 @@ function calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equ
     
     // Faixas de preço para UNIDADES EXTERNAS MULTI-SPLIT (condensadoras)
     // Valores atualizados 2025-2026 baseados em pesquisa de mercado
-    // Nota: Unidades externas multi-split são mais caras que splits simples porque
-    // precisam ter capacidade para múltiplas unidades internas
+        // precisam ter capacidade para múltiplas unidades internas
     // Fonte: Pesquisa de mercado 2025-2026, catálogos de fabricantes
     const faixasPrecoExternas = {
         18000: { min: 4000, max: 8000 },    // Condensadora 18k BTU multi-split (média: R$ 6.000)
@@ -896,8 +685,7 @@ function calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equ
     
     // Faixas de preço para UNIDADES INTERNAS (evaporadoras) vendidas separadamente
     // Valores atualizados 2025-2026 baseados em pesquisa de mercado
-    // Nota: Unidades internas são mais baratas que splits completos porque
-    // não incluem a unidade externa
+        // não incluem a unidade externa
     // Limite máximo: 60k BTU por unidade interna
     // Fonte: Pesquisa de mercado 2025-2026, catálogos de fabricantes
     const faixasPrecoInternas = {
@@ -969,10 +757,7 @@ function calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equ
         custoTotalUnidadesInternas: custoTotalUnidadesInternas
     };
 }
-
-/**
- * Atualiza os resultados na interface
- */
+// Atualiza os resultados na interface
 function atualizarResultados() {
     try {
     // Obtém valores dos inputs ou sliders
@@ -1076,9 +861,7 @@ function atualizarResultados() {
     } catch (error) {
         console.error('[Ar Condicionado] Erro ao calcular sistema:', error);
         resultadoMultisplit = null;
-    }
-    
-    // Verifica se o resultado é válido
+    } // resultado é válido
     if (!resultadoMultisplit || typeof resultadoMultisplit !== 'object') {
         console.error('[Ar Condicionado] Erro: resultadoMultisplit inválido', resultadoMultisplit);
         // Mesmo com erro, tenta limpar os campos
@@ -1178,16 +961,10 @@ function atualizarResultados() {
         console.error('[Ar Condicionado] Stack trace:', error.stack);
     }
 }
-
 // Variáveis globais para gráficos
 let graficoCustoArCondicionado = null;
 let graficoBTUArCondicionado = null;
-
-/**
- * Atualiza os gráficos de visualização do sistema de ar condicionado
- * @param {Object} resultadoMultisplit - Resultado do cálculo do sistema multi-split
- * @param {number} numAmbientes - Número de ambientes
- */
+// Atualiza os gráficos de visualização do sistema de ar condicionado
 function atualizarGraficosArCondicionado(resultadoMultisplit, numAmbientes) {
     if (!resultadoMultisplit) return;
     
@@ -1207,11 +984,7 @@ function atualizarGraficosArCondicionado(resultadoMultisplit, numAmbientes) {
     // Atualiza gráfico de barras: BTU por ambiente
     atualizarGraficoBTU(resultadoMultisplit, numAmbientes);
 }
-
-/**
- * Cria ou atualiza o gráfico de pizza de distribuição de custos
- * @param {Object} resultadoMultisplit - Resultado do cálculo
- */
+// Cria ou atualiza o gráfico de pizza de distribuição de custos
 function atualizarGraficoCusto(resultadoMultisplit) {
     const ctx = document.getElementById('graficoCustoArCondicionado');
     if (!ctx) return;
@@ -1277,12 +1050,7 @@ function atualizarGraficoCusto(resultadoMultisplit) {
         }
     });
 }
-
-/**
- * Cria ou atualiza o gráfico de barras de BTU por ambiente
- * @param {Object} resultadoMultisplit - Resultado do cálculo
- * @param {number} numAmbientes - Número de ambientes
- */
+// Cria ou atualiza o gráfico de barras de BTU por ambiente
 function atualizarGraficoBTU(resultadoMultisplit, numAmbientes) {
     const ctx = document.getElementById('graficoBTUArCondicionado');
     if (!ctx) return;
@@ -1364,11 +1132,7 @@ function atualizarGraficoBTU(resultadoMultisplit, numAmbientes) {
         }
     });
 }
-
-/**
- * Troca o idioma da interface
- * @param {string} novoIdioma - Código do idioma ('pt-BR' ou 'it-IT')
- */
+// Troca o idioma da interface
 function trocarIdioma(novoIdioma) {
     idiomaAtual = novoIdioma;
     localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
@@ -1398,23 +1162,14 @@ function trocarIdioma(novoIdioma) {
     const homeLabel = traducoes[novoIdioma]?.['aria-home'] || 'Home';
     document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
 }
-
-/**
- * Ajusta o valor de um slider usando botões de seta
- * @param {string} targetId - ID do slider
- * @param {number} step - Valor do incremento/decremento
- */
+// Ajusta o valor de um slider usando botões de seta
 function ajustarValor(targetId, step) {
     ajustarValorPadrao(targetId, step);
 }
-
 // Controle para botões de seta (repetição ao segurar)
 let intervalId = null;
 let timeoutId = null;
-
-// ============================================
 // INICIALIZAÇÃO
-// ============================================
 document.addEventListener('DOMContentLoaded', function() {
     // Configurar botões de idioma
     document.getElementById('btnPortugues')?.addEventListener('click', () => trocarIdioma('pt-BR'));
@@ -1449,8 +1204,7 @@ document.addEventListener('DOMContentLoaded', function() {
         atualizarResultados();
     };
     
-    // Aplica throttle reduzido nos sliders para melhor responsividade (50ms)
-    // Adiciona também listener 'change' para garantir que o valor final seja sempre atualizado
+    // Aplica throttle reduzido nos sliders para melhor responsividade (50ms) // Adiciona também listener 'change' para garantir que o valor final seja sempre atualizado
     if (sliderArea) {
     sliderArea.addEventListener('input', throttle(() => {
         atualizarArea();
@@ -1714,10 +1468,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const inputClasseEnergetica = document.getElementById('inputClasseEnergetica');
     
     classeBoxes.forEach(box => {
-        box.addEventListener('click', () => {
-            // Remove seleção anterior
-            classeBoxes.forEach(b => b.classList.remove('classe-box-selected'));
-            // Adiciona seleção atual
+        box.addEventListener('click', () => { // Remove seleção anterior
+            classeBoxes.forEach(b => b.classList.remove('classe-box-selected')); // Adiciona seleção atual
             box.classList.add('classe-box-selected');
             // Atualiza valor oculto
             if (inputClasseEnergetica) {
@@ -1804,11 +1556,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Calcular resultados iniciais
     atualizarResultados();
 });
-
-/**
- * Alterna a exibição do memorial de cálculo
- * Esconde a seção de resultados e mostra o memorial, ou vice-versa
- */
+// Alterna a exibição do memorial de cálculo
 function toggleMemorial() {
     const memorialSection = document.getElementById('memorialSection');
     const resultadosSection = document.getElementById('resultadosSection');
@@ -1834,10 +1582,7 @@ function toggleMemorial() {
         if (resultadosSection) resultadosSection.style.display = 'block';
     }
 }
-
-/**
- * Atualiza o memorial de cálculo com os valores atuais dos cálculos
- */
+// Atualiza o memorial de cálculo com os valores atuais dos cálculos
 function atualizarMemorialComValores() {
     // Lê valores do sistema multi-split
     const numAmbientes = parseInt(document.getElementById('sliderNumAmbientes')?.value || 1);
@@ -1846,9 +1591,7 @@ function atualizarMemorialComValores() {
     const pessoas = parseInt(document.getElementById('sliderPessoas').value);
     const equipamentos = parseInt(document.getElementById('sliderEquipamentos').value);
     const insolacao = document.querySelector('input[name="insolacao"]:checked')?.value || 'media';
-    const isolamento = document.querySelector('input[name="isolamento"]:checked')?.value || 'medio';
-    
-    // Calcula o sistema multi-split
+    const isolamento = document.querySelector('input[name="isolamento"]:checked')?.value || 'medio'; // sistema multi-split
     const resultadoMultisplit = calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equipamentos, insolacao, isolamento);
     
     // Calcula valores para o memorial

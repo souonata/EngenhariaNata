@@ -1,6 +1,4 @@
-// ============================================
 // VARIÁVEIS GLOBAIS (acessíveis em todo o código)
-// ============================================
 //
 // Comentários didáticos - Visão geral do algoritmo de amortização
 // ---------------------------------------------------------------
@@ -34,54 +32,34 @@
 // manipular eventos da UI (botões +/- com repetição) e gerar a tabela
 // passo a passo. Os trechos matemáticos importantes (PMT / SAC / Americano)
 // estão comentados onde são calculados.
-
 // Armazena os valores originais dos inputs quando o usuário começa a editar
 // Útil para restaurar o valor se o usuário apertar ESC
 let valoresOriginais = {};
-
 // Armazena a tabela completa de amortização (todas as parcelas calculadas)
 // Cada item tem: parcela, valorParcela, amortizacao, juros, saldoDevedor
 let tabelaAmortizacaoAtual = [];
-
 // Armazena os dados do empréstimo atual (valor, taxa, prazo, etc)
 let dadosEmprestimo = {};
-
-// Armazena a última posição do slider de parcelas selecionada pelo usuário
-// Isso permite manter a posição quando outros valores são alterados
+// Armazena a última posição do slider de parcelas selecionada pelo usuário // manter a posição quando outros valores são alterados
 let ultimaParcelaSelecionada = 1;
-
 // Idioma atual da aplicação - prefer using site-wide keys when available
 const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
 const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
 let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
-
 // Moeda atual (BRL para português, EUR para italiano)
 let moedaAtual = idiomaAtual === 'pt-BR' ? 'BRL' : 'EUR';
-
 // Elementos HTML que serão usados frequentemente no código
 // Declarados aqui mas inicializados DEPOIS que o HTML carregar (no DOMContentLoaded)
 let btnExemplos, exemplosSection, resultados, sliderParcelas;
 let btnPortugues, btnItaliano;
 let sliderValor, sliderTaxa, sliderPrazo; // Sliders substituindo os inputs de texto
-
 // Controle para os botões de seta (aumentar/diminuir valores)
 // intervalId - controla a repetição contínua quando segura o botão
 // timeoutId - controla o atraso inicial antes de começar a repetir
 let intervalId = null;
 let timeoutId = null;
-
-// ============================================
 // FUNÇÕES DE AJUSTE DE VALORES (Botões de Seta)
-// ============================================
-
-/**
- * Aumenta ou diminui o valor de um campo de input
- * @param {string} targetId - ID do campo HTML a ser ajustado ('valorRapido', 'taxaRapida', 'prazoRapido')
- * @param {number} step - Quanto adicionar ou subtrair (pode ser negativo)
- * 
- * Exemplo: ajustarValor('valorRapido', 10000) adiciona 10.000 ao valor
- *          ajustarValor('taxaRapida', -0.1) subtrai 0,1% da taxa
- */
+// Aumenta ou diminui o valor de um campo de input
 // Função para obter o máximo do slider baseado no idioma
 function obterMaxValorSlider() {
     return idiomaAtual === 'it-IT' ? 500000 : 1000000; // 500 mil euros para italiano, 1 milhão para português
@@ -102,20 +80,15 @@ function ajustarValor(targetId, step) {
         // CAMPO DE VALOR EMPRESTADO
         // Steps dinâmicos baseados no valor atual:
         // - Entre 1.000 e 10.000: step de 1.000
-        // - Entre 10.000 e 1.000.000: step de 10.000
-
-        // Obtém o valor atual do slider (já é um número)
-        let valor = parseFloat(slider.value) || 0;
-        
-        // Calcula o passo efetivo baseado no valor atual
+        // - Entre 10.000 e 1.000.000: step de 10.000 // valor atual do slider (já é um número)
+        let valor = parseFloat(slider.value) || 0; // passo efetivo baseado no valor atual
         const stepSign = (typeof step === 'number' && !isNaN(step) && step !== 0) ? Math.sign(step) : 1;
         let baseStep;
         
         const maxSlider = obterMaxValorSlider();
         
         // Determina o step baseado no valor atual
-        // IMPORTANTE: Se está no máximo do slider, sempre usar step de 10.000 ao diminuir
-        // O step de 100.000 só é usado para valores MANUAIS acima do máximo do slider
+                // O step de 100.000 só é usado para valores MANUAIS acima do máximo do slider
         if (valor < 10000) {
             // Entre 1.000 e 10.000: step de 1.000
             baseStep = 1000;
@@ -129,9 +102,7 @@ function ajustarValor(targetId, step) {
             baseStep = 100000;
         }
         
-        const stepVal = stepSign * baseStep;
-        
-        // Adiciona o step e garante que fica entre 1000 e MAX_VALOR_SLIDER (limite do slider)
+        const stepVal = stepSign * baseStep; // Adiciona o step e garante que fica entre 1000 e MAX_VALOR_SLIDER (limite do slider)
         valor = Math.max(1000, Math.min(MAX_VALOR_SLIDER, valor + stepVal));
         valor = Math.round(valor);
         
@@ -161,9 +132,7 @@ function ajustarValor(targetId, step) {
         }
         
         // Obter limite máximo baseado no período
-        const maxTaxa = obterLimiteMaximoTaxa(periodoAtual);
-        
-        // Adiciona o step e limita entre 0 e o máximo do período
+        const maxTaxa = obterLimiteMaximoTaxa(periodoAtual); // Adiciona o step e limita entre 0 e o máximo do período
         taxa = Math.max(0, Math.min(maxTaxa, taxa + stepEffective));
         
         // Arredonda para o step apropriado para evitar erros de precisão
@@ -184,9 +153,7 @@ function ajustarValor(targetId, step) {
         
     } else if (targetId === 'sliderPrazo') {
         // CAMPO DE PRAZO EM ANOS (slider)
-        let prazo = parseInt(slider.value) || 0;
-        
-        // Adiciona o step e limita entre 1 e 50 anos
+        let prazo = parseInt(slider.value) || 0; // Adiciona o step e limita entre 1 e 50 anos
         prazo = Math.max(1, Math.min(50, prazo + step));
         
         // Atualiza o slider
@@ -199,9 +166,7 @@ function ajustarValor(targetId, step) {
     } else if (targetId === 'sliderParcelas') {
         // CAMPO DE PARCELA SELECIONADA (slider)
         let parcela = parseInt(slider.value) || 1;
-        const maxParcelas = parseInt(slider.max) || 120;
-        
-        // Adiciona o step e limita entre 1 e o máximo de parcelas
+        const maxParcelas = parseInt(slider.max) || 120; // Adiciona o step e limita entre 1 e o máximo de parcelas
         parcela = Math.max(1, Math.min(maxParcelas, parcela + step));
         
         // Atualiza o slider
@@ -215,32 +180,18 @@ function ajustarValor(targetId, step) {
     }
     
 }
-
-// ============================================
 // FUNÇÕES DE FORMATAÇÃO DE INPUTS
-// ============================================
-
-/**
- * Seleciona todo o texto do campo quando o usuário clica nele
- * Facilita a edição - o usuário pode começar a digitar direto
- */
+// Seleciona todo o texto do campo quando o usuário clica nele
 function selecionarConteudo(e) {
     e.target.select(); // select() é uma função nativa que seleciona todo o texto
 }
-
-/**
- * Formata o valor emprestado quando o usuário termina de editar (blur/Enter/Tab)
- * Adiciona pontos como separador de milhares (ex: 100.000)
- * Durante a digitação, não formata para permitir inserção completa do valor
- */
+// Formata o valor emprestado quando o usuário termina de editar (blur/Enter/Tab)
 function formatarValorInput(e) {
     const MAX_VALOR = 10000000; // 10 milhões
     
     // Converte valor com sufixos (k/M/m) ou número puro para número
     // Aceita: "7,5k", "7.5k", "7500", "10000", "1.5M", etc.
-    let numero = obterValorNumericoComSufixo(e.target.value);
-    
-    // Se o campo ficou vazio, não faz nada (mas no blur vamos forçar o mínimo)
+    let numero = obterValorNumericoComSufixo(e.target.value); // Se campo ficou vazio, não faz nada (mas no blur vamos forçar o mínimo)
     if (isNaN(numero) || numero === 0) {
         if (e.type === 'blur') {
             numero = 1000;
@@ -319,19 +270,11 @@ function formatarValorInput(e) {
     // Recalcula automaticamente quando o usuário muda o valor
     calcularEmprestimo();
 }
-
-/**
- * Formata a taxa de juros enquanto o usuário digita
- * Garante que usa vírgula como separador decimal (ex: 10,5)
- */
+// Formata a taxa de juros enquanto o usuário digita
 function formatarTaxaInput(e) {
-    let valor = e.target.value;
-    
-    // Remove tudo EXCETO números e vírgula
+    let valor = e.target.value; // Remove tudo EXCETO números e vírgula
     // [^\d,] significa "qualquer coisa que não seja dígito ou vírgula"
-    valor = valor.replace(/[^\d,]/g, '');
-    
-    // Se o usuário digitou ponto, troca por vírgula
+    valor = valor.replace(/[^\d,]/g, ''); // Se usuário digitou ponto, troca por vírgula
     valor = valor.replace('.', ',');
     
     // Garante que só tem UMA vírgula no texto
@@ -371,15 +314,9 @@ function formatarTaxaInput(e) {
     
     calcularEmprestimo();
 }
-
-/**
- * Formata o prazo em anos - aceita apenas números inteiros
- * Limita entre 1 e 50 anos
- */
+// Formata o prazo em anos
 function formatarPrazoInput(e) {
-    let valor = e.target.value;
-    
-    // Remove tudo que não é número (letras, pontos, vírgulas)
+    let valor = e.target.value; // Remove tudo que não é número (letras, pontos, vírgulas)
     valor = valor.replace(/\D/g, '');
     
     // Se ficou vazio, sai da função
@@ -409,27 +346,8 @@ function formatarPrazoInput(e) {
     
     calcularEmprestimo();
 }
-
-// ============================================
 // FUNÇÕES AUXILIARES DE CONVERSÃO
-// ============================================
-
-/**
- * Converte um texto formatado de volta para número puro
- * 
- * Esta função é essencial porque o usuário pode digitar valores formatados
- * (com pontos e vírgulas), mas para fazer cálculos precisamos de números puros.
- * 
- * Exemplos de conversão:
- * - "100.000" → 100000 (remove pontos de milhares)
- * - "1.500" → 1500 (remove pontos de milhares)
- * - "10,5" → 10.5 (troca vírgula por ponto)
- * - "1.234,56" → 1234.56 (remove pontos, troca vírgula por ponto)
- * - "1234.56" → 1234.56 (mantém como está)
- * 
- * @param {string|number} valorFormatado - Valor formatado (texto ou número)
- * @returns {number} Número puro para cálculos
- */
+// Converte um texto formatado de volta para número puro
 // Função obterValorNumericoFormatado - alias para converterValorFormatadoParaNumero de site-config.js
 // Mantida para compatibilidade com código existente
 function obterValorNumericoFormatado(valorFormatado) {
@@ -450,17 +368,9 @@ function obterValorNumericoFormatado(valorFormatado) {
     valorTexto = valorTexto.replace(/[^0-9.\-]/g, '');
     return parseFloat(valorTexto) || 0;
 }
-
-/**
- * Nome alternativo para a mesma função acima
- * Mantido para compatibilidade com código antigo
- */
+// Nome alternativo para a mesma função acima
 /* Removido: function obterValorNumerico(valorFormatado) era redundante */
-
-/**
- * Guarda o valor original do campo quando o usuário começa a editar
- * Permite cancelar a edição com ESC e voltar ao valor anterior
- */
+// Guarda o valor original do campo quando o usuário começa a editar
 function iniciarEdicao(e) {
     // Guarda o valor atual usando o ID do campo como chave
     valoresOriginais[e.target.id] = e.target.value;
@@ -468,22 +378,14 @@ function iniciarEdicao(e) {
     // Seleciona todo o texto para facilitar a edição
     selecionarConteudo(e);
 }
-
-/**
- * Trata teclas especiais enquanto o usuário edita um campo
- * ESC = cancela e restaura valor anterior
- * Enter = confirma e sai do campo
- */
+// Trata teclas especiais enquanto o usuário edita um campo
 function tratarTeclasRapido(e) {
     // ESC - Cancelar edição e restaurar valor original
-    if (e.key === 'Escape') {
-        // Busca o valor original que foi guardado
+    if (e.key === 'Escape') { // valor original que foi guardado
         e.target.value = valoresOriginais[e.target.id];
         
         // Tira o foco do campo (fecha o teclado virtual no celular)
-        e.target.blur();
-        
-        // Remove o valor guardado da memória
+        e.target.blur(); // Remove o valor guardado da memória
         delete valoresOriginais[e.target.id];
         
         // Impede comportamento padrão do navegador
@@ -497,7 +399,6 @@ function tratarTeclasRapido(e) {
     }
     // Tab e Shift+Tab - Deixa o navegador tratar normalmente (navegação entre campos)
 }
-
 // Dicionário de traduções
 const traducoes = {
     'pt-BR': {
@@ -811,12 +712,8 @@ const traducoes = {
         'tooltip-taxa-texto': 'Il tasso di interesse è la percentuale applicata sul valore del mutuo. Puoi inserire il tasso in diversi periodi (anno, mese o giorno). Il sistema converte automaticamente in tasso mensile utilizzando interessi composti. Tassi maggiori comportano rate maggiori e più interessi totali.'
     }
 };
-
 // Função para trocar idioma
-/**
- * Valida e ajusta valores dos sliders para garantir que estejam dentro dos limites
- * após mudança de idioma ou outras alterações de configuração
- */
+// Valida e ajusta valores dos sliders para garantir estejam dentro dos limites
 function validarEAjustarValoresSliders() {
     // Validar slider de valor
     if (sliderValor) {
@@ -832,8 +729,7 @@ function validarEAjustarValoresSliders() {
             valorAtual = min;
         } else if (valorAtual < min) {
             valorAtual = min;
-        } else if (valorAtual > max) {
-            // Se o valor está acima do máximo, ajustar para o máximo
+        } else if (valorAtual > max) { // Se valor está acima do máximo, ajustar para o máximo
             valorAtual = max;
         }
         
@@ -953,25 +849,7 @@ function trocarIdioma(idioma) {
     const homeLabel = traducoes[idioma]?.['aria-home'] || 'Home';
     document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
 }
-
-/**
- * Converte uma taxa de juros para o equivalente mensal
- * 
- * Esta função é essencial para os cálculos de empréstimo, pois todos os
- * sistemas de amortização trabalham com taxas mensais, mas o usuário pode
- * informar a taxa em diferentes períodos (ano, mês ou dia).
- * 
- * @param {number} taxa - Taxa de juros em percentual (ex: 12 = 12%)
- * @param {string} periodo - Período da taxa: 'ano', 'mes' ou 'dia'
- * @returns {number} Taxa mensal equivalente em decimal (ex: 0.01 = 1%)
- * 
- * IMPORTANTE: Usa juros compostos, não simples!
- * 
- * Exemplos:
- * - 12% ao ano → ~0.95% ao mês (não é 12/12 = 1%!)
- * - 1% ao mês → 0.01 (decimal)
- * - 0.03% ao dia → ~0.94% ao mês (assumindo 30 dias)
- */
+// Converte uma taxa de juros para o equivalente mensal
 function converterTaxaParaMensal(taxa, periodo) {
     // switch = estrutura que escolhe uma ação baseada no valor da variável
     switch(periodo) {
@@ -979,8 +857,7 @@ function converterTaxaParaMensal(taxa, periodo) {
             // CASO 1: Taxa anual → mensal
             // Fórmula de juros compostos: taxa_mensal = (1 + taxa_anual)^(1/12) - 1
             // 
-            // Por que não simplesmente dividir por 12?
-            // Porque juros compostos não são lineares!
+                        // Porque juros compostos não são lineares!
             // Exemplo: 12% ao ano não é 1% ao mês
             // Com juros compostos: (1.12)^(1/12) - 1 ≈ 0.0095 = 0.95% ao mês
             //
@@ -1005,20 +882,12 @@ function converterTaxaParaMensal(taxa, periodo) {
             return Math.pow(1 + taxa / 100, 30) - 1;
             
         default:
-            // CASO PADRÃO: Se o período não for reconhecido, trata como mensal
-            // Isso evita erros se alguém passar um valor inválido
+            // CASO PADRÃO: Se o período não for reconhecido, trata como mensal // erros se alguém passar um valor inválido
             return taxa / 100;
     }
 }
 
-    /**
-     * Converte uma taxa percentual de um período para outro preservando equivalência
-     * Ex: converterTaxaBetweenPeriods(12, 'ano', 'mes') -> ~0.95 (12% a.a. => ~0.95% a.m.)
-     * @param {number} taxaPercent - taxa no período 'from' como percentual (ex: 12 -> 12%)
-     * @param {'ano'|'mes'|'dia'} from - período de origem
-     * @param {'ano'|'mes'|'dia'} to - período destino
-     * @returns {number} taxa no período destino como percentual (ex: 0.95 => 0.95%)
-     */
+    // Converte uma taxa percentual de um período para outro preservando equivalência
     function converterTaxaBetweenPeriods(taxaPercent, from, to) {
         // Converte o valor informado para taxa mensal (decimal) e depois converte
         // para o período destino. Trabalhamos em decimais nas operações e devolvemos
@@ -1040,14 +909,7 @@ function converterTaxaParaMensal(taxa, periodo) {
         }
 
         return targetDecimal * 100; // percentual
-    }
-
-/**
- * Obtém o limite máximo da taxa de juros baseado no período
- * Limite base: 20% ao ano
- * @param {'ano'|'mes'|'dia'} periodo - Período da taxa
- * @returns {number} Limite máximo em percentual
- */
+    } // limite máximo da taxa de juros baseado no período
 function obterLimiteMaximoTaxa(periodo) {
     const MAX_TAXA_ANO = 20; // 20% ao ano
     
@@ -1065,33 +927,7 @@ function obterLimiteMaximoTaxa(periodo) {
         default:
             return MAX_TAXA_ANO;
     }
-}
-
-/**
- * Calcula a tabela de amortização usando o Sistema Price (Tabela Price)
- * 
- * Este é o sistema mais comum no Brasil para empréstimos pessoais e consignados.
- * Também é conhecido como "Sistema Francês" na Itália.
- * 
- * Características:
- * - Parcelas FIXAS durante todo o prazo
- * - No início: paga mais juros, menos amortização
- * - No final: paga menos juros, mais amortização
- * - Total de juros: maior que no SAC
- * 
- * @param {number} valorEmprestimo - Valor total emprestado (ex: 100000)
- * @param {number} taxaMensal - Taxa de juros mensal em decimal (ex: 0.01 = 1%)
- * @param {number} numeroParcelas - Número total de parcelas (ex: 120)
- * @returns {Array} Array com objetos contendo dados de cada parcela
- * 
- * Fórmula da parcela fixa (PMT):
- * PMT = PV × [i × (1+i)^n] / [(1+i)^n - 1]
- * 
- * Onde:
- * - PV = Valor Presente (valor emprestado)
- * - i = taxa de juros mensal
- * - n = número de parcelas
- */
+} // tabela de amortização usando o Sistema Price (Tabela Price)
 function calcularPrice(valorEmprestimo, taxaMensal, numeroParcelas) {
     // Array que vai guardar os dados de cada parcela
     const tabela = [];
@@ -1118,14 +954,11 @@ function calcularPrice(valorEmprestimo, taxaMensal, numeroParcelas) {
     
     // PASSO 2: Para cada parcela, calcula juros, amortização e saldo
     // Loop que repete uma vez para cada parcela (de 1 até numeroParcelas)
-    for (let i = 1; i <= numeroParcelas; i++) {
-        // Calcula os juros da parcela atual
+    for (let i = 1; i <= numeroParcelas; i++) { // juros da parcela atual
         // Juros = Saldo Devedor × Taxa Mensal
         // No início, o saldo é maior, então os juros são maiores
         // No final, o saldo é menor, então os juros são menores
-        const juros = saldoDevedor * taxaMensal;
-        
-        // Calcula a amortização (quanto do empréstimo está sendo pago)
+        const juros = saldoDevedor * taxaMensal; // amortização (quanto do empréstimo está sendo pago)
         // Amortização = Parcela Fixa - Juros
         // No início: parcela grande, juros grandes → amortização pequena
         // No final: parcela grande, juros pequenos → amortização grande
@@ -1141,9 +974,7 @@ function calcularPrice(valorEmprestimo, taxaMensal, numeroParcelas) {
         // Exemplo: pode sobrar R$ 0.01 devido a arredondamentos
         if (i === numeroParcelas) {
             saldoDevedor = 0;
-        }
-        
-        // Adiciona os dados desta parcela ao array da tabela
+        } // Adiciona os dados desta parcela ao array da tabela
         tabela.push({
             parcela: i,                    // Número da parcela (1, 2, 3, ...)
             valorParcela: parcelaFixa,     // Valor total da parcela (sempre igual)
@@ -1151,90 +982,10 @@ function calcularPrice(valorEmprestimo, taxaMensal, numeroParcelas) {
             juros: juros,                  // Quanto foi pago de juros nesta parcela
             saldoDevedor: Math.max(0, saldoDevedor)  // Saldo restante (nunca negativo)
         });
-    }
-    
-    // Retorna a tabela completa com todas as parcelas
+    } // tabela completa com todas as parcelas
     return tabela;
 }
-
-/**
- * ============================================
- * FUNÇÃO: CALCULAR SISTEMA SAC
- * ============================================
- * 
- * Calcula a tabela de amortização usando o Sistema de Amortização Constante (SAC).
- * Neste sistema, a amortização é sempre a mesma em todas as parcelas, mas o valor
- * total da parcela diminui com o tempo porque os juros são calculados sobre o
- * saldo devedor, que diminui a cada pagamento.
- * 
- * CARACTERÍSTICAS DO SISTEMA SAC:
- * - Amortização constante (sempre igual)
- * - Juros decrescentes (diminuem a cada parcela)
- * - Parcelas decrescentes (começam maiores e diminuem)
- * - Total de juros: menor que no Price para o mesmo empréstimo
- * 
- * @param {number} valorEmprestimo - Valor total emprestado
- * @param {number} taxaMensal - Taxa de juros mensal em decimal (ex: 0.01 = 1% ao mês)
- * @param {number} numeroParcelas - Número total de parcelas
- * @returns {Array} Array de objetos, cada um representando uma parcela com:
- *   - parcela: número da parcela (1, 2, 3, ...)
- *   - valorParcela: valor total da parcela (amortização + juros) - diminui com o tempo
- *   - amortizacao: valor amortizado (sempre igual)
- *   - juros: valor de juros (diminui com o tempo)
- *   - saldoDevedor: saldo restante após pagar esta parcela
- * 
- * FÓRMULAS DO SISTEMA SAC:
- * 
- * 1. Amortização constante:
- *    Amortização = Valor Emprestado / Número de Parcelas
- * 
- * 2. Juros de cada parcela:
- *    Juros = Saldo Devedor × Taxa Mensal
- *    (O saldo devedor diminui a cada parcela, então os juros também diminuem)
- * 
- * 3. Valor da parcela:
- *    Parcela = Amortização + Juros
- *    (Como a amortização é constante e os juros diminuem, a parcela diminui)
- * 
- * 4. Novo saldo após cada parcela:
- *    Saldo Devedor = Saldo Devedor - Amortização
- * 
- * EXEMPLO PRÁTICO:
- *   Valor: R$ 100.000
- *   Taxa: 1% ao mês (0.01)
- *   Prazo: 120 meses
- *   
- *   Amortização constante = 100.000 / 120 = R$ 833,33
- *   
- *   Mês 1:
- *     Juros = 100.000 × 0.01 = R$ 1.000,00
- *     Parcela = 833,33 + 1.000,00 = R$ 1.833,33
- *     Saldo = 100.000 - 833,33 = R$ 99.166,67
- *   
- *   Mês 60:
- *     Saldo inicial ≈ R$ 50.000 (aproximadamente metade)
- *     Juros = 50.000 × 0.01 = R$ 500,00
- *     Parcela = 833,33 + 500,00 = R$ 1.333,33
- *   
- *   Mês 120:
- *     Saldo inicial ≈ R$ 833,33 (última amortização)
- *     Juros = 833,33 × 0.01 = R$ 8,33
- *     Parcela = 833,33 + 8,33 = R$ 841,66
- *     Saldo = 0
- * 
- * VANTAGENS:
- * - Menor total de juros pagos comparado ao Price
- * - Amortização mais rápida no início
- * - Melhor para quem pode pagar mais no início
- * 
- * DESVANTAGENS:
- * - Parcelas iniciais maiores
- * - Pode ser difícil para orçamentos apertados no início
- * 
- * USO:
- * - Brasil: Financiamento imobiliário da Caixa Econômica Federal
- * - Itália: Ammortamento all'Italiana
- */
+// ============================================
 function calcularSAC(valorEmprestimo, taxaMensal, numeroParcelas) {
     // Array que armazena os dados de cada parcela calculada
     const tabela = [];
@@ -1243,16 +994,12 @@ function calcularSAC(valorEmprestimo, taxaMensal, numeroParcelas) {
     // Vai diminuindo a cada parcela conforme a amortização é paga
     let saldoDevedor = valorEmprestimo;
     
-    // ============================================
-    // PASSO 1: CALCULAR AMORTIZAÇÃO CONSTANTE
-    // ============================================
-    // A amortização é sempre a mesma em todas as parcelas.
+        // PASSO 1: CALCULAR AMORTIZAÇÃO CONSTANTE
+        // A amortização é sempre a mesma em todas as parcelas.
     // Fórmula: Amortização = Valor Emprestado / Número de Parcelas
     // 
     // Exemplo: R$ 100.000 em 120 parcelas = R$ 833,33 por parcela
-    const amortizacaoConstante = valorEmprestimo / numeroParcelas;
-    
-    // Para cada parcela, calcula juros, parcela e saldo
+    const amortizacaoConstante = valorEmprestimo / numeroParcelas; // parcela, calcula juros, parcela e saldo
     // Loop que repete uma vez para cada parcela (de 1 até numeroParcelas)
     for (let i = 1; i <= numeroParcelas; i++) {
         // PASSO 1: Calcula os juros da parcela atual
@@ -1284,9 +1031,7 @@ function calcularSAC(valorEmprestimo, taxaMensal, numeroParcelas) {
         // Isso corrige pequenos erros de arredondamento
         if (i === numeroParcelas) {
             saldoDevedor = 0;
-        }
-        
-        // Adiciona os dados desta parcela ao array da tabela
+        } // Adiciona os dados desta parcela ao array da tabela
         tabela.push({
             parcela: i,                        // Número da parcela (1, 2, 3, ...)
             valorParcela: valorParcela,        // Valor total da parcela (diminui com o tempo)
@@ -1294,106 +1039,18 @@ function calcularSAC(valorEmprestimo, taxaMensal, numeroParcelas) {
             juros: juros,                      // Juros (diminuem com o tempo)
             saldoDevedor: Math.max(0, saldoDevedor)  // Saldo restante (nunca negativo)
         });
-    }
-    
-    // Retorna a tabela completa com todas as parcelas
+    } // tabela completa com todas as parcelas
     return tabela;
 }
-
-/**
- * ============================================
- * FUNÇÃO: CALCULAR SISTEMA AMERICANO
- * ============================================
- * 
- * Calcula a tabela de amortização usando o Sistema Americano.
- * Neste sistema, durante todo o período são pagos apenas os juros,
- * e o valor principal (valor emprestado) é pago integralmente na última parcela.
- * 
- * CARACTERÍSTICAS DO SISTEMA AMERICANO:
- * - Parcelas intermediárias: pagam apenas juros (valor fixo)
- * - Última parcela: paga juros + valor principal completo
- * - Saldo devedor: permanece constante até a última parcela
- * - Total de juros: maior que nos outros sistemas (juros sobre valor total durante todo o período)
- * 
- * @param {number} valorEmprestimo - Valor total emprestado
- * @param {number} taxaMensal - Taxa de juros mensal em decimal (ex: 0.01 = 1% ao mês)
- * @param {number} numeroParcelas - Número total de parcelas
- * @returns {Array} Array de objetos, cada um representando uma parcela com:
- *   - parcela: número da parcela (1, 2, 3, ...)
- *   - valorParcela: valor da parcela
- *     * Parcelas 1 a n-1: apenas juros (valor fixo)
- *     * Última parcela: juros + valor principal
- *   - amortizacao: valor amortizado
- *     * Parcelas 1 a n-1: zero (não amortiza nada)
- *     * Última parcela: valor principal completo
- *   - juros: valor de juros (sempre igual, calculado sobre o valor total)
- *   - saldoDevedor: saldo restante
- *     * Parcelas 1 a n-1: permanece igual ao valor emprestado
- *     * Última parcela: zera
- * 
- * FÓRMULAS DO SISTEMA AMERICANO:
- * 
- * 1. Juros mensais (constantes):
- *    Juros = Valor Emprestado × Taxa Mensal
- *    (Sempre calculado sobre o valor total, pois não há amortização intermediária)
- * 
- * 2. Parcelas intermediárias (1 a n-1):
- *    Parcela = Juros
- *    Amortização = 0
- *    Saldo Devedor = Valor Emprestado (não muda)
- * 
- * 3. Última parcela (n):
- *    Parcela = Juros + Valor Emprestado
- *    Amortização = Valor Emprestado
- *    Saldo Devedor = 0
- * 
- * EXEMPLO PRÁTICO:
- *   Valor: R$ 100.000
- *   Taxa: 1% ao mês (0.01)
- *   Prazo: 120 meses
- *   
- *   Juros mensais = 100.000 × 0.01 = R$ 1.000,00
- *   
- *   Parcelas 1 a 119:
- *     Parcela = R$ 1.000,00 (apenas juros)
- *     Amortização = R$ 0,00
- *     Saldo = R$ 100.000,00 (permanece constante)
- *   
- *   Parcela 120 (última):
- *     Parcela = 1.000,00 + 100.000,00 = R$ 101.000,00
- *     Amortização = R$ 100.000,00
- *     Saldo = R$ 0,00
- *   
- *   Total de juros = 1.000,00 × 120 = R$ 120.000,00
- * 
- * VANTAGENS:
- * - Parcelas menores durante o período (apenas juros)
- * - Útil para investidores que esperam valorização do capital
- * - Permite manter o capital disponível por mais tempo
- * 
- * DESVANTAGENS:
- * - Última parcela muito grande (pode ser difícil de pagar)
- * - Maior total de juros pagos
- * - Risco de não conseguir pagar a última parcela
- * 
- * USO:
- * - Raro no Brasil
- * - Ocasional na Itália para investidores
- * - Mais comum em empréstimos de curto prazo ou para investimentos
- */
+// ============================================
 function calcularAlemao(valorEmprestimo, taxaMensal, numeroParcelas) {
     // Array que vai guardar os dados de cada parcela
-    const tabela = [];
-    
-    // Calcula o valor dos juros mensais (sempre o mesmo)
+    const tabela = []; // valor dos juros mensais (sempre o mesmo)
     // Juros = Valor Emprestado × Taxa Mensal
     // Exemplo: R$ 100.000 × 0.01 = R$ 1.000 por mês
-    const jurosMensal = valorEmprestimo * taxaMensal;
-    
-    // Para cada parcela, calcula os valores
+    const jurosMensal = valorEmprestimo * taxaMensal; // parcela, calcula os valores
     // Loop que repete uma vez para cada parcela (de 1 até numeroParcelas)
-    for (let i = 1; i <= numeroParcelas; i++) {
-        // Verifica se é a última parcela
+    for (let i = 1; i <= numeroParcelas; i++) { // Verifica é a última parcela
         if (i === numeroParcelas) {
             // ÚLTIMA PARCELA: paga juros + todo o principal
             tabela.push({
@@ -1414,45 +1071,23 @@ function calcularAlemao(valorEmprestimo, taxaMensal, numeroParcelas) {
                 saldoDevedor: valorEmprestimo  // Saldo continua igual (não diminui)
             });
         }
-    }
-    
-    // Retorna a tabela completa com todas as parcelas
+    } // tabela completa com todas as parcelas
     return tabela;
 }
-
-/**
- * Função principal que calcula o empréstimo completo
- * 
- * Esta é a função mais importante do arquivo. Ela:
- * 1. Lê os valores informados pelo usuário (valor, taxa, prazo, sistema)
- * 2. Valida os dados
- * 3. Converte a taxa para mensal
- * 4. Calcula a tabela de amortização usando o sistema escolhido
- * 5. Calcula totais (juros, valor total a pagar)
- * 6. Atualiza toda a interface (tabela, gráficos, resumos)
- * 
- * Esta função é chamada sempre que o usuário muda qualquer valor
- * (slider, input, sistema de amortização, etc.)
- */
+// Função principal calcula o empréstimo completo
 function calcularEmprestimo() {
-    // ============================================
-    // PASSO 1: LER VALORES DOS CONTROLES
-    // ============================================
-    
+        // PASSO 1: LER VALORES DOS CONTROLES
+        
     // Lê o valor do slider de valor emprestado
     // parseFloat() = converte texto para número decimal
     // || 0 = se não conseguir converter, usa zero
-    let valorEmprestimo = parseFloat(sliderValor.value) || 0;
-    
-    // Verifica se o usuário digitou um valor manual maior que o máximo do slider
-    // Isso permite valores acima do limite do slider (até 10 milhões)
+    let valorEmprestimo = parseFloat(sliderValor.value) || 0; // usuário digitou um valor manual maior que o máximo do slider // valores acima do limite do slider (até 10 milhões)
     const inputValor = document.getElementById('inputValor');
     if (inputValor) {
         // Converte valor com sufixos (k/M/m) para número
         const valorInput = obterValorNumericoComSufixo(inputValor.value);
         // Pega o máximo permitido pelo slider (depende do idioma)
-        const maxSlider = obterMaxValorSlider();
-        // Se o valor digitado está acima do slider mas dentro do limite (10 milhões)
+        const maxSlider = obterMaxValorSlider(); // Se valor digitado está acima do slider mas dentro do limite (10 milhões)
         if (valorInput > maxSlider && valorInput <= 10000000) {
             // Usa o valor digitado manualmente
             valorEmprestimo = valorInput;
@@ -1473,10 +1108,8 @@ function calcularEmprestimo() {
     // Lê o sistema de amortização escolhido (SAC, Price ou Americano)
     const tipoCalculo = document.querySelector('input[name="sistemaRapido"]:checked').value;
     
-    // ============================================
-    // PASSO 2: VALIDAR OS DADOS
-    // ============================================
-    
+        // PASSO 2: VALIDAR OS DADOS
+        
     // Validação 1: Valor emprestado deve ser pelo menos R$ 1.000
     if (!valorEmprestimo || valorEmprestimo < 1000) {
         // Se for menor, ajusta o slider para o mínimo
@@ -1498,10 +1131,8 @@ function calcularEmprestimo() {
         return;  // Para a execução se o prazo for inválido
     }
     
-    // ============================================
-    // PASSO 3: CONVERTER E PREPARAR DADOS
-    // ============================================
-    
+        // PASSO 3: CONVERTER E PREPARAR DADOS
+        
     // Converte a taxa para mensal (todos os cálculos usam taxa mensal)
     // Exemplo: 12% ao ano → ~0.95% ao mês
     const taxaMensal = converterTaxaParaMensal(taxaJuros, periodoJuros);
@@ -1510,10 +1141,8 @@ function calcularEmprestimo() {
     // Exemplo: 10 anos → 120 parcelas (10 × 12 meses)
     const numeroParcelas = prazoAnos * 12;
     
-    // ============================================
-    // PASSO 4: CALCULAR A TABELA DE AMORTIZAÇÃO
-    // ============================================
-    
+        // PASSO 4: CALCULAR A TABELA DE AMORTIZAÇÃO
+        
     // Escolhe qual função usar baseado no sistema selecionado
     switch(tipoCalculo) {
         case 'price':
@@ -1531,18 +1160,14 @@ function calcularEmprestimo() {
             tabelaAmortizacaoAtual = calcularAlemao(valorEmprestimo, taxaMensal, numeroParcelas);
             break;
             
-        default:
-            // Se o sistema não for reconhecido, mostra erro e para
+        default: // Se sistema não for reconhecido, mostra erro e para
             alert('Sistema de amortização inválido.');
             return;
     }
     
-    // ============================================
-    // PASSO 5: GUARDAR DADOS PARA USO POSTERIOR
-    // ============================================
-    
-    // Salva todos os dados em uma variável global
-    // Isso permite que outras funções acessem esses dados depois
+        // PASSO 5: GUARDAR DADOS PARA USO POSTERIOR
+        
+    // Salva todos os dados em uma variável global // que outras funções acessem esses dados depois
     dadosEmprestimo = {
         valorEmprestimo: valorEmprestimo,    // Valor emprestado
         periodoJuros: periodoJuros,          // Período da taxa (ano/mês/dia)
@@ -1553,39 +1178,28 @@ function calcularEmprestimo() {
         tipoCalculo: tipoCalculo             // Sistema usado (price/sac/alemao)
     };
     
-    // ============================================
-    // PASSO 6: CALCULAR TOTAIS E ESTATÍSTICAS
-    // ============================================
-    
-    // Calcula o total de juros pagos
+        // PASSO 6: CALCULAR TOTAIS E ESTATÍSTICAS // total de juros pagos
     // reduce() = percorre o array somando os juros de cada parcela
     // (sum, item) => sum + item.juros = para cada item, adiciona os juros ao total
     const totalJuros = tabelaAmortizacaoAtual.reduce(function(soma, parcela) {
         return soma + parcela.juros;
-    }, 0);
-    
-    // Calcula o valor total a pagar
+    }, 0); // valor total a pagar
     // Total = Valor emprestado + Total de juros
-    const totalPagar = valorEmprestimo + totalJuros;
-    
-    // Calcula a porcentagem de juros sobre o valor emprestado
+    const totalPagar = valorEmprestimo + totalJuros; // porcentagem de juros sobre o valor emprestado
     // Exemplo: R$ 60.000 de juros em R$ 100.000 = 60%
     const porcentagemJuros = (totalJuros / valorEmprestimo) * 100;
     
-    // ============================================
-    // PASSO 7: ATUALIZAR A INTERFACE
-    // ============================================
-    
+        // PASSO 7: ATUALIZAR A INTERFACE
+        
     // Mostra os resultados principais (valor, juros, total, porcentagem)
     exibirResultados(valorEmprestimo, totalJuros, totalPagar, porcentagemJuros);
     
     // Configura o slider de seleção de parcela
-    sliderParcelas.max = numeroParcelas;      // Define o máximo como número de parcelas
+    sliderParcelas.max = numeroParcelas; // máximo como número de parcelas
     
     // Restaura a última posição selecionada, ou o máximo se for maior que o novo máximo
     // Isso mantém a parcela que o usuário estava visualizando quando outros valores mudam
-    if (ultimaParcelaSelecionada > numeroParcelas) {
-        // Se a última posição for maior que o novo máximo, usa o máximo
+    if (ultimaParcelaSelecionada > numeroParcelas) { // Se última posição for maior que o novo máximo, usa o máximo
         ultimaParcelaSelecionada = numeroParcelas;
     }
     sliderParcelas.value = ultimaParcelaSelecionada;
@@ -1609,7 +1223,6 @@ function calcularEmprestimo() {
     // Mostra a seção de resultados (caso esteja escondida)
     resultados.style.display = 'block';
 }
-
 // Exibir resumo dos resultados
 function exibirResultados(valorEmprestimo, totalJuros, totalPagar, porcentagemJuros) {
     const resValorEmprestado = document.getElementById('resValorEmprestado');
@@ -1621,7 +1234,6 @@ function exibirResultados(valorEmprestimo, totalJuros, totalPagar, porcentagemJu
     const resPorcentagemJuros = document.getElementById('resPorcentagemJuros');
     if (resPorcentagemJuros) resPorcentagemJuros.textContent = formatarNumeroDecimal(porcentagemJuros, 1) + '%';
 }
-
 // Atualizar exibição da parcela selecionada no slider
 window.atualizarParcelaExibida = function() {
     const indiceParcela = parseInt(sliderParcelas.value) - 1;
@@ -1641,7 +1253,6 @@ window.atualizarParcelaExibida = function() {
     const saldoDevedor = document.getElementById('saldoDevedor');
     if (saldoDevedor) saldoDevedor.textContent = formatarMoeda(parcela.saldoDevedor);
 }
-
 // Preencher tabela de amortização (todas as parcelas)
 function preencherTabelaAmortizacao() {
     const tbody = document.querySelector('#tabelaAmortizacao tbody');
@@ -1673,7 +1284,6 @@ function preencherTabelaAmortizacao() {
         }, 0);
     }
 }
-
 // Toggle memorial de cálculo
 function toggleMemorial() {
     const memorialSection = document.getElementById('memorialSection');
@@ -1700,7 +1310,6 @@ function toggleMemorial() {
         if (resultadosSection) resultadosSection.style.display = 'block';
     }
 }
-
 // Toggle exemplos (agora chamado a partir do memorial)
 function toggleExemplos() {
     if (!exemplosSection) {
@@ -1722,10 +1331,7 @@ function toggleExemplos() {
         if (memorialSection) memorialSection.style.display = 'block';
     }
 }
-
-/**
- * Atualiza o memorial de cálculo com os valores atuais dos cálculos
- */
+// Atualiza o memorial de cálculo com os valores atuais dos cálculos
 function atualizarMemorialComValores() {
     // Obter valores atuais
     const valorEmprestimo = parseFloat(sliderValor.value) || 0;
@@ -2009,7 +1615,6 @@ function atualizarMemorialComValores() {
         }
     });
 }
-
 // Atualizar exemplos com valores dos sliders
 function atualizarExemplosComValores() {
     // Usar valores dos sliders
@@ -2105,7 +1710,6 @@ function atualizarExemplosComValores() {
         }
     }
 }
-
 // Obter texto da periodicidade
 function obterTextoPeriodicidade(periodo) {
     const textos = {
@@ -2114,27 +1718,16 @@ function obterTextoPeriodicidade(periodo) {
     };
     return textos[idiomaAtual][periodo] || textos[idiomaAtual]['ano'];
 }
-
-/**
- * Formata um número sem símbolo de moeda
- * 
- * Adiciona separadores de milhares conforme o idioma.
- * Exemplo: 100000 → "100.000" (pt-BR) ou "100.000" (it-IT)
- * 
- * @param {number} valor - Número a ser formatado
- * @returns {string} Número formatado como texto
- */
+// Formata um número sem símbolo de moeda
 // Funções de formatação agora estão em assets/js/site-config.js
 // formatarNumero -> formatarNumero (global, usa 0 decimais por padrão)
 // formatarNumeroDecimal -> formatarNumeroDecimal (global)
 // formatarNumeroCompacto -> formatarNumeroCompacto (global)
 // formatarMoeda -> formatarMoeda (global, recebe idioma como parâmetro)
 // formatarMoedaSemDecimal -> formatarMoedaSemDecimal (global, recebe idioma como parâmetro)
-
 // Inicialização
 // Variáveis globais para os gráficos
 let graficoEvolutivo = null;
-
 // Criar ou atualizar gráficos
 function atualizarGraficos() {
     if (tabelaAmortizacaoAtual.length === 0) return;
@@ -2265,7 +1858,6 @@ function atualizarGraficos() {
         }
     });
 }
-
 // Inicialização após carregamento do DOM
 document.addEventListener('DOMContentLoaded', function() {
     // Inicializar referências aos elementos do DOM
@@ -2313,13 +1905,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Funções para atualizar inputs de texto quando sliders mudam
     window.atualizarDisplayValor = function() {
-        if (inputValor && sliderValor && document.activeElement !== inputValor) {
-            // Se o input tem um valor acima do máximo do slider, usa o input
+        if (inputValor && sliderValor && document.activeElement !== inputValor) { // Se input tem um valor acima do máximo do slider, usa o input
             // Caso contrário, usa o slider
             const valorInput = obterValorNumericoComSufixo(inputValor.value);
-            const valorSlider = parseFloat(sliderValor.value) || 0;
-            
-            // Se o input tem valor válido e está acima do limite do slider, usa o input
+            const valorSlider = parseFloat(sliderValor.value) || 0; // Se input tem valor válido e está acima do limite do slider, usa o input
             // Caso contrário, sincroniza com o slider
             const maxSlider = obterMaxValorSlider();
         if (valorInput > maxSlider && valorInput <= 10000000) {
@@ -2492,12 +2081,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Garantir que o valor convertido não exceda o novo limite
                 let taxaLimitada = Math.min(taxaConvertida, maxTaxa);
                 
-                // Garantir que valores muito pequenos não sejam zerados
-                // Se a taxa original não era zero e a convertida é positiva, preservar
+                // Garantir que valores muito pequenos não sejam zerados // Se taxa original não era zero e a convertida é positiva, preservar
                 if (taxaAtual > 0 && taxaConvertida > 0) {
                     // Para valores diários, garantir que valores muito pequenos sejam preservados
-                    if (novoPeriodo === 'dia' && taxaLimitada < 0.001) {
-                        // Se o valor convertido for menor que o step mínimo, usar o valor convertido original
+                    if (novoPeriodo === 'dia' && taxaLimitada < 0.001) { // Se valor convertido for menor que o step mínimo, usar o valor convertido original
                         // mas garantir que seja pelo menos 0.0001 para não zerar
                         taxaLimitada = Math.max(taxaConvertida, 0.0001);
                     }

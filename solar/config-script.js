@@ -1,8 +1,6 @@
 // ajustarValorPadrao é carregado via script tag no HTML
-// ============================================
 // CONFIGURAÇÕES SOLAR - SCRIPT
 // Permite customizar valores de componentes (UI de administração)
-// ============================================
 //
 // Esta página permite ajustar os valores padrão usados pela calculadora solar:
 // potência/preço de painéis, tensão, capacidade, peso e preço das baterias (AGM / LiFePO4).
@@ -14,12 +12,10 @@
 //    para serem usados pela calculadora principal (solar.html).
 //  - restaurarPadroes(): remove a configuração salva, voltando aos valores padrão.
 //
-// Observações:
 //  - O arquivo aceita defaults do SiteConfig (se presente) para manter
 //    consistência com configurações globais do site.
 //  - Capacidade é medida em kWh, mas a UI e calculadora aceitam conversões
 //    de Ah para kWh quando necessário.
-
 // Valores padrão
 const VALORES_PADRAO = {
     potenciaPainel: 400,
@@ -35,18 +31,13 @@ const VALORES_PADRAO = {
     precoLitio: 12000,
     pesoLitio: 60
 };
-
 // Permite que defaults do SiteConfig sobrescrevam alguns valores padrão de baterias
 const BATTERY_DEFAULTS = (typeof SiteConfig !== 'undefined' && SiteConfig.DEFAULTS && SiteConfig.DEFAULTS.BATTERY) ? SiteConfig.DEFAULTS.BATTERY : { DEFAULT_LFP_KWH: 4.8, DEFAULT_AGM_KWH: 1.2, LFP_MAX_KG: 180, AGM_MAX_KG: 180 };
-
 // Idioma atual (herda do localStorage)
 const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
 const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
 let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
-
-// ============================================
 // DICIONÁRIO DE TRADUÇÃO
-// ============================================
 const traducoes = {
     'pt-BR': {
         'config-title': '⚙️ Configurações',
@@ -99,10 +90,7 @@ const traducoes = {
         , 'aria-home': 'Torna alla schermata iniziale'
     }
 };
-
-// ============================================
 // FUNÇÕES DE INTERFACE
-// ============================================
 
 function trocarIdioma(idioma) {
     idiomaAtual = idioma;
@@ -198,10 +186,7 @@ function restaurarPadroes() {
     localStorage.removeItem(SITE_LS.SOLAR_CONFIG_KEY);
     carregarValores();
 }
-
-// ============================================
 // EVENT LISTENERS
-// ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
     // Carregar idioma e valores salvos

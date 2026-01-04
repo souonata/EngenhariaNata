@@ -1,6 +1,4 @@
-// ============================================
 // DIMENSIONADOR DE FAZENDA AUTO-SUSTENTÁVEL
-// ============================================
 //
 // Comentários didáticos em Português - Visão geral do algoritmo
 // -------------------------------------------------------------
@@ -20,7 +18,7 @@
 //  - Cálculo de ciclos de plantio para manter produção contínua
 //  - Consideração de épocas de plantio e colheita
 //  - Cálculo de espaço necessário por tipo de planta/animal
-//  - Consumo fixo para alguns itens (ex: ovos de galinha)
+//  - Consumo fixo para alguns itens
 //  - Consumo proporcional para outros itens
 //
 // Fórmulas Principais:
@@ -30,21 +28,13 @@
 //  - Área Necessária = Quantidade de Plantas × Espaço por Planta
 //  - Frequência de Plantio = Ciclo de Plantio ÷ 2 (para sobreposição)
 //
-// Observações:
-//  - Alguns itens têm consumo fixo garantido (ex: 2 ovos/pessoa/dia)
+//  - Alguns itens têm consumo fixo garantido
 //  - Outros itens recebem produção restante distribuída proporcionalmente
 //  - O calendário considera épocas de plantio e colheita de cada cultura
 //  - A reprodução animal é calculada para manter produção contínua
-
-// ============================================
 // FUNÇÕES DE FORMATAÇÃO
-// ============================================
-
 // Função formatarNumeroDecimal agora está em assets/js/site-config.js
-
-// ============================================
 // ÍCONES DOS PRODUTOS
-// ============================================
 
 const ICONES_PRODUTOS = {
     // Frutas - Brasil
@@ -147,10 +137,7 @@ const ICONES_PRODUTOS = {
     'anatra-ovos': '🥚',
     'anatra-corte': '🍗'
 };
-
-// ============================================
 // DADOS DE PRODUÇÃO
-// ============================================
 // Os dados vêm EXCLUSIVAMENTE do banco de dados regional (fazenda-database.js)
 // Estas variáveis serão preenchidas dinamicamente baseadas no idioma selecionado
 // NÃO há dados hardcoded aqui - tudo vem do banco de dados
@@ -162,7 +149,6 @@ let DADOS_PLANTAS = {
 };
 
 let DADOS_ANIMAIS = {};
-
 // Consumo médio por pessoa (kg/ano)
 const CONSUMO_POR_PESSOA = {
     frutas: 100, // kg/ano
@@ -173,10 +159,7 @@ const CONSUMO_POR_PESSOA = {
     carne: 40, // kg/ano
     peixe: 10 // kg/ano
 };
-
-// ============================================
 // TRADUÇÕES
-// ============================================
 
 const traducoes = {
     'pt-BR': {
@@ -402,10 +385,7 @@ const traducoes = {
         'ocultar-info-tecnica': 'Nascondi Informazioni Tecniche'
     }
 };
-
-// ============================================
 // FUNÇÕES DE CÁLCULO
-// ============================================
 
 function calcularAreaNecessaria(tipo, nome, quantidadePessoas, consumoDiarioPorPessoa) {
     const dados = DADOS_PLANTAS[tipo][nome];
@@ -482,10 +462,7 @@ function calcularAreaAnimais(tipoAnimal, quantidade) {
     const dados = DADOS_ANIMAIS[tipoAnimal];
     return dados.espaco * quantidade;
 }
-
-// ============================================
 // FUNÇÕES DE INTERFACE
-// ============================================
 
 function criarCheckboxPlantas(tipo, nome) {
     const div = document.createElement('button');
@@ -866,10 +843,7 @@ function atualizarResultados() {
     
     aplicarTraducoes();
 }
-
-// ============================================
 // FUNÇÃO PARA TOGGLE DE INFORMAÇÕES TÉCNICAS
-// ============================================
 
 function toggleInfoTecnica(idDetalhes, idBtn) {
     const detalhes = document.getElementById(idDetalhes);
@@ -885,13 +859,9 @@ function toggleInfoTecnica(idDetalhes, idBtn) {
         }
     }
 }
-
 // Tornar função global para uso em onclick
 window.toggleInfoTecnica = toggleInfoTecnica;
-
-// ============================================
 // MEMORIAL DE CÁLCULO
-// ============================================
 
 function atualizarMemorialComValores() {
     const textos = traducoes[idiomaAtual] || traducoes['pt-BR'];
@@ -1106,11 +1076,7 @@ function toggleMemorial() {
         }
     }
 }
-
-// ============================================
 // CARREGAR DADOS DO BANCO DE DADOS
-// ============================================
-
 // Armazenar dados completos do banco de dados (incluindo informações técnicas)
 let DADOS_COMPLETOS = {
     plantas: {
@@ -1225,10 +1191,7 @@ function carregarDadosBanco(idioma) {
     
     console.log(`[Fazenda] Banco de dados carregado com sucesso para ${idioma}`);
 }
-
-// ============================================
 // TRADUÇÃO
-// ============================================
 
 let idiomaAtual = 'pt-BR';
 
@@ -1290,7 +1253,6 @@ function trocarIdioma(novoIdioma) {
         secaoResultados.style.display = 'none';
     }
 }
-
 // Função para recriar checkboxes quando o idioma muda
 function recriarCheckboxes() {
     // Verificar se os elementos existem
@@ -1393,11 +1355,7 @@ function recriarCheckboxes() {
     // Os event listeners já estão configurados globalmente no DOMContentLoaded
     // Não é necessário reaplicá-los aqui
 }
-
-// ============================================
 // INICIALIZAÇÃO
-// ============================================
-
 // Função de inicialização que aguarda o carregamento completo
 function inicializarApp() {
     // Verificar se o banco de dados está disponível
@@ -1522,7 +1480,6 @@ function inicializarApp() {
     configurarEventListeners();
     
 }
-
 // Função separada para configurar event listeners
 function configurarEventListeners() {
     
@@ -1702,7 +1659,6 @@ function configurarEventListeners() {
     
     console.log('[Fazenda] App inicializado com sucesso!');
 }
-
 // Aguardar carregamento completo do DOM e do banco de dados
 document.addEventListener('DOMContentLoaded', () => {
     console.log('[Fazenda] DOM carregado, verificando dependências...');

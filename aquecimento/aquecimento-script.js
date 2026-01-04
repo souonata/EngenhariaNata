@@ -1,8 +1,6 @@
 // ajustarValorPadrao é carregado via script tag no HTML
-// ============================================
 // DIMENSIONADOR DE AQUECEDOR SOLAR TÉRMICO
 // Sistema Termossifão com Tubos a Vácuo
-// ============================================
 //
 // Comentários didáticos em Português - Visão geral do algoritmo
 // -------------------------------------------------------------
@@ -41,28 +39,18 @@
 //  - Fator Estratificação: 0.65 (65% do volume útil)
 //  - Horas de Aquecimento por Dia: 16 horas
 //  - Calor Específico da Água: 1.163 Wh/kg°C
-
-// ============================================
 // CONFIGURAÇÃO DE CHAVES E SELETORES
-// ============================================
 const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido' };
 const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', ARROW_BTN: '.arrow-btn' };
 let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
-
-// ============================================
 // CONSTANTES FÍSICAS FIXAS
-// ============================================
 const CONSTANTS = {
     densidade_agua: 1.0,              // kg/L
     calor_especifico_agua: 1.163,     // Wh/kg°C (Para cálculo direto em kWh)
     irradiacao_horaria_pico_media: 800.0, // W/m²
     altura_minima_boiler: 0.20        // metros
 };
-
-// ============================================
 // MATRIZES DE DADOS
-// ============================================
-
 // Matriz de Irradiação Solar e Clima (Por Faixa de Latitude)
 // Valores base ao nível do mar (altitude = 0m)
 // Brasil (latitudes negativas - Sul)
@@ -83,7 +71,6 @@ const MATRIZ_CLIMA_BRASIL = {
         T_ambiente_inverno_base: 16.0 
     }    // Valor padrão
 };
-
 // Itália (latitudes positivas - Norte)
 const MATRIZ_CLIMA_ITALIA = {
     "36N_40N": { 
@@ -107,13 +94,11 @@ const MATRIZ_CLIMA_ITALIA = {
         T_ambiente_inverno_base: 8.0 
     }     // Valor padrão
 };
-
 // Constantes para cálculo de temperatura com altitude
 // Gradiente adiabático: temperatura diminui ~6.5°C por 1000m de altitude
 const GRADIENTE_ADIABATICO = 6.5; // °C por 1000m
 // Altitude de referência (nível do mar)
 const ALTITUDE_REFERENCIA = 0; // metros
-
 // Matriz de Consumo e Temperatura Desejada
 // [U_tipo] : [Consumo_por_pessoa (L/dia), T_desejada (°C), Fator_autonomia]
 const MATRIZ_CONSUMO = {
@@ -121,7 +106,6 @@ const MATRIZ_CONSUMO = {
     "Padrao": { consumo_por_pessoa: 40.0, T_desejada: 45.0, fator_autonomia: 1.5 },
     "Alto": { consumo_por_pessoa: 60.0, T_desejada: 50.0, fator_autonomia: 2.0 }
 };
-
 // Modelo de Referência do Coletor Solar Térmico
 // Baseado em produtos reais disponíveis nos fornecedores indicados
 const MODELO_REFERENCIA = {
@@ -158,16 +142,13 @@ const MODELO_REFERENCIA = {
         }
     }
 };
-
 // Função para obter o modelo de referência baseado no idioma
 function obterModeloReferencia() {
     return MODELO_REFERENCIA[idiomaAtual] || MODELO_REFERENCIA['pt-BR'];
 }
-
 // Constantes para cálculo de aquecimento da casa
 // Potência necessária por metro cúbico (W/m³) - base para cálculo de volume
 const POTENCIA_POR_M3 = 30; // W/m³ (aproximadamente 100 BTU/m³ convertido)
-
 // Consumo específico por classe energética (kWh/m²·ano)
 // Valores baseados nas normas europeias e italianas de eficiência energética
 // Referência: Diretiva EPBD 2002/91/CE, Dlgs 192/2005 (Itália), DPR 59/2009
@@ -186,46 +167,32 @@ const CONSUMO_ESPECIFICO_CLASSE = {
     "F": 3.05,   // 2,60 < Consumo ≤ 3,50 kWh/m²·ano (média: 3,05)
     "G": 4.0     // > 3,50 kWh/m²·ano (usando 4,0 como referência) - Classe menos eficiente
 };
-
 // Temperatura desejada para aquecimento da casa (conforto térmico)
 const TEMPERATURA_CONFORTO_CASA = 22.0; // °C
-
 // Temperatura mínima de operação dos termossifões (radiadores)
 // Termossifões com termostato precisam de uma temperatura mínima para funcionar adequadamente
 // Abaixo desta temperatura, o termossifão não consegue transferir calor suficiente para o ambiente
 const TEMPERATURA_MINIMA_TERMOSSIFAO = 48.0; // °C
-
 // Temperatura de armazenamento inicial no boiler (após carregamento solar)
 // Esta é a temperatura máxima que a água atinge quando o sistema solar carrega o boiler
 const TEMPERATURA_ARMAZENAMENTO_INICIAL = 65.0; // °C
-
 // Fator de estratificação térmica no boiler
 // Devido à estratificação térmica, apenas parte do volume do boiler (parte superior) 
 // mantém água quente suficiente para os termossifões funcionarem
 // Este fator representa a fração do volume do boiler que estará acima da temperatura mínima
 // Valores típicos: 0.6 a 0.7 (60-70% da parte superior do boiler)
 const FATOR_ESTRATIFICACAO = 0.65; // 65% do volume superior do boiler mantém temperatura adequada
-
 // Horas de aquecimento ativo por dia
 // O aquecimento residencial geralmente é necessário durante as horas mais frias (noite e manhã)
 // Durante o dia (8 horas), o sol pode ajudar a aquecer naturalmente, reduzindo a necessidade de aquecimento ativo
 // Valor conservador: 16 horas de aquecimento ativo por dia (período noturno + manhã)
 const HORAS_AQUECIMENTO_POR_DIA = 16.0; // horas de aquecimento ativo por dia
-
-// ============================================
 // FUNÇÕES AUXILIARES
-// ============================================
-
-/**
- * Converte string numérica para número, aceitando tanto ponto quanto vírgula como decimal
- * @param {string} valorTexto - Valor como string (pode ter ponto ou vírgula)
- * @returns {number} Valor numérico
- */
+// Converte string numérica para número, aceitando tanto ponto quanto vírgula como decimal
 // Funções de formatação agora estão em assets/js/site-config.js
 // converterParaNumero -> converterValorFormatadoParaNumero (global)
 // formatarNumero -> formatarNumero (global)
 // formatarDecimal -> formatarNumeroDecimal (global)
-
 // Alias para compatibilidade com código existente
 function converterParaNumero(valorTexto) {
     const resultado = converterValorFormatadoParaNumero(valorTexto);
@@ -235,13 +202,7 @@ function converterParaNumero(valorTexto) {
 function formatarDecimal(valor, decimais = 1) {
     return formatarNumeroDecimal(valor, decimais);
 }
-
-/**
- * Determina a faixa de latitude baseada na latitude fornecida e idioma
- * @param {number} latitude - Latitude em graus
- * @param {string} idioma - Idioma atual ('pt-BR' ou 'it-IT')
- * @returns {string} Chave da faixa de latitude
- */
+// Determina a faixa de latitude baseada na latitude fornecida e idioma
 function obterFaixaLatitude(latitude, idioma) {
     if (idioma === 'it-IT') {
         // Itália: latitudes positivas (Norte)
@@ -264,23 +225,10 @@ function obterFaixaLatitude(latitude, idioma) {
             return "OUTRAS";
         }
     }
-}
-
-/**
- * Obtém a matriz de clima baseada no idioma
- * @param {string} idioma - Idioma atual ('pt-BR' ou 'it-IT')
- * @returns {Object} Matriz de clima correspondente
- */
+} // matriz de clima baseada no idioma
 function obterMatrizClima(idioma) {
     return idioma === 'it-IT' ? MATRIZ_CLIMA_ITALIA : MATRIZ_CLIMA_BRASIL;
-}
-
-/**
- * Calcula as Horas de Sol Pico (HSP) no inverno baseado na latitude
- * As HSP variam com a latitude: quanto mais longe do equador, menos horas de sol no inverno
- * @param {number} latitude - Latitude do local (negativa para Sul, positiva para Norte)
- * @returns {number} Horas de Sol Pico (HSP) no inverno (kWh/m²/dia)
- */
+} // Horas de Sol Pico (HSP) no inverno baseado na latitude
 function calcularHorasSolPicoInverno(latitude) {
     // Converter latitude para valor absoluto para cálculos
     const latAbs = Math.abs(latitude);
@@ -315,15 +263,7 @@ function calcularHorasSolPicoInverno(latitude) {
     
     // Garantir valores mínimos e máximos razoáveis
     return Math.max(1.0, Math.min(6.0, hsp));
-}
-
-/**
- * Calcula a temperatura da água fria ajustada pela altitude
- * Baseado em dados geográficos: temperatura diminui com altitude
- * @param {number} T_base - Temperatura base ao nível do mar (°C)
- * @param {number} altitude - Altitude em metros
- * @returns {number} Temperatura ajustada pela altitude (°C)
- */
+} // temperatura da água fria ajustada pela altitude
 function calcularTemperaturaComAltitude(T_base, altitude) {
     // Gradiente adiabático: ~6.5°C por 1000m
     // Para água, o efeito é um pouco menor, usamos ~5.5°C por 1000m
@@ -333,15 +273,7 @@ function calcularTemperaturaComAltitude(T_base, altitude) {
     
     // Limitar temperatura mínima (água não congela facilmente em sistemas, mas limitamos a 2°C)
     return Math.max(2.0, T_ajustada);
-}
-
-/**
- * Calcula a temperatura ambiente de inverno ajustada pela altitude
- * Variação linear de 0 até 2000m, chegando a -13°C a 2000m em relação ao nível do mar
- * @param {number} T_base - Temperatura ambiente base ao nível do mar (°C)
- * @param {number} altitude - Altitude em metros
- * @returns {number} Temperatura ambiente ajustada pela altitude (°C)
- */
+} // temperatura ambiente de inverno ajustada pela altitude
 function calcularTemperaturaAmbienteComAltitude(T_base, altitude) {
     // Variação linear: -13°C a 2000m = -6.5°C por 1000m = -0.0065°C por metro
     // Aplicar variação linear de 0 até 2000m
@@ -352,19 +284,7 @@ function calcularTemperaturaAmbienteComAltitude(T_base, altitude) {
     // Limitar temperatura mínima a -5°C (condições extremas de inverno)
     return Math.max(-5.0, T_ajustada);
 }
-
-// ============================================
-// FUNÇÕES DE CÁLCULO
-// ============================================
-
-/**
- * Calcula a demanda de energia térmica para aquecimento da casa
- * @param {number} areaCasa - Área da casa em m²
- * @param {number} alturaCasa - Altura do pé direito em m
- * @param {string} classeEnergetica - Classe energética (A a G)
- * @param {number} T_ambiente_inverno - Temperatura ambiente de inverno em °C
- * @returns {Object} Objeto com valores calculados para aquecimento da casa
- */
+// FUNÇÕES DE CÁLCULO // demanda de energia térmica para aquecimento da casa
 function calcularAquecimentoCasa(areaCasa, alturaCasa, classeEnergetica, T_ambiente_inverno) {
     // Volume da casa
     const volumeCasa = areaCasa * alturaCasa; // m³
@@ -373,14 +293,11 @@ function calcularAquecimentoCasa(areaCasa, alturaCasa, classeEnergetica, T_ambie
     const Delta_T_casa = TEMPERATURA_CONFORTO_CASA - T_ambiente_inverno;
     
     // Obter consumo específico da classe energética (kWh/m²·ano)
-    // Nota: Os valores de consumo específico são baseados em altura padrão de ~2,7m
-    // IMPORTANTE: Este valor representa o consumo TOTAL de energia da casa (aquecimento + outros usos)
-    // Para aquecimento, assumimos que representa aproximadamente 60-70% do consumo total em climas frios
+            // Para aquecimento, assumimos que representa aproximadamente 60-70% do consumo total em climas frios
     const consumoEspecifico = CONSUMO_ESPECIFICO_CLASSE[classeEnergetica] || CONSUMO_ESPECIFICO_CLASSE["D"];
     
     // Fator de ajuste para altura do pé direito
-    // Altura padrão de referência: 2,7m
-    // Para cada 0,1m acima de 2,7m, aumenta 10% no consumo
+    // Altura padrão de referência: 2,7m // 0,1m acima de 2,7m, aumenta 10% no consumo
     const alturaPadrao = 2.7; // metros
     let fatorAltura = 1.0;
     if (alturaCasa > alturaPadrao) {
@@ -390,8 +307,7 @@ function calcularAquecimentoCasa(areaCasa, alturaCasa, classeEnergetica, T_ambie
     }
     
     // Calcular demanda diária de energia baseada em consumo específico por área
-    // IMPORTANTE: Os valores de consumo específico estão em kWh/m²·ano
-    // O consumo específico representa a perda de calor anual por m²
+        // O consumo específico representa a perda de calor anual por m²
     // 
     // Para calcular a demanda diária de energia:
     // 1. Calcular consumo anual total = Consumo específico × Área × Fator altura
@@ -411,8 +327,7 @@ function calcularAquecimentoCasa(areaCasa, alturaCasa, classeEnergetica, T_ambie
     const demandaCasa_kWh = consumoAnualAquecimento_kWh / diasPeriodoAquecimento;
     
     // Calcular potência necessária (W) para dimensionamento de termossifões
-    // Potência = Demanda diária (kWh/dia) / Horas de aquecimento por dia × 1000
-    // Adiciona 15% de margem para perdas adicionais (portas, janelas, infiltrações, etc.)
+    // Potência = Demanda diária (kWh/dia) / Horas de aquecimento por dia × 1000 // Adiciona 15% de margem para perdas adicionais (portas, janelas, infiltrações, etc.)
     const potenciaBase_W = (demandaCasa_kWh / HORAS_AQUECIMENTO_POR_DIA) * 1000.0;
     const potenciaNecessaria_W = potenciaBase_W * 1.15;
     
@@ -437,55 +352,7 @@ function calcularAquecimentoCasa(areaCasa, alturaCasa, classeEnergetica, T_ambie
         fracaoAquecimento: fracaoAquecimento,
         T_ambiente_inverno: T_ambiente_inverno // Adicionar temperatura ambiente para uso posterior
     };
-}
-
-/**
- * Calcula o dimensionamento completo do sistema de aquecimento solar térmico
- * 
- * LÓGICA COMPLETA DO CÁLCULO:
- * 
- * 1. DEMANDA DE ENERGIA:
- *    - ÁGUA: Calcula energia necessária para aquecer água de consumo diário
- *    - CASA: Calcula potência necessária baseada em perda de calor por área (Área × Coeficiente/m² × ΔT)
- *            e converte para demanda diária (Potência × 16 horas de aquecimento ativo)
- * 
- * 2. VOLUME DO BOILER:
- *    - ÁGUA: Volume = Consumo diário × Dias de autonomia
- *    - CASA: Volume calculado para armazenar energia suficiente para os dias de autonomia,
- *            considerando temperatura mínima dos termossifões (48°C) e estratificação térmica
- *    - TOTAL: Soma dos volumes de água e casa
- * 
- * 3. ENERGIA PARA AQUECER O BOILER:
- *    - Calcula energia necessária para aquecer TODO o volume do boiler (água + casa)
- *      da temperatura ambiente até 65°C
- *    - Esta energia é necessária apenas uma vez, quando o sistema é carregado em 1 dia de sol
- * 
- * 4. ÁREA DE COLETORES:
- *    - ÁGUA: Área = (Demanda diária × Fator segurança) ÷ (HSP × Eficiência)
- *    - CASA: Área = ((Energia aquecer boiler + Demanda × Dias autonomia) × Fator segurança) ÷ (HSP × Eficiência)
- *    - TOTAL: Soma das áreas de água e casa
- * 
- * 5. NÚMERO DE PAINÉIS:
- *    - Número = Área total ÷ Área por painel (arredondado para cima)
- * 
- * 6. TERMOSSIFÕES:
- *    - Dimensionados para fornecer no total a potência necessária para compensar
- *      a perda de calor da casa (calculada em calcularAquecimentoCasa)
- *    - Cada ambiente recebe termossifões dimensionados individualmente
- * 
- * @param {number} numeroPessoas - Número de pessoas
- * @param {string} tipoUso - Tipo de uso (Economico, Padrao, Alto)
- * @param {number} latitude - Latitude do local
- * @param {number} altitude - Altitude do local
- * @param {string|null} modeloColetor - Modelo do coletor (deprecated, usa modelo de referência baseado no idioma)
- * @param {number} areaCasa - Área da casa em m²
- * @param {number} alturaCasa - Altura do pé direito em m
- * @param {string} classeEnergetica - Classe energética (A a G)
- * @param {number} diasAutonomia - Dias de autonomia para aquecimento da casa
- * @param {boolean} incluirAgua - Se deve incluir sistema de água
- * @param {boolean} incluirCasa - Se deve incluir sistema de aquecimento da casa
- * @returns {Object} Objeto com todos os valores calculados
- */
+} // dimensionamento completo do sistema de aquecimento solar térmico
 function calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, modeloColetor, areaCasa, alturaCasa, classeEnergetica, diasAutonomia, incluirAgua, incluirCasa) {
     // Obter dados das matrizes
     const dadosConsumo = MATRIZ_CONSUMO[tipoUso] || MATRIZ_CONSUMO["Padrao"];
@@ -577,8 +444,7 @@ function calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, mod
     const demandaTotal_kWh = E_nec_kWh + resultadoCasa.demandaCasa_kWh;
     
     // 4.6. DIMENSIONAMENTO DA ÁREA DO COLETOR (A_col)
-    // IMPORTANTE: Usa Horas de Sol Pico (HSP) para calcular a energia capturada pelos painéis
-    // HSP = H_g_diaria (já está em kWh/m²/dia, equivalente a horas de sol pico)
+        // HSP = H_g_diaria (já está em kWh/m²/dia, equivalente a horas de sol pico)
     // Energia capturada por m² de painel = HSP × Potência térmica do painel (kW/m²) × Eficiência
     // Potência térmica do painel em condições de pico (1000 W/m²) = eficiência_óptica × 1 kW/m²
     
@@ -620,8 +486,7 @@ function calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, mod
         const demandaTotalAutonomia_kWh = resultadoCasa.demandaCasa_kWh * diasAutonomia;
         
         // PASSO 2: Calcular volume de água necessário para armazenar essa energia
-        // IMPORTANTE: A água precisa estar acima da temperatura mínima de operação dos termossifões
-        // até o último dia de autonomia. Consideramos:
+                // até o último dia de autonomia. Consideramos:
         // - Temperatura inicial de armazenamento: TEMPERATURA_ARMAZENAMENTO_INICIAL (65°C)
         // - Temperatura mínima de operação dos termossifões: TEMPERATURA_MINIMA_TERMOSSIFAO (48°C)
         // - Delta_T_armazenamento: diferença entre temperatura inicial e temperatura mínima (17°C)
@@ -635,8 +500,7 @@ function calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, mod
         const V_teorico_L = massa_kg / CONSTANTS.densidade_agua; // L
         
         // PASSO 3: Ajustar volume considerando estratificação térmica
-        // IMPORTANTE: Devido à estratificação térmica no boiler, apenas parte do volume
-        // (parte superior) mantém água quente suficiente para os termossifões funcionarem.
+                // (parte superior) mantém água quente suficiente para os termossifões funcionarem.
         // A água quente fica em cima e a fria embaixo. Portanto, precisamos de um volume maior
         // para garantir que a parte superior (que será usada pelos termossifões) tenha água
         // quente suficiente até o último dia de autonomia.
@@ -656,8 +520,7 @@ function calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, mod
     const V_boiler_total_L = V_boiler_agua_L + V_boiler_casa_L;
     
     // PASSO 6: Calcular energia necessária para aquecer TODO o volume do boiler
-    // IMPORTANTE: Esta energia deve considerar o volume TOTAL do boiler (água + casa),
-    // pois o sistema precisa aquecer todo o volume em apenas 1 dia de sol.
+        // pois o sistema precisa aquecer todo o volume em apenas 1 dia de sol.
     // Esta energia é necessária apenas se houver sistema de casa, pois para água
     // o boiler já é dimensionado para armazenar água quente pronta para uso.
     if ((incluirCasa && V_boiler_total_L > 0) || (incluirAgua && incluirCasa && V_boiler_total_L > 0)) {
@@ -692,12 +555,10 @@ function calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, mod
         // - Energia para os dias de autonomia (demanda diária × dias de autonomia)
         const demandaCasaComAutonomia_kWh = resultadoCasa.demandaCasa_kWh * diasAutonomia;
         
-        // IMPORTANTE: A energia para aquecer o boiler só é necessária se houver sistema de casa
-        // Para sistema apenas de água, o boiler já armazena água quente pronta para uso
+                // Para sistema apenas de água, o boiler já armazena água quente pronta para uso
         const demandaTotalCasa_kWh = energiaAquecimentoBoiler_kWh + demandaCasaComAutonomia_kWh;
         
-        // Área = (Energia para aquecer boiler + Demanda × Dias de Autonomia) × Fator Segurança / (Energia capturada por m²)
-        // Isso garante que em 1 dia de sol, o sistema:
+        // Área = (Energia para aquecer boiler + Demanda × Dias de Autonomia) × Fator Segurança / (Energia capturada por m²) // que em 1 dia de sol, o sistema:
         // - Aqueça todo o volume do boiler até 65°C
         // - Capte energia suficiente para N dias de autonomia
         areaCasa_m2 = (demandaTotalCasa_kWh * fatorSeguranca) / energiaCapturadaPorM2_kWh;
@@ -747,7 +608,6 @@ function calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, mod
         temperaturaArmazenamentoInicial: TEMPERATURA_ARMAZENAMENTO_INICIAL // Temperatura inicial de armazenamento
     };
 }
-
 // Matriz de Termossifões (Radiadores) para Aquecimento de Ambientes
 // Valores baseados em preços médios do mercado (Brasil em R$ e Itália em €) - 2024/2025
 // Matriz de Termossifões (Radiadores) para Aquecimento de Ambientes
@@ -774,12 +634,7 @@ const MATRIZ_TERMOSSIFOES = {
         { tamanho: 'Doppio', potencia_W: 2400, comprimento_cm: 150, altura_cm: 60, preco: 280.0, descricao: '150x60cm - 2400W', tempMinimaAgua: 50.0 }
     ]
 };
-
-/**
- * Estima o número e tipos de ambientes de uma casa baseado na área
- * @param {number} areaCasa - Área total da casa em m²
- * @returns {Array} Array de objetos com tipo e área estimada de cada ambiente
- */
+// Estima o número e tipos de ambientes de uma casa baseado na área
 function estimarAmbientes(areaCasa) {
     const ambientes = [];
     
@@ -824,16 +679,7 @@ function estimarAmbientes(areaCasa) {
     }
     
     return ambientes;
-}
-
-/**
- * Calcula a potência necessária para aquecer um ambiente
- * @param {number} areaAmbiente - Área do ambiente em m²
- * @param {number} alturaCasa - Altura do pé direito em m
- * @param {number} T_externa - Temperatura externa de inverno em °C
- * @param {string} classeEnergetica - Classe energética da casa
- * @returns {number} Potência necessária em Watts
- */
+} // potência necessária para aquecer um ambiente
 function calcularPotenciaAmbiente(areaAmbiente, alturaCasa, T_externa, classeEnergetica) {
     // Obter consumo específico da classe energética (kWh/m²·ano)
     const consumoEspecifico = CONSUMO_ESPECIFICO_CLASSE[classeEnergetica] || CONSUMO_ESPECIFICO_CLASSE["D"];
@@ -858,25 +704,16 @@ function calcularPotenciaAmbiente(areaAmbiente, alturaCasa, T_externa, classeEne
     const demandaDiaria_kWh = consumoAnualAquecimento_kWh / diasPeriodoAquecimento;
     
     // Calcular potência necessária (W) para dimensionamento de termossifões
-    // Potência = Demanda diária (kWh/dia) / Horas de aquecimento por dia × 1000
-    // Adiciona 15% de margem para perdas adicionais (portas, janelas, etc.)
+    // Potência = Demanda diária (kWh/dia) / Horas de aquecimento por dia × 1000 // Adiciona 15% de margem para perdas adicionais (portas, janelas, etc.)
     const potenciaBase_W = (demandaDiaria_kWh / HORAS_AQUECIMENTO_POR_DIA) * 1000.0;
     const potenciaNecessaria_W = potenciaBase_W * 1.15;
     
     return Math.max(0, potenciaNecessaria_W);
 }
-
-/**
- * Seleciona o termossifão mais adequado para uma potência necessária
- * @param {number} potenciaNecessaria_W - Potência necessária em Watts
- * @param {Array} matrizTermossifoes - Matriz de termossifões disponíveis
- * @returns {Object} Termossifão selecionado ou null
- */
+// Seleciona o termossifão mais adequado para uma potência necessária
 function selecionarTermossifao(potenciaNecessaria_W, matrizTermossifoes) {
     // Ordenar por potência (menor para maior)
-    const termossifoesOrdenados = [...matrizTermossifoes].sort((a, b) => a.potencia_W - b.potencia_W);
-    
-    // Se a potência necessária é muito pequena (menor que 50% do menor termossifão disponível),
+    const termossifoesOrdenados = [...matrizTermossifoes].sort((a, b) => a.potencia_W - b.potencia_W); // Se potência necessária é muito pequena (menor que 50% do menor termossifão disponível),
     // usar o menor termossifão disponível (melhor ter capacidade extra do que insuficiente)
     if (potenciaNecessaria_W < termossifoesOrdenados[0].potencia_W * 0.5) {
         return termossifoesOrdenados[0];
@@ -898,17 +735,7 @@ function selecionarTermossifao(potenciaNecessaria_W, matrizTermossifoes) {
     // Se nenhum termossifão individual atende, usar o maior disponível
     // Pode ser necessário mais de um em ambientes muito grandes
     return termossifoesOrdenados[termossifoesOrdenados.length - 1];
-}
-
-/**
- * Calcula a quantidade e custo de termossifões necessários para aquecer a casa
- * Considera cada ambiente individualmente com termossifão apropriado
- * @param {number} areaCasa - Área total da casa em m²
- * @param {number} alturaCasa - Altura do pé direito em m
- * @param {number} T_ambiente_inverno - Temperatura externa de inverno em °C
- * @param {string} classeEnergetica - Classe energética da casa
- * @returns {Object} Objeto com quantidade, detalhes e custo dos termossifões
- */
+} // quantidade e custo de termossifões necessários para aquecer a casa
 function calcularTermossifoes(areaCasa, alturaCasa, T_ambiente_inverno, classeEnergetica) {
     if (areaCasa <= 0 || alturaCasa <= 0) {
         return {
@@ -993,20 +820,7 @@ function calcularTermossifoes(areaCasa, alturaCasa, T_ambiente_inverno, classeEn
         detalhes: detalhes.join('; '),
         ambientes: termossifoesPorAmbiente
     };
-}
-
-/**
- * Calcula os custos estimados do sistema de aquecimento solar
- * @param {number} numeroPaineis - Número de painéis necessários
- * @param {number} areaColetor_m2 - Área total de coletores em m²
- * @param {number} volumeBoiler_L - Volume do boiler em litros
- * @param {number} areaCasa - Área da casa em m² (para cálculo de termossifões)
- * @param {number} alturaCasa - Altura do pé direito em m (para cálculo de termossifões)
- * @param {number} T_ambiente_inverno - Temperatura externa de inverno em °C (para cálculo de termossifões)
- * @param {string} classeEnergetica - Classe energética da casa (para cálculo de termossifões)
- * @param {boolean} incluirCasa - Se o sistema inclui aquecimento da casa
- * @returns {Object} Objeto com os custos calculados
- */
+} // custos estimados do sistema de aquecimento solar
 function calcularCustos(numeroPaineis, areaColetor_m2, volumeBoiler_L, areaCasa = 0, alturaCasa = 2.7, T_ambiente_inverno = 10, classeEnergetica = 'D', incluirCasa = false) {
     // Preços médios do mercado baseados em pesquisas 2024/2025
     // Valores em R$ para Brasil (pt-BR) e € para Itália (it-IT)
@@ -1099,10 +913,7 @@ function calcularCustos(numeroPaineis, areaColetor_m2, volumeBoiler_L, areaCasa 
         custoTotal: custoTotal
     };
 }
-
-/**
- * Atualiza os limites do slider de latitude baseado no idioma
- */
+// Atualiza os limites do slider de latitude baseado no idioma
 function atualizarLimitesLatitude() {
     const sliderLatitude = document.getElementById('sliderLatitude');
     const inputLatitude = document.getElementById('inputLatitude');
@@ -1133,10 +944,7 @@ function atualizarLimitesLatitude() {
         }
     }
 }
-
-/**
- * Atualiza os resultados na interface
- */
+// Atualiza os resultados na interface
 function atualizarResultados() {
     // Obtém valores dos inputs ou sliders
     const inputPessoas = document.getElementById('inputPessoas');
@@ -1237,9 +1045,7 @@ function atualizarResultados() {
         if (secaoResultados) {
             secaoResultados.style.display = 'block';
         }
-    }
-    
-    // Calcula o dimensionamento (modeloColetor não é mais usado, usa modelo de referência baseado no idioma)
+    } // dimensionamento (modeloColetor não é mais usado, usa modelo de referência baseado no idioma)
     let resultado;
     try {
         resultado = calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, null, areaCasa, alturaCasa, classeEnergetica, diasAutonomia, incluirAgua, incluirCasa);
@@ -1437,15 +1243,8 @@ function atualizarResultados() {
         atualizarMemorialComValores();
     }
 }
-
-// ============================================
 // FUNÇÕES DO MEMORIAL DE CÁLCULO
-// ============================================
-
-/**
- * Alterna a exibição do memorial de cálculo
- * Esconde a seção de resultados e mostra o memorial, ou vice-versa
- */
+// Alterna a exibição do memorial de cálculo
 function toggleMemorial() {
     const memorialSection = document.getElementById('memorialSection');
     const resultadosSection = document.getElementById('resultadosSection');
@@ -1466,11 +1265,7 @@ function toggleMemorial() {
         if (resultadosSection) resultadosSection.style.display = 'block';
     }
 }
-
-/**
- * Atualiza o memorial de cálculo com os valores atuais dos cálculos
- * Preenche os exemplos e o resumo com os valores reais calculados
- */
+// Atualiza o memorial de cálculo com os valores atuais dos cálculos
 function atualizarMemorialComValores() {
     // Obter valores atuais
     const inputPessoas = document.getElementById('inputPessoas');
@@ -1536,9 +1331,7 @@ function atualizarMemorialComValores() {
     const modeloRef = obterModeloReferencia();
     const classeEnergetica = document.querySelector('input[name="classeEnergetica"]:checked')?.value || 'D';
     const incluirAgua = document.getElementById('checkboxAgua')?.checked || false;
-    const incluirCasa = document.getElementById('checkboxCasa')?.checked || false;
-    
-    // Calcula os valores (modeloColetor não é mais usado, usa modelo de referência baseado no idioma)
+    const incluirCasa = document.getElementById('checkboxCasa')?.checked || false; // valores (modeloColetor não é mais usado, usa modelo de referência baseado no idioma)
     const resultado = calcularDimensionamento(numeroPessoas, tipoUso, latitude, altitude, null, areaCasa, alturaCasa, classeEnergetica, diasAutonomia, incluirAgua, incluirCasa);
     const textos = traducoes[idiomaAtual] || traducoes['pt-BR'];
     
@@ -1720,10 +1513,7 @@ function atualizarMemorialComValores() {
     const resumoVolumeBoiler = document.getElementById('resumo-volume-boiler');
     if (resumoVolumeBoiler) resumoVolumeBoiler.textContent = formatarNumeroComSufixo(Math.round(resultado.volumeBoiler_L), 0) + ' L';
 }
-
-// ============================================
 // DICIONÁRIO DE TRADUÇÕES
-// ============================================
 const traducoes = {
     'pt-BR': {
         'dev-badge-header': '🚧 EM DESENVOLVIMENTO',
@@ -1775,7 +1565,7 @@ const traducoes = {
         'memorial-passo4-title': '4️⃣ Passo 4: Calcular Eficiência do Coletor',
         'memorial-passo4-explicacao': 'A eficiência do coletor é calculada usando a fórmula η = η₀ - (U × (T_media - T_ambiente) / I), onde η₀ é a eficiência óptica, U é o coeficiente de perda linear, T_media é a temperatura média do fluido, T_ambiente é a temperatura ambiente e I é a irradiação solar. Quanto maior a diferença de temperatura, menor a eficiência.',
         'memorial-passo5-title': '5️⃣ Passo 5: Calcular Área de Coletores',
-        'memorial-passo5-explicacao': 'A área de coletores necessária depende da demanda total de energia, das horas de sol pico (HSP) disponíveis e da eficiência do coletor. Para aquecimento da casa, o sistema precisa captar em 1 dia energia suficiente para os dias de autonomia (ex: se autonomia = 5 dias, precisa captar em 1 dia energia para 5 dias e noites). A energia capturada por m² de painel é calculada considerando 1 hora de sol pico (1000 W/m²) multiplicada pelo número de horas de sol pico do dia.',
+        'memorial-passo5-explicacao': 'A área de coletores necessária depende da demanda total de energia, das horas de sol pico (HSP) disponíveis e da eficiência do coletor. Para aquecimento da casa, o sistema precisa captar em 1 dia energia suficiente para os dias de autonomia. A energia capturada por m² de painel é calculada considerando 1 hora de sol pico (1000 W/m²) multiplicada pelo número de horas de sol pico do dia.',
         'memorial-passo6-title': '6️⃣ Passo 6: Calcular Número de Painéis',
         'memorial-passo6-explicacao': 'O número de painéis é calculado dividindo a área total necessária pela área de cada painel, arredondando para cima.',
         'memorial-passo7-title': '7️⃣ Passo 7: Dimensionar Termossifões por Ambiente',
@@ -1975,10 +1765,7 @@ const traducoes = {
         'tooltip-autonomia-texto': 'I giorni di autonomia rappresentano quanti giorni consecutivi senza sole il sistema deve essere in grado di mantenere la casa riscaldata utilizzando solo l\'energia immagazzinata nel boiler. Valori maggiori aumentano il volume necessario del boiler e l\'area dei collettori, garantendo maggiore sicurezza in periodi di bassa insolazione, ma aumentano anche il costo del sistema.'
     }
 };
-
-// ============================================
 // FUNÇÃO DE TRADUÇÃO
-// ============================================
 function traduzir() {
     const textos = traducoes[idiomaAtual] || traducoes['pt-BR'];
     document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -2024,10 +1811,7 @@ function traduzir() {
         }
     }
 }
-
-// ============================================
 // FUNÇÃO: TROCAR IDIOMA
-// ============================================
 function trocarIdioma(novoIdioma) {
     idiomaAtual = novoIdioma;
     localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
@@ -2050,10 +1834,7 @@ function trocarIdioma(novoIdioma) {
     const homeLabel = traducoes[novoIdioma]?.['aria-home'] || 'Home';
     document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
 }
-
-// ============================================
 // INICIALIZAÇÃO
-// ============================================
 document.addEventListener('DOMContentLoaded', () => {
     // Configurar seletor de idioma
     document.getElementById('btnPortugues')?.addEventListener('click', () => trocarIdioma('pt-BR'));

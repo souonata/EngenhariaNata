@@ -1,73 +1,26 @@
-// ============================================
-// RELÓGIO DA BARRA DE STATUS & SISTEMA DE I18N
-// Atualiza o horário exibido em tempo real e fornece internacionalização
-// ============================================
-//
-// Visão geral - internacionalização (i18n) e relógio
-// -------------------------------------------------
-// Esta página funciona como a 'launcher' do portfólio e fornece duas
-// funcionalidades interligadas:
-// 1) Sistema simples de i18n: elementos que precisam ser traduzidos usam
-//    o atributo `data-i18n` com uma chave. O dicionário `traducoes` mapeia
-//    cada idioma para o texto correspondente. A função trocarIdioma atualiza
-//    todos os elementos com essa chave, salva a preferência em localStorage
-//    e também atualiza atributos de acessibilidade (ex.: aria-labels).
-// 2) Relógio: atualiza horas, minutos, segundos e uma data humanizada usando
-//    as traduções para dias/meses. Usa o horário local do dispositivo.
-//    O relógio é atualizado a cada segundo via setInterval.
-//
-// Observações:
-// - A chave de idioma é padronizada via SiteConfig.LOCAL_STORAGE quando
-//   disponível (garante consistência entre páginas do portfólio).
-// - A função atualizarHorario usa arrays traduzidos de dias/meses para
-//   apresentar uma data localizada (ex: 'segunda 7 dezembro').
-
-// ============================================
-// SISTEMA DE INTERNACIONALIZAÇÃO (i18n)
-// Suporta Português do Brasil (pt-BR) e Italiano (it-IT)
-// ============================================
-
-// ============================================
-// CONFIGURAÇÃO DE CHAVES E SELETORES
-// ============================================
-// Verifica se o arquivo site-config.js foi carregado
-// Se sim, usa as configurações centralizadas
-// Se não, usa valores padrão como fallback (compatibilidade)
-
-// SITE_LS: Chaves usadas no localStorage (armazenamento do navegador)
-// typeof SiteConfig !== 'undefined' = verifica se SiteConfig existe
-// Se existe, usa SiteConfig.LOCAL_STORAGE
-// Se não existe, cria um objeto com valores padrão
+// Chaves do localStorage
 const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) 
-    ? SiteConfig.LOCAL_STORAGE  // Usa configuração centralizada
+    ? SiteConfig.LOCAL_STORAGE
     : { 
-        LANGUAGE_KEY: 'idiomaPreferido',      // Chave para guardar idioma
-        SOLAR_CONFIG_KEY: 'configSolar'       // Chave para guardar config do Solar
+        LANGUAGE_KEY: 'idiomaPreferido',
+        SOLAR_CONFIG_KEY: 'configSolar'
       };
-
-// SITE_SEL: Seletores CSS para encontrar elementos na página
-// Mesma lógica: usa SiteConfig se disponível, senão usa valores padrão
+// Seletores CSS
 const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) 
-    ? SiteConfig.SELECTORS  // Usa seletores centralizados
+    ? SiteConfig.SELECTORS
     : { 
-        HOME_BUTTON: '.home-button-fixed',    // Botão para voltar ao início
-        LANG_BTN: '.lang-btn',                // Botões de idioma
-        APP_ICON: '.app-icon',                // Ícones dos apps
-        ARROW_BTN: '.arrow-btn',              // Botões de seta
-        BUTTON_ACTION: '.btn-acao'            // Botões de ação
+        HOME_BUTTON: '.home-button-fixed',
+        LANG_BTN: '.lang-btn',
+        APP_ICON: '.app-icon',
+        ARROW_BTN: '.arrow-btn',
+        BUTTON_ACTION: '.btn-acao'
       };
-
-// Idioma ativo no momento
-// Tenta carregar do localStorage, senão usa português como padrão
+// Carrega idioma salvo ou usa 'pt-BR' como padrão
 let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) 
     || (typeof SiteConfig !== 'undefined' 
         ? SiteConfig.DEFAULTS.language
         : 'pt-BR');
-
-/**
- * Dicionário de traduções
- * Estrutura: traducoes[idioma][chave] = texto traduzido
- */
+// Dicionário de traduções para português e italiano
 const traducoes = {
     'pt-BR': {
         // Nomes dos aplicativos
@@ -198,32 +151,13 @@ const traducoes = {
         'footer': '💻 Portafoglio Ingegneria NATA @ 2025'
     }
 };
-
-/**
- * Troca o idioma da interface inteira
- * 
- * Esta função é chamada quando o usuário clica em um botão de idioma.
- * Ela atualiza todos os textos visíveis na página para o novo idioma.
- * 
- * @param {string} novoIdioma - Código do idioma ('pt-BR' para português ou 'it-IT' para italiano)
- * 
- * Como funciona:
- * 1. Atualiza a variável que guarda o idioma atual
- * 2. Salva a preferência no navegador (localStorage)
- * 3. Atualiza o atributo lang do HTML (ajuda leitores de tela)
- * 4. Busca todos os elementos com data-i18n e traduz seus textos
- * 5. Destaca o botão do idioma ativo
- * 6. Atualiza o relógio com dias/meses no idioma correto
- */
+// Troca o idioma da interface
 function trocarIdioma(novoIdioma) {
-    // Atualiza a variável global e salva a preferência
     idiomaAtual = novoIdioma;
     localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
-    
-    // Atualiza o atributo lang do HTML (ajuda leitores de tela)
     document.documentElement.lang = novoIdioma;
     
-    // Busca e traduz todos os elementos com data-i18n
+    // Traduz elementos com atributo data-i18n
     const elementosTraduzir = document.querySelectorAll('[data-i18n]');
     elementosTraduzir.forEach(function(elemento) {
         const chave = elemento.getAttribute('data-i18n');
@@ -232,7 +166,7 @@ function trocarIdioma(novoIdioma) {
         }
     });
     
-    // Destaca o botão do idioma ativo
+    // Marca botão do idioma ativo com classe 'active'
     document.querySelectorAll(SITE_SEL.LANG_BTN).forEach(function(botao) {
         if (botao.getAttribute('data-lang') === novoIdioma) {
             botao.classList.add('active');
@@ -241,48 +175,30 @@ function trocarIdioma(novoIdioma) {
         }
     });
     
-    // Atualiza o relógio e rótulos de acessibilidade
+    // Atualiza relógio e aria-labels
     atualizarHorario();
     const homeLabel = traducoes[novoIdioma]?.['aria-home'] || 'Home';
     document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(function(elemento) {
         elemento.setAttribute('aria-label', homeLabel);
     });
 }
-
-// ============================================
-// RELÓGIO LOCAL SIMPLIFICADO
-// ============================================
-
-/**
- * Atualiza o horário e data mostrados na barra de status
- * 
- * Esta função é chamada a cada segundo para manter o relógio atualizado.
- * Ela mostra:
- * - Horário completo (HH:MM:SS) à esquerda
- * - Data formatada (Dia DD Mês) à direita
- * 
- * Tudo é traduzido para o idioma atual (português ou italiano).
- * Usa o horário local do dispositivo.
- */
+// Atualiza horário e data na barra de status
 function atualizarHorario() {
-    // Obtém elementos HTML
     const elementoHorario = document.getElementById('horario');
     const elementoData = document.getElementById('data');
     
-    // Se os elementos não existirem, não faz nada (evita erros)
     if (!elementoHorario || !elementoData) {
         return;
     }
     
-    // Obtém data/hora local
     const agora = new Date();
     
-    // Formata horário (HH:MM:SS)
+    // Formata horário com zero à esquerda
     const horas = String(agora.getHours()).padStart(2, '0');
     const minutos = String(agora.getMinutes()).padStart(2, '0');
     const segundos = String(agora.getSeconds()).padStart(2, '0');
     
-    // Arrays de tradução para dias da semana
+    // Traduz dias da semana
     const diasSemana = [
         traducoes[idiomaAtual]?.['dia-dom'] || 'Dom',
         traducoes[idiomaAtual]?.['dia-seg'] || 'Seg',
@@ -312,55 +228,42 @@ function atualizarHorario() {
     const mesAbreviado = meses[agora.getMonth()];
     const dia = agora.getDate();
     
-    // Atualiza o conteúdo dos elementos HTML
+    // Atualiza elementos na página
     elementoHorario.textContent = `${horas}:${minutos}:${segundos}`;
     elementoData.textContent = `${diaSemana} ${dia} ${mesAbreviado}`;
 }
-
-// ============================================
-// INICIALIZAÇÃO QUANDO A PÁGINA CARREGA
-// ============================================
-// DOMContentLoaded = evento que acontece quando o HTML foi completamente carregado
-// Isso garante que todos os elementos existem antes de tentar usá-los
-
-// Função de inicialização que pode ser chamada quando o DOM estiver pronto
+// Inicializa a página quando DOM estiver pronto
 function inicializar() {
-    // Verifica se os elementos necessários existem
     const elementoHorario = document.getElementById('horario');
     const elementoData = document.getElementById('data');
     const btnPortugues = document.getElementById('btnPortugues');
     const btnItaliano = document.getElementById('btnItaliano');
     
-    // Se os elementos não existirem, tenta novamente após um pequeno delay
+    // Aguarda elementos estarem disponíveis
     if (!elementoHorario || !elementoData || !btnPortugues || !btnItaliano) {
-        console.warn('Elementos não encontrados, tentando novamente...');
         setTimeout(inicializar, 100);
         return;
     }
     
-    // Inicializa a interface com o idioma salvo (ou português se não houver)
     trocarIdioma(idiomaAtual);
-    
-    // Atualiza o relógio imediatamente
     atualizarHorario();
     
-    // Adiciona event listeners nos botões de idioma
+    // Botão de idioma português
     btnPortugues.addEventListener('click', function() {
         trocarIdioma('pt-BR');
     });
     
+    // Botão de idioma italiano
     btnItaliano.addEventListener('click', function() {
         trocarIdioma('it-IT');
     });
     
-    // Configura atualização automática a cada segundo
+    // Atualiza relógio a cada segundo
     setInterval(atualizarHorario, 1000);
     
-    // Adiciona versões nos ícones após o DOM estar pronto
     adicionarVersoesNosIcones();
 }
-
-// Tenta inicializar quando o DOM estiver pronto
+// Inicia quando DOM estiver carregado
 if (document.readyState === 'loading') {
     // DOM ainda não carregou completamente
     document.addEventListener('DOMContentLoaded', inicializar);
@@ -368,29 +271,19 @@ if (document.readyState === 'loading') {
     // DOM já está pronto
     inicializar();
 }
-
-// ============================================
-// SISTEMA DE VERSÕES NOS ÍCONES
-// ============================================
-// Mapeamento de apps para versões (baseado em config/versions.json)
-// Apps em DEV usam formato 0.X.X, apps lançados usam 1.X.X
+// Versões dos aplicativos
 const versoesApps = {
     'sobre': '1.0.0',
     'bitola': '1.2.0',
     'helice': '1.6.0',
     'mutuo': '1.2.0',
     'bugs': '1.0.0',
-    'arcondicionado': '0.2.0',      // DEV
-    'aquecimento': '0.2.0',          // DEV
-    'solar': '0.20.0',               // DEV
-    'fazenda': '0.1.0'               // DEV
-};
-
-/**
- * Adiciona texto de versão no rodapé de cada ícone SVG
- */
+    'arcondicionado': '0.2.0',
+    'aquecimento': '0.2.0',
+    'solar': '0.20.0',
+    'fazenda': '0.1.0'
+}; // Adiciona badges de versão nos ícones dos apps
 function adicionarVersoesNosIcones() {
-    // Mapeamento de href para chave de app
     const hrefParaApp = {
         'sobre/sobre.html': 'sobre',
         'bitola/bitola.html': 'bitola',
@@ -403,34 +296,29 @@ function adicionarVersoesNosIcones() {
         'fazenda/fazenda.html': 'fazenda'
     };
     
-    // Busca todos os ícones de apps (que são links <a>)
     const appIcons = document.querySelectorAll('.app-icon');
     
     appIcons.forEach(function(appIcon) {
-        // O próprio appIcon é o link <a>
         const href = appIcon.getAttribute('href');
-        
         if (!href) return;
         
-        // Identifica qual app é baseado no href
         const appKey = hrefParaApp[href];
         if (!appKey || !versoesApps[appKey]) return;
         
-        // Busca o SVG dentro do ícone (dentro de .icon > svg)
         const iconDiv = appIcon.querySelector('.icon');
         if (!iconDiv) return;
         
         const svg = iconDiv.querySelector('svg');
         if (!svg) return;
         
-        // Verifica se já tem texto de versão (evita duplicação)
+        // Evita duplicação
         if (svg.querySelector('.version-text')) return;
         
-        // Cria elemento de texto SVG para a versão
+        // Cria badge de versão no SVG
         const versionText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         versionText.setAttribute('class', 'version-text');
-        versionText.setAttribute('x', '30'); // Centro horizontal (viewBox 0 0 60 60)
-        versionText.setAttribute('y', '56'); // Próximo ao rodapé (60 - 4px de margem)
+        versionText.setAttribute('x', '30');
+        versionText.setAttribute('y', '56');
         versionText.setAttribute('text-anchor', 'middle');
         versionText.setAttribute('font-size', '8');
         versionText.setAttribute('font-weight', '500');
@@ -438,12 +326,7 @@ function adicionarVersoesNosIcones() {
         versionText.setAttribute('style', 'filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6));');
         versionText.textContent = `V. ${versoesApps[appKey]}`;
         
-        // Adiciona o texto ao SVG
         svg.appendChild(versionText);
     });
-}
-
-// ============================================
-// EFEITO DE TOQUE NOS ÍCONES (Mobile)
-// ============================================
+} // Adiciona efeitos visuais de toque para mobile
 

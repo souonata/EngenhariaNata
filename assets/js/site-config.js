@@ -1,97 +1,76 @@
-// ============================================
-// CONFIGURAÇÃO GLOBAL DO SITE
-// ============================================
-// Este arquivo centraliza todas as configurações e funções utilitárias
-// que são usadas por várias páginas do portfólio. Isso evita repetir o mesmo
-// código em cada arquivo e facilita manutenção.
-//
-// Por que centralizar?
-// - Se precisar mudar o nome de uma chave do localStorage, muda só aqui
-// - Se precisar ajustar valores padrão, muda só aqui
-// - Todos os arquivos usam as mesmas configurações, evitando erros
-// - Funções de formatação e conversão padronizadas em todo o site
-// ============================================
+// Configuração global do site
+// Centraliza constantes, seletores e funções utilitárias
 
-// Função que cria um objeto isolado (IIFE - Immediately Invoked Function Expression)
-// Isso evita que as variáveis dentro poluam o escopo global
 (function(global){
     'use strict';
 
-    // ============================================
-    // CONFIGURAÇÕES PRINCIPAIS
-    // ============================================
-    
     const SiteConfig = {
-        // LOCAL_STORAGE: Chaves usadas no localStorage (armazenamento do navegador)
-        // Essas são as "gavetas" onde guardamos informações do usuário
+        // Chaves do localStorage
         LOCAL_STORAGE: {
-            LANGUAGE_KEY: 'idiomaPreferido',      // Guarda o idioma escolhido (pt-BR ou it-IT)
-            SOLAR_CONFIG_KEY: 'configSolar'       // Guarda as configurações do app Solar
+            LANGUAGE_KEY: 'idiomaPreferido',
+            SOLAR_CONFIG_KEY: 'configSolar'
         },
 
-        // DEFAULTS: Valores padrão usados quando não há nada salvo
+        // Valores padrão
         DEFAULTS: {
-            language: 'pt-BR',                    // Idioma padrão: Português do Brasil
-            TAXA_BRL_EUR: 6.19,                   // Taxa de conversão: 1 Euro = 6.19 Reais (aproximado)
+            language: 'pt-BR',
+            TAXA_BRL_EUR: 6.19,
             BATTERY: {
-                LFP_MAX_KG: 180,                  // Peso máximo de bateria de lítio (LiFePO4): 180 kg
-                AGM_MAX_KG: 180,                  // Peso máximo de bateria AGM: 180 kg
-                DEFAULT_LFP_KWH: 4.8,             // Capacidade padrão lítio: 4.8 kWh
-                DEFAULT_AGM_KWH: 1.2              // Capacidade padrão AGM: 1.2 kWh
+                LFP_MAX_KG: 180,
+                AGM_MAX_KG: 180,
+                DEFAULT_LFP_KWH: 4.8,
+                DEFAULT_AGM_KWH: 1.2
             },
-            INVERTER_MIN_KW: 1                    // Potência mínima do inversor: 1 kW
+            INVERTER_MIN_KW: 1
         },
 
-        // SELECTORS: Seletores CSS usados para encontrar elementos na página
-        // Em vez de escrever '.home-button-fixed' em vários lugares,
-        // escrevemos SELECTORS.HOME_BUTTON e se precisar mudar, muda só aqui
+        // Seletores CSS
         SELECTORS: {
-            HOME_BUTTON: '.home-button-fixed',    // Botão fixo para voltar ao início
-            LANG_BTN: '.lang-btn',                // Botões de seleção de idioma
-            APP_ICON: '.app-icon',                // Ícones dos aplicativos na tela inicial
-            ARROW_BTN: '.arrow-btn',              // Botões de seta (+ e -) nos sliders
-            BUTTON_ACTION: '.btn-acao',           // Botões de ação genéricos
-            LANGUAGE_SELECTOR: '.language-selector' // Container do seletor de idioma
+            HOME_BUTTON: '.home-button-fixed',
+            LANG_BTN: '.lang-btn',
+            APP_ICON: '.app-icon',
+            ARROW_BTN: '.arrow-btn',
+            BUTTON_ACTION: '.btn-acao',
+            LANGUAGE_SELECTOR: '.language-selector'
         },
 
-        // ASSETS: Caminhos e URLs de recursos externos
+        // Caminhos de recursos
         ASSETS: {
-            CSS_BASE: 'assets/css/',              // Pasta onde ficam os arquivos CSS
-            JS_BASE: 'assets/js/',                // Pasta onde ficam os arquivos JavaScript
-            CHARTJS_CDN: 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js'  // URL da biblioteca de gráficos Chart.js (versão específica sem source maps)
+            CSS_BASE: 'assets/css/',
+            JS_BASE: 'assets/js/',
+            CHARTJS_CDN: 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js'
         },
 
-        // UI: Configurações da interface do usuário
+        // Configurações de interface
         UI: {
-            INPUT_PADDING_CHARS: 2,               // Caracteres de folga para inputs dinâmicos
-            INPUT_MIN_WIDTH: 50,                  // Largura mínima de inputs em pixels
-            SCROLL_BEHAVIOR: 'smooth',            // Comportamento de scroll (smooth ou auto)
-            ANIMATION_DURATION: 300,              // Duração padrão de animações em ms
-            DEBOUNCE_DELAY: 300,                  // Delay para debounce de inputs (ms)
-            THROTTLE_DELAY: 100                   // Delay para throttle de sliders (ms)
+            INPUT_PADDING_CHARS: 2,
+            INPUT_MIN_WIDTH: 50,
+            SCROLL_BEHAVIOR: 'smooth',
+            ANIMATION_DURATION: 300,
+            DEBOUNCE_DELAY: 300,
+            THROTTLE_DELAY: 100
         },
 
-        // FORMATTING: Configurações de formatação de números
+        // Configurações de formatação
         FORMATTING: {
-            LOCALE_PT: 'pt-BR',                   // Locale para formatação brasileira
-            LOCALE_IT: 'it-IT',                   // Locale para formatação italiana
-            DECIMAL_SEPARATOR_PT: ',',            // Separador decimal em português
-            THOUSANDS_SEPARATOR_PT: '.',          // Separador de milhares em português
-            DECIMAL_SEPARATOR_IT: ',',            // Separador decimal em italiano
-            THOUSANDS_SEPARATOR_IT: '.'           // Separador de milhares em italiano
+            LOCALE_PT: 'pt-BR',
+            LOCALE_IT: 'it-IT',
+            DECIMAL_SEPARATOR_PT: ',',
+            THOUSANDS_SEPARATOR_PT: '.',
+            DECIMAL_SEPARATOR_IT: ',',
+            THOUSANDS_SEPARATOR_IT: '.'
         },
 
-        // CURRENCY: Configurações de moeda
+        // Moedas
         CURRENCY: {
-            BRL: 'BRL',                           // Real brasileiro
-            EUR: 'EUR',                           // Euro
-            BRL_SYMBOL: 'R$',                     // Símbolo do Real
-            EUR_SYMBOL: '€'                       // Símbolo do Euro
+            BRL: 'BRL',
+            EUR: 'EUR',
+            BRL_SYMBOL: 'R$',
+            EUR_SYMBOL: '€'
         }
     };
 
-    // Tenta tornar o objeto somente leitura (não pode ser modificado depois)
-    // Se der erro (navegadores antigos), usa o objeto normal
+    // Torna objeto imutável
     try { 
         global.SiteConfig = Object.freeze(SiteConfig); 
     } catch(erro){ 
@@ -101,18 +80,8 @@
     // Agora o objeto está disponível globalmente como window.SiteConfig
     // Outros arquivos podem usar: SiteConfig.DEFAULTS.language, etc.
 })(window);
-
-// ============================================
 // FUNÇÕES GLOBAIS DE FORMATAÇÃO DE NÚMEROS
-// ============================================
-
-/**
- * Formata número com casas decimais usando formatação brasileira
- * Sempre usa vírgula como separador decimal e ponto como separador de milhares
- * @param {number} valor - Valor numérico
- * @param {number} casasDecimais - Número de casas decimais (padrão: 0)
- * @returns {string} Valor formatado (ex: "12" ou "1.234,56")
- */
+// Formata número com casas decimais usando formatação brasileira
 function formatarNumero(valor, casasDecimais = 0) {
     if (isNaN(valor) || valor === null || valor === undefined) return '-';
     return valor.toLocaleString(SiteConfig.FORMATTING.LOCALE_PT, {
@@ -121,14 +90,7 @@ function formatarNumero(valor, casasDecimais = 0) {
         useGrouping: true
     });
 }
-
-/**
- * Formata número com casas decimais usando formatação brasileira
- * Sempre usa vírgula como separador decimal e ponto como separador de milhares
- * @param {number} valor - Valor numérico
- * @param {number} casasDecimais - Número de casas decimais (padrão: 1)
- * @returns {string} Valor formatado (ex: "12,5" ou "1.234,56")
- */
+// Formata número com casas decimais (formato brasileiro)
 function formatarNumeroDecimal(valor, casasDecimais = 1) {
     if (isNaN(valor) || valor === null || valor === undefined) return '-';
     return valor.toLocaleString(SiteConfig.FORMATTING.LOCALE_PT, {
@@ -137,29 +99,16 @@ function formatarNumeroDecimal(valor, casasDecimais = 1) {
         useGrouping: true
     });
 }
-
-/**
- * Formata número com casas decimais usando formatação brasileira (alias para formatarNumeroDecimal)
- * Mantida para compatibilidade com código existente
- * @param {number} valor - Valor numérico
- * @param {number} casasDecimais - Número de casas decimais (padrão: 0)
- * @returns {string} Valor formatado (ex: "12" ou "1.234,56")
- */
+// Alias para formatarNumero (compatibilidade)
 function formatarNumeroBR(valor, casasDecimais = 0) {
     return formatarNumero(valor, casasDecimais);
 }
-
-/**
- * Converte valor formatado (com vírgula decimal) de volta para número
- * Aceita tanto formato brasileiro (1.234,56) quanto formato internacional (1234.56)
- * @param {string} valorFormatado - Valor formatado como string
- * @returns {number} Valor numérico
- */
+// Converte string formatada para número (aceita BR e internacional)
 function converterValorFormatadoParaNumero(valorFormatado) {
     if (!valorFormatado) return 0;
     let valorTexto = String(valorFormatado).trim();
     
-    // Se tem vírgula e ponto, assume formato brasileiro (1.234,56)
+    // Formato brasileiro com ambos separadores
     if (valorTexto.indexOf('.') !== -1 && valorTexto.indexOf(',') !== -1) {
         valorTexto = valorTexto.replace(/\./g, ''); // Remove pontos (milhares)
         valorTexto = valorTexto.replace(',', '.');   // Troca vírgula por ponto
@@ -172,86 +121,64 @@ function converterValorFormatadoParaNumero(valorFormatado) {
     // Se tem apenas um ponto, verifica se é decimal ou milhares
     else if (valorTexto.indexOf('.') !== -1) {
         const partes = valorTexto.split('.');
-        // Se há mais de 2 partes, é formato com milhares (ex: 1.234.567)
         if (partes.length > 2) {
-            valorTexto = valorTexto.replace(/\./g, ''); // Remove todos os pontos (milhares)
+            valorTexto = valorTexto.replace(/\./g, '');
         }
-        // Se há 2 partes
         else if (partes.length === 2) {
-            // Se a segunda parte tem exatamente 3 dígitos, provavelmente é milhares (ex: 5.800, 1.234)
             if (partes[1].length === 3) {
-                valorTexto = valorTexto.replace(/\./g, ''); // Remove o ponto (milhares)
+                valorTexto = valorTexto.replace(/\./g, '');
             }
-            // Se a segunda parte tem 1-2 dígitos, provavelmente é decimal (ex: 2.32, 12.5)
             else if (partes[1].length <= 2) {
-                // Mantém o ponto como separador decimal (já está no formato correto)
-                // Não precisa fazer nada, parseFloat já entende
+                // Mantém como decimal
             }
-            // Caso contrário (mais de 3 dígitos na segunda parte), remove o ponto
             else {
                 valorTexto = valorTexto.replace(/\./g, '');
             }
         }
     }
-    // Se não tem nem vírgula nem ponto, já está no formato correto
     
     return parseFloat(valorTexto) || 0;
 }
-
-/**
- * Converte valor formatado para número (versão simplificada)
- * Remove pontos (separadores de milhares) e substitui vírgula por ponto
- * Detecta quando ponto é separador decimal (ex: 1.5 → 1.5) vs separador de milhares (ex: 1.500 → 1500)
- * @param {string} valorFormatado - Valor formatado como string
- * @returns {number} Valor numérico
- */
+// Converte string formatada para número (detecta decimal vs milhares)
 function obterValorNumericoFormatado(valorFormatado) {
     if (!valorFormatado) return 0;
     
     let valor = valorFormatado.toString().trim();
     
-    // Se tem vírgula, trata como separador decimal brasileiro
+    // Vírgula = separador decimal BR
     if (valor.indexOf(',') !== -1) {
-        // Remove pontos (separadores de milhares) e substitui vírgula por ponto
-        valor = valor.replace(/\./g, ''); // Remove pontos de milhares
-        valor = valor.replace(',', '.');   // Substitui vírgula por ponto
+        valor = valor.replace(/\./g, '');
+        valor = valor.replace(',', '.');
         return parseFloat(valor) || 0;
     }
     
-    // Se tem apenas ponto(s), precisa determinar se é decimal ou milhares
+    // Ponto - determina se é decimal ou milhares
     if (valor.indexOf('.') !== -1) {
         const partes = valor.split('.');
         
-        // Se há mais de 2 partes, é formato com milhares (ex: 1.234.567)
-        if (partes.length > 2) {
-            // Remove todos os pontos (milhares)
+        // Se há mais de 2 partes, é formato com milhares
+        if (partes.length > 2) { // Remove todos os pontos (milhares)
             valor = valor.replace(/\./g, '');
             return parseFloat(valor) || 0;
         }
         
         // Se há exatamente 2 partes
-        if (partes.length === 2) {
-            // Se a segunda parte tem 1-2 dígitos, é separador decimal (ex: 1.5, 12.34, 1.50)
+        if (partes.length === 2) { // Se segunda parte tem 1-2 dígitos, é separador decimal
             if (partes[1].length <= 2 && partes[1].match(/^\d+$/)) {
                 // Mantém o ponto como separador decimal (já está no formato correto para parseFloat)
                 return parseFloat(valor) || 0;
-            }
-            // Se a segunda parte tem 3 dígitos, precisa analisar melhor
-            if (partes[1].length === 3) {
-                // Se a primeira parte tem 1-3 dígitos e o valor total é pequeno (< 100), 
-                // provavelmente é decimal (ex: 1.500 = 1.5, 12.500 = 12.5)
+            } // Se segunda parte tem 3 dígitos, precisa analisar melhor
+            if (partes[1].length === 3) { // Se primeira parte tem 1-3 dígitos e o valor total é pequeno (< 100), 
+                // provavelmente é decimal
                 const valorTeste = parseFloat(valor);
                 if (partes[0].length <= 3 && valorTeste < 100) {
                     // Trata como decimal
                     return valorTeste || 0;
-                }
-                // Se a primeira parte tem mais de 3 dígitos ou valor >= 100, 
-                // provavelmente é milhares (ex: 1500.000 = 1500000)
-                // Remove o ponto (milhares)
+                } // Se primeira parte tem mais de 3 dígitos ou valor >= 100, 
+                // provavelmente é milhares // Remove o ponto (milhares)
                 valor = valor.replace(/\./g, '');
                 return parseFloat(valor) || 0;
-            }
-            // Se a segunda parte tem mais de 3 dígitos, remove o ponto (milhares)
+            } // Se segunda parte tem mais de 3 dígitos, remove o ponto (milhares)
             valor = valor.replace(/\./g, '');
             return parseFloat(valor) || 0;
         }
@@ -260,17 +187,9 @@ function obterValorNumericoFormatado(valorFormatado) {
     // Se não tem nem vírgula nem ponto, já está no formato correto
     return parseFloat(valor) || 0;
 }
-
-/**
- * Formata potência para exibição com abreviação "k" para valores >= 1000
- * Exemplos: 999 → "999", 1000 → "1k", 2500 → "2,5k", 10000 → "10k"
- * @param {number} valor - Valor da potência em watts
- * @returns {string} Valor formatado com "k" quando apropriado
- */
+// Formata potência com sufixo "k" para valores >= 1000
 function formatarPotencia(valor) {
-    if (isNaN(valor) || valor === null || valor === undefined) return '-';
-    
-    // Se o valor for menor que 1000, formata normalmente
+    if (isNaN(valor) || valor === null || valor === undefined) return '-'; // Se valor for menor que 1000, formata normalmente
     if (valor < 1000) {
         return formatarNumero(valor, 0);
     }
@@ -278,21 +197,15 @@ function formatarPotencia(valor) {
     // Se for >= 1000, divide por 1000 e adiciona "k"
     const valorK = valor / 1000;
     
-    // Se for um número inteiro (ex: 1k, 2k, 10k), não mostra decimais
+    // Se for um número inteiro, não mostra decimais
     if (valorK % 1 === 0) {
         return valorK + 'k';
     }
     
-    // Caso contrário, mostra uma casa decimal (ex: 1,5k, 2,5k)
+    // Caso contrário, mostra uma casa decimal
     return formatarNumeroDecimal(valorK, 1) + 'k';
 }
-
-/**
- * Formata potência para exibição convertendo para kW quando >= 1000W
- * Exemplos: 999 → "999 W", 1000 → "1,0 kW", 2500 → "2,5 kW"
- * @param {number} valor_W - Valor da potência em watts
- * @returns {string} Valor formatado com "W" ou "kW"
- */
+// Formata potência em W ou kW conforme o valor
 function formatarPotenciaWkW(valor_W) {
     if (isNaN(valor_W) || valor_W === null || valor_W === undefined) return '-';
     if (valor_W >= 1000) {
@@ -300,19 +213,7 @@ function formatarPotenciaWkW(valor_W) {
     }
     return formatarNumero(Math.round(valor_W)) + ' W';
 }
-
-/**
- * Formata números com sufixos k (kilo), M (mega) ou m (mili) quando apropriado
- * Usa abreviações para números grandes e pequenos:
- * - >= 1.000.000 → "M" (mega): 1.500.000 → "1,5M"
- * - >= 1.000 → "k" (kilo): 1.500 → "1,5k", 7.500 → "7,5k"
- * - < 1 e >= 0.001 → "m" (mili): 0.005 → "5m", 0.5 → "500m"
- * - < 0.001 → mantém formato decimal: 0.0005 → "0,0005"
- * - Entre 1 e 999 → sem sufixo: 500 → "500"
- * @param {number} valor - Número a ser formatado
- * @param {number} casasDecimais - Número de casas decimais (padrão: 1 para k/M, 0 para m)
- * @returns {string} Número formatado com sufixo quando apropriado
- */
+// Formata números com sufixos k, M ou m
 function formatarNumeroComSufixo(valor, casasDecimais = 1) {
     if (isNaN(valor) || valor === null || valor === undefined) return '-';
     
@@ -357,25 +258,13 @@ function formatarNumeroComSufixo(valor, casasDecimais = 1) {
     // Valores < 0.001 - mantém formato decimal
     return sinal + formatarNumeroDecimal(absValor, Math.max(casasDecimais, 3));
 }
-
-/**
- * Converte valor formatado com sufixos (k/M/m) de volta para número
- * Aceita tanto ponto quanto vírgula como separador decimal
- * Aceita números puros (sem sufixo) que serão interpretados como valores diretos
- * Exemplos: "1,5k" → 1500, "7.5k" → 7500, "2M" → 2000000, "500m" → 0.5, "10000" → 10000
- * @param {string} valorFormatado - Valor formatado com possível sufixo
- * @returns {number} Valor numérico convertido
- */
+// Converte valor formatado com sufixos (k/M/m) de volta para número
 function obterValorNumericoComSufixo(valorFormatado) {
     if (!valorFormatado || typeof valorFormatado !== 'string') return 0;
     
     const valor = valorFormatado.toString().trim();
-    if (valor === '' || valor === '-') return 0;
-    
-    // Remove espaços e converte para minúsculo para verificar sufixos
-    const valorLower = valor.toLowerCase();
-    
-    // Verifica se termina com sufixo
+    if (valor === '' || valor === '-') return 0; // Remove espaços e converte para minúsculo para verificar sufixos
+    const valorLower = valor.toLowerCase(); // Verifica termina com sufixo
     let multiplicador = 1;
     let valorSemSufixo = valor;
     let temSufixo = false;
@@ -399,9 +288,7 @@ function obterValorNumericoComSufixo(valorFormatado) {
         const valorTeste = valor.slice(0, -1).trim();
         // Normaliza separador decimal para verificar o valor
         const valorTesteNormalizado = valorTeste.replace(',', '.');
-        const valorNum = parseFloat(valorTesteNormalizado);
-        
-        // Se o valor antes do sufixo for >= 1, provavelmente é mega (M maiúsculo)
+        const valorNum = parseFloat(valorTesteNormalizado); // Se valor antes do sufixo for >= 1, provavelmente é mega (M maiúsculo)
         // Mas se termina com 'm' minúsculo e valor >= 1, pode ser erro, mas tratamos como mili
         // Se valor < 1, é definitivamente mili
         if (!isNaN(valorNum) && valorNum < 1) {
@@ -425,9 +312,7 @@ function obterValorNumericoComSufixo(valorFormatado) {
     }
     
     // Normaliza separador decimal: converte vírgula para ponto
-    const valorNormalizado = valorSemSufixo.replace(',', '.');
-    
-    // Remove qualquer caractere que não seja número, ponto ou sinal negativo
+    const valorNormalizado = valorSemSufixo.replace(',', '.'); // Remove qualquer caractere que não seja número, ponto ou sinal negativo
     const valorLimpo = valorNormalizado.replace(/[^\d.-]/g, '');
     
     // Converte para número
@@ -438,39 +323,19 @@ function obterValorNumericoComSufixo(valorFormatado) {
     
     return valorNumerico * multiplicador;
 }
-
-/**
- * Formata números de forma compacta para gráficos
- * Usa abreviações para números grandes:
- * - 1.500.000 → "1,5M" (milhões)
- * - 150.000 → "150k" (milhares)
- * - 500 → "500" (sem abreviação)
- * @param {number} valor - Número a ser formatado
- * @returns {string} Número formatado de forma compacta
- */
-function formatarNumeroCompacto(valor) {
-    // Se o valor é maior ou igual a 1 milhão
+// Formata números de forma compacta para gráficos
+function formatarNumeroCompacto(valor) { // Se valor é maior ou igual a 1 milhão
     if (valor >= 1000000) {
         const valorEmMilhoes = (valor / 1000000).toFixed(1);
         return valorEmMilhoes.replace('.', ',') + 'M';
-    } 
-    // Se o valor é maior ou igual a 1 mil (mas menor que 1 milhão)
+    } // Se valor é maior ou igual a 1 mil (mas menor que 1 milhão)
     else if (valor >= 1000) {
         const valorEmMilhares = (valor / 1000).toFixed(0);
         return valorEmMilhares + 'k';
-    }
-    // Se o valor é menor que 1 mil, retorna como está (sem abreviação)
+    } // Se valor é menor que 1 mil, retorna como está (sem abreviação)
     return valor.toString();
 }
-
-/**
- * Formata valores monetários com 2 casas decimais
- * Formata números como moeda (R$ ou €) com centavos.
- * Exemplo: 1234.56 → "R$ 1.234,56" (pt-BR) ou "€ 1.234,56" (it-IT)
- * @param {number} valor - Valor a ser formatado
- * @param {string} idioma - Idioma atual ('pt-BR' ou 'it-IT')
- * @returns {string} Valor formatado como moeda
- */
+// Formata valores monetários com 2 casas decimais
 function formatarMoeda(valor, idioma) {
     if (!idioma) {
         // Tenta obter do localStorage ou usa padrão
@@ -487,15 +352,7 @@ function formatarMoeda(valor, idioma) {
         maximumFractionDigits: 2
     }).format(valor);
 }
-
-/**
- * Formata valores monetários sem casas decimais
- * Formata números como moeda (R$ ou €) sem centavos.
- * Exemplo: 1234.56 → "R$ 1.235" (arredondado, pt-BR)
- * @param {number} valor - Valor a ser formatado
- * @param {string} idioma - Idioma atual ('pt-BR' ou 'it-IT')
- * @returns {string} Valor formatado como moeda sem decimais
- */
+// Formata valores monetários sem casas decimais
 function formatarMoedaSemDecimal(valor, idioma) {
     if (!idioma) {
         const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido' };
@@ -511,16 +368,8 @@ function formatarMoedaSemDecimal(valor, idioma) {
         maximumFractionDigits: 0
     }).format(valor);
 }
-
-// ============================================
 // FUNÇÃO GLOBAL: AJUSTAR TAMANHO DINÂMICO DE INPUTS
-// ============================================
-/**
- * Ajusta dinamicamente a largura de um input baseado no seu conteúdo
- * Adiciona caracteres de folga ao tamanho atual do texto
- * @param {HTMLElement|string} input - Elemento input ou ID do input
- * @param {number} folgaCaracteres - Número de caracteres de folga (padrão: 2)
- */
+// Ajusta dinamicamente a largura de um input baseado no seu conteúdo
 function ajustarTamanhoInput(input, folgaCaracteres) {
     // Usa valor padrão do SiteConfig se não especificado
     if (folgaCaracteres === undefined) {
@@ -530,9 +379,7 @@ function ajustarTamanhoInput(input, folgaCaracteres) {
     // Se recebeu string (ID), busca o elemento
     if (typeof input === 'string') {
         input = document.getElementById(input);
-    }
-    
-    // Verifica se o elemento existe e é um input
+    } // elemento existe e é um input
     if (!input || input.tagName !== 'INPUT') {
         return;
     }
@@ -543,8 +390,7 @@ function ajustarTamanhoInput(input, folgaCaracteres) {
     medida.style.visibility = 'hidden';
     medida.style.position = 'absolute';
     medida.style.whiteSpace = 'pre';
-    // Copia propriedades individuais de fonte ao invés da propriedade 'font' completa
-    // Isso evita problemas com CSP e fontes externas
+    // Copia propriedades individuais de fonte ao invés da propriedade 'font' completa // problemas com CSP e fontes externas
     medida.style.fontFamily = inputStyle.fontFamily;
     medida.style.fontSize = inputStyle.fontSize;
     medida.style.fontWeight = inputStyle.fontWeight;
@@ -553,75 +399,37 @@ function ajustarTamanhoInput(input, folgaCaracteres) {
     medida.style.letterSpacing = inputStyle.letterSpacing;
     medida.style.padding = inputStyle.padding;
     medida.style.border = inputStyle.border;
-    medida.style.boxSizing = inputStyle.boxSizing;
-    
-    // Adiciona o texto atual + caracteres de folga
+    medida.style.boxSizing = inputStyle.boxSizing; // Adiciona o texto atual + caracteres de folga
     const textoAtual = input.value || input.placeholder || '';
     const caracteresFolga = 'M'.repeat(folgaCaracteres); // 'M' é geralmente o caractere mais largo
-    medida.textContent = textoAtual + caracteresFolga;
-    
-    // Adiciona temporariamente ao DOM para medir
-    document.body.appendChild(medida);
-    
-    // Calcula a largura necessária
-    const larguraNecessaria = medida.offsetWidth;
-    
-    // Remove o elemento temporário
+    medida.textContent = textoAtual + caracteresFolga; // Adiciona temporariamente ao DOM para medir
+    document.body.appendChild(medida); // largura necessária
+    const larguraNecessaria = medida.offsetWidth; // Remove o elemento temporário
     document.body.removeChild(medida);
     
     // Aplica a largura ao input (com mínimo configurado)
     const larguraMinima = SiteConfig.UI.INPUT_MIN_WIDTH;
     input.style.width = Math.max(larguraNecessaria, larguraMinima) + 'px';
 }
-
-// ============================================
-// FUNÇÕES UTILITÁRIAS DE IDIOMA
-// ============================================
-
-/**
- * Obtém o idioma atual do localStorage ou usa o padrão
- * @returns {string} Idioma atual ('pt-BR' ou 'it-IT')
- */
+// FUNÇÕES UTILITÁRIAS DE IDIOMA // idioma atual do localStorage ou usa o padrão
 function obterIdiomaAtual() {
     const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido' };
     return localStorage.getItem(SITE_LS.LANGUAGE_KEY) || SiteConfig.DEFAULTS.language;
-}
-
-/**
- * Obtém a moeda correspondente ao idioma atual
- * @param {string} idioma - Idioma ('pt-BR' ou 'it-IT')
- * @returns {string} Código da moeda ('BRL' ou 'EUR')
- */
+} // moeda correspondente ao idioma atual
 function obterMoedaPorIdioma(idioma) {
     if (!idioma) {
         idioma = obterIdiomaAtual();
     }
     return idioma === 'pt-BR' ? SiteConfig.CURRENCY.BRL : SiteConfig.CURRENCY.EUR;
-}
-
-/**
- * Obtém o símbolo da moeda correspondente ao idioma atual
- * @param {string} idioma - Idioma ('pt-BR' ou 'it-IT')
- * @returns {string} Símbolo da moeda ('R$' ou '€')
- */
+} // símbolo da moeda correspondente ao idioma atual
 function obterSimboloMoeda(idioma) {
     if (!idioma) {
         idioma = obterIdiomaAtual();
     }
     return idioma === 'pt-BR' ? SiteConfig.CURRENCY.BRL_SYMBOL : SiteConfig.CURRENCY.EUR_SYMBOL;
 }
-
-// ============================================
 // FUNÇÕES DE PERFORMANCE: DEBOUNCE E THROTTLE
-// ============================================
-
-/**
- * Debounce: Executa a função apenas após um período de inatividade
- * Útil para inputs de texto que disparam cálculos pesados
- * @param {Function} func - Função a ser executada
- * @param {number} wait - Tempo de espera em milissegundos (padrão: 300ms)
- * @returns {Function} Função com debounce aplicado
- */
+// Debounce: Executa a função apenas após um período de inatividade
 function debounce(func, wait) {
     if (wait === undefined) {
         wait = SiteConfig.UI.DEBOUNCE_DELAY;
@@ -636,15 +444,7 @@ function debounce(func, wait) {
         timeout = setTimeout(later, wait);
     };
 }
-
-/**
- * Throttle: Executa a função no máximo uma vez por período
- * Útil para sliders que disparam cálculos a cada movimento
- * Versão melhorada que garante que o último evento seja sempre processado (trailing edge)
- * @param {Function} func - Função a ser executada
- * @param {number} limit - Intervalo mínimo entre execuções em ms (padrão: 100ms)
- * @returns {Function} Função com throttle aplicado
- */
+// Throttle: Executa a função no máximo uma vez por período
 function throttle(func, limit) {
     if (limit === undefined) {
         limit = SiteConfig.UI.THROTTLE_DELAY;
@@ -681,14 +481,7 @@ function throttle(func, limit) {
         }
     };
 }
-
-/**
- * Configura um slider com eventos input (throttled) e change (sem throttle)
- * Garante que o valor final seja sempre atualizado, mesmo quando o usuário move rapidamente
- * @param {HTMLElement} slider - Elemento slider
- * @param {Function} callback - Função a ser chamada quando o valor muda
- * @param {number} throttleDelay - Delay do throttle em ms (padrão: 100ms)
- */
+// Configura um slider com eventos input (throttled) e change (sem throttle)
 function configurarSliderComThrottle(slider, callback, throttleDelay = 100) {
     if (!slider || typeof callback !== 'function') return;
     
@@ -699,34 +492,20 @@ function configurarSliderComThrottle(slider, callback, throttleDelay = 100) {
     // Garante que o valor final seja sempre atualizado
     slider.addEventListener('change', callback);
 }
-
-// ============================================
 // CACHE DE SELETORES DOM
-// ============================================
-
-/**
- * Cache simples de seletores DOM para evitar múltiplas consultas
- * Armazena elementos já buscados para reutilização
- */
+// Cache simples de seletores DOM para evitar múltiplas consultas
 const DOMCache = {
     _cache: new Map(),
     
-    /**
-     * Obtém elemento do cache ou busca e armazena
-     * @param {string} selector - Seletor CSS ou ID
-     * @param {boolean} useQuerySelector - Se true, usa querySelector; senão, getElementById
-     * @returns {HTMLElement|null} Elemento encontrado ou null
-     */
+    // Obtém elemento do cache ou busca e armazena
     get(selector, useQuerySelector = false) {
         const key = useQuerySelector ? `qs:${selector}` : `id:${selector}`;
         
         if (this._cache.has(key)) {
-            const cached = this._cache.get(key);
-            // Verifica se o elemento ainda existe no DOM
+            const cached = this._cache.get(key); // elemento ainda existe no DOM
             if (cached && document.contains(cached)) {
                 return cached;
-            } else {
-                // Remove do cache se não existe mais
+            } else { // Remove do cache se não existe mais
                 this._cache.delete(key);
             }
         }
@@ -742,35 +521,19 @@ const DOMCache = {
         return element;
     },
     
-    /**
-     * Limpa o cache (útil quando elementos são removidos do DOM)
-     */
+    // Limpa o cache (útil quando elementos são removidos do DOM)
     clear() {
         this._cache.clear();
     },
     
-    /**
-     * Remove um elemento específico do cache
-     * @param {string} selector - Seletor usado para armazenar
-     * @param {boolean} useQuerySelector - Se true, usa querySelector; senão, getElementById
-     */
+    // Remove um elemento específico do cache
     remove(selector, useQuerySelector = false) {
         const key = useQuerySelector ? `qs:${selector}` : `id:${selector}`;
         this._cache.delete(key);
     }
 };
-
-// ============================================
 // FUNÇÃO GLOBAL DE INTERNACIONALIZAÇÃO (i18n)
-// ============================================
-
-/**
- * Função global para trocar idioma e atualizar elementos com data-i18n
- * Centraliza a lógica de i18n que estava duplicada em cada app
- * @param {string} novoIdioma - Novo idioma ('pt-BR' ou 'it-IT')
- * @param {Object} traducoes - Objeto com traduções { 'pt-BR': {...}, 'it-IT': {...} }
- * @param {Function} callback - Função opcional chamada após trocar idioma
- */
+// Função global para trocar idioma e atualizar elementos com data
 function trocarIdiomaGlobal(novoIdioma, traducoes, callback) {
     if (!novoIdioma || !traducoes || !traducoes[novoIdioma]) {
         console.warn('⚠️ Idioma ou traduções inválidos:', novoIdioma);
@@ -820,17 +583,8 @@ function trocarIdiomaGlobal(novoIdioma, traducoes, callback) {
         callback(novoIdioma);
     }
 }
-
-// ============================================
 // INICIALIZAÇÃO PADRÃO DE EVENT LISTENERS
-// ============================================
-
-/**
- * Inicializa event listeners padrão (botões de idioma e home)
- * Centraliza código repetido em cada app
- * @param {Object} traducoes - Objeto com traduções
- * @param {Function} trocarIdiomaCallback - Função para trocar idioma (pode usar trocarIdiomaGlobal)
- */
+// Inicializa event listeners padrão (botões de idioma e home)
 function inicializarEventListenersPadrao(traducoes, trocarIdiomaCallback) {
     // Botão Português
     const btnPT = DOMCache.get('btnPortugues');
@@ -856,18 +610,8 @@ function inicializarEventListenersPadrao(traducoes, trocarIdiomaCallback) {
         });
     }
 }
-
-// ============================================
 // LAZY LOADING DE BIBLIOTECAS EXTERNAS
-// ============================================
-
-/**
- * Carrega Chart.js dinamicamente apenas quando necessário
- * Melhora o tempo de carregamento inicial da página
- * @param {Function} callback - Função chamada após Chart.js ser carregado
- * @param {Array<string>} plugins - Array opcional de plugins do Chart.js para carregar
- * @returns {Promise} Promise que resolve quando Chart.js está carregado
- */
+// Carrega Chart.js dinamicamente apenas quando necessário
 function carregarChartJS(callback, plugins = []) {
     return new Promise((resolve, reject) => {
         // Se Chart.js já está carregado, executa callback imediatamente
@@ -877,8 +621,7 @@ function carregarChartJS(callback, plugins = []) {
             return;
         }
         
-        // Prevenir carregamento automático de source maps
-        // Isso evita erros de CSP quando o Chart.js tenta carregar .map files
+        // Prevenir carregamento automático de source maps // erros de CSP quando o Chart.js tenta carregar .map files
         const originalSourceMapSupport = window.SourceMapSupport;
         if (typeof window.SourceMapSupport !== 'undefined') {
             window.SourceMapSupport = undefined;
@@ -929,25 +672,8 @@ function carregarChartJS(callback, plugins = []) {
         document.head.appendChild(script);
     });
 }
-
-// ============================================
 // FUNÇÃO GLOBAL MELHORADA: AJUSTAR VALOR DE SLIDER COM ACELERAÇÃO
-// ============================================
-
-/**
- * Ajusta o valor de um slider usando botões de seta com aceleração variável
- * 
- * Esta função melhora a experiência do usuário ao:
- * - Forçar valores min/max quando o slider está no fim do curso
- * - Atualizar valores com maior frequência (reduz lag)
- * - Implementar aceleração variável: lento no primeiro segundo, rápido nos outros dois
- * - Percorrer todo o range do slider em 3 segundos quando o botão é pressionado
- * 
- * @param {string} targetId - ID do elemento slider a ser ajustado
- * @param {number} step - Valor do incremento/decremento (positivo para aumentar, negativo para diminuir)
- * @param {Object} options - Opções adicionais (opcional)
- * @param {Function} options.onUpdate - Função chamada a cada atualização (opcional)
- */
+// Ajusta o valor de um slider usando botões de seta com aceleração variável
 function ajustarValorSlider(targetId, step, options = {}) {
     const slider = document.getElementById(targetId);
     if (!slider) return;
@@ -964,14 +690,12 @@ function ajustarValorSlider(targetId, step, options = {}) {
         valorAtual = min;
     }
     
-    // Se step for string (ex: "dynamic", "-dynamic"), precisa ser tratado pela função customizada
+    // Se step for string, precisa ser tratado pela função customizada
     // Aqui assumimos que step já foi convertido para número
     if (typeof step === 'string') {
         console.warn('ajustarValorSlider: step deve ser número. Use função customizada para steps dinâmicos.');
         return;
-    }
-    
-    // Calcula o novo valor
+    } // novo valor
     let novoValor = valorAtual + step;
     
     // Arredonda para o múltiplo mais próximo do step
@@ -980,8 +704,7 @@ function ajustarValorSlider(targetId, step, options = {}) {
     // Garante que está dentro dos limites (mas permite movimento mesmo próximo dos limites)
     novoValor = Math.max(min, Math.min(max, novoValor));
     
-    // NÃO força valores min/max quando próximo do fim do curso
-    // Isso permite que o usuário continue ajustando mesmo quando próximo dos limites
+    // NÃO força valores min/max quando próximo do fim do curso // que o usuário continue ajustando mesmo quando próximo dos limites
     // A detecção de limite é feita na função de repetição, não aqui
     
     // Atualiza o valor do slider
@@ -995,18 +718,7 @@ function ajustarValorSlider(targetId, step, options = {}) {
         options.onUpdate(novoValor);
     }
 }
-
-/**
- * Configura botões de seta com aceleração variável para sliders
- * 
- * Quando o botão é pressionado e mantido:
- * - Primeiro segundo: ajusta lentamente (a cada 200ms)
- * - Segundos 2-3: ajusta rapidamente (a cada 50ms, depois 30ms)
- * - Percorre todo o range do slider em aproximadamente 3 segundos
- * 
- * @param {string} buttonSelector - Seletor CSS dos botões de seta (ex: '.arrow-btn')
- * @param {Function} customAdjustFn - Função customizada de ajuste (opcional, usa ajustarValorSlider por padrão)
- */
+// Configura botões de seta com aceleração variável para sliders
 function configurarBotoesSliderComAceleracao(buttonSelector, customAdjustFn = null) {
     const buttons = document.querySelectorAll(buttonSelector);
     
@@ -1020,9 +732,7 @@ function configurarBotoesSliderComAceleracao(buttonSelector, customAdjustFn = nu
         let isActive = false;
         
         const slider = document.getElementById(targetId);
-        if (!slider) return;
-        
-        // Obtém o step do atributo (pode ser número ou string como "dynamic")
+        if (!slider) return; // step do atributo (pode ser número ou string como "dynamic")
         let step = btn.getAttribute('data-step');
         // Se não for "dynamic" ou "-dynamic", converte para número
         if (step !== 'dynamic' && step !== '-dynamic') {
@@ -1035,7 +745,7 @@ function configurarBotoesSliderComAceleracao(buttonSelector, customAdjustFn = nu
         const max = parseFloat(slider.max) || 100;
         const range = max - min;
         
-        // Função de ajuste (usa customizada se fornecida, senão usa a padrão)
+        // Função de ajuste (usa customizada se fornecida ou usa a padrão)
         const adjustFn = customAdjustFn || ((targetId, step) => {
             ajustarValorSlider(targetId, step);
         });
@@ -1092,24 +802,18 @@ function configurarBotoesSliderComAceleracao(buttonSelector, customAdjustFn = nu
                     lastSecond = currentSecond;
                     // Reinicia o intervalo com a nova velocidade
                     intervalId = setInterval(doAdjust, currentInterval);
-                }
-                
-                // Verifica o valor antes do ajuste
+                } // valor antes do ajuste
                 let valorAntes = parseFloat(slider.value);
                 if (isNaN(valorAntes)) valorAntes = min;
                 
                 // Ajusta o valor
                 adjustFn(targetId, step);
-                lastAdjustTime = now;
-                
-                // Verifica o valor depois do ajuste
+                lastAdjustTime = now; // valor depois do ajuste
                 let valorDepois = parseFloat(slider.value);
                 if (isNaN(valorDepois)) valorDepois = min;
                 
-                // Para apenas se o valor não mudou E está no limite
-                // Isso permite movimento mesmo quando próximo dos limites
-                if (valorAntes === valorDepois) {
-                    // Verifica se step é positivo (aumentar) ou negativo (diminuir)
+                // Para apenas se o valor não mudou E está no limite // movimento mesmo quando próximo dos limites
+                if (valorAntes === valorDepois) { // Verifica step é positivo (aumentar) ou negativo (diminuir)
                     const stepNum = (step === 'dynamic') ? 1 : (step === '-dynamic') ? -1 : parseFloat(step) || 1;
                     if ((stepNum > 0 && valorDepois >= max) || (stepNum < 0 && valorDepois <= min)) {
                         stopRepeating();
@@ -1154,10 +858,7 @@ function configurarBotoesSliderComAceleracao(buttonSelector, customAdjustFn = nu
         });
     });
 }
-
-// ============================================
 // DETECÇÃO DE GESTOS TOUCH GLOBAL
-// ============================================
 // Esta funcionalidade diferencia scroll de interações com botões e sliders
 // em dispositivos touch, melhorando a experiência do usuário
 
@@ -1242,9 +943,7 @@ function setupGlobalTouchGestures() {
                 
                 if (verticalRatio > scrollThreshold) {
                     // Movimento majoritariamente vertical = SCROLL
-                    isScrolling = true;
-                    
-                    // Se o target é um botão ou slider, prevenir ação padrão
+                    isScrolling = true; // Se target é um botão ou slider, prevenir ação padrão
                     if (touchTarget) {
                         const isButton = touchTarget.tagName === 'BUTTON' || 
                                        touchTarget.classList.contains('arrow-btn') ||
@@ -1379,7 +1078,6 @@ function setupGlobalTouchGestures() {
         isScrolling = false;
     });
 }
-
 // Inicializar gestos touch globalmente
 (function() {
     'use strict';
@@ -1422,39 +1120,8 @@ function setupGlobalTouchGestures() {
         // Silenciosamente ignorar todos os erros para não quebrar o carregamento
     }
 })();
-
-// ============================================
 // VALIDAÇÃO DE DEPENDÊNCIAS
-// ============================================
-/**
- * Valida se dependências necessárias estão disponíveis
- * Útil para verificar se funções/objetos globais necessários foram carregados
- * 
- * @param {Object} dependencias - Objeto com nomes das dependências e tipos esperados
- * @param {Object} opcoes - Opções de validação
- * @param {boolean} opcoes.mostrarErros - Se true, mostra erros no console (padrão: true)
- * @param {boolean} opcoes.lancarErro - Se true, lança exceção quando dependência não encontrada (padrão: false)
- * @returns {Object} Objeto com resultado da validação { valido: boolean, faltando: Array<string> }
- * 
- * @example
- * // Validar dependências básicas
- * const resultado = validarDependencias({
- *     'formatarNumero': 'function',
- *     'SiteConfig': 'object',
- *     'Chart': 'object' // Chart.js
- * });
- * 
- * if (!resultado.valido) {
- *     console.error('Dependências faltando:', resultado.faltando);
- * }
- * 
- * @example
- * // Validar com tratamento de erro
- * const resultado = validarDependencias({
- *     'formatarNumero': 'function',
- *     'FAZENDA_DATABASE': 'object'
- * }, { lancarErro: true });
- */
+// Valida se dependências necessárias estão disponíveis
 function validarDependencias(dependencias, opcoes = {}) {
     const config = {
         mostrarErros: opcoes.mostrarErros !== false,
@@ -1464,8 +1131,7 @@ function validarDependencias(dependencias, opcoes = {}) {
     const faltando = [];
     const tipoIncorreto = [];
     
-    for (const [nome, tipoEsperado] of Object.entries(dependencias)) {
-        // Verifica se existe no escopo global
+    for (const [nome, tipoEsperado] of Object.entries(dependencias)) { // Verifica existe no escopo global
         const existe = typeof window !== 'undefined' && nome in window;
         
         if (!existe) {
@@ -1509,32 +1175,12 @@ function validarDependencias(dependencias, opcoes = {}) {
         todas: Object.keys(dependencias)
     };
 }
-
 // Exportar para uso global (se necessário)
 if (typeof window !== 'undefined') {
     window.validarDependencias = validarDependencias;
 }
-
-// ============================================
 // INICIALIZAÇÃO DE ÍCONES DE INFORMAÇÃO
-// ============================================
-/**
- * Inicializa um ícone de informação com descrição toggle
- * Padroniza o comportamento de mostrar/esconder descrições em todos os apps
- *
- * @param {string} iconId - ID do elemento do ícone de informação
- * @param {string} descricaoId - ID do elemento da descrição
- * @param {Object} opcoes - Opções de configuração
- * @param {boolean} opcoes.inicialmenteVisivel - Se true, descrição começa visível (padrão: false)
- *
- * @example
- * // Inicializar ícone de informação padrão
- * inicializarIconeInfo('infoIconAutonomia', 'descricaoAutonomia');
- *
- * @example
- * // Inicializar com descrição inicialmente visível
- * inicializarIconeInfo('infoIconConsumo', 'descricaoConsumo', { inicialmenteVisivel: true });
- */
+// Inicializa um ícone de informação com descrição toggle
 function inicializarIconeInfo(iconId, descricaoId, opcoes = {}) {
     const config = {
         inicialmenteVisivel: opcoes.inicialmenteVisivel === true
@@ -1579,7 +1225,6 @@ function inicializarIconeInfo(iconId, descricaoId, opcoes = {}) {
         }
     });
 }
-
 // Exportar para uso global
 if (typeof window !== 'undefined') {
     window.inicializarIconeInfo = inicializarIconeInfo;

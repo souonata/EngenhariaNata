@@ -1,18 +1,14 @@
-// ============================================
 // ACCORDION - SISTEMA DE EXPANSÃO/RETRAÇÃO DE SEÇÕES
 // Permite que o usuário clique nos títulos dos cards para mostrar/ocultar conteúdo
-// ============================================
 
 /* ========================================== */
 /* SISTEMA DE INTERNACIONALIZAÇÃO (i18n) */
 /* Tradução PT-BR ↔ IT-IT */
 /* ========================================== */
-
 // Prefer site-wide config keys when available
 const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
 const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
 let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
-
 // Replaced file content: cleaned translations and minimal accordion logic
 // This file sets up translations (pt-BR / it-IT) and enables a simple accordion
 // behavior so card headers expand/collapse on click and keyboard (Enter / Space).
@@ -276,7 +272,6 @@ const traducoes = {
         'aria-home': 'Torna alla schermata iniziale'
     }
 };
-
 // -------------------------------------------------------------
 // Funções de UI (idioma, accordion) — explicação didática
 // -------------------------------------------------------------

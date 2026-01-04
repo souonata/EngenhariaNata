@@ -1,88 +1,23 @@
 // ajustarValorPadrao é carregado via script tag no HTML
-// ============================================
 // CALCULADORA DE PASSO DE HÉLICE PARA BARCOS
-// ============================================
-
-/**
- * Idioma atual - carrega do localStorage ou usa português como padrão
- */
+// Idioma atual
 const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
 const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
 let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
-
-/**
- * ============================================
- * CONSTANTES E EXPLICAÇÃO DO MÉTODO
- * ============================================
- * 
- * CONSTANTE DE CONVERSÃO (1056):
- * A constante 1056 é amplamente utilizada na indústria náutica para converter
- * velocidade em nós para polegadas por minuto, permitindo o cálculo do passo da hélice.
- * 
- * Derivação da constante:
- * - 1 nó = 1,852 km/h (definição internacional)
- * - 1 nó = 1,852 × 1000 m/h = 1,852,000 m/h
- * - 1 nó = 1,852,000 × 100 cm/h = 185,200,000 cm/h
- * - 1 nó = 185,200,000 ÷ 60 min/h = 3,086,666.67 cm/min
- * - 1 nó = 3,086,666.67 ÷ 2.54 cm/pol = 1,215,222.31 pol/min
- * 
- * A constante 1056 é uma aproximação prática e amplamente aceita na indústria,
- * que simplifica os cálculos mantendo precisão suficiente para aplicações práticas.
- * 
- * FÓRMULA PRINCIPAL:
- *  Passo (polegadas) = (Velocidade_nós × 1056 × Redução) / (RPM_motor × (1 - Slip))
- *
- * Onde:
- *  - Velocidade_nós: velocidade desejada da embarcação em nós (1 nó = 1,852 km/h)
- *  - Redução: relação de redução da rabeta (ex: 2.0 = redução 2:1)
- *    → Se redução = 2.0, o motor gira 2 vezes para a hélice girar 1 vez
- *  - RPM_motor: rotação máxima do motor em rotações por minuto
- *  - Slip: percentual de deslizamento (0.10 = 10%, 0.15 = 15%, etc.)
- *    → Representa a perda de eficiência entre a hélice e a água
- *    → Valores típicos: 10-20% para barcos de lazer
- *
- * INTERPRETAÇÃO FÍSICA:
- *  - O passo é a distância teórica (em polegadas) que a hélice avançaria
- *    em uma rotação completa, sem considerar o deslizamento
- *  - O slip reduz a eficiência: se slip = 15%, apenas 85% da eficiência teórica é alcançada
- *  - A fórmula usa (1 - Slip) no denominador para compensar essa perda
- *  - Exemplo: slip de 15% (0.15) → usa 85% (0.85) da eficiência teórica
- * 
- * FONTE:
- * Esta fórmula é baseada em métodos padrão da indústria náutica para dimensionamento
- * de hélices para embarcações de lazer e comerciais.
- */
+// ============================================
 const CONSTANTE_CONVERSAO = 1056; // Constante de conversão: nós → polegadas/minuto (padrão da indústria náutica)
-
 // Fatores de conversão de velocidade
 const CONVERSAO_VELOCIDADE = {
     knots: 1,           // Nós (unidade base)
     mph: 0.868976,      // Milhas por hora para nós
     kmh: 0.539957       // Quilômetros por hora para nós
 };
-
 // Fatores de conversão de passo
 const CONVERSAO_PASSO = {
     inches: 1,          // Polegadas (unidade base)
     mm: 25.4            // Milímetros por polegada
 };
-
-/**
- * Converte uma velocidade de qualquer unidade para nós (unidade base para cálculos)
- * 
- * Nós (knots) é a unidade padrão usada em navegação marítima e é a unidade base
- * para todos os cálculos nesta calculadora. Esta função converte outras unidades
- * (mph, km/h) para nós antes de fazer os cálculos.
- * 
- * @param {number} valor - O valor da velocidade na unidade original
- * @param {string} unidade - A unidade original ('knots', 'mph' ou 'kmh')
- * @returns {number} O valor convertido para nós
- * 
- * Exemplos:
- * - converterVelocidadeParaKnots(30, 'mph') → ~26.07 nós (30 × 0.868976)
- * - converterVelocidadeParaKnots(50, 'kmh') → ~27.00 nós (50 × 0.539957)
- * - converterVelocidadeParaKnots(25, 'knots') → 25 nós (sem conversão)
- */
+// Converte uma velocidade de qualquer unidade para nós (unidade base para cálculos)
 function converterVelocidadeParaKnots(valor, unidade) {
     // Multiplica o valor pelo fator de conversão correspondente à unidade
     // O objeto CONVERSAO_VELOCIDADE contém os fatores:
@@ -91,72 +26,28 @@ function converterVelocidadeParaKnots(valor, unidade) {
     // - 'kmh': 0.539957 (1 km/h = 0.539957 nós)
     return valor * CONVERSAO_VELOCIDADE[unidade];
 }
-
-/**
- * Converte uma velocidade de nós para outra unidade (mph ou km/h)
- * 
- * Esta é a função inversa de `converterVelocidadeParaKnots`. Ela converte
- * valores calculados em nós de volta para a unidade que o usuário escolheu
- * para exibição na interface.
- * 
- * @param {number} valor - O valor da velocidade em nós
- * @param {string} unidade - A unidade de destino ('knots', 'mph' ou 'kmh')
- * @returns {number} O valor convertido para a unidade desejada
- * 
- * Exemplos:
- * - converterKnotsParaUnidade(25, 'mph') → ~28.78 mph (25 ÷ 0.868976)
- * - converterKnotsParaUnidade(25, 'kmh') → ~46.30 km/h (25 ÷ 0.539957)
- * - converterKnotsParaUnidade(25, 'knots') → 25 nós (sem conversão)
- */
+// Converte uma velocidade de nós para outra unidade (mph ou km/h)
 function converterKnotsParaUnidade(valor, unidade) {
     // Divide o valor pelo fator de conversão para obter a unidade desejada
     // Como os fatores são menores que 1, dividir por eles aumenta o valor
     // Exemplo: 25 nós ÷ 0.868976 = ~28.78 mph
     return valor / CONVERSAO_VELOCIDADE[unidade];
 }
-
-/**
- * Formata número com vírgula como separador decimal e ponto como separador de milhares
- * Sempre usa formatação brasileira (pt-BR) independente do idioma da interface
- * @param {number} valor - Valor numérico a formatar
- * @param {number} casasDecimais - Número de casas decimais (padrão: 0)
- * @returns {string} Valor formatado (ex: "1.234,56" ou "12,5")
- */
+// Formata número com vírgula como separador decimal e ponto como separador de milhares
 // Funções de formatação agora estão em assets/js/site-config.js
 // formatarNumero -> formatarNumero (global)
 // converterValorFormatadoParaNumero -> converterValorFormatadoParaNumero (global)
-
-/**
- * Converte o passo da hélice de polegadas para outra unidade (milímetros)
- * 
- * O passo é calculado internamente em polegadas (unidade padrão na indústria náutica),
- * mas o usuário pode escolher ver o resultado em milímetros. Esta função faz essa conversão.
- * 
- * @param {number} valor - O valor do passo em polegadas
- * @param {string} unidade - A unidade de destino ('inches' ou 'mm')
- * @returns {number} O valor do passo na unidade desejada
- * 
- * Exemplos:
- * - converterPassoParaUnidade(12.5, 'inches') → 12.5 polegadas (sem conversão)
- * - converterPassoParaUnidade(12.5, 'mm') → 317.5 mm (12.5 × 25.4)
- */
-function converterPassoParaUnidade(valor, unidade) {
-    // Se a unidade já é polegadas, retorna o valor sem conversão
+// Converte o passo da hélice de polegadas para outra unidade (milímetros)
+function converterPassoParaUnidade(valor, unidade) { // Se unidade já é polegadas, retorna o valor sem conversão
     if (unidade === 'inches') return valor;
     
     // Converte polegadas para milímetros multiplicando por 25.4
     // 1 polegada = 25.4 milímetros (conversão padrão do sistema métrico)
     return valor * CONVERSAO_PASSO.mm; // Converte para mm
 }
-
-/**
- * Variáveis globais para gráfico
- */
+// Variáveis globais para gráfico
 let graficoHelice = null;
-
-/**
- * Dicionário de traduções PT-BR ↔ IT-IT
- */
+// Dicionário de traduções PT
 const traducoes = {
     'pt-BR': {
         'app-title': '🚤 Calculadora de Passo de Hélice',
@@ -289,21 +180,12 @@ const traducoes = {
         'tooltip-slip-texto': 'Lo slip (scivolamento) è la perdita di efficienza tra l\'elica e l\'acqua, espressa come percentuale. Rappresenta quanto l\'elica "scivola" nell\'acqua invece di spingerla efficacemente. Barche da diporto tipiche hanno 10-20% di slip. Minore è lo slip, più efficiente è l\'elica, ma anche più difficile da raggiungere. Il valore predefinito del 15% è un buon equilibrio per la maggior parte delle barche.'
     }
 };
-
-/**
- * Troca o idioma da interface do usuário
- * 
- * Esta função atualiza todos os textos da página para o idioma selecionado,
- * salva a preferência do usuário e atualiza elementos visuais relacionados.
- * 
- * @param {string} novoIdioma - Código do idioma ('pt-BR' para português ou 'it-IT' para italiano)
- */
+// Troca o idioma da interface do usuário
 function trocarIdioma(novoIdioma) {
     // PASSO 1: Atualiza a variável global que armazena o idioma atual
     idiomaAtual = novoIdioma;
     
-    // PASSO 2: Salva a preferência de idioma no localStorage do navegador
-    // Isso garante que o idioma seja mantido quando o usuário navegar entre páginas
+    // PASSO 2: Salva a preferência de idioma no localStorage do navegador // que o idioma seja mantido quando o usuário navegar entre páginas
     // ou revisitar o site. Usa a chave padronizada do SiteConfig.
     localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
     
@@ -315,51 +197,35 @@ function trocarIdioma(novoIdioma) {
     // PASSO 4: Atualiza todos os elementos na página que possuem o atributo `data-i18n`
     // `querySelectorAll('[data-i18n]')` busca todos os elementos que precisam ser traduzidos.
     document.querySelectorAll('[data-i18n]').forEach(elemento => {
-        // Pega a "chave" de tradução do atributo `data-i18n` (ex: "app-title", "label-velocidade")
-        const chave = elemento.getAttribute('data-i18n');
-        
-        // Verifica se existe uma tradução para a chave no idioma selecionado
+        // Pega a "chave" de tradução do atributo `data-i18n`
+        const chave = elemento.getAttribute('data-i18n'); // Verifica existe uma tradução para a chave no idioma selecionado
         // Se existir, substitui o texto interno do elemento pela tradução
         if (traducoes[novoIdioma] && traducoes[novoIdioma][chave]) {
             elemento.textContent = traducoes[novoIdioma][chave];
         }
     });
     
-    // PASSO 5: Atualiza o estilo dos botões de idioma para destacar o idioma ativo
-    // Remove a classe 'active' de todos os botões e adiciona-a apenas ao botão do idioma atual
+    // PASSO 5: Atualiza o estilo dos botões de idioma para destacar o idioma ativo // Remove a classe 'active' de todos os botões e adiciona-a apenas ao botão do idioma atual
     document.querySelectorAll(SITE_SEL.LANG_BTN).forEach(btn => {
         if (btn.getAttribute('data-lang') === novoIdioma) {
-            btn.classList.add('active');   // Adiciona 'active' se for o idioma selecionado
+            btn.classList.add('active'); // Adiciona 'active' se for o idioma selecionado
         } else {
             btn.classList.remove('active'); // Remove 'active' dos outros
         }
     });
     
-    // PASSO 6: Atualiza o gráfico com os labels traduzidos
-    // Isso garante que os títulos dos eixos e legendas do gráfico também sejam traduzidos
+    // PASSO 6: Atualiza o gráfico com os labels traduzidos // que os títulos dos eixos e legendas do gráfico também sejam traduzidos
     atualizarGrafico();
 
-    // PASSO 7: Atualiza os atributos `aria-label` para botões de navegação (ex: botão "Home")
+    // PASSO 7: Atualiza os atributos `aria-label` para botões de navegação
     // Isso melhora a acessibilidade para usuários de leitores de tela
     const homeLabel = traducoes[novoIdioma]?.['aria-home'] || 'Home'; // Pega a tradução ou usa 'Home' como fallback
     document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
 }
-
-/**
- * Ajusta o valor de um slider usando botões de seta (↑ ↓)
- * 
- * Esta função é chamada quando o usuário clica nos botões de seta ao lado dos sliders.
- * Ela incrementa ou decrementa o valor do slider respeitando os limites mínimo/máximo
- * e o passo (step) definido no slider.
- * 
- * @param {string} targetId - ID do elemento slider a ser ajustado (ex: 'sliderVelocidade')
- * @param {number} step - Valor do incremento/decremento (positivo para aumentar, negativo para diminuir)
- */
+// Ajusta o valor de um slider usando botões de seta (↑ ↓)
 function ajustarValor(targetId, step) {
     // PASSO 1: Obtém a referência do elemento slider no DOM
-    const slider = document.getElementById(targetId);
-    
-    // Se o slider não existir, interrompe a execução (proteção contra erros)
+    const slider = document.getElementById(targetId); // Se slider não existir, interrompe a execução (proteção contra erros)
     if (!slider) return;
     
     // PASSO 2: Obtém os valores atuais e limites do slider
@@ -375,8 +241,7 @@ function ajustarValor(targetId, step) {
     // PASSO 3: Calcula o novo valor somando o step ao valor atual
     let novoValor = valorAtual + step;
     
-    // PASSO 4: Arredonda o novo valor para o múltiplo mais próximo do step do slider
-    // Isso garante que o valor sempre fique alinhado com os passos definidos
+    // PASSO 4: Arredonda o novo valor para o múltiplo mais próximo do step do slider // que o valor sempre fique alinhado com os passos definidos
     // Exemplo: se stepAttr = 0.1 e novoValor = 12.37, arredonda para 12.4
     novoValor = Math.round(novoValor / stepAttr) * stepAttr;
     
@@ -394,41 +259,13 @@ function ajustarValor(targetId, step) {
     slider.dispatchEvent(new Event('input', { bubbles: true }));
     ajustarValorPadrao(targetId, step);
 }
-
 // Controle para os botões de seta
 let intervalId = null;
 let timeoutId = null;
-
-/**
- * ============================================
- * FUNÇÃO PRINCIPAL: CALCULAR PASSO DA HÉLICE
- * ============================================
- * 
- * Calcula o passo ideal da hélice para uma embarcação baseado em:
- * - Velocidade desejada
- * - RPM do motor
- * - Redução da rabeta
- * - Slip estimado
- * 
- * @param {number} velocidade - Velocidade desejada em nós (já convertida)
- * @param {number} reducao - Relação de redução da rabeta (ex: 2.0 = 2:1)
- * @param {number} rpmMotor - Rotação máxima do motor em RPM
- * @param {number} slip - Percentual de slip como decimal (ex: 0.15 = 15%)
- * @returns {Object} Objeto contendo:
- *   - passo: Passo recomendado em polegadas (1 casa decimal)
- *   - rpmHelice: RPM efetivo na hélice (inteiro)
- *   - velocidadeTeorica: Velocidade teórica sem slip em nós (1 casa decimal)
- * 
- * EXEMPLO DE USO:
- *   const resultado = calcularPasso(25, 2.0, 5000, 0.15);
- *   // resultado = { passo: 12.4, rpmHelice: 2500, velocidadeTeorica: 29.4 }
- */
+// ============================================
 function calcularPasso(velocidade, reducao, rpmMotor, slip) {
-    // ============================================
-    // PASSO 1: CALCULAR RPM EFETIVO NA HÉLICE
-    // ============================================
-    // A rabeta (lower unit) reduz a rotação do motor antes de chegar à hélice.
-    // Se a redução é 2:1, significa que o motor gira 2 vezes para a hélice girar 1 vez.
+        // PASSO 1: CALCULAR RPM EFETIVO NA HÉLICE
+        // A rabeta (lower unit) reduz a rotação do motor antes de chegar à hélice. // Se redução é 2:1, significa que o motor gira 2 vezes para a hélice girar 1 vez.
     // Isso aumenta o torque disponível na hélice, permitindo hélices maiores e mais eficientes.
     // 
     // Fórmula: RPM_hélice = RPM_motor / Redução
@@ -439,10 +276,8 @@ function calcularPasso(velocidade, reducao, rpmMotor, slip) {
     // - RPM na hélice: 5000 / 2.0 = 2500 RPM
     const rpmHelice = rpmMotor / reducao;
     
-    // ============================================
-    // PASSO 2: CALCULAR PASSO RECOMENDADO
-    // ============================================
-    // Fórmula principal: Passo = (Velocidade × 1056 × Redução) / (RPM × (1 - Slip))
+        // PASSO 2: CALCULAR PASSO RECOMENDADO
+        // Fórmula principal: Passo = (Velocidade × 1056 × Redução) / (RPM × (1 - Slip))
     //
     // Explicação detalhada de cada termo:
     // 
@@ -469,10 +304,8 @@ function calcularPasso(velocidade, reducao, rpmMotor, slip) {
     //       ≈ 12.4 polegadas (arredondado)
     const passo = (velocidade * CONSTANTE_CONVERSAO * reducao) / (rpmMotor * (1 - slip));
     
-    // ============================================
-    // PASSO 3: CALCULAR VELOCIDADE TEÓRICA
-    // ============================================
-    // A velocidade teórica mostra qual velocidade seria obtida se não houvesse slip.
+        // PASSO 3: CALCULAR VELOCIDADE TEÓRICA
+        // A velocidade teórica mostra qual velocidade seria obtida se não houvesse slip.
     // É calculada usando a fórmula inversa, assumindo slip = 0.
     // 
     // Fórmula inversa: Velocidade = (Passo × RPM) / (1056 × Redução)
@@ -489,10 +322,8 @@ function calcularPasso(velocidade, reducao, rpmMotor, slip) {
     //                    ≈ 29.4 nós (arredondado)
     const velocidadeTeorica = (passo * rpmMotor) / (CONSTANTE_CONVERSAO * reducao);
     
-    // ============================================
-    // RETORNAR RESULTADOS
-    // ============================================
-    return {
+        // RETORNAR RESULTADOS
+        return {
         // Passo arredondado para 1 casa decimal
         // Precisão de 0.1 polegadas é suficiente para seleção de hélices comerciais
         // Exemplo: 12.423 → 12.4 polegadas
@@ -509,28 +340,16 @@ function calcularPasso(velocidade, reducao, rpmMotor, slip) {
         velocidadeTeorica: Math.round(velocidadeTeorica * 10) / 10
     };
 }
-
-/**
- * Atualiza os limites mínimo e máximo do slider de velocidade baseado na unidade selecionada
- * 
- * Quando o usuário muda a unidade de velocidade (nós, mph, km/h), os limites do slider
- * precisam ser ajustados para refletir valores equivalentes na nova unidade. Esta função
- * também converte o valor atual do slider para a nova unidade, mantendo a velocidade
- * equivalente.
- * 
- * @param {string} unidadeAnterior - Unidade anterior (para conversão correta do valor atual)
- *                                    Se for null, assume que o valor já está na unidade atual
- */
+// Atualiza os limites mínimo e máximo do slider de velocidade baseado na unidade selecionada
 function atualizarLimitesVelocidade(unidadeAnterior = null) {
-    // PASSO 1: Obtém a unidade de velocidade selecionada pelo usuário
-    // Busca o radio button marcado com name="unidadeVelocidade" e pega seu valor
+    // PASSO 1: Obtém a unidade de velocidade selecionada pelo usuário // radio button marcado com name="unidadeVelocidade" e pega seu valor
     const unidadeVelocidade = document.querySelector('input[name="unidadeVelocidade"]:checked').value;
     
     // PASSO 2: Obtém referências ao slider e input, e pega o valor atual
     const slider = document.getElementById('sliderVelocidade');
     const inputVelocidadeEl = document.getElementById('inputVelocidade');
     
-    // Prioriza o valor do input (o que o usuário vê), senão usa o slider
+    // Prioriza o valor do input (o que o usuário vê) ou usa o slider
     let valorAtual;
     if (inputVelocidadeEl && inputVelocidadeEl.value) {
         const valorInput = converterValorFormatadoParaNumero(inputVelocidadeEl.value);
@@ -543,8 +362,7 @@ function atualizarLimitesVelocidade(unidadeAnterior = null) {
         valorAtual = parseFloat(slider.value); // Fallback para o slider
     }
     
-    // PASSO 3: Converte o valor atual para nós (unidade base) para manter a equivalência
-    // Se houver uma unidade anterior, converte dela. Caso contrário, assume que já está na unidade atual.
+    // PASSO 3: Converte o valor atual para nós (unidade base) para manter a equivalência // Com uma unidade anterior, converte dela. Caso contrário, assume que já está na unidade atual.
     let valorEmKnots;
     if (unidadeAnterior) {
         // Converte da unidade anterior para nós
@@ -601,29 +419,11 @@ function atualizarLimitesVelocidade(unidadeAnterior = null) {
         inputVelocidadeEl.value = valorFormatado;
     }
 }
-
-/**
- * Atualiza a interface com os resultados calculados
- * 
- * Esta é a função principal que orquestra a atualização da interface. Ela:
- * 1. Coleta os valores dos sliders
- * 2. Converte unidades quando necessário
- * 3. Calcula o passo da hélice
- * 4. Atualiza todos os elementos de exibição na tela
- * 5. Atualiza o gráfico
- * 
- * Esta função é chamada sempre que o usuário altera qualquer parâmetro (velocidade,
- * redução, RPM, slip) ou muda as unidades de medida.
- */
+// Atualiza a interface com os resultados calculados
 function atualizarResultado() {
-    // ============================================
-    // PASSO 1: OBTER UNIDADES SELECIONADAS
-    // ============================================
-    // Obtém as unidades de velocidade e passo selecionadas pelo usuário
+        // PASSO 1: OBTER UNIDADES SELECIONADAS // unidades de velocidade e passo selecionadas pelo usuário
     const unidadeVelocidadeRadio = document.querySelector('input[name="unidadeVelocidade"]:checked');
-    const unidadePassoRadio = document.querySelector('input[name="unidadePasso"]:checked');
-    
-    // Verifica se os elementos existem antes de acessar .value
+    const unidadePassoRadio = document.querySelector('input[name="unidadePasso"]:checked'); // elementos existem antes de acessar .value
     if (!unidadeVelocidadeRadio || !unidadePassoRadio) {
         console.error('Erro: Unidades não encontradas');
         return;
@@ -632,11 +432,8 @@ function atualizarResultado() {
     const unidadeVelocidade = unidadeVelocidadeRadio.value;
     const unidadePasso = unidadePassoRadio.value;
     
-    // ============================================
-    // PASSO 2: OBTER VALORES DOS INPUTS OU SLIDERS
-    // ============================================
-    // Lê os valores dos inputs editáveis (se existirem e tiverem valores válidos) ou dos sliders
-    // Isso permite valores fora dos limites do slider quando digitados manualmente
+        // PASSO 2: OBTER VALORES DOS INPUTS OU SLIDERS
+        // Lê os valores dos inputs editáveis (se existirem e tiverem valores válidos) ou dos sliders // valores fora dos limites do slider quando digitados manualmente
     const inputVelocidade = document.getElementById('inputVelocidade');
     const inputReducao = document.getElementById('inputReducao');
     const inputRPM = document.getElementById('inputRPM');
@@ -646,8 +443,7 @@ function atualizarResultado() {
     const sliderRPM = document.getElementById('sliderRPM');
     const sliderSlip = document.getElementById('sliderSlip');
     
-    // Obtém valores dos inputs ou sliders (inputs têm prioridade se existirem e tiverem valores válidos)
-    // Se o input tiver um valor válido (número > 0), usa ele; caso contrário, usa o slider
+    // Obtém valores dos inputs ou sliders (inputs têm prioridade se existirem e tiverem valores válidos) // Se input tiver um valor válido (número > 0), usa ele; caso contrário, usa o slider
     let velocidadeInput = parseFloat(sliderVelocidade.value);
     if (inputVelocidade && inputVelocidade.value) {
         const valorInput = converterValorFormatadoParaNumero(inputVelocidade.value);
@@ -680,24 +476,20 @@ function atualizarResultado() {
         }
     }
     
-    // ============================================
-    // PASSO 3: CONVERTER VELOCIDADE PARA NÓS
-    // ============================================
-    // Converte a velocidade para nós (unidade base para cálculos)
+        // PASSO 3: CONVERTER VELOCIDADE PARA NÓS
+        // Converte a velocidade para nós (unidade base para cálculos)
     // velocidadeInput já está na unidade selecionada (do slider ou input)
     const velocidadeKnots = converterVelocidadeParaKnots(velocidadeInput, unidadeVelocidade);
     
-    // ============================================
-    // PASSO 4: ATUALIZAR DISPLAYS DOS VALORES DE ENTRADA
-    // ============================================
-    // Atualiza os inputs ao lado dos sliders para mostrar os valores atuais
+        // PASSO 4: ATUALIZAR DISPLAYS DOS VALORES DE ENTRADA
+        // Atualiza os inputs ao lado dos sliders para mostrar os valores atuais
     // Formata velocidade: nós sem decimais, outras unidades com 1 decimal
     if (inputVelocidade) {
         inputVelocidade.value = formatarNumero(velocidadeInput, unidadeVelocidade === 'knots' ? 0 : 1);
         if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputVelocidade);
     }
     if (inputReducao) {
-        inputReducao.value = formatarNumero(reducao, 2);     // Redução com 2 decimais (ex: 2,32)
+        inputReducao.value = formatarNumero(reducao, 2);     // Redução com 2 decimais
         if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputReducao);
     }
     if (inputRPM) {
@@ -709,17 +501,13 @@ function atualizarResultado() {
         if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputSlip);
     }
     
-    // ============================================
-    // PASSO 5: CALCULAR O PASSO DA HÉLICE
-    // ============================================
-    // Chama a função principal de cálculo, convertendo slip de percentual para decimal
+        // PASSO 5: CALCULAR O PASSO DA HÉLICE
+        // Chama a função principal de cálculo, convertendo slip de percentual para decimal
     // Exemplo: slipPercent = 15 → slip = 0.15 (15%)
     const resultado = calcularPasso(velocidadeKnots, reducao, rpmMotor, slipPercent / 100);
     
-    // ============================================
-    // PASSO 6: CONVERTER E EXIBIR RESULTADOS
-    // ============================================
-    // Converte o passo para a unidade selecionada (polegadas ou milímetros)
+        // PASSO 6: CONVERTER E EXIBIR RESULTADOS
+        // Converte o passo para a unidade selecionada (polegadas ou milímetros)
     const passoConvertido = converterPassoParaUnidade(resultado.passo, unidadePasso);
     // Formata: milímetros sem decimais, polegadas com 1 decimal
     const resultadoPassoEl = document.getElementById('resultadoPasso');
@@ -735,10 +523,7 @@ function atualizarResultado() {
     const velocidadeTeoricaEl = document.getElementById('velocidadeTeorica');
     if (velocidadeTeoricaEl) velocidadeTeoricaEl.textContent = formatarNumero(velocidadeTeoricaConvertida, 1);
     
-    // ============================================
-    // PASSO 7: ATUALIZAR UNIDADE DE VELOCIDADE NO DISPLAY
-    // ============================================
-    // Obtém o texto da unidade de velocidade traduzido (nós, mph, km/h)
+        // PASSO 7: ATUALIZAR UNIDADE DE VELOCIDADE NO DISPLAY // texto da unidade de velocidade traduzido (nós, mph, km/h)
     const unidadeVelocidadeText = {
         'knots': traducoes[idiomaAtual]?.['unidade-nos'] || 'nós',  // "nós" em português, "nodi" em italiano
         'mph': traducoes[idiomaAtual]?.['unidade-mph'] || 'mph',    // "mph" (igual em ambos)
@@ -748,10 +533,8 @@ function atualizarResultado() {
     const unidadeVelocidadeTeoricaEl = document.getElementById('unidadeVelocidadeTeorica');
     if (unidadeVelocidadeTeoricaEl) unidadeVelocidadeTeoricaEl.textContent = unidadeVelocidadeText;
     
-    // ============================================
-    // PASSO 8: ATUALIZAR O GRÁFICO
-    // ============================================
-    // Atualiza o gráfico de relação Passo × Velocidade com os novos dados
+        // PASSO 8: ATUALIZAR O GRÁFICO
+        // Atualiza o gráfico de relação Passo × Velocidade com os novos dados
     atualizarGrafico();
     
     // Atualiza o memorial se estiver visível
@@ -759,11 +542,7 @@ function atualizarResultado() {
         atualizarMemorialComValores();
     }
 }
-
-/**
- * Alterna a exibição do memorial de cálculo
- * Esconde a seção de resultados e mostra o memorial, ou vice-versa
- */
+// Alterna a exibição do memorial de cálculo
 function toggleMemorial() {
     const memorialSection = document.getElementById('memorialSection');
     const resultadosSection = document.getElementById('resultadosSection');
@@ -787,10 +566,7 @@ function toggleMemorial() {
         if (resultadosSection) resultadosSection.style.display = 'block';
     }
 }
-
-/**
- * Atualiza o memorial de cálculo com os valores atuais dos cálculos
- */
+// Atualiza o memorial de cálculo com os valores atuais dos cálculos
 function atualizarMemorialComValores() {
     // Obter valores atuais
     const reducao = parseFloat(document.getElementById('sliderReducao').value);
@@ -830,20 +606,7 @@ function atualizarMemorialComValores() {
     document.getElementById('resumo-passo').textContent = formatarNumero(passo, 1) + '"';
     document.getElementById('resumo-velocidade-teorica').textContent = formatarNumero(velocidadeTeorica, 1) + ' nós';
 }
-
-/**
- * Cria ou atualiza o gráfico de relação Passo × Velocidade
- * 
- * Esta função gera um gráfico de linha mostrando como o passo da hélice varia
- * conforme a velocidade desejada. O gráfico ajuda a visualizar a relação entre
- * esses dois parâmetros e permite ao usuário entender melhor o comportamento
- * da hélice em diferentes velocidades.
- * 
- * O gráfico é criado usando a biblioteca Chart.js e mostra:
- * - Eixo X: Velocidade (na unidade selecionada pelo usuário)
- * - Eixo Y: Passo recomendado (na unidade selecionada pelo usuário)
- * - Linha: Relação entre velocidade e passo para os parâmetros atuais (redução, RPM, slip)
- */
+// Cria ou atualiza o gráfico de relação Passo × Velocidade
 function atualizarGrafico() {
     // Carrega Chart.js dinamicamente se ainda não estiver carregado
     if (typeof Chart === 'undefined') {
@@ -853,20 +616,14 @@ function atualizarGrafico() {
         return;
     }
     
-    // ============================================
-    // PASSO 1: OBTER CONFIGURAÇÕES ATUAIS
-    // ============================================
-    // Obtém as unidades selecionadas e os valores dos parâmetros fixos
+        // PASSO 1: OBTER CONFIGURAÇÕES ATUAIS // unidades selecionadas e os valores dos parâmetros fixos
     const unidadeVelocidade = document.querySelector('input[name="unidadeVelocidade"]:checked').value;
     const unidadePasso = document.querySelector('input[name="unidadePasso"]:checked').value;
     const reducao = parseFloat(document.getElementById('sliderReducao').value);      // Redução da rabeta
     const rpmMotor = parseFloat(document.getElementById('sliderRPM').value);         // RPM do motor
     const slipPercent = parseFloat(document.getElementById('sliderSlip').value);     // Slip em percentual
     
-    // ============================================
-    // PASSO 2: OBTER VALORES ATUAIS PARA MARCADOR
-    // ============================================
-    // Obtém a velocidade atual selecionada pelo usuário
+        // PASSO 2: OBTER VALORES ATUAIS PARA MARCADOR // velocidade atual selecionada pelo usuário
     const sliderVelocidade = document.getElementById('sliderVelocidade');
     const velocidadeAtual = sliderVelocidade ? parseFloat(sliderVelocidade.value) : 25;
     const velocidadeAtualKnots = converterVelocidadeParaKnots(velocidadeAtual, unidadeVelocidade);
@@ -874,10 +631,8 @@ function atualizarGrafico() {
     const passoAtual = converterPassoParaUnidade(resultadoAtual.passo, unidadePasso);
     const velocidadeAtualConvertida = converterKnotsParaUnidade(velocidadeAtualKnots, unidadeVelocidade);
     
-    // ============================================
-    // PASSO 3: GERAR DADOS PARA O GRÁFICO
-    // ============================================
-    // Cria arrays vazios para armazenar os valores de velocidade e passo
+        // PASSO 3: GERAR DADOS PARA O GRÁFICO
+        // Cria arrays vazios para armazenar os valores de velocidade e passo
     const velocidades = []; // Valores do eixo X (velocidades)
     const passos = [];      // Valores do eixo Y (passos)
     const passosSlipMin = []; // Passos com slip mínimo (10%)
@@ -889,15 +644,12 @@ function atualizarGrafico() {
         // Converte a velocidade de nós para a unidade selecionada pelo usuário
         const vConvertida = converterKnotsParaUnidade(vKnots, unidadeVelocidade);
         // Arredonda para número inteiro e adiciona ao array de velocidades
-        velocidades.push(Math.round(vConvertida));
-        
-        // Calcula o passo necessário para essa velocidade usando os parâmetros atuais
-        // Converte slip de percentual para decimal (ex: 15% → 0.15)
+        velocidades.push(Math.round(vConvertida)); // passo necessário para essa velocidade usando os parâmetros atuais
+        // Converte slip de percentual para decimal
         const resultado = calcularPasso(vKnots, reducao, rpmMotor, slipPercent / 100);
         
         // Converte o passo de polegadas para a unidade selecionada pelo usuário
-        const passoConvertido = converterPassoParaUnidade(resultado.passo, unidadePasso);
-        // Adiciona o passo ao array de passos
+        const passoConvertido = converterPassoParaUnidade(resultado.passo, unidadePasso); // Adiciona o passo ao array de passos
         passos.push(passoConvertido);
         
         // Calcula passos para zona de slip (10% e 20% - faixa típica para barcos de lazer)
@@ -907,26 +659,18 @@ function atualizarGrafico() {
         passosSlipMax.push(converterPassoParaUnidade(resultadoSlipMax.passo, unidadePasso));
     }
     
-    // ============================================
-    // PASSO 4: OBTER O CONTEXTO DO CANVAS
-    // ============================================
-    // Obtém o elemento canvas do HTML e seu contexto 2D
+        // PASSO 4: OBTER O CONTEXTO DO CANVAS // elemento canvas do HTML e seu contexto 2D
     // O contexto é necessário para desenhar o gráfico
     const ctx = document.getElementById('graficoHelice').getContext('2d');
     
-    // ============================================
-    // PASSO 5: DESTRUIR GRÁFICO ANTERIOR (SE EXISTIR)
-    // ============================================
-    // Se já existe um gráfico criado anteriormente, destroi-o antes de criar um novo
-    // Isso evita vazamentos de memória e garante que apenas um gráfico exista por vez
+        // PASSO 5: DESTRUIR GRÁFICO ANTERIOR (SE EXISTIR)
+        // Se já existe um gráfico criado anteriormente, destroi-o antes de criar um novo // vazamentos de memória e garante que apenas um gráfico exista por vez
     if (graficoHelice) {
         graficoHelice.destroy();
     }
     
-    // ============================================
-    // PASSO 6: CRIAR NOVO GRÁFICO COM CHART.JS
-    // ============================================
-    // Cria um novo gráfico de linha usando a biblioteca Chart.js
+        // PASSO 6: CRIAR NOVO GRÁFICO COM CHART.JS
+        // Cria um novo gráfico de linha usando a biblioteca Chart.js
     graficoHelice = new Chart(ctx, {
         // Tipo de gráfico: linha (line chart)
         type: 'line',
@@ -996,8 +740,7 @@ function atualizarGrafico() {
                             Math.abs(curr.v - velocidadeArredondada) < Math.abs(prev.v - velocidadeArredondada) ? curr : prev
                         );
                         // Cria array com null em todos os pontos exceto o atual
-                        const dadosMarcador = velocidades.map(() => null);
-                        // Calcula o passo para a velocidade atual exata
+                        const dadosMarcador = velocidades.map(() => null); // passo para a velocidade atual exata
                         dadosMarcador[maisProximo.i] = passoAtual;
                         return dadosMarcador;
                     })(),
@@ -1051,18 +794,15 @@ function atualizarGrafico() {
                     // Funções de callback para personalizar o conteúdo do tooltip
                     callbacks: {
                         // Personaliza o texto do label (valor) no tooltip
-                        label: function(context) {
-                            // Obtém a unidade de passo selecionada
-                            const unidadePasso = document.querySelector('input[name="unidadePasso"]:checked').value;
-                            // Obtém o texto da unidade traduzido
+                        label: function(context) { // unidade de passo selecionada
+                            const unidadePasso = document.querySelector('input[name="unidadePasso"]:checked').value; // texto da unidade traduzido
                             const unidadeText = unidadePasso === 'inches' 
                                 ? traducoes[idiomaAtual]['unidade-polegadas'] 
                                 : traducoes[idiomaAtual]['unidade-mm'];
                             // Formata o valor: milímetros sem decimais, polegadas com 1 decimal
                             const valor = unidadePasso === 'mm' 
                                 ? formatarNumero(Math.round(context.parsed.y), 0)  // Arredonda para inteiro
-                                : formatarNumero(context.parsed.y, 1);  // 1 casa decimal
-                            // Retorna o texto formatado: "12,5 polegadas" ou "317 mm"
+                                : formatarNumero(context.parsed.y, 1);  // 1 casa decimal // texto formatado: "12,5 polegadas" ou "317 mm"
                             return `${valor} ${unidadeText}`;
                         }
                     }
@@ -1076,16 +816,13 @@ function atualizarGrafico() {
                     title: {
                         display: true,  // Mostra o título
                         // Texto do título: gera dinamicamente com a unidade traduzida
-                        text: (() => {
-                            // Obtém a unidade de velocidade selecionada
-                            const unidadeVelocidade = document.querySelector('input[name="unidadeVelocidade"]:checked').value;
-                            // Obtém o texto da unidade traduzido
+                        text: (() => { // unidade de velocidade selecionada
+                            const unidadeVelocidade = document.querySelector('input[name="unidadeVelocidade"]:checked').value; // texto da unidade traduzido
                             const unidadeText = {
                                 'knots': traducoes[idiomaAtual]?.['unidade-nos'] || 'nós',  // "nós" ou "nodi"
                                 'mph': traducoes[idiomaAtual]?.['unidade-mph'] || 'mph',    // "mph"
                                 'kmh': traducoes[idiomaAtual]?.['unidade-kmh'] || 'km/h'     // "km/h"
-                            }[unidadeVelocidade];
-                            // Retorna o título traduzido: "Velocidade (nós)" ou "Velocità (nodi)"
+                            }[unidadeVelocidade]; // título traduzido: "Velocidade (nós)" ou "Velocità (nodi)"
                             return `${idiomaAtual === 'pt-BR' ? 'Velocidade' : 'Velocità'} (${unidadeText})`;
                         })(),
                         // Configuração da fonte do título
@@ -1106,14 +843,11 @@ function atualizarGrafico() {
                     title: {
                         display: true,  // Mostra o título
                         // Texto do título: gera dinamicamente com a unidade traduzida
-                        text: (() => {
-                            // Obtém a unidade de passo selecionada
-                            const unidadePasso = document.querySelector('input[name="unidadePasso"]:checked').value;
-                            // Obtém o texto da unidade traduzido
+                        text: (() => { // unidade de passo selecionada
+                            const unidadePasso = document.querySelector('input[name="unidadePasso"]:checked').value; // texto da unidade traduzido
                             const unidadeText = unidadePasso === 'inches' 
                                 ? traducoes[idiomaAtual]['unidade-polegadas']  // "polegadas" ou "pollici"
-                                : traducoes[idiomaAtual]['unidade-mm'];        // "mm"
-                            // Retorna o título traduzido: "Passo (polegadas)" ou "Passo (mm)"
+                                : traducoes[idiomaAtual]['unidade-mm'];        // "mm" // título traduzido: "Passo (polegadas)" ou "Passo (mm)"
                             return `${idiomaAtual === 'pt-BR' ? 'Passo' : 'Passo'} (${unidadeText})`;
                         })(),
                         // Configuração da fonte do título
@@ -1133,18 +867,10 @@ function atualizarGrafico() {
         }
     });
 }
-
-/**
- * CÓDIGO DE INICIALIZAÇÃO
- * =======================
- * Este código é executado quando a página termina de carregar (evento DOMContentLoaded).
- * Ele configura todos os event listeners (ouvintes de eventos) e inicializa a interface.
- */
+// CÓDIGO DE INICIALIZAÇÃO
 document.addEventListener('DOMContentLoaded', function() {
-    // ============================================
-    // PASSO 1: OBTER REFERÊNCIAS AOS ELEMENTOS DO DOM
-    // ============================================
-    // Cria um objeto com referências a todos os elementos importantes da página
+        // PASSO 1: OBTER REFERÊNCIAS AOS ELEMENTOS DO DOM
+        // Cria um objeto com referências a todos os elementos importantes da página
     // Isso facilita o acesso posterior e melhora a organização do código
     // Referências aos elementos (mantidas para compatibilidade, mas não mais usadas diretamente)
     const elementos = {
@@ -1154,25 +880,18 @@ document.addEventListener('DOMContentLoaded', function() {
         sliderSlip: document.getElementById('sliderSlip')               // Slider de slip
     };
     
-    // ============================================
-    // PASSO 2: INICIALIZAR IDIOMA
-    // ============================================
-    // Aplica o idioma salvo no localStorage (ou o padrão) à interface
-    // Isso garante que a página seja exibida no idioma preferido do usuário
+        // PASSO 2: INICIALIZAR IDIOMA
+        // Aplica o idioma salvo no localStorage (ou o padrão) à interface // que a página seja exibida no idioma preferido do usuário
     trocarIdioma(idiomaAtual);
     
-    // ============================================
-    // PASSO 3: CONFIGURAR BOTÕES DE IDIOMA
-    // ============================================
-    // Adiciona event listeners aos botões de seleção de idioma
+        // PASSO 3: CONFIGURAR BOTÕES DE IDIOMA
+    // ============================================ // Adiciona event listeners aos botões de seleção de idioma
     // Quando clicados, trocam o idioma da interface
     document.getElementById('btnPortugues').addEventListener('click', () => trocarIdioma('pt-BR'));
     document.getElementById('btnItaliano').addEventListener('click', () => trocarIdioma('it-IT'));
     
-    // ============================================
-    // PASSO 4: CONFIGURAR EVENT LISTENERS DOS SLIDERS
-    // ============================================
-    // Adiciona event listeners ao evento 'input' de cada slider
+        // PASSO 4: CONFIGURAR EVENT LISTENERS DOS SLIDERS
+    // ============================================ // Adiciona event listeners ao evento 'input' de cada slider
     // O evento 'input' é disparado sempre que o valor do slider muda
     // Quando isso acontece, a função `atualizarResultado()` é chamada para recalcular tudo
     const sliderVelocidade = document.getElementById('sliderVelocidade');
@@ -1230,10 +949,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 100));
     }
     
-    // ============================================
-    // PASSO 4B: CONFIGURAR EVENT LISTENERS DOS INPUTS EDITÁVEIS
-    // ============================================
-    // Permite edição manual dos valores, inclusive fora dos limites do slider
+        // PASSO 4B: CONFIGURAR EVENT LISTENERS DOS INPUTS EDITÁVEIS
+        // Permite edição manual dos valores, inclusive fora dos limites do slider
     const inputVelocidadeEl = document.getElementById('inputVelocidade');
     const inputReducaoEl = document.getElementById('inputReducao');
     const inputRPMEl = document.getElementById('inputRPM');
@@ -1298,10 +1015,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 300));
     }
     
-    // ============================================
-    // PASSO 5: CONFIGURAR BOTÕES DE SETA (↑ ↓)
-    // ============================================
-    // Usa a função global com aceleração exponencial
+        // PASSO 5: CONFIGURAR BOTÕES DE SETA (↑ ↓)
+        // Usa a função global com aceleração exponencial
     if (typeof configurarBotoesSliderComAceleracao === 'function') {
         // Usa função de ajuste local que atualiza inputs correspondentes
         function ajustarValorHelice(targetId, step) {
@@ -1317,10 +1032,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ============================================
-    // PASSO 6: CONFIGURAR RADIO BUTTONS DE UNIDADE DE VELOCIDADE
-    // ============================================
-    // Rastreia a unidade anterior para fazer a conversão correta quando o usuário muda
+        // PASSO 6: CONFIGURAR RADIO BUTTONS DE UNIDADE DE VELOCIDADE
+        // Rastreia a unidade anterior para fazer a conversão correta quando o usuário muda
     let unidadeVelocidadeAnterior = 'knots';
     
     // Encontra qual radio button está marcado inicialmente
@@ -1328,9 +1041,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (radio.checked) {
             unidadeVelocidadeAnterior = radio.value;  // Salva a unidade inicial
         }
-    });
-    
-    // Adiciona event listeners para quando o usuário muda a unidade de velocidade
+    }); // Adiciona event listeners para quando o usuário muda a unidade de velocidade
     document.querySelectorAll('input[name="unidadeVelocidade"]').forEach(radio => {
         radio.addEventListener('change', () => {
             // Salva a unidade anterior antes de atualizar
@@ -1344,10 +1055,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // ============================================
-    // PASSO 7: CONFIGURAR RADIO BUTTONS DE UNIDADE DE PASSO
-    // ============================================
-    // Adiciona event listeners para quando o usuário muda a unidade de passo
+        // PASSO 7: CONFIGURAR RADIO BUTTONS DE UNIDADE DE PASSO
+    // ============================================ // Adiciona event listeners para quando o usuário muda a unidade de passo
     document.querySelectorAll('input[name="unidadePasso"]').forEach(radio => {
         radio.addEventListener('change', () => {
             // Quando a unidade de passo muda, apenas recalcula os resultados
@@ -1356,10 +1065,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // ============================================
-    // PASSO 8: CONFIGURAR MEMORIAL DE CÁLCULO
-    // ============================================
-    const btnMemorial = document.getElementById('btnMemorial');
+        // PASSO 8: CONFIGURAR MEMORIAL DE CÁLCULO
+        const btnMemorial = document.getElementById('btnMemorial');
     const btnFecharMemorial = document.getElementById('btnFecharMemorial');
     const btnVoltarMemorial = document.querySelectorAll('.btn-voltar-memorial');
     
@@ -1375,10 +1082,8 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', toggleMemorial);
     });
     
-    // ============================================
-    // PASSO 9: INICIALIZAR A INTERFACE
-    // ============================================
-    // Formata os valores iniciais dos inputs para o formato brasileiro
+        // PASSO 9: INICIALIZAR A INTERFACE
+        // Formata os valores iniciais dos inputs para o formato brasileiro
     const inputReducaoInicial = document.getElementById('inputReducao');
     if (inputReducaoInicial && inputReducaoInicial.value) {
         const valorNumerico = parseFloat(inputReducaoInicial.value);

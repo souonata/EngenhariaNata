@@ -1,7 +1,5 @@
 // ajustarValorPadrao é carregado via script tag no HTML
-// ============================================
 // CALCULADORA DE BITOLA DE FIOS
-// ============================================
 //
 // Comentários didáticos em Português - Visão geral do algoritmo
 // -------------------------------------------------------------
@@ -34,85 +32,39 @@
 //    (inclui bitolas finas para cabos: 0.25, 0.5, 0.75, 1.0 mm²)
 // 4) Recalcular queda de tensão real com a bitola escolhida para verificação
 //
-// Observações:
 // - A fórmula considera apenas a resistência ôhmica do condutor
 // - Para CA, assume-se fator de potência unitário (cos φ = 1) para simplificação
 // - A queda de tensão máxima permitida para projetos residenciais no Brasil é 4% (NBR 5410)
 // - Bitolas comerciais seguem a norma brasileira (NBR 5410)
-
-// ============================================
 // CONFIGURAÇÃO DE CHAVES E SELETORES
-// ============================================
 const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
 const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
 let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
-
-// ============================================
 // CONSTANTES DO SISTEMA
 // ============================================
-
-/**
- * ============================================
- * CONSTANTE: RESISTIVIDADE DO COBRE
- * ============================================
- * 
- * Resistividade do cobre a 20°C: 0.0178 Ω·mm²/m (cobre duro)
- * 
- * Esta constante representa a resistência elétrica específica do cobre duro
- * a uma temperatura de 20°C. É usada para calcular a resistência de condutores
- * elétricos baseado em sua área de seção transversal e comprimento.
- * 
- * Fórmula da resistência: R = ρ × L / S
- * Onde:
- *   R = resistência elétrica (Ω)
- *   ρ = resistividade (Ω·mm²/m) = 0.0178 para cobre duro a 20°C
- *   L = comprimento do condutor (m)
- *   S = área de seção transversal (mm²)
- * 
- * NOTA: A resistividade varia com a temperatura e com a têmpera do cobre:
- *   - Cobre recozido (mole): 0.017241 Ω·mm²/m (NBR NM 280)
- *   - Cobre duro: 0.0178 Ω·mm²/m (NBR 5410)
- * 
- * Para aplicações práticas em instalações elétricas residenciais, utilizamos
- * o valor de 0.0178 Ω·mm²/m conforme especificado na NBR 5410, que é o valor
- * mais conservador e amplamente utilizado em projetos elétricos no Brasil.
- * 
- * REFERÊNCIAS:
- * - NBR 5410:2004 - Instalações elétricas de baixa tensão
- * - NBR NM 280:2003 - Condutores elétricos de cobre
- * - CEI 64-8 - Norma italiana para instalações elétricas
- */
 const RESISTIVIDADE_COBRE = 0.0178; // Ω·mm²/m (cobre duro a 20°C, conforme NBR 5410)
-
 // Bitolas comerciais padrão brasileiro (mm²)
 // Ordenadas do menor para o maior
 // Estas são as bitolas disponíveis no mercado brasileiro conforme norma NBR 5410
 // Inclui bitolas finas para cabos de carregadores (0.25, 0.5, 0.75, 1.0 mm²)
 const BITOLAS_COMERCIAIS = [0.25, 0.5, 0.75, 1.0, 1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240];
-
 // Disjuntores comerciais padrão (A)
 // Valores típicos disponíveis no mercado brasileiro e italiano
 const DISJUNTORES_COMERCIAIS = [6, 10, 13, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630];
-
 // Fator de segurança para dimensionamento de bitola
 // Usado no Brasil e Itália: 1.25 (25% de margem de segurança)
 // 
-// NOTA: Embora a NBR 5410 não especifique diretamente uma margem de segurança
 // de 25%, é uma prática comum entre profissionais da área adotar margens adicionais
 // para compensar possíveis variações nas condições operacionais e garantir maior
 // segurança. Este fator também é aplicado no dimensionamento de disjuntores.
 const FATOR_SEGURANCA = 1.25;
-
 // Valores típicos de tensão para corrente contínua (V)
 // Usados no slider quando o tipo de corrente é CC
 // Inclui tensões padrão: 5V, 9V, 12V, 15V, 20V
 // Índice do array corresponde ao valor do slider (0-13)
 // Limite máximo: 96V
 const TENSOES_CC_TIPICAS = [3.3, 5, 9, 12, 15, 20, 24, 36, 48, 60, 72, 84, 96];
-
-// ============================================
 // ELEMENTOS HTML (inicializados no DOMContentLoaded)
-// ============================================
 let sliderPotencia, inputPotencia;
 let sliderComprimento, inputComprimento;
 let sliderTensaoCC, inputTensaoCC;
@@ -121,31 +73,13 @@ let radioTipoCorrente;
 let radioTensaoCA;
 let secaoTensaoCC;
 let areaMinima, bitolaComercial, correnteCircuito, quedaReal;
-
 // Flag para rastrear se a tensão CC foi digitada manualmente (fora dos steps)
 // Quando true, usa o valor do input diretamente; quando false, usa o valor do slider
 let tensaoCCManual = false;
-
 // Controle para botões de seta (repetição ao segurar)
 let intervalId = null;
 let timeoutId = null;
-
-// ============================================
-// FUNÇÕES DE AJUSTE DE VALORES (Botões de Seta)
-// ============================================
-
-/**
- * Calcula o step dinâmico para o slider de potência baseado no valor atual
- * @param {number} valor - Valor atual do slider
- * @returns {number} - Step apropriado (1, 10, 50 ou 100)
- * 
- * Regras:
- * - Entre 1 e 10: step de 1
- * - Entre 100 e 1000: step de 10
- * - Entre 1000 e 3000: step de 50
- * - Entre 3000 e 10000: step de 100
- * - Entre 10 e 100: usa step de 1 (transição suave)
- */
+// FUNÇÕES DE AJUSTE DE VALORES (Botões de Seta) // step dinâmico para o slider de potência baseado no valor atual
 function obterStepPotencia(valor) {
     // Ajusta o step baseado no valor para manter velocidade consistente
     // Steps maiores para valores baixos também, para evitar travamento
@@ -173,27 +107,16 @@ function obterStepPotencia(valor) {
         return 100;
     }
 }
-
-/**
- * Aumenta ou diminui o valor de um slider
- * @param {string} targetId - ID do slider a ser ajustado
- * @param {number|string} step - Quanto adicionar ou subtrair (pode ser negativo ou "dynamic" para steps dinâmicos)
- */
+// Aumenta ou diminui o valor de um slider
 function ajustarValor(targetId, step) {
     const slider = document.getElementById(targetId);
-    if (!slider) return;
-    
-    // Obtém o valor atual do slider
-    let valor = parseFloat(slider.value) || 0;
-    
-    // Se o step for "dynamic", calcula o step apropriado baseado no valor atual
+    if (!slider) return; // valor atual do slider
+    let valor = parseFloat(slider.value) || 0; // Se step for "dynamic", calcula o step apropriado baseado no valor atual
     let stepEfetivo = step;
     if (step === 'dynamic' || step === '-dynamic') {
         const stepCalculado = obterStepPotencia(valor);
         stepEfetivo = step === 'dynamic' ? stepCalculado : -stepCalculado;
-    }
-    
-    // Calcula o novo valor
+    } // novo valor
     let novoValor = valor + stepEfetivo;
     
     // Limita ao mínimo e máximo do slider
@@ -235,29 +158,16 @@ function ajustarValor(targetId, step) {
         ajustarValorPadrao(targetId, step);
     }
 }
-
-/**
- * Função de ajuste customizada para o Bitola que suporta steps dinâmicos
- * Esta função recalcula o step a cada ajuste baseado no valor atual
- * @param {string} targetId - ID do slider
- * @param {number|string} step - Step inicial (pode ser 'dynamic' ou número)
- */
+// Função de ajuste customizada para o Bitola suporta steps dinâmicos
 function ajustarValorBitolaComAceleracao(targetId, step) {
     const slider = document.getElementById(targetId);
-    if (!slider) return;
-    
-    // Obtém o valor atual do slider
-    let valor = parseFloat(slider.value) || 0;
-    
-    // Se o step for "dynamic", calcula o step apropriado baseado no valor ATUAL
-    // Isso garante que o step seja recalculado a cada ajuste, mantendo a velocidade consistente
+    if (!slider) return; // valor atual do slider
+    let valor = parseFloat(slider.value) || 0; // Se step for "dynamic", calcula o step apropriado baseado no valor ATUAL // que o step seja recalculado a cada ajuste, mantendo a velocidade consistente
     let stepEfetivo = step;
     if (step === 'dynamic' || step === '-dynamic') {
         const stepCalculado = obterStepPotencia(valor);
         stepEfetivo = step === 'dynamic' ? stepCalculado : -stepCalculado;
-    }
-    
-    // Calcula o novo valor
+    } // novo valor
     let novoValor = valor + stepEfetivo;
     
     // Limita ao mínimo e máximo do slider
@@ -277,8 +187,7 @@ function ajustarValorBitolaComAceleracao(targetId, step) {
     // Garante que não ultrapasse os limites (mas permite movimento mesmo próximo dos limites)
     novoValor = Math.max(min, Math.min(max, novoValor));
     
-    // NÃO força valores min/max quando próximo do fim do curso
-    // Isso permite que o usuário continue ajustando mesmo quando próximo dos limites
+    // NÃO força valores min/max quando próximo do fim do curso // que o usuário continue ajustando mesmo quando próximo dos limites
     // A detecção de limite é feita na função iniciarRepeticao, não aqui
     
     // Atualiza o slider
@@ -287,12 +196,7 @@ function ajustarValorBitolaComAceleracao(targetId, step) {
     // Dispara evento de input para atualizar a interface (sem throttle para reduzir lag)
     slider.dispatchEvent(new Event('input', { bubbles: true }));
 }
-
-/**
- * Inicia a repetição contínua ao segurar um botão de seta com aceleração exponencial
- * @param {string} targetId - ID do slider alvo
- * @param {number|string} step - Passo a ser aplicado (pode ser 'dynamic')
- */
+// Inicia a repetição contínua ao segurar um botão de seta com aceleração exponencial
 function iniciarRepeticao(targetId, step) {
     // Para qualquer repetição anterior
     pararRepeticao();
@@ -329,9 +233,7 @@ function iniciarRepeticao(targetId, step) {
             lastSecond = currentSecond;
             // Reinicia o intervalo com a nova velocidade
             intervalId = setInterval(doAdjust, currentInterval);
-        }
-        
-        // Verifica o valor antes do ajuste
+        } // valor antes do ajuste
         const slider = document.getElementById(targetId);
         if (slider) {
             const valorAntes = parseFloat(slider.value) || 0;
@@ -341,13 +243,10 @@ function iniciarRepeticao(targetId, step) {
             const max = parseFloat(slider.max) || 10000;
             
             // Ajusta o valor (recalcula step dinâmico a cada ajuste)
-            ajustarValorBitolaComAceleracao(targetId, step);
-            
-            // Verifica o valor depois do ajuste
+            ajustarValorBitolaComAceleracao(targetId, step); // valor depois do ajuste
             const valorDepois = parseFloat(slider.value) || 0;
             
-            // Para apenas se o valor não mudou E está no limite
-            // Isso permite movimento mesmo quando próximo dos limites
+            // Para apenas se o valor não mudou E está no limite // movimento mesmo quando próximo dos limites
             if (valorAntes === valorDepois) {
                 if ((step === 'dynamic' || (typeof step === 'number' && step > 0)) && valorDepois >= max) {
                     // Se está no máximo e tentando aumentar, mas o valor não mudou, para
@@ -372,10 +271,7 @@ function iniciarRepeticao(targetId, step) {
     // Armazena referência para poder parar
     window._bitolaRepeticao = { isActive: () => isActive, stop: () => { isActive = false; } };
 }
-
-/**
- * Para a repetição contínua quando o botão é solto
- */
+// Para a repetição contínua quando o botão é solto
 function pararRepeticao() {
     if (timeoutId) {
         clearTimeout(timeoutId);
@@ -390,56 +286,12 @@ function pararRepeticao() {
         delete window._bitolaRepeticao;
     }
 }
-
-// ============================================
-// FUNÇÕES DE CÁLCULO
-// ============================================
-
-/**
- * Obtém o valor numérico de um input formatado
- * Remove pontos (milhares) e substitui vírgula (decimal) por ponto
- * @param {string} valorFormatado - Valor formatado (ex: "1.000,50")
- * @returns {number} - Valor numérico (ex: 1000.50)
- */
+// FUNÇÕES DE CÁLCULO // valor numérico de um input formatado
 // Funções de formatação agora estão em assets/js/site-config.js
 // obterValorNumericoFormatado -> obterValorNumericoFormatado (global)
 // formatarNumero -> formatarNumero (global)
 // formatarPotencia -> formatarPotencia (global)
-
-/**
- * ============================================
- * FUNÇÃO: CALCULAR CORRENTE DO CIRCUITO
- * ============================================
- * 
- * Calcula a corrente elétrica necessária para alimentar uma carga
- * com determinada potência em uma tensão específica.
- * 
- * @param {number} potencia - Potência elétrica em watts (W)
- * @param {number} tensao - Tensão de operação em volts (V)
- * @returns {number} Corrente elétrica em amperes (A)
- * 
- * FÓRMULA:
- *   I = P / V
- * 
- * Onde:
- *   I = corrente (A)
- *   P = potência (W)
- *   V = tensão (V)
- * 
- * OBSERVAÇÕES:
- * - Para corrente contínua (CC): a fórmula é direta
- * - Para corrente alternada (CA): assume-se fator de potência unitário (cos φ = 1)
- *   para simplificação. Em circuitos com cargas reativas (motores, etc.),
- *   seria necessário considerar: I = P / (V × cos φ)
- * 
- * EXEMPLO:
- *   Potência: 2200 W
- *   Tensão: 220 V
- *   Corrente: 2200 / 220 = 10 A
- * 
- * VALIDAÇÃO:
- * - Se tensão = 0, retorna 0 para evitar divisão por zero
- */
+// ============================================
 function calcularCorrente(potencia, tensao) {
     // Proteção contra divisão por zero
     if (tensao === 0) return 0;
@@ -449,85 +301,19 @@ function calcularCorrente(potencia, tensao) {
     // Para cargas reativas, seria necessário: I = P / (V × cos φ)
     return potencia / tensao;
 }
-
-/**
- * ============================================
- * FUNÇÃO: CALCULAR ÁREA DE SEÇÃO MÍNIMA
- * ============================================
- * 
- * Calcula a área de seção transversal mínima necessária para um condutor
- * elétrico que atenda aos requisitos de queda de tensão máxima permitida.
- * 
- * @param {number} comprimento - Distância do circuito em metros (m)
- *   IMPORTANTE: Este é o comprimento de UM condutor (distância entre fonte e carga),
- *   não a soma dos dois condutores. A fórmula já multiplica por 2 para considerar
- *   ida e volta.
- * @param {number} corrente - Corrente do circuito em amperes (A)
- * @param {number} tensao - Tensão de operação em volts (V)
- * @param {number} quedaPercentual - Queda de tensão máxima permitida em percentual (%)
- *   Valores típicos: 3% para instalações residenciais (Brasil), 3-5% para outros usos
- * @returns {number} Área de seção mínima em milímetros quadrados (mm²)
- * 
- * DEDUÇÃO DA FÓRMULA:
- * 
- * 1. Queda de tensão em um circuito com dois condutores (ida e volta):
- *    ΔV = 2 × R × I
- * 
- * 2. Resistência de um condutor: R = ρ × L / S
- *    Onde:
- *      R = resistência (Ω)
- *      ρ = resistividade do cobre (0.0175 Ω·mm²/m)
- *      L = comprimento do condutor (m)
- *      S = área de seção transversal (mm²)
- * 
- * 3. Substituindo R na fórmula de queda de tensão:
- *    ΔV = 2 × (ρ × L / S) × I
- *    ΔV = (2 × ρ × L × I) / S
- * 
- * 4. Isolando S (área de seção):
- *    S = (2 × ρ × L × I) / ΔV
- * 
- * Onde:
- *   S = área de seção mínima (mm²)
- *   ρ = resistividade do cobre = 0.0175 Ω·mm²/m
- *   L = distância entre fonte e carga (m) - apenas um condutor
- *   I = corrente do circuito (A)
- *   ΔV = queda de tensão máxima em volts = (queda% / 100) × V
- * 
- * EXEMPLO PRÁTICO:
- *   Potência: 2200 W
- *   Tensão: 220 V
- *   Corrente: 10 A (calculada como 2200 / 220)
- *   Distância: 30 m
- *   Queda máxima: 4% (conforme NBR 5410)
- *   
- *   ΔV = (3 / 100) × 220 = 6.6 V
- *   S = (2 × 0.0175 × 30 × 10) / 6.6
- *   S = 10.5 / 6.6
- *   S = 1.59 mm²
- *   
- *   Bitola comercial mínima: 2.5 mm² (com fator de segurança)
- * 
- * VALIDAÇÃO:
- * - Se quedaVolts = 0, retorna Infinity (evita divisão por zero)
- */
+// ============================================
 function calcularAreaMinima(comprimento, corrente, tensao, quedaPercentual) {
-    // ============================================
-    // PASSO 1: CONVERTER QUEDA PERCENTUAL PARA VOLTS
-    // ============================================
-    // A queda de tensão é especificada em percentual (ex: 4%),
+        // PASSO 1: CONVERTER QUEDA PERCENTUAL PARA VOLTS
+        // A queda de tensão é especificada em percentual,
     // mas a fórmula precisa do valor em volts.
     // Exemplo: 3% de 220V = 6.6V
     const quedaVolts = (quedaPercentual / 100) * tensao;
     
-    // Proteção contra divisão por zero
-    // Se a queda permitida for zero, nenhuma bitola seria suficiente
+    // Proteção contra divisão por zero // Se queda permitida for zero, nenhuma bitola seria suficiente
     if (quedaVolts === 0) return Infinity;
     
-    // ============================================
-    // PASSO 2: CALCULAR ÁREA MÍNIMA
-    // ============================================
-    // Fórmula: S = (2 × ρ × L × I) / ΔV
+        // PASSO 2: CALCULAR ÁREA MÍNIMA
+        // Fórmula: S = (2 × ρ × L × I) / ΔV
     // 
     // O fator 2 considera que a queda de tensão ocorre em ambos os condutores:
     // - Condutor de ida (fase/positivo): perde ΔV/2
@@ -540,26 +326,17 @@ function calcularAreaMinima(comprimento, corrente, tensao, quedaPercentual) {
     
     return areaMinima;
 }
-
-/**
- * Seleciona a bitola comercial que atende ao requisito mínimo com fator de segurança
- * @param {number} areaMinima - Área de seção mínima necessária (mm²)
- * @returns {number} - Bitola comercial em milímetros quadrados (mm²)
- * 
- * Aplica fator de segurança de 1.25 (25% de margem) conforme prática no Brasil e Itália
- */
+// Seleciona a bitola comercial atende ao requisito mínimo com fator de segurança
 function selecionarBitolaComercial(areaMinima) {
     // Validação: se área mínima é inválida, retorna a menor bitola disponível
     if (!isFinite(areaMinima) || areaMinima <= 0) {
         return BITOLAS_COMERCIAIS[0];
     }
     
-    // Aplica fator de segurança (1.25 = 25% de margem)
-    // Isso garante que a bitola escolhida tenha capacidade superior à necessária
+    // Aplica fator de segurança (1.25 = 25% de margem) // que a bitola escolhida tenha capacidade superior à necessária
     const areaComSeguranca = areaMinima * FATOR_SEGURANCA;
     
-    // Percorre as bitolas comerciais do menor para o maior
-    // Retorna a primeira que seja maior ou igual à área mínima com segurança
+    // Percorre as bitolas comerciais do menor para o maior // primeira que seja maior ou igual à área mínima com segurança
     for (let i = 0; i < BITOLAS_COMERCIAIS.length; i++) {
         if (BITOLAS_COMERCIAIS[i] >= areaComSeguranca) {
             return BITOLAS_COMERCIAIS[i];
@@ -569,22 +346,13 @@ function selecionarBitolaComercial(areaMinima) {
     // Se nenhuma bitola atender (área muito grande), retorna a maior disponível
     return BITOLAS_COMERCIAIS[BITOLAS_COMERCIAIS.length - 1];
 }
-
-/**
- * Seleciona o disjuntor comercial mais próximo para proteger o circuito
- * @param {number} corrente - Corrente do circuito em amperes (A)
- * @returns {number} - Disjuntor comercial em amperes (A)
- * 
- * O disjuntor deve ser maior que a corrente do circuito para permitir funcionamento normal,
- * mas próximo o suficiente para proteger adequadamente
- */
+// Seleciona o disjuntor comercial mais próximo para proteger o circuito
 function selecionarDisjuntorComercial(corrente) {
     // Aplica fator de segurança de 1.25 para dimensionar o disjuntor
     // O disjuntor deve suportar 25% a mais que a corrente nominal
     const correnteComSeguranca = corrente * FATOR_SEGURANCA;
     
-    // Percorre os disjuntores comerciais do menor para o maior
-    // Retorna o primeiro que seja maior ou igual à corrente com segurança
+    // Percorre os disjuntores comerciais do menor para o maior // primeiro que seja maior ou igual à corrente com segurança
     for (let i = 0; i < DISJUNTORES_COMERCIAIS.length; i++) {
         if (DISJUNTORES_COMERCIAIS[i] >= correnteComSeguranca) {
             return DISJUNTORES_COMERCIAIS[i];
@@ -594,92 +362,25 @@ function selecionarDisjuntorComercial(corrente) {
     // Se nenhum disjuntor atender, retorna o maior disponível
     return DISJUNTORES_COMERCIAIS[DISJUNTORES_COMERCIAIS.length - 1];
 }
-
-/**
- * ============================================
- * FUNÇÃO: CALCULAR QUEDA DE TENSÃO REAL
- * ============================================
- * 
- * Calcula a queda de tensão real que ocorrerá em um circuito usando
- * uma bitola comercial específica. Esta função é usada para verificar
- * se a bitola selecionada atende aos requisitos de queda de tensão.
- * 
- * @param {number} comprimento - Distância do circuito em metros (m)
- *   IMPORTANTE: Este é o comprimento de UM condutor (distância entre fonte e carga),
- *   não a soma dos dois condutores. A fórmula já multiplica por 2 para considerar
- *   ida e volta.
- * @param {number} corrente - Corrente do circuito em amperes (A)
- * @param {number} tensao - Tensão de operação em volts (V)
- * @param {number} bitola - Bitola comercial em milímetros quadrados (mm²)
- *   Exemplos: 1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240
- * @returns {number} Queda de tensão real em percentual (%)
- * 
- * DEDUÇÃO DA FÓRMULA:
- * 
- * 1. Resistência de um condutor: R = ρ × L / S
- * 
- * 2. Queda de tensão em um circuito com dois condutores:
- *    ΔV = 2 × R × I
- * 
- * 3. Substituindo R:
- *    ΔV = 2 × (ρ × L / S) × I
- *    ΔV = (2 × ρ × L × I) / S
- * 
- * 4. Convertendo para percentual:
- *    ΔV% = (ΔV / V) × 100
- * 
- * Onde:
- *   ΔV = queda de tensão em volts
- *   ρ = resistividade do cobre = 0.0175 Ω·mm²/m
- *   L = distância entre fonte e carga (m) - apenas um condutor
- *   I = corrente do circuito (A)
- *   S = área de seção do condutor (mm²) = bitola
- *   V = tensão de operação (V)
- * 
- * EXEMPLO PRÁTICO:
- *   Corrente: 10 A
- *   Tensão: 220 V
- *   Distância: 30 m
- *   Bitola: 2.5 mm²
- *   
- *   ΔV = (2 × 0.0175 × 30 × 10) / 2.5
- *   ΔV = 10.5 / 2.5
- *   ΔV = 4.2 V
- *   
- *   ΔV% = (4.2 / 220) × 100 = 1.91%
- *   
- *   Resultado: 1.91% (dentro do limite de 4% estabelecido pela NBR 5410)
- * 
- * VALIDAÇÃO:
- * - Se tensão = 0 ou bitola = 0, retorna 0 para evitar divisão por zero
- */
+// ============================================
 function calcularQuedaReal(comprimento, corrente, tensao, bitola) {
     // Proteção contra divisão por zero
     if (tensao === 0 || bitola === 0) return 0;
     
-    // ============================================
-    // PASSO 1: CALCULAR QUEDA DE TENSÃO EM VOLTS
-    // ============================================
-    // Fórmula: ΔV = (2 × ρ × L × I) / S
+        // PASSO 1: CALCULAR QUEDA DE TENSÃO EM VOLTS
+        // Fórmula: ΔV = (2 × ρ × L × I) / S
     // 
     // O fator 2 considera que a queda ocorre em ambos os condutores (ida e volta).
     // O comprimento L é a distância entre fonte e carga (não a soma dos condutores).
     const quedaVolts = (2 * RESISTIVIDADE_COBRE * comprimento * corrente) / bitola;
     
-    // ============================================
-    // PASSO 2: CONVERTER PARA PERCENTUAL
-    // ============================================
-    // A queda de tensão é expressa como percentual da tensão nominal
-    // para facilitar a comparação com limites recomendados (ex: 3%)
+        // PASSO 2: CONVERTER PARA PERCENTUAL
+        // A queda de tensão é expressa como percentual da tensão nominal
+    // para facilitar a comparação com limites recomendados
     const quedaPercentual = (quedaVolts / tensao) * 100;
     
     return quedaPercentual;
-}
-
-/**
- * Obtém a tensão atual baseada no tipo de corrente selecionado
- * @returns {number} - Tensão em volts (V)
- */
+} // tensão atual baseada no tipo de corrente selecionado
 function obterTensaoAtual() {
     const tipoCorrente = document.querySelector('input[name="tipoCorrente"]:checked')?.value;
     
@@ -701,17 +402,11 @@ function obterTensaoAtual() {
         return TENSOES_CC_TIPICAS[indice] || 12;
     }
 }
-
-/**
- * Atualiza a interface com os resultados do cálculo
- */
-function atualizarResultados() {
-    // Verifica se os elementos necessários existem
+// Atualiza a interface com os resultados do cálculo
+function atualizarResultados() { // elementos necessários existem
     if (!inputPotencia || !inputComprimento || !inputQuedaTensao) {
         return;
-    }
-    
-    // Obtém os valores dos inputs
+    } // valores dos inputs
     // Para potência, converte valor com sufixos (k/M/m) para número
     const potencia = obterValorNumericoComSufixo(inputPotencia.value);
     
@@ -727,18 +422,12 @@ function atualizarResultados() {
         if (quedaReal) quedaReal.textContent = '-';
         if (disjuntorComercial) disjuntorComercial.textContent = '-';
         return;
-    }
-    
-    // Calcula a corrente do circuito
-    const corrente = calcularCorrente(potencia, tensao);
-    
-    // Calcula a área de seção mínima
+    } // corrente do circuito
+    const corrente = calcularCorrente(potencia, tensao); // área de seção mínima
     const areaMin = calcularAreaMinima(comprimento, corrente, tensao, quedaPercentual);
     
     // Seleciona a bitola comercial (já aplica fator de segurança internamente)
-    const bitola = selecionarBitolaComercial(areaMin);
-    
-    // Calcula a queda de tensão real com a bitola escolhida
+    const bitola = selecionarBitolaComercial(areaMin); // queda de tensão real com a bitola escolhida
     const quedaRealPercentual = calcularQuedaReal(comprimento, corrente, tensao, bitola);
     
     // Seleciona o disjuntor comercial recomendado
@@ -746,7 +435,7 @@ function atualizarResultados() {
     
     // Atualiza a interface (verificando se os elementos existem)
     // Para área mínima e bitola comercial, usar formatarNumeroSemZerosDesnecessarios
-    // para remover zeros desnecessários (ex: 12,00 → 12, 16,20 → 16,2)
+    // para remover zeros desnecessários
     if (areaMinima) {
         if (isFinite(areaMin) && areaMin > 0) {
             areaMinima.textContent = formatarNumeroSemZerosDesnecessarios(areaMin, 2) + ' mm²';
@@ -770,15 +459,7 @@ function atualizarResultados() {
         atualizarMemorialComValores();
     }
 }
-
-/**
- * Formata número removendo zeros desnecessários
- * Se o número for inteiro, mostra sem decimais
- * Se tiver decimais significativos, mostra até 2 casas decimais
- * @param {number} valor - Valor numérico
- * @param {number} maxDecimais - Número máximo de casas decimais (padrão: 2)
- * @returns {string} Valor formatado sem zeros desnecessários
- */
+// Formata número removendo zeros desnecessários
 function formatarNumeroSemZerosDesnecessarios(valor, maxDecimais = 2) {
     if (isNaN(valor) || valor === null || valor === undefined) return '-';
     
@@ -801,10 +482,7 @@ function formatarNumeroSemZerosDesnecessarios(valor, maxDecimais = 2) {
     
     return valorFormatado;
 }
-
-/**
- * Atualiza a exibição da tensão CC baseada no slider
- */
+// Atualiza a exibição da tensão CC baseada no slider
 function atualizarTensaoCC() {
     // Quando o slider é movido, desativa o modo manual
     tensaoCCManual = false;
@@ -814,10 +492,7 @@ function atualizarTensaoCC() {
     if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputTensaoCC);
     atualizarResultados();
 }
-
-/**
- * Alterna entre os controles de tensão CA e CC
- */
+// Alterna entre os controles de tensão CA e CC
 function alternarTipoCorrente() {
     const tipoCorrente = document.querySelector('input[name="tipoCorrente"]:checked')?.value;
     const tensaoCAInline = document.getElementById('tensaoCAInline');
@@ -843,14 +518,8 @@ function alternarTipoCorrente() {
     // Recalcula os resultados
     atualizarResultados();
 }
-
-// ============================================
 // SISTEMA DE INTERNACIONALIZAÇÃO (i18n)
-// ============================================
-
-/**
- * Dicionário de traduções
- */
+// Dicionário de traduções
 const traducoes = {
     'pt-BR': {
         'app-title': '🔌 Calculadora de Bitola de Fios',
@@ -1017,15 +686,8 @@ const traducoes = {
         'tooltip-queda-tensao-texto': 'La caduta di tensione massima è la percentuale di riduzione di tensione consentita lungo il circuito. Valori minori garantiscono migliori prestazioni degli apparecchi, ma richiedono fili più spessi. Per impianti elettrici residenziali in Italia, la norma CEI 64-8 (9ª edizione, 2024) stabilisce il limite massimo del 4% per la caduta di tensione nei circuiti terminali. Valori maggiori possono causare problemi di funzionamento degli apparecchi e non sono conformi alle normative italiane.'
     }
 };
-
-// ============================================
 // FUNÇÕES DO MEMORIAL DE CÁLCULO
-// ============================================
-
-/**
- * Alterna a exibição do memorial de cálculo
- * Esconde a seção de resultados e mostra o memorial, ou vice-versa
- */
+// Alterna a exibição do memorial de cálculo
 function toggleMemorial() {
     const memorialSection = document.getElementById('memorialSection');
     const resultadosSection = document.getElementById('resultadosSection');
@@ -1046,11 +708,7 @@ function toggleMemorial() {
         if (resultadosSection) resultadosSection.style.display = 'block';
     }
 }
-
-/**
- * Atualiza o memorial de cálculo com os valores atuais dos cálculos
- * Preenche os exemplos e o resumo com os valores reais calculados
- */
+// Atualiza o memorial de cálculo com os valores atuais dos cálculos
 function atualizarMemorialComValores() {
     // Obter valores atuais
     const potencia = obterValorNumericoComSufixo(inputPotencia.value);
@@ -1061,9 +719,7 @@ function atualizarMemorialComValores() {
     // Validação básica
     if (potencia <= 0 || comprimento <= 0 || tensao <= 0 || quedaPercentual <= 0) {
         return;
-    }
-    
-    // Calcula os valores
+    } // valores
     const corrente = calcularCorrente(potencia, tensao);
     const areaMin = calcularAreaMinima(comprimento, corrente, tensao, quedaPercentual);
     const bitola = selecionarBitolaComercial(areaMin);
@@ -1122,11 +778,7 @@ function atualizarMemorialComValores() {
     const resumoDisjuntor = document.getElementById('resumo-disjuntor');
     if (resumoDisjuntor) resumoDisjuntor.textContent = `${formatarNumeroComSufixo(disjuntor, 0)} A`;
 }
-
-/**
- * Troca o idioma da interface
- * @param {string} novoIdioma - Código do idioma ('pt-BR' ou 'it-IT')
- */
+// Troca o idioma da interface
 function trocarIdioma(novoIdioma) {
     idiomaAtual = novoIdioma;
     localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
@@ -1167,10 +819,7 @@ function trocarIdioma(novoIdioma) {
     // Recalcula resultados para atualizar formatação numérica
     atualizarResultados();
 }
-
-// ============================================
 // INICIALIZAÇÃO (quando a página carrega)
-// ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
     // Obtém referências aos elementos HTML
@@ -1264,8 +913,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 inputPotencia.value = formatarNumeroSemZerosDesnecessarios(valor, 1);
             }
-        } else if (inputPotencia.value.trim() === '') {
-            // Se o campo estiver vazio, mantém vazio
+        } else if (inputPotencia.value.trim() === '') { // Se campo estiver vazio, mantém vazio
             inputPotencia.value = '';
         }
         if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPotencia);

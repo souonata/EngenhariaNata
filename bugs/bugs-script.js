@@ -1,14 +1,9 @@
-// ============================================
 // BUG REPORT FORM SCRIPT
-// ============================================
-// NOTA: Este arquivo contém console.log intencionais para debug
 // do sistema de envio de relatórios de bugs. Eles são úteis para
 // diagnosticar problemas de envio ao Google Forms.
-
 // Configuração do Google Forms
 const USE_GOOGLE_FORMS = true;
 const FORM_ACTION_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSc3Qo7Otct-L7mN2qS9r967oBol6n6gnsEJz2nfkz89sSpBcQ/formResponse';
-
 // IDs dos campos do Google Form
 // Configure manualmente aqui se a obtenção automática não funcionar
 // Veja o arquivo OBTER_ENTRY_IDS.md para instruções
@@ -16,13 +11,11 @@ const GOOGLE_FORM_ENTRY_IDS_MANUAL = {
     description: 'entry.1073025523', // Descrição do Bug
     contact: 'entry.1357011976'      // Contato (opcional)
 };
-
 // IDs obtidos automaticamente (serão mesclados com os manuais)
 let GOOGLE_FORM_ENTRY_IDS = {
     description: GOOGLE_FORM_ENTRY_IDS_MANUAL.description,
     contact: GOOGLE_FORM_ENTRY_IDS_MANUAL.contact
 };
-
 // Função para inicializar os Entry IDs (usa apenas os manuais devido a CORS)
 function inicializarEntryIDs() {
     // Usa apenas os IDs manuais (obtenção automática bloqueada por CORS)
@@ -43,11 +36,9 @@ function inicializarEntryIDs() {
     
     return GOOGLE_FORM_ENTRY_IDS;
 }
-
 // Idioma atual
 const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido' };
 let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || 'pt-BR';
-
 // Traduções
 const traducoes = {
     'pt-BR': {
@@ -103,7 +94,6 @@ const traducoes = {
         'footer': '💻 Segnala Bug - Engenharia Nata @ 2025'
     }
 };
-
 // Função para trocar idioma
 function trocarIdioma(novoIdioma) {
     idiomaAtual = novoIdioma;
@@ -137,7 +127,6 @@ function trocarIdioma(novoIdioma) {
         }
     });
 }
-
 // Mostrar mensagem de status
 function showStatus(type, message) {
     const statusDiv = document.getElementById('statusMessage');
@@ -151,7 +140,6 @@ function showStatus(type, message) {
         }, 5000);
     }
 }
-
 // Mostrar mensagem de agradecimento e redirecionar
 function mostrarAgradecimentoERedirecionar() {
     const mensagem = traducoes[idiomaAtual]['bug-thank-you'];
@@ -192,9 +180,7 @@ function mostrarAgradecimentoERedirecionar() {
     `;
     
     overlay.appendChild(modal);
-    document.body.appendChild(overlay);
-    
-    // Adiciona animações CSS se não existirem
+    document.body.appendChild(overlay); // Adiciona animações CSS se não existirem
     if (!document.getElementById('bug-modal-styles')) {
         const style = document.createElement('style');
         style.id = 'bug-modal-styles';
@@ -219,7 +205,6 @@ function mostrarAgradecimentoERedirecionar() {
         }, 300);
     }, 3000);
 }
-
 // Enviar dados para Google Form via POST usando formulário HTML oculto
 async function enviarParaGoogleForm(formData) {
     return new Promise((resolve, reject) => {
@@ -232,10 +217,8 @@ async function enviarParaGoogleForm(formData) {
         enviarFormularioOculto(formData, resolve, reject);
     });
 }
-
 // Função auxiliar para enviar usando formulário HTML oculto
-function enviarFormularioOculto(formData, resolve, reject) {
-    // Verifica se temos pelo menos o campo obrigatório (descrição)
+function enviarFormularioOculto(formData, resolve, reject) { // Verifica temos pelo menos o campo obrigatório (descrição)
     if (!GOOGLE_FORM_ENTRY_IDS.description) {
         console.error('❌ Entry ID da descrição não configurado! Configure em GOOGLE_FORM_ENTRY_IDS_MANUAL ou veja OBTER_ENTRY_IDS.md');
         reject(new Error('Entry ID da descrição não configurado. Configure manualmente ou veja OBTER_ENTRY_IDS.md para instruções.'));
@@ -257,9 +240,7 @@ function enviarFormularioOculto(formData, resolve, reject) {
         iframe.name = 'hidden_iframe';
         iframe.style.display = 'none';
         document.body.appendChild(iframe);
-    }
-    
-    // Adiciona campos ao formulário
+    } // Adiciona campos ao formulário
     // Campo Descrição (obrigatório)
     if (GOOGLE_FORM_ENTRY_IDS.description) {
         const inputDesc = document.createElement('input');
@@ -278,9 +259,7 @@ function enviarFormularioOculto(formData, resolve, reject) {
         inputContact.value = formData.contact.trim();
         form.appendChild(inputContact);
         console.log(`✅ Enviando contato: "${formData.contact}" para ${GOOGLE_FORM_ENTRY_IDS.contact}`);
-    }
-    
-    // Adiciona campos obrigatórios do Google Forms
+    } // Adiciona campos obrigatórios do Google Forms
     const draftResponse = document.createElement('input');
     draftResponse.type = 'hidden';
     draftResponse.name = 'draftResponse';
@@ -303,9 +282,7 @@ function enviarFormularioOculto(formData, resolve, reject) {
     partialResponse.type = 'hidden';
     partialResponse.name = 'partialResponse';
     partialResponse.value = '[]';
-    form.appendChild(partialResponse);
-    
-    // Adiciona o formulário ao body
+    form.appendChild(partialResponse); // Adiciona o formulário ao body
     document.body.appendChild(form);
     
     // Variável para controlar se já foi resolvido
@@ -315,8 +292,7 @@ function enviarFormularioOculto(formData, resolve, reject) {
     iframe.onload = () => {
         if (resolved) return;
         resolved = true;
-        console.log('✅ Formulário enviado com sucesso!');
-        // Remove o formulário
+        console.log('✅ Formulário enviado com sucesso!'); // Remove o formulário
         if (form.parentNode) {
             document.body.removeChild(form);
         }
@@ -328,8 +304,7 @@ function enviarFormularioOculto(formData, resolve, reject) {
     iframe.onerror = () => {
         if (resolved) return;
         resolved = true;
-        console.warn('⚠️ Erro ao carregar iframe, mas o formulário pode ter sido enviado');
-        // Remove o formulário
+        console.warn('⚠️ Erro ao carregar iframe, mas o formulário pode ter sido enviado'); // Remove o formulário
         if (form.parentNode) {
             document.body.removeChild(form);
         }
@@ -363,7 +338,6 @@ function enviarFormularioOculto(formData, resolve, reject) {
         reject(error);
     }
 }
-
 // Enviar formulário
 async function enviarFormulario(e) {
     e.preventDefault();
@@ -396,8 +370,7 @@ async function enviarFormulario(e) {
             url: window.location.href
         };
         
-        // Sempre tenta enviar para o Google Form
-        // Adiciona timeout adicional para evitar travamento
+        // Sempre tenta enviar para o Google Form // Adiciona timeout adicional para evitar travamento
         const timeoutPromise = new Promise((_, reject) => {
             setTimeout(() => reject(new Error('Timeout ao enviar formulário')), 8000);
         });
@@ -443,7 +416,6 @@ async function enviarFormulario(e) {
             submitBtn.textContent = traducoes[idiomaAtual]['bug-button-submit'];
         }
 }
-
 // Inicialização
 document.addEventListener('DOMContentLoaded', async () => {
     // Event listeners

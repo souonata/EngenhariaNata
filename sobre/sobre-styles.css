@@ -19,7 +19,6 @@ body {
     padding: 15px 0 110px 0;  /* Padding topo/baixo, sem lateral */
 }
 
-
 /* ============================================
    CONTAINER PRINCIPAL
    ============================================ */
@@ -102,7 +101,6 @@ header h1 {
 .card-header-clicavel:active {
     background: var(--accent-active-bg);
 }
-
 
 .seta-expansao {
     margin-left: auto;

@@ -1,10 +1,6 @@
-// ============================================
-// SERVICE WORKER - DESINSTALAÇÃO
-// ============================================
-// Este service worker remove todos os caches e se auto-desregistra
-// para garantir que o site sempre carregue do servidor
-
-// Remove todos os caches na instalação
+// Remove todos os caches e desregistra o service worker
+// Garante que o site sempre carregue do servidor
+// Evento de instalação - remove caches existentes
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -20,8 +16,7 @@ self.addEventListener('install', (event) => {
         })
     );
 });
-
-// Desregistra o service worker na ativação
+// Evento de ativação - desregistra o service worker
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -38,10 +33,8 @@ self.addEventListener('activate', (event) => {
         })
     );
 });
-
-// Não intercepta nenhuma requisição - deixa tudo ir direto para o servidor
+// Evento de fetch - não intercepta requisições
 self.addEventListener('fetch', (event) => {
-    // Não faz nada - requisições vão direto para a rede
     return;
 });
 

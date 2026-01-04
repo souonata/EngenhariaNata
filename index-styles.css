@@ -1,101 +1,63 @@
-/* ============================================
-   RESET GLOBAL - Remove margens e paddings padrão
-   ============================================ */
+/* Reset de margens e paddings */
 * {
-    margin: 0;           /* Remove margem de TODOS os elementos */
-    padding: 0;          /* Remove padding de TODOS os elementos */
-    box-sizing: border-box;  /* Faz width incluir border e padding */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* Bloqueia scroll horizontal em TODA a página */
+/* Bloqueia scroll horizontal */
 html {
     overflow-x: hidden;
     width: 100%;
-    /* Desabilita zoom com pinch (dois dedos) no iOS */
     touch-action: pan-y;
 }
 
-/* ============================================
-   BODY - Estilo da página inteira
-   ============================================ */
+/* Estilo do body */
 body {
-    /* Fonte do sistema (igual iPhone/Android) */
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    
-    /* Ocupa toda a altura da janela */
     min-height: 100vh;
-    height: auto; /* Ajusta altura conforme conteúdo */
-    
-    /* Layout em coluna: seletor de idioma acima do celular */
+    height: auto;
     display: flex;
     flex-direction: column;
-    align-items: center;      /* Centraliza horizontalmente */
-    gap: 15px;                /* Espaço mínimo entre seletor e celular */
-    
-        /* Padding mínimo no topo e embaixo - sem padding lateral para aproveitar toda a largura */
+    align-items: center;
+    gap: 15px;
     padding: 15px 0 20px 0;
-    
-    /* BLOQUEIA scroll horizontal, permite vertical apenas se necessário */
     overflow-x: hidden;
     overflow-y: auto;
     width: 100%;
     position: relative;
-    
-    /* Fundo verde Engenharia Nata */
     background: var(--site-bg, #4e7262);
 }
 
-/* ============================================
-   DEVICE-SCREEN - Simula a tela de um celular
-   ============================================ */
+/* Simula tela de celular */
 .device-screen {
-    /* Largura automática: se adapta ao conteúdo e espaço disponível */
     width: 100%;
     max-width: none;
-    /* Largura mínima baseada no conteúdo: relógio (12:30:00 + Qui 05/12) ou logo (ENGENHARIA)
-       Com paddings reduzidos: horário ~144px + data ~135px + padding 20px = ~299px
-       Logo: ENGENHARIA ~180px + ícone 32px + gap 12px + padding = ~224px
-       Usando o maior, mas permitindo encolher mais */
-    min-width: 200px; /* Mínimo para caber relógio ou logo - reduzido para permitir mais compressão */
-    
-    /* Altura automática baseada no conteúdo */
+    min-width: 200px;
     min-height: 400px;
     height: auto;
     max-height: none;
-    
-    /* Fundo escuro com gradiente para simular tela de celular */
     background: linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 100%);
-    
-    /* Cantos arredondados estilo celular */
     border-radius: 40px;
-    
-    /* Sombra para dar profundidade */
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-    
-    /* Espaçamento interno - reduzido para permitir largura menor */
     padding: 12px 8px;
-    
-    /* Layout em coluna */
     display: flex;
     flex-direction: column;
     position: relative;
     overflow: visible;
 }
 
-/* ============================================
-   BARRA DE STATUS - Barra do topo (horário)
-   ============================================ */
+/* Barra de status no topo */
 .barra-status {
-    /* Distribui horário à esquerda e data à direita */
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: white;
     font-size: 14px;
     font-weight: 600;
-    padding: 10px 10px; /* Reduzido de 15px para 10px para permitir largura menor */
+    padding: 10px 10px;
     margin-bottom: 20px;
-    min-width: fit-content; /* Garante que o conteúdo defina a largura mínima */
+    min-width: fit-content;
     width: 100%;
     box-sizing: border-box;
 }
@@ -111,7 +73,6 @@ body {
     --lang-btn-border: rgba(255,255,255,0.3); 
     --lang-btn-hover: rgba(255,255,255,0.3); 
 }
-
 
 /* ============================================
    HORÁRIO - Estilo display LED/LCD vintage
