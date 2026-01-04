@@ -1,0 +1,1064 @@
+/* assets/css/shared-styles.css — shared UI components and helpers
+   Centralized common styles used by apps to reduce duplication.
+
+   Pages may override variables below to tune colors/sizes per-app.
+*/
+
+:root {
+        /* --- App-specific tokens centralizados --- */
+        --accent-hover-bg: rgba(45, 159, 163, 0.05);
+        --accent-active-bg: rgba(45, 159, 163, 0.1);
+        --accent-shadow: rgba(45, 159, 163, 0.3);
+        --accent-table-bg: rgba(45, 159, 163, 0.15);
+        --accent-table-color: #2d9fa3ff;
+        --accent-table-border: #2d9fa3ff;
+        --accent-table-header-bg: #f5f5f5;
+        --accent-table-header-color: #333;
+        --accent-table-row-alt-bg: rgba(0,0,0,0.02);
+        --accent-table-row-alt-border: rgba(0,0,0,0.1);
+        --accent-table-row-alt-color: #777;
+        --accent-table-radius: 6px;
+        --accent-table-font-size: 10px;
+        --accent-table-padding: 4px 8px;
+        --accent-table-header-font-size: 11px;
+        --accent-table-header-padding: 8px;
+        --accent-table-row-padding: 4px 8px;
+        --accent-table-row-font-size: 10px;
+        --accent-table-row-alt-font-size: 10px;
+        --accent-table-row-alt-padding: 4px 8px;
+        --accent-table-row-alt-radius: 6px;
+        --accent-table-row-alt-shadow: none;
+        --accent-table-row-alt-header-bg: #f5f5f5;
+        --accent-table-row-alt-header-color: #333;
+        --accent-table-row-alt-header-border: #2d9fa3ff;
+        --accent-table-row-alt-header-font-size: 11px;
+        --accent-table-row-alt-header-padding: 8px;
+        --accent-table-row-alt-header-radius: 6px;
+        --accent-table-row-alt-header-shadow: none;
+    /* Defaults — pages can override */
+    --home-bg: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%);
+    /* Site background used across app pages (defaults to the established green) */
+    --site-bg: #4e7262;
+    /* Default bottom spacing to keep the floating home button from covering footer text */
+    --site-bottom-padding: 110px;
+    --home-shadow: rgba(102, 126, 234, 0.4);
+    --home-size: 60px;
+    --home-size-mobile: 50px;
+
+    --lang-btn-bg: rgba(255,255,255,0.2);
+    --lang-btn-border: rgba(255,255,255,0.3);
+    --lang-btn-hover: rgba(255,255,255,0.3);
+    --lang-btn-color: white;
+
+    --arrow-border: #2d9fa3ff;
+    --arrow-bg: white;
+    --arrow-hover-bg: #2d9fa3ff;
+    --arrow-hover-color: white;
+    
+    /* Accent colors for sliders and UI elements */
+    --accent-color: #2d9fa3ff;
+    --accent-secondary: #667eea;
+    --accent-hover: #1e7e82;
+    
+    /* Memorial de cálculo colors */
+    --memorial-accent: var(--accent-color, #2d9fa3ff);
+    --memorial-bg: white;
+    --memorial-border: #e0e0e0;
+    --formula-bg: #f0f4ff;
+    --formula-border: var(--accent-color, #2d9fa3ff);
+    --formula-text: #1a237e;
+    --info-bg: #e8f5e9;
+    --info-border: #4caf50;
+    --info-text: #2e7d32;
+    --resumo-bg: #f0f4ff;
+    
+    /* Resultado colors */
+    --resultado-bg: #f5f5f5;
+    --resultado-border: var(--accent-color, #2d9fa3ff);
+    --resultado-label: #666;
+    --resultado-value: #333;
+    
+    /* Checkbox colors */
+    --checkbox-border: #e0e0e0;
+    --checkbox-checked-bg: #e0f7fa;
+    --checkbox-checked-border: var(--accent-color, #2d9fa3ff);
+    --checkbox-hover-bg: #f5f5f5;
+}
+
+/* ============================================
+   GLOBAL RESET
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Ensure page-level scrollbar space is always reserved so layouts don't shift
+   when a vertical scrollbar appears/disappears. This improves visual
+   consistency between pages (no horizontal jump).
+*/
+html {
+    /* always reserve vertical scroll space */
+    overflow-y: scroll;
+    /* reserve a stable gutter for scrollbar only on the right edge */
+    scrollbar-gutter: stable;
+    overflow-x: hidden;
+    width: 100%;
+    touch-action: pan-y;
+}
+
+/* Em telas pequenas, remove o scrollbar-gutter para evitar espaços laterais */
+@media (max-width: 768px) {
+    html {
+        scrollbar-gutter: auto;
+    }
+}
+
+/* ============================================
+   GLOBAL BODY STYLES
+   ============================================ */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    color: #333;
+    line-height: 1.4;
+    background: var(--site-bg, #4e7262);
+    min-height: 100vh;
+    /* Layout em coluna: seletor de idioma acima do container */
+    display: flex;
+    flex-direction: column;
+    align-items: center;      /* Centraliza horizontalmente */
+    gap: 15px;                /* Espaço mínimo entre seletor e container */
+    padding: 15px 0 var(--site-bottom-padding, 110px) 0;  /* Padding topo/baixo, sem lateral */
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+}
+
+/* ============================================
+   GLOBAL CONTAINER
+   ============================================ */
+.container, .conteiner-principal {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 12px;
+    position: relative;
+    z-index: 10;
+}
+
+/* ============================================
+   GLOBAL HEADER STYLES
+   ============================================ */
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 12px;
+    padding: 8px 0;
+}
+
+header h1 {
+    font-size: 1.4rem;
+    margin-bottom: 2px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.subtitle, .subtitulo {
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+
+/* ============================================
+   GLOBAL FOOTER STYLES
+   ============================================ */
+footer {
+    text-align: center;
+    color: white;
+    margin-top: 12px;
+    padding: 8px 0;
+    opacity: 0.9;
+    font-size: 0.75rem;
+}
+
+footer p {
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    margin: 0;
+    color: white;
+}
+
+/* For elements that create their own scrollbars (eg. inside the simulated
+   device), reserve stable gutter so scroll toggles won't change width */
+.home-screen, .tabela-scroll {
+    scrollbar-gutter: stable both-edges;
+}
+
+/* Home (floating) button — consistent across apps */
+.home-button-fixed {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--home-size);
+    height: var(--home-size);
+    background: var(--home-bg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px var(--home-shadow);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    text-decoration: none;
+    color: white;
+}
+
+.home-button-fixed:hover { transform: translateX(-50%) scale(1.08); }
+.home-button-fixed svg { width: calc(var(--home-size) * 0.45); height: calc(var(--home-size) * 0.45); fill: white; }
+
+@media (max-width: 480px){
+    .home-button-fixed { bottom: 20px; width: var(--home-size-mobile); height: var(--home-size-mobile); }
+    .home-button-fixed svg { width: calc(var(--home-size-mobile) * 0.5); height: calc(var(--home-size-mobile) * 0.5); }
+}
+
+/* Language selector buttons — use the Solar page size & style as global default
+   This also accepts per-page variables (like --lang-btn-bg / --lang-btn-border)
+   and provides fallbacks so changing this in one place affects all apps. */
+.btn-idioma, .lang-btn {
+    background: var(--lang-btn-bg, rgba(255,255,255,0.2));
+    border: 2px solid var(--lang-btn-border, rgba(255,255,255,0.3));
+    border-radius: 20px;         /* match Solar's shape */
+    padding: 8px 16px;          /* tamanho padronizado */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--lang-btn-color, white);
+    font-size: 0.85rem;         /* same scale used by Solar */
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    user-select: none;
+    min-width: 60px;            /* largura mínima padronizada */
+    height: 36px;               /* altura fixa para consistência */
+    box-sizing: border-box;
+    touch-action: manipulation;  /* Melhora responsividade em mobile */
+}
+
+/* Garantir área mínima de toque de 44x44px em mobile */
+@media (max-width: 768px) {
+    .btn-idioma, .lang-btn {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 10px 16px;
+    }
+}
+
+.btn-idioma:hover, .lang-btn:hover {
+    background: var(--lang-btn-hover, rgba(255,255,255,0.3));
+    border-color: var(--lang-btn-border-hover, rgba(255,255,255,0.5));
+    transform: translateY(-2px);
+}
+
+/* Melhorar acessibilidade: outline visível no foco do teclado */
+.btn-idioma:focus-visible, .lang-btn:focus-visible {
+    outline: 3px solid var(--lang-btn-color, white);
+    outline-offset: 2px;
+}
+
+.btn-idioma.active, .lang-btn.active {
+    background: white;
+    color: var(--accent-color, #2d9fa3ff); /* per-page accent controls color - defaults to Solar theme */
+    border-color: white;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+}
+
+/* Global container rule for language selector so all pages use identical
+   spacing and positioning. Pages can override variables if needed. */
+.language-selector, .seletor-idioma {
+    display: flex;
+    justify-content: center;               /* always centered horizontally */
+    gap: var(--lang-selector-gap, 8px);    /* consistent spacing between buttons */
+    margin: var(--lang-selector-margin, 15px auto 15px auto); /* top/right/bottom/left - espaçamento fixo */
+    z-index: 100;                          /* ensure it's above device visuals */
+    width: 100%;                           /* helps centering inside containers */
+    position: relative;                    /* permite posicionamento consistente */
+}
+/* Small helpers scoped for language buttons */
+.btn-idioma .flag, .lang-btn .flag { font-size: 1.1rem; }
+.btn-idioma .lang-text, .lang-btn .lang-text, .btn-idioma .texto-idioma, .lang-btn .texto-idioma { 
+    font-size: 0.85rem; 
+    font-weight: 600; 
+    min-width: 20px;                       /* garante tamanho consistente */
+    text-align: center;
+}
+
+/* App icons on the home grid */
+.app-icon { display: inline-block; text-decoration: none; color: inherit; }
+.app-icon .icon { display:block; width: 60px; height: 60px; border-radius: 12px; overflow: hidden; }
+.app-icon .app-name { display:block; text-align:center; margin-top:6px; font-size:0.95rem; }
+
+/* Arrow increment/decrement buttons next to inputs/sliders */
+.arrow-btn{
+    width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content:center;
+    border: 2px solid var(--arrow-border); background: var(--arrow-bg); color: var(--arrow-border);
+    cursor: pointer; transition: all 0.15s ease; user-select:none; touch-action: manipulation;
+    min-width: 30px; min-height: 30px; /* Garantir tamanho mínimo */
+    outline: none; /* Remove outline padrão */
+}
+
+/* Melhorar acessibilidade: outline visível no foco do teclado */
+.arrow-btn:focus-visible {
+    outline: 3px solid var(--arrow-border);
+    outline-offset: 2px;
+}
+
+/* Garantir área mínima de toque de 44x44px em mobile */
+@media (max-width: 768px) {
+    .arrow-btn {
+        min-width: 44px;
+        min-height: 44px;
+        width: 44px;
+        height: 44px;
+    }
+}
+.arrow-btn:hover{ background: var(--arrow-hover-bg); color: var(--arrow-hover-color); transform: scale(1.05); }
+.arrow-btn:active{ transform: scale(.98); }
+
+/* Standard action buttons used cross-site */
+.btn-acao { 
+    padding: 10px 14px; 
+    border-radius: 10px; 
+    cursor: pointer; 
+    border: none; 
+    display: inline-flex; 
+    align-items:center; 
+    gap:8px;
+    touch-action: manipulation;
+    min-height: 44px; /* Área mínima de toque */
+}
+
+@media (max-width: 768px) {
+    .btn-acao {
+        min-height: 44px;
+        padding: 12px 16px;
+    }
+}
+
+/* Small helpers */
+.input-with-arrows { display:flex; align-items:center; gap:8px; }
+
+/* ============================================
+   GLOBAL TYPOGRAPHY & FONTS
+   ============================================ */
+/* Typography already defined in body above */
+
+/* ============================================
+   GLOBAL INPUT GROUPS & CONTROLS
+   ============================================ */
+.grupo-entrada, .input-group {
+    margin-bottom: 12px;
+}
+
+.grupo-entrada:last-child, .input-group:last-child {
+    margin-bottom: 0;
+}
+
+.grupo-entrada > label, .input-group > label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+/* Control header (centered label with value display) */
+.cabecalho-controle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.cabecalho-controle label {
+    font-size: 0.85rem;
+    color: var(--accent-color, #2d9fa3ff);
+    font-weight: 600;
+}
+
+/* Value display (shows current slider/input value) */
+.valor-display {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #333;
+    background: #f0f0f0;
+    padding: 3px 10px;
+    border-radius: 15px;
+    min-width: 70px;
+    text-align: center;
+}
+
+.valor-com-unidades {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Unidade sempre visível ao lado do input */
+.valor-com-unidades .unidade {
+    display: inline-block;
+    font-weight: 600;
+    color: #555;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* ============================================
+   GLOBAL SLIDER STYLES
+   ============================================ */
+.slider-com-botoes {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+/* Range slider base styles */
+input[type="range"] {
+    flex: 1;
+    height: 16px; /* Barra mais alta - mesmo tamanho do slider de parcelas */
+    background: #e0e0e0;
+    border-radius: 8px;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* Melhorar acessibilidade: outline visível no foco do teclado */
+input[type="range"]:focus-visible {
+    outline: 3px solid var(--accent-color, #2d9fa3ff);
+    outline-offset: 2px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 36px;  /* Botão maior - mesmo tamanho do slider de parcelas */
+    height: 36px; /* Botão maior - mesmo tamanho do slider de parcelas */
+    background: linear-gradient(135deg, var(--accent-color, #2d9fa3ff) 0%, var(--accent-secondary, #667eea) 100%);
+    border-radius: 50%;
+    cursor: grab;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3); /* Sombra mais forte */
+    border: 3px solid white; /* Borda branca para destacar */
+    transition: all 0.2s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1); /* Aumenta 10% ao passar mouse */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+    cursor: grabbing;
+    transform: scale(1.15); /* Aumenta mais ao clicar */
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 36px;  /* Botão maior - mesmo tamanho do slider de parcelas */
+    height: 36px; /* Botão maior - mesmo tamanho do slider de parcelas */
+    background: linear-gradient(135deg, var(--accent-color, #2d9fa3ff) 0%, var(--accent-secondary, #667eea) 100%);
+    border-radius: 50%;
+    border: 3px solid white; /* Borda branca para destacar */
+    cursor: grab;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    transition: all 0.2s ease;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+input[type="range"]::-moz-range-thumb:active {
+    cursor: grabbing;
+    transform: scale(1.15);
+}
+
+/* ============================================
+   GLOBAL CARD/CONTAINER STYLES
+   ============================================ */
+.cartao, .card {
+    background: white;
+    border-radius: 12px;
+    padding: 12px 15px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+}
+
+/* ============================================
+   GLOBAL INFO GROUP STYLES
+   ============================================ */
+.info-group {
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 4px solid var(--accent-color, #2d9fa3ff);
+}
+
+/* ============================================
+   GLOBAL RADIO BUTTON STYLES (Helice style)
+   ============================================ */
+.grupo-radio {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.grupo-radio-compacto {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    align-items: center;
+}
+
+.opcao-radio {
+    flex: 0 0 auto;
+    position: relative;
+}
+
+.opcao-radio input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.cartao-radio {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.opcao-radio input:checked + .cartao-radio {
+    border-color: var(--accent-color, #2d9fa3ff);
+    background-color: #e0f7fa;
+    box-shadow: 0 4px 10px rgba(45, 159, 163, 0.2);
+}
+
+.rotulo-radio {
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.rotulo-detalhe {
+    font-weight: 400;
+    font-size: 0.7rem;
+    color: #666;
+    text-align: center;
+    display: block;
+    margin-top: 2px;
+}
+
+.opcao-radio-compacto {
+    position: relative;
+    width: auto;
+}
+
+.opcao-radio-compacto input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.cartao-radio-compacto {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 6px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-width: 35px;
+    font-size: 0.7rem;
+}
+
+.opcao-radio-compacto input:checked + .cartao-radio-compacto {
+    border-color: var(--accent-color, #2d9fa3ff);
+    background-color: #e0f7fa;
+    box-shadow: 0 2px 6px rgba(45, 159, 163, 0.2);
+}
+
+.opcao-radio-compacto .rotulo-radio {
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-align: center;
+}
+
+/* ============================================
+   GLOBAL CHECKBOX STYLES
+   ============================================ */
+.grupo-checkbox {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.opcao-checkbox {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: none;
+    background: transparent;
+    padding: 0;
+    text-align: left;
+    width: 100%;
+}
+
+.opcao-checkbox input[type="checkbox"] {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    cursor: pointer;
+    accent-color: var(--accent-color, #2d9fa3ff);
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.cartao-checkbox {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 16px;
+    border: 2px solid var(--checkbox-border, #e0e0e0);
+    border-radius: 8px;
+    background: white;
+    transition: all 0.3s;
+    cursor: pointer;
+    flex: 1;
+    width: 100%;
+}
+
+.opcao-checkbox:hover .cartao-checkbox {
+    border-color: var(--accent-color, #2d9fa3ff);
+    background-color: var(--checkbox-hover-bg, #f5f5f5);
+}
+
+.opcao-checkbox input:checked + .cartao-checkbox,
+.opcao-checkbox.selected .cartao-checkbox {
+    border-color: var(--checkbox-checked-border, var(--accent-color, #2d9fa3ff));
+    background: var(--checkbox-checked-bg, #e0f7fa);
+    box-shadow: 0 4px 10px rgba(45, 159, 163, 0.2);
+}
+
+.rotulo-checkbox {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.descricao-checkbox {
+    font-size: 0.8rem;
+    color: #666;
+    font-style: italic;
+}
+
+.opcao-checkbox input:checked + .cartao-checkbox .rotulo-checkbox,
+.opcao-checkbox.selected .cartao-checkbox .rotulo-checkbox {
+    color: var(--accent-color, #2d9fa3ff);
+}
+
+.opcao-checkbox input:checked + .cartao-checkbox .descricao-checkbox,
+.opcao-checkbox.selected .cartao-checkbox .descricao-checkbox {
+    color: #555;
+}
+
+/* ============================================
+   GLOBAL RESULTADO STYLES
+   ============================================ */
+.resultado-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    background: var(--resultado-bg, #f5f5f5);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    padding: 12px;
+    border-left: 4px solid var(--resultado-border, var(--accent-color, #2d9fa3ff));
+    border-bottom: none;
+}
+
+.resultado-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.resultado-item.destaque {
+    background: linear-gradient(135deg, var(--accent-color, #2d9fa3ff) 0%, var(--accent-hover, #1e7e82) 100%);
+    color: white;
+    padding: 16px;
+    border-radius: 8px;
+    margin: 12px 0;
+    border-left: none;
+}
+
+.label-resultado {
+    font-size: 0.9rem;
+    color: var(--resultado-label, #666);
+    font-weight: 500;
+}
+
+.resultado-item.destaque .label-resultado {
+    color: white;
+    font-weight: 600;
+}
+
+.valor-resultado {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--resultado-value, #333);
+}
+
+.resultado-item.destaque .valor-resultado {
+    color: white;
+}
+
+.valor-resultado-grande {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-color, #2d9fa3ff);
+}
+
+.resultado-item.destaque .valor-resultado-grande {
+    color: white;
+    font-size: 1.8rem;
+}
+
+/* ============================================
+   GLOBAL MEMORIAL DE CÁLCULO STYLES
+   ============================================ */
+.memorial-section {
+    background: var(--memorial-bg, white);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 12px;
+}
+
+.memorial-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--memorial-border, #e0e0e0);
+}
+
+.memorial-header h2 {
+    color: var(--memorial-accent, var(--accent-color, #2d9fa3ff));
+    font-size: 1.2rem;
+    margin: 0;
+    flex: 1;
+}
+
+.btn-fechar-memorial, .btn-voltar-memorial {
+    background: var(--memorial-accent, var(--accent-color, #2d9fa3ff));
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-fechar-memorial:hover, .btn-voltar-memorial:hover {
+    background: var(--accent-secondary, #667eea);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(45, 159, 163, 0.3);
+}
+
+.btn-voltar-memorial {
+    margin: 12px 0;
+    display: block;
+    width: fit-content;
+}
+
+.memorial-item {
+    background: white;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    border-left: 5px solid var(--memorial-accent, var(--accent-color, #2d9fa3ff));
+}
+
+.memorial-item h3, .memorial-item h4 {
+    color: var(--memorial-accent, var(--accent-color, #2d9fa3ff));
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.memorial-item h4 {
+    font-size: 1rem;
+    margin-top: 12px;
+}
+
+.memorial-item p {
+    margin-bottom: 10px;
+    line-height: 1.8;
+    color: #333;
+}
+
+.memorial-item ul {
+    margin: 10px 0;
+    padding-left: 20px;
+    color: #333;
+}
+
+.memorial-item li {
+    margin: 5px 0;
+    line-height: 1.6;
+}
+
+.formula-box {
+    background: var(--formula-bg, #f0f4ff);
+    padding: 12px;
+    border-radius: 8px;
+    margin: 12px 0;
+    border: 2px solid var(--formula-border, var(--accent-color, #2d9fa3ff));
+}
+
+.formula-box h4 {
+    color: var(--formula-text, #1a237e);
+    margin-bottom: 15px;
+}
+
+.formula-box code {
+    display: block;
+    background: white;
+    padding: 15px;
+    border-radius: 5px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: #d63384;
+    margin-bottom: 10px;
+    overflow-x: auto;
+}
+
+.formula-box p {
+    margin: 5px 0;
+    font-family: 'Courier New', monospace;
+    color: var(--formula-text, #1a237e);
+    white-space: pre-line;
+}
+
+.info-box {
+    background: var(--info-bg, #e8f5e9);
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 12px;
+    border-left: 4px solid var(--info-border, #4caf50);
+}
+
+.info-box p {
+    margin: 5px 0;
+    color: var(--info-text, #2e7d32);
+}
+
+.info-box ul {
+    margin: 8px 0;
+    padding-left: 20px;
+    color: var(--info-text, #2e7d32);
+}
+
+.info-box li {
+    margin: 5px 0;
+}
+
+.resumo-calculado {
+    background: var(--resumo-bg, #f0f4ff);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 12px;
+}
+
+.resumo-calculado h3 {
+    color: var(--memorial-accent, var(--accent-color, #2d9fa3ff));
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+}
+
+.resumo-item-calc {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.resumo-item-calc:last-child {
+    border-bottom: none;
+}
+
+.resumo-item-calc span:first-child {
+    font-weight: 600;
+    color: #555;
+}
+
+.resumo-item-calc span:last-child {
+    font-weight: bold;
+    color: var(--memorial-accent, var(--accent-color, #2d9fa3ff));
+    font-size: 1.1rem;
+}
+
+.btn-help {
+    background: transparent;
+    border: none;
+    color: var(--memorial-accent, var(--accent-color, #2d9fa3ff));
+    cursor: pointer;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.btn-help:hover {
+    background: var(--memorial-accent, var(--accent-color, #2d9fa3ff));
+    color: white;
+    transform: scale(1.05);
+}
+
+.texto-saiba-mais {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transform: rotate(-3deg);
+    text-shadow: 2px 2px 4px rgba(45, 159, 163, 0.3);
+    white-space: nowrap;
+}
+
+/* Header de resultados com botão SAIBA MAIS - alinhado e próximo ao título */
+.resultados-header-com-ajuda {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.resultados-header-com-ajuda h2 {
+    margin: 0;
+    flex: 0 1 auto;
+}
+
+/* Responsive adjustments for memorial */
+@media (max-width: 600px) {
+    .memorial-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .btn-fechar-memorial {
+        width: 100%;
+    }
+}
+
+/* ============================================
+   ÍCONE DE INFORMAÇÃO E DESCRIÇÃO PADRONIZADA
+   ============================================ */
+
+/* Ícone de informação (padrão para todos os apps) */
+.info-icon {
+    position: relative;
+    display: inline-block;
+    margin-left: 16px;
+    margin-right: 8px;
+    cursor: pointer;
+    vertical-align: middle;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.info-icon-symbol {
+    display: inline-block;
+    font-size: 1.1rem;
+    color: var(--accent-color, #2d9fa3ff);
+    transition: transform 0.2s, opacity 0.2s;
+    user-select: none;
+}
+
+.info-icon:hover .info-icon-symbol,
+.info-icon:focus .info-icon-symbol {
+    transform: scale(1.2);
+    opacity: 0.8;
+}
+
+.info-icon:focus {
+    outline: 2px solid var(--accent-color, #2d9fa3ff);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Descrição que aparece abaixo do label, acima do slider */
+.descricao-info {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: #666;
+    background-color: #f5f5f5;
+    border-radius: 6px;
+    border-left: 3px solid var(--accent-color, #2d9fa3ff);
+    text-align: left;
+    transition: opacity 0.3s ease, max-height 0.3s ease;
+}
+
+.descricao-info[style*="display: none"] {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+@media (max-width: 480px) {
+    .descricao-info {
+        font-size: 0.7rem;
+        padding: 6px 10px;
+    }
+    
+    .info-icon {
+        margin-left: 12px;
+        margin-right: 6px;
+    }
+}

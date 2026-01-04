@@ -1,0 +1,48 @@
+# Instruções do Projeto - Engenharia NATA
+
+Este arquivo contém as regras e diretrizes que devem ser seguidas ao trabalhar neste projeto.
+
+## 📖 Leia Primeiro
+
+**SEMPRE** consulte o arquivo `.github/copilot-instructions.md` para instruções completas e detalhadas sobre:
+- Estrutura do projeto
+- Padrões de código
+- Convenções de nomenclatura
+- Boas práticas
+- Exemplos de código
+
+## 🎯 Regras Fundamentais
+
+1. **JavaScript Puro**: NUNCA use frameworks (React, Vue, Angular, etc.)
+2. **Bilíngue**: SEMPRE implemente suporte PT-BR e IT-IT
+3. **Comentários**: SEMPRE comente o código em português
+4. **Memorial**: TODOS os apps educativos devem ter memorial de cálculo completo
+5. **Mobile-First**: SEMPRE priorize design responsivo
+6. **Cache-Busting**: SEMPRE use versões nos links CSS/JS (`?v=X.Y.Z`)
+
+## 📁 Arquivos Importantes
+
+- `.github/copilot-instructions.md` - Instruções completas e detalhadas
+- `assets/js/site-config.js` - Funções compartilhadas (SEMPRE use estas funções)
+- `README.md` - Documentação principal do projeto
+
+## 🚫 NÃO Faça
+
+- ❌ Usar frameworks JavaScript
+- ❌ Usar bibliotecas externas além de Chart.js (via CDN)
+- ❌ Deixar `console.log` em produção
+- ❌ Ignorar internacionalização
+- ❌ Esquecer de atualizar o memorial de cálculo
+
+## ✅ Sempre Faça
+
+- ✅ Use funções de `site-config.js` para formatação
+- ✅ Implemente traduções PT-BR e IT-IT
+- ✅ Sincronize sliders com inputs
+- ✅ Use throttling/debouncing para eventos frequentes
+- ✅ Teste cálculos com valores conhecidos
+- ✅ Atualize documentação quando necessário
+
+---
+
+**Para instruções completas, consulte**: `.github/copilot-instructions.md`

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="apple-touch-icon" href="../favicon.svg">
+    
+    <!-- SEO Meta Tags -->
+    <title>Configuração Solar - Personalizar Painéis e Baterias | Engenharia NATA</title>
+    <meta name="description" content="Página de configuração do dimensionamento solar: ajuste preços, potências e especificações de painéis solares e baterias (AGM e LiFePO4).">
+    <meta name="keywords" content="configuração solar, painéis solares, baterias, AGM, LiFePO4, configuração fotovoltaico">
+    <meta name="author" content="Engenharia NATA">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://engnata.infinityfree.me/solar/config.html">
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.0">
+    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.0">
+    <link rel="stylesheet" href="solar-styles.css?v=1.1.3">
+    <style>
+        /* Estilos específicos da página de config */
+        .info-box {
+            background: #e8f5e9;
+            border-left: 4px solid #2d9fa3ff;
+            padding: 10px 12px;
+            margin-bottom: 15px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.8rem;
+            color: #333;
+        }
+        .info-box h3 {
+            color: #2d9fa3ff;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .info-box ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+        .info-box li {
+            margin-bottom: 4px;
+        }
+        .secao-config {
+            margin-bottom: 12px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .secao-config:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .secao-config h3 {
+            color: #2d9fa3ff;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-acao {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        .btn-salvar {
+            background: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%);
+            color: white;
+        }
+        .btn-salvar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-resetar {
+            background: #f5f5f5;
+            color: #666;
+            border: 2px solid #ddd;
+        }
+        .btn-resetar:hover {
+            background: #eee;
+            border-color: #ccc;
+        }
+        .unidade-input {
+            font-size: 0.75rem;
+            color: #888;
+            text-align: center;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="conteiner-principal">
+        <header>
+            <h1 data-i18n="config-title">⚙️ Configurações</h1>
+            <p class="subtitulo" data-i18n="config-subtitle">Valores de Referência 2024</p>
+        </header>
+
+        <!-- Informações de Referência -->
+        <section class="cartao">
+            <div class="info-box">
+                <h3 data-i18n="config-ref-title">📋 Valores de Referência (Brasil 2024)</h3>
+                <ul>
+                    <li data-i18n="config-ref-painel">Painel Solar 400-450W: R$ 1.200</li>
+                    <li data-i18n="config-ref-bat-agm">Bateria AGM 12V 100Ah (~1.2 kWh): R$ 420</li>
+                    <li data-i18n="config-ref-bat-litio">Bateria Lítio 48V 100Ah (~4.8 kWh): R$ 12.000</li>
+                    <li data-i18n="config-ref-inv1">Inversor Off-Grid 1kW: R$ 1.100</li>
+                    <li data-i18n="config-ref-inv2">Inversor Off-Grid 2kW: R$ 1.550</li>
+                    <li data-i18n="config-ref-inv5">Inversor Off-Grid 5kW: R$ 2.500</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Configuração dos Painéis -->
+        <section class="cartao">
+            <div class="secao-config">
+                <h3>☀️ <span data-i18n="config-paineis">Painéis Solares</span></h3>
+                
+                <div class="grupo-entrada">
+                    <div class="cabecalho-controle">
+                        <label data-i18n="config-potencia-painel">Potência</label>
+                        <span id="valPotenciaPainel" class="valor-display">400 W</span>
+                    </div>
+                    <div class="slider-com-botoes">
+                        <button type="button" class="arrow-btn" data-target="sliderPotenciaPainel" data-step="-50">−</button>
+                        <input type="range" id="sliderPotenciaPainel" min="200" max="600" step="50" value="400">
+                        <button type="button" class="arrow-btn" data-target="sliderPotenciaPainel" data-step="50">+</button>
+                    </div>
+                </div>
+
+                <div class="grupo-entrada">
+                    <div class="cabecalho-controle">
+                        <label data-i18n="config-preco-painel">Preço por Painel</label>
+                        <span id="valPrecoPainel" class="valor-display">R$ 1.200</span>
+                    </div>
+                    <div class="slider-com-botoes">
+                        <button type="button" class="arrow-btn" data-target="sliderPrecoPainel" data-step="-100">−</button>
+                        <input type="range" id="sliderPrecoPainel" min="500" max="3000" step="100" value="1200">
+                        <button type="button" class="arrow-btn" data-target="sliderPrecoPainel" data-step="100">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuração das Baterias AGM -->
+            <div class="secao-config">
+                <h3>🔋 <span data-i18n="config-bat-agm">Bateria Chumbo-Ácido (AGM)</span></h3>
+
+                <div class="grupo-entrada">
+                    <div class="cabecalho-controle">
+                        <label data-i18n="config-tensao">Tensão</label>
+                        <span id="valTensaoAGM" class="valor-display">12 V</span>
+                    </div>
+                    <div class="slider-com-botoes">
+                        <button type="button" class="arrow-btn" data-target="sliderTensaoAGM" data-step="-6">−</button>
+                        <input type="range" id="sliderTensaoAGM" min="6" max="48" step="6" value="12">
+                        <button type="button" class="arrow-btn" data-target="sliderTensaoAGM" data-step="6">+</button>
+                    </div>
+                </div>
+
+                <div class="grupo-entrada">
+                    <div class="cabecalho-controle">
+                        <label data-i18n="config-capacidade">Capacidade</label>
+                        <span id="valCapacidadeAGM" class="valor-display">1.2 kWh</span>
+                    </div>
+                    <div class="slider-com-botoes">
+                        <button type="button" class="arrow-btn" data-target="sliderCapacidadeAGM" data-step="-0.1">−</button>
+                        <input type="range" id="sliderCapacidadeAGM" min="0.6" max="6" step="0.1" value="1.2">
+                        <button type="button" class="arrow-btn" data-target="sliderCapacidadeAGM" data-step="0.1">+</button>
+                    </div>
+                </div>
+
+                <div class="grupo-entrada">
+                    <div class="cabecalho-controle">
+                        <label data-i18n="config-preco-bat">Preço</label>
+                        <span id="valPrecoAGM" class="valor-display">R$ 420</span>
+                    </div>
+                    <div class="slider-com-botoes">
+                        <button type="button" class="arrow-btn" data-target="sliderPrecoAGM" data-step="-10">−</button>
+                        <input type="range" id="sliderPrecoAGM" min="200" max="2500" step="50" value="420">
+                        <button type="button" class="arrow-btn" data-target="sliderPrecoAGM" data-step="10">+</button>
+                    </div>
+                </div>
+
+                <div class="grupo-entrada">
+                    <div class="cabecalho-controle">
+                        <label data-i18n="config-peso-bat">Peso</label>
+                        <span id="valPesoAGM" class="valor-display">30 kg</span>
+                    </div>
+                    <div class="slider-com-botoes">
+                        <button type="button" class="arrow-btn" data-target="sliderPesoAGM" data-step="-5">−</button>
+                        <!-- Ampliado o máximo para 180 kg (solicitação do usuário) -->
+                        <input type="range" id="sliderPesoAGM" min="10" max="180" step="10" value="30">
+                        <button type="button" class="arrow-btn" data-target="sliderPesoAGM" data-step="5">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuração das Baterias LiFePO4 -->
+            <div class="secao-config">
+                <h3>⚡ <span data-i18n="config-bat-litio">Bateria Lítio (LiFePO₄)</span></h3>
+
+                <div class="grupo-entrada">
+                    <div class="cabecalho-controle">
+                        <label data-i18n="config-tensao">Tensão</label>
+                        <span id="valTensaoLitio" class="valor-display">48 V</span>
+                    </div>
+                    <div class="slider-com-botoes">
+                        <button type="button" class="arrow-btn" data-target="sliderTensaoLitio" data-step="-6">−</button>
+                        <input type="range" id="sliderTensaoLitio" min="12" max="48" step="6" value="48">
+                        <button type="button" class="arrow-btn" data-target="sliderTensaoLitio" data-step="6">+</button>
+                    </div>
+                </div>
+
+                <div class="grupo-entrada">
+                    <div class="cabecalho-controle">
+                        <label data-i18n="config-capacidade">Capacidade</label>
+                        <span id="valCapacidadeLitio" class="valor-display">4.8 kWh</span>
+                    </div>
+                    <div class="slider-com-botoes">
+                        <button type="button" class="arrow-btn" data-target="sliderCapacidadeLitio" data-step="-0.1">−</button>
+                        <input type="range" id="sliderCapacidadeLitio" min="1" max="15" step="0.1" value="4.8">
+                        <button type="button" class="arrow-btn" data-target="sliderCapacidadeLitio" data-step="0.1">+</button>
+                    </div>
+                </div>
+
+                <div class="grupo-entrada">
+                    <div class="cabecalho-controle">
+                        <label data-i18n="config-preco-bat">Preço</label>
+                        <span id="valPrecoLitio" class="valor-display">R$ 12.000</span>
+                    </div>
+                    <div class="slider-com-botoes">
+                        <button type="button" class="arrow-btn" data-target="sliderPrecoLitio" data-step="-10">−</button>
+                        <input type="range" id="sliderPrecoLitio" min="1000" max="30000" step="100" value="12000">
+                        <button type="button" class="arrow-btn" data-target="sliderPrecoLitio" data-step="10">+</button>
+                    </div>
+                </div>
+
+                <div class="grupo-entrada">
+                    <div class="cabecalho-controle">
+                        <label data-i18n="config-peso-bat">Peso</label>
+                        <span id="valPesoLitio" class="valor-display">60 kg</span>
+                    </div>
+                    <div class="slider-com-botoes">
+                        <button type="button" class="arrow-btn" data-target="sliderPesoLitio" data-step="-1">−</button>
+                        <!-- Ampliado o máximo para 180 kg (solicitação do usuário) -->
+                        <input type="range" id="sliderPesoLitio" min="5" max="180" step="1" value="60">
+                        <button type="button" class="arrow-btn" data-target="sliderPesoLitio" data-step="1">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botões de Ação -->
+            <button type="button" class="btn-acao btn-salvar" id="btnSalvar" data-i18n="config-salvar">💾 Salvar e Voltar</button>
+            <button type="button" class="btn-acao btn-resetar" id="btnResetar" data-i18n="config-resetar">🔄 Restaurar Padrões</button>
+        </section>
+    </div>
+
+    <footer>
+        <p data-i18n="footer">Solar - Engenharia NATA @ 2025</p>
+    </footer>
+
+    <a href="solar.html" class="home-button-fixed" title="Voltar" aria-label="Voltar para configurações do Solar">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+    </a>
+
+    <script src="../assets/js/site-config.js?v=1.2.0"></script>
+    <script src="../assets/js/ajustarValorUtil.js?v=1.1.0"></script>
+    <script src="config-script.js?v=1.0.9"></script>
+</body>
+</html>

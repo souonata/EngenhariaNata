@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="apple-touch-icon" href="../favicon.svg">
+    
+    <!-- SEO Meta Tags -->
+    <title>Reportar Bug - Engenharia NATA</title>
+    <meta name="description" content="Formulário para reportar bugs e problemas nos apps da Engenharia NATA">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.0">
+    <link rel="stylesheet" href="bugs-styles.css?v=1.0.0">
+</head>
+<body>
+    <!-- Seletor de Idioma -->
+    <div class="language-selector">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" aria-label="Alterar idioma para Português" title="Português">
+            <span class="flag" aria-hidden="true">🇧🇷</span>
+            <span class="lang-text">PT</span>
+        </button>
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" aria-label="Alterar idioma para Italiano" title="Italiano">
+            <span class="flag" aria-hidden="true">🇮🇹</span>
+            <span class="lang-text">IT</span>
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- Cabeçalho -->
+        <header>
+            <h1 data-i18n="bug-title">🐛 Reportar Bug</h1>
+            <p class="subtitulo" data-i18n="bug-subtitle">Ajude-nos a melhorar reportando problemas encontrados</p>
+        </header>
+
+        <!-- Formulário -->
+        <section class="card">
+            <form id="bugForm">
+                <!-- Descrição do bug -->
+                <div class="grupo-entrada">
+                    <label for="bugDescription" data-i18n="bug-label-description">Descrição do Bug *</label>
+                    <textarea 
+                        id="bugDescription" 
+                        name="description" 
+                        rows="6" 
+                        required 
+                        class="textarea-input"
+                        placeholder="Descreva o problema encontrado, o que você estava fazendo quando ocorreu, e o que você esperava que acontecesse..."
+                        data-i18n-placeholder="bug-placeholder-description"></textarea>
+                </div>
+
+                <!-- Contato para resposta -->
+                <div class="grupo-entrada">
+                    <label for="bugContact" data-i18n="bug-label-contact">Contato para Resposta (Opcional)</label>
+                    <input 
+                        type="email" 
+                        id="bugContact" 
+                        name="contact" 
+                        class="input-text"
+                        placeholder="seu@email.com"
+                        data-i18n-placeholder="bug-placeholder-contact">
+                    <p class="dica" data-i18n="bug-hint-contact">Se você quiser receber uma resposta sobre o bug reportado, informe seu email.</p>
+                </div>
+
+                <!-- Mensagem de status -->
+                <div id="statusMessage" class="status-message" style="display: none;"></div>
+
+                <!-- Botões -->
+                <div class="form-buttons">
+                    <button type="submit" class="btn-submit" data-i18n="bug-button-submit">
+                        📤 Enviar Relatório
+                    </button>
+                    <a href="../index.html" class="btn-cancel" data-i18n="bug-button-cancel">
+                        ← Voltar
+                    </a>
+                </div>
+            </form>
+        </section>
+    </div>
+    
+    <footer>
+        <p data-i18n="footer">💻 Reportar Bug - Engenharia Nata @ 2025</p>
+    </footer>
+
+    <!-- Botão de retorno à tela inicial -->
+    <a href="../index.html" class="home-button-fixed" aria-label="Voltar à tela inicial">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <!-- Scripts -->
+    <script src="../assets/js/site-config.js?v=1.1.0"></script>
+    <script src="bugs-script.js?v=1.0.0"></script>
+</body>
+</html>

@@ -1,0 +1,483 @@
+/* ============================================
+   ESTILOS DO APP AR CONDICIONADO
+   ============================================ */
+
+/* Variáveis CSS para personalização do tema */
+:root { 
+    /* Todas as variáveis de cor, espaçamento e fonte já estão centralizadas em shared-styles.css */
+}
+
+/* ============================================
+   RESET, BODY, CONTAINER, HEADER
+   ============================================ */
+/* Estilos globais movidos para assets/css/shared-styles.css */
+/* Reset, body, container, header, footer, typography estão no arquivo global */
+/* Mantendo apenas estilos específicos do Ar Condicionado */
+
+/* Badge "Em Desenvolvimento" no cabeçalho */
+.dev-badge-header {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.dev-badge-text {
+    display: inline-block;
+    background: #ff6b35;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid white;
+}
+
+@media (max-width: 480px) {
+    .dev-badge-text {
+        font-size: 0.65rem;
+        padding: 5px 10px;
+    }
+}
+
+
+/* Container e header movidos para shared-styles.css */
+/* Mantendo apenas estilos específicos do Ar Condicionado */
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 12px;
+    position: relative;
+    z-index: 10;
+}
+
+header h1 {
+    font-size: 1.5rem;
+    margin: 8px 0 4px 0;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.subtitulo {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+.card {
+    background: var(--memorial-bg);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px var(--accent-shadow);
+}
+
+.card h2 {
+    font-size: 1.1rem;
+    color: var(--accent-color);
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+/* ============================================
+   RESULTADOS
+   ============================================ */
+.resultados {
+    background: var(--resumo-bg);
+}
+
+/* Resultado styles moved to shared-styles.css */
+/* Mantendo apenas estilos específicos do Ar Condicionado */
+.resultado-item.destaque {
+    background: var(--accent-color);
+    color: white;
+    padding: 16px;
+    border-radius: 8px;
+    margin: 12px 0;
+    border-bottom: none;
+}
+
+.label-resultado {
+    font-size: 0.9rem;
+    color: var(--resultado-label);
+    font-weight: 500;
+}
+
+.resultado-item.destaque .label-resultado {
+    color: white;
+    font-weight: 600;
+}
+
+.resultado-item.destaque .valor-resultado {
+    color: white;
+}
+
+.valor-resultado-grande {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+.resultado-item.destaque .valor-resultado-grande {
+    color: white;
+    font-size: 1.8rem;
+}
+
+/* ============================================
+   INFO BOX
+   ============================================ */
+.info-box {
+    background: #e3f2fd;
+    border-left: 4px solid #1976D2;
+    padding: 12px;
+    margin-top: 16px;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.85rem;
+}
+
+.info-box p {
+    margin: 0 0 8px 0;
+    color: #1976D2;
+    font-weight: 600;
+}
+
+.info-box ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #333;
+}
+
+.info-box li {
+    margin-bottom: 4px;
+}
+
+/* Typography moved to shared-styles.css */
+
+/* ============================================
+   MEMORIAL DE CÁLCULO
+   ============================================ */
+.memorial-section {
+    background: var(--memorial-bg);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 12px var(--accent-shadow);
+    margin-bottom: 12px;
+}
+
+.memorial-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--memorial-border);
+}
+
+.memorial-header h2 {
+    color: var(--accent-color);
+    font-size: 1.2rem;
+    margin: 0;
+    flex: 1;
+}
+
+.btn-fechar-memorial {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-fechar-memorial:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--accent-shadow);
+}
+
+.btn-voltar-memorial {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin: 12px 0;
+    display: block;
+    width: fit-content;
+}
+
+.btn-voltar-memorial:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--accent-shadow);
+}
+
+.memorial-item {
+    background: var(--memorial-bg);
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    border-left: 5px solid var(--accent-color);
+}
+
+.memorial-item h3 {
+    color: var(--accent-color);
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.memorial-item p {
+    margin-bottom: 10px;
+    line-height: 1.8;
+    color: var(--resultado-value);
+}
+
+.formula-box {
+    background: var(--formula-bg);
+    padding: 12px;
+    border-radius: 8px;
+    margin: 12px 0;
+    border: 2px solid var(--accent-color);
+}
+
+.formula-box p {
+    margin: 5px 0;
+    font-family: 'Courier New', monospace;
+    color: var(--formula-text);
+}
+
+.info-box {
+    background: var(--info-bg);
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 12px;
+    border-left: 4px solid var(--info-border);
+}
+
+.info-box p {
+    margin: 5px 0;
+    color: var(--info-text);
+}
+
+.info-box ul {
+    margin: 8px 0;
+    padding-left: 20px;
+    color: var(--info-text);
+}
+
+.info-box li {
+    margin: 5px 0;
+}
+
+.resumo-calculado {
+    background: var(--resumo-bg);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 12px;
+}
+
+.resumo-item-calc {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.resumo-item-calc:last-child {
+    border-bottom: none;
+}
+
+.resumo-item-calc span:first-child {
+    font-weight: 600;
+    color: #555;
+}
+
+.resumo-item-calc span:last-child {
+    font-weight: bold;
+    color: var(--accent-color);
+    font-size: 1.1rem;
+}
+
+/* .btn-help and .texto-saiba-mais styles moved to assets/css/shared-styles.css */
+
+/* ============================================
+   RODAPÉ
+   ============================================ */
+footer {
+    text-align: center;
+    color: white;
+    padding: 20px 0;
+    margin-top: 30px;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+footer p {
+    margin: 0;
+}
+
+@media (max-width: 600px) {
+    .memorial-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .btn-fechar-memorial {
+        width: 100%;
+    }
+}
+
+/* ============================================
+   CLASSE ENERGÉTICA
+   ============================================ */
+.classe-energetica-container {
+    margin-top: 15px;
+}
+
+.classe-energetica-scale {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.classe-box {
+    flex: 1;
+    min-width: 70px;
+    max-width: 100px;
+    padding: 10px 8px;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.classe-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.classe-box-selected {
+    border: 3px solid #ff9800;
+    box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+    transform: scale(1.05);
+}
+
+.classe-label {
+    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 5px;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.classe-valor {
+    font-size: 0.75rem;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    font-weight: 500;
+}
+
+/* Cores das classes energéticas */
+.classe-box[data-classe="A4"] {
+    background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%);
+}
+
+.classe-box[data-classe="A3"] {
+    background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+}
+
+.classe-box[data-classe="A2"] {
+    background: linear-gradient(135deg, #1E88E5 0%, #1976D2 100%);
+}
+
+.classe-box[data-classe="A1"] {
+    background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
+}
+
+.classe-box[data-classe="B"] {
+    background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%);
+}
+
+.classe-box[data-classe="C"] {
+    background: linear-gradient(135deg, #66BB6A 0%, #43A047 100%);
+}
+
+.classe-box[data-classe="D"] {
+    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+}
+
+.classe-box[data-classe="E"] {
+    background: linear-gradient(135deg, #FF6F00 0%, #E65100 100%);
+}
+
+.classe-box[data-classe="F"] {
+    background: linear-gradient(135deg, #FF5722 0%, #D84315 100%);
+}
+
+.classe-box[data-classe="G"] {
+    background: linear-gradient(135deg, #D32F2F 0%, #B71C1C 100%);
+}
+
+.classe-energetica-unidade {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .classe-box {
+        min-width: 60px;
+        max-width: 80px;
+        padding: 8px 6px;
+    }
+    
+    .classe-label {
+        font-size: 0.9rem;
+    }
+    
+    .classe-valor {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .classe-energetica-scale {
+        gap: 5px;
+    }
+    
+    .classe-box {
+        min-width: 50px;
+        max-width: 70px;
+        padding: 6px 4px;
+    }
+    
+    .classe-label {
+        font-size: 0.8rem;
+    }
+    
+    .classe-valor {
+        font-size: 0.65rem;
+    }
+}
+

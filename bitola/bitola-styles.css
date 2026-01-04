@@ -1,0 +1,148 @@
+/* ============================================
+   BITOLA - Estilos Específicos da Calculadora de Bitola de Fios
+   ============================================
+   
+   NOTA: Os estilos padrão de controles (sliders, inputs, botões, radio buttons)
+   foram movidos para assets/css/controls-styles.css para reutilização.
+   
+   Este arquivo contém apenas estilos específicos do Bitola que não são genéricos.
+   ============================================ */
+
+/* ============================================
+   RESET, BODY, CONTAINER, HEADER
+   ============================================ */
+/* Estilos globais movidos para assets/css/shared-styles.css */
+/* Reset, body, container, header, footer, typography estão no arquivo global */
+
+/* Variáveis CSS para personalização do tema Bitola */
+:root { 
+    /* Todas as variáveis de cor, espaçamento e fonte já estão centralizadas em shared-styles.css */
+}
+
+/* ============================================
+   SEÇÃO DE CONTROLES
+   ============================================ */
+/* Card styles estão em shared-styles.css */
+
+/* Cartão de radio para CA com tensão inline */
+.cartao-radio-ca {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-width: 180px;
+    padding: 10px 12px;
+}
+
+/* Tensão inline ao lado da tomada */
+.tensao-inline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tensao-inline .grupo-radio-compacto {
+    gap: 4px;
+}
+
+/* Dicas e informações adicionais */
+.dica {
+    font-size: 0.75rem;
+    color: var(--resultado-label);
+    text-align: center;
+    margin-top: 4px;
+    line-height: 1.3;
+}
+
+.dica-recomendacao {
+    font-size: 0.8rem;
+    color: var(--info-text);
+    text-align: center;
+    margin-top: 4px;
+    line-height: 1.3;
+    background: var(--info-bg);
+    padding: 6px;
+    border-radius: 6px;
+}
+
+.dica-recomendacao strong {
+    color: var(--info-border);
+}
+
+/* Unidade de medida ao lado do valor */
+.unidade {
+    font-size: 0.9rem;
+    color: var(--resultado-label);
+    font-weight: 600;
+}
+
+/* Reduzir largura dos campos de input - máximo 5 caracteres */
+.valor-input {
+    max-width: 65px;
+    min-width: 50px;
+    width: 65px;
+    text-align: center;
+}
+
+.valor-com-unidades {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ============================================
+   SEÇÃO DE RESULTADOS
+   ============================================ */
+.resultados {
+    background: var(--memorial-bg);
+    margin-top: 16px;
+}
+
+.resultados h2 {
+    text-align: center;
+    color: var(--resultado-value);
+    margin-bottom: 16px;
+    font-size: 1.2rem;
+}
+
+/* Resultado styles moved to shared-styles.css */
+/* Usando o padrão global para .resultado-item.destaque */
+
+/* Footer styles moved to shared-styles.css */
+
+/* ============================================
+   RESPONSIVIDADE
+   ============================================ */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.2rem;
+    }
+    
+    .subtitulo {
+        font-size: 0.85rem;
+    }
+    
+    .resultado-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    
+    .valor-resultado,
+    .valor-resultado-grande {
+        width: 100%;
+        text-align: right;
+    }
+    
+    .dica,
+    .dica-recomendacao {
+        font-size: 0.7rem;
+    }
+}
+
+/* ============================================
+   MEMORIAL DE CÁLCULO
+   ============================================ */
+/* Estilos globais de memorial movidos para assets/css/shared-styles.css */
+

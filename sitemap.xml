@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    
+    <!-- Página Principal -->
+    <url>
+        <loc>https://engnata.infinityfree.me/</loc>
+        <lastmod>2025-12-09</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.infinityfree.me/"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.infinityfree.me/"/>
+    </url>
+    
+    <!-- Página Sobre -->
+    <url>
+        <loc>https://engnata.infinityfree.me/sobre/sobre.html</loc>
+        <lastmod>2025-12-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.infinityfree.me/sobre/sobre.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.infinityfree.me/sobre/sobre.html"/>
+    </url>
+    
+    <!-- Calculadora de Empréstimos -->
+    <url>
+        <loc>https://engnata.infinityfree.me/mutuo/mutuo.html</loc>
+        <lastmod>2025-12-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.infinityfree.me/mutuo/mutuo.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.infinityfree.me/mutuo/mutuo.html"/>
+    </url>
+    
+    <!-- Calculadora de Hélice -->
+    <url>
+        <loc>https://engnata.infinityfree.me/helice/helice.html</loc>
+        <lastmod>2025-12-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.infinityfree.me/helice/helice.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.infinityfree.me/helice/helice.html"/>
+    </url>
+    
+    <!-- Dimensionamento Solar -->
+    <url>
+        <loc>https://engnata.infinityfree.me/solar/solar.html</loc>
+        <lastmod>2025-12-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.infinityfree.me/solar/solar.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.infinityfree.me/solar/solar.html"/>
+    </url>
+    
+    <!-- Configuração Solar -->
+    <url>
+        <loc>https://engnata.infinityfree.me/solar/config.html</loc>
+        <lastmod>2025-12-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.infinityfree.me/solar/config.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.infinityfree.me/solar/config.html"/>
+    </url>
+    
+    <!-- Calculadora de Bitola -->
+    <url>
+        <loc>https://engnata.infinityfree.me/bitola/bitola.html</loc>
+        <lastmod>2025-12-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.infinityfree.me/bitola/bitola.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.infinityfree.me/bitola/bitola.html"/>
+    </url>
+    
+    <!-- Dimensionador de Ar Condicionado -->
+    <url>
+        <loc>https://engnata.infinityfree.me/arcondicionado/arcondicionado.html</loc>
+        <lastmod>2025-12-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.infinityfree.me/arcondicionado/arcondicionado.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.infinityfree.me/arcondicionado/arcondicionado.html"/>
+    </url>
+    
+    <!-- Dimensionador de Aquecedor Solar -->
+    <url>
+        <loc>https://engnata.infinityfree.me/aquecimento/aquecimento.html</loc>
+        <lastmod>2025-12-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.infinityfree.me/aquecimento/aquecimento.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.infinityfree.me/aquecimento/aquecimento.html"/>
+    </url>
+    
+    <!-- Dimensionador de Fazenda Auto-Sustentável -->
+    <url>
+        <loc>https://engnata.infinityfree.me/fazenda/fazenda.html</loc>
+        <lastmod>2025-12-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.infinityfree.me/fazenda/fazenda.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.infinityfree.me/fazenda/fazenda.html"/>
+    </url>
+    
+    <!-- Formulário de Reporte de Bugs -->
+    <url>
+        <loc>https://engnata.infinityfree.me/bugs/bugs.html</loc>
+        <lastmod>2025-12-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.infinityfree.me/bugs/bugs.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.infinityfree.me/bugs/bugs.html"/>
+    </url>
+    
+</urlset>
+

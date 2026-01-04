@@ -1,0 +1,7 @@
+# DirectoryIndex especifica qual arquivo deve ser servido quando uma pasta é acessada
+# Aqui definimos que ao acessar a pasta /helice/, o servidor deve abrir o arquivo helice.html
+DirectoryIndex helice.html
+
+# ErrorDocument define uma página personalizada para erro 404 (página não encontrada)
+# Redireciona automaticamente para a página principal do app se um arquivo não existir
+ErrorDocument 404 /helice/helice.html

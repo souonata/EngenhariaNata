@@ -1,0 +1,494 @@
+/* ============================================
+   CONTROLS & SLIDERS - Estilos Padrão Globais
+   ============================================
+   
+   Este arquivo contém os estilos padrão para controles de formulário,
+   sliders, inputs com setas e botões, baseados no padrão usado na
+   página de Mutuo. Pode ser reutilizado em qualquer página do projeto.
+   
+   Use variáveis CSS para customizar cores e tamanhos por página.
+*/
+
+/* ============================================
+   VARIÁVEIS CSS - Customização por Página
+   ============================================ */
+:root {
+    /* Cores de destaque para controles */
+    --control-accent: #2d9fa3ff;
+    --control-accent-secondary: #667eea;
+    --control-border: #e0e0e0;
+    --control-border-focus: #2d9fa3ff;
+    --control-bg: white;
+    --control-bg-hover: #f5f5f5;
+    --control-bg-focus: white;
+    
+    /* Tamanhos de controles */
+    --control-input-padding: 8px;
+    --control-input-border-radius: 8px;
+    --control-input-font-size: 14px;
+    --control-label-font-size: 0.85rem;
+    
+    /* Slider específico */
+    --slider-height: 16px;
+    --slider-thumb-size: 36px;
+    --slider-thumb-border: 3px;
+    
+    /* Botões de seta */
+    --arrow-btn-size: 30px;
+    --arrow-btn-size-mobile: 44px;
+    
+    /* Input com setas - gap entre elementos */
+    --input-arrows-gap: 8px;
+}
+
+/* ============================================
+   CONTAINER DE CONTROLES
+   ============================================ */
+
+/* Container para grupo de controles com layout flexível */
+.controles-rapidos {
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+
+.controles-rapidos h3 {
+    color: var(--control-accent, #2d9fa3ff);
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.controles-desc {
+    text-align: center;
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+/* Grid de controles - layout responsivo */
+.controles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    align-items: end;
+}
+
+.controles-grid-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Item individual de controle */
+.controle-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.controle-item label {
+    font-size: var(--control-label-font-size, 0.9rem);
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+/* ============================================
+   INPUTS DE FORMULÁRIO
+   ============================================ */
+
+/* Input padrão de formulário */
+.controle-item input,
+.controle-item select,
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: var(--control-input-padding, 8px);
+    border: 2px solid var(--control-border, #e0e0e0);
+    border-radius: var(--control-input-border-radius, 8px);
+    font-size: var(--control-input-font-size, 14px);
+    transition: all 0.3s ease;
+    background: var(--control-bg, white);
+}
+
+.controle-item input:focus,
+.controle-item select:focus,
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--control-border-focus, var(--control-accent, #2d9fa3ff));
+    background: var(--control-bg-focus, white);
+    box-shadow: 0 0 0 3px rgba(45, 159, 163, 0.1);
+}
+
+/* Melhorar acessibilidade: outline visível no foco do teclado */
+.controle-item input:focus-visible,
+.controle-item select:focus-visible,
+.form-group input:focus-visible,
+.form-group select:focus-visible {
+    outline: 3px solid var(--control-border-focus, var(--control-accent, #2d9fa3ff));
+    outline-offset: 2px;
+}
+
+/* Input editável que substitui display (usado em Mutuo) */
+.valor-input {
+    border: 2px solid transparent;
+    outline: none;
+    cursor: text;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.valor-input:hover {
+    border-color: rgba(45, 159, 163, 0.3);
+    background: var(--control-bg-hover, #f5f5f5);
+}
+
+.valor-input:focus {
+    border-color: var(--control-accent, #2d9fa3ff);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(45, 159, 163, 0.1);
+}
+
+/* Remover setas de input number */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+/* ============================================
+   INPUT COM SETAS (Incremento/Decremento)
+   ============================================ */
+
+/* Container que agrupa input com botões de seta */
+.input-with-arrows {
+    display: flex;
+    align-items: center;
+    gap: var(--input-arrows-gap, 8px);
+}
+
+/* Input dentro do container com setas */
+.input-with-arrows input {
+    flex: 1;
+    padding: var(--control-input-padding, 8px);
+    border: 2px solid var(--control-border, #e0e0e0);
+    border-radius: var(--control-input-border-radius, 8px);
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.input-with-arrows input:focus {
+    outline: none;
+    border-color: var(--control-border-focus, var(--control-accent, #2d9fa3ff));
+    box-shadow: 0 0 0 3px rgba(45, 159, 163, 0.1);
+}
+
+/* Botões de seta (já definidos em shared-styles.css, mas mantemos referência aqui) */
+/* Use a classe .arrow-btn do shared-styles.css */
+
+/* ============================================
+   SLIDERS (Range Input)
+   ============================================ */
+
+/* Container do slider */
+.slider-container {
+    margin: 8px 0;
+    padding: 10px 0; /* Mais espaço ao redor para facilitar toque */
+}
+
+/* Slider com botões de seta ao lado */
+.slider-com-botoes {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--input-arrows-gap, 8px);
+    margin-top: 4px;
+}
+
+/* Estilo base do slider (input[type="range"]) */
+input[type="range"] {
+    flex: 1;
+    height: var(--slider-height, 16px);
+    border-radius: calc(var(--slider-height, 16px) / 2);
+    background: #e0e0e0;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* Thumb do slider para WebKit (Chrome, Safari, Edge) */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: var(--slider-thumb-size, 36px);
+    height: var(--slider-thumb-size, 36px);
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--control-accent, #2d9fa3ff) 0%, var(--control-accent-secondary, #667eea) 100%);
+    cursor: grab;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    border: var(--slider-thumb-border, 3px) solid white;
+    transition: all 0.2s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+    cursor: grabbing;
+    transform: scale(1.15);
+}
+
+/* Thumb do slider para Firefox */
+input[type="range"]::-moz-range-thumb {
+    width: var(--slider-thumb-size, 36px);
+    height: var(--slider-thumb-size, 36px);
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--control-accent, #2d9fa3ff) 0%, var(--control-accent-secondary, #667eea) 100%);
+    border: var(--slider-thumb-border, 3px) solid white;
+    cursor: grab;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    transition: all 0.2s ease;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+input[type="range"]::-moz-range-thumb:active {
+    cursor: grabbing;
+    transform: scale(1.15);
+}
+
+/* ============================================
+   RADIO BUTTONS CUSTOMIZADOS
+   ============================================ */
+
+/* Grupo de radio buttons */
+.radio-group {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.radio-group-compact {
+    gap: 5px;
+}
+
+/* Label customizado para radio button */
+.radio-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    cursor: pointer;
+    padding: 6px 8px;
+    border: 2px solid var(--control-border, #e0e0e0);
+    border-radius: var(--control-input-border-radius, 8px);
+    transition: all 0.3s ease;
+    background: var(--control-bg, white);
+}
+
+.radio-label:hover {
+    border-color: var(--control-accent, #2d9fa3ff);
+    background: #e0f7fa;
+}
+
+.radio-label input[type="radio"] {
+    display: none;
+}
+
+/* Círculo customizado do radio */
+.radio-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--control-accent, #2d9fa3ff);
+    border-radius: 50%;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.radio-label input[type="radio"]:checked + .radio-custom {
+    background: var(--control-accent, #2d9fa3ff);
+    border-color: var(--control-accent, #2d9fa3ff);
+}
+
+.radio-label input[type="radio"]:checked + .radio-custom::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+}
+
+.radio-label input[type="radio"]:checked ~ .radio-text {
+    font-weight: 700;
+    color: var(--control-accent, #2d9fa3ff);
+}
+
+.radio-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: #555;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+/* Radio inline (horizontal) */
+.radio-label-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    margin: 0 2px;
+}
+
+.radio-label-inline input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.radio-label-inline .radio-custom {
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--control-accent, #2d9fa3ff);
+    border-radius: 50%;
+    position: relative;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.radio-label-inline input[type="radio"]:checked + .radio-custom {
+    background-color: var(--control-accent, #2d9fa3ff);
+}
+
+.radio-label-inline input[type="radio"]:checked + .radio-custom::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+}
+
+.radio-label-inline .radio-text {
+    font-size: 0.85rem;
+    color: #555;
+    font-weight: 500;
+}
+
+.radio-label-inline:hover .radio-custom {
+    border-color: var(--control-accent-secondary, #667eea);
+}
+
+/* ============================================
+   BOTÕES DE AÇÃO
+   ============================================ */
+
+/* Botão primário */
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: var(--control-input-border-radius, 8px);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 8px;
+    background: linear-gradient(135deg, var(--control-accent-secondary, #667eea) 0%, var(--control-accent, #2d9fa3ff) 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(45, 159, 163, 0.4);
+}
+
+/* Botão secundário */
+.btn-secondary {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--control-accent, #2d9fa3ff);
+    border-radius: var(--control-input-border-radius, 8px);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 8px;
+    background: #f5f5f5;
+    color: var(--control-accent, #2d9fa3ff);
+}
+
+.btn-secondary:hover {
+    background: var(--control-accent, #2d9fa3ff);
+    color: white;
+}
+
+/* ============================================
+   RESPONSIVIDADE - Mobile
+   ============================================ */
+
+@media (max-width: 768px) {
+    /* Aumentar tamanho dos botões de seta no mobile */
+    .arrow-btn {
+        width: var(--arrow-btn-size-mobile, 44px);
+        height: var(--arrow-btn-size-mobile, 44px);
+        font-size: 24px;
+        border-width: 2px;
+        touch-action: manipulation;
+    }
+    
+    /* Aumentar tamanho dos inputs no mobile */
+    .controle-item input,
+    .input-with-arrows input {
+        font-size: 18px;
+        padding: 10px 8px;
+        min-height: 44px;
+    }
+    
+    /* Melhorar espaçamento entre botões e input */
+    .input-with-arrows {
+        gap: 10px;
+    }
+    
+    /* Grid de controles em coluna única no mobile */
+    .controles-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn-primary,
+    .btn-secondary {
+        font-size: 16px;
+        padding: 12px;
+    }
+    
+    .controles-rapidos {
+        padding: 8px;
+    }
+}
+

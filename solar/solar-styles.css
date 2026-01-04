@@ -1,0 +1,519 @@
+/* ============================================
+   ENERGIA SOLAR - Estilos Específicos do Dimensionamento Fotovoltaico
+   ============================================
+   
+   Estilos padrão de controles estão em assets/css/controls-styles.css.
+   Este arquivo contém apenas estilos específicos do app Energia Solar.
+   ============================================ */
+
+/* ============================================
+   RESET, BODY, CONTAINER, HEADER
+   ============================================ */
+/* Estilos globais movidos para assets/css/shared-styles.css */
+/* Reset, body, container, header, footer, typography estão no arquivo global */
+
+/* Variáveis CSS do tema Solar */
+:root { 
+    /* Todas as variáveis de cor, espaçamento e fonte já estão centralizadas em shared-styles.css */
+}
+
+/* Badge "Em Desenvolvimento" no cabeçalho */
+.dev-badge-header {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.dev-badge-text {
+    display: inline-block;
+    background: #ff6b35;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid white;
+}
+
+@media (max-width: 480px) {
+    .dev-badge-text {
+        font-size: 0.65rem;
+        padding: 5px 10px;
+    }
+}
+
+/* ============================================
+   AJUSTES DE LARGURA DOS CAMPOS DE INPUT
+   ============================================ */
+/* Largura dos campos de input baseada no valor máximo do slider + 1 caractere de folga */
+/* sliderConsumo: max=999 (3 caracteres) → permite expansão dinâmica até 8 caracteres */
+#inputConsumo {
+    max-width: 8ch; /* 8 caracteres para valores até 9999 */
+    min-width: 4ch;
+    /* width removido para permitir expansão dinâmica via ajustarTamanhoInput */
+}
+
+/* sliderAutonomia: max=10 (2 caracteres) → 5 caracteres */
+#inputAutonomia {
+    max-width: 5ch; /* 5 caracteres */
+    min-width: 3ch;
+    width: 5ch;
+}
+
+/* sliderVidaUtil: max=25 (2 caracteres para litio) → 5 caracteres */
+#inputVidaUtil {
+    max-width: 5ch; /* 5 caracteres */
+    min-width: 3ch;
+    width: 5ch;
+}
+
+/* Container e header movidos para shared-styles.css */
+/* Mantendo apenas estilos específicos do Solar */
+.conteiner-principal {
+    width: 100%;
+    margin: 0;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.subtitulo {
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+
+/* ============================================
+   SEÇÃO DE CONTROLES
+   ============================================ */
+
+/* Input numérico estilizado */
+.wrapper-numero {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.wrapper-numero input {
+    width: 100%;
+    padding: 8px;
+    padding-right: 45px;
+        border: 2px solid var(--checkbox-border, #e0e0e0);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+        color: var(--resultado-value, #333);
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.wrapper-numero input:focus {
+    border-color: var(--accent-color, #2d9fa3ff);
+}
+
+.sufixo-input {
+    position: absolute;
+    right: 15px;
+    color: #888;
+    font-weight: 600;
+}
+
+
+
+
+/* Os estilos globais de .grupo-radio, .opcao-radio, .cartao-radio estão em controls-styles.css */
+/* Mantendo apenas estilos específicos do Solar se necessário */
+
+/* Ícone específico do radio do Solar */
+.icone-radio {
+    font-size: 1.2rem;
+    margin-bottom: 0;
+}
+
+/* Container para rótulo de bateria com múltiplas linhas */
+.rotulo-radio-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+
+.rotulo-radio-nome {
+    font-weight: 600;
+    font-size: 1rem;
+        color: var(--resultado-value, #333);
+    line-height: 1.2;
+}
+
+.rotulo-radio-tipo {
+    font-size: 0.85rem;
+        color: var(--resultado-label, #666);
+    line-height: 1.2;
+}
+
+.rotulo-radio-especs {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    margin-top: 4px;
+    font-size: 0.65rem;
+    color: #999;
+    line-height: 1.1;
+    font-weight: 400;
+}
+
+.espec-item {
+    font-weight: 400;
+}
+
+/* ============================================
+   RESULTADOS
+   ============================================ */
+.grade-resultados {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.item-resultado {
+    background: var(--resultado-bg, #f9f9f9);
+    padding: 8px;
+    border-radius: 8px;
+    text-align: center;
+    border-bottom: 3px solid var(--accent-color, #2d9fa3ff);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Linha horizontal com ícone + texto/valor */
+.linha-resultado {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.icone-resultado {
+    font-size: 1rem;
+    display: inline;
+}
+
+/* .valor-resultado moved to shared-styles.css */
+/* Mantendo apenas estilos específicos do Solar */
+
+.rotulo-resultado {
+    font-size: 0.75rem;
+    color: #666;
+    display: inline;
+}
+
+.sub-resultado {
+    font-size: 0.65rem;
+    color: #888;
+    display: block;
+}
+
+.gargalo {
+    font-size: 0.6rem;
+    color: #999;
+}
+
+.custo-item {
+    margin-top: 3px;
+    padding-top: 3px;
+    border-top: 1px dashed #ddd;
+    color: #2d9fa3ff;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+.estimativa-preco {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%);
+    color: white;
+    border-bottom: none;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    position: relative;
+}
+
+.estimativa-preco .valor-resultado {
+    color: white;
+    font-size: 1.4rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.estimativa-preco .rotulo-resultado {
+    color: rgba(255,255,255,0.9);
+    margin-top: 0;
+}
+
+/* Ícone de informação e descrição agora usam classes padronizadas de shared-styles.css */
+/* Mantido apenas para compatibilidade com classes específicas antigas */
+.info-icon-autonomia {
+    /* Usa .info-icon de shared-styles.css */
+}
+
+.descricao-autonomia {
+    /* Usa .descricao-info de shared-styles.css */
+}
+
+/* Ícone de informação/configurações */
+.icone-info {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.icone-info:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: translateY(-50%) scale(1.15);
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+footer {
+    text-align: center;
+    color: white;
+    margin-top: 8px;
+    padding: 8px 0;
+    opacity: 0.9;
+    font-size: 0.75rem;
+}
+
+footer p {
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+/* ============================================
+   MEMORIAL DE CÁLCULO
+   ============================================ */
+/* Memorial styles moved to shared-styles.css */
+
+.memorial-header h2 {
+    color: #2d9fa3ff;
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.btn-fechar-memorial {
+    background: #2d9fa3ff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-fechar-memorial:hover {
+    background: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(45, 159, 163, 0.3);
+}
+
+.btn-voltar-memorial {
+    background: #2d9fa3ff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin: 12px 0;
+    display: block;
+    width: fit-content;
+}
+
+.btn-voltar-memorial:hover {
+    background: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(45, 159, 163, 0.3);
+}
+
+.memorial-item {
+    background: white;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    border-left: 5px solid #2d9fa3ff;
+}
+
+.memorial-item h3 {
+    color: #2d9fa3ff;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.memorial-item p {
+    margin-bottom: 10px;
+    line-height: 1.8;
+    color: #333;
+}
+
+.formula-box {
+    background: #f0f4ff;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 12px 0;
+    border: 2px solid #2d9fa3ff;
+}
+
+.formula-box p {
+    margin: 5px 0;
+    font-family: 'Courier New', monospace;
+    color: #1a237e;
+}
+
+.info-box {
+    background: #e8f5e9;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 12px;
+    border-left: 4px solid #4caf50;
+}
+
+.info-box p {
+    margin: 5px 0;
+    color: #2e7d32;
+}
+
+.info-box ul {
+    margin: 8px 0;
+    padding-left: 20px;
+    color: #2e7d32;
+}
+
+.info-box li {
+    margin: 5px 0;
+}
+
+.resumo-calculado {
+    background: #f0f4ff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 12px;
+}
+
+.resumo-item-calc {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.resumo-item-calc:last-child {
+    border-bottom: none;
+}
+
+.resumo-item-calc span:first-child {
+    font-weight: 600;
+    color: #555;
+}
+
+.resumo-item-calc span:last-child {
+    font-weight: bold;
+    color: #2d9fa3ff;
+    font-size: 1.1rem;
+}
+
+.btn-help {
+    background: transparent;
+    border: none;
+    color: #2d9fa3ff;
+    cursor: pointer;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.btn-help:hover {
+    background: #2d9fa3ff;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* .btn-help and .texto-saiba-mais styles moved to assets/css/shared-styles.css */
+
+/* Responsividade */
+@media (max-width: 480px) {
+    .grade-resultados {
+        grid-template-columns: 1fr;
+    }
+    
+    .memorial-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .memorial-item {
+        padding: 12px;
+    }
+    
+    .formula-box {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+}
+
+/* ============================================
+   BADGE "EM DESENVOLVIMENTO" NO CABEÇALHO
+   ============================================ */
+.dev-badge-header {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.dev-badge-text {
+    display: inline-block;
+    background: #ff6b35;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid white;
+}
+
+@media (max-width: 480px) {
+    .dev-badge-text {
+        font-size: 0.65rem;
+        padding: 5px 10px;
+    }
+}
+

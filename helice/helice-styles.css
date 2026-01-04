@@ -1,0 +1,269 @@
+/* ============================================
+   HELICE - Estilos Específicos da Calculadora de Hélice
+   ============================================
+   
+   NOTA: Os estilos padrão de controles (sliders, inputs, botões, radio buttons)
+   foram movidos para assets/css/controls-styles.css para reutilização.
+   
+   Este arquivo contém apenas estilos específicos do Helice que não são genéricos.
+   ============================================ */
+
+/* ============================================
+   RESET, BODY, CONTAINER, HEADER, FOOTER
+   ============================================ */
+/* Estilos globais movidos para assets/css/shared-styles.css */
+/* Reset, body, container, header, footer, typography estão no arquivo global */
+
+:root { 
+    /* Todas as variáveis de idioma já estão centralizadas em shared-styles.css */
+}
+
+/* ============================================
+   SEÇÃO DE CONTROLES
+   ============================================ */
+/* Card styles moved to shared-styles.css */
+
+/* Input groups, controls, sliders moved to shared-styles.css */
+
+/* Slider styles moved to shared-styles.css */
+
+/* Info group styles moved to shared-styles.css */
+
+.info-text {
+    font-size: 0.9rem;
+    color: var(--resultado-label);
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* ============================================
+   SEÇÃO DE RESULTADO
+   ============================================ */
+.resultado {
+    background: var(--memorial-bg);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 3px 15px var(--accent-shadow);
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.resultado h2 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    color: var(--resultado-value);
+}
+
+/* Grade de resultados (3 colunas) */
+.grade-resultados {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+}
+
+.item-resultado {
+    background: var(--resultado-bg);
+    padding: 8px;
+    border-radius: 8px;
+    text-align: center;
+    border-bottom: 3px solid var(--accent-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.item-resultado:first-child {
+    padding: 12px 8px;
+}
+
+.linha-resultado {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 5px;
+}
+
+.linha-resultado-com-unidades {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+
+.icone-resultado {
+    font-size: 1rem;
+    display: inline;
+}
+
+.valor-resultado {
+    display: inline;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--resultado-value);
+}
+
+.rotulo-resultado {
+    font-size: 0.75rem;
+    color: var(--resultado-label);
+    display: inline;
+}
+
+@media (max-width: 600px) {
+    .grade-resultados {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+}
+
+/* ============================================
+   SEÇÃO DE GRÁFICO
+   ============================================ */
+.grafico-section {
+    background: var(--memorial-bg);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 4px 12px var(--accent-shadow);
+    margin-bottom: 12px;
+}
+
+.grafico-section h3 {
+    color: var(--resultado-value);
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 220px;
+    width: 100%;
+}
+
+/* ============================================
+   SEÇÃO INFORMATIVA
+   ============================================ */
+.info-educativa {
+    background: var(--memorial-bg);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 4px 12px var(--accent-shadow);
+}
+
+.info-educativa h3 {
+    color: var(--resultado-value);
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+.info-card {
+    background: var(--info-bg);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border-left: 4px solid var(--accent-color);
+}
+
+.info-card h4 {
+    color: var(--accent-color);
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.info-card p {
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Caixa de fórmula */
+.formula-box {
+    background: var(--formula-bg);
+    border: 2px solid var(--formula-border);
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 12px;
+}
+
+.formula-box h4 {
+    color: var(--formula-text);
+    margin-bottom: 15px;
+}
+
+.formula-box code {
+    display: block;
+    background: var(--memorial-bg);
+    padding: 15px;
+    border-radius: 5px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: var(--accent-secondary);
+    margin-bottom: 10px;
+    overflow-x: auto;
+}
+
+.formula-box p {
+    color: var(--formula-text);
+    font-size: 0.9rem;
+}
+
+/* Footer styles moved to shared-styles.css */
+
+/* ============================================
+   RESPONSIVE - MOBILE
+   ============================================ */
+@media (min-width: 768px) {
+    .detalhes {
+        flex-direction: row;
+    }
+    
+    .detalhe-item {
+        flex: 1;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .chart-container {
+        height: 400px;
+    }
+}
+
+/* Estilos de radio buttons movidos para assets/css/controls-styles.css */
+/* Os estilos globais de .grupo-radio, .opcao-radio, .cartao-radio estão em controls-styles.css */
+/* Mantendo apenas estilos específicos do Helice se necessário */
+
+/* ============================================
+   AJUSTES DE LARGURA DOS INPUTS
+   ============================================ */
+/* Velocidade: máximo 4 caracteres (99.9) + 2-3 caracteres extras = ~7 caracteres */
+#inputVelocidade {
+    min-width: 60px;
+    max-width: 65px;
+    width: 65px;
+}
+
+/* Redução: máximo 4 caracteres (3.50) + 2-3 caracteres extras = ~7 caracteres */
+#inputReducao {
+    min-width: 60px;
+    max-width: 65px;
+    width: 65px;
+}
+
+/* RPM: máximo 4 dígitos (7000) + 2-3 caracteres extras = ~7 caracteres */
+#inputRPM {
+    min-width: 60px;
+    max-width: 65px;
+    width: 65px;
+}
+
+/* Slip: máximo 2 dígitos (20) + 2-3 caracteres extras = ~5 caracteres */
+#inputSlip {
+    min-width: 40px;
+    max-width: 45px;
+    width: 45px;
+}
+
+/* ============================================
+   MEMORIAL DE CÁLCULO
+   ============================================ */
+/* Estilos globais de memorial movidos para assets/css/shared-styles.css */
+/* Mantendo apenas estilos específicos do Helice se necessário */

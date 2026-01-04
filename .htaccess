@@ -1,0 +1,74 @@
+# ============================================
+# HEADERS DE SEGURANÇA
+# ============================================
+<IfModule mod_headers.c>
+    # Content Security Policy (CSP)
+    # Protege contra XSS, injection attacks e carregamento de recursos não autorizados
+    # Permite: recursos próprios, Chart.js do jsdelivr, Google Forms, schema.org
+    # Permite fontes de qualquer domínio HTTPS (incluindo extensões do navegador)
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://docs.google.com https://script.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https://cdn.jsdelivr.net https://docs.google.com https://script.google.com https://*.googleapis.com https://worldtimeapi.org; frame-src https://docs.google.com; object-src 'none'; base-uri 'self'; form-action 'self' https://docs.google.com; upgrade-insecure-requests;"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://docs.google.com https://script.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https://cdn.jsdelivr.net https://docs.google.com https://script.google.com https://*.googleapis.com https://worldtimeapi.org; frame-src https://docs.google.com; object-src 'none'; base-uri 'self'; form-action 'self' https://docs.google.com; upgrade-insecure-requests;"
+    
+    # X-Frame-Options: Previne clickjacking (embarque do site em iframes maliciosos)
+    Header always set X-Frame-Options "SAMEORIGIN"
+    
+    # X-Content-Type-Options: Previne MIME type sniffing
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # X-XSS-Protection: Ativa proteção XSS em navegadores antigos (Chrome, IE, Safari)
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # Strict-Transport-Security (HSTS): Força uso de HTTPS
+    # max-age=31536000 = 1 ano
+    # includeSubDomains = aplica a todos os subdomínios
+    # preload = permite inclusão em lista de preload do HSTS
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    
+    # Referrer-Policy: Controla quanto de informação do referrer é enviado
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # Permissions-Policy (antigo Feature-Policy): Controla quais APIs do navegador podem ser usadas
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()"
+    
+    # Remove informações do servidor (segurança por obscuridade)
+    Header always unset Server
+    Header always unset X-Powered-By
+</IfModule>
+
+# ============================================
+# CONFIGURAÇÕES DE CACHE
+# ============================================
+
+# Desabilitar cache para arquivos HTML, CSS e JS
+<FilesMatch "\.(html|htm|css|js)$">
+    FileETag None
+    <IfModule mod_headers.c>
+        Header unset ETag
+        Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
+    </IfModule>
+</FilesMatch>
+
+# Permitir cache apenas para imagens (opcional)
+<FilesMatch "\.(jpg|jpeg|png|gif|svg|ico)$">
+    <IfModule mod_headers.c>
+        Header set Cache-Control "max-age=2592000, public"
+    </IfModule>
+</FilesMatch>
+
+# ============================================
+# PROTEÇÃO ADICIONAL
+# ============================================
+
+# Bloquear acesso a arquivos sensíveis
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Proteger arquivos de configuração
+<FilesMatch "(^#.*#|\.(bak|conf|dist|fla|in[ci]|log|psd|sh|sql|sw[op])|~)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

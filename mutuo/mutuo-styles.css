@@ -1,0 +1,975 @@
+/* ============================================
+   MUTUO - Estilos Específicos da Calculadora de Empréstimos
+   ============================================
+   
+   Estilos padrão de controles estão em assets/css/controls-styles.css.
+   Este arquivo contém apenas estilos específicos do Mutuo.
+   ============================================ */
+
+/* ============================================
+   RESET, BODY, CONTAINER, HEADER
+   ============================================ */
+/* Estilos globais movidos para assets/css/shared-styles.css */
+/* Reset, body, container, header, footer, typography estão no arquivo global */
+
+/* ============================================
+   LANGUAGE SELECTOR - Botões de português/italiano
+   ============================================ */
+/* language selector layout centralized in assets/css/shared-styles.css */
+
+/* lang button styles moved to assets/css/shared-styles.css — per-page variables below */
+:root { --lang-btn-bg: rgba(255,255,255,0.1); --lang-btn-border: rgba(255,255,255,0.3); --lang-btn-hover: rgba(255,255,255,0.18); }
+
+/* language button appearance moved to assets/css/shared-styles.css
+   Per-page variables (eg. --lang-btn-bg) may still be used to tune colors */
+
+
+/* Typography moved to shared-styles.css */
+
+/* ============================================
+   CARTÃO - Caixas brancas que contém conteúdo
+   ============================================ */
+/* Card base styles moved to shared-styles.css */
+.card {
+    animation: fadeIn 0.45s ease-in; /* Mutuo-specific animation */
+}
+
+/* ============================================
+   ANIMAÇÃO - Aparecer suavemente
+   ============================================ */
+@keyframes fadeIn {
+    from {
+        opacity: 0;              /* Começa invisível */
+        transform: translateY(20px);  /* 20px abaixo */
+    }
+    to {
+        opacity: 1;              /* Termina visível */
+        transform: translateY(0);     /* Posição normal */
+    }
+}
+
+.card h2 {
+    color: #2d9fa3ff;
+    margin-bottom: 8px;
+    font-size: 1rem; /* compact */
+    border-bottom: 2px solid #2d9fa3ff;
+    padding-bottom: 6px;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 12px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+    color: #333;
+    font-size: 0.85rem;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 8px;
+    border: 2px solid var(--checkbox-border, #e0e0e0);
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--accent-color, #2d9fa3ff);
+    box-shadow: 0 0 0 3px var(--accent-shadow, rgba(45, 159, 163, 0.1));
+}
+
+/* Estilos de radio buttons movidos para assets/css/controls-styles.css */
+/* Mantendo apenas estilos específicos do Mutuo abaixo */
+
+/* Input editável que substitui o display */
+.valor-input {
+    border: 2px solid transparent;
+    outline: none;
+    cursor: text;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.valor-input:hover {
+    border-color: var(--accent-shadow, rgba(45, 159, 163, 0.3));
+    background: var(--resultado-bg, #f5f5f5);
+}
+
+.valor-input:focus {
+    border-color: var(--accent-color, #2d9fa3ff);
+    background: var(--memorial-bg, white);
+    box-shadow: 0 0 0 3px var(--accent-shadow, rgba(45, 159, 163, 0.1));
+}
+
+/* Ajustes específicos por campo - tamanhos mínimos para valores máximos formatados */
+#inputValor {
+    max-width: 110px; /* Para valores até 99.999.999 (11 caracteres + 2 de margem) */
+    min-width: 70px;
+}
+
+#inputPrazo {
+    max-width: 45px; /* Para valores até 99 (2 caracteres + 2 de margem) */
+    min-width: 30px;
+}
+
+#inputTaxa {
+    max-width: 75px; /* Para valores diários com 3 casas decimais (ex: 0,009 ou 1,234) */
+    min-width: 50px;
+}
+
+.tabela-sistemas {
+    width: auto;
+    max-width: 100%;
+    margin: 12px auto 0;
+    border-collapse: collapse;
+    font-size: 10px;
+    background: transparent;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: none;
+}
+
+.tabela-sistemas thead {
+    background: var(--accent-table-bg, rgba(45, 159, 163, 0.15));
+    color: var(--accent-table-color, #2d9fa3ff);
+}
+
+.tabela-sistemas th {
+    padding: 4px 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.tabela-sistemas th:first-child {
+    text-align: left;
+    padding-left: 8px;
+}
+
+.tabela-sistemas td {
+    padding: 4px 8px;
+    text-align: center;
+    border-bottom: 1px solid var(--accent-table-row-alt-border, rgba(0,0,0,0.05));
+    color: var(--accent-table-row-alt-color, #777);
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.tabela-sistemas td:first-child {
+    text-align: left;
+    padding-left: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+.tabela-sistemas tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Estilos de botões (.btn-primary, .btn-secondary) movidos para assets/css/controls-styles.css */
+
+/* Exemplos Section */
+.exemplos-section {
+    background: #f9f9f9;
+}
+
+.exemplos-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.btn-fechar-exemplos {
+    background: #2d9fa3ff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-fechar-exemplos:hover {
+    background: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(45, 159, 163, 0.3);
+}
+
+.btn-voltar-exemplo {
+    background: #2d9fa3ff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin: 12px 0;
+    display: block;
+    width: fit-content;
+}
+
+.btn-voltar-exemplo:hover {
+    background: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(45, 159, 163, 0.3);
+}
+
+.exemplo-item {
+    background: white;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+    border-left: 5px solid #2d9fa3ff;
+}
+
+.exemplo-item h3 {
+    color: #2d9fa3ff;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.exemplo-item p {
+    margin-bottom: 8px;
+    line-height: 1.8;
+}
+
+.exemplo-calculo {
+    background: #f0f4ff;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.exemplo-calculo ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.exemplo-calculo li {
+    padding: 5px 0;
+    padding-left: 20px;
+    position: relative;
+}
+
+.exemplo-calculo li:before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: #2d9fa3ff;
+    font-weight: bold;
+}
+
+.vantagem {
+    background: #e8f5e9;
+    padding: 10px;
+    border-radius: 5px;
+    color: #2e7d32;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.comparacao {
+    background: white;
+    padding: 12px; /* compact */
+    border-radius: 8px;
+    margin-top: 12px;
+}
+
+.comparacao h3 {
+    color: #2d9fa3ff;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.table-scroll-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 10px 0;
+}
+
+.comparacao table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.comparacao th,
+.comparacao td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.comparacao th {
+    background: #2d9fa3ff;
+    color: white;
+    font-weight: 600;
+}
+
+.comparacao tr:hover {
+    background: #f5f5f5;
+}
+
+/* Resultados */
+.resultados {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.resumo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.resumo-item {
+    background: white;
+    padding: 8px; /* slightly less padding - compact */
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.resumo-item .label {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.resumo-item .value {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.destaque-emprestado {
+    color: #2196F3 !important;
+}
+
+.destaque-juros {
+    color: #ef5350 !important;
+}
+
+.destaque-total {
+    color: #FFA726 !important;
+}
+
+.destaque-percentual {
+    color: #FF6B35 !important;
+    font-weight: 900;
+}
+
+.parcelas-info {
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+
+/* Estilos de controles estão em assets/css/controls-styles.css */
+
+.controles-primeira-linha {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.controles-coluna-esquerda {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    min-width: 0; /* Permite que o flex item encolha abaixo do tamanho do conteúdo */
+}
+
+.controles-coluna-esquerda .grupo-entrada {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.controles-coluna-esquerda .slider-com-botoes {
+    width: 100%;
+    min-width: 0;
+}
+
+.controles-grid-vertical > .controle-item:last-child {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.controles-grid-vertical > .controle-item:last-child button {
+    min-width: 200px;
+}
+
+/* Item de controle com layout horizontal (label ao lado do input) - mantido para compatibilidade */
+.controle-item-horizontal {
+    display: grid;
+    grid-template-columns: 180px auto;
+    gap: 15px;
+    align-items: center;
+}
+
+.controle-item-horizontal label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #555;
+    text-align: right;
+}
+
+/* Estilos para inputs no estilo Helice */
+.controles-rapidos .grupo-entrada {
+    margin-bottom: 15px;
+}
+
+.controles-rapidos .grupo-entrada:last-child {
+    margin-bottom: 0;
+}
+
+/* Estilos de input-with-arrows movidos para assets/css/controls-styles.css */
+/* Mantendo apenas ajustes específicos do Mutuo */
+.controles-rapidos .input-with-arrows {
+    margin-top: 4px;
+}
+
+.controles-rapidos .periodo-radios-inline {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.controles-rapidos .radio-label-inline {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.controles-rapidos .radio-label-inline .radio-custom {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 50%;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.controles-rapidos .radio-label-inline input[type="radio"]:checked + .radio-custom {
+    border-color: var(--accent-color, #2d9fa3ff);
+    background: var(--accent-color, #2d9fa3ff);
+}
+
+.controles-rapidos .radio-label-inline input[type="radio"]:checked + .radio-custom::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+}
+
+.controles-rapidos .radio-label-inline .radio-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #555;
+}
+
+/* .input-with-arrows movido para assets/css/controls-styles.css */
+
+/* Arrow button core style moved to assets/css/shared-styles.css
+   Per-page color/size overrides available via --arrow-* variables. */
+:root { --arrow-border: #2d9fa3ff; --arrow-bg: white; --arrow-hover-bg: #2d9fa3ff; --arrow-hover-color: white; }
+
+/* Slider with +/- buttons used in solar for compact controls */
+/* Slider styles moved to shared-styles.css */
+
+.controle-item-horizontal input {
+    padding: 2px 4px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 18px;
+    transition: all 0.3s ease;
+    width: 220px;
+}
+
+/* Estilos de input[type="number"] movidos para assets/css/controls-styles.css */
+
+/* Larguras específicas dos inputs - mantidas para compatibilidade */
+.controles-rapidos #valorRapido {
+    width: 105px;
+}
+
+.controles-rapidos #prazoRapido {
+    width: 60px;
+}
+
+/* Increased width to allow daily rates with 3 decimals (e.g. 0,123)
+   Keep responsive behaviour: the default is wider but it still fits mobile. */
+.controles-rapidos #taxaRapida {
+    width: 120px;
+    min-width: 80px;
+}
+
+/* Estilos de focus movidos para assets/css/controls-styles.css */
+
+.controle-taxa-periodo {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    align-items: stretch;
+    justify-content: center;
+    width: 100%;
+    margin-top: 0;
+}
+
+.controle-taxa-periodo .grupo-entrada {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.taxa-input {
+    min-width: auto;
+    max-width: none;
+}
+
+.taxa-label-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.taxa-label-row label {
+    margin: 0;
+}
+
+.periodo-radios-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.taxa-input > label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.taxa-input > label > span:first-child {
+    display: block;
+}
+
+.periodo-inline {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #666;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: nowrap;
+}
+
+/* Estilos de radio-label-inline movidos para assets/css/controls-styles.css */
+
+.texto-ao {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #555;
+    margin: 0;
+    padding: 0;
+}
+
+.sistema-amortizacao-box {
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 10px;
+    background: rgba(45, 159, 163, 0.02);
+    width: 100%;
+    max-width: 600px;
+}
+
+.sistema-amortizacao-box h3 {
+    text-align: center;
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+/* .radio-group movido para assets/css/controls-styles.css */
+
+.controles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.controle-item-horizontal {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-with-arrows {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.input-with-arrows input {
+    width: 100px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.arrow-btn {
+    width: 32px;
+    height: 32px;
+}
+
+.controle-sistema-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    align-items: center;
+}
+
+.label-sistema-com-ajuda {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+.label-sistema {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #555;
+    text-align: center;
+}
+
+.btn-help {
+    background: transparent;
+    border: none;
+    color: #2d9fa3ff;
+    cursor: pointer;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.btn-help:hover {
+    background: #2d9fa3ff;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* .texto-saiba-mais styles moved to assets/css/shared-styles.css */
+
+.controle-sistema-wrapper .radio-group {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-left: 5px;
+}
+
+@media (max-width: 768px) {
+    .controle-item-horizontal {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .controle-item-horizontal label {
+        text-align: left;
+        font-size: 1rem;
+    }
+    
+    .controles-primeira-linha {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .controle-taxa-periodo {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .taxa-input {
+        max-width: 100%;
+    }
+    
+    /* Estilos responsivos de controles movidos para assets/css/controls-styles.css */
+}
+
+/* Estilos de .controle-item movidos para assets/css/controls-styles.css */
+
+.parcelas-info h3 {
+    color: #2d9fa3ff;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+/* Estilos de slider movidos para assets/css/controls-styles.css */
+/* Mantendo apenas estilos específicos do slider de parcelas */
+.slider-container {
+    margin: 8px 0;
+    padding: 10px 0; /* Mais espaço ao redor para facilitar toque */
+}
+
+/* O slider #sliderParcelas usa os estilos globais de input[type="range"] */
+
+.parcela-detalhes {
+    margin-top: 6px; /* reduce vertical gap */
+}
+
+.detalhe-item {
+    text-align: center;
+    margin-bottom: 8px; /* compact */
+}
+
+.detalhe-item-horizontal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.label-parcela {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #555;
+    line-height: 1;
+}
+
+.value-grande {
+    display: inline-block;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #2d9fa3ff;
+    line-height: 1;
+    margin: 0;
+}
+
+.parcela-composicao {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px; /* tighter layout */
+    margin-top: 8px;
+}
+
+.composicao-item {
+    background: #f5f5f5;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.label-small {
+    display: block;
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.value-medium {
+    display: block;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Recipiente de Gráficos */
+.graficos-container {
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+
+.graficos-container h3 {
+    color: #2d9fa3ff;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.grafico-unico {
+    background: #f9f9f9;
+    padding: 8px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    opacity: 1;
+    /* Transição será controlada via JavaScript para fade out/in rápido */
+}
+
+.grafico-unico canvas {
+    max-height: 320px;
+}
+
+@media (max-width: 768px) {
+    .grafico-unico canvas {
+        max-height: 260px;
+    }
+}
+
+@media (max-width: 480px) {
+    .grafico-unico canvas {
+        max-height: 240px;
+    }
+}
+
+/* Recipiente de Tabela */
+.tabela-container {
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    /* center table and header inside the card */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tabela-container h3 {
+    color: #2d9fa3ff;
+    margin-bottom: 8px;
+    text-align: center;
+    width: 100%;
+}
+
+.tabela-scroll {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 300px;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    /* Garantir que o scroll inicie à esquerda */
+    direction: ltr;
+    /* Reservar espaço para a barra de scroll vertical para não cobrir a última coluna */
+    scrollbar-gutter: stable;
+    /* Adicionar padding à direita para evitar que a última coluna seja coberta pela barra de scroll vertical */
+    padding-right: 17px; /* Largura aproximada da barra de scroll vertical */
+}
+
+#tabelaAmortizacao {
+    /* fit to content when possible but never overflow its container */
+    width: auto;
+    max-width: 100%;
+    /* Adicionar padding à direita para evitar que a última coluna seja coberta pela barra de scroll */
+    margin-right: 0;
+    border-collapse: collapse;
+}
+
+#tabelaAmortizacao th,
+#tabelaAmortizacao td {
+    padding: 8px;
+    text-align: right;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+#tabelaAmortizacao th:first-child,
+#tabelaAmortizacao td:first-child {
+    text-align: center;
+}
+
+#tabelaAmortizacao th {
+    background: #2d9fa3ff;
+    color: white;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+}
+
+#tabelaAmortizacao tbody tr:hover {
+    background: #f5f5f5;
+}
+
+/* Footer styles moved to shared-styles.css */
+
+/* Responsive */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    .card {
+        padding: 12px;
+    }
+    
+    .resumo-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .parcela-composicao {
+        grid-template-columns: 1fr;
+    }
+    
+    .value-grande {
+        font-size: 1.6rem;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+        padding-bottom: var(--site-bottom-padding, 110px);
+    }
+    
+    header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .card {
+        padding: 12px;
+    }
+    
+    /* Estilos responsivos de botões movidos para assets/css/controls-styles.css */
+}
+
+/* Home button moved to `assets/css/shared-styles.css`
+   Per-page overrides (colors/sizes) retained here via CSS variables. */
+:root {
+    --home-bg: linear-gradient(135deg, #667eea 0%, #2d9fa3ff 100%);
+    --home-shadow: rgba(45, 159, 163, 0.4);
+    --home-size: 50px;
+    --home-size-mobile: 46px;
+}
+
+/* ============================================
+   MEMORIAL DE CÁLCULO
+   ============================================ */
+/* Estilos globais de memorial movidos para assets/css/shared-styles.css */
+

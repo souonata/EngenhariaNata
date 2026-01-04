@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="apple-touch-icon" href="../favicon.svg">
+    
+    <!-- SEO Meta Tags -->
+    <title>Dimensionador de Fazenda Auto-Sustentável - Planejamento de Produção | Engenharia NATA</title>
+    <meta name="description" content="Planejador completo de fazenda auto-sustentável. Calcula espaço necessário, quantidade de plantas e animais, frequência de plantio/colheita e reprodução para alimentar uma família.">
+    <meta name="keywords" content="fazenda auto-sustentável, permacultura, agricultura familiar, planejamento agrícola, produção de alimentos, criação de animais, horta, pomar">
+    <meta name="author" content="Engenharia NATA">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://engnata.infinityfree.me/fazenda/fazenda.html">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://engnata.infinityfree.me/fazenda/fazenda.html">
+    <meta property="og:title" content="Dimensionador de Fazenda Auto-Sustentável - Engenharia NATA">
+    <meta property="og:description" content="Planejador completo de fazenda auto-sustentável com cálculo de espaço, plantas e animais necessários.">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:locale:alternate" content="it_IT">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:url" content="https://engnata.infinityfree.me/fazenda/fazenda.html">
+    <meta property="twitter:title" content="Dimensionador de Fazenda Auto-Sustentável">
+    <meta property="twitter:description" content="Planejador completo de fazenda auto-sustentável com cálculo de espaço, plantas e animais necessários.">
+    
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.0">
+    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.0">
+<<<<<<< C:\Users\abros\OneDrive\Documentos\Meus Programas\Backups\EngenhariaNata\fazenda\fazenda.html
+    <link rel="stylesheet" href="fazenda-styles.css?v=1.0.0">
+=======
+    <link rel="stylesheet" href="fazenda-styles.css?v=0.1.0">
+>>>>>>> c:\Users\abros\.windsurf\worktrees\EngenhariaNata\EngenhariaNata-649ffcd6\fazenda\fazenda.html
+</head>
+<body>
+    <!-- ========================================== -->
+    <!-- SELETOR DE IDIOMA (PADRÃO GLOBAL - FORA DO CONTAINER) -->
+    <!-- ========================================== -->
+    <div class="language-selector">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" aria-label="Alterar idioma para Português" title="Português">
+            <span class="flag" aria-hidden="true">🇧🇷</span>
+            <span class="lang-text">PT</span>
+        </button>
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" aria-label="Alterar idioma para Italiano" title="Italiano">
+            <span class="flag" aria-hidden="true">🇮🇹</span>
+            <span class="lang-text">IT</span>
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- ========================================== -->
+        <!-- CABEÇALHO -->
+        <!-- ========================================== -->
+        <header>
+            <div class="dev-badge-header">
+                <span class="dev-badge-text" data-i18n="dev-badge-header">🚧 EM DESENVOLVIMENTO</span>
+            </div>
+            <h1 data-i18n="app-title">🌾 Dimensionador de Fazenda Auto-Sustentável</h1>
+            <p class="subtitulo" data-i18n="app-subtitle">Planejamento completo de produção de alimentos</p>
+        </header>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE ENTRADAS -->
+        <!-- ========================================== -->
+        <section id="secaoEntradas" class="card">
+            <!-- Número de Pessoas -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderPessoas" data-i18n="label-pessoas">Número de Pessoas</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputPessoas" class="valor-display valor-input" value="4">
+                        <span class="unidade" data-i18n="unit-people">pessoas</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPessoas" data-step="-1" aria-label="Diminuir pessoas">−</button>
+                    <input type="range" id="sliderPessoas" min="1" max="20" step="1" value="4">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPessoas" data-step="1" aria-label="Aumentar pessoas">+</button>
+                </div>
+            </div>
+
+            <!-- Produção Mínima de Plantas por Dia -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderConsumoPlantas" data-i18n="label-consumo-plantas">Produção Mínima de Plantas (Frutas/Verduras/Legumes)</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputConsumoPlantas" class="valor-display valor-input" value="0.5">
+                        <span class="unidade" data-i18n="unit-kg-dia-pessoa">kg/dia/pessoa</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderConsumoPlantas" data-step="-0.1" aria-label="Diminuir consumo">−</button>
+                    <input type="range" id="sliderConsumoPlantas" min="0.1" max="2.0" step="0.1" value="0.5">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderConsumoPlantas" data-step="0.1" aria-label="Aumentar consumo">+</button>
+                </div>
+                <p class="dica" data-i18n="dica-consumo-plantas">💡 Total de plantas (frutas + verduras + legumes) por pessoa por dia</p>
+            </div>
+
+            <!-- Produção Mínima de Proteínas por Dia -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderConsumoProteinas" data-i18n="label-consumo-proteinas">Produção Mínima de Proteínas (Animais)</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputConsumoProteinas" class="valor-display valor-input" value="0.5">
+                        <span class="unidade" data-i18n="unit-kg-dia-pessoa">kg/dia/pessoa</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderConsumoProteinas" data-step="-0.1" aria-label="Diminuir consumo">−</button>
+                    <input type="range" id="sliderConsumoProteinas" min="0.1" max="2.0" step="0.1" value="0.5">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderConsumoProteinas" data-step="0.1" aria-label="Aumentar consumo">+</button>
+                </div>
+                <p class="dica" data-i18n="dica-consumo-proteinas">💡 Total de proteínas (ovos, leite, carne, peixe) por pessoa por dia</p>
+            </div>
+
+            <!-- Frutas -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-frutas">🍎 Frutas</label>
+                <p class="dica" data-i18n="dica-selecao">💡 Selecione os tipos que deseja cultivar</p>
+                <div class="grupo-checkbox-grid" id="grupoFrutas">
+                    <!-- Preenchido via JavaScript -->
+                </div>
+            </div>
+
+            <!-- Verduras -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-verduras">🥬 Verduras</label>
+                <div class="grupo-checkbox-grid" id="grupoVerduras">
+                    <!-- Preenchido via JavaScript -->
+                </div>
+            </div>
+
+            <!-- Legumes -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-legumes">🥕 Legumes</label>
+                <div class="grupo-checkbox-grid" id="grupoLegumes">
+                    <!-- Preenchido via JavaScript -->
+                </div>
+            </div>
+
+            <!-- Animais -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-animais">🐔 Animais</label>
+                <p class="dica" data-i18n="dica-animais">💡 Selecione os tipos que deseja criar</p>
+                <div class="grupo-checkbox-grid" id="grupoAnimais">
+                    <!-- Preenchido via JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE MEMORIAL DE CÁLCULO -->
+        <!-- Começa escondida (display: none) -->
+        <!-- Aparece quando o usuário clica em "SAIBA MAIS" -->
+        <!-- ========================================== -->
+        <div id="memorialSection" class="card memorial-section" style="display: none;">
+            <div class="memorial-header">
+                <h2 data-i18n="memorial-title">📚 Memorial de Cálculo - Fazenda Auto-Sustentável</h2>
+                <button id="btnFecharMemorial" class="btn-fechar-memorial" data-i18n-title="back-to-calculator">
+                    <span data-i18n="back">← Voltar</span>
+                </button>
+            </div>
+            
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-intro-title">🎯 Objetivo do Dimensionamento</h3>
+                <p data-i18n="memorial-intro-text">Este memorial explica passo a passo como é calculado o dimensionamento de uma fazenda auto-sustentável, incluindo área necessária, quantidade de plantas e animais, frequência de plantio/colheita e reprodução para alimentar uma família.</p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo1-title">1️⃣ Passo 1: Calcular Consumo Total</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Consumo Anual Total (kg/ano) = Consumo Diário por Pessoa (kg/dia) × Número de Pessoas × 365 dias</strong></p>
+                </div>
+                <p data-i18n="memorial-passo1-explicacao">O consumo total é calculado multiplicando o consumo diário por pessoa pelo número de pessoas e pelos dias do ano.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-consumo">0.5 kg/dia/pessoa × 4 pessoas × 365 dias = 730 kg/ano</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo2-title">2️⃣ Passo 2: Calcular Área Necessária para Plantas</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Área Necessária (m²) = Consumo Anual Total (kg/ano) ÷ Produção por m² (kg/m²·ano)</strong></p>
+                </div>
+                <p data-i18n="memorial-passo2-explicacao">A área necessária é calculada dividindo o consumo anual total pela produção anual por metro quadrado de cada tipo de planta.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-area-plantas">730 kg/ano ÷ 5 kg/m²·ano = 146 m²</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Calcular Quantidade de Plantas</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Quantidade de Plantas = Área (m²) × Densidade de Plantio (plantas/m²)</strong></p>
+                </div>
+                <p data-i18n="memorial-passo3-explicacao">A quantidade de plantas é calculada multiplicando a área necessária pela densidade de plantio específica de cada tipo de planta.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-quantidade-plantas">146 m² × 4 plantas/m² = 584 plantas</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo4-title">4️⃣ Passo 4: Calcular Quantidade de Animais</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Para produção diária (ovos, leite):</strong></p>
+                    <p><strong>Quantidade = (Consumo Diário Total ÷ Produção Diária por Animal)</strong></p>
+                    <p><strong>Para produção por ciclo (carne):</strong></p>
+                    <p><strong>Quantidade = (Consumo Anual Total ÷ Produção Anual por Animal)</strong></p>
+                </div>
+                <p data-i18n="memorial-passo4-explicacao">A quantidade de animais é calculada baseada no tipo de produção: diária (ovos, leite) ou por ciclo (carne).</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-animais">Para 2 ovos/dia/pessoa: 8 ovos/dia ÷ 0.7 ovos/dia/galinha = 12 galinhas poedeiras</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo5-title">5️⃣ Passo 5: Calcular Frequência de Plantio</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Frequência (dias) = Ciclo de Crescimento (dias)</strong></p>
+                    <p><strong>Vezes por Ano = 365 dias ÷ Frequência (dias)</strong></p>
+                </div>
+                <p data-i18n="memorial-passo5-explicacao">A frequência de plantio é determinada pelo ciclo de crescimento de cada tipo de planta para manter produção contínua.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-frequencia">Ciclo de 90 dias → plantio a cada 90 dias → 4 vezes por ano</span></p>
+            </div>
+
+            <div class="resumo-calculado">
+                <h3 data-i18n="memorial-resumo-title">📊 Resumo Calculado</h3>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-area-plantas">Área Total Plantas:</span>
+                    <span id="resumo-area-plantas">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-area-animais">Área Total Animais:</span>
+                    <span id="resumo-area-animais">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-area-total">Área Total:</span>
+                    <span id="resumo-area-total">-</span>
+                </div>
+            </div>
+
+            <button class="btn-voltar-memorial" data-i18n-title="back-to-calculator">
+                <span data-i18n="back">← Voltar</span>
+            </button>
+        </div>
+
+        <!-- SEÇÃO DE RESULTADOS -->
+        <!-- ========================================== -->
+        <section class="card" id="secaoResultados" style="display: none;">
+            <div class="resultados-header-com-ajuda">
+                <h2 data-i18n="titulo-resultados">📊 Resultados do Dimensionamento</h2>
+                <button id="btnMemorial" class="btn-help" title="Ver Memorial de Cálculo" data-i18n-title="btn-memorial" tabindex="10">
+                    <span class="texto-saiba-mais" data-i18n="learn-more">SAIBA MAIS!</span>
+                </button>
+            </div>
+            
+            <!-- Resumo Geral -->
+            <div class="info-group">
+                <h3 data-i18n="titulo-resumo">Resumo Geral</h3>
+                <div class="resultado-item">
+                    <span data-i18n="label-area-total">Área Total Necessária:</span>
+                    <strong id="areaTotal">-</strong>
+                </div>
+                <div class="resultado-item">
+                    <span data-i18n="label-area-plantas">Área para Plantas:</span>
+                    <strong id="areaPlantas">-</strong>
+                </div>
+                <div class="resultado-item">
+                    <span data-i18n="label-area-animais">Área para Animais:</span>
+                    <strong id="areaAnimais">-</strong>
+                </div>
+            </div>
+
+            <!-- Plantas Selecionadas -->
+            <div class="info-group" id="grupoPlantas" style="display: none;">
+                <h3 data-i18n="titulo-plantas">🌱 Plantas Selecionadas</h3>
+                <div id="detalhesPlantas"></div>
+            </div>
+
+            <!-- Animais Selecionados -->
+            <div class="info-group" id="grupoAnimaisResultado" style="display: none;">
+                <h3 data-i18n="titulo-animais-resultado">🐾 Animais Selecionados</h3>
+                <div id="detalhesAnimais"></div>
+            </div>
+
+            <!-- Calendário de Plantio -->
+            <div class="info-group" id="grupoCalendario" style="display: none;">
+                <h3 data-i18n="titulo-calendario">📅 Calendário de Plantio e Colheita</h3>
+                <div id="detalhesCalendario"></div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- FOOTER -->
+        <!-- ========================================== -->
+        <footer>
+            <p data-i18n="footer-text">Engenharia NATA @ 2025 - Apps Educativos de Engenharia</p>
+        </footer>
+    </div>
+
+    <!-- Botão Home Flutuante -->
+    <a href="../index.html" class="home-button-fixed" aria-label="Voltar para a página inicial">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+<<<<<<< C:\Users\abros\OneDrive\Documentos\Meus Programas\Backups\EngenhariaNata\fazenda\fazenda.html
+    <script src="../assets/js/site-config.js?v=1.1.0"></script>
+    <script src="fazenda-database.js?v=1.0.0"></script>
+    <script src="fazenda-script.js?v=1.0.0"></script>
+=======
+    <script src="../assets/js/site-config.js?v=1.2.0"></script>
+    <script src="fazenda-database.js?v=0.1.0"></script>
+    <script src="fazenda-script.js?v=0.1.0"></script>
+>>>>>>> c:\Users\abros\.windsurf\worktrees\EngenhariaNata\EngenhariaNata-649ffcd6\fazenda\fazenda.html
+</body>
+</html>
+

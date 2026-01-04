@@ -1,0 +1,634 @@
+/* ============================================
+   RESET GLOBAL - Remove margens e paddings padrão
+   ============================================ */
+* {
+    margin: 0;           /* Remove margem de TODOS os elementos */
+    padding: 0;          /* Remove padding de TODOS os elementos */
+    box-sizing: border-box;  /* Faz width incluir border e padding */
+}
+
+/* Bloqueia scroll horizontal em TODA a página */
+html {
+    overflow-x: hidden;
+    width: 100%;
+    /* Desabilita zoom com pinch (dois dedos) no iOS */
+    touch-action: pan-y;
+}
+
+/* ============================================
+   BODY - Estilo da página inteira
+   ============================================ */
+body {
+    /* Fonte do sistema (igual iPhone/Android) */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    
+    /* Ocupa toda a altura da janela */
+    min-height: 100vh;
+    height: auto; /* Ajusta altura conforme conteúdo */
+    
+    /* Layout em coluna: seletor de idioma acima do celular */
+    display: flex;
+    flex-direction: column;
+    align-items: center;      /* Centraliza horizontalmente */
+    gap: 15px;                /* Espaço mínimo entre seletor e celular */
+    
+        /* Padding mínimo no topo e embaixo - sem padding lateral para aproveitar toda a largura */
+    padding: 15px 0 20px 0;
+    
+    /* BLOQUEIA scroll horizontal, permite vertical apenas se necessário */
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: 100%;
+    position: relative;
+    
+    /* Fundo verde Engenharia Nata */
+    background: var(--site-bg, #4e7262);
+}
+
+/* ============================================
+   DEVICE-SCREEN - Simula a tela de um celular
+   ============================================ */
+.device-screen {
+    /* Largura automática: se adapta ao conteúdo e espaço disponível */
+    width: 100%;
+    max-width: none;
+    /* Largura mínima baseada no conteúdo: relógio (12:30:00 + Qui 05/12) ou logo (ENGENHARIA)
+       Com paddings reduzidos: horário ~144px + data ~135px + padding 20px = ~299px
+       Logo: ENGENHARIA ~180px + ícone 32px + gap 12px + padding = ~224px
+       Usando o maior, mas permitindo encolher mais */
+    min-width: 200px; /* Mínimo para caber relógio ou logo - reduzido para permitir mais compressão */
+    
+    /* Altura automática baseada no conteúdo */
+    min-height: 400px;
+    height: auto;
+    max-height: none;
+    
+    /* Fundo escuro com gradiente para simular tela de celular */
+    background: linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 100%);
+    
+    /* Cantos arredondados estilo celular */
+    border-radius: 40px;
+    
+    /* Sombra para dar profundidade */
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    
+    /* Espaçamento interno - reduzido para permitir largura menor */
+    padding: 12px 8px;
+    
+    /* Layout em coluna */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: visible;
+}
+
+/* ============================================
+   BARRA DE STATUS - Barra do topo (horário)
+   ============================================ */
+.barra-status {
+    /* Distribui horário à esquerda e data à direita */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 10px; /* Reduzido de 15px para 10px para permitir largura menor */
+    margin-bottom: 20px;
+    min-width: fit-content; /* Garante que o conteúdo defina a largura mínima */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ========================================== */
+/* SELETOR DE IDIOMA GLOBAL (PADRÃO) */
+/* Botões para trocar entre PT-BR e IT-IT */
+/* Fica FORA do celular, sobre o fundo */
+/* Estilos centralizados em assets/css/shared-styles.css */
+/* ========================================== */
+:root { 
+    --lang-btn-bg: rgba(255,255,255,0.2); 
+    --lang-btn-border: rgba(255,255,255,0.3); 
+    --lang-btn-hover: rgba(255,255,255,0.3); 
+}
+
+
+/* ============================================
+   HORÁRIO - Estilo display LED/LCD vintage
+   ============================================ */
+.horario {
+    /* Cor laranja estilo displays LED vintage */
+    color: #ff8c00;
+    
+    /* Fonte monoespaçada estilo displays digitais */
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    
+    /* Efeito de brilho para simular LED */
+    text-shadow: 
+        0 0 5px rgba(255, 140, 0, 0.8),
+        0 0 10px rgba(255, 140, 0, 0.6),
+        0 0 15px rgba(255, 140, 0, 0.4);
+}
+
+/* ============================================
+   DATA - Dia da semana e data à direita
+   ============================================ */
+.data {
+    /* Cor branca para contrastar com horário */
+    color: white;
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    
+    /* Sutil glow branco */
+    text-shadow: 
+        0 0 3px rgba(255, 255, 255, 0.5),
+        0 0 6px rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================
+   SÍMBOLO DE SINCRONIZAÇÃO - Indicador de atualização
+   ============================================ */
+.sync-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff8c00;
+    margin-left: 8px;
+    opacity: 0.3;
+    animation: syncFade 1.5s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+.sync-indicator svg {
+    width: 16px;
+    height: 16px;
+    filter: drop-shadow(0 0 3px rgba(255, 140, 0, 0.8));
+    animation: syncRotate 2s linear infinite;
+}
+
+/* Animação de fade in/out para o símbolo de sincronização */
+@keyframes syncFade {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Rotação contínua do símbolo de sincronização */
+@keyframes syncRotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ============================================
+   TELA INICIAL - Área principal com os apps
+   ============================================ */
+.home-screen {
+    /* Ocupa todo espaço restante e ajusta altura automaticamente */
+    flex: 1 1 auto;
+    padding: 20px 8px; /* Reduzido padding horizontal de 20px para 8px */
+    overflow: visible;
+    min-height: 0;
+    height: auto;
+}
+
+/* ============================================
+   APPS GRID - Grade de ícones dos aplicativos
+   ============================================ */
+.apps-grid {
+    /* Grid responsivo: organiza ícones em linha quando há espaço, quebra quando necessário */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* auto-fit distribui uniformemente, minmax garante tamanho mínimo */
+    justify-content: space-evenly; /* Distribui espaço uniformemente entre os itens */
+    justify-items: center;
+    align-items: start;
+    gap: 15px;
+    padding: 20px 0;
+    flex: 0 1 auto;
+    min-width: 0; /* Permite que o grid encolha abaixo do tamanho do conteúdo */
+    width: 100%; /* Garante que o grid ocupe toda a largura disponível */
+}
+
+/* Em telas pequenas, usa 2 colunas para aproveitar melhor o espaço */
+@media (max-width: 480px) {
+    .apps-grid {
+        grid-template-columns: repeat(2, 1fr); /* Duas colunas no celular vertical */
+        gap: 15px;
+    }
+}
+
+/* Em telas médias e grandes, permite mais ícones por linha */
+@media (min-width: 768px) {
+    .apps-description-section {
+        padding: 0 20px;
+    }
+    
+    .apps-grid {
+        gap: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Mantém distribuição uniforme */
+    }
+}
+
+/* ============================================
+   APP ICON - Cada ícone de aplicativo
+   ============================================ */
+.app-icon {
+    /* Layout em coluna (ícone em cima, nome embaixo) */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.app-icon:hover {
+    transform: scale(1.1);
+}
+
+.app-icon:active {
+    transform: scale(0.95);
+}
+
+/* ============================================
+   ÍCONE - Recipiente do ícone SVG
+   ============================================ */
+.icon {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 8px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.2s ease;
+}
+
+/* Ícones com badge podem ter overflow visível */
+.icon-dev {
+    position: relative;
+    overflow: visible !important;
+}
+
+.icon-dev svg {
+    overflow: visible !important;
+}
+
+.app-icon:hover .icon {
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
+}
+
+.icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.dev-badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #ff6b35;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 5px 7px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    line-height: 1.2;
+    white-space: nowrap;
+    border: 2px solid white;
+    min-width: 32px;
+    text-align: center;
+}
+
+/* ============================================
+   VERSION TEXT - Texto de versão nos ícones SVG
+   ============================================ */
+.icon svg .version-text {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 8px;
+    font-weight: 500;
+    fill: rgba(255, 255, 255, 0.85);
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Em telas maiores, ajusta o tamanho da fonte da versão */
+@media (min-width: 768px) {
+    .icon svg .version-text {
+        font-size: 9px;
+    }
+}
+
+/* ============================================
+   APP NAME - Nome do aplicativo
+   ============================================ */
+.app-name {
+    color: white;
+    font-size: 11px;
+    text-align: center;
+    max-width: 100px;
+    line-height: 1.2;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Em telas maiores: ícones e texto maiores */
+@media (min-width: 768px) {
+    .icon {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .app-name {
+        font-size: 11px;
+        max-width: 120px;
+    }
+}
+
+/* ============================================
+   DOCK - Barra inferior com logo (como iPhone)
+   Centralizado horizontalmente na parte inferior da tela
+   ============================================ */
+.dock {
+    /* Fundo semi-transparente com efeito de vidro */
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 25px;
+    padding: 15px 10px; /* Reduzido padding horizontal de 20px para 10px */
+    margin: 10px 0 0 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70px;
+    flex: 0 0 auto;
+    min-width: 0; /* Permite que o dock encolha */
+}
+
+/* Recipiente da logo */
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: fadeIn 1s ease;
+    min-width: fit-content; /* Garante que o texto "ENGENHARIA" defina a largura mínima */
+    white-space: nowrap; /* Evita quebra de linha */
+}
+
+/* Ícone da logo (escudo com check) */
+.logo-icon {
+    width: 32px;
+    height: 32px;
+    color: #00ff88;
+    filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.5));
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Texto da logo */
+.logo-text {
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.95);
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+}
+
+/* Palavra NATA destacada */
+.logo-highlight {
+    color: #00ff88;
+    font-weight: 900;
+    text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+    animation: pulseText 2s ease-in-out infinite;
+}
+
+/* Animação de pulsação no texto NATA (mesma do ícone) */
+@keyframes pulseText {
+    0%, 100% {
+        text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+    }
+    50% {
+        text-shadow: 0 0 12px rgba(0, 255, 136, 0.8);
+    }
+}
+
+/* Animação de pulsação no ícone */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.5));
+    }
+    50% {
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 12px rgba(0, 255, 136, 0.8));
+    }
+}
+
+/* Animação de fade-in */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   SCROLLBAR - Personalização da barra de rolagem
+   ============================================ */
+.home-screen::-webkit-scrollbar {
+    width: 6px;
+}
+
+.home-screen::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.home-screen::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.home-screen::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================
+   ANIMAÇÕES
+   ============================================ */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.app-icon {
+    animation: fadeInUp 0.5s ease;
+}
+
+/* ============================================
+   SEÇÃO DE DESCRIÇÕES DOS APPS
+   ============================================ */
+.apps-description-section {
+    width: 100%;
+    max-width: none;
+    margin: 40px auto 20px;
+    padding: 0;
+}
+
+.section-title {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.section-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    text-align: center;
+    margin-bottom: 30px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.apps-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.app-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.app-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.app-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.app-icon-large {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+}
+
+.app-card-header > a {
+    text-decoration: none;
+    display: inline-block;
+    transition: transform 0.2s ease;
+    position: relative;
+}
+
+.app-card-header > a:hover {
+    transform: scale(1.05);
+}
+
+.app-card-header > a:active {
+    transform: scale(0.95);
+}
+
+.app-card-header h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #333;
+}
+
+.app-card-header h3 a {
+    color: #2d9fa3;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.app-card-header h3 a:hover {
+    color: #1e7a7e;
+    text-decoration: underline;
+}
+
+.app-description {
+    color: #555;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.app-link {
+    display: inline-block;
+    color: #2d9fa3;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.app-link:hover {
+    color: #1e7a7e;
+    text-decoration: underline;
+}
+
+/* Em telas pequenas, garante pelo menos 1 coluna com largura mínima */
+@media (max-width: 480px) {
+    .apps-list {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+/* Em telas médias e grandes, permite mais cards por linha */
+@media (min-width: 768px) {
+    .apps-description-section {
+        padding: 0 20px;
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .apps-list {
+        gap: 24px;
+    }
+}
+

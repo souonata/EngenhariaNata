@@ -1,0 +1,37 @@
+--- SYNC-VERSIONS.PS1 (ReadHTML) ---
+Executado: 2025-01-15
+
+CORREÇÃO APLICADA:
+- Corrigido erro de sintaxe PowerShell na linha 294 (interpolação de string)
+
+RESULTADO:
+- [ATUALIZADO] solar.css: 1.2.0
+- [ATUALIZADO] solar.js: 1.20.0
+- [ATUALIZADO] fazenda.css: 1.0.0
+- [ATUALIZADO] fazenda.js: 1.0.0
+- [ATUALIZADO] fazenda.database: 1.0.0
+- [ATUALIZADO] arcondicionado.css: 1.0.0
+- [ATUALIZADO] arcondicionado.js: 1.2.0
+- [ATUALIZADO] aquecimento.css: 1.0.0
+- [ATUALIZADO] aquecimento.js: 1.2.0
+
+NOTA: O script leu versões dos HTMLs e atualizou o JSON. Porém, os HTMLs dos apps DEV ainda têm versões 1.X.X. 
+Precisamos atualizar os HTMLs dos apps DEV para 0.X.X antes de sincronizar novamente.
+
+STATUS: Script executado com sucesso após correção de bug.
+
+--- COUNT-LINES.PS1 ---
+Executado: 2025-01-15
+
+RESULTADO:
+Mutuo: HTML=458 JS=1561 CSS=762
+Ar Condicionado: HTML=504 JS=1395 CSS=387
+Aquecedor Solar: HTML=578 JS=1599 CSS=673
+Bitola: HTML=317 JS=834 CSS=103
+Hélice: HTML=301 JS=759 CSS=199
+Energia Solar: HTML=477 JS=2188 CSS=408
+Fazenda: HTML=245 JS=1338 CSS=231
+
+Total: HTML=2880 JS=9674 CSS=2763
+
+STATUS: Script executado com sucesso.

@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="apple-touch-icon" href="../favicon.svg">
+    
+    <!-- SEO Meta Tags -->
+    <title>Dimensionador de Aquecedor Solar Térmico - Coletores e Boiler | Engenharia NATA</title>
+    <meta name="description" content="Dimensionador completo de sistemas de aquecimento solar térmico. Calcula área de coletores, volume do boiler, número de painéis e potência necessária. Suporta água de consumo e aquecimento ambiente.">
+    <meta name="keywords" content="aquecedor solar, dimensionamento solar térmico, coletores solares, boiler solar, aquecimento água, energia solar térmica, classes energéticas">
+    <meta name="author" content="Engenharia NATA">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://engnata.infinityfree.me/aquecimento/aquecimento.html">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://engnata.infinityfree.me/aquecimento/aquecimento.html">
+    <meta property="og:title" content="Dimensionador de Aquecedor Solar Térmico - Engenharia NATA">
+    <meta property="og:description" content="Dimensionador completo de sistemas de aquecimento solar térmico com cálculo de coletores, boiler e potência necessária.">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:locale:alternate" content="it_IT">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:url" content="https://engnata.infinityfree.me/aquecimento/aquecimento.html">
+    <meta property="twitter:title" content="Dimensionador de Aquecedor Solar Térmico">
+    <meta property="twitter:description" content="Dimensionador completo de sistemas de aquecimento solar térmico com cálculo de coletores, boiler e potência necessária.">
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.0">
+    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.0">
+<<<<<<< C:\Users\abros\OneDrive\Documentos\Meus Programas\Backups\EngenhariaNata\aquecimento\aquecimento.html
+    <link rel="stylesheet" href="aquecimento-styles.css?v=1.0.0">
+=======
+    <link rel="stylesheet" href="aquecimento-styles.css?v=0.1.0">
+>>>>>>> c:\Users\abros\.windsurf\worktrees\EngenhariaNata\EngenhariaNata-649ffcd6\aquecimento\aquecimento.html
+</head>
+<body>
+    <!-- ========================================== -->
+    <!-- SELETOR DE IDIOMA (PADRÃO GLOBAL - FORA DO CONTAINER) -->
+    <!-- ========================================== -->
+    <div class="language-selector">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" aria-label="Alterar idioma para Português" title="Português">
+            <span class="flag" aria-hidden="true">🇧🇷</span>
+            <span class="lang-text">PT</span>
+        </button>
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" aria-label="Alterar idioma para Italiano" title="Italiano">
+            <span class="flag" aria-hidden="true">🇮🇹</span>
+            <span class="lang-text">IT</span>
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- ========================================== -->
+        <!-- CABEÇALHO -->
+        <!-- ========================================== -->
+        <header>
+            <div class="dev-badge-header">
+                <span class="dev-badge-text" data-i18n="dev-badge-header">🚧 EM DESENVOLVIMENTO</span>
+            </div>
+            <h1 data-i18n="app-title">☀️ Dimensionador de Aquecedor Solar Térmico</h1>
+            <p class="subtitulo" data-i18n="app-subtitle">Cálculo para Sistema Termossifão com Tubos a Vácuo</p>
+        </header>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE ENTRADAS -->
+        <!-- ========================================== -->
+        <section class="card">
+            <!-- Tipo de Sistema -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-tipo-sistema">Tipo de Sistema</label>
+                <p class="dica" data-i18n="dica-tipo-sistema">💡 Selecione um ou ambos os tipos de sistema</p>
+                <div class="grupo-checkbox">
+                    <label class="opcao-checkbox">
+                        <input type="checkbox" id="checkboxAgua" name="tipoSistema" value="agua" checked>
+                        <div class="cartao-checkbox">
+                            <span class="rotulo-checkbox" data-i18n="opt-agua-consumo">💧 Água de Consumo</span>
+                            <span class="descricao-checkbox" data-i18n="desc-agua-consumo">Banho, pias, etc.</span>
+                        </div>
+                    </label>
+                    <label class="opcao-checkbox">
+                        <input type="checkbox" id="checkboxCasa" name="tipoSistema" value="casa" checked>
+                        <div class="cartao-checkbox">
+                            <span class="rotulo-checkbox" data-i18n="opt-aquecimento-casa">🏠 Aquecimento da Casa</span>
+                            <span class="descricao-checkbox" data-i18n="desc-aquecimento-casa">Aquecimento ambiente</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Número de Pessoas -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderPessoas" data-i18n="label-pessoas">Número de Pessoas</label>
+                    <span class="info-icon" id="infoIconPessoas" role="button" tabindex="0" aria-label="Informação sobre número de pessoas" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputPessoas" class="valor-display valor-input" value="4">
+                        <span class="unidade" data-i18n="unit-people">pessoas</span>
+                    </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoPessoas" style="display: none;">
+                    <span data-i18n="tooltip-pessoas-texto">O número de pessoas determina o consumo diário de água quente. O consumo por pessoa varia conforme o padrão selecionado (Econômico: 30L/dia, Padrão: 40L/dia, Alto: 60L/dia). Este valor é usado para calcular o volume necessário do boiler e a área de coletores solares.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPessoas" data-step="-1" aria-label="Diminuir pessoas">−</button>
+                    <input type="range" id="sliderPessoas" min="1" max="10" step="1" value="4">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPessoas" data-step="1" aria-label="Aumentar pessoas">+</button>
+                </div>
+            </div>
+
+            <!-- Tipo de Uso -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label data-i18n="label-tipo-uso">Padrão de Consumo</label>
+                    <span class="info-icon" id="infoIconConsumo" role="button" tabindex="0" aria-label="Informação sobre padrão de consumo" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoConsumo" style="display: none;">
+                    <span data-i18n="tooltip-consumo-texto">O padrão de consumo define quantos litros de água quente cada pessoa utiliza por dia. Econômico (30L/pessoa/dia): uso moderado, ideal para quem economiza água. Padrão (40L/pessoa/dia): uso médio residencial. Alto (60L/pessoa/dia): uso intensivo, para residências com banhos longos ou múltiplos banhos por dia.</span>
+                </div>
+                <div class="grupo-radio">
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoUso" value="Economico">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opt-economico">Econômico</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoUso" value="Padrao" checked>
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opt-padrao">Padrão</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoUso" value="Alto">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opt-alto">Alto</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Latitude -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderLatitude" data-i18n="label-latitude">Latitude</label>
+                    <span class="info-icon" id="infoIconLatitude" role="button" tabindex="0" aria-label="Informação sobre latitude" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputLatitude" class="valor-display valor-input" value="-23,5" data-default-pt="-23,5" data-default-it="41,9">
+                        <span class="unidade" data-i18n="unit-degrees">°</span>
+                    </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoLatitude" style="display: none;">
+                    <span data-i18n="tooltip-latitude-texto">A latitude é a coordenada geográfica que indica a distância do local em relação ao Equador, medida em graus. Valores negativos indicam hemisfério sul (Brasil: -35° a -5°), valores positivos indicam hemisfério norte (Itália: 36° a 47°). A latitude afeta a intensidade e duração da radiação solar, influenciando diretamente o dimensionamento dos coletores solares.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderLatitude" data-step="-0.5" aria-label="Diminuir latitude">−</button>
+                    <input type="range" id="sliderLatitude" min="-35" max="-5" step="0.5" value="-23.5">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderLatitude" data-step="0.5" aria-label="Aumentar latitude">+</button>
+                </div>
+            </div>
+
+            <!-- Altitude -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderAltitude" data-i18n="label-altitude">Altitude</label>
+                    <span class="info-icon" id="infoIconAltitude" role="button" tabindex="0" aria-label="Informação sobre altitude" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputAltitude" class="valor-display valor-input" value="800">
+                        <span class="unidade" data-i18n="unit-meter">m</span>
+                    </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoAltitude" style="display: none;">
+                    <span data-i18n="tooltip-altitude-texto">A altitude é a elevação do local de instalação em relação ao nível do mar, medida em metros. Locais em maior altitude têm menor pressão atmosférica e menor temperatura média, o que pode reduzir ligeiramente a eficiência dos coletores solares. A altitude também afeta o ponto de ebulição da água, importante para sistemas de aquecimento.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderAltitude" data-step="-50" aria-label="Diminuir altitude">−</button>
+                    <input type="range" id="sliderAltitude" min="0" max="2000" step="50" value="800">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderAltitude" data-step="50" aria-label="Aumentar altitude">+</button>
+                </div>
+            </div>
+
+            <!-- Seção: Aquecimento da Casa -->
+            <div class="grupo-entrada" style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
+                <h3 style="text-align: center; color: #2d9fa3ff; margin-bottom: 16px; font-size: 1.1rem;" data-i18n="secao-aquecimento-casa">🏠 Aquecimento da Casa</h3>
+            </div>
+
+            <!-- Área da Casa -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderAreaCasa" data-i18n="label-area-casa">Área da Casa</label>
+                    <span class="info-icon" id="infoIconAreaCasa" role="button" tabindex="0" aria-label="Informação sobre área da casa" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputAreaCasa" class="valor-display valor-input" value="100">
+                        <span class="unidade" data-i18n="unit-m2">m²</span>
+                    </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoAreaCasa" style="display: none;">
+                    <span data-i18n="tooltip-area-casa-texto">A área da casa é a área total construída em metros quadrados (m²) que será aquecida pelo sistema solar térmico. Este valor é usado para calcular a demanda de energia térmica necessária para aquecer o ambiente, considerando a classe energética da construção e as perdas térmicas através de paredes, teto e janelas.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderAreaCasa" data-step="-5" aria-label="Diminuir área">−</button>
+                    <input type="range" id="sliderAreaCasa" min="20" max="300" step="5" value="100">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderAreaCasa" data-step="5" aria-label="Aumentar área">+</button>
+                </div>
+            </div>
+
+            <!-- Altura do Pé Direito -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderAlturaCasa" data-i18n="label-altura-casa">Altura do Pé Direito</label>
+                    <span class="info-icon" id="infoIconAlturaCasa" role="button" tabindex="0" aria-label="Informação sobre altura do pé direito" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputAlturaCasa" class="valor-display valor-input" value="2,7">
+                        <span class="unidade" data-i18n="unit-meter">m</span>
+                    </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoAlturaCasa" style="display: none;">
+                    <span data-i18n="tooltip-altura-casa-texto">A altura do pé direito é a distância do piso ao teto, medida em metros. Ambientes mais altos têm maior volume de ar para aquecer, aumentando a demanda de energia térmica. O cálculo considera o volume total (área × altura) para determinar a potência necessária do sistema de aquecimento ambiente. Altura padrão residencial: 2,7m.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderAlturaCasa" data-step="-0.1" aria-label="Diminuir altura">−</button>
+                    <input type="range" id="sliderAlturaCasa" min="2.0" max="4.0" step="0.1" value="2.7">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderAlturaCasa" data-step="0.1" aria-label="Aumentar altura">+</button>
+                </div>
+            </div>
+
+            <!-- Dias de Autonomia -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderDiasAutonomia" data-i18n="label-dias-autonomia">Dias de Autonomia</label>
+                    <span class="info-icon" id="infoIconAutonomia" role="button" tabindex="0" aria-label="Informação sobre dias de autonomia" title="Clique para mais informações">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputDiasAutonomia" class="valor-display valor-input" value="3">
+                        <span class="unidade" data-i18n="unit-dias">dias</span>
+                    </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoAutonomia" style="display: none;">
+                    <span data-i18n="tooltip-autonomia-texto">Os dias de autonomia representam quantos dias consecutivos sem sol o sistema deve ser capaz de manter a casa aquecida usando apenas a energia armazenada no boiler. Valores maiores aumentam o volume necessário do boiler e a área de coletores, garantindo maior segurança em períodos de baixa insolação, mas também aumentam o custo do sistema.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderDiasAutonomia" data-step="-1" aria-label="Diminuir dias">−</button>
+                    <input type="range" id="sliderDiasAutonomia" min="1" max="7" step="1" value="3">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderDiasAutonomia" data-step="1" aria-label="Aumentar dias">+</button>
+                </div>
+            </div>
+
+            <!-- Classe Energética -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-classe-energetica">Classe Energética</label>
+                <div class="grupo-radio">
+                    <label class="opcao-radio classe-energetica classe-A classe-A4">
+                        <input type="radio" name="classeEnergetica" value="A4">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">A4</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-a4">≤0,40</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio classe-energetica classe-A classe-A3">
+                        <input type="radio" name="classeEnergetica" value="A3">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">A3</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-a3">0,40-0,60</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio classe-energetica classe-A classe-A2">
+                        <input type="radio" name="classeEnergetica" value="A2">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">A2</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-a2">0,60-0,80</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio classe-energetica classe-A classe-A1">
+                        <input type="radio" name="classeEnergetica" value="A1">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">A1</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-a1">0,80-1,00</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio classe-energetica classe-B">
+                        <input type="radio" name="classeEnergetica" value="B">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">B</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-b">1,00-1,20</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio classe-energetica classe-C">
+                        <input type="radio" name="classeEnergetica" value="C">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">C</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-c">1,20-1,50</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio classe-energetica classe-D">
+                        <input type="radio" name="classeEnergetica" value="D" checked>
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">D</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-d">1,50-2,00</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio classe-energetica classe-E">
+                        <input type="radio" name="classeEnergetica" value="E">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">E</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-e">2,00-2,60</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio classe-energetica classe-F">
+                        <input type="radio" name="classeEnergetica" value="F">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">F</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-f">2,60-3,50</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio classe-energetica classe-G">
+                        <input type="radio" name="classeEnergetica" value="G">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">G</span>
+                            <span class="rotulo-consumo" data-i18n="consumo-classe-g">>3,50</span>
+                        </div>
+                    </label>
+                </div>
+                <p class="dica dica-multilinha" data-i18n="dica-classe-energetica" style="text-align: center;">
+                    <span style="font-size: 0.85em; color: #666;">* Valores em kWh/m²·ano</span>
+                </p>
+            </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE MEMORIAL DE CÁLCULO -->
+        <!-- Começa escondida (display: none) -->
+        <!-- Aparece quando o usuário clica em "SAIBA MAIS" -->
+        <!-- ========================================== -->
+        <div id="memorialSection" class="card memorial-section" style="display: none;">
+            <div class="memorial-header">
+                <h2 data-i18n="memorial-title">📚 Memorial de Cálculo - Aquecedor Solar Térmico</h2>
+                <button id="btnFecharMemorial" class="btn-fechar-memorial" data-i18n-title="back-to-calculator">
+                    <span data-i18n="back">← Voltar</span>
+                </button>
+            </div>
+            
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-intro-title">🎯 Objetivo do Dimensionamento</h3>
+                <p data-i18n="memorial-intro-text">Este memorial explica passo a passo como é calculado o dimensionamento de um sistema de aquecimento solar térmico, incluindo área de coletores, volume do boiler, número de painéis e potência necessária para água de consumo e/ou aquecimento ambiente.</p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo1-title">1️⃣ Passo 1: Calcular Demanda de Energia para Água</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Consumo Diário (L) = Número de Pessoas × Consumo por Pessoa</strong></p>
+                    <p><strong>ΔT = Temperatura Desejada - Temperatura Água Fria</strong></p>
+                    <p><strong>Energia Necessária (kWh) = Volume (L) × Densidade (kg/L) × Calor Específico (Wh/kg°C) × ΔT ÷ 1000</strong></p>
+                </div>
+                <p data-i18n="memorial-passo1-explicacao">A energia necessária para aquecer a água depende do consumo diário, da diferença de temperatura e das propriedades físicas da água.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-agua">4 pessoas × 50 L/pessoa = 200 L/dia, ΔT = 40°C → 200 × 1.0 × 1.163 × 40 ÷ 1000 = 9.3 kWh/dia</span></p>
+                <div class="info-box">
+                    <p><strong>📊 Valores de referência usados:</strong></p>
+                    <ul>
+                        <li><strong>Densidade da água:</strong> 1.0 kg/L — Constante física que permite converter volume (litros) em massa (kg)</li>
+                        <li><strong>Calor específico da água:</strong> 1.163 Wh/kg°C (ou 4.186 kJ/kg°C) — Quantidade de energia necessária para elevar 1 kg de água em 1°C. Este valor é uma propriedade física da água.</li>
+                        <li><strong>Consumo por pessoa:</strong> Econômico (30 L/dia), Padrão (40 L/dia), Alto (60 L/dia) — Valores baseados em padrões de consumo residencial</li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong>⚛️ Lei Física Aplicada — Transferência de Calor:</strong></p>
+                    <p style="margin-top: 5px;">O calor sempre flui do corpo mais quente para o mais frio. Os coletores solares captam calor do sol e transferem para a água. A quantidade de energia necessária para aquecer a água é calculada usando o calor específico: quanto maior a diferença de temperatura e a quantidade de água, mais energia é necessária.</p>
+                </div>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo2-title">2️⃣ Passo 2: Calcular Potência e Demanda para Aquecimento da Casa</h3>
+                <p><strong>Fórmula de Demanda Diária (para dimensionamento de coletores):</strong></p>
+                <div class="formula-box">
+                    <p><strong>Consumo Anual Total = Consumo Específico (kWh/m²·ano) × Área (m²) × Fator Altura</strong></p>
+                    <p><strong>Consumo Anual Aquecimento = Consumo Anual Total × Fração Aquecimento (60-70%)</strong></p>
+                    <p><strong>Demanda Diária (kWh/dia) = Consumo Anual Aquecimento ÷ Dias de Aquecimento (150 dias)</strong></p>
+                </div>
+                <p><strong>Fórmula de Potência (para dimensionamento de termossifões):</strong></p>
+                <div class="formula-box">
+                    <p><strong>Potência (W) = (Demanda Diária (kWh/dia) ÷ Horas de Aquecimento por Dia) × 1000 × 1.15</strong></p>
+                    <p><em>Nota: O aquecimento residencial geralmente é necessário durante as horas mais frias (noite e manhã), aproximadamente 16 horas por dia. Durante o dia (8 horas), o sol pode ajudar a aquecer naturalmente.</em></p>
+                </div>
+                <p data-i18n="memorial-passo2-explicacao">A demanda diária de energia (em kWh/dia) é calculada a partir do consumo específico anual por área (kWh/m²·ano), considerando a área da casa, fator de altura e fração de energia usada para aquecimento. A potência necessária (em Watts) é calculada a partir da demanda diária dividida pelas horas de aquecimento ativo por dia (16 horas), representando a potência INSTANTÂNEA necessária para manter a casa aquecida (compensar as perdas térmicas).</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-casa">Área: 100 m², classe D (1.75 kWh/m²·ano), fator altura: 1.00 → Consumo anual aquecimento: 262.5 kWh/ano → Demanda Diária: 262.5 ÷ 150 dias = 1.75 kWh/dia → Potência: 1.75 kWh/dia ÷ 16h × 1000 × 1.15 = 126 W</span></p>
+                <div class="info-box">
+                    <p><strong>📊 Valores de referência usados:</strong></p>
+                    <ul>
+                        <li><strong>Temperatura de Conforto:</strong> 22°C — Temperatura interna desejada para conforto térmico</li>
+                        <li><strong>Consumo Específico por Classe Energética (kWh/m²·ano):</strong> A4 (0.35), A3 (0.50), A2 (0.70), A1 (0.90), B (1.10), C (1.35), D (1.75), E (2.30), F (3.05), G (4.0) — Representam o consumo anual de energia por metro quadrado de área construída. Valores baseados nas normas europeias de eficiência energética.</li>
+                        <li><strong>Fator de Altura:</strong> Ajuste para pé direito acima de 2,7m (padrão). Para cada 0,1m acima de 2,7m, aumenta 10% no consumo.</li>
+                        <li><strong>Fração de Aquecimento:</strong> 60-70% do consumo total é usado para aquecimento (70% em climas muito frios, 60% em climas moderados).</li>
+                        <li><strong>Dias de Aquecimento:</strong> 150 dias/ano — Período aproximado em que o aquecimento é necessário (aproximadamente 5 meses de inverno).</li>
+                        <li><strong>Fator de Segurança (1.15):</strong> Margem de 15% para perdas adicionais (portas, janelas, infiltrações, etc.)</li>
+                        <li><strong>Horas de Aquecimento por Dia:</strong> 16 horas — O aquecimento residencial geralmente é necessário durante as horas mais frias (noite e manhã). Durante o dia (8 horas), o sol pode ajudar a aquecer naturalmente, reduzindo a necessidade de aquecimento ativo.</li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong>⚛️ Lei Física Aplicada — Transferência de Calor:</strong></p>
+                    <p style="margin-top: 5px;">O calor sempre flui do ambiente mais quente para o mais frio. A casa perde calor continuamente para o ambiente externo através das paredes, telhado, janelas e portas. O consumo específico anual (kWh/m²·ano) representa a perda de calor anual por metro quadrado de área construída. A demanda diária é calculada dividindo o consumo anual pelo número de dias de aquecimento, e a potência necessária é calculada para compensar essas perdas térmicas e manter a temperatura interna constante durante as horas de uso.</p>
+                </div>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Dimensionar Volume do Boiler</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula para Água de Consumo:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Volume Boiler Água (L) = Consumo Diário (L) × Dias de Autonomia</strong></p>
+                </div>
+                <p data-i18n="memorial-passo3-explicacao">O volume do boiler deve ser suficiente para armazenar água quente para os dias sem sol (autonomia).</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-boiler">200 L/dia × 3 dias = 600 L</span></p>
+                
+                <p style="margin-top: 15px;"><strong>Fórmula para Aquecimento da Casa:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Energia Total Autonomia (kWh) = Demanda Diária (kWh/dia) × Dias de Autonomia</strong></p>
+                    <p><strong>ΔT Utilizável = Temperatura Armazenamento Inicial - Temperatura Mínima Termossifão</strong></p>
+                    <p><strong>Volume Teórico (L) = Energia Total (Wh) ÷ (Calor Específico × ΔT Utilizável × Densidade)</strong></p>
+                    <p><strong>Volume Boiler Casa (L) = Volume Teórico ÷ Fator de Estratificação</strong></p>
+                    <p><strong>Volume Útil (L) = Volume Boiler Casa × Fator de Estratificação</strong></p>
+                </div>
+                <p style="margin-top: 10px;"><strong>Exemplo:</strong> <span id="memorial-exemplo-boiler-casa">-</span></p>
+                <div class="info-box">
+                    <p><strong>📊 Valores de referência usados:</strong></p>
+                    <ul>
+                        <li><strong>Temperatura Mínima Termossifão:</strong> 48°C — Temperatura mínima necessária para os termossifões (radiadores) funcionarem adequadamente. Abaixo desta temperatura, o termossifão não consegue transferir calor suficiente para o ambiente.</li>
+                        <li><strong>Temperatura Armazenamento Inicial:</strong> 65°C — Temperatura máxima que a água atinge quando o sistema solar carrega o boiler completamente.</li>
+                        <li><strong>ΔT Utilizável:</strong> 17°C (65°C - 48°C) — Faixa de temperatura que pode ser utilizada pelos termossifões. A água precisa estar acima de 48°C até o último dia de autonomia.</li>
+                        <li><strong>Fator de Estratificação:</strong> 0.65 (65%) — Devido à estratificação térmica no boiler, apenas 65% do volume (parte superior) mantém água quente suficiente. A água quente fica em cima e a fria embaixo, então precisamos de um volume maior para garantir que a parte superior tenha água quente suficiente.</li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong>⚛️ Princípio Físico Aplicado — Estratificação Térmica:</strong></p>
+                    <p style="margin-top: 5px;">A água quente é menos densa que a água fria, então ela "flutua" para cima no boiler. Isso cria camadas: água quente em cima e fria embaixo. Os termossifões são conectados na parte superior do boiler, então apenas a água quente (parte superior) é utilizada. Por isso, precisamos de um volume maior de boiler para garantir que mesmo no último dia de autonomia, a parte superior ainda tenha água acima de 48°C.</p>
+                </div>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo4-title">4️⃣ Passo 4: Calcular Eficiência do Coletor</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Parâmetro Perda = (Temperatura Média Fluido - Temperatura Ambiente) ÷ Irradiação Pico</strong></p>
+                    <p><strong>Eficiência = Eficiência Óptica - (Coeficiente Perda Linear × Parâmetro Perda)</strong></p>
+                </div>
+                <p data-i18n="memorial-passo4-explicacao">A eficiência do coletor varia com a temperatura de operação e as condições ambientais. Quanto maior a diferença de temperatura, menor a eficiência.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-eficiencia">Temperatura média 42°C, ambiente 18°C, irradiação 800 W/m² → eficiência ≈ 65%</span></p>
+                <div class="info-box">
+                    <p><strong>📊 Valores de referência usados:</strong></p>
+                    <ul>
+                        <li><strong>Eficiência ótica (η₀):</strong> Varia conforme o modelo de referência (72-75%) — Eficiência máxima do coletor quando não há perdas térmicas. Valores típicos para coletores com tubos a vácuo.</li>
+                        <li><strong>Coeficiente de perda linear (a₁):</strong> Varia conforme o modelo (1.4-1.6 W/m²·K) — Representa as perdas térmicas do coletor. Quanto maior este valor, mais o coletor perde calor para o ambiente. Coletores com tubos a vácuo têm valores menores (melhor isolamento).</li>
+                        <li><strong>Irradiação horária de pico média:</strong> 800 W/m² — Valor médio de irradiação solar durante as horas de sol pleno. Usado para calcular o parâmetro de perda térmica.</li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong>⚛️ Lei Física Aplicada — Transferência de Calor e Eficiência:</strong></p>
+                    <p style="margin-top: 5px;">A eficiência do coletor diminui quando a diferença de temperatura entre o coletor e o ambiente aumenta. Isso acontece porque o calor "escapa" mais rapidamente do coletor quente para o ambiente mais frio (transferência de calor). Por isso, em dias muito frios ou quando a água está muito quente, o coletor é menos eficiente. Os coletores com tubos a vácuo têm melhor isolamento térmico, reduzindo essas perdas.</p>
+                </div>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo5-title">5️⃣ Passo 5: Calcular Área de Coletores</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Para Água: Área (m²) = (Demanda Diária (kWh/dia) × Fator Segurança) ÷ (HSP × Eficiência)</strong></p>
+                    <p><strong>Para Casa:</strong></p>
+                    <p><strong>Energia para Aquecer Boiler = Volume Boiler Casa (L) × Densidade × Calor Específico × (65°C - Temp. Ambiente)</strong></p>
+                    <p><strong>Energia para Autonomia = Demanda Diária Casa (kWh/dia) × Dias de Autonomia</strong></p>
+                    <p><strong>Energia Total = Energia Aquecer Boiler + Energia Autonomia</strong></p>
+                    <p><strong>Área (m²) = (Energia Total × Fator Segurança) ÷ (HSP × Eficiência)</strong></p>
+                </div>
+                <p data-i18n="memorial-passo5-explicacao">A área de coletores necessária depende da demanda total de energia, das horas de sol pico (HSP) disponíveis e da eficiência do coletor. Para aquecimento da casa, o sistema precisa captar em 1 dia energia suficiente para: (1) aquecer todo o volume do boiler até 65°C, e (2) fornecer energia para os dias de autonomia. A energia capturada por m² de painel é calculada considerando 1 hora de sol pico (1000 W/m²) multiplicada pelo número de horas de sol pico do dia.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-area">Água: 4.00 kWh/dia ÷ (4.0 HSP × 0.68) = 1.47 m²; Casa: (10.5 kWh + 3.70 kWh/dia × 3 dias) ÷ (4.0 HSP × 0.68) = 8.0 m²; Total: 9.47 m²</span></p>
+                <div class="info-box">
+                    <p><strong>📊 Valores de referência usados:</strong></p>
+                    <ul>
+                        <li><strong>HSP (Horas de Sol Pleno):</strong> Calculado dinamicamente baseado na latitude usando interpolação linear. Valores de referência: Latitude 0° (~5.5 HSP), 15° (~4.5 HSP), 30° (~3.5 HSP), 45° (~2.5 HSP), 60° (~1.5 HSP). Quanto mais longe do equador, menos horas de sol no inverno.</li>
+                        <li><strong>Irradiação de pico:</strong> 1000 W/m² — Valor padrão usado para definir "1 hora de sol pleno". Representa a irradiação solar máxima típica.</li>
+                        <li><strong>Fator de Segurança:</strong> 1.3 (30%) — Margem de segurança para compensar dias nublados, perdas no sistema e variações climáticas</li>
+                        <li><strong>Gradiente adiabático:</strong> 6.5°C por 1000m para ar ambiente — Usado para ajustar temperaturas base ao nível do mar conforme a altitude do local. A temperatura diminui aproximadamente 6.5°C a cada 1000m de altitude.</li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong>⚛️ Lei Física Aplicada — Conservação de Energia:</strong></p>
+                    <p style="margin-top: 5px;">A energia captada pelos coletores deve ser suficiente para atender a demanda. A energia solar captada (irradiação × área × eficiência × HSP) deve ser igual ou maior que a energia necessária. Para sistemas com autonomia, a energia captada em <strong>apenas 1 dia de sol</strong> deve ser suficiente para: (1) aquecer todo o volume do boiler da temperatura ambiente até 65°C, e (2) fornecer energia para os dias de autonomia. Isso garante que mesmo após vários dias sem sol, o sistema ainda tenha água quente suficiente acima de 48°C para os termossifões funcionarem.</p>
+                </div>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo6-title">6️⃣ Passo 6: Calcular Número de Painéis</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Número de Painéis = Arredondar para Cima(Área Coletor ÷ Área por Painel)</strong></p>
+                </div>
+                <p data-i18n="memorial-passo6-explicacao">O número de painéis é calculado dividindo a área total necessária pela área de cada painel, arredondando para cima.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-paineis">4.0 m² ÷ 2.0 m²/painel = 2 painéis</span></p>
+            </div>
+
+            <div class="memorial-item" id="memorial-item-termossifoes" style="display: none;">
+                <h3 data-i18n="memorial-passo7-title">7️⃣ Passo 7: Dimensionar Termossifões por Ambiente</h3>
+                <p><strong data-i18n="memorial-formula">Método:</strong></p>
+                <div class="formula-box">
+                    <p><strong>1. Estimar número de ambientes baseado na área da casa</strong></p>
+                    <p><strong>2. Calcular potência por ambiente usando consumo específico por área (kWh/m²·ano)</strong></p>
+                    <p><strong>3. Selecionar termossifão adequado para cada ambiente</strong></p>
+                </div>
+                <p data-i18n="memorial-passo7-explicacao">Os termossifões são dimensionados individualmente para cada ambiente da casa, garantindo aquecimento adequado em todos os cômodos.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-termossifoes">-</span></p>
+            </div>
+
+            <div class="resumo-calculado">
+                <h3 data-i18n="memorial-resumo-title">📊 Resumo Calculado</h3>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-demanda-agua">Demanda Água:</span>
+                    <span id="resumo-demanda-agua">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-demanda-casa">Demanda Casa:</span>
+                    <span id="resumo-demanda-casa">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-area-coletor">Área Coletor:</span>
+                    <span id="resumo-area-coletor">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-paineis">Número de Painéis:</span>
+                    <span id="resumo-paineis">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-volume-boiler">Volume Boiler:</span>
+                    <span id="resumo-volume-boiler">-</span>
+                </div>
+            </div>
+
+            <button class="btn-voltar-memorial" data-i18n-title="back-to-calculator">
+                <span data-i18n="back">← Voltar</span>
+            </button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE RESULTADOS -->
+        <!-- ========================================== -->
+        <section class="card resultados" id="resultadosSection">
+            <div class="resultados-header-com-ajuda">
+                <h2 data-i18n="resultados-title">📊 Resultados do Dimensionamento</h2>
+                <button id="btnMemorial" class="btn-help" title="Ver Memorial de Cálculo" data-i18n-title="btn-memorial" tabindex="10">
+                    <span class="texto-saiba-mais" data-i18n="learn-more">SAIBA MAIS!</span>
+                </button>
+            </div>
+            
+            <!-- Seção de Custos - PRIMEIRO -->
+            <div style="margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #2d9fa3ff;">
+                <h3 style="margin-bottom: 15px; color: #2d9fa3ff;" data-i18n="custos-title">💰 Estimativa de Custos</h3>
+                
+                <!-- Custo Total em destaque no topo -->
+                <div class="resultado-item destaque" style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #2d9fa3ff;">
+                    <span class="label-resultado" data-i18n="custo-total">Custo Total Estimado:</span>
+                    <span class="valor-resultado-grande" id="custoTotal">-</span>
+                </div>
+                
+                <!-- Detalhamento dos custos -->
+                <div style="margin-top: 15px;">
+                    <h4 style="margin-bottom: 10px; color: #666; font-size: 0.95rem; font-weight: 600;" data-i18n="custos-detalhamento">Detalhamento:</h4>
+                    
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="custo-paineis">Custo dos Painéis:</span>
+                        <span class="valor-resultado" id="custoPaineis">-</span>
+                    </div>
+
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="custo-acumuladores">Custo dos Acumuladores (Boiler):</span>
+                        <span class="valor-resultado" id="custoAcumuladores">-</span>
+                    </div>
+
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="custo-tubulacoes">Tubulações e Conexões:</span>
+                        <span class="valor-resultado" id="custoTubulacoes">-</span>
+                    </div>
+
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="custo-isolantes">Isolantes Térmicos:</span>
+                        <span class="valor-resultado" id="custoIsolantes">-</span>
+                    </div>
+
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="custo-termossifoes">Termossifões (Radiadores):</span>
+                        <span class="valor-resultado" id="custoTermossifoes" title="">-</span>
+                    </div>
+                </div>
+
+                <p class="nota-referencia" style="margin-top: 15px;" data-i18n="nota-custos">* Valores aproximados baseados em preços médios do mercado. Podem variar conforme região e fornecedor.</p>
+            </div>
+
+            <!-- Resultados do Dimensionamento - DEPOIS -->
+            <div class="resultado-item destaque">
+                <span class="label-resultado" data-i18n="resultado-area-coletor">Área de Coletores:</span>
+                <span class="valor-resultado-grande" id="areaColetor">-</span>
+            </div>
+
+            <div class="resultado-item destaque">
+                <span class="label-resultado" data-i18n="resultado-paineis">Número de Painéis:</span>
+                <span class="valor-resultado-grande" id="numeroPaineis">-</span>
+            </div>
+            <div class="nota-referencia" id="notaPainelReferencia"></div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-demanda-agua">Demanda Aquecimento Água:</span>
+                <span class="valor-resultado" id="demandaEnergia">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-demanda-casa">Demanda Aquecimento Casa:</span>
+                <span class="valor-resultado" id="demandaCasa">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-volume-boiler">Volume do Boiler:</span>
+                <span class="valor-resultado" id="volumeBoiler">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado-potencia-casa">Potência Necessária para Aquecimento:</span>
+                <span class="valor-resultado" id="potenciaCasa">-</span>
+                <div class="dica-texto" data-i18n="dica-potencia-casa" style="font-size: 0.85em; color: #666; margin-top: 4px;"></div>
+            </div>
+
+            <div class="resultado-item" id="resultadoTermossifoes" style="display: none; flex-direction: column; align-items: flex-start;">
+                <span class="label-resultado" data-i18n="resultado-termossifoes" style="margin-bottom: 8px;">Termossifões Necessários:</span>
+                <span class="valor-resultado" id="termossifoesDetalhes" style="width: 100%;">-</span>
+            </div>
+
+            <div class="info-box">
+                <p data-i18n="info-recomendacoes">💡 <strong>Recomendações de Instalação:</strong></p>
+                <ul id="recomendacoes">
+                    <li data-i18n="rec-altura">O fundo do boiler deve estar a pelo menos 0,20 m acima do topo dos coletores</li>
+                    <li data-i18n="rec-orientacao">Orientar coletores para o Norte geográfico (azimute 0°)</li>
+                    <li data-i18n="rec-inclinacao">Inclinação recomendada: Latitude + 10° a 15°</li>
+                    <li data-i18n="rec-tubulacao">Usar tubulação curta (máx. 8-10 m) e diâmetro de 25mm (1")</li>
+                </ul>
+            </div>
+
+        </section>
+    </div>
+
+    <footer>
+        <p data-i18n="footer">Dimensionador de Aquecedor Solar - Engenharia Nata @ 2025</p>
+    </footer>
+
+    <!-- Botão de retorno à tela inicial -->
+    <a href="../index.html" class="home-button-fixed" aria-label="Voltar à tela inicial">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <!-- Scripts -->
+    <script src="../assets/js/site-config.js?v=1.2.0"></script>
+    <script src="../assets/js/ajustarValorUtil.js?v=1.1.0"></script>
+<<<<<<< C:\Users\abros\OneDrive\Documentos\Meus Programas\Backups\EngenhariaNata\aquecimento\aquecimento.html
+    <script src="aquecimento-script.js?v=1.2.0"></script>
+=======
+    <script src="aquecimento-script.js?v=0.2.0"></script>
+>>>>>>> c:\Users\abros\.windsurf\worktrees\EngenhariaNata\EngenhariaNata-649ffcd6\aquecimento\aquecimento.html
+</body>
+</html>
+

@@ -1,0 +1,837 @@
+/* ============================================
+   ESTILOS DO APP AQUECEDOR SOLAR
+   ============================================ */
+
+/* Variáveis CSS para personalização do tema */
+:root { 
+    /* Todas as variáveis de cor, espaçamento e fonte já estão centralizadas em shared-styles.css */
+}
+
+/* ============================================
+   RESET, BODY, CONTAINER, HEADER
+   ============================================ */
+/* Estilos globais movidos para assets/css/shared-styles.css */
+/* Reset, body, container, header, footer, typography estão no arquivo global */
+/* Mantendo apenas estilos específicos do Aquecimento */
+
+/* Container e header movidos para shared-styles.css */
+/* Mantendo apenas estilos específicos do Aquecimento */
+
+/* Badge "Em Desenvolvimento" no cabeçalho */
+.dev-badge-header {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.dev-badge-text {
+    display: inline-block;
+    background: #ff6b35;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid white;
+}
+
+@media (max-width: 480px) {
+    .dev-badge-text {
+        font-size: 0.65rem;
+        padding: 5px 10px;
+    }
+}
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 12px;
+    position: relative;
+    z-index: 10;
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+.card {
+    background: var(--memorial-bg);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px var(--accent-shadow);
+}
+
+.card h2 {
+    font-size: 1.1rem;
+    color: var(--accent-color);
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+/* ============================================
+   RESULTADOS
+   ============================================ */
+.resultados {
+    background: var(--memorial-bg);
+}
+
+/* Resultado styles moved to shared-styles.css */
+/* Mantendo apenas estilos específicos do Aquecimento */
+.resultado-item.destaque {
+    background: var(--accent-color);
+    color: white;
+    padding: 16px;
+    border-radius: 8px;
+    margin: 12px 0;
+    border-bottom: none;
+}
+
+.label-resultado {
+    font-size: 0.9rem;
+    color: var(--resultado-label);
+    font-weight: 500;
+}
+
+.resultado-item.destaque .label-resultado {
+    color: white;
+    font-weight: 600;
+}
+
+.resultado-item.destaque .valor-resultado {
+    color: white;
+}
+
+.valor-resultado-grande {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+.resultado-item.destaque .valor-resultado-grande {
+    color: white;
+    font-size: 1.8rem;
+}
+
+/* ============================================
+   INFO BOX
+   ============================================ */
+.info-box {
+    background: var(--info-bg);
+    border-left: 4px solid var(--accent-color);
+    padding: 12px;
+    margin-top: 16px;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.85rem;
+}
+
+.info-box p {
+    margin: 0 0 8px 0;
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.info-box ul {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--resultado-value);
+}
+
+.info-box li {
+    margin-bottom: 4px;
+}
+
+/* ============================================
+   ESTILOS ESPECÍFICOS PARA MODELO DE COLETOR
+   ============================================ */
+.modelo-referencia {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.cartao-modelo-referencia {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    min-width: 0;
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    border: 2px solid var(--accent-color, #2d9fa3ff);
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(45, 159, 163, 0.15);
+}
+
+.modelo-imagem {
+    width: 100%;
+    height: 120px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.modelo-imagem svg {
+    width: 100%;
+    height: 100%;
+    max-width: 200px;
+    max-height: 120px;
+}
+
+.opcao-radio input:checked + .cartao-radio-modelo .modelo-imagem {
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+    border-color: var(--accent-color, #2d9fa3ff);
+}
+
+.modelo-header {
+    text-align: center;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.modelo-detalhes {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.detalhe-linha {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+.detalhe-label {
+    color: #666;
+    font-weight: 500;
+}
+
+.detalhe-valor {
+    color: #333;
+    font-weight: 600;
+}
+
+.opcao-radio input:checked + .cartao-radio-modelo {
+    border-color: var(--accent-color, #2d9fa3ff);
+    background-color: #e0f7fa;
+    box-shadow: 0 4px 10px rgba(45, 159, 163, 0.2);
+}
+
+.opcao-radio input:checked + .cartao-radio-modelo .modelo-header {
+    border-bottom-color: rgba(45, 159, 163, 0.3);
+}
+
+.opcao-radio input:checked + .cartao-radio-modelo .detalhe-valor {
+    color: var(--accent-color, #2d9fa3ff);
+}
+
+/* Layout responsivo - em telas maiores, mostrar lado a lado */
+@media (min-width: 600px) {
+    .grupo-radio-modelos {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: stretch;
+    }
+    
+    .opcao-radio-modelo {
+        flex: 1;
+        min-width: 180px;
+        max-width: 280px;
+    }
+}
+
+/* Ajustes para telas muito pequenas */
+@media (max-width: 400px) {
+    .cartao-radio-modelo {
+        padding: 10px;
+    }
+    
+    .detalhe-linha {
+        font-size: 0.8rem;
+    }
+  }
+  
+/* ============================================
+   CLASSES ENERGÉTICAS COM GRADIENTE DE CORES
+   ============================================ */
+.classe-energetica .cartao-radio {
+    position: relative;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 60px;
+}
+
+.classe-energetica .rotulo-radio {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.classe-energetica .rotulo-consumo {
+    font-size: 0.7rem;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+/* Gradiente de cores: Azul (A eficiente) a Vermelho (G ruim) */
+/* Classe A4 - Mais eficiente (azul mais escuro) */
+.classe-A4 .cartao-radio {
+    background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%);
+    color: white;
+    border-color: #0D47A1;
+}
+
+.classe-A4 input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #0277BD 0%, #0D47A1 100%);
+    border-color: #01579B;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(13, 71, 161, 0.5);
+}
+
+/* Classe A3 */
+.classe-A3 .cartao-radio {
+    background: linear-gradient(135deg, #1565C0 0%, #1976D2 100%);
+    color: white;
+    border-color: #1565C0;
+}
+
+.classe-A3 input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #0D47A1 0%, #1565C0 100%);
+    border-color: #0277BD;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(21, 101, 192, 0.5);
+}
+
+/* Classe A2 */
+.classe-A2 .cartao-radio {
+    background: linear-gradient(135deg, #1976D2 0%, #2196F3 100%);
+    color: white;
+    border-color: #1976D2;
+}
+
+.classe-A2 input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #1565C0 0%, #1976D2 100%);
+    border-color: #0D47A1;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(25, 118, 210, 0.5);
+}
+
+/* Classe A1 */
+.classe-A1 .cartao-radio {
+    background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+    color: white;
+    border-color: #1976D2;
+}
+
+.classe-A1 input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #1976D2 0%, #2196F3 100%);
+    border-color: #1565C0;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(33, 150, 243, 0.4);
+}
+
+.classe-B .cartao-radio {
+    background: linear-gradient(135deg, #42A5F5 0%, #64B5F6 100%);
+    color: white;
+    border-color: #2196F3;
+}
+
+.classe-B input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #2196F3 0%, #42A5F5 100%);
+    border-color: #1976D2;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(66, 165, 245, 0.4);
+}
+
+.classe-C .cartao-radio {
+    background: linear-gradient(135deg, #66BB6A 0%, #81C784 100%);
+    color: white;
+    border-color: #4CAF50;
+}
+
+.classe-C input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+    border-color: #43A047;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+.classe-D .cartao-radio {
+    background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%);
+    color: #333;
+    border-color: #FFA000;
+}
+
+.classe-D input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #FFA000 0%, #FFC107 100%);
+    border-color: #FF8F00;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(255, 193, 7, 0.4);
+}
+
+.classe-E .cartao-radio {
+    background: linear-gradient(135deg, #FF9800 0%, #FFB74D 100%);
+    color: white;
+    border-color: #F57C00;
+}
+
+.classe-E input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #F57C00 0%, #FF9800 100%);
+    border-color: #EF6C00;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(255, 152, 0, 0.4);
+}
+
+.classe-F .cartao-radio {
+    background: linear-gradient(135deg, #FF5722 0%, #FF8A65 100%);
+    color: white;
+    border-color: #E64A19;
+}
+
+.classe-F input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #E64A19 0%, #FF5722 100%);
+    border-color: #D84315;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(255, 87, 34, 0.4);
+}
+
+.classe-G .cartao-radio {
+    background: linear-gradient(135deg, #F44336 0%, #EF5350 100%);
+    color: white;
+    border-color: #D32F2F;
+}
+
+.classe-G input:checked + .cartao-radio {
+    background: linear-gradient(135deg, #D32F2F 0%, #F44336 100%);
+    border-color: #C62828;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.7), inset 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(244, 67, 54, 0.4);
+}
+
+/* ============================================
+   RESPONSIVIDADE - CLASSES ENERGÉTICAS
+   ============================================ */
+/* Grid responsivo para classes energéticas */
+.grupo-entrada:has(.classe-energetica) .grupo-radio {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 8px;
+    width: 100%;
+}
+
+/* Em telas médias, 5 colunas */
+@media (min-width: 600px) and (max-width: 900px) {
+    .grupo-entrada:has(.classe-energetica) .grupo-radio {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+/* Em telas grandes, todas em uma linha */
+@media (min-width: 900px) {
+    .grupo-entrada:has(.classe-energetica) .grupo-radio {
+        grid-template-columns: repeat(10, 1fr);
+    }
+}
+
+/* Em telas pequenas, 3 colunas */
+@media (max-width: 600px) {
+    .grupo-entrada:has(.classe-energetica) .grupo-radio {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Em telas muito pequenas, 2 colunas */
+@media (max-width: 400px) {
+    .grupo-entrada:has(.classe-energetica) .grupo-radio {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .classe-energetica .rotulo-radio {
+        font-size: 1rem;
+    }
+    
+    .classe-energetica .rotulo-consumo {
+        font-size: 0.65rem;
+    }
+    
+    .classe-energetica .cartao-radio {
+        min-height: 55px;
+        padding: 8px 6px;
+    }
+}
+
+/* Garantir que cada opção ocupe o espaço do grid */
+.grupo-entrada:has(.classe-energetica) .opcao-radio {
+    width: 100%;
+    margin: 0;
+}
+
+.classe-energetica .cartao-radio {
+    width: 100%;
+}
+
+/* ============================================
+   DICAS MULTILINHA
+   ============================================ */
+.dica-multilinha {
+    line-height: 1.6;
+    margin-top: 8px;
+}
+
+.dica-multilinha strong {
+    font-weight: 600;
+    color: #333;
+}
+
+/* ============================================
+   NOTA DE REFERÊNCIA
+   ============================================ */
+.nota-referencia {
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: 12px;
+    margin-bottom: 16px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-left: 3px solid #2d9fa3ff;
+    border-radius: 4px;
+    line-height: 1.6;
+}
+
+.nota-referencia a {
+    color: #2d9fa3ff;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid #2d9fa3ff;
+    transition: all 0.2s;
+}
+
+.nota-referencia a:hover {
+    color: #1e7e82;
+    border-bottom-color: #1e7e82;
+}
+
+/* ============================================
+   CHECKBOXES DE TIPO DE SISTEMA
+   ============================================ */
+.grupo-checkbox {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.opcao-checkbox {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.opcao-checkbox input[type="checkbox"] {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    cursor: pointer;
+    accent-color: var(--accent-color, #2d9fa3ff);
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.cartao-checkbox {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    transition: all 0.3s;
+    cursor: pointer;
+    flex: 1;
+}
+
+.opcao-checkbox:hover .cartao-checkbox {
+    border-color: var(--accent-color, #2d9fa3ff);
+    background-color: #f5f5f5;
+}
+
+.opcao-checkbox input:checked + .cartao-checkbox {
+    border-color: var(--accent-color, #2d9fa3ff);
+    background: linear-gradient(135deg, #e0f7fa 0%, #f5f5f5 100%);
+    box-shadow: 0 4px 10px rgba(45, 159, 163, 0.2);
+}
+
+.rotulo-checkbox {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.descricao-checkbox {
+    font-size: 0.8rem;
+    color: #666;
+    font-style: italic;
+}
+
+.opcao-checkbox input:checked + .cartao-checkbox .rotulo-checkbox {
+    color: var(--accent-color, #2d9fa3ff);
+}
+
+.opcao-checkbox input:checked + .cartao-checkbox .descricao-checkbox {
+    color: #555;
+}
+
+/* ============================================
+   TAMANHOS ESPECÍFICOS DOS INPUTS
+   ============================================ */
+/* Ajustar tamanho dos inputs baseado no maior valor possível + 2-3 caracteres */
+#inputPessoas {
+    min-width: 45px;
+    max-width: 50px;
+}
+
+#inputLatitude {
+    min-width: 65px;
+    max-width: 70px;
+}
+
+#inputAltitude {
+    min-width: 60px;
+    max-width: 65px;
+}
+
+#inputAreaCasa {
+    min-width: 50px;
+    max-width: 55px;
+}
+
+#inputAlturaCasa {
+    min-width: 50px;
+    max-width: 55px;
+}
+
+#inputDiasAutonomia {
+    min-width: 35px;
+    max-width: 40px;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+footer {
+    text-align: center;
+    color: white;
+    margin-top: 12px;
+    padding: 8px 0;
+    opacity: 0.9;
+    font-size: 0.75rem;
+}
+
+footer p {
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+/* Badge "Em Desenvolvimento" no cabeçalho */
+.dev-badge-header {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.dev-badge-text {
+    display: inline-block;
+    background: #ff6b35;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid white;
+}
+
+@media (max-width: 480px) {
+    .dev-badge-text {
+        font-size: 0.65rem;
+        padding: 5px 10px;
+    }
+}
+
+
+/* Typography moved to shared-styles.css */
+
+/* ============================================
+   MEMORIAL DE CÁLCULO
+   ============================================ */
+.memorial-section {
+    background: var(--memorial-bg);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 12px var(--accent-shadow);
+    margin-bottom: 12px;
+}
+
+.memorial-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--memorial-border);
+}
+
+.memorial-header h2 {
+    color: var(--accent-color);
+    font-size: 1.2rem;
+    margin: 0;
+    flex: 1;
+}
+
+.btn-fechar-memorial {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-fechar-memorial:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--accent-shadow);
+}
+
+.btn-voltar-memorial {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin: 12px 0;
+    display: block;
+    width: fit-content;
+}
+
+.btn-voltar-memorial:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--accent-shadow);
+}
+
+.memorial-item {
+    background: var(--memorial-bg);
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    border-left: 5px solid var(--accent-color);
+}
+
+.memorial-item h3 {
+    color: var(--accent-color);
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.memorial-item p {
+    margin-bottom: 10px;
+    line-height: 1.8;
+    color: var(--resultado-value);
+}
+
+.formula-box {
+    background: var(--info-bg);
+    padding: 12px;
+    border-radius: 8px;
+    margin: 12px 0;
+    border: 2px solid var(--accent-color);
+}
+
+.formula-box p {
+    margin: 5px 0;
+    font-family: 'Courier New', monospace;
+    color: var(--formula-text);
+}
+
+.info-box {
+    background: var(--info-bg);
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 12px;
+    border-left: 4px solid var(--info-border);
+}
+
+.info-box p {
+    margin: 5px 0;
+    color: var(--info-text);
+}
+
+.info-box ul {
+    margin: 8px 0;
+    padding-left: 20px;
+    color: var(--info-text);
+}
+
+.info-box li {
+    margin: 5px 0;
+}
+
+.resumo-calculado {
+    background: var(--resumo-bg);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 12px;
+}
+
+.resumo-item-calc {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.resumo-item-calc:last-child {
+    border-bottom: none;
+}
+
+.resumo-item-calc span:first-child {
+    font-weight: 600;
+    color: #555;
+}
+
+.resumo-item-calc span:last-child {
+    font-weight: bold;
+    color: var(--accent-color);
+    font-size: 1.1rem;
+}
+
+/* .btn-help and .texto-saiba-mais styles moved to assets/css/shared-styles.css */
+
+@media (max-width: 600px) {
+    .memorial-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .btn-fechar-memorial {
+        width: 100%;
+    }
+}
+

@@ -1,0 +1,9 @@
+# robots.txt para Engenharia NATA
+# Permite que todos os bots indexem o site
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://engnata.infinityfree.me/sitemap.xml
+
