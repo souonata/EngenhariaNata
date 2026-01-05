@@ -58,3 +58,21 @@ DEPLOY.md
 PLANO_ATUALIZACAO_COMPLETA.md
 RESUMO_MELHORIAS.md
 REVISAO_APPS.md
+
+# Documentação de desenvolvimento (não necessária em produção)
+*.md
+!README.md
+*-old.html
+*-old.js
+scripts/migrate-apps.ps1
+scripts/update-versions.js
+ARQUITETURA_MODULAR.md
+CHECKLIST_VALIDACAO.md
+GLOSSARIO.md
+INFRAESTRUTURA_COMPLETA.md
+PADRAO_MIGRACAO_ES6.md
+PLANO_INFRAESTRUTURA_MODERNA.md
+REFATORACAO_RESUMO.md
+RESUMO_MIGRACAO.md
+SEGURANCA_IMPLEMENTADA.md
+SEO-INSTRUCTIONS.md
