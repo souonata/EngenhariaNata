@@ -1,9 +1,15 @@
 ﻿{
     "project":  "Engenharia NATA",
-    "lastUpdated":  "2025-12-29",
+    "lastUpdated":  "2026-01-05",
     "versioning":  {
                        "format":  "semantic",
                        "description":  "Versões seguem formato MAJOR.MINOR.PATCH"
+                   },
+    "migration":  {
+                       "status":  "70% complete (7/10 apps)",
+                       "migrated":  ["bugs", "sobre", "helice", "bitola", "mutuo", "index", "arcondicionado"],
+                       "pending":  ["aquecimento", "solar", "fazenda"],
+                       "architecture":  "ES6 Modules with App base class"
                    },
     "apps":  {
                  "index":  {
