@@ -12,6 +12,7 @@
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { formatarNumero } from '../src/utils/formatters.js';
+import { configurarInputComSlider, obterValorReal, limparValorReal } from '../src/utils/input-handlers.js';
 
 // ============================================
 // CONSTANTES
@@ -87,7 +88,13 @@ class HeliceApp extends App {
         ['sliderVelocidade', 'sliderReducao', 'sliderRPM', 'sliderSlip'].forEach(id => {
             const slider = document.getElementById(id);
             if (slider) {
-                slider.addEventListener('input', () => this.atualizarResultado());
+                slider.addEventListener('input', () => {
+                    // Limpar valorReal do input correspondente ao usar o slider
+                    const inputId = id.replace('slider', 'input');
+                    const input = document.getElementById(inputId);
+                    limparValorReal(input);
+                    this.atualizarResultado();
+                });
             }
         });
 
@@ -172,6 +179,8 @@ class HeliceApp extends App {
             let tempoInicio = 0;
             let estaSegurando = false;
             let direcao = 1;
+            let timeoutInicial = null;
+            let incrementouUmaVez = false;
             
             const animar = (timestamp) => {
                 if (!estaSegurando) return;
@@ -207,6 +216,22 @@ class HeliceApp extends App {
                 animationFrame = requestAnimationFrame(animar);
             };
             
+            const incrementarUmaVez = () => {
+                const targetId = btn.getAttribute('data-target');
+                const slider = document.getElementById(targetId);
+                if (!slider) return;
+                
+                const step = parseFloat(btn.getAttribute('data-step'));
+                const novoValor = Math.max(
+                    parseFloat(slider.min),
+                    Math.min(parseFloat(slider.max), parseFloat(slider.value) + step)
+                );
+                
+                slider.value = novoValor;
+                slider.dispatchEvent(new Event('input', { bubbles: true }));
+                incrementouUmaVez = true;
+            };
+            
             const iniciarAnimacao = () => {
                 if (animationFrame) return;
                 
@@ -226,18 +251,31 @@ class HeliceApp extends App {
             const pararIncremento = () => {
                 estaSegurando = false;
                 
+                if (timeoutInicial) {
+                    clearTimeout(timeoutInicial);
+                    timeoutInicial = null;
+                }
+                
                 if (animationFrame) {
                     cancelAnimationFrame(animationFrame);
                     animationFrame = null;
                 }
                 
                 delete btn.dataset.valorInicial;
+                incrementouUmaVez = false;
             };
             
             btn.addEventListener('mousedown', (e) => {
                 e.preventDefault();
                 estaSegurando = true;
-                iniciarAnimacao();
+                
+                incrementarUmaVez();
+                
+                timeoutInicial = setTimeout(() => {
+                    if (estaSegurando) {
+                        iniciarAnimacao();
+                    }
+                }, 500);
             });
             
             btn.addEventListener('mouseup', (e) => {
@@ -252,7 +290,14 @@ class HeliceApp extends App {
             btn.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 estaSegurando = true;
-                iniciarAnimacao();
+                
+                incrementarUmaVez();
+                
+                timeoutInicial = setTimeout(() => {
+                    if (estaSegurando) {
+                        iniciarAnimacao();
+                    }
+                }, 500);
             });
             
             btn.addEventListener('touchend', (e) => {
@@ -277,59 +322,30 @@ class HeliceApp extends App {
         const sliderRPM = document.getElementById('sliderRPM');
         const sliderSlip = document.getElementById('sliderSlip');
 
-        const atualizarDoInput = (input, slider) => {
-            const valor = input.value.replace(/[^\d.,]/g, '').replace(',', '.');
-            const numero = parseFloat(valor);
-            
-            if (!isNaN(numero)) {
-                slider.value = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), numero));
-                this.atualizarResultado();
-            }
-        };
+        // Configurar todos os inputs com os sliders usando o utilitário
+        configurarInputComSlider({
+            input: inputVelocidade,
+            slider: sliderVelocidade,
+            onUpdate: () => this.atualizarResultado()
+        });
 
-        if (inputVelocidade && sliderVelocidade) {
-            inputVelocidade.addEventListener('blur', () => atualizarDoInput(inputVelocidade, sliderVelocidade));
-            inputVelocidade.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    atualizarDoInput(inputVelocidade, sliderVelocidade);
-                    inputVelocidade.blur();
-                }
-            });
-        }
+        configurarInputComSlider({
+            input: inputReducao,
+            slider: sliderReducao,
+            onUpdate: () => this.atualizarResultado()
+        });
 
-        if (inputReducao && sliderReducao) {
-            inputReducao.addEventListener('blur', () => atualizarDoInput(inputReducao, sliderReducao));
-            inputReducao.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    atualizarDoInput(inputReducao, sliderReducao);
-                    inputReducao.blur();
-                }
-            });
-        }
+        configurarInputComSlider({
+            input: inputRPM,
+            slider: sliderRPM,
+            onUpdate: () => this.atualizarResultado()
+        });
 
-        if (inputRPM && sliderRPM) {
-            inputRPM.addEventListener('blur', () => atualizarDoInput(inputRPM, sliderRPM));
-            inputRPM.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    atualizarDoInput(inputRPM, sliderRPM);
-                    inputRPM.blur();
-                }
-            });
-        }
-
-        if (inputSlip && sliderSlip) {
-            inputSlip.addEventListener('blur', () => atualizarDoInput(inputSlip, sliderSlip));
-            inputSlip.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    atualizarDoInput(inputSlip, sliderSlip);
-                    inputSlip.blur();
-                }
-            });
-        }
+        configurarInputComSlider({
+            input: inputSlip,
+            slider: sliderSlip,
+            onUpdate: () => this.atualizarResultado()
+        });
     }
 
     /**
@@ -454,20 +470,24 @@ class HeliceApp extends App {
         // Obter valores dos inputs
         const unidadeVelocidade = document.querySelector('input[name="unidadeVelocidade"]:checked')?.value || 'knots';
         const unidadePasso = document.querySelector('input[name="unidadePasso"]:checked')?.value || 'polegadas';
-        const reducao = parseFloat(document.getElementById('sliderReducao')?.value || 2);
-        const rpmMotor = parseFloat(document.getElementById('sliderRPM')?.value || 5000);
-        const slipPercent = parseFloat(document.getElementById('sliderSlip')?.value || 15);
-
-        // Velocidade: usa o valor do slider diretamente
+        
+        const sliderReducao = document.getElementById('sliderReducao');
+        const sliderRPM = document.getElementById('sliderRPM');
+        const sliderSlip = document.getElementById('sliderSlip');
         const sliderVelocidade = document.getElementById('sliderVelocidade');
-        const inputVelocidade = document.getElementById('inputVelocidade');
-        let velocidade = parseFloat(sliderVelocidade?.value || 25);
-
-        // Atualizar campos de texto com valores formatados
+        
         const inputReducao = document.getElementById('inputReducao');
         const inputRPM = document.getElementById('inputRPM');
         const inputSlip = document.getElementById('inputSlip');
+        const inputVelocidade = document.getElementById('inputVelocidade');
+        
+        // Usar valor real do input se disponível, senão usar slider
+        const reducao = obterValorReal(inputReducao, sliderReducao, 2);
+        const rpmMotor = obterValorReal(inputRPM, sliderRPM, 5000);
+        const slipPercent = obterValorReal(inputSlip, sliderSlip, 15);
+        const velocidade = obterValorReal(inputVelocidade, sliderVelocidade, 25);
 
+        // Atualizar campos de texto com valores formatados
         if (inputVelocidade) inputVelocidade.value = formatarNumero(velocidade, 1);
         if (inputReducao) inputReducao.value = formatarNumero(reducao, 2);
         if (inputRPM) inputRPM.value = formatarNumero(rpmMotor, 0);

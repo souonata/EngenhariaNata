@@ -8,6 +8,7 @@
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { formatarNumero, formatarMoeda } from '../src/utils/formatters.js';
+import { configurarInputComSlider, obterValorReal, limparValorReal } from '../src/utils/input-handlers.js';
 
 // ============================================
 // CLASSE PRINCIPAL
@@ -83,7 +84,13 @@ class ArcondicionadoApp extends App {
         sliders.forEach(id => {
             const slider = document.getElementById(id);
             if (slider) {
-                slider.addEventListener('input', () => this.aoMudarSlider(id));
+                slider.addEventListener('input', () => {
+                    // Limpar valorReal do input correspondente ao usar o slider
+                    const inputId = id.replace('slider', 'input');
+                    const input = document.getElementById(inputId);
+                    limparValorReal(input);
+                    this.aoMudarSlider(id);
+                });
             }
         });
         
@@ -131,7 +138,7 @@ class ArcondicionadoApp extends App {
         // Primeiro incremento imediato (clique simples)
         this.ajustarValor(targetId, step);
         
-        // Aguarda 300ms antes de iniciar animação contínua
+        // Aguarda 500ms antes de iniciar animação contínua
         this.estadoBotoes.delayTimeout = setTimeout(() => {
             if (this.estadoBotoes.estaSegurando) {
                 // Captura valor inicial DEPOIS do primeiro incremento
@@ -139,7 +146,7 @@ class ArcondicionadoApp extends App {
                 this.estadoBotoes.tempoInicio = performance.now();
                 this.estadoBotoes.animationId = requestAnimationFrame((timestamp) => this.animarIncremento(timestamp));
             }
-        }, 300);
+        }, 500);
     }
     
     animarIncremento(timestamp) {
@@ -230,53 +237,12 @@ class ArcondicionadoApp extends App {
             
             if (!input || !slider) return;
             
-            // Aplicar valor ao perder foco
-            input.addEventListener('blur', () => {
-                this.aplicarValorInput(input, slider);
-            });
-            
-            // Aplicar valor ao pressionar Enter
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    this.aplicarValorInput(input, slider);
-                    input.blur();
-                }
+            configurarInputComSlider({
+                input: input,
+                slider: slider,
+                onUpdate: () => this.atualizarResultados()
             });
         });
-    }
-    
-    aplicarValorInput(input, slider) {
-        let valor = input.value.trim().toUpperCase();
-        
-        // Remove caracteres não numéricos exceto ponto e vírgula
-        valor = valor.replace(/[^0-9.,KM]/g, '');
-        
-        // Substitui vírgula por ponto
-        valor = valor.replace(',', '.');
-        
-        // Converte sufixos k/m
-        if (valor.endsWith('K')) {
-            valor = parseFloat(valor.slice(0, -1)) * 1000;
-        } else if (valor.endsWith('M')) {
-            valor = parseFloat(valor.slice(0, -1)) * 1000000;
-        } else {
-            valor = parseFloat(valor);
-        }
-        
-        if (isNaN(valor)) {
-            // Se inválido, restaura valor do slider
-            valor = parseFloat(slider.value);
-        }
-        
-        // Aplica limites do slider
-        const min = parseFloat(slider.min);
-        const max = parseFloat(slider.max);
-        valor = Math.max(min, Math.min(max, valor));
-        
-        // Atualiza slider e input
-        slider.value = valor;
-        this.aoMudarSlider(slider.id);
     }
     
     configurarInfoIcons() {
@@ -355,8 +321,6 @@ class ArcondicionadoApp extends App {
         const slider = document.getElementById(sliderId);
         if (!slider) return;
         
-        const valor = parseFloat(slider.value);
-        
         // Mapeamento de sliders para inputs
         const inputMap = {
             'sliderNumAmbientes': 'inputNumAmbientes',
@@ -369,6 +333,7 @@ class ArcondicionadoApp extends App {
         
         const inputId = inputMap[sliderId];
         const input = document.getElementById(inputId);
+        const valor = obterValorReal(input, slider, parseFloat(slider.value));
         
         if (input) {
             // Formata valor conforme o tipo

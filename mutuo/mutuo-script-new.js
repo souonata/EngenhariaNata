@@ -8,6 +8,7 @@
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { formatarNumero, formatarMoeda } from '../src/utils/formatters.js';
+import { configurarInputComSlider, obterValorReal, limparValorReal } from '../src/utils/input-handlers.js';
 
 // ============================================
 // CLASSE PRINCIPAL
@@ -57,6 +58,10 @@ class MutuoApp extends App {
                         this.ultimaParcelaSelecionada = parseInt(slider.value);
                         this.atualizarParcelaExibida();
                     } else {
+                        // Limpar valorReal do input correspondente ao usar o slider
+                        const inputId = id.replace('slider', 'input');
+                        const input = document.getElementById(inputId);
+                        limparValorReal(input);
                         this.calcular();
                     }
                 });
@@ -94,18 +99,20 @@ class MutuoApp extends App {
             });
         });
 
-        // Botão SAIBA MAIS (exemplos)
+        // Botão SAIBA MAIS (abre memorial)
         const btnExemplos = document.getElementById('btnExemplos');
         if (btnExemplos) {
             btnExemplos.addEventListener('click', () => {
+                this.atualizarMemorial();
                 const memorial = document.getElementById('memorialSection');
                 if (memorial) {
                     memorial.style.display = 'block';
+                    memorial.scrollIntoView({ behavior: 'smooth' });
                 }
             });
         }
 
-        // Botão Fechar Memorial
+        // Botão Fechar Memorial (topo)
         const btnFecharMemorial = document.getElementById('btnFecharMemorial');
         if (btnFecharMemorial) {
             btnFecharMemorial.addEventListener('click', () => {
@@ -115,6 +122,52 @@ class MutuoApp extends App {
                 }
             });
         }
+
+        // Botão Voltar Memorial (rodapé)
+        const btnVoltarMemorial = document.querySelector('.btn-voltar-memorial');
+        if (btnVoltarMemorial) {
+            btnVoltarMemorial.addEventListener('click', () => {
+                const memorial = document.getElementById('memorialSection');
+                if (memorial) {
+                    memorial.style.display = 'none';
+                }
+            });
+        }
+
+        // Botão Ver Exemplos Educacionais
+        const btnVerExemplos = document.getElementById('btnVerExemplos');
+        if (btnVerExemplos) {
+            btnVerExemplos.addEventListener('click', () => {
+                const memorial = document.getElementById('memorialSection');
+                const exemplos = document.getElementById('exemplosSection');
+                if (memorial) memorial.style.display = 'none';
+                if (exemplos) {
+                    exemplos.style.display = 'block';
+                    exemplos.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
+
+        // Botão Fechar Exemplos
+        const btnFecharExemplos = document.getElementById('btnFecharExemplos');
+        if (btnFecharExemplos) {
+            btnFecharExemplos.addEventListener('click', () => {
+                const exemplos = document.getElementById('exemplosSection');
+                if (exemplos) {
+                    exemplos.style.display = 'none';
+                }
+            });
+        }
+
+        // Botões Voltar nos Exemplos (todos os botões com a classe)
+        document.querySelectorAll('.btn-voltar-exemplo').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const exemplos = document.getElementById('exemplosSection');
+                if (exemplos) {
+                    exemplos.style.display = 'none';
+                }
+            });
+        });
     }
 
     configurarIconesInfo() {
@@ -156,6 +209,8 @@ class MutuoApp extends App {
             let tempoInicio = 0;
             let estaSegurando = false;
             let direcao = 1;
+            let timeoutInicial = null;
+            let incrementouUmaVez = false;
             
             const animar = (timestamp) => {
                 if (!estaSegurando) return;
@@ -191,6 +246,22 @@ class MutuoApp extends App {
                 animationFrame = requestAnimationFrame(animar);
             };
             
+            const incrementarUmaVez = () => {
+                const targetId = btn.getAttribute('data-target');
+                const slider = document.getElementById(targetId);
+                if (!slider) return;
+                
+                const step = parseFloat(btn.getAttribute('data-step'));
+                const novoValor = Math.max(
+                    parseFloat(slider.min),
+                    Math.min(parseFloat(slider.max), parseFloat(slider.value) + step)
+                );
+                
+                slider.value = novoValor;
+                slider.dispatchEvent(new Event('input', { bubbles: true }));
+                incrementouUmaVez = true;
+            };
+            
             const iniciarAnimacao = () => {
                 if (animationFrame) return;
                 
@@ -210,18 +281,31 @@ class MutuoApp extends App {
             const pararIncremento = () => {
                 estaSegurando = false;
                 
+                if (timeoutInicial) {
+                    clearTimeout(timeoutInicial);
+                    timeoutInicial = null;
+                }
+                
                 if (animationFrame) {
                     cancelAnimationFrame(animationFrame);
                     animationFrame = null;
                 }
                 
                 delete btn.dataset.valorInicial;
+                incrementouUmaVez = false;
             };
             
             btn.addEventListener('mousedown', (e) => {
                 e.preventDefault();
                 estaSegurando = true;
-                iniciarAnimacao();
+                
+                incrementarUmaVez();
+                
+                timeoutInicial = setTimeout(() => {
+                    if (estaSegurando) {
+                        iniciarAnimacao();
+                    }
+                }, 500);
             });
             
             btn.addEventListener('mouseup', (e) => {
@@ -236,7 +320,14 @@ class MutuoApp extends App {
             btn.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 estaSegurando = true;
-                iniciarAnimacao();
+                
+                incrementarUmaVez();
+                
+                timeoutInicial = setTimeout(() => {
+                    if (estaSegurando) {
+                        iniciarAnimacao();
+                    }
+                }, 500);
             });
             
             btn.addEventListener('touchend', (e) => {
@@ -258,57 +349,27 @@ class MutuoApp extends App {
         const sliderTaxa = document.getElementById('sliderTaxa');
         const sliderPrazo = document.getElementById('sliderPrazo');
 
-        const atualizarDoInput = (input, slider, tipo) => {
-            const valor = input.value.replace(/[^\d.,]/g, '').replace(',', '.');
-            const numero = parseFloat(valor);
-            
-            if (!isNaN(numero)) {
-                if (tipo === 'valor') {
-                    // Converter k/m para valor numérico
-                    let valorFinal = numero;
-                    if (input.value.toLowerCase().includes('k')) {
-                        valorFinal = numero * 1000;
-                    } else if (input.value.toLowerCase().includes('m')) {
-                        valorFinal = numero * 1000000;
-                    }
-                    slider.value = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), valorFinal));
-                } else {
-                    slider.value = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), numero));
-                }
-                this.calcular();
-            }
-        };
-
         if (inputValor && sliderValor) {
-            inputValor.addEventListener('blur', () => atualizarDoInput(inputValor, sliderValor, 'valor'));
-            inputValor.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    atualizarDoInput(inputValor, sliderValor, 'valor');
-                    inputValor.blur();
-                }
+            configurarInputComSlider({
+                input: inputValor,
+                slider: sliderValor,
+                onUpdate: () => this.calcular()
             });
         }
 
         if (inputTaxa && sliderTaxa) {
-            inputTaxa.addEventListener('blur', () => atualizarDoInput(inputTaxa, sliderTaxa, 'taxa'));
-            inputTaxa.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    atualizarDoInput(inputTaxa, sliderTaxa, 'taxa');
-                    inputTaxa.blur();
-                }
+            configurarInputComSlider({
+                input: inputTaxa,
+                slider: sliderTaxa,
+                onUpdate: () => this.calcular()
             });
         }
 
         if (inputPrazo && sliderPrazo) {
-            inputPrazo.addEventListener('blur', () => atualizarDoInput(inputPrazo, sliderPrazo, 'prazo'));
-            inputPrazo.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    atualizarDoInput(inputPrazo, sliderPrazo, 'prazo');
-                    inputPrazo.blur();
-                }
+            configurarInputComSlider({
+                input: inputPrazo,
+                slider: sliderPrazo,
+                onUpdate: () => this.calcular()
             });
         }
     }
@@ -384,13 +445,16 @@ class MutuoApp extends App {
     }
 
     obterDadosEntrada() {
+        const inputValor = document.getElementById('inputValor');
+        const inputTaxa = document.getElementById('inputTaxa');
+        const inputPrazo = document.getElementById('inputPrazo');
         const sliderValor = document.getElementById('sliderValor');
         const sliderTaxa = document.getElementById('sliderTaxa');
         const sliderPrazo = document.getElementById('sliderPrazo');
         
-        const valor = parseFloat(sliderValor?.value || 50000);
-        const taxaInput = parseFloat(sliderTaxa?.value || 12);
-        const prazoAnos = parseInt(sliderPrazo?.value || 5);
+        const valor = obterValorReal(inputValor, sliderValor, 50000);
+        const taxaInput = obterValorReal(inputTaxa, sliderTaxa, 12);
+        const prazoAnos = parseInt(obterValorReal(inputPrazo, sliderPrazo, 5));
 
         const periodicidade = document.querySelector('input[name="periodoRapido"]:checked')?.value || 'ano';
         const sistema = document.querySelector('input[name="sistemaRapido"]:checked')?.value || 'sac';
@@ -640,6 +704,128 @@ class MutuoApp extends App {
             <td>-</td>
         `;
         tbody.appendChild(trTotal);
+    }
+
+    atualizarMemorial() {
+        // Obter valores atuais
+        const inputValor = document.getElementById('inputValor');
+        const inputTaxa = document.getElementById('inputTaxa');
+        const inputPrazo = document.getElementById('inputPrazo');
+        const sliderValor = document.getElementById('sliderValor');
+        const sliderTaxa = document.getElementById('sliderTaxa');
+        const sliderPrazo = document.getElementById('sliderPrazo');
+
+        const valor = obterValorReal(inputValor, sliderValor);
+        const taxa = obterValorReal(inputTaxa, sliderTaxa);
+        const prazo = obterValorReal(inputPrazo, sliderPrazo);
+        
+        const periodicidade = document.querySelector('input[name="periodoRapido"]:checked')?.value || 'mes';
+        const sistema = document.querySelector('input[name="sistemaRapido"]:checked')?.value || 'sac';
+
+        // Obter nomes traduzidos
+        const nomeSistema = sistema === 'sac' ? i18n.obterTraducao('system-sac') : 
+                           sistema === 'price' ? i18n.obterTraducao('system-price') : 
+                           i18n.obterTraducao('system-german');
+
+        const periodoTexto = periodicidade === 'ano' ? i18n.obterTraducao('yearly') : i18n.obterTraducao('monthly');
+
+        // Atualizar resumo
+        const resumoValor = document.getElementById('resumo-valor');
+        const resumoTaxa = document.getElementById('resumo-taxa');
+        const resumoPrazo = document.getElementById('resumo-prazo');
+        const resumoSistema = document.getElementById('resumo-sistema');
+        const resumoParcela = document.getElementById('resumo-parcela');
+        const resumoTotalJuros = document.getElementById('resumo-total-juros');
+        const resumoTotalPago = document.getElementById('resumo-total-pago');
+
+        if (resumoValor) resumoValor.textContent = formatarMoeda(valor);
+        if (resumoTaxa) resumoTaxa.textContent = `${formatarNumero(taxa, 2)}% ${periodoTexto}`;
+        if (resumoPrazo) resumoPrazo.textContent = `${prazo} ${periodicidade === 'ano' ? i18n.obterTraducao('years') : i18n.obterTraducao('months')}`;
+        if (resumoSistema) resumoSistema.textContent = nomeSistema;
+
+        if (this.tabelaAmortizacao && this.tabelaAmortizacao.length > 0) {
+            const primeiraParcela = this.tabelaAmortizacao[0];
+            const totalJuros = this.tabelaAmortizacao.reduce((sum, p) => sum + p.juros, 0);
+            const totalPago = this.tabelaAmortizacao.reduce((sum, p) => sum + p.parcela, 0);
+
+            if (resumoParcela) {
+                if (sistema === 'sac') {
+                    const ultimaParcela = this.tabelaAmortizacao[this.tabelaAmortizacao.length - 1];
+                    resumoParcela.textContent = `${formatarMoeda(primeiraParcela.parcela)} → ${formatarMoeda(ultimaParcela.parcela)}`;
+                } else {
+                    resumoParcela.textContent = formatarMoeda(primeiraParcela.parcela);
+                }
+            }
+            if (resumoTotalJuros) resumoTotalJuros.textContent = formatarMoeda(totalJuros);
+            if (resumoTotalPago) resumoTotalPago.textContent = formatarMoeda(totalPago);
+        }
+
+        // Gerar conteúdo dinâmico do memorial baseado no sistema
+        this.gerarConteudoMemorialDinamico(sistema, valor, taxa, prazo);
+    }
+
+    gerarConteudoMemorialDinamico(sistema, valor, taxa, prazo) {
+        const container = document.getElementById('memorial-conteudo-dinamico');
+        if (!container) return;
+
+        // Limpar conteúdo anterior
+        container.innerHTML = '';
+
+        // Obter traduções
+        const txtAmortizacao = i18n.obterTraducao('memorial-amortizacao') || 'Amortização';
+        const txtJuros = i18n.obterTraducao('memorial-juros') || 'Juros';
+        const txtSaldoDevedor = i18n.obterTraducao('memorial-saldo-devedor') || 'Saldo Devedor';
+        const txtParcela = i18n.obterTraducao('memorial-parcela') || 'Parcela';
+        const txtParcelaFixa = i18n.obterTraducao('memorial-parcela-fixa') || 'Parcela Fixa';
+        const txtFormulas = i18n.obterTraducao('formulas') || 'Fórmulas';
+        const txtUltimaParcela = i18n.obterTraducao('memorial-ultima-parcela') || 'Última Parcela';
+
+        // Criar conteúdo baseado no sistema
+        if (sistema === 'sac') {
+            const subtitulo = i18n.obterTraducao('memorial-sac-subtitle') || 'Sistema de Amortização Constante';
+            container.innerHTML = `
+                <div class="memorial-item">
+                    <h3>📐 ${subtitulo}</h3>
+                    <p><strong>${txtFormulas}:</strong></p>
+                    <div class="formula-box">
+                        <p>${txtAmortizacao} = ${formatarMoeda(valor)} ÷ ${prazo} = ${formatarMoeda(valor / prazo)}</p>
+                        <p>${txtJuros} = ${txtSaldoDevedor} × ${formatarNumero(taxa / 100, 4)}</p>
+                        <p>${txtParcela} = ${txtAmortizacao} + ${txtJuros}</p>
+                    </div>
+                </div>
+            `;
+        } else if (sistema === 'price') {
+            const taxaMensal = taxa / 100;
+            const pmt = valor * (taxaMensal * Math.pow(1 + taxaMensal, prazo)) / (Math.pow(1 + taxaMensal, prazo) - 1);
+            const subtitulo = i18n.obterTraducao('memorial-price-subtitle') || 'Sistema Francês de Amortização';
+            
+            container.innerHTML = `
+                <div class="memorial-item">
+                    <h3>📐 ${subtitulo}</h3>
+                    <p><strong>${txtFormulas}:</strong></p>
+                    <div class="formula-box">
+                        <p>PMT = ${formatarMoeda(valor)} × [${formatarNumero(taxa / 100, 4)} × (1 + ${formatarNumero(taxa / 100, 4)})^${prazo}] / [(1 + ${formatarNumero(taxa / 100, 4)})^${prazo} - 1]</p>
+                        <p>${txtParcelaFixa} = ${formatarMoeda(pmt)}</p>
+                        <p>${txtJuros} = ${txtSaldoDevedor} × ${formatarNumero(taxa / 100, 4)}</p>
+                        <p>${txtAmortizacao} = ${txtParcela} - ${txtJuros}</p>
+                    </div>
+                </div>
+            `;
+        } else if (sistema === 'americano') {
+            const jurosFixos = valor * (taxa / 100);
+            const subtitulo = i18n.obterTraducao('memorial-german-subtitle') || 'Sistema Americano';
+            
+            container.innerHTML = `
+                <div class="memorial-item">
+                    <h3>📐 ${subtitulo}</h3>
+                    <p><strong>${txtFormulas}:</strong></p>
+                    <div class="formula-box">
+                        <p>${txtJuros} (${txtParcela.toLowerCase()}s 1 a ${prazo - 1}) = ${formatarMoeda(valor)} × ${formatarNumero(taxa / 100, 4)} = ${formatarMoeda(jurosFixos)}</p>
+                        <p>${txtUltimaParcela} (${prazo}) = ${formatarMoeda(valor)} + ${formatarMoeda(jurosFixos)} = ${formatarMoeda(valor + jurosFixos)}</p>
+                    </div>
+                </div>
+            `;
+        }
     }
 
     atualizarGrafico() {

@@ -118,7 +118,7 @@
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderPotencia" data-step="-dynamic" aria-label="Diminuir potência">−</button>
-                    <input type="range" id="sliderPotencia" min="1" max="10000" step="1" value="1000">
+                    <input type="range" id="sliderPotencia" min="1" max="2000" step="1" value="1000">
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderPotencia" data-step="dynamic" aria-label="Aumentar potência">+</button>
                 </div>
             </div>
@@ -300,29 +300,28 @@
                 <div class="info-box">
                     <p><strong data-i18n="memorial-referencias-normas-title">Normas Técnicas:</strong></p>
                     <ul>
-                        <li data-i18n="memorial-referencias-nbr-5410"><strong>NBR 5410:2004</strong> - Instalações elétricas de baixa tensão. Associação Brasileira de Normas Técnicas (ABNT). Estabelece o limite máximo de 4% para queda de tensão em circuitos terminais e especifica a resistividade do cobre duro como 0.0178 Ω·mm²/m a 20°C.</li>
-                        <li data-i18n="memorial-referencias-nbr-nm-280"><strong>NBR NM 280:2003</strong> - Condutores elétricos de cobre. Especifica a resistividade do cobre recozido (mole) como 0.017241 Ω·mm²/m a 20°C.</li>
-                        <li data-i18n="memorial-referencias-cei-64-8"><strong>CEI 64-8</strong> - Norma italiana para instalações elétricas de baixa tensão. Estabelece limite máximo de 4% para queda de tensão e fornece fórmulas para cálculo considerando fator de potência.</li>
+                        <li data-i18n-html="memorial-referencias-nbr-5410"><strong>NBR 5410:2004</strong> - Instalações elétricas de baixa tensão. Associação Brasileira de Normas Técnicas (ABNT). Estabelece o limite máximo de 4% para queda de tensão em circuitos terminais e especifica a resistividade do cobre duro como 0.0178 Ω·mm²/m a 20°C.</li>
+                        <li data-i18n-html="memorial-referencias-nbr-nm-280"><strong>NBR NM 280:2003</strong> - Condutores elétricos de cobre. Especifica a resistividade do cobre recozido (mole) como 0.017241 Ω·mm²/m a 20°C.</li>
+                        <li data-i18n-html="memorial-referencias-cei-64-8"><strong>CEI 64-8</strong> - Norma italiana para instalações elétricas de baixa tensão. Estabelece limite máximo de 4% para queda de tensão e fornece fórmulas para cálculo considerando fator de potência.</li>
                     </ul>
                     <p style="margin-top: 15px;"><strong data-i18n="memorial-referencias-guias-title">Guias e Padrões Internacionais:</strong></p>
                     <ul>
-                        <li data-i18n="memorial-referencias-ieee-525"><strong>IEEE Std 525-2007</strong> - IEEE Guide for the Design and Installation of Cable Systems in Substations. Fornece diretrizes para cálculo de queda de tensão em condutores elétricos, incluindo fórmulas exatas e aproximadas para diferentes condições de carga.</li>
+                        <li data-i18n-html="memorial-referencias-ieee-525"><strong>IEEE Std 525-2007</strong> - IEEE Guide for the Design and Installation of Cable Systems in Substations. Fornece diretrizes para cálculo de queda de tensão em condutores elétricos, incluindo fórmulas exatas e aproximadas para diferentes condições de carga.</li>
                     </ul>
                     <p style="margin-top: 15px;"><strong data-i18n="memorial-referencias-formulas-title">Fórmulas e Fundamentos Físicos:</strong></p>
                     <ul>
-                        <li data-i18n="memorial-referencias-lei-ohm"><strong>Lei de Ohm:</strong> V = I × R, onde V é a tensão, I é a corrente e R é a resistência.</li>
-                        <li data-i18n="memorial-referencias-resistencia"><strong>Resistência de condutores:</strong> R = ρ × L / S, onde ρ é a resistividade, L é o comprimento e S é a área da seção transversal.</li>
-                        <li data-i18n="memorial-referencias-queda-monofasico"><strong>Queda de tensão em circuitos monofásicos:</strong> ΔV = K × ρ × (L × I) / S, onde K = 2 para circuitos monofásicos (F+N).</li>
+                        <li data-i18n-html="memorial-referencias-lei-ohm"><strong>Lei de Ohm:</strong> V = I × R, onde V é a tensão, I é a corrente e R é a resistência.</li>
+                        <li data-i18n-html="memorial-referencias-resistencia"><strong>Resistência de condutores:</strong> R = ρ × L / S, onde ρ é a resistividade, L é o comprimento e S é a área da seção transversal.</li>
+                        <li data-i18n-html="memorial-referencias-queda-monofasico"><strong>Queda de tensão em circuitos monofásicos:</strong> ΔV = K × ρ × (L × I) / S, onde K = 2 para circuitos monofásicos (F+N).</li>
                     </ul>
                     <p style="margin-top: 15px;"><strong data-i18n="memorial-referencias-fontes-title">Fontes de Consulta:</strong></p>
-                    <ul>
-                        <li data-i18n="memorial-referencias-fontes-lista"></li>
+                    <ul data-i18n-html="memorial-referencias-fontes-lista">
                     </ul>
                 </div>
             </div>
 
-            <button class="btn-voltar-memorial" data-i18n-title="back-to-calculator">
-                <span data-i18n="back">← Voltar</span>
+            <button class="btn-voltar-memorial" data-i18n-title="botoes.voltar">
+                <span data-i18n="botoes.voltar">← Voltar</span>
             </button>
         </div>
 
@@ -365,7 +364,7 @@
     </div>
 
     <footer>
-        <p data-i18n="footer.texto">Calculadora de Bitola de Fios - Engenharia Nata @ 2025</p>
+        <p data-i18n="footer">Calculadora de Bitola de Fios - Engenharia Nata @ 2025</p>
     </footer>
 
     <!-- Botão de retorno à tela inicial -->
@@ -376,7 +375,7 @@
     </a>
 
     <!-- Scripts -->
-    <script type="module" src="bitola-script-new.js?v=1.2.7"></script>
+    <script type="module" src="bitola-script-new.js?v=1.3.0"></script>
 </body>
 </html>
 

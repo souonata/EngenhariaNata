@@ -8,6 +8,7 @@
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { formatarNumero } from '../src/utils/formatters.js';
+import { configurarInputComSlider, obterValorReal, limparValorReal } from '../src/utils/input-handlers.js';
 
 // ============================================
 // CONSTANTES
@@ -36,6 +37,7 @@ class BitolaApp extends App {
 
     inicializarBitola() {
         this.configurarEventos();
+        this.atualizarLimitesPotencia();
         this.atualizarResultado();
     }
 
@@ -54,13 +56,22 @@ class BitolaApp extends App {
         ['sliderPotencia', 'sliderComprimento', 'sliderTensaoCC', 'sliderQuedaTensao'].forEach(id => {
             const slider = document.getElementById(id);
             if (slider) {
-                slider.addEventListener('input', () => this.atualizarResultado());
+                slider.addEventListener('input', () => {
+                    // Limpar valorReal do input correspondente ao usar o slider
+                    const inputId = id.replace('slider', 'input');
+                    const input = document.getElementById(inputId);
+                    if (input) {
+                        limparValorReal(input);
+                    }
+                    this.atualizarResultado();
+                });
             }
         });
 
         // Radio buttons de tipo de corrente
         document.querySelectorAll('input[name="tipoCorrente"]').forEach(radio => {
             radio.addEventListener('change', () => {
+                this.atualizarLimitesPotencia();
                 this.atualizarVisibilidadeTensao();
                 this.atualizarResultado();
             });
@@ -136,6 +147,8 @@ class BitolaApp extends App {
             let tempoInicio = 0;
             let estaSegurando = false;
             let direcao = 1;
+            let timeoutInicial = null;
+            let incrementouUmaVez = false;
             
             const animar = (timestamp) => {
                 if (!estaSegurando) return;
@@ -174,6 +187,36 @@ class BitolaApp extends App {
                 animationFrame = requestAnimationFrame(animar);
             };
             
+            const incrementarUmaVez = () => {
+                const targetId = btn.getAttribute('data-target');
+                const slider = document.getElementById(targetId);
+                if (!slider) return;
+                
+                const stepStr = btn.getAttribute('data-step');
+                let step;
+                
+                if (stepStr === 'dynamic' || stepStr === '-dynamic') {
+                    const valor = parseFloat(slider.value);
+                    if (valor < 100) step = 1;
+                    else if (valor < 1000) step = 10;
+                    else if (valor < 10000) step = 100;
+                    else step = 1000;
+                    
+                    if (stepStr === '-dynamic') step = -step;
+                } else {
+                    step = parseFloat(stepStr);
+                }
+                
+                const novoValor = Math.max(
+                    parseFloat(slider.min),
+                    Math.min(parseFloat(slider.max), parseFloat(slider.value) + step)
+                );
+                
+                slider.value = novoValor;
+                slider.dispatchEvent(new Event('input', { bubbles: true }));
+                incrementouUmaVez = true;
+            };
+            
             const iniciarAnimacao = () => {
                 if (animationFrame) return;
                 
@@ -200,19 +243,34 @@ class BitolaApp extends App {
             const pararIncremento = () => {
                 estaSegurando = false;
                 
+                if (timeoutInicial) {
+                    clearTimeout(timeoutInicial);
+                    timeoutInicial = null;
+                }
+                
                 if (animationFrame) {
                     cancelAnimationFrame(animationFrame);
                     animationFrame = null;
                 }
                 
                 delete btn.dataset.valorInicial;
+                incrementouUmaVez = false;
             };
             
             // Mouse: segurar botão
             btn.addEventListener('mousedown', (e) => {
                 e.preventDefault();
                 estaSegurando = true;
-                iniciarAnimacao();
+                
+                // Incrementa uma vez imediatamente
+                incrementarUmaVez();
+                
+                // Aguarda 500ms antes de iniciar incremento contínuo
+                timeoutInicial = setTimeout(() => {
+                    if (estaSegurando) {
+                        iniciarAnimacao();
+                    }
+                }, 500);
             });
             
             btn.addEventListener('mouseup', (e) => {
@@ -228,7 +286,16 @@ class BitolaApp extends App {
             btn.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 estaSegurando = true;
-                iniciarAnimacao();
+                
+                // Incrementa uma vez imediatamente
+                incrementarUmaVez();
+                
+                // Aguarda 500ms antes de iniciar incremento contínuo
+                timeoutInicial = setTimeout(() => {
+                    if (estaSegurando) {
+                        iniciarAnimacao();
+                    }
+                }, 500);
             });
             
             btn.addEventListener('touchend', (e) => {
@@ -253,69 +320,82 @@ class BitolaApp extends App {
         const sliderTensaoCC = document.getElementById('sliderTensaoCC');
         const sliderQuedaTensao = document.getElementById('sliderQuedaTensao');
 
-        const atualizarDoInput = (input, slider, tipo) => {
-            const valor = input.value.replace(/[^\d.,]/g, '').replace(',', '.');
-            const numero = parseFloat(valor);
+        // Parser customizado para potência (aceita k e M)
+        const parsePotencia = (valor) => {
+            const textoLimpo = valor.replace(/[^\d.,kmKM]/g, '');
+            let numero = parseFloat(textoLimpo.replace(',', '.'));
             
-            if (!isNaN(numero)) {
-                if (tipo === 'potencia') {
-                    // Converter k/m para valor numérico
-                    let valorFinal = numero;
-                    if (input.value.toLowerCase().includes('k')) {
-                        valorFinal = numero * 1000;
-                    } else if (input.value.toLowerCase().includes('m')) {
-                        valorFinal = numero * 1000000;
-                    }
-                    slider.value = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), valorFinal));
-                } else {
-                    slider.value = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), numero));
-                }
-                this.atualizarResultado();
+            if (valor.toLowerCase().includes('k')) {
+                numero *= 1000;
+            } else if (valor.toLowerCase().includes('m')) {
+                numero *= 1000000;
             }
+            
+            return numero;
         };
 
+        // Configurar inputs com sliders usando o utilitário
         if (inputPotencia && sliderPotencia) {
-            inputPotencia.addEventListener('blur', () => atualizarDoInput(inputPotencia, sliderPotencia, 'potencia'));
-            inputPotencia.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    atualizarDoInput(inputPotencia, sliderPotencia, 'potencia');
-                    inputPotencia.blur();
-                }
+            configurarInputComSlider({
+                input: inputPotencia,
+                slider: sliderPotencia,
+                onUpdate: () => this.atualizarResultado(),
+                parseValue: parsePotencia
             });
         }
 
         if (inputComprimento && sliderComprimento) {
-            inputComprimento.addEventListener('blur', () => atualizarDoInput(inputComprimento, sliderComprimento, 'comprimento'));
-            inputComprimento.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    atualizarDoInput(inputComprimento, sliderComprimento, 'comprimento');
-                    inputComprimento.blur();
-                }
+            configurarInputComSlider({
+                input: inputComprimento,
+                slider: sliderComprimento,
+                onUpdate: () => this.atualizarResultado()
             });
         }
 
         if (inputTensaoCC && sliderTensaoCC) {
-            inputTensaoCC.addEventListener('blur', () => atualizarDoInput(inputTensaoCC, sliderTensaoCC, 'tensaoCC'));
-            inputTensaoCC.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    atualizarDoInput(inputTensaoCC, sliderTensaoCC, 'tensaoCC');
-                    inputTensaoCC.blur();
-                }
+            configurarInputComSlider({
+                input: inputTensaoCC,
+                slider: sliderTensaoCC,
+                onUpdate: () => this.atualizarResultado()
             });
         }
 
         if (inputQuedaTensao && sliderQuedaTensao) {
-            inputQuedaTensao.addEventListener('blur', () => atualizarDoInput(inputQuedaTensao, sliderQuedaTensao, 'queda'));
-            inputQuedaTensao.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    atualizarDoInput(inputQuedaTensao, sliderQuedaTensao, 'queda');
-                    inputQuedaTensao.blur();
-                }
+            configurarInputComSlider({
+                input: inputQuedaTensao,
+                slider: sliderQuedaTensao,
+                onUpdate: () => this.atualizarResultado()
             });
+        }
+    }
+
+    atualizarLimitesPotencia() {
+        const tipoCorrente = document.querySelector('input[name="tipoCorrente"]:checked')?.value;
+        const sliderPotencia = document.getElementById('sliderPotencia');
+        const inputPotencia = document.getElementById('inputPotencia');
+        
+        if (!sliderPotencia) return;
+        
+        // Definir limites baseado no tipo de corrente
+        const limites = tipoCorrente === 'ca' 
+            ? { min: 1, max: 3000 }  // CA: 0-3000W
+            : { min: 1, max: 500 };   // CC: 0-500W
+        
+        sliderPotencia.min = limites.min;
+        sliderPotencia.max = limites.max;
+        
+        // Ajustar valor atual se estiver fora do novo range
+        const valorAtual = obterValorReal(inputPotencia, sliderPotencia);
+        if (valorAtual > limites.max) {
+            sliderPotencia.value = limites.max;
+            if (inputPotencia) {
+                limparValorReal(inputPotencia);
+            }
+        } else if (valorAtual < limites.min) {
+            sliderPotencia.value = limites.min;
+            if (inputPotencia) {
+                limparValorReal(inputPotencia);
+            }
         }
     }
 
@@ -411,11 +491,6 @@ class BitolaApp extends App {
     }
 
     formatarComSufixo(valor) {
-        if (valor >= 1000000) {
-            return formatarNumero(valor / 1000000, 1) + 'M';
-        } else if (valor >= 1000) {
-            return formatarNumero(valor / 1000, 1) + 'k';
-        }
         return formatarNumero(valor, 0);
     }
 
@@ -431,13 +506,14 @@ class BitolaApp extends App {
         const sliderQuedaTensao = document.getElementById('sliderQuedaTensao');
         const sliderTensaoCC = document.getElementById('sliderTensaoCC');
 
-        const potencia = parseFloat(sliderPotencia?.value || 100);
-        const comprimento = parseFloat(sliderComprimento?.value || 10);
-        const quedaPercentual = parseFloat(sliderQuedaTensao?.value || 3);
+        // Usar valor real do input se disponível, senão usar slider
+        const potencia = obterValorReal(inputPotencia, sliderPotencia);
+        const comprimento = obterValorReal(inputComprimento, sliderComprimento);
+        const quedaPercentual = obterValorReal(inputQuedaTensao, sliderQuedaTensao);
         const tensao = this.obterTensaoAtual();
 
         // Atualizar inputs de texto
-        if (inputPotencia) inputPotencia.value = this.formatarComSufixo(potencia) + 'W';
+        if (inputPotencia) inputPotencia.value = this.formatarComSufixo(potencia);
         if (inputComprimento) inputComprimento.value = formatarNumero(comprimento, 1);
         if (inputQuedaTensao) inputQuedaTensao.value = formatarNumero(quedaPercentual, 1);
         if (inputTensaoCC) {

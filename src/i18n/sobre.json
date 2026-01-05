@@ -126,7 +126,26 @@
       "html": "Estrutura das páginas",
       "css": "Estilos e animações",
       "js": "JavaScript puro e rápido",
-      "chart": "Gráficos interativos"
+      "chart": "Gráficos interativos",
+      "mobile": {
+        "desc": "Funciona bem em celular e computador"
+      }
+    },
+    "resource-bilingual": {
+      "title": "🌍 Bilíngue",
+      "desc": "Troca entre Português e Italiano"
+    },
+    "resource-charts": {
+      "title": "📊 Gráficos",
+      "desc": "Visualização clara dos dados"
+    },
+    "resource-mobile": {
+      "title": "📱 Mobile-First",
+      "desc": "Funciona bem em celular e computador"
+    },
+    "resource-code-commented": {
+      "title": "💡 Código Comentado",
+      "desc": "Código explicado para facilitar aprendizado"
     },
     "footer": "💻 Portfólio Engenharia NATA",
     "aria": {
@@ -234,7 +253,7 @@
       "title": "Caratteristiche Principali",
       "bilingual": {
         "title": "🌍 Bilingue",
-        "desc": "Cambia tra Portoghese e Italiano e mostra la valuta corrispondente."
+        "desc": "Passa tra Portoghese e Italiano e visualizza la valuta corrispondente."
       },
       "charts": {
         "title": "📊 Grafici",
@@ -242,15 +261,15 @@
       },
       "mobile": {
         "title": "📱 Mobile-First",
-        "desc": "Funziona bene su cellulare e computer"
+        "desc": "Funziona perfettamente su cellulare e computer"
       },
       "code": {
         "title": "💡 Codice Commentato",
-        "desc": "Codice spiegato per facilitare l'apprendimento"
+        "desc": "Codice ben documentato per facilitare l'apprendimento"
       },
       "responsive": {
         "title": "Responsive",
-        "desc": "Progettato per dispositivi mobili e desktop"
+        "desc": "Ottimizzato per dispositivi mobili e desktop"
       },
       "fast": {
         "title": "Veloce",
@@ -306,7 +325,26 @@
       "html": "Struttura delle pagine",
       "css": "Stili e animazioni",
       "js": "JavaScript puro e veloce",
-      "chart": "Grafici interattivi"
+      "chart": "Grafici interattivi",
+      "mobile": {
+        "desc": "Funziona perfettamente su cellulare e computer"
+      }
+    },
+    "resource-bilingual": {
+      "title": "🌍 Bilingue",
+      "desc": "Passa tra Portoghese e Italiano"
+    },
+    "resource-charts": {
+      "title": "📊 Grafici",
+      "desc": "Visualizzazione chiara dei dati"
+    },
+    "resource-mobile": {
+      "title": "📱 Mobile-First",
+      "desc": "Funziona perfettamente su cellulare e computer"
+    },
+    "resource-code-commented": {
+      "title": "💡 Codice Commentato",
+      "desc": "Codice ben documentato per facilitare l'apprendimento"
     },
     "footer": "💻 Portfolio Ingegneria NATA",
     "aria": {
