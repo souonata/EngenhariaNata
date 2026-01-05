@@ -1,0 +1,436 @@
+{
+  "pt-BR": {
+    "app": {
+      "title": "💰 Calculadora de Empréstimos",
+      "subtitle": "Sistemas de Amortização: SAC, Price e Americano"
+    },
+    "labels": {
+      "valorEmprestado": "Valor Emprestado",
+      "taxaJuros": "Taxa de Juros",
+      "prazo": "Prazo",
+      "periodicidade": "Periodicidade da Taxa",
+      "sistemaAmortizacao": "Sistema de Amortização",
+      "parcelaSelecionada": "Parcela Selecionada"
+    },
+    "unidades": {
+      "reais": "R$",
+      "euros": "€",
+      "aoAno": "ao ano",
+      "aoMes": "ao mês",
+      "anos": "anos",
+      "meses": "meses",
+      "parcela": "Parcela"
+    },
+    "sistemas": {
+      "sac": "SAC (Amortização Constante)",
+      "price": "Tabela Price (Parcela Fixa)",
+      "americano": "Sistema Americano"
+    },
+    "system-sac-short": "SAC",
+    "system-price-short": "Price",
+    "system-german-short": "Americano",
+    "period-year-short": "Ano",
+    "period-month-short": "Mês",
+    "period-day-short": "Dia",
+    "loan-amount": "Valor Emprestado",
+    "loan-term": "Prazo (anos)",
+    "interest-rate": "Taxa de Juros",
+    "amortization-system": "Sistema de Amortização",
+    "selected-installment": "Parcela Selecionada",
+    "of": "de",
+    "installment-value": "Valor da Parcela",
+    "amortization": "Amortização",
+    "interest": "Juros",
+    "outstanding-balance": "Saldo Devedor",
+    "evolution-charts": "📊 Evolução ao Longo do Tempo",
+    "learn-more": "SAIBA MAIS!",
+    "back": "← Voltar",
+    "back-to-calculator": "Voltar para a Calculadora",
+    "tooltip-valor-texto": "O valor emprestado é o montante total que você está solicitando ao banco ou instituição financeira. Este valor será usado para calcular as parcelas, juros e amortização. Valores maiores resultam em parcelas maiores e mais juros totais.",
+    "tooltip-taxa-texto": "A taxa de juros é o percentual cobrado sobre o valor emprestado. Você pode informar a taxa em diferentes períodos (ano, mês ou dia). O sistema converte automaticamente para taxa mensal usando juros compostos. Taxas maiores resultam em parcelas maiores e mais juros totais.",
+    "tooltip-prazo-texto": "O prazo é o tempo total em anos para quitar o empréstimo. Este valor é convertido automaticamente para meses (anos × 12) para os cálculos. Prazos maiores resultam em parcelas menores, mas mais juros totais ao longo do tempo.",
+    "memorial-title": "📚 Memorial de Cálculo - Sistemas de Amortização",
+    "memorial-intro-title": "🎯 Objetivo do Cálculo",
+    "memorial-intro-text": "Este memorial explica passo a passo como são calculados os sistemas de amortização (SAC, Price e Americano), incluindo as fórmulas matemáticas utilizadas e exemplos práticos com os valores atuais.",
+    "memorial-resumo-title": "📊 Resumo Calculado",
+    "memorial-resumo-valor": "Valor Emprestado:",
+    "memorial-resumo-taxa": "Taxa de Juros:",
+    "memorial-resumo-prazo": "Prazo:",
+    "memorial-resumo-sistema": "Sistema:",
+    "memorial-resumo-parcela": "Valor da Parcela:",
+    "memorial-resumo-total-juros": "Total de Juros:",
+    "memorial-resumo-total-pago": "Total Pago:",
+    "memorial-exemplos-link": "💡 Quer entender melhor os sistemas?",
+    "memorial-exemplos-text": "Veja exemplos educacionais detalhados de cada sistema de amortização clicando no botão abaixo.",
+    "btn-ver-exemplos": "Ver Exemplos Educacionais",
+    "examples-title": "📚 Entenda os Sistemas de Amortização",
+    "comparison-title": "🔍 Comparação dos Sistemas",
+    "table-interest": "Juros",
+    "table-interest-balance": "sobre saldo devedor",
+    "table-interest-fixed": "Fixos",
+    "table-installment": "Parcela",
+    "table-installment-variable": "Variável",
+    "table-installment-fixed": "Fixa",
+    "table-amortization": "Amortização",
+    "table-amortization-fixed": "Fixa",
+    "table-amortization-variable": "Variável",
+    "table-amortization-last": "última parcela",
+    "example-sac-title": "1. Sistema SAC - Amortização Constante",
+    "used-in": "Usado em:",
+    "example-sac-usage": "Brasil (financiamento imobiliário) e Itália (Ammortamento all'Italiana)",
+    "how-it-works": "Como funciona:",
+    "example-sac-description": "Você paga sempre a mesma parte do valor emprestado (amortização constante). Os juros caem todo mês porque são calculados sobre o saldo devedor. As parcelas começam mais altas e diminuem com o tempo.",
+    "formulas": "Fórmulas:",
+    "formula-sac-1": "Amortização = Valor Emprestado ÷ Número de Parcelas",
+    "formula-sac-2": "Juros = Saldo Devedor × Taxa Mensal",
+    "formula-sac-3": "Parcela = Amortização + Juros",
+    "example-label": "Exemplo:",
+    "example-sac-advantage": "✅ Melhor para: Quem pode pagar mais no início e quer pagar menos juros no total",
+    "example-price-title": "2. Tabela Price (Sistema Francês)",
+    "example-price-usage": "Brasil (empréstimos pessoais, consignados) e Itália (Ammortamento alla Francese - mais comum)",
+    "example-price-description": "A parcela é sempre a mesma todo mês. No começo, você paga mais juros e menos amortização. Com o tempo, isso inverte: menos juros, mais amortização.",
+    "formula-price": "PMT = VP × (i × (1 + i)ⁿ) ÷ ((1 + i)ⁿ - 1)",
+    "formula-price-vars": "VP = Valor Presente, i = Taxa Mensal, n = Número de Parcelas",
+    "example-price-advantage": "✅ Melhor para: Quem prefere previsibilidade com parcelas sempre iguais",
+    "example-american-title": "3. Sistema Americano",
+    "example-american-usage": "Raro no Brasil, ocasional na Itália para investidores",
+    "example-american-description": "Durante todo o período, você paga apenas os juros. No final, paga o valor total emprestado de uma só vez.",
+    "formula-american-1": "Parcelas 1 a n-1: Valor Emprestado × Taxa Mensal",
+    "formula-american-2": "Última Parcela: Valor Emprestado + Juros",
+    "example-american-advantage": "✅ Melhor para: Investidores que esperam receber grande valor no futuro",
+    "table-system": "Sistema",
+    "table-total-interest": "Total de Juros",
+    "table-first-installment": "1ª Parcela",
+    "table-last-installment": "Última Parcela",
+    "table-most-used": "Mais Usado",
+    "table-sac-usage": "🇧🇷 Imóveis",
+    "table-price-usage": "🇮🇹 Mutui / 🇧🇷 Consignado",
+    "table-american-name": "Americano",
+    "table-american-usage": "Raro",
+    "tooltips": {
+      "valor": "O valor emprestado é o montante total que você deseja emprestar ou financiar. Este valor será pago ao longo do tempo através de parcelas calculadas de acordo com o sistema de amortização escolhido.",
+      "taxa": "A taxa de juros é o percentual cobrado sobre o valor emprestado. Pode ser informada ao mês ou ao ano. Uma taxa maior significa parcelas mais altas e maior custo total do empréstimo.",
+      "prazo": "O prazo é o período de tempo em que você pagará o empréstimo. Pode ser informado em anos ou meses. Um prazo maior resulta em parcelas menores, mas aumenta o total de juros pagos."
+    },
+    "periodicidadeOpcoes": {
+      "anual": "Anual",
+      "mensal": "Mensal"
+    },
+    "resultado": {
+      "titulo": "Resultados",
+      "valorParcela": "Valor da Parcela",
+      "totalPago": "Total Pago",
+      "jurosTotais": "Juros Totais",
+      "amortizacao": "Amortização",
+      "juros": "Juros",
+      "saldoDevedor": "Saldo Devedor",
+      "observacaoAmericano": "* No Sistema Americano, apenas juros são pagos durante o período. O valor principal é pago integralmente na última parcela."
+    },
+    "tabela": {
+      "titulo": "Tabela de Amortização",
+      "parcela": "Parcela",
+      "valorParcela": "Valor da Parcela",
+      "amortizacao": "Amortização",
+      "juros": "Juros",
+      "saldoDevedor": "Saldo Devedor",
+      "totalizado": "TOTALIZADO",
+      "verTabela": "VER TABELA COMPLETA",
+      "fechar": "FECHAR TABELA"
+    },
+    "grafico": {
+      "titulo": "Evolução do Empréstimo",
+      "amortizacao": "Amortização",
+      "juros": "Juros",
+      "saldoDevedor": "Saldo Devedor",
+      "eixoX": "Parcela",
+      "eixoY": "Valor"
+    },
+    "exemplos": {
+      "titulo": "💡 Exemplos Práticos",
+      "exemplo1": {
+        "titulo": "Casa Popular",
+        "descricao": "Financiamento de imóvel popular no Brasil"
+      },
+      "exemplo2": {
+        "titulo": "Apartamento",
+        "descricao": "Financiamento de apartamento classe média"
+      },
+      "exemplo3": {
+        "titulo": "Carro Novo",
+        "descricao": "Financiamento de veículo 0km"
+      },
+      "exemplo4": {
+        "titulo": "Carro Usado",
+        "descricao": "Financiamento de veículo usado"
+      },
+      "exemplo5": {
+        "titulo": "Moto",
+        "descricao": "Financiamento de motocicleta"
+      },
+      "exemplo6": {
+        "titulo": "Empréstimo Pessoal Pequeno",
+        "descricao": "Empréstimo pessoal de curto prazo"
+      }
+    },
+    "memorial": {
+      "titulo": "Memorial de Cálculo",
+      "introducao": "Este memorial explica como são calculadas as parcelas, amortização e juros para cada sistema de amortização.",
+      "sac": {
+        "titulo": "Sistema SAC (Amortização Constante)",
+        "descricao": "No SAC, a amortização é constante em todas as parcelas. Os juros diminuem a cada mês porque incidem sobre o saldo devedor, que vai reduzindo.",
+        "formula": "Amortização = Valor Emprestado ÷ Número de Parcelas",
+        "jurosFormula": "Juros = Saldo Devedor × Taxa Mensal",
+        "parcelaFormula": "Parcela = Amortização + Juros"
+      },
+      "price": {
+        "titulo": "Tabela Price (Sistema Francês)",
+        "descricao": "Na Tabela Price, o valor da parcela é fixo. No início, a maior parte é juros; ao final, a maior parte é amortização.",
+        "formula": "PMT = VP × (i × (1 + i)ⁿ) ÷ ((1 + i)ⁿ - 1)",
+        "variaveis": "VP = Valor Presente, i = Taxa Mensal, n = Número de Parcelas"
+      },
+      "americano": {
+        "titulo": "Sistema Americano",
+        "descricao": "No Sistema Americano, durante todo o período apenas juros são pagos. O valor principal é pago integralmente apenas na última parcela.",
+        "jurosFormula": "Juros Mensais = Valor Emprestado × Taxa Mensal",
+        "ultimaParcela": "Última Parcela = Valor Emprestado + Juros Mensais"
+      }
+    },
+    "botoes": {
+      "voltar": "← Voltar",
+      "calcular": "Calcular",
+      "limpar": "Limpar",
+      "saibaMais": "SAIBA MAIS!",
+      "aplicar": "Aplicar"
+    },
+    "footer": {
+      "texto": "Calculadora de Empréstimos - Engenharia Nata @ 2025"
+    },
+    "aria": {
+      "aumentarValor": "Aumentar valor emprestado",
+      "diminuirValor": "Diminuir valor emprestado",
+      "aumentarTaxa": "Aumentar taxa de juros",
+      "diminuirTaxa": "Diminuir taxa de juros",
+      "aumentarPrazo": "Aumentar prazo",
+      "diminuirPrazo": "Diminuir prazo",
+      "aumentarParcela": "Avançar para próxima parcela",
+      "diminuirParcela": "Voltar para parcela anterior"
+    }
+  },
+  "it-IT": {
+    "app": {
+      "title": "💰 Calcolatore di Prestiti",
+      "subtitle": "Sistemi di Ammortamento: Italiano, Francese e Tedesco"
+    },
+    "labels": {
+      "valorEmprestado": "Importo del Prestito",
+      "taxaJuros": "Tasso di Interesse",
+      "prazo": "Durata",
+      "periodicidade": "Periodicità del Tasso",
+      "sistemaAmortizacao": "Sistema di Ammortamento",
+      "parcelaSelecionada": "Rata Selezionata"
+    },
+    "unidades": {
+      "reais": "€",
+      "euros": "€",
+      "aoAno": "all'anno",
+      "aoMes": "al mese",
+      "anos": "anni",
+      "meses": "mesi",
+      "parcela": "Rata"
+    },
+    "sistemas": {
+      "sac": "Ammortamento all'Italiana",
+      "price": "Ammortamento alla Francese",
+      "americano": "Sistema Tedesco"
+    },
+    "system-sac-short": "Italiana",
+    "system-price-short": "Francese",
+    "system-german-short": "Tedesco",
+    "period-year-short": "Anno",
+    "period-month-short": "Mese",
+    "period-day-short": "Giorno",
+    "loan-amount": "Importo del Prestito",
+    "loan-term": "Durata (anni)",
+    "interest-rate": "Tasso di Interesse",
+    "amortization-system": "Sistema di Ammortamento",
+    "selected-installment": "Rata Selezionata",
+    "of": "di",
+    "installment-value": "Valore della Rata",
+    "amortization": "Ammortamento",
+    "interest": "Interessi",
+    "outstanding-balance": "Debito Residuo",
+    "evolution-charts": "📊 Evoluzione nel Tempo",
+    "learn-more": "SCOPRI DI PIÙ!",
+    "back": "← Indietro",
+    "back-to-calculator": "Torna alla Calcolatrice",
+    "tooltip-valor-texto": "L'importo del prestito è l'importo totale che stai richiedendo alla banca o all'istituto finanziario. Questo importo verrà utilizzato per calcolare le rate, gli interessi e l'ammortamento. Importi maggiori comportano rate più elevate e più interessi totali.",
+    "tooltip-taxa-texto": "Il tasso di interesse è la percentuale applicata sull'importo del prestito. Puoi informare il tasso in periodi diversi (anno, mese o giorno). Il sistema converte automaticamente in tasso mensile utilizzando interessi composti. Tassi più alti comportano rate più elevate e più interessi totali.",
+    "tooltip-prazo-texto": "La durata è il tempo totale in anni per estinguere il prestito. Questo valore viene convertito automaticamente in mesi (anni × 12) per i calcoli. Durate maggiori comportano rate più piccole, ma più interessi totali nel tempo.",
+    "memorial-title": "📚 Memoriale di Calcolo - Sistemi di Ammortamento",
+    "memorial-intro-title": "🎯 Obiettivo del Calcolo",
+    "memorial-intro-text": "Questo memoriale spiega passo dopo passo come vengono calcolati i sistemi di ammortamento (Italiana, Francese e Tedesco), includendo le formule matematiche utilizzate ed esempi pratici con i valori attuali.",
+    "memorial-resumo-title": "📊 Riepilogo Calcolato",
+    "memorial-resumo-valor": "Importo del Prestito:",
+    "memorial-resumo-taxa": "Tasso di Interesse:",
+    "memorial-resumo-prazo": "Durata:",
+    "memorial-resumo-sistema": "Sistema:",
+    "memorial-resumo-parcela": "Valore della Rata:",
+    "memorial-resumo-total-juros": "Totale Interessi:",
+    "memorial-resumo-total-pago": "Totale Pagato:",
+    "memorial-exemplos-link": "💡 Vuoi capire meglio i sistemi?",
+    "memorial-exemplos-text": "Vedi esempi educativi dettagliati di ogni sistema di ammortamento cliccando sul pulsante qui sotto.",
+    "btn-ver-exemplos": "Vedi Esempi Educativi",
+    "examples-title": "📚 Comprendi i Sistemi di Ammortamento",
+    "comparison-title": "🔍 Confronto dei Sistemi",
+    "table-interest": "Interessi",
+    "table-interest-balance": "su debito residuo",
+    "table-interest-fixed": "Fissi",
+    "table-installment": "Rata",
+    "table-installment-variable": "Variabile",
+    "table-installment-fixed": "Fissa",
+    "table-amortization": "Ammortamento",
+    "table-amortization-fixed": "Fisso",
+    "table-amortization-variable": "Variabile",
+    "table-amortization-last": "ultima rata",
+    "example-sac-title": "1. Sistema Italiano - Ammortamento Costante",
+    "used-in": "Utilizzato in:",
+    "example-sac-usage": "Brasile (mutui immobiliari) e Italia (Ammortamento all'Italiana)",
+    "how-it-works": "Come funziona:",
+    "example-sac-description": "Paghi sempre la stessa parte dell'importo prestato (ammortamento costante). Gli interessi diminuiscono ogni mese perché vengono calcolati sul debito residuo. Le rate iniziano più alte e diminuiscono con il tempo.",
+    "formulas": "Formule:",
+    "formula-sac-1": "Ammortamento = Importo Prestato ÷ Numero di Rate",
+    "formula-sac-2": "Interessi = Debito Residuo × Tasso Mensile",
+    "formula-sac-3": "Rata = Ammortamento + Interessi",
+    "example-label": "Esempio:",
+    "example-sac-advantage": "✅ Migliore per: Chi può pagare di più all'inizio e vuole pagare meno interessi in totale",
+    "example-price-title": "2. Sistema Francese (Rata Fissa)",
+    "example-price-usage": "Brasile (prestiti personali) e Italia (Ammortamento alla Francese - più comune)",
+    "example-price-description": "La rata è sempre la stessa ogni mese. All'inizio, paghi più interessi e meno ammortamento. Con il tempo, questo si inverte: meno interessi, più ammortamento.",
+    "formula-price": "PMT = VP × (i × (1 + i)ⁿ) ÷ ((1 + i)ⁿ - 1)",
+    "formula-price-vars": "VP = Valore Presente, i = Tasso Mensile, n = Numero di Rate",
+    "example-price-advantage": "✅ Migliore per: Chi preferisce prevedibilità con rate sempre uguali",
+    "example-american-title": "3. Sistema Tedesco",
+    "example-american-usage": "Raro in Brasile, occasionale in Italia per investitori",
+    "example-american-description": "Durante tutto il periodo, paghi solo gli interessi. Alla fine, paghi l'importo totale prestato tutto in una volta.",
+    "formula-american-1": "Rate 1 a n-1: Importo Prestato × Tasso Mensile",
+    "formula-american-2": "Ultima Rata: Importo Prestato + Interessi",
+    "example-american-advantage": "✅ Migliore per: Investitori che si aspettano di ricevere un grande valore in futuro",
+    "table-system": "Sistema",
+    "table-total-interest": "Totale Interessi",
+    "table-first-installment": "1ª Rata",
+    "table-last-installment": "Ultima Rata",
+    "table-most-used": "Più Utilizzato",
+    "table-sac-usage": "🇧🇷 Immobili",
+    "table-price-usage": "🇮🇹 Mutui / 🇧🇷 Prestiti",
+    "table-american-name": "Tedesco",
+    "table-american-usage": "Raro",
+    "tooltips": {
+      "valor": "L'importo del prestito è l'importo totale che desideri prendere in prestito o finanziare. Questo importo verrà rimborsato nel tempo attraverso rate calcolate secondo il sistema di ammortamento scelto.",
+      "taxa": "Il tasso di interesse è la percentuale applicata sull'importo del prestito. Può essere espresso mensilmente o annualmente. Un tasso più alto significa rate più elevate e un costo totale del prestito maggiore.",
+      "prazo": "La durata è il periodo di tempo in cui rimborserai il prestito. Può essere espressa in anni o mesi. Una durata più lunga comporta rate più piccole, ma aumenta il totale degli interessi pagati."
+    },
+    "periodicidadeOpcoes": {
+      "anual": "Annuale",
+      "mensal": "Mensile"
+    },
+    "resultado": {
+      "titulo": "Risultati",
+      "valorParcela": "Valore della Rata",
+      "totalPago": "Totale Pagato",
+      "jurosTotais": "Interessi Totali",
+      "amortizacao": "Ammortamento",
+      "juros": "Interessi",
+      "saldoDevedor": "Debito Residuo",
+      "observacaoAmericano": "* Nel Sistema Tedesco, durante il periodo vengono pagati solo gli interessi. L'importo principale viene pagato interamente nell'ultima rata."
+    },
+    "tabela": {
+      "titulo": "Piano di Ammortamento",
+      "parcela": "Rata",
+      "valorParcela": "Valore della Rata",
+      "amortizacao": "Ammortamento",
+      "juros": "Interessi",
+      "saldoDevedor": "Debito Residuo",
+      "totalizado": "TOTALE",
+      "verTabela": "VEDI PIANO COMPLETO",
+      "fechar": "CHIUDI PIANO"
+    },
+    "grafico": {
+      "titulo": "Evoluzione del Prestito",
+      "amortizacao": "Ammortamento",
+      "juros": "Interessi",
+      "saldoDevedor": "Debito Residuo",
+      "eixoX": "Rata",
+      "eixoY": "Valore"
+    },
+    "exemplos": {
+      "titulo": "💡 Esempi Pratici",
+      "exemplo1": {
+        "titulo": "Casa Popolare",
+        "descricao": "Mutuo per immobile popolare"
+      },
+      "exemplo2": {
+        "titulo": "Appartamento",
+        "descricao": "Mutuo per appartamento classe media"
+      },
+      "exemplo3": {
+        "titulo": "Auto Nuova",
+        "descricao": "Finanziamento auto nuova"
+      },
+      "exemplo4": {
+        "titulo": "Auto Usata",
+        "descricao": "Finanziamento auto usata"
+      },
+      "exemplo5": {
+        "titulo": "Moto",
+        "descricao": "Finanziamento motocicletta"
+      },
+      "exemplo6": {
+        "titulo": "Prestito Personale Piccolo",
+        "descricao": "Prestito personale a breve termine"
+      }
+    },
+    "memorial": {
+      "titulo": "Memoriale di Calcolo",
+      "introducao": "Questo memoriale spiega come vengono calcolate le rate, l'ammortamento e gli interessi per ciascun sistema di ammortamento.",
+      "sac": {
+        "titulo": "Sistema Italiano (Ammortamento Costante)",
+        "descricao": "Nel sistema italiano, l'ammortamento è costante in tutte le rate. Gli interessi diminuiscono ogni mese perché vengono applicati sul debito residuo, che si riduce.",
+        "formula": "Ammortamento = Importo del Prestito ÷ Numero di Rate",
+        "jurosFormula": "Interessi = Debito Residuo × Tasso Mensile",
+        "parcelaFormula": "Rata = Ammortamento + Interessi"
+      },
+      "price": {
+        "titulo": "Sistema Francese (Rata Fissa)",
+        "descricao": "Nel sistema francese, il valore della rata è fisso. All'inizio, la maggior parte è costituita da interessi; alla fine, la maggior parte è ammortamento.",
+        "formula": "PMT = VP × (i × (1 + i)ⁿ) ÷ ((1 + i)ⁿ - 1)",
+        "variaveis": "VP = Valore Presente, i = Tasso Mensile, n = Numero di Rate"
+      },
+      "americano": {
+        "titulo": "Sistema Tedesco",
+        "descricao": "Nel sistema tedesco, durante tutto il periodo vengono pagati solo gli interessi. L'importo principale viene pagato interamente solo nell'ultima rata.",
+        "jurosFormula": "Interessi Mensili = Importo del Prestito × Tasso Mensile",
+        "ultimaParcela": "Ultima Rata = Importo del Prestito + Interessi Mensili"
+      }
+    },
+    "botoes": {
+      "voltar": "← Indietro",
+      "calcular": "Calcola",
+      "limpar": "Pulisci",
+      "saibaMais": "SCOPRI DI PIÙ!",
+      "aplicar": "Applica"
+    },
+    "footer": {
+      "texto": "Calcolatore di Prestiti - Engenharia Nata @ 2025"
+    },
+    "aria": {
+      "aumentarValor": "Aumenta importo del prestito",
+      "diminuirValor": "Diminuisci importo del prestito",
+      "aumentarTaxa": "Aumenta tasso di interesse",
+      "diminuirTaxa": "Diminuisci tasso di interesse",
+      "aumentarPrazo": "Aumenta durata",
+      "diminuirPrazo": "Diminuisci durata",
+      "aumentarParcela": "Passa alla rata successiva",
+      "diminuirParcela": "Torna alla rata precedente"
+    }
+  }
+}

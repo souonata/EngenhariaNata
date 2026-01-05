@@ -56,8 +56,8 @@
         <!-- CABEÇALHO -->
         <!-- ========================================== -->
         <header>
-            <h1 data-i18n="app.title">🔌 Calculadora de Bitola de Fios</h1>
-            <p class="subtitulo" data-i18n="app.subtitle">Área de Seção Mínima para Circuitos CC e CA</p>
+            <h1 data-i18n="app-title">🔌 Calculadora de Bitola de Fios</h1>
+            <p class="subtitulo" data-i18n="app-subtitle">Área de Seção Mínima para Circuitos CC e CA</p>
         </header>
 
         <!-- ========================================== -->
@@ -66,7 +66,7 @@
         <section class="card">
             <!-- Tipo de Corrente (CC ou CA) -->
             <div class="grupo-entrada">
-                <label data-i18n="labels.tipoCorrente">Tipo de Corrente</label>
+                <label data-i18n="label-tipo-corrente">Tipo de Corrente</label>
                 <div class="grupo-radio">
                     <label class="opcao-radio">
                         <input type="radio" name="tipoCorrente" value="cc" checked>
@@ -103,18 +103,18 @@
             <!-- Potência Máxima Nominal -->
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
-                    <label for="sliderPotencia" data-i18n="labels.potencia">Potência Máxima Nominal</label>
+                    <label for="sliderPotencia" data-i18n="label-potencia">Potência Máxima Nominal</label>
                     <span class="info-icon" id="infoIconPotencia" role="button" tabindex="0" aria-label="Informação sobre potência máxima nominal" title="Clique para mais informações">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputPotencia" class="valor-display valor-input" value="1000">
-                        <span class="unidade" data-i18n="unidades.watt">W</span>
+                        <span class="unidade" data-i18n="unit-watt">W</span>
                     </div>
                 </div>
                 <!-- Descrição que aparece/desaparece ao clicar no ícone -->
                 <div class="descricao-info" id="descricaoPotencia" style="display: none;">
-                    <span data-i18n="tooltips.potencia">A potência máxima nominal representa a quantidade total de energia elétrica que será consumida pelo circuito, medida em watts (W). Este valor é usado para calcular a corrente elétrica necessária. Você pode encontrar este valor nas especificações dos equipamentos que serão conectados ao circuito.</span>
+                    <span data-i18n="tooltip-potencia-texto">A potência máxima nominal representa a quantidade total de energia elétrica que será consumida pelo circuito, medida em watts (W). Este valor é usado para calcular a corrente elétrica necessária. Você pode encontrar este valor nas especificações dos equipamentos que serão conectados ao circuito.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderPotencia" data-step="-dynamic" aria-label="Diminuir potência">−</button>
@@ -126,18 +126,18 @@
             <!-- Comprimento Total do Circuito -->
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
-                    <label for="sliderComprimento" data-i18n="labels.comprimento">Distância do Circuito</label>
+                    <label for="sliderComprimento" data-i18n="label-comprimento">Distância do Circuito</label>
                     <span class="info-icon" id="infoIconComprimento" role="button" tabindex="0" aria-label="Informação sobre distância do circuito" title="Clique para mais informações">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputComprimento" class="valor-display valor-input" value="20">
-                        <span class="unidade" data-i18n="unidades.metro">m</span>
+                        <span class="unidade" data-i18n="unit-meter">m</span>
                     </div>
                 </div>
                 <!-- Descrição que aparece/desaparece ao clicar no ícone -->
                 <div class="descricao-info" id="descricaoComprimento" style="display: none;">
-                    <span data-i18n="tooltips.comprimento">A distância do circuito é a distância entre a fonte de energia (disjuntor, transformador, etc.) e a carga (equipamento que consome energia). O cálculo considera automaticamente a ida e volta do circuito (dois condutores), então você deve informar apenas a distância simples entre os pontos.</span>
+                    <span data-i18n="tooltip-comprimento-texto">A distância do circuito é a distância entre a fonte de energia (disjuntor, transformador, etc.) e a carga (equipamento que consome energia). O cálculo considera automaticamente a ida e volta do circuito (dois condutores), então você deve informar apenas a distância simples entre os pontos.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderComprimento" data-step="-0.1" aria-label="Diminuir comprimento">−</button>
@@ -153,18 +153,18 @@
             <!-- Para CC: slider com valores típicos -->
             <div id="secaoTensaoCC" class="grupo-entrada">
                 <div class="cabecalho-controle">
-                    <label for="sliderTensaoCC" data-i18n="labels.tensao">Tensão</label>
+                    <label for="sliderTensaoCC" data-i18n="label-tensao">Tensão</label>
                     <span class="info-icon" id="infoIconTensaoCC" role="button" tabindex="0" aria-label="Informação sobre tensão" title="Clique para mais informações">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputTensaoCC" class="valor-display valor-input" value="12">
-                        <span class="unidade" data-i18n="unidades.volt">V</span>
+                        <span class="unidade" data-i18n="unit-volt">V</span>
                     </div>
                 </div>
                 <!-- Descrição que aparece/desaparece ao clicar no ícone -->
                 <div class="descricao-info" id="descricaoTensaoCC" style="display: none;">
-                    <span data-i18n="tooltips.tensaoCC">A tensão é a diferença de potencial elétrico entre dois pontos do circuito, medida em volts (V). Para corrente contínua (CC), valores típicos incluem 3.3V, 5V, 9V, 12V, 15V, 20V, 24V, 36V, 48V, 60V, 72V e 96V. Este valor afeta diretamente o cálculo da corrente e da bitola necessária.</span>
+                    <span data-i18n="tooltip-tensao-cc-texto">A tensão é a diferença de potencial elétrico entre dois pontos do circuito, medida em volts (V). Para corrente contínua (CC), valores típicos incluem 3.3V, 5V, 9V, 12V, 15V, 20V, 24V, 36V, 48V, 60V, 72V e 96V. Este valor afeta diretamente o cálculo da corrente e da bitola necessária.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderTensaoCC" data-step="-1" aria-label="Diminuir tensão">−</button>
@@ -176,7 +176,7 @@
             <!-- Queda de Tensão -->
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
-                    <label for="sliderQuedaTensao" data-i18n="labels.quedaTensao">Queda de Tensão Máxima</label>
+                    <label for="sliderQuedaTensao" data-i18n="label-queda-tensao">Queda de Tensão Máxima</label>
                     <span class="info-icon" id="infoIconQuedaTensao" role="button" tabindex="0" aria-label="Informação sobre queda de tensão máxima" title="Clique para mais informações">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
@@ -187,7 +187,7 @@
                 </div>
                 <!-- Descrição que aparece/desaparece ao clicar no ícone -->
                 <div class="descricao-info" id="descricaoQuedaTensao" style="display: none;">
-                    <span data-i18n="tooltips.quedaTensao">A queda de tensão máxima é o percentual de redução de tensão permitido ao longo do circuito. Valores menores garantem melhor desempenho dos equipamentos, mas exigem fios mais grossos. Para projetos residenciais no Brasil, recomenda-se 3% a 4% conforme a NBR 5410. Valores maiores podem causar problemas de funcionamento dos equipamentos.</span>
+                    <span data-i18n="tooltip-queda-tensao-texto">A queda de tensão máxima é o percentual de redução de tensão permitido ao longo do circuito. Valores menores garantem melhor desempenho dos equipamentos, mas exigem fios mais grossos. Para projetos residenciais no Brasil, recomenda-se 3% a 4% conforme a NBR 5410. Valores maiores podem causar problemas de funcionamento dos equipamentos.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderQuedaTensao" data-step="-0.5" aria-label="Diminuir queda de tensão">−</button>
@@ -204,9 +204,9 @@
         <!-- ========================================== -->
         <div id="memorialSection" class="card memorial-section" style="display: none;">
             <div class="memorial-header">
-                <h2 data-i18n="memorial.titulo">📚 Memorial de Cálculo - Bitola de Fios</h2>
-                <button id="btnFecharMemorial" class="btn-fechar-memorial" data-i18n-title="botoes.voltar">
-                    <span data-i18n="botoes.voltar">← Voltar</span>
+                <h2 data-i18n="memorial-title">📚 Memorial de Cálculo - Bitola de Fios</h2>
+                <button id="btnFecharMemorial" class="btn-fechar-memorial" data-i18n-title="back-to-calculator">
+                    <span data-i18n="back">← Voltar</span>
                 </button>
             </div>
             
@@ -331,41 +331,41 @@
         <!-- ========================================== -->
         <section class="card resultados" id="resultadosSection">
             <div class="resultados-header-com-ajuda">
-                <h2 data-i18n="resultado.titulo">📊 Resultados</h2>
-                <button id="btnMemorial" class="btn-help" title="Ver Memorial de Cálculo" data-i18n-title="botoes.saibaMais" tabindex="10">
-                    <span class="texto-saiba-mais" data-i18n="botoes.saibaMais">SAIBA MAIS!</span>
+                <h2 data-i18n="resultados-title">📊 Resultados</h2>
+                <button id="btnMemorial" class="btn-help" title="Ver Memorial de Cálculo" data-i18n-title="btn-memorial" tabindex="10">
+                    <span class="texto-saiba-mais" data-i18n="learn-more">SAIBA MAIS!</span>
                 </button>
             </div>
 
             <div class="resultado-item destaque">
-                <span class="label-resultado" data-i18n="resultado.bitolaComercial">Bitola Comercial Recomendada:</span>
+                <span class="label-resultado" data-i18n="resultado-bitola-comercial">Bitola Comercial Recomendada:</span>
                 <span class="valor-resultado-grande" id="bitolaComercial">-</span>
             </div>
 
             <div class="resultado-item destaque">
-                <span class="label-resultado" data-i18n="resultado.areaMinima">Área de Seção Mínima:</span>
+                <span class="label-resultado" data-i18n="resultado-area-minima">Área de Seção Mínima:</span>
                 <span class="valor-resultado-grande" id="areaMinima">-</span>
             </div>
 
             <div class="resultado-item">
-                <span class="label-resultado" data-i18n="resultado.corrente">Corrente do Circuito:</span>
+                <span class="label-resultado" data-i18n="resultado-corrente">Corrente do Circuito:</span>
                 <span class="valor-resultado" id="correnteCircuito">-</span>
             </div>
 
             <div class="resultado-item">
-                <span class="label-resultado" data-i18n="resultado.quedaReal">Queda de Tensão Real:</span>
+                <span class="label-resultado" data-i18n="resultado-queda-real">Queda de Tensão Real:</span>
                 <span class="valor-resultado" id="quedaReal">-</span>
             </div>
 
             <div class="resultado-item">
-                <span class="label-resultado" data-i18n="resultado.disjuntor">Disjuntor Comercial Recomendado:</span>
+                <span class="label-resultado" data-i18n="resultado-disjuntor">Disjuntor Comercial Recomendado:</span>
                 <span class="valor-resultado" id="disjuntorComercial">-</span>
             </div>
         </section>
     </div>
 
     <footer>
-        <p data-i18n="footer.texto">Calculadora de Bitola de Fios - Engenharia Nata @ 2025</p>
+        <p data-i18n="footer">Calculadora de Bitola de Fios - Engenharia Nata @ 2025</p>
     </footer>
 
     <!-- Botão de retorno à tela inicial -->
@@ -376,7 +376,9 @@
     </a>
 
     <!-- Scripts -->
-    <script type="module" src="bitola-script-new.js?v=1.2.7"></script>
+    <script src="../assets/js/site-config.js?v=1.2.0"></script>
+    <script src="../assets/js/ajustarValorUtil.js?v=1.1.0"></script>
+    <script src="bitola-script.js?v=1.2.0"></script>
 </body>
 </html>
 

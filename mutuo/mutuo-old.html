@@ -41,7 +41,7 @@
     <!-- Quando atualizar o CSS, mude a versão para forçar o navegador a baixar de novo -->
     <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.0">
     <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.0">
-    <link rel="stylesheet" href="mutuo-styles.css?v=1.0.1">
+    <link rel="stylesheet" href="mutuo-styles.css?v=1.2.7">
 </head>
 <body>
     <!-- ========================================== -->
@@ -66,8 +66,7 @@
         <!-- ========================================== -->
         <header>
             <!-- Título principal - data-i18n indica que esse texto será traduzido -->
-            <h1 data-i18n="app.title">💰 Calculadora de Empréstimos</h1>
-            <p class="subtitulo" data-i18n="app.subtitle">Sistemas de Amortização: SAC, Price e Americano</p>
+            <h1 data-i18n="app-title">📊 Calculadora de Financiamento</h1>
         </header>
 
         <!-- ========================================== -->
@@ -345,7 +344,7 @@
                                     </div>
                                 </label>
                                 <label class="opcao-radio">
-                                    <input type="radio" name="sistemaRapido" value="americano" tabindex="9">
+                                    <input type="radio" name="sistemaRapido" value="alemao" tabindex="9">
                                     <div class="cartao-radio">
                                         <span class="rotulo-radio" data-i18n="system-german-short">Alemão</span>
                                     </div>
@@ -435,7 +434,7 @@
                             </div>
                             <div class="slider-com-botoes">
                                 <button type="button" class="arrow-btn arrow-down" data-target="sliderTaxa" data-step="-0.1" aria-label="Diminuir taxa em 0.1%">−</button>
-                                <input type="range" id="sliderTaxa" min="0" max="20" step="0.01" value="10" tabindex="3">
+                                <input type="range" id="sliderTaxa" min="0" max="20" step="0.1" value="10" tabindex="3">
                                 <button type="button" class="arrow-btn arrow-up" data-target="sliderTaxa" data-step="0.1" aria-label="Aumentar taxa em 0.1%">+</button>
                             </div>
                         </div>
@@ -525,7 +524,7 @@
     </div>
 
     <footer>
-        <p data-i18n="footer.texto">Calculadora de Empréstimos - Engenharia Nata @ 2025</p>
+        <p data-i18n="footer">Calculadora de Empréstimos - Engenharia Nata @ 2025</p>
     </footer>
 
     <!-- Botão de retorno à tela inicial (fixo centralizado no rodapé) -->
@@ -536,10 +535,10 @@
         </svg>
     </a>
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- Chart.js será carregado dinamicamente quando necessário (lazy loading) -->
     
+    <script src="../assets/js/site-config.js?v=1.1.0"></script>
     <!-- JavaScript da calculadora -->
-    <script type="module" src="mutuo-script-new.js?v=1.2.7"></script>
+    <script src="mutuo-script.js?v=1.2.2"></script>
 </body>
 </html>

@@ -832,22 +832,25 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     opacity: 1;
     /* Transição será controlada via JavaScript para fade out/in rápido */
+    position: relative;
+    width: 100%;
+}
+
+.grafico-unico::before {
+    content: '';
+    display: block;
+    padding-top: 100%; /* Aspect ratio 1:1 (altura = largura) */
 }
 
 .grafico-unico canvas {
-    max-height: 320px;
-}
-
-@media (max-width: 768px) {
-    .grafico-unico canvas {
-        max-height: 260px;
-    }
-}
-
-@media (max-width: 480px) {
-    .grafico-unico canvas {
-        max-height: 240px;
-    }
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    width: calc(100% - 16px) !important;
+    height: calc(100% - 16px) !important;
+    max-height: none;
 }
 
 /* Recipiente de Tabela */

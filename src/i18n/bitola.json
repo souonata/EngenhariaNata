@@ -1,0 +1,168 @@
+{
+  "pt-BR": {
+    "app": {
+      "title": "🔌 Calculadora de Bitola de Fios",
+      "subtitle": "Área de Seção Mínima para Circuitos CC e CA"
+    },
+    "labels": {
+      "tipoCorrente": "Tipo de Corrente",
+      "potencia": "Potência Máxima Nominal",
+      "comprimento": "Distância do Circuito",
+      "tensao": "Tensão",
+      "quedaTensao": "Queda de Tensão Máxima"
+    },
+    "unidades": {
+      "watt": "W",
+      "meter": "m",
+      "volt": "V",
+      "mm2": "mm²",
+      "ampere": "A",
+      "percent": "%"
+    },
+    "dicas": {
+      "comprimento": "💡 Distância entre a fonte e a carga<br>(o cálculo considera automaticamente ida e volta)",
+      "tensaoCC": "💡 Valores típicos: 3.3V, 5V, 9V, 12V, 15V, 20V, 24V, 36V, 48V, 60V, 72V, 96V",
+      "quedaTensao": "✅ Máximo permitido para projetos residenciais no Brasil: 4% (NBR 5410)"
+    },
+    "resultado": {
+      "titulo": "📊 Resultados",
+      "areaMinima": "Área de Seção Mínima:",
+      "bitolaComercial": "Bitola Comercial Recomendada:",
+      "corrente": "Corrente do Circuito:",
+      "quedaReal": "Queda de Tensão Real:",
+      "disjuntor": "Disjuntor Comercial Recomendado:"
+    },
+    "botoes": {
+      "voltar": "← Voltar",
+      "saibaMais": "SAIBA MAIS!"
+    },
+    "tooltips": {
+      "potencia": "A potência máxima nominal representa a quantidade total de energia elétrica que será consumida pelo circuito, medida em watts (W). Este valor é usado para calcular a corrente elétrica necessária.",
+      "comprimento": "A distância do circuito é a distância entre a fonte de energia e a carga. O cálculo considera automaticamente a ida e volta do circuito (dois condutores).",
+      "tensaoCC": "A tensão é a diferença de potencial elétrico entre dois pontos do circuito, medida em volts (V). Para corrente contínua (CC), valores típicos incluem 3.3V, 5V, 9V, 12V, 15V, 20V, 24V, 36V, 48V, 60V, 72V e 96V.",
+      "quedaTensao": "A queda de tensão máxima é o percentual de redução de tensão permitido ao longo do circuito. Para projetos residenciais no Brasil, recomenda-se 3% a 4% conforme a NBR 5410."
+    },
+    "memorial": {
+      "btnVer": "Ver Memorial de Cálculo",
+      "titulo": "📚 Memorial de Cálculo - Bitola de Fios",
+      "introTitulo": "🎯 Objetivo do Cálculo",
+      "introTexto": "Este memorial explica passo a passo como é calculada a bitola mínima de fios elétricos para circuitos CC e CA, considerando potência, distância, tensão e queda de tensão máxima permitida.",
+      "passo1Titulo": "1️⃣ Passo 1: Calcular Corrente do Circuito",
+      "passo1Explicacao": "A corrente é calculada dividindo a potência pela tensão. Esta é a corrente que o circuito precisa transportar.",
+      "passo2Titulo": "2️⃣ Passo 2: Calcular Área de Seção Mínima",
+      "passo2Explicacao": "A área mínima é calculada usando a fórmula S = (2 × ρ × L × I) / ΔV, onde ρ é a resistividade do cobre (0.0178 Ω·mm²/m).",
+      "passo3Titulo": "3️⃣ Passo 3: Selecionar Bitola Comercial",
+      "passo3Explicacao": "A área mínima calculada é multiplicada por um fator de segurança de 1.25 (25% de margem) e então selecionamos a bitola comercial padrão brasileiro (NBR 5410) que atende ao requisito.",
+      "passo4Titulo": "4️⃣ Passo 4: Verificar Queda de Tensão Real",
+      "passo4Explicacao": "Recalculamos a queda de tensão com a bitola comercial escolhida usando a fórmula ΔV% = ((2 × ρ × L × I) / S) / V × 100.",
+      "passo5Titulo": "5️⃣ Passo 5: Selecionar Disjuntor Comercial",
+      "passo5Explicacao": "O disjuntor é selecionado com base na corrente do circuito, aplicando um fator de segurança de 1.25 e escolhendo o disjuntor comercial padrão que atende ao requisito.",
+      "formula": "Fórmula:",
+      "exemplo": "Exemplo:",
+      "constantes": "Constantes usadas:",
+      "resistividade": "ρ (resistividade do cobre) = 0.0178 Ω·mm²/m a 20°C (cobre duro, conforme NBR 5410)",
+      "fator2": "Fator 2 = considera ida e volta do circuito (dois condutores)",
+      "bitolas": "Bitolas comerciais disponíveis:",
+      "bitolasList a": "0.25, 0.5, 0.75, 1.0, 1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240 mm²",
+      "resumoTitulo": "📊 Resumo Calculado",
+      "resumoCorrente": "Corrente do Circuito:",
+      "resumoArea": "Área Mínima:",
+      "resumoBitola": "Bitola Comercial:",
+      "resumoQueda": "Queda Real:",
+      "resumoDisjuntor": "Disjuntor:",
+      "formulaCorrente": "Corrente (A) = Potência (W) ÷ Tensão (V)",
+      "formulaQueda": "Queda Real (%) = ((2 × ρ × L × I) ÷ S) ÷ Tensão × 100",
+      "quedaRecomendada": "Queda de tensão recomendada:",
+      "quedaRecomendadaTexto": "4% — Limite máximo estabelecido pela NBR 5410 para circuitos terminais em regime permanente. Este é o padrão técnico brasileiro.",
+      "leiOhmTitulo": "⚛️ Lei Física Aplicada — Lei de Ohm:",
+      "leiOhmTexto": "A Lei de Ohm relaciona tensão (V), corrente (I) e resistência (R): V = I × R. No cálculo de bitola, usamos esta lei para determinar a queda de tensão."
+    },
+    "footer": "Calculadora de Bitola de Fios - Engenharia Nata @ 2025",
+    "aria": {
+      "home": "Voltar para a tela inicial"
+    }
+  },
+  "it-IT": {
+    "app": {
+      "title": "🔌 Calcolatrice Sezione Cavi",
+      "subtitle": "Area di Sezione Minima per Circuiti CC e CA"
+    },
+    "labels": {
+      "tipoCorrente": "Tipo di Corrente",
+      "potencia": "Potenza Massima Nominale",
+      "comprimento": "Distanza del Circuito",
+      "tensao": "Tensione",
+      "quedaTensao": "Caduta di Tensione Massima"
+    },
+    "unidades": {
+      "watt": "W",
+      "meter": "m",
+      "volt": "V",
+      "mm2": "mm²",
+      "ampere": "A",
+      "percent": "%"
+    },
+    "dicas": {
+      "comprimento": "💡 Distanza tra la sorgente e il carico<br>(il calcolo considera automaticamente andata e ritorno)",
+      "tensaoCC": "💡 Valori tipici: 3.3V, 5V, 9V, 12V, 15V, 20V, 24V, 36V, 48V, 60V, 72V, 96V",
+      "quedaTensao": "✅ Massimo consentito per progetti residenziali in Brasile: 4% (NBR 5410)"
+    },
+    "resultado": {
+      "titulo": "📊 Risultati",
+      "areaMinima": "Area di Sezione Minima:",
+      "bitolaComercial": "Sezione Commerciale Consigliata:",
+      "corrente": "Corrente del Circuito:",
+      "quedaReal": "Caduta di Tensione Reale:",
+      "disjuntor": "Interruttore Commerciale Consigliato:"
+    },
+    "botoes": {
+      "voltar": "← Indietro",
+      "saibaMais": "SCOPRI DI PIÙ!"
+    },
+    "tooltips": {
+      "potencia": "La potenza massima nominale rappresenta la quantità totale di energia elettrica che verrà consumata dal circuito, misurata in watt (W).",
+      "comprimento": "La distanza del circuito è la distanza tra la sorgente di energia e il carico. Il calcolo considera automaticamente l'andata e il ritorno del circuito (due conduttori).",
+      "tensaoCC": "La tensione è la differenza di potenziale elettrico tra due punti del circuito, misurata in volt (V). Per corrente continua (CC), i valori tipici includono 3.3V, 5V, 9V, 12V, 15V, 20V, 24V, 36V, 48V, 60V, 72V e 96V.",
+      "quedaTensao": "La caduta di tensione massima è la percentuale di riduzione di tensione consentita lungo il circuito. Per progetti residenziali in Brasile, si consiglia dal 3% al 4% secondo NBR 5410."
+    },
+    "memorial": {
+      "btnVer": "Vedi Memoriale di Calcolo",
+      "titulo": "📚 Memoriale di Calcolo - Sezione Cavi",
+      "introTitulo": "🎯 Obiettivo del Calcolo",
+      "introTexto": "Questo memoriale spiega passo dopo passo come viene calcolata la sezione minima dei cavi elettrici per circuiti CC e CA.",
+      "passo1Titulo": "1️⃣ Passo 1: Calcolare Corrente del Circuito",
+      "passo1Explicacao": "La corrente viene calcolata dividendo la potenza per la tensione. Questa è la corrente che il circuito deve trasportare.",
+      "passo2Titulo": "2️⃣ Passo 2: Calcolare Area di Sezione Minima",
+      "passo2Explicacao": "L'area minima viene calcolata utilizzando la formula S = (2 × ρ × L × I) / ΔV, dove ρ è la resistività del rame (0.0178 Ω·mm²/m).",
+      "passo3Titulo": "3️⃣ Passo 3: Selezionare Sezione Commerciale",
+      "passo3Explicacao": "L'area minima calcolata viene moltiplicata per un fattore di sicurezza di 1.25 (25% di margine).",
+      "passo4Titulo": "4️⃣ Passo 4: Verificare Caduta di Tensione Reale",
+      "passo4Explicacao": "Ricalcoliamo la caduta di tensione con la sezione commerciale scelta.",
+      "passo5Titulo": "5️⃣ Passo 5: Selezionare Interruttore Commerciale",
+      "passo5Explicacao": "L'interruttore viene selezionato in base alla corrente del circuito, applicando un fattore di sicurezza di 1.25.",
+      "formula": "Formula:",
+      "exemplo": "Esempio:",
+      "constantes": "Costanti utilizzate:",
+      "resistividade": "ρ (resistività del rame) = 0.0178 Ω·mm²/m a 20°C (rame duro)",
+      "fator2": "Fattore 2 = considera andata e ritorno del circuito (due conduttori)",
+      "bitolas": "Sezioni commerciali disponibili:",
+      "bitolaslista": "0.25, 0.5, 0.75, 1.0, 1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240 mm²",
+      "resumoTitulo": "📊 Riepilogo Calcolato",
+      "resumoCorrente": "Corrente del Circuito:",
+      "resumoArea": "Area Minima:",
+      "resumoBitola": "Sezione Commerciale:",
+      "resumoQueda": "Caduta Reale:",
+      "resumoDisjuntor": "Interruttore:",
+      "formulaCorrente": "Corrente (A) = Potenza (W) ÷ Tensione (V)",
+      "formulaQueda": "Caduta Reale (%) = ((2 × ρ × L × I) ÷ S) ÷ Tensione × 100",
+      "quedaRecomendada": "Caduta di tensione consigliata:",
+      "quedaRecomendadaTexto": "4% — Limite massimo stabilito dalla NBR 5410 per circuiti terminali in regime permanente.",
+      "leiOhmTitulo": "⚛️ Legge Fisica Applicata — Legge di Ohm:",
+      "leiOhmTexto": "La Legge di Ohm relaziona tensione (V), corrente (I) e resistenza (R): V = I × R."
+    },
+    "footer": "Calcolatrice Sezione Cavi - Engenharia Nata @ 2025",
+    "aria": {
+      "home": "Torna alla schermata iniziale"
+    }
+  }
+}

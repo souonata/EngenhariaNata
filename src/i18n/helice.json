@@ -1,0 +1,176 @@
+{
+  "pt-BR": {
+    "app": {
+      "title": "🚤 Calculadora de Passo de Hélice",
+      "subtitle": "Para barcos de lazer"
+    },
+    "labels": {
+      "unidadeVelocidade": "Unidade de Velocidade",
+      "velocidade": "Velocidade Desejada",
+      "reducao": "Redução da Rabeta",
+      "rpm": "RPM Máximo do Motor",
+      "slip": "Slip Estimado"
+    },
+    "unidades": {
+      "mph": "mph",
+      "kmh": "km/h",
+      "mm": "mm",
+      "polegadas": "polegadas",
+      "polegadasCompacto": "pol",
+      "nos": "nós"
+    },
+    "resultado": {
+      "titulo": "Resultados",
+      "rpmHelice": "RPM na Hélice:",
+      "velocidadeTeorica": "Velocidade Teórica:"
+    },
+    "grafico": {
+      "titulo": "📊 Relação Passo × Velocidade",
+      "label": "Passo (polegadas)",
+      "eixoX": "Velocidade (nós)",
+      "eixoY": "Passo Recomendado (pol)"
+    },
+    "info": {
+      "titulo": "ℹ️ Como Funciona",
+      "slip": "Valor típico para barcos de lazer: 10-20%. Representa a perda de eficiência da hélice.",
+      "passoTitulo": "O que é Passo?",
+      "passoTexto": "O passo é a distância teórica (em polegadas) que a hélice avançaria em uma rotação completa, sem considerar o deslizamento (slip).",
+      "reducaoTitulo": "Redução da Rabeta",
+      "reducaoTexto": "Relação entre a rotação do motor e a rotação da hélice. Ex: 2:1 significa que o motor gira 2 vezes para a hélice girar 1 vez.",
+      "slipTitulo": "O que é Slip?",
+      "slipTexto": "Deslizamento entre a hélice e a água. Barcos de lazer típicos têm 10-20% de slip. Quanto menor o slip, mais eficiente a hélice."
+    },
+    "formula": {
+      "titulo": "📐 Fórmula Utilizada",
+      "explicacao": "Onde 1056 é a constante de conversão de nós para polegadas/minuto"
+    },
+    "memorial": {
+      "btnVer": "Ver Memorial de Cálculo",
+      "titulo": "📚 Memorial de Cálculo - Passo de Hélice",
+      "introTitulo": "🎯 Objetivo do Cálculo",
+      "introTexto": "Este memorial explica passo a passo como é calculado o passo ideal da hélice para barcos de lazer, considerando velocidade desejada, RPM do motor, redução da rabeta e slip.",
+      "passo1Titulo": "1️⃣ Passo 1: Calcular RPM Efetivo na Hélice",
+      "passo1Explicacao": "A rabeta reduz a rotação do motor. Se a redução é 2:1, a hélice gira 2 vezes mais devagar que o motor.",
+      "passo2Titulo": "2️⃣ Passo 2: Calcular Passo da Hélice",
+      "passo2Explicacao": "O passo é a distância teórica que a hélice avançaria em uma rotação completa. O slip reduz a eficiência, então usamos (1 - Slip) para compensar.",
+      "passo3Titulo": "3️⃣ Passo 3: Calcular Velocidade Teórica",
+      "passo3Explicacao": "A velocidade teórica mostra qual velocidade seria obtida se não houvesse slip.",
+      "formula": "Fórmula:",
+      "exemplo": "Exemplo:",
+      "constantesTitulo": "Constantes usadas:",
+      "constante1056": "1056 = constante de conversão de nós para polegadas/minuto",
+      "principioFisicoTitulo": "⚛️ Princípio Físico Aplicado — Propulsão Náutica:",
+      "principioFisicoTexto": "A hélice funciona como uma rosca na água: quando gira, empurra a água para trás, e pela terceira lei de Newton (ação e reação), a água empurra o barco para frente.",
+      "conceitosTitulo": "📖 Conceitos Importantes",
+      "slipTitulo": "Slip (Deslizamento):",
+      "slipTexto": "O slip é a perda de eficiência entre a hélice e a água. Barcos de lazer típicos têm 10-20% de slip.",
+      "reducaoTitulo": "Redução da Rabeta:",
+      "reducaoTexto": "Relação entre a rotação do motor e a rotação da hélice. Ex: 2:1 significa que o motor gira 2 vezes para a hélice girar 1 vez.",
+      "resumoTitulo": "📊 Resumo Calculado",
+      "resumoRpm": "RPM na Hélice:",
+      "resumoPasso": "Passo Recomendado:",
+      "resumoVelocidade": "Velocidade Teórica:"
+    },
+    "tooltips": {
+      "velocidade": "A velocidade desejada é a velocidade máxima que você quer que o barco alcance, medida em nós, mph ou km/h.",
+      "reducao": "A redução da rabeta é a relação entre a rotação do motor e a rotação da hélice. Valores típicos variam de 1:1 a 3:1.",
+      "rpm": "O RPM máximo do motor é a rotação máxima que o motor pode atingir. Valores típicos variam de 4000 a 7000 rpm.",
+      "slip": "O slip (deslizamento) é a perda de eficiência entre a hélice e a água. O valor padrão de 15% é um bom equilíbrio."
+    },
+    "botoes": {
+      "voltar": "← Voltar",
+      "saibaMais": "SAIBA MAIS!"
+    },
+    "footer": "Calculadora de Hélice - Engenharia Nata @ 2025",
+    "aria": {
+      "home": "Voltar para a tela inicial"
+    }
+  },
+  "it-IT": {
+    "app": {
+      "title": "🚤 Calcolatore Passo Elica",
+      "subtitle": "Per barche da diporto"
+    },
+    "labels": {
+      "unidadeVelocidade": "Unità di Velocità",
+      "velocidade": "Velocità Desiderata",
+      "reducao": "Riduzione Piede Poppiero",
+      "rpm": "RPM Massimo Motore",
+      "slip": "Slip Stimato"
+    },
+    "unidades": {
+      "mph": "mph",
+      "kmh": "km/h",
+      "mm": "mm",
+      "polegadas": "pollici",
+      "polegadasCompacto": "pol",
+      "nos": "nodi"
+    },
+    "resultado": {
+      "titulo": "Risultati",
+      "rpmHelice": "RPM Elica:",
+      "velocidadeTeorica": "Velocità Teorica:"
+    },
+    "grafico": {
+      "titulo": "📊 Relazione Passo × Velocità",
+      "label": "Passo (pollici)",
+      "eixoX": "Velocità (nodi)",
+      "eixoY": "Passo Consigliato (pol)"
+    },
+    "info": {
+      "titulo": "ℹ️ Come Funziona",
+      "slip": "Valore tipico per barche da diporto: 10-20%. Rappresenta la perdita di efficienza dell'elica.",
+      "passoTitulo": "Cos'è il Passo?",
+      "passoTexto": "Il passo è la distanza teorica (in pollici) che l'elica avanzerebbe in una rotazione completa, senza considerare lo scivolamento (slip).",
+      "reducaoTitulo": "Riduzione Piede Poppiero",
+      "reducaoTexto": "Rapporto tra la rotazione del motore e la rotazione dell'elica. Es: 2:1 significa che il motore gira 2 volte per 1 giro dell'elica.",
+      "slipTitulo": "Cos'è lo Slip?",
+      "slipTexto": "Scivolamento tra l'elica e l'acqua. Barche da diporto tipiche hanno 10-20% di slip. Minore è lo slip, più efficiente è l'elica."
+    },
+    "formula": {
+      "titulo": "📐 Formula Utilizzata",
+      "explicacao": "Dove 1056 è la costante di conversione da nodi a pollici/minuto"
+    },
+    "memorial": {
+      "btnVer": "Vedi Memoriale di Calcolo",
+      "titulo": "📚 Memoriale di Calcolo - Passo Elica",
+      "introTitulo": "🎯 Obiettivo del Calcolo",
+      "introTexto": "Questo memoriale spiega passo dopo passo come viene calcolato il passo ideale dell'elica per barche da diporto.",
+      "passo1Titulo": "1️⃣ Passo 1: Calcolare RPM Effettivo dell'Elica",
+      "passo1Explicacao": "Il piede poppiero riduce la rotazione del motore. Se la riduzione è 2:1, l'elica gira 2 volte più lentamente del motore.",
+      "passo2Titulo": "2️⃣ Passo 2: Calcolare Passo dell'Elica",
+      "passo2Explicacao": "Il passo è la distanza teorica che l'elica avanzerebbe in una rotazione completa. Lo slip riduce l'efficienza, quindi usiamo (1 - Slip) per compensare.",
+      "passo3Titulo": "3️⃣ Passo 3: Calcolare Velocità Teorica",
+      "passo3Explicacao": "La velocità teorica mostra quale velocità si otterrebbe se non ci fosse slip.",
+      "formula": "Formula:",
+      "exemplo": "Esempio:",
+      "constantesTitulo": "Costanti utilizzate:",
+      "constante1056": "1056 = costante di conversione da nodi a pollici/minuto",
+      "principioFisicoTitulo": "⚛️ Principio Fisico Applicato — Propulsione Nautica:",
+      "principioFisicoTexto": "L'elica funziona come una vite nell'acqua: quando gira, spinge l'acqua all'indietro, e per la terza legge di Newton (azione e reazione), l'acqua spinge la barca in avanti.",
+      "conceitosTitulo": "📖 Concetti Importanti",
+      "slipTitulo": "Slip (Scivolamento):",
+      "slipTexto": "Lo slip è la perdita di efficienza tra l'elica e l'acqua. Barche da diporto tipiche hanno 10-20% di slip.",
+      "reducaoTitulo": "Riduzione Piede Poppiero:",
+      "reducaoTexto": "Rapporto tra la rotazione del motore e la rotazione dell'elica. Es: 2:1 significa che il motore gira 2 volte per 1 giro dell'elica.",
+      "resumoTitulo": "📊 Riepilogo Calcolato",
+      "resumoRpm": "RPM Elica:",
+      "resumoPasso": "Passo Consigliato:",
+      "resumoVelocidade": "Velocità Teorica:"
+    },
+    "tooltips": {
+      "velocidade": "La velocità desiderata è la velocità massima che si desidera raggiungere con la barca, misurata in nodi, mph o km/h.",
+      "reducao": "La riduzione del piede poppiero è il rapporto tra la rotazione del motore e la rotazione dell'elica. Valori tipici vanno da 1:1 a 3:1.",
+      "rpm": "Il RPM massimo del motore è la rotazione massima che il motore può raggiungere. Valori tipici vanno da 4000 a 7000 rpm.",
+      "slip": "Lo slip (scivolamento) è la perdita di efficienza tra l'elica e l'acqua. Il valore predefinito del 15% è un buon equilibrio."
+    },
+    "botoes": {
+      "voltar": "← Indietro",
+      "saibaMais": "SCOPRI DI PIÙ!"
+    },
+    "footer": "Calcolatore Elica - Engenharia Nata @ 2025",
+    "aria": {
+      "home": "Torna alla schermata iniziale"
+    }
+  }
+}

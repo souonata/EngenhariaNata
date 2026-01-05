@@ -1,0 +1,318 @@
+{
+  "pt-BR": {
+    "page": {
+      "title": "Sobre o Projeto",
+      "subtitle": "Portfólio de apps web",
+      "titleFull": "📱 Sobre o Projeto - Engenharia NATA"
+    },
+    "overview": {
+      "title": "Visão Geral",
+      "description": "Portfólio de ferramentas práticas para o dia a dia: calculadoras de engenharia e finanças que você pode usar diretamente no navegador, sem precisar instalar nada."
+    },
+    "apps": {
+      "mutuo": {
+        "name": "Empréstimo",
+        "desc": "Compara empréstimos e mostra parcelas para você economizar"
+      },
+      "helice": {
+        "name": "Hélice",
+        "desc": "Ajuda a escolher a hélice perfeita para seu barco"
+      },
+      "solar": {
+        "name": "Energia Solar",
+        "desc": "Dimensione painéis solares para gerar sua própria energia"
+      },
+      "bitola": {
+        "name": "Bitola",
+        "desc": "Calcula o fio elétrico ideal para sua instalação de forma segura"
+      },
+      "arcondicionado": {
+        "name": "Ar Condicionado",
+        "desc": "Calcula o ar condicionado ideal para seus ambientes"
+      },
+      "aquecimento": {
+        "name": "Aquecedor Solar",
+        "desc": "Planeja seu sistema de aquecimento solar economizando energia"
+      },
+      "fazenda": {
+        "name": "Fazenda",
+        "desc": "Planeje sua fazenda auto-sustentável para produção própria"
+      },
+      "sobre": {
+        "name": "Sobre mim",
+        "desc": "Informações do projeto"
+      },
+      "bugs": {
+        "name": "Reportar Bug",
+        "desc": "Ajude a melhorar os apps reportando problemas"
+      }
+    },
+    "what": {
+      "it": {
+        "does": "O que faz:"
+      }
+    },
+    "calculator": {
+      "description": "Compara empréstimos e mostra parcelas para você economizar."
+    },
+    "arcondicionado": {
+      "description": "Calcula o ar condicionado ideal para seus ambientes."
+    },
+    "aquecimento": {
+      "description": "Planeje seu sistema de aquecimento solar economizando energia."
+    },
+    "solar": {
+      "description": "Dimensione painéis solares para gerar sua própria energia."
+    },
+    "fazenda": {
+      "description": "Planeje sua fazenda auto-sustentável para produção própria."
+    },
+    "app": {
+      "bitola": "Calculadora de Bitola de Fios",
+      "helice": "Calculadora de Hélice Náutica",
+      "mutuo": "Calculadora de Empréstimos",
+      "bugs": "Sistema de Reporte de Bugs",
+      "arcondicionado": "Calculadora de Ar Condicionado",
+      "aquecimento": "Calculadora de Aquecedor Solar",
+      "solar": "Calculadora de Energia Solar",
+      "fazenda": "Planejador de Fazenda"
+    },
+    "bitola": {
+      "description": "Calcula o fio elétrico correto para sua instalação, evitando aquecimento e garantindo segurança."
+    },
+    "helice": {
+      "description": "Ajuda a escolher a hélice perfeita para seu barco."
+    },
+    "mutuo": {
+      "description": "Calcula e compara sistemas de amortização (SAC, Price e Americano) para você tomar a melhor decisão financeira."
+    },
+    "bugs": {
+      "description": "Ajude a melhorar os apps reportando problemas."
+    },
+    "stat": {
+      "html": "linhas HTML",
+      "js": "linhas JavaScript",
+      "css": "linhas CSS"
+    },
+    "features": {
+      "title": "Recursos Principais",
+      "bilingual": {
+        "title": "🌍 Bilíngue",
+        "desc": "Troca entre Português e Italiano e exibe a moeda correspondente."
+      },
+      "charts": {
+        "title": "📊 Gráficos",
+        "desc": "Visualização clara dos dados"
+      },
+      "mobile": {
+        "title": "📱 Mobile-First",
+        "desc": "Funciona bem em celular e computador"
+      },
+      "code": {
+        "title": "💡 Código Comentado",
+        "desc": "Código explicado para facilitar aprendizado"
+      },
+      "responsive": {
+        "title": "Responsivo",
+        "desc": "Projetado para funcionar bem em dispositivos móveis e desktop"
+      },
+      "fast": {
+        "title": "Rápido",
+        "desc": "Cálculos instantâneos ao ajustar valores"
+      }
+    },
+    "tech": {
+      "title": "Tecnologias Usadas",
+      "html": "Estrutura das páginas",
+      "css": "Estilos e animações",
+      "js": "JavaScript puro e rápido",
+      "chart": "Gráficos interativos"
+    },
+    "footer": "💻 Portfólio Engenharia NATA",
+    "aria": {
+      "home": "Voltar para a tela inicial",
+      "expandCard": "Expandir seção",
+      "collapseCard": "Recolher seção"
+    }
+  },
+  "it-IT": {
+    "page": {
+      "title": "Sul Progetto",
+      "subtitle": "Portfolio di app web",
+      "titleFull": "📱 Sul Progetto - Ingegneria NATA"
+    },
+    "overview": {
+      "title": "Panoramica",
+      "description": "Portfolio di strumenti pratici per la vita quotidiana: calcolatrici di ingegneria e finanza che puoi usare direttamente nel browser, senza bisogno di installare nulla."
+    },
+    "apps": {
+      "mutuo": {
+        "name": "Mutuo",
+        "desc": "Confronta prestiti e mostra rate per risparmiare"
+      },
+      "helice": {
+        "name": "Elica",
+        "desc": "Aiuta a scegliere l'elica perfetta per la tua barca"
+      },
+      "solar": {
+        "name": "Energia Solare",
+        "desc": "Dimensiona pannelli solari per generare la tua energia"
+      },
+      "bitola": {
+        "name": "Sezione Cavi",
+        "desc": "Calcola il cavo elettrico ideale per la tua installazione in modo sicuro"
+      },
+      "arcondicionado": {
+        "name": "Climatizzatore",
+        "desc": "Calcola il climatizzatore ideale per i tuoi ambienti"
+      },
+      "aquecimento": {
+        "name": "Riscaldatore Solare",
+        "desc": "Pianifica il tuo sistema di riscaldamento solare risparmiando energia"
+      },
+      "fazenda": {
+        "name": "Fattoria",
+        "desc": "Pianifica la tua fattoria auto-sostenibile per produzione propria"
+      },
+      "sobre": {
+        "name": "Su di me",
+        "desc": "Informazioni sul progetto"
+      },
+      "bugs": {
+        "name": "Segnala Bug",
+        "desc": "Aiuta a migliorare le app segnalando problemi"
+      }
+    },
+    "what": {
+      "it": {
+        "does": "Cosa fa:"
+      }
+    },
+    "calculator": {
+      "description": "Confronta prestiti e mostra rate per risparmiare."
+    },
+    "arcondicionado": {
+      "description": "Calcola il climatizzatore ideale per i tuoi ambienti."
+    },
+    "aquecimento": {
+      "description": "Pianifica il tuo sistema di riscaldamento solare risparmiando energia."
+    },
+    "solar": {
+      "description": "Dimensiona pannelli solari per generare la tua energia."
+    },
+    "fazenda": {
+      "description": "Pianifica la tua fattoria auto-sostenibile per produzione propria."
+    },
+    "app": {
+      "bitola": "Calcolatrice Sezione Cavi",
+      "helice": "Calcolatrice Elica Nautica",
+      "mutuo": "Calcolatrice Prestiti",
+      "bugs": "Sistema Segnalazione Bug",
+      "arcondicionado": "Calcolatrice Climatizzatore",
+      "aquecimento": "Calcolatrice Riscaldatore Solare",
+      "solar": "Calcolatrice Energia Solare",
+      "fazenda": "Pianificatore Fattoria"
+    },
+    "bitola": {
+      "description": "Calcola il cavo elettrico corretto per la tua installazione, evitando surriscaldamento e garantendo sicurezza."
+    },
+    "helice": {
+      "description": "Aiuta a scegliere l'elica perfetta per la tua barca."
+    },
+    "mutuo": {
+      "description": "Calcola e confronta sistemi di ammortamento (Italiano, Francese e Tedesco) per prendere la migliore decisione finanziaria."
+    },
+    "bugs": {
+      "description": "Aiuta a migliorare le app segnalando problemi."
+    },
+    "stat": {
+      "html": "righe HTML",
+      "js": "righe JavaScript",
+      "css": "righe CSS"
+    },
+    "features": {
+      "title": "Caratteristiche Principali",
+      "bilingual": {
+        "title": "🌍 Bilingue",
+        "desc": "Cambia tra Portoghese e Italiano e mostra la valuta corrispondente."
+      },
+      "charts": {
+        "title": "📊 Grafici",
+        "desc": "Visualizzazione chiara dei dati"
+      },
+      "mobile": {
+        "title": "📱 Mobile-First",
+        "desc": "Funziona bene su cellulare e computer"
+      },
+      "code": {
+        "title": "💡 Codice Commentato",
+        "desc": "Codice spiegato per facilitare l'apprendimento"
+      },
+      "responsive": {
+        "title": "Responsive",
+        "desc": "Progettato per dispositivi mobili e desktop"
+      },
+      "fast": {
+        "title": "Veloce",
+        "desc": "Calcoli istantanei al cambiare dei valori"
+      },
+      "cc-ca": {
+        "title": "CC e CA",
+        "desc": "Supporta corrente continua (CC) e alternata (CA) con tensioni tipiche e valori personalizzati."
+      },
+      "bitola-comercial": {
+        "title": "Sezione Commerciale",
+        "desc": "Seleziona automaticamente la sezione commerciale standard brasiliana (NBR 5410) che soddisfa i requisiti."
+      },
+      "queda-tensao": {
+        "title": "Caduta di Tensione",
+        "desc": "Raccomanda il 3% di caduta di tensione per progetti residenziali in Brasile (standard più utilizzato)."
+      },
+      "memorial": {
+        "title": "Memoriale di Calcolo",
+        "desc": "Mostra il dettaglio completo di tutti i calcoli eseguiti per trasparenza e apprendimento."
+      },
+      "pitch": {
+        "title": "Calcolo del Passo",
+        "desc": "Determina il passo corretto per raggiungere il massimo RPM"
+      },
+      "slip": {
+        "title": "Analisi di Slittamento",
+        "desc": "Considera l'efficienza e lo slittamento nell'acqua"
+      },
+      "bug-report": {
+        "title": "Segnalazione di Errori",
+        "desc": "Modulo semplice per segnalare bug e problemi di usabilità"
+      },
+      "contact-info": {
+        "title": "Informazioni di Contatto",
+        "desc": "Campi opzionali per email e telefono, permettendo risposta personalizzata"
+      },
+      "issue-type": {
+        "title": "Tipo di Problema",
+        "desc": "Classificazione del problema: bug, suggerimento o miglioramento"
+      },
+      "analytics": {
+        "title": "Analisi",
+        "desc": "Report di bug per analisi di qualità e prioritizzazione delle correzioni"
+      },
+      "btu": {
+        "title": "Calcolo BTU",
+        "desc": "Calcola i BTU necessari in base alle dimensioni della stanza e alle condizioni ambientali"
+      }
+    },
+    "tech": {
+      "title": "Tecnologie Utilizzate",
+      "html": "Struttura delle pagine",
+      "css": "Stili e animazioni",
+      "js": "JavaScript puro e veloce",
+      "chart": "Grafici interattivi"
+    },
+    "footer": "💻 Portfolio Ingegneria NATA",
+    "aria": {
+      "home": "Torna alla schermata iniziale",
+      "expandCard": "Espandi sezione",
+      "collapseCard": "Comprimi sezione"
+    }
+  }
+}

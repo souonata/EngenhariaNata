@@ -1,0 +1,76 @@
+{
+  "pt-BR": {
+    "titulo": "Relatar Bug ou Sugestão",
+    "descricao": "Encontrou algum problema ou tem uma ideia para melhorar? Conte-nos!",
+    "formulario": {
+      "nome": "Seu Nome",
+      "email": "Seu Email",
+      "tipo": "Tipo de Relatório",
+      "bug": "🐛 Bug / Erro",
+      "sugestao": "💡 Sugestão / Melhoria",
+      "app": "Aplicativo",
+      "selecione": "Selecione...",
+      "principal": "Página Principal",
+      "solar": "Calculadora Solar",
+      "bitola": "Calculadora de Bitola",
+      "helice": "Calculadora de Hélice",
+      "mutuo": "Simulador de Financiamento",
+      "arcondicionado": "Ar Condicionado",
+      "aquecimento": "Aquecimento",
+      "fazenda": "Fazenda Auto-Sustentável",
+      "sobre": "Sobre",
+      "prioridade": "Prioridade",
+      "baixa": "Baixa",
+      "media": "Média",
+      "alta": "Alta",
+      "critica": "Crítica",
+      "titulo": "Título / Resumo",
+      "descricao": "Descrição Detalhada",
+      "descricaoPlaceholder": "Descreva o problema ou sugestão em detalhes...",
+      "enviar": "Enviar Relatório",
+      "enviando": "Enviando..."
+    },
+    "mensagens": {
+      "sucesso": "✅ Relatório enviado com sucesso! Obrigado pelo feedback.",
+      "erro": "❌ Erro ao enviar. Tente novamente.",
+      "camposObrigatorios": "⚠️ Preencha todos os campos obrigatórios."
+    }
+  },
+  "it-IT": {
+    "titulo": "Segnala Bug o Suggerimento",
+    "descricao": "Hai trovato un problema o hai un'idea per migliorare? Raccontaci!",
+    "formulario": {
+      "nome": "Il Tuo Nome",
+      "email": "La Tua Email",
+      "tipo": "Tipo di Segnalazione",
+      "bug": "🐛 Bug / Errore",
+      "sugestao": "💡 Suggerimento / Miglioramento",
+      "app": "Applicazione",
+      "selecione": "Seleziona...",
+      "principal": "Pagina Principale",
+      "solar": "Calcolatore Solare",
+      "bitola": "Calcolatore di Calibro",
+      "helice": "Calcolatore di Elica",
+      "mutuo": "Simulatore di Finanziamento",
+      "arcondicionado": "Aria Condizionata",
+      "aquecimento": "Riscaldamento",
+      "fazenda": "Fattoria Auto-Sostenibile",
+      "sobre": "Informazioni",
+      "prioridade": "Priorità",
+      "baixa": "Bassa",
+      "media": "Media",
+      "alta": "Alta",
+      "critica": "Critica",
+      "titulo": "Titolo / Riepilogo",
+      "descricao": "Descrizione Dettagliata",
+      "descricaoPlaceholder": "Descrivi il problema o suggerimento in dettaglio...",
+      "enviar": "Invia Segnalazione",
+      "enviando": "Invio in corso..."
+    },
+    "mensagens": {
+      "sucesso": "✅ Segnalazione inviata con successo! Grazie per il feedback.",
+      "erro": "❌ Errore durante l'invio. Riprova.",
+      "camposObrigatorios": "⚠️ Compila tutti i campi obbligatori."
+    }
+  }
+}
