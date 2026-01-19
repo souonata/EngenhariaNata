@@ -113,8 +113,12 @@
     "watermark-dev": "🚧 EM DESENVOLVIMENTO",
     "graficos-title": "📊 Visualizações",
     "grafico-amortizacao-title": "Análise de Amortização do Sistema",
+<<<<<<< HEAD
     "grafico-sazonalidade-title": "Sazonalidade de Geração Solar",
     "erro-inicializacao": "Erro ao inicializar o app. Por favor, recarregue a página."
+=======
+    "grafico-sazonalidade-title": "Sazonalidade de Geração Solar"
+>>>>>>> 20fb6cc5c8bf1842cd6f0d1ad9712f16e845c595
   },
   "it-IT": {
     "dev-badge-header": "🚧 IN SVILUPPO",
@@ -160,17 +164,29 @@
     "custos-titulo": "Dettaglio Costi",
     "custo-total": "Totale",
     "footer": "Solare - Engenharia NATA @ 2025",
+<<<<<<< HEAD
+=======
+    "aria-home": "Torna alla schermata iniziale",
+    "watermark-dev": "🚧 IN SVILUPPO",
+    "learn-more": "SCOPRI DI PIÙ!",
+    "back": "← Indietro",
+    "btn-memorial": "Vedi Memoriale di Calcolo",
+>>>>>>> 20fb6cc5c8bf1842cd6f0d1ad9712f16e845c595
     "dias": "giorni",
     "dia": "giorno",
     "anos": "anni",
     "ano": "anno",
     "moeda": "€",
+<<<<<<< HEAD
     "aria-home": "Torna alla schermata iniziale",
     "watermark-dev": "🚧 IN SVILUPPO",
     "learn-more": "SCOPRI DI PIÙ!",
     "back": "← Indietro",
     "back-to-calculator": "Torna alla Calcolatrice",
     "btn-memorial": "Vedi Memoriale di Calcolo",
+=======
+    "back-to-calculator": "Torna alla Calcolatrice",
+>>>>>>> 20fb6cc5c8bf1842cd6f0d1ad9712f16e845c595
     "memorial-title": "📚 Memoriale di Calcolo - Energia Solare",
     "memorial-intro-title": "🎯 Obiettivo del Dimensionamento",
     "memorial-intro-text": "Questo memoriale spiega passo dopo passo come vengono calcolati i componenti di un sistema fotovoltaico off-grid: numero di pannelli solari, capacità delle batterie, potenza dell'inverter, corrente del MPPT e stima dei costi. Le formule e la logica di calcolo sono state validate da test automatizzati.",
@@ -230,7 +246,13 @@
     "memorial-formula-passo8-5": "Costo Totale = Costo Pannelli + Costo Batterie + Costo Inverter",
     "graficos-title": "📊 Visualizzazioni",
     "grafico-amortizacao-title": "Analisi di Ammortamento del Sistema",
+<<<<<<< HEAD
     "grafico-sazonalidade-title": "Stagionalità della Generazione Solare",
     "erro-inicializacao": "Errore nell'inizializzazione dell'app. Ricarica la pagina."
   }
 }
+=======
+    "grafico-sazonalidade-title": "Stagionalità della Generazione Solare"
+  }
+}
+>>>>>>> 20fb6cc5c8bf1842cd6f0d1ad9712f16e845c595

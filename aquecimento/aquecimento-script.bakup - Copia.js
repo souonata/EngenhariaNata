@@ -9,6 +9,7 @@
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { formatarNumero, formatarMoeda } from '../src/utils/formatters.js';
+import { configurarInputComSlider, obterValorReal, limparValorReal } from '../src/utils/input-handlers.js';
 
 // ============================================
 // CLASSE PRINCIPAL
@@ -177,6 +178,9 @@ class AquecimentoApp extends App {
                 const inputId = sliderId.replace('slider', 'input');
                 const inputElement = document.getElementById(inputId);
                 
+                // Limpar valorReal do input correspondente ao usar o slider
+                limparValorReal(inputElement);
+                
                 if (inputElement) {
                     let valor = parseFloat(e.target.value);
                     
@@ -235,13 +239,13 @@ class AquecimentoApp extends App {
         // Primeiro incremento imediato
         this.ajustarValor(targetId, step);
         
-        // Aguardar 300ms antes de iniciar incremento contínuo
+        // Aguardar 500ms antes de iniciar incremento contínuo
         this.estadoBotoes.delayTimeout = setTimeout(() => {
             // Capturar valor inicial APÓS o primeiro incremento
             this.estadoBotoes.valorInicial = parseFloat(slider.value);
             this.estadoBotoes.tempoInicio = performance.now();
             this.animarIncremento();
-        }, 300);
+        }, 500);
     }
     
     animarIncremento() {
@@ -340,39 +344,16 @@ class AquecimentoApp extends App {
         const inputs = document.querySelectorAll('.valor-input');
         
         inputs.forEach(input => {
-            // Evento de blur (quando sai do campo)
-            input.addEventListener('blur', (e) => {
-                const inputId = e.target.id;
-                const sliderId = inputId.replace('input', 'slider');
-                const slider = document.getElementById(sliderId);
-                
-                if (!slider) return;
-                
-                let valor = this.converterParaNumero(e.target.value);
-                
-                if (!isNaN(valor)) {
-                    const min = parseFloat(slider.min);
-                    const max = parseFloat(slider.max);
-                    valor = Math.max(min, Math.min(max, valor));
-                    
-                    slider.value = valor;
-                    
-                    // Formatar com vírgula para latitude
-                    if (inputId === 'inputLatitude') {
-                        e.target.value = this.formatarDecimal(valor, 1);
-                    } else {
-                        e.target.value = valor;
-                    }
-                    
-                    this.atualizarResultados();
-                }
-            });
+            const inputId = input.id;
+            const sliderId = inputId.replace('input', 'slider');
+            const slider = document.getElementById(sliderId);
             
-            // Evento de Enter
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    e.target.blur();
-                }
+            if (!slider) return;
+            
+            configurarInputComSlider({
+                input: input,
+                slider: slider,
+                onUpdate: () => this.atualizarResultados()
             });
         });
     }

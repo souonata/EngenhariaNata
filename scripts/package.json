@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "check-migration": "node scripts/migration-checker.js",
+    "check-all-migrations": "node scripts/check-all-migrations.js"
+  }
+}
