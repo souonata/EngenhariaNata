@@ -109,6 +109,10 @@ header h1 {
     transition: transform 0.3s ease;
 }
 
+.card-expansivel.expandido .seta-expansao {
+    transform: rotate(180deg);
+}
+
 .conteudo-expansivel {
     max-height: 0;
     overflow: hidden;
@@ -116,6 +120,7 @@ header h1 {
 }
 
 .card-expansivel.expandido .conteudo-expansivel {
+    max-height: 5000px;
     margin-top: 12px;
 }
 

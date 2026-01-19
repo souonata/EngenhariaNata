@@ -204,19 +204,19 @@
                 <label data-i18n="label-insolacao">Insolação (Exposição ao Sol)</label>
                 <div class="grupo-radio">
                     <label class="opcao-radio">
-                        <input type="radio" name="insolacao" value="baixa" checked>
+                        <input type="radio" name="insolacao" value="baixa" checked data-i18n-value="bassa">
                         <div class="cartao-radio">
                             <span class="rotulo-radio" data-i18n="opt-baixa">Baixa</span>
                         </div>
                     </label>
                     <label class="opcao-radio">
-                        <input type="radio" name="insolacao" value="media">
+                        <input type="radio" name="insolacao" value="media" data-i18n-value="media">
                         <div class="cartao-radio">
                             <span class="rotulo-radio" data-i18n="opt-media">Média</span>
                         </div>
                     </label>
                     <label class="opcao-radio">
-                        <input type="radio" name="insolacao" value="alta">
+                        <input type="radio" name="insolacao" value="alta" data-i18n-value="alta">
                         <div class="cartao-radio">
                             <span class="rotulo-radio" data-i18n="opt-alta">Alta</span>
                         </div>
@@ -230,19 +230,19 @@
                 <label data-i18n="label-isolamento">Isolamento Térmico</label>
                 <div class="grupo-radio">
                     <label class="opcao-radio">
-                        <input type="radio" name="isolamento" value="ruim">
+                        <input type="radio" name="isolamento" value="ruim" data-i18n-value="scarso">
                         <div class="cartao-radio">
                             <span class="rotulo-radio" data-i18n="opt-ruim">Ruim</span>
                         </div>
                     </label>
                     <label class="opcao-radio">
-                        <input type="radio" name="isolamento" value="medio" checked>
+                        <input type="radio" name="isolamento" value="medio" checked data-i18n-value="medio">
                         <div class="cartao-radio">
                             <span class="rotulo-radio" data-i18n="opt-medio">Médio</span>
                         </div>
                     </label>
                     <label class="opcao-radio">
-                        <input type="radio" name="isolamento" value="bom">
+                        <input type="radio" name="isolamento" value="bom" data-i18n-value="buono">
                         <div class="cartao-radio">
                             <span class="rotulo-radio" data-i18n="opt-bom">Bom</span>
                         </div>
@@ -419,7 +419,7 @@
                     <p><strong>Custo Total = Custo Total Unidades Externas + Custo Total Unidades Internas</strong></p>
                 </div>
                 <p data-i18n="memorial-passo6-explicacao">O custo é estimado com base em faixas de preço de mercado (2024-2025) para unidades externas e internas vendidas separadamente. Os valores são médias das faixas de preço pesquisadas.</p>
-                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-custo">Unidade Externa 180k BTU: R$ 95.000. Unidades Internas (5 × 30k BTU): 5 × R$ 4.750 = R$ 23.750. Custo Total: R$ 118.750</span></p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-custo"></span></p>
             </div>
 
             <div class="resumo-calculado">
@@ -545,22 +545,7 @@
                     </div>
                 </div>
 
-                <!-- 4. Gráficos de Visualização -->
-                <div class="graficos-container" style="margin-top: 30px;">
-                    <h3 style="color: #1976D2; margin-bottom: 15px;" data-i18n="graficos-title">📊 Visualizações</h3>
-                    
-                    <!-- Gráfico de Pizza: Proporção de Custo -->
-                    <div class="grafico-box" style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        <h4 style="color: #1976D2; margin-bottom: 10px; font-size: 1rem;" data-i18n="grafico-custo-title">Distribuição de Custos</h4>
-                        <canvas id="graficoCustoArCondicionado" style="max-height: 300px;"></canvas>
-                    </div>
 
-                    <!-- Gráfico de Barras: Distribuição de Carga Térmica -->
-                    <div class="grafico-box" style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        <h4 style="color: #1976D2; margin-bottom: 10px; font-size: 1rem;" data-i18n="grafico-btu-title">BTU por Ambiente</h4>
-                        <canvas id="graficoBTUArCondicionado" style="max-height: 300px;"></canvas>
-                    </div>
-                </div>
             </div>
         </section>
     </div>
@@ -579,7 +564,7 @@
     <!-- Scripts -->
     <!-- Chart.js para gráficos - DEVE ser carregado ANTES do módulo -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="module" src="arcondicionado-script-new.js?v=1.0.6"></script>
+    <script type="module" src="arcondicionado-script.js?v=1.0.6"></script>
 </body>
 </html>
 

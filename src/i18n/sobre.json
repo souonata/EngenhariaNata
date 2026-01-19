@@ -119,16 +119,142 @@
       "fast": {
         "title": "Rápido",
         "desc": "Cálculos instantâneos ao ajustar valores"
+      },
+      "cc-ca": {
+        "title": "CC e CA",
+        "desc": "Suporta corrente contínua (CC) e alternada (CA) com tensões típicas e valores personalizados."
+      },
+      "bitola-comercial": {
+        "title": "Bitola Comercial",
+        "desc": "Seleciona automaticamente a bitola comercial padrão brasileiro (NBR 5410) que atende aos requisitos."
+      },
+      "queda-tensao": {
+        "title": "Queda de Tensão",
+        "desc": "Recomenda 3% de queda de tensão para projetos residenciais no Brasil (padrão mais utilizado)."
+      },
+      "memorial": {
+        "title": "Memorial de Cálculo",
+        "desc": "Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado."
+      },
+      "pitch": {
+        "title": "Cálculo de Passo",
+        "desc": "Determina o passo correto para atingir o RPM máximo"
+      },
+      "slip": {
+        "title": "Análise de Slip",
+        "desc": "Considera a eficiência e o deslizamento na água"
+      },
+      "bug-report": {
+        "title": "Report de Erros",
+        "desc": "Formulário simples para reportar bugs e problemas de usabilidade"
+      },
+      "contact-info": {
+        "title": "Informações de Contato",
+        "desc": "Campos opcionais para email e telefone, permitindo resposta personalizada"
+      },
+      "issue-type": {
+        "title": "Tipo de Problema",
+        "desc": "Classificação do problema: bug, sugestão ou melhoria"
+      },
+      "analytics": {
+        "title": "Análise",
+        "desc": "Relatórios de bugs para análise de qualidade e priorização de correções"
+      },
+      "btu": {
+        "title": "Cálculo de BTU",
+        "desc": "Determina a capacidade necessária em BTU baseada em área (700 BTU/m²), fator de altura, pessoas e equipamentos"
+      },
+      "multisplit": {
+        "title": "Sistema Multi-Split",
+        "desc": "Dimensiona sistema multi-split com múltiplas unidades internas (1-8 ambientes) e unidades externas, permitindo múltiplas unidades quando necessário"
+      },
+      "custo": {
+        "title": "Custo Estimado",
+        "desc": "Calcula custo estimado do sistema baseado em faixas de preço de mercado para unidades internas e externas"
+      },
+      "fatores": {
+        "title": "Múltiplos Fatores",
+        "desc": "Considera área total (10-300 m²), número de ambientes (1-8), altura, pessoas, equipamentos, insolação e isolamento térmico"
+      },
+      "agua-casa": {
+        "title": "Água e Casa",
+        "desc": "Suporta aquecimento de água de consumo e aquecimento ambiente separadamente ou combinados"
+      },
+      "classe-energetica": {
+        "title": "Classe Energética",
+        "desc": "Calcula baseado em área (m²) e classes energéticas (A4 a G) com consumo específico real em kWh/m²·ano"
+      },
+      "temperatura": {
+        "title": "Temperatura e Estratificação",
+        "desc": "Considera temperatura mínima para termossifões (48°C) e estratificação térmica do boiler (65% do volume útil)"
+      },
+      "autonomia": {
+        "title": "Dias de Autonomia",
+        "desc": "Configura dias de autonomia para água e casa, dimensionando o boiler adequadamente"
+      },
+      "battery": {
+        "title": "Baterias AGM/Lítio",
+        "desc": "Compara chumbo-ácido e LiFePO₄ usando capacidade em <strong>kWh</strong>, tabelas de vida útil e parâmetros configuráveis.",
+        "note": "As configurações permitem ajustar kWh/Ah, tensão, preço e peso (sliders até 180 kg)."
+      },
+      "config": {
+        "title": "Configurável",
+        "desc": "Customize preços, potências e especificações das baterias — mudanças salvas em `localStorage` (chave `configSolar`)."
+      },
+      "inverter-mppt": {
+        "title": "Inversor e MPPT",
+        "desc": "Dimensiona inversor baseado no consumo típico de pico e controlador MPPT com capacidade para carregar todo o banco de baterias e suportar o pico de todos os painéis."
+      },
+      "plantas": {
+        "title": "Plantas e Animais",
+        "desc": "Seleção de frutas, verduras, legumes e animais com cálculo proporcional de produção mínima"
+      },
+      "producao-minima": {
+        "title": "Produção Mínima",
+        "desc": "Sliders ajustáveis para definir produção mínima diária de plantas e proteínas por pessoa"
+      },
+      "calendario": {
+        "title": "Calendário",
+        "desc": "Calendário completo de plantio, colheita e reprodução animal para manter produção contínua"
+      },
+      "espaco": {
+        "title": "Dimensionamento",
+        "desc": "Calcula área necessária, quantidade de plantas/animais e consumo diário por pessoa"
+      },
+      "regional": {
+        "title": "Banco de Dados Regional",
+        "desc": "Informações técnicas detalhadas para Brasil e Itália (clima, solo, técnicas)"
       }
+    },
+    "resource-bilingual": {
+      "title": "🌍 Bilíngue",
+      "desc": "Troca entre Português e Italiano"
+    },
+    "resource-charts": {
+      "title": "📊 Gráficos",
+      "desc": "Visualização clara dos dados"
+    },
+    "resource-mobile": {
+      "title": "📱 Mobile-First",
+      "desc": "Funciona bem em celular e computador"
+    },
+    "resource-code-commented": {
+      "title": "💡 Código Comentado",
+      "desc": "Código explicado para facilitar aprendizado"
     },
     "tech": {
       "title": "Tecnologias Usadas",
       "html": "Estrutura das páginas",
       "css": "Estilos e animações",
       "js": "JavaScript puro e rápido",
-      "chart": "Gráficos interativos"
+      "chart": "Gráficos interativos",
+      "mobile": {
+        "desc": "Funciona bem em celular e computador"
+      }
     },
-    "footer": "💻 Portfólio Engenharia NATA",
+    "footer": {
+      "text": "💻 Portfólio Engenharia NATA"
+    },
     "aria": {
       "home": "Voltar para a tela inicial",
       "expandCard": "Expandir seção",
@@ -299,16 +425,98 @@
       "btu": {
         "title": "Calcolo BTU",
         "desc": "Calcola i BTU necessari in base alle dimensioni della stanza e alle condizioni ambientali"
+      },
+      "multisplit": {
+        "title": "Sistema Multi-Split",
+        "desc": "Dimensiona sistema multi-split con multiple unità interne (1-8 ambienti) e unità esterne, permettendo multiple unità quando necessario"
+      },
+      "custo": {
+        "title": "Costo Stimato",
+        "desc": "Calcola il costo stimato del sistema basato su fasce di prezzo di mercato per unità interne ed esterne"
+      },
+      "fatores": {
+        "title": "Molteplici Fattori",
+        "desc": "Considera area totale (10-300 m²), numero di ambienti (1-8), altezza, persone, apparecchiature, insolazione e isolamento termico"
+      },
+      "agua-casa": {
+        "title": "Acqua e Casa",
+        "desc": "Supporta riscaldamento dell'acqua sanitaria e riscaldamento ambiente separatamente o combinati"
+      },
+      "classe-energetica": {
+        "title": "Classe Energetica",
+        "desc": "Calcola basato su area (m²) e classi energetiche (A4 a G) con consumo specifico reale in kWh/m²·anno"
+      },
+      "temperatura": {
+        "title": "Temperatura e Stratificazione",
+        "desc": "Considera temperatura minima per termosifoni (48°C) e stratificazione termica del boiler (65% del volume utile)"
+      },
+      "autonomia": {
+        "title": "Giorni di Autonomia",
+        "desc": "Configura giorni di autonomia per acqua e casa, dimensionando il boiler adeguatamente"
+      },
+      "battery": {
+        "title": "Batterie AGM/Litio",
+        "desc": "Confronta piombo-acido e LiFePO₄ usando capacità in <strong>kWh</strong>, tabelle di vita utile e parametri configurabili.",
+        "note": "Le configurazioni permettono di regolare kWh/Ah, tensione, prezzo e peso (slider fino a 180 kg)."
+      },
+      "config": {
+        "title": "Configurabile",
+        "desc": "Personalizza prezzi, potenze e specifiche delle batterie — modifiche salvate in `localStorage` (chiave `configSolar`)."
+      },
+      "inverter-mppt": {
+        "title": "Inverter e MPPT",
+        "desc": "Dimensiona inverter basato sul consumo tipico di picco e controllore MPPT con capacità per caricare tutto il banco di batterie e supportare il picco di tutti i pannelli."
+      },
+      "plantas": {
+        "title": "Piante e Animali",
+        "desc": "Selezione di frutta, verdura, legumi e animali con calcolo proporzionale di produzione minima"
+      },
+      "producao-minima": {
+        "title": "Produzione Minima",
+        "desc": "Slider regolabili per definire produzione minima giornaliera di piante e proteine per persona"
+      },
+      "calendario": {
+        "title": "Calendario",
+        "desc": "Calendario completo di semina, raccolta e riproduzione animale per mantenere produzione continua"
+      },
+      "espaco": {
+        "title": "Dimensionamento",
+        "desc": "Calcola area necessaria, quantità di piante/animali e consumo giornaliero per persona"
+      },
+      "regional": {
+        "title": "Database Regionale",
+        "desc": "Informazioni tecniche dettagliate per Brasile e Italia (clima, suolo, tecniche)"
       }
+    },
+    "resource-bilingual": {
+      "title": "🌍 Bilingue",
+      "desc": "Cambia tra Portoghese e Italiano"
+    },
+    "resource-charts": {
+      "title": "📊 Grafici",
+      "desc": "Visualizzazione chiara dei dati"
+    },
+    "resource-mobile": {
+      "title": "📱 Mobile-First",
+      "desc": "Funziona bene su cellulare e computer"
+    },
+    "resource-code-commented": {
+      "title": "💡 Codice Commentato",
+      "desc": "Codice spiegato per facilitare l'apprendimento"
     },
     "tech": {
       "title": "Tecnologie Utilizzate",
       "html": "Struttura delle pagine",
       "css": "Stili e animazioni",
       "js": "JavaScript puro e veloce",
-      "chart": "Grafici interattivi"
+      "chart": "Grafici interattivi",
+      "mobile": {
+        "desc": "Funziona bene su cellulare e computer"
+      }
     },
-    "footer": "💻 Portfolio Ingegneria NATA",
+    "footer": {
+      "text": "💻 Portfolio Ingegneria NATA"
+    },
     "aria": {
       "home": "Torna alla schermata iniziale",
       "expandCard": "Espandi sezione",

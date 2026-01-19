@@ -1,7 +1,11 @@
-// DIMENSIONADOR DE FAZENDA AUTO-SUSTENTÁVEL
+// DIMENSIONADOR DE FAZENDA AUTO-SUSTENTÁVEL - Versão Modular ES6
 //
 // Comentários didáticos em Português - Visão geral do algoritmo
 // -------------------------------------------------------------
+
+import { App } from '../src/core/app.js';
+import { formatarNumeroDecimal } from '../src/utils/formatters.js';
+
 // Objetivo: planejar uma fazenda auto-sustentável que produza todos os
 // alimentos necessários para uma família, incluindo:
 //  - Cálculo de espaço necessário (área total em m²)
@@ -33,7 +37,8 @@
 //  - O calendário considera épocas de plantio e colheita de cada cultura
 //  - A reprodução animal é calculada para manter produção contínua
 // FUNÇÕES DE FORMATAÇÃO
-// Função formatarNumeroDecimal agora está em assets/js/site-config.js
+// formatarNumeroDecimal agora é importado de ../src/utils/formatters.js
+
 // ÍCONES DOS PRODUTOS
 
 const ICONES_PRODUTOS = {
@@ -1659,49 +1664,45 @@ function configurarEventListeners() {
     
     console.log('[Fazenda] App inicializado com sucesso!');
 }
-// Aguardar carregamento completo do DOM e do banco de dados
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('[Fazenda] DOM carregado, verificando dependências...');
-    
-    // Verificar se as funções necessárias estão disponíveis
-    if (typeof formatarNumeroDecimal === 'undefined') {
-        console.error('[Fazenda] ERRO: formatarNumeroDecimal não está disponível!');
+// ============================================
+// INICIALIZAÇÃO COM ARQUITETURA MODULAR
+// ============================================
+
+class FazendaApp extends App {
+    constructor() {
+        super({
+            appName: 'fazenda',
+            callbacks: {
+                aoInicializar: () => this.inicializar(),
+                aoTrocarIdioma: () => this.atualizarInterface()
+            }
+        });
     }
-    if (typeof throttle === 'undefined') {
-        console.warn('[Fazenda] AVISO: throttle não está disponível, usando função padrão');
-    }
-    if (typeof debounce === 'undefined') {
-        console.warn('[Fazenda] AVISO: debounce não está disponível, usando função padrão');
-    }
-    
-    // Função para tentar inicializar
-    function tentarInicializar(tentativa = 0) {
-        console.log(`[Fazenda] Tentativa ${tentativa + 1} de inicialização...`);
+
+    inicializar() {
+        console.log('[Fazenda] Inicializando app modular...');
         
-        if (typeof FAZENDA_DATABASE !== 'undefined') {
-            console.log('[Fazenda] Banco de dados encontrado, inicializando app...');
-            try {
-                inicializarApp();
-                console.log('[Fazenda] App inicializado com sucesso!');
-            } catch (error) {
-                console.error('[Fazenda] Erro ao inicializar app:', error);
-                console.error('[Fazenda] Stack trace:', error.stack);
-                alert('Erro ao inicializar o aplicativo. Verifique o console para mais detalhes.\n\nErro: ' + error.message);
-            }
-        } else {
-            console.warn(`[Fazenda] Banco de dados ainda não disponível (tentativa ${tentativa + 1})`);
-            if (tentativa < 10) {
-                // Tentar novamente após um pequeno delay (máximo 10 tentativas = 1 segundo)
-                setTimeout(() => tentarInicializar(tentativa + 1), 100);
-            } else {
-                console.error('[Fazenda] ERRO CRÍTICO: FAZENDA_DATABASE não foi carregado após 1 segundo!');
-                console.error('[Fazenda] Verifique se fazenda-database.js está sendo carregado antes de fazenda-script.js');
-                alert('Erro: O banco de dados não foi carregado. Verifique se fazenda-database.js está sendo carregado corretamente.');
-            }
+        // Verificar se o banco de dados está disponível
+        if (typeof FAZENDA_DATABASE === 'undefined') {
+            console.error('ERRO CRÍTICO: FAZENDA_DATABASE não está disponível!');
+            setTimeout(() => this.inicializar(), 100);
+            return;
+        }
+        
+        // Chamar função original de inicialização
+        inicializarApp();
+    }
+
+    atualizarInterface() {
+        // Quando o idioma mudar, recarregar dados
+        if (typeof carregarDadosBanco === 'function') {
+            const novoIdioma = localStorage.getItem('idiomaPreferido') || 'pt-BR';
+            carregarDadosBanco(novoIdioma);
         }
     }
-    
-    // Iniciar tentativas
-    tentarInicializar();
-});
+}
+
+// Inicializar app
+const app = new FazendaApp();
+app.inicializar();
 

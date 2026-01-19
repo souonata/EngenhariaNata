@@ -365,19 +365,32 @@ footer p {
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    border: 2px solid transparent;
+    border: 2px solid #bbb;
     position: relative;
+    outline: none;
+    box-shadow: 0 0 0 2px transparent;
 }
 
 .classe-box:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    border-color: #ff9800;
+    outline: 2px solid #ff9800;
 }
 
 .classe-box-selected {
     border: 3px solid #ff9800;
-    box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
-    transform: scale(1.05);
+    box-shadow: 0 0 16px 4px rgba(255,152,0,0.4);
+    transform: scale(1.08);
+    outline: 3px solid #ff9800;
+    z-index: 2;
+    position: relative;
+    background-image: linear-gradient(135deg, #fff2cc 0%, #ff9800 100%);
+    color: #ff9800 !important;
+    text-shadow: none;
+    outline: 2px solid #ff9800;
+    border-color: #ff9800;
+    box-shadow: 0 0 0 4px #ffe0b2;
 }
 
 .classe-label {

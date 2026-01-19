@@ -19,6 +19,12 @@
       "polegadasCompacto": "pol",
       "nos": "nós"
     },
+    "exemplo": {
+      "motor": "Motor",
+      "passo": "Passo",
+      "reducao": "redução",
+      "slip": "slip"
+    },
     "resultado": {
       "titulo": "Resultados",
       "rpmHelice": "RPM na Hélice:",
@@ -57,8 +63,12 @@
       "passo3Explicacao": "A velocidade teórica mostra qual velocidade seria obtida se não houvesse slip.",
       "formula": "Fórmula:",
       "exemplo": "Exemplo:",
+      "formulaPasso1": "RPM Hélice = RPM Motor ÷ Redução",
+      "formulaPasso2": "Passo (polegadas) = (Velocidade × 1056 × Redução) ÷ (RPM × (1 - Slip))",
+      "formulaPasso3": "Velocidade Teórica (nós) = (Passo × RPM) ÷ (1056 × Redução)",
       "constantesTitulo": "Constantes usadas:",
       "constante1056": "1056 = constante de conversão de nós para polegadas/minuto",
+      "slipTipico": "<strong>Slip típico:</strong> 10-20% para barcos de lazer — Representa a perda de eficiência devido ao deslizamento da hélice na água. Valor padrão usado: 15%.",
       "principioFisicoTitulo": "⚛️ Princípio Físico Aplicado — Propulsão Náutica:",
       "principioFisicoTexto": "A hélice funciona como uma rosca na água: quando gira, empurra a água para trás, e pela terceira lei de Newton (ação e reação), a água empurra o barco para frente.",
       "conceitosTitulo": "📖 Conceitos Importantes",
@@ -106,6 +116,12 @@
       "polegadasCompacto": "pol",
       "nos": "nodi"
     },
+    "exemplo": {
+      "motor": "Motore",
+      "passo": "Passo",
+      "reducao": "riduzione",
+      "slip": "slip"
+    },
     "resultado": {
       "titulo": "Risultati",
       "rpmHelice": "RPM Elica:",
@@ -144,8 +160,12 @@
       "passo3Explicacao": "La velocità teorica mostra quale velocità si otterrebbe se non ci fosse slip.",
       "formula": "Formula:",
       "exemplo": "Esempio:",
+      "formulaPasso1": "RPM Elica = RPM Motore ÷ Riduzione",
+      "formulaPasso2": "Passo (pollici) = (Velocità × 1056 × Riduzione) ÷ (RPM × (1 - Slip))",
+      "formulaPasso3": "Velocità Teorica (nodi) = (Passo × RPM) ÷ (1056 × Riduzione)",
       "constantesTitulo": "Costanti utilizzate:",
       "constante1056": "1056 = costante di conversione da nodi a pollici/minuto",
+      "slipTipico": "<strong>Slip tipico:</strong> 10-20% per barche da diporto — Rappresenta la perdita di efficienza dovuta allo scivolamento dell'elica nell'acqua. Valore predefinito utilizzato: 15%.",
       "principioFisicoTitulo": "⚛️ Principio Fisico Applicato — Propulsione Nautica:",
       "principioFisicoTexto": "L'elica funziona come una vite nell'acqua: quando gira, spinge l'acqua all'indietro, e per la terza legge di Newton (azione e reazione), l'acqua spinge la barca in avanti.",
       "conceitosTitulo": "📖 Concetti Importanti",

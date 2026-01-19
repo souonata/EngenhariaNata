@@ -1,3 +1,7 @@
+// Imports ES6
+import { App } from '../src/core/app.js';
+import { formatarNumeroDecimal } from '../src/utils/formatters.js';
+
 // CALCULADORA SOLAR
 // Dimensionamento de Sistema Fotovoltaico Off-Grid
 //
@@ -2169,9 +2173,19 @@ function atualizarEspecsBaterias() {
         `;
     }
 }
-// INICIALIZAÇÃO
-document.addEventListener('DOMContentLoaded', () => {
-    try {
+// INICIALIZAÇÃO COM ES6 MODULES
+class SolarApp extends App {
+    inicializar() {
+        inicializarApp();
+    }
+
+    atualizarInterface() {
+        trocarIdioma(this.idioma);
+    }
+}
+
+// Função principal de inicialização
+function inicializarApp() {
     // 1. Configurar botões de idioma
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -2807,6 +2821,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Instancia e inicializa o app
 new SolarApp('../src/i18n/solar.json');
+
+// FUNÇÕES DO MEMORIAL DE CÁLCULO
 // Atualiza as fórmulas do memorial de cálculo conforme o idioma selecionado
 function atualizarFormulasMemorial(idioma) {
     // Lista de todas as chaves de fórmulas

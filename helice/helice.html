@@ -204,7 +204,7 @@
                 <h3 data-i18n="memorial.passo1Titulo">1️⃣ Passo 1: Calcular RPM Efetivo na Hélice</h3>
                 <p><strong data-i18n="memorial.formula">Fórmula:</strong></p>
                 <div class="formula-box">
-                    <p><strong>RPM Hélice = RPM Motor ÷ Redução</strong></p>
+                    <p><strong data-i18n="memorial.formulaPasso1">RPM Hélice = RPM Motor ÷ Redução</strong></p>
                 </div>
                 <p data-i18n="memorial.passo1Explicacao">A rabeta reduz a rotação do motor. Se a redução é 2:1, a hélice gira 2 vezes mais devagar que o motor.</p>
                 <p><strong data-i18n="memorial.exemplo">Exemplo:</strong> <span id="memorial-exemplo-rpm">Motor 5000 RPM, redução 2:1 → 5000 ÷ 2 = 2500 RPM na hélice</span></p>
@@ -214,7 +214,7 @@
                 <h3 data-i18n="memorial.passo2Titulo">2️⃣ Passo 2: Calcular Passo da Hélice</h3>
                 <p><strong data-i18n="memorial.formula">Fórmula:</strong></p>
                 <div class="formula-box">
-                    <p><strong>Passo (polegadas) = (Velocidade × 1056 × Redução) ÷ (RPM × (1 - Slip))</strong></p>
+                    <p><strong data-i18n="memorial.formulaPasso2">Passo (polegadas) = (Velocidade × 1056 × Redução) ÷ (RPM × (1 - Slip))</strong></p>
                 </div>
                 <p data-i18n="memorial.passo2Explicacao">O passo é a distância teórica que a hélice avançaria em uma rotação completa. O slip reduz a eficiência, então usamos (1 - Slip) para compensar.</p>
                 <p><strong data-i18n="memorial.exemplo">Exemplo:</strong> <span id="memorial-exemplo-passo">25 nós, redução 2:1, 5000 RPM, slip 15% → (25 × 1056 × 2) ÷ (5000 × 0.85) = 12.4 polegadas</span></p>
@@ -222,7 +222,7 @@
                     <p><strong data-i18n="memorial.constantesTitulo">Valores de referência usados:</strong></p>
                     <ul>
                         <li data-i18n="memorial.constante1056">1056 = constante de conversão de nós para polegadas/minuto — Constante amplamente utilizada na indústria náutica, derivada da conversão de unidades: 1 nó = 1.852 km/h = 1.215.222 pol/min (aproximado para 1056 na prática). Esta constante simplifica os cálculos mantendo precisão suficiente para aplicações práticas.</li>
-                        <li><strong>Slip típico:</strong> 10-20% para barcos de lazer — Representa a perda de eficiência devido ao deslizamento da hélice na água. Valor padrão usado: 15%.</li>
+                        <li data-i18n="memorial.slipTipico"><strong>Slip típico:</strong> 10-20% para barcos de lazer — Representa a perda de eficiência devido ao deslizamento da hélice na água. Valor padrão usado: 15%.</li>
                     </ul>
                     <p style="margin-top: 10px;"><strong data-i18n="memorial.principioFisicoTitulo">⚛️ Princípio Físico Aplicado — Propulsão Náutica:</strong></p>
                     <p style="margin-top: 5px;" data-i18n="memorial.principioFisicoTexto">A hélice funciona como uma "rosca" na água: quando gira, "empurra" a água para trás, e pela terceira lei de Newton (ação e reação), a água "empurra" o barco para frente. O slip ocorre porque a água não é um meio rígido, então a hélice "desliza" parcialmente, reduzindo a eficiência. Quanto maior o passo, mais distância a hélice avança por rotação, mas também requer mais torque do motor.</p>
@@ -233,7 +233,7 @@
                 <h3 data-i18n="memorial.passo3Titulo">3️⃣ Passo 3: Calcular Velocidade Teórica</h3>
                 <p><strong data-i18n="memorial.formula">Fórmula:</strong></p>
                 <div class="formula-box">
-                    <p><strong>Velocidade Teórica (nós) = (Passo × RPM) ÷ (1056 × Redução)</strong></p>
+                    <p><strong data-i18n="memorial.formulaPasso3">Velocidade Teórica (nós) = (Passo × RPM) ÷ (1056 × Redução)</strong></p>
                 </div>
                 <p data-i18n="memorial.passo3Explicacao">A velocidade teórica mostra qual velocidade seria obtida se não houvesse slip. É útil para comparar com a velocidade desejada.</p>
                 <p><strong data-i18n="memorial.exemplo">Exemplo:</strong> <span id="memorial-exemplo-velocidade">Passo 12.4", 5000 RPM, redução 2:1 → (12.4 × 5000) ÷ (1056 × 2) = 29.4 nós</span></p>
@@ -376,6 +376,6 @@
     </a>
 
     <!-- Módulos ES6 -->
-    <script type="module" src="helice-script-new.js?v=1.2.2"></script>
+    <script type="module" src="helice-script.js?v=1.2.2"></script>
 </body>
 </html>

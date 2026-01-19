@@ -19,7 +19,12 @@ export class App {
             loading.mostrar();
 
             await this.carregarTraducoes();
-            
+
+            // Registra callback de idioma ANTES de inicializar app
+            if (this.config.callbacks.aoTrocarIdioma) {
+                i18n.registrarCallback(this.config.callbacks.aoTrocarIdioma);
+            }
+
             i18n.inicializar(this.config.traducoes, this.config.idiomaInicial);
             theme.inicializar();
             configurarBotoesIdioma();
@@ -29,10 +34,6 @@ export class App {
 
             if (this.config.callbacks.aoInicializar) {
                 await this.config.callbacks.aoInicializar();
-            }
-
-            if (this.config.callbacks.aoTrocarIdioma) {
-                i18n.registrarCallback(this.config.callbacks.aoTrocarIdioma);
             }
 
             loading.ocultar();

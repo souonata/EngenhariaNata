@@ -49,6 +49,7 @@ export default defineConfig({
         solarConfig: resolve(__dirname, 'solar/config.html'),
         sobre: resolve(__dirname, 'sobre/sobre.html')
       },
+        popov: resolve(__dirname, 'popov/popov.html'),
       output: {
         // Code splitting para otimização
         manualChunks: {

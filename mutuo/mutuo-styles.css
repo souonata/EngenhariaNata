@@ -230,6 +230,27 @@
     box-shadow: 0 4px 8px rgba(45, 159, 163, 0.3);
 }
 
+.btn-aplicar-exemplo {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin: 15px auto 0;
+    display: block;
+    width: fit-content;
+}
+
+.btn-aplicar-exemplo:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
 .exemplo-item {
     background: white;
     padding: 10px;

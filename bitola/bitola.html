@@ -211,112 +211,112 @@
             </div>
             
             <div class="memorial-item">
-                <h3 data-i18n="memorial-intro-title">🎯 Objetivo do Cálculo</h3>
-                <p data-i18n="memorial-intro-text">Este memorial explica passo a passo como é calculada a bitola mínima de fios elétricos para circuitos CC e CA, considerando potência, distância, tensão e queda de tensão máxima permitida.</p>
+                <h3 data-i18n="memorial.introTitulo">🎯 Objetivo do Cálculo</h3>
+                <p data-i18n="memorial.introTexto">Este memorial explica passo a passo como é calculada a bitola mínima de fios elétricos para circuitos CC e CA, considerando potência, distância, tensão e queda de tensão máxima permitida.</p>
             </div>
 
             <div class="memorial-item">
-                <h3 data-i18n="memorial-passo1-title">1️⃣ Passo 1: Calcular Corrente do Circuito</h3>
-                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <h3 data-i18n="memorial.passo1Titulo">1️⃣ Passo 1: Calcular Corrente do Circuito</h3>
+                <p><strong data-i18n="memorial.formula">Fórmula:</strong></p>
                 <div class="formula-box">
-                    <p><strong data-i18n="memorial-formula-corrente">Corrente (A) = Potência (W) ÷ Tensão (V)</strong></p>
+                    <p><strong data-i18n="memorial.formulaCorrente">Corrente (A) = Potência (W) ÷ Tensão (V)</strong></p>
                 </div>
-                <p data-i18n="memorial-passo1-explicacao">A corrente é calculada dividindo a potência pela tensão. Esta é a corrente que o circuito precisa transportar.</p>
-                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-corrente">1000W ÷ 220V = 4.55A</span></p>
+                <p data-i18n="memorial.passo1Explicacao">A corrente é calculada dividindo a potência pela tensão. Esta é a corrente que o circuito precisa transportar.</p>
+                <p><strong data-i18n="memorial.exemplo">Exemplo:</strong> <span id="memorial-exemplo-corrente">1000W ÷ 220V = 4.55A</span></p>
             </div>
 
             <div class="memorial-item">
-                <h3 data-i18n="memorial-passo2-title">2️⃣ Passo 2: Calcular Área de Seção Mínima</h3>
-                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <h3 data-i18n="memorial.passo2Titulo">2️⃣ Passo 2: Calcular Área de Seção Mínima</h3>
+                <p><strong data-i18n="memorial.formula">Fórmula:</strong></p>
                 <div class="formula-box">
                     <p><strong>Área (mm²) = (2 × ρ × L × I) ÷ ΔV</strong></p>
                 </div>
-                <p data-i18n="memorial-passo2-explicacao">A área mínima é calculada considerando a resistividade do cobre, a distância (multiplicada por 2 para ida e volta), a corrente e a queda de tensão máxima permitida.</p>
-                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-area">(2 × 0.0178 × 20m × 4.55A) ÷ 8.8V = 0.37 mm²</span></p>
+                <p data-i18n="memorial.passo2Explicacao">A área mínima é calculada considerando a resistividade do cobre, a distância (multiplicada por 2 para ida e volta), a corrente e a queda de tensão máxima permitida.</p>
+                <p><strong data-i18n="memorial.exemplo">Exemplo:</strong> <span id="memorial-exemplo-area">(2 × 0.0178 × 20m × 4.55A) ÷ 8.8V = 0.37 mm²</span></p>
                 <div class="info-box">
-                    <p><strong data-i18n="memorial-constants">Valores de referência usados:</strong></p>
+                    <p><strong data-i18n="memorial.constantes">Valores de referência usados:</strong></p>
                     <ul>
-                        <li data-i18n="memorial-resistividade">ρ (resistividade do cobre) = 0.0178 Ω·mm²/m a 20°C — Valor para cobre duro conforme NBR 5410. Para cobre recozido (mole), o valor é 0.017241 Ω·mm²/m (NBR NM 280). Este valor representa a resistência elétrica específica do material e varia com a temperatura e têmpera do cobre.</li>
-                        <li data-i18n="memorial-fator-2">Fator 2 = considera ida e volta do circuito (dois condutores) — O circuito elétrico precisa de dois fios: um para levar a corrente até a carga e outro para retornar. Por isso, a distância total percorrida pela corrente é 2 × distância entre fonte e carga.</li>
-                        <li><strong data-i18n="memorial-queda-recomendada">Queda de tensão recomendada:</strong> <span data-i18n="memorial-queda-recomendada-texto">4% — Padrão mais utilizado para projetos residenciais no Brasil, conforme normas técnicas.</span></li>
+                        <li data-i18n="memorial.resistividade">ρ (resistividade do cobre) = 0.0178 Ω·mm²/m a 20°C — Valor para cobre duro conforme NBR 5410. Para cobre recozido (mole), o valor é 0.017241 Ω·mm²/m (NBR NM 280). Este valor representa a resistência elétrica específica do material e varia com a temperatura e têmpera do cobre.</li>
+                        <li data-i18n="memorial.fator2">Fator 2 = considera ida e volta do circuito (dois condutores) — O circuito elétrico precisa de dois fios: um para levar a corrente até a carga e outro para retornar. Por isso, a distância total percorrida pela corrente é 2 × distância entre fonte e carga.</li>
+                        <li><strong data-i18n="memorial.quedaRecomendada">Queda de tensão recomendada:</strong> <span data-i18n="memorial.quedaRecomendadaTexto">4% — Padrão mais utilizado para projetos residenciais no Brasil, conforme normas técnicas.</span></li>
                     </ul>
-                    <p style="margin-top: 10px;"><strong data-i18n="memorial-lei-ohm-titulo">⚛️ Lei Física Aplicada — Lei de Ohm:</strong></p>
-                    <p style="margin-top: 5px;" data-i18n="memorial-lei-ohm-texto">A Lei de Ohm relaciona tensão (V), corrente (I) e resistência (R): V = I × R. No cálculo de bitola, usamos esta lei para determinar a queda de tensão: quanto maior a corrente e a resistência do fio, maior a queda de tensão. A resistência do fio depende da resistividade do material (cobre), do comprimento e da área da seção transversal (bitola).</p>
+                    <p style="margin-top: 10px;"><strong data-i18n="memorial.leiOhmTitulo">⚛️ Lei Física Aplicada — Lei de Ohm:</strong></p>
+                    <p style="margin-top: 5px;" data-i18n="memorial.leiOhmTexto">A Lei de Ohm relaciona tensão (V), corrente (I) e resistência (R): V = I × R. No cálculo de bitola, usamos esta lei para determinar a queda de tensão: quanto maior a corrente e a resistência do fio, maior a queda de tensão. A resistência do fio depende da resistividade do material (cobre), do comprimento e da área da seção transversal (bitola).</p>
                 </div>
             </div>
 
             <div class="memorial-item">
-                <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Selecionar Bitola Comercial</h3>
-                <p data-i18n="memorial-passo3-explicacao">A área mínima calculada é multiplicada por um fator de segurança de 1.25 (25% de margem) e então selecionamos a bitola comercial padrão brasileiro (NBR 5410) que atende ao requisito.</p>
-                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-bitola">Área mínima 0.36 mm² × 1.25 = 0.45 mm² → Bitola comercial: 1.5 mm²</span></p>
+                <h3 data-i18n="memorial.passo3Titulo">3️⃣ Passo 3: Selecionar Bitola Comercial</h3>
+                <p data-i18n="memorial.passo3Explicacao">A área mínima calculada é multiplicada por um fator de segurança de 1.25 (25% de margem) e então selecionamos a bitola comercial padrão brasileiro (NBR 5410) que atende ao requisito.</p>
+                <p><strong data-i18n="memorial.exemplo">Exemplo:</strong> <span id="memorial-exemplo-bitola">Área mínima 0.36 mm² × 1.25 = 0.45 mm² → Bitola comercial: 1.5 mm²</span></p>
                 <div class="info-box">
-                    <p><strong data-i18n="memorial-bitolas">Bitolas comerciais disponíveis:</strong></p>
-                    <p data-i18n="memorial-bitolas-lista">1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240 mm²</p>
+                    <p><strong data-i18n="memorial.bitolas">Bitolas comerciais disponíveis:</strong></p>
+                    <p data-i18n="memorial.bitolasList">1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240 mm²</p>
                 </div>
             </div>
 
             <div class="memorial-item">
-                <h3 data-i18n="memorial-passo4-title">4️⃣ Passo 4: Verificar Queda de Tensão Real</h3>
-                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <h3 data-i18n="memorial.passo4Titulo">4️⃣ Passo 4: Verificar Queda de Tensão Real</h3>
+                <p><strong data-i18n="memorial.formula">Fórmula:</strong></p>
                 <div class="formula-box">
-                    <p><strong data-i18n="memorial-formula-queda">Queda Real (%) = ((2 × ρ × L × I) ÷ S) ÷ Tensão × 100</strong></p>
+                    <p><strong data-i18n="memorial.formulaQueda">Queda Real (%) = ((2 × ρ × L × I) ÷ S) ÷ Tensão × 100</strong></p>
                 </div>
-                <p data-i18n="memorial-passo4-explicacao">Recalculamos a queda de tensão com a bitola comercial escolhida para verificar se está dentro do limite permitido.</p>
-                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-queda">Com bitola 1.5 mm² → queda real = 1.06% (dentro do limite de 4%)</span></p>
+                <p data-i18n="memorial.passo4Explicacao">Recalculamos a queda de tensão com a bitola comercial escolhida para verificar se está dentro do limite permitido.</p>
+                <p><strong data-i18n="memorial.exemplo">Exemplo:</strong> <span id="memorial-exemplo-queda">Com bitola 1.5 mm² → queda real = 1.06% (dentro do limite de 4%)</span></p>
             </div>
 
             <div class="memorial-item">
-                <h3 data-i18n="memorial-passo5-title">5️⃣ Passo 5: Selecionar Disjuntor Comercial</h3>
-                <p data-i18n="memorial-passo5-explicacao">O disjuntor é selecionado com base na corrente do circuito, aplicando um fator de segurança de 1.25 e escolhendo o disjuntor comercial padrão que atende ao requisito.</p>
-                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-disjuntor">Corrente 4.55A × 1.25 = 5.69A → Disjuntor comercial: 10A</span></p>
+                <h3 data-i18n="memorial.passo5Titulo">5️⃣ Passo 5: Selecionar Disjuntor Comercial</h3>
+                <p data-i18n="memorial.passo5Explicacao">O disjuntor é selecionado com base na corrente do circuito, aplicando um fator de segurança de 1.25 e escolhendo o disjuntor comercial padrão que atende ao requisito.</p>
+                <p><strong data-i18n="memorial.exemplo">Exemplo:</strong> <span id="memorial-exemplo-disjuntor">Corrente 4.55A × 1.25 = 5.69A → Disjuntor comercial: 10A</span></p>
             </div>
 
             <div class="resumo-calculado">
-                <h3 data-i18n="memorial-resumo-title">📊 Resumo Calculado</h3>
+                <h3 data-i18n="memorial.resumoTitulo">📊 Resumo Calculado</h3>
                 <div class="resumo-item-calc">
-                    <span data-i18n="memorial-resumo-corrente">Corrente do Circuito:</span>
+                    <span data-i18n="memorial.resumoCorrente">Corrente do Circuito:</span>
                     <span id="resumo-corrente">-</span>
                 </div>
                 <div class="resumo-item-calc">
-                    <span data-i18n="memorial-resumo-area">Área Mínima:</span>
+                    <span data-i18n="memorial.resumoArea">Área Mínima:</span>
                     <span id="resumo-area">-</span>
                 </div>
                 <div class="resumo-item-calc">
-                    <span data-i18n="memorial-resumo-bitola">Bitola Comercial:</span>
+                    <span data-i18n="memorial.resumoBitola">Bitola Comercial:</span>
                     <span id="resumo-bitola">-</span>
                 </div>
                 <div class="resumo-item-calc">
-                    <span data-i18n="memorial-resumo-queda">Queda Real:</span>
+                    <span data-i18n="memorial.resumoQueda">Queda Real:</span>
                     <span id="resumo-queda">-</span>
                 </div>
                 <div class="resumo-item-calc">
-                    <span data-i18n="memorial-resumo-disjuntor">Disjuntor:</span>
+                    <span data-i18n="memorial.resumoDisjuntor">Disjuntor:</span>
                     <span id="resumo-disjuntor">-</span>
                 </div>
             </div>
 
             <div class="memorial-item">
-                <h3 data-i18n="memorial-referencias-title">📚 Referências Bibliográficas e Fontes Técnicas</h3>
+                <h3 data-i18n="memorial.referenciasTitulo">📚 Referências Bibliográficas e Fontes Técnicas</h3>
                 <div class="info-box">
-                    <p><strong data-i18n="memorial-referencias-normas-title">Normas Técnicas:</strong></p>
+                    <p><strong data-i18n="memorial.referenciasNormasTitulo">Normas Técnicas:</strong></p>
                     <ul>
-                        <li data-i18n="memorial-referencias-nbr-5410"><strong>NBR 5410:2004</strong> - Instalações elétricas de baixa tensão. Associação Brasileira de Normas Técnicas (ABNT). Estabelece o limite máximo de 4% para queda de tensão em circuitos terminais e especifica a resistividade do cobre duro como 0.0178 Ω·mm²/m a 20°C.</li>
-                        <li data-i18n="memorial-referencias-nbr-nm-280"><strong>NBR NM 280:2003</strong> - Condutores elétricos de cobre. Especifica a resistividade do cobre recozido (mole) como 0.017241 Ω·mm²/m a 20°C.</li>
-                        <li data-i18n="memorial-referencias-cei-64-8"><strong>CEI 64-8</strong> - Norma italiana para instalações elétricas de baixa tensão. Estabelece limite máximo de 4% para queda de tensão e fornece fórmulas para cálculo considerando fator de potência.</li>
+                        <li data-i18n="memorial.referenciasNbr5410"><strong>NBR 5410:2004</strong> - Instalações elétricas de baixa tensão. Associação Brasileira de Normas Técnicas (ABNT). Estabelece o limite máximo de 4% para queda de tensão em circuitos terminais e especifica a resistividade do cobre duro como 0.0178 Ω·mm²/m a 20°C.</li>
+                        <li data-i18n="memorial.referenciasNbrNm280"><strong>NBR NM 280:2003</strong> - Condutores elétricos de cobre. Especifica a resistividade do cobre recozido (mole) como 0.017241 Ω·mm²/m a 20°C.</li>
+                        <li data-i18n="memorial.referenciasCei64"><strong>CEI 64-8</strong> - Norma italiana para instalações elétricas de baixa tensão. Estabelece limite máximo de 4% para queda de tensão e fornece fórmulas para cálculo considerando fator de potência.</li>
                     </ul>
-                    <p style="margin-top: 15px;"><strong data-i18n="memorial-referencias-guias-title">Guias e Padrões Internacionais:</strong></p>
+                    <p style="margin-top: 15px;"><strong data-i18n="memorial.referenciasGuiasTitulo">Guias e Padrões Internacionais:</strong></p>
                     <ul>
-                        <li data-i18n="memorial-referencias-ieee-525"><strong>IEEE Std 525-2007</strong> - IEEE Guide for the Design and Installation of Cable Systems in Substations. Fornece diretrizes para cálculo de queda de tensão em condutores elétricos, incluindo fórmulas exatas e aproximadas para diferentes condições de carga.</li>
+                        <li data-i18n="memorial.referenciasIeee525"><strong>IEEE Std 525-2007</strong> - IEEE Guide for the Design and Installation of Cable Systems in Substations. Fornece diretrizes para cálculo de queda de tensão em condutores elétricos, incluindo fórmulas exatas e aproximadas para diferentes condições de carga.</li>
                     </ul>
-                    <p style="margin-top: 15px;"><strong data-i18n="memorial-referencias-formulas-title">Fórmulas e Fundamentos Físicos:</strong></p>
+                    <p style="margin-top: 15px;"><strong data-i18n="memorial.referenciasFormulasTitulo">Fórmulas e Fundamentos Físicos:</strong></p>
                     <ul>
-                        <li data-i18n="memorial-referencias-lei-ohm"><strong>Lei de Ohm:</strong> V = I × R, onde V é a tensão, I é a corrente e R é a resistência.</li>
-                        <li data-i18n="memorial-referencias-resistencia"><strong>Resistência de condutores:</strong> R = ρ × L / S, onde ρ é a resistividade, L é o comprimento e S é a área da seção transversal.</li>
-                        <li data-i18n="memorial-referencias-queda-monofasico"><strong>Queda de tensão em circuitos monofásicos:</strong> ΔV = K × ρ × (L × I) / S, onde K = 2 para circuitos monofásicos (F+N).</li>
+                        <li data-i18n="memorial.referenciasLeiOhm"><strong>Lei de Ohm:</strong> V = I × R, onde V é a tensão, I é a corrente e R é a resistência.</li>
+                        <li data-i18n="memorial.referenciasResistencia"><strong>Resistência de condutores:</strong> R = ρ × L / S, onde ρ é a resistividade, L é o comprimento e S é a área da seção transversal.</li>
+                        <li data-i18n="memorial.referenciasQuedaMonofasico"><strong>Queda de tensão em circuitos monofásicos:</strong> ΔV = K × ρ × (L × I) / S, onde K = 2 para circuitos monofásicos (F+N).</li>
                     </ul>
-                    <p style="margin-top: 15px;"><strong data-i18n="memorial-referencias-fontes-title">Fontes de Consulta:</strong></p>
+                    <p style="margin-top: 15px;"><strong data-i18n="memorial.referenciasFontesTitulo">Fontes de Consulta:</strong></p>
                     <ul>
-                        <li data-i18n="memorial-referencias-fontes-lista"></li>
+                        <li data-i18n="memorial.referenciasFontesLista"></li>
                     </ul>
                 </div>
             </div>
@@ -376,7 +376,7 @@
     </a>
 
     <!-- Scripts -->
-    <script type="module" src="bitola-script-new.js?v=1.2.7"></script>
+    <script type="module" src="bitola-script.js?v=1.2.7"></script>
 </body>
 </html>
 

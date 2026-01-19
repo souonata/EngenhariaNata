@@ -36,8 +36,8 @@
     <div class="container">
         <!-- Cabeçalho -->
         <header>
-            <h1 data-i18n="bug-title">🐛 Reportar Bug</h1>
-            <p class="subtitulo" data-i18n="bug-subtitle">Ajude-nos a melhorar reportando problemas encontrados</p>
+            <h1 data-i18n="titulo">🐛 Reportar Bug</h1>
+            <p class="subtitulo" data-i18n="descricao">Ajude-nos a melhorar reportando problemas encontrados</p>
         </header>
 
         <!-- Formulário -->
@@ -45,7 +45,7 @@
             <form id="bugForm">
                 <!-- Descrição do bug -->
                 <div class="grupo-entrada">
-                    <label for="bugDescription" data-i18n="bug-label-description">Descrição do Bug *</label>
+                    <label for="bugDescription" data-i18n="formulario.descricao">Descrição do Bug *</label>
                     <textarea 
                         id="bugDescription" 
                         name="description" 
@@ -53,20 +53,20 @@
                         required 
                         class="textarea-input"
                         placeholder="Descreva o problema encontrado, o que você estava fazendo quando ocorreu, e o que você esperava que acontecesse..."
-                        data-i18n-placeholder="bug-placeholder-description"></textarea>
+                        data-i18n-placeholder="formulario.descricaoPlaceholder"></textarea>
                 </div>
 
                 <!-- Contato para resposta -->
                 <div class="grupo-entrada">
-                    <label for="bugContact" data-i18n="bug-label-contact">Contato para Resposta (Opcional)</label>
+                    <label for="bugContact" data-i18n="formulario.email">Contato para Resposta (Opcional)</label>
                     <input 
                         type="email" 
                         id="bugContact" 
                         name="contact" 
                         class="input-text"
                         placeholder="seu@email.com"
-                        data-i18n-placeholder="bug-placeholder-contact">
-                    <p class="dica" data-i18n="bug-hint-contact">Se você quiser receber uma resposta sobre o bug reportado, informe seu email.</p>
+                        data-i18n-placeholder="formulario.email">
+                    <p class="dica" data-i18n="formulario.email">Se você quiser receber uma resposta sobre o bug reportado, informe seu email.</p>
                 </div>
 
                 <!-- Mensagem de status -->
@@ -74,10 +74,10 @@
 
                 <!-- Botões -->
                 <div class="form-buttons">
-                    <button type="submit" class="btn-submit" data-i18n="bug-button-submit">
+                    <button type="submit" class="btn-submit" data-i18n="formulario.enviar">
                         📤 Enviar Relatório
                     </button>
-                    <a href="../index.html" class="btn-cancel" data-i18n="bug-button-cancel">
+                    <a href="../index.html" class="btn-cancel" data-i18n="formulario.selecione">
                         ← Voltar
                     </a>
                 </div>
@@ -96,8 +96,7 @@
         </svg>
     </a>
 
-    <!-- Scripts -->
-    <script src="../assets/js/site-config.js?v=1.1.0"></script>
-    <script src="bugs-script.js?v=1.0.0"></script>
+    <!-- Scripts Modulares ES6 -->
+    <script type="module" src="bugs-script.js?v=1.0.0"></script>
 </body>
 </html>
