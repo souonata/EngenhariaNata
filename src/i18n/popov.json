@@ -1,0 +1,85 @@
+{
+  "pt-BR": {
+    "app": {
+      "title": "🤖 Popov IA",
+      "subtitle": "Acesso privado via Tailscale"
+    },
+    "embed": {
+      "title": "Abrir Popov IA",
+      "hint": "Se o iframe não carregar (bloqueio por segurança ou falta de acesso), use “Abrir em nova aba”."
+    },
+    "buttons": {
+      "openNewTab": "Abrir em nova aba",
+      "configureUrl": "Configurar URL"
+    },
+    "status": {
+      "waitingTitle": "Aguardando configuração…",
+      "waitingText": "Defina a URL do Popov IA (Tailscale Serve) para exibir aqui.",
+      "loading": "Carregando…",
+      "loadingTitle": "Carregando…",
+      "loadingText": "Tentando abrir o Popov IA no iframe. Se não aparecer, use o botão para abrir em nova aba.",
+      "loadedTitle": "Carregado",
+      "loadedText": "Se você estiver na tailnet e o servidor permitir iframe, o Popov IA deve aparecer abaixo.",
+      "timeoutTitle": "Não carregou a tempo",
+      "timeoutText": "Pode ser falta de acesso via Tailscale ou bloqueio de iframe. Tente “Abrir em nova aba” ou confira a URL.",
+      "invalidUrl": "URL inválida. Use http(s)://..."
+    },
+    "instructions": {
+      "title": "Como acessar (Tailscale)",
+      "step1": "Entre na sua tailnet (Tailscale) e verifique se você tem permissão de acesso.",
+      "step2": "Abra o Popov IA pela URL interna (recomendado: Tailscale Serve sem Funnel).",
+      "step3": "Cole essa URL em “Configurar URL” para carregar o app aqui.",
+      "note": "Se o servidor do Popov IA bloquear embeds (X-Frame-Options/CSP), o iframe pode não funcionar — nesse caso, use “Abrir em nova aba”."
+    },
+    "dialogs": {
+      "urlTitle": "Configurar URL",
+      "urlPrompt": "Cole a URL do Popov IA (Tailscale Serve):",
+      "urlPlaceholder": "https://popov-ia.<sua_tailnet>.ts.net"
+    },
+    "footer": {
+      "texto": "Popov IA (Privado) - Engenharia NATA @ 2026"
+    }
+  },
+  "it-IT": {
+    "app": {
+      "title": "🤖 Popov IA",
+      "subtitle": "Accesso privato via Tailscale"
+    },
+    "embed": {
+      "title": "Apri Popov IA",
+      "hint": "Se l'iframe non si carica (blocco di sicurezza o mancanza di accesso), usa “Apri in una nuova scheda”."
+    },
+    "buttons": {
+      "openNewTab": "Apri in una nuova scheda",
+      "configureUrl": "Configura URL"
+    },
+    "status": {
+      "waitingTitle": "In attesa di configurazione…",
+      "waitingText": "Imposta l'URL di Popov IA (Tailscale Serve) per mostrarlo qui.",
+      "loading": "Caricamento…",
+      "loadingTitle": "Caricamento…",
+      "loadingText": "Tentativo di aprire Popov IA nell'iframe. Se non appare, usa il pulsante per aprire in una nuova scheda.",
+      "loadedTitle": "Caricato",
+      "loadedText": "Se sei nella tailnet e il server consente iframe, Popov IA dovrebbe apparire qui sotto.",
+      "timeoutTitle": "Non si è caricato in tempo",
+      "timeoutText": "Potrebbe essere mancanza di accesso via Tailscale o blocco dell'iframe. Prova “Apri in una nuova scheda” o controlla l'URL.",
+      "invalidUrl": "URL non valido. Usa http(s)://..."
+    },
+    "instructions": {
+      "title": "Come accedere (Tailscale)",
+      "step1": "Accedi alla tua tailnet (Tailscale) e verifica di avere i permessi di accesso.",
+      "step2": "Apri Popov IA tramite l'URL interno (consigliato: Tailscale Serve senza Funnel).",
+      "step3": "Incolla quell'URL in “Configura URL” per caricare l'app qui.",
+      "note": "Se il server di Popov IA blocca gli embed (X-Frame-Options/CSP), l'iframe potrebbe non funzionare — in tal caso usa “Apri in una nuova scheda”."
+    },
+    "dialogs": {
+      "urlTitle": "Configura URL",
+      "urlPrompt": "Incolla l'URL di Popov IA (Tailscale Serve):",
+      "urlPlaceholder": "https://popov-ia.<tua_tailnet>.ts.net"
+    },
+    "footer": {
+      "texto": "Popov IA (Privato) - Engenharia NATA @ 2026"
+    }
+  }
+}
+
