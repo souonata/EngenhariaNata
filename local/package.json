@@ -4,6 +4,8 @@
   "description": "Portfólio de apps web educativos para engenharia e finanças - JavaScript puro, bilíngue PT/IT",
   "type": "module",
   "scripts": {
+    "control": "node server-control.js",
+    "dev:controlled": "npm run control",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",

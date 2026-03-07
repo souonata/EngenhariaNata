@@ -42,7 +42,7 @@
     "res-estimativa": "Estimativa de Custo",
     "custos-titulo": "Detalhamento de Custos",
     "custo-total": "Total",
-    "footer": "Solar - Engenharia NATA @ 2025",
+    "footer": "Solar - Engenharia NATA @ 2026",
     "dias": "dias",
     "dia": "dia",
     "anos": "anos",
@@ -159,7 +159,7 @@
     "res-estimativa": "Costo Stimato",
     "custos-titulo": "Dettaglio Costi",
     "custo-total": "Totale",
-    "footer": "Solare - Engenharia NATA @ 2025",
+    "footer": "Solare - Engenharia NATA @ 2026",
     "aria-home": "Torna alla schermata iniziale",
     "watermark-dev": "🚧 IN SVILUPPO",
     "learn-more": "SCOPRI DI PIÙ!",
@@ -234,3 +234,4 @@
     "erro-inicializacao": "Errore nell'inizializzazione dell'app. Ricarica la pagina."
   }
 }
+

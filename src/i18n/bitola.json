@@ -90,9 +90,21 @@
       "referenciasFontesTitulo": "Fontes de Consulta:",
       "referenciasFontesLista": ""
     },
-    "footer": "Calculadora de Bitola de Fios - Engenharia Nata @ 2025",
+    "titles": {
+      "langPt": "Português",
+      "langIt": "Italiano",
+      "currentDc": "Corrente Contínua",
+      "currentAc": "Corrente Alternada",
+      "clickInfo": "Clique para mais informações"
+    },
+    "footer": "Calculadora de Bitola de Fios - Engenharia Nata @ 2026",
     "aria": {
-      "home": "Voltar para a tela inicial"
+      "home": "Voltar para a tela inicial",
+      "langPt": "Alterar idioma para Português",
+      "langIt": "Alterar idioma para Italiano",
+      "clickInfo": "Informação adicional",
+      "decrease": "Diminuir valor",
+      "increase": "Aumentar valor"
     }
   },
   "it-IT": {
@@ -230,9 +242,22 @@
     "memorial-referencias-queda-monofasico": "<strong>Caduta di tensione in circuiti monofase:</strong> ΔV = K × ρ × (L × I) / S, dove K = 2 per circuiti monofase (F+N).",
     "memorial-referencias-fontes-title": "Fonti di Consultazione:",
     "memorial-referencias-fontes-lista": "<li><strong>CEI (Comitato Elettrotecnico Italiano)</strong> - Organizzazione responsabile delle norme tecniche italiane per impianti elettrici. Sito: <a href=\"https://www.ceiweb.it\" target=\"_blank\">www.ceiweb.it</a></li><li><strong>Norma CEI 0-21</strong> - Regola tecnica di riferimento per la connessione di utenti attivi e passivi alle reti BT delle imprese distributrici di energia elettrica.</li><li><strong>ANIE Federazione</strong> - Federazione Nazionale Imprese Elettrotecniche ed Elettroniche. Pubblica guide tecniche e manuali per impianti elettrici.</li><li><strong>Politecnico di Milano e Politecnico di Torino</strong> - Università tecniche italiane che offrono letteratura accademica sull'ingegneria elettrica e il dimensionamento dei conduttori.</li>",
-    "footer": "Calcolatrice Sezione Cavi - Engenharia Nata @ 2025",
+    "titles": {
+      "langPt": "Portoghese",
+      "langIt": "Italiano",
+      "currentDc": "Corrente Continua",
+      "currentAc": "Corrente Alternata",
+      "clickInfo": "Clicca per maggiori informazioni"
+    },
+    "footer": "Calcolatrice Sezione Cavi - Engenharia Nata @ 2026",
     "aria": {
-      "home": "Torna alla schermata iniziale"
+      "home": "Torna alla schermata iniziale",
+      "langPt": "Cambia lingua in portoghese",
+      "langIt": "Cambia lingua in italiano",
+      "clickInfo": "Informazioni aggiuntive",
+      "decrease": "Diminuisci valore",
+      "increase": "Aumenta valore"
     }
   }
 }
+

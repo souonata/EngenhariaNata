@@ -45,11 +45,11 @@
     <!-- SELETOR DE IDIOMA (PADRÃO GLOBAL - FORA DO CONTAINER) -->
     <!-- ========================================== -->
     <div class="language-selector">
-        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" aria-label="Alterar idioma para Português" title="Português">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" data-i18n-aria="aria-lang-pt" data-i18n-title="title-lang-pt">
             <span class="flag" aria-hidden="true">🇧🇷</span>
             <span class="lang-text">PT</span>
         </button>
-        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" aria-label="Alterar idioma para Italiano" title="Italiano">
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" data-i18n-aria="aria-lang-it" data-i18n-title="title-lang-it">
             <span class="flag" aria-hidden="true">🇮🇹</span>
             <span class="lang-text">IT</span>
         </button>
@@ -97,7 +97,7 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderPessoas" data-i18n="label-pessoas">Número de Pessoas</label>
-                    <span class="info-icon" id="infoIconPessoas" role="button" tabindex="0" aria-label="Informação sobre número de pessoas" title="Clique para mais informações">
+                    <span class="info-icon" id="infoIconPessoas" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                     <div class="valor-com-unidades">
@@ -110,9 +110,9 @@
                     <span data-i18n="tooltip-pessoas-texto">O número de pessoas determina o consumo diário de água quente. O consumo por pessoa varia conforme o padrão selecionado (Econômico: 30L/dia, Padrão: 40L/dia, Alto: 60L/dia). Este valor é usado para calcular o volume necessário do boiler e a área de coletores solares.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPessoas" data-step="-1" aria-label="Diminuir pessoas">−</button>
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPessoas" data-step="-1" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderPessoas" min="1" max="10" step="1" value="4">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPessoas" data-step="1" aria-label="Aumentar pessoas">+</button>
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPessoas" data-step="1" data-i18n-aria="aria-increase">+</button>
                 </div>
             </div>
 
@@ -120,7 +120,7 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label data-i18n="label-tipo-uso">Padrão de Consumo</label>
-                    <span class="info-icon" id="infoIconConsumo" role="button" tabindex="0" aria-label="Informação sobre padrão de consumo" title="Clique para mais informações">
+                    <span class="info-icon" id="infoIconConsumo" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                 </div>
@@ -154,7 +154,7 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderLatitude" data-i18n="label-latitude">Latitude</label>
-                    <span class="info-icon" id="infoIconLatitude" role="button" tabindex="0" aria-label="Informação sobre latitude" title="Clique para mais informações">
+                    <span class="info-icon" id="infoIconLatitude" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                     <div class="valor-com-unidades">
@@ -167,9 +167,9 @@
                     <span data-i18n="tooltip-latitude-texto">A latitude é a coordenada geográfica que indica a distância do local em relação ao Equador, medida em graus. Valores negativos indicam hemisfério sul (Brasil: -35° a -5°), valores positivos indicam hemisfério norte (Itália: 36° a 47°). A latitude afeta a intensidade e duração da radiação solar, influenciando diretamente o dimensionamento dos coletores solares.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderLatitude" data-step="-0.5" aria-label="Diminuir latitude">−</button>
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderLatitude" data-step="-0.5" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderLatitude" min="-35" max="-5" step="0.5" value="-23.5">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderLatitude" data-step="0.5" aria-label="Aumentar latitude">+</button>
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderLatitude" data-step="0.5" data-i18n-aria="aria-increase">+</button>
                 </div>
             </div>
 
@@ -177,7 +177,7 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderAltitude" data-i18n="label-altitude">Altitude</label>
-                    <span class="info-icon" id="infoIconAltitude" role="button" tabindex="0" aria-label="Informação sobre altitude" title="Clique para mais informações">
+                    <span class="info-icon" id="infoIconAltitude" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                     <div class="valor-com-unidades">
@@ -190,9 +190,9 @@
                     <span data-i18n="tooltip-altitude-texto">A altitude é a elevação do local de instalação em relação ao nível do mar, medida em metros. Locais em maior altitude têm menor pressão atmosférica e menor temperatura média, o que pode reduzir ligeiramente a eficiência dos coletores solares. A altitude também afeta o ponto de ebulição da água, importante para sistemas de aquecimento.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderAltitude" data-step="-50" aria-label="Diminuir altitude">−</button>
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderAltitude" data-step="-50" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderAltitude" min="0" max="2000" step="50" value="800">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderAltitude" data-step="50" aria-label="Aumentar altitude">+</button>
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderAltitude" data-step="50" data-i18n-aria="aria-increase">+</button>
                 </div>
             </div>
 
@@ -205,7 +205,7 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderAreaCasa" data-i18n="label-area-casa">Área da Casa</label>
-                    <span class="info-icon" id="infoIconAreaCasa" role="button" tabindex="0" aria-label="Informação sobre área da casa" title="Clique para mais informações">
+                    <span class="info-icon" id="infoIconAreaCasa" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                     <div class="valor-com-unidades">
@@ -218,9 +218,9 @@
                     <span data-i18n="tooltip-area-casa-texto">A área da casa é a área total construída em metros quadrados (m²) que será aquecida pelo sistema solar térmico. Este valor é usado para calcular a demanda de energia térmica necessária para aquecer o ambiente, considerando a classe energética da construção e as perdas térmicas através de paredes, teto e janelas.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderAreaCasa" data-step="-5" aria-label="Diminuir área">−</button>
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderAreaCasa" data-step="-5" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderAreaCasa" min="20" max="300" step="5" value="100">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderAreaCasa" data-step="5" aria-label="Aumentar área">+</button>
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderAreaCasa" data-step="5" data-i18n-aria="aria-increase">+</button>
                 </div>
             </div>
 
@@ -228,7 +228,7 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderAlturaCasa" data-i18n="label-altura-casa">Altura do Pé Direito</label>
-                    <span class="info-icon" id="infoIconAlturaCasa" role="button" tabindex="0" aria-label="Informação sobre altura do pé direito" title="Clique para mais informações">
+                    <span class="info-icon" id="infoIconAlturaCasa" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                     <div class="valor-com-unidades">
@@ -241,9 +241,9 @@
                     <span data-i18n="tooltip-altura-casa-texto">A altura do pé direito é a distância do piso ao teto, medida em metros. Ambientes mais altos têm maior volume de ar para aquecer, aumentando a demanda de energia térmica. O cálculo considera o volume total (área × altura) para determinar a potência necessária do sistema de aquecimento ambiente. Altura padrão residencial: 2,7m.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderAlturaCasa" data-step="-0.1" aria-label="Diminuir altura">−</button>
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderAlturaCasa" data-step="-0.1" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderAlturaCasa" min="2.0" max="4.0" step="0.1" value="2.7">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderAlturaCasa" data-step="0.1" aria-label="Aumentar altura">+</button>
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderAlturaCasa" data-step="0.1" data-i18n-aria="aria-increase">+</button>
                 </div>
             </div>
 
@@ -251,7 +251,7 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderDiasAutonomia" data-i18n="label-dias-autonomia">Dias de Autonomia</label>
-                    <span class="info-icon" id="infoIconAutonomia" role="button" tabindex="0" aria-label="Informação sobre dias de autonomia" title="Clique para mais informações">
+                    <span class="info-icon" id="infoIconAutonomia" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                     <div class="valor-com-unidades">
@@ -264,9 +264,9 @@
                     <span data-i18n="tooltip-autonomia-texto">Os dias de autonomia representam quantos dias consecutivos sem sol o sistema deve ser capaz de manter a casa aquecida usando apenas a energia armazenada no boiler. Valores maiores aumentam o volume necessário do boiler e a área de coletores, garantindo maior segurança em períodos de baixa insolação, mas também aumentam o custo do sistema.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderDiasAutonomia" data-step="-1" aria-label="Diminuir dias">−</button>
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderDiasAutonomia" data-step="-1" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderDiasAutonomia" min="1" max="7" step="1" value="3">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderDiasAutonomia" data-step="1" aria-label="Aumentar dias">+</button>
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderDiasAutonomia" data-step="1" data-i18n-aria="aria-increase">+</button>
                 </div>
             </div>
 
@@ -558,7 +558,7 @@
         <section class="card resultados" id="resultadosSection">
             <div class="resultados-header-com-ajuda">
                 <h2 data-i18n="resultados-title">📊 Resultados do Dimensionamento</h2>
-                <button id="btnMemorial" class="btn-help" title="Ver Memorial de Cálculo" data-i18n-title="btn-memorial" tabindex="10">
+                <button id="btnMemorial" class="btn-help" data-i18n-title="btn-memorial" tabindex="10">
                     <span class="texto-saiba-mais" data-i18n="learn-more">SAIBA MAIS!</span>
                 </button>
             </div>
@@ -680,11 +680,11 @@
     </div>
 
     <footer>
-        <p data-i18n="footer.texto">Dimensionador de Aquecedor Solar - Engenharia Nata @ 2025</p>
+        <p data-i18n="footer.texto">Dimensionador de Aquecedor Solar - Engenharia Nata @ 2026</p>
     </footer>
 
     <!-- Botão de retorno à tela inicial -->
-    <a href="../index.html" class="home-button-fixed" aria-label="Voltar à tela inicial">
+    <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria-home">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
         </svg>
@@ -694,4 +694,5 @@
     <script type="module" src="aquecimento-script.js?v=1.0.2"></script>
 </body>
 </html>
+
 

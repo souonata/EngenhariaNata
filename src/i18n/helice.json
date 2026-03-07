@@ -102,9 +102,21 @@
       "voltar": "← Voltar",
       "saibaMais": "SAIBA MAIS!"
     },
-    "footer": "Calculadora de Hélice - Engenharia Nata @ 2025",
+    "footer": "Calculadora de Hélice - Engenharia Nata @ 2026",
+    "titles": {
+      "langPt": "Português",
+      "langIt": "Italiano",
+      "singleProp": "Single Prop",
+      "dualProp": "Dual Prop",
+      "clickInfo": "Clique para mais informações"
+    },
     "aria": {
-      "home": "Voltar para a tela inicial"
+      "home": "Voltar para a tela inicial",
+      "langPt": "Alterar idioma para Português",
+      "langIt": "Alterar idioma para Italiano",
+      "clickInfo": "Informação adicional",
+      "decrease": "Diminuir valor",
+      "increase": "Aumentar valor"
     }
   },
   "it-IT": {
@@ -210,9 +222,22 @@
       "voltar": "← Indietro",
       "saibaMais": "SCOPRI DI PIÙ!"
     },
-    "footer": "Calcolatore Elica - Engenharia Nata @ 2025",
+    "footer": "Calcolatore Elica - Engenharia Nata @ 2026",
+    "titles": {
+      "langPt": "Portoghese",
+      "langIt": "Italiano",
+      "singleProp": "Elica Singola",
+      "dualProp": "Dual Prop",
+      "clickInfo": "Clicca per maggiori informazioni"
+    },
     "aria": {
-      "home": "Torna alla schermata iniziale"
+      "home": "Torna alla schermata iniziale",
+      "langPt": "Cambia lingua in portoghese",
+      "langIt": "Cambia lingua in italiano",
+      "clickInfo": "Informazioni aggiuntive",
+      "decrease": "Diminuisci valore",
+      "increase": "Aumenta valore"
     }
   }
 }
+

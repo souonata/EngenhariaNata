@@ -89,8 +89,15 @@
     "watermark-dev": "🚧 EM DESENVOLVIMENTO",
     "learn-more": "SAIBA MAIS!",
     "back": "← Voltar",
-    "footer": "Dimensionador de Aquecedor Solar - Engenharia Nata @ 2025",
+    "footer": "Dimensionador de Aquecedor Solar - Engenharia Nata @ 2026",
     "aria-home": "Voltar para a tela inicial",
+    "aria-lang-pt": "Alterar idioma para Português",
+    "aria-lang-it": "Alterar idioma para Italiano",
+    "title-lang-pt": "Português",
+    "title-lang-it": "Italiano",
+    "aria-click-info": "Clique para mais informações",
+    "aria-decrease": "Diminuir valor",
+    "aria-increase": "Aumentar valor",
     "tooltip-pessoas-texto": "O número de pessoas determina o consumo diário de água quente. O consumo por pessoa varia conforme o padrão selecionado.",
     "tooltip-consumo-texto": "O padrão de consumo define quantos litros de água quente cada pessoa utiliza por dia.",
     "tooltip-latitude-texto": "A latitude é a coordenada geográfica que indica a distância do local em relação ao Equador, medida em graus.",
@@ -189,8 +196,15 @@
     "watermark-dev": "🚧 IN SVILUPPO",
     "learn-more": "SCOPRI DI PIÙ!",
     "back": "← Indietro",
-    "footer": "Dimensionatore Riscaldatore Solare - Engenharia Nata @ 2025",
+    "footer": "Dimensionatore Riscaldatore Solare - Engenharia Nata @ 2026",
     "aria-home": "Torna alla schermata iniziale",
+    "aria-lang-pt": "Cambia lingua in portoghese",
+    "aria-lang-it": "Cambia lingua in italiano",
+    "title-lang-pt": "Portoghese",
+    "title-lang-it": "Italiano",
+    "aria-click-info": "Clicca per maggiori informazioni",
+    "aria-decrease": "Diminuisci valore",
+    "aria-increase": "Aumenta valore",
     "tooltip-pessoas-texto": "Il numero di persone determina il consumo giornaliero di acqua calda.",
     "tooltip-consumo-texto": "Lo standard di consumo definisce quanti litri di acqua calda ogni persona utilizza al giorno.",
     "tooltip-latitude-texto": "La latitudine è la coordinata geografica che indica la distanza del luogo rispetto all'Equatore.",
@@ -200,3 +214,4 @@
     "tooltip-autonomia-texto": "I giorni di autonomia rappresentano quanti giorni consecutivi senza sole il sistema deve mantenere la casa riscaldata."
   }
 }
+

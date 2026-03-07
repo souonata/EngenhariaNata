@@ -191,7 +191,7 @@ const traducoes = {
         'label-area-total': 'Área Total Necessária:',
         'label-area-plantas': 'Área para Plantas:',
         'label-area-animais': 'Área para Animais:',
-        'footer-text': 'Engenharia NATA @ 2025 - Apps Educativos de Engenharia',
+        'footer-text': 'Engenharia NATA @ 2026 - Apps Educativos de Engenharia',
         'watermark-dev': '🚧 EM DESENVOLVIMENTO',
         'dev-badge-header': '🚧 EM DESENVOLVIMENTO',
         // Nomes de plantas e animais - Brasil
@@ -302,7 +302,7 @@ const traducoes = {
         'label-area-total': 'Area Totale Necessaria:',
         'label-area-plantas': 'Area per Piante:',
         'label-area-animais': 'Area per Animali:',
-        'footer-text': 'Engenharia NATA @ 2025 - App Educativi di Ingegneria',
+        'footer-text': 'Engenharia NATA @ 2026 - App Educativi di Ingegneria',
         'watermark-dev': '🚧 IN SVILUPPO',
         'dev-badge-header': '🚧 IN SVILUPPO',
         // Nomes de plantas e animais - Itália
@@ -1705,4 +1705,5 @@ class FazendaApp extends App {
 // Inicializar app
 const app = new FazendaApp();
 app.inicializar();
+
 

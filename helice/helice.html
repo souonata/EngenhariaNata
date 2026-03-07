@@ -49,12 +49,12 @@
     <!-- ========================================== -->
     <div class="language-selector">
         <!-- Botão para português (ativo definido pelo JavaScript) -->
-        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" aria-label="Alterar idioma para Português" title="Português">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" data-i18n-aria="aria.langPt" data-i18n-title="titles.langPt">
             <span class="flag" aria-hidden="true">🇧🇷</span>
             <span class="lang-text">PT</span>
         </button>
         <!-- Botão para italiano -->
-        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" aria-label="Alterar idioma para Italiano" title="Italiano">
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" data-i18n-aria="aria.langIt" data-i18n-title="titles.langIt">
             <span class="flag" aria-hidden="true">🇮🇹</span>
             <span class="lang-text">IT</span>
         </button>
@@ -81,14 +81,14 @@
                     <label class="opcao-radio">
                         <input type="radio" name="tipoHelice" value="single" checked>
                         <div class="cartao-radio">
-                            <span class="rotulo-radio" style="font-size: 1.5rem;" title="Single Prop">⚙️</span>
+                            <span class="rotulo-radio" style="font-size: 1.5rem;" data-i18n-title="titles.singleProp">⚙️</span>
                             <span class="rotulo-radio" data-i18n="helice.tipoSingleProp">Single Prop</span>
                         </div>
                     </label>
                     <label class="opcao-radio">
                         <input type="radio" name="tipoHelice" value="ips">
                         <div class="cartao-radio">
-                            <span class="rotulo-radio" style="font-size: 1.5rem;" title="Dual Prop">⛵</span>
+                            <span class="rotulo-radio" style="font-size: 1.5rem;" data-i18n-title="titles.dualProp">⛵</span>
                             <span class="rotulo-radio" data-i18n="helice.tipoDualIps">Dual Prop</span>
                         </div>
                     </label>
@@ -145,7 +145,7 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderVelocidade" data-i18n="labels.velocidade">Velocidade Desejada</label>
-                    <span class="info-icon" id="infoIconVelocidade" role="button" tabindex="0" aria-label="Informação sobre velocidade desejada" title="Clique para mais informações">
+                    <span class="info-icon" id="infoIconVelocidade" role="button" tabindex="0" data-i18n-aria="aria.clickInfo" data-i18n-title="titles.clickInfo">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                     <div class="valor-com-unidades">
@@ -178,9 +178,9 @@
                     <span data-i18n="tooltips.velocidade">A velocidade desejada é a velocidade máxima que você quer que o barco alcance, medida em nós, mph ou km/h. Este valor é usado para calcular o passo ideal da hélice. Velocidades maiores exigem hélices com passo maior, mas também requerem mais potência do motor.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderVelocidade" data-step="-1" aria-label="Diminuir velocidade">−</button>
+                    <button type="button" class="arrow-btn" data-target="sliderVelocidade" data-step="-1" data-i18n-aria="aria.decrease">−</button>
                     <input type="range" id="sliderVelocidade" min="5" max="60" step="1" value="40">
-                    <button type="button" class="arrow-btn" data-target="sliderVelocidade" data-step="1" aria-label="Aumentar velocidade">+</button>
+                    <button type="button" class="arrow-btn" data-target="sliderVelocidade" data-step="1" data-i18n-aria="aria.increase">+</button>
                 </div>
             </div>
 
@@ -188,7 +188,7 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderReducao" data-i18n="labels.reducao">Redução da Rabeta</label>
-                    <span class="info-icon" id="infoIconReducao" role="button" tabindex="0" aria-label="Informação sobre redução da rabeta" title="Clique para mais informações">
+                    <span class="info-icon" id="infoIconReducao" role="button" tabindex="0" data-i18n-aria="aria.clickInfo" data-i18n-title="titles.clickInfo">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                     <input type="text" id="inputReducao" class="valor-display valor-input" value="2.32">
@@ -199,9 +199,9 @@
                     <span data-i18n="tooltips.reducao">A redução da rabeta é a relação entre a rotação do motor e a rotação da hélice. Por exemplo, uma redução de 2:1 significa que o motor gira 2 vezes para a hélice girar 1 vez. Isso aumenta o torque disponível na hélice, permitindo hélices maiores e mais eficientes. Valores típicos variam de 1:1 a 3:1.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderReducao" data-step="-0.1" aria-label="Diminuir redução">−</button>
+                    <button type="button" class="arrow-btn" data-target="sliderReducao" data-step="-0.1" data-i18n-aria="aria.decrease">−</button>
                     <input type="range" id="sliderReducao" min="1.00" max="3.50" step="0.01" value="2.32">
-                    <button type="button" class="arrow-btn" data-target="sliderReducao" data-step="0.1" aria-label="Aumentar redução">+</button>
+                    <button type="button" class="arrow-btn" data-target="sliderReducao" data-step="0.1" data-i18n-aria="aria.increase">+</button>
                 </div>
             </div>
 
@@ -209,7 +209,7 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderRPM" data-i18n="labels.rpm">RPM Máximo do Motor</label>
-                    <span class="info-icon" id="infoIconRPM" role="button" tabindex="0" aria-label="Informação sobre RPM máximo do motor" title="Clique para mais informações">
+                    <span class="info-icon" id="infoIconRPM" role="button" tabindex="0" data-i18n-aria="aria.clickInfo" data-i18n-title="titles.clickInfo">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                     <input type="text" id="inputRPM" class="valor-display valor-input" value="5800">
@@ -220,9 +220,9 @@
                     <span data-i18n="tooltips.rpm">O RPM máximo do motor é a rotação máxima que o motor pode atingir, medida em rotações por minuto (rpm). Este valor é usado para calcular o RPM efetivo na hélice (dividindo pela redução) e determinar o passo ideal. Valores típicos para motores de barcos de lazer variam de 1500 a 7000 rpm.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderRPM" data-step="-100" aria-label="Diminuir RPM">−</button>
+                    <button type="button" class="arrow-btn" data-target="sliderRPM" data-step="-100" data-i18n-aria="aria.decrease">−</button>
                     <input type="range" id="sliderRPM" min="1500" max="7000" step="100" value="5800">
-                    <button type="button" class="arrow-btn" data-target="sliderRPM" data-step="100" aria-label="Aumentar RPM">+</button>
+                    <button type="button" class="arrow-btn" data-target="sliderRPM" data-step="100" data-i18n-aria="aria.increase">+</button>
                 </div>
             </div>
 
@@ -230,7 +230,7 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderSlip" data-i18n="labels.slip">Slip Estimado</label>
-                    <span class="info-icon" id="infoIconSlip" role="button" tabindex="0" aria-label="Informação sobre slip estimado" title="Clique para mais informações">
+                    <span class="info-icon" id="infoIconSlip" role="button" tabindex="0" data-i18n-aria="aria.clickInfo" data-i18n-title="titles.clickInfo">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                     <input type="text" id="inputSlip" class="valor-display valor-input" value="15">
@@ -241,9 +241,9 @@
                     <span data-i18n="tooltips.slip">O slip (deslizamento) é a perda de eficiência entre a hélice e a água, expressa como percentual. Representa quanto a hélice "desliza" na água em vez de empurrá-la efetivamente. Barcos de lazer típicos têm 10-20% de slip. Quanto menor o slip, mais eficiente a hélice, mas também mais difícil de alcançar. O valor padrão de 15% é um bom equilíbrio para a maioria dos barcos.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderSlip" data-step="-1" aria-label="Diminuir slip">−</button>
+                    <button type="button" class="arrow-btn" data-target="sliderSlip" data-step="-1" data-i18n-aria="aria.decrease">−</button>
                     <input type="range" id="sliderSlip" min="10" max="20" step="1" value="15">
-                    <button type="button" class="arrow-btn" data-target="sliderSlip" data-step="1" aria-label="Aumentar slip">+</button>
+                    <button type="button" class="arrow-btn" data-target="sliderSlip" data-step="1" data-i18n-aria="aria.increase">+</button>
                 </div>
             </div>
         </section>
@@ -263,7 +263,7 @@
         <section class="resultado" id="resultadosSection">
             <div class="resultados-header-com-ajuda">
                 <h2 data-i18n="resultado.titulo">Resultados</h2>
-                <button id="btnMemorial" class="btn-help" title="Ver Memorial de Cálculo" data-i18n-title="memorial.btnVer" tabindex="10">
+                <button id="btnMemorial" class="btn-help" data-i18n-title="memorial.btnVer" tabindex="10">
                     <span class="texto-saiba-mais" data-i18n="botoes.saibaMais">SAIBA MAIS!</span>
                 </button>
             </div>
@@ -433,11 +433,11 @@
     </div>
 
     <footer>
-        <p data-i18n="footer">Calculadora de Hélice - Engenharia Nata @ 2025</p>
+        <p data-i18n="footer">Calculadora de Hélice - Engenharia Nata @ 2026</p>
     </footer>
 
     <!-- Botão de retorno à tela inicial (fixo centralizado no rodapé) -->
-    <a href="../index.html" class="home-button-fixed" aria-label="Voltar à tela inicial" data-i18n-aria="aria.home">
+    <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria.home">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
         </svg>
@@ -447,3 +447,4 @@
     <script type="module" src="helice-script.js?v=1.0.2"></script>
 </body>
 </html>
+

@@ -3,6 +3,14 @@
     "dev-badge-header": "🚧 EM DESENVOLVIMENTO",
     "app-title": "🌾 Dimensionador de Fazenda Auto-Sustentável",
     "app-subtitle": "Planejamento completo de produção de alimentos",
+    "title-lang-pt": "Português",
+    "title-lang-it": "Italiano",
+    "aria-lang-pt": "Alterar idioma para Português",
+    "aria-lang-it": "Alterar idioma para Italiano",
+    "aria-decrease": "Diminuir valor",
+    "aria-increase": "Aumentar valor",
+    "aria-home": "Voltar à tela inicial",
+    "btn-memorial": "Abrir memorial de cálculo",
     "label-pessoas": "Número de Pessoas",
     "unit-people": "pessoas",
     "label-consumo-plantas": "Produção Mínima de Plantas (Frutas/Verduras/Legumes)",
@@ -29,12 +37,20 @@
     "memorial-formula": "Fórmula:",
     "memorial-example": "Exemplo:",
     "memorial-resumo-title": "📊 Resumo dos Cálculos Atuais",
-    "footer": "💻 Portfólio Engenharia NATA @ 2025"
+    "footer": "💻 Portfólio Engenharia NATA @ 2026"
   },
   "it-IT": {
     "dev-badge-header": "🚧 IN SVILUPPO",
     "app-title": "🌾 Dimensionatore di Fattoria Auto-Sostenibile",
     "app-subtitle": "Pianificazione completa della produzione alimentare",
+    "title-lang-pt": "Portoghese",
+    "title-lang-it": "Italiano",
+    "aria-lang-pt": "Cambia lingua in portoghese",
+    "aria-lang-it": "Cambia lingua in italiano",
+    "aria-decrease": "Riduci valore",
+    "aria-increase": "Aumenta valore",
+    "aria-home": "Torna alla schermata iniziale",
+    "btn-memorial": "Apri memoriale di calcolo",
     "label-pessoas": "Numero di Persone",
     "unit-people": "persone",
     "label-consumo-plantas": "Produzione Minima di Piante (Frutta/Verdura/Legumi)",
@@ -61,6 +77,7 @@
     "memorial-formula": "Formula:",
     "memorial-example": "Esempio:",
     "memorial-resumo-title": "📊 Riepilogo dei Calcoli Attuali",
-    "footer": "💻 Portfolio Ingegneria NATA @ 2025"
+    "footer": "💻 Portfolio Ingegneria NATA @ 2026"
   }
 }
+

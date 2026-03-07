@@ -23,11 +23,11 @@
 <body>
     <!-- Seletor de Idioma -->
     <div class="language-selector">
-        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" aria-label="Alterar idioma para Português" title="Português">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" data-i18n-aria="aria.langPt" data-i18n-title="titles.langPt">
             <span class="flag" aria-hidden="true">🇧🇷</span>
             <span class="lang-text">PT</span>
         </button>
-        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" aria-label="Alterar idioma para Italiano" title="Italiano">
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" data-i18n-aria="aria.langIt" data-i18n-title="titles.langIt">
             <span class="flag" aria-hidden="true">🇮🇹</span>
             <span class="lang-text">IT</span>
         </button>
@@ -86,11 +86,11 @@
     </div>
     
     <footer>
-        <p data-i18n="footer">💻 Reportar Bug - Engenharia Nata @ 2025</p>
+        <p data-i18n="footer">💻 Reportar Bug - Engenharia Nata @ 2026</p>
     </footer>
 
     <!-- Botão de retorno à tela inicial -->
-    <a href="../index.html" class="home-button-fixed" aria-label="Voltar à tela inicial">
+    <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria.home">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
         </svg>
@@ -100,3 +100,4 @@
     <script type="module" src="bugs-script.js?v=1.0.2"></script>
 </body>
 </html>
+

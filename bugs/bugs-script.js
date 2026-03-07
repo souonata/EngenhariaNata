@@ -98,10 +98,9 @@ class BugsApp extends App {
         if (!btn) return;
 
         btn.disabled = desabilitar;
-        const textoOriginal = btn.textContent.trim();
         btn.textContent = desabilitar 
-            ? '⏳ Enviando...'
-            : (textoOriginal.includes('Enviando') ? '📤 Enviar Relatório' : textoOriginal);
+            ? `⏳ ${i18n.t('formulario.enviando')}`
+            : i18n.t('formulario.enviar');
     }
 
     mostrarMensagem(mensagem, tipo) {

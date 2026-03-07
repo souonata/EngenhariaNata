@@ -2,25 +2,25 @@
   "pt-BR": {
     "page": {
       "title": "Sobre o Projeto",
-      "subtitle": "Portfólio de apps web",
+      "subtitle": "Portfólio técnico de apps web",
       "titleFull": "📱 Sobre o Projeto - Engenharia NATA"
     },
     "overview": {
       "title": "Visão Geral",
-      "description": "Portfólio de ferramentas práticas para o dia a dia: calculadoras de engenharia e finanças que você pode usar diretamente no navegador, sem precisar instalar nada."
+      "description": "Portfólio de ferramentas práticas para engenharia, energia e finanças, com foco educacional e uso direto no navegador, sem instalação."
     },
     "apps": {
       "mutuo": {
         "name": "Empréstimo",
-        "desc": "Compara empréstimos e mostra parcelas para você economizar"
+        "desc": "Compara sistemas de amortização e facilita decisões financeiras com mais clareza"
       },
       "helice": {
         "name": "Hélice",
-        "desc": "Ajuda a escolher a hélice perfeita para seu barco"
+        "desc": "Apoia a escolha de hélice com base em desempenho e parâmetros reais de navegação"
       },
       "solar": {
         "name": "Energia Solar",
-        "desc": "Dimensione painéis solares para gerar sua própria energia"
+        "desc": "Dimensiona sistemas fotovoltaicos off-grid com foco técnico e econômico"
       },
       "bitola": {
         "name": "Bitola",
@@ -28,23 +28,23 @@
       },
       "arcondicionado": {
         "name": "Ar Condicionado",
-        "desc": "Calcula o ar condicionado ideal para seus ambientes"
+        "desc": "Dimensiona cargas térmicas e recomenda configurações para múltiplos ambientes"
       },
       "aquecimento": {
         "name": "Aquecedor Solar",
-        "desc": "Planeja seu sistema de aquecimento solar economizando energia"
+        "desc": "Dimensiona aquecimento solar térmico para água e ambiente com critérios energéticos"
       },
       "fazenda": {
         "name": "Fazenda",
-        "desc": "Planeje sua fazenda auto-sustentável para produção própria"
+        "desc": "Planeja produção alimentar auto-sustentável com dados técnicos e calendário de produção"
       },
       "sobre": {
-        "name": "Sobre mim",
+        "name": "Sobre o projeto",
         "desc": "Informações do projeto"
       },
       "bugs": {
         "name": "Reportar Bug",
-        "desc": "Ajude a melhorar os apps reportando problemas"
+        "desc": "Canal direto para reportar problemas e sugerir melhorias"
       }
     },
     "what": {
@@ -87,7 +87,7 @@
       "description": "Calcula e compara sistemas de amortização (SAC, Price e Americano) para você tomar a melhor decisão financeira."
     },
     "bugs": {
-      "description": "Ajude a melhorar os apps reportando problemas."
+      "description": "Canal para reportar falhas, compartilhar sugestões e apoiar a evolução contínua dos apps."
     },
     "stat": {
       "html": "linhas HTML",
@@ -145,12 +145,12 @@
         "desc": "Considera a eficiência e o deslizamento na água"
       },
       "bug-report": {
-        "title": "Report de Erros",
-        "desc": "Formulário simples para reportar bugs e problemas de usabilidade"
+        "title": "Reporte de Problemas",
+        "desc": "Formulário objetivo para registrar bugs e problemas de usabilidade"
       },
       "contact-info": {
         "title": "Informações de Contato",
-        "desc": "Campos opcionais para email e telefone, permitindo resposta personalizada"
+        "desc": "Campos opcionais para retorno personalizado sobre cada reporte"
       },
       "issue-type": {
         "title": "Tipo de Problema",
@@ -158,7 +158,7 @@
       },
       "analytics": {
         "title": "Análise",
-        "desc": "Relatórios de bugs para análise de qualidade e priorização de correções"
+        "desc": "Relatórios que ajudam a priorizar correções e melhorias de qualidade"
       },
       "btu": {
         "title": "Cálculo de BTU",
@@ -246,7 +246,7 @@
       "title": "Tecnologias Usadas",
       "html": "Estrutura das páginas",
       "css": "Estilos e animações",
-      "js": "JavaScript puro e rápido",
+      "js": "JavaScript modular, moderno e performático",
       "chart": "Gráficos interativos",
       "mobile": {
         "desc": "Funciona bem em celular e computador"
@@ -268,10 +268,16 @@
       "title": "💡 Código Comentado",
       "desc": "Código explicado para facilitar aprendizado"
     },
+    "titles": {
+      "langPt": "Português",
+      "langIt": "Italiano"
+    },
     "footer": {
       "text": "💻 Portfólio Engenharia NATA"
     },
     "aria": {
+      "langPt": "Alterar idioma para Português",
+      "langIt": "Alterar idioma para Italiano",
       "home": "Voltar para a tela inicial",
       "expandCard": "Expandir seção",
       "collapseCard": "Recolher seção"
@@ -280,25 +286,25 @@
   "it-IT": {
     "page": {
       "title": "Sul Progetto",
-      "subtitle": "Portfolio di app web",
+      "subtitle": "Portfolio tecnico di app web",
       "titleFull": "📱 Sul Progetto - Ingegneria NATA"
     },
     "overview": {
       "title": "Panoramica",
-      "description": "Portfolio di strumenti pratici per la vita quotidiana: calcolatrici di ingegneria e finanza che puoi usare direttamente nel browser, senza bisogno di installare nulla."
+      "description": "Portfolio di strumenti pratici per ingegneria, energia e finanza, con approccio educativo e utilizzo diretto dal browser, senza installazione."
     },
     "apps": {
       "mutuo": {
         "name": "Mutuo",
-        "desc": "Confronta prestiti e mostra rate per risparmiare"
+        "desc": "Confronta sistemi di ammortamento e supporta decisioni finanziarie più chiare"
       },
       "helice": {
         "name": "Elica",
-        "desc": "Aiuta a scegliere l'elica perfetta per la tua barca"
+        "desc": "Supporta la scelta dell'elica in base a prestazioni e parametri reali di navigazione"
       },
       "solar": {
         "name": "Energia Solare",
-        "desc": "Dimensiona pannelli solari per generare la tua energia"
+        "desc": "Dimensiona sistemi fotovoltaici off-grid con attenzione tecnica ed economica"
       },
       "bitola": {
         "name": "Sezione Cavi",
@@ -306,23 +312,23 @@
       },
       "arcondicionado": {
         "name": "Climatizzatore",
-        "desc": "Calcola il climatizzatore ideale per i tuoi ambienti"
+        "desc": "Dimensiona i carichi termici e suggerisce configurazioni per ambienti multipli"
       },
       "aquecimento": {
         "name": "Riscaldatore Solare",
-        "desc": "Pianifica il tuo sistema di riscaldamento solare risparmiando energia"
+        "desc": "Dimensiona il riscaldamento solare termico per acqua e ambienti con criteri energetici"
       },
       "fazenda": {
         "name": "Fattoria",
-        "desc": "Pianifica la tua fattoria auto-sostenibile per produzione propria"
+        "desc": "Pianifica produzione alimentare auto-sostenibile con dati tecnici e calendario operativo"
       },
       "sobre": {
-        "name": "Su di me",
+        "name": "Sul progetto",
         "desc": "Informazioni sul progetto"
       },
       "bugs": {
         "name": "Segnala Bug",
-        "desc": "Aiuta a migliorare le app segnalando problemi"
+        "desc": "Canale diretto per segnalare problemi e proporre miglioramenti"
       }
     },
     "what": {
@@ -365,7 +371,7 @@
       "description": "Calcola e confronta sistemi di ammortamento (Italiano, Francese e Tedesco) per prendere la migliore decisione finanziaria."
     },
     "bugs": {
-      "description": "Aiuta a migliorare le app segnalando problemi."
+      "description": "Canale per segnalare problemi, inviare suggerimenti e supportare il miglioramento continuo delle app."
     },
     "stat": {
       "html": "righe HTML",
@@ -423,12 +429,12 @@
         "desc": "Considera l'efficienza e lo slittamento nell'acqua"
       },
       "bug-report": {
-        "title": "Segnalazione di Errori",
-        "desc": "Modulo semplice per segnalare bug e problemi di usabilità"
+        "title": "Segnalazione Problemi",
+        "desc": "Modulo essenziale per registrare bug e problemi di usabilità"
       },
       "contact-info": {
         "title": "Informazioni di Contatto",
-        "desc": "Campi opzionali per email e telefono, permettendo risposta personalizzata"
+        "desc": "Campi opzionali per ricevere un riscontro personalizzato su ogni segnalazione"
       },
       "issue-type": {
         "title": "Tipo di Problema",
@@ -436,7 +442,7 @@
       },
       "analytics": {
         "title": "Analisi",
-        "desc": "Report di bug per analisi di qualità e prioritizzazione delle correzioni"
+        "desc": "Report utili per dare priorità alle correzioni e migliorare la qualità"
       },
       "btu": {
         "title": "Calcolo BTU",
@@ -524,7 +530,7 @@
       "title": "Tecnologie Utilizzate",
       "html": "Struttura delle pagine",
       "css": "Stili e animazioni",
-      "js": "JavaScript puro e veloce",
+      "js": "JavaScript modulare, moderno e performante",
       "chart": "Grafici interattivi",
       "mobile": {
         "desc": "Funziona perfettamente su cellulare e computer"
@@ -546,10 +552,16 @@
       "title": "💡 Codice Commentato",
       "desc": "Codice ben documentato per facilitare l'apprendimento"
     },
+    "titles": {
+      "langPt": "Portoghese",
+      "langIt": "Italiano"
+    },
     "footer": {
       "text": "💻 Portfolio Ingegneria NATA"
     },
     "aria": {
+      "langPt": "Cambia lingua in portoghese",
+      "langIt": "Cambia lingua in italiano",
       "home": "Torna alla schermata iniziale",
       "expandCard": "Espandi sezione",
       "collapseCard": "Comprimi sezione"

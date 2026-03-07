@@ -42,11 +42,11 @@
     <!-- SELETOR DE IDIOMA (PADRÃO GLOBAL - FORA DO CONTAINER) -->
     <!-- ========================================== -->
     <div class="language-selector">
-        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" aria-label="Alterar idioma para Português" title="Português">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" data-i18n-aria="aria-lang-pt" data-i18n-title="title-lang-pt">
             <span class="flag" aria-hidden="true">🇧🇷</span>
             <span class="lang-text">PT</span>
         </button>
-        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" aria-label="Alterar idioma para Italiano" title="Italiano">
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" data-i18n-aria="aria-lang-it" data-i18n-title="title-lang-it">
             <span class="flag" aria-hidden="true">🇮🇹</span>
             <span class="lang-text">IT</span>
         </button>
@@ -78,9 +78,9 @@
                     </div>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPessoas" data-step="-1" aria-label="Diminuir pessoas">−</button>
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPessoas" data-step="-1" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderPessoas" min="1" max="20" step="1" value="4">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPessoas" data-step="1" aria-label="Aumentar pessoas">+</button>
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPessoas" data-step="1" data-i18n-aria="aria-increase">+</button>
                 </div>
             </div>
 
@@ -94,9 +94,9 @@
                     </div>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderConsumoPlantas" data-step="-0.1" aria-label="Diminuir consumo">−</button>
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderConsumoPlantas" data-step="-0.1" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderConsumoPlantas" min="0.1" max="2.0" step="0.1" value="0.5">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderConsumoPlantas" data-step="0.1" aria-label="Aumentar consumo">+</button>
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderConsumoPlantas" data-step="0.1" data-i18n-aria="aria-increase">+</button>
                 </div>
                 <p class="dica" data-i18n="dica-consumo-plantas">💡 Total de plantas (frutas + verduras + legumes) por pessoa por dia</p>
             </div>
@@ -111,9 +111,9 @@
                     </div>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderConsumoProteinas" data-step="-0.1" aria-label="Diminuir consumo">−</button>
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderConsumoProteinas" data-step="-0.1" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderConsumoProteinas" min="0.1" max="2.0" step="0.1" value="0.5">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderConsumoProteinas" data-step="0.1" aria-label="Aumentar consumo">+</button>
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderConsumoProteinas" data-step="0.1" data-i18n-aria="aria-increase">+</button>
                 </div>
                 <p class="dica" data-i18n="dica-consumo-proteinas">💡 Total de proteínas (ovos, leite, carne, peixe) por pessoa por dia</p>
             </div>
@@ -252,7 +252,7 @@
         <section class="card" id="secaoResultados" style="display: none;">
             <div class="resultados-header-com-ajuda">
                 <h2 data-i18n="titulo-resultados">📊 Resultados do Dimensionamento</h2>
-                <button id="btnMemorial" class="btn-help" title="Ver Memorial de Cálculo" data-i18n-title="btn-memorial" tabindex="10">
+                <button id="btnMemorial" class="btn-help" data-i18n-title="btn-memorial" tabindex="10">
                     <span class="texto-saiba-mais" data-i18n="learn-more">SAIBA MAIS!</span>
                 </button>
             </div>
@@ -297,12 +297,12 @@
         <!-- FOOTER -->
         <!-- ========================================== -->
         <footer>
-            <p data-i18n="footer-text">Engenharia NATA @ 2025 - Apps Educativos de Engenharia</p>
+            <p data-i18n="footer-text">Engenharia NATA @ 2026 - Apps Educativos de Engenharia</p>
         </footer>
     </div>
 
     <!-- Botão Home Flutuante -->
-    <a href="../index.html" class="home-button-fixed" aria-label="Voltar para a página inicial">
+    <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria-home">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
         </svg>
@@ -313,4 +313,5 @@
     <script type="module" src="fazenda-script.js?v=1.0.2"></script>
 </body>
 </html>
+
 

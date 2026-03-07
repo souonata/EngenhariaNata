@@ -45,11 +45,11 @@
     <!-- SELETOR DE IDIOMA (PADRÃO GLOBAL - FORA DO CONTAINER) -->
     <!-- ========================================== -->
     <div class="language-selector">
-        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" aria-label="Alterar idioma para Português" title="Português">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" data-i18n-aria="aria-lang-pt" data-i18n-title="title-lang-pt">
             <span class="flag" aria-hidden="true">🇧🇷</span>
             <span class="lang-text">PT</span>
         </button>
-        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" aria-label="Alterar idioma para Italiano" title="Italiano">
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" data-i18n-aria="aria-lang-it" data-i18n-title="title-lang-it">
             <span class="flag" aria-hidden="true">🇮🇹</span>
             <span class="lang-text">IT</span>
         </button>
@@ -261,7 +261,7 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderConsumo" data-i18n="label-consumo">Consumo Médio Mensal</label>
-                    <span class="info-icon" id="infoIconConsumo" role="button" tabindex="0" aria-label="Informação sobre consumo médio mensal" title="Clique para mais informações">
+                    <span class="info-icon" id="infoIconConsumo" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                     <input type="text" id="inputConsumo" class="valor-display valor-input" value="200">
@@ -272,9 +272,9 @@
                     <span data-i18n="tooltip-consumo-texto">O consumo médio mensal representa a quantidade de energia elétrica que você utiliza por mês, medida em quilowatt-hora (kWh). Este valor é usado para calcular a energia diária necessária e dimensionar todo o sistema fotovoltaico. Você pode encontrar este valor na sua conta de luz.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderConsumo" data-step="-10" aria-label="Diminuir consumo">−</button>
+                    <button type="button" class="arrow-btn" data-target="sliderConsumo" data-step="-10" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderConsumo" min="10" max="999" step="10" value="200">
-                    <button type="button" class="arrow-btn" data-target="sliderConsumo" data-step="10" aria-label="Aumentar consumo">+</button>
+                    <button type="button" class="arrow-btn" data-target="sliderConsumo" data-step="10" data-i18n-aria="aria-increase">+</button>
                 </div>
             </div>
 
@@ -282,7 +282,7 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderAutonomia" data-i18n="label-autonomia">Dias de Autonomia</label>
-                    <span class="info-icon info-icon-autonomia" id="infoIconAutonomia" role="button" tabindex="0" aria-label="Informação sobre dias de autonomia" title="Clique para mais informações">
+                    <span class="info-icon info-icon-autonomia" id="infoIconAutonomia" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                     <input type="text" id="inputAutonomia" class="valor-display valor-input" value="1">
@@ -293,9 +293,9 @@
                     <span data-i18n="tooltip-autonomia-texto">Os dias de autonomia representam quantos dias consecutivos o sistema deve conseguir fornecer energia sem receber luz solar. Por exemplo, se você configurar 3 dias de autonomia, o sistema será dimensionado para armazenar energia suficiente para funcionar por 3 dias mesmo sem sol, garantindo funcionamento durante períodos nublados ou chuvosos.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderAutonomia" data-step="-1" aria-label="Diminuir autonomia">−</button>
+                    <button type="button" class="arrow-btn" data-target="sliderAutonomia" data-step="-1" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderAutonomia" min="1" max="10" step="1" value="1">
-                    <button type="button" class="arrow-btn" data-target="sliderAutonomia" data-step="1" aria-label="Aumentar autonomia">+</button>
+                    <button type="button" class="arrow-btn" data-target="sliderAutonomia" data-step="1" data-i18n-aria="aria-increase">+</button>
                 </div>
             </div>
 
@@ -338,7 +338,7 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderVidaUtil" data-i18n="label-vida-util">Vida Útil Estimada</label>
-                    <span class="info-icon" id="infoIconVidaUtil" role="button" tabindex="0" aria-label="Informação sobre vida útil estimada" title="Clique para mais informações">
+                    <span class="info-icon" id="infoIconVidaUtil" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                     <input type="text" id="inputVidaUtil" class="valor-display valor-input" value="20">
@@ -349,9 +349,9 @@
                     <span data-i18n="tooltip-vida-util-texto">A vida útil desejada é o número de anos que você espera que o sistema funcione antes de precisar substituir as baterias. Baterias LiFePO4 podem durar até 25 anos com uso adequado, enquanto baterias AGM (chumbo-ácido) geralmente duram de 1 a 5 anos. Quanto maior a vida útil desejada, menor será o DoD (profundidade de descarga) diário para preservar as baterias.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderVidaUtil" data-step="-1" aria-label="Diminuir vida útil">−</button>
+                    <button type="button" class="arrow-btn" data-target="sliderVidaUtil" data-step="-1" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderVidaUtil" min="1" max="25" step="1" value="20">
-                    <button type="button" class="arrow-btn" data-target="sliderVidaUtil" data-step="1" aria-label="Aumentar vida útil">+</button>
+                    <button type="button" class="arrow-btn" data-target="sliderVidaUtil" data-step="1" data-i18n-aria="aria-increase">+</button>
                 </div>
                 <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">
                     <span id="descVidaUtil">DoD Diário: --%</span>
@@ -362,7 +362,7 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderPrecoKWh" data-i18n="label-preco-kwh">Custo da Energia (kWh)</label>
-                    <span class="info-icon" id="infoIconPrecoKWh" role="button" tabindex="0" aria-label="Informação sobre custo da energia" title="Clique para mais informações">
+                    <span class="info-icon" id="infoIconPrecoKWh" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                     <div class="valor-com-unidades">
@@ -375,9 +375,9 @@
                     <span data-i18n="tooltip-preco-kwh-texto">O custo da energia elétrica por kWh é o preço que você paga pela energia da rede elétrica. Este valor é usado para calcular a economia financeira do sistema solar ao longo do tempo. Você pode ajustar este valor para simular diferentes cenários de tarifa ou projeções futuras.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderPrecoKWh" data-step="-0.05" aria-label="Diminuir preço kWh">−</button>
+                    <button type="button" class="arrow-btn" data-target="sliderPrecoKWh" data-step="-0.05" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderPrecoKWh" min="0.19" max="3.00" step="0.05" value="0.75">
-                    <button type="button" class="arrow-btn" data-target="sliderPrecoKWh" data-step="0.05" aria-label="Aumentar preço kWh">+</button>
+                    <button type="button" class="arrow-btn" data-target="sliderPrecoKWh" data-step="0.05" data-i18n-aria="aria-increase">+</button>
                 </div>
                 <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">
                     <span id="notaPrecoKWh" style="font-size: 0.75rem; color: #888; font-style: italic;"></span>
@@ -388,7 +388,7 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderAumentoAnualEnergia" data-i18n="label-aumento-anual-energia">Aumento Anual do Custo da Energia</label>
-                    <span class="info-icon" id="infoIconAumentoAnualEnergia" role="button" tabindex="0" aria-label="Informação sobre aumento anual do custo da energia" title="Clique para mais informações">
+                    <span class="info-icon" id="infoIconAumentoAnualEnergia" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                     <div class="valor-com-unidades">
@@ -401,9 +401,9 @@
                     <span data-i18n="tooltip-aumento-anual-energia-texto">O aumento anual do custo da energia representa a taxa percentual de crescimento do preço da energia elétrica ao longo dos anos. Este valor é usado para calcular a economia acumulada considerando que a energia fica mais cara com o tempo. O valor padrão é baseado no histórico dos últimos 50 anos no Brasil e na Itália.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderAumentoAnualEnergia" data-step="-0.1" aria-label="Diminuir aumento anual">−</button>
+                    <button type="button" class="arrow-btn" data-target="sliderAumentoAnualEnergia" data-step="-0.1" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderAumentoAnualEnergia" min="1.2" max="40.0" step="0.1" value="8.0">
-                    <button type="button" class="arrow-btn" data-target="sliderAumentoAnualEnergia" data-step="0.1" aria-label="Aumentar aumento anual">+</button>
+                    <button type="button" class="arrow-btn" data-target="sliderAumentoAnualEnergia" data-step="0.1" data-i18n-aria="aria-increase">+</button>
                 </div>
                 <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">
                     <span id="notaAumentoAnualEnergia" style="font-size: 0.75rem; color: #888; font-style: italic;"></span>
@@ -414,7 +414,7 @@
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
                     <label for="sliderPrecoBateriaKWh" data-i18n="label-preco-bateria-kwh">Preço da Bateria (por kWh)</label>
-                    <span class="info-icon" id="infoIconPrecoBateriaKWh" role="button" tabindex="0" aria-label="Informação sobre preço da bateria" title="Clique para mais informações">
+                    <span class="info-icon" id="infoIconPrecoBateriaKWh" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
                         <span class="info-icon-symbol">ℹ️</span>
                     </span>
                     <div class="valor-com-unidades">
@@ -427,9 +427,9 @@
                     <span data-i18n="tooltip-preco-bateria-kwh-texto">O preço da bateria por kWh representa o custo unitário de capacidade de armazenamento de energia. Este valor varia conforme o tipo de bateria (LiFePO4 é mais caro que AGM) e o mercado. Você pode ajustar este valor para simular diferentes custos de baterias e ver como isso afeta o custo total do sistema.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderPrecoBateriaKWh" data-step="-100" aria-label="Diminuir preço bateria">−</button>
+                    <button type="button" class="arrow-btn" data-target="sliderPrecoBateriaKWh" data-step="-100" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderPrecoBateriaKWh" min="10" max="8000" step="10" value="3000">
-                    <button type="button" class="arrow-btn" data-target="sliderPrecoBateriaKWh" data-step="100" aria-label="Aumentar preço bateria">+</button>
+                    <button type="button" class="arrow-btn" data-target="sliderPrecoBateriaKWh" data-step="100" data-i18n-aria="aria-increase">+</button>
                 </div>
                 <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">
                     <span id="notaPrecoBateriaKWh" style="font-size: 0.75rem; color: #888; font-style: italic;"></span>
@@ -441,7 +441,7 @@
         <section class="cartao">
             <div class="resultados-header-com-ajuda">
                 <h2 style="text-align: center; color: #2d9fa3ff; font-size: 1rem;" data-i18n="results-title">Sistema Recomendado</h2>
-                <button id="btnMemorial" class="btn-help" title="Ver Memorial de Cálculo" data-i18n-title="btn-memorial" tabindex="10">
+                <button id="btnMemorial" class="btn-help" data-i18n-title="btn-memorial" tabindex="10">
                     <span class="texto-saiba-mais" data-i18n="learn-more">SAIBA MAIS!</span>
                 </button>
             </div>
@@ -452,7 +452,7 @@
                     <span class="icone-resultado">💰</span>
                     <span class="rotulo-resultado" data-i18n="res-estimativa">Custo Total</span>
                     <span id="resPrecoEstimado" class="valor-resultado">R$ 15.000</span>
-                    <a href="config.html" class="icone-info" title="Configurações de preços">ⓘ</a>
+                    <a href="config.html" class="icone-info" data-i18n-title="title-config-prices">ⓘ</a>
                 </div>
 
                 <!-- Placas -->
@@ -516,7 +516,7 @@
                 <div class="grupo-entrada" style="margin-bottom: 20px; max-width: 400px; margin-left: auto; margin-right: auto;">
                     <div class="cabecalho-controle">
                         <label for="sliderPeriodoAnalise" data-i18n="label-periodo-analise">Período de Análise do Gráfico</label>
-                        <span class="info-icon" id="infoIconPeriodoAnalise" role="button" tabindex="0" aria-label="Informação sobre período de análise" title="Clique para mais informações">
+                        <span class="info-icon" id="infoIconPeriodoAnalise" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
                             <span class="info-icon-symbol">ℹ️</span>
                         </span>
                         <div class="valor-com-unidades">
@@ -529,9 +529,9 @@
                         <span data-i18n="tooltip-periodo-analise-texto">O período de análise do gráfico define quantos anos serão considerados na análise financeira de amortização e lucro líquido. O período mínimo é 1x a vida útil máxima da bateria selecionada (25 anos para LiFePO4, 5 anos para AGM), e o máximo é 4x esse valor. Valores maiores permitem ver projeções de longo prazo.</span>
                     </div>
                     <div class="slider-com-botoes">
-                        <button type="button" class="arrow-btn" data-target="sliderPeriodoAnalise" data-step="-1" aria-label="Diminuir período">−</button>
+                        <button type="button" class="arrow-btn" data-target="sliderPeriodoAnalise" data-step="-1" data-i18n-aria="aria-decrease">−</button>
                         <input type="range" id="sliderPeriodoAnalise" min="5" max="100" step="1" value="25">
-                        <button type="button" class="arrow-btn" data-target="sliderPeriodoAnalise" data-step="1" aria-label="Aumentar período">+</button>
+                        <button type="button" class="arrow-btn" data-target="sliderPeriodoAnalise" data-step="1" data-i18n-aria="aria-increase">+</button>
                     </div>
                 </div>
 
@@ -552,10 +552,10 @@
     </div>
 
     <footer>
-        <p data-i18n="footer.texto">Energia Solar - Engenharia NATA @ 2025</p>
+        <p data-i18n="footer.texto">Energia Solar - Engenharia NATA @ 2026</p>
     </footer>
 
-    <a href="../index.html" class="home-button-fixed" aria-label="Voltar à tela inicial">
+    <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria-home">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
         </svg>
@@ -568,3 +568,4 @@
     <script src="solar-script.js?v=1.0.2"></script>
 </body>
 </html>
+

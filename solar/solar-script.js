@@ -270,7 +270,7 @@ const traducoes = {
         'res-estimativa': 'Estimativa de Custo',
         'custos-titulo': 'Detalhamento de Custos',
         'custo-total': 'Total',
-        'footer': 'Solar - Engenharia NATA @ 2025',
+        'footer': 'Solar - Engenharia NATA @ 2026',
         'dias': 'dias',
         'dia': 'dia',
         'anos': 'anos',
@@ -345,7 +345,15 @@ const traducoes = {
         'btn-memorial': 'Ver Memorial de Cálculo',
         'graficos-title': '📊 Visualizações',
         'grafico-amortizacao-title': 'Análise de Amortização do Sistema',
-        'grafico-sazonalidade-title': 'Sazonalidade de Geração Solar'
+        'grafico-sazonalidade-title': 'Sazonalidade de Geração Solar',
+        'aria-lang-pt': 'Alterar idioma para Português',
+        'aria-lang-it': 'Alterar idioma para Italiano',
+        'title-lang-pt': 'Português',
+        'title-lang-it': 'Italiano',
+        'aria-click-info': 'Clique para mais informações',
+        'aria-decrease': 'Diminuir valor',
+        'aria-increase': 'Aumentar valor',
+        'title-config-prices': 'Configurações de preços'
     },
     'it-IT': {
         'dev-badge-header': '🚧 IN SVILUPPO',
@@ -390,7 +398,7 @@ const traducoes = {
         'res-estimativa': 'Costo Stimato',
         'custos-titulo': 'Dettaglio Costi',
         'custo-total': 'Totale',
-        'footer': 'Solare - Engenharia NATA @ 2025',
+        'footer': 'Solare - Engenharia NATA @ 2026',
         'aria-home': 'Voltar para a tela inicial',
         'watermark-dev': '🚧 EM DESENVOLVIMENTO',
         'learn-more': 'SAIBA MAIS!',
@@ -466,7 +474,15 @@ const traducoes = {
         'memorial-formula-passo8-5': 'Costo Totale = Costo Pannelli + Costo Batterie + Costo Inverter',
         'graficos-title': '📊 Visualizzazioni',
         'grafico-amortizacao-title': 'Analisi di Ammortamento del Sistema',
-        'grafico-sazonalidade-title': 'Stagionalità della Generazione Solare'
+        'grafico-sazonalidade-title': 'Stagionalità della Generazione Solare',
+        'aria-lang-pt': 'Cambia lingua in portoghese',
+        'aria-lang-it': 'Cambia lingua in italiano',
+        'title-lang-pt': 'Portoghese',
+        'title-lang-it': 'Italiano',
+        'aria-click-info': 'Clicca per maggiori informazioni',
+        'aria-decrease': 'Diminuisci valore',
+        'aria-increase': 'Aumenta valore',
+        'title-config-prices': 'Impostazioni prezzi'
     }
 };
 // Controle para os botões de seta
@@ -605,6 +621,22 @@ function trocarIdioma(novoIdioma) {
         const key = el.getAttribute('data-i18n');
         if (traducoes[novoIdioma] && traducoes[novoIdioma][key]) {
             el.textContent = traducoes[novoIdioma][key];
+        }
+    });
+
+    // Atualiza atributos title traduzíveis
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.getAttribute('data-i18n-title');
+        if (traducoes[novoIdioma] && traducoes[novoIdioma][key]) {
+            el.setAttribute('title', traducoes[novoIdioma][key]);
+        }
+    });
+
+    // Atualiza atributos aria-label traduzíveis
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+        const key = el.getAttribute('data-i18n-aria');
+        if (traducoes[novoIdioma] && traducoes[novoIdioma][key]) {
+            el.setAttribute('aria-label', traducoes[novoIdioma][key]);
         }
     });
 
@@ -3047,4 +3079,5 @@ function atualizarMemorialComValores() {
         resumoMPPT.textContent = formatarNumeroComSufixo(correnteMPPT, 0) + ' A (integrado)';
     }
 }
+
 

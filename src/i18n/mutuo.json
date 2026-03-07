@@ -75,7 +75,7 @@
     "tooltip-valor-texto": "O valor emprestado é o montante total que você está solicitando ao banco ou instituição financeira. Este valor será usado para calcular as parcelas, juros e amortização. Valores maiores resultam em parcelas maiores e mais juros totais.",
     "tooltip-taxa-texto": "A taxa de juros é o percentual cobrado sobre o valor emprestado. Você pode informar a taxa em diferentes períodos (ano, mês ou dia). O sistema converte automaticamente para taxa mensal usando juros compostos. Taxas maiores resultam em parcelas maiores e mais juros totais.",
     "tooltip-prazo-texto": "O prazo é o tempo total em anos para quitar o empréstimo. Este valor é convertido automaticamente para meses (anos × 12) para os cálculos. Prazos maiores resultam em parcelas menores, mas mais juros totais ao longo do tempo.",
-    "tooltip-extra-texto": "O pagamento extra é um valor adicional aplicado na periodicidade escolhida (mensal, semestral ou anual). Esse valor aparece nas parcelas individuais, é abatido do saldo devedor e reduz o tempo total para quitação do financiamento.",
+    "tooltip-extra-texto": "O pagamento extra é um valor a mais que você pode adicionar às parcelas (todo mês, a cada 6 meses ou uma vez por ano). Isso ajuda a reduzir a dívida mais rápido: você paga menos parcelas no total e pode quitar o financiamento antes.",
     "memorial-title": "📚 Memorial de Cálculo - Sistemas de Amortização",
     "memorial-intro-title": "🎯 Objetivo do Cálculo",
     "memorial-intro-text": "Este memorial explica passo a passo como são calculados os sistemas de amortização (SAC, Price e Americano), incluindo as fórmulas matemáticas utilizadas e exemplos práticos com os valores atuais.",
@@ -265,7 +265,7 @@
       "langIt": "Italiano"
     },
     "footer": {
-      "texto": "Calculadora de Empréstimos - Engenharia Nata @ 2025"
+      "texto": "Calculadora de Empréstimos - Engenharia Nata @ 2026"
     },
     "aria": {
       "aumentarValor": "Aumentar valor emprestado",
@@ -363,7 +363,7 @@
     "tooltip-valor-texto": "L'importo del prestito è l'importo totale che stai richiedendo alla banca o all'istituto finanziario. Questo importo verrà utilizzato per calcolare le rate, gli interessi e l'ammortamento. Importi maggiori comportano rate più elevate e più interessi totali.",
     "tooltip-taxa-texto": "Il tasso di interesse è la percentuale applicata sull'importo del prestito. Puoi informare il tasso in periodi diversi (anno, mese o giorno). Il sistema converte automaticamente in tasso mensile utilizzando interessi composti. Tassi più alti comportano rate più elevate e più interessi totali.",
     "tooltip-prazo-texto": "La durata è il tempo totale in anni per estinguere il prestito. Questo valore viene convertito automaticamente in mesi (anni × 12) per i calcoli. Durate maggiori comportano rate più piccole, ma più interessi totali nel tempo.",
-    "tooltip-extra-texto": "Il pagamento extra è un importo aggiuntivo applicato con la periodicità scelta (mensile, semestrale o annuale). Questo valore viene mostrato nelle singole rate, riduce il debito residuo e contribuisce ad accorciare il tempo totale di estinzione del finanziamento.",
+    "tooltip-extra-texto": "Il pagamento extra è un valore in più che puoi aggiungere alle rate (ogni mese, ogni 6 mesi o una volta all'anno). Questo aiuta a diminuire il debito più velocemente: paghi meno rate totali e puoi finire il finanziamento prima.",
     "memorial-title": "📚 Memoriale di Calcolo - Sistemi di Ammortamento",
     "memorial-intro-title": "🎯 Obiettivo del Calcolo",
     "memorial-intro-text": "Questo memoriale spiega passo dopo passo come vengono calcolati i sistemi di ammortamento (Italiana, Francese e Tedesco), includendo le formule matematiche utilizzate ed esempi pratici con i valori attuali.",
@@ -553,7 +553,7 @@
       "langIt": "Italiano"
     },
     "footer": {
-      "texto": "Calcolatore di Prestiti - Engenharia Nata @ 2025"
+      "texto": "Calcolatore di Prestiti - Engenharia Nata @ 2026"
     },
     "aria": {
       "aumentarValor": "Aumenta importo del prestito",
@@ -576,3 +576,4 @@
     }
   }
 }
+

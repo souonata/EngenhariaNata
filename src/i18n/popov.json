@@ -12,6 +12,10 @@
       "openNewTab": "Abrir em nova aba",
       "configureUrl": "Configurar URL"
     },
+    "titles": {
+      "langPt": "Português",
+      "langIt": "Italiano"
+    },
     "status": {
       "waitingTitle": "Aguardando configuração…",
       "waitingText": "Defina a URL do Popov IA (Tailscale Serve) para exibir aqui.",
@@ -36,6 +40,11 @@
       "urlPrompt": "Cole a URL do Popov IA (Tailscale Serve):",
       "urlPlaceholder": "https://popov-ia.<sua_tailnet>.ts.net"
     },
+    "aria": {
+      "langPt": "Alterar idioma para Português",
+      "langIt": "Alterar idioma para Italiano",
+      "home": "Voltar à tela inicial"
+    },
     "footer": {
       "texto": "Popov IA (Privado) - Engenharia NATA @ 2026"
     }
@@ -52,6 +61,10 @@
     "buttons": {
       "openNewTab": "Apri in una nuova scheda",
       "configureUrl": "Configura URL"
+    },
+    "titles": {
+      "langPt": "Portoghese",
+      "langIt": "Italiano"
     },
     "status": {
       "waitingTitle": "In attesa di configurazione…",
@@ -76,6 +89,11 @@
       "urlTitle": "Configura URL",
       "urlPrompt": "Incolla l'URL di Popov IA (Tailscale Serve):",
       "urlPlaceholder": "https://popov-ia.<tua_tailnet>.ts.net"
+    },
+    "aria": {
+      "langPt": "Cambia lingua in portoghese",
+      "langIt": "Cambia lingua in italiano",
+      "home": "Torna alla schermata iniziale"
     },
     "footer": {
       "texto": "Popov IA (Privato) - Engenharia NATA @ 2026"

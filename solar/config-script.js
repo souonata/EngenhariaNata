@@ -60,9 +60,11 @@ const traducoes = {
         'config-peso-bat': 'Peso',
         'config-salvar': '💾 Salvar e Voltar',
         'config-resetar': '🔄 Restaurar Padrões',
-        'footer': 'Solar - Engenharia NATA @ 2025',
-        'moeda': 'R$'
-        , 'aria-home': 'Voltar para a tela inicial'
+        'footer': 'Solar - Engenharia NATA @ 2026',
+        'moeda': 'R$',
+        'aria-home': 'Voltar para a tela inicial',
+        'title-back': 'Voltar',
+        'aria-back-solar': 'Voltar para configurações do Solar'
     },
     'it-IT': {
         'config-title': '⚙️ Configurazioni',
@@ -85,9 +87,11 @@ const traducoes = {
         'config-peso-bat': 'Peso',
         'config-salvar': '💾 Salva e Torna',
         'config-resetar': '🔄 Ripristina Predefiniti',
-        'footer': 'Solare - Engenharia NATA @ 2025',
-        'moeda': '€'
-        , 'aria-home': 'Torna alla schermata iniziale'
+        'footer': 'Solare - Engenharia NATA @ 2026',
+        'moeda': '€',
+        'aria-home': 'Torna alla schermata iniziale',
+        'title-back': 'Indietro',
+        'aria-back-solar': 'Torna alle impostazioni del Solare'
     }
 };
 // FUNÇÕES DE INTERFACE
@@ -100,6 +104,20 @@ function trocarIdioma(idioma) {
         const chave = el.getAttribute('data-i18n');
         if (traducoes[idioma] && traducoes[idioma][chave]) {
             el.textContent = traducoes[idioma][chave];
+        }
+    });
+
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const chave = el.getAttribute('data-i18n-title');
+        if (traducoes[idioma] && traducoes[idioma][chave]) {
+            el.setAttribute('title', traducoes[idioma][chave]);
+        }
+    });
+
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+        const chave = el.getAttribute('data-i18n-aria');
+        if (traducoes[idioma] && traducoes[idioma][chave]) {
+            el.setAttribute('aria-label', traducoes[idioma][chave]);
         }
     });
     atualizarDisplays();
@@ -227,3 +245,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // Botão Restaurar
     document.getElementById('btnResetar').addEventListener('click', restaurarPadroes);
 });
+

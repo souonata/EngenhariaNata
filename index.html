@@ -82,12 +82,12 @@
     <!-- ========================================== -->
     <div class="language-selector">
         <!-- Botão para português (ativo definido pelo JavaScript) -->
-        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" aria-label="Alterar idioma para Português" title="Português">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" data-i18n-aria="aria-lang-pt" data-i18n-title="title-lang-pt">
             <span class="flag" aria-hidden="true">🇧🇷</span>
             <span class="lang-text">PT</span>
         </button>
         <!-- Botão para italiano -->
-        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" aria-label="Alterar idioma para Italiano" title="Italiano">
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" data-i18n-aria="aria-lang-it" data-i18n-title="title-lang-it">
             <span class="flag" aria-hidden="true">🇮🇹</span>
             <span class="lang-text">IT</span>
         </button>
@@ -101,7 +101,7 @@
         <div class="barra-status">
             <!-- Horário à esquerda e data à direita -->
             <span class="horario" id="horario">...</span>
-            <span class="sync-indicator" id="syncIndicator" style="display: none;" aria-label="Sincronizando horário">
+            <span class="sync-indicator" id="syncIndicator" style="display: none;" data-i18n-aria="aria-sync-time">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z" fill="currentColor"/>
                 </svg>
@@ -116,7 +116,7 @@
                 
                 <!-- Ícone do aplicativo Sobre o Projeto -->
                 <!-- Ícone do aplicativo Popov IA -->
-                <a href="popov/popov.html" class="app-icon" aria-label="Popov IA">
+                <a href="popov/popov.html" class="app-icon" data-i18n-aria="app-popov">
                     <div class="icon">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <defs>
@@ -132,7 +132,7 @@
                     <span class="app-name" data-i18n="app-popov">Popov IA</span>
                 </a>
                 <!-- Ao clicar, abre a página sobre/sobre.html -->
-                <a href="sobre/sobre.html" class="app-icon" aria-label="Sobre o projeto">
+                <a href="sobre/sobre.html" class="app-icon" data-i18n-aria="app-about">
                     <!-- Ícone SVG personalizado com gradiente azul -->
                     <div class="icon">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img">
@@ -150,11 +150,11 @@
                         </svg>
                     </div>
                     <!-- Nome do aplicativo que aparece abaixo do ícone -->
-                    <span class="app-name" data-i18n="app-about">Sobre mim</span>
+                    <span class="app-name" data-i18n="app-about">Sobre o Projeto</span>
                 </a>
 
                 <!-- Ícone do aplicativo Bitola -->
-                <a href="bitola/bitola.html" class="app-icon" aria-label="Bitola">
+                <a href="bitola/bitola.html" class="app-icon" data-i18n-aria="app-bitola">
                     <div class="icon">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <defs>
@@ -172,7 +172,7 @@
 
                 <!-- Ícone do aplicativo de cálculo de hélice -->
                 <!-- Ao clicar, abre a página helice/helice.html -->
-                <a href="helice/helice.html" class="app-icon" aria-label="Hélice">
+                <a href="helice/helice.html" class="app-icon" data-i18n-aria="app-helice">
                     <!-- Ícone SVG personalizado com gradiente azul-turquesa -->
                     <div class="icon">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -195,7 +195,7 @@
 
                 <!-- Ícone do aplicativo da calculadora -->
                 <!-- Ao clicar, abre a página mutuo/mutuo.html -->
-                <a href="mutuo/mutuo.html" class="app-icon" aria-label="Mutuo">
+                <a href="mutuo/mutuo.html" class="app-icon" data-i18n-aria="app-mutuo">
                     <!-- Ícone SVG personalizado com gradiente verde -->
                     <div class="icon">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -217,7 +217,7 @@
                 </a>
 
                 <!-- Ícone do aplicativo Reportar Bug -->
-                <a href="bugs/bugs.html" class="app-icon" aria-label="Reportar Bug">
+                <a href="bugs/bugs.html" class="app-icon" data-i18n-aria="app-bugs">
                     <div class="icon">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <defs>
@@ -234,7 +234,7 @@
                 </a>
 
                 <!-- Ícone do aplicativo Ar Condicionado (DEV) -->
-                <a href="arcondicionado/arcondicionado.html" class="app-icon" aria-label="Ar Condicionado">
+                <a href="arcondicionado/arcondicionado.html" class="app-icon" data-i18n-aria="app-arcondicionado">
                     <div class="icon icon-dev">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <defs>
@@ -252,7 +252,7 @@
                 </a>
 
                 <!-- Ícone do aplicativo Aquecedor Solar (DEV) -->
-                <a href="aquecimento/aquecimento.html" class="app-icon" aria-label="Aquecedor Solar">
+                <a href="aquecimento/aquecimento.html" class="app-icon" data-i18n-aria="app-aquecimento">
                     <div class="icon icon-dev">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <defs>
@@ -270,7 +270,7 @@
                 </a>
 
                 <!-- Ícone do aplicativo Energia Solar (DEV) -->
-                <a href="solar/solar.html" class="app-icon" aria-label="Energia Solar">
+                <a href="solar/solar.html" class="app-icon" data-i18n-aria="app-solar">
                     <div class="icon icon-dev">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <defs>
@@ -288,7 +288,7 @@
                 </a>
 
                 <!-- Ícone do aplicativo Fazenda (DEV) -->
-                <a href="fazenda/fazenda.html" class="app-icon" aria-label="Fazenda">
+                <a href="fazenda/fazenda.html" class="app-icon" data-i18n-aria="app-fazenda">
                     <div class="icon icon-dev">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <defs>
@@ -332,7 +332,7 @@
             <!-- App: Popov IA -->
             <div class="app-card">
                 <div class="app-card-header">
-                    <a href="popov/popov.html" aria-label="Popov IA">
+                    <a href="popov/popov.html" data-i18n-aria="app-popov">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
                             <defs>
                                 <linearGradient id="gradient-popov-desc" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -347,12 +347,12 @@
                     <h3><a href="popov/popov.html" data-i18n="app-popov-title">Popov IA - Assistente Privado</a></h3>
                 </div>
                 <p class="app-description" data-i18n="app-popov-description">Assistente IA privado via Tailscale. Acesse recursos avançados de engenharia com segurança e privacidade.</p>
-                <a href="popov/popov.html" class="app-link">Abrir Popov IA →</a>
+                <a href="popov/popov.html" class="app-link" data-i18n="app-link-view">Ver página →</a>
             </div>
             <!-- App: Sobre -->
             <div class="app-card">
                 <div class="app-card-header">
-                    <a href="sobre/sobre.html" aria-label="Sobre mim">
+                    <a href="sobre/sobre.html" data-i18n-aria="app-about">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
                             <defs>
                                 <linearGradient id="gradient-about-desc" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -364,7 +364,7 @@
                             <text x="30" y="40" font-size="28" text-anchor="middle">📖</text>
                         </svg>
                     </a>
-                    <h3><a href="sobre/sobre.html" data-i18n="app-about-title">Sobre mim</a></h3>
+                    <h3><a href="sobre/sobre.html" data-i18n="app-about-title">Sobre o Projeto</a></h3>
                 </div>
                 <p class="app-description" data-i18n="app-about-description">Informações sobre o projeto Engenharia NATA, tecnologias utilizadas, estatísticas do código e objetivos educacionais. Conheça mais sobre os apps e o desenvolvimento deste portfólio.</p>
                 <a href="sobre/sobre.html" class="app-link" data-i18n="app-link-view">Ver página →</a>
@@ -373,7 +373,7 @@
             <!-- App: Bitola -->
             <div class="app-card">
                 <div class="app-card-header">
-                    <a href="bitola/bitola.html" aria-label="Bitola">
+                    <a href="bitola/bitola.html" data-i18n-aria="app-bitola">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
                             <defs>
                                 <linearGradient id="gradient-bitola-desc" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -394,7 +394,7 @@
             <!-- App: Helice -->
             <div class="app-card">
                 <div class="app-card-header">
-                    <a href="helice/helice.html" aria-label="Hélice">
+                    <a href="helice/helice.html" data-i18n-aria="app-helice">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
                             <defs>
                                 <linearGradient id="gradient-helice-desc" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -415,7 +415,7 @@
             <!-- App: Mutuo -->
             <div class="app-card">
                 <div class="app-card-header">
-                    <a href="mutuo/mutuo.html" aria-label="Mutuo">
+                    <a href="mutuo/mutuo.html" data-i18n-aria="app-mutuo">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
                             <defs>
                                 <linearGradient id="gradient-mutuo-desc" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -436,7 +436,7 @@
             <!-- App: Reportar Bug -->
             <div class="app-card">
                 <div class="app-card-header">
-                    <a href="bugs/bugs.html" aria-label="Reportar Bug">
+                    <a href="bugs/bugs.html" data-i18n-aria="app-bugs">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
                             <defs>
                                 <linearGradient id="gradient-bugs-desc" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -457,7 +457,7 @@
             <!-- App: Ar Condicionado (DEV) -->
             <div class="app-card">
                 <div class="app-card-header">
-                    <a href="arcondicionado/arcondicionado.html" aria-label="Ar Condicionado">
+                    <a href="arcondicionado/arcondicionado.html" data-i18n-aria="app-arcondicionado">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
                             <defs>
                                 <linearGradient id="gradient-arcondicionado-desc" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -479,7 +479,7 @@
             <!-- App: Aquecedor Solar (DEV) -->
             <div class="app-card">
                 <div class="app-card-header">
-                    <a href="aquecimento/aquecimento.html" aria-label="Aquecedor Solar">
+                    <a href="aquecimento/aquecimento.html" data-i18n-aria="app-aquecimento">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
                             <defs>
                                 <linearGradient id="gradient-aquecimento-desc" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -501,7 +501,7 @@
             <!-- App: Energia Solar (DEV) -->
             <div class="app-card">
                 <div class="app-card-header">
-                    <a href="solar/solar.html" aria-label="Energia Solar">
+                    <a href="solar/solar.html" data-i18n-aria="app-solar">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
                             <defs>
                                 <linearGradient id="gradient-solar-desc" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -523,7 +523,7 @@
             <!-- App: Fazenda (DEV) -->
             <div class="app-card">
                 <div class="app-card-header">
-                    <a href="fazenda/fazenda.html" aria-label="Fazenda">
+                    <a href="fazenda/fazenda.html" data-i18n-aria="app-fazenda">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
                             <defs>
                                 <linearGradient id="gradient-fazenda-desc" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -545,7 +545,7 @@
     </div>
     
     <footer>
-        <p data-i18n="footer">💻 Portfólio Engenharia NATA @ 2025</p>
+        <p data-i18n="footer">💻 Portfólio Engenharia NATA @ 2026</p>
     </footer>
     
     <!-- Script Modular -->
@@ -578,3 +578,4 @@
     </script>
 </body>
 </html>
+

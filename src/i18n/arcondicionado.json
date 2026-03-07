@@ -51,8 +51,15 @@
     "resultado-btu-base": "BTU Base (Volume + Pessoas + Equipamentos):",
     "resultado-btu-final": "BTU Final (após fatores de insolação e isolamento):",
     "info-modelos": "💡 Modelos Comerciais Comuns:",
-    "footer": "Dimensionador de Ar Condicionado - Engenharia Nata @ 2025",
+    "footer": "Dimensionador de Ar Condicionado - Engenharia Nata @ 2026",
     "aria-home": "Voltar para a tela inicial",
+    "aria-lang-pt": "Alterar idioma para Português",
+    "aria-lang-it": "Alterar idioma para Italiano",
+    "title-lang-pt": "Português",
+    "title-lang-it": "Italiano",
+    "aria-click-info": "Clique para mais informações",
+    "aria-decrease": "Diminuir valor",
+    "aria-increase": "Aumentar valor",
     "watermark-dev": "🚧 EM DESENVOLVIMENTO",
     "learn-more": "SAIBA MAIS!",
     "back": "← Voltar",
@@ -180,8 +187,15 @@
     "resultado-btu-base": "BTU Base (Volume + Persone + Apparecchi):",
     "resultado-btu-final": "BTU Finale (dopo fattori insolazione e isolamento):",
     "info-modelos": "💡 Modelli Commerciali Comuni:",
-    "footer": "Dimensionatore Climatizzatore - Engenharia Nata @ 2025",
+    "footer": "Dimensionatore Climatizzatore - Engenharia Nata @ 2026",
     "aria-home": "Torna alla schermata iniziale",
+    "aria-lang-pt": "Cambia lingua in portoghese",
+    "aria-lang-it": "Cambia lingua in italiano",
+    "title-lang-pt": "Portoghese",
+    "title-lang-it": "Italiano",
+    "aria-click-info": "Clicca per maggiori informazioni",
+    "aria-decrease": "Diminuisci valore",
+    "aria-increase": "Aumenta valore",
     "watermark-dev": "🚧 IN SVILUPPO",
     "learn-more": "SCOPRI DI PIÙ!",
     "back": "← Indietro",
@@ -258,3 +272,4 @@
     "tooltip-equipamentos-texto": "Apparecchi elettrici generano calore durante il funzionamento, aumentando il carico termico dell'ambiente. Ogni apparecchio (TV, computer, frigorifero, ecc.) aggiunge approssimativamente 300 BTU al calcolo. Contare ogni apparecchio come 1 unità."
   }
 }
+
