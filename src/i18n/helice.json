@@ -11,6 +11,16 @@
       "rpm": "RPM Máximo do Motor",
       "slip": "Slip Estimado"
     },
+    "helice": {
+      "tipoPropulsao": "Tipo de Propulsao",
+      "tipoSingleProp": "Single Prop",
+      "tipoDualIps": "Dual Prop",
+      "modeloIps": "Modelos Volvo Penta: IPS e Aquamatic",
+      "modeloIpsGrupo": "IPS",
+      "modeloAquamaticGrupo": "Aquamatic",
+      "ipsInfo": "Sistema IPS com duas helices em contrarotacao e drive integrado.",
+      "ipsSpecsPlaceholder": "Selecione um modelo para ver faixas sugeridas."
+    },
     "unidades": {
       "mph": "mph",
       "kmh": "km/h",
@@ -32,9 +42,10 @@
     },
     "grafico": {
       "titulo": "📊 Relação Passo × Velocidade",
-      "label": "Passo (polegadas)",
+      "label": "Passo",
+      "slipLabel": "Zona de Slip (10-20%)",
       "eixoX": "Velocidade (nós)",
-      "eixoY": "Passo Recomendado (pol)"
+      "eixoY": "Passo Recomendado"
     },
     "info": {
       "titulo": "ℹ️ Como Funciona",
@@ -84,8 +95,8 @@
     "tooltips": {
       "velocidade": "A velocidade desejada é a velocidade máxima que você quer que o barco alcance, medida em nós, mph ou km/h.",
       "reducao": "A redução da rabeta é a relação entre a rotação do motor e a rotação da hélice. Valores típicos variam de 1:1 a 3:1.",
-      "rpm": "O RPM máximo do motor é a rotação máxima que o motor pode atingir. Valores típicos variam de 4000 a 7000 rpm.",
-      "slip": "O slip (deslizamento) é a perda de eficiência entre a hélice e a água. O valor padrão de 15% é um bom equilíbrio."
+      "rpm": "O RPM máximo do motor é a rotação máxima que o motor pode atingir. Valores típicos variam de 1500 a 7000 rpm.",
+      "slip": "O slip (deslizamento) é a perda de eficiência entre a hélice e a água. O valor recomendado muda conforme o tipo de hélice."
     },
     "botoes": {
       "voltar": "← Voltar",
@@ -108,6 +119,16 @@
       "rpm": "RPM Massimo Motore",
       "slip": "Slip Stimato"
     },
+    "helice": {
+      "tipoPropulsao": "Tipo di Propulsione",
+      "tipoSingleProp": "Elica Singola",
+      "tipoDualIps": "Dual Prop",
+      "modeloIps": "Modelli Volvo Penta: IPS e Aquamatic",
+      "modeloIpsGrupo": "IPS",
+      "modeloAquamaticGrupo": "Aquamatic",
+      "ipsInfo": "Sistema IPS con due eliche in controrotazione e drive integrato.",
+      "ipsSpecsPlaceholder": "Seleziona un modello per vedere le fasce suggerite."
+    },
     "unidades": {
       "mph": "mph",
       "kmh": "km/h",
@@ -129,9 +150,10 @@
     },
     "grafico": {
       "titulo": "📊 Relazione Passo × Velocità",
-      "label": "Passo (pollici)",
+      "label": "Passo",
+      "slipLabel": "Zona di Slip (10-20%)",
       "eixoX": "Velocità (nodi)",
-      "eixoY": "Passo Consigliato (pol)"
+      "eixoY": "Passo Consigliato"
     },
     "info": {
       "titulo": "ℹ️ Come Funziona",
@@ -181,8 +203,8 @@
     "tooltips": {
       "velocidade": "La velocità desiderata è la velocità massima che si desidera raggiungere con la barca, misurata in nodi, mph o km/h.",
       "reducao": "La riduzione del piede poppiero è il rapporto tra la rotazione del motore e la rotazione dell'elica. Valori tipici vanno da 1:1 a 3:1.",
-      "rpm": "Il RPM massimo del motore è la rotazione massima che il motore può raggiungere. Valori tipici vanno da 4000 a 7000 rpm.",
-      "slip": "Lo slip (scivolamento) è la perdita di efficienza tra l'elica e l'acqua. Il valore predefinito del 15% è un buon equilibrio."
+      "rpm": "Il RPM massimo del motore è la rotazione massima che il motore può raggiungere. Valori tipici variano da 1500 a 7000 rpm.",
+      "slip": "Lo slip è la perdita di efficienza tra l'elica e l'acqua. Il valore consigliato dipende dal tipo di elica."
     },
     "botoes": {
       "voltar": "← Indietro",

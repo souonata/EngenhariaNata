@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <!-- Meta viewport otimizada para mobile: desabilita zoom e scroll lateral -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- Meta tags para DESABILITAR cache - sempre carrega arquivos atualizados -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
     <link rel="apple-touch-icon" href="../favicon.svg">
-    
+
     <!-- SEO Meta Tags -->
     <title>Calculadora de Hélice - Passo de Hélice para Barcos | Engenharia NATA</title>
     <meta name="description" content="Calculadora de passo de hélice para barcos de lazer. Determina o passo ideal baseado em RPM máximo, velocidade desejada e análise de slip. Gráficos de relação velocidade × passo.">
@@ -21,7 +21,7 @@
     <meta name="author" content="Engenharia NATA">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://engnata.infinityfree.me/helice/helice.html">
-    
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://engnata.infinityfree.me/helice/helice.html">
@@ -29,18 +29,18 @@
     <meta property="og:description" content="Calculadora de passo de hélice para barcos de lazer com análise de slip e gráficos interativos.">
     <meta property="og:locale" content="pt_BR">
     <meta property="og:locale:alternate" content="it_IT">
-    
+
     <!-- Twitter -->
     <meta property="twitter:card" content="summary">
     <meta property="twitter:url" content="https://engnata.infinityfree.me/helice/helice.html">
     <meta property="twitter:title" content="Calculadora de Hélice">
     <meta property="twitter:description" content="Calculadora de passo de hélice para barcos de lazer com análise de slip e gráficos interativos.">
-    
+
     <!-- Carrega o arquivo CSS com controle de versão -->
-    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.0">
-    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.0">
-    <link rel="stylesheet" href="helice-styles.css?v=1.5.8">
-    
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.1">
+    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.1">
+    <link rel="stylesheet" href="helice-styles.css?v=1.0.1">
+
     <!-- Chart.js será carregado dinamicamente quando necessário (lazy loading) -->
 </head>
 <body>
@@ -74,6 +74,73 @@
         <!-- CONTROLES DE ENTRADA -->
         <!-- ========================================== -->
         <section class="cartao">
+            <!-- Tipo de propulsao: Single Prop vs Dual Prop IPS -->
+            <div class="grupo-entrada" id="secaoTipoPropulsao">
+                <label data-i18n="helice.tipoPropulsao">Tipo de Propulsao</label>
+                <div class="grupo-radio">
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoHelice" value="single" checked>
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" style="font-size: 1.5rem;" title="Single Prop">⚙️</span>
+                            <span class="rotulo-radio" data-i18n="helice.tipoSingleProp">Single Prop</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoHelice" value="ips">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" style="font-size: 1.5rem;" title="Dual Prop">⛵</span>
+                            <span class="rotulo-radio" data-i18n="helice.tipoDualIps">Dual Prop</span>
+                        </div>
+                    </label>
+                </div>
+                <div class="descricao-info" id="infoIPSSection" style="display: none;">
+                    <span data-i18n="helice.ipsInfo">Sistema IPS com duas helices em contrarotacao e drive integrado.</span>
+                </div>
+            </div>
+
+            <!-- Modelos Volvo Penta: IPS e Aquamatic -->
+            <div class="grupo-entrada" id="secaoModeloIPS" style="display: none;">
+                <label data-i18n="helice.modeloIps">Modelos Volvo Penta: IPS e Aquamatic</label>
+                <p class="subtitulo" data-i18n="helice.modeloIpsGrupo">IPS</p>
+                <div class="grupo-radio" id="grupoModelosIPS">
+                    <label class="opcao-radio">
+                        <input type="radio" name="modeloIPS" value="T" checked>
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">T</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="modeloIPS" value="N">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">N</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="modeloIPS" value="P">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">P</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="modeloIPS" value="Q">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">Q</span>
+                        </div>
+                    </label>
+                </div>
+                <p class="subtitulo" data-i18n="helice.modeloAquamaticGrupo">Aquamatic</p>
+                <div class="grupo-radio" id="grupoModelosAquamatic">
+                    <label class="opcao-radio">
+                        <input type="radio" name="modeloIPS" value="H">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">H</span>
+                        </div>
+                    </label>
+                </div>
+                <div class="descricao-info" id="ipsSpecs" style="display: none;">
+                    <span id="ipsSpecsText" data-i18n="helice.ipsSpecsPlaceholder">Selecione um modelo para ver faixas sugeridas.</span>
+                </div>
+            </div>
             <!-- Velocidade desejada -->
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
@@ -150,11 +217,11 @@
                 </div>
                 <!-- Descrição que aparece/desaparece ao clicar no ícone -->
                 <div class="descricao-info" id="descricaoRPM" style="display: none;">
-                    <span data-i18n="tooltips.rpm">O RPM máximo do motor é a rotação máxima que o motor pode atingir, medida em rotações por minuto (rpm). Este valor é usado para calcular o RPM efetivo na hélice (dividindo pela redução) e determinar o passo ideal. Valores típicos para motores de barcos de lazer variam de 4000 a 7000 rpm.</span>
+                    <span data-i18n="tooltips.rpm">O RPM máximo do motor é a rotação máxima que o motor pode atingir, medida em rotações por minuto (rpm). Este valor é usado para calcular o RPM efetivo na hélice (dividindo pela redução) e determinar o passo ideal. Valores típicos para motores de barcos de lazer variam de 1500 a 7000 rpm.</span>
                 </div>
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn" data-target="sliderRPM" data-step="-100" aria-label="Diminuir RPM">−</button>
-                    <input type="range" id="sliderRPM" min="4000" max="7000" step="100" value="5800">
+                    <input type="range" id="sliderRPM" min="1500" max="7000" step="100" value="5800">
                     <button type="button" class="arrow-btn" data-target="sliderRPM" data-step="100" aria-label="Aumentar RPM">+</button>
                 </div>
             </div>
@@ -182,6 +249,73 @@
         </section>
 
         <!-- ========================================== -->
+        <!-- GRÁFICO INTERATIVO -->
+        <!-- ========================================== -->
+        <section class="grafico-section">
+            <h3 data-i18n="grafico.titulo">📊 Relação Passo × Velocidade</h3>
+            <div class="chart-container">
+                <canvas id="graficoHelice"></canvas>
+            </div>
+        </section>
+
+        <!-- RESULTADO -->
+        <!-- ========================================== -->
+        <section class="resultado" id="resultadosSection">
+            <div class="resultados-header-com-ajuda">
+                <h2 data-i18n="resultado.titulo">Resultados</h2>
+                <button id="btnMemorial" class="btn-help" title="Ver Memorial de Cálculo" data-i18n-title="memorial.btnVer" tabindex="10">
+                    <span class="texto-saiba-mais" data-i18n="botoes.saibaMais">SAIBA MAIS!</span>
+                </button>
+            </div>
+            <!-- Grade de resultados: Passo, RPM, Velocidade -->
+            <div class="grade-resultados">
+                <!-- Passo Recomendado -->
+                <div class="item-resultado">
+                    <div class="linha-resultado-com-unidades">
+                        <span class="icone-resultado">📐</span>
+                        <span class="valor-resultado" id="resultadoPasso">18</span>
+                        <!-- Seletor de unidade de passo (horizontal, compacto) -->
+                        <div class="grupo-radio-compacto">
+                            <label class="opcao-radio-compacto">
+                                <input type="radio" name="unidadePasso" value="polegadas" checked>
+                                <div class="cartao-radio-compacto">
+                                    <span class="rotulo-radio" data-i18n="unidades.polegadasCompacto">pol</span>
+                                </div>
+                            </label>
+                            <label class="opcao-radio-compacto">
+                                <input type="radio" name="unidadePasso" value="mm">
+                                <div class="cartao-radio-compacto">
+                                    <span class="rotulo-radio" data-i18n="unidades.mm">mm</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="rotulo-resultado" data-i18n="resultado.passoLabel">Passo</div>
+                </div>
+
+                <!-- RPM na Hélice -->
+                <div class="item-resultado">
+                    <div class="linha-resultado">
+                        <span class="icone-resultado">⚙️</span>
+                        <span class="valor-resultado" id="rpmHelice">2500</span>
+                        <span class="rotulo-resultado">rpm</span>
+                    </div>
+                    <div class="rotulo-resultado" data-i18n="resultado.rpmHelice">RPM na Hélice</div>
+                </div>
+
+                <!-- Velocidade Teórica -->
+                <div class="item-resultado">
+                    <div class="linha-resultado">
+                        <span class="icone-resultado">⚡</span>
+                        <span class="valor-resultado" id="velocidadeTeorica">29.4</span>
+                        <span class="rotulo-resultado" id="unidadeVelocidadeTeorica" data-i18n="unidades.nos">nós</span>
+                    </div>
+                    <div class="rotulo-resultado" data-i18n="resultado.velocidadeTeorica">Velocidade Teórica</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
         <!-- ========================================== -->
         <!-- SEÇÃO DE MEMORIAL DE CÁLCULO -->
         <!-- Começa escondida (display: none) -->
@@ -194,7 +328,7 @@
                     <span data-i18n="botoes.voltar">← Voltar</span>
                 </button>
             </div>
-            
+
             <div class="memorial-item">
                 <h3 data-i18n="memorial.introTitulo">🎯 Objetivo do Cálculo</h3>
                 <p data-i18n="memorial.introTexto">Este memorial explica passo a passo como é calculado o passo ideal da hélice para barcos de lazer, considerando velocidade desejada, RPM do motor, redução da rabeta e slip.</p>
@@ -222,7 +356,7 @@
                     <p><strong data-i18n="memorial.constantesTitulo">Valores de referência usados:</strong></p>
                     <ul>
                         <li data-i18n="memorial.constante1056">1056 = constante de conversão de nós para polegadas/minuto — Constante amplamente utilizada na indústria náutica, derivada da conversão de unidades: 1 nó = 1.852 km/h = 1.215.222 pol/min (aproximado para 1056 na prática). Esta constante simplifica os cálculos mantendo precisão suficiente para aplicações práticas.</li>
-                        <li data-i18n="memorial.slipTipico"><strong>Slip típico:</strong> 10-20% para barcos de lazer — Representa a perda de eficiência devido ao deslizamento da hélice na água. Valor padrão usado: 15%.</li>
+                        <li data-i18n-html="memorial.slipTipico"></li>
                     </ul>
                     <p style="margin-top: 10px;"><strong data-i18n="memorial.principioFisicoTitulo">⚛️ Princípio Físico Aplicado — Propulsão Náutica:</strong></p>
                     <p style="margin-top: 5px;" data-i18n="memorial.principioFisicoTexto">A hélice funciona como uma "rosca" na água: quando gira, "empurra" a água para trás, e pela terceira lei de Newton (ação e reação), a água "empurra" o barco para frente. O slip ocorre porque a água não é um meio rígido, então a hélice "desliza" parcialmente, reduzindo a eficiência. Quanto maior o passo, mais distância a hélice avança por rotação, mas também requer mais torque do motor.</p>
@@ -268,79 +402,13 @@
             </button>
         </div>
 
-        <!-- RESULTADO -->
-        <!-- ========================================== -->
-        <section class="resultado" id="resultadosSection">
-            <div class="resultados-header-com-ajuda">
-                <h2 data-i18n="resultado.titulo">Resultados</h2>
-                <button id="btnMemorial" class="btn-help" title="Ver Memorial de Cálculo" data-i18n-title="memorial.btnVer" tabindex="10">
-                    <span class="texto-saiba-mais" data-i18n="botoes.saibaMais">SAIBA MAIS!</span>
-                </button>
-            </div>
-            <!-- Grade de resultados: Passo, RPM, Velocidade -->
-            <div class="grade-resultados">
-                <!-- Passo Recomendado -->
-                <div class="item-resultado">
-                    <div class="linha-resultado-com-unidades">
-                        <span class="icone-resultado">📐</span>
-                        <span class="valor-resultado" id="resultadoPasso">18</span>
-                        <!-- Seletor de unidade de passo (horizontal, compacto) -->
-                        <div class="grupo-radio-compacto">
-                            <label class="opcao-radio-compacto">
-                                <input type="radio" name="unidadePasso" value="polegadas" checked>
-                                <div class="cartao-radio-compacto">
-                                    <span class="rotulo-radio" data-i18n="unidades.polegadasCompacto">pol</span>
-                                </div>
-                            </label>
-                            <label class="opcao-radio-compacto">
-                                <input type="radio" name="unidadePasso" value="mm">
-                                <div class="cartao-radio-compacto">
-                                    <span class="rotulo-radio" data-i18n="unidades.mm">mm</span>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="rotulo-resultado" data-i18n="resultado.passoLabel">Passo</div>
-                </div>
-                
-                <!-- RPM na Hélice -->
-                <div class="item-resultado">
-                    <div class="linha-resultado">
-                        <span class="icone-resultado">⚙️</span>
-                        <span class="valor-resultado" id="rpmHelice">2500</span>
-                        <span class="rotulo-resultado">rpm</span>
-                    </div>
-                    <div class="rotulo-resultado" data-i18n="resultado.rpmHelice">RPM na Hélice</div>
-                </div>
-                
-                <!-- Velocidade Teórica -->
-                <div class="item-resultado">
-                    <div class="linha-resultado">
-                        <span class="icone-resultado">⚡</span>
-                        <span class="valor-resultado" id="velocidadeTeorica">29.4</span>
-                        <span class="rotulo-resultado" id="unidadeVelocidadeTeorica" data-i18n="unidades.nos">nós</span>
-                    </div>
-                    <div class="rotulo-resultado" data-i18n="resultado.velocidadeTeorica">Velocidade Teórica</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ========================================== -->
-        <!-- GRÁFICO INTERATIVO -->
-        <!-- ========================================== -->
-        <section class="grafico-section">
-            <h3 data-i18n="grafico.titulo">📊 Relação Passo × Velocidade</h3>
-            <div class="chart-container">
-                <canvas id="graficoHelice"></canvas>
-            </div>
-        </section>
 
         <!-- ========================================== -->
         <!-- INFORMAÇÕES EDUCATIVAS -->
         <!-- ========================================== -->
         <section class="info-educativa">
             <h3 data-i18n="info.titulo">ℹ️ Como Funciona</h3>
-            
+
             <div class="info-card">
                 <h4 data-i18n="info.passoTitulo">O que é Passo?</h4>
                 <p data-i18n="info.passoTexto">O passo é a distância teórica (em polegadas) que a hélice avançaria em uma rotação completa, sem considerar o deslizamento (slip).</p>
@@ -376,10 +444,6 @@
     </a>
 
     <!-- Módulos ES6 -->
-<<<<<<< HEAD
-    <script type="module" src="helice-script.js?v=1.2.2"></script>
-=======
-    <script type="module" src="helice-script-new.js?v=1.2.3"></script>
->>>>>>> 20fb6cc5c8bf1842cd6f0d1ad9712f16e845c595
+    <script type="module" src="helice-script.js?v=1.0.1"></script>
 </body>
 </html>

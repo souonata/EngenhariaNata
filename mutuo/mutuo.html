@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <!-- Meta viewport otimizada para mobile: desabilita zoom e scroll lateral -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- Meta tags para DESABILITAR cache do navegador -->
     <!-- Isso garante que sempre carrega a versão mais nova dos arquivos -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
     <link rel="apple-touch-icon" href="../favicon.svg">
-    
+
     <!-- SEO Meta Tags -->
     <title>Calculadora de Empréstimos BR/IT - SAC, Price e Americano | Engenharia NATA</title>
     <meta name="description" content="Calculadora bilíngue (PT/IT) de sistemas de amortização: SAC, Price e Americano. Gráficos interativos, tabela de amortização completa e comparação de juros totais. Ideal para planejamento financeiro.">
@@ -22,7 +22,7 @@
     <meta name="author" content="Engenharia NATA">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://engnata.infinityfree.me/mutuo/mutuo.html">
-    
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://engnata.infinityfree.me/mutuo/mutuo.html">
@@ -30,17 +30,17 @@
     <meta property="og:description" content="Calculadora bilíngue de sistemas de amortização: SAC, Price e Americano com gráficos interativos.">
     <meta property="og:locale" content="pt_BR">
     <meta property="og:locale:alternate" content="it_IT">
-    
+
     <!-- Twitter -->
     <meta property="twitter:card" content="summary">
     <meta property="twitter:url" content="https://engnata.infinityfree.me/mutuo/mutuo.html">
     <meta property="twitter:title" content="Calculadora de Empréstimos BR/IT">
     <meta property="twitter:description" content="Calculadora bilíngue de sistemas de amortização: SAC, Price e Americano com gráficos interativos.">
-    
+
     <!-- Carrega o CSS com parâmetro de versão (?v=1.0.0) -->
     <!-- Quando atualizar o CSS, mude a versão para forçar o navegador a baixar de novo -->
-    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.0">
-    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.0">
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.1">
+    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.1">
     <link rel="stylesheet" href="mutuo-styles.css?v=1.0.1">
 </head>
 <body>
@@ -82,7 +82,7 @@
                     <span data-i18n="botoes.voltar">← Voltar</span>
                 </button>
             </div>
-            
+
             <div class="memorial-item">
                 <h3 data-i18n="memorial-intro-title">🎯 Objetivo do Cálculo</h3>
                 <p data-i18n="memorial-intro-text">Este memorial explica passo a passo como são calculados os sistemas de amortização (SAC, Price e Americano), incluindo as fórmulas matemáticas utilizadas e exemplos práticos com os valores atuais.</p>
@@ -149,7 +149,7 @@
                     <span data-i18n="botoes.voltar">← Voltar</span>
                 </button>
             </div>
-            
+
             <!-- Tabela comparativa dos sistemas -->
             <div class="comparacao" style="margin-bottom: 20px;">
                 <h3 data-i18n="comparison-title">🔍 Comparação dos Sistemas</h3>
@@ -184,7 +184,7 @@
                     </tbody>
                 </table>
             </div>
-            
+
             <!-- EXEMPLO 1: Sistema SAC -->
             <div class="exemplo-item">
                 <h3 data-i18n="example-sac-title">1. Sistema SAC - Amortização Constante</h3>
@@ -197,7 +197,7 @@
                         <li data-i18n="formula-sac-2">Juros = Saldo Devedor × Taxa Mensal</li>
                         <li data-i18n="formula-sac-3">Parcela = Amortização + Juros</li>
                     </ul>
-                    <p><strong data-i18n="example-label">Exemplo:</strong> 
+                    <p><strong data-i18n="example-label">Exemplo:</strong>
                         <!-- Importante: usa ID em vez de data-i18n porque o JavaScript atualiza esse valor -->
                         <span id="example-sac-calc">R$ 100.000 a 1% ao mês por 120 meses</span>
                     </p>
@@ -312,7 +312,7 @@
                 </table>
                 </div>
             </div>
-            
+
             <button class="btn-voltar-exemplo" data-i18n-title="botoes.voltar">
                 <span data-i18n="botoes.voltar">← Voltar</span>
             </button>
@@ -333,13 +333,13 @@
                             </div>
                             <div class="grupo-radio">
                                 <label class="opcao-radio">
-                                    <input type="radio" name="sistemaRapido" value="sac" checked tabindex="7">
+                                    <input type="radio" name="sistemaRapido" value="sac" tabindex="7">
                                     <div class="cartao-radio">
                                         <span class="rotulo-radio" data-i18n="system-sac-short">SAC</span>
                                     </div>
                                 </label>
                                 <label class="opcao-radio">
-                                    <input type="radio" name="sistemaRapido" value="price" tabindex="8">
+                                    <input type="radio" name="sistemaRapido" value="price" checked tabindex="8">
                                     <div class="cartao-radio">
                                         <span class="rotulo-radio" data-i18n="system-price-short">Price</span>
                                     </div>
@@ -353,7 +353,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="controles-primeira-linha">
                         <div class="controles-coluna-esquerda">
                             <div class="grupo-entrada">
@@ -362,26 +362,26 @@
                                     <span class="info-icon" id="infoIconValor" role="button" tabindex="0" aria-label="Informação sobre valor emprestado" title="Clique para mais informações">
                                         <span class="info-icon-symbol">ℹ️</span>
                                     </span>
-                                    <input type="text" id="inputValor" class="valor-display valor-input" value="100.000" tabindex="1">
+                                    <input type="text" id="inputValor" class="valor-display valor-input" value="115.000" tabindex="1">
                                 </div>
                                 <!-- Descrição que aparece/desaparece ao clicar no ícone -->
                                 <div class="descricao-info" id="descricaoValor" style="display: none;">
                                     <span data-i18n="tooltip-valor-texto">O valor emprestado é o montante total que você está solicitando ao banco ou instituição financeira. Este valor será usado para calcular as parcelas, juros e amortização. Valores maiores resultam em parcelas maiores e mais juros totais.</span>
                                 </div>
                                 <div class="slider-com-botoes">
-                                    <button type="button" class="arrow-btn arrow-down" data-target="sliderValor" data-step="-10000" aria-label="Diminuir valor em 10.000">−</button>
-                                    <input type="range" id="sliderValor" min="1000" max="1000000" step="1000" value="100000">
-                                    <button type="button" class="arrow-btn arrow-up" data-target="sliderValor" data-step="10000" aria-label="Aumentar valor em 10.000">+</button>
+                                    <button type="button" class="arrow-btn arrow-down" data-target="sliderValor" data-step="-1000" aria-label="Diminuir valor em 1.000">−</button>
+                                    <input type="range" id="sliderValor" min="1000" max="1000000" step="1000" value="115000">
+                                    <button type="button" class="arrow-btn arrow-up" data-target="sliderValor" data-step="1000" aria-label="Aumentar valor em 1.000">+</button>
                                 </div>
                             </div>
-                            
+
                             <div class="grupo-entrada">
                                 <div class="cabecalho-controle">
                                     <label for="inputPrazo" data-i18n="loan-term">Prazo (anos)</label>
                                     <span class="info-icon" id="infoIconPrazo" role="button" tabindex="0" aria-label="Informação sobre prazo" title="Clique para mais informações">
                                         <span class="info-icon-symbol">ℹ️</span>
                                     </span>
-                                    <input type="text" id="inputPrazo" class="valor-display valor-input" value="10" tabindex="2">
+                                    <input type="text" id="inputPrazo" class="valor-display valor-input" value="30" tabindex="2">
                                 </div>
                                 <!-- Descrição que aparece/desaparece ao clicar no ícone -->
                                 <div class="descricao-info" id="descricaoPrazo" style="display: none;">
@@ -389,13 +389,13 @@
                                 </div>
                                 <div class="slider-com-botoes">
                                     <button type="button" class="arrow-btn arrow-down" data-target="sliderPrazo" data-step="-1" aria-label="Diminuir prazo em 1 ano">−</button>
-                                    <input type="range" id="sliderPrazo" min="1" max="50" step="1" value="10">
+                                    <input type="range" id="sliderPrazo" min="1" max="50" step="1" value="30">
                                     <button type="button" class="arrow-btn arrow-up" data-target="sliderPrazo" data-step="1" aria-label="Aumentar prazo em 1 ano">+</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="controle-taxa-periodo">
                         <div class="grupo-entrada">
                             <div class="cabecalho-controle">
@@ -406,7 +406,7 @@
                                     <span class="info-icon-symbol">ℹ️</span>
                                 </span>
                                 <div class="valor-com-unidades">
-                                    <input type="text" id="inputTaxa" class="valor-display valor-input" value="10,0" tabindex="3">
+                                    <input type="text" id="inputTaxa" class="valor-display valor-input" value="3,16" tabindex="3">
                                     <div class="grupo-radio-compacto">
                                         <label class="opcao-radio-compacto">
                                             <input type="radio" name="periodoRapido" value="ano" checked tabindex="4">
@@ -434,15 +434,59 @@
                                 <span data-i18n="tooltip-taxa-texto">A taxa de juros é o percentual cobrado sobre o valor emprestado. Você pode informar a taxa em diferentes períodos (ano, mês ou dia). O sistema converte automaticamente para taxa mensal usando juros compostos. Taxas maiores resultam em parcelas maiores e mais juros totais.</span>
                             </div>
                             <div class="slider-com-botoes">
-                                <button type="button" class="arrow-btn arrow-down" data-target="sliderTaxa" data-step="-0.1" aria-label="Diminuir taxa em 0.1%">−</button>
-                                <input type="range" id="sliderTaxa" min="0" max="20" step="0.01" value="10" tabindex="3">
-                                <button type="button" class="arrow-btn arrow-up" data-target="sliderTaxa" data-step="0.1" aria-label="Aumentar taxa em 0.1%">+</button>
+                                <button type="button" class="arrow-btn arrow-down" data-target="sliderTaxa" data-step="-0.01" aria-label="Diminuir taxa em 0.01%">−</button>
+                                <input type="range" id="sliderTaxa" min="0" max="20" step="0.01" value="3.16" tabindex="3">
+                                <button type="button" class="arrow-btn arrow-up" data-target="sliderTaxa" data-step="0.01" aria-label="Aumentar taxa em 0.01%">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="controle-taxa-periodo">
+                        <div class="grupo-entrada">
+                            <div class="cabecalho-controle">
+                                <label for="sliderExtraPagamento">
+                                    <span data-i18n="extra-payment">Pagamento Extra</span>
+                                </label>
+                                <span class="info-icon" id="infoIconExtra" role="button" tabindex="0" aria-label="Informação sobre pagamento extra" title="Clique para mais informações">
+                                    <span class="info-icon-symbol">ℹ️</span>
+                                </span>
+                                <div class="valor-com-unidades">
+                                    <input type="text" id="inputExtraPagamento" class="valor-display valor-input" value="6000" tabindex="11">
+                                    <div class="grupo-radio-compacto">
+                                        <label class="opcao-radio-compacto">
+                                            <input type="radio" name="periodoExtra" value="mensal" tabindex="12">
+                                            <div class="cartao-radio-compacto">
+                                                <span class="rotulo-radio" data-i18n="extra-frequency-monthly">Mensal</span>
+                                            </div>
+                                        </label>
+                                        <label class="opcao-radio-compacto">
+                                            <input type="radio" name="periodoExtra" value="semestral" checked tabindex="13">
+                                            <div class="cartao-radio-compacto">
+                                                <span class="rotulo-radio" data-i18n="extra-frequency-semiannual">Semestral</span>
+                                            </div>
+                                        </label>
+                                        <label class="opcao-radio-compacto">
+                                            <input type="radio" name="periodoExtra" value="anual" tabindex="14">
+                                            <div class="cartao-radio-compacto">
+                                                <span class="rotulo-radio" data-i18n="extra-frequency-annual">Anual</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="descricao-info" id="descricaoExtra" style="display: none;">
+                                <span data-i18n="tooltip-extra-texto">O pagamento extra é um valor adicional aplicado na periodicidade escolhida (mensal, semestral ou anual). Esse valor aparece nas parcelas individuais, é abatido do saldo devedor e reduz o tempo total para quitação do financiamento.</span>
+                            </div>
+                            <div class="slider-com-botoes">
+                                <button type="button" class="arrow-btn arrow-down" data-target="sliderExtraPagamento" data-step="-10" aria-label="Diminuir pagamento extra em 10">−</button>
+                                <input type="range" id="sliderExtraPagamento" min="0" max="10000" step="10" value="6000" tabindex="11">
+                                <button type="button" class="arrow-btn arrow-up" data-target="sliderExtraPagamento" data-step="10" aria-label="Aumentar pagamento extra em 10">+</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <div class="graficos-container">
                 <h3 data-i18n="evolution-charts">📊 Evolução ao Longo do Tempo</h3>
                 <div class="grafico-unico">
@@ -457,9 +501,9 @@
                         <span class="value-grande" id="valorParcela">-</span>
                     </div>
                 </div>
-                
+
                 <h3><span data-i18n="selected-installment">Parcela Selecionada</span>: <span id="numeroParcela">1</span> <span data-i18n="of">de</span> <span id="totalParcelas">-</span></h3>
-                
+
                 <div class="slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderParcelas" data-step="-1" aria-label="Diminuir parcela em 1">−</button>
                     <input type="range" id="sliderParcelas" min="1" max="120" value="1" step="1">
@@ -479,6 +523,10 @@
                         <div class="composicao-item">
                             <span class="label-small" data-i18n="outstanding-balance">Saldo Devedor</span>
                             <span class="value-medium" id="saldoDevedor">-</span>
+                        </div>
+                        <div class="composicao-item">
+                            <span class="label-small" data-i18n="installment-amort-interest-ratio">Proporção Amortização/Interesses</span>
+                            <span class="value-medium" id="proporcaoAmortJurosParcela">-</span>
                         </div>
                     </div>
                 </div>
@@ -501,6 +549,10 @@
                     <span class="label" data-i18n="total-interest">Total de Juros</span>
                     <span class="value destaque-juros" id="resTotalJuros">-</span>
                 </div>
+                <div class="resumo-item">
+                    <span class="label" data-i18n="payoff-time">Tempo para Quitar</span>
+                    <span class="value" id="resTempoQuitacao">-</span>
+                </div>
             </div>
 
             <div class="tabela-container">
@@ -513,6 +565,7 @@
                                 <th data-i18n="value">Valor</th>
                                 <th data-i18n="amortization">Amortização</th>
                                 <th data-i18n="interest">Juros</th>
+                                <th data-i18n="extra-payment">Pagamento Extra</th>
                                 <th data-i18n="outstanding-balance">Saldo Devedor</th>
                             </tr>
                         </thead>
@@ -527,8 +580,6 @@
     <footer>
         <p data-i18n="footer.texto">Calculadora de Empréstimos - Engenharia Nata @ 2025</p>
     </footer>
-
-    <!-- Botão de retorno à tela inicial (fixo centralizado no rodapé) -->
     <!-- Fica sempre visível enquanto rola a página -->
     <a href="../index.html" class="home-button-fixed" aria-label="Voltar à tela inicial">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
@@ -538,12 +589,8 @@
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    
+
     <!-- JavaScript da calculadora -->
-<<<<<<< HEAD
-    <script type="module" src="mutuo-script.js?v=1.2.7"></script>
-=======
-    <script type="module" src="mutuo-script-new.js?v=1.3.3"></script>
->>>>>>> 20fb6cc5c8bf1842cd6f0d1ad9712f16e845c595
+    <script type="module" src="mutuo-script.js?v=1.0.2"></script>
 </body>
 </html>

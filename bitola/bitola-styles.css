@@ -1,10 +1,10 @@
 /* ============================================
    BITOLA - Estilos Específicos da Calculadora de Bitola de Fios
    ============================================
-   
+
    NOTA: Os estilos padrão de controles (sliders, inputs, botões, radio buttons)
    foram movidos para assets/css/controls-styles.css para reutilização.
-   
+
    Este arquivo contém apenas estilos específicos do Bitola que não são genéricos.
    ============================================ */
 
@@ -15,7 +15,7 @@
 /* Reset, body, container, header, footer, typography estão no arquivo global */
 
 /* Variáveis CSS para personalização do tema Bitola */
-:root { 
+:root {
     /* Todas as variáveis de cor, espaçamento e fonte já estão centralizadas em shared-styles.css */
 }
 
@@ -91,6 +91,20 @@
     gap: 4px;
 }
 
+/* Potencia nominal precisa comportar ate 999.999 */
+#inputPotencia {
+    min-width: 90px;
+    width: 110px;
+    max-width: 120px;
+}
+
+/* Potencia nominal precisa comportar ate 999.999 */
+#inputPotencia {
+    min-width: 90px;
+    width: 110px;
+    max-width: 120px;
+}
+
 /* ============================================
    SEÇÃO DE RESULTADOS
    ============================================ */
@@ -118,23 +132,23 @@
     header h1 {
         font-size: 1.2rem;
     }
-    
+
     .subtitulo {
         font-size: 0.85rem;
     }
-    
+
     .resultado-item {
         flex-direction: column;
         align-items: flex-start;
         gap: 4px;
     }
-    
+
     .valor-resultado,
     .valor-resultado-grande {
         width: 100%;
         text-align: right;
     }
-    
+
     .dica,
     .dica-recomendacao {
         font-size: 0.7rem;

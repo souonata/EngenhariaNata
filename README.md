@@ -19,9 +19,7 @@ Uma coleção de aplicativos web educativos para estudar conceitos práticos de 
 10. **solar** (v0.1.0) - Dimensionador de painéis fotovoltaicos off-grid
 
 **Documentação Completa:**
-- 📘 [PADRAO_MIGRACAO_ES6.md](PADRAO_MIGRACAO_ES6.md) - Guia completo de migração
 - ✅ [CHECKLIST_VALIDACAO.md](CHECKLIST_VALIDACAO.md) - Checklist de validação
-- 📋 [RESUMO_MIGRACAO.md](RESUMO_MIGRACAO.md) - Resumo da migração realizada
 
 ### 🎯 Arquitetura ES6 Implementada
 

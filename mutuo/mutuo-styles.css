@@ -110,8 +110,8 @@
 
 /* Ajustes específicos por campo - tamanhos mínimos para valores máximos formatados */
 #inputValor {
-    max-width: 110px; /* Para valores até 99.999.999 (11 caracteres + 2 de margem) */
-    min-width: 70px;
+    max-width: 125px; /* Um pouco menor, mantendo conforto para editar */
+    min-width: 80px;
 }
 
 #inputPrazo {
@@ -122,6 +122,12 @@
 #inputTaxa {
     max-width: 75px; /* Para valores diários com 3 casas decimais */
     min-width: 50px;
+}
+
+#inputExtraPagamento {
+    width: 78px;
+    max-width: 78px;
+    min-width: 78px;
 }
 
 .tabela-sistemas {
@@ -806,7 +812,7 @@
 
 .parcela-composicao {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 8px; /* tighter layout */
     margin-top: 8px;
 }

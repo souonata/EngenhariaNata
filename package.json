@@ -1,6 +1,6 @@
 {
   "name": "engenharia-nata",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Portfólio de apps web educativos para engenharia e finanças - JavaScript puro, bilíngue PT/IT",
   "type": "module",
   "scripts": {

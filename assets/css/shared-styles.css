@@ -313,48 +313,6 @@ footer p {
 }
 
 
-/* Theme toggle button styles */
-.theme-btn {
-    background: var(--lang-btn-bg, rgba(255,255,255,0.2));
-    border: 2px solid var(--lang-btn-border, rgba(255,255,255,0.3));
-    border-radius: 20px;
-    padding: 8px 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: var(--lang-btn-color, white);
-    font-size: 0.85rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-}
-
-.theme-btn:hover {
-    background: var(--lang-btn-hover, rgba(255,255,255,0.3));
-    border-color: var(--lang-btn-border-hover, rgba(255,255,255,0.5));
-    transform: translateY(-2px);
-}
-
-.theme-btn.active {
-    background: white;
-    color: var(--accent-color, #2d9fa3ff);
-    border-color: white;
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
-}
-
-/* Dark theme overrides */
-body[data-theme="dark"] {
-    --site-bg: #121212;
-    --lang-btn-bg: rgba(255,255,255,0.1);
-    --lang-btn-hover: rgba(255,255,255,0.2);
-    --lang-btn-border: rgba(255,255,255,0.2);
-    --lang-btn-color: white;
-    --accent-color: #4CAF50;
-    --accent-hover: #66BB6A;
-    color: #f0f0f0;
-}
-
 /* Standard action buttons used cross-site */
 .btn-acao { 
     padding: 10px 14px; 

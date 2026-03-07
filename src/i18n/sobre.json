@@ -252,10 +252,6 @@
         "desc": "Funciona bem em celular e computador"
       }
     },
-<<<<<<< HEAD
-    "footer": {
-      "text": "💻 Portfólio Engenharia NATA"
-=======
     "resource-bilingual": {
       "title": "🌍 Bilíngue",
       "desc": "Troca entre Português e Italiano"
@@ -271,7 +267,9 @@
     "resource-code-commented": {
       "title": "💡 Código Comentado",
       "desc": "Código explicado para facilitar aprendizado"
->>>>>>> 20fb6cc5c8bf1842cd6f0d1ad9712f16e845c595
+    },
+    "footer": {
+      "text": "💻 Portfólio Engenharia NATA"
     },
     "aria": {
       "home": "Voltar para a tela inicial",
@@ -529,13 +527,6 @@
       "js": "JavaScript puro e veloce",
       "chart": "Grafici interattivi",
       "mobile": {
-<<<<<<< HEAD
-        "desc": "Funziona bene su cellulare e computer"
-      }
-    },
-    "footer": {
-      "text": "💻 Portfolio Ingegneria NATA"
-=======
         "desc": "Funziona perfettamente su cellulare e computer"
       }
     },
@@ -554,7 +545,9 @@
     "resource-code-commented": {
       "title": "💡 Codice Commentato",
       "desc": "Codice ben documentato per facilitare l'apprendimento"
->>>>>>> 20fb6cc5c8bf1842cd6f0d1ad9712f16e845c595
+    },
+    "footer": {
+      "text": "💻 Portfolio Ingegneria NATA"
     },
     "aria": {
       "home": "Torna alla schermata iniziale",

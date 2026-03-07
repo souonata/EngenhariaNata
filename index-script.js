@@ -1,7 +1,7 @@
 /**
  * index-script-new.js
  * Landing Page - Versão Modular
- * 
+ *
  * Página inicial do portfólio com cards de apps e relógio/data
  */
 
@@ -64,16 +64,16 @@ class IndexApp extends App {
     atualizarHorario() {
         const elementoHorario = document.getElementById('horario');
         const elementoData = document.getElementById('data');
-        
+
         if (!elementoHorario || !elementoData) return;
-        
+
         const agora = new Date();
-        
+
         // Formata horário com zero à esquerda
         const horas = String(agora.getHours()).padStart(2, '0');
         const minutos = String(agora.getMinutes()).padStart(2, '0');
         const segundos = String(agora.getSeconds()).padStart(2, '0');
-        
+
         // Traduz dias da semana
         const diasSemana = [
             i18n.t('dia-dom'),
@@ -85,7 +85,7 @@ class IndexApp extends App {
             i18n.t('dia-sab')
         ];
         const diaSemana = diasSemana[agora.getDay()];
-        
+
         // Traduz meses
         const meses = [
             i18n.t('mes-jan'),
@@ -103,7 +103,7 @@ class IndexApp extends App {
         ];
         const mesAbreviado = meses[agora.getMonth()];
         const dia = agora.getDate();
-        
+
         // Atualiza elementos na página
         elementoHorario.textContent = `${horas}:${minutos}:${segundos}`;
         elementoData.textContent = `${diaSemana} ${dia} ${mesAbreviado}`;
@@ -122,25 +122,25 @@ class IndexApp extends App {
             'popov/popov.html': 'popov',
             'fazenda/fazenda.html': 'fazenda'
         };
-        
+
         const appIcons = document.querySelectorAll('.app-icon');
-        
+
         appIcons.forEach(appIcon => {
             const href = appIcon.getAttribute('href');
             if (!href) return;
-            
+
             const appKey = hrefParaApp[href];
             if (!appKey || !versoesApps[appKey]) return;
-            
+
             const iconDiv = appIcon.querySelector('.icon');
             if (!iconDiv) return;
-            
+
             const svg = iconDiv.querySelector('svg');
             if (!svg) return;
-            
+
             // Evita duplicação
             if (svg.querySelector('.version-text')) return;
-            
+
             // Cria badge de versão no SVG
             const versionText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             versionText.setAttribute('class', 'version-text');
@@ -152,7 +152,7 @@ class IndexApp extends App {
             versionText.setAttribute('fill', 'rgba(255, 255, 255, 0.85)');
             versionText.setAttribute('style', 'filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6));');
             versionText.textContent = `V. ${versoesApps[appKey]}`;
-            
+
             svg.appendChild(versionText);
         });
     }
@@ -163,14 +163,11 @@ class IndexApp extends App {
 // ============================================
 
 if (document.readyState === 'loading') {
-    console.log('⏳ Index: Aguardando DOM carregar...');
     document.addEventListener('DOMContentLoaded', () => {
-        console.log('✅ Index: DOM carregado, inicializando...');
         const app = new IndexApp();
         app.inicializar();
     });
 } else {
-    console.log('✅ Index: DOM já carregado, inicializando imediatamente...');
     const app = new IndexApp();
     app.inicializar();
 }

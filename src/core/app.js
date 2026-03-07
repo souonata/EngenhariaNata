@@ -1,7 +1,6 @@
 // Core da aplicação - inicialização comum a todos os apps
 
 import { i18n, configurarBotoesIdioma } from './i18n.js';
-import { theme } from '../components/theme.js';
 import { loading } from '../components/loading.js';
 
 export class App {
@@ -26,7 +25,6 @@ export class App {
             }
 
             i18n.inicializar(this.config.traducoes, this.config.idiomaInicial);
-            theme.inicializar();
             configurarBotoesIdioma();
 
             this.configurarBotaoHome();
@@ -84,4 +82,4 @@ export class App {
     }
 }
 
-export { i18n, theme, loading };
+export { i18n, loading };

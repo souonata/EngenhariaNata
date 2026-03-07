@@ -1,7 +1,7 @@
 /**
  * bitola-script-new.js
  * Calculadora de Bitola de Fios - Versão Modular
- * 
+ *
  * Calcula a área de seção mínima de fios elétricos para circuitos CC e CA
  */
 
@@ -117,8 +117,7 @@ class BitolaApp extends App {
             if (icon && descricao) {
                 // Garante estado inicial
                 descricao.style.display = 'none';
-                console.log(`✅ Configurado ícone: ${iconId}`);
-                
+
                 icon.addEventListener('click', () => {
                     const isVisible = descricao.style.display === 'block';
                     descricao.style.display = isVisible ? 'none' : 'block';
@@ -133,7 +132,6 @@ class BitolaApp extends App {
                     }
                 });
             } else {
-                console.warn(`⚠️ Elemento não encontrado: ${iconId} ou ${descricaoId}`);
             }
         });
     }
@@ -141,33 +139,35 @@ class BitolaApp extends App {
     configurarBotoesIncremento() {
         document.querySelectorAll('.arrow-btn').forEach(btn => {
             let animationFrame = null;
-            let tempoInicio = 0;
+            let timeoutId = null;
             let estaSegurando = false;
+            let jaIniciouAnimacao = false;
             let direcao = 1;
-            
+            const DELAY_AUTO = 500; // ms de espera antes de iniciar incremento automático
+
             const animar = (timestamp) => {
                 if (!estaSegurando) return;
-                
+
                 const targetId = btn.getAttribute('data-target');
                 const slider = document.getElementById(targetId);
-                
+
                 if (!slider) return;
-                
-                const tempoDecorrido = timestamp - tempoInicio;
+
+                const tempoDecorrido = timestamp - parseFloat(btn.dataset.tempoInicio);
                 const min = parseFloat(slider.min);
                 const max = parseFloat(slider.max);
                 const range = max - min;
-                
+
                 // Velocidade linear: percorre todo o range em 3 segundos
                 const velocidade = range / 3000; // unidades por ms
                 const distancia = velocidade * tempoDecorrido;
-                
+
                 const valorInicial = parseFloat(btn.dataset.valorInicial);
                 let novoValor = valorInicial + (distancia * direcao);
-                
+
                 // Limita aos bounds
                 novoValor = Math.max(min, Math.min(max, novoValor));
-                
+
                 // Se chegou no limite, para
                 if ((direcao > 0 && novoValor >= max) || (direcao < 0 && novoValor <= min)) {
                     slider.value = novoValor;
@@ -175,75 +175,120 @@ class BitolaApp extends App {
                     pararIncremento();
                     return;
                 }
-                
+
                 slider.value = novoValor;
                 slider.dispatchEvent(new Event('input', { bubbles: true }));
-                
+
                 animationFrame = requestAnimationFrame(animar);
             };
-            
+
             const iniciarAnimacao = () => {
                 if (animationFrame) return;
-                
+
                 const targetId = btn.getAttribute('data-target');
                 const slider = document.getElementById(targetId);
                 if (!slider) return;
-                
+
                 const stepStr = btn.getAttribute('data-step');
-                
+
                 // Determina direção baseado no data-step
                 if (stepStr === 'dynamic' || parseFloat(stepStr) > 0) {
                     direcao = 1;
                 } else {
                     direcao = -1;
                 }
-                
-                // Salva valor inicial
+
+                // Salva estado inicial para animação
                 btn.dataset.valorInicial = slider.value;
-                
-                tempoInicio = performance.now();
+                btn.dataset.tempoInicio = performance.now();
+
+                jaIniciouAnimacao = true;
                 animationFrame = requestAnimationFrame(animar);
             };
-            
+
+            const incrementoUnitario = () => {
+                const targetId = btn.getAttribute('data-target');
+                const slider = document.getElementById(targetId);
+                if (!slider) return;
+
+                const stepStr = btn.getAttribute('data-step');
+                const passo = stepStr === 'dynamic' ? 1 : Math.abs(parseFloat(stepStr)) || 1;
+                const direcaoLocal = stepStr === 'dynamic' || parseFloat(stepStr) > 0 ? 1 : -1;
+
+                const min = parseFloat(slider.min);
+                const max = parseFloat(slider.max);
+
+                let novoValor = parseFloat(slider.value) + (passo * direcaoLocal);
+                novoValor = Math.max(min, Math.min(max, novoValor));
+
+                slider.value = novoValor;
+                slider.dispatchEvent(new Event('input', { bubbles: true }));
+            };
+
             const pararIncremento = () => {
                 estaSegurando = false;
-                
+                jaIniciouAnimacao = false;
+
                 if (animationFrame) {
                     cancelAnimationFrame(animationFrame);
                     animationFrame = null;
                 }
-                
+
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                    timeoutId = null;
+                }
+
                 delete btn.dataset.valorInicial;
+                delete btn.dataset.tempoInicio;
             };
-            
+
             // Mouse: segurar botão
             btn.addEventListener('mousedown', (e) => {
                 e.preventDefault();
                 estaSegurando = true;
-                iniciarAnimacao();
+
+                // Primeiro: incrementa apenas 1 unidade
+                incrementoUnitario();
+
+                // Depois de um tempo: inicia incremento automático
+                timeoutId = setTimeout(() => {
+                    if (estaSegurando && !jaIniciouAnimacao) {
+                        iniciarAnimacao();
+                    }
+                }, DELAY_AUTO);
             });
-            
+
             btn.addEventListener('mouseup', (e) => {
                 e.preventDefault();
                 pararIncremento();
             });
-            
+
             btn.addEventListener('mouseleave', (e) => {
                 pararIncremento();
             });
-            
+
             // Touch: segurar botão em dispositivos móveis
             btn.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 estaSegurando = true;
-                iniciarAnimacao();
+
+                // Primeiro: incrementa apenas 1 unidade
+                incrementoUnitario();
+
+                // Depois de um tempo: inicia incremento automático
+                timeoutId = setTimeout(() => {
+                    if (estaSegurando && !jaIniciouAnimacao) {
+                        iniciarAnimacao();
+                    }
+                }, DELAY_AUTO);
             });
-            
+
             btn.addEventListener('touchend', (e) => {
                 e.preventDefault();
                 pararIncremento();
             });
-            
+
             btn.addEventListener('touchcancel', (e) => {
                 pararIncremento();
             });
@@ -255,29 +300,43 @@ class BitolaApp extends App {
         const inputComprimento = document.getElementById('inputComprimento');
         const inputTensaoCC = document.getElementById('inputTensaoCC');
         const inputQuedaTensao = document.getElementById('inputQuedaTensao');
-        
+
         const sliderPotencia = document.getElementById('sliderPotencia');
         const sliderComprimento = document.getElementById('sliderComprimento');
         const sliderTensaoCC = document.getElementById('sliderTensaoCC');
         const sliderQuedaTensao = document.getElementById('sliderQuedaTensao');
 
         const atualizarDoInput = (input, slider, tipo) => {
-            const valor = input.value.replace(/[^\d.,]/g, '').replace(',', '.');
-            const numero = parseFloat(valor);
-            
+            const numero = this.parsearValor(input.value);
+
             if (!isNaN(numero)) {
+                const min = parseFloat(slider.min);
+                const max = parseFloat(slider.max);
+                let valorFinal = numero;
+
                 if (tipo === 'potencia') {
-                    // Converter k/m para valor numérico
-                    let valorFinal = numero;
-                    if (input.value.toLowerCase().includes('k')) {
-                        valorFinal = numero * 1000;
-                    } else if (input.value.toLowerCase().includes('m')) {
-                        valorFinal = numero * 1000000;
+                    valorFinal = Math.min(999999, Math.max(min, numero));
+                    input.dataset.valorReal = valorFinal;
+                    slider.value = Math.min(max, valorFinal);
+                } else if (tipo === 'tensaoCC') {
+                    valorFinal = Math.max(min, numero);
+                    input.dataset.valorReal = valorFinal;
+                    // Ajusta slider para a tensao tipica mais proxima
+                    let indiceMaisProximo = 0;
+                    let menorDiferenca = Infinity;
+                    for (let i = 0; i < TENSOES_CC_TIPICAS.length; i++) {
+                        const diferenca = Math.abs(TENSOES_CC_TIPICAS[i] - valorFinal);
+                        if (diferenca < menorDiferenca) {
+                            menorDiferenca = diferenca;
+                            indiceMaisProximo = i;
+                        }
                     }
-                    slider.value = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), valorFinal));
+                    slider.value = indiceMaisProximo;
                 } else {
-                    slider.value = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), numero));
+                    valorFinal = Math.max(min, Math.min(max, numero));
+                    slider.value = valorFinal;
                 }
+
                 this.atualizarResultado();
             }
         };
@@ -290,6 +349,9 @@ class BitolaApp extends App {
                     atualizarDoInput(inputPotencia, sliderPotencia, 'potencia');
                     inputPotencia.blur();
                 }
+            });
+            sliderPotencia.addEventListener('input', () => {
+                inputPotencia.dataset.valorReal = sliderPotencia.value;
             });
         }
 
@@ -313,6 +375,11 @@ class BitolaApp extends App {
                     inputTensaoCC.blur();
                 }
             });
+            sliderTensaoCC.addEventListener('input', () => {
+                const indice = parseInt(sliderTensaoCC.value || 0);
+                const tensao = TENSOES_CC_TIPICAS[indice] || 12;
+                inputTensaoCC.dataset.valorReal = tensao;
+            });
         }
 
         if (inputQuedaTensao && sliderQuedaTensao) {
@@ -332,31 +399,34 @@ class BitolaApp extends App {
         const secaoTensaoCA = document.getElementById('secaoTensaoCA');
         const secaoTensaoCC = document.getElementById('secaoTensaoCC');
         const tensaoCAInline = document.getElementById('tensaoCAInline');
-        
-        console.log('🔄 Tipo de corrente:', tipoCorrente);
-        console.log('📍 tensaoCAInline encontrado:', !!tensaoCAInline);
 
         if (tipoCorrente === 'ca') {
             if (secaoTensaoCA) secaoTensaoCA.style.display = 'block';
             if (secaoTensaoCC) secaoTensaoCC.style.display = 'none';
             if (tensaoCAInline) {
                 tensaoCAInline.style.display = 'flex';
-                console.log('✅ tensaoCAInline exibido');
             }
         } else {
             if (secaoTensaoCA) secaoTensaoCA.style.display = 'none';
             if (secaoTensaoCC) secaoTensaoCC.style.display = 'block';
             if (tensaoCAInline) {
                 tensaoCAInline.style.display = 'none';
-                console.log('❌ tensaoCAInline ocultado');
             }
         }
     }
 
     parsearValor(texto) {
         if (!texto) return NaN;
-        // Remove pontos de milhar e substitui vírgula por ponto
-        const limpo = texto.toString().replace(/\./g, '').replace(/,/g, '.');
+        const valor = texto.toString().trim();
+
+        if (valor.includes(',')) {
+            // Formato pt-BR: ponto milhar, virgula decimal
+            const limpo = valor.replace(/\./g, '').replace(/,/g, '.');
+            return parseFloat(limpo);
+        }
+
+        // Se vier com ponto e sem virgula, tratar ponto como decimal
+        const limpo = valor.replace(/,/g, '');
         return parseFloat(limpo);
     }
 
@@ -386,18 +456,32 @@ class BitolaApp extends App {
 
     selecionarBitolaComercial(areaMinima) {
         if (!isFinite(areaMinima) || areaMinima <= 0) {
-            return BITOLAS_COMERCIAIS[0];
+            return { bitola: BITOLAS_COMERCIAIS[0], multiplicador: 1, bitolaEquivalente: BITOLAS_COMERCIAIS[0] };
         }
 
         const areaComSeguranca = areaMinima * FATOR_SEGURANCA;
 
         for (let i = 0; i < BITOLAS_COMERCIAIS.length; i++) {
             if (BITOLAS_COMERCIAIS[i] >= areaComSeguranca) {
-                return BITOLAS_COMERCIAIS[i];
+                return { bitola: BITOLAS_COMERCIAIS[i], multiplicador: 1, bitolaEquivalente: BITOLAS_COMERCIAIS[i] };
             }
         }
 
-        return BITOLAS_COMERCIAIS[BITOLAS_COMERCIAIS.length - 1];
+        const bitolaMaxima = BITOLAS_COMERCIAIS[BITOLAS_COMERCIAIS.length - 1];
+        const multiplicador = Math.ceil(areaComSeguranca / bitolaMaxima);
+        return {
+            bitola: bitolaMaxima,
+            multiplicador,
+            bitolaEquivalente: bitolaMaxima * multiplicador
+        };
+    }
+
+    formatarBitolaComercial(bitola, multiplicador) {
+        const textoBitola = `${formatarNumero(bitola, 2)} mm²`;
+        if (multiplicador > 1) {
+            return `${textoBitola} (${multiplicador}x)`;
+        }
+        return textoBitola;
     }
 
     selecionarDisjuntorComercial(corrente) {
@@ -419,11 +503,6 @@ class BitolaApp extends App {
     }
 
     formatarComSufixo(valor) {
-        if (valor >= 1000000) {
-            return formatarNumero(valor / 1000000, 1) + 'M';
-        } else if (valor >= 1000) {
-            return formatarNumero(valor / 1000, 1) + 'k';
-        }
         return formatarNumero(valor, 0);
     }
 
@@ -439,18 +518,27 @@ class BitolaApp extends App {
         const sliderQuedaTensao = document.getElementById('sliderQuedaTensao');
         const sliderTensaoCC = document.getElementById('sliderTensaoCC');
 
-        const potencia = parseFloat(sliderPotencia?.value || 100);
+        const potenciaValorReal = inputPotencia?.dataset.valorReal;
+        const potencia = potenciaValorReal ? parseFloat(potenciaValorReal) : parseFloat(sliderPotencia?.value || 100);
         const comprimento = parseFloat(sliderComprimento?.value || 10);
         const quedaPercentual = parseFloat(sliderQuedaTensao?.value || 3);
         const tensao = this.obterTensaoAtual();
 
         // Atualizar inputs de texto
-        if (inputPotencia) inputPotencia.value = this.formatarComSufixo(potencia) + 'W';
+        if (inputPotencia) {
+            inputPotencia.value = this.formatarComSufixo(potencia);
+            inputPotencia.dataset.valorReal = potencia;
+        }
         if (inputComprimento) inputComprimento.value = formatarNumero(comprimento, 1);
         if (inputQuedaTensao) inputQuedaTensao.value = formatarNumero(quedaPercentual, 1);
         if (inputTensaoCC) {
-            const indice = parseInt(sliderTensaoCC?.value || 0);
-            inputTensaoCC.value = formatarNumero(TENSOES_CC_TIPICAS[indice] || 12, 1);
+            const tensaoValorReal = inputTensaoCC.dataset.valorReal;
+            if (tensaoValorReal) {
+                inputTensaoCC.value = formatarNumero(parseFloat(tensaoValorReal), 1);
+            } else {
+                const indice = parseInt(sliderTensaoCC?.value || 0);
+                inputTensaoCC.value = formatarNumero(TENSOES_CC_TIPICAS[indice] || 12, 1);
+            }
         }
 
         // Validação básica
@@ -462,8 +550,8 @@ class BitolaApp extends App {
         // Calcular
         const corrente = this.calcularCorrente(potencia, tensao);
         const areaMin = this.calcularAreaMinima(comprimento, corrente, tensao, quedaPercentual);
-        const bitola = this.selecionarBitolaComercial(areaMin);
-        const quedaRealPercentual = this.calcularQuedaReal(comprimento, corrente, tensao, bitola);
+        const bitolaSelecionada = this.selecionarBitolaComercial(areaMin);
+        const quedaRealPercentual = this.calcularQuedaReal(comprimento, corrente, tensao, bitolaSelecionada.bitolaEquivalente);
         const disjuntor = this.selecionarDisjuntorComercial(corrente);
 
         // Atualizar interface
@@ -477,7 +565,9 @@ class BitolaApp extends App {
             areaMinima.textContent = isFinite(areaMin) ? formatarNumero(areaMin, 2) + ' mm²' : '-';
         }
         if (bitolaComercial) {
-            bitolaComercial.textContent = isFinite(bitola) ? formatarNumero(bitola, 2) + ' mm²' : '-';
+            bitolaComercial.textContent = isFinite(bitolaSelecionada.bitola)
+                ? this.formatarBitolaComercial(bitolaSelecionada.bitola, bitolaSelecionada.multiplicador)
+                : '-';
         }
         if (correnteCircuito) {
             correnteCircuito.textContent = isFinite(corrente) ? formatarNumero(corrente, 2) + ' A' : '-';
@@ -492,7 +582,17 @@ class BitolaApp extends App {
         // Atualizar memorial se visível
         const memorial = document.getElementById('memorialSection');
         if (memorial && memorial.style.display !== 'none') {
-            this.atualizarMemorial(potencia, comprimento, tensao, quedaPercentual, corrente, areaMin, bitola, quedaRealPercentual, disjuntor);
+            this.atualizarMemorial(
+                potencia,
+                comprimento,
+                tensao,
+                quedaPercentual,
+                corrente,
+                areaMin,
+                bitolaSelecionada,
+                quedaRealPercentual,
+                disjuntor
+            );
         }
     }
 
@@ -504,7 +604,7 @@ class BitolaApp extends App {
         });
     }
 
-    atualizarMemorial(potencia, comprimento, tensao, quedaPercentual, corrente, areaMin, bitola, quedaReal, disjuntor) {
+    atualizarMemorial(potencia, comprimento, tensao, quedaPercentual, corrente, areaMin, bitolaSelecionada, quedaReal, disjuntor) {
         // Atualizar exemplos - apenas valores numéricos e unidades
         const exCorrente = document.getElementById('memorial-exemplo-corrente');
         const exArea = document.getElementById('memorial-exemplo-area');
@@ -520,10 +620,10 @@ class BitolaApp extends App {
             exArea.textContent = `(2 × 0.0178 × ${formatarNumero(comprimento, 1)} × ${formatarNumero(corrente, 2)}) ÷ ${formatarNumero(quedaVolts, 2)} = ${formatarNumero(areaMin, 2)} ${this.traducoes.unidades.mm2}`;
         }
         if (exBitola) {
-            exBitola.textContent = `${formatarNumero(areaMin, 2)} ${this.traducoes.unidades.mm2} × 1.25 = ${formatarNumero(areaMin * 1.25, 2)} ${this.traducoes.unidades.mm2} → ${formatarNumero(bitola, 2)} ${this.traducoes.unidades.mm2}`;
+            exBitola.textContent = `${formatarNumero(areaMin, 2)} ${this.traducoes.unidades.mm2} × 1.25 = ${formatarNumero(areaMin * 1.25, 2)} ${this.traducoes.unidades.mm2} → ${this.formatarBitolaComercial(bitolaSelecionada.bitola, bitolaSelecionada.multiplicador)}`;
         }
         if (exQueda) {
-            exQueda.textContent = `((2 × 0.0178 × ${formatarNumero(comprimento, 1)} × ${formatarNumero(corrente, 2)}) ÷ ${formatarNumero(bitola, 2)}) ÷ ${formatarNumero(tensao, 1)} × 100 = ${formatarNumero(quedaReal, 2)}${this.traducoes.unidades.percent}`;
+            exQueda.textContent = `((2 × 0.0178 × ${formatarNumero(comprimento, 1)} × ${formatarNumero(corrente, 2)}) ÷ ${formatarNumero(bitolaSelecionada.bitolaEquivalente, 2)}) ÷ ${formatarNumero(tensao, 1)} × 100 = ${formatarNumero(quedaReal, 2)}${this.traducoes.unidades.percent}`;
         }
         if (exDisjuntor) {
             exDisjuntor.textContent = `${formatarNumero(corrente, 2)}${this.traducoes.unidades.ampere} × 1.25 = ${formatarNumero(corrente * 1.25, 2)}${this.traducoes.unidades.ampere} → ${formatarNumero(disjuntor, 0)}${this.traducoes.unidades.ampere}`;
@@ -538,7 +638,7 @@ class BitolaApp extends App {
 
         if (resumoCorrente) resumoCorrente.textContent = formatarNumero(corrente, 2) + ' ' + this.traducoes.unidades.ampere;
         if (resumoArea) resumoArea.textContent = formatarNumero(areaMin, 2) + ' ' + this.traducoes.unidades.mm2;
-        if (resumoBitola) resumoBitola.textContent = formatarNumero(bitola, 2) + ' ' + this.traducoes.unidades.mm2;
+        if (resumoBitola) resumoBitola.textContent = this.formatarBitolaComercial(bitolaSelecionada.bitola, bitolaSelecionada.multiplicador);
         if (resumoQueda) resumoQueda.textContent = formatarNumero(quedaReal, 2) + this.traducoes.unidades.percent;
         if (resumoDisjuntor) resumoDisjuntor.textContent = formatarNumero(disjuntor, 0) + ' ' + this.traducoes.unidades.ampere;
     }
