@@ -12,7 +12,7 @@ import { i18n } from './src/core/i18n.js';
 // VERSÕES DOS APLICATIVOS
 // ============================================
 
-const versoesApps = {
+const versoesAppsPadrao = {
     'sobre': '1.0.0',
     'bitola': '1.2.0',
     'helice': '1.6.0',
@@ -40,11 +40,33 @@ class IndexApp extends App {
         });
 
         this.intervaloRelogio = null;
+        this.versoesApps = { ...versoesAppsPadrao };
     }
 
-    inicializarIndex() {
+    async inicializarIndex() {
+        await this.carregarVersoesDoServidor();
         this.configurarRelogio();
         this.adicionarVersoesNosIcones();
+    }
+
+    async carregarVersoesDoServidor() {
+        try {
+            const response = await fetch(`./config/versions.json?t=${Date.now()}`, {
+                cache: 'no-store'
+            });
+
+            if (!response.ok) {
+                return;
+            }
+
+            const dados = await response.json();
+            this.versoesApps = {
+                ...this.versoesApps,
+                ...dados
+            };
+        } catch (_erro) {
+            // Mantem versoes padrao caso versions.json esteja indisponivel.
+        }
     }
 
     atualizarAposTrocaIdioma() {
@@ -130,7 +152,7 @@ class IndexApp extends App {
             if (!href) return;
 
             const appKey = hrefParaApp[href];
-            if (!appKey || !versoesApps[appKey]) return;
+            if (!appKey || !this.versoesApps[appKey]) return;
 
             const iconDiv = appIcon.querySelector('.icon');
             if (!iconDiv) return;
@@ -151,7 +173,7 @@ class IndexApp extends App {
             versionText.setAttribute('font-weight', '500');
             versionText.setAttribute('fill', 'rgba(255, 255, 255, 0.85)');
             versionText.setAttribute('style', 'filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6));');
-            versionText.textContent = `V. ${versoesApps[appKey]}`;
+            versionText.textContent = `V. ${this.versoesApps[appKey]}`;
 
             svg.appendChild(versionText);
         });

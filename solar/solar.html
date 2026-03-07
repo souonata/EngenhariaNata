@@ -35,9 +35,9 @@
     <meta property="twitter:url" content="https://engnata.infinityfree.me/solar/solar.html">
     <meta property="twitter:title" content="Dimensionamento Solar Fotovoltaico">
     <meta property="twitter:description" content="Dimensionamento completo de sistemas fotovoltaicos off-grid com cálculo de painéis, baterias e inversor.">
-        <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.1">
-        <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.1">
-        <link rel="stylesheet" href="solar-styles.css?v=1.0.1">
+        <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.2">
+        <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
+        <link rel="stylesheet" href="solar-styles.css?v=1.0.2">
 
 </head>
 <body>
@@ -194,7 +194,7 @@
                 <div class="formula-box">
                     <p><strong id="memorial-formula-passo7-1">Potência Total dos Painéis = Número de Painéis × Potência por Painel (W)</strong></p>
                     <p><strong id="memorial-formula-passo7-2">Corrente Máxima Necessária = Potência Total dos Painéis ÷ Tensão do Banco (V)</strong></p>
-                    <p><strong id="memorial-formula-passo7-3">Se Capacidade MPPT do Inversor < Corrente Máxima Necessária, aumenta potência do inversor até encontrar um com MPPT adequado</strong></p>
+                    <p><strong id="memorial-formula-passo7-3">Se Capacidade MPPT do Inversor &lt; Corrente Máxima Necessária, aumenta potência do inversor até encontrar um com MPPT adequado</strong></p>
                 </div>
                 <p data-i18n="memorial-passo7-explicacao">Verifica-se se o inversor escolhido tem capacidade MPPT integrada suficiente para os painéis. A corrente necessária é calculada dividindo a potência total dos painéis pela tensão do banco de baterias. Se o inversor inicial não tiver MPPT suficiente, escolhe-se um inversor maior até encontrar um com capacidade adequada. Isso garante que o sistema funcione corretamente sem necessidade de MPPT separado.</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-mppt">11 painéis × 400W = 4400W ÷ 48V = 91.7A necessários → Inversor 2kW tem MPPT 60A (insuficiente) → Escolhe Inversor 3kW com MPPT 80A (insuficiente) → Escolhe Inversor 5kW com MPPT 100A (adequado)</span></p>
@@ -561,10 +561,10 @@
         </svg>
     </a>
 
-    <script src="../assets/js/site-config.js?v=1.0.1"></script>
-    <script src="../assets/js/ajustarValorUtil.js?v=1.0.1"></script>
+    <script src="../assets/js/site-config.js?v=1.0.2"></script>
+    <script src="../assets/js/ajustarValorUtil.js?v=1.0.2"></script>
     <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"?v=1.0.1"></script>
-    <script src="solar-script.js?v=1.0.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="solar-script.js?v=1.0.2"></script>
 </body>
 </html>

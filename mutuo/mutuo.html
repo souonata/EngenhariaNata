@@ -39,9 +39,9 @@
 
     <!-- Carrega o CSS com parâmetro de versão (?v=1.0.0) -->
     <!-- Quando atualizar o CSS, mude a versão para forçar o navegador a baixar de novo -->
-    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.1">
-    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.1">
-    <link rel="stylesheet" href="mutuo-styles.css?v=1.0.1">
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.2">
+    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
+    <link rel="stylesheet" href="mutuo-styles.css?v=1.0.2">
 </head>
 <body>
     <!-- ========================================== -->
@@ -49,12 +49,12 @@
     <!-- ========================================== -->
     <div class="language-selector">
         <!-- Botão para português (ativo definido pelo JavaScript) -->
-        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" aria-label="Alterar idioma para Português" title="Português">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" data-i18n-aria="aria.langPt" data-i18n-title="titles.langPt">
             <span class="flag" aria-hidden="true">🇧🇷</span>
             <span class="lang-text">PT</span>
         </button>
         <!-- Botão para italiano -->
-        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" aria-label="Alterar idioma para Italiano" title="Italiano">
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" data-i18n-aria="aria.langIt" data-i18n-title="titles.langIt">
             <span class="flag" aria-hidden="true">🇮🇹</span>
             <span class="lang-text">IT</span>
         </button>
@@ -327,7 +327,7 @@
                         <div class="controle-sistema-wrapper">
                             <div class="label-sistema-com-ajuda">
                                 <label class="label-sistema" data-i18n="amortization-system">Sistema de Amortização</label>
-                                <button id="btnExemplos" class="btn-help" title="Ver Exemplos" data-i18n-title="btn-examples" tabindex="10">
+                                <button id="btnExemplos" class="btn-help" data-i18n-title="btn-examples" tabindex="10">
                                     <span class="texto-saiba-mais" data-i18n="learn-more">SAIBA MAIS!</span>
                                 </button>
                             </div>
@@ -359,7 +359,7 @@
                             <div class="grupo-entrada">
                                 <div class="cabecalho-controle">
                                     <label for="inputValor" data-i18n="loan-amount">Valor Emprestado</label>
-                                    <span class="info-icon" id="infoIconValor" role="button" tabindex="0" aria-label="Informação sobre valor emprestado" title="Clique para mais informações">
+                                    <span class="info-icon" id="infoIconValor" role="button" tabindex="0" data-i18n-aria="aria.infoValor" data-i18n-title="titles.clickInfo">
                                         <span class="info-icon-symbol">ℹ️</span>
                                     </span>
                                     <input type="text" id="inputValor" class="valor-display valor-input" value="115.000" tabindex="1">
@@ -369,16 +369,16 @@
                                     <span data-i18n="tooltip-valor-texto">O valor emprestado é o montante total que você está solicitando ao banco ou instituição financeira. Este valor será usado para calcular as parcelas, juros e amortização. Valores maiores resultam em parcelas maiores e mais juros totais.</span>
                                 </div>
                                 <div class="slider-com-botoes">
-                                    <button type="button" class="arrow-btn arrow-down" data-target="sliderValor" data-step="-1000" aria-label="Diminuir valor em 1.000">−</button>
+                                    <button type="button" class="arrow-btn arrow-down" data-target="sliderValor" data-step="-1000" data-i18n-aria="aria.diminuirValor">−</button>
                                     <input type="range" id="sliderValor" min="1000" max="1000000" step="1000" value="115000">
-                                    <button type="button" class="arrow-btn arrow-up" data-target="sliderValor" data-step="1000" aria-label="Aumentar valor em 1.000">+</button>
+                                    <button type="button" class="arrow-btn arrow-up" data-target="sliderValor" data-step="1000" data-i18n-aria="aria.aumentarValor">+</button>
                                 </div>
                             </div>
 
                             <div class="grupo-entrada">
                                 <div class="cabecalho-controle">
                                     <label for="inputPrazo" data-i18n="loan-term">Prazo (anos)</label>
-                                    <span class="info-icon" id="infoIconPrazo" role="button" tabindex="0" aria-label="Informação sobre prazo" title="Clique para mais informações">
+                                    <span class="info-icon" id="infoIconPrazo" role="button" tabindex="0" data-i18n-aria="aria.infoPrazo" data-i18n-title="titles.clickInfo">
                                         <span class="info-icon-symbol">ℹ️</span>
                                     </span>
                                     <input type="text" id="inputPrazo" class="valor-display valor-input" value="30" tabindex="2">
@@ -388,9 +388,9 @@
                                     <span data-i18n="tooltip-prazo-texto">O prazo é o tempo total em anos para quitar o empréstimo. Este valor é convertido automaticamente para meses (anos × 12) para os cálculos. Prazos maiores resultam em parcelas menores, mas mais juros totais ao longo do tempo.</span>
                                 </div>
                                 <div class="slider-com-botoes">
-                                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPrazo" data-step="-1" aria-label="Diminuir prazo em 1 ano">−</button>
+                                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPrazo" data-step="-1" data-i18n-aria="aria.diminuirPrazo">−</button>
                                     <input type="range" id="sliderPrazo" min="1" max="50" step="1" value="30">
-                                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPrazo" data-step="1" aria-label="Aumentar prazo em 1 ano">+</button>
+                                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPrazo" data-step="1" data-i18n-aria="aria.aumentarPrazo">+</button>
                                 </div>
                             </div>
                         </div>
@@ -402,7 +402,7 @@
                                 <label for="sliderTaxa">
                                     <span data-i18n="interest-rate">Taxa de Juros</span>
                                 </label>
-                                <span class="info-icon" id="infoIconTaxa" role="button" tabindex="0" aria-label="Informação sobre taxa de juros" title="Clique para mais informações">
+                                <span class="info-icon" id="infoIconTaxa" role="button" tabindex="0" data-i18n-aria="aria.infoTaxa" data-i18n-title="titles.clickInfo">
                                     <span class="info-icon-symbol">ℹ️</span>
                                 </span>
                                 <div class="valor-com-unidades">
@@ -434,9 +434,9 @@
                                 <span data-i18n="tooltip-taxa-texto">A taxa de juros é o percentual cobrado sobre o valor emprestado. Você pode informar a taxa em diferentes períodos (ano, mês ou dia). O sistema converte automaticamente para taxa mensal usando juros compostos. Taxas maiores resultam em parcelas maiores e mais juros totais.</span>
                             </div>
                             <div class="slider-com-botoes">
-                                <button type="button" class="arrow-btn arrow-down" data-target="sliderTaxa" data-step="-0.01" aria-label="Diminuir taxa em 0.01%">−</button>
+                                <button type="button" class="arrow-btn arrow-down" data-target="sliderTaxa" data-step="-0.01" data-i18n-aria="aria.diminuirTaxa">−</button>
                                 <input type="range" id="sliderTaxa" min="0" max="20" step="0.01" value="3.16" tabindex="3">
-                                <button type="button" class="arrow-btn arrow-up" data-target="sliderTaxa" data-step="0.01" aria-label="Aumentar taxa em 0.01%">+</button>
+                                <button type="button" class="arrow-btn arrow-up" data-target="sliderTaxa" data-step="0.01" data-i18n-aria="aria.aumentarTaxa">+</button>
                             </div>
                         </div>
                     </div>
@@ -447,7 +447,7 @@
                                 <label for="sliderExtraPagamento">
                                     <span data-i18n="extra-payment">Pagamento Extra</span>
                                 </label>
-                                <span class="info-icon" id="infoIconExtra" role="button" tabindex="0" aria-label="Informação sobre pagamento extra" title="Clique para mais informações">
+                                <span class="info-icon" id="infoIconExtra" role="button" tabindex="0" data-i18n-aria="aria.infoExtra" data-i18n-title="titles.clickInfo">
                                     <span class="info-icon-symbol">ℹ️</span>
                                 </span>
                                 <div class="valor-com-unidades">
@@ -478,9 +478,9 @@
                                 <span data-i18n="tooltip-extra-texto">O pagamento extra é um valor adicional aplicado na periodicidade escolhida (mensal, semestral ou anual). Esse valor aparece nas parcelas individuais, é abatido do saldo devedor e reduz o tempo total para quitação do financiamento.</span>
                             </div>
                             <div class="slider-com-botoes">
-                                <button type="button" class="arrow-btn arrow-down" data-target="sliderExtraPagamento" data-step="-10" aria-label="Diminuir pagamento extra em 10">−</button>
+                                <button type="button" class="arrow-btn arrow-down" data-target="sliderExtraPagamento" data-step="-10" data-i18n-aria="aria.diminuirExtra">−</button>
                                 <input type="range" id="sliderExtraPagamento" min="0" max="10000" step="10" value="6000" tabindex="11">
-                                <button type="button" class="arrow-btn arrow-up" data-target="sliderExtraPagamento" data-step="10" aria-label="Aumentar pagamento extra em 10">+</button>
+                                <button type="button" class="arrow-btn arrow-up" data-target="sliderExtraPagamento" data-step="10" data-i18n-aria="aria.aumentarExtra">+</button>
                             </div>
                         </div>
                     </div>
@@ -505,9 +505,9 @@
                 <h3><span data-i18n="selected-installment">Parcela Selecionada</span>: <span id="numeroParcela">1</span> <span data-i18n="of">de</span> <span id="totalParcelas">-</span></h3>
 
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderParcelas" data-step="-1" aria-label="Diminuir parcela em 1">−</button>
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderParcelas" data-step="-1" data-i18n-aria="aria.diminuirParcela">−</button>
                     <input type="range" id="sliderParcelas" min="1" max="120" value="1" step="1">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderParcelas" data-step="1" aria-label="Aumentar parcela em 1">+</button>
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderParcelas" data-step="1" data-i18n-aria="aria.aumentarParcela">+</button>
                 </div>
 
                 <div class="parcela-detalhes">
@@ -581,7 +581,7 @@
         <p data-i18n="footer.texto">Calculadora de Empréstimos - Engenharia Nata @ 2025</p>
     </footer>
     <!-- Fica sempre visível enquanto rola a página -->
-    <a href="../index.html" class="home-button-fixed" aria-label="Voltar à tela inicial">
+    <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria.home">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
         </svg>

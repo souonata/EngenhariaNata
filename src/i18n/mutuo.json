@@ -259,6 +259,11 @@
       "saibaMais": "SAIBA MAIS!",
       "aplicar": "Aplicar"
     },
+    "titles": {
+      "clickInfo": "Clique para mais informações",
+      "langPt": "Português",
+      "langIt": "Italiano"
+    },
     "footer": {
       "texto": "Calculadora de Empréstimos - Engenharia Nata @ 2025"
     },
@@ -270,7 +275,16 @@
       "aumentarPrazo": "Aumentar prazo",
       "diminuirPrazo": "Diminuir prazo",
       "aumentarParcela": "Avançar para próxima parcela",
-      "diminuirParcela": "Voltar para parcela anterior"
+      "diminuirParcela": "Voltar para parcela anterior",
+      "aumentarExtra": "Aumentar pagamento extra",
+      "diminuirExtra": "Diminuir pagamento extra",
+      "infoValor": "Informação sobre valor emprestado",
+      "infoPrazo": "Informação sobre prazo",
+      "infoTaxa": "Informação sobre taxa de juros",
+      "infoExtra": "Informação sobre pagamento extra",
+      "home": "Voltar à tela inicial",
+      "langPt": "Alterar idioma para Português",
+      "langIt": "Alterar idioma para Italiano"
     }
   },
   "it-IT": {
@@ -533,6 +547,11 @@
       "saibaMais": "SCOPRI DI PIÙ!",
       "aplicar": "Applica"
     },
+    "titles": {
+      "clickInfo": "Clicca per maggiori informazioni",
+      "langPt": "Portoghese",
+      "langIt": "Italiano"
+    },
     "footer": {
       "texto": "Calcolatore di Prestiti - Engenharia Nata @ 2025"
     },
@@ -544,7 +563,16 @@
       "aumentarPrazo": "Aumenta durata",
       "diminuirPrazo": "Diminuisci durata",
       "aumentarParcela": "Passa alla rata successiva",
-      "diminuirParcela": "Torna alla rata precedente"
+      "diminuirParcela": "Torna alla rata precedente",
+      "aumentarExtra": "Aumenta pagamento extra",
+      "diminuirExtra": "Diminuisci pagamento extra",
+      "infoValor": "Informazioni sull'importo del prestito",
+      "infoPrazo": "Informazioni sulla durata",
+      "infoTaxa": "Informazioni sul tasso di interesse",
+      "infoExtra": "Informazioni sul pagamento extra",
+      "home": "Torna alla schermata iniziale",
+      "langPt": "Cambia lingua in portoghese",
+      "langIt": "Cambia lingua in italiano"
     }
   }
 }
