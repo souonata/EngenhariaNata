@@ -19,33 +19,6 @@
     z-index: 10;
 }
 
-/* Badge "Em Desenvolvimento" no cabeçalho */
-.dev-badge-header {
-    text-align: center;
-    margin-bottom: 8px;
-}
-
-.dev-badge-text {
-    display: inline-block;
-    background: #ff6b35;
-    color: white;
-    font-size: 0.75rem;
-    font-weight: bold;
-    padding: 6px 12px;
-    border-radius: 8px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border: 2px solid white;
-}
-
-@media (max-width: 480px) {
-    .dev-badge-text {
-        font-size: 0.65rem;
-        padding: 5px 10px;
-    }
-}
-
 /* Garantir centralização dos títulos dos grupos */
 .grupo-entrada > label {
     text-align: center !important;

@@ -1,6 +1,5 @@
 {
   "pt-BR": {
-    "dev-badge-header": "🚧 EM DESENVOLVIMENTO",
     "app-title": "☀️ Dimensionador de Aquecedor Solar Térmico",
     "app-subtitle": "Cálculo para Sistema Termossifão com Tubos a Vácuo",
     "label-tipo-sistema": "Tipo de Sistema",
@@ -86,7 +85,6 @@
     "unit-meter": "m",
     "unit-painel-singular": "painel",
     "unit-painel-plural": "paineis",
-    "watermark-dev": "🚧 EM DESENVOLVIMENTO",
     "learn-more": "SAIBA MAIS!",
     "back": "← Voltar",
     "footer": "Dimensionador de Aquecedor Solar - Engenharia Nata @ 2026",
@@ -107,7 +105,6 @@
     "tooltip-autonomia-texto": "Os dias de autonomia representam quantos dias consecutivos sem sol o sistema deve ser capaz de manter a casa aquecida."
   },
   "it-IT": {
-    "dev-badge-header": "🚧 IN SVILUPPO",
     "app-title": "☀️ Dimensionatore Riscaldatore Solare Termico",
     "app-subtitle": "Calcolo per Sistema Termosifone con Tubi Sottovuoto",
     "label-tipo-sistema": "Tipo di Sistema",
@@ -193,7 +190,6 @@
     "unit-meter": "m",
     "unit-painel-singular": "pannello",
     "unit-painel-plural": "pannelli",
-    "watermark-dev": "🚧 IN SVILUPPO",
     "learn-more": "SCOPRI DI PIÙ!",
     "back": "← Indietro",
     "footer": "Dimensionatore Riscaldatore Solare - Engenharia Nata @ 2026",

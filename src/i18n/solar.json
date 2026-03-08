@@ -1,6 +1,5 @@
 {
   "pt-BR": {
-    "dev-badge-header": "🚧 EM DESENVOLVIMENTO",
     "app-title": "🔋 Energia Solar",
     "app-subtitle": "Dimensionamento de Sistema Fotovoltaico",
     "label-consumo": "Consumo Médio Mensal",
@@ -110,14 +109,12 @@
     "memorial-formula-passo8-3": "Custo Inversor = Preço do Inversor com MPPT Integrado (da tabela de preços)",
     "memorial-formula-passo8-4": "Custo MPPT = 0 (já incluído no inversor)",
     "memorial-formula-passo8-5": "Custo Total = Custo Painéis + Custo Baterias + Custo Inversor",
-    "watermark-dev": "🚧 EM DESENVOLVIMENTO",
     "graficos-title": "📊 Visualizações",
     "grafico-amortizacao-title": "Análise de Amortização do Sistema",
     "grafico-sazonalidade-title": "Sazonalidade de Geração Solar",
     "erro-inicializacao": "Erro ao inicializar o app. Por favor, recarregue a página."
   },
   "it-IT": {
-    "dev-badge-header": "🚧 IN SVILUPPO",
     "app-title": "🔋 Energia Solare",
     "app-subtitle": "Dimensionamento Impianto Fotovoltaico",
     "label-consumo": "Consumo Medio Mensile",
@@ -161,7 +158,6 @@
     "custo-total": "Totale",
     "footer": "Solare - Engenharia NATA @ 2026",
     "aria-home": "Torna alla schermata iniziale",
-    "watermark-dev": "🚧 IN SVILUPPO",
     "learn-more": "SCOPRI DI PIÙ!",
     "back": "← Indietro",
     "btn-memorial": "Vedi Memoriale di Calcolo",

@@ -15,7 +15,7 @@
     "apps-description-title": "Aplicativos Disponíveis",
     "apps-description-subtitle": "Ferramentas práticas de engenharia, energia e finanças",
     "app-about-title": "Sobre o Projeto",
-    "app-about-description": "Panorama atualizado do projeto Engenharia NATA: arquitetura modular ES6, apps ativos, evolução do portfólio e objetivos educacionais.",
+    "app-about-description": "Panorama do projeto Engenharia NATA: arquitetura modular ES6, apps ativos e objetivos educacionais.",
     "app-mutuo-title": "Empréstimo - Calculadora de Empréstimos",
     "app-mutuo-description": "Calculadora bilíngue (PT/IT) de sistemas de amortização: SAC, Price e Americano. Inclui gráficos interativos, tabela de amortização completa e comparação de juros totais. Ideal para planejamento financeiro e análise de empréstimos.",
     "app-helice-title": "Hélice - Calculadora de Passo",
@@ -60,8 +60,7 @@
     "aria-lang-it": "Alterar idioma para Italiano",
     "aria-sync-time": "Sincronizando horário",
     "aria-home": "Voltar para a tela inicial",
-    "footer": "💻 Portfólio Engenharia NATA @ 2026",
-    "dev-badge": "DEV"
+    "footer": "💻 Portfólio Engenharia NATA @ 2026"
   },
   "it-IT": {
     "app-about": "Sul Progetto",
@@ -79,7 +78,7 @@
     "apps-description-title": "Applicazioni Disponibili",
     "apps-description-subtitle": "Strumenti pratici di ingegneria, energia e finanza",
     "app-about-title": "Sul Progetto",
-    "app-about-description": "Panoramica aggiornata del progetto Engenharia NATA: architettura modulare ES6, app attive, evoluzione del portafoglio e obiettivi educativi.",
+    "app-about-description": "Panoramica del progetto Engenharia NATA: architettura modulare ES6, app attive e obiettivi educativi.",
     "app-mutuo-title": "Mutuo - Calcolatrice di Prestiti",
     "app-mutuo-description": "Calcolatrice bilingue (PT/IT) di sistemi di ammortamento: SAC, Francese e Americano. Include grafici interattivi, tabella di ammortamento completa e confronto degli interessi totali. Ideale per pianificazione finanziaria e analisi di prestiti.",
     "app-helice-title": "Elica - Calcolatrice del Passo",
@@ -124,8 +123,7 @@
     "aria-lang-it": "Cambia lingua in italiano",
     "aria-sync-time": "Sincronizzazione orario",
     "aria-home": "Torna alla schermata iniziale",
-    "footer": "💻 Portafoglio Ingegneria NATA @ 2026",
-    "dev-badge": "DEV"
+    "footer": "💻 Portafoglio Ingegneria NATA @ 2026"
   }
 }
 

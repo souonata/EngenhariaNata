@@ -1,6 +1,5 @@
 {
   "pt-BR": {
-    "dev-badge-header": "🚧 EM DESENVOLVIMENTO",
     "app-title": "🌾 Dimensionador de Fazenda Auto-Sustentável",
     "app-subtitle": "Planejamento completo de produção de alimentos",
     "title-lang-pt": "Português",
@@ -40,7 +39,6 @@
     "footer": "💻 Portfólio Engenharia NATA @ 2026"
   },
   "it-IT": {
-    "dev-badge-header": "🚧 IN SVILUPPO",
     "app-title": "🌾 Dimensionatore di Fattoria Auto-Sostenibile",
     "app-subtitle": "Pianificazione completa della produzione alimentare",
     "title-lang-pt": "Portoghese",

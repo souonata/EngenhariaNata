@@ -192,8 +192,6 @@ const traducoes = {
         'label-area-plantas': 'Área para Plantas:',
         'label-area-animais': 'Área para Animais:',
         'footer-text': 'Engenharia NATA @ 2026 - Apps Educativos de Engenharia',
-        'watermark-dev': '🚧 EM DESENVOLVIMENTO',
-        'dev-badge-header': '🚧 EM DESENVOLVIMENTO',
         // Nomes de plantas e animais - Brasil
         'banana': 'Banana', 'manga': 'Manga', 'laranja': 'Laranja', 'limao': 'Limão',
         'abacate': 'Abacate', 'mamao': 'Mamão', 'goiaba': 'Goiaba', 'maracuja': 'Maracujá',
@@ -303,8 +301,6 @@ const traducoes = {
         'label-area-plantas': 'Area per Piante:',
         'label-area-animais': 'Area per Animali:',
         'footer-text': 'Engenharia NATA @ 2026 - App Educativi di Ingegneria',
-        'watermark-dev': '🚧 IN SVILUPPO',
-        'dev-badge-header': '🚧 IN SVILUPPO',
         // Nomes de plantas e animais - Itália
         'uva': 'Uva', 'oliva': 'Oliva', 'figo': 'Fico', 'pesca': 'Pesca',
         'albicocca': 'Albicocca', 'prugna': 'Prugna', 'pera': 'Pera', 'mela': 'Mela',

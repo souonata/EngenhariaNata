@@ -17,33 +17,6 @@
     /* Todas as variáveis de cor, espaçamento e fonte já estão centralizadas em shared-styles.css */
 }
 
-/* Badge "Em Desenvolvimento" no cabeçalho */
-.dev-badge-header {
-    text-align: center;
-    margin-bottom: 8px;
-}
-
-.dev-badge-text {
-    display: inline-block;
-    background: #ff6b35;
-    color: white;
-    font-size: 0.75rem;
-    font-weight: bold;
-    padding: 6px 12px;
-    border-radius: 8px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border: 2px solid white;
-}
-
-@media (max-width: 480px) {
-    .dev-badge-text {
-        font-size: 0.65rem;
-        padding: 5px 10px;
-    }
-}
-
 /* ============================================
    AJUSTES DE LARGURA DOS CAMPOS DE INPUT
    ============================================ */
@@ -482,35 +455,6 @@ footer p {
     .formula-box {
         padding: 10px;
         font-size: 0.9rem;
-    }
-}
-
-/* ============================================
-   BADGE "EM DESENVOLVIMENTO" NO CABEÇALHO
-   ============================================ */
-.dev-badge-header {
-    text-align: center;
-    margin-bottom: 8px;
-}
-
-.dev-badge-text {
-    display: inline-block;
-    background: #ff6b35;
-    color: white;
-    font-size: 0.75rem;
-    font-weight: bold;
-    padding: 6px 12px;
-    border-radius: 8px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border: 2px solid white;
-}
-
-@media (max-width: 480px) {
-    .dev-badge-text {
-        font-size: 0.65rem;
-        padding: 5px 10px;
     }
 }
 

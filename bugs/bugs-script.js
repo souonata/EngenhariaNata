@@ -1,4 +1,4 @@
-// Bugs Reporter - App refatorado com arquitetura modular
+// Bugs Reporter
 
 import { App, i18n, loading } from '../src/core/app.js';
 import { domCache } from '../src/utils/dom.js';

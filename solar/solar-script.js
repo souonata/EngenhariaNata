@@ -228,7 +228,6 @@ function calcularPrecoInversor(potenciaKw, moeda) {
 // DICIONÁRIO DE TRADUÇÃO
 const traducoes = {
     'pt-BR': {
-        'dev-badge-header': '🚧 EM DESENVOLVIMENTO',
         'app-title': '🔋 Energia Solar',
         'app-subtitle': 'Dimensionamento de Sistema Fotovoltaico',
         'label-consumo': 'Consumo Médio Mensal',
@@ -339,7 +338,6 @@ const traducoes = {
         'memorial-formula-passo8-4': 'Custo MPPT = 0 (já incluído no inversor)',
         'memorial-formula-passo8-5': 'Custo Total = Custo Painéis + Custo Baterias + Custo Inversor',
         'aria-home': 'Voltar para a tela inicial',
-        'watermark-dev': '🚧 EM DESENVOLVIMENTO',
         'learn-more': 'SAIBA MAIS!',
         'back': '← Voltar',
         'btn-memorial': 'Ver Memorial de Cálculo',
@@ -356,7 +354,6 @@ const traducoes = {
         'title-config-prices': 'Configurações de preços'
     },
     'it-IT': {
-        'dev-badge-header': '🚧 IN SVILUPPO',
         'app-title': '🔋 Energia Solare',
         'app-subtitle': 'Dimensionamento Impianto Fotovoltaico',
         'label-consumo': 'Consumo Medio Mensile',
@@ -400,7 +397,6 @@ const traducoes = {
         'custo-total': 'Totale',
         'footer': 'Solare - Engenharia NATA @ 2026',
         'aria-home': 'Voltar para a tela inicial',
-        'watermark-dev': '🚧 EM DESENVOLVIMENTO',
         'learn-more': 'SAIBA MAIS!',
         'back': '← Voltar',
         'btn-memorial': 'Ver Memorial de Cálculo',
@@ -410,7 +406,6 @@ const traducoes = {
         'ano': 'anno',
         'moeda': '€',
         'aria-home': 'Torna alla schermata iniziale',
-        'watermark-dev': '🚧 IN SVILUPPO',
         'learn-more': 'SCOPRI DI PIÙ!',
         'back': '← Indietro',
         'back-to-calculator': 'Torna alla Calcolatrice',
