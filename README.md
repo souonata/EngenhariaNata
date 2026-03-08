@@ -74,7 +74,3 @@ EngenhariaNata/
 5. Adicione o app ao `index.html` e `sobre/sobre.html`
 6. Execute `scripts/count-lines.ps1` para atualizar as estatísticas
 7. Execute `scripts/sync-versions.ps1 -Mode ReadHTML` para atualizar `config/versions.json`
-
----
-
-**Este README foi mantido conciso e direto — para mais detalhes, consulte os arquivos de documentação mencionados acima.**
