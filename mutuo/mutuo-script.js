@@ -27,6 +27,7 @@ class MutuoApp extends App {
         this.ultimaParcelaSelecionada = 1;
         this.graficos = { evolucao: null };
         this.periodicidadeAnterior = 'ano'; // Rastrear periodicidade para conversão
+        this.memorialSistemaSelecionado = 'price';
     }
 
     get traducoes() {
@@ -107,14 +108,20 @@ class MutuoApp extends App {
             });
         });
 
-        // Botão SAIBA MAIS (exemplos)
+        // Botão SAIBA MAIS
         const btnExemplos = document.getElementById('btnExemplos');
         if (btnExemplos) {
             btnExemplos.addEventListener('click', () => {
                 const memorial = document.getElementById('memorialSection');
+                const resultados = document.getElementById('resultados');
+                const sistemaAtual = document.querySelector('input[name="sistemaRapido"]:checked')?.value || 'price';
                 if (memorial) {
                     memorial.style.display = 'block';
                 }
+                if (resultados) {
+                    resultados.style.display = 'none';
+                }
+                this.selecionarSistemaMemorial(sistemaAtual);
             });
         }
 
@@ -123,39 +130,65 @@ class MutuoApp extends App {
         if (btnFecharMemorial) {
             btnFecharMemorial.addEventListener('click', () => {
                 const memorial = document.getElementById('memorialSection');
+                const resultados = document.getElementById('resultados');
                 if (memorial) {
                     memorial.style.display = 'none';
                 }
-            });
-        }
-
-        // Botão "Ver Exemplos Educacionais" no memorial
-        const btnVerExemplos = document.getElementById('btnVerExemplos');
-        if (btnVerExemplos) {
-            btnVerExemplos.addEventListener('click', () => {
-                const memorial = document.getElementById('memorialSection');
-                const exemplos = document.getElementById('exemplosSection');
-                if (memorial) memorial.style.display = 'none';
-                if (exemplos) exemplos.style.display = 'block';
-                // Scroll para o início da seção de exemplos educativos
-                const comprendi = exemplos.querySelector('h2, .exemplos-header, .comparacao, .comparacao h3');
-                if (comprendi) {
-                    comprendi.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                if (resultados) {
+                    resultados.style.display = 'block';
                 }
             });
         }
 
-        // Botões "Voltar" do memorial e dos exemplos
-        document.querySelectorAll('.btn-voltar-memorial, .btn-voltar-exemplo').forEach(btn => {
+        // Botões "Voltar" da seção educativa unificada
+        document.querySelectorAll('.btn-voltar-memorial').forEach(btn => {
             btn.addEventListener('click', () => {
                 const memorial = document.getElementById('memorialSection');
-                const exemplos = document.getElementById('exemplosSection');
-                const resultados = document.getElementById('resultadosSection');
+                const resultados = document.getElementById('resultados');
 
                 if (memorial) memorial.style.display = 'none';
-                if (exemplos) exemplos.style.display = 'none';
                 if (resultados) resultados.style.display = 'block';
             });
+        });
+
+        // Abas/botões de sistema no memorial (sincronizados entre blocos)
+        const memorialSection = document.getElementById('memorialSection');
+        if (memorialSection) {
+            memorialSection.addEventListener('click', (event) => {
+                if (!(event.target instanceof Element)) return;
+
+                const tabButton = event.target.closest('.js-system-tab');
+                if (!tabButton) return;
+
+                const sistema = tabButton.getAttribute('data-system');
+                if (!sistema) return;
+
+                this.selecionarSistemaMemorial(sistema);
+            });
+        }
+    }
+
+    selecionarSistemaMemorial(sistema) {
+        this.memorialSistemaSelecionado = sistema;
+
+        // Sincronizar estado visual de todos os grupos de botões
+        document.querySelectorAll('.js-system-tab').forEach((button) => {
+            const ativo = button.getAttribute('data-system') === sistema;
+            button.classList.toggle('is-active', ativo);
+            button.setAttribute('aria-selected', ativo ? 'true' : 'false');
+        });
+
+        // Exibir o painel correspondente em cada bloco que possui painéis por sistema
+        document.querySelectorAll('[data-system-panel]').forEach((panel) => {
+            const ativo = panel.getAttribute('data-system-panel') === sistema;
+            panel.classList.toggle('is-active', ativo);
+            panel.hidden = !ativo;
+        });
+
+        // Destacar linha do sistema escolhido na tabela comparativa
+        document.querySelectorAll('[data-system-row]').forEach((row) => {
+            const ativo = row.getAttribute('data-system-row') === sistema;
+            row.classList.toggle('is-highlight', ativo);
         });
     }
 
@@ -581,11 +614,11 @@ class MutuoApp extends App {
         const valor = parseFloat(sliderValor?.value || 115000);
         const taxaInput = parseFloat(sliderTaxa?.value || 3.16);
         const prazoAnos = parseInt(sliderPrazo?.value || 30);
-        const extraPagamento = parseFloat(sliderExtraPagamento?.value || 6000);
+        const extraPagamento = parseFloat(sliderExtraPagamento?.value || 0);
 
         const periodicidade = document.querySelector('input[name="periodoRapido"]:checked')?.value || 'ano';
         const sistema = document.querySelector('input[name="sistemaRapido"]:checked')?.value || 'price';
-        const periodicidadeExtra = document.querySelector('input[name="periodoExtra"]:checked')?.value || 'semestral';
+        const periodicidadeExtra = document.querySelector('input[name="periodoExtra"]:checked')?.value || 'mensal';
 
         // Número de parcelas sempre mensal
         const numParcelas = prazoAnos * 12;
@@ -641,7 +674,11 @@ class MutuoApp extends App {
         this.atualizarParcelaExibida();
         this.gerarTabelaCompleta();
         this.atualizarGrafico();
-        this.atualizarMemorial(dados);
+        try {
+            this.atualizarMemorial(dados);
+        } catch (error) {
+            console.error('[Mutuo] Erro ao atualizar memorial:', error);
+        }
     }
 
     calcularAmortizacao(dados) {
@@ -801,17 +838,26 @@ class MutuoApp extends App {
         const numeroParcela = document.getElementById('numeroParcela');
         const valorParcela = document.getElementById('valorParcela');
         const valorAmortizacao = document.getElementById('valorAmortizacao');
+        const labelAmortizacaoParcela = document.getElementById('labelAmortizacaoParcela');
         const valorJurosParcela = document.getElementById('valorJurosParcela');
         const saldoDevedor = document.getElementById('saldoDevedor');
         const proporcaoAmortJurosParcela = document.getElementById('proporcaoAmortJurosParcela');
 
-        const totalParcela = parcela.amortizacao + parcela.juros;
-        const percentualAmortizacao = totalParcela > 0 ? (parcela.amortizacao / totalParcela) * 100 : 0;
+        // Quando houver pagamento extra, ele tambem entra como amortizacao efetiva.
+        const amortizacaoEfetiva = parcela.amortizacao + (parcela.extraPagamento || 0);
+        const totalParcela = amortizacaoEfetiva + parcela.juros;
+        const percentualAmortizacao = totalParcela > 0 ? (amortizacaoEfetiva / totalParcela) * 100 : 0;
         const percentualJuros = totalParcela > 0 ? (parcela.juros / totalParcela) * 100 : 0;
 
         if (numeroParcela) numeroParcela.textContent = parcela.numero;
         if (valorParcela) valorParcela.textContent = this.formatarMoedaLocal(parcela.parcela);
-        if (valorAmortizacao) valorAmortizacao.textContent = this.formatarMoedaLocal(parcela.amortizacao);
+        if (labelAmortizacaoParcela) {
+            const temExtra = (parcela.extraPagamento || 0) > 0;
+            labelAmortizacaoParcela.textContent = temExtra
+                ? (this.traducoes['amortization-with-extra'] || 'Amortização (+ extra)')
+                : (this.traducoes['amortization'] || 'Amortização');
+        }
+        if (valorAmortizacao) valorAmortizacao.textContent = this.formatarMoedaLocal(amortizacaoEfetiva);
         if (valorJurosParcela) valorJurosParcela.textContent = this.formatarMoedaLocal(parcela.juros);
         if (saldoDevedor) saldoDevedor.textContent = this.formatarMoedaLocal(parcela.saldo);
         if (proporcaoAmortJurosParcela) {
@@ -821,7 +867,7 @@ class MutuoApp extends App {
 
     toggleTabela() {
         const tabelaSection = document.getElementById('tabelaSection');
-        const resultados = document.getElementById('resultadosSection');
+        const resultados = document.getElementById('resultados');
 
         if (!tabelaSection) return;
 
@@ -1035,16 +1081,18 @@ class MutuoApp extends App {
                            periodicidade === 'mes' ? (this.traducoes['period-month-short'] || 'Mensal') :
                            (this.traducoes['period-day-short'] || 'Diária');
         const casasDecimaisTaxa = periodicidade === 'dia' ? 4 : (periodicidade === 'mes' ? 3 : 2);
+        const textoTaxa = this.traducoes['memorial-rate-label'] || 'Taxa';
+        const textoTaxaMensal = this.traducoes['memorial-monthly-rate-label'] || 'Taxa Mensal';
 
         htmlConteudo += `
             <div class="memorial-item">
                 <h3>${this.traducoes['memorial-passo1-title'] || '1️⃣ Passo 1: Converter Taxa para Mensal'}</h3>
                 <p><strong>${this.traducoes['memorial-formula'] || 'Fórmula:'}</strong></p>
                 <div class="formula-box">
-                    <p><strong>Taxa Mensal = f(Taxa ${periodoTexto})</strong></p>
+                    <p><strong>${textoTaxaMensal} = f(${textoTaxa} ${periodoTexto})</strong></p>
                 </div>
                 <p>${this.traducoes['memorial-passo1-explicacao'] || 'Todos os cálculos são feitos com taxa mensal.'}</p>
-                <p><strong>${this.traducoes['memorial-example'] || 'Exemplo:'}</strong> Taxa ${formatarNumero(taxaExibida, casasDecimaisTaxa)}% → Taxa Mensal = ${formatarNumero(taxaMensal * 100, 4)}%</p>
+                <p><strong>${this.traducoes['memorial-example'] || 'Exemplo:'}</strong> ${textoTaxa} ${formatarNumero(taxaExibida, casasDecimaisTaxa)}% → ${textoTaxaMensal} = ${formatarNumero(taxaMensal * 100, 4)}%</p>
             </div>
         `;
 
@@ -1061,88 +1109,79 @@ class MutuoApp extends App {
             </div>
         `;
 
-        // Passo 3: Sistema específico
-        if (sistema === 'sac') {
-            const amortizacao = valor / numParcelas;
-            const parcela1 = this.tabelaAmortizacao[0];
-            const indiceMeio = Math.max(0, Math.floor(totalParcelasReais / 2) - 1);
-            const parcelaMeio = this.tabelaAmortizacao[indiceMeio] || parcela1;
-            const parcelaUltima = this.tabelaAmortizacao[totalParcelasReais - 1] || parcela1;
+        const gerarPainelPasso3 = (sistemaPainel, tabelaSistema) => {
+            const totalParcelasPainel = tabelaSistema.length;
+            const parcela1 = tabelaSistema[0];
+            const indiceMeio = Math.max(0, Math.floor(totalParcelasPainel / 2) - 1);
+            const parcelaMeio = tabelaSistema[indiceMeio] || parcela1;
+            const parcelaUltima = tabelaSistema[totalParcelasPainel - 1] || parcela1;
 
-            htmlConteudo += `
-                <div class="memorial-item">
-                    <h3>${this.traducoes['memorial-passo3-title'] || '3️⃣ Passo 3: Calcular Tabela de Amortização (SAC)'}</h3>
-                    <div class="memorial-item">
-                        <h4>${this.traducoes['memorial-sac-passo1-title'] || 'SAC - Passo 1: Calcular Amortização Constante'}</h4>
-                        <p><strong>${this.traducoes['memorial-formula'] || 'Fórmula:'}</strong></p>
-                        <div class="formula-box">
-                            <p><strong>${this.traducoes['tabela']?.amortizacao || 'Amortização'} = ${this.traducoes['labels']?.valorEmprestado || 'Valor Emprestado'} ÷ ${numParcelas}</strong></p>
+            if (sistemaPainel === 'sac') {
+                const amortizacao = valor / numParcelas;
+                return `
+                    <div class="system-panel" data-system-panel="sac" hidden>
+                        <div class="memorial-item">
+                            <h4>${this.traducoes['memorial-sac-passo1-title'] || 'SAC - Passo 1: Calcular Amortização Constante'}</h4>
+                            <p><strong>${this.traducoes['memorial-formula'] || 'Fórmula:'}</strong></p>
+                            <div class="formula-box">
+                                <p><strong>${this.traducoes['tabela']?.amortizacao || 'Amortização'} = ${this.traducoes['labels']?.valorEmprestado || 'Valor Emprestado'} ÷ ${numParcelas}</strong></p>
+                            </div>
+                            <p>${this.traducoes['memorial-sac-passo1-explicacao'] || 'A amortização é sempre a mesma em todas as parcelas.'}</p>
+                            <p><strong>${this.traducoes['memorial-example'] || 'Exemplo:'}</strong> ${this.formatarMoedaLocal(valor)} ÷ ${numParcelas} = ${this.formatarMoedaLocal(amortizacao)}</p>
                         </div>
-                        <p>${this.traducoes['memorial-sac-passo1-explicacao'] || 'A amortização é sempre a mesma em todas as parcelas.'}</p>
-                        <p><strong>${this.traducoes['memorial-example'] || 'Exemplo:'}</strong> ${this.formatarMoedaLocal(valor)} ÷ ${numParcelas} = ${this.formatarMoedaLocal(amortizacao)}</p>
-                    </div>
-                    <div class="memorial-item">
-                        <h4>${this.traducoes['memorial-sac-passo2-title'] || 'SAC - Passo 2: Calcular Juros e Parcela'}</h4>
-                        <p><strong>${this.traducoes['memorial-formula'] || 'Fórmula:'}</strong></p>
-                        <div class="formula-box">
-                            <p><strong>${this.traducoes['tabela']?.juros || 'Juros'} = ${this.traducoes['tabela']?.saldoDevedor || 'Saldo Devedor'} × Taxa<br>${this.traducoes['unidades']?.parcela || 'Parcela'} = ${this.traducoes['tabela']?.amortizacao || 'Amortização'} + ${this.traducoes['tabela']?.juros || 'Juros'}</strong></p>
+                        <div class="memorial-item">
+                            <h4>${this.traducoes['memorial-sac-passo2-title'] || 'SAC - Passo 2: Calcular Juros e Parcela'}</h4>
+                            <p><strong>${this.traducoes['memorial-formula'] || 'Fórmula:'}</strong></p>
+                            <div class="formula-box">
+                                <p><strong>${this.traducoes['tabela']?.juros || 'Juros'} = ${this.traducoes['tabela']?.saldoDevedor || 'Saldo Devedor'} × ${textoTaxa}<br>${this.traducoes['unidades']?.parcela || 'Parcela'} = ${this.traducoes['tabela']?.amortizacao || 'Amortização'} + ${this.traducoes['tabela']?.juros || 'Juros'}</strong></p>
+                            </div>
+                            <p>${this.traducoes['memorial-sac-passo2-explicacao'] || 'Os juros diminuem a cada parcela porque o saldo diminui.'}</p>
+                            <ul>
+                                <li>${this.traducoes['unidades']?.meses || 'Mês'} 1: ${this.traducoes['tabela']?.juros || 'Juros'} = ${this.formatarMoedaLocal(parcela1.juros)} -> ${this.traducoes['unidades']?.parcela || 'Parcela'} = ${this.formatarMoedaLocal(amortizacao)} + ${this.formatarMoedaLocal(parcela1.juros)} = ${this.formatarMoedaLocal(parcela1.parcela)}</li>
+                                <li>${this.traducoes['unidades']?.meses || 'Mês'} ${indiceMeio + 1}: ${this.traducoes['tabela']?.juros || 'Juros'} = ${this.formatarMoedaLocal(parcelaMeio.juros)} -> ${this.traducoes['unidades']?.parcela || 'Parcela'} = ${this.formatarMoedaLocal(amortizacao)} + ${this.formatarMoedaLocal(parcelaMeio.juros)} = ${this.formatarMoedaLocal(parcelaMeio.parcela)}</li>
+                                <li>${this.traducoes['unidades']?.meses || 'Mês'} ${totalParcelasPainel}: ${this.traducoes['tabela']?.juros || 'Juros'} = ${this.formatarMoedaLocal(parcelaUltima.juros)} -> ${this.traducoes['unidades']?.parcela || 'Parcela'} = ${this.formatarMoedaLocal(amortizacao)} + ${this.formatarMoedaLocal(parcelaUltima.juros)} = ${this.formatarMoedaLocal(parcelaUltima.parcela)}</li>
+                            </ul>
                         </div>
-                        <p>${this.traducoes['memorial-sac-passo2-explicacao'] || 'Os juros diminuem a cada parcela porque o saldo diminui.'}</p>
-                        <p><strong>${this.traducoes['memorial-example'] || 'Exemplo:'}</strong></p>
-                        <ul>
-                            <li>${this.traducoes['unidades']?.meses || 'Mês'} 1: ${this.traducoes['tabela']?.juros || 'Juros'} = ${this.formatarMoedaLocal(parcela1.juros)} → ${this.traducoes['unidades']?.parcela || 'Parcela'} = ${this.formatarMoedaLocal(amortizacao)} + ${this.formatarMoedaLocal(parcela1.juros)} = ${this.formatarMoedaLocal(parcela1.parcela)}</li>
-                            <li>${this.traducoes['unidades']?.meses || 'Mês'} ${indiceMeio + 1}: ${this.traducoes['tabela']?.juros || 'Juros'} = ${this.formatarMoedaLocal(parcelaMeio.juros)} → ${this.traducoes['unidades']?.parcela || 'Parcela'} = ${this.formatarMoedaLocal(amortizacao)} + ${this.formatarMoedaLocal(parcelaMeio.juros)} = ${this.formatarMoedaLocal(parcelaMeio.parcela)}</li>
-                            <li>${this.traducoes['unidades']?.meses || 'Mês'} ${totalParcelasReais}: ${this.traducoes['tabela']?.juros || 'Juros'} = ${this.formatarMoedaLocal(parcelaUltima.juros)} → ${this.traducoes['unidades']?.parcela || 'Parcela'} = ${this.formatarMoedaLocal(amortizacao)} + ${this.formatarMoedaLocal(parcelaUltima.juros)} = ${this.formatarMoedaLocal(parcelaUltima.parcela)}</li>
-                        </ul>
                     </div>
-                </div>
-            `;
-        } else if (sistema === 'price') {
-            const parcela1 = this.tabelaAmortizacao[0];
-            const indiceMeio = Math.max(0, Math.floor(totalParcelasReais / 2) - 1);
-            const parcelaMeio = this.tabelaAmortizacao[indiceMeio] || parcela1;
-            const parcelaUltima = this.tabelaAmortizacao[totalParcelasReais - 1] || parcela1;
+                `;
+            }
 
-            htmlConteudo += `
-                <div class="memorial-item">
-                    <h3>${this.traducoes['memorial-passo3-title'] || '3️⃣ Passo 3: Calcular Tabela de Amortização (Price)'}</h3>
-                    <div class="memorial-item">
-                        <h4>${this.traducoes['memorial-price-passo1-title'] || 'Price - Passo 1: Calcular Parcela Fixa (PMT)'}</h4>
-                        <p><strong>${this.traducoes['memorial-formula'] || 'Fórmula:'}</strong></p>
-                        <div class="formula-box">
-                            <p><strong>PMT = PV × [i × (1+i)^n] ÷ [(1+i)^n - 1]</strong></p>
+            if (sistemaPainel === 'price') {
+                return `
+                    <div class="system-panel" data-system-panel="price" hidden>
+                        <div class="memorial-item">
+                            <h4>${this.traducoes['memorial-price-passo1-title'] || 'Price - Passo 1: Calcular Parcela Fixa (PMT)'}</h4>
+                            <p><strong>${this.traducoes['memorial-formula'] || 'Fórmula:'}</strong></p>
+                            <div class="formula-box">
+                                <p><strong>PMT = PV × [i × (1+i)^n] ÷ [(1+i)^n - 1]</strong></p>
+                            </div>
+                            <p>${this.traducoes['memorial-price-passo1-explicacao'] || 'Esta fórmula calcula o valor da parcela fixa.'}</p>
+                            <p><strong>${this.traducoes['memorial-example'] || 'Exemplo:'}</strong> PMT = ${this.formatarMoedaLocal(parcela1.parcela)}</p>
                         </div>
-                        <p>${this.traducoes['memorial-price-passo1-explicacao'] || 'Esta fórmula calcula o valor da parcela fixa.'}</p>
-                        <p><strong>${this.traducoes['memorial-example'] || 'Exemplo:'}</strong> PMT = ${this.formatarMoedaLocal(primeiraParcela)}</p>
-                    </div>
-                    <div class="memorial-item">
-                        <h4>${this.traducoes['memorial-price-passo2-title'] || 'Price - Passo 2: Calcular Juros e Amortização'}</h4>
-                        <p><strong>${this.traducoes['memorial-formula'] || 'Fórmula:'}</strong></p>
-                        <div class="formula-box">
-                            <p><strong>${this.traducoes['tabela']?.juros || 'Juros'} = ${this.traducoes['tabela']?.saldoDevedor || 'Saldo'} × Taxa<br>${this.traducoes['tabela']?.amortizacao || 'Amortização'} = PMT - ${this.traducoes['tabela']?.juros || 'Juros'}</strong></p>
+                        <div class="memorial-item">
+                            <h4>${this.traducoes['memorial-price-passo2-title'] || 'Price - Passo 2: Calcular Juros e Amortização'}</h4>
+                            <p><strong>${this.traducoes['memorial-formula'] || 'Fórmula:'}</strong></p>
+                            <div class="formula-box">
+                                <p><strong>${this.traducoes['tabela']?.juros || 'Juros'} = ${this.traducoes['tabela']?.saldoDevedor || 'Saldo'} × ${textoTaxa}<br>${this.traducoes['tabela']?.amortizacao || 'Amortização'} = PMT - ${this.traducoes['tabela']?.juros || 'Juros'}</strong></p>
+                            </div>
+                            <p>${this.traducoes['memorial-price-passo2-explicacao'] || 'A parcela é fixa, mas a composição muda ao longo do tempo.'}</p>
+                            <ul>
+                                <li>${this.traducoes['unidades']?.meses || 'Mês'} 1: ${this.traducoes['tabela']?.juros || 'Juros'} = ${this.formatarMoedaLocal(parcela1.juros)}, ${this.traducoes['tabela']?.amortizacao || 'Amortização'} = ${this.formatarMoedaLocal(parcela1.amortizacao)}</li>
+                                <li>${this.traducoes['unidades']?.meses || 'Mês'} ${indiceMeio + 1}: ${this.traducoes['tabela']?.juros || 'Juros'} = ${this.formatarMoedaLocal(parcelaMeio.juros)}, ${this.traducoes['tabela']?.amortizacao || 'Amortização'} = ${this.formatarMoedaLocal(parcelaMeio.amortizacao)}</li>
+                                <li>${this.traducoes['unidades']?.meses || 'Mês'} ${totalParcelasPainel}: ${this.traducoes['tabela']?.juros || 'Juros'} = ${this.formatarMoedaLocal(parcelaUltima.juros)}, ${this.traducoes['tabela']?.amortizacao || 'Amortização'} = ${this.formatarMoedaLocal(parcelaUltima.amortizacao)}</li>
+                            </ul>
                         </div>
-                        <p>${this.traducoes['memorial-price-passo2-explicacao'] || 'A parcela é fixa, mas a composição muda ao longo do tempo.'}</p>
-                        <p><strong>${this.traducoes['memorial-example'] || 'Exemplo:'}</strong></p>
-                        <ul>
-                            <li>${this.traducoes['unidades']?.meses || 'Mês'} 1: ${this.traducoes['tabela']?.juros || 'Juros'} = ${this.formatarMoedaLocal(parcela1.juros)}, ${this.traducoes['tabela']?.amortizacao || 'Amortização'} = ${this.formatarMoedaLocal(parcela1.amortizacao)}</li>
-                            <li>${this.traducoes['unidades']?.meses || 'Mês'} ${indiceMeio + 1}: ${this.traducoes['tabela']?.juros || 'Juros'} = ${this.formatarMoedaLocal(parcelaMeio.juros)}, ${this.traducoes['tabela']?.amortizacao || 'Amortização'} = ${this.formatarMoedaLocal(parcelaMeio.amortizacao)}</li>
-                            <li>${this.traducoes['unidades']?.meses || 'Mês'} ${totalParcelasReais}: ${this.traducoes['tabela']?.juros || 'Juros'} = ${this.formatarMoedaLocal(parcelaUltima.juros)}, ${this.traducoes['tabela']?.amortizacao || 'Amortização'} = ${this.formatarMoedaLocal(parcelaUltima.amortizacao)}</li>
-                        </ul>
                     </div>
-                </div>
-            `;
-        } else if (sistema === 'americano') {
-            const parcela1 = this.tabelaAmortizacao[0];
-            const parcelaUltima = this.tabelaAmortizacao[totalParcelasReais - 1] || parcela1;
+                `;
+            }
 
-            htmlConteudo += `
-                <div class="memorial-item">
-                    <h3>${this.traducoes['memorial-passo3-title'] || '3️⃣ Passo 3: Calcular Tabela de Amortização (Americano)'}</h3>
+            return `
+                <div class="system-panel" data-system-panel="americano" hidden>
                     <div class="memorial-item">
                         <h4>${this.traducoes['memorial-americano-passo1-title'] || 'Americano - Passo 1: Calcular Juros Mensais'}</h4>
                         <p><strong>${this.traducoes['memorial-formula'] || 'Fórmula:'}</strong></p>
                         <div class="formula-box">
-                            <p><strong>${this.traducoes['tabela']?.juros || 'Juros'} = ${this.traducoes['labels']?.valorEmprestado || 'Valor Emprestado'} × Taxa</strong></p>
+                            <p><strong>${this.traducoes['tabela']?.juros || 'Juros'} = ${this.traducoes['labels']?.valorEmprestado || 'Valor Emprestado'} × ${textoTaxa}</strong></p>
                         </div>
                         <p>${this.traducoes['memorial-americano-passo1-explicacao'] || 'Os juros são sempre calculados sobre o valor total.'}</p>
                         <p><strong>${this.traducoes['memorial-example'] || 'Exemplo:'}</strong> ${this.traducoes['tabela']?.juros || 'Juros'} = ${this.formatarMoedaLocal(valor)} × ${formatarNumero(taxaMensal * 100, 4)}% = ${this.formatarMoedaLocal(parcela1.juros)}</p>
@@ -1154,17 +1193,43 @@ class MutuoApp extends App {
                             <p><strong>${this.traducoes['unidades']?.parcela || 'Parcelas'} 1 a n-1: ${this.traducoes['tabela']?.juros || 'Apenas Juros'}<br>Última: ${this.traducoes['tabela']?.juros || 'Juros'} + ${this.traducoes['labels']?.valorEmprestado || 'Valor Emprestado'}</strong></p>
                         </div>
                         <p>${this.traducoes['memorial-americano-passo2-explicacao'] || 'Paga-se apenas juros durante o período. O principal é pago no final.'}</p>
-                        <p><strong>${this.traducoes['memorial-example'] || 'Exemplo:'}</strong></p>
                         <ul>
-                            <li>${this.traducoes['unidades']?.parcela || 'Parcelas'} 1 a ${Math.max(1, totalParcelasReais - 1)}: ${this.formatarMoedaLocal(parcela1.parcela)} (${this.traducoes['tabela']?.juros || 'apenas juros'})</li>
-                            <li>${this.traducoes['unidades']?.parcela || 'Parcela'} ${totalParcelasReais}: ${this.formatarMoedaLocal(parcelaUltima.parcela)} (${this.traducoes['tabela']?.juros || 'juros'} + ${this.traducoes['labels']?.valorEmprestado || 'principal'})</li>
+                            <li>${this.traducoes['unidades']?.parcela || 'Parcelas'} 1 a ${Math.max(1, totalParcelasPainel - 1)}: ${this.formatarMoedaLocal(parcela1.parcela)} (${this.traducoes['tabela']?.juros || 'apenas juros'})</li>
+                            <li>${this.traducoes['unidades']?.parcela || 'Parcela'} ${totalParcelasPainel}: ${this.formatarMoedaLocal(parcelaUltima.parcela)} (${this.traducoes['tabela']?.juros || 'juros'} + ${this.traducoes['labels']?.valorEmprestado || 'principal'})</li>
                         </ul>
                     </div>
                 </div>
             `;
-        }
+        };
+
+        const tabelasPorSistema = {
+            sac: this.calcularAmortizacao({ ...dados, sistema: 'sac' }),
+            price: this.calcularAmortizacao({ ...dados, sistema: 'price' }),
+            americano: this.calcularAmortizacao({ ...dados, sistema: 'americano' })
+        };
+
+        htmlConteudo += `
+            <div class="memorial-item">
+                <h3>${this.traducoes['memorial-passo3-title'] || '3️⃣ Passo 3: Calcular Tabela de Amortização'}</h3>
+                <div class="memorial-system-switcher" role="tablist" aria-label="Sistema para formulas">
+                    <button type="button" class="js-system-tab" data-system="sac" aria-selected="false">
+                        <span data-i18n="system-sac-short">SAC</span>
+                    </button>
+                    <button type="button" class="js-system-tab" data-system="price" aria-selected="false">
+                        <span data-i18n="system-price-short">Price</span>
+                    </button>
+                    <button type="button" class="js-system-tab" data-system="americano" aria-selected="false">
+                        <span data-i18n="system-german-short">Americano</span>
+                    </button>
+                </div>
+                ${gerarPainelPasso3('sac', tabelasPorSistema.sac)}
+                ${gerarPainelPasso3('price', tabelasPorSistema.price)}
+                ${gerarPainelPasso3('americano', tabelasPorSistema.americano)}
+            </div>
+        `;
 
         conteudoDinamico.innerHTML = htmlConteudo;
+        this.selecionarSistemaMemorial(this.memorialSistemaSelecionado || sistema || 'price');
     }
     aplicarExemplo(tipo) {
         const exemplos = {

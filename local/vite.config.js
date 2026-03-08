@@ -1,24 +1,26 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
+const projectRoot = resolve(__dirname, '..');
+
 export default defineConfig({
   // Diretório raiz do projeto
-  root: '.',
+  root: projectRoot,
   
   // Diretório público (assets não processados)
-  publicDir: 'public',
+  publicDir: resolve(projectRoot, 'public'),
   
   // Configurações do servidor de desenvolvimento
   server: {
-    port: 3000,
+    port: Number(process.env.VITE_PORT || 5173),
     open: true,
     cors: true,
-    strictPort: false
+    strictPort: true
   },
   
   // Configurações de build
   build: {
-    outDir: 'dist',
+    outDir: resolve(__dirname, 'dist'),
     assetsDir: 'assets',
     sourcemap: true,
     minify: 'terser',
@@ -37,19 +39,19 @@ export default defineConfig({
     // Configurações do Rollup
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html'),
-        aquecimento: resolve(__dirname, 'aquecimento/aquecimento.html'),
-        arcondicionado: resolve(__dirname, 'arcondicionado/arcondicionado.html'),
-        bitola: resolve(__dirname, 'bitola/bitola.html'),
-        bugs: resolve(__dirname, 'bugs/bugs.html'),
-        fazenda: resolve(__dirname, 'fazenda/fazenda.html'),
-        helice: resolve(__dirname, 'helice/helice.html'),
-        mutuo: resolve(__dirname, 'mutuo/mutuo.html'),
-        solar: resolve(__dirname, 'solar/solar.html'),
-        solarConfig: resolve(__dirname, 'solar/config.html'),
-        sobre: resolve(__dirname, 'sobre/sobre.html')
+        main: resolve(projectRoot, 'index.html'),
+        aquecimento: resolve(projectRoot, 'aquecimento/aquecimento.html'),
+        arcondicionado: resolve(projectRoot, 'arcondicionado/arcondicionado.html'),
+        bitola: resolve(projectRoot, 'bitola/bitola.html'),
+        bugs: resolve(projectRoot, 'bugs/bugs.html'),
+        fazenda: resolve(projectRoot, 'fazenda/fazenda.html'),
+        helice: resolve(projectRoot, 'helice/helice.html'),
+        mutuo: resolve(projectRoot, 'mutuo/mutuo.html'),
+        solar: resolve(projectRoot, 'solar/solar.html'),
+        solarConfig: resolve(projectRoot, 'solar/config.html'),
+        sobre: resolve(projectRoot, 'sobre/sobre.html'),
+        popov: resolve(projectRoot, 'popov/popov.html')
       },
-        popov: resolve(__dirname, 'popov/popov.html'),
       output: {
         // Code splitting para otimização
         manualChunks: {
@@ -75,9 +77,9 @@ export default defineConfig({
   // Resolve aliases para imports mais limpos
   resolve: {
     alias: {
-      '@': resolve(__dirname, './'),
-      '@assets': resolve(__dirname, './assets'),
-      '@config': resolve(__dirname, './config')
+      '@': projectRoot,
+      '@assets': resolve(projectRoot, 'assets'),
+      '@config': resolve(projectRoot, 'config')
     }
   },
   

@@ -1,9 +1,12 @@
 import { createServer } from 'node:http';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const CONTROL_PORT = Number(process.env.CONTROL_PORT || 3001);
 const VITE_URL = process.env.VITE_URL || 'http://localhost:5173';
+const APP_DIR = dirname(fileURLToPath(import.meta.url));
 
 let viteProcess = null;
 let startedByController = false;
@@ -52,12 +55,22 @@ const startVite = () => {
     return { ok: true, message: 'Vite ja esta em execucao', pid: viteProcess.pid };
   }
 
-  const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-  viteProcess = spawn(npmCmd, ['run', 'dev'], {
-    cwd: process.cwd(),
-    stdio: 'ignore',
-    windowsHide: true
-  });
+  let child;
+  if (process.platform === 'win32') {
+    // On Windows, running npm through cmd is more reliable than spawning npm.cmd directly.
+    child = spawn('cmd.exe', ['/d', '/s', '/c', 'npm run dev'], {
+      cwd: APP_DIR,
+      windowsHide: true,
+      stdio: 'ignore'
+    });
+  } else {
+    child = spawn('npm', ['run', 'dev'], {
+      cwd: APP_DIR,
+      stdio: 'ignore'
+    });
+  }
+
+  viteProcess = child;
 
   startedByController = true;
 
