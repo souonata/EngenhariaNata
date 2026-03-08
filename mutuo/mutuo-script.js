@@ -1213,13 +1213,13 @@ class MutuoApp extends App {
                 <h3>${this.traducoes['memorial-passo3-title'] || '3️⃣ Passo 3: Calcular Tabela de Amortização'}</h3>
                 <div class="memorial-system-switcher" role="tablist" aria-label="Sistema para formulas">
                     <button type="button" class="js-system-tab" data-system="sac" aria-selected="false">
-                        <span data-i18n="system-sac-short">SAC</span>
+                        <span>${this.traducoes['system-sac-short'] || 'SAC'}</span>
                     </button>
                     <button type="button" class="js-system-tab" data-system="price" aria-selected="false">
-                        <span data-i18n="system-price-short">Price</span>
+                        <span>${this.traducoes['system-price-short'] || 'Price'}</span>
                     </button>
                     <button type="button" class="js-system-tab" data-system="americano" aria-selected="false">
-                        <span data-i18n="system-german-short">Americano</span>
+                        <span>${this.traducoes['system-german-short'] || 'Americano'}</span>
                     </button>
                 </div>
                 ${gerarPainelPasso3('sac', tabelasPorSistema.sac)}
