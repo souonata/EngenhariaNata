@@ -44,6 +44,20 @@ class MutuoApp extends App {
         this.calcular();
     }
 
+    obterCoresGrafico() {
+        const css = getComputedStyle(document.documentElement);
+        return {
+            green: css.getPropertyValue('--chart-green').trim() || '#4caf50',
+            greenSoft: css.getPropertyValue('--chart-green-soft').trim() || 'rgba(76, 175, 80, 0.16)',
+            orange: css.getPropertyValue('--chart-orange').trim() || '#ff9800',
+            orangeSoft: css.getPropertyValue('--chart-orange-soft').trim() || 'rgba(255, 152, 0, 0.16)',
+            blue: css.getPropertyValue('--chart-blue').trim() || '#2196f3',
+            blueSoft: css.getPropertyValue('--chart-blue-soft').trim() || 'rgba(33, 150, 243, 0.16)',
+            text: css.getPropertyValue('--chart-text').trim() || '#3a3a3a',
+            grid: css.getPropertyValue('--chart-grid').trim() || 'rgba(0, 0, 0, 0.08)'
+        };
+    }
+
     atualizarAposTrocaIdioma() {
         this.calcular();
     }
@@ -139,6 +153,12 @@ class MutuoApp extends App {
                 }
             });
         }
+
+        document.addEventListener('engnata:themechange', () => {
+            if (this.tabelaAmortizacao.length > 0) {
+                this.atualizarGrafico();
+            }
+        });
 
         // Botões "Voltar" da seção educativa unificada
         document.querySelectorAll('.btn-voltar-memorial').forEach(btn => {
@@ -947,6 +967,7 @@ class MutuoApp extends App {
             return jurosAcumulados;
         });
         const dadosSaldo = this.tabelaAmortizacao.map(p => p.saldo);
+        const cores = this.obterCoresGrafico();
 
         this.graficos.evolucao = new Chart(ctx, {
             type: 'line',
@@ -956,22 +977,22 @@ class MutuoApp extends App {
                     {
                         label: i18n.t('grafico.amortizacao'),
                         data: dadosAmortAcum,
-                        borderColor: '#4CAF50',
-                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        borderColor: cores.green,
+                        backgroundColor: cores.greenSoft,
                         tension: 0.4
                     },
                     {
                         label: i18n.t('grafico.juros'),
                         data: dadosJurosAcum,
-                        borderColor: '#FF9800',
-                        backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                        borderColor: cores.orange,
+                        backgroundColor: cores.orangeSoft,
                         tension: 0.4
                     },
                     {
                         label: i18n.t('grafico.saldoDevedor'),
                         data: dadosSaldo,
-                        borderColor: '#2196F3',
-                        backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                        borderColor: cores.blue,
+                        backgroundColor: cores.blueSoft,
                         tension: 0.4
                     }
                 ]
@@ -982,20 +1003,37 @@ class MutuoApp extends App {
                 animation: false,
                 plugins: {
                     legend: {
-                        position: 'top'
+                        position: 'top',
+                        labels: {
+                            color: cores.text
+                        }
                     }
                 },
                 scales: {
                     x: {
+                        ticks: {
+                            color: cores.text
+                        },
+                        grid: {
+                            color: cores.grid
+                        },
                         title: {
                             display: true,
-                            text: i18n.t('grafico.eixoX')
+                            text: i18n.t('grafico.eixoX'),
+                            color: cores.text
                         }
                     },
                     y: {
+                        ticks: {
+                            color: cores.text
+                        },
+                        grid: {
+                            color: cores.grid
+                        },
                         title: {
                             display: true,
-                            text: i18n.t('grafico.eixoY')
+                            text: i18n.t('grafico.eixoY'),
+                            color: cores.text
                         },
                         beginAtZero: true
                     }
@@ -1071,8 +1109,8 @@ class MutuoApp extends App {
                                 ' (' + (this.traducoes['sistemas']?.americano || 'Sistema Americano') + ')';
 
         htmlConteudo += `
-            <div class="memorial-item" style="background: rgba(45, 159, 163, 0.1); padding: 15px; border-left: 4px solid #2d9fa3ff; border-radius: 4px; margin-bottom: 20px;">
-                <p style="margin: 0; font-size: 1.1em;"><strong>${this.traducoes['memorial-sistema-selecionado'] || 'Sistema selecionado:'}</strong> <span style="color: #2d9fa3ff; font-weight: bold;">${nomeSistema}${explicacaoSistema}</span></p>
+            <div class="memorial-item" style="background: var(--accent-hover-bg, rgba(45, 159, 163, 0.1)); padding: 15px; border-left: 4px solid var(--accent-color, #2d9fa3ff); border-radius: 4px; margin-bottom: 20px;">
+                <p style="margin: 0; font-size: 1.1em;"><strong>${this.traducoes['memorial-sistema-selecionado'] || 'Sistema selecionado:'}</strong> <span style="color: var(--accent-color, #2d9fa3ff); font-weight: bold;">${nomeSistema}${explicacaoSistema}</span></p>
             </div>
         `;
 

@@ -20,7 +20,7 @@ header h1 {
 }
 
 .subtitulo {
-    color: #444;
+    color: var(--text-secondary, #444);
     font-size: 1.05rem;
     font-weight: 500;
     margin-top: 5px;
@@ -28,7 +28,7 @@ header h1 {
 
 /* Formulário */
 .card {
-    background: white;
+    background: var(--surface-bg, white);
     border-radius: 12px;
     padding: 30px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -41,7 +41,7 @@ header h1 {
 .grupo-entrada label {
     display: block;
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary, #333);
     margin-bottom: 8px;
     font-size: 0.95rem;
 }
@@ -50,7 +50,9 @@ header h1 {
 .textarea-input {
     width: 100%;
     padding: 12px;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--border-color, #e0e0e0);
+    background: var(--surface-bg, white);
+    color: var(--text-primary, #333);
     border-radius: 8px;
     font-size: 1rem;
     font-family: inherit;
@@ -68,7 +70,9 @@ header h1 {
 .input-text {
     width: 100%;
     padding: 12px;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--border-color, #e0e0e0);
+    background: var(--surface-bg, white);
+    color: var(--text-primary, #333);
     border-radius: 8px;
     font-size: 1rem;
     transition: border-color 0.3s ease;

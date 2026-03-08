@@ -45,7 +45,7 @@
 
 .opcao-checkbox.selected .cartao-checkbox {
     border-color: var(--accent-color);
-    background: #f5e6d3;
+    background: var(--checkbox-checked-bg, #f5e6d3);
     box-shadow: 0 4px 10px rgba(139, 111, 71, 0.2);
 }
 
@@ -59,13 +59,13 @@
 .rotulo-checkbox {
     font-weight: 600;
     font-size: 0.9rem;
-    color: #333;
+    color: var(--text-primary, #333);
     margin-bottom: 4px;
 }
 
 .descricao-checkbox {
     font-size: 0.75rem;
-    color: #666;
+    color: var(--text-secondary, #666);
 }
 
 /* Resultado styles moved to shared-styles.css */
@@ -77,7 +77,7 @@
 
 /* Detalhes de plantas e animais */
 .detalhe-item {
-    background: white;
+    background: var(--surface-bg, white);
     padding: 12px;
     border-radius: 8px;
     margin-bottom: 10px;

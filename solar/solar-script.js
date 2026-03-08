@@ -66,6 +66,80 @@
 const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
 const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
 let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
+
+const THEME_STORAGE_KEY = 'engnata_theme_mode';
+const THEME_TOGGLE_ID = 'themeToggleGlobal';
+
+function obterTextoBotaoTema(theme) {
+    const isItaliano = (idiomaAtual || '').startsWith('it');
+    const paraEscuro = theme !== 'dark';
+
+    if (isItaliano) {
+        return paraEscuro ? 'Attiva tema scuro' : 'Attiva tema chiaro';
+    }
+    return paraEscuro ? 'Ativar tema escuro' : 'Ativar tema claro';
+}
+
+function atualizarBotaoTemaSolar(theme) {
+    const btn = document.getElementById(THEME_TOGGLE_ID);
+    if (!btn) return;
+
+    btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
+    btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+    const texto = obterTextoBotaoTema(theme);
+    btn.setAttribute('aria-label', texto);
+    btn.title = texto;
+}
+
+function aplicarTemaSolar(theme) {
+    const tema = theme === 'dark' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', tema);
+    localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(tema));
+    atualizarBotaoTemaSolar(tema);
+    document.dispatchEvent(new CustomEvent('engnata:themechange', { detail: { theme: tema } }));
+}
+
+function alternarTemaSolar() {
+    const atual = document.documentElement.getAttribute('data-theme') || 'light';
+    const proximo = atual === 'dark' ? 'light' : 'dark';
+    aplicarTemaSolar(proximo);
+}
+
+function inicializarTemaSolar() {
+    const temaSalvoBruto = localStorage.getItem(THEME_STORAGE_KEY);
+    const temaSalvo = temaSalvoBruto ? JSON.parse(temaSalvoBruto) : 'light';
+    document.documentElement.setAttribute('data-theme', temaSalvo === 'dark' ? 'dark' : 'light');
+
+    if (!document.getElementById(THEME_TOGGLE_ID)) {
+        const btn = document.createElement('button');
+        btn.id = THEME_TOGGLE_ID;
+        btn.type = 'button';
+        btn.className = 'theme-toggle-btn';
+        btn.addEventListener('click', alternarTemaSolar);
+        document.body.appendChild(btn);
+    }
+
+    atualizarBotaoTemaSolar(document.documentElement.getAttribute('data-theme') || 'light');
+}
+
+function obterCoresGraficoSolar() {
+    const css = getComputedStyle(document.documentElement);
+    return {
+        red: css.getPropertyValue('--chart-red').trim() || '#f44336',
+        redSoft: css.getPropertyValue('--chart-red-soft').trim() || 'rgba(244, 67, 54, 0.18)',
+        green: css.getPropertyValue('--chart-green').trim() || '#4caf50',
+        greenSoft: css.getPropertyValue('--chart-green-soft').trim() || 'rgba(76, 175, 80, 0.16)',
+        orange: css.getPropertyValue('--chart-orange').trim() || '#ff9800',
+        orangeSoft: css.getPropertyValue('--chart-orange-soft').trim() || 'rgba(255, 152, 0, 0.16)',
+        purple: css.getPropertyValue('--chart-purple').trim() || '#9c27b0',
+        purpleSoft: css.getPropertyValue('--chart-purple-soft').trim() || 'rgba(156, 39, 176, 0.18)',
+        blue: css.getPropertyValue('--chart-blue').trim() || '#2196f3',
+        blueSoft: css.getPropertyValue('--chart-blue-soft').trim() || 'rgba(33, 150, 243, 0.16)',
+        yellow: css.getPropertyValue('--chart-yellow').trim() || '#ffc107',
+        text: css.getPropertyValue('--chart-text').trim() || '#3a3a3a',
+        grid: css.getPropertyValue('--chart-grid').trim() || 'rgba(0, 0, 0, 0.08)'
+    };
+}
 // Função formatarNumeroDecimal agora está em assets/js/site-config.js
 // Formata número decimal sempre com vírgula como separador decimal
 function formatarDecimalComVirgula(valor, casasDecimais = 2) {
@@ -1250,6 +1324,8 @@ function atualizarGraficoAmortizacao(dados) {
     // Encontrar o ponto de payback (quando lucro líquido >= 0)
     const paybackIndex = lucroPrejuizoLiquido.findIndex(lucro => lucro >= 0);
     
+    const cores = obterCoresGraficoSolar();
+
     graficoAmortizacao = new Chart(ctx.getContext('2d'), {
         type: 'line',
         data: {
@@ -1258,8 +1334,8 @@ function atualizarGraficoAmortizacao(dados) {
                 {
                     label: idiomaAtual === 'pt-BR' ? 'Investimento Inicial' : 'Investimento Iniziale',
                     data: investimentoInicial,
-                    borderColor: 'rgba(244, 67, 54, 1)',
-                    backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                    borderColor: cores.red,
+                    backgroundColor: cores.redSoft,
                     borderWidth: 2,
                     borderDash: [5, 5],
                     fill: false,
@@ -1268,8 +1344,8 @@ function atualizarGraficoAmortizacao(dados) {
                 {
                     label: idiomaAtual === 'pt-BR' ? 'Economia Acumulada' : 'Risparmio Accumulato',
                     data: economiaAcumulada,
-                    borderColor: 'rgba(76, 175, 80, 1)',
-                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                    borderColor: cores.green,
+                    backgroundColor: cores.greenSoft,
                     borderWidth: 3,
                     fill: true,
                     tension: 0.4,
@@ -1279,8 +1355,8 @@ function atualizarGraficoAmortizacao(dados) {
                 {
                     label: idiomaAtual === 'pt-BR' ? 'Custo Substituições Baterias' : 'Costo Sostituzioni Batterie',
                     data: custoSubstituicoesBaterias,
-                    borderColor: 'rgba(255, 152, 0, 1)',
-                    backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                    borderColor: cores.orange,
+                    backgroundColor: cores.orangeSoft,
                     borderWidth: 2,
                     borderDash: [3, 3],
                     fill: false,
@@ -1290,8 +1366,8 @@ function atualizarGraficoAmortizacao(dados) {
                 {
                     label: idiomaAtual === 'pt-BR' ? 'Custo Substituições Sistema Completo' : 'Costo Sostituzioni Sistema Completo',
                     data: custoSubstituicoesSistemaCompleto,
-                    borderColor: 'rgba(156, 39, 176, 1)',
-                    backgroundColor: 'rgba(156, 39, 176, 0.1)',
+                    borderColor: cores.purple,
+                    backgroundColor: cores.purpleSoft,
                     borderWidth: 2,
                     borderDash: [5, 5],
                     fill: false,
@@ -1301,8 +1377,8 @@ function atualizarGraficoAmortizacao(dados) {
                 {
                     label: idiomaAtual === 'pt-BR' ? 'Prejuízo Líquido' : 'Perdita Netta',
                     data: lucroPrejuizoLiquido.map(v => v < 0 ? v : null),
-                    borderColor: 'rgba(244, 67, 54, 1)',
-                    backgroundColor: 'rgba(244, 67, 54, 0.2)',
+                    borderColor: cores.red,
+                    backgroundColor: cores.redSoft,
                     borderWidth: 3,
                     fill: true,
                     tension: 0.4,
@@ -1313,8 +1389,8 @@ function atualizarGraficoAmortizacao(dados) {
                 {
                     label: idiomaAtual === 'pt-BR' ? 'Lucro Líquido' : 'Profitto Netto',
                     data: lucroPrejuizoLiquido.map(v => v >= 0 ? v : null),
-                    borderColor: 'rgba(25, 118, 210, 1)',
-                    backgroundColor: 'rgba(25, 118, 210, 0.2)',
+                    borderColor: cores.blue,
+                    backgroundColor: cores.blueSoft,
                     borderWidth: 3,
                     fill: true,
                     tension: 0.4,
@@ -1337,6 +1413,7 @@ function atualizarGraficoAmortizacao(dados) {
                     position: 'top',
                     labels: {
                         font: { size: 12, weight: 'bold' },
+                        color: cores.text,
                         padding: 15
                     }
                 },
@@ -1387,14 +1464,14 @@ function atualizarGraficoAmortizacao(dados) {
                     title: {
                         display: true,
                         text: idiomaAtual === 'pt-BR' ? 'Tempo (anos)' : 'Tempo (anni)',
-                        font: { size: 12, weight: 'bold' }
+                        font: { size: 12, weight: 'bold' },
+                        color: cores.text
                     },
                     ticks: {
+                        color: cores.text,
                         maxRotation: 0,
                         minRotation: 0,
                         callback: function(value, index) {
-                            // Usar diretamente o array de labels criado anteriormente
-                            // Mostrar apenas labels não vazios (dinamicamente baseado no período de análise)
                             if (index >= 0 && index < labels.length) {
                                 const label = labels[index];
                                 if (label && label.trim() !== '') {
@@ -1403,21 +1480,29 @@ function atualizarGraficoAmortizacao(dados) {
                             }
                             return '';
                         },
-                        maxTicksLimit: anosParaMostrar.length, // Labels dinâmicos baseados no período de análise
-                        autoSkip: false, // Não pular labels automaticamente - queremos mostrar todos os labels não vazios
-                        includeBounds: true // Incluir os limites (0 e período de análise)
-                    }
+                        maxTicksLimit: anosParaMostrar.length,
+                        autoSkip: false,
+                        includeBounds: true
+                    },
+                    grid: {
+                        color: cores.grid
+                    },
                 },
                 y: {
                     title: {
                         display: true,
                         text: idiomaAtual === 'pt-BR' ? `Valor (${moeda})` : `Valore (${moeda})`,
-                        font: { size: 12, weight: 'bold' }
+                        font: { size: 12, weight: 'bold' },
+                        color: cores.text
                     },
                     ticks: {
+                        color: cores.text,
                         callback: function(value) {
                             return `${moeda} ${value.toLocaleString(idiomaAtual, {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
                         }
+                    },
+                    grid: {
+                        color: cores.grid
                     }
                 }
             }
@@ -1494,7 +1579,7 @@ function atualizarGraficoAmortizacao(dados) {
         const labelLucroPrejuizo = isPrejuizo 
             ? (idiomaAtual === 'pt-BR' ? 'Prejuízo líquido' : 'Perdita netta')
             : (idiomaAtual === 'pt-BR' ? 'Lucro líquido' : 'Profitto netto');
-        const corLucroPrejuizo = isPrejuizo ? '#F44336' : '#4CAF50';
+        const corLucroPrejuizo = isPrejuizo ? 'var(--chart-red, #F44336)' : 'var(--chart-green, #4CAF50)';
         
         if (idiomaAtual === 'pt-BR') {
             let infoSubstituicoes = '';
@@ -1503,12 +1588,12 @@ function atualizarGraficoAmortizacao(dados) {
                 
             if (substituicoesBaterias.length > 0) {
                     const anosSubstBaterias = substituicoesBaterias.map(s => s.ano).join(', ');
-                    partesInfo.push(`<span style="color: #FF9800;">🔋 Substituições de baterias (vida útil: ${vidaUtil} anos): <strong>${substituicoesBaterias.length} vez${substituicoesBaterias.length > 1 ? 'es' : ''}</strong> aos ${anosSubstBaterias} ano${substituicoesBaterias.length > 1 ? 's' : ''} | Custo total: <strong>${formatarMoedaComVirgula(custoTotalSubstituicoesBateriasPeriodo, moeda, 2)}</strong></span>`);
+                    partesInfo.push(`<span style="color: var(--chart-orange, #FF9800);">🔋 Substituições de baterias (vida útil: ${vidaUtil} anos): <strong>${substituicoesBaterias.length} vez${substituicoesBaterias.length > 1 ? 'es' : ''}</strong> aos ${anosSubstBaterias} ano${substituicoesBaterias.length > 1 ? 's' : ''} | Custo total: <strong>${formatarMoedaComVirgula(custoTotalSubstituicoesBateriasPeriodo, moeda, 2)}</strong></span>`);
                 }
                 
                 if (substituicoesSistemaCompleto.length > 0) {
                     const anosSubstSistema = substituicoesSistemaCompleto.map(s => s.ano).join(', ');
-                    partesInfo.push(`<span style="color: #9C27B0;">⚙️ Substituições completas do sistema (a cada 25 anos): <strong>${substituicoesSistemaCompleto.length} vez${substituicoesSistemaCompleto.length > 1 ? 'es' : ''}</strong> aos ${anosSubstSistema} ano${substituicoesSistemaCompleto.length > 1 ? 's' : ''} | Custo total: <strong>${formatarMoedaComVirgula(custoTotalSubstituicoesSistemaPeriodo, moeda, 2)}</strong></span>`);
+                    partesInfo.push(`<span style="color: var(--chart-purple, #9C27B0);">⚙️ Substituições completas do sistema (a cada 25 anos): <strong>${substituicoesSistemaCompleto.length} vez${substituicoesSistemaCompleto.length > 1 ? 'es' : ''}</strong> aos ${anosSubstSistema} ano${substituicoesSistemaCompleto.length > 1 ? 's' : ''} | Custo total: <strong>${formatarMoedaComVirgula(custoTotalSubstituicoesSistemaPeriodo, moeda, 2)}</strong></span>`);
                 }
                 
                 if (partesInfo.length > 0) {
@@ -1557,7 +1642,7 @@ function atualizarGraficoAmortizacao(dados) {
                         </tr>
                     </table>
                 </div>
-                <span style="color: #1976D2;">⏱️ Payback inicial: <strong>${textoPaybackInicial}</strong>${textoPaybackComSubstituicoes}</span>${infoSubstituicoes}<br>
+                <span style="color: var(--chart-blue, #1976D2);">⏱️ Payback inicial: <strong>${textoPaybackInicial}</strong>${textoPaybackComSubstituicoes}</span>${infoSubstituicoes}<br>
                 <span style="color: ${corLucroPrejuizo};">💵 ${labelLucroPrejuizo} em ${anosAnalise} anos: <strong>${formatarMoedaComVirgula(Math.abs(lucroTotalPeriodo), moeda, 2)}</strong></span>
             `;
         } else {
@@ -1567,12 +1652,12 @@ function atualizarGraficoAmortizacao(dados) {
                 
             if (substituicoesBaterias.length > 0) {
                     const anniSubstBatterie = substituicoesBaterias.map(s => s.ano).join(', ');
-                    partiInfo.push(`<span style="color: #FF9800;">🔋 Sostituzioni batterie (vita utile: ${vidaUtil} anni): <strong>${substituicoesBaterias.length} volt${substituicoesBaterias.length > 1 ? 'e' : 'a'}</strong> agli ${anniSubstBatterie} anno${substituicoesBaterias.length > 1 ? 'i' : ''} | Costo totale: <strong>${formatarMoedaComVirgula(custoTotalSubstituicoesBateriasPeriodo, moeda, 2)}</strong></span>`);
+                    partiInfo.push(`<span style="color: var(--chart-orange, #FF9800);">🔋 Sostituzioni batterie (vita utile: ${vidaUtil} anni): <strong>${substituicoesBaterias.length} volt${substituicoesBaterias.length > 1 ? 'e' : 'a'}</strong> agli ${anniSubstBatterie} anno${substituicoesBaterias.length > 1 ? 'i' : ''} | Costo totale: <strong>${formatarMoedaComVirgula(custoTotalSubstituicoesBateriasPeriodo, moeda, 2)}</strong></span>`);
                 }
                 
                 if (substituicoesSistemaCompleto.length > 0) {
                     const anniSubstSistema = substituicoesSistemaCompleto.map(s => s.ano).join(', ');
-                    partiInfo.push(`<span style="color: #9C27B0;">⚙️ Sostituzioni complete del sistema (ogni 25 anni): <strong>${substituicoesSistemaCompleto.length} volt${substituicoesSistemaCompleto.length > 1 ? 'e' : 'a'}</strong> agli ${anniSubstSistema} anno${substituicoesSistemaCompleto.length > 1 ? 'i' : ''} | Costo totale: <strong>${formatarMoedaComVirgula(custoTotalSubstituicoesSistemaPeriodo, moeda, 2)}</strong></span>`);
+                    partiInfo.push(`<span style="color: var(--chart-purple, #9C27B0);">⚙️ Sostituzioni complete del sistema (ogni 25 anni): <strong>${substituicoesSistemaCompleto.length} volt${substituicoesSistemaCompleto.length > 1 ? 'e' : 'a'}</strong> agli ${anniSubstSistema} anno${substituicoesSistemaCompleto.length > 1 ? 'i' : ''} | Costo totale: <strong>${formatarMoedaComVirgula(custoTotalSubstituicoesSistemaPeriodo, moeda, 2)}</strong></span>`);
                 }
                 
                 if (partiInfo.length > 0) {
@@ -1621,7 +1706,7 @@ function atualizarGraficoAmortizacao(dados) {
                         </tr>
                     </table>
                 </div>
-                <span style="color: #1976D2;">⏱️ Payback iniziale: <strong>${testoPaybackIniziale}</strong>${testoPaybackConSostituzioni}</span>${infoSubstituicoes}<br>
+                <span style="color: var(--chart-blue, #1976D2);">⏱️ Payback iniziale: <strong>${testoPaybackIniziale}</strong>${testoPaybackConSostituzioni}</span>${infoSubstituicoes}<br>
                 <span style="color: ${corLucroPrejuizo};">💵 ${labelLucroPrejuizo} in ${anosAnalise} anni: <strong>${formatarMoedaComVirgula(Math.abs(lucroTotalPeriodo), moeda, 2)}</strong></span>
             `;
         }
@@ -1709,12 +1794,13 @@ function atualizarGraficoSazonalidade(dados) {
     });
     
     // Cores baseadas na produção (verde para alta, amarelo para média, vermelho para baixa)
+    const coresTema = obterCoresGraficoSolar();
     const cores = producaoMensal.map(prod => {
         const maxProd = Math.max(...producaoMensal);
         const ratio = prod / maxProd;
-        if (ratio >= 0.9) return 'rgba(76, 175, 80, 0.8)';      // Verde - alta produção
-        if (ratio >= 0.7) return 'rgba(255, 193, 7, 0.8)';      // Amarelo - média produção
-        return 'rgba(244, 67, 54, 0.8)';                        // Vermelho - baixa produção
+        if (ratio >= 0.9) return coresTema.green;
+        if (ratio >= 0.7) return coresTema.yellow;
+        return coresTema.red;
     });
     
     graficoSazonalidade = new Chart(ctx.getContext('2d'), {
@@ -1725,7 +1811,7 @@ function atualizarGraficoSazonalidade(dados) {
                 label: idiomaAtual === 'pt-BR' ? 'Produção Mensal (kWh)' : 'Produzione Mensile (kWh)',
                 data: producaoMensal,
                 backgroundColor: cores,
-                borderColor: cores.map(c => c.replace('0.8', '1')),
+                borderColor: cores,
                 borderWidth: 2
             }]
         },
@@ -1748,17 +1834,23 @@ function atualizarGraficoSazonalidade(dados) {
             scales: {
                 y: {
                     beginAtZero: true,
+                    ticks: { color: coresTema.text },
+                    grid: { color: coresTema.grid },
                     title: {
                         display: true,
                         text: idiomaAtual === 'pt-BR' ? 'Produção (kWh/mês)' : 'Produzione (kWh/mese)',
-                        font: { size: 12, weight: 'bold' }
+                        font: { size: 12, weight: 'bold' },
+                        color: coresTema.text
                     }
                 },
                 x: {
+                    ticks: { color: coresTema.text },
+                    grid: { color: coresTema.grid },
                     title: {
                         display: true,
                         text: idiomaAtual === 'pt-BR' ? 'Mês' : 'Mese',
-                        font: { size: 12, weight: 'bold' }
+                        font: { size: 12, weight: 'bold' },
+                        color: coresTema.text
                     }
                 }
             }
@@ -2244,7 +2336,11 @@ function configurarInputsNumericosMoveisSolar() {
 // INICIALIZAÇÃO
 document.addEventListener('DOMContentLoaded', () => {
     try {
+    inicializarTemaSolar();
     configurarInputsNumericosMoveisSolar();
+    document.addEventListener('engnata:themechange', () => {
+        atualizarInterface();
+    });
 
     // 1. Configurar botões de idioma
     document.querySelectorAll('.lang-btn').forEach(btn => {

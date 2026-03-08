@@ -146,12 +146,29 @@ class AquecimentoApp extends App {
         const idiomaAtual = i18n.getIdioma();
         return this.config.traducoes[idiomaAtual];
     }
+
+    obterCoresGrafico() {
+        const css = getComputedStyle(document.documentElement);
+        return {
+            blue: css.getPropertyValue('--chart-blue').trim() || '#2196f3',
+            red: css.getPropertyValue('--chart-red').trim() || '#f44336',
+            yellow: css.getPropertyValue('--chart-yellow').trim() || '#ffc107',
+            green: css.getPropertyValue('--chart-green').trim() || '#4caf50',
+            orange: css.getPropertyValue('--chart-orange').trim() || '#ff9800',
+            text: css.getPropertyValue('--chart-text').trim() || '#3a3a3a',
+            grid: css.getPropertyValue('--chart-grid').trim() || 'rgba(0, 0, 0, 0.08)'
+        };
+    }
     
     // ============================================
     // INICIALIZAÇÃO
     // ============================================
     inicializarAquecimento() {
         console.log('✅ Inicializando Aquecimento...');
+
+        document.addEventListener('engnata:themechange', () => {
+            this.atualizarResultados();
+        });
         
         // Configurar todos os eventos e elementos
         this.configurarSliders();
@@ -1013,17 +1030,18 @@ class AquecimentoApp extends App {
         const labels = [];
         const data = [];
         const colors = [];
+        const cores = this.obterCoresGrafico();
         
         if (calcularAgua && demandaAgua > 0) {
             labels.push(idioma === 'pt-BR' ? '💧 Água' : '💧 Acqua');
             data.push(demandaAgua);
-            colors.push('#36A2EB');
+            colors.push(cores.blue);
         }
         
         if (calcularCasa && demandaCasa > 0) {
             labels.push(idioma === 'pt-BR' ? '🏠 Casa' : '🏠 Casa');
             data.push(demandaCasa);
-            colors.push('#FF6384');
+            colors.push(cores.red);
         }
         
         if (data.length === 0) return;
@@ -1042,11 +1060,13 @@ class AquecimentoApp extends App {
                 maintainAspectRatio: true,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: { color: cores.text }
                     },
                     title: {
                         display: true,
-                        text: idioma === 'pt-BR' ? 'Distribuição de Demanda (kWh/dia)' : 'Distribuzione della Domanda (kWh/giorno)'
+                        text: idioma === 'pt-BR' ? 'Distribuição de Demanda (kWh/dia)' : 'Distribuzione della Domanda (kWh/giorno)',
+                        color: cores.text
                     }
                 }
             }
@@ -1064,6 +1084,7 @@ class AquecimentoApp extends App {
         
         const labelSolar = idioma === 'pt-BR' ? 'Energia Solar' : 'Energia Solare';
         const labelDemanda = idioma === 'pt-BR' ? 'Demanda Total' : 'Domanda Totale';
+        const cores = this.obterCoresGrafico();
         
         this.graficoComparacao = new Chart(ctx, {
             type: 'bar',
@@ -1072,7 +1093,7 @@ class AquecimentoApp extends App {
                 datasets: [{
                     label: 'kWh/dia',
                     data: [energiaSolar, demandaTotal],
-                    backgroundColor: ['#FFCE56', '#FF6384']
+                    backgroundColor: [cores.yellow, cores.red]
                 }]
             },
             options: {
@@ -1081,9 +1102,12 @@ class AquecimentoApp extends App {
                 scales: {
                     y: {
                         beginAtZero: true,
+                        ticks: { color: cores.text },
+                        grid: { color: cores.grid },
                         title: {
                             display: true,
-                            text: 'kWh/dia'
+                            text: 'kWh/dia',
+                            color: cores.text
                         }
                     }
                 },
@@ -1093,7 +1117,8 @@ class AquecimentoApp extends App {
                     },
                     title: {
                         display: true,
-                        text: idioma === 'pt-BR' ? 'Solar vs Demanda' : 'Solare vs Domanda'
+                        text: idioma === 'pt-BR' ? 'Solar vs Demanda' : 'Solare vs Domanda',
+                        color: cores.text
                     }
                 }
             }
@@ -1115,6 +1140,7 @@ class AquecimentoApp extends App {
         
         const labelSolar = idioma === 'pt-BR' ? 'Cobertura Solar' : 'Copertura Solare';
         const labelEletrico = idioma === 'pt-BR' ? 'Energia Elétrica Necessária' : 'Energia Elettrica Necessaria';
+        const cores = this.obterCoresGrafico();
         
         this.graficoEficiencia = new Chart(ctx, {
             type: 'bar',
@@ -1124,13 +1150,13 @@ class AquecimentoApp extends App {
                     {
                         label: labelSolar,
                         data: [coberturaSolar],
-                        backgroundColor: '#4BC0C0',
+                        backgroundColor: cores.green,
                         stack: 'Stack 0'
                     },
                     {
                         label: labelEletrico,
                         data: [deficitEletrico],
-                        backgroundColor: '#FF9F40',
+                        backgroundColor: cores.orange,
                         stack: 'Stack 0'
                     }
                 ]
@@ -1143,22 +1169,29 @@ class AquecimentoApp extends App {
                     x: {
                         stacked: true,
                         max: 100,
+                        ticks: { color: cores.text },
+                        grid: { color: cores.grid },
                         title: {
                             display: true,
-                            text: '%'
+                            text: '%',
+                            color: cores.text
                         }
                     },
                     y: {
-                        stacked: true
+                        stacked: true,
+                        ticks: { color: cores.text },
+                        grid: { color: cores.grid }
                     }
                 },
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: { color: cores.text }
                     },
                     title: {
                         display: true,
-                        text: idioma === 'pt-BR' ? 'Eficiência do Sistema (%)' : 'Efficienza del Sistema (%)'
+                        text: idioma === 'pt-BR' ? 'Eficiência do Sistema (%)' : 'Efficienza del Sistema (%)',
+                        color: cores.text
                     }
                 }
             }

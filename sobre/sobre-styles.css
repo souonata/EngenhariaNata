@@ -83,6 +83,16 @@ header h1 {
     z-index: 1;
 }
 
+html[data-theme="dark"] .card.highlight {
+    background: var(--surface-bg, #252526);
+    border-color: var(--border-color, #3f3f46);
+}
+
+html[data-theme="dark"] .card.highlight .card-header {
+    border-bottom-color: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+}
+
 .card-header-clicavel {
     cursor: pointer;
     user-select: none;

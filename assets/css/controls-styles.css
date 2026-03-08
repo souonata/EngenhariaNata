@@ -47,7 +47,7 @@
 
 /* Container para grupo de controles com layout flexível */
 .controles-rapidos {
-    background: white;
+    background: var(--surface-bg, white);
     padding: 10px;
     border-radius: 10px;
     margin-bottom: 8px;
@@ -61,7 +61,7 @@
 
 .controles-desc {
     text-align: center;
-    color: #666;
+    color: var(--text-secondary, #666);
     font-size: 0.9rem;
     margin-bottom: 8px;
 }
@@ -90,7 +90,7 @@
 .controle-item label {
     font-size: var(--control-label-font-size, 0.9rem);
     font-weight: 600;
-    color: #555;
+    color: var(--text-secondary, #555);
     margin-bottom: 8px;
 }
 
@@ -147,7 +147,7 @@
 
 .valor-input:focus {
     border-color: var(--control-accent, #2d9fa3ff);
-    background: white;
+    background: var(--control-bg-focus, var(--surface-bg, white));
     box-shadow: 0 0 0 3px rgba(45, 159, 163, 0.1);
 }
 
@@ -182,7 +182,8 @@ input[type="number"] {
     border-radius: var(--control-input-border-radius, 8px);
     font-size: 1rem;
     font-weight: bold;
-    color: #333;
+    color: var(--text-primary, #333);
+    background: var(--surface-bg, white);
     text-align: center;
     transition: all 0.3s ease;
 }
@@ -220,7 +221,7 @@ input[type="range"] {
     flex: 1;
     height: var(--slider-height, 16px);
     border-radius: calc(var(--slider-height, 16px) / 2);
-    background: #e0e0e0;
+    background: var(--input-track, #e0e0e0);
     outline: none;
     cursor: pointer;
     -webkit-appearance: none;
@@ -237,7 +238,7 @@ input[type="range"]::-webkit-slider-thumb {
     background: linear-gradient(135deg, var(--control-accent, #2d9fa3ff) 0%, var(--control-accent-secondary, #667eea) 100%);
     cursor: grab;
     box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-    border: var(--slider-thumb-border, 3px) solid white;
+    border: var(--slider-thumb-border, 3px) solid var(--surface-bg, white);
     transition: all 0.2s ease;
 }
 
@@ -257,7 +258,7 @@ input[type="range"]::-moz-range-thumb {
     height: var(--slider-thumb-size, 36px);
     border-radius: 50%;
     background: linear-gradient(135deg, var(--control-accent, #2d9fa3ff) 0%, var(--control-accent-secondary, #667eea) 100%);
-    border: var(--slider-thumb-border, 3px) solid white;
+    border: var(--slider-thumb-border, 3px) solid var(--surface-bg, white);
     cursor: grab;
     box-shadow: 0 3px 8px rgba(0,0,0,0.3);
     transition: all 0.2s ease;

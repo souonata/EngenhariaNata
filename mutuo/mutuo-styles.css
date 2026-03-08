@@ -48,10 +48,10 @@
 }
 
 .card h2 {
-    color: #2d9fa3ff;
+    color: var(--accent-color, #2d9fa3ff);
     margin-bottom: 8px;
     font-size: 1rem; /* compact */
-    border-bottom: 2px solid #2d9fa3ff;
+    border-bottom: 2px solid var(--accent-color, #2d9fa3ff);
     padding-bottom: 6px;
     text-align: center;
 }
@@ -64,7 +64,7 @@
     display: block;
     margin-bottom: 4px;
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary, #333);
     font-size: 0.85rem;
 }
 

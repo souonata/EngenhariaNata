@@ -88,6 +88,23 @@
     background: rgba(244, 67, 54, 0.08);
 }
 
+html[data-theme="dark"] .btn {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+html[data-theme="dark"] .btn-primary {
+    background: rgba(100, 181, 246, 0.2);
+}
+
+html[data-theme="dark"] .btn-secondary {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .status-box {
+    border-color: var(--border-color, rgba(255, 255, 255, 0.22));
+    background: rgba(255, 255, 255, 0.06);
+}
+
 .iframe-shell {
     position: relative;
     width: 100%;

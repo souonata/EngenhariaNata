@@ -37,6 +37,8 @@ const BATTERY_DEFAULTS = (typeof SiteConfig !== 'undefined' && SiteConfig.DEFAUL
 const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
 const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
 let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
+const THEME_STORAGE_KEY = 'engnata_theme_mode';
+const THEME_TOGGLE_ID = 'themeToggleGlobal';
 // DICIONÁRIO DE TRADUÇÃO
 const traducoes = {
     'pt-BR': {
@@ -94,6 +96,55 @@ const traducoes = {
         'aria-back-solar': 'Torna alle impostazioni del Solare'
     }
 };
+
+function obterTextoBotaoTema(theme) {
+    const isItaliano = (idiomaAtual || '').startsWith('it');
+    const paraEscuro = theme !== 'dark';
+    if (isItaliano) {
+        return paraEscuro ? 'Attiva tema scuro' : 'Attiva tema chiaro';
+    }
+    return paraEscuro ? 'Ativar tema escuro' : 'Ativar tema claro';
+}
+
+function atualizarBotaoTemaConfig(theme) {
+    const btn = document.getElementById(THEME_TOGGLE_ID);
+    if (!btn) return;
+    btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
+    btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+    const texto = obterTextoBotaoTema(theme);
+    btn.setAttribute('aria-label', texto);
+    btn.title = texto;
+}
+
+function aplicarTemaConfig(theme) {
+    const tema = theme === 'dark' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', tema);
+    localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(tema));
+    atualizarBotaoTemaConfig(tema);
+}
+
+function alternarTemaConfig() {
+    const atual = document.documentElement.getAttribute('data-theme') || 'light';
+    const proximo = atual === 'dark' ? 'light' : 'dark';
+    aplicarTemaConfig(proximo);
+}
+
+function inicializarTemaConfig() {
+    const temaSalvoBruto = localStorage.getItem(THEME_STORAGE_KEY);
+    const temaSalvo = temaSalvoBruto ? JSON.parse(temaSalvoBruto) : 'light';
+    document.documentElement.setAttribute('data-theme', temaSalvo === 'dark' ? 'dark' : 'light');
+
+    if (!document.getElementById(THEME_TOGGLE_ID)) {
+        const btn = document.createElement('button');
+        btn.id = THEME_TOGGLE_ID;
+        btn.type = 'button';
+        btn.className = 'theme-toggle-btn';
+        btn.addEventListener('click', alternarTemaConfig);
+        document.body.appendChild(btn);
+    }
+
+    atualizarBotaoTemaConfig(document.documentElement.getAttribute('data-theme') || 'light');
+}
 // FUNÇÕES DE INTERFACE
 
 function trocarIdioma(idioma) {
@@ -207,6 +258,8 @@ function restaurarPadroes() {
 // EVENT LISTENERS
 
 document.addEventListener('DOMContentLoaded', () => {
+    inicializarTemaConfig();
+
     // Carregar idioma e valores salvos
     trocarIdioma(idiomaAtual);
     carregarValores();

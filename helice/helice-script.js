@@ -116,7 +116,21 @@ class HeliceApp extends App {
     inicializarHelice() {
         this.configurarEventos();
         this.carregarChartJS();
+        document.addEventListener('engnata:themechange', () => this.atualizarResultado());
         this.atualizarResultado();
+    }
+
+    obterCoresGrafico() {
+        const css = getComputedStyle(document.documentElement);
+        return {
+            yellow: css.getPropertyValue('--chart-yellow').trim() || '#ffc107',
+            yellowSoft: css.getPropertyValue('--chart-yellow-soft').trim() || 'rgba(255, 193, 7, 0.16)',
+            blue: css.getPropertyValue('--chart-blue').trim() || '#2196f3',
+            blueSoft: css.getPropertyValue('--chart-blue-soft').trim() || 'rgba(33, 150, 243, 0.16)',
+            red: css.getPropertyValue('--chart-red').trim() || '#f44336',
+            text: css.getPropertyValue('--chart-text').trim() || '#3a3a3a',
+            grid: css.getPropertyValue('--chart-grid').trim() || 'rgba(0, 0, 0, 0.08)'
+        };
     }
 
     /**
@@ -827,6 +841,7 @@ class HeliceApp extends App {
         }
 
         // Criar novo gráfico
+        const cores = this.obterCoresGrafico();
         graficoHelice = new Chart(ctx, {
             type: 'line',
             data: {
@@ -835,8 +850,8 @@ class HeliceApp extends App {
                     {
                         label: labelSlipComUnidade,
                         data: passosSlipMax,
-                        borderColor: 'rgba(255, 193, 7, 0.3)',
-                        backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                        borderColor: cores.yellow,
+                        backgroundColor: cores.yellowSoft,
                         borderWidth: 1,
                         fill: '+1',
                         tension: 0.4,
@@ -847,8 +862,8 @@ class HeliceApp extends App {
                     {
                         label: '',
                         data: passosSlipMin,
-                        borderColor: 'rgba(255, 193, 7, 0.3)',
-                        backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                        borderColor: cores.yellow,
+                        backgroundColor: cores.yellowSoft,
                         borderWidth: 1,
                         fill: false,
                         tension: 0.4,
@@ -859,8 +874,8 @@ class HeliceApp extends App {
                     {
                         label: labelPassoComUnidade,
                         data: passos,
-                        borderColor: 'rgba(0, 123, 255, 1)',
-                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                        borderColor: cores.blue,
+                        backgroundColor: cores.blueSoft,
                         borderWidth: 3,
                         tension: 0.4,
                         pointRadius: 4,
@@ -870,8 +885,8 @@ class HeliceApp extends App {
                     {
                         label: `Ponto Atual (${formatarNumero(velocidadeTeoricaConvertida, 1)} ${unidadeVelocidadeTexto})`,
                         data: pontosAtual,
-                        borderColor: 'rgba(220, 53, 69, 1)',
-                        backgroundColor: 'rgba(220, 53, 69, 1)',
+                        borderColor: cores.red,
+                        backgroundColor: cores.red,
                         pointRadius: 8,
                         pointHoverRadius: 10,
                         showLine: false,
@@ -886,7 +901,8 @@ class HeliceApp extends App {
                 plugins: {
                     legend: {
                         display: true,
-                        position: 'top'
+                        position: 'top',
+                        labels: { color: cores.text }
                     },
                     tooltip: {
                         mode: 'index',
@@ -895,15 +911,21 @@ class HeliceApp extends App {
                 },
                 scales: {
                     x: {
+                        ticks: { color: cores.text },
+                        grid: { color: cores.grid },
                         title: {
                             display: true,
-                            text: i18n.obterTraducao('grafico.eixoX') || 'Velocidade'
+                            text: i18n.obterTraducao('grafico.eixoX') || 'Velocidade',
+                            color: cores.text
                         }
                     },
                     y: {
+                        ticks: { color: cores.text },
+                        grid: { color: cores.grid },
                         title: {
                             display: true,
-                            text: `${i18n.obterTraducao('grafico.eixoY') || 'Passo Recomendado'} (${unidadePassoTexto})`
+                            text: `${i18n.obterTraducao('grafico.eixoY') || 'Passo Recomendado'} (${unidadePassoTexto})`,
+                            color: cores.text
                         },
                         beginAtZero: false
                     }

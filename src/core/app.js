@@ -2,6 +2,7 @@
 
 import { i18n, configurarBotoesIdioma } from './i18n.js';
 import { loading } from '../components/loading.js';
+import { inicializarTema } from './theme.js';
 
 export class App {
     constructor(config = {}) {
@@ -15,6 +16,7 @@ export class App {
 
     async inicializar() {
         try {
+            inicializarTema();
             loading.mostrar();
 
             await this.carregarTraducoes();

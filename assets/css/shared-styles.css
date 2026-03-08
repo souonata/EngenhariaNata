@@ -5,6 +5,28 @@
 */
 
 :root {
+    --text-primary: #333;
+    --text-secondary: #666;
+    --surface-bg: #ffffff;
+    --surface-muted: #f5f5f5;
+    --surface-soft: #f0f0f0;
+    --border-color: #e0e0e0;
+    --input-track: #e0e0e0;
+    --shadow-elevated: 0 3px 15px rgba(0, 0, 0, 0.1);
+    --chart-text: #3a3a3a;
+    --chart-grid: rgba(0, 0, 0, 0.08);
+    --chart-green: #4caf50;
+    --chart-green-soft: rgba(76, 175, 80, 0.16);
+    --chart-orange: #ff9800;
+    --chart-orange-soft: rgba(255, 152, 0, 0.16);
+    --chart-blue: #2196f3;
+    --chart-blue-soft: rgba(33, 150, 243, 0.16);
+    --chart-red: #f44336;
+    --chart-red-soft: rgba(244, 67, 54, 0.18);
+    --chart-purple: #9c27b0;
+    --chart-purple-soft: rgba(156, 39, 176, 0.18);
+    --chart-yellow: #ffc107;
+    --chart-yellow-soft: rgba(255, 193, 7, 0.16);
         /* --- App-specific tokens centralizados --- */
         --accent-hover-bg: rgba(45, 159, 163, 0.05);
         --accent-active-bg: rgba(45, 159, 163, 0.1);
@@ -85,6 +107,63 @@
     --checkbox-hover-bg: #f5f5f5;
 }
 
+html[data-theme="dark"] {
+    --site-bg: #1e1e1e;
+    --text-primary: #e6e6e6;
+    --text-secondary: #b8b8b8;
+    --surface-bg: #252526;
+    --surface-muted: #2d2d30;
+    --surface-soft: #333337;
+    --border-color: #3f3f46;
+    --input-track: #3a3a40;
+    --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.45);
+
+    --lang-btn-bg: rgba(255, 255, 255, 0.08);
+    --lang-btn-border: rgba(255, 255, 255, 0.18);
+    --lang-btn-hover: rgba(255, 255, 255, 0.16);
+    --lang-btn-color: #e6e6e6;
+
+    --arrow-bg: #2d2d30;
+    --arrow-border: #5cc9d0;
+
+    --accent-color: #5cc9d0;
+    --accent-secondary: #7f9cf5;
+    --accent-hover: #7adbe1;
+
+    --memorial-bg: #252526;
+    --memorial-border: #3f3f46;
+    --formula-bg: #1f2937;
+    --formula-text: #c8d4ff;
+    --info-bg: #173329;
+    --info-border: #2ea16a;
+    --info-text: #bdebd3;
+    --resumo-bg: #1f2937;
+
+    --resultado-bg: #2d2d30;
+    --resultado-label: #b8b8b8;
+    --resultado-value: #e6e6e6;
+
+    --checkbox-border: #4a4a52;
+    --checkbox-checked-bg: rgba(92, 201, 208, 0.16);
+    --checkbox-checked-border: #5cc9d0;
+    --checkbox-hover-bg: #333337;
+
+    --chart-text: #cfcfd4;
+    --chart-grid: rgba(255, 255, 255, 0.14);
+    --chart-green: #66bb6a;
+    --chart-green-soft: rgba(102, 187, 106, 0.2);
+    --chart-orange: #ffb74d;
+    --chart-orange-soft: rgba(255, 183, 77, 0.22);
+    --chart-blue: #64b5f6;
+    --chart-blue-soft: rgba(100, 181, 246, 0.22);
+    --chart-red: #ef5350;
+    --chart-red-soft: rgba(239, 83, 80, 0.22);
+    --chart-purple: #ba68c8;
+    --chart-purple-soft: rgba(186, 104, 200, 0.22);
+    --chart-yellow: #ffd54f;
+    --chart-yellow-soft: rgba(255, 213, 79, 0.22);
+}
+
 /* ============================================
    GLOBAL RESET
    ============================================ */
@@ -120,7 +199,7 @@ html {
    ============================================ */
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    color: #333;
+    color: var(--text-primary, #333);
     line-height: 1.4;
     background: var(--site-bg, #4e7262);
     min-height: 100vh;
@@ -355,7 +434,7 @@ footer p {
 .grupo-entrada > label, .input-group > label {
     display: block;
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary, #333);
     margin-bottom: 4px;
     font-size: 0.85rem;
     text-align: center;
@@ -380,8 +459,8 @@ footer p {
 .valor-display {
     font-size: 0.9rem;
     font-weight: bold;
-    color: #333;
-    background: #f0f0f0;
+    color: var(--text-primary, #333);
+    background: var(--surface-soft, #f0f0f0);
     padding: 3px 10px;
     border-radius: 15px;
     min-width: 70px;
@@ -418,7 +497,7 @@ footer p {
 input[type="range"] {
     flex: 1;
     height: 16px; /* Barra mais alta - mesmo tamanho do slider de parcelas */
-    background: #e0e0e0;
+    background: var(--input-track, #e0e0e0);
     border-radius: 8px;
     outline: none;
     cursor: pointer;
@@ -479,10 +558,10 @@ input[type="range"]::-moz-range-thumb:active {
    GLOBAL CARD/CONTAINER STYLES
    ============================================ */
 .cartao, .card {
-    background: white;
+    background: var(--surface-bg, white);
     border-radius: 12px;
     padding: 12px 15px;
-    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-elevated, 0 3px 15px rgba(0, 0, 0, 0.1));
     margin-bottom: 10px;
 }
 
@@ -490,7 +569,7 @@ input[type="range"]::-moz-range-thumb:active {
    GLOBAL INFO GROUP STYLES
    ============================================ */
 .info-group {
-    background: #f5f5f5;
+    background: var(--surface-muted, #f5f5f5);
     padding: 15px;
     border-radius: 10px;
     border-left: 4px solid var(--accent-color, #2d9fa3ff);
@@ -530,7 +609,7 @@ input[type="range"]::-moz-range-thumb:active {
     justify-content: center;
     gap: 6px;
     padding: 8px 12px;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--border-color, #e0e0e0);
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s;
@@ -551,7 +630,7 @@ input[type="range"]::-moz-range-thumb:active {
 .rotulo-detalhe {
     font-weight: 400;
     font-size: 0.7rem;
-    color: #666;
+    color: var(--text-secondary, #666);
     text-align: center;
     display: block;
     margin-top: 2px;
@@ -573,7 +652,7 @@ input[type="range"]::-moz-range-thumb:active {
     align-items: center;
     justify-content: center;
     padding: 3px 6px;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--border-color, #e0e0e0);
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.3s;
@@ -634,7 +713,7 @@ input[type="range"]::-moz-range-thumb:active {
     padding: 12px 16px;
     border: 2px solid var(--checkbox-border, #e0e0e0);
     border-radius: 8px;
-    background: white;
+    background: var(--surface-bg, white);
     transition: all 0.3s;
     cursor: pointer;
     flex: 1;
@@ -656,7 +735,7 @@ input[type="range"]::-moz-range-thumb:active {
 .rotulo-checkbox {
     font-weight: 600;
     font-size: 0.95rem;
-    color: #333;
+    color: var(--text-primary, #333);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -664,7 +743,7 @@ input[type="range"]::-moz-range-thumb:active {
 
 .descricao-checkbox {
     font-size: 0.8rem;
-    color: #666;
+    color: var(--text-secondary, #666);
     font-style: italic;
 }
 
@@ -1022,12 +1101,52 @@ input[type="range"]::-moz-range-thumb:active {
     padding: 8px 12px;
     font-size: 0.75rem;
     line-height: 1.4;
-    color: #666;
-    background-color: #f5f5f5;
+    color: var(--text-secondary, #666);
+    background-color: var(--surface-muted, #f5f5f5);
     border-radius: 6px;
     border-left: 3px solid var(--accent-color, #2d9fa3ff);
     text-align: left;
     transition: opacity 0.3s ease, max-height 0.3s ease;
+}
+
+.theme-toggle-btn {
+    position: fixed;
+    top: 14px;
+    right: 14px;
+    z-index: 2000;
+    min-width: 72px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border-color, #e0e0e0);
+    background: var(--surface-bg, #fff);
+    color: var(--text-primary, #333);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    box-shadow: var(--shadow-elevated, 0 3px 15px rgba(0, 0, 0, 0.1));
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+    transform: translateY(-1px);
+    border-color: var(--accent-color, #2d9fa3ff);
+}
+
+.theme-toggle-btn:focus-visible {
+    outline: 3px solid var(--accent-color, #2d9fa3ff);
+    outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+    .theme-toggle-btn {
+        top: 10px;
+        right: 10px;
+        min-width: 68px;
+        height: 34px;
+        font-size: 0.74rem;
+    }
 }
 
 .descricao-info[style*="display: none"] {
