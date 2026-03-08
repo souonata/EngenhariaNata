@@ -3,7 +3,7 @@
 Portfólio de apps web educativos de engenharia e finanças, com foco em cálculos práticos, explicações didáticas e interface bilíngue (pt-BR / it-IT).
 
 ## Acesse!
-- Site: `https://engnata.infinityfree.me`
+- Site: `https://engnata.eu`
 
 ## Aplicativos
 
