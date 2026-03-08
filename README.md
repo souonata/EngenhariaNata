@@ -63,25 +63,7 @@ EngenhariaNata/
 
 - Site: `https://engnata.infinityfree.me`
 - SEO: `sitemap.xml` e `robots.txt`
-- Para acompanhar o crescimento do projeto
 
-#### Otimização de SVGs (`scripts/optimize-svgs.ps1`)
-
-Script PowerShell para otimizar SVGs inline nos arquivos HTML removendo espaços desnecessários.
-
-**Uso:**
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\optimize-svgs.ps1
-```
-
-**O que o script faz:**
-- Remove espaços múltiplos dentro de tags SVG
-- Remove quebras de linha desnecessárias
-- Mantém estrutura e funcionalidade dos SVGs
-
-**Quando usar:**
-- Para reduzir tamanho dos arquivos HTML
-- Para melhorar performance de carregamento
 
 ### Adicionando um Novo App
 
@@ -92,18 +74,6 @@ powershell -ExecutionPolicy Bypass -File scripts\optimize-svgs.ps1
 5. Adicione o app ao `index.html` e `sobre/sobre.html`
 6. Execute `scripts/count-lines.ps1` para atualizar as estatísticas
 7. Execute `scripts/sync-versions.ps1 -Mode ReadHTML` para atualizar `config/versions.json`
-
-### Processo de Deploy
-
-Consulte [DEPLOY.md](DEPLOY.md) para o processo completo de deploy, incluindo:
-- Checklist de verificações pré-deploy
-- Sincronização de versões
-- Atualização de Service Worker
-- Troubleshooting comum
-
-### Atualização Completa do Site
-
-Para executar uma atualização completa do site (executar todos os scripts, validar traduções e dependências, sincronizar versões, atualizar conteúdo), consulte [PLANO_ATUALIZACAO_COMPLETA.md](PLANO_ATUALIZACAO_COMPLETA.md). Este plano detalhado de 50 passos garante que todas as atualizações sejam feitas de forma segura e sistemática, mesmo quebrando em muitos passos pequenos e gerenciáveis.
 
 ---
 
