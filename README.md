@@ -2,6 +2,9 @@
 
 Portfólio de apps web educativos de engenharia e finanças, com foco em cálculos práticos, explicações didáticas e interface bilíngue (pt-BR / it-IT).
 
+## Acesse!
+- Site: `https://engnata.infinityfree.me`
+
 ## Aplicativos
 
 - `mutuo/` - Calculadora de empréstimos com SAC, Price e Americano
@@ -58,12 +61,6 @@ EngenhariaNata/
 ├── solar/
 └── local/
 ```
-
-## Produção
-
-- Site: `https://engnata.infinityfree.me`
-- SEO: `sitemap.xml` e `robots.txt`
-
 
 ### Adicionando um Novo App
 
