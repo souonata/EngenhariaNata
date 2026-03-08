@@ -2196,9 +2196,56 @@ function atualizarEspecsBaterias() {
         `;
     }
 }
+
+function configurarInputsNumericosMoveisSolar() {
+    const inputs = document.querySelectorAll('input.valor-input, input[type="number"]');
+
+    inputs.forEach(input => {
+        if (input.dataset.mobileInputConfigured === 'true') {
+            return;
+        }
+
+        const step = (input.getAttribute('step') || '').replace(',', '.');
+        const value = (input.value || '').trim();
+        const ehDecimal =
+            (step && !Number.isInteger(parseFloat(step))) ||
+            /[,.]/.test(value);
+
+        if (!input.hasAttribute('inputmode')) {
+            input.setAttribute('inputmode', ehDecimal ? 'decimal' : 'numeric');
+        }
+
+        if (!input.hasAttribute('pattern')) {
+            input.setAttribute('pattern', ehDecimal ? '[0-9]*[.,]?[0-9]*' : '[0-9]*');
+        }
+
+        if (!input.hasAttribute('enterkeyhint')) {
+            input.setAttribute('enterkeyhint', 'done');
+        }
+
+        if (!input.hasAttribute('autocomplete')) {
+            input.setAttribute('autocomplete', 'off');
+        }
+
+        const selecionarConteudo = () => {
+            if (!input.disabled && !input.readOnly) {
+                input.select();
+            }
+        };
+
+        input.addEventListener('focus', selecionarConteudo);
+        input.addEventListener('click', selecionarConteudo);
+        input.addEventListener('touchend', selecionarConteudo);
+
+        input.dataset.mobileInputConfigured = 'true';
+    });
+}
+
 // INICIALIZAÇÃO
 document.addEventListener('DOMContentLoaded', () => {
     try {
+    configurarInputsNumericosMoveisSolar();
+
     // 1. Configurar botões de idioma
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.addEventListener('click', () => {
