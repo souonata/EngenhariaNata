@@ -1,4 +1,4 @@
-// CALCULADORA SOLAR
+﻿// CALCULADORA SOLAR
 // Dimensionamento de Sistema Fotovoltaico Off-Grid
 //
 // Objetivo: dado um consumo médio mensal (kWh), dias de autonomia e
@@ -62,65 +62,11 @@
 //   do banco de baterias.
 // - As tabelas CICLOS_AGM e CICLOS_LITIO mapeiam cycles → DoD com interpolação
 //   linear quando necessário (veja obterDoDPorCiclos / obterCiclosPorDoD).
-// Variável que guarda o idioma atual (Português ou Italiano)
-const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
-const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
-let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
+import { App } from '../src/core/app.js';
+import { i18n } from '../src/core/i18n.js';
 
-const THEME_STORAGE_KEY = 'engnata_theme_mode';
-const THEME_TOGGLE_ID = 'themeToggleGlobal';
-
-function obterTextoBotaoTema(theme) {
-    const isItaliano = (idiomaAtual || '').startsWith('it');
-    const paraEscuro = theme !== 'dark';
-
-    if (isItaliano) {
-        return paraEscuro ? 'Attiva tema scuro' : 'Attiva tema chiaro';
-    }
-    return paraEscuro ? 'Ativar tema escuro' : 'Ativar tema claro';
-}
-
-function atualizarBotaoTemaSolar(theme) {
-    const btn = document.getElementById(THEME_TOGGLE_ID);
-    if (!btn) return;
-
-    btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
-    btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
-    const texto = obterTextoBotaoTema(theme);
-    btn.setAttribute('aria-label', texto);
-    btn.title = texto;
-}
-
-function aplicarTemaSolar(theme) {
-    const tema = theme === 'dark' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', tema);
-    localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(tema));
-    atualizarBotaoTemaSolar(tema);
-    document.dispatchEvent(new CustomEvent('engnata:themechange', { detail: { theme: tema } }));
-}
-
-function alternarTemaSolar() {
-    const atual = document.documentElement.getAttribute('data-theme') || 'light';
-    const proximo = atual === 'dark' ? 'light' : 'dark';
-    aplicarTemaSolar(proximo);
-}
-
-function inicializarTemaSolar() {
-    const temaSalvoBruto = localStorage.getItem(THEME_STORAGE_KEY);
-    const temaSalvo = temaSalvoBruto ? JSON.parse(temaSalvoBruto) : 'light';
-    document.documentElement.setAttribute('data-theme', temaSalvo === 'dark' ? 'dark' : 'light');
-
-    if (!document.getElementById(THEME_TOGGLE_ID)) {
-        const btn = document.createElement('button');
-        btn.id = THEME_TOGGLE_ID;
-        btn.type = 'button';
-        btn.className = 'theme-toggle-btn';
-        btn.addEventListener('click', alternarTemaSolar);
-        document.body.appendChild(btn);
-    }
-
-    atualizarBotaoTemaSolar(document.documentElement.getAttribute('data-theme') || 'light');
-}
+// Idioma atual - mantido para compatibilidade com funções de cálculo e display
+let idiomaAtual = 'pt-BR';
 
 function obterCoresGraficoSolar() {
     const css = getComputedStyle(document.documentElement);
@@ -193,7 +139,7 @@ const VALORES_PADRAO = {
 };
 // Função para obter configuração atual (customizada ou padrão)
 function obterConfig() {
-    const configSalva = localStorage.getItem(SITE_LS.SOLAR_CONFIG_KEY);
+    const configSalva = localStorage.getItem('configSolar');
     return configSalva ? JSON.parse(configSalva) : VALORES_PADRAO;
 }
 // TABELAS DE VIDA ÚTIL (Ciclos vs Descarga)
@@ -299,264 +245,8 @@ function calcularPrecoInversor(potenciaKw, moeda) {
     // PASSO 5: Fallback (não deveria chegar aqui, mas retorna o preço máximo como segurança)
     return tabela[tabela.length - 1].preco;
 }
-// DICIONÁRIO DE TRADUÇÃO
-const traducoes = {
-    'pt-BR': {
-        'app-title': '🔋 Energia Solar',
-        'app-subtitle': 'Dimensionamento de Sistema Fotovoltaico',
-        'label-consumo': 'Consumo Médio Mensal',
-        'tooltip-consumo-texto': 'O consumo médio mensal representa a quantidade de energia elétrica que você utiliza por mês, medida em quilowatt-hora (kWh). Este valor é usado para calcular a energia diária necessária e dimensionar todo o sistema fotovoltaico. Você pode encontrar este valor na sua conta de luz.',
-        'label-autonomia': 'Dias de Autonomia',
-        'tooltip-autonomia-texto': 'Os dias de autonomia representam quantos dias consecutivos o sistema deve conseguir fornecer energia sem receber luz solar. Por exemplo, se você configurar 3 dias de autonomia, o sistema será dimensionado para armazenar energia suficiente para funcionar por 3 dias mesmo sem sol, garantindo funcionamento durante períodos nublados ou chuvosos.',
-        'label-tipo-bateria': 'Tipo de Bateria',
-        'opt-chumbo': 'Chumbo-Ácido',
-        'opt-litio': 'Lítio',
-        'res-mppt-integrado': 'MPPT (Integrado)',
-        'label-vida-util': 'Vida Útil Desejada',
-        'tooltip-vida-util-texto': 'A vida útil desejada é o número de anos que você espera que o sistema funcione antes de precisar substituir as baterias. Baterias LiFePO4 podem durar até 25 anos com uso adequado, enquanto baterias AGM (chumbo-ácido) geralmente duram de 1 a 5 anos. Quanto maior a vida útil desejada, menor será o DoD (profundidade de descarga) diário para preservar as baterias.',
-        'label-preco-kwh': 'Custo da Energia (kWh)',
-        'tooltip-preco-kwh-texto': 'O custo da energia elétrica por kWh é o preço que você paga pela energia da rede elétrica. Este valor é usado para calcular a economia financeira do sistema solar ao longo do tempo. Você pode ajustar este valor para simular diferentes cenários de tarifa ou projeções futuras.',
-        'dica-preco-kwh': '💡 Ajuste para simular diferentes cenários de tarifa',
-        'nota-preco-kwh-pt': 'Valor padrão: R$ 0,75/kWh (média ANEEL, dez/2024)',
-        'nota-preco-kwh-it': 'Valor padrão: € 0,30/kWh (média ARERA, dez/2024)',
-        'label-aumento-anual-energia': 'Aumento Anual do Custo da Energia',
-        'tooltip-aumento-anual-energia-texto': 'O aumento anual do custo da energia representa a taxa percentual de crescimento do preço da energia elétrica ao longo dos anos. Este valor é usado para calcular a economia acumulada considerando que a energia fica mais cara com o tempo. O valor padrão é baseado no histórico dos últimos 50 anos no Brasil e na Itália.',
-        'dica-aumento-anual-energia': '💡 Baseado no histórico dos últimos 50 anos',
-        'nota-aumento-anual-energia-pt': 'Valor padrão: 8%/ano (histórico Brasil 2000-2024)',
-        'nota-aumento-anual-energia-it': 'Valor padrão: 6%/ano (histórico Itália)',
-        'label-periodo-analise': 'Período de Análise do Gráfico',
-        'tooltip-periodo-analise-texto': 'O período de análise do gráfico define quantos anos serão considerados na análise financeira de amortização e lucro líquido. O período mínimo é 1x a vida útil máxima da bateria selecionada (25 anos para LiFePO4, 5 anos para AGM), e o máximo é 4x esse valor. Valores maiores permitem ver projeções de longo prazo.',
-        'dica-periodo-analise': '💡 Ajuste o período de análise do gráfico (1x a 4x vida útil máxima)',
-        'unidade-anos': 'anos',
-        'label-preco-bateria-kwh': 'Preço da Bateria (por kWh)',
-        'tooltip-preco-bateria-kwh-texto': 'O preço da bateria por kWh representa o custo unitário de capacidade de armazenamento de energia. Este valor varia conforme o tipo de bateria (LiFePO4 é mais caro que AGM) e o mercado. Você pode ajustar este valor para simular diferentes custos de baterias e ver como isso afeta o custo total do sistema.',
-        'dica-preco-bateria-kwh': '💡 Ajuste para simular diferentes custos de baterias',
-        'nota-preco-bateria-kwh-pt': 'Valor padrão: R$ 2.000/kWh (média mercado LiFePO4, dez/2024)',
-        'nota-preco-bateria-kwh-it': 'Valor padrão: € 320/kWh (média mercado LiFePO4, dez/2024)',
-        'results-title': 'Sistema Recomendado',
-        'res-placas': 'Placas Solares',
-        'res-baterias': 'Baterias',
-        'res-inversor': 'Inversor',
-        'res-mppt': 'MPPT',
-        'res-onda-pura': 'Onda Senoidal Pura',
-        'res-peso': 'Peso das Baterias',
-        'res-estimativa': 'Estimativa de Custo',
-        'custos-titulo': 'Detalhamento de Custos',
-        'custo-total': 'Total',
-        'footer': 'Solar - Engenharia NATA @ 2026',
-        'dias': 'dias',
-        'dia': 'dia',
-        'anos': 'anos',
-        'ano': 'ano',
-        'moeda': 'R$',
-        'aria-home': 'Voltar para a tela inicial',
-        'learn-more': 'SAIBA MAIS!',
-        'back': '← Voltar',
-        'back-to-calculator': 'Voltar para a Calculadora',
-        'btn-memorial': 'Ver Memorial de Cálculo',
-        'memorial-title': '📚 Memorial de Cálculo - Energia Solar',
-        'memorial-intro-title': '🎯 Objetivo do Dimensionamento',
-        'memorial-intro-text': 'Este memorial explica passo a passo como são calculados os componentes de um sistema fotovoltaico off-grid: número de painéis solares, capacidade de baterias, potência do inversor, corrente do MPPT e estimativa de custos. As fórmulas e a lógica de cálculo foram validadas por testes automatizados.',
-        'memorial-passo1-title': '1️⃣ Passo 1: Calcular Energia Diária Necessária',
-        'memorial-passo2-title': '2️⃣ Passo 2: Determinar DoD (Profundidade de Descarga) pela Vida Útil',
-        'memorial-passo3-title': '3️⃣ Passo 3: Calcular Capacidade Necessária de Baterias',
-        'memorial-passo4-title': '4️⃣ Passo 4: Calcular Número de Baterias',
-        'memorial-passo5-title': '5️⃣ Passo 5: Calcular Número de Painéis Solares',
-        'memorial-passo6-title': '6️⃣ Passo 6: Dimensionar o Inversor com MPPT Integrado',
-        'memorial-passo7-title': '7️⃣ Passo 7: Verificar Capacidade MPPT do Inversor',
-        'memorial-passo8-title': '8️⃣ Passo 8: Calcular Custo Total Estimado',
-        'memorial-resumo-title': '📊 Resumo dos Cálculos Atuais',
-        'memorial-formula': 'Fórmula:',
-        'memorial-example': 'Exemplo:',
-        'memorial-tip': '💡 Dica:',
-        'memorial-constants': 'Constantes usadas:',
-        'memorial-hsp': 'HSP (Horas de Sol Pleno) = 5 horas/dia (padrão para Brasil)',
-        'memorial-eficiencia': 'Eficiência do Sistema = 80% (considera perdas de 20% em cabos, MPPT e inversor)',
-        'memorial-passo1-explicacao': 'Esta é a quantidade de energia que o sistema precisa fornecer todos os dias para atender ao consumo médio.',
-        'memorial-passo2-explicacao': 'O DoD (Depth of Discharge) determina quanto da capacidade da bateria pode ser usada diariamente. Quanto maior a vida útil desejada, menor deve ser o DoD para preservar a bateria. O DoD é calculado usando tabelas de ciclos vs DoD baseadas em dados de fabricantes, com interpolação linear para valores intermediários.',
-        'memorial-dod-tip': 'Baterias LiFePO4 permitem DoD maiores (50-80%) que baterias AGM (30-50%) para a mesma vida útil.',
-        'memorial-passo3-explicacao': 'Calculamos a capacidade necessária por dois critérios e escolhemos o maior: um para garantir a vida útil desejada e outro para garantir os dias de autonomia sem sol.',
-        'memorial-passo4-explicacao': 'Arredondamos para cima para garantir que temos capacidade suficiente. Para tensões 24V e 48V, garantimos número par de baterias para facilitar a montagem em série/paralelo.',
-        'memorial-passo5-explicacao': 'Os painéis precisam gerar energia suficiente para recarregar as baterias, considerando perdas do sistema (cabo, MPPT, inversor). A eficiência do sistema de 80% considera todas as perdas. Usamos HSP (Horas de Sol Pleno) de 5 horas/dia para estimar a geração diária, que representa o número médio de horas em que a radiação solar atinge 1000 W/m².',
-        'memorial-passo6-explicacao': 'Em sistemas off-grid, todos os inversores modernos já vêm com MPPT integrado. O inversor converte DC das baterias para AC da casa e deve ter capacidade para o consumo de pico típico de uma residência. O fator de pico de 5x considera que o consumo não é constante ao longo do dia. Além disso, o inversor escolhido deve ter capacidade MPPT suficiente para suportar a corrente máxima dos painéis.',
-        'memorial-passo7-explicacao': 'Verifica-se se o inversor escolhido tem capacidade MPPT integrada suficiente para os painéis. A corrente necessária é calculada dividindo a potência total dos painéis pela tensão do banco de baterias. Se o inversor inicial não tiver MPPT suficiente, escolhe-se um inversor maior até encontrar um com capacidade adequada. Isso garante que o sistema funcione corretamente sem necessidade de MPPT separado.',
-        'memorial-passo8-explicacao': 'Os preços podem ser personalizados na página de configurações. Os valores são convertidos automaticamente para a moeda do idioma selecionado (R$ para português, € para italiano).',
-        'memorial-resumo-energia-diaria': 'Energia Diária:',
-        'memorial-resumo-dod': 'DoD Alvo:',
-        'memorial-resumo-capacidade': 'Capacidade Necessária:',
-        'memorial-resumo-baterias': 'Baterias Instaladas:',
-        'memorial-resumo-paineis': 'Painéis Solares:',
-        'memorial-resumo-inversor': 'Inversor:',
-        'memorial-resumo-mppt': 'MPPT:',
-        'memorial-formula-passo1': 'Energia Diária (kWh/dia) = Consumo Mensal (kWh) ÷ 30 dias',
-        'memorial-formula-passo2-1': 'Ciclos Totais = Vida Útil (anos) × 365 dias/ano',
-        'memorial-formula-passo2-2': 'DoD Alvo = f(Ciclos Totais, Tipo de Bateria)',
-        'memorial-formula-passo3-1': 'Capacidade por Vida Útil = Energia Diária ÷ DoD',
-        'memorial-formula-passo3-2': 'Capacidade por Autonomia = Energia Diária × Dias de Autonomia ÷ DoD',
-        'memorial-formula-passo3-3': 'Capacidade Necessária = Máximo(por Vida Útil, por Autonomia)',
-        'memorial-formula-passo4-1': 'Número de Baterias = Arredondar para Cima(Capacidade Necessária ÷ Capacidade por Bateria)',
-        'memorial-formula-passo4-2': 'Capacidade Real Instalada = Número de Baterias × Capacidade por Bateria',
-        'memorial-formula-passo4-3': 'Energia Utilizável = Capacidade Real × DoD',
-        'memorial-formula-passo5-1': 'Energia a Gerar = Energia Utilizável do Banco ÷ Eficiência do Sistema',
-        'memorial-formula-passo5-2': 'Potência Necessária (W) = Energia a Gerar (kWh/dia) × 1000 ÷ HSP (horas de sol pleno)',
-        'memorial-formula-passo5-3': 'Número de Painéis = Arredondar para Cima(Potência Necessária ÷ Potência por Painel)',
-        'memorial-formula-passo6-1': 'Consumo Médio Horário = Energia Diária (kWh) ÷ 24 horas',
-        'memorial-formula-passo6-2': 'Consumo de Pico = Consumo Médio Horário × Fator de Pico (5x)',
-        'memorial-formula-passo6-3': 'Potência Mínima do Inversor (kW) = Máximo(Consumo de Pico, 1 kW mínimo)',
-        'memorial-formula-passo7-1': 'Potência Total dos Painéis = Número de Painéis × Potência por Painel (W)',
-        'memorial-formula-passo7-2': 'Corrente Máxima Necessária = Potência Total dos Painéis ÷ Tensão do Banco (V)',
-        'memorial-formula-passo7-3': 'Se Capacidade MPPT do Inversor < Corrente Máxima Necessária, aumenta potência do inversor até encontrar um com MPPT adequado',
-        'memorial-formula-passo8-1': 'Custo Painéis = Número de Painéis × Preço por Painel',
-        'memorial-formula-passo8-2': 'Custo Baterias = Número de Baterias × Preço por Bateria',
-        'memorial-formula-passo8-3': 'Custo Inversor = Preço do Inversor com MPPT Integrado (da tabela de preços)',
-        'memorial-formula-passo8-4': 'Custo MPPT = 0 (já incluído no inversor)',
-        'memorial-formula-passo8-5': 'Custo Total = Custo Painéis + Custo Baterias + Custo Inversor',
-        'aria-home': 'Voltar para a tela inicial',
-        'learn-more': 'SAIBA MAIS!',
-        'back': '← Voltar',
-        'btn-memorial': 'Ver Memorial de Cálculo',
-        'graficos-title': '📊 Visualizações',
-        'grafico-amortizacao-title': 'Análise de Amortização do Sistema',
-        'grafico-sazonalidade-title': 'Sazonalidade de Geração Solar',
-        'aria-lang-pt': 'Alterar idioma para Português',
-        'aria-lang-it': 'Alterar idioma para Italiano',
-        'title-lang-pt': 'Português',
-        'title-lang-it': 'Italiano',
-        'aria-click-info': 'Clique para mais informações',
-        'aria-decrease': 'Diminuir valor',
-        'aria-increase': 'Aumentar valor',
-        'title-config-prices': 'Configurações de preços'
-    },
-    'it-IT': {
-        'app-title': '🔋 Energia Solare',
-        'app-subtitle': 'Dimensionamento Impianto Fotovoltaico',
-        'label-consumo': 'Consumo Medio Mensile',
-        'tooltip-consumo-texto': 'Il consumo medio mensile rappresenta la quantità di energia elettrica che utilizzi al mese, misurata in chilowattora (kWh). Questo valore viene utilizzato per calcolare l\'energia giornaliera necessaria e dimensionare l\'intero sistema fotovoltaico. Puoi trovare questo valore nella tua bolletta elettrica.',
-        'label-autonomia': 'Giorni di Autonomia',
-        'tooltip-autonomia-texto': 'I giorni di autonomia rappresentano quanti giorni consecutivi il sistema deve essere in grado di fornire energia senza ricevere luce solare. Ad esempio, se imposti 3 giorni di autonomia, il sistema sarà dimensionato per immagazzinare energia sufficiente per funzionare per 3 giorni anche senza sole, garantendo il funzionamento durante periodi nuvolosi o piovosi.',
-        'label-tipo-bateria': 'Tipo di Batteria',
-        'opt-chumbo': 'Piombo-Acido',
-        'opt-litio': 'Litio',
-        'res-mppt-integrado': 'MPPT (Integrato)',
-        'label-vida-util': 'Vita Utile Desiderata',
-        'tooltip-vida-util-texto': 'La vita utile desiderata è il numero di anni che ti aspetti che il sistema funzioni prima di dover sostituire le batterie. Le batterie LiFePO4 possono durare fino a 25 anni con un uso adeguato, mentre le batterie AGM (piombo-acido) generalmente durano da 1 a 5 anni. Maggiore è la vita utile desiderata, minore sarà il DoD (profondità di scarica) giornaliero per preservare le batterie.',
-        'label-preco-kwh': 'Costo dell\'Energia (kWh)',
-        'tooltip-preco-kwh-texto': 'Il costo dell\'energia elettrica per kWh è il prezzo che paghi per l\'energia della rete elettrica. Questo valore viene utilizzato per calcolare il risparmio finanziario del sistema solare nel tempo. Puoi regolare questo valore per simulare diversi scenari tariffari o proiezioni future.',
-        'dica-preco-kwh': '💡 Regola per simulare diversi scenari tariffari',
-        'nota-preco-kwh-pt': 'Valore predefinito: R$ 0,75/kWh (media ANEEL, dic/2024)',
-        'nota-preco-kwh-it': 'Valore predefinito: € 0,30/kWh (media ARERA, dic/2024)',
-        'label-aumento-anual-energia': 'Aumento Annuo del Costo dell\'Energia',
-        'tooltip-aumento-anual-energia-texto': 'L\'aumento annuo del costo dell\'energia rappresenta il tasso percentuale di crescita del prezzo dell\'energia elettrica nel corso degli anni. Questo valore viene utilizzato per calcolare il risparmio accumulato considerando che l\'energia diventa più costosa nel tempo. Il valore predefinito è basato sulla storia degli ultimi 50 anni in Brasile e in Italia.',
-        'dica-aumento-anual-energia': '💡 Basato sulla storia degli ultimi 50 anni',
-        'nota-aumento-anual-energia-pt': 'Valore predefinito: 8%/anno (storia Brasile 2000-2024)',
-        'nota-aumento-anual-energia-it': 'Valore predefinito: 6%/anno (storia Italia)',
-        'label-periodo-analise': 'Periodo di Analisi del Grafico',
-        'tooltip-periodo-analise-texto': 'Il periodo di analisi del grafico definisce quanti anni saranno considerati nell\'analisi finanziaria di ammortamento e profitto netto. Il periodo minimo è 1x la vita utile massima della batteria selezionata (25 anni per LiFePO4, 5 anni per AGM), e il massimo è 4x quel valore. Valori maggiori consentono di vedere proiezioni a lungo termine.',
-        'dica-periodo-analise': '💡 Regola il periodo di analisi del grafico (1x a 4x vita utile massima)',
-        'unidade-anos': 'anni',
-        'label-preco-bateria-kwh': 'Prezzo Batteria (per kWh)',
-        'tooltip-preco-bateria-kwh-texto': 'Il prezzo della batteria per kWh rappresenta il costo unitario di capacità di accumulo di energia. Questo valore varia in base al tipo di batteria (LiFePO4 è più costosa dell\'AGM) e al mercato. Puoi regolare questo valore per simulare diversi costi delle batterie e vedere come ciò influisce sul costo totale del sistema.',
-        'dica-preco-bateria-kwh': '💡 Regola per simulare diversi costi delle batterie',
-        'nota-preco-bateria-kwh-pt': 'Valore predefinito: R$ 2.000/kWh (media mercato LiFePO4, dic/2024)',
-        'nota-preco-bateria-kwh-it': 'Valore predefinito: € 320/kWh (media mercato LiFePO4, dic/2024)',
-        'results-title': 'Sistema Consigliato',
-        'res-placas': 'Pannelli Solari',
-        'res-baterias': 'Batterie',
-        'res-inversor': 'Inverter',
-        'res-mppt': 'MPPT',
-        'res-onda-pura': 'Onda Sinusoidale Pura',
-        'res-peso': 'Peso Batterie',
-        'res-estimativa': 'Costo Stimato',
-        'custos-titulo': 'Dettaglio Costi',
-        'custo-total': 'Totale',
-        'footer': 'Solare - Engenharia NATA @ 2026',
-        'aria-home': 'Voltar para a tela inicial',
-        'learn-more': 'SAIBA MAIS!',
-        'back': '← Voltar',
-        'btn-memorial': 'Ver Memorial de Cálculo',
-        'dias': 'giorni',
-        'dia': 'giorno',
-        'anos': 'anni',
-        'ano': 'anno',
-        'moeda': '€',
-        'aria-home': 'Torna alla schermata iniziale',
-        'learn-more': 'SCOPRI DI PIÙ!',
-        'back': '← Indietro',
-        'back-to-calculator': 'Torna alla Calcolatrice',
-        'btn-memorial': 'Vedi Memoriale di Calcolo',
-        'memorial-title': '📚 Memoriale di Calcolo - Energia Solare',
-        'memorial-intro-title': '🎯 Obiettivo del Dimensionamento',
-        'memorial-intro-text': 'Questo memoriale spiega passo dopo passo come vengono calcolati i componenti di un sistema fotovoltaico off-grid: numero di pannelli solari, capacità delle batterie, potenza dell\'inverter, corrente del MPPT e stima dei costi. Le formule e la logica di calcolo sono state validate da test automatizzati.',
-        'memorial-passo1-title': '1️⃣ Passo 1: Calcolare Energia Giornaliera Necessaria',
-        'memorial-passo2-title': '2️⃣ Passo 2: Determinare DoD (Profondità di Scarica) dalla Vita Utile',
-        'memorial-passo3-title': '3️⃣ Passo 3: Calcolare Capacità Necessaria delle Batterie',
-        'memorial-passo4-title': '4️⃣ Passo 4: Calcolare Numero di Batterie',
-        'memorial-passo5-title': '5️⃣ Passo 5: Calcolare Numero di Pannelli Solari',
-        'memorial-passo6-title': '6️⃣ Passo 6: Dimensionare l\'Inverter con MPPT Integrato',
-        'memorial-passo7-title': '7️⃣ Passo 7: Verificare Capacità MPPT dell\'Inverter',
-        'memorial-passo8-title': '8️⃣ Passo 8: Calcolare Costo Totale Stimato',
-        'memorial-resumo-title': '📊 Riepilogo dei Calcoli Attuali',
-        'memorial-formula': 'Formula:',
-        'memorial-example': 'Esempio:',
-        'memorial-tip': '💡 Suggerimento:',
-        'memorial-constants': 'Costanti utilizzate:',
-        'memorial-hsp': 'HSP (Ore di Sole Pieno) = 5 ore/giorno (standard per il Brasile)',
-        'memorial-eficiencia': 'Efficienza del Sistema = 80% (considera perdite del 20% in cavi, MPPT e inverter)',
-        'memorial-passo1-explicacao': 'Questa è la quantità di energia che il sistema deve fornire ogni giorno per soddisfare il consumo medio.',
-        'memorial-passo2-explicacao': 'Il DoD (Depth of Discharge) determina quanto della capacità della batteria può essere utilizzato quotidianamente. Maggiore è la vita utile desiderata, minore deve essere il DoD per preservare la batteria. Il DoD viene calcolato utilizzando tabelle di cicli vs DoD basate su dati dei produttori, con interpolazione lineare per valori intermedi.',
-        'memorial-dod-tip': 'Le batterie LiFePO4 consentono DoD maggiori (50-80%) rispetto alle batterie AGM (30-50%) per la stessa vita utile.',
-        'memorial-passo3-explicacao': 'Calcoliamo la capacità necessaria con due criteri e scegliamo il maggiore: uno per garantire la vita utile desiderata e l\'altro per garantire i giorni di autonomia senza sole.',
-        'memorial-passo4-explicacao': 'Arrotondiamo per eccesso per garantire di avere capacità sufficiente. Per tensioni 24V e 48V, garantiamo un numero pari di batterie per facilitare il montaggio in serie/parallelo.',
-        'memorial-passo5-explicacao': 'I pannelli devono generare energia sufficiente per ricaricare le batterie, considerando le perdite del sistema (cavo, MPPT, inverter). L\'efficienza del sistema dell\'80% considera tutte le perdite. Usiamo HSP (Ore di Sole Pieno) di 5 ore/giorno per stimare la generazione giornaliera, che rappresenta il numero medio di ore in cui la radiazione solare raggiunge 1000 W/m².',
-        'memorial-passo6-explicacao': 'Nei sistemi off-grid, tutti gli inverter moderni includono già MPPT integrato. L\'inverter converte DC delle batterie in AC della casa e deve avere capacità per il consumo di picco tipico di una residenza. Il fattore di picco di 5x considera che il consumo non è costante durante il giorno. Inoltre, l\'inverter scelto deve avere capacità MPPT sufficiente per supportare la corrente massima dei pannelli.',
-        'memorial-passo7-explicacao': 'Si verifica se l\'inverter scelto ha capacità MPPT integrata sufficiente per i pannelli. La corrente necessaria viene calcolata dividendo la potenza totale dei pannelli per la tensione del banco di batterie. Se l\'inverter iniziale non ha MPPT sufficiente, si sceglie un inverter più grande fino a trovarne uno con capacità adeguata. Questo garantisce che il sistema funzioni correttamente senza necessità di MPPT separato.',
-        'memorial-passo8-explicacao': 'I prezzi possono essere personalizzati nella pagina delle impostazioni. I valori vengono convertiti automaticamente nella valuta della lingua selezionata (R$ per portoghese, € per italiano).',
-        'memorial-resumo-energia-diaria': 'Energia Giornaliera:',
-        'memorial-resumo-dod': 'DoD Obiettivo:',
-        'memorial-resumo-capacidade': 'Capacità Necessaria:',
-        'memorial-resumo-baterias': 'Batterie Installate:',
-        'memorial-resumo-paineis': 'Pannelli Solari:',
-        'memorial-resumo-inversor': 'Inverter:',
-        'memorial-resumo-mppt': 'MPPT:',
-        'memorial-formula-passo1': 'Energia Giornaliera (kWh/giorno) = Consumo Mensile (kWh) ÷ 30 giorni',
-        'memorial-formula-passo2-1': 'Cicli Totali = Vita Utile (anni) × 365 giorni/anno',
-        'memorial-formula-passo2-2': 'DoD Obiettivo = f(Cicli Totali, Tipo di Batteria)',
-        'memorial-formula-passo3-1': 'Capacità per Vita Utile = Energia Giornaliera ÷ DoD',
-        'memorial-formula-passo3-2': 'Capacità per Autonomia = Energia Giornaliera × Giorni di Autonomia ÷ DoD',
-        'memorial-formula-passo3-3': 'Capacità Necessaria = Massimo(per Vita Utile, per Autonomia)',
-        'memorial-formula-passo4-1': 'Numero di Batterie = Arrotondare per Eccesso(Capacità Necessaria ÷ Capacità per Batteria)',
-        'memorial-formula-passo4-2': 'Capacità Reale Installata = Numero di Batterie × Capacità per Batteria',
-        'memorial-formula-passo4-3': 'Energia Utilizzabile = Capacità Reale × DoD',
-        'memorial-formula-passo5-1': 'Energia da Generare = Energia Utilizzabile del Banco ÷ Efficienza del Sistema',
-        'memorial-formula-passo5-2': 'Potenza Necessaria (W) = Energia da Generare (kWh/giorno) × 1000 ÷ HSP (ore di sole pieno)',
-        'memorial-formula-passo5-3': 'Numero di Pannelli = Arrotondare per Eccesso(Potenza Necessaria ÷ Potenza per Pannello)',
-        'memorial-formula-passo6-1': 'Consumo Medio Orario = Energia Giornaliera (kWh) ÷ 24 ore',
-        'memorial-formula-passo6-2': 'Consumo di Picco = Consumo Medio Orario × Fattore di Picco (5x)',
-        'memorial-formula-passo6-3': 'Potenza Minima dell\'Inverter (kW) = Massimo(Consumo di Picco, 1 kW minimo)',
-        'memorial-formula-passo7-1': 'Potenza Totale dei Pannelli = Numero di Pannelli × Potenza per Pannello (W)',
-        'memorial-formula-passo7-2': 'Corrente Massima Necessaria = Potenza Totale dei Pannelli ÷ Tensione del Banco (V)',
-        'memorial-formula-passo7-3': 'Se Capacità MPPT dell\'Inverter < Corrente Massima Necessaria, aumenta potenza dell\'inverter fino a trovarne uno con MPPT adeguato',
-        'memorial-formula-passo8-1': 'Costo Pannelli = Numero di Pannelli × Prezzo per Pannello',
-        'memorial-formula-passo8-2': 'Costo Batterie = Numero di Batterie × Prezzo per Batteria',
-        'memorial-formula-passo8-3': 'Costo Inverter = Prezzo dell\'Inverter con MPPT Integrato (dalla tabella dei prezzi)',
-        'memorial-formula-passo8-4': 'Costo MPPT = 0 (già incluso nell\'inverter)',
-        'memorial-formula-passo8-5': 'Costo Totale = Costo Pannelli + Costo Batterie + Costo Inverter',
-        'graficos-title': '📊 Visualizzazioni',
-        'grafico-amortizacao-title': 'Analisi di Ammortamento del Sistema',
-        'grafico-sazonalidade-title': 'Stagionalità della Generazione Solare',
-        'aria-lang-pt': 'Cambia lingua in portoghese',
-        'aria-lang-it': 'Cambia lingua in italiano',
-        'title-lang-pt': 'Portoghese',
-        'title-lang-it': 'Italiano',
-        'aria-click-info': 'Clicca per maggiori informazioni',
-        'aria-decrease': 'Diminuisci valore',
-        'aria-increase': 'Aumenta valore',
-        'title-config-prices': 'Impostazioni prezzi'
-    }
-};
-// Controle para os botões de seta
-let intervalId = null;
-let timeoutId = null;
+// Controle para os botões de seta (usado em ajustarValor)
+
 // FUNÇÃO: ATUALIZAR NOTAS DE VALORES PADRÃO
 // Atualiza as notas de valores padrão abaixo dos sliders e ajusta os limites dos sliders
 function atualizarNotasValoresPadrao() {
@@ -565,12 +255,12 @@ function atualizarNotasValoresPadrao() {
     
     if (notaPrecoKWh) {
         const chaveNota = idiomaAtual === 'pt-BR' ? 'nota-preco-kwh-pt' : 'nota-preco-kwh-it';
-        notaPrecoKWh.textContent = traducoes[idiomaAtual]?.[chaveNota] || '';
+        notaPrecoKWh.textContent = i18n.t(chaveNota) || '';
     }
     
     if (notaPrecoBateriaKWh) {
         const chaveNota = idiomaAtual === 'pt-BR' ? 'nota-preco-bateria-kwh-pt' : 'nota-preco-bateria-kwh-it';
-        notaPrecoBateriaKWh.textContent = traducoes[idiomaAtual]?.[chaveNota] || '';
+        notaPrecoBateriaKWh.textContent = i18n.t(chaveNota) || '';
     }
     
     // Atualizar slider de aumento anual do custo da energia
@@ -597,7 +287,7 @@ function atualizarNotasValoresPadrao() {
     
     if (notaAumentoAnualEnergia) {
         const chaveNota = idiomaAtual === 'pt-BR' ? 'nota-aumento-anual-energia-pt' : 'nota-aumento-anual-energia-it';
-        notaAumentoAnualEnergia.textContent = traducoes[idiomaAtual]?.[chaveNota] || '';
+        notaAumentoAnualEnergia.textContent = i18n.t(chaveNota) || '';
     }
     
     // Atualizar limites do slider de preço kWh (1/20 e 4x do valor padrão)
@@ -678,96 +368,7 @@ function atualizarNotasValoresPadrao() {
         }
     }
 }
-// FUNÇÃO: TROCAR IDIOMA
-function trocarIdioma(novoIdioma) {
-    idiomaAtual = novoIdioma;
-    // Persiste a preferência de idioma usando a chave padronizada do projeto
-    localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
-    document.documentElement.lang = novoIdioma;
-    
-    // Atualiza todos os elementos com data-i18n
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (traducoes[novoIdioma] && traducoes[novoIdioma][key]) {
-            el.textContent = traducoes[novoIdioma][key];
-        }
-    });
-
-    // Atualiza atributos title traduzíveis
-    document.querySelectorAll('[data-i18n-title]').forEach(el => {
-        const key = el.getAttribute('data-i18n-title');
-        if (traducoes[novoIdioma] && traducoes[novoIdioma][key]) {
-            el.setAttribute('title', traducoes[novoIdioma][key]);
-        }
-    });
-
-    // Atualiza atributos aria-label traduzíveis
-    document.querySelectorAll('[data-i18n-aria]').forEach(el => {
-        const key = el.getAttribute('data-i18n-aria');
-        if (traducoes[novoIdioma] && traducoes[novoIdioma][key]) {
-            el.setAttribute('aria-label', traducoes[novoIdioma][key]);
-        }
-    });
-
-    // Atualiza botões de idioma (ativação visual)
-    document.querySelectorAll(SITE_SEL.LANG_BTN).forEach(btn => {
-        if (btn.getAttribute('data-lang') === novoIdioma) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
-
-    // Atualizar notas de valores padrão e limites dos sliders primeiro
-    atualizarNotasValoresPadrao();
-    
-    // Atualiza valor padrão do preço kWh quando o idioma muda
-    const sliderPrecoKWh = document.getElementById('sliderPrecoKWh');
-    const inputPrecoKWh = document.getElementById('inputPrecoKWh');
-    const unidadePrecoKWh = document.getElementById('unidadePrecoKWh');
-    if (sliderPrecoKWh && inputPrecoKWh) {
-        const valorPadrao = PRECO_KWH[novoIdioma] || PRECO_KWH['pt-BR'];
-        sliderPrecoKWh.value = valorPadrao.toFixed(2);
-        inputPrecoKWh.value = formatarDecimalComVirgula(valorPadrao, 2);
-        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPrecoKWh);
-    }
-    if (unidadePrecoKWh) {
-        unidadePrecoKWh.textContent = novoIdioma === 'it-IT' ? '€' : 'R$';
-    }
-    
-    // Atualiza valor padrão do preço da bateria quando o idioma muda
-    const sliderPrecoBateriaKWh = document.getElementById('sliderPrecoBateriaKWh');
-    const inputPrecoBateriaKWh = document.getElementById('inputPrecoBateriaKWh');
-    const unidadePrecoBateriaKWh = document.getElementById('unidadePrecoBateriaKWh');
-    if (sliderPrecoBateriaKWh && inputPrecoBateriaKWh) {
-        // Obter tipo de bateria selecionado
-        const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
-        const tipoBateria = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
-        
-        // Selecionar preço baseado no tipo de bateria
-        const precosBateria = tipoBateria === 'chumbo' ? PRECO_BATERIA_KWH_CHUMBO : PRECO_BATERIA_KWH_LITIO;
-        const valorPadraoBateria = precosBateria[novoIdioma] || precosBateria['pt-BR'];
-        
-        // Atualizar constante global para compatibilidade
-        PRECO_BATERIA_KWH[novoIdioma] = valorPadraoBateria;
-        
-        sliderPrecoBateriaKWh.value = Math.round(valorPadraoBateria).toString();
-        inputPrecoBateriaKWh.value = Math.round(valorPadraoBateria).toString();
-        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPrecoBateriaKWh);
-    }
-    if (unidadePrecoBateriaKWh) {
-        unidadePrecoBateriaKWh.textContent = novoIdioma === 'it-IT' ? '€' : 'R$';
-    }
-
-    atualizarInterface();
-
-    // Atualiza fórmulas do memorial
-    atualizarFormulasMemorial(novoIdioma);
-
-    // Atualiza aria-label do botão home
-    const homeLabel = traducoes[novoIdioma]?.['aria-home'] || 'Home';
-    document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
-} // DoD (Depth of Discharge
+// DoD (Depth of Discharge
 function obterDoDPorCiclos(ciclos, tipo) {
     // PASSO 1: Seleciona a tabela de ciclos baseada no tipo de bateria
     // Baterias de lítio têm muito mais ciclos que baterias de chumbo-ácido
@@ -1958,7 +1559,7 @@ function calcularSistema(dodAlvo) {
         });
         // Zera o preço
         const precoElemento = document.getElementById('resPrecoEstimado');
-        if (precoElemento) precoElemento.textContent = `${traducoes[idiomaAtual]?.['moeda'] || 'R$'} 0`;
+        if (precoElemento) precoElemento.textContent = `${i18n.t('moeda') || 'R$'} 0`;
         return; // Interrompe a execução da função
     }
 
@@ -2144,7 +1745,7 @@ function calcularSistema(dodAlvo) {
     const resPesoBaterias = document.getElementById('resPesoBaterias');
     if (resPesoBaterias) resPesoBaterias.textContent = formatarNumeroComSufixo(pesoTotal, 1) + ' kg';
     
-    const moeda = traducoes[idiomaAtual]?.['moeda'] || 'R$';
+    const moeda = i18n.t('moeda') || 'R$';
     const formatarPreco = (valor) => `${moeda} ${valor.toLocaleString(idiomaAtual, {minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: true})}`;
     
     // Exibir custos detalhados
@@ -2289,694 +1890,380 @@ function atualizarEspecsBaterias() {
     }
 }
 
-function configurarInputsNumericosMoveisSolar() {
-    const inputs = document.querySelectorAll('input.valor-input, input[type="number"]');
-
-    inputs.forEach(input => {
-        if (input.dataset.mobileInputConfigured === 'true') {
-            return;
-        }
-
-        const step = (input.getAttribute('step') || '').replace(',', '.');
-        const value = (input.value || '').trim();
-        const ehDecimal =
-            (step && !Number.isInteger(parseFloat(step))) ||
-            /[,.]/.test(value);
-
-        if (!input.hasAttribute('inputmode')) {
-            input.setAttribute('inputmode', ehDecimal ? 'decimal' : 'numeric');
-        }
-
-        if (!input.hasAttribute('pattern')) {
-            input.setAttribute('pattern', ehDecimal ? '[0-9]*[.,]?[0-9]*' : '[0-9]*');
-        }
-
-        if (!input.hasAttribute('enterkeyhint')) {
-            input.setAttribute('enterkeyhint', 'done');
-        }
-
-        if (!input.hasAttribute('autocomplete')) {
-            input.setAttribute('autocomplete', 'off');
-        }
-
-        const selecionarConteudo = () => {
-            if (!input.disabled && !input.readOnly) {
-                input.select();
+class SolarApp extends App {
+    constructor() {
+        super({
+            appName: 'solar',
+            callbacks: {
+                aoInicializar: () => this.inicializarSolar(),
+                aoTrocarIdioma: () => this.atualizarAposTrocaIdioma()
             }
-        };
-
-        input.addEventListener('focus', selecionarConteudo);
-        input.addEventListener('click', selecionarConteudo);
-        input.addEventListener('touchend', selecionarConteudo);
-
-        input.dataset.mobileInputConfigured = 'true';
-    });
-}
-
-// INICIALIZAÇÃO
-document.addEventListener('DOMContentLoaded', () => {
-    try {
-    inicializarTemaSolar();
-    configurarInputsNumericosMoveisSolar();
-    document.addEventListener('engnata:themechange', () => {
-        atualizarInterface();
-    });
-
-    // 1. Configurar botões de idioma
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            trocarIdioma(btn.getAttribute('data-lang'));
         });
-    });
+    }
 
-    // 2. Configurar botões de seta - usa função global com aceleração exponencial
-    if (typeof configurarBotoesSliderComAceleracao === 'function') {
-        // Usa função de ajuste local que atualiza inputs correspondentes
-        function ajustarValorSolar(targetId, step) {
-            ajustarValor(targetId, step);
-        }
-        configurarBotoesSliderComAceleracao(SITE_SEL.ARROW_BTN, ajustarValorSolar);
-    } else {
-        // Fallback para código antigo se a função global não estiver disponível
-        document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
+    inicializarSolar() {
+        document.addEventListener('engnata:themechange', () => {
+            atualizarInterface();
+        });
+
+        // Botões de seta (arrow buttons)
+        document.querySelectorAll('.arrow-btn').forEach(btn => {
             const targetId = btn.getAttribute('data-target');
             const step = parseFloat(btn.getAttribute('data-step'));
             btn.addEventListener('click', () => ajustarValor(targetId, step));
         });
-    }
-    
-    // Código antigo removido - agora usa função global
-    /*
-    document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
-        const targetId = btn.getAttribute('data-target');
-        const step = parseFloat(btn.getAttribute('data-step'));
-        
-        // Cada botão tem seu próprio controle de intervalo/timeout
-        let intervalId = null;
-        let timeoutId = null;
 
-        // Função para iniciar a repetição
-        const startRepeating = () => {
-            // Limpa qualquer intervalo/timeout anterior
-            if (timeoutId) clearTimeout(timeoutId);
-            if (intervalId) clearInterval(intervalId);
-            
-            // Primeiro ajuste imediato
-            ajustarValor(targetId, step);
-            
-            // Configura repetição após delay
-            timeoutId = setTimeout(() => {
-                intervalId = setInterval(() => {
-                    ajustarValor(targetId, step);
-                }, 100); // Repete a cada 100ms
-            }, 500); // Delay de 500ms antes de começar a repetir
+        // Sliders
+        const sliderConsumo = document.getElementById('sliderConsumo');
+        const sliderAutonomia = document.getElementById('sliderAutonomia');
+        const sliderVidaUtil = document.getElementById('sliderVidaUtil');
+
+        const throttleFn = (fn, delay) => {
+            let lastCall = 0;
+            return function(...args) {
+                const now = Date.now();
+                if (now - lastCall >= delay) { lastCall = now; return fn(...args); }
+            };
         };
 
-        // Função para parar a repetição
-        const stopRepeating = () => {
-            if (timeoutId) {
-                clearTimeout(timeoutId);
-                timeoutId = null;
-            }
-            if (intervalId) {
-                clearInterval(intervalId);
-                intervalId = null;
-            }
+        const atualizarConsumo = () => {
+            if (!sliderConsumo) return;
+            const valor = parseInt(sliderConsumo.value) || 200;
+            const inputConsumo = document.getElementById('inputConsumo');
+            if (inputConsumo) { inputConsumo.value = valor; }
+            atualizarInterface();
+        };
+        const atualizarAutonomia = () => {
+            if (!sliderAutonomia) return;
+            const valor = parseInt(sliderAutonomia.value) || 1;
+            const inputAutonomia = document.getElementById('inputAutonomia');
+            if (inputAutonomia) { inputAutonomia.value = valor; }
+            atualizarInterface();
+        };
+        const atualizarVidaUtil = () => {
+            if (!sliderVidaUtil) return;
+            const valor = parseFloat(sliderVidaUtil.value) || 20;
+            const inputVidaUtil = document.getElementById('inputVidaUtil');
+            if (inputVidaUtil) { inputVidaUtil.value = Math.round(valor); }
+            atualizarInterface();
         };
 
-        // Eventos de Mouse (PC)
-        btn.addEventListener('mousedown', (e) => {
-            e.preventDefault(); // Evita seleção de texto
-            startRepeating();
-        });
-        btn.addEventListener('mouseup', stopRepeating);
-        btn.addEventListener('mouseleave', stopRepeating);
+        if (sliderConsumo) {
+            sliderConsumo.addEventListener('input', throttleFn(atualizarConsumo, 100));
+            sliderConsumo.addEventListener('change', atualizarConsumo);
+        }
+        if (sliderAutonomia) {
+            sliderAutonomia.addEventListener('input', throttleFn(atualizarAutonomia, 100));
+            sliderAutonomia.addEventListener('change', atualizarAutonomia);
+        }
+        if (sliderVidaUtil) {
+            sliderVidaUtil.addEventListener('input', throttleFn(atualizarVidaUtil, 100));
+            sliderVidaUtil.addEventListener('change', atualizarVidaUtil);
+        }
 
-        // Eventos de Toque (Mobile)
-        btn.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // Evita scroll/zoom
-            startRepeating();
-        });
-        btn.addEventListener('touchend', stopRepeating);
-        btn.addEventListener('touchcancel', stopRepeating);
-    });
-    */
-
-    // 3. Configurar sliders (eventos de input)
-    const sliderConsumo = document.getElementById('sliderConsumo');
-    const sliderAutonomia = document.getElementById('sliderAutonomia');
-    const sliderVidaUtil = document.getElementById('sliderVidaUtil');
-    
-    // Função auxiliar para atualizar consumo
-    const atualizarConsumo = () => {
-        if (!sliderConsumo) return;
-        const valor = parseInt(sliderConsumo.value) || 200;
-        const inputConsumo = document.getElementById('inputConsumo');
-        if (inputConsumo) {
-            inputConsumo.value = valor;
-            // Ajusta o tamanho do input dinamicamente com folga maior para valores maiores
-            if (typeof ajustarTamanhoInput === 'function') {
-                // Usa mais folga para valores maiores (até 999)
-                const folga = valor >= 100 ? 4 : 3;
-                ajustarTamanhoInput(inputConsumo, folga);
-            }
-        }
-        atualizarInterface();
-    };
-    
-    // Função auxiliar para atualizar autonomia
-    const atualizarAutonomia = () => {
-        if (!sliderAutonomia) return;
-        const valor = parseInt(sliderAutonomia.value) || 1;
-        const inputAutonomia = document.getElementById('inputAutonomia');
-        if (inputAutonomia) {
-            inputAutonomia.value = valor;
-            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAutonomia);
-        }
-        atualizarInterface();
-    };
-    
-    // Função auxiliar para atualizar vida útil
-    const atualizarVidaUtil = () => {
-        if (!sliderVidaUtil) return;
-        const valor = parseFloat(sliderVidaUtil.value) || 20;
-        const inputVidaUtil = document.getElementById('inputVidaUtil');
-        if (inputVidaUtil) {
-            inputVidaUtil.value = Math.round(valor);
-            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputVidaUtil);
-        }
-        atualizarInterface();
-    };
-    
-    // Aplica throttle nos sliders para melhorar performance durante o arraste // Adiciona também listener 'change' para garantir que o valor final seja sempre atualizado
-    // Usa throttle se disponível, caso contrário usa a função diretamente
-    const throttleFn = (typeof throttle === 'function') ? throttle : (fn, delay) => fn;
-    
-    if (sliderConsumo) {
-        sliderConsumo.addEventListener('input', throttleFn(atualizarConsumo, 100));
-        sliderConsumo.addEventListener('change', atualizarConsumo);
-    }
-    
-    if (sliderAutonomia) {
-        sliderAutonomia.addEventListener('input', throttleFn(atualizarAutonomia, 100));
-        sliderAutonomia.addEventListener('change', atualizarAutonomia);
-    }
-    
-    if (sliderVidaUtil) {
-        sliderVidaUtil.addEventListener('input', throttleFn(atualizarVidaUtil, 100));
-        sliderVidaUtil.addEventListener('change', atualizarVidaUtil);
-    }
-    
-    // Função auxiliar para atualizar preço kWh
-    const atualizarPrecoKWh = () => {
+        const atualizarPrecoKWh = () => {
+            const sliderPrecoKWhEl = document.getElementById('sliderPrecoKWh');
+            if (!sliderPrecoKWhEl) return;
+            const minVal = parseFloat(sliderPrecoKWhEl.min) || 0;
+            const maxVal = parseFloat(sliderPrecoKWhEl.max) || 3;
+            const stepVal = parseFloat(sliderPrecoKWhEl.step) || 0.05;
+            let valor = parseFloat(sliderPrecoKWhEl.value);
+            if (isNaN(valor)) valor = PRECO_KWH[idiomaAtual] || PRECO_KWH['pt-BR'];
+            valor = Math.round(Math.max(minVal, Math.min(maxVal, valor)) / stepVal) * stepVal;
+            valor = Math.round(valor * 100) / 100;
+            sliderPrecoKWhEl.value = valor.toFixed(2);
+            const inputPrecoKWhEl = document.getElementById('inputPrecoKWh');
+            if (inputPrecoKWhEl) inputPrecoKWhEl.value = formatarDecimalComVirgula(valor, 2);
+            atualizarInterface();
+        };
         const sliderPrecoKWhEl = document.getElementById('sliderPrecoKWh');
-        if (!sliderPrecoKWhEl) return;
-        
-        // Usa os limites min/max do slider (que já foram calculados dinamicamente)
-        const minVal = parseFloat(sliderPrecoKWhEl.min) || 0;
-        const maxVal = parseFloat(sliderPrecoKWhEl.max) || 3;
-        const stepVal = parseFloat(sliderPrecoKWhEl.step) || 0.05;
-        
-        let valor = parseFloat(sliderPrecoKWhEl.value);
-        if (isNaN(valor)) {
-        const valorPadrao = PRECO_KWH[idiomaAtual] || PRECO_KWH['pt-BR'];
-            valor = valorPadrao;
+        if (sliderPrecoKWhEl) {
+            sliderPrecoKWhEl.addEventListener('input', throttleFn(atualizarPrecoKWh, 100));
+            sliderPrecoKWhEl.addEventListener('change', atualizarPrecoKWh);
         }
-        
-        // Garantir que o valor está dentro dos limites do slider
-        valor = Math.max(minVal, Math.min(maxVal, valor));
-        // Arredondar para múltiplos do step
-        valor = Math.round(valor / stepVal) * stepVal;
-        // Garantir precisão de 2 casas decimais
-        valor = Math.round(valor * 100) / 100;
-        
-        sliderPrecoKWhEl.value = valor.toFixed(2);
-        
+
+        const atualizarAumentoAnualEnergia = () => {
+            const sliderAumentoAnualEnergiaEl = document.getElementById('sliderAumentoAnualEnergia');
+            if (!sliderAumentoAnualEnergiaEl) return;
+            const valorPadrao = AUMENTO_ANUAL_ENERGIA[idiomaAtual] || AUMENTO_ANUAL_ENERGIA['pt-BR'];
+            const valor = parseFloat(sliderAumentoAnualEnergiaEl.value) || valorPadrao;
+            const valorLimitado = Math.max(valorPadrao / 5, Math.min(valorPadrao * 5, valor));
+            sliderAumentoAnualEnergiaEl.value = Math.round(valorLimitado * 10) / 10;
+            const inputAumentoAnualEnergiaEl = document.getElementById('inputAumentoAnualEnergia');
+            if (inputAumentoAnualEnergiaEl) inputAumentoAnualEnergiaEl.value = formatarDecimalComVirgula(valorLimitado, 1);
+            atualizarInterface();
+        };
+        const sliderAumentoAnualEnergiaEl = document.getElementById('sliderAumentoAnualEnergia');
+        if (sliderAumentoAnualEnergiaEl) {
+            sliderAumentoAnualEnergiaEl.addEventListener('input', throttleFn(atualizarAumentoAnualEnergia, 100));
+            sliderAumentoAnualEnergiaEl.addEventListener('change', atualizarAumentoAnualEnergia);
+        }
+
+        const atualizarPrecoBateriaKWh = () => {
+            const sliderPrecoBateriaKWhEl = document.getElementById('sliderPrecoBateriaKWh');
+            if (!sliderPrecoBateriaKWhEl) return;
+            const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
+            const tipoBateria = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
+            const precosBateria = tipoBateria === 'chumbo' ? PRECO_BATERIA_KWH_CHUMBO : PRECO_BATERIA_KWH_LITIO;
+            const valorPadrao = precosBateria[idiomaAtual] || precosBateria['pt-BR'];
+            PRECO_BATERIA_KWH[idiomaAtual] = valorPadrao;
+            const valor = parseFloat(sliderPrecoBateriaKWhEl.value) || valorPadrao;
+            const valorLimitado = Math.max(Math.round(valorPadrao / 100), Math.min(Math.round(valorPadrao * 4), valor));
+            sliderPrecoBateriaKWhEl.value = Math.round(valorLimitado / 10) * 10;
+            const inputPrecoBateriaKWhEl = document.getElementById('inputPrecoBateriaKWh');
+            if (inputPrecoBateriaKWhEl) inputPrecoBateriaKWhEl.value = Math.round(valorLimitado / 10) * 10;
+            atualizarInterface();
+        };
+        const sliderPrecoBateriaKWhEl = document.getElementById('sliderPrecoBateriaKWh');
+        if (sliderPrecoBateriaKWhEl) {
+            sliderPrecoBateriaKWhEl.addEventListener('input', throttleFn(atualizarPrecoBateriaKWh, 100));
+            sliderPrecoBateriaKWhEl.addEventListener('change', atualizarPrecoBateriaKWh);
+        }
+
+        // Botão do memorial
+        const btnMemorial = document.getElementById('btnMemorial');
+        if (btnMemorial) btnMemorial.addEventListener('click', () => toggleMemorial());
+        const btnFecharMemorial = document.getElementById('btnFecharMemorial');
+        if (btnFecharMemorial) btnFecharMemorial.addEventListener('click', () => toggleMemorial());
+        document.querySelectorAll('.btn-voltar-memorial').forEach(btn => btn.addEventListener('click', () => toggleMemorial()));
+
+        // Inputs editáveis
+        const inputConsumo = document.getElementById('inputConsumo');
+        const inputAutonomia = document.getElementById('inputAutonomia');
+        const inputVidaUtil = document.getElementById('inputVidaUtil');
+
+        if (inputConsumo) {
+            inputConsumo.addEventListener('focus', (e) => e.target.select());
+            inputConsumo.addEventListener('input', () => {
+                const valor = parseInt(inputConsumo.value);
+                if (!isNaN(valor) && valor > 0) {
+                    if (sliderConsumo && valor >= parseInt(sliderConsumo.min) && valor <= parseInt(sliderConsumo.max)) sliderConsumo.value = valor;
+                    atualizarInterface();
+                }
+            });
+        }
+        if (inputAutonomia) {
+            inputAutonomia.addEventListener('focus', (e) => e.target.select());
+            inputAutonomia.addEventListener('input', () => {
+                const valor = parseInt(inputAutonomia.value);
+                if (!isNaN(valor) && valor > 0) {
+                    if (sliderAutonomia && valor >= parseInt(sliderAutonomia.min) && valor <= parseInt(sliderAutonomia.max)) sliderAutonomia.value = valor;
+                    atualizarInterface();
+                }
+            });
+        }
+        if (inputVidaUtil) {
+            inputVidaUtil.addEventListener('focus', (e) => e.target.select());
+            inputVidaUtil.addEventListener('input', () => {
+                const valor = parseFloat(inputVidaUtil.value);
+                if (!isNaN(valor) && valor > 0) {
+                    const tipoBateria = document.querySelector('input[name="tipoBateria"]:checked')?.value || 'chumbo';
+                    const minVida = tipoBateria === 'litio' ? 5 : 1;
+                    const maxVida = tipoBateria === 'litio' ? 25 : 5;
+                    if (sliderVidaUtil && valor >= minVida && valor <= maxVida) sliderVidaUtil.value = valor;
+                    atualizarInterface();
+                }
+            });
+        }
+
         const inputPrecoKWhEl = document.getElementById('inputPrecoKWh');
         if (inputPrecoKWhEl) {
-            inputPrecoKWhEl.value = formatarDecimalComVirgula(valor, 2);
-            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPrecoKWhEl);
+            inputPrecoKWhEl.addEventListener('focus', (e) => e.target.select());
+            inputPrecoKWhEl.addEventListener('input', () => {
+                const valor = converterVirgulaParaNumero(inputPrecoKWhEl.value);
+                if (!isNaN(valor) && valor > 0) {
+                    const sliderPrecoKWhEl2 = document.getElementById('sliderPrecoKWh');
+                    if (sliderPrecoKWhEl2) {
+                        const minVal = parseFloat(sliderPrecoKWhEl2.min) || 0.10;
+                        const maxVal = parseFloat(sliderPrecoKWhEl2.max) || 2.00;
+                        const valorLimitado = Math.max(minVal, Math.min(maxVal, valor));
+                        if (valorLimitado >= minVal && valorLimitado <= maxVal) {
+                            sliderPrecoKWhEl2.value = valorLimitado.toFixed(2);
+                            inputPrecoKWhEl.value = formatarDecimalComVirgula(valorLimitado, 2);
+                        }
+                    }
+                    atualizarInterface();
+                }
+            });
         }
-        atualizarInterface();
-    };
-    
-    const sliderPrecoKWhEl = document.getElementById('sliderPrecoKWh');
-    if (sliderPrecoKWhEl) {
-        sliderPrecoKWhEl.addEventListener('input', throttleFn(atualizarPrecoKWh, 100));
-        sliderPrecoKWhEl.addEventListener('change', atualizarPrecoKWh);
-    }
-    
-    // Função auxiliar para atualizar aumento anual do custo da energia
-    const atualizarAumentoAnualEnergia = () => {
-        const sliderAumentoAnualEnergiaEl = document.getElementById('sliderAumentoAnualEnergia');
-        if (!sliderAumentoAnualEnergiaEl) return;
-        const valorPadrao = AUMENTO_ANUAL_ENERGIA[idiomaAtual] || AUMENTO_ANUAL_ENERGIA['pt-BR'];
-        const valor = parseFloat(sliderAumentoAnualEnergiaEl.value) || valorPadrao;
-        // Garantir que o valor está dentro dos limites
-        const minValor = valorPadrao / 5;
-        const maxValor = valorPadrao * 5;
-        const valorLimitado = Math.max(minValor, Math.min(maxValor, valor));
-        // Arredondar para múltiplos de 0.1
-        sliderAumentoAnualEnergiaEl.value = Math.round(valorLimitado * 10) / 10;
-        
-        const inputAumentoAnualEnergiaEl = document.getElementById('inputAumentoAnualEnergia');
-        if (inputAumentoAnualEnergiaEl) {
-            inputAumentoAnualEnergiaEl.value = formatarDecimalComVirgula(valorLimitado, 1);
-            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAumentoAnualEnergiaEl);
-        }
-        atualizarInterface();
-    };
-    
-    const sliderAumentoAnualEnergiaEl = document.getElementById('sliderAumentoAnualEnergia');
-    if (sliderAumentoAnualEnergiaEl) {
-        sliderAumentoAnualEnergiaEl.addEventListener('input', throttleFn(atualizarAumentoAnualEnergia, 100));
-        sliderAumentoAnualEnergiaEl.addEventListener('change', atualizarAumentoAnualEnergia);
-    }
-    
-    // Função auxiliar para atualizar preço bateria por kWh
-    const atualizarPrecoBateriaKWh = () => {
-        const sliderPrecoBateriaKWhEl = document.getElementById('sliderPrecoBateriaKWh');
-        if (!sliderPrecoBateriaKWhEl) return;
-        // Obter tipo de bateria selecionado para determinar preço padrão
-        const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
-        const tipoBateria = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
-        const precosBateria = tipoBateria === 'chumbo' ? PRECO_BATERIA_KWH_CHUMBO : PRECO_BATERIA_KWH_LITIO;
-        const valorPadrao = precosBateria[idiomaAtual] || precosBateria['pt-BR'];
-        
-        // Atualizar constante global para compatibilidade
-        PRECO_BATERIA_KWH[idiomaAtual] = valorPadrao;
-        const valor = parseFloat(sliderPrecoBateriaKWhEl.value) || valorPadrao;
-        // Garantir que o valor está dentro dos limites
-        // Mínimo: 1/100 do valor padrão, máximo: 4x do valor padrão
-        const minValor = Math.round(valorPadrao / 100);
-        const maxValor = Math.round(valorPadrao * 4);
-        const valorLimitado = Math.max(minValor, Math.min(maxValor, valor));
-        // Arredondar para múltiplos de 10 para manter consistência com o step
-        sliderPrecoBateriaKWhEl.value = Math.round(valorLimitado / 10) * 10;
-        
+
         const inputPrecoBateriaKWhEl = document.getElementById('inputPrecoBateriaKWh');
         if (inputPrecoBateriaKWhEl) {
-            inputPrecoBateriaKWhEl.value = Math.round(valorLimitado / 10) * 10;
-            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPrecoBateriaKWhEl);
+            inputPrecoBateriaKWhEl.addEventListener('focus', (e) => e.target.select());
+            inputPrecoBateriaKWhEl.addEventListener('input', () => {
+                const valor = parseFloat(inputPrecoBateriaKWhEl.value);
+                if (!isNaN(valor) && valor > 0) {
+                    const sliderPrecoBateriaKWhEl2 = document.getElementById('sliderPrecoBateriaKWh');
+                    if (sliderPrecoBateriaKWhEl2) {
+                        const minVal = parseFloat(sliderPrecoBateriaKWhEl2.min);
+                        const maxVal = parseFloat(sliderPrecoBateriaKWhEl2.max);
+                        const valorArredondado = Math.round(Math.max(minVal, Math.min(maxVal, valor)) / 10) * 10;
+                        if (valorArredondado >= minVal && valorArredondado <= maxVal) sliderPrecoBateriaKWhEl2.value = valorArredondado;
+                    }
+                    atualizarInterface();
+                }
+            });
         }
-        atualizarInterface();
-    };
-    
-    const sliderPrecoBateriaKWhEl = document.getElementById('sliderPrecoBateriaKWh');
-    if (sliderPrecoBateriaKWhEl) {
-        sliderPrecoBateriaKWhEl.addEventListener('input', throttleFn(atualizarPrecoBateriaKWh, 100));
-        sliderPrecoBateriaKWhEl.addEventListener('change', atualizarPrecoBateriaKWh);
-    }
-    
-    // 3B. Configurar botão do memorial
-    const btnMemorial = document.getElementById('btnMemorial');
-    const memorialSection = document.getElementById('memorialSection');
-    const resultadosSection = document.querySelector('.cartao:last-of-type');
-    
-    if (btnMemorial && memorialSection) {
-        btnMemorial.addEventListener('click', () => {
-            toggleMemorial();
-        });
-    }
-    
-    // Configurar botões de fechar o memorial
-    const btnFecharMemorial = document.getElementById('btnFecharMemorial');
-    const botoesVoltarMemorial = document.querySelectorAll('.btn-voltar-memorial');
-    
-    if (btnFecharMemorial) {
-        btnFecharMemorial.addEventListener('click', () => {
-            toggleMemorial();
-        });
-    }
-    
-    botoesVoltarMemorial.forEach(btn => {
-        btn.addEventListener('click', () => {
-            toggleMemorial();
-        });
-    });
-    
-    // 3C. Configurar inputs editáveis (permitem valores fora dos limites do slider)
-    const inputConsumo = document.getElementById('inputConsumo');
-    const inputAutonomia = document.getElementById('inputAutonomia');
-    const inputVidaUtil = document.getElementById('inputVidaUtil');
-    
-    if (inputConsumo) {
-        inputConsumo.addEventListener('focus', (e) => e.target.select());
-        inputConsumo.addEventListener('input', () => {
-            const valor = parseInt(inputConsumo.value);
-            // Ajusta o tamanho do input dinamicamente conforme o valor digitado
-            if (typeof ajustarTamanhoInput === 'function') {
-                // Usa mais folga para valores maiores (até 999)
-                const folga = (!isNaN(valor) && valor >= 100) ? 4 : 3;
-                ajustarTamanhoInput(inputConsumo, folga);
-            }
-            if (!isNaN(valor) && valor > 0) {
-                // Atualiza o slider apenas se estiver dentro dos limites
-                if (valor >= parseInt(sliderConsumo.min) && valor <= parseInt(sliderConsumo.max)) {
-                    sliderConsumo.value = valor;
-                }
-                // Sempre recalcula, mesmo se estiver fora dos limites
-                atualizarInterface();
-            }
-        });
-    }
-    
-    if (inputAutonomia) {
-        inputAutonomia.addEventListener('focus', (e) => e.target.select());
-        inputAutonomia.addEventListener('input', () => {
-            const valor = parseInt(inputAutonomia.value);
-            if (!isNaN(valor) && valor > 0) {
-                if (valor >= parseInt(sliderAutonomia.min) && valor <= parseInt(sliderAutonomia.max)) {
-                    sliderAutonomia.value = valor;
-                }
-                atualizarInterface();
-            }
-        });
-    }
-    
-    if (inputVidaUtil) {
-        inputVidaUtil.addEventListener('focus', (e) => e.target.select());
-        inputVidaUtil.addEventListener('input', () => {
-            const valor = parseFloat(inputVidaUtil.value);
-            if (!isNaN(valor) && valor > 0) {
-                const tipoBateria = document.querySelector('input[name="tipoBateria"]:checked')?.value || 'chumbo';
-                const minVida = tipoBateria === 'litio' ? 5 : 1;
-                const maxVida = tipoBateria === 'litio' ? 25 : 5;
-                
-                if (valor >= minVida && valor <= maxVida) {
-                    sliderVidaUtil.value = valor;
-                }
-                atualizarInterface();
-            }
-        });
-    }
-    
-    const inputPrecoKWhEl = document.getElementById('inputPrecoKWh');
-    if (inputPrecoKWhEl) {
-        inputPrecoKWhEl.addEventListener('focus', (e) => e.target.select());
-        inputPrecoKWhEl.addEventListener('input', () => {
-            const valor = converterVirgulaParaNumero(inputPrecoKWhEl.value);
-            if (!isNaN(valor) && valor > 0) {
-                const sliderPrecoKWhEl2 = document.getElementById('sliderPrecoKWh');
-                if (sliderPrecoKWhEl2) {
-                    // Limita o valor entre min e max do slider
-                    const minVal = parseFloat(sliderPrecoKWhEl2.min) || 0.10;
-                    const maxVal = parseFloat(sliderPrecoKWhEl2.max) || 2.00;
-                    const valorLimitado = Math.max(minVal, Math.min(maxVal, valor));
-                    
-                    if (valorLimitado >= minVal && valorLimitado <= maxVal) {
-                        sliderPrecoKWhEl2.value = valorLimitado.toFixed(2);
-                        inputPrecoKWhEl.value = formatarDecimalComVirgula(valorLimitado, 2);
-                    }
-                }
-                atualizarInterface();
-            }
-        });
-    }
-    
-    const inputPrecoBateriaKWhEl = document.getElementById('inputPrecoBateriaKWh');
-    if (inputPrecoBateriaKWhEl) {
-        inputPrecoBateriaKWhEl.addEventListener('focus', (e) => e.target.select());
-        inputPrecoBateriaKWhEl.addEventListener('input', () => {
-            const valor = parseFloat(inputPrecoBateriaKWhEl.value);
-            if (!isNaN(valor) && valor > 0) {
-                const sliderPrecoBateriaKWhEl2 = document.getElementById('sliderPrecoBateriaKWh');
-                if (sliderPrecoBateriaKWhEl2) {
-                    // Limita o valor entre min e max do slider (que são calculados dinamicamente)
-                    const minVal = parseFloat(sliderPrecoBateriaKWhEl2.min);
-                    const maxVal = parseFloat(sliderPrecoBateriaKWhEl2.max);
-                    const valorLimitado = Math.max(minVal, Math.min(maxVal, valor));
-                    // Arredondar para múltiplos de 10 para manter consistência com o step
-                    const valorArredondado = Math.round(valorLimitado / 10) * 10;
-                    
-                    if (valorArredondado >= minVal && valorArredondado <= maxVal) {
-                        sliderPrecoBateriaKWhEl2.value = valorArredondado;
-                    }
-                }
-                atualizarInterface();
-            }
-        });
-    }
 
-    // 4. Configurar Radio Buttons (Tipo de Bateria)
-    document.querySelectorAll('input[name="tipoBateria"]').forEach(radio => {
-        radio.addEventListener('change', () => {
-            // Atualizar preço da bateria e limites do slider quando o tipo mudar
-            atualizarNotasValoresPadrao();
-            
-            // Atualizar limites do slider de período de análise baseado no tipo de bateria
-            const sliderPeriodoAnalise = document.getElementById('sliderPeriodoAnalise');
-            const inputPeriodoAnalise = document.getElementById('inputPeriodoAnalise');
-            if (sliderPeriodoAnalise) {
+        // Radio buttons (tipo de bateria)
+        document.querySelectorAll('input[name="tipoBateria"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                atualizarNotasValoresPadrao();
+                const sliderPeriodoAnalise = document.getElementById('sliderPeriodoAnalise');
+                const inputPeriodoAnalise = document.getElementById('inputPeriodoAnalise');
+                if (sliderPeriodoAnalise) {
+                    const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
+                    const tipoBateriaAtual = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
+                    const vidaUtilMaxima = tipoBateriaAtual === 'litio' ? 25 : 5;
+                    sliderPeriodoAnalise.min = vidaUtilMaxima.toString();
+                    sliderPeriodoAnalise.max = (vidaUtilMaxima * 4).toString();
+                    const valorAtual = parseInt(sliderPeriodoAnalise.value) || vidaUtilMaxima;
+                    const valorAjustado = Math.max(vidaUtilMaxima, Math.min(vidaUtilMaxima * 4, valorAtual));
+                    sliderPeriodoAnalise.value = valorAjustado.toString();
+                    if (inputPeriodoAnalise) inputPeriodoAnalise.value = valorAjustado.toString();
+                }
+                atualizarInterface();
+            });
+        });
+
+        // Slider período de análise
+        const sliderPeriodoAnaliseEl = document.getElementById('sliderPeriodoAnalise');
+        const inputPeriodoAnaliseEl = document.getElementById('inputPeriodoAnalise');
+        if (sliderPeriodoAnaliseEl) {
+            const atualizarPeriodoAnalise = () => {
                 const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
                 const tipoBateriaAtual = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
                 const vidaUtilMaxima = tipoBateriaAtual === 'litio' ? 25 : 5;
-                
-                // Atualizar limites: min = 1x vida útil máxima, max = 4x vida útil máxima
-                sliderPeriodoAnalise.min = vidaUtilMaxima.toString();
-                sliderPeriodoAnalise.max = (vidaUtilMaxima * 4).toString();
-                
-                // Ajustar valor atual se estiver fora dos novos limites
-                const valorAtual = parseInt(sliderPeriodoAnalise.value) || vidaUtilMaxima;
-                const minPeriodo = vidaUtilMaxima;
-                const maxPeriodo = vidaUtilMaxima * 4;
-                const valorAjustado = Math.max(minPeriodo, Math.min(maxPeriodo, valorAtual));
-                
-                sliderPeriodoAnalise.value = valorAjustado.toString();
-                if (inputPeriodoAnalise) {
-                    inputPeriodoAnalise.value = valorAjustado.toString();
-                    if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPeriodoAnalise);
+                sliderPeriodoAnaliseEl.min = vidaUtilMaxima.toString();
+                sliderPeriodoAnaliseEl.max = (vidaUtilMaxima * 4).toString();
+                const valorLimitado = Math.max(vidaUtilMaxima, Math.min(vidaUtilMaxima * 4, parseInt(sliderPeriodoAnaliseEl.value) || vidaUtilMaxima));
+                sliderPeriodoAnaliseEl.value = valorLimitado.toString();
+                if (inputPeriodoAnaliseEl) inputPeriodoAnaliseEl.value = valorLimitado.toString();
+                atualizarInterface();
+            };
+            sliderPeriodoAnaliseEl.addEventListener('input', throttleFn(atualizarPeriodoAnalise, 100));
+            sliderPeriodoAnaliseEl.addEventListener('change', atualizarPeriodoAnalise);
+        }
+        if (inputPeriodoAnaliseEl) {
+            inputPeriodoAnaliseEl.addEventListener('focus', (e) => e.target.select());
+            inputPeriodoAnaliseEl.addEventListener('input', throttleFn(() => {
+                const valor = parseInt(inputPeriodoAnaliseEl.value);
+                if (!isNaN(valor) && valor > 0) {
+                    const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
+                    const tipoBateriaAtual = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
+                    const vidaUtilMaxima = tipoBateriaAtual === 'litio' ? 25 : 5;
+                    const valorLimitado = Math.max(vidaUtilMaxima, Math.min(vidaUtilMaxima * 4, valor));
+                    if (sliderPeriodoAnaliseEl) sliderPeriodoAnaliseEl.value = valorLimitado.toString();
+                    inputPeriodoAnaliseEl.value = valorLimitado.toString();
+                    atualizarInterface();
                 }
-            }
-            
-            atualizarInterface();
-        });
-    });
-    
-    // 4.5. Configurar Slider e Input de Período de Análise do Gráfico
-    const sliderPeriodoAnaliseEl = document.getElementById('sliderPeriodoAnalise');
-    const inputPeriodoAnaliseEl = document.getElementById('inputPeriodoAnalise');
-    
-    if (sliderPeriodoAnaliseEl) {
-        // Função auxiliar para atualizar período de análise
-        const atualizarPeriodoAnalise = () => {
-            // Obter limites baseados no tipo de bateria
+            }, 200));
+        }
+
+        // Sincronizar valores iniciais dos inputs com os sliders
+        if (sliderConsumo && inputConsumo) inputConsumo.value = sliderConsumo.value;
+        if (sliderAutonomia && inputAutonomia) inputAutonomia.value = sliderAutonomia.value;
+        if (sliderVidaUtil && inputVidaUtil) inputVidaUtil.value = Math.round(parseFloat(sliderVidaUtil.value));
+
+        // Sincronizar preço kWh com valor padrão baseado no idioma
+        const sliderPrecoKWhInit = document.getElementById('sliderPrecoKWh');
+        const inputPrecoKWhInit = document.getElementById('inputPrecoKWh');
+        const unidadePrecoKWhInit = document.getElementById('unidadePrecoKWh');
+        if (sliderPrecoKWhInit && inputPrecoKWhInit) {
+            const valorPadrao = PRECO_KWH[idiomaAtual] || PRECO_KWH['pt-BR'];
+            sliderPrecoKWhInit.value = valorPadrao.toFixed(2);
+            inputPrecoKWhInit.value = formatarDecimalComVirgula(valorPadrao, 2);
+        }
+        if (unidadePrecoKWhInit) unidadePrecoKWhInit.textContent = idiomaAtual === 'it-IT' ? '€' : 'R$';
+
+        // Sincronizar aumento anual do custo da energia
+        const sliderAumentoAnualEnergiaInit = document.getElementById('sliderAumentoAnualEnergia');
+        const inputAumentoAnualEnergiaInit = document.getElementById('inputAumentoAnualEnergia');
+        const notaAumentoAnualEnergiaInit = document.getElementById('notaAumentoAnualEnergia');
+        if (sliderAumentoAnualEnergiaInit && inputAumentoAnualEnergiaInit) {
+            const valorPadraoAumento = AUMENTO_ANUAL_ENERGIA[idiomaAtual] || AUMENTO_ANUAL_ENERGIA['pt-BR'];
+            const minValorAumento = valorPadraoAumento / 5;
+            const maxValorAumento = valorPadraoAumento * 5;
+            sliderAumentoAnualEnergiaInit.min = (Math.floor(minValorAumento / 0.1) * 0.1).toFixed(1);
+            sliderAumentoAnualEnergiaInit.max = (Math.ceil(maxValorAumento / 0.1) * 0.1).toFixed(1);
+            sliderAumentoAnualEnergiaInit.value = valorPadraoAumento.toFixed(1);
+            inputAumentoAnualEnergiaInit.value = formatarDecimalComVirgula(valorPadraoAumento, 1);
+        }
+        if (notaAumentoAnualEnergiaInit) {
+            const chaveNota = idiomaAtual === 'pt-BR' ? 'nota-aumento-anual-energia-pt' : 'nota-aumento-anual-energia-it';
+            notaAumentoAnualEnergiaInit.textContent = i18n.t(chaveNota) || '';
+        }
+
+        // Sincronizar período de análise
+        const sliderPeriodoAnaliseInit = document.getElementById('sliderPeriodoAnalise');
+        const inputPeriodoAnaliseInit = document.getElementById('inputPeriodoAnalise');
+        if (sliderPeriodoAnaliseInit && inputPeriodoAnaliseInit) {
             const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
             const tipoBateriaAtual = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
             const vidaUtilMaxima = tipoBateriaAtual === 'litio' ? 25 : 5;
-            const minPeriodo = vidaUtilMaxima;
-            const maxPeriodo = vidaUtilMaxima * 4;
-            
-            // Atualizar limites do slider primeiro
-            sliderPeriodoAnaliseEl.min = minPeriodo.toString();
-            sliderPeriodoAnaliseEl.max = maxPeriodo.toString();
-            
-            // Obter valor atual do slider
-            const valor = parseInt(sliderPeriodoAnaliseEl.value) || vidaUtilMaxima;
-            
-            // Garantir que o valor está dentro dos limites
-            const valorLimitado = Math.max(minPeriodo, Math.min(maxPeriodo, valor));
-            
-            // Atualizar slider e input
-            sliderPeriodoAnaliseEl.value = valorLimitado.toString();
-            if (inputPeriodoAnaliseEl) {
-                inputPeriodoAnaliseEl.value = valorLimitado.toString();
-                if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPeriodoAnaliseEl);
-            }
-            
-            // Atualizar gráfico
-            atualizarInterface();
-        };
-        
-        // Event listener para quando o slider é arrastado (input)
-        sliderPeriodoAnaliseEl.addEventListener('input', throttleFn(atualizarPeriodoAnalise, 100));
-        
-        // Event listener para quando o slider é solto (change)
-        sliderPeriodoAnaliseEl.addEventListener('change', atualizarPeriodoAnalise);
-    }
-    
-    if (inputPeriodoAnaliseEl) {
-        inputPeriodoAnaliseEl.addEventListener('focus', (e) => e.target.select());
-        
-        // Função auxiliar para processar valor do input manual
-        const processarValorInputPeriodo = () => {
-            const valor = parseInt(inputPeriodoAnaliseEl.value);
-            if (!isNaN(valor) && valor > 0) {
-                // Obter limites baseados no tipo de bateria
-                const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
-                const tipoBateriaAtual = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
-                const vidaUtilMaxima = tipoBateriaAtual === 'litio' ? 25 : 5;
-                const minPeriodo = vidaUtilMaxima;
-                const maxPeriodo = vidaUtilMaxima * 4;
-                
-                // Atualizar limites do slider primeiro
-                if (sliderPeriodoAnaliseEl) {
-                    sliderPeriodoAnaliseEl.min = minPeriodo.toString();
-                    sliderPeriodoAnaliseEl.max = maxPeriodo.toString();
-                }
-                
-                // Garantir que o valor está dentro dos limites
-                const valorLimitado = Math.max(minPeriodo, Math.min(maxPeriodo, valor));
-                
-                // Atualizar slider e input
-                if (sliderPeriodoAnaliseEl) {
-                    sliderPeriodoAnaliseEl.value = valorLimitado.toString();
-                }
-                inputPeriodoAnaliseEl.value = valorLimitado.toString();
-                if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPeriodoAnaliseEl);
-                
-                // Atualizar gráfico
-                atualizarInterface();
-            }
-        };
-        
-        inputPeriodoAnaliseEl.addEventListener('input', throttleFn(processarValorInputPeriodo, 200));
-        
-        inputPeriodoAnaliseEl.addEventListener('blur', () => {
-            const valor = parseInt(inputPeriodoAnaliseEl.value);
-            if (isNaN(valor) || valor <= 0) {
-                // Se valor inválido, restaurar valor do slider
-                if (sliderPeriodoAnaliseEl) {
-                    const valorSlider = parseInt(sliderPeriodoAnaliseEl.value) || 25;
-                    inputPeriodoAnaliseEl.value = valorSlider.toString();
-                    if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPeriodoAnaliseEl);
-                }
-            } else {
-                processarValorInputPeriodo();
-            }
-        });
+            sliderPeriodoAnaliseInit.min = vidaUtilMaxima.toString();
+            sliderPeriodoAnaliseInit.max = (vidaUtilMaxima * 4).toString();
+            sliderPeriodoAnaliseInit.value = vidaUtilMaxima.toString();
+            inputPeriodoAnaliseInit.value = vidaUtilMaxima.toString();
+        }
+
+        // Sincronizar preço bateria por kWh
+        const sliderPrecoBateriaKWhInit = document.getElementById('sliderPrecoBateriaKWh');
+        const inputPrecoBateriaKWhInit = document.getElementById('inputPrecoBateriaKWh');
+        const unidadePrecoBateriaKWhInit = document.getElementById('unidadePrecoBateriaKWh');
+        if (sliderPrecoBateriaKWhInit && inputPrecoBateriaKWhInit) {
+            const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
+            const tipoBateria = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
+            const precosBateria = tipoBateria === 'chumbo' ? PRECO_BATERIA_KWH_CHUMBO : PRECO_BATERIA_KWH_LITIO;
+            const valorPadraoBateria = precosBateria[idiomaAtual] || precosBateria['pt-BR'];
+            PRECO_BATERIA_KWH[idiomaAtual] = valorPadraoBateria;
+            sliderPrecoBateriaKWhInit.value = Math.round(valorPadraoBateria).toString();
+            inputPrecoBateriaKWhInit.value = Math.round(valorPadraoBateria).toString();
+        }
+        if (unidadePrecoBateriaKWhInit) unidadePrecoBateriaKWhInit.textContent = idiomaAtual === 'it-IT' ? '€' : 'R$';
+
+        atualizarNotasValoresPadrao();
+        atualizarEspecsBaterias();
+
+        setTimeout(() => atualizarInterface(), 100);
+        setTimeout(() => atualizarInterface(), 800);
     }
 
-    // 5. Sincronizar valores iniciais dos inputs com os sliders
-    // Garante que os inputs exibam os valores corretos dos sliders ao carregar
-    if (sliderConsumo && inputConsumo) {
-        inputConsumo.value = sliderConsumo.value;
-        if (typeof ajustarTamanhoInput === 'function') {
-            const valorInicial = parseInt(sliderConsumo.value) || 200;
-            const folga = valorInicial >= 100 ? 4 : 3;
-            ajustarTamanhoInput(inputConsumo, folga);
+    atualizarAposTrocaIdioma() {
+        idiomaAtual = i18n.obterIdiomaAtual();
+
+        atualizarNotasValoresPadrao();
+
+        const sliderPrecoKWh = document.getElementById('sliderPrecoKWh');
+        const inputPrecoKWh = document.getElementById('inputPrecoKWh');
+        const unidadePrecoKWh = document.getElementById('unidadePrecoKWh');
+        if (sliderPrecoKWh && inputPrecoKWh) {
+            const valorPadrao = PRECO_KWH[idiomaAtual] || PRECO_KWH['pt-BR'];
+            sliderPrecoKWh.value = valorPadrao.toFixed(2);
+            inputPrecoKWh.value = formatarDecimalComVirgula(valorPadrao, 2);
         }
-    }
-    if (sliderAutonomia && inputAutonomia) {
-        inputAutonomia.value = sliderAutonomia.value;
-        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAutonomia);
-    }
-    
-    // Descrições de informação usando função padronizada
-    if (typeof inicializarIconeInfo === 'function') {
-        inicializarIconeInfo('infoIconConsumo', 'descricaoConsumo');
-        inicializarIconeInfo('infoIconAutonomia', 'descricaoAutonomia');
-        inicializarIconeInfo('infoIconVidaUtil', 'descricaoVidaUtil');
-        inicializarIconeInfo('infoIconPrecoKWh', 'descricaoPrecoKWh');
-        inicializarIconeInfo('infoIconAumentoAnualEnergia', 'descricaoAumentoAnualEnergia');
-        inicializarIconeInfo('infoIconPrecoBateriaKWh', 'descricaoPrecoBateriaKWh');
-        inicializarIconeInfo('infoIconPeriodoAnalise', 'descricaoPeriodoAnalise');
-    }
-    if (sliderVidaUtil && inputVidaUtil) {
-        inputVidaUtil.value = Math.round(parseFloat(sliderVidaUtil.value));
-        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputVidaUtil);
-    }
-    // Sincronizar preço kWh com valor padrão baseado no idioma
-    const sliderPrecoKWhInit = document.getElementById('sliderPrecoKWh');
-    const inputPrecoKWhInit = document.getElementById('inputPrecoKWh');
-    const unidadePrecoKWhInit = document.getElementById('unidadePrecoKWh');
-    if (sliderPrecoKWhInit && inputPrecoKWhInit) {
-        const valorPadrao = PRECO_KWH[idiomaAtual] || PRECO_KWH['pt-BR'];
-        sliderPrecoKWhInit.value = valorPadrao.toFixed(2);
-        inputPrecoKWhInit.value = formatarDecimalComVirgula(valorPadrao, 2);
-        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPrecoKWhInit);
-    }
-    if (unidadePrecoKWhInit) {
-        unidadePrecoKWhInit.textContent = idiomaAtual === 'it-IT' ? '€' : 'R$';
-    }
-    
-    // Sincronizar aumento anual do custo da energia
-    const sliderAumentoAnualEnergiaInit = document.getElementById('sliderAumentoAnualEnergia');
-    const inputAumentoAnualEnergiaInit = document.getElementById('inputAumentoAnualEnergia');
-    const notaAumentoAnualEnergiaInit = document.getElementById('notaAumentoAnualEnergia');
-    if (sliderAumentoAnualEnergiaInit && inputAumentoAnualEnergiaInit) {
-        const valorPadraoAumento = AUMENTO_ANUAL_ENERGIA[idiomaAtual] || AUMENTO_ANUAL_ENERGIA['pt-BR'];
-        // Limites: 1/5 e 5x do valor padrão
-        const minValorAumento = valorPadraoAumento / 5;
-        const maxValorAumento = valorPadraoAumento * 5;
-        sliderAumentoAnualEnergiaInit.min = (Math.floor(minValorAumento / 0.1) * 0.1).toFixed(1);
-        sliderAumentoAnualEnergiaInit.max = (Math.ceil(maxValorAumento / 0.1) * 0.1).toFixed(1);
-        sliderAumentoAnualEnergiaInit.value = valorPadraoAumento.toFixed(1);
-        inputAumentoAnualEnergiaInit.value = formatarDecimalComVirgula(valorPadraoAumento, 1);
-        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAumentoAnualEnergiaInit);
-    }
-    if (notaAumentoAnualEnergiaInit) {
-        const chaveNota = idiomaAtual === 'pt-BR' ? 'nota-aumento-anual-energia-pt' : 'nota-aumento-anual-energia-it';
-        notaAumentoAnualEnergiaInit.textContent = traducoes[idiomaAtual]?.[chaveNota] || '';
-    }
-    
-    // Sincronizar período de análise do gráfico com valor padrão baseado no tipo de bateria
-    const sliderPeriodoAnaliseInit = document.getElementById('sliderPeriodoAnalise');
-    const inputPeriodoAnaliseInit = document.getElementById('inputPeriodoAnalise');
-    if (sliderPeriodoAnaliseInit && inputPeriodoAnaliseInit) {
-        const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
-        const tipoBateriaAtual = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
-        const vidaUtilMaxima = tipoBateriaAtual === 'litio' ? 25 : 5;
-        
-        // Limites: min = 1x vida útil máxima, max = 4x vida útil máxima
-        sliderPeriodoAnaliseInit.min = vidaUtilMaxima.toString();
-        sliderPeriodoAnaliseInit.max = (vidaUtilMaxima * 4).toString();
-        
-        // Valor padrão: 1x vida útil máxima
-        sliderPeriodoAnaliseInit.value = vidaUtilMaxima.toString();
-        inputPeriodoAnaliseInit.value = vidaUtilMaxima.toString();
-        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPeriodoAnaliseInit);
-    }
-    
-    // Sincronizar preço bateria por kWh com valor padrão baseado no tipo de bateria e idioma
-    const sliderPrecoBateriaKWhInit = document.getElementById('sliderPrecoBateriaKWh');
-    const inputPrecoBateriaKWhInit = document.getElementById('inputPrecoBateriaKWh');
-    const unidadePrecoBateriaKWhInit = document.getElementById('unidadePrecoBateriaKWh');
-    if (sliderPrecoBateriaKWhInit && inputPrecoBateriaKWhInit) {
-        // Obter tipo de bateria selecionado
-        const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
-        const tipoBateria = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
-        
-        // Selecionar preço baseado no tipo de bateria
-        const precosBateria = tipoBateria === 'chumbo' ? PRECO_BATERIA_KWH_CHUMBO : PRECO_BATERIA_KWH_LITIO;
-        const valorPadraoBateria = precosBateria[idiomaAtual] || precosBateria['pt-BR'];
-        
-        // Atualizar constante global para compatibilidade
-        PRECO_BATERIA_KWH[idiomaAtual] = valorPadraoBateria;
-        
-        sliderPrecoBateriaKWhInit.value = Math.round(valorPadraoBateria).toString();
-        inputPrecoBateriaKWhInit.value = Math.round(valorPadraoBateria).toString();
-        if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPrecoBateriaKWhInit);
-    }
-    if (unidadePrecoBateriaKWhInit) {
-        unidadePrecoBateriaKWhInit.textContent = idiomaAtual === 'it-IT' ? '€' : 'R$';
-    }
-    
-    // Atualizar notas de valores padrão
-    atualizarNotasValoresPadrao();
-    
-    // 6. Inicializar
-    trocarIdioma(idiomaAtual);
-    
-    // 7. Atualizar especificações das baterias nos botões
-    atualizarEspecsBaterias();
-    
-    // 8. Calcular valores iniciais
-    // Usa setTimeout para garantir que todos os elementos estejam completamente carregados
-    setTimeout(() => {
+        if (unidadePrecoKWh) unidadePrecoKWh.textContent = idiomaAtual === 'it-IT' ? '€' : 'R$';
+
+        const sliderPrecoBateriaKWh = document.getElementById('sliderPrecoBateriaKWh');
+        const inputPrecoBateriaKWh = document.getElementById('inputPrecoBateriaKWh');
+        const unidadePrecoBateriaKWh = document.getElementById('unidadePrecoBateriaKWh');
+        if (sliderPrecoBateriaKWh && inputPrecoBateriaKWh) {
+            const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
+            const tipoBateria = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
+            const precosBateria = tipoBateria === 'chumbo' ? PRECO_BATERIA_KWH_CHUMBO : PRECO_BATERIA_KWH_LITIO;
+            const valorPadraoBateria = precosBateria[idiomaAtual] || precosBateria['pt-BR'];
+            PRECO_BATERIA_KWH[idiomaAtual] = valorPadraoBateria;
+            sliderPrecoBateriaKWh.value = Math.round(valorPadraoBateria).toString();
+            inputPrecoBateriaKWh.value = Math.round(valorPadraoBateria).toString();
+        }
+        if (unidadePrecoBateriaKWh) unidadePrecoBateriaKWh.textContent = idiomaAtual === 'it-IT' ? '€' : 'R$';
+
         atualizarInterface();
-    }, 100);
-    
-    // 10. Garantir que os gráficos sejam atualizados após um pequeno delay
-    // para que o Chart.js seja carregado e os elementos estejam prontos
-    setTimeout(() => {
-        // Recalcula para garantir que os gráficos sejam atualizados
-        atualizarInterface();
-    }, 800);
+        atualizarFormulasMemorial(idiomaAtual);
+    }
 }
 
-// Instancia e inicializa o app
-new SolarApp('../src/i18n/solar.json');
+new SolarApp().inicializar();
 // Atualiza as fórmulas do memorial de cálculo conforme o idioma selecionado
 function atualizarFormulasMemorial(idioma) {
     // Lista de todas as chaves de fórmulas
@@ -3009,8 +2296,9 @@ function atualizarFormulasMemorial(idioma) {
     // Atualiza cada fórmula
     chavesFormulas.forEach(chave => {
         const elemento = document.getElementById(chave);
-        if (elemento && traducoes[idioma] && traducoes[idioma][chave]) {
-            elemento.textContent = traducoes[idioma][chave];
+        if (elemento) {
+            const textoFormula = i18n.t(chave);
+            if (textoFormula) elemento.textContent = textoFormula;
         }
     });
 }
@@ -3106,7 +2394,7 @@ function atualizarMemorialComValores() {
     const correnteMPPT = capacidadeMPPTIntegrado;
     
     // Formatação
-    const moeda = traducoes[idiomaAtual]?.['moeda'] || 'R$';
+    const moeda = i18n.t('moeda') || 'R$';
     const formatarNumero = (num) => num.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 2, useGrouping: true });
     const formatarMoeda = (num) => num.toLocaleString(idiomaAtual, { style: 'currency', currency: moeda === 'R$' ? 'BRL' : 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
     

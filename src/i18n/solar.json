@@ -112,7 +112,11 @@
     "graficos-title": "📊 Visualizações",
     "grafico-amortizacao-title": "Análise de Amortização do Sistema",
     "grafico-sazonalidade-title": "Sazonalidade de Geração Solar",
-    "erro-inicializacao": "Erro ao inicializar o app. Por favor, recarregue a página."
+    "erro-inicializacao": "Erro ao inicializar o app. Por favor, recarregue a página.",
+    "aria-lang-pt": "Alterar idioma para Português",
+    "aria-lang-it": "Alterar idioma para Italiano",
+    "title-lang-pt": "Português",
+    "title-lang-it": "Italiano"
   },
   "it-IT": {
     "app-title": "🔋 Energia Solare",
@@ -227,7 +231,11 @@
     "graficos-title": "📊 Visualizzazioni",
     "grafico-amortizacao-title": "Analisi di Ammortamento del Sistema",
     "grafico-sazonalidade-title": "Stagionalità della Generazione Solare",
-    "erro-inicializacao": "Errore nell'inizializzazione dell'app. Ricarica la pagina."
+    "erro-inicializacao": "Errore nell'inizializzazione dell'app. Ricarica la pagina.",
+    "aria-lang-pt": "Cambia lingua in portoghese",
+    "aria-lang-it": "Cambia lingua in italiano",
+    "title-lang-pt": "Portoghese",
+    "title-lang-it": "Italiano"
   }
 }
 

@@ -1,4 +1,3 @@
-// ajustarValorPadrao é carregado via script tag no HTML
 // CONFIGURAÇÕES SOLAR - SCRIPT
 // Permite customizar valores de componentes (UI de administração)
 //
@@ -12,10 +11,13 @@
 //    para serem usados pela calculadora principal (solar.html).
 //  - restaurarPadroes(): remove a configuração salva, voltando aos valores padrão.
 //
-//  - O arquivo aceita defaults do SiteConfig (se presente) para manter
-//    consistência com configurações globais do site.
 //  - Capacidade é medida em kWh, mas a UI e calculadora aceitam conversões
 //    de Ah para kWh quando necessário.
+
+import { App } from '../src/core/app.js';
+import { i18n } from '../src/core/i18n.js';
+
+let idiomaAtual = 'pt-BR';
 // Valores padrão
 const VALORES_PADRAO = {
     potenciaPainel: 400,
@@ -31,155 +33,13 @@ const VALORES_PADRAO = {
     precoLitio: 12000,
     pesoLitio: 60
 };
-// Permite que defaults do SiteConfig sobrescrevam alguns valores padrão de baterias
-const BATTERY_DEFAULTS = (typeof SiteConfig !== 'undefined' && SiteConfig.DEFAULTS && SiteConfig.DEFAULTS.BATTERY) ? SiteConfig.DEFAULTS.BATTERY : { DEFAULT_LFP_KWH: 4.8, DEFAULT_AGM_KWH: 1.2, LFP_MAX_KG: 180, AGM_MAX_KG: 180 };
-// Idioma atual (herda do localStorage)
-const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido', SOLAR_CONFIG_KEY: 'configSolar' };
-const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { HOME_BUTTON: '.home-button-fixed', LANG_BTN: '.lang-btn', APP_ICON: '.app-icon', ARROW_BTN: '.arrow-btn', BUTTON_ACTION: '.btn-acao' };
-let idiomaAtual = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || (typeof SiteConfig !== 'undefined' ? SiteConfig.DEFAULTS.language : 'pt-BR');
-const THEME_STORAGE_KEY = 'engnata_theme_mode';
-const THEME_TOGGLE_ID = 'themeToggleGlobal';
-// DICIONÁRIO DE TRADUÇÃO
-const traducoes = {
-    'pt-BR': {
-        'config-title': '⚙️ Configurações',
-        'config-subtitle': 'Valores de Referência 2024',
-        'config-ref-title': '📋 Valores de Referência (Brasil 2024)',
-        'config-ref-painel': 'Painel Solar 400-450W: R$ 1.200',
-        'config-ref-bat-agm': 'Bateria AGM 12V 100Ah (~1.2 kWh): R$ 420',
-        'config-ref-bat-litio': 'Bateria Lítio 48V 100Ah (~4.8 kWh): R$ 12.000',
-        'config-ref-inv1': 'Inversor Off-Grid 1kW: R$ 1.100',
-        'config-ref-inv2': 'Inversor Off-Grid 2kW: R$ 1.550',
-        'config-ref-inv5': 'Inversor Off-Grid 5kW: R$ 2.500',
-        'config-paineis': 'Painéis Solares',
-        'config-potencia-painel': 'Potência',
-        'config-preco-painel': 'Preço por Painel',
-        'config-bat-agm': 'Bateria Chumbo-Ácido (AGM)',
-        'config-bat-litio': 'Bateria Lítio (LiFePO₄)',
-        'config-tensao': 'Tensão',
-        'config-capacidade': 'Capacidade',
-        'config-preco-bat': 'Preço',
-        'config-peso-bat': 'Peso',
-        'config-salvar': '💾 Salvar e Voltar',
-        'config-resetar': '🔄 Restaurar Padrões',
-        'footer': 'Solar - Engenharia NATA @ 2026',
-        'moeda': 'R$',
-        'aria-home': 'Voltar para a tela inicial',
-        'title-back': 'Voltar',
-        'aria-back-solar': 'Voltar para configurações do Solar'
-    },
-    'it-IT': {
-        'config-title': '⚙️ Configurazioni',
-        'config-subtitle': 'Valori di Riferimento 2024',
-        'config-ref-title': '📋 Valori di Riferimento (Italia 2024)',
-        'config-ref-painel': 'Pannello Solare 400-450W: € 194',
-        'config-ref-bat-agm': 'Batteria AGM 12V 100Ah (~1.2 kWh): € 68',
-        'config-ref-bat-litio': 'Batteria Litio 48V 100Ah (~4.8 kWh): € 1.940',
-        'config-ref-inv1': 'Inverter Off-Grid 1kW: € 178',
-        'config-ref-inv2': 'Inverter Off-Grid 2kW: € 250',
-        'config-ref-inv5': 'Inverter Off-Grid 5kW: € 404',
-        'config-paineis': 'Pannelli Solari',
-        'config-potencia-painel': 'Potenza',
-        'config-preco-painel': 'Prezzo per Pannello',
-        'config-bat-agm': 'Batteria Piombo-Acido (AGM)',
-        'config-bat-litio': 'Batteria Litio (LiFePO₄)',
-        'config-tensao': 'Tensione',
-        'config-capacidade': 'Capacità',
-        'config-preco-bat': 'Prezzo',
-        'config-peso-bat': 'Peso',
-        'config-salvar': '💾 Salva e Torna',
-        'config-resetar': '🔄 Ripristina Predefiniti',
-        'footer': 'Solare - Engenharia NATA @ 2026',
-        'moeda': '€',
-        'aria-home': 'Torna alla schermata iniziale',
-        'title-back': 'Indietro',
-        'aria-back-solar': 'Torna alle impostazioni del Solare'
-    }
-};
+// Limites máximos das baterias
+const BATTERY_DEFAULTS = { DEFAULT_LFP_KWH: 4.8, DEFAULT_AGM_KWH: 1.2, LFP_MAX_KG: 180, AGM_MAX_KG: 180 };
 
-function obterTextoBotaoTema(theme) {
-    const isItaliano = (idiomaAtual || '').startsWith('it');
-    const paraEscuro = theme !== 'dark';
-    if (isItaliano) {
-        return paraEscuro ? 'Attiva tema scuro' : 'Attiva tema chiaro';
-    }
-    return paraEscuro ? 'Ativar tema escuro' : 'Ativar tema claro';
-}
-
-function atualizarBotaoTemaConfig(theme) {
-    const btn = document.getElementById(THEME_TOGGLE_ID);
-    if (!btn) return;
-    btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
-    btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
-    const texto = obterTextoBotaoTema(theme);
-    btn.setAttribute('aria-label', texto);
-    btn.title = texto;
-}
-
-function aplicarTemaConfig(theme) {
-    const tema = theme === 'dark' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', tema);
-    localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(tema));
-    atualizarBotaoTemaConfig(tema);
-}
-
-function alternarTemaConfig() {
-    const atual = document.documentElement.getAttribute('data-theme') || 'light';
-    const proximo = atual === 'dark' ? 'light' : 'dark';
-    aplicarTemaConfig(proximo);
-}
-
-function inicializarTemaConfig() {
-    const temaSalvoBruto = localStorage.getItem(THEME_STORAGE_KEY);
-    const temaSalvo = temaSalvoBruto ? JSON.parse(temaSalvoBruto) : 'light';
-    document.documentElement.setAttribute('data-theme', temaSalvo === 'dark' ? 'dark' : 'light');
-
-    if (!document.getElementById(THEME_TOGGLE_ID)) {
-        const btn = document.createElement('button');
-        btn.id = THEME_TOGGLE_ID;
-        btn.type = 'button';
-        btn.className = 'theme-toggle-btn';
-        btn.addEventListener('click', alternarTemaConfig);
-        document.body.appendChild(btn);
-    }
-
-    atualizarBotaoTemaConfig(document.documentElement.getAttribute('data-theme') || 'light');
-}
 // FUNÇÕES DE INTERFACE
 
-function trocarIdioma(idioma) {
-    idiomaAtual = idioma;
-    // Persiste a escolha de idioma para todo o portfólio (centralized key)
-    localStorage.setItem(SITE_LS.LANGUAGE_KEY, idioma);
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const chave = el.getAttribute('data-i18n');
-        if (traducoes[idioma] && traducoes[idioma][chave]) {
-            el.textContent = traducoes[idioma][chave];
-        }
-    });
-
-    document.querySelectorAll('[data-i18n-title]').forEach(el => {
-        const chave = el.getAttribute('data-i18n-title');
-        if (traducoes[idioma] && traducoes[idioma][chave]) {
-            el.setAttribute('title', traducoes[idioma][chave]);
-        }
-    });
-
-    document.querySelectorAll('[data-i18n-aria]').forEach(el => {
-        const chave = el.getAttribute('data-i18n-aria');
-        if (traducoes[idioma] && traducoes[idioma][chave]) {
-            el.setAttribute('aria-label', traducoes[idioma][chave]);
-        }
-    });
-    atualizarDisplays();
-
-    // Ajusta aria-label do botão home para o idioma selecionado (acessibilidade)
-    const homeLabel = traducoes[idioma]?.['aria-home'] || 'Home';
-    document.querySelectorAll(SITE_SEL.HOME_BUTTON).forEach(el => el.setAttribute('aria-label', homeLabel));
-}
-
 function atualizarDisplays() {
-    const moeda = traducoes[idiomaAtual]?.['moeda'] || 'R$';
+    const moeda = i18n.t('moeda') || 'R$';
     
     // Painéis
     const potenciaPainel = document.getElementById('sliderPotenciaPainel').value;
@@ -209,11 +69,21 @@ function atualizarDisplays() {
 }
 
 function ajustarValor(targetId, step) {
-    ajustarValorPadrao(targetId, step, { onInput: atualizarDisplays });
+    const slider = document.getElementById(targetId);
+    if (!slider) return;
+    const min = parseFloat(slider.min) || 0;
+    const max = parseFloat(slider.max) || 100;
+    const stepAttr = parseFloat(slider.step) || 1;
+    let valor = parseFloat(slider.value);
+    if (isNaN(valor)) valor = min;
+    valor = Math.round(Math.max(min, Math.min(max, valor + step)) / stepAttr) * stepAttr;
+    slider.value = valor;
+    slider.dispatchEvent(new Event('input', { bubbles: true }));
+    atualizarDisplays();
 }
 
 function carregarValores() {
-    const configSalva = localStorage.getItem(SITE_LS.SOLAR_CONFIG_KEY);
+    const configSalva = localStorage.getItem('configSolar');
     const config = configSalva ? JSON.parse(configSalva) : VALORES_PADRAO;
     
     // Aplicar valores aos sliders
@@ -247,55 +117,60 @@ function salvarValores() {
         pesoLitio: parseInt(document.getElementById('sliderPesoLitio').value)
     };
     
-    localStorage.setItem(SITE_LS.SOLAR_CONFIG_KEY, JSON.stringify(config));
+    localStorage.setItem('configSolar', JSON.stringify(config));
     window.location.href = 'solar.html';
 }
 
 function restaurarPadroes() {
-    localStorage.removeItem(SITE_LS.SOLAR_CONFIG_KEY);
+    localStorage.removeItem('configSolar');
     carregarValores();
 }
-// EVENT LISTENERS
 
-document.addEventListener('DOMContentLoaded', () => {
-    inicializarTemaConfig();
+// ============================================
+// CLASSE PRINCIPAL
+// ============================================
 
-    // Carregar idioma e valores salvos
-    trocarIdioma(idiomaAtual);
-    carregarValores();
-    // Apply centralized battery max limits from SiteConfig if available
-    const batteryDefaults = (typeof SiteConfig !== 'undefined' && SiteConfig.DEFAULTS && SiteConfig.DEFAULTS.BATTERY) ? SiteConfig.DEFAULTS.BATTERY : { LFP_MAX_KG: 180, AGM_MAX_KG: 180, DEFAULT_LFP_KWH: 4.8, DEFAULT_AGM_KWH: 1.2 };
-    const sPesoAGM = document.getElementById('sliderPesoAGM');
-    const sPesoLitio = document.getElementById('sliderPesoLitio');
-    if (sPesoAGM) sPesoAGM.max = batteryDefaults.AGM_MAX_KG;
-    if (sPesoLitio) sPesoLitio.max = batteryDefaults.LFP_MAX_KG;
-    
-    // Listeners para todos os sliders
-    const sliders = document.querySelectorAll('input[type="range"]');
-    sliders.forEach(slider => {
-        slider.addEventListener('input', atualizarDisplays);
-    });
-    
-    // Listeners para botões +/- - usa função global com aceleração exponencial
-    if (typeof configurarBotoesSliderComAceleracao === 'function') {
-        // Usa função de ajuste local
-        function ajustarValorSolarConfig(targetId, step) {
-            ajustarValor(targetId, step);
-        }
-        configurarBotoesSliderComAceleracao(SITE_SEL.ARROW_BTN, ajustarValorSolarConfig);
-    } else {
-        // Fallback para código antigo se a função global não estiver disponível
-        document.querySelectorAll(SITE_SEL.ARROW_BTN).forEach(btn => {
+class ConfigSolarApp extends App {
+    constructor() {
+        super({
+            appName: 'solar-config',
+            callbacks: {
+                aoInicializar: () => this.configurar(),
+                aoTrocarIdioma: () => this.atualizarAposTrocaIdioma()
+            }
+        });
+    }
+
+    atualizarAposTrocaIdioma() {
+        idiomaAtual = i18n.obterIdiomaAtual();
+        atualizarDisplays();
+    }
+
+    configurar() {
+        const sPesoAGM = document.getElementById('sliderPesoAGM');
+        const sPesoLitio = document.getElementById('sliderPesoLitio');
+        if (sPesoAGM) sPesoAGM.max = BATTERY_DEFAULTS.AGM_MAX_KG;
+        if (sPesoLitio) sPesoLitio.max = BATTERY_DEFAULTS.LFP_MAX_KG;
+
+        carregarValores();
+
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            slider.addEventListener('input', atualizarDisplays);
+        });
+
+        document.querySelectorAll('.arrow-btn').forEach(btn => {
             const targetId = btn.getAttribute('data-target');
             const step = parseFloat(btn.getAttribute('data-step'));
             btn.addEventListener('click', () => ajustarValor(targetId, step));
         });
+
+        const btnSalvar = document.getElementById('btnSalvar');
+        if (btnSalvar) btnSalvar.addEventListener('click', salvarValores);
+
+        const btnResetar = document.getElementById('btnResetar');
+        if (btnResetar) btnResetar.addEventListener('click', restaurarPadroes);
     }
-    
-    // Botão Salvar
-    document.getElementById('btnSalvar').addEventListener('click', salvarValores);
-    
-    // Botão Restaurar
-    document.getElementById('btnResetar').addEventListener('click', restaurarPadroes);
-});
+}
+
+new ConfigSolarApp().inicializar();
 

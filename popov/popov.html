@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- App privado (acesso via Tailscale) -->
+    <!-- App privado (chat com backend local via tunnel HTTPS) -->
     <meta name="robots" content="noindex, nofollow, noarchive">
 
     <!-- Meta tags para DESABILITAR cache - sempre carrega arquivos atualizados -->
@@ -14,20 +14,20 @@
 
     <!-- CSP local do app (pode ser reforçada/ajustada via popov/.htaccess) -->
     <!-- Nota: se o servidor aplicar CSP por header, esta meta NÃO substitui o header. -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self'; frame-src https: http:; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https: http://localhost:8000 http://127.0.0.1:8000; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;">
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
     <link rel="apple-touch-icon" href="../favicon.svg">
 
     <!-- SEO Meta Tags -->
-    <title>Popov IA (Privado) | Engenharia NATA</title>
-    <meta name="description" content="Popov IA - acesso privado via Tailscale.">
+    <title>Popov IA (Local) | Engenharia NATA</title>
+    <meta name="description" content="Popov IA com Ollama local e streaming seguro via FastAPI.">
     <meta name="author" content="Engenharia NATA">
 
     <!-- Estilos compartilhados -->
-    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.2">
-    <link rel="stylesheet" href="popov-styles.css?v=1.0.2">
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.3">
+    <link rel="stylesheet" href="popov-styles.css?v=1.0.3">
 </head>
 <body>
     <!-- ========================================== -->
@@ -46,65 +46,59 @@
 
     <div class="container popov-container">
         <header class="popov-header">
-            <h1 data-i18n="app.title">🤖 Popov IA</h1>
-            <p class="subtitulo" data-i18n="app.subtitle">Acesso privado via Tailscale</p>
+            <h1 data-i18n="app.title">Popov IA Local</h1>
+            <p class="subtitulo" data-i18n="app.subtitle">Ollama gpt-oss:20b com streaming seguro</p>
         </header>
 
         <section class="card popov-card">
             <div class="popov-card-header">
-                <h2 class="popov-card-title" data-i18n="embed.title">Abrir Popov IA</h2>
+                <h2 class="popov-card-title" data-i18n="chat.title">Conversa</h2>
 
                 <div class="popov-actions">
-                    <a id="btnAbrirNovaAba" class="btn btn-primary" href="#" target="_blank" rel="noreferrer noopener" data-i18n="buttons.openNewTab">
-                        Abrir em nova aba
-                    </a>
-                    <button id="btnConfigurarUrl" class="btn btn-secondary" type="button" data-i18n="buttons.configureUrl">
-                        Configurar URL
+                    <button id="btnConfigurarApi" class="btn btn-secondary" type="button" data-i18n="buttons.configureApi">
+                        Configurar API
+                    </button>
+                    <button id="btnLimparConversa" class="btn btn-secondary" type="button" data-i18n="buttons.clearConversation">
+                        Limpar conversa
                     </button>
                 </div>
             </div>
 
-            <p class="popov-hint" data-i18n="embed.hint">
-                Se o iframe não carregar (bloqueio por segurança ou falta de acesso), use “Abrir em nova aba”.
-            </p>
-
             <div id="statusBox" class="status-box" role="status" aria-live="polite">
-                <strong class="status-title" id="statusTitle" data-i18n="status.waitingTitle">Aguardando configuração…</strong>
+                <strong class="status-title" id="statusTitle" data-i18n="status.waitingTitle">Aguardando configuração...</strong>
                 <div class="status-text" id="statusText" data-i18n="status.waitingText">
-                    Defina a URL do Popov IA (Tailscale Serve) para exibir aqui.
+                    Defina URL da API e token Bearer para iniciar.
                 </div>
             </div>
 
-            <div class="iframe-shell">
-                <div id="iframeLoading" class="iframe-loading" aria-hidden="true">
-                    <div class="spinner" aria-hidden="true"></div>
-                    <div class="iframe-loading-text" data-i18n="status.loading">Carregando…</div>
+            <div id="chatContainer" class="chat-shell" aria-live="polite" aria-label="Chat Popov IA"></div>
+
+            <form id="chatForm" class="chat-form" autocomplete="off">
+                <div class="model-selector-row">
+                    <label for="modelSelect" class="model-select-label" data-i18n="chat.modelLabel">Modelo</label>
+                    <select id="modelSelect" class="model-select" aria-label="Selecionar modelo">
+                        <option value="" data-i18n="chat.modelDefault">Padrao (backend)</option>
+                        <option value="hunter-alpha" data-i18n="chat.modelHunter">Hunter-Alpha</option>
+                        <option value="healer-alpha" data-i18n="chat.modelHealer">Healer-Alpha</option>
+                    </select>
                 </div>
-                <iframe
-                    id="popovFrame"
-                    title="Popov IA"
-                    loading="lazy"
-                    referrerpolicy="no-referrer"
-                    sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin"
-                ></iframe>
-            </div>
+                <label class="visually-hidden" for="chatInput" data-i18n="chat.inputLabel">Mensagem</label>
+                <textarea id="chatInput" rows="3" maxlength="4000" data-i18n-placeholder="chat.inputPlaceholder" placeholder="Digite sua mensagem"></textarea>
+                <div class="chat-actions">
+                    <button id="btnParar" class="btn btn-secondary" type="button" data-i18n="buttons.stop" disabled>
+                        Parar
+                    </button>
+                    <button id="btnEnviar" class="btn btn-primary" type="submit" data-i18n="buttons.send">
+                        Enviar
+                    </button>
+                </div>
+            </form>
         </section>
 
-        <section class="card popov-instructions">
-            <h2 data-i18n="instructions.title">Como acessar (Tailscale)</h2>
-            <ol class="instructions-list">
-                <li data-i18n="instructions.step1">Entre na sua tailnet (Tailscale) e verifique se você tem permissão de acesso.</li>
-                <li data-i18n="instructions.step2">Abra o Popov IA pela URL interna (recomendado: Tailscale Serve sem Funnel).</li>
-                <li data-i18n="instructions.step3">Cole essa URL em “Configurar URL” para carregar o app aqui.</li>
-            </ol>
-            <p class="instructions-footnote" data-i18n="instructions.note">
-                Se o servidor do Popov IA bloquear embeds (X-Frame-Options/CSP), o iframe pode não funcionar — nesse caso, use “Abrir em nova aba”.
-            </p>
-        </section>
     </div>
 
     <footer>
-        <p data-i18n="footer.texto">Popov IA (Privado) - Engenharia NATA @ 2026</p>
+        <p data-i18n="footer.texto">Popov IA Local - Engenharia NATA @ 2026</p>
     </footer>
 
     <!-- Botão de retorno à tela inicial -->
@@ -114,7 +108,7 @@
         </svg>
     </a>
 
-    <script type="module" src="popov-script.js?v=1.0.2"></script>
+    <script type="module" src="popov-script.js?v=1.0.5"></script>
 </body>
 </html>
 

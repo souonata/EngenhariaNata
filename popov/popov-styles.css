@@ -1,5 +1,5 @@
 /* popov-styles.css
- * App Popov IA (privado via Tailscale)
+ * App Popov IA local (frontend do chat)
  * Mobile-first, sem frameworks
  */
 
@@ -73,6 +73,10 @@
     margin-bottom: 6px;
 }
 
+.status-text {
+    display: none;
+}
+
 .status-box.is-success {
     border-color: rgba(76, 175, 80, 0.35);
     background: rgba(76, 175, 80, 0.08);
@@ -105,57 +109,139 @@ html[data-theme="dark"] .status-box {
     background: rgba(255, 255, 255, 0.06);
 }
 
-.iframe-shell {
+.chat-shell {
     position: relative;
     width: 100%;
     border-radius: 14px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.03);
+    min-height: 360px;
+    max-height: 62vh;
+    overflow-y: auto;
+    padding: 16px;
 }
 
-/* Altura pensada para desktop; no mobile reduz */
-#popovFrame {
-    width: 100%;
-    height: 74vh;
-    min-height: 520px;
-    border: 0;
-    display: block;
-    background: transparent;
+.chat-message {
+    margin-bottom: 12px;
+    display: grid;
+    gap: 6px;
 }
 
-.iframe-loading {
-    position: absolute;
-    inset: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+.chat-message-role {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.chat-message-content {
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.chat-message-user .chat-message-content {
+    background: rgba(0, 195, 255, 0.12);
+}
+
+.chat-message-assistant .chat-message-content {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.chat-message-system .chat-message-content {
+    background: rgba(255, 193, 7, 0.12);
+    border-color: rgba(255, 193, 7, 0.2);
+}
+
+.chat-form {
+    margin-top: 12px;
+    display: grid;
     gap: 10px;
-    background: rgba(0, 0, 0, 0.45);
-    z-index: 2;
 }
 
-.iframe-loading.is-visible {
+.model-selector-row {
     display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
-.spinner {
-    width: 28px;
-    height: 28px;
-    border-radius: 999px;
-    border: 3px solid rgba(255, 255, 255, 0.25);
-    border-top-color: rgba(255, 255, 255, 0.9);
-    animation: spin 0.9s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-.iframe-loading-text {
-    opacity: 0.95;
+.model-select-label {
     font-weight: 600;
+    opacity: 0.9;
+}
+
+.model-select {
+    min-width: 220px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.04);
+    color: inherit;
+    padding: 8px 10px;
+    font: inherit;
+}
+
+.model-select:focus-visible {
+    outline: 2px solid rgba(0, 195, 255, 0.6);
+    outline-offset: 1px;
+}
+
+#chatInput {
+    width: 100%;
+    resize: vertical;
+    min-height: 86px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.03);
+    color: inherit;
+    padding: 10px 12px;
+    font: inherit;
+}
+
+#chatInput:focus-visible {
+    outline: 2px solid rgba(0, 195, 255, 0.6);
+    outline-offset: 1px;
+}
+
+.chat-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn[disabled],
+.btn[aria-disabled="true"] {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+html[data-theme="dark"] #chatInput {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+html[data-theme="dark"] .model-select {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.22);
 }
 
 .popov-instructions .instructions-list {
@@ -170,9 +256,27 @@ html[data-theme="dark"] .status-box {
 }
 
 @media (max-width: 640px) {
-    #popovFrame {
-        height: 68vh;
-        min-height: 420px;
+    .chat-shell {
+        min-height: 310px;
+        max-height: 56vh;
+        padding: 12px;
+    }
+
+    .model-selector-row {
+        align-items: stretch;
+    }
+
+    .model-select {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .chat-actions {
+        justify-content: stretch;
+    }
+
+    .chat-actions .btn {
+        flex: 1;
     }
 }
 

@@ -1,44 +1,73 @@
 {
   "pt-BR": {
     "app": {
-      "title": "🤖 Popov IA",
-      "subtitle": "Acesso privado via Tailscale"
+      "title": "Popov IA Local",
+      "subtitle": "Ollama gpt-oss:20b com streaming seguro"
     },
-    "embed": {
-      "title": "Abrir Popov IA",
-      "hint": "Se o iframe não carregar (bloqueio por segurança ou falta de acesso), use “Abrir em nova aba”."
+    "chat": {
+      "title": "Conversa",
+      "hint": "Este chat envia perguntas para seu backend FastAPI, que repassa em streaming ao Ollama local.",
+      "welcome": "Conexao pronta. Envie sua primeira pergunta.",
+      "inputLabel": "Mensagem",
+      "modelLabel": "Modelo",
+      "modelDefault": "Padrao (backend)",
+      "modelHunter": "Hunter-Alpha",
+      "modelHealer": "Healer-Alpha",
+      "inputPlaceholder": "Digite sua pergunta e use Ctrl+Enter para enviar rapido",
+      "missingConfig": "Configure a URL da API antes de enviar perguntas.",
+      "missingToken": "Configure um token Bearer valido para continuar.",
+      "stopped": "Resposta interrompida pelo usuario.",
+      "genericError": "Falha ao consultar o backend.",
+      "errorPrefix": "Erro",
+      "emptyAnswer": "O modelo nao retornou conteudo.",
+      "cleared": "Conversa limpa. Novo contexto iniciado.",
+      "configSaved": "Configuracao salva com sucesso.",
+      "roleUser": "Voce",
+      "roleAssistant": "Assistente",
+      "roleSystem": "Sistema"
     },
     "buttons": {
-      "openNewTab": "Abrir em nova aba",
-      "configureUrl": "Configurar URL"
+      "send": "Enviar",
+      "stop": "Parar",
+      "configureApi": "Configurar API",
+      "clearConversation": "Limpar conversa"
     },
     "titles": {
       "langPt": "Português",
       "langIt": "Italiano"
     },
     "status": {
-      "waitingTitle": "Aguardando configuração…",
-      "waitingText": "Defina a URL do Popov IA (Tailscale Serve) para exibir aqui.",
-      "loading": "Carregando…",
-      "loadingTitle": "Carregando…",
-      "loadingText": "Tentando abrir o Popov IA no iframe. Se não aparecer, use o botão para abrir em nova aba.",
-      "loadedTitle": "Carregado",
-      "loadedText": "Se você estiver na tailnet e o servidor permitir iframe, o Popov IA deve aparecer abaixo.",
-      "timeoutTitle": "Não carregou a tempo",
-      "timeoutText": "Pode ser falta de acesso via Tailscale ou bloqueio de iframe. Tente “Abrir em nova aba” ou confira a URL.",
-      "invalidUrl": "URL inválida. Use http(s)://..."
+      "waitingTitle": "Aguardando configuracao...",
+      "waitingText": "Defina URL da API e token Bearer para iniciar.",
+      "tokenTitle": "Token necessario",
+      "tokenText": "A URL da API foi definida, mas o token Bearer ainda nao foi informado.",
+      "readyTitle": "Configurado",
+      "readyText": "Conexao configurada. Verificando saude do backend...",
+      "onlineTitle": "Backend online",
+      "onlineText": "Pronto para conversar com o modelo gpt-oss:20b.",
+      "offlineTitle": "Backend indisponivel",
+      "offlineText": "Nao foi possivel acessar /health. Verifique FastAPI, tunnel e token.",
+      "streamingTitle": "Gerando resposta",
+      "streamingText": "O modelo esta respondendo em streaming.",
+      "stoppedTitle": "Resposta interrompida",
+      "stoppedText": "Voce pode enviar uma nova pergunta quando quiser.",
+      "errorTitle": "Falha na consulta",
+      "errorText": "Confira URL da API, token, CORS e disponibilidade do Ollama.",
+      "invalidUrl": "URL invalida. Use http(s)://...",
+      "invalidToken": "Token invalido. Informe um valor nao vazio."
     },
     "instructions": {
-      "title": "Como acessar (Tailscale)",
-      "step1": "Entre na sua tailnet (Tailscale) e verifique se você tem permissão de acesso.",
-      "step2": "Abra o Popov IA pela URL interna (recomendado: Tailscale Serve sem Funnel).",
-      "step3": "Cole essa URL em “Configurar URL” para carregar o app aqui.",
-      "note": "Se o servidor do Popov IA bloquear embeds (X-Frame-Options/CSP), o iframe pode não funcionar — nesse caso, use “Abrir em nova aba”."
+      "title": "Como conectar",
+      "step1": "Rode o Ollama local e confirme que o modelo gpt-oss:20b esta instalado.",
+      "step2": "Suba o backend FastAPI local com token Bearer e CORS restrito.",
+      "step3": "Publique a API via Cloudflare Tunnel e configure a URL no botao acima.",
+      "note": "Para seguranca, nunca exponha a API sem token. No frontend, o token fica no navegador do usuario autorizado."
     },
     "dialogs": {
-      "urlTitle": "Configurar URL",
-      "urlPrompt": "Cole a URL do Popov IA (Tailscale Serve):",
-      "urlPlaceholder": "https://popov-ia.<sua_tailnet>.ts.net"
+      "apiTitle": "Configurar API",
+      "apiPrompt": "Cole a URL base da API FastAPI (ex.: https://api-seu-tunnel.trycloudflare.com)",
+      "tokenTitle": "Token Bearer",
+      "tokenPrompt": "Cole o token Bearer para autenticar as requisicoes de chat"
     },
     "aria": {
       "langPt": "Alterar idioma para Português",
@@ -46,49 +75,78 @@
       "home": "Voltar à tela inicial"
     },
     "footer": {
-      "texto": "Popov IA (Privado) - Engenharia NATA @ 2026"
+      "texto": "Popov IA Local - Engenharia NATA @ 2026"
     }
   },
   "it-IT": {
     "app": {
-      "title": "🤖 Popov IA",
-      "subtitle": "Accesso privato via Tailscale"
+      "title": "Popov IA Locale",
+      "subtitle": "Ollama gpt-oss:20b con streaming sicuro"
     },
-    "embed": {
-      "title": "Apri Popov IA",
-      "hint": "Se l'iframe non si carica (blocco di sicurezza o mancanza di accesso), usa “Apri in una nuova scheda”."
+    "chat": {
+      "title": "Conversazione",
+      "hint": "Questa chat invia domande al tuo backend FastAPI, che inoltra lo streaming a Ollama locale.",
+      "welcome": "Connessione pronta. Invia la tua prima domanda.",
+      "inputLabel": "Messaggio",
+      "modelLabel": "Modello",
+      "modelDefault": "Predefinito (backend)",
+      "modelHunter": "Hunter-Alpha",
+      "modelHealer": "Healer-Alpha",
+      "inputPlaceholder": "Scrivi la domanda e usa Ctrl+Invio per invio rapido",
+      "missingConfig": "Configura prima l'URL API.",
+      "missingToken": "Configura un token Bearer valido per continuare.",
+      "stopped": "Risposta interrotta dall'utente.",
+      "genericError": "Errore durante la chiamata al backend.",
+      "errorPrefix": "Errore",
+      "emptyAnswer": "Il modello non ha restituito contenuto.",
+      "cleared": "Conversazione pulita. Nuovo contesto avviato.",
+      "configSaved": "Configurazione salvata con successo.",
+      "roleUser": "Tu",
+      "roleAssistant": "Assistente",
+      "roleSystem": "Sistema"
     },
     "buttons": {
-      "openNewTab": "Apri in una nuova scheda",
-      "configureUrl": "Configura URL"
+      "send": "Invia",
+      "stop": "Ferma",
+      "configureApi": "Configura API",
+      "clearConversation": "Pulisci conversazione"
     },
     "titles": {
       "langPt": "Portoghese",
       "langIt": "Italiano"
     },
     "status": {
-      "waitingTitle": "In attesa di configurazione…",
-      "waitingText": "Imposta l'URL di Popov IA (Tailscale Serve) per mostrarlo qui.",
-      "loading": "Caricamento…",
-      "loadingTitle": "Caricamento…",
-      "loadingText": "Tentativo di aprire Popov IA nell'iframe. Se non appare, usa il pulsante per aprire in una nuova scheda.",
-      "loadedTitle": "Caricato",
-      "loadedText": "Se sei nella tailnet e il server consente iframe, Popov IA dovrebbe apparire qui sotto.",
-      "timeoutTitle": "Non si è caricato in tempo",
-      "timeoutText": "Potrebbe essere mancanza di accesso via Tailscale o blocco dell'iframe. Prova “Apri in una nuova scheda” o controlla l'URL.",
-      "invalidUrl": "URL non valido. Usa http(s)://..."
+      "waitingTitle": "In attesa di configurazione...",
+      "waitingText": "Imposta URL API e token Bearer per iniziare.",
+      "tokenTitle": "Token necessario",
+      "tokenText": "L'URL API e impostato, ma manca ancora il token Bearer.",
+      "readyTitle": "Configurato",
+      "readyText": "Connessione configurata. Verifica stato backend...",
+      "onlineTitle": "Backend online",
+      "onlineText": "Pronto per parlare con il modello gpt-oss:20b.",
+      "offlineTitle": "Backend non disponibile",
+      "offlineText": "Impossibile raggiungere /health. Verifica FastAPI, tunnel e token.",
+      "streamingTitle": "Risposta in corso",
+      "streamingText": "Il modello sta rispondendo in streaming.",
+      "stoppedTitle": "Risposta interrotta",
+      "stoppedText": "Puoi inviare una nuova domanda in qualsiasi momento.",
+      "errorTitle": "Errore di richiesta",
+      "errorText": "Controlla URL API, token, CORS e disponibilita di Ollama.",
+      "invalidUrl": "URL non valido. Usa http(s)://...",
+      "invalidToken": "Token non valido. Inserisci un valore non vuoto."
     },
     "instructions": {
-      "title": "Come accedere (Tailscale)",
-      "step1": "Accedi alla tua tailnet (Tailscale) e verifica di avere i permessi di accesso.",
-      "step2": "Apri Popov IA tramite l'URL interno (consigliato: Tailscale Serve senza Funnel).",
-      "step3": "Incolla quell'URL in “Configura URL” per caricare l'app qui.",
-      "note": "Se il server di Popov IA blocca gli embed (X-Frame-Options/CSP), l'iframe potrebbe non funzionare — in tal caso usa “Apri in una nuova scheda”."
+      "title": "Come collegare",
+      "step1": "Avvia Ollama locale e verifica che gpt-oss:20b sia installato.",
+      "step2": "Avvia il backend FastAPI locale con token Bearer e CORS limitato.",
+      "step3": "Pubblica la API via Cloudflare Tunnel e configura l'URL nel pulsante sopra.",
+      "note": "Per sicurezza, non esporre mai la API senza token. Nel frontend il token resta nel browser dell'utente autorizzato."
     },
     "dialogs": {
-      "urlTitle": "Configura URL",
-      "urlPrompt": "Incolla l'URL di Popov IA (Tailscale Serve):",
-      "urlPlaceholder": "https://popov-ia.<tua_tailnet>.ts.net"
+      "apiTitle": "Configura API",
+      "apiPrompt": "Incolla l'URL base della API FastAPI (es.: https://api-tuo-tunnel.trycloudflare.com)",
+      "tokenTitle": "Token Bearer",
+      "tokenPrompt": "Incolla il token Bearer per autenticare le richieste chat"
     },
     "aria": {
       "langPt": "Cambia lingua in portoghese",
@@ -96,7 +154,7 @@
       "home": "Torna alla schermata iniziale"
     },
     "footer": {
-      "texto": "Popov IA (Privato) - Engenharia NATA @ 2026"
+      "texto": "Popov IA Locale - Engenharia NATA @ 2026"
     }
   }
 }
