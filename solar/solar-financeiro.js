@@ -18,8 +18,9 @@ export const AUMENTO_ANUAL_ENERGIA = {
 
 /**
  * Formata moeda com vírgula como separador decimal
+ * Nota: moeda aqui é o símbolo (€ ou R$), não o código
  */
-export function formatarMoedaComVirgula(valor, moeda, casasDecimais = 2) {
+function formatarMoedaComVirgula(valor, moeda, casasDecimais = 2) {
     if (isNaN(valor) || valor === null || valor === undefined) return `${moeda} 0,00`;
     return `${moeda} ${valor.toLocaleString('pt-BR', {
         minimumFractionDigits: casasDecimais,

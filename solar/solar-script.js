@@ -337,12 +337,7 @@ function atualizarArranjoPaineis(qtdPaineis, tensaoBanco, potenciaInversor, pain
         ? `Tensão máxima da stringa: ${tensaoMaxString} Vdc. Corrente máxima do arranjo: ${correnteMaxArray} A.`
         : `Tensione massima della stringa: ${tensaoMaxString} Vdc. Corrente massima dell'array: ${correnteMaxArray} A.`;
 }
-// Função formatarNumeroDecimal agora está em assets/js/site-config.js
-// Formata número decimal sempre com vírgula como separador decimal
-function formatarDecimalComVirgula(valor, casasDecimais = 2) {
-    if (isNaN(valor) || valor === null || valor === undefined) return '0,00';
-    return valor.toFixed(casasDecimais).replace('.', ',');
-}
+// Função formatarMoedaComVirgula agora é importada de ../src/utils/formatters.js
 // Formata moeda sempre com vírgula como separador decimal
 function formatarMoedaComVirgula(valor, moeda, casasDecimais = 2) {
     if (isNaN(valor) || valor === null || valor === undefined) return `${moeda} 0,00`;
