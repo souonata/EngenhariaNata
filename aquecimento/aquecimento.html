@@ -343,7 +343,7 @@
                     </label>
                 </div>
                 <p class="dica dica-multilinha" data-i18n="dica-classe-energetica" style="text-align: center;">
-                    <span style="font-size: 0.85em; color: #666;">* Valores em kWh/m²·ano</span>
+                    <span style="font-size: 0.85em; color: var(--text-secondary, #666);">* Valores em kWh/m²·ano</span>
                 </p>
             </div>
 
@@ -572,7 +572,7 @@
                 
                 <!-- Detalhamento dos custos -->
                 <div style="margin-top: 15px;">
-                    <h4 style="margin-bottom: 10px; color: #666; font-size: 0.95rem; font-weight: 600;" data-i18n="custos-detalhamento">Detalhamento:</h4>
+                    <h4 style="margin-bottom: 10px; color: var(--text-secondary, #666); font-size: 0.95rem; font-weight: 600;" data-i18n="custos-detalhamento">Detalhamento:</h4>
                     
                     <div class="resultado-item">
                         <span class="label-resultado" data-i18n="custo-paineis">Custo dos Painéis:</span>
@@ -633,7 +633,7 @@
             <div class="resultado-item">
                 <span class="label-resultado" data-i18n="resultado-potencia-casa">Potência Necessária para Aquecimento:</span>
                 <span class="valor-resultado" id="potenciaCasa">-</span>
-                <div class="dica-texto" data-i18n="dica-potencia-casa" style="font-size: 0.85em; color: #666; margin-top: 4px;"></div>
+                <div class="dica-texto" data-i18n="dica-potencia-casa" style="font-size: 0.85em; color: var(--text-secondary, #666); margin-top: 4px;"></div>
             </div>
 
             <div class="resultado-item" id="resultadoTermossifoes" style="display: none; flex-direction: column; align-items: flex-start;">
@@ -642,23 +642,23 @@
             </div>
 
             <!-- Seção de Gráficos -->
-            <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid var(--border-color, #e0e0e0);">
                 <h3 style="text-align: center; color: #2d9fa3ff; margin-bottom: 20px; font-size: 1.1rem;" data-i18n="graficos-title">📊 Visualizações</h3>
                 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px;">
                     <!-- Gráfico de Distribuição -->
-                    <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <div style="background: var(--surface-raised, white); padding: 15px; border-radius: 8px; box-shadow: var(--shadow-elevated, 0 2px 4px rgba(0,0,0,0.1));">
                         <canvas id="graficoDistribuicao" style="max-height: 300px;"></canvas>
                     </div>
                     
                     <!-- Gráfico de Comparação -->
-                    <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <div style="background: var(--surface-raised, white); padding: 15px; border-radius: 8px; box-shadow: var(--shadow-elevated, 0 2px 4px rgba(0,0,0,0.1));">
                         <canvas id="graficoComparacao" style="max-height: 300px;"></canvas>
                     </div>
                 </div>
                 
                 <!-- Gráfico de Eficiência (largura total) -->
-                <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <div style="background: var(--surface-raised, white); padding: 15px; border-radius: 8px; box-shadow: var(--shadow-elevated, 0 2px 4px rgba(0,0,0,0.1));">
                     <canvas id="graficoEficiencia" style="max-height: 200px;"></canvas>
                 </div>
             </div>

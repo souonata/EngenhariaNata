@@ -522,7 +522,7 @@ footer p {
 .valor-com-unidades .unidade {
     display: inline-block;
     font-weight: 600;
-    color: #555;
+    color: var(--text-secondary, #555);
     white-space: nowrap;
     flex-shrink: 0;
 }
@@ -802,7 +802,7 @@ input[type="range"]::-moz-range-thumb:active {
 
 .opcao-checkbox input:checked + .cartao-checkbox .descricao-checkbox,
 .opcao-checkbox.selected .cartao-checkbox .descricao-checkbox {
-    color: #555;
+    color: var(--text-secondary, #555);
 }
 
 /* ============================================

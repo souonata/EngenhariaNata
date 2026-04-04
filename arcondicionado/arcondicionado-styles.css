@@ -66,11 +66,13 @@ header h1 {
 /* Resultado styles moved to shared-styles.css */
 /* Mantendo apenas estilos específicos do Ar Condicionado */
 .resultado-item.destaque {
-    background: var(--accent-color);
+    background: var(--resultado-destaque-bg, var(--accent-color));
     color: white;
     padding: 16px;
     border-radius: 8px;
     margin: 12px 0;
+    border: 1px solid var(--resultado-destaque-border, rgba(45, 159, 163, 0.24));
+    box-shadow: var(--resultado-destaque-shadow, 0 10px 22px rgba(45, 159, 163, 0.18));
     border-bottom: none;
 }
 
@@ -266,7 +268,7 @@ header h1 {
     justify-content: space-between;
     align-items: center;
     padding: 8px 0;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
 }
 
 .resumo-item-calc:last-child {
@@ -275,7 +277,7 @@ header h1 {
 
 .resumo-item-calc span:first-child {
     font-weight: 600;
-    color: #555;
+    color: var(--text-secondary, #555);
 }
 
 .resumo-item-calc span:last-child {
@@ -425,7 +427,7 @@ footer p {
 .classe-energetica-unidade {
     text-align: center;
     font-size: 0.85rem;
-    color: #666;
+    color: var(--text-secondary, #666);
     margin-top: 5px;
     font-style: italic;
 }
@@ -527,6 +529,12 @@ html[data-theme="dark"] .dados-tecnicos-box {
 
 html[data-theme="dark"] .dados-tecnicos-titulo {
     color: #8dbdff;
+}
+
+html[data-theme="dark"] .classe-box-selected {
+    background-image: linear-gradient(135deg, #6b4f1a 0%, #a86a14 100%);
+    color: #ffe3be !important;
+    box-shadow: 0 0 0 4px rgba(255, 193, 122, 0.24);
 }
 
 @media (max-width: 768px) {
