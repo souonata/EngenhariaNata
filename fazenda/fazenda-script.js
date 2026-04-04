@@ -5,10 +5,17 @@
 
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
-import { formatarNumeroDecimal } from '../src/utils/formatters.js';
+import { formatarNumeroComSufixo, formatarNumeroDecimal } from '../src/utils/formatters.js';
 import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
 
 const explicacaoFazenda = new ExplicacaoResultado('v2-explicacao', i18n);
+
+function obterBancoFazenda() {
+    if (typeof globalThis !== 'undefined' && globalThis.FAZENDA_DATABASE) {
+        return globalThis.FAZENDA_DATABASE;
+    }
+    return undefined;
+}
 
 // Objetivo: planejar uma fazenda auto-sustentável que produza todos os
 // alimentos necessários para uma família, incluindo:
@@ -467,6 +474,53 @@ function calcularAreaAnimais(tipoAnimal, quantidade) {
     const dados = DADOS_ANIMAIS[tipoAnimal];
     return dados.espaco * quantidade;
 }
+
+function obterFichaSubsistenciaPlanta(tipo, nome, dados) {
+    const armazenamentoPadrao = {
+        frutas: 'Consumir in natura e processar excedente (polpa, compota, desidratado).',
+        verduras: 'Colheita escalonada e consumo rapido (refrigeracao de curta duracao).',
+        legumes: 'Priorizar cura/secagem para maior vida util e estocagem ventilada.'
+    };
+
+    const armazenamentosEspecificos = {
+        banana: 'Verde: ambiente ventilado. Madura: refrigerar e processar em polpa/congelar.',
+        manga: 'Madura: refrigeracao 5-10 dias. Excedente: polpa congelada.',
+        laranja: 'Armazenar em local fresco e seco por 2-4 semanas.',
+        limao: 'Refrigeracao prolonga conservacao para 3-5 semanas.',
+        batata: 'Curar e manter em local escuro, seco e ventilado (nao refrigerar).',
+        alho: 'Secar e armazenar pendurado em local seco e ventilado.',
+        cebola: 'Cura pos-colheita e armazenamento seco/ventilado.',
+        cenoura: 'Refrigeracao com umidade controlada para reduzir perda de massa.',
+        feijao: 'Secagem completa dos graos e armazenamento hermetico.',
+        milho: 'Secagem dos graos abaixo de umidade segura e silo/recipiente fechado.'
+    };
+
+    return {
+        disponibilidade: `Plantio: ${dados.plantio} | Colheita: ${dados.colheita}`,
+        janelaProducao: `Ciclo medio: ${dados.ciclo} dias`,
+        armazenamento: armazenamentosEspecificos[nome] || armazenamentoPadrao[tipo] || 'Armazenar em local limpo, seco e protegido de pragas.'
+    };
+}
+
+function obterFichaSubsistenciaAnimal(nome, dados) {
+    const base = {
+        disponibilidade: dados.producaoDiaria > 0
+            ? `Producao continua: ${dados.producaoDiaria} ${dados.producaoUnidade}`
+            : `Producao por ciclo: ${dados.producaoCiclo} ${dados.producaoUnidade}`,
+        janelaProducao: `Ciclo reprodutivo: ${dados.cicloReprodutivo} dias`,
+        armazenamento: 'Planejar cadeia fria (refrigeracao/congelamento) para leite, ovos, peixe e carne.'
+    };
+
+    if (nome.includes('ovos')) {
+        base.armazenamento = 'Ovos: classificar, higienizar a seco e refrigerar para maior durabilidade.';
+    } else if (nome.includes('leite') || nome === 'capra' || nome === 'pecora') {
+        base.armazenamento = 'Leite: resfriamento imediato e processamento (queijo/iogurte) para estender a vida util.';
+    } else if (nome.includes('peixe')) {
+        base.armazenamento = 'Peixe: gelo imediato apos despesca, filetagem e congelamento rapido.';
+    }
+
+    return base;
+}
 // FUNÇÕES DE INTERFACE
 
 function criarCheckboxPlantas(tipo, nome) {
@@ -631,6 +685,7 @@ function atualizarResultados() {
             
             // Buscar dados completos do banco de dados
             const dadosCompletos = DADOS_COMPLETOS.plantas[tipo]?.[nome] || {};
+            const fichaSubsistencia = obterFichaSubsistenciaPlanta(tipo, nome, dados);
             
             detalhesPlantas.push({
                 tipo,
@@ -645,7 +700,10 @@ function atualizarResultados() {
                 frequencia: freq,
                 tecnica: dadosCompletos.tecnica || '',
                 clima: dadosCompletos.clima || '',
-                solo: dadosCompletos.solo || ''
+                solo: dadosCompletos.solo || '',
+                disponibilidade: fichaSubsistencia.disponibilidade,
+                janelaProducao: fichaSubsistencia.janelaProducao,
+                armazenamento: fichaSubsistencia.armazenamento
             });
         });
     });
@@ -701,6 +759,7 @@ function atualizarResultados() {
         
         // Buscar dados completos do banco de dados
         const dadosCompletosAnimal = DADOS_COMPLETOS.animais[nome] || {};
+        const fichaSubsistenciaAnimal = obterFichaSubsistenciaAnimal(nome, dados);
         
         detalhesAnimais.push({
             nome,
@@ -712,7 +771,10 @@ function atualizarResultados() {
             isGalinhaOvos, // Flag para não normalizar galinha de ovos
             tecnica: dadosCompletosAnimal.tecnica || '',
             clima: dadosCompletosAnimal.clima || '',
-            alimentacao: dadosCompletosAnimal.alimentacao || ''
+            alimentacao: dadosCompletosAnimal.alimentacao || '',
+            disponibilidade: fichaSubsistenciaAnimal.disponibilidade,
+            janelaProducao: fichaSubsistenciaAnimal.janelaProducao,
+            armazenamento: fichaSubsistenciaAnimal.armazenamento
         });
     });
     
@@ -762,6 +824,8 @@ function atualizarResultados() {
                     <p><span data-i18n="ciclo-dias">Ciclo (dias):</span> ${p.ciclo} ${traduzir('dias')}</p>
                     <p><span data-i18n="plantio">Época de Plantio:</span> ${p.plantio}</p>
                     <p><span data-i18n="colheita">Época de Colheita:</span> ${p.colheita}</p>
+                        <p><span>Disponibilidade:</span> ${p.disponibilidade}</p>
+                        <p><span>Armazenamento:</span> ${p.armazenamento}</p>
                     <p><span data-i18n="frequencia-plantio">Frequência de Plantio:</span> <span class="valor-destaque">A cada ${p.frequencia.frequencia} ${traduzir('dias')} (${p.frequencia.vezesAno} ${traduzir('vezes-ano')})</span></p>
                 </div>
                 ${temInfoTecnica ? `
@@ -808,6 +872,8 @@ function atualizarResultados() {
                         <p><span data-i18n="consumo-diario-pessoa">Consumo por Pessoa/Dia:</span> <span class="valor-destaque">${formatarNumeroDecimal(a.consumoDiarioPorPessoa, 3)} kg</span></p>
                         <p><span data-i18n="espaco-animal">Espaço por Animal:</span> ${a.dados.espaco} m²</p>
                         <p><span data-i18n="ciclo-reprodutivo">Ciclo Reprodutivo:</span> ${a.dados.cicloReprodutivo} ${traduzir('dias')}</p>
+                        <p><span>Disponibilidade:</span> ${a.disponibilidade}</p>
+                        <p><span>Armazenamento:</span> ${a.armazenamento}</p>
                         <p><span data-i18n="frequencia-reproducao">Frequência de Reprodução:</span> <span class="valor-destaque">${a.freqReprod} ${traduzir('vezes-ano')}</span></p>
                         ${a.dados.tempoCrescimento ? `<p><span data-i18n="tempo-crescimento">Tempo até Produção:</span> ${a.dados.tempoCrescimento} ${traduzir('dias')}</p>` : ''}
                         ${a.dados.consumoRacao ? `<p><span data-i18n="consumo-racao">Consumo de Ração:</span> ${a.dados.consumoRacao} kg/dia/animal</p>` : ''}
@@ -1155,18 +1221,19 @@ let DADOS_COMPLETOS = {
 };
 
 function carregarDadosBanco(idioma) {
+    const banco = obterBancoFazenda();
     // Verificar se o banco de dados está disponível
-    if (typeof FAZENDA_DATABASE === 'undefined') {
+    if (!banco) {
         console.error('ERRO: FAZENDA_DATABASE não está definido! Certifique-se de que fazenda-database.js está carregado antes de fazenda-script.js');
         return;
     }
     
-    if (!FAZENDA_DATABASE[idioma]) {
+    if (!banco[idioma]) {
         console.warn(`Banco de dados não encontrado para idioma ${idioma}, usando pt-BR`);
         idioma = 'pt-BR';
     }
     
-    const dados = FAZENDA_DATABASE[idioma];
+    const dados = banco[idioma];
     
     if (!dados) {
         console.error('ERRO: Dados do banco de dados não encontrados!');
@@ -1425,8 +1492,9 @@ function recriarCheckboxes() {
 // INICIALIZAÇÃO
 // Função de inicialização que aguarda o carregamento completo
 function inicializarApp() {
+    const banco = obterBancoFazenda();
     // Verificar se o banco de dados está disponível
-    if (typeof FAZENDA_DATABASE === 'undefined') {
+    if (!banco) {
         console.error('ERRO CRÍTICO: FAZENDA_DATABASE não está disponível!');
         // Tentar novamente após um pequeno delay
         setTimeout(inicializarApp, 100);
@@ -1450,7 +1518,7 @@ function inicializarApp() {
     
     if (totalFrutas === 0 && totalVerduras === 0 && totalLegumes === 0 && totalAnimais === 0) {
         console.error('ERRO: Nenhum dado foi carregado do banco de dados!');
-        console.error('FAZENDA_DATABASE:', typeof FAZENDA_DATABASE);
+        console.error('FAZENDA_DATABASE:', typeof banco);
         console.error('DADOS_PLANTAS:', DADOS_PLANTAS);
         console.error('DADOS_ANIMAIS:', DADOS_ANIMAIS);
         alert('Erro: Nenhum produto foi carregado do banco de dados. Verifique o console para mais detalhes.');
@@ -1735,19 +1803,20 @@ class FazendaApp extends App {
         super({
             appName: 'fazenda',
             callbacks: {
-                aoInicializar: () => this.inicializar(),
+                aoInicializar: () => this.inicializarFazenda(),
                 aoTrocarIdioma: () => this.atualizarInterface()
             }
         });
     }
 
-    inicializar() {
+    inicializarFazenda() {
         console.log('[Fazenda] Inicializando app modular...');
+        const banco = obterBancoFazenda();
         
         // Verificar se o banco de dados está disponível
-        if (typeof FAZENDA_DATABASE === 'undefined') {
+        if (!banco) {
             console.error('ERRO CRÍTICO: FAZENDA_DATABASE não está disponível!');
-            setTimeout(() => this.inicializar(), 100);
+            setTimeout(() => this.inicializarFazenda(), 100);
             return;
         }
         

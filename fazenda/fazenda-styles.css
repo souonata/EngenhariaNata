@@ -5,6 +5,18 @@
     --accent-secondary: #a67c52;
     --site-bg: #6b8e5a;
     --site-bottom-padding: 110px;
+    --calendar-border-color: #4caf50;
+    --calendar-title-color: #2e7d32;
+    --checkbox-selected-bg: #f5e6d3;
+}
+
+[data-theme="dark"] {
+    --site-bg: #2b3a24;
+    --accent-color: #c9a678;
+    --accent-secondary: #d7b487;
+    --calendar-border-color: #7fbf7f;
+    --calendar-title-color: #b7e3b7;
+    --checkbox-selected-bg: rgba(201, 166, 120, 0.16);
 }
 
 /* ============================================
@@ -45,7 +57,7 @@
 
 .opcao-checkbox.selected .cartao-checkbox {
     border-color: var(--accent-color);
-    background: var(--checkbox-checked-bg, #f5e6d3);
+    background: var(--checkbox-checked-bg, var(--checkbox-selected-bg));
     box-shadow: 0 4px 10px rgba(139, 111, 71, 0.2);
 }
 
@@ -107,12 +119,12 @@
     padding: 10px;
     border-radius: 8px;
     margin-bottom: 8px;
-    border-left: 4px solid #4caf50;
+    border-left: 4px solid var(--calendar-border-color);
 }
 
 .calendario-item h4 {
     margin: 0 0 6px 0;
-    color: #2e7d32;
+    color: var(--calendar-title-color);
     font-size: 0.95rem;
 }
 

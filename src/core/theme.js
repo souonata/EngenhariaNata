@@ -69,7 +69,11 @@ function garantirBotaoTema() {
         btn.id = TOGGLE_ID;
         btn.type = 'button';
         btn.className = 'theme-toggle-btn';
+    }
+
+    if (btn.dataset.themeBound !== 'true') {
         btn.addEventListener('click', alternarTema);
+        btn.dataset.themeBound = 'true';
     }
 
     if (btn.parentElement !== host) {

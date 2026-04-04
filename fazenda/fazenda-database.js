@@ -1066,3 +1066,7 @@ const FAZENDA_DATABASE = {
     }
 };
 
+if (typeof globalThis !== 'undefined') {
+    globalThis.FAZENDA_DATABASE = FAZENDA_DATABASE;
+}
+
