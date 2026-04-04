@@ -475,6 +475,10 @@
                     <span class="value" id="resTempoQuitacao">-</span>
                 </div>
                 <div class="resumo-item">
+                    <span class="label" data-i18n="installment-value">Valor da Parcela</span>
+                    <span class="value" id="resValorParcela">-</span>
+                </div>
+                <div class="resumo-item">
                     <span class="label" data-i18n="loan-amount-result">Valor Emprestado</span>
                     <span class="value destaque-emprestado" id="resValorEmprestado">-</span>
                 </div>
@@ -492,21 +496,7 @@
                 </div>
             </div>
 
-            <div class="graficos-container">
-                <h3 data-i18n="evolution-charts">📊 Evolução ao Longo do Tempo</h3>
-                <div class="grafico-unico">
-                    <canvas id="graficoEvolutivo"></canvas>
-                </div>
-            </div>
-
-            <div class="parcelas-info">
-                <div class="parcela-detalhes">
-                    <div class="detalhe-item-horizontal">
-                        <span class="label-parcela" data-i18n="installment-value">Valor da Parcela</span>
-                        <span class="value-grande" id="valorParcela">-</span>
-                    </div>
-                </div>
-
+            <div class="parcelas-info parcelas-info--selector">
                 <h3><span data-i18n="selected-installment">Parcela Selecionada</span>: <span id="numeroParcela">1</span> <span data-i18n="of">de</span> <span id="totalParcelas">-</span></h3>
 
                 <div class="slider-com-botoes">
@@ -534,6 +524,13 @@
                             <span class="value-medium" id="proporcaoAmortJurosParcela">-</span>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div class="graficos-container">
+                <h3 data-i18n="evolution-charts">📊 Evolução ao Longo do Tempo</h3>
+                <div class="grafico-unico">
+                    <canvas id="graficoEvolutivo"></canvas>
                 </div>
             </div>
 

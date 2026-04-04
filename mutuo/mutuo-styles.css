@@ -18,7 +18,30 @@
 /* language selector layout centralized in assets/css/shared-styles.css */
 
 /* lang button styles moved to assets/css/shared-styles.css — per-page variables below */
-:root { --lang-btn-bg: rgba(255,255,255,0.1); --lang-btn-border: rgba(255,255,255,0.3); --lang-btn-hover: rgba(255,255,255,0.18); }
+:root {
+    --lang-btn-bg: rgba(255,255,255,0.1);
+    --lang-btn-border: rgba(255,255,255,0.3);
+    --lang-btn-hover: rgba(255,255,255,0.18);
+    --mutuo-panel-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --mutuo-surface-strong: #ffffff;
+    --mutuo-surface-soft: #f9f9f9;
+    --mutuo-surface-muted: #f5f5f5;
+    --mutuo-formula-bg: #f0f4ff;
+    --mutuo-success-bg: #e8f5e9;
+    --mutuo-success-text: #2e7d32;
+    --mutuo-shadow-soft: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+html[data-theme="dark"] {
+    --mutuo-panel-bg: linear-gradient(145deg, #20242d 0%, #181c24 100%);
+    --mutuo-surface-strong: #20242b;
+    --mutuo-surface-soft: #191d24;
+    --mutuo-surface-muted: #262b34;
+    --mutuo-formula-bg: #1a2330;
+    --mutuo-success-bg: rgba(46, 161, 106, 0.14);
+    --mutuo-success-text: #bdebd3;
+    --mutuo-shadow-soft: 0 8px 18px rgba(0, 0, 0, 0.28);
+}
 
 /* language button appearance moved to assets/css/shared-styles.css
    Per-page variables (eg. --lang-btn-bg) may still be used to tune colors */
@@ -173,7 +196,7 @@
     text-align: left;
     padding-left: 8px;
     font-weight: 600;
-    color: #555;
+    color: var(--text-primary, #555);
 }
 
 .tabela-sistemas tbody tr:last-child td {
@@ -184,7 +207,7 @@
 
 /* Exemplos Section */
 .exemplos-section {
-    background: #f9f9f9;
+    background: var(--mutuo-surface-soft, #f9f9f9);
 }
 
 .exemplos-header {
@@ -205,8 +228,8 @@
 
 .memorial-system-switcher .js-system-tab {
     border: 1px solid #2d9fa3ff;
-    background: #fff;
-    color: #2d9fa3ff;
+    background: var(--mutuo-surface-strong, #fff);
+    color: var(--accent-color, #2d9fa3ff);
     border-radius: 999px;
     padding: 7px 12px;
     font-weight: 700;
@@ -215,12 +238,12 @@
 }
 
 .memorial-system-switcher .js-system-tab:hover {
-    background: rgba(45, 159, 163, 0.08);
+    background: var(--accent-hover-bg, rgba(45, 159, 163, 0.08));
 }
 
 .memorial-system-switcher .js-system-tab.is-active {
-    background: #2d9fa3ff;
-    color: #fff;
+    background: var(--accent-color, #2d9fa3ff);
+    color: var(--surface-bg, #fff);
 }
 
 .system-panel {
@@ -293,7 +316,7 @@
 }
 
 .exemplo-item {
-    background: white;
+    background: var(--mutuo-surface-strong, white);
     padding: 10px;
     margin-bottom: 8px;
     border-radius: 10px;
@@ -322,7 +345,7 @@
 }
 
 .exemplo-calculo {
-    background: #f0f4ff;
+    background: var(--mutuo-formula-bg, #f0f4ff);
     padding: 10px;
     border-radius: 8px;
     margin: 10px 0;
@@ -348,16 +371,16 @@
 }
 
 .vantagem {
-    background: #e8f5e9;
+    background: var(--mutuo-success-bg, #e8f5e9);
     padding: 10px;
     border-radius: 5px;
-    color: #2e7d32;
+    color: var(--mutuo-success-text, #2e7d32);
     font-weight: 600;
     margin-top: 10px;
 }
 
 .comparacao {
-    background: white;
+    background: var(--mutuo-surface-strong, white);
     padding: 12px; /* compact */
     border-radius: 8px;
     margin-top: 12px;
@@ -384,7 +407,7 @@
 .comparacao td {
     padding: 12px;
     text-align: left;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
 }
 
 .comparacao th {
@@ -394,7 +417,7 @@
 }
 
 .comparacao tr:hover {
-    background: #f5f5f5;
+    background: var(--mutuo-surface-muted, #f5f5f5);
 }
 
 .comparacao tr.is-highlight {
@@ -403,7 +426,7 @@
 
 /* Resultados */
 .resultados {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: var(--mutuo-panel-bg, linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%));
 }
 
 .resumo-grid {
@@ -414,26 +437,26 @@
 }
 
 .resumo-item {
-    background: white;
+    background: var(--mutuo-surface-strong, white);
     padding: 8px; /* slightly less padding - compact */
     border-radius: 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    box-shadow: var(--mutuo-shadow-soft, 0 2px 6px rgba(0,0,0,0.06));
 }
 
 .resumo-item .label {
     font-size: 0.8rem;
-    color: #666;
+    color: var(--text-secondary, #666);
     margin-bottom: 4px;
 }
 
 .resumo-item .value {
     font-size: 1.3rem;
     font-weight: bold;
-    color: #333;
+    color: var(--text-primary, #333);
 }
 
 .destaque-emprestado {
@@ -454,10 +477,22 @@
 }
 
 .parcelas-info {
-    background: white;
+    background: var(--mutuo-surface-strong, white);
     padding: 10px;
     border-radius: 10px;
     margin-bottom: 8px;
+}
+
+.parcelas-info--selector {
+    padding-bottom: 12px;
+}
+
+.parcelas-info--selector .slider-com-botoes {
+    margin-top: 6px;
+}
+
+.parcelas-info--selector .parcela-detalhes {
+    margin-top: 10px;
 }
 
 /* Estilos de controles estão em assets/css/controls-styles.css */
@@ -510,7 +545,7 @@
 .controle-item-horizontal label {
     font-size: 1rem;
     font-weight: 600;
-    color: #555;
+    color: var(--text-primary, #555);
     text-align: right;
 }
 
@@ -545,7 +580,7 @@
 .controles-rapidos .radio-label-inline .radio-custom {
     width: 16px;
     height: 16px;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--checkbox-border, #e0e0e0);
     border-radius: 50%;
     position: relative;
     transition: all 0.3s ease;
@@ -564,14 +599,14 @@
     transform: translate(-50%, -50%);
     width: 6px;
     height: 6px;
-    background: white;
+    background: var(--surface-bg, white);
     border-radius: 50%;
 }
 
 .controles-rapidos .radio-label-inline .radio-text {
     font-size: 0.75rem;
     font-weight: 600;
-    color: #555;
+    color: var(--text-secondary, #555);
 }
 
 /* .input-with-arrows movido para assets/css/controls-styles.css */
@@ -662,7 +697,7 @@
 .periodo-inline {
     font-size: 0.85rem;
     font-weight: 400;
-    color: #666;
+    color: var(--text-secondary, #666);
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -674,16 +709,16 @@
 .texto-ao {
     font-size: 1rem;
     font-weight: 600;
-    color: #555;
+    color: var(--text-primary, #555);
     margin: 0;
     padding: 0;
 }
 
 .sistema-amortizacao-box {
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--border-color, #e0e0e0);
     border-radius: 10px;
     padding: 10px;
-    background: rgba(45, 159, 163, 0.02);
+    background: var(--accent-hover-bg, rgba(45, 159, 163, 0.02));
     width: 100%;
     max-width: 600px;
 }
@@ -691,7 +726,7 @@
 .sistema-amortizacao-box h3 {
     text-align: center;
     font-size: 18px;
-    color: #555;
+    color: var(--text-primary, #555);
     margin-bottom: 5px;
 }
 
@@ -745,7 +780,7 @@
 .label-sistema {
     font-size: 1rem;
     font-weight: 600;
-    color: #555;
+    color: var(--text-primary, #555);
     text-align: center;
 }
 
@@ -766,8 +801,8 @@
 }
 
 .btn-help:hover {
-    background: #2d9fa3ff;
-    color: white;
+    background: var(--accent-color, #2d9fa3ff);
+    color: var(--surface-bg, white);
     transform: scale(1.05);
 }
 
@@ -845,7 +880,7 @@
 .label-parcela {
     font-size: 1rem;
     font-weight: 600;
-    color: #555;
+    color: var(--text-primary, #555);
     line-height: 1;
 }
 
@@ -866,7 +901,7 @@
 }
 
 .composicao-item {
-    background: #f5f5f5;
+    background: var(--mutuo-surface-muted, #f5f5f5);
     padding: 10px;
     border-radius: 8px;
     text-align: center;
@@ -875,7 +910,7 @@
 .label-small {
     display: block;
     font-size: 0.85rem;
-    color: #666;
+    color: var(--text-secondary, #666);
     margin-bottom: 8px;
 }
 
@@ -883,12 +918,12 @@
     display: block;
     font-size: 1rem;
     font-weight: bold;
-    color: #333;
+    color: var(--text-primary, #333);
 }
 
 /* Recipiente de Gráficos */
 .graficos-container {
-    background: white;
+    background: var(--mutuo-surface-strong, white);
     padding: 10px;
     border-radius: 10px;
     margin-bottom: 8px;
@@ -901,10 +936,10 @@
 }
 
 .grafico-unico {
-    background: #f9f9f9;
+    background: var(--mutuo-surface-soft, #f9f9f9);
     padding: 8px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-shadow: var(--mutuo-shadow-soft, 0 2px 4px rgba(0,0,0,0.05));
     opacity: 1;
     /* Transição será controlada via JavaScript para fade out/in rápido */
     position: relative;
@@ -930,7 +965,7 @@
 
 /* Recipiente de Tabela */
 .tabela-container {
-    background: white;
+    background: var(--mutuo-surface-strong, white);
     padding: 10px;
     border-radius: 10px;
     /* center table and header inside the card */
@@ -974,7 +1009,7 @@
 #tabelaAmortizacao td {
     padding: 8px;
     text-align: right;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
 }
 
 #tabelaAmortizacao th:first-child,
@@ -991,7 +1026,7 @@
 }
 
 #tabelaAmortizacao tbody tr:hover {
-    background: #f5f5f5;
+    background: var(--mutuo-surface-muted, #f5f5f5);
 }
 
 /* Footer styles moved to shared-styles.css */

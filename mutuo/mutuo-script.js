@@ -39,6 +39,37 @@ class MutuoApp extends App {
         return formatarMoeda(valor, i18n.obterMoeda());
     }
 
+    formatarRotuloAnoGrafico(ano) {
+        if (ano === 0) return '0';
+
+        const unidadeAno = ano === 1
+            ? (this.traducoes['period-year-short'] || 'Ano').toLowerCase()
+            : (this.traducoes['years'] || this.traducoes['unidades']?.anos || 'anos');
+
+        return `${ano} ${unidadeAno}`;
+    }
+
+    formatarTempoGrafico(valorEmAnos) {
+        const totalMeses = Math.max(0, Math.round(Number(valorEmAnos) * 12));
+        const anos = Math.floor(totalMeses / 12);
+        const meses = totalMeses % 12;
+        const partes = [];
+
+        if (anos > 0) {
+            partes.push(this.formatarRotuloAnoGrafico(anos));
+        }
+
+        if (meses > 0 || partes.length === 0) {
+            const unidadeMes = meses === 1
+                ? (this.traducoes['period-month-short'] || 'Mês').toLowerCase()
+                : (this.traducoes['months'] || this.traducoes['unidades']?.meses || 'meses');
+
+            partes.push(`${meses} ${unidadeMes}`);
+        }
+
+        return partes.join(' e ');
+    }
+
     inicializarMutuo() {
         this.configurarEventos();
         this.calcular();
@@ -837,6 +868,7 @@ class MutuoApp extends App {
         const resTotalJuros = document.getElementById('resTotalJuros');
         const resPorcentagemJuros = document.getElementById('resPorcentagemJuros');
         const resTempoQuitacao = document.getElementById('resTempoQuitacao');
+        const resValorParcela = document.getElementById('resValorParcela');
 
         const mesesQuitacao = this.tabelaAmortizacao.length;
         const anosQuitacao = Math.floor(mesesQuitacao / 12);
@@ -849,6 +881,10 @@ class MutuoApp extends App {
         if (resTotalJuros) resTotalJuros.textContent = this.formatarMoedaLocal(jurosTotais);
         if (resPorcentagemJuros) resPorcentagemJuros.textContent = formatarNumero(percJuros, 2) + '%';
         if (resTempoQuitacao) resTempoQuitacao.textContent = textoQuitacao;
+        if (resValorParcela) {
+            const primeiraParcela = this.tabelaAmortizacao[0]?.parcela || 0;
+            resValorParcela.textContent = this.formatarMoedaLocal(primeiraParcela);
+        }
     }
 
     atualizarParcelaExibida() {
@@ -856,7 +892,7 @@ class MutuoApp extends App {
         if (!parcela) return;
 
         const numeroParcela = document.getElementById('numeroParcela');
-        const valorParcela = document.getElementById('valorParcela');
+        const resValorParcela = document.getElementById('resValorParcela');
         const valorAmortizacao = document.getElementById('valorAmortizacao');
         const labelAmortizacaoParcela = document.getElementById('labelAmortizacaoParcela');
         const valorJurosParcela = document.getElementById('valorJurosParcela');
@@ -870,7 +906,7 @@ class MutuoApp extends App {
         const percentualJuros = totalParcela > 0 ? (parcela.juros / totalParcela) * 100 : 0;
 
         if (numeroParcela) numeroParcela.textContent = parcela.numero;
-        if (valorParcela) valorParcela.textContent = this.formatarMoedaLocal(parcela.parcela);
+        if (resValorParcela) resValorParcela.textContent = this.formatarMoedaLocal(parcela.parcela);
         if (labelAmortizacaoParcela) {
             const temExtra = (parcela.extraPagamento || 0) > 0;
             labelAmortizacaoParcela.textContent = temExtra
@@ -953,47 +989,56 @@ class MutuoApp extends App {
             this.graficos.evolucao.destroy();
         }
 
-        const labels = this.tabelaAmortizacao.map(p => p.numero);
+        const totalMeses = this.tabelaAmortizacao.length;
+        const totalAnos = totalMeses / 12;
+        const passoMensal = 1 / 12;
+        const tolerancia = 0.0001;
+        const ehMarcoAnual = (valor) => Math.abs(Number(valor) - Math.round(Number(valor))) < tolerancia;
 
         // Calcular valores acumulados
         let amortAcumulada = 0;
         let jurosAcumulados = 0;
         const dadosAmortAcum = this.tabelaAmortizacao.map(p => {
             amortAcumulada += p.amortizacao + (p.extraPagamento || 0);
-            return amortAcumulada;
+            return { x: p.numero / 12, y: amortAcumulada };
         });
         const dadosJurosAcum = this.tabelaAmortizacao.map(p => {
             jurosAcumulados += p.juros;
-            return jurosAcumulados;
+            return { x: p.numero / 12, y: jurosAcumulados };
         });
-        const dadosSaldo = this.tabelaAmortizacao.map(p => p.saldo);
+        const dadosSaldo = this.tabelaAmortizacao.map(p => ({ x: p.numero / 12, y: p.saldo }));
         const cores = this.obterCoresGrafico();
 
         this.graficos.evolucao = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: labels,
                 datasets: [
                     {
                         label: i18n.t('grafico.amortizacao'),
                         data: dadosAmortAcum,
                         borderColor: cores.green,
                         backgroundColor: cores.greenSoft,
-                        tension: 0.4
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 4
                     },
                     {
                         label: i18n.t('grafico.juros'),
                         data: dadosJurosAcum,
                         borderColor: cores.orange,
                         backgroundColor: cores.orangeSoft,
-                        tension: 0.4
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 4
                     },
                     {
                         label: i18n.t('grafico.saldoDevedor'),
                         data: dadosSaldo,
                         borderColor: cores.blue,
                         backgroundColor: cores.blueSoft,
-                        tension: 0.4
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 4
                     }
                 ]
             },
@@ -1007,15 +1052,40 @@ class MutuoApp extends App {
                         labels: {
                             color: cores.text
                         }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: (items) => {
+                                const ponto = items[0]?.raw;
+                                const parcela = Math.round((ponto?.x || 0) * 12);
+                                return `${this.traducoes['unidades']?.parcela || 'Parcela'} ${parcela} • ${this.formatarTempoGrafico(ponto?.x || 0)}`;
+                            },
+                            label: (contexto) => `${contexto.dataset.label}: ${this.formatarMoedaLocal(contexto.parsed.y)}`
+                        }
                     }
                 },
                 scales: {
                     x: {
+                        type: 'linear',
+                        min: 0,
+                        max: Math.max(totalAnos, passoMensal),
                         ticks: {
-                            color: cores.text
+                            color: cores.text,
+                            stepSize: passoMensal,
+                            autoSkip: false,
+                            maxRotation: 0,
+                            callback: (valor) => {
+                                if (!ehMarcoAnual(valor)) {
+                                    return '';
+                                }
+
+                                return String(Math.round(Number(valor)));
+                            }
                         },
                         grid: {
-                            color: cores.grid
+                            color: (contexto) => ehMarcoAnual(contexto.tick?.value) ? cores.grid : 'rgba(0, 0, 0, 0.04)',
+                            lineWidth: (contexto) => ehMarcoAnual(contexto.tick?.value) ? 1 : 0.6,
+                            tickLength: 4
                         },
                         title: {
                             display: true,

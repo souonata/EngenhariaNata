@@ -205,7 +205,7 @@
       "amortizacao": "Amortização",
       "juros": "Juros",
       "saldoDevedor": "Saldo Devedor",
-      "eixoX": "Parcela",
+      "eixoX": "Tempo (anos)",
       "eixoY": "Valor"
     },
     "exemplos": {
@@ -499,7 +499,7 @@
       "amortizacao": "Ammortamento",
       "juros": "Interessi",
       "saldoDevedor": "Debito Residuo",
-      "eixoX": "Rata",
+      "eixoX": "Tempo (anni)",
       "eixoY": "Valore"
     },
     "exemplos": {
