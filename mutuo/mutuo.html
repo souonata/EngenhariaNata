@@ -39,7 +39,8 @@
 
     <!-- Carrega o CSS com parâmetro de versão (?v=1.0.0) -->
     <!-- Quando atualizar o CSS, mude a versão para forçar o navegador a baixar de novo -->
-    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=1.0.2">
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.0.0">
+    <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
     <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
     <link rel="stylesheet" href="mutuo-styles.css?v=1.0.2">
 </head>
@@ -469,33 +470,6 @@
                 </div>
             </div>
 
-            <div class="resumo-grid">
-                <div class="resumo-item">
-                    <span class="label" data-i18n="payoff-time">Tempo para Quitar</span>
-                    <span class="value" id="resTempoQuitacao">-</span>
-                </div>
-                <div class="resumo-item">
-                    <span class="label" data-i18n="installment-value">Valor da Parcela</span>
-                    <span class="value" id="resValorParcela">-</span>
-                </div>
-                <div class="resumo-item">
-                    <span class="label" data-i18n="loan-amount-result">Valor Emprestado</span>
-                    <span class="value destaque-emprestado" id="resValorEmprestado">-</span>
-                </div>
-                <div class="resumo-item">
-                    <span class="label" data-i18n="total-payment">Total a Pagar</span>
-                    <span class="value destaque-total" id="resTotalPagar">-</span>
-                </div>
-                <div class="resumo-item">
-                    <span class="label" data-i18n="total-interest-pct">% Total de Juros</span>
-                    <span class="value destaque-percentual" id="resPorcentagemJuros">-</span>
-                </div>
-                <div class="resumo-item">
-                    <span class="label" data-i18n="total-interest">Total de Juros</span>
-                    <span class="value destaque-juros" id="resTotalJuros">-</span>
-                </div>
-            </div>
-
             <div class="parcelas-info parcelas-info--selector">
                 <h3><span data-i18n="selected-installment">Parcela Selecionada</span>: <span id="numeroParcela">1</span> <span data-i18n="of">de</span> <span id="totalParcelas">-</span></h3>
 
@@ -526,6 +500,9 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Painel de Explicação V2.0 -->
+            <div id="v2-explicacao"></div>
 
             <div class="graficos-container">
                 <h3 data-i18n="evolution-charts">📊 Evolução ao Longo do Tempo</h3>
@@ -570,7 +547,7 @@
     <script src="../assets/js/vendor/chart.umd.js"></script>
 
     <!-- JavaScript da calculadora -->
-    <script type="module" src="mutuo-script.js?v=1.0.2"></script>
+    <script type="module" src="mutuo-script.js?v=2.0.0"></script>
 </body>
 </html>
 

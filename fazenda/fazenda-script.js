@@ -4,7 +4,11 @@
 // -------------------------------------------------------------
 
 import { App } from '../src/core/app.js';
+import { i18n } from '../src/core/i18n.js';
 import { formatarNumeroDecimal } from '../src/utils/formatters.js';
+import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
+
+const explicacaoFazenda = new ExplicacaoResultado('v2-explicacao', i18n);
 
 // Objetivo: planejar uma fazenda auto-sustentável que produza todos os
 // alimentos necessários para uma família, incluindo:
@@ -556,6 +560,7 @@ function atualizarResultados() {
     if (!temPlantas && !temAnimais) {
         const secaoResultados = document.getElementById('secaoResultados');
         if (secaoResultados) secaoResultados.style.display = 'none';
+        explicacaoFazenda.limpar();
         return;
     }
     
@@ -843,6 +848,17 @@ function atualizarResultados() {
     }
     
     aplicarTraducoes();
+
+    renderizarExplicacaoFazenda({
+        quantidadePessoas,
+        areaTotal,
+        areaTotalPlantas,
+        areaTotalAnimais,
+        detalhesPlantas,
+        detalhesAnimais,
+        consumoPlantasDiario,
+        consumoProteinasDiario
+    });
 }
 // FUNÇÃO PARA TOGGLE DE INFORMAÇÕES TÉCNICAS
 
@@ -862,6 +878,56 @@ function toggleInfoTecnica(idDetalhes, idBtn) {
 }
 // Tornar função global para uso em onclick
 window.toggleInfoTecnica = toggleInfoTecnica;
+
+function renderizarExplicacaoFazenda({ quantidadePessoas, areaTotal, areaTotalPlantas, areaTotalAnimais, detalhesPlantas, detalhesAnimais, consumoPlantasDiario, consumoProteinasDiario }) {
+    const pt = i18n.obterIdiomaAtual() === 'pt-BR';
+    const totalPlantas = detalhesPlantas.length;
+    const totalAnimais = detalhesAnimais.length;
+
+    explicacaoFazenda.renderizar({
+        destaque: pt
+            ? `Planejamento para ${quantidadePessoas} pessoa(s): área total estimada de ${formatarNumeroComSufixo(areaTotal, 1)} m² para auto-sustentação.`
+            : `Pianificazione per ${quantidadePessoas} persona/e: area totale stimata di ${formatarNumeroComSufixo(areaTotal, 1)} m² per autosostentamento.`,
+        linhas: [
+            {
+                icone: '🌱',
+                titulo: pt ? 'Área para Plantas' : 'Area per Piante',
+                valor: `${formatarNumeroComSufixo(areaTotalPlantas, 1)} m²`,
+                descricao: pt
+                    ? `${totalPlantas} cultura(s) selecionada(s) para cobrir ${formatarNumeroDecimal(consumoPlantasDiario, 2)} kg/pessoa/dia.`
+                    : `${totalPlantas} coltura/e selezionata/e per coprire ${formatarNumeroDecimal(consumoPlantasDiario, 2)} kg/persona/giorno.`
+            },
+            {
+                icone: '🐾',
+                titulo: pt ? 'Área para Animais' : 'Area per Animali',
+                valor: `${formatarNumeroComSufixo(areaTotalAnimais, 1)} m²`,
+                descricao: pt
+                    ? `${totalAnimais} tipo(s) de criação para proteína de ${formatarNumeroDecimal(consumoProteinasDiario, 2)} kg/pessoa/dia.`
+                    : `${totalAnimais} tipo/i di allevamento per proteine di ${formatarNumeroDecimal(consumoProteinasDiario, 2)} kg/persona/giorno.`
+            },
+            {
+                icone: '📅',
+                titulo: pt ? 'Ciclos de Produção' : 'Cicli di Produzione',
+                valor: pt ? 'Plantio escalonado' : 'Semina scaglionata',
+                descricao: pt
+                    ? 'O calendário distribui plantio e colheita para reduzir falta de alimento durante o ano.'
+                    : 'Il calendario distribuisce semina e raccolta per ridurre carenze alimentari durante l\'anno.'
+            },
+            {
+                icone: '✅',
+                titulo: pt ? 'Leitura Prática' : 'Lettura Pratica',
+                valor: pt ? 'Plano mínimo viável' : 'Piano minimo sostenibile',
+                descricao: pt
+                    ? 'Os valores são referência inicial. Ajuste por clima local, solo e produtividade real da propriedade.'
+                    : 'I valori sono riferimento iniziale. Regola per clima locale, suolo e produttivita reale della proprieta.'
+            }
+        ],
+        dica: pt
+            ? 'Comece com metade da área projetada e amplie por safra com base no rendimento real medido no campo.'
+            : 'Inizia con meta area prevista e amplia per raccolto in base alla resa reale misurata in campo.',
+        norma: pt ? 'Planejamento agroecológico de produção familiar (estimativa educacional)' : 'Pianificazione agroecologica familiare (stima educativa)'
+    });
+}
 // MEMORIAL DE CÁLCULO
 
 function atualizarMemorialComValores() {

@@ -8,6 +8,7 @@
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { formatarNumero, formatarMoeda } from '../src/utils/formatters.js';
+import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
 
 // ============================================
 // CLASSE PRINCIPAL
@@ -28,6 +29,7 @@ class MutuoApp extends App {
         this.graficos = { evolucao: null };
         this.periodicidadeAnterior = 'ano'; // Rastrear periodicidade para conversão
         this.memorialSistemaSelecionado = 'price';
+        this.explicacao = new ExplicacaoResultado('v2-explicacao', i18n);
     }
 
     get traducoes() {
@@ -862,29 +864,76 @@ class MutuoApp extends App {
         const totalParcelas = document.getElementById('totalParcelas');
         if (totalParcelas) totalParcelas.textContent = this.tabelaAmortizacao.length;
 
-        // Atualizar resumo financeiro
-        const resValorEmprestado = document.getElementById('resValorEmprestado');
-        const resTotalPagar = document.getElementById('resTotalPagar');
-        const resTotalJuros = document.getElementById('resTotalJuros');
-        const resPorcentagemJuros = document.getElementById('resPorcentagemJuros');
-        const resTempoQuitacao = document.getElementById('resTempoQuitacao');
-        const resValorParcela = document.getElementById('resValorParcela');
-
         const mesesQuitacao = this.tabelaAmortizacao.length;
-        const anosQuitacao = Math.floor(mesesQuitacao / 12);
-        const mesesRestantes = mesesQuitacao % 12;
 
-        const textoQuitacao = `${anosQuitacao} ${this.traducoes['unidades']?.anos || 'anos'} ${mesesRestantes} ${this.traducoes['unidades']?.meses || 'meses'}`;
+        // Painel de explicação V2.0
+        this.renderizarExplicacao({ dados, totalPago, jurosTotais, percJuros, mesesQuitacao });
+    }
 
-        if (resValorEmprestado) resValorEmprestado.textContent = this.formatarMoedaLocal(dados.valor);
-        if (resTotalPagar) resTotalPagar.textContent = this.formatarMoedaLocal(totalPago);
-        if (resTotalJuros) resTotalJuros.textContent = this.formatarMoedaLocal(jurosTotais);
-        if (resPorcentagemJuros) resPorcentagemJuros.textContent = formatarNumero(percJuros, 2) + '%';
-        if (resTempoQuitacao) resTempoQuitacao.textContent = textoQuitacao;
-        if (resValorParcela) {
-            const primeiraParcela = this.tabelaAmortizacao[0]?.parcela || 0;
-            resValorParcela.textContent = this.formatarMoedaLocal(primeiraParcela);
-        }
+    renderizarExplicacao({ dados, totalPago, jurosTotais, percJuros, mesesQuitacao }) {
+        const pt = i18n.obterIdiomaAtual() === 'pt-BR';
+        const anos = Math.floor(mesesQuitacao / 12);
+        const meses = mesesQuitacao % 12;
+        const sistemaLabel = {
+            sac: pt ? 'SAC' : 'SAC',
+            price: pt ? 'Price (Frances)' : 'Price (Francese)',
+            american: pt ? 'Americano' : 'Americano'
+        }[dados.sistema] || dados.sistema;
+
+        const totalPagoStr = this.formatarMoedaLocal(totalPago);
+        const jurosTotaisStr = this.formatarMoedaLocal(jurosTotais);
+        const valorStr = this.formatarMoedaLocal(dados.valor);
+        const primeiraParcela = this.tabelaAmortizacao[0]?.parcela || 0;
+        const ultimaParcela = this.tabelaAmortizacao[this.tabelaAmortizacao.length - 1]?.parcela || 0;
+        const tempoStr = anos > 0
+            ? (pt ? `${anos} ano(s) e ${meses} mes(es)` : `${anos} anno/i e ${meses} mese/i`)
+            : (pt ? `${meses} meses` : `${meses} mesi`);
+
+        this.explicacao.renderizar({
+            destaque: pt
+                ? `Para ${valorStr} emprestado no sistema ${sistemaLabel}, voce pagara ${jurosTotaisStr} de juros (${formatarNumero(percJuros, 1)}% a mais).`
+                : `Per ${valorStr} preso in prestito con il sistema ${sistemaLabel}, pagherai ${jurosTotaisStr} di interessi (${formatarNumero(percJuros, 1)}% in piu).`,
+            linhas: [
+                {
+                    icone: '💸',
+                    titulo: pt ? 'Total em Juros' : 'Totale Interessi',
+                    valor: `${jurosTotaisStr} (${formatarNumero(percJuros, 1)}%)`,
+                    descricao: pt
+                        ? `Quanto a mais voce paga alem dos ${valorStr} emprestados.`
+                        : `Quanto paghi in piu rispetto ai ${valorStr} presi in prestito.`
+                },
+                {
+                    icone: '📅',
+                    titulo: pt ? 'Prazo de Quitacao' : 'Durata del Prestito',
+                    valor: tempoStr,
+                    descricao: pt ? `${mesesQuitacao} parcelas mensais.` : `${mesesQuitacao} rate mensili.`
+                },
+                {
+                    icone: '💳',
+                    titulo: pt ? '1a Parcela' : '1a Rata',
+                    valor: this.formatarMoedaLocal(primeiraParcela),
+                    descricao: pt
+                        ? (dados.sistema === 'sac'
+                            ? `No SAC a parcela cai com o tempo. Ultima: ${this.formatarMoedaLocal(ultimaParcela)}.`
+                            : 'No Price as parcelas sao fixas.')
+                        : (dados.sistema === 'sac'
+                            ? `Nel SAC la rata diminuisce nel tempo. Ultima: ${this.formatarMoedaLocal(ultimaParcela)}.`
+                            : 'Nel Price le rate sono fisse.')
+                },
+                {
+                    icone: '🏁',
+                    titulo: pt ? 'Total Pago' : 'Totale Pagato',
+                    valor: totalPagoStr,
+                    descricao: pt
+                        ? `Soma de capital (${valorStr}) + juros (${jurosTotaisStr}).`
+                        : `Somma di capitale (${valorStr}) + interessi (${jurosTotaisStr}).`
+                }
+            ],
+            dica: pt
+                ? 'Pagamentos extras reduzem juros totais e o tempo de quitacao.'
+                : 'Pagamenti extra riducono interessi totali e tempo di estinzione.',
+            norma: pt ? 'Sistemas SAC, Price e Americano' : 'Sistemi SAC, Price e Americano'
+        });
     }
 
     atualizarParcelaExibida() {
@@ -892,7 +941,6 @@ class MutuoApp extends App {
         if (!parcela) return;
 
         const numeroParcela = document.getElementById('numeroParcela');
-        const resValorParcela = document.getElementById('resValorParcela');
         const valorAmortizacao = document.getElementById('valorAmortizacao');
         const labelAmortizacaoParcela = document.getElementById('labelAmortizacaoParcela');
         const valorJurosParcela = document.getElementById('valorJurosParcela');
@@ -906,7 +954,6 @@ class MutuoApp extends App {
         const percentualJuros = totalParcela > 0 ? (parcela.juros / totalParcela) * 100 : 0;
 
         if (numeroParcela) numeroParcela.textContent = parcela.numero;
-        if (resValorParcela) resValorParcela.textContent = this.formatarMoedaLocal(parcela.parcela);
         if (labelAmortizacaoParcela) {
             const temExtra = (parcela.extraPagamento || 0) > 0;
             labelAmortizacaoParcela.textContent = temExtra

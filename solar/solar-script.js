@@ -64,9 +64,76 @@
 //   linear quando necessário (veja obterDoDPorCiclos / obterCiclosPorDoD).
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
+import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
 
 // Idioma atual - mantido para compatibilidade com funções de cálculo e display
 let idiomaAtual = 'pt-BR';
+const explicacaoSolar = new ExplicacaoResultado('v2-explicacao', i18n);
+
+function renderizarExplicacaoSolar({
+    qtdPaineis,
+    POTENCIA_PAINEL,
+    qtdBaterias,
+    energiaPorBateria,
+    potenciaInversor,
+    correnteMPPT,
+    custoTotal,
+    custoBaterias,
+    custoPaineis,
+    autonomia,
+    dodAlvo,
+    consumoMensal
+}) {
+    const pt = idiomaAtual === 'pt-BR';
+    const moeda = i18n.t('moeda') || 'R$';
+    const custoTotalFmt = `${moeda} ${custoTotal.toLocaleString(idiomaAtual, { minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: true })}`;
+    const custoBateriasFmt = `${moeda} ${custoBaterias.toLocaleString(idiomaAtual, { minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: true })}`;
+    const custoPaineisFmt = `${moeda} ${custoPaineis.toLocaleString(idiomaAtual, { minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: true })}`;
+
+    explicacaoSolar.renderizar({
+        destaque: pt
+            ? `Seu sistema recomendado: ${qtdPaineis} paineis + ${qtdBaterias} baterias, com investimento estimado de ${custoTotalFmt}.`
+            : `Sistema consigliato: ${qtdPaineis} pannelli + ${qtdBaterias} batterie, con investimento stimato di ${custoTotalFmt}.`,
+        linhas: [
+            {
+                icone: '☀️',
+                titulo: pt ? 'Geracao Solar' : 'Generazione Solare',
+                valor: `${qtdPaineis} x ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W`,
+                descricao: pt
+                    ? 'Quantidade de paineis para recarregar o banco e sustentar o consumo medio diario.'
+                    : 'Numero di pannelli per ricaricare il banco batterie e sostenere il consumo medio giornaliero.'
+            },
+            {
+                icone: '🔋',
+                titulo: pt ? 'Banco de Baterias' : 'Banco Batterie',
+                valor: `${qtdBaterias} x ${formatarNumeroDecimal(energiaPorBateria, 1)} kWh`,
+                descricao: pt
+                    ? `Autonomia configurada: ${autonomia} dia(s), com DoD alvo de ${Math.round(dodAlvo * 100)}%.`
+                    : `Autonomia configurata: ${autonomia} giorno/i, con DoD target ${Math.round(dodAlvo * 100)}%.`
+            },
+            {
+                icone: '⚡',
+                titulo: pt ? 'Inversor Off-grid' : 'Inverter Off-grid',
+                valor: `${potenciaInversor} kW (MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)}A)`,
+                descricao: pt
+                    ? 'Dimensionado para picos de consumo e corrente fotovoltaica sem sobrecarga.'
+                    : 'Dimensionato per picchi di consumo e corrente fotovoltaica senza sovraccarichi.'
+            },
+            {
+                icone: '💰',
+                titulo: pt ? 'Custos Principais' : 'Costi Principali',
+                valor: custoTotalFmt,
+                descricao: pt
+                    ? `Baterias: ${custoBateriasFmt} | Paineis: ${custoPaineisFmt}.`
+                    : `Batterie: ${custoBateriasFmt} | Pannelli: ${custoPaineisFmt}.`
+            }
+        ],
+        dica: pt
+            ? `Com consumo de ${formatarNumeroDecimal(consumoMensal, 0)} kWh/mes, aumentar autonomia ou vida util eleva principalmente o custo de baterias.`
+            : `Con consumo di ${formatarNumeroDecimal(consumoMensal, 0)} kWh/mese, aumentare autonomia o vita utile aumenta soprattutto il costo delle batterie.`,
+        norma: pt ? 'Boas praticas ABSOLAR e ABNT NBR 16690 (Sistemas Fotovoltaicos)' : 'Buone pratiche ABSOLAR e ABNT NBR 16690 (Sistemi Fotovoltaici)'
+    });
+}
 
 function obterCoresGraficoSolar() {
     const css = getComputedStyle(document.documentElement);
@@ -147,14 +214,14 @@ function obterConfig() {
 
 const CICLOS_AGM = [
     {dod: 25, c: 1500}, {dod: 30, c: 1310}, {dod: 35, c: 1001}, {dod: 40, c: 785},
-    {dod: 45, c: 645}, {dod: 50, c: 698}, {dod: 55, c: 614}, {dod: 60, c: 545},
+    {dod: 45, c: 645}, {dod: 50, c: 630}, {dod: 55, c: 614}, {dod: 60, c: 545}, // c:698 era erro de digitação — corrigido para interpolação entre 645@45% e 614@55%
     {dod: 65, c: 486}, {dod: 70, c: 437}, {dod: 75, c: 395}, {dod: 80, c: 358},
     {dod: 85, c: 340}, {dod: 90, c: 315}, {dod: 95, c: 293}
 ];
 
 const CICLOS_LITIO = [
     {dod: 25, c: 10000}, {dod: 30, c: 9581}, {dod: 35, c: 7664}, {dod: 40, c: 6233},
-    {dod: 45, c: 5090}, {dod: 50, c: 5090}, {dod: 55, c: 4505}, {dod: 60, c: 4005},
+    {dod: 45, c: 5090}, {dod: 50, c: 4798}, {dod: 55, c: 4505}, {dod: 60, c: 4005}, // c:5090 era duplicata — corrigido para interpolação entre 5090@45% e 4505@55%
     {dod: 65, c: 3606}, {dod: 70, c: 3277}, {dod: 75, c: 3000}, {dod: 80, c: 2758},
     {dod: 85, c: 2581}, {dod: 90, c: 2399}, {dod: 95, c: 2239}
 ];
@@ -1765,6 +1832,21 @@ function calcularSistema(dodAlvo) {
         // MPPT está integrado no inversor, então não há custo separado
         custoMPPTEl.textContent = '-';
     }
+
+    renderizarExplicacaoSolar({
+        qtdPaineis,
+        POTENCIA_PAINEL,
+        qtdBaterias,
+        energiaPorBateria,
+        potenciaInversor,
+        correnteMPPT,
+        custoTotal,
+        custoBaterias,
+        custoPaineis,
+        autonomia,
+        dodAlvo,
+        consumoMensal
+    });
     
     // Motivo do dimensionamento das BATERIAS — explica os parâmetros que geraram o dimensionamento
     // Ex: autonomia X dias × consumoDiario Y kWh → utilizável necessário Z kWh → DoD alvo W% → capacidade nominal necessária T kWh → módulos M × S kWh

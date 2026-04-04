@@ -12,6 +12,7 @@
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { formatarNumero } from '../src/utils/formatters.js';
+import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
 
 // ============================================
 // CONSTANTES
@@ -99,6 +100,7 @@ class HeliceApp extends App {
             }
         });
         this.unidadeVelocidadeAtual = 'mph'; // Valor padrão
+        this.explicacao = new ExplicacaoResultado('v2-explicacao', i18n);
     }
 
     /**
@@ -705,6 +707,9 @@ class HeliceApp extends App {
         if (memorial && memorial.style.display !== 'none') {
             this.atualizarMemorial();
         }
+
+        // Painel de explicação V2.0
+        this.renderizarExplicacao({ velocidadeKnots, resultado, unidadeVelocidade, unidadePasso, slipPercent, reducao, rpmMotor });
     }
 
     /**
@@ -772,6 +777,60 @@ class HeliceApp extends App {
             memorial.style.display = 'none';
             if (resultados) resultados.style.display = 'block';
         }
+    }
+
+    renderizarExplicacao({ velocidadeKnots, resultado, unidadeVelocidade, unidadePasso, slipPercent, reducao, rpmMotor }) {
+        const pt = i18n.obterIdiomaAtual() === 'pt-BR';
+        const passoStr = formatarNumero(resultado.passo, 1) + '"';
+        const rpmHeliceStr = formatarNumero(resultado.rpmHelice, 0) + ' RPM';
+        const velTeorStr = formatarNumero(resultado.velocidadeTeorica, 1) + (pt ? ' nós' : ' nodi');
+        const velRealStr = formatarNumero(velocidadeKnots, 1) + (pt ? ' nós' : ' nodi');
+
+        this.explicacao.renderizar({
+            destaque: pt
+                ? `Para os seus parâmetros, o passo de hélice ideal calculado é ${passoStr}.`
+                : `Con i tuoi parametri, il passo dell'elica ideale è ${passoStr}.`,
+            linhas: [
+                {
+                    icone: '🚀',
+                    titulo: pt ? 'Passo da Hélice' : 'Passo dell\'Elica',
+                    valor: passoStr,
+                    descricao: pt
+                        ? 'Distância teórica que o barco avança a cada volta completa da hélice, sem considerar perdas.'
+                        : 'Distanza teorica che la barca percorre ad ogni giro completo dell\'elica, senza perdite.'
+                },
+                {
+                    icone: '⚙️',
+                    titulo: pt ? 'RPM na Hélice' : 'Giri all\'Elica',
+                    valor: rpmHeliceStr,
+                    descricao: pt
+                        ? `O motor gira a ${formatarNumero(rpmMotor, 0)} RPM e a rabeta reduz para ${formatarNumero(resultado.rpmHelice, 0)} RPM com relação ${formatarNumero(reducao, 2)}:1.`
+                        : `Il motore gira a ${formatarNumero(rpmMotor, 0)} RPM e il piede riduce a ${formatarNumero(resultado.rpmHelice, 0)} RPM con rapporto ${formatarNumero(reducao, 2)}:1.`
+                },
+                {
+                    icone: '💨',
+                    titulo: pt ? 'Velocidade Teórica' : 'Velocità Teorica',
+                    valor: velTeorStr,
+                    descricao: pt
+                        ? 'Velocidade máxima em condições ideais, sem resistência da água (slip zero).'
+                        : 'Velocità massima in condizioni ideali, senza resistenza dell\'acqua (slip zero).'
+                },
+                {
+                    icone: '🌊',
+                    titulo: pt ? 'Velocidade Real (com Slip)' : 'Velocità Reale (con Slip)',
+                    valor: velRealStr,
+                    descricao: pt
+                        ? `Com ${formatarNumero(slipPercent, 0)}% de slip (deslizamento na água), a velocidade efetiva é menor que a teórica.`
+                        : `Con ${formatarNumero(slipPercent, 0)}% di slip, la velocità effettiva è inferiore a quella teorica.`
+                }
+            ],
+            dica: pt
+                ? 'Hélices de 3 pás são padrão para uso recreativo. 4 pás oferecem mais torque e menor vibração a altas velocidades.'
+                : 'Eliche a 3 pale sono standard per uso ricreativo. 4 pale offrono più coppia e meno vibrazioni ad alta velocità.',
+            norma: pt
+                ? 'Fórmula ABYC — Constante 1056 (conversão pés × nós × RPM)'
+                : 'Formula ABYC — Costante 1056 (conversione piedi × nodi × RPM)'
+        });
     }
 
     /**

@@ -1,0 +1,344 @@
+/*
+ * v2-components.css  — EngenhariaNata V2.0
+ * Estilos para: painel de explicação de resultados, badge V2, chips de categoria (Bugs app).
+ * Importar em cada app: <link rel="stylesheet" href="../assets/css/v2-components.css">
+ * Para index.html: <link rel="stylesheet" href="assets/css/v2-components.css">
+ */
+
+/* ===================================================================
+   PAINEL DE EXPLICAÇÃO DE RESULTADOS
+=================================================================== */
+
+#v2-explicacao {
+    margin-top: 1.5rem;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    pointer-events: none;
+}
+
+#v2-explicacao.v2-explicacao-visivel {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.v2-explicacao-card {
+    background: var(--memorial-bg, var(--surface-color));
+    border: 1px solid var(--memorial-border, var(--border-color));
+    border-radius: var(--border-radius, 12px);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+/* Header */
+.v2-exp-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--memorial-border, var(--border-color));
+    padding-bottom: 0.6rem;
+}
+
+.v2-exp-header-icon {
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+.v2-exp-header-titulo {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--memorial-accent, var(--accent-color));
+    margin: 0;
+    letter-spacing: 0.01em;
+}
+
+/* Destaque principal */
+.v2-exp-destaque {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    background: var(--resumo-bg, var(--card-color));
+    border-left: 3px solid var(--accent-color);
+    padding: 0.6rem 0.85rem;
+    border-radius: 6px;
+    line-height: 1.4;
+}
+
+/* Linhas de explicação */
+.v2-exp-linhas {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.v2-exp-linha {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+}
+
+.v2-exp-icone {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    color: var(--accent-color);
+    min-width: 1.2rem;
+    text-align: center;
+}
+
+.v2-exp-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    flex: 1;
+}
+
+.v2-exp-titulo {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary, var(--text-color));
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.v2-exp-valor {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+.v2-exp-desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary, var(--text-color));
+    margin: 0;
+    line-height: 1.45;
+    opacity: 0.85;
+}
+
+/* Dica prática */
+.v2-exp-dica {
+    font-size: 0.875rem;
+    background: var(--info-bg, #e8f4f8);
+    border: 1px solid var(--info-border, #b8dde8);
+    border-radius: 8px;
+    padding: 0.6rem 0.85rem;
+    color: var(--text-color);
+    line-height: 1.45;
+}
+
+.v2-exp-dica-label {
+    font-weight: 600;
+    color: var(--accent-color);
+}
+
+/* Norma/referência */
+.v2-exp-norma {
+    font-size: 0.78rem;
+    color: var(--text-secondary, var(--text-color));
+    opacity: 0.72;
+    padding-top: 0.2rem;
+    border-top: 1px dashed var(--border-color);
+}
+
+.v2-exp-norma-label {
+    font-weight: 600;
+}
+
+/* ===================================================================
+   BADGE V2.0 — Adicionado ao header de cada app via JS
+=================================================================== */
+
+.v2-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #fff;
+    background: var(--accent-color);
+    border-radius: 20px;
+    padding: 0.18rem 0.55rem;
+    vertical-align: middle;
+    margin-left: 0.4rem;
+    text-transform: uppercase;
+    line-height: 1.3;
+    opacity: 0.9;
+    user-select: none;
+}
+
+/* ===================================================================
+   CHPS DE CATEGORIA — Bugs app
+=================================================================== */
+
+.v2-categoria-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.v2-chip {
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    border: 2px solid var(--border-color);
+    background: transparent;
+    color: var(--text-color);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+    font-family: inherit;
+}
+
+.v2-chip:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.v2-chip.ativo {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #fff;
+    font-weight: 600;
+}
+
+/* ===================================================================
+   HISTÓRICO DE FEEDBACKS — Bugs app
+=================================================================== */
+
+.v2-historico-section {
+    margin-top: 1.5rem;
+}
+
+.v2-historico-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 0.6rem 0;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.v2-historico-header h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-color);
+}
+
+.v2-historico-toggle {
+    font-size: 0.85rem;
+    color: var(--accent-color);
+    font-weight: 600;
+    user-select: none;
+}
+
+.v2-historico-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 0.75rem;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.v2-historico-lista.escondido {
+    display: none;
+}
+
+.v2-feedback-item {
+    background: var(--card-color, var(--surface-color));
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.85rem;
+    line-height: 1.45;
+}
+
+.v2-feedback-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.3rem;
+    flex-wrap: wrap;
+}
+
+.v2-feedback-item-cat {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.1rem 0.5rem;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.v2-cat-bug { background: #fee2e2; color: #b91c1c; }
+.v2-cat-sugestao { background: #fef9c3; color: #854d0e; }
+.v2-cat-elogio { background: #dcfce7; color: #166534; }
+
+.v2-feedback-item-data {
+    font-size: 0.75rem;
+    color: var(--text-secondary, var(--text-color));
+    opacity: 0.65;
+    margin-left: auto;
+}
+
+.v2-feedback-item-msg {
+    color: var(--text-color);
+    word-break: break-word;
+}
+
+.v2-historico-vazio {
+    text-align: center;
+    color: var(--text-secondary, var(--text-color));
+    opacity: 0.6;
+    font-size: 0.88rem;
+    padding: 1rem 0;
+}
+
+.v2-export-btn {
+    margin-top: 0.75rem;
+    font-size: 0.82rem;
+    padding: 0.45rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--accent-color);
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s;
+}
+
+.v2-export-btn:hover {
+    background: var(--card-color, var(--surface-color));
+}
+
+/* ===================================================================
+   DARK MODE OVERRIDES
+=================================================================== */
+
+[data-theme="dark"] .v2-exp-dica {
+    background: rgba(45, 159, 163, 0.12);
+    border-color: rgba(45, 159, 163, 0.3);
+}
+
+[data-theme="dark"] .v2-cat-bug { background: #450a0a; color: #fca5a5; }
+[data-theme="dark"] .v2-cat-sugestao { background: #422006; color: #fde68a; }
+[data-theme="dark"] .v2-cat-elogio { background: #052e16; color: #86efac; }
+
+/* ===================================================================
+   RESPONSIVE
+=================================================================== */
+
+@media (max-width: 480px) {
+    .v2-explicacao-card {
+        padding: 1rem;
+    }
+    .v2-exp-destaque {
+        font-size: 0.9rem;
+    }
+}

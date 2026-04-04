@@ -8,6 +8,7 @@
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { formatarNumero } from '../src/utils/formatters.js';
+import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
 
 // ============================================
 // CONSTANTES
@@ -32,6 +33,7 @@ class BitolaApp extends App {
                 aoTrocarIdioma: () => this.atualizarAposTrocaIdioma()
             }
         });
+        this.explicacao = new ExplicacaoResultado('v2-explicacao', i18n);
     }
 
     /**
@@ -594,6 +596,9 @@ class BitolaApp extends App {
                 disjuntor
             );
         }
+
+        // Painel de explicação V2.0
+        this.renderizarExplicacao({ potencia, comprimento, tensao, corrente, areaMin, bitolaSelecionada, quedaRealPercentual, quedaPercentual, disjuntor });
     }
 
     limparResultados() {
@@ -601,6 +606,72 @@ class BitolaApp extends App {
         ids.forEach(id => {
             const el = document.getElementById(id);
             if (el) el.textContent = '-';
+        });
+        this.explicacao.limpar();
+    }
+
+    renderizarExplicacao({ potencia, comprimento, tensao, corrente, areaMin, bitolaSelecionada, quedaRealPercentual, quedaPercentual, disjuntor }) {
+        const pt = i18n.obterIdiomaAtual() === 'pt-BR';
+        const bitolaStr = isFinite(bitolaSelecionada?.bitola)
+            ? this.formatarBitolaComercial(bitolaSelecionada.bitola, bitolaSelecionada.multiplicador)
+            : '-';
+
+        const quedaOk = quedaRealPercentual <= quedaPercentual;
+        const dicaPt = quedaOk
+            ? 'A queda de tensão está dentro do limite. O fio dimensionado é adequado para o circuito.'
+            : 'A queda de tensão real excede o limite especificado. Considere aumentar a bitola ou reduzir o comprimento.';
+        const dicaIt = quedaOk
+            ? 'La caduta di tensione è nei limiti. Il cavo dimensionato è adeguato per il circuito.'
+            : 'La caduta di tensione reale supera il limite. Considera di aumentare la sezione o ridurre la lunghezza.';
+
+        this.explicacao.renderizar({
+            destaque: pt
+                ? `Use fio de ${bitolaStr} para proteger este circuito com segurança.`
+                : `Usa cavo da ${bitolaStr} per proteggere questo circuito in sicurezza.`,
+            linhas: [
+                {
+                    icone: '⚡',
+                    titulo: pt ? 'Corrente do Circuito' : 'Corrente del Circuito',
+                    valor: `${formatarNumero(corrente, 2)} A`,
+                    descricao: pt
+                        ? `Com ${formatarNumero(potencia, 0)}W em ${formatarNumero(tensao, 1)}V. Quanto maior a corrente, mais grosso precisa ser o fio.`
+                        : `Con ${formatarNumero(potencia, 0)}W a ${formatarNumero(tensao, 1)}V. Maggiore la corrente, più grosso deve essere il cavo.`
+                },
+                {
+                    icone: '📏',
+                    titulo: pt ? 'Área Mínima Calculada' : 'Sezione Minima Calcolata',
+                    valor: `${formatarNumero(areaMin, 2)} mm²`,
+                    descricao: pt
+                        ? 'Calculada pela fórmula da resistividade do cobre (NBR 5410). O comercial aplica +25% de margem de segurança.'
+                        : 'Calcolata con la formula della resistività del rame. Il cavo commerciale applica un margine di sicurezza del +25%.'
+                },
+                {
+                    icone: '🔌',
+                    titulo: pt ? 'Bitola Comercial' : 'Sezione Commerciale',
+                    valor: bitolaStr,
+                    descricao: pt
+                        ? 'É a bitola padrão mais próxima disponível nas lojas. Esta é a que você vai comprar.'
+                        : 'È la sezione standard più vicina disponibile nei negozi. Questo è ciò che acquisterai.'
+                },
+                {
+                    icone: '📉',
+                    titulo: pt ? 'Queda de Tensão Real' : 'Caduta di Tensione Reale',
+                    valor: `${formatarNumero(quedaRealPercentual, 2)}% ${quedaOk ? '✅' : '⚠️'}`,
+                    descricao: pt
+                        ? `Até 3% é aceitável pela NBR 5410 para circuitos terminais. Limite definido: ${quedaPercentual}%.`
+                        : `Fino al 3% è accettabile per circuiti terminali. Limite impostato: ${quedaPercentual}%.`
+                },
+                {
+                    icone: '🔬',
+                    titulo: pt ? 'Disjuntor Recomendado' : 'Interruttore Raccomandato',
+                    valor: `${formatarNumero(disjuntor, 0)} A`,
+                    descricao: pt
+                        ? 'Desliga automaticamente se a corrente ultrapassar o limite, protegendo o fio e os equipamentos.'
+                        : 'Si disattiva automaticamente se la corrente supera il limite, proteggendo il cavo e le apparecchiature.'
+                }
+            ],
+            dica: pt ? dicaPt : dicaIt,
+            norma: pt ? 'ABNT NBR 5410:2004+Errata 1:2008 — Instalações Elétricas de Baixa Tensão' : 'ABNT NBR 5410:2004 — Impianti Elettrici a Bassa Tensione'
         });
     }
 

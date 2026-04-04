@@ -8,6 +8,7 @@
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { formatarNumero, formatarMoeda } from '../src/utils/formatters.js';
+import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
 
 // ============================================
 // CLASSE PRINCIPAL
@@ -91,6 +92,7 @@ class ArcondicionadoApp extends App {
         
         // Taxas de conversão de moeda
         this.TAXA_BRL_EUR = 6.19;
+        this.explicacao = new ExplicacaoResultado('v2-explicacao', i18n);
     }
     
     // ============================================
@@ -787,6 +789,58 @@ class ArcondicionadoApp extends App {
         if (elementoCustoInternas) {
             elementoCustoInternas.textContent = this.formatarMoedaComConversao(resultado.custoTotalUnidadesInternas);
         }
+
+        this.renderizarExplicacao(resultado, numAmbientes);
+    }
+
+    renderizarExplicacao(resultado, numAmbientes) {
+        const pt = i18n.obterIdiomaAtual() === 'pt-BR';
+        const capacidadeExterna = resultado.combinacaoExterna.reduce((soma, btu) => soma + btu, 0);
+        const folga = capacidadeExterna - resultado.btuTotal;
+
+        this.explicacao.renderizar({
+            destaque: pt
+                ? `Sistema multi-split recomendado para ${numAmbientes} ambiente(s), com carga térmica de ${this.formatarBTU(resultado.btuTotal)}.`
+                : `Sistema multi-split consigliato per ${numAmbientes} ambiente/i, con carico termico di ${this.formatarBTU(resultado.btuTotal)}.`,
+            linhas: [
+                {
+                    icone: '❄️',
+                    titulo: pt ? 'BTU Necessário' : 'BTU Necessario',
+                    valor: this.formatarBTU(resultado.btuTotal),
+                    descricao: pt
+                        ? 'Carga térmica calculada com área, altura, pessoas, equipamentos, insolação e isolamento.'
+                        : 'Carico termico calcolato con area, altezza, persone, apparecchi, insolazione e isolamento.'
+                },
+                {
+                    icone: '🏢',
+                    titulo: pt ? 'Unidade Externa' : 'Unita Esterna',
+                    valor: `${resultado.numUnidadesExternas} unidade(s)`,
+                    descricao: pt
+                        ? `Capacidade instalada: ${this.formatarBTU(capacidadeExterna)} (folga: ${this.formatarBTU(Math.max(folga, 0))}).`
+                        : `Capacita installata: ${this.formatarBTU(capacidadeExterna)} (margine: ${this.formatarBTU(Math.max(folga, 0))}).`
+                },
+                {
+                    icone: '🧩',
+                    titulo: pt ? 'Unidades Internas' : 'Unita Interne',
+                    valor: Object.values(resultado.unidadesInternasPorModelo).reduce((s, n) => s + n, 0).toString(),
+                    descricao: pt
+                        ? 'Distribuição das evaporadoras por ambiente para equilibrar conforto e eficiência.'
+                        : 'Distribuzione delle evaporatrici per ambiente per bilanciare comfort ed efficienza.'
+                },
+                {
+                    icone: '💰',
+                    titulo: pt ? 'Custo do Sistema' : 'Costo del Sistema',
+                    valor: this.formatarMoedaComConversao(resultado.custoTotal),
+                    descricao: pt
+                        ? `Externa: ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesExternas)} | Internas: ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesInternas)}.`
+                        : `Esterna: ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesExternas)} | Interne: ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesInternas)}.`
+                }
+            ],
+            dica: pt
+                ? 'Pé-direito alto e insolação forte elevam BTU. Melhor isolamento reduz consumo elétrico ao longo do tempo.'
+                : 'Altezza elevata e alta insolazione aumentano i BTU. Migliore isolamento riduce i consumi elettrici nel tempo.',
+            norma: pt ? 'Método residencial simplificado (ASHRAE / boas práticas HVAC)' : 'Metodo residenziale semplificato (ASHRAE / buone pratiche HVAC)'
+        });
     }
     
 

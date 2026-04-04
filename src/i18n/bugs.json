@@ -7,43 +7,40 @@
     "titulo": "Relatar Bug ou Sugestão",
     "descricao": "Encontrou algum problema ou tem uma ideia para melhorar? Conte-nos!",
     "formulario": {
-      "nome": "Seu Nome",
-      "email": "Seu Email",
-      "tipo": "Tipo de Relatório",
-      "bug": "🐛 Bug / Erro",
-      "sugestao": "💡 Sugestão / Melhoria",
-      "app": "Aplicativo",
-      "selecione": "Selecione...",
-      "principal": "Página Principal",
-      "solar": "Calculadora Solar",
-      "bitola": "Calculadora de Bitola",
-      "helice": "Calculadora de Hélice",
-      "mutuo": "Simulador de Financiamento",
-      "arcondicionado": "Ar Condicionado",
-      "aquecimento": "Aquecimento",
-      "fazenda": "Fazenda Auto-Sustentável",
-      "sobre": "Sobre",
-      "prioridade": "Prioridade",
-      "baixa": "Baixa",
-      "media": "Média",
-      "alta": "Alta",
-      "critica": "Crítica",
-      "titulo": "Título / Resumo",
-      "descricao": "Descrição Detalhada",
-      "descricaoPlaceholder": "Descreva o problema ou sugestão em detalhes...",
-      "enviar": "Enviar Relatório",
-      "enviando": "Enviando..."
+      "categoria": "Categoria",
+      "catBug": "🐛 Bug",
+      "catSugestao": "💡 Sugestão",
+      "catElogio": "⭐ Elogio",
+      "emailLabel": "Contato (Opcional)",
+      "emailPlaceholder": "seu@email.com",
+      "emailDica": "Informe seu email apenas se quiser receber resposta.",
+      "descricao": "Descrição *",
+      "descricaoPlaceholder": "Descreva o problema encontrado, o que você estava fazendo e o que esperava que acontecesse...",
+      "enviar": "📤 Enviar Relatório",
+      "enviando": "Enviando...",
+      "voltar": "← Voltar"
+    },
+    "historico": {
+      "titulo": "Meus Relatórios",
+      "vazio": "Nenhum relatório enviado ainda.",
+      "exportar": "⬇ Exportar como JSON"
+    },
+    "categorias": {
+      "bug": "Bug",
+      "sugestao": "Sugestão",
+      "elogio": "Elogio"
     },
     "mensagens": {
-      "sucesso": "✅ Relatório enviado com sucesso! Obrigado pelo feedback.",
-      "erro": "❌ Erro ao enviar. Tente novamente.",
-      "camposObrigatorios": "⚠️ Preencha todos os campos obrigatórios."
+      "sucesso": "✅ Relatório salvo! Obrigado pelo feedback.",
+      "erro": "❌ Erro ao salvar. Tente novamente.",
+      "camposObrigatorios": "⚠️ Preencha a descrição antes de enviar."
     },
     "aria": {
       "langPt": "Alterar idioma para Português",
       "langIt": "Alterar idioma para Italiano",
       "home": "Voltar à tela inicial"
-    }
+    },
+    "footer": "💻 Engenharia Nata @ 2026"
   },
   "it-IT": {
     "titles": {
@@ -53,42 +50,39 @@
     "titulo": "Segnala Bug o Suggerimento",
     "descricao": "Hai trovato un problema o hai un'idea per migliorare? Raccontaci!",
     "formulario": {
-      "nome": "Il Tuo Nome",
-      "email": "La Tua Email",
-      "tipo": "Tipo di Segnalazione",
-      "bug": "🐛 Bug / Errore",
-      "sugestao": "💡 Suggerimento / Miglioramento",
-      "app": "Applicazione",
-      "selecione": "Seleziona...",
-      "principal": "Pagina Principale",
-      "solar": "Calcolatore Solare",
-      "bitola": "Calcolatore di Calibro",
-      "helice": "Calcolatore di Elica",
-      "mutuo": "Simulatore di Finanziamento",
-      "arcondicionado": "Aria Condizionata",
-      "aquecimento": "Riscaldamento",
-      "fazenda": "Fattoria Auto-Sostenibile",
-      "sobre": "Informazioni",
-      "prioridade": "Priorità",
-      "baixa": "Bassa",
-      "media": "Media",
-      "alta": "Alta",
-      "critica": "Critica",
-      "titulo": "Titolo / Riepilogo",
-      "descricao": "Descrizione Dettagliata",
-      "descricaoPlaceholder": "Descrivi il problema o suggerimento in dettaglio...",
-      "enviar": "Invia Segnalazione",
-      "enviando": "Invio in corso..."
+      "categoria": "Categoria",
+      "catBug": "🐛 Bug",
+      "catSugestao": "💡 Suggerimento",
+      "catElogio": "⭐ Complimento",
+      "emailLabel": "Contatto (Opzionale)",
+      "emailPlaceholder": "tua@email.com",
+      "emailDica": "Inserisci la tua email solo se vuoi ricevere una risposta.",
+      "descricao": "Descrizione *",
+      "descricaoPlaceholder": "Descrivi il problema trovato, cosa stavi facendo e cosa ti aspettavi...",
+      "enviar": "📤 Invia Segnalazione",
+      "enviando": "Invio in corso...",
+      "voltar": "← Indietro"
+    },
+    "historico": {
+      "titulo": "Le Mie Segnalazioni",
+      "vazio": "Nessuna segnalazione inviata ancora.",
+      "exportar": "⬇ Esporta come JSON"
+    },
+    "categorias": {
+      "bug": "Bug",
+      "sugestao": "Suggerimento",
+      "elogio": "Complimento"
     },
     "mensagens": {
-      "sucesso": "✅ Segnalazione inviata con successo! Grazie per il feedback.",
-      "erro": "❌ Errore durante l'invio. Riprova.",
-      "camposObrigatorios": "⚠️ Compila tutti i campi obbligatori."
+      "sucesso": "✅ Segnalazione salvata! Grazie per il feedback.",
+      "erro": "❌ Errore durante il salvataggio. Riprova.",
+      "camposObrigatorios": "⚠️ Compila la descrizione prima di inviare."
     },
     "aria": {
       "langPt": "Cambia lingua in portoghese",
       "langIt": "Cambia lingua in italiano",
       "home": "Torna alla schermata iniziale"
-    }
+    },
+    "footer": "💻 Engenharia Nata @ 2026"
   }
 }

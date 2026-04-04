@@ -9,6 +9,7 @@
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { formatarNumero, formatarMoeda } from '../src/utils/formatters.js';
+import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
 
 // ============================================
 // CLASSE PRINCIPAL
@@ -139,6 +140,7 @@ class AquecimentoApp extends App {
         this.graficoDistribuicao = null;
         this.graficoComparacao = null;
         this.graficoEficiencia = null;
+        this.explicacao = new ExplicacaoResultado('v2-explicacao', i18n);
     }
     
     // Getter para traduções
@@ -1000,6 +1002,19 @@ class AquecimentoApp extends App {
         // Atualizar gráficos
         const energiaSolar_kWh_dia = energiaSolarTotal;
         this.atualizarGraficos(demandaAgua_kWh_dia, demandaCasa_kWh_dia, energiaSolar_kWh_dia, calcularAgua, calcularCasa);
+
+        this.renderizarExplicacao({
+            numeroPaineis,
+            areaTotal,
+            demandaAgua_kWh_dia,
+            demandaCasa_kWh_dia,
+            volumeBoiler,
+            potenciaCasa_W,
+            custoTotal,
+            calcularAgua,
+            calcularCasa,
+            moedaSimbolo
+        });
     }
     
     // ============================================
@@ -1016,6 +1031,47 @@ class AquecimentoApp extends App {
         
         // Gráfico de Eficiência do Sistema
         this.atualizarGraficoEficiencia(energiaSolar_kWh_dia, demandaAgua_kWh_dia, demandaCasa_kWh_dia, calcularAgua, calcularCasa, idioma);
+    }
+
+    renderizarExplicacao({ numeroPaineis, areaTotal, demandaAgua_kWh_dia, demandaCasa_kWh_dia, volumeBoiler, potenciaCasa_W, custoTotal, calcularAgua, calcularCasa, moedaSimbolo }) {
+        const pt = i18n.getIdioma() === 'pt-BR';
+        const demandaTotal = demandaAgua_kWh_dia + demandaCasa_kWh_dia;
+
+        this.explicacao.renderizar({
+            destaque: pt
+                ? `Dimensionamento recomendado com ${numeroPaineis} painéis e área coletora de ${this.formatarDecimal(areaTotal, 2)} m².`
+                : `Dimensionamento consigliato con ${numeroPaineis} pannelli e area collettori di ${this.formatarDecimal(areaTotal, 2)} m².`,
+            linhas: [
+                {
+                    icone: '🔥',
+                    titulo: pt ? 'Demanda Térmica Total' : 'Domanda Termica Totale',
+                    valor: `${this.formatarDecimal(demandaTotal, 2)} kWh/dia`,
+                    descricao: pt
+                        ? `Água: ${this.formatarDecimal(demandaAgua_kWh_dia, 2)} | Casa: ${this.formatarDecimal(demandaCasa_kWh_dia, 2)}.`
+                        : `Acqua: ${this.formatarDecimal(demandaAgua_kWh_dia, 2)} | Casa: ${this.formatarDecimal(demandaCasa_kWh_dia, 2)}.`
+                },
+                {
+                    icone: '🛢️',
+                    titulo: pt ? 'Boiler e Potência' : 'Boiler e Potenza',
+                    valor: calcularAgua ? `${this.formatarDecimal(volumeBoiler, 0)} L` : (pt ? 'Boiler desativado' : 'Boiler disattivato'),
+                    descricao: calcularCasa
+                        ? (pt ? `Potência para ambiente: ${this.formatarPotenciaWkW(potenciaCasa_W)}.` : `Potenza ambiente: ${this.formatarPotenciaWkW(potenciaCasa_W)}.`)
+                        : (pt ? 'Aquecimento da casa desativado.' : 'Riscaldamento casa disattivato.')
+                },
+                {
+                    icone: '💰',
+                    titulo: pt ? 'Custo Estimado' : 'Costo Stimato',
+                    valor: `${moedaSimbolo} ${this.formatarNumeroComSufixo(custoTotal, 2)}`,
+                    descricao: pt
+                        ? 'Inclui coletores, boiler, tubulação, isolantes e termossifões.'
+                        : 'Include collettori, boiler, tubazioni, isolanti e termosifoni.'
+                }
+            ],
+            dica: pt
+                ? 'Se aumentar pessoas, área da casa ou altitude, a demanda de calor tende a subir.'
+                : 'Se aumenti persone, area casa o altitudine, la domanda di calore tende a salire.',
+            norma: pt ? 'Boas práticas ABNT NBR 15569 para aquecimento solar térmico' : 'Buone pratiche ABNT NBR 15569 per riscaldamento solare termico'
+        });
     }
     
     atualizarGraficoDistribuicao(demandaAgua, demandaCasa, calcularAgua, calcularCasa, idioma) {
