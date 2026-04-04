@@ -41,6 +41,14 @@
     --input-arrows-gap: 8px;
 }
 
+html[data-theme="dark"] {
+    --control-border: #4a4f58;
+    --control-border-focus: var(--accent-color, #5cc9d0);
+    --control-bg: var(--surface-raised, #2a2d33);
+    --control-bg-hover: #31363d;
+    --control-bg-focus: var(--surface-bg, #252526);
+}
+
 /* ============================================
    CONTAINER DE CONTROLES
    ============================================ */
@@ -306,7 +314,7 @@ input[type="range"]::-moz-range-thumb:active {
 
 .radio-label:hover {
     border-color: var(--control-accent, #2d9fa3ff);
-    background: #e0f7fa;
+    background: var(--choice-chip-hover-bg, #e0f7fa);
 }
 
 .radio-label input[type="radio"] {
@@ -336,7 +344,7 @@ input[type="range"]::-moz-range-thumb:active {
     transform: translate(-50%, -50%);
     width: 8px;
     height: 8px;
-    background: white;
+    background: var(--surface-bg, white);
     border-radius: 50%;
 }
 
@@ -348,7 +356,7 @@ input[type="range"]::-moz-range-thumb:active {
 .radio-text {
     font-size: 15px;
     font-weight: 500;
-    color: #555;
+    color: var(--text-secondary, #555);
     transition: all 0.3s ease;
     text-align: center;
 }
@@ -390,13 +398,13 @@ input[type="range"]::-moz-range-thumb:active {
     transform: translate(-50%, -50%);
     width: 6px;
     height: 6px;
-    background: white;
+    background: var(--surface-bg, white);
     border-radius: 50%;
 }
 
 .radio-label-inline .radio-text {
     font-size: 0.85rem;
-    color: #555;
+    color: var(--text-secondary, #555);
     font-weight: 500;
 }
 
@@ -439,7 +447,7 @@ input[type="range"]::-moz-range-thumb:active {
     cursor: pointer;
     transition: all 0.3s ease;
     margin-top: 8px;
-    background: #f5f5f5;
+    background: var(--surface-raised, #f5f5f5);
     color: var(--control-accent, #2d9fa3ff);
 }
 

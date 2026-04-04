@@ -13,7 +13,7 @@ from security import InMemoryRateLimiter, get_client_ip, require_auth, validate_
 from settings import get_settings
 
 settings = get_settings()
-app = FastAPI(title='Popov LLM API', version='1.1.0')
+app = FastAPI(title='Engenharia NATA LLM API', version='1.1.0')
 
 MODEL_ALIASES = {
     'hunter-alpha': 'hunter',

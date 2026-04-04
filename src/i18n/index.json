@@ -1,9 +1,6 @@
 {
   "pt-BR": {
     "app-about": "Sobre o Projeto",
-    "app-popov": "Popov IA",
-    "app-popov-title": "Popov IA - Assistente Privado",
-    "app-popov-description": "Assistente IA privado via Tailscale. Acesse recursos avançados de engenharia com segurança e privacidade.",
     "app-bugs": "Reportar Bug",
     "app-helice": "Hélice",
     "app-mutuo": "Empréstimo",
@@ -66,9 +63,6 @@
     "app-about": "Sul Progetto",
     "app-bugs": "Segnala Bug",
     "app-helice": "Elica",
-    "app-popov": "Popov IA",
-    "app-popov-title": "Popov IA - Assistente Privato",
-    "app-popov-description": "Assistente IA privato via Tailscale. Accedi a risorse avanzate di ingegneria con sicurezza e privacy.",
     "app-mutuo": "Mutuo",
     "app-solar": "Energia Solare",
     "app-bitola": "Sezione Cavi",

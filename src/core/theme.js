@@ -61,17 +61,21 @@ export function alternarTema() {
 }
 
 function garantirBotaoTema() {
-    if (document.getElementById(TOGGLE_ID)) {
-        return;
+    const host = document.querySelector('.language-selector, .seletor-idioma') || document.body;
+    let btn = document.getElementById(TOGGLE_ID);
+
+    if (!btn) {
+        btn = document.createElement('button');
+        btn.id = TOGGLE_ID;
+        btn.type = 'button';
+        btn.className = 'theme-toggle-btn';
+        btn.addEventListener('click', alternarTema);
     }
 
-    const btn = document.createElement('button');
-    btn.id = TOGGLE_ID;
-    btn.type = 'button';
-    btn.className = 'theme-toggle-btn';
-    btn.addEventListener('click', alternarTema);
+    if (btn.parentElement !== host) {
+        host.appendChild(btn);
+    }
 
-    document.body.appendChild(btn);
     atualizarBotaoTheme(document.documentElement.getAttribute(THEME_ATTR) || THEME_LIGHT);
 }
 

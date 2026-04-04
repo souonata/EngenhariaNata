@@ -501,42 +501,42 @@
             </div>
 
             <!-- Sistema Multi-Split -->
-            <div>
-                <h3 style="margin-bottom: 15px; color: #1976D2;" data-i18n="resultado-multisplit-title">🏢 Sistema Multi-Split</h3>
+            <div class="multisplit-section">
+                <h3 class="resultado-subtitulo" data-i18n="resultado-multisplit-title">🏢 Sistema Multi-Split</h3>
 
                 <!-- 1. Custo Total em destaque primeiro -->
-                <div class="resultado-item destaque" style="margin-bottom: 20px;">
+                <div class="resultado-item destaque resultado-item-destaque-principal">
                     <span class="label-resultado" data-i18n="resultado-custo-sistema">Custo Estimado do Sistema:</span>
                     <span class="valor-resultado-grande" id="custoSistemaMultisplit">-</span>
                 </div>
 
                 <!-- 2. Detalhamento dos Custos -->
-                <div class="info-box" style="background: #fff3e0; border-left-color: #ff9800; margin-bottom: 20px;">
-                    <p style="color: #e65100; font-weight: 600; margin-bottom: 10px;" data-i18n="detalhamento-custos">💰 Detalhamento dos Custos:</p>
-                    <ul style="list-style: none; padding: 0; margin: 0;">
-                        <li style="padding: 8px 0; border-bottom: 1px solid #ffe0b2; display: flex; justify-content: space-between; align-items: center;">
+                <div class="info-box custos-detalhe-box">
+                    <p class="custos-detalhe-titulo" data-i18n="detalhamento-custos">💰 Detalhamento dos Custos:</p>
+                    <ul class="custos-detalhe-lista">
+                        <li>
                             <span data-i18n="custo-unidade-externa">Unidade Externa:</span>
-                            <strong style="color: #e65100;" id="custoUnidadeExternaMultisplit">-</strong>
+                            <strong id="custoUnidadeExternaMultisplit">-</strong>
                         </li>
-                        <li style="padding: 8px 0; border-bottom: 1px solid #ffe0b2; display: flex; justify-content: space-between; align-items: center;">
+                        <li>
                             <span data-i18n="custo-unidades-internas">Unidades Internas:</span>
-                            <strong style="color: #e65100;" id="custoUnidadesInternasMultisplit">-</strong>
+                            <strong id="custoUnidadesInternasMultisplit">-</strong>
                         </li>
                     </ul>
                 </div>
 
                 <!-- 3. Dados Técnicos -->
-                <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; border-left: 4px solid #1976D2;">
-                    <p style="color: #1976D2; font-weight: 600; margin-bottom: 10px; margin-top: 0;" data-i18n="dados-tecnicos">⚙️ Dados Técnicos:</p>
-                    <div class="resultado-item" style="border-bottom: 1px solid #e0e0e0; padding: 8px 0;">
+                <div class="dados-tecnicos-box">
+                    <p class="dados-tecnicos-titulo" data-i18n="dados-tecnicos">⚙️ Dados Técnicos:</p>
+                    <div class="resultado-item resultado-item-tecnico">
                         <span class="label-resultado" data-i18n="resultado-btu-total">BTU Total Necessário:</span>
                         <span class="valor-resultado" id="btuTotalMultisplit">-</span>
                     </div>
-                    <div class="resultado-item" style="border-bottom: 1px solid #e0e0e0; padding: 8px 0;">
+                    <div class="resultado-item resultado-item-tecnico">
                         <span class="label-resultado" data-i18n="resultado-unidade-externa">Unidade Externa (Condensadora):</span>
                         <span class="valor-resultado" id="unidadeExternaMultisplit">-</span>
                     </div>
-                    <div class="resultado-item" style="padding: 8px 0; border-bottom: none;">
+                    <div class="resultado-item resultado-item-tecnico resultado-item-tecnico-final">
                         <span class="label-resultado" data-i18n="resultado-unidades-internas">Unidades Internas (Evaporadoras):</span>
                         <span class="valor-resultado" id="unidadesInternasMultisplit">-</span>
                     </div>
@@ -559,8 +559,8 @@
     </a>
 
     <!-- Scripts -->
-    <!-- Chart.js para gráficos - DEVE ser carregado ANTES do módulo -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js local para gráficos - DEVE ser carregado ANTES do módulo -->
+    <script src="../assets/js/vendor/chart.umd.js"></script>
     <script type="module" src="arcondicionado-script.js?v=1.0.2"></script>
 </body>
 </html>

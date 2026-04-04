@@ -430,6 +430,105 @@ footer p {
     font-style: italic;
 }
 
+.multisplit-section {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.resultado-subtitulo {
+    margin-bottom: 0;
+    color: #1976D2;
+}
+
+.resultado-item-destaque-principal {
+    margin-bottom: 0;
+}
+
+.custos-detalhe-box {
+    margin-bottom: 0;
+    background: var(--warning-bg, #fff3e0);
+    border-left-color: var(--warning-border, #ff9800);
+}
+
+.custos-detalhe-titulo {
+    color: #e65100;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.custos-detalhe-lista {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.custos-detalhe-lista li {
+    padding: 8px 0;
+    border-bottom: 1px solid #ffe0b2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.custos-detalhe-lista li:last-child {
+    border-bottom: none;
+}
+
+.custos-detalhe-lista strong {
+    color: #e65100;
+}
+
+.dados-tecnicos-box {
+    background: var(--surface-raised, #f5f5f5);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #1976D2;
+}
+
+.dados-tecnicos-titulo {
+    color: #1976D2;
+    font-weight: 600;
+    margin-bottom: 10px;
+    margin-top: 0;
+}
+
+.resultado-item-tecnico {
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+    padding: 8px 0;
+    margin-bottom: 0;
+    border-left: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.resultado-item-tecnico-final {
+    border-bottom: none;
+}
+
+html[data-theme="dark"] .resultado-subtitulo {
+    color: #7bb5ff;
+}
+
+html[data-theme="dark"] .custos-detalhe-titulo,
+html[data-theme="dark"] .custos-detalhe-lista strong {
+    color: #ffbe73;
+}
+
+html[data-theme="dark"] .custos-detalhe-lista li {
+    border-bottom-color: rgba(255, 190, 115, 0.18);
+}
+
+html[data-theme="dark"] .dados-tecnicos-box {
+    border-left-color: #6ea8ff;
+}
+
+html[data-theme="dark"] .dados-tecnicos-titulo {
+    color: #8dbdff;
+}
+
 @media (max-width: 768px) {
     .classe-box {
         min-width: 60px;

@@ -8,6 +8,8 @@
     --text-primary: #333;
     --text-secondary: #666;
     --surface-bg: #ffffff;
+    --surface-raised: #f7f8fb;
+    --surface-raised-strong: #eef2f7;
     --surface-muted: #f5f5f5;
     --surface-soft: #f0f0f0;
     --border-color: #e0e0e0;
@@ -103,6 +105,11 @@
     --info-bg: #e8f5e9;
     --info-border: #4caf50;
     --info-text: #2e7d32;
+    --warning-bg: #fff3cd;
+    --warning-border: #ffc107;
+    --warning-text: #7a5b00;
+    --feature-bg: var(--surface-bg);
+    --stats-bg: var(--surface-bg);
     --resumo-bg: #f0f4ff;
     
     /* Resultado colors */
@@ -110,6 +117,9 @@
     --resultado-border: var(--accent-color, #2d9fa3ff);
     --resultado-label: #666;
     --resultado-value: #333;
+    --resultado-destaque-bg: linear-gradient(135deg, #67c7d0 0%, #5fb8c4 100%);
+    --resultado-destaque-border: rgba(45, 159, 163, 0.24);
+    --resultado-destaque-shadow: 0 10px 22px rgba(45, 159, 163, 0.18);
     
     /* Checkbox colors */
     --checkbox-border: #e0e0e0;
@@ -123,6 +133,8 @@ html[data-theme="dark"] {
     --text-primary: #e6e6e6;
     --text-secondary: #b8b8b8;
     --surface-bg: #252526;
+    --surface-raised: #2a2d33;
+    --surface-raised-strong: #31363d;
     --surface-muted: #2d2d30;
     --surface-soft: #333337;
     --border-color: #3f3f46;
@@ -159,11 +171,19 @@ html[data-theme="dark"] {
     --info-bg: #173329;
     --info-border: #2ea16a;
     --info-text: #bdebd3;
+    --warning-bg: #3a2f14;
+    --warning-border: #d39a1a;
+    --warning-text: #ffd780;
+    --feature-bg: #2b3036;
+    --stats-bg: #2a2f35;
     --resumo-bg: #1f2937;
 
     --resultado-bg: #2d2d30;
     --resultado-label: #b8b8b8;
     --resultado-value: #e6e6e6;
+    --resultado-destaque-bg: linear-gradient(135deg, #3a7a82 0%, #315a61 100%);
+    --resultado-destaque-border: rgba(92, 201, 208, 0.32);
+    --resultado-destaque-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
 
     --checkbox-border: #4a4a52;
     --checkbox-checked-bg: rgba(92, 201, 208, 0.16);
@@ -378,11 +398,14 @@ footer p {
 .language-selector, .seletor-idioma {
     display: flex;
     justify-content: center;               /* always centered horizontally */
+    align-items: center;
     gap: var(--lang-selector-gap, 8px);    /* consistent spacing between buttons */
     margin: var(--lang-selector-margin, 15px auto 15px auto); /* top/right/bottom/left - espaçamento fixo */
-    z-index: 100;                          /* ensure it's above device visuals */
-    width: 100%;                           /* helps centering inside containers */
-    position: relative;                    /* permite posicionamento consistente */
+    z-index: 1400;                         /* ensure it's above device visuals */
+    width: fit-content;
+    max-width: calc(100vw - 16px);
+    position: sticky;
+    top: 10px;
 }
 /* Small helpers scoped for language buttons */
 .btn-idioma .flag, .lang-btn .flag { font-size: 1.1rem; }
@@ -541,7 +564,7 @@ input[type="range"]::-webkit-slider-thumb {
     border-radius: 50%;
     cursor: grab;
     box-shadow: 0 3px 8px rgba(0,0,0,0.3); /* Sombra mais forte */
-    border: 3px solid white; /* Borda branca para destacar */
+    border: 3px solid var(--surface-bg, white); /* Borda integrada ao tema */
     transition: all 0.2s ease;
 }
 
@@ -560,7 +583,7 @@ input[type="range"]::-moz-range-thumb {
     height: 36px; /* Botão maior - mesmo tamanho do slider de parcelas */
     background: linear-gradient(135deg, var(--accent-color, #2d9fa3ff) 0%, var(--accent-secondary, #667eea) 100%);
     border-radius: 50%;
-    border: 3px solid white; /* Borda branca para destacar */
+    border: 3px solid var(--surface-bg, white); /* Borda integrada ao tema */
     cursor: grab;
     box-shadow: 0 3px 8px rgba(0,0,0,0.3);
     transition: all 0.2s ease;
@@ -585,6 +608,7 @@ input[type="range"]::-moz-range-thumb:active {
     padding: 12px 15px;
     box-shadow: var(--shadow-elevated, 0 3px 15px rgba(0, 0, 0, 0.1));
     margin-bottom: 10px;
+    border: 1px solid var(--border-color, #e0e0e0);
 }
 
 /* ============================================
@@ -790,12 +814,13 @@ input[type="range"]::-moz-range-thumb:active {
     align-items: center;
     padding: 10px 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    background: var(--resultado-bg, #f5f5f5);
+    background: var(--surface-raised, var(--resultado-bg, #f5f5f5));
     border-radius: 8px;
     margin-bottom: 8px;
     padding: 12px;
     border-left: 4px solid var(--resultado-border, var(--accent-color, #2d9fa3ff));
     border-bottom: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .resultado-item:last-child {
@@ -804,12 +829,14 @@ input[type="range"]::-moz-range-thumb:active {
 }
 
 .resultado-item.destaque {
-    background: linear-gradient(135deg, var(--accent-color, #2d9fa3ff) 0%, var(--accent-hover, #1e7e82) 100%);
+    background: var(--resultado-destaque-bg, linear-gradient(135deg, var(--accent-color, #2d9fa3ff) 0%, var(--accent-hover, #1e7e82) 100%));
     color: white;
     padding: 16px;
     border-radius: 8px;
     margin: 12px 0;
+    border: 1px solid var(--resultado-destaque-border, rgba(45, 159, 163, 0.24));
     border-left: none;
+    box-shadow: var(--resultado-destaque-shadow, 0 10px 22px rgba(45, 159, 163, 0.18));
 }
 
 .label-resultado {
@@ -1134,10 +1161,8 @@ input[type="range"]::-moz-range-thumb:active {
 }
 
 .theme-toggle-btn {
-    position: fixed;
-    top: 14px;
-    right: 14px;
-    z-index: 2000;
+    position: static;
+    z-index: 1;
     min-width: 72px;
     height: 36px;
     padding: 0 12px;
@@ -1151,6 +1176,8 @@ input[type="range"]::-moz-range-thumb:active {
     box-shadow: var(--shadow-elevated, 0 3px 15px rgba(0, 0, 0, 0.1));
     cursor: pointer;
     transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    margin-left: 6px;
+    flex: 0 0 auto;
 }
 
 .theme-toggle-btn:hover {
@@ -1165,8 +1192,6 @@ input[type="range"]::-moz-range-thumb:active {
 
 @media (max-width: 768px) {
     .theme-toggle-btn {
-        top: 10px;
-        right: 10px;
         min-width: 68px;
         height: 34px;
         font-size: 0.74rem;

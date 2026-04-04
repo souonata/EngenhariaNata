@@ -11,7 +11,7 @@
     <meta http-equiv="Expires" content="0">
     
     <!-- Content Security Policy (fallback caso .htaccess não seja aplicado) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://docs.google.com https://script.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https://cdn.jsdelivr.net https://docs.google.com https://script.google.com https://*.googleapis.com https://worldtimeapi.org; frame-src https://docs.google.com; object-src 'none'; base-uri 'self'; form-action 'self' https://docs.google.com; upgrade-insecure-requests;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://docs.google.com https://script.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https://docs.google.com https://script.google.com https://*.googleapis.com https://worldtimeapi.org; frame-src https://docs.google.com; object-src 'none'; base-uri 'self'; form-action 'self' https://docs.google.com; upgrade-insecure-requests;">
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -115,22 +115,6 @@
             <div class="apps-grid">
                 
                 <!-- Ícone do aplicativo Sobre o Projeto -->
-                <!-- Ícone do aplicativo Popov IA -->
-                <a href="popov/popov.html" class="app-icon" data-i18n-aria="app-popov">
-                    <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="gradient-popov" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#4F8EDB;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#1B2A4F;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-popov)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">🤖</text>
-                        </svg>
-                    </div>
-                    <span class="app-name" data-i18n="app-popov">Popov IA</span>
-                </a>
                 <!-- Ao clicar, abre a página sobre/sobre.html -->
                 <a href="sobre/sobre.html" class="app-icon" data-i18n-aria="app-about">
                     <!-- Ícone SVG personalizado com gradiente azul -->
@@ -325,26 +309,6 @@
         <p class="section-subtitle" data-i18n="apps-description-subtitle">Ferramentas práticas para cálculos de engenharia e finanças</p>
         
         <div class="apps-list">
-            <!-- App: Popov IA -->
-            <div class="app-card">
-                <div class="app-card-header">
-                    <a href="popov/popov.html" data-i18n-aria="app-popov">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
-                            <defs>
-                                <linearGradient id="gradient-popov-desc" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#4F8EDB;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#1B2A4F;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-popov-desc)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">🤖</text>
-                        </svg>
-                    </a>
-                    <h3><a href="popov/popov.html" data-i18n="app-popov-title">Popov IA - Assistente Privado</a></h3>
-                </div>
-                <p class="app-description" data-i18n="app-popov-description">Assistente IA privado via Tailscale. Acesse recursos avançados de engenharia com segurança e privacidade.</p>
-                <a href="popov/popov.html" class="app-link" data-i18n="app-link-view">Ver página →</a>
-            </div>
             <!-- App: Sobre -->
             <div class="app-card">
                 <div class="app-card-header">

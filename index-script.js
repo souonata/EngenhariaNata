@@ -21,7 +21,6 @@ const versoesAppsPadrao = {
     'arcondicionado': '0.2.0',
     'aquecimento': '0.2.0',
     'solar': '0.20.0',
-    'popov': '1.0.0',
     'fazenda': '0.1.0'
 };
 
@@ -141,7 +140,6 @@ class IndexApp extends App {
             'arcondicionado/arcondicionado.html': 'arcondicionado',
             'aquecimento/aquecimento.html': 'aquecimento',
             'solar/solar.html': 'solar',
-            'popov/popov.html': 'popov',
             'fazenda/fazenda.html': 'fazenda'
         };
 

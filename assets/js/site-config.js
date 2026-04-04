@@ -38,7 +38,7 @@
         ASSETS: {
             CSS_BASE: 'assets/css/',
             JS_BASE: 'assets/js/',
-            CHARTJS_CDN: 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js'
+            CHARTJS_CDN: '/assets/js/vendor/chart.umd.js'
         },
 
         // Configurações de interface
@@ -631,7 +631,6 @@ function carregarChartJS(callback, plugins = []) {
         const script = document.createElement('script');
         script.src = SiteConfig.ASSETS.CHARTJS_CDN;
         script.async = true;
-        script.crossOrigin = 'anonymous'; // Permite CORS para evitar problemas
         
         script.onload = () => {
             // Carrega plugins se especificados

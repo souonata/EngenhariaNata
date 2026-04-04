@@ -49,8 +49,7 @@ export default defineConfig({
         mutuo: resolve(projectRoot, 'mutuo/mutuo.html'),
         solar: resolve(projectRoot, 'solar/solar.html'),
         solarConfig: resolve(projectRoot, 'solar/config.html'),
-        sobre: resolve(projectRoot, 'sobre/sobre.html'),
-        popov: resolve(projectRoot, 'popov/popov.html')
+        sobre: resolve(projectRoot, 'sobre/sobre.html')
       },
       output: {
         // Code splitting para otimização
