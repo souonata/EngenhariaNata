@@ -318,7 +318,36 @@
     const toUrl = (base, path) => {
       const safeBase = (base || '').trim().replace(/\/+$/, '');
       const safePath = (path || '').trim();
+
+      if (!safeBase) {
+        const origin = window.location.origin || '';
+        if (origin && origin !== 'null') {
+          return `${origin}${safePath.startsWith('/') ? safePath : '/' + safePath}`;
+        }
+      }
+
       return `${safeBase}${safePath.startsWith('/') ? safePath : '/' + safePath}`;
+    };
+
+    const buildCandidateUrls = (base, path) => {
+      const primary = toUrl(base, path);
+      const candidates = [primary];
+
+      if (primary.includes('://localhost')) {
+        candidates.push(primary.replace('://localhost', '://127.0.0.1'));
+      } else if (primary.includes('://127.0.0.1')) {
+        candidates.push(primary.replace('://127.0.0.1', '://localhost'));
+      }
+
+      return [...new Set(candidates)];
+    };
+
+    const isConnectionError = (error) => {
+      if (!error || typeof error.message !== 'string') {
+        return false;
+      }
+      const msg = error.message.toLowerCase();
+      return msg.includes('failed to fetch') || msg.includes('networkerror') || msg.includes('network error');
     };
 
     const setBusy = (busy) => {
@@ -359,13 +388,19 @@
     };
 
     const requestJson = async (url, options = {}) => {
+      const hasBody = Boolean(options.body);
+      const headers = {
+        ...(options.headers || {})
+      };
+
+      if (hasBody) {
+        headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+      }
+
       const response = await fetch(url, {
         method: options.method || 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(options.headers || {})
-        },
-        body: options.body ? JSON.stringify(options.body) : undefined
+        headers,
+        body: hasBody ? JSON.stringify(options.body) : undefined
       });
 
       const text = await response.text();
@@ -388,21 +423,49 @@
       ui.openSiteLink.href = site;
     };
 
+    const writeConnectionHelp = (baseUrl) => {
+      const normalized = (baseUrl || '').trim() || '(mesma origem)';
+      writeLog(`API indisponivel em ${normalized}. Inicie o controlador em local/: npm run control`);
+      writeLog('No Windows voce pode usar o arquivo iniciar-dashboard-local.bat para abrir tudo automaticamente.');
+    };
+
     const refreshStatus = async () => {
       setBusy(true);
       try {
-        const url = toUrl(ui.apiBaseUrl.value, ui.statusPath.value);
-        const data = await requestJson(url);
+        const urls = buildCandidateUrls(ui.apiBaseUrl.value, ui.statusPath.value);
+        let data = null;
+        let usedUrl = urls[0];
+        let lastError = null;
+
+        for (const candidate of urls) {
+          try {
+            data = await requestJson(candidate);
+            usedUrl = candidate;
+            lastError = null;
+            break;
+          } catch (error) {
+            lastError = error;
+          }
+        }
+
+        if (lastError) {
+          throw lastError;
+        }
+
         const parsed = parseStatus(data);
         setPill(parsed.state);
         ui.statusUpdated.textContent = `Atualizado: ${new Date().toLocaleString('pt-BR')}`;
         ui.statusRaw.textContent = `Resposta: ${JSON.stringify(parsed.raw)}`;
-        writeLog(`Status consultado em ${url}`);
+        writeLog(`Status consultado em ${usedUrl}`);
       } catch (error) {
         setPill('desconhecido');
         ui.statusUpdated.textContent = `Atualizado: ${new Date().toLocaleString('pt-BR')}`;
         ui.statusRaw.textContent = 'Resposta: erro de conexao';
         writeLog(`Falha ao consultar status: ${error.message}`);
+
+        if (isConnectionError(error)) {
+          writeConnectionHelp(ui.apiBaseUrl.value);
+        }
       } finally {
         setBusy(false);
       }
@@ -411,12 +474,34 @@
     const action = async (pathInput, actionName) => {
       setBusy(true);
       try {
-        const url = toUrl(ui.apiBaseUrl.value, pathInput.value);
-        const data = await requestJson(url, { method: 'POST' });
-        writeLog(`Acao '${actionName}' executada em ${url}: ${JSON.stringify(data)}`);
+        const urls = buildCandidateUrls(ui.apiBaseUrl.value, pathInput.value);
+        let data = null;
+        let usedUrl = urls[0];
+        let lastError = null;
+
+        for (const candidate of urls) {
+          try {
+            data = await requestJson(candidate, { method: 'POST' });
+            usedUrl = candidate;
+            lastError = null;
+            break;
+          } catch (error) {
+            lastError = error;
+          }
+        }
+
+        if (lastError) {
+          throw lastError;
+        }
+
+        writeLog(`Acao '${actionName}' executada em ${usedUrl}: ${JSON.stringify(data)}`);
         await refreshStatus();
       } catch (error) {
         writeLog(`Falha ao ${actionName}: ${error.message}`);
+
+        if (isConnectionError(error)) {
+          writeConnectionHelp(ui.apiBaseUrl.value);
+        }
       } finally {
         setBusy(false);
       }

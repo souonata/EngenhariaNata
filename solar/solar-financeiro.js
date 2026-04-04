@@ -51,18 +51,15 @@ export function criarGraficoAmortizacao(dados, idiomaAtual) {
         tipoBateria = 'litio'
     } = dados;
     
-    // Determinar vida útil máxima baseada no tipo de bateria
-    const vidaUtilMaxima = tipoBateria === 'litio' ? 25 : 5;
-    
-    // Obter período de análise (padrão: 25 anos para lítio, 5 para AGM)
+    // Obter período de análise em faixa fixa de 5 a 50 anos
     const sliderPeriodoAnalise = document.getElementById('sliderPeriodoAnalise');
-    let anosAnalise = vidaUtilMaxima;
+    let anosAnalise = 25;
     
     if (sliderPeriodoAnalise) {
-        sliderPeriodoAnalise.min = vidaUtilMaxima.toString();
-        sliderPeriodoAnalise.max = (vidaUtilMaxima * 4).toString();
-        anosAnalise = parseInt(sliderPeriodoAnalise.value) || vidaUtilMaxima;
-        anosAnalise = Math.max(vidaUtilMaxima, Math.min(vidaUtilMaxima * 4, anosAnalise));
+        sliderPeriodoAnalise.min = '5';
+        sliderPeriodoAnalise.max = '50';
+        anosAnalise = parseInt(sliderPeriodoAnalise.value) || 25;
+        anosAnalise = Math.max(5, Math.min(50, anosAnalise));
     }
     
     const mesesAnalise = anosAnalise * 12;

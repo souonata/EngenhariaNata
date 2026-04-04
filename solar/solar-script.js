@@ -65,6 +65,7 @@
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
+import { formatarNumero, formatarNumeroDecimal, formatarNumeroComSufixo } from '../src/utils/formatters.js';
 
 // Idioma atual - mantido para compatibilidade com funções de cálculo e display
 let idiomaAtual = 'pt-BR';
@@ -153,6 +154,189 @@ function obterCoresGraficoSolar() {
         grid: css.getPropertyValue('--chart-grid').trim() || 'rgba(0, 0, 0, 0.08)'
     };
 }
+
+function atualizarDiagramaLigacaoSistema({
+    qtdPaineis,
+    potenciaPainel,
+    potenciaTotalPaineis,
+    tensaoBanco,
+    potenciaInversor,
+    correnteMPPT,
+    paineisExtras = 0,
+    qtdBaterias,
+    energiaPorBateria,
+    capacidadeRealKWh,
+    energiaDiaria,
+    autonomia
+}) {
+    const setTexto = (id, valor) => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.textContent = valor;
+        }
+    };
+
+    const pt = idiomaAtual === 'pt-BR';
+    const sufixoDia = pt ? 'dia' : 'giorno';
+    const sufixoDias = pt ? 'dias' : 'giorni';
+
+    setTexto('layoutLabelPaineis', pt ? 'Placas Solares' : 'Pannelli Solari');
+    setTexto('layoutValorPaineis', `${qtdPaineis} x ${formatarNumeroComSufixo(potenciaPainel, 0)}W`);
+    setTexto('layoutValorPaineisPot', `${formatarNumeroDecimal(potenciaTotalPaineis / 1000, 2)} kWp`);
+
+    setTexto('layoutLabelInversor', pt ? 'Inversor Off-grid' : 'Inverter Off-grid');
+    setTexto('layoutValorInversor', `${potenciaInversor} kW`);
+    setTexto('layoutValorMppt', `MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)}A`);
+
+    setTexto('layoutLabelBaterias', pt ? 'Banco de Baterias' : 'Banco Batterie');
+    setTexto('layoutValorBaterias', `${qtdBaterias} x ${formatarNumeroDecimal(energiaPorBateria, 1)} kWh`);
+    setTexto('layoutValorBancoKWh', `${formatarNumeroDecimal(capacidadeRealKWh, 1)} kWh ${pt ? 'instalados' : 'installati'}`);
+
+    setTexto('layoutLabelCargas', pt ? 'Cargas AC' : 'Carichi AC');
+    setTexto('layoutValorCargas', `${formatarNumeroDecimal(energiaDiaria, 2)} kWh/${pt ? 'dia' : 'giorno'}`);
+    setTexto('layoutValorAutonomia', `${autonomia} ${autonomia > 1 ? sufixoDias : sufixoDia} ${pt ? 'de autonomia' : 'di autonomia'}`);
+
+    setTexto('layoutFluxoPv', pt ? 'DC solar' : 'DC solare');
+    setTexto('layoutFluxoAc', pt ? 'AC saída' : 'AC uscita');
+    setTexto('layoutFluxoBat', pt ? 'Carga/descarga DC' : 'Carica/scarica DC');
+
+    atualizarArranjoPaineis(qtdPaineis, tensaoBanco, potenciaInversor, paineisExtras, potenciaPainel);
+}
+
+function obterFaixaMpptEstimada(potenciaInversor) {
+    if (potenciaInversor <= 1) {
+        return { min: 30, max: 100 };
+    }
+    if (potenciaInversor <= 2) {
+        return { min: 60, max: 145 };
+    }
+    if (potenciaInversor <= 3) {
+        return { min: 80, max: 160 };
+    }
+    if (potenciaInversor <= 5) {
+        return { min: 120, max: 430 };
+    }
+    return { min: 120, max: 450 };
+}
+
+function sugerirArranjoPaineis(qtdPaineis, tensaoBanco, potenciaInversor, potenciaPainel = 400) {
+    const VMP_PAINEL_EST = 41;
+    const VOC_PAINEL_EST = 49;
+    const FATOR_FRIO_VOC = 1.15;
+    const IMP_PAINEL_EST = Math.max(1, potenciaPainel / VMP_PAINEL_EST);
+
+    if (!Number.isFinite(qtdPaineis) || qtdPaineis <= 0) {
+        return {
+            serieBase: 1,
+            strings: [],
+            tipo: 'indefinido',
+            faixaMppt: null,
+            qtdPaineisOriginal: 0,
+            qtdPaineisAjustado: 0,
+            paineisExtras: 0,
+            correnteArray: 0
+        };
+    }
+
+    const faixaMppt = obterFaixaMpptEstimada(potenciaInversor);
+    const serieMinTec = Math.max(1, Math.ceil(faixaMppt.min / VMP_PAINEL_EST));
+    const serieMaxTec = Math.max(1, Math.floor(faixaMppt.max / (VOC_PAINEL_EST * FATOR_FRIO_VOC)));
+
+    let alvoSerie = tensaoBanco >= 48 ? 3 : (tensaoBanco >= 24 ? 2 : 1);
+    alvoSerie = Math.max(serieMinTec, Math.min(serieMaxTec, alvoSerie));
+
+    const limiteSerie = Math.min(8, qtdPaineis);
+    let melhorSerie = 1;
+    let melhorScore = Number.POSITIVE_INFINITY;
+
+    for (let serie = 1; serie <= limiteSerie; serie++) {
+        const paralelo = Math.ceil(qtdPaineis / serie);
+        const resto = qtdPaineis % serie;
+        const penalidadeResto = resto === 0 ? 0 : 0.7;
+        const penalidadeParalelo = paralelo > 8 ? (paralelo - 8) * 0.1 : 0;
+        const foraJanela = serie < serieMinTec || serie > serieMaxTec;
+        const penalidadeMppt = foraJanela ? 2.5 : 0;
+        const score = Math.abs(serie - alvoSerie) + penalidadeResto + penalidadeParalelo + penalidadeMppt;
+
+        if (score < melhorScore) {
+            melhorScore = score;
+            melhorSerie = serie;
+        }
+    }
+
+    const qtdStrings = Math.ceil(qtdPaineis / melhorSerie);
+    const qtdPaineisAjustado = qtdStrings * melhorSerie;
+    const paineisExtras = qtdPaineisAjustado - qtdPaineis;
+    const strings = Array.from({ length: qtdStrings }, () => melhorSerie);
+
+    const maxSerie = Math.max(...strings);
+    const maxParalelo = strings.length;
+
+    let tipo = 'paralelo';
+    if (maxParalelo === 1 && maxSerie > 1) {
+        tipo = 'serie';
+    } else if (maxParalelo > 1 && maxSerie > 1) {
+        tipo = 'serie-paralelo';
+    }
+
+    const vmpString = melhorSerie * VMP_PAINEL_EST;
+    const vocFrioString = melhorSerie * VOC_PAINEL_EST * FATOR_FRIO_VOC;
+    const correnteArray = maxParalelo * IMP_PAINEL_EST;
+    const emFaixaMppt = vmpString >= faixaMppt.min && vocFrioString <= faixaMppt.max;
+
+    return {
+        serieBase: melhorSerie,
+        strings,
+        tipo,
+        faixaMppt,
+        serieMinTec,
+        serieMaxTec,
+        vmpString,
+        vocFrioString,
+        correnteArray,
+        emFaixaMppt,
+        qtdPaineisOriginal: qtdPaineis,
+        qtdPaineisAjustado,
+        paineisExtras
+    };
+}
+
+function atualizarArranjoPaineis(qtdPaineis, tensaoBanco, potenciaInversor, paineisExtras = 0, potenciaPainel = 400) {
+    const resumoTexto = document.getElementById('layoutArranjoResumoTexto');
+    const leigoTexto = document.getElementById('layoutArranjoLeigo');
+    const eletricoTexto = document.getElementById('layoutArranjoEletrico');
+    if (!resumoTexto || !leigoTexto || !eletricoTexto) {
+        return;
+    }
+
+    const pt = idiomaAtual === 'pt-BR';
+    const arranjo = sugerirArranjoPaineis(qtdPaineis, tensaoBanco, potenciaInversor, potenciaPainel);
+    const extrasEfetivos = Math.max(paineisExtras || 0, arranjo.paineisExtras || 0);
+
+    const qtdStrings = arranjo.strings.length;
+    if (qtdStrings === 0) {
+        resumoTexto.textContent = '--';
+        leigoTexto.textContent = '--';
+        eletricoTexto.textContent = '--';
+        return;
+    }
+
+    const serieNominal = arranjo.serieBase;
+    const notacao = `${qtdStrings}P${serieNominal}S`;
+    resumoTexto.textContent = pt
+        ? `Arranjo sugerido para ${qtdPaineis} placas: ${notacao}.`
+        : `Configurazione suggerita per ${qtdPaineis} pannelli: ${notacao}.`;
+
+    leigoTexto.textContent = pt
+        ? `${qtdStrings}P${serieNominal}S significa ${qtdStrings} grupos em paralelo, cada grupo com ${serieNominal} placas em série. Em série aumenta a tensão; em paralelo aumenta a corrente.`
+        : `${qtdStrings}P${serieNominal}S significa ${qtdStrings} gruppi in parallelo, con ${serieNominal} pannelli in serie per gruppo. In serie aumenta la tensione; in parallelo aumenta la corrente.`;
+
+    const tensaoMaxString = formatarNumeroDecimal(arranjo.vocFrioString, 1);
+    const correnteMaxArray = formatarNumeroDecimal(arranjo.correnteArray, 1);
+    eletricoTexto.textContent = pt
+        ? `Tensão máxima da stringa: ${tensaoMaxString} Vdc. Corrente máxima do arranjo: ${correnteMaxArray} A.`
+        : `Tensione massima della stringa: ${tensaoMaxString} Vdc. Corrente massima dell'array: ${correnteMaxArray} A.`;
+}
 // Função formatarNumeroDecimal agora está em assets/js/site-config.js
 // Formata número decimal sempre com vírgula como separador decimal
 function formatarDecimalComVirgula(valor, casasDecimais = 2) {
@@ -206,8 +390,53 @@ const VALORES_PADRAO = {
 };
 // Função para obter configuração atual (customizada ou padrão)
 function obterConfig() {
+    const parseNumero = (valor, fallback) => {
+        if (typeof valor === 'number' && Number.isFinite(valor)) {
+            return valor;
+        }
+        if (typeof valor === 'string') {
+            const texto = valor.trim();
+            const normalizado = (texto.includes('.') && texto.includes(','))
+                ? texto.replace(/\./g, '').replace(',', '.')
+                : texto.replace(',', '.');
+            const parsed = Number.parseFloat(normalizado);
+            if (Number.isFinite(parsed)) {
+                return parsed;
+            }
+        }
+        return fallback;
+    };
+
+    const configPadrao = { ...VALORES_PADRAO };
     const configSalva = localStorage.getItem('configSolar');
-    return configSalva ? JSON.parse(configSalva) : VALORES_PADRAO;
+
+    if (!configSalva) {
+        return configPadrao;
+    }
+
+    try {
+        const raw = JSON.parse(configSalva);
+        if (!raw || typeof raw !== 'object') {
+            return configPadrao;
+        }
+
+        return {
+            ...configPadrao,
+            potenciaPainel: parseNumero(raw.potenciaPainel, configPadrao.potenciaPainel),
+            precoPainel: parseNumero(raw.precoPainel, configPadrao.precoPainel),
+            tensaoAGM: parseNumero(raw.tensaoAGM, configPadrao.tensaoAGM),
+            capacidadeAGM: parseNumero(raw.capacidadeAGM, configPadrao.capacidadeAGM),
+            precoAGM: parseNumero(raw.precoAGM, configPadrao.precoAGM),
+            pesoAGM: parseNumero(raw.pesoAGM, configPadrao.pesoAGM),
+            tensaoLitio: parseNumero(raw.tensaoLitio, configPadrao.tensaoLitio),
+            capacidadeLitio: parseNumero(raw.capacidadeLitio, configPadrao.capacidadeLitio),
+            precoLitio: parseNumero(raw.precoLitio, configPadrao.precoLitio),
+            pesoLitio: parseNumero(raw.pesoLitio, configPadrao.pesoLitio)
+        };
+    } catch (error) {
+        console.warn('[Solar] configSolar invalida no localStorage. Usando valores padrao.', error);
+        return configPadrao;
+    }
 }
 // TABELAS DE VIDA ÚTIL (Ciclos vs Descarga)
 // DoD mínimo = 25%, máximo = 95%
@@ -318,17 +547,17 @@ function calcularPrecoInversor(potenciaKw, moeda) {
 // Atualiza as notas de valores padrão abaixo dos sliders e ajusta os limites dos sliders
 function atualizarNotasValoresPadrao() {
     const notaPrecoKWh = document.getElementById('notaPrecoKWh');
-    const notaPrecoBateriaKWh = document.getElementById('notaPrecoBateriaKWh');
     
     if (notaPrecoKWh) {
         const chaveNota = idiomaAtual === 'pt-BR' ? 'nota-preco-kwh-pt' : 'nota-preco-kwh-it';
         notaPrecoKWh.textContent = i18n.t(chaveNota) || '';
     }
     
-    if (notaPrecoBateriaKWh) {
-        const chaveNota = idiomaAtual === 'pt-BR' ? 'nota-preco-bateria-kwh-pt' : 'nota-preco-bateria-kwh-it';
-        notaPrecoBateriaKWh.textContent = i18n.t(chaveNota) || '';
-    }
+    const tipoBateriaRadio = document.querySelector('input[name="tipoBateria"]:checked');
+    const tipoBateriaAtual = tipoBateriaRadio ? tipoBateriaRadio.value : 'litio';
+    const precosBateriaAtual = tipoBateriaAtual === 'chumbo' ? PRECO_BATERIA_KWH_CHUMBO : PRECO_BATERIA_KWH_LITIO;
+    const valorPadraoBateria = precosBateriaAtual[idiomaAtual] || precosBateriaAtual['pt-BR'];
+    atualizarNotaPrecoBateriaPadrao(tipoBateriaAtual, valorPadraoBateria);
     
     // Atualizar slider de aumento anual do custo da energia
     const sliderAumentoAnualEnergia = document.getElementById('sliderAumentoAnualEnergia');
@@ -411,28 +640,7 @@ function atualizarNotasValoresPadrao() {
         }
         
         // Atualizar nota de valor padrão
-        const notaPrecoBateriaKWh = document.getElementById('notaPrecoBateriaKWh');
-        if (notaPrecoBateriaKWh) {
-            const tipoTexto = tipoBateria === 'chumbo' 
-                ? (idiomaAtual === 'pt-BR' ? 'AGM' : 'AGM')
-                : (idiomaAtual === 'pt-BR' ? 'LiFePO4' : 'LiFePO4');
-            const mesAno = idiomaAtual === 'pt-BR' ? 'dez/2024' : 'dic/2024';
-            const moeda = idiomaAtual === 'it-IT' ? '€' : 'R$';
-            // Formatar faixa de preços baseado no tipo
-            let faixaPreco = '';
-            if (tipoBateria === 'chumbo') {
-                faixaPreco = idiomaAtual === 'pt-BR' 
-                    ? 'R$ 1.200-2.000' 
-                    : '€ 400-700';
-            } else {
-                faixaPreco = idiomaAtual === 'pt-BR' 
-                    ? 'R$ 2.500-3.500' 
-                    : '€ 500-1.000';
-            }
-            notaPrecoBateriaKWh.textContent = idiomaAtual === 'pt-BR'
-                ? `Valor padrão: ${moeda} ${valorPadrao.toLocaleString('pt-BR')}/kWh (faixa mercado ${tipoTexto}: ${faixaPreco}, ${mesAno})`
-                : `Valore predefinito: ${moeda} ${valorPadrao.toLocaleString('it-IT')}/kWh (fascia mercato ${tipoTexto}: ${faixaPreco}, ${mesAno})`;
-        }
+        atualizarNotaPrecoBateriaPadrao(tipoBateria, valorPadrao);
     }
 }
 // DoD (Depth of Discharge
@@ -717,24 +925,69 @@ const AUMENTO_ANUAL_ENERGIA = {
     'pt-BR': 8.0,   // % ao ano (Brasil)
     'it-IT': 6.0    // % ao ano (Itália)
 };
+const PERIODO_ANALISE_MIN_ANOS = 5;
+const PERIODO_ANALISE_MAX_ANOS = 50;
+const PRECO_PAINEL_PADRAO_EUR = {
+    'it-IT': 220
+};
 // Valores padrão de preço da bateria por kWh
 // Preços de baterias LiFePO4 (Lítio)
-// Baseado em pesquisa de mercado: Brasil R$ 2.500-3.500, Itália € 500-1.000
+// Baseado em pesquisa de mercado: Brasil R$ 2.500-3.500.
+// Itália/Europa 2026 refinada com base em benchmark residenziale LFP:
+// MrKilowatt (prezzi chiavi in mano 2,4-15 kWh) e riferimenti di mercato su
+// BYD, Huawei Luna, sonnen e Tesla Powerwall. Media pratica: circa € 640/kWh.
 const PRECO_BATERIA_KWH_LITIO = {
     'pt-BR': 3000,  // R$/kWh - Média mercado LiFePO4 (R$ 2.500-3.500, média R$ 3.000)
-    'it-IT': 750    // €/kWh - Média mercado LiFePO4 (€ 500-1.000, média € 750)
+    'it-IT': 640    // €/kWh - Base 2026 Europa/Italia (benchmark residenziale LFP)
 };
 // Preços de baterias de Chumbo-Ácido AGM
 // Baseado em pesquisa de mercado: Brasil R$ 1.200-2.000, Itália € 400-700
 const PRECO_BATERIA_KWH_CHUMBO = {
     'pt-BR': 1600,  // R$/kWh - Média mercado AGM (R$ 1.200-2.000, média R$ 1.600)
-    'it-IT': 550    // €/kWh - Média mercado AGM (€ 400-700, média € 550)
+    'it-IT': 450    // €/kWh - Stima tecnica conservativa per AGM in Italia
 };
 // Mantido para compatibilidade - será atualizado dinamicamente baseado no tipo de bateria
 const PRECO_BATERIA_KWH = {
     'pt-BR': 3000,  // R$/kWh - Média mercado LiFePO4 (dez/2024) - padrão inicial
-    'it-IT': 750    // €/kWh - Média mercado LiFePO4 (dez/2024) - padrão inicial
+    'it-IT': 640    // €/kWh - Base 2026 Europa/Italia - padrão inicial
 };
+
+function temConfigSolarCustomizada() {
+    return Boolean(localStorage.getItem('configSolar'));
+}
+
+function obterPrecoPainelPadraoPorIdioma(precoPainelBase) {
+    if (idiomaAtual === 'it-IT' && !temConfigSolarCustomizada()) {
+        return PRECO_PAINEL_PADRAO_EUR['it-IT'];
+    }
+
+    return precoPainelBase * (idiomaAtual === 'pt-BR' ? 1 : 1 / TAXA_BRL_EUR);
+}
+
+function atualizarNotaPrecoBateriaPadrao(tipoBateria, valorPadrao) {
+    const notaPrecoBateriaKWh = document.getElementById('notaPrecoBateriaKWh');
+    if (!notaPrecoBateriaKWh) return;
+
+    const tipoTexto = tipoBateria === 'chumbo' ? 'AGM' : 'LiFePO4';
+    const moeda = idiomaAtual === 'it-IT' ? '€' : 'R$';
+
+    let faixaPreco = '';
+    let mesAno = idiomaAtual === 'pt-BR' ? 'dez/2024' : 'gen/2026';
+
+    if (tipoBateria === 'chumbo') {
+        faixaPreco = idiomaAtual === 'pt-BR'
+            ? 'R$ 1.200-2.000'
+            : '€ 350-550';
+    } else {
+        faixaPreco = idiomaAtual === 'pt-BR'
+            ? 'R$ 2.500-3.500'
+            : '€ 500-820/kWh';
+    }
+
+    notaPrecoBateriaKWh.textContent = idiomaAtual === 'pt-BR'
+        ? `Valor padrão: ${moeda} ${valorPadrao.toLocaleString('pt-BR')}/kWh (faixa mercado ${tipoTexto}: ${faixaPreco}, ${mesAno})`
+        : `Valore predefinito: ${moeda} ${valorPadrao.toLocaleString('it-IT')}/kWh (mercato europeo ${tipoTexto}: ${faixaPreco}, ${mesAno})`;
+}
 // FUNÇÕES DE ATUALIZAÇÃO DOS GRÁFICOS
 // Atualiza todos os gráficos do sistema solar
 function atualizarGraficosSolar(dados) {
@@ -827,27 +1080,17 @@ function atualizarGraficoAmortizacao(dados) {
     const aumentoAnualPercentual = sliderAumentoAnual ? (parseFloat(sliderAumentoAnual.value) || AUMENTO_ANUAL_ENERGIA[idiomaAtual] || AUMENTO_ANUAL_ENERGIA['pt-BR']) : (AUMENTO_ANUAL_ENERGIA[idiomaAtual] || AUMENTO_ANUAL_ENERGIA['pt-BR']);
     const fatorAumentoAnual = 1 + (aumentoAnualPercentual / 100);
     
-    // Obter período de análise do slider ou usar valor padrão baseado na vida útil máxima da bateria
+    // Obter período de análise do slider em faixa fixa de 5 a 50 anos
     const sliderPeriodoAnalise = document.getElementById('sliderPeriodoAnalise');
-    const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
-    const tipoBateriaAtual = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
-    const vidaUtilMaxima = tipoBateriaAtual === 'litio' ? 25 : 5;
-    
-    let anosAnalise = vidaUtilMaxima; // Valor padrão: 1x vida útil máxima
+    let anosAnalise = 25;
     
     if (sliderPeriodoAnalise) {
-        // Atualizar limites do slider baseado no tipo de bateria
-        // Min: 1x vida útil máxima, Max: 4x vida útil máxima
-        sliderPeriodoAnalise.min = vidaUtilMaxima.toString();
-        sliderPeriodoAnalise.max = (vidaUtilMaxima * 4).toString();
+        sliderPeriodoAnalise.min = PERIODO_ANALISE_MIN_ANOS.toString();
+        sliderPeriodoAnalise.max = PERIODO_ANALISE_MAX_ANOS.toString();
         
-        // Obter valor do slider
-        anosAnalise = parseInt(sliderPeriodoAnalise.value) || vidaUtilMaxima;
+        anosAnalise = parseInt(sliderPeriodoAnalise.value) || 25;
         
-        // Garantir que o valor está dentro dos limites
-        const minPeriodo = vidaUtilMaxima;
-        const maxPeriodo = vidaUtilMaxima * 4;
-        anosAnalise = Math.max(minPeriodo, Math.min(maxPeriodo, anosAnalise));
+        anosAnalise = Math.max(PERIODO_ANALISE_MIN_ANOS, Math.min(PERIODO_ANALISE_MAX_ANOS, anosAnalise));
         
         // Atualizar slider e input se necessário
         sliderPeriodoAnalise.value = anosAnalise.toString();
@@ -1614,7 +1857,7 @@ function calcularSistema(dodAlvo) {
     
     // Obtém especificações dos painéis solares
     const POTENCIA_PAINEL = config.potenciaPainel; // Potência de cada painel em Watts
-    const PRECO_PAINEL = config.precoPainel;       // Preço de cada painel em BRL
+    const PRECO_PAINEL = config.precoPainel;       // Preço base salvo na configuração
 
         // PASSO 4: VALIDAÇÃO DE ENTRADA
     // ============================================ // Se consumo for inválido (zero ou negativo), zera todos os resultados
@@ -1699,7 +1942,7 @@ function calcularSistema(dodAlvo) {
     // Arredonda para cima para ter potência suficiente
     // Exemplo: se precisamos de 8400 W e cada painel tem 400 W:
     // qtdPaineis = ceil(8400 / 400) = ceil(21) = 21 painéis
-    const qtdPaineis = Math.ceil(potenciaSolarNecessaria / POTENCIA_PAINEL);
+    let qtdPaineis = Math.ceil(potenciaSolarNecessaria / POTENCIA_PAINEL);
     
         // PASSO 9: DIMENSIONAMENTO DO INVERSOR COM MPPT INTEGRADO
         // Em sistemas off-grid, todos os inversores modernos já vêm com MPPT integrado
@@ -1717,15 +1960,30 @@ function calcularSistema(dodAlvo) {
     const consumoMedioHorario = energiaDiaria / 24; // kW (consumo médio por hora)
     const consumoPico = consumoMedioHorario * FATOR_PICO_CONSUMO; // kW (pico de consumo)
     let potenciaInversor = Math.max(1, Math.ceil(consumoPico)); // Mínimo 1kW, arredonda para cima // corrente máxima necessária para os painéis
-    // Corrente = Potência Total dos Painéis / Tensão do Banco de Baterias
-    const potenciaTotalPaineis = qtdPaineis * POTENCIA_PAINEL; // Watts
     const tensaoBanco = batSpec.v; // Volts (tensão do banco de baterias)
-    const correnteMaximaNecessaria = potenciaTotalPaineis / tensaoBanco; // Ampères // inversor escolhido tem capacidade MPPT suficiente
-    // Se não tiver, aumenta a potência do inversor até encontrar um com MPPT adequado
-    let capacidadeMPPTIntegrado = obterCapacidadeMPPTIntegrado(potenciaInversor);
-    while (capacidadeMPPTIntegrado < correnteMaximaNecessaria && potenciaInversor < 10) {
-        potenciaInversor += 1; // Aumenta em 1kW
+
+    // Em strings em paralelo, todas as strings devem ter o mesmo número de módulos em série.
+    // A quantidade final de painéis é ajustada automaticamente para fechar strings iguais.
+    let paineisExtras = 0;
+    let arranjoPaineis = null;
+    let potenciaTotalPaineis = 0;
+    let correnteMaximaNecessaria = 0;
+    let capacidadeMPPTIntegrado = 0;
+
+    while (true) {
+        arranjoPaineis = sugerirArranjoPaineis(qtdPaineis, tensaoBanco, potenciaInversor, POTENCIA_PAINEL);
+        qtdPaineis = arranjoPaineis.qtdPaineisAjustado;
+        paineisExtras = arranjoPaineis.paineisExtras;
+
+        potenciaTotalPaineis = qtdPaineis * POTENCIA_PAINEL;
+        correnteMaximaNecessaria = potenciaTotalPaineis / tensaoBanco;
         capacidadeMPPTIntegrado = obterCapacidadeMPPTIntegrado(potenciaInversor);
+
+        if (capacidadeMPPTIntegrado >= correnteMaximaNecessaria || potenciaInversor >= 10) {
+            break;
+        }
+
+        potenciaInversor += 1;
     }
     
     // Se ainda não encontrou inversor adequado, usa o maior disponível
@@ -1733,6 +1991,12 @@ function calcularSistema(dodAlvo) {
         const maiorInversor = PRECOS_INVERSOR_BRL[PRECOS_INVERSOR_BRL.length - 1];
         potenciaInversor = maiorInversor.kw;
         capacidadeMPPTIntegrado = maiorInversor.mpptA;
+
+        arranjoPaineis = sugerirArranjoPaineis(qtdPaineis, tensaoBanco, potenciaInversor, POTENCIA_PAINEL);
+        qtdPaineis = arranjoPaineis.qtdPaineisAjustado;
+        paineisExtras = arranjoPaineis.paineisExtras;
+        potenciaTotalPaineis = qtdPaineis * POTENCIA_PAINEL;
+        correnteMaximaNecessaria = potenciaTotalPaineis / tensaoBanco;
     }
     
     // A corrente MPPT é a capacidade integrada do inversor escolhido
@@ -1749,10 +2013,8 @@ function calcularSistema(dodAlvo) {
     // Exemplo: se TAXA_BRL_EUR = 6.19, então 1 BRL = 1/6.19 ≈ 0.1615 EUR
     const fatorConversao = idiomaAtual === 'pt-BR' ? 1 : 1 / TAXA_BRL_EUR;
     
-    // Converte os preços unitários para a moeda do idioma
-    // Exemplo: se PRECO_PAINEL = 1200 BRL e fatorConversao = 0.1615:
-    // precoPainelConvertido = 1200 × 0.1615 ≈ 194 EUR
-    const precoPainelConvertido = PRECO_PAINEL * fatorConversao;
+    // Em italiano, sem configuração customizada, usa base local de mercado por painel.
+    const precoPainelConvertido = obterPrecoPainelPadraoPorIdioma(PRECO_PAINEL);
     
     // Obter preço ajustável da bateria por kWh do slider (ou usar preço padrão)
     const sliderPrecoBateriaKWh = document.getElementById('sliderPrecoBateriaKWh');
@@ -1791,6 +2053,21 @@ function calcularSistema(dodAlvo) {
     // O inversor já inclui o MPPT, então não há custo separado de MPPT
     // Exemplo: custoTotal = 25200 + 168000 + 5500 = 198700 BRL
     const custoTotal = custoPaineis + custoBaterias + custoInversor;
+
+    atualizarDiagramaLigacaoSistema({
+        qtdPaineis,
+        potenciaPainel: POTENCIA_PAINEL,
+        potenciaTotalPaineis,
+        tensaoBanco,
+        potenciaInversor,
+        correnteMPPT,
+        paineisExtras,
+        qtdBaterias,
+        energiaPorBateria,
+        capacidadeRealKWh,
+        energiaDiaria,
+        autonomia
+    });
 
     // 6. Exibir Resultados (verificando se os elementos existem)
     const resQtdPlacas = document.getElementById('resQtdPlacas');
@@ -1986,6 +2263,55 @@ class SolarApp extends App {
     inicializarSolar() {
         document.addEventListener('engnata:themechange', () => {
             atualizarInterface();
+        });
+
+        const alternarDescricaoInfo = (icone) => {
+            if (!icone) return;
+
+            const iconId = icone.id || '';
+            const descricaoId = iconId.startsWith('infoIcon')
+                ? `descricao${iconId.slice('infoIcon'.length)}`
+                : '';
+            const descricao = descricaoId ? document.getElementById(descricaoId) : null;
+            if (!descricao) return;
+
+            const estaAberta = descricao.style.display !== 'none';
+
+            document.querySelectorAll('.descricao-info').forEach((elemento) => {
+                elemento.style.display = 'none';
+            });
+            document.querySelectorAll('.info-icon').forEach((elemento) => {
+                elemento.setAttribute('aria-expanded', 'false');
+            });
+
+            if (!estaAberta) {
+                descricao.style.display = 'block';
+                icone.setAttribute('aria-expanded', 'true');
+            }
+        };
+
+        document.querySelectorAll('.info-icon').forEach((icone) => {
+            icone.setAttribute('aria-expanded', 'false');
+            icone.addEventListener('click', () => alternarDescricaoInfo(icone));
+            icone.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    alternarDescricaoInfo(icone);
+                }
+            });
+        });
+
+        document.addEventListener('click', (event) => {
+            const clicouNoIcone = event.target.closest('.info-icon');
+            const clicouNaDescricao = event.target.closest('.descricao-info');
+            if (clicouNoIcone || clicouNaDescricao) return;
+
+            document.querySelectorAll('.descricao-info').forEach((elemento) => {
+                elemento.style.display = 'none';
+            });
+            document.querySelectorAll('.info-icon').forEach((elemento) => {
+                elemento.setAttribute('aria-expanded', 'false');
+            });
         });
 
         // Botões de seta (arrow buttons)
@@ -2194,13 +2520,10 @@ class SolarApp extends App {
                 const sliderPeriodoAnalise = document.getElementById('sliderPeriodoAnalise');
                 const inputPeriodoAnalise = document.getElementById('inputPeriodoAnalise');
                 if (sliderPeriodoAnalise) {
-                    const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
-                    const tipoBateriaAtual = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
-                    const vidaUtilMaxima = tipoBateriaAtual === 'litio' ? 25 : 5;
-                    sliderPeriodoAnalise.min = vidaUtilMaxima.toString();
-                    sliderPeriodoAnalise.max = (vidaUtilMaxima * 4).toString();
-                    const valorAtual = parseInt(sliderPeriodoAnalise.value) || vidaUtilMaxima;
-                    const valorAjustado = Math.max(vidaUtilMaxima, Math.min(vidaUtilMaxima * 4, valorAtual));
+                    sliderPeriodoAnalise.min = PERIODO_ANALISE_MIN_ANOS.toString();
+                    sliderPeriodoAnalise.max = PERIODO_ANALISE_MAX_ANOS.toString();
+                    const valorAtual = parseInt(sliderPeriodoAnalise.value) || 25;
+                    const valorAjustado = Math.max(PERIODO_ANALISE_MIN_ANOS, Math.min(PERIODO_ANALISE_MAX_ANOS, valorAtual));
                     sliderPeriodoAnalise.value = valorAjustado.toString();
                     if (inputPeriodoAnalise) inputPeriodoAnalise.value = valorAjustado.toString();
                 }
@@ -2213,12 +2536,9 @@ class SolarApp extends App {
         const inputPeriodoAnaliseEl = document.getElementById('inputPeriodoAnalise');
         if (sliderPeriodoAnaliseEl) {
             const atualizarPeriodoAnalise = () => {
-                const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
-                const tipoBateriaAtual = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
-                const vidaUtilMaxima = tipoBateriaAtual === 'litio' ? 25 : 5;
-                sliderPeriodoAnaliseEl.min = vidaUtilMaxima.toString();
-                sliderPeriodoAnaliseEl.max = (vidaUtilMaxima * 4).toString();
-                const valorLimitado = Math.max(vidaUtilMaxima, Math.min(vidaUtilMaxima * 4, parseInt(sliderPeriodoAnaliseEl.value) || vidaUtilMaxima));
+                sliderPeriodoAnaliseEl.min = PERIODO_ANALISE_MIN_ANOS.toString();
+                sliderPeriodoAnaliseEl.max = PERIODO_ANALISE_MAX_ANOS.toString();
+                const valorLimitado = Math.max(PERIODO_ANALISE_MIN_ANOS, Math.min(PERIODO_ANALISE_MAX_ANOS, parseInt(sliderPeriodoAnaliseEl.value) || 25));
                 sliderPeriodoAnaliseEl.value = valorLimitado.toString();
                 if (inputPeriodoAnaliseEl) inputPeriodoAnaliseEl.value = valorLimitado.toString();
                 atualizarInterface();
@@ -2231,10 +2551,7 @@ class SolarApp extends App {
             inputPeriodoAnaliseEl.addEventListener('input', throttleFn(() => {
                 const valor = parseInt(inputPeriodoAnaliseEl.value);
                 if (!isNaN(valor) && valor > 0) {
-                    const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
-                    const tipoBateriaAtual = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
-                    const vidaUtilMaxima = tipoBateriaAtual === 'litio' ? 25 : 5;
-                    const valorLimitado = Math.max(vidaUtilMaxima, Math.min(vidaUtilMaxima * 4, valor));
+                    const valorLimitado = Math.max(PERIODO_ANALISE_MIN_ANOS, Math.min(PERIODO_ANALISE_MAX_ANOS, valor));
                     if (sliderPeriodoAnaliseEl) sliderPeriodoAnaliseEl.value = valorLimitado.toString();
                     inputPeriodoAnaliseEl.value = valorLimitado.toString();
                     atualizarInterface();
@@ -2280,13 +2597,10 @@ class SolarApp extends App {
         const sliderPeriodoAnaliseInit = document.getElementById('sliderPeriodoAnalise');
         const inputPeriodoAnaliseInit = document.getElementById('inputPeriodoAnalise');
         if (sliderPeriodoAnaliseInit && inputPeriodoAnaliseInit) {
-            const tipoBateriaEl = document.querySelector('input[name="tipoBateria"]:checked');
-            const tipoBateriaAtual = tipoBateriaEl ? tipoBateriaEl.value : 'litio';
-            const vidaUtilMaxima = tipoBateriaAtual === 'litio' ? 25 : 5;
-            sliderPeriodoAnaliseInit.min = vidaUtilMaxima.toString();
-            sliderPeriodoAnaliseInit.max = (vidaUtilMaxima * 4).toString();
-            sliderPeriodoAnaliseInit.value = vidaUtilMaxima.toString();
-            inputPeriodoAnaliseInit.value = vidaUtilMaxima.toString();
+            sliderPeriodoAnaliseInit.min = PERIODO_ANALISE_MIN_ANOS.toString();
+            sliderPeriodoAnaliseInit.max = PERIODO_ANALISE_MAX_ANOS.toString();
+            sliderPeriodoAnaliseInit.value = '25';
+            inputPeriodoAnaliseInit.value = '25';
         }
 
         // Sincronizar preço bateria por kWh
@@ -2525,7 +2839,7 @@ function atualizarMemorialComValores() {
     if (exemploCustos) {
         // Converter preços para a moeda do idioma
         const fatorConversao = idiomaAtual === 'pt-BR' ? 1 : 1 / TAXA_BRL_EUR;
-        const precoPainelConvertido = config.precoPainel * fatorConversao;
+        const precoPainelConvertido = obterPrecoPainelPadraoPorIdioma(config.precoPainel);
         
         // Obter preço ajustável da bateria por kWh do slider
         const sliderPrecoBateriaKWh = document.getElementById('sliderPrecoBateriaKWh');

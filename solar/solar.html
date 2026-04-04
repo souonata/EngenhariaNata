@@ -513,6 +513,56 @@
             <div class="graficos-container" style="margin-top: 30px;">
                 <h3 style="color: #2d9fa3ff; margin-bottom: 15px;" data-i18n="graficos-title">📊 Visualizações</h3>
 
+                <!-- Diagrama de Ligação do Sistema -->
+                <div class="grafico-box diagrama-ligacao-box">
+                    <h4 class="grafico-box-title" data-i18n="grafico-layout-ligacao-title">Layout de Ligação do Sistema</h4>
+                    <p class="diagrama-ligacao-legenda" data-i18n="grafico-layout-ligacao-subtitle">Fluxo elétrico simplificado entre placas, inversor com MPPT integrado, baterias e cargas.</p>
+
+                    <svg id="diagramaLigacaoSolar" class="diagrama-ligacao-svg" viewBox="0 0 980 320" role="img" aria-label="Diagrama de ligação solar simplificado">
+                        <defs>
+                            <marker id="setaFluxoSolar" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#2d9fa3"></polygon>
+                            </marker>
+                        </defs>
+
+                        <rect x="38" y="70" rx="14" ry="14" width="220" height="96" class="node-bg node-paineis"></rect>
+                        <text x="148" y="100" text-anchor="middle" class="node-title" id="layoutLabelPaineis">Placas Solares</text>
+                        <text x="148" y="126" text-anchor="middle" class="node-value" id="layoutValorPaineis">--</text>
+                        <text x="148" y="148" text-anchor="middle" class="node-subvalue" id="layoutValorPaineisPot">--</text>
+
+                        <rect x="356" y="70" rx="14" ry="14" width="250" height="96" class="node-bg node-inversor"></rect>
+                        <text x="481" y="100" text-anchor="middle" class="node-title" id="layoutLabelInversor">Inversor Off-grid</text>
+                        <text x="481" y="126" text-anchor="middle" class="node-value" id="layoutValorInversor">--</text>
+                        <text x="481" y="148" text-anchor="middle" class="node-subvalue" id="layoutValorMppt">--</text>
+
+                        <rect x="720" y="70" rx="14" ry="14" width="220" height="96" class="node-bg node-cargas"></rect>
+                        <text x="830" y="100" text-anchor="middle" class="node-title" id="layoutLabelCargas">Cargas AC</text>
+                        <text x="830" y="126" text-anchor="middle" class="node-value" id="layoutValorCargas">--</text>
+                        <text x="830" y="148" text-anchor="middle" class="node-subvalue" id="layoutValorAutonomia">--</text>
+
+                        <rect x="356" y="206" rx="14" ry="14" width="250" height="96" class="node-bg node-baterias"></rect>
+                        <text x="481" y="236" text-anchor="middle" class="node-title" id="layoutLabelBaterias">Banco de Baterias</text>
+                        <text x="481" y="262" text-anchor="middle" class="node-value" id="layoutValorBaterias">--</text>
+                        <text x="481" y="284" text-anchor="middle" class="node-subvalue" id="layoutValorBancoKWh">--</text>
+
+                        <line x1="260" y1="118" x2="352" y2="118" class="fluxo-linha" marker-end="url(#setaFluxoSolar)"></line>
+                        <text x="306" y="106" text-anchor="middle" class="fluxo-legenda" id="layoutFluxoPv">DC solar</text>
+
+                        <line x1="608" y1="118" x2="716" y2="118" class="fluxo-linha" marker-end="url(#setaFluxoSolar)"></line>
+                        <text x="662" y="106" text-anchor="middle" class="fluxo-legenda" id="layoutFluxoAc">AC saída</text>
+
+                        <line x1="481" y1="168" x2="481" y2="202" class="fluxo-linha" marker-end="url(#setaFluxoSolar)"></line>
+                        <line x1="507" y1="202" x2="507" y2="168" class="fluxo-linha fluxo-reverso" marker-end="url(#setaFluxoSolar)"></line>
+                        <text x="536" y="188" class="fluxo-legenda" id="layoutFluxoBat">Carga/descarga DC</text>
+                    </svg>
+
+                    <div class="arranjo-simples-box">
+                        <p id="layoutArranjoResumoTexto" class="arranjo-simples-resumo">--</p>
+                        <p id="layoutArranjoLeigo" class="arranjo-simples-leigo">--</p>
+                        <p id="layoutArranjoEletrico" class="arranjo-simples-eletrico">--</p>
+                    </div>
+                </div>
+
                 <!-- Controle do Período de Análise do Gráfico -->
                 <div class="grupo-entrada" style="margin-bottom: 20px; max-width: 400px; margin-left: auto; margin-right: auto;">
                     <div class="cabecalho-controle">
@@ -531,7 +581,7 @@
                     </div>
                     <div class="slider-com-botoes">
                         <button type="button" class="arrow-btn" data-target="sliderPeriodoAnalise" data-step="-1" data-i18n-aria="aria-decrease">−</button>
-                        <input type="range" id="sliderPeriodoAnalise" min="5" max="100" step="1" value="25">
+                        <input type="range" id="sliderPeriodoAnalise" min="5" max="50" step="1" value="25">
                         <button type="button" class="arrow-btn" data-target="sliderPeriodoAnalise" data-step="1" data-i18n-aria="aria-increase">+</button>
                     </div>
                 </div>
