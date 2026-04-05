@@ -38,7 +38,7 @@
     "resultado": {
       "titulo": "Resultados",
       "rpmHelice": "RPM na Hélice:",
-      "velocidadeTeorica": "Velocidade Teórica:"
+      "velocidadeTeorica": "Velocidade com Slip Zero:"
     },
     "grafico": {
       "titulo": "📊 Relação Passo × Velocidade",
@@ -90,7 +90,7 @@
       "resumoTitulo": "📊 Resumo Calculado",
       "resumoRpm": "RPM na Hélice:",
       "resumoPasso": "Passo Recomendado:",
-      "resumoVelocidade": "Velocidade Teórica:"
+      "resumoVelocidade": "Velocidade com Slip Zero:"
     },
     "tooltips": {
       "velocidade": "A velocidade desejada é a velocidade máxima que você quer que o barco alcance, medida em nós, mph ou km/h.",
@@ -158,7 +158,7 @@
     "resultado": {
       "titulo": "Risultati",
       "rpmHelice": "RPM Elica:",
-      "velocidadeTeorica": "Velocità Teorica:"
+      "velocidadeTeorica": "Velocità con Slip Zero:"
     },
     "grafico": {
       "titulo": "📊 Relazione Passo × Velocità",
@@ -210,7 +210,7 @@
       "resumoTitulo": "📊 Riepilogo Calcolato",
       "resumoRpm": "RPM Elica:",
       "resumoPasso": "Passo Consigliato:",
-      "resumoVelocidade": "Velocità Teorica:"
+      "resumoVelocidade": "Velocità con Slip Zero:"
     },
     "tooltips": {
       "velocidade": "La velocità desiderata è la velocità massima che si desidera raggiungere con la barca, misurata in nodi, mph o km/h.",

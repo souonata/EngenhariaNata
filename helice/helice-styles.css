@@ -257,11 +257,11 @@
     width: 65px;
 }
 
-/* Slip: máximo 2 dígitos (20) + 2-3 caracteres extras = ~5 caracteres */
+/* Slip: suporta valores com vírgula/ponto (ex: 10,5) sem cortar no campo */
 #inputSlip {
-    min-width: 40px;
-    max-width: 45px;
-    width: 45px;
+    min-width: 60px;
+    max-width: 65px;
+    width: 65px;
 }
 
 /* ============================================

@@ -473,8 +473,7 @@ class HeliceApp extends App {
         const sliderSlip = document.getElementById('sliderSlip');
 
         const atualizarDoInput = (input, slider) => {
-            const valor = input.value.replace(/[^\d.,]/g, '').replace(',', '.');
-            const numero = parseFloat(valor);
+            const numero = this.parsearValor(input.value, slider);
 
             if (!isNaN(numero)) {
                 slider.value = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), numero));
@@ -565,9 +564,48 @@ class HeliceApp extends App {
     /**
      * Parseia valor formatado (permite vírgula ou ponto)
      */
-    parsearValor(texto) {
+    parsearValor(texto, slider = null) {
         if (!texto) return NaN;
-        return parseFloat(texto.toString().replace(/,/g, '.'));
+
+        const passo = parseFloat(slider?.step || '1');
+        const campoInteiro = Number.isFinite(passo) && passo >= 1;
+        let valorNormalizado = texto.toString().trim().replace(/[^\d,.-]/g, '');
+
+        if (!valorNormalizado) return NaN;
+
+        const ultimaVirgula = valorNormalizado.lastIndexOf(',');
+        const ultimoPonto = valorNormalizado.lastIndexOf('.');
+        const temVirgula = ultimaVirgula !== -1;
+        const temPonto = ultimoPonto !== -1;
+
+        if (temVirgula && temPonto) {
+            const separadorDecimal = ultimaVirgula > ultimoPonto ? ',' : '.';
+            const regexMilhar = separadorDecimal === ',' ? /\./g : /,/g;
+            valorNormalizado = valorNormalizado.replace(regexMilhar, '');
+            valorNormalizado = valorNormalizado.replace(separadorDecimal, '.');
+        } else if (temVirgula) {
+            if (campoInteiro && /,\d{3}$/.test(valorNormalizado)) {
+                valorNormalizado = valorNormalizado.replace(/,/g, '');
+            } else {
+                if ((valorNormalizado.match(/,/g) || []).length > 1) {
+                    const partes = valorNormalizado.split(',');
+                    const decimal = partes.pop();
+                    valorNormalizado = `${partes.join('')}.${decimal}`;
+                } else {
+                    valorNormalizado = valorNormalizado.replace(',', '.');
+                }
+            }
+        } else if (temPonto) {
+            if (campoInteiro && /\.\d{3}$/.test(valorNormalizado)) {
+                valorNormalizado = valorNormalizado.replace(/\./g, '');
+            } else if ((valorNormalizado.match(/\./g) || []).length > 1) {
+                const partes = valorNormalizado.split('.');
+                const decimal = partes.pop();
+                valorNormalizado = `${partes.join('')}.${decimal}`;
+            }
+        }
+
+        return parseFloat(valorNormalizado);
     }
 
     /**
@@ -709,7 +747,15 @@ class HeliceApp extends App {
         }
 
         // Painel de explicação V2.0
-        this.renderizarExplicacao({ velocidadeKnots, resultado, unidadeVelocidade, unidadePasso, slipPercent, reducao, rpmMotor });
+        this.renderizarExplicacao({
+            velocidadeDesejada: velocidade,
+            resultado,
+            unidadeVelocidade,
+            unidadePasso,
+            slipPercent,
+            reducao,
+            rpmMotor
+        });
     }
 
     /**
@@ -779,12 +825,15 @@ class HeliceApp extends App {
         }
     }
 
-    renderizarExplicacao({ velocidadeKnots, resultado, unidadeVelocidade, unidadePasso, slipPercent, reducao, rpmMotor }) {
+    renderizarExplicacao({ velocidadeDesejada, resultado, unidadeVelocidade, unidadePasso, slipPercent, reducao, rpmMotor }) {
         const pt = i18n.obterIdiomaAtual() === 'pt-BR';
         const passoStr = formatarNumero(resultado.passo, 1) + '"';
         const rpmHeliceStr = formatarNumero(resultado.rpmHelice, 0) + ' RPM';
-        const velTeorStr = formatarNumero(resultado.velocidadeTeorica, 1) + (pt ? ' nós' : ' nodi');
-        const velRealStr = formatarNumero(velocidadeKnots, 1) + (pt ? ' nós' : ' nodi');
+        const unidadeVelTexto = i18n.obterTraducao(`unidades.${unidadeVelocidade === 'knots' ? 'nos' : unidadeVelocidade}`)
+            || (unidadeVelocidade === 'knots' ? (pt ? 'nós' : 'nodi') : unidadeVelocidade);
+        const velSlipZeroConvertida = this.converterDeKnots(resultado.velocidadeTeorica, unidadeVelocidade);
+        const velSlipZeroStr = formatarNumero(velSlipZeroConvertida, 1) + ` ${unidadeVelTexto}`;
+        const velDesejadaStr = formatarNumero(velocidadeDesejada, 1) + ` ${unidadeVelTexto}`;
 
         this.explicacao.renderizar({
             destaque: pt
@@ -809,19 +858,19 @@ class HeliceApp extends App {
                 },
                 {
                     icone: '💨',
-                    titulo: pt ? 'Velocidade Teórica' : 'Velocità Teorica',
-                    valor: velTeorStr,
+                    titulo: pt ? 'Velocidade com Slip Zero' : 'Velocità con Slip Zero',
+                    valor: velSlipZeroStr,
                     descricao: pt
-                        ? 'Velocidade máxima em condições ideais, sem resistência da água (slip zero).'
-                        : 'Velocità massima in condizioni ideali, senza resistenza dell\'acqua (slip zero).'
+                        ? 'Esta é a velocidade sem perdas por slip para o passo calculado no giro e redução atuais.'
+                        : 'Questa è la velocità senza perdite da slip per il passo calcolato con giri e riduzione attuali.'
                 },
                 {
                     icone: '🌊',
-                    titulo: pt ? 'Velocidade Real (com Slip)' : 'Velocità Reale (con Slip)',
-                    valor: velRealStr,
+                    titulo: pt ? 'Velocidade Desejada (com Slip)' : 'Velocità Desiderata (con Slip)',
+                    valor: velDesejadaStr,
                     descricao: pt
-                        ? `Com ${formatarNumero(slipPercent, 0)}% de slip (deslizamento na água), a velocidade efetiva é menor que a teórica.`
-                        : `Con ${formatarNumero(slipPercent, 0)}% di slip, la velocità effettiva è inferiore a quella teorica.`
+                        ? `Este é o valor alvo do input. Com ${formatarNumero(slipPercent, 0)}% de slip, ele define o passo necessário.`
+                        : `Questo è il valore obiettivo dell'input. Con ${formatarNumero(slipPercent, 0)}% di slip, definisce il passo necessario.`
                 }
             ],
             dica: pt
@@ -844,14 +893,10 @@ class HeliceApp extends App {
         const unidadePassoTexto = unidadePasso === 'mm'
             ? (i18n.obterTraducao('unidades.mm') || 'mm')
             : (i18n.obterTraducao('unidades.polegadasCompacto') || 'pol');
-        const labelPassoBase = i18n.obterTraducao('grafico.label') || 'Passo';
-        const labelSlipBase = i18n.obterTraducao('grafico.slipLabel') || 'Zona de Slip (10-20%)';
-        const labelPassoComUnidade = `${labelPassoBase} (${unidadePassoTexto})`;
-        const labelSlipComUnidade = `${labelSlipBase} (${unidadePassoTexto})`;
         const reducao = parseFloat(document.getElementById('sliderReducao')?.value || 2);
         const rpmMotor = parseFloat(document.getElementById('sliderRPM')?.value || 5000);
         const slipPercent = parseFloat(document.getElementById('sliderSlip')?.value || 15);
-        const faixaSlip = this.obterFaixaSlipAtual();
+        const labelPassoComUnidade = `Slip (${formatarNumero(slipPercent, 1)}%)`;
 
         // Valor atual para marcador
         const sliderVelocidade = document.getElementById('sliderVelocidade');
@@ -863,33 +908,60 @@ class HeliceApp extends App {
         const unidadeVelocidadeTexto = i18n.obterTraducao(`unidades.${unidadeVelocidade === 'knots' ? 'nos' : unidadeVelocidade}`) || unidadeVelocidade;
 
         // Gerar dados do gráfico
-        const velocidades = [];
         const passos = [];
-        const passosSlipMin = [];
-        const passosSlipMax = [];
+        const passosSlipZero = [];
 
         for (let vKnots = 5; vKnots <= 60; vKnots += 5) {
             const vConvertida = this.converterDeKnots(vKnots, unidadeVelocidade);
-            velocidades.push(Math.round(vConvertida));
 
             const resultado = this.calcularPasso(vKnots, reducao, rpmMotor, slipPercent / 100);
-            passos.push(this.converterPasso(resultado.passo, unidadePasso));
+            passos.push({
+                x: vConvertida,
+                y: this.converterPasso(resultado.passo, unidadePasso)
+            });
 
-            const resultadoSlipMin = this.calcularPasso(vKnots, reducao, rpmMotor, faixaSlip.min / 100);
-            const resultadoSlipMax = this.calcularPasso(vKnots, reducao, rpmMotor, faixaSlip.max / 100);
-            passosSlipMin.push(this.converterPasso(resultadoSlipMin.passo, unidadePasso));
-            passosSlipMax.push(this.converterPasso(resultadoSlipMax.passo, unidadePasso));
+            const resultadoSlipZero = this.calcularPasso(vKnots, reducao, rpmMotor, 0);
+            passosSlipZero.push({
+                x: vConvertida,
+                y: this.converterPasso(resultadoSlipZero.passo, unidadePasso)
+            });
         }
 
-        const indiceMaisProximo = velocidades.reduce((melhor, valor, indice) => {
-            const difAtual = Math.abs(valor - velocidadeTeoricaConvertida);
-            const difMelhor = Math.abs(velocidades[melhor] - velocidadeTeoricaConvertida);
-            return difAtual < difMelhor ? indice : melhor;
-        }, 0);
+        const velocidadeMinBase = this.converterDeKnots(5, unidadeVelocidade);
+        const velocidadeMaxBase = this.converterDeKnots(60, unidadeVelocidade);
+        const velocidadesDestaque = [velocidadeAtual, velocidadeTeoricaConvertida];
 
-        const pontosAtual = velocidades.map((_, indice) =>
-            indice === indiceMaisProximo ? passoAtual : null
-        );
+        const velMinDados = Math.min(velocidadeMinBase, ...velocidadesDestaque);
+        const velMaxDados = Math.max(velocidadeMaxBase, ...velocidadesDestaque);
+        const margemX = (velMaxDados - velMinDados) * 0.08 || 1;
+        const velocidadeMin = Math.max(0, velMinDados - margemX);
+        const velocidadeMax = velMaxDados + margemX;
+
+        const todosPassos = [
+            ...passos.map(p => p.y),
+            ...passosSlipZero.map(p => p.y),
+            passoAtual
+        ];
+        const passoMinDados = Math.min(...todosPassos);
+        const passoMaxDados = Math.max(...todosPassos);
+        const margemY = (passoMaxDados - passoMinDados) * 0.12 || 1;
+        const passoMin = Math.max(0, passoMinDados - margemY);
+        const passoMax = passoMaxDados + margemY;
+
+        const linhaPassoRecomendado = [
+            { x: velocidadeMin, y: passoAtual },
+            { x: velocidadeMax, y: passoAtual }
+        ];
+
+        const linhaVelocidadeDesejada = [
+            { x: velocidadeAtual, y: passoMin },
+            { x: velocidadeAtual, y: passoAtual }
+        ];
+
+        const linhaVelocidadeTeorica = [
+            { x: velocidadeTeoricaConvertida, y: passoMin },
+            { x: velocidadeTeoricaConvertida, y: passoAtual }
+        ];
 
         const ctx = document.getElementById('graficoHelice')?.getContext('2d');
         if (!ctx) return;
@@ -901,40 +973,19 @@ class HeliceApp extends App {
 
         // Criar novo gráfico
         const cores = this.obterCoresGrafico();
+        const corPasso = '#d81b60'; // magenta
+        const corVelDesejada = '#1e88e5'; // azul
+        const corVelTeorica = '#2e7d32'; // verde
+
         graficoHelice = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: velocidades,
                 datasets: [
-                    {
-                        label: labelSlipComUnidade,
-                        data: passosSlipMax,
-                        borderColor: cores.yellow,
-                        backgroundColor: cores.yellowSoft,
-                        borderWidth: 1,
-                        fill: '+1',
-                        tension: 0.4,
-                        pointRadius: 0,
-                        pointHoverRadius: 0,
-                        order: 3
-                    },
-                    {
-                        label: '',
-                        data: passosSlipMin,
-                        borderColor: cores.yellow,
-                        backgroundColor: cores.yellowSoft,
-                        borderWidth: 1,
-                        fill: false,
-                        tension: 0.4,
-                        pointRadius: 0,
-                        pointHoverRadius: 0,
-                        order: 2
-                    },
                     {
                         label: labelPassoComUnidade,
                         data: passos,
-                        borderColor: cores.blue,
-                        backgroundColor: cores.blueSoft,
+                        borderColor: corPasso,
+                        backgroundColor: 'transparent',
                         borderWidth: 3,
                         tension: 0.4,
                         pointRadius: 4,
@@ -942,13 +993,49 @@ class HeliceApp extends App {
                         order: 1
                     },
                     {
-                        label: `Ponto Atual (${formatarNumero(velocidadeTeoricaConvertida, 1)} ${unidadeVelocidadeTexto})`,
-                        data: pontosAtual,
-                        borderColor: cores.red,
-                        backgroundColor: cores.red,
-                        pointRadius: 8,
-                        pointHoverRadius: 10,
-                        showLine: false,
+                        label: `Slip (0%)`,
+                        data: passosSlipZero,
+                        borderColor: '#7a7a7a',
+                        backgroundColor: 'transparent',
+                        borderDash: [8, 6],
+                        borderWidth: 2,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 0,
+                        order: 1
+                    },
+                    {
+                        label: `Passo Recomendado (${formatarNumero(passoAtual, 1)} ${unidadePassoTexto})`,
+                        data: linhaPassoRecomendado,
+                        borderColor: corVelTeorica,
+                        backgroundColor: 'transparent',
+                        borderDash: [2, 4],
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        pointHoverRadius: 0,
+                        tension: 0,
+                        order: 0
+                    },
+                    {
+                        label: `Velocidade Desejada (${formatarNumero(velocidadeAtual, 1)} ${unidadeVelocidadeTexto})`,
+                        data: linhaVelocidadeDesejada,
+                        borderColor: corVelDesejada,
+                        backgroundColor: 'transparent',
+                        borderWidth: 1,
+                        pointRadius: 0,
+                        pointHoverRadius: 0,
+                        tension: 0,
+                        order: 0
+                    },
+                    {
+                        label: `Velocidade com Slip Zero (${formatarNumero(velocidadeTeoricaConvertida, 1)} ${unidadeVelocidadeTexto})`,
+                        data: linhaVelocidadeTeorica,
+                        borderColor: corVelTeorica,
+                        backgroundColor: 'transparent',
+                        borderWidth: 1,
+                        pointRadius: 0,
+                        pointHoverRadius: 0,
+                        tension: 0,
                         order: 0
                     }
                 ]
@@ -964,13 +1051,28 @@ class HeliceApp extends App {
                         labels: { color: cores.text }
                     },
                     tooltip: {
-                        mode: 'index',
+                        mode: 'nearest',
                         intersect: false
                     }
                 },
                 scales: {
                     x: {
-                        ticks: { color: cores.text },
+                        type: 'linear',
+                        min: velocidadeMin,
+                        max: velocidadeMax,
+                        afterBuildTicks: (axis) => {
+                            const ticksExistentes = axis.ticks.map(t => t.value);
+                            const ticksExtras = [velocidadeAtual, velocidadeTeoricaConvertida];
+                            const todos = [...ticksExistentes, ...ticksExtras]
+                                .filter(v => Number.isFinite(v))
+                                .sort((a, b) => a - b)
+                                .filter((v, i, arr) => i === 0 || Math.abs(v - arr[i - 1]) > 0.05);
+                            axis.ticks = todos.map(v => ({ value: v }));
+                        },
+                        ticks: {
+                            color: cores.text,
+                            callback: (value) => formatarNumero(value, 1)
+                        },
                         grid: { color: cores.grid },
                         title: {
                             display: true,
@@ -979,7 +1081,20 @@ class HeliceApp extends App {
                         }
                     },
                     y: {
-                        ticks: { color: cores.text },
+                        min: passoMin,
+                        max: passoMax,
+                        afterBuildTicks: (axis) => {
+                            const ticksExistentes = axis.ticks.map(t => t.value);
+                            const todos = [...ticksExistentes, passoAtual]
+                                .filter(v => Number.isFinite(v))
+                                .sort((a, b) => a - b)
+                                .filter((v, i, arr) => i === 0 || Math.abs(v - arr[i - 1]) > 0.05);
+                            axis.ticks = todos.map(v => ({ value: v }));
+                        },
+                        ticks: {
+                            color: cores.text,
+                            callback: (value) => formatarNumero(value, 1)
+                        },
                         grid: { color: cores.grid },
                         title: {
                             display: true,
