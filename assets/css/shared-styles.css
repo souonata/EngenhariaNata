@@ -307,6 +307,40 @@ footer p {
     color: white;
 }
 
+.footer-meta {
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.footer-oss {
+    font-size: 0.7rem;
+    opacity: 0.95;
+}
+
+.footer-github-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: white;
+    text-decoration: none;
+    font-size: 0.72rem;
+    line-height: 1.2;
+}
+
+.footer-github-link:hover {
+    text-decoration: underline;
+}
+
+.footer-github-link svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+    flex-shrink: 0;
+}
+
 /* For elements that create their own scrollbars (eg. inside the simulated
    device), reserve stable gutter so scroll toggles won't change width */
 .home-screen, .tabela-scroll {

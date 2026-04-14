@@ -194,6 +194,50 @@ html[data-theme="dark"] .status-message.error {
     border-color: var(--border-color, #ccc);
 }
 
+/* Google Forms Embed */
+.bugs-form-embed-card h2 {
+    color: var(--accent-color, #2d9fa3ff);
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.bugs-form-embed-desc {
+    color: var(--text-secondary, #555);
+    margin-bottom: 14px;
+    text-align: center;
+}
+
+.bugs-form-embed-wrap {
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--surface-bg, #fff);
+    border: 1px solid var(--border-color, #e0e0e0);
+}
+
+.bugs-form-embed-wrap iframe {
+    width: 100%;
+    max-width: 100%;
+    min-height: 620px;
+    border: 0;
+    display: block;
+}
+
+.bugs-form-open-tab {
+    margin-top: 12px;
+    text-align: center;
+}
+
+.bugs-form-open-tab a {
+    color: var(--accent-color, #2d9fa3ff);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.bugs-form-open-tab a:hover {
+    text-decoration: underline;
+}
+
 /* Responsivo */
 @media (max-width: 768px) {
     .container {
@@ -202,6 +246,10 @@ html[data-theme="dark"] .status-message.error {
 
     .card {
         padding: 20px;
+    }
+
+    .bugs-form-embed-wrap iframe {
+        min-height: 700px;
     }
 
     .form-buttons {
