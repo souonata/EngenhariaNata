@@ -1,15 +1,16 @@
 // Bugs / Feedback Reporter — V2.0
-// Armazenamento local (localStorage). Sem dependência de Google Forms.
+// Formulario customizado com envio direto para Google Forms.
 
 import { App, i18n, loading } from '../src/core/app.js';
 import { domCache } from '../src/utils/dom.js';
 
 const STORAGE_KEY = 'engnata_feedbacks';
 const MAX_FEEDBACKS = 100;
-
-// ───────────────────────────────────────────────
-//  Utilitários de armazenamento
-// ───────────────────────────────────────────────
+const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSc3Qo7Otct-L7mN2qS9r967oBol6n6gnsEJz2nfkz89sSpBcQ/formResponse';
+const GOOGLE_FORM_FIELDS = {
+    descricao: 'entry.1073025523',
+    contato: 'entry.1357011976'
+};
 
 function carregarFeedbacks() {
     try {
@@ -25,7 +26,7 @@ function salvarFeedbacks(lista) {
 
 function adicionarFeedback(novo) {
     const lista = carregarFeedbacks();
-    lista.unshift(novo); // mais recente primeiro
+    lista.unshift(novo);
     if (lista.length > MAX_FEEDBACKS) lista.length = MAX_FEEDBACKS;
     salvarFeedbacks(lista);
 }
@@ -33,10 +34,6 @@ function adicionarFeedback(novo) {
 function gerarId() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 }
-
-// ───────────────────────────────────────────────
-//  App principal
-// ───────────────────────────────────────────────
 
 class BugsApp extends App {
     constructor() {
@@ -49,6 +46,7 @@ class BugsApp extends App {
         });
         this.categoriaAtual = 'bug';
         this.historicoAberto = false;
+        this.enviando = false;
     }
 
     configurar() {
@@ -58,11 +56,10 @@ class BugsApp extends App {
         this.atualizarInterface();
     }
 
-    // ── Chips de Categoria ──────────────────────
-
     configurarChips() {
         const container = document.getElementById('categoriaChips');
         if (!container) return;
+
         container.addEventListener('click', (e) => {
             const chip = e.target.closest('.v2-chip[data-cat]');
             if (!chip) return;
@@ -75,12 +72,10 @@ class BugsApp extends App {
         const input = document.getElementById('categoriaInput');
         if (input) input.value = cat;
 
-        document.querySelectorAll('#categoriaChips .v2-chip').forEach(c => {
-            c.classList.toggle('ativo', c.dataset.cat === cat);
+        document.querySelectorAll('#categoriaChips .v2-chip').forEach((chip) => {
+            chip.classList.toggle('ativo', chip.dataset.cat === cat);
         });
     }
-
-    // ── Formulário ──────────────────────────────
 
     configurarFormulario() {
         const form = domCache.get('#bugForm');
@@ -88,11 +83,13 @@ class BugsApp extends App {
         form.addEventListener('submit', (e) => this.enviar(e));
     }
 
-    enviar(e) {
+    async enviar(e) {
         e.preventDefault();
 
+        if (this.enviando) return;
+
         const descricao = (domCache.get('#bugDescription')?.value || '').trim();
-        const contato   = (domCache.get('#bugContact')?.value || '').trim();
+        const contato = (domCache.get('#bugContact')?.value || '').trim();
 
         if (!descricao) {
             this.mostrarStatus(i18n.t('mensagens.camposObrigatorios'), 'erro');
@@ -100,22 +97,56 @@ class BugsApp extends App {
             return;
         }
 
-        loading.mostrar();
-
         const novo = {
-            id:        gerarId(),
+            id: gerarId(),
             timestamp: new Date().toISOString(),
             categoria: this.categoriaAtual,
-            mensagem:  descricao,
-            contato:   contato || null
+            mensagem: descricao,
+            contato: contato || null
         };
 
-        adicionarFeedback(novo);
-        this.limparFormulario();
-        this.mostrarStatus(i18n.t('mensagens.sucesso'), 'sucesso');
-        this.atualizarHistoricoUI();
+        loading.mostrar();
+        this.definirEstadoEnvio(true);
 
-        loading.ocultar();
+        try {
+            await this.enviarParaGoogleForms(novo);
+            adicionarFeedback(novo);
+            this.limparFormulario();
+            this.mostrarStatus(i18n.t('mensagens.sucesso'), 'sucesso');
+            this.atualizarHistoricoUI();
+        } catch (erro) {
+            console.error('Erro ao enviar relatório:', erro);
+            this.mostrarStatus(i18n.t('mensagens.erro'), 'erro');
+        } finally {
+            this.definirEstadoEnvio(false);
+            loading.ocultar();
+        }
+    }
+
+    async enviarParaGoogleForms(feedback) {
+        const formData = new FormData();
+        formData.append(GOOGLE_FORM_FIELDS.descricao, this.montarDescricao(feedback));
+        formData.append(GOOGLE_FORM_FIELDS.contato, feedback.contato || '');
+
+        await fetch(GOOGLE_FORM_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: formData
+        });
+    }
+
+    montarDescricao(feedback) {
+        const categoria = i18n.t(`categorias.${feedback.categoria}`) || feedback.categoria;
+        return `[${categoria}]\n${feedback.mensagem}`;
+    }
+
+    definirEstadoEnvio(ativo) {
+        this.enviando = ativo;
+        const submitBtn = domCache.get('#submitBtn');
+        if (!submitBtn) return;
+
+        submitBtn.disabled = ativo;
+        submitBtn.textContent = ativo ? i18n.t('formulario.enviando') : i18n.t('formulario.enviar');
     }
 
     limparFormulario() {
@@ -130,14 +161,22 @@ class BugsApp extends App {
         el.textContent = msg;
         el.style.display = 'block';
         el.className = `status-message status-${tipo}`;
-        setTimeout(() => { el.style.display = 'none'; }, 4000);
+        setTimeout(() => {
+            el.style.display = 'none';
+        }, 4000);
     }
-
-    // ── Histórico ───────────────────────────────
 
     configurarHistorico() {
         const toggle = document.getElementById('historicoToggle');
-        if (toggle) toggle.addEventListener('click', () => this.toggleHistorico());
+        if (toggle) {
+            toggle.addEventListener('click', () => this.toggleHistorico());
+            toggle.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.toggleHistorico();
+                }
+            });
+        }
 
         const exportBtn = document.getElementById('exportBtn');
         if (exportBtn) exportBtn.addEventListener('click', () => this.exportarJSON());
@@ -148,25 +187,26 @@ class BugsApp extends App {
     toggleHistorico() {
         this.historicoAberto = !this.historicoAberto;
         const lista = document.getElementById('historicoLista');
-        const icon  = document.getElementById('historicoToggleIcon');
+        const icon = document.getElementById('historicoToggleIcon');
+        const toggle = document.getElementById('historicoToggle');
+
         if (lista) lista.classList.toggle('escondido', !this.historicoAberto);
-        if (icon)  icon.textContent = this.historicoAberto ? '▴' : '▾';
+        if (icon) icon.textContent = this.historicoAberto ? '▴' : '▾';
+        if (toggle) toggle.setAttribute('aria-expanded', String(this.historicoAberto));
     }
 
     atualizarHistoricoUI() {
         const feedbacks = carregarFeedbacks();
-        const contador  = document.getElementById('historicoContador');
-        const lista     = document.getElementById('historicoLista');
-        const vazio     = document.getElementById('historicoVazio');
+        const contador = document.getElementById('historicoContador');
+        const lista = document.getElementById('historicoLista');
+        const vazio = document.getElementById('historicoVazio');
         const exportBtn = document.getElementById('exportBtn');
 
         if (contador) contador.textContent = feedbacks.length;
         if (exportBtn) exportBtn.style.display = feedbacks.length ? 'block' : 'none';
-
         if (!lista) return;
 
-        // Remove itens antigos, mantém mensagem vazia
-        lista.querySelectorAll('.v2-feedback-item').forEach(el => el.remove());
+        lista.querySelectorAll('.v2-feedback-item').forEach((el) => el.remove());
 
         if (feedbacks.length === 0) {
             if (vazio) vazio.style.display = 'block';
@@ -174,8 +214,7 @@ class BugsApp extends App {
         }
 
         if (vazio) vazio.style.display = 'none';
-
-        feedbacks.forEach(fb => {
+        feedbacks.forEach((fb) => {
             lista.appendChild(this.criarItemHistorico(fb));
         });
     }
@@ -185,12 +224,11 @@ class BugsApp extends App {
         item.className = 'v2-feedback-item';
 
         const catLabels = {
-            bug:      { classe: 'v2-cat-bug',      label: i18n.t('categorias.bug') },
+            bug: { classe: 'v2-cat-bug', label: i18n.t('categorias.bug') },
             sugestao: { classe: 'v2-cat-sugestao', label: i18n.t('categorias.sugestao') },
-            elogio:   { classe: 'v2-cat-elogio',   label: i18n.t('categorias.elogio') }
+            elogio: { classe: 'v2-cat-elogio', label: i18n.t('categorias.elogio') }
         };
         const cat = catLabels[fb.categoria] || catLabels.bug;
-
         const data = new Date(fb.timestamp);
         const dataStr = data.toLocaleDateString() + ' ' + data.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -208,25 +246,20 @@ class BugsApp extends App {
         return texto.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
-    // ── Exportar ────────────────────────────────
-
     exportarJSON() {
         const feedbacks = carregarFeedbacks();
         const blob = new Blob([JSON.stringify(feedbacks, null, 2)], { type: 'application/json' });
-        const url  = URL.createObjectURL(blob);
-        const a    = document.createElement('a');
-        a.href     = url;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
         a.download = `engnata-feedbacks-${new Date().toISOString().slice(0, 10)}.json`;
         a.click();
         URL.revokeObjectURL(url);
     }
 
-    // ── Interface ───────────────────────────────
-
     atualizarInterface() {
         document.title = i18n.t('titulo') + ' - Engenharia NATA';
-        // Atualiza os textos dos chips via data-i18n (já tratado pelo i18n global)
-        // mas atualiza também o histórico pois os rótulos de categoria mudam
+        this.definirEstadoEnvio(this.enviando);
         this.atualizarHistoricoUI();
     }
 }

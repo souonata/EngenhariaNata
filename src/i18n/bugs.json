@@ -7,9 +7,9 @@
     "titulo": "Relatar Bug ou Sugestão",
     "descricao": "Encontrou algum problema ou tem uma ideia para melhorar? Conte-nos!",
     "googleForms": {
-      "titulo": "📨 Envie seu relatório pelo Google Forms",
-      "descricao": "Preencha o formulário abaixo. As respostas serão enviadas diretamente para sua base do Google Forms.",
-      "abrirNovaAba": "Abrir formulário em nova aba"
+      "titulo": "📨 Envie seu relatório",
+      "descricao": "Use o formulário abaixo. A interface é nativa da página, mas as respostas continuam sendo enviadas para sua base do Google Forms.",
+      "abrirNovaAba": "Abrir formulário original em nova aba"
     },
     "formulario": {
       "categoria": "Categoria",
@@ -36,8 +36,8 @@
       "elogio": "Elogio"
     },
     "mensagens": {
-      "sucesso": "✅ Relatório salvo! Obrigado pelo feedback.",
-      "erro": "❌ Erro ao salvar. Tente novamente.",
+      "sucesso": "✅ Relatório enviado com sucesso. Obrigado pelo feedback.",
+      "erro": "❌ Não foi possível enviar agora. Tente novamente.",
       "camposObrigatorios": "⚠️ Preencha a descrição antes de enviar."
     },
     "aria": {
@@ -49,16 +49,16 @@
   },
   "it-IT": {
     "titles": {
-     googleForms": {
-      "titulo": "📨 Invia la tua segnalazione con Google Forms",
-      "descricao": "Compila il modulo qui sotto. Le risposte saranno inviate direttamente al tuo Google Forms.",
-      "abrirNovaAba": "Apri il modulo in una nuova scheda"
-    },
-    " "langPt": "Portoghese",
+      "langPt": "Portoghese",
       "langIt": "Italiano"
     },
     "titulo": "Segnala Bug o Suggerimento",
-    "descricao": "Hai trovato un problema o hai un'idea per migliorare? Raccontaci!",
+    "descricao": "Hai trovato un problema o hai un'idea per migliorare? Raccontacelo!",
+    "googleForms": {
+      "titulo": "📨 Invia la tua segnalazione",
+      "descricao": "Usa il modulo qui sotto. L'interfaccia è nativa della pagina, ma le risposte continuano a essere inviate al tuo Google Forms.",
+      "abrirNovaAba": "Apri il modulo originale in una nuova scheda"
+    },
     "formulario": {
       "categoria": "Categoria",
       "catBug": "🐛 Bug",
@@ -84,8 +84,8 @@
       "elogio": "Complimento"
     },
     "mensagens": {
-      "sucesso": "✅ Segnalazione salvata! Grazie per il feedback.",
-      "erro": "❌ Errore durante il salvataggio. Riprova.",
+      "sucesso": "✅ Segnalazione inviata con successo. Grazie per il feedback.",
+      "erro": "❌ Impossibile inviare ora. Riprova.",
       "camposObrigatorios": "⚠️ Compila la descrizione prima di inviare."
     },
     "aria": {

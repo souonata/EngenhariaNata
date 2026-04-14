@@ -41,24 +41,69 @@
             <p class="subtitulo" data-i18n="descricao">Ajude-nos a melhorar reportando problemas encontrados</p>
         </header>
 
-        <!-- Google Forms incorporado -->
-        <section class="card bugs-form-embed-card">
-            <h2 data-i18n="googleForms.titulo">📨 Envie seu relatório pelo Google Forms</h2>
-            <p class="bugs-form-embed-desc" data-i18n="googleForms.descricao">Preencha o formulário abaixo. As respostas serão enviadas diretamente para sua base do Google Forms.</p>
+        <section class="card bugs-form-card">
+            <h2 data-i18n="googleForms.titulo">📨 Envie seu relatório</h2>
+            <p class="bugs-form-custom-desc" data-i18n="googleForms.descricao">Use o formulário abaixo. A interface é nativa da página, mas as respostas continuam sendo enviadas para sua base do Google Forms.</p>
 
-            <div class="bugs-form-embed-wrap">
-                <iframe
-                    src="https://docs.google.com/forms/d/e/1FAIpQLSc3Qo7Otct-L7mN2qS9r967oBol6n6gnsEJz2nfkz89sSpBcQ/viewform?embedded=true"
-                    width="640"
-                    height="543"
-                    frameborder="0"
-                    marginheight="0"
-                    marginwidth="0"
-                    loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"
-                    title="Google Forms - Reportar Bug"
-                >Caricamento…</iframe>
-            </div>
+            <div id="statusMessage" class="status-message" style="display: none;"></div>
+
+            <form id="bugForm" class="bugs-form" novalidate>
+                <div class="grupo-entrada">
+                    <label for="categoriaInput" data-i18n="formulario.categoria">Categoria</label>
+                    <div id="categoriaChips" class="v2-categoria-chips" role="group" aria-label="Categoria do relatório">
+                        <button type="button" class="v2-chip ativo" data-cat="bug" data-i18n="formulario.catBug">🐛 Bug</button>
+                        <button type="button" class="v2-chip" data-cat="sugestao" data-i18n="formulario.catSugestao">💡 Sugestão</button>
+                        <button type="button" class="v2-chip" data-cat="elogio" data-i18n="formulario.catElogio">⭐ Elogio</button>
+                    </div>
+                    <input id="categoriaInput" name="categoria" type="hidden" value="bug">
+                </div>
+
+                <div class="grupo-entrada">
+                    <label for="bugDescription" data-i18n="formulario.descricao">Descrição *</label>
+                    <textarea
+                        id="bugDescription"
+                        name="descricao"
+                        class="textarea-input"
+                        rows="6"
+                        required
+                        data-i18n="formulario.descricaoPlaceholder"
+                        placeholder="Descreva o problema encontrado, o que você estava fazendo e o que esperava que acontecesse..."
+                    ></textarea>
+                </div>
+
+                <div class="grupo-entrada">
+                    <label for="bugContact" data-i18n="formulario.emailLabel">Contato (Opcional)</label>
+                    <input
+                        id="bugContact"
+                        name="contato"
+                        type="text"
+                        class="input-text"
+                        inputmode="email"
+                        autocomplete="email"
+                        data-i18n="formulario.emailPlaceholder"
+                        placeholder="seu@email.com"
+                    >
+                    <p class="dica" data-i18n="formulario.emailDica">Informe seu email apenas se quiser receber resposta.</p>
+                </div>
+
+                <div class="form-buttons">
+                    <button id="submitBtn" type="submit" class="btn-submit" data-i18n="formulario.enviar">📤 Enviar Relatório</button>
+                    <a href="../index.html" class="btn-cancel" data-i18n="formulario.voltar">← Voltar</a>
+                </div>
+            </form>
+
+            <section class="v2-historico-section" aria-labelledby="historicoTitulo">
+                <div id="historicoToggle" class="v2-historico-header" tabindex="0" role="button" aria-expanded="false">
+                    <h3 id="historicoTitulo"><span data-i18n="historico.titulo">Meus Relatórios</span> <span id="historicoContador">0</span></h3>
+                    <span id="historicoToggleIcon" class="v2-historico-toggle">▾</span>
+                </div>
+
+                <div id="historicoLista" class="v2-historico-lista escondido">
+                    <p id="historicoVazio" class="v2-historico-vazio" data-i18n="historico.vazio">Nenhum relatório enviado ainda.</p>
+                </div>
+
+                <button id="exportBtn" type="button" class="v2-export-btn" style="display: none;" data-i18n="historico.exportar">⬇ Exportar como JSON</button>
+            </section>
 
             <p class="bugs-form-open-tab">
                 <a
@@ -66,7 +111,7 @@
                     target="_blank"
                     rel="noopener noreferrer"
                     data-i18n="googleForms.abrirNovaAba"
-                >Abrir formulário em nova aba</a>
+                >Abrir formulário original em nova aba</a>
             </p>
         </section>
     </div>
