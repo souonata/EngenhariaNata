@@ -43,7 +43,6 @@
 
         <section class="card bugs-form-card">
             <h2 data-i18n="googleForms.titulo">📨 Envie seu relatório</h2>
-            <p class="bugs-form-custom-desc" data-i18n="googleForms.descricao">Use o formulário abaixo. A interface é nativa da página, mas as respostas continuam sendo enviadas para sua base do Google Forms.</p>
 
             <div id="statusMessage" class="status-message" style="display: none;"></div>
 
@@ -91,19 +90,6 @@
                     <a href="../index.html" class="btn-cancel" data-i18n="formulario.voltar">← Voltar</a>
                 </div>
             </form>
-
-            <section class="v2-historico-section" aria-labelledby="historicoTitulo">
-                <div id="historicoToggle" class="v2-historico-header" tabindex="0" role="button" aria-expanded="false">
-                    <h3 id="historicoTitulo"><span data-i18n="historico.titulo">Meus Relatórios</span> <span id="historicoContador">0</span></h3>
-                    <span id="historicoToggleIcon" class="v2-historico-toggle">▾</span>
-                </div>
-
-                <div id="historicoLista" class="v2-historico-lista escondido">
-                    <p id="historicoVazio" class="v2-historico-vazio" data-i18n="historico.vazio">Nenhum relatório enviado ainda.</p>
-                </div>
-
-                <button id="exportBtn" type="button" class="v2-export-btn" style="display: none;" data-i18n="historico.exportar">⬇ Exportar como JSON</button>
-            </section>
 
             <p class="bugs-form-open-tab">
                 <a
