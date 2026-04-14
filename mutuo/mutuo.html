@@ -357,7 +357,10 @@
                                     <span class="info-icon" id="infoIconValor" role="button" tabindex="0" data-i18n-aria="aria.infoValor" data-i18n-title="titles.clickInfo">
                                         <span class="info-icon-symbol">ℹ️</span>
                                     </span>
-                                    <input type="text" id="inputValor" class="valor-display valor-input" value="115.000" tabindex="1" inputmode="numeric" pattern="[0-9]*" enterkeyhint="done" autocomplete="off">
+                                    <div class="valor-com-unidades">
+                                        <input type="text" id="inputValor" class="valor-display valor-input" value="115.000" tabindex="1" inputmode="numeric" pattern="[0-9]*" enterkeyhint="done" autocomplete="off">
+                                        <span class="unidade" data-i18n="input-currency-unit">R$</span>
+                                    </div>
                                 </div>
                                 <!-- Descrição que aparece/desaparece ao clicar no ícone -->
                                 <div class="descricao-info" id="descricaoValor" style="display: none;">
@@ -376,7 +379,10 @@
                                     <span class="info-icon" id="infoIconPrazo" role="button" tabindex="0" data-i18n-aria="aria.infoPrazo" data-i18n-title="titles.clickInfo">
                                         <span class="info-icon-symbol">ℹ️</span>
                                     </span>
-                                    <input type="text" id="inputPrazo" class="valor-display valor-input" value="30" tabindex="2" inputmode="numeric" pattern="[0-9]*" enterkeyhint="done" autocomplete="off">
+                                    <div class="valor-com-unidades">
+                                        <input type="text" id="inputPrazo" class="valor-display valor-input" value="30" tabindex="2" inputmode="numeric" pattern="[0-9]*" enterkeyhint="done" autocomplete="off">
+                                        <span class="unidade" data-i18n="years">anos</span>
+                                    </div>
                                 </div>
                                 <!-- Descrição que aparece/desaparece ao clicar no ícone -->
                                 <div class="descricao-info" id="descricaoPrazo" style="display: none;">
@@ -402,6 +408,7 @@
                                 </span>
                                 <div class="valor-com-unidades">
                                     <input type="text" id="inputTaxa" class="valor-display valor-input" value="3,16" tabindex="3" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" enterkeyhint="done" autocomplete="off">
+                                    <span class="unidade">%</span>
                                     <div class="grupo-radio-compacto">
                                         <label class="opcao-radio-compacto">
                                             <input type="radio" name="periodoRapido" value="ano" checked tabindex="4">
@@ -441,6 +448,7 @@
                                 </span>
                                 <div class="valor-com-unidades">
                                     <input type="text" id="inputExtraPagamento" class="valor-display valor-input" value="0" tabindex="11" inputmode="numeric" pattern="[0-9]*" enterkeyhint="done" autocomplete="off">
+                                    <span class="unidade" data-i18n="input-currency-unit">R$</span>
                                     <div class="grupo-radio-compacto">
                                         <label class="opcao-radio-compacto">
                                             <input type="radio" name="periodoExtra" value="mensal" checked tabindex="12">
@@ -494,7 +502,7 @@
                             <span class="value-medium" id="saldoDevedor">-</span>
                         </div>
                         <div class="composicao-item">
-                            <span class="label-small" data-i18n="installment-amort-interest-ratio">Proporção Amortização/Interesses</span>
+                            <span class="label-small" data-i18n="installment-amort-interest-ratio">Proporção Amortização/Juros</span>
                             <span class="value-medium" id="proporcaoAmortJurosParcela">-</span>
                         </div>
                     </div>
