@@ -153,6 +153,109 @@ html[data-theme="dark"] {
     min-width: 78px;
 }
 
+.extras-especificos-box {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px dashed var(--checkbox-border, #d7d7d7);
+    border-radius: 10px;
+    background: var(--mutuo-surface-soft, #f9f9f9);
+}
+
+/* Padroniza a cor dos nomes dos inputs para o mesmo tom de destaque */
+.controles-rapidos .cabecalho-controle > label,
+.controles-rapidos .cabecalho-controle > label > span,
+.extras-especificos-box h4 {
+    color: var(--accent-color, #2d9fa3ff);
+}
+
+.extras-especificos-box h4 {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.cabecalho-controle--extra-especifico {
+    margin-bottom: 6px;
+}
+
+.extras-especificos-box p {
+    margin: 0 0 8px;
+    font-size: 0.82rem;
+    color: var(--text-secondary, #666);
+}
+
+.extras-especificos-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.extra-especifico-row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+}
+
+.extra-especifico-campo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+}
+
+.extra-especifico-label {
+    font-size: 0.78rem;
+    color: var(--accent-color, #2d9fa3ff);
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.input-extra-especifico-valor {
+    width: 84px;
+    max-width: 84px;
+    min-width: 84px;
+}
+
+.input-extra-especifico-parcela {
+    width: 72px;
+    max-width: 72px;
+    min-width: 72px;
+    text-align: center;
+}
+
+.btn-remover-extra-especifico {
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--checkbox-border, #d9d9d9);
+    border-radius: 8px;
+    background: var(--mutuo-surface-strong, #fff);
+    color: #c62828;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.btn-adicionar-extra-especifico {
+    margin-top: 8px;
+    width: 100%;
+    border: 1px solid var(--accent-color, #2d9fa3ff);
+    border-radius: 8px;
+    background: var(--mutuo-surface-strong, #fff);
+    color: var(--accent-color, #2d9fa3ff);
+    cursor: pointer;
+    padding: 7px 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.btn-adicionar-extra-especifico:hover,
+.btn-remover-extra-especifico:hover {
+    filter: brightness(0.96);
+}
+
 .tabela-sistemas {
     width: auto;
     max-width: 100%;
@@ -838,6 +941,28 @@ html[data-theme="dark"] {
     
     .taxa-input {
         max-width: 100%;
+    }
+
+    .extra-especifico-row {
+        flex-wrap: wrap;
+        row-gap: 6px;
+        justify-content: center;
+    }
+
+    .input-extra-especifico-parcela {
+        width: 72px;
+        max-width: 72px;
+        min-width: 72px;
+    }
+
+    .input-extra-especifico-valor {
+        width: 78px;
+        max-width: 78px;
+        min-width: 78px;
+    }
+
+    .btn-remover-extra-especifico {
+        margin-left: 0;
     }
     
     /* Estilos responsivos de controles movidos para assets/css/controls-styles.css */

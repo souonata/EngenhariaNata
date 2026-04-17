@@ -441,7 +441,7 @@
                         <div class="grupo-entrada">
                             <div class="cabecalho-controle">
                                 <label for="sliderExtraPagamento">
-                                    <span data-i18n="extra-payment">Pagamento Extra</span>
+                                    <span data-i18n="extra-payment-recurring">Pagamento Extra Recorrente</span>
                                 </label>
                                 <span class="info-icon" id="infoIconExtra" role="button" tabindex="0" data-i18n-aria="aria.infoExtra" data-i18n-title="titles.clickInfo">
                                     <span class="info-icon-symbol">ℹ️</span>
@@ -451,9 +451,9 @@
                                     <span class="unidade" data-i18n="input-currency-unit">R$</span>
                                     <div class="grupo-radio-compacto">
                                         <label class="opcao-radio-compacto">
-                                            <input type="radio" name="periodoExtra" value="mensal" checked tabindex="12">
+                                            <input type="radio" name="periodoExtra" value="semestral" checked tabindex="12">
                                             <div class="cartao-radio-compacto">
-                                                <span class="rotulo-radio" data-i18n="extra-frequency-monthly">Mensal</span>
+                                                <span class="rotulo-radio" data-i18n="extra-frequency-semiannual">Semestral</span>
                                             </div>
                                         </label>
                                         <label class="opcao-radio-compacto">
@@ -473,10 +473,37 @@
                                 <input type="range" id="sliderExtraPagamento" min="0" max="10000" step="10" value="0" tabindex="11">
                                 <button type="button" class="arrow-btn arrow-up" data-target="sliderExtraPagamento" data-step="10" data-i18n-aria="aria.aumentarExtra">+</button>
                             </div>
+
+                            <div class="extras-especificos-box">
+                                <div class="cabecalho-controle cabecalho-controle--extra-especifico">
+                                    <h4 data-i18n="extra-specific-payments-title">Pagamentos Extras Específicos</h4>
+                                    <span class="info-icon" id="infoIconExtraEspecifico" role="button" tabindex="0" data-i18n-aria="aria.infoExtraSpecific" data-i18n-title="titles.clickInfo">
+                                        <span class="info-icon-symbol">ℹ️</span>
+                                    </span>
+                                </div>
+                                <div class="descricao-info" id="descricaoExtraEspecifico" style="display: none;">
+                                    <span data-i18n="extra-specific-payments-help">Adicione valores extras em parcelas específicas para simular balões de amortização.</span>
+                                </div>
+
+                                <div id="extrasEspecificosLista" class="extras-especificos-lista">
+                                </div>
+
+                                <button type="button" id="btnAdicionarExtraEspecifico" class="btn-adicionar-extra-especifico" data-i18n="extra-specific-add-button">+ Adicionar pagamento específico</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="graficos-container">
+                <h3 data-i18n="evolution-charts">📊 Evolução ao Longo do Tempo</h3>
+                <div class="grafico-unico">
+                    <canvas id="graficoEvolutivo"></canvas>
+                </div>
+            </div>
+
+            <!-- Painel de Explicação V2.0 -->
+            <div id="v2-explicacao"></div>
 
             <div class="parcelas-info parcelas-info--selector">
                 <h3><span data-i18n="selected-installment">Parcela Selecionada</span>: <span id="numeroParcela">1</span> <span data-i18n="of">de</span> <span id="totalParcelas">-</span></h3>
@@ -506,16 +533,6 @@
                             <span class="value-medium" id="proporcaoAmortJurosParcela">-</span>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Painel de Explicação V2.0 -->
-            <div id="v2-explicacao"></div>
-
-            <div class="graficos-container">
-                <h3 data-i18n="evolution-charts">📊 Evolução ao Longo do Tempo</h3>
-                <div class="grafico-unico">
-                    <canvas id="graficoEvolutivo"></canvas>
                 </div>
             </div>
 

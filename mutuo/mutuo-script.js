@@ -99,6 +99,9 @@ class MutuoApp extends App {
         // Info icons
         this.configurarIconesInfo();
 
+        // Pagamentos extras aplicados em parcelas especificas
+        this.configurarPagamentosExtrasEspecificos();
+
         // Botões de incremento/decremento (setas + e -)
         this.configurarBotoesIncremento();
 
@@ -250,7 +253,8 @@ class MutuoApp extends App {
             { iconId: 'infoIconValor', descricaoId: 'descricaoValor' },
             { iconId: 'infoIconTaxa', descricaoId: 'descricaoTaxa' },
             { iconId: 'infoIconPrazo', descricaoId: 'descricaoPrazo' },
-            { iconId: 'infoIconExtra', descricaoId: 'descricaoExtra' }
+            { iconId: 'infoIconExtra', descricaoId: 'descricaoExtra' },
+            { iconId: 'infoIconExtraEspecifico', descricaoId: 'descricaoExtraEspecifico' }
         ];
 
         infoIcons.forEach(({ iconId, descricaoId }) => {
@@ -566,6 +570,105 @@ class MutuoApp extends App {
         }
     }
 
+    configurarPagamentosExtrasEspecificos() {
+        const lista = document.getElementById('extrasEspecificosLista');
+        const btnAdicionar = document.getElementById('btnAdicionarExtraEspecifico');
+
+        if (!lista || !btnAdicionar) return;
+
+        const vincularLinha = (linha) => {
+            const inputValor = linha.querySelector('.input-extra-especifico-valor');
+            const inputParcela = linha.querySelector('.input-extra-especifico-parcela');
+            const btnRemover = linha.querySelector('.btn-remover-extra-especifico');
+
+            if (inputValor) {
+                inputValor.addEventListener('input', () => {
+                    inputValor.value = inputValor.value.replace(/\D/g, '');
+                });
+
+                inputValor.addEventListener('blur', () => {
+                    const valor = parseInt(inputValor.value.replace(/\D/g, ''), 10);
+                    inputValor.value = isNaN(valor) ? '' : formatarNumero(valor, 0);
+                    this.calcular();
+                });
+            }
+
+            if (inputParcela) {
+                const normalizarParcela = () => {
+                    if (!inputParcela.value || String(inputParcela.value).trim() === '') {
+                        inputParcela.value = '';
+                        return;
+                    }
+
+                    const numParcelas = Math.max(1, parseInt(document.getElementById('sliderPrazo')?.value || 30, 10) * 12);
+                    const parcela = parseInt(inputParcela.value, 10);
+
+                    if (isNaN(parcela)) {
+                        inputParcela.value = '';
+                        return;
+                    }
+
+                    const parcelaNormalizada = Math.max(1, Math.min(numParcelas, parcela));
+                    inputParcela.value = String(parcelaNormalizada);
+                };
+
+                inputParcela.addEventListener('blur', () => {
+                    normalizarParcela();
+                    this.calcular();
+                });
+
+                inputParcela.addEventListener('change', () => {
+                    normalizarParcela();
+                    this.calcular();
+                });
+            }
+
+            if (btnRemover) {
+                btnRemover.addEventListener('click', () => {
+                    linha.remove();
+                    this.calcular();
+                });
+            }
+        };
+
+        lista.querySelectorAll('.extra-especifico-row').forEach(vincularLinha);
+
+        btnAdicionar.addEventListener('click', () => {
+            const placeholderValor = this.traducoes['extra-specific-value-placeholder'] || 'Valor extra';
+            const placeholderParcela = this.traducoes['extra-specific-installment-placeholder'] || 'Parcela';
+            const labelValor = this.traducoes['extra-specific-value-label'] || 'Valor';
+            const labelParcela = this.traducoes['extra-specific-installment-label'] || 'Parcela (nº)';
+            const ariaRemover = i18n.obterIdiomaAtual() === 'it-IT'
+                ? 'Rimuovi pagamento extra specifico'
+                : 'Remover pagamento extra específico';
+
+            const novaLinha = document.createElement('div');
+            novaLinha.className = 'extra-especifico-row';
+            novaLinha.innerHTML = `
+                <div class="extra-especifico-campo">
+                    <label class="extra-especifico-label">${labelValor}</label>
+                    <input type="text" class="valor-display valor-input input-extra-especifico-valor" value="" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="${placeholderValor}">
+                </div>
+                <div class="extra-especifico-campo">
+                    <label class="extra-especifico-label">${labelParcela}</label>
+                    <input type="number" class="valor-display valor-input input-extra-especifico-parcela" value="" min="1" max="999" step="1" placeholder="${placeholderParcela}">
+                </div>
+                <button type="button" class="btn-remover-extra-especifico" aria-label="${ariaRemover}">×</button>
+            `;
+
+            lista.appendChild(novaLinha);
+            vincularLinha(novaLinha);
+
+            const novoInputValor = novaLinha.querySelector('.input-extra-especifico-valor');
+            if (novoInputValor) {
+                novoInputValor.focus();
+                novoInputValor.select();
+            }
+
+            this.calcular();
+        });
+    }
+
     converterTaxa() {
         const sliderTaxa = document.getElementById('sliderTaxa');
         const inputTaxa = document.getElementById('inputTaxa');
@@ -671,7 +774,7 @@ class MutuoApp extends App {
 
         const periodicidade = document.querySelector('input[name="periodoRapido"]:checked')?.value || 'ano';
         const sistema = document.querySelector('input[name="sistemaRapido"]:checked')?.value || 'price';
-        const periodicidadeExtra = document.querySelector('input[name="periodoExtra"]:checked')?.value || 'mensal';
+        const periodicidadeExtra = document.querySelector('input[name="periodoExtra"]:checked')?.value || 'semestral';
 
         // Número de parcelas sempre mensal
         const numParcelas = prazoAnos * 12;
@@ -690,6 +793,22 @@ class MutuoApp extends App {
             taxaMensal = Math.pow(1 + taxaInput / 100, 30) - 1;
         }
 
+        const pagamentosExtrasEspecificos = [];
+        document.querySelectorAll('.extra-especifico-row').forEach((linha) => {
+            const inputValor = linha.querySelector('.input-extra-especifico-valor');
+            const inputParcela = linha.querySelector('.input-extra-especifico-parcela');
+
+            const valorExtra = parseInt((inputValor?.value || '').replace(/\D/g, ''), 10);
+            const parcelaExtra = parseInt(inputParcela?.value || '0', 10);
+
+            if (!isNaN(valorExtra) && valorExtra > 0 && !isNaN(parcelaExtra) && parcelaExtra >= 1 && parcelaExtra <= numParcelas) {
+                pagamentosExtrasEspecificos.push({
+                    parcela: parcelaExtra,
+                    valor: valorExtra
+                });
+            }
+        });
+
         return {
             valor,
             taxaMensal,
@@ -698,7 +817,8 @@ class MutuoApp extends App {
             taxaExibida: taxaInput,
             periodicidade,
             extraPagamento,
-            periodicidadeExtra
+            periodicidadeExtra,
+            pagamentosExtrasEspecificos
         };
     }
 
@@ -735,12 +855,22 @@ class MutuoApp extends App {
     }
 
     calcularAmortizacao(dados) {
-        const { valor, taxaMensal, numParcelas, sistema, extraPagamento, periodicidadeExtra } = dados;
+        const { valor, taxaMensal, numParcelas, sistema, extraPagamento, periodicidadeExtra, pagamentosExtrasEspecificos = [] } = dados;
         const tabela = [];
+
+        const mapaExtrasEspecificos = pagamentosExtrasEspecificos.reduce((acc, item) => {
+            const parcela = parseInt(item.parcela, 10);
+            const valorExtra = parseFloat(item.valor);
+
+            if (!isNaN(parcela) && !isNaN(valorExtra) && valorExtra > 0) {
+                acc.set(parcela, (acc.get(parcela) || 0) + valorExtra);
+            }
+
+            return acc;
+        }, new Map());
 
         const deveAplicarExtra = (numeroParcela) => {
             if (!extraPagamento || extraPagamento <= 0) return false;
-            if (periodicidadeExtra === 'mensal') return true;
             if (periodicidadeExtra === 'semestral') return numeroParcela % 6 === 0;
             if (periodicidadeExtra === 'anual') return numeroParcela % 12 === 0;
             return false;
@@ -758,7 +888,10 @@ class MutuoApp extends App {
                 const amortizacao = Math.min(amortizacaoFixa, saldo);
                 const parcelaBase = amortizacao + juros;
                 const saldoAposBase = saldo - amortizacao;
-                const extraAplicado = deveAplicarExtra(i) ? Math.min(extraPagamento, saldoAposBase) : 0;
+                const extraRecorrente = deveAplicarExtra(i) ? extraPagamento : 0;
+                const extraEspecifico = mapaExtrasEspecificos.get(i) || 0;
+                const extraSolicitado = extraRecorrente + extraEspecifico;
+                const extraAplicado = Math.min(extraSolicitado, saldoAposBase);
                 const parcela = parcelaBase + extraAplicado;
                 saldo = saldoAposBase - extraAplicado;
 
@@ -785,7 +918,10 @@ class MutuoApp extends App {
                 const amortizacao = Math.min(amortizacaoBase, saldo);
                 const parcelaBase = amortizacao + juros;
                 const saldoAposBase = saldo - amortizacao;
-                const extraAplicado = deveAplicarExtra(i) ? Math.min(extraPagamento, saldoAposBase) : 0;
+                const extraRecorrente = deveAplicarExtra(i) ? extraPagamento : 0;
+                const extraEspecifico = mapaExtrasEspecificos.get(i) || 0;
+                const extraSolicitado = extraRecorrente + extraEspecifico;
+                const extraAplicado = Math.min(extraSolicitado, saldoAposBase);
                 const parcela = parcelaBase + extraAplicado;
                 saldo = saldoAposBase - extraAplicado;
 
@@ -809,7 +945,10 @@ class MutuoApp extends App {
                 const amortizacao = i === numParcelas ? saldo : 0;
                 const parcelaBase = amortizacao + juros;
                 const saldoAposBase = saldo - amortizacao;
-                const extraAplicado = (i < numParcelas && deveAplicarExtra(i)) ? Math.min(extraPagamento, saldoAposBase) : 0;
+                const extraRecorrente = (i < numParcelas && deveAplicarExtra(i)) ? extraPagamento : 0;
+                const extraEspecifico = (i < numParcelas) ? (mapaExtrasEspecificos.get(i) || 0) : 0;
+                const extraSolicitado = extraRecorrente + extraEspecifico;
+                const extraAplicado = Math.min(extraSolicitado, saldoAposBase);
                 const parcela = parcelaBase + extraAplicado;
                 saldo = saldoAposBase - extraAplicado;
 
@@ -1054,6 +1193,13 @@ class MutuoApp extends App {
             return { x: p.numero / 12, y: jurosAcumulados };
         });
         const dadosSaldo = this.tabelaAmortizacao.map(p => ({ x: p.numero / 12, y: p.saldo }));
+        const maiorValorY = Math.max(
+            0,
+            ...dadosAmortAcum.map((p) => p.y),
+            ...dadosJurosAcum.map((p) => p.y),
+            ...dadosSaldo.map((p) => p.y)
+        );
+        const maximoEscalaY = maiorValorY > 0 ? maiorValorY * 1.02 : 1;
         const cores = this.obterCoresGrafico();
 
         this.graficos.evolucao = new Chart(ctx, {
@@ -1140,9 +1286,40 @@ class MutuoApp extends App {
                             color: cores.text
                         }
                     },
+                    xTop: {
+                        type: 'linear',
+                        position: 'top',
+                        min: 0,
+                        max: Math.max(totalAnos, passoMensal),
+                        ticks: {
+                            display: true,
+                            color: cores.text,
+                            stepSize: passoMensal,
+                            autoSkip: false,
+                            maxRotation: 0,
+                            callback: (valor) => {
+                                if (!ehMarcoAnual(valor)) {
+                                    return '';
+                                }
+
+                                return String(Math.round(Number(valor)));
+                            }
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                            drawTicks: true,
+                            color: cores.grid
+                        },
+                        title: {
+                            display: true,
+                            text: i18n.t('grafico.eixoX'),
+                            color: cores.text
+                        }
+                    },
                     y: {
                         ticks: {
-                            color: cores.text
+                            color: cores.text,
+                            callback: (valor) => formatarNumero(Number(valor), 0)
                         },
                         grid: {
                             color: cores.grid
@@ -1152,7 +1329,25 @@ class MutuoApp extends App {
                             text: i18n.t('grafico.eixoY'),
                             color: cores.text
                         },
-                        beginAtZero: true
+                        beginAtZero: true,
+                        max: maximoEscalaY
+                    },
+                    yRight: {
+                        position: 'right',
+                        beginAtZero: true,
+                        max: maximoEscalaY,
+                        ticks: {
+                            color: cores.text,
+                            callback: (valor) => formatarNumero(Number(valor), 0)
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                            drawTicks: true,
+                            color: cores.grid
+                        },
+                        title: {
+                            display: false
+                        }
                     }
                 }
             }
