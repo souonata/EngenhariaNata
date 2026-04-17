@@ -84,7 +84,15 @@ function ajustarValor(targetId, step) {
 
 function carregarValores() {
     const configSalva = localStorage.getItem('configSolar');
-    const config = configSalva ? JSON.parse(configSalva) : VALORES_PADRAO;
+    let config = VALORES_PADRAO;
+    if (configSalva) {
+        try {
+            config = JSON.parse(configSalva);
+        } catch (e) {
+            console.warn('configSolar inválido no localStorage, usando valores padrão.', e);
+            localStorage.removeItem('configSolar');
+        }
+    }
     
     // Aplicar valores aos sliders
     document.getElementById('sliderPotenciaPainel').value = config.potenciaPainel || VALORES_PADRAO.potenciaPainel;

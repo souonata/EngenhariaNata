@@ -672,12 +672,6 @@ class HeliceApp extends App {
         // Converter valor para nova unidade
         const novoValor = this.converterDeKnots(valorKnots, unidadeAtual);
         slider.value = Math.max(min, Math.min(max, novoValor));
-
-        // Atualizar labels de range
-        const rangeMin = document.getElementById('rangeMinVelocidade');
-        const rangeMax = document.getElementById('rangeMaxVelocidade');
-        if (rangeMin) rangeMin.textContent = min;
-        if (rangeMax) rangeMax.textContent = max;
     }
 
     /**

@@ -341,6 +341,53 @@ footer p {
     flex-shrink: 0;
 }
 
+/* Widget de visitantes no rodapé */
+.visitors-widget {
+    margin-top: 6px;
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    font-size: 0.72rem;
+    line-height: 1.2;
+    color: white;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.visitors-widget .visitors-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.visitors-widget .visitors-icon,
+.visitors-widget .visitors-flag {
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+.visitors-widget .visitors-count {
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.visitors-widget .visitors-separator {
+    opacity: 0.6;
+}
+
+@media (max-width: 360px) {
+    .visitors-widget {
+        font-size: 0.68rem;
+        padding: 4px 8px;
+        gap: 4px;
+    }
+}
+
 /* For elements that create their own scrollbars (eg. inside the simulated
    device), reserve stable gutter so scroll toggles won't change width */
 .home-screen, .tabela-scroll {

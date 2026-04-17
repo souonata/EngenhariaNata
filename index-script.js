@@ -46,6 +46,7 @@ class IndexApp extends App {
         await this.carregarVersoesDoServidor();
         this.configurarRelogio();
         this.adicionarVersoesNosIcones();
+        this.inicializarWidgetVisitantes();
     }
 
     async carregarVersoesDoServidor() {
@@ -70,6 +71,7 @@ class IndexApp extends App {
 
     atualizarAposTrocaIdioma() {
         this.atualizarHorario();
+        this.atualizarNomePaisVisitante();
     }
 
     configurarRelogio() {
@@ -175,6 +177,86 @@ class IndexApp extends App {
 
             svg.appendChild(versionText);
         });
+    }
+
+    // ============================================
+    // WIDGET DE VISITANTES
+    // ============================================
+
+    inicializarWidgetVisitantes() {
+        this.codigoPaisVisitante = null;
+        this.carregarTotalVisitas();
+        this.detectarPaisVisitante();
+    }
+
+    async carregarTotalVisitas() {
+        const elementoContagem = document.getElementById('visitorsCount');
+        if (!elementoContagem) return;
+
+        try {
+            const resposta = await fetch('https://souonata.goatcounter.com/counter/TOTAL.json', {
+                cache: 'no-store'
+            });
+            if (!resposta.ok) throw new Error(`HTTP ${resposta.status}`);
+            const dados = await resposta.json();
+            if (dados && dados.count) {
+                elementoContagem.textContent = dados.count;
+            }
+        } catch (_erro) {
+            elementoContagem.textContent = '—';
+        }
+    }
+
+    async detectarPaisVisitante() {
+        try {
+            const resposta = await fetch('https://api.country.is/', {
+                cache: 'no-store'
+            });
+            if (!resposta.ok) throw new Error(`HTTP ${resposta.status}`);
+            const dados = await resposta.json();
+            if (dados && typeof dados.country === 'string' && dados.country.length === 2) {
+                this.codigoPaisVisitante = dados.country.toUpperCase();
+                this.atualizarNomePaisVisitante();
+            }
+        } catch (_erro) {
+            const flag = document.getElementById('visitorsFlag');
+            const nome = document.getElementById('visitorsCountry');
+            if (flag) flag.textContent = '🌐';
+            if (nome) nome.textContent = i18n.t('counter-country-unknown') || '—';
+        }
+    }
+
+    atualizarNomePaisVisitante() {
+        const codigo = this.codigoPaisVisitante;
+        if (!codigo) return;
+
+        const flag = document.getElementById('visitorsFlag');
+        const nome = document.getElementById('visitorsCountry');
+        if (!flag || !nome) return;
+
+        flag.textContent = this.codigoParaBandeira(codigo);
+
+        let nomePais = codigo;
+        try {
+            const idioma = typeof i18n.obterIdiomaAtual === 'function'
+                ? i18n.obterIdiomaAtual()
+                : 'pt-BR';
+            const display = new Intl.DisplayNames([idioma], { type: 'region' });
+            nomePais = display.of(codigo) || codigo;
+        } catch (_erro) {
+            // Mantém código ISO se Intl.DisplayNames falhar
+        }
+        nome.textContent = nomePais;
+    }
+
+    codigoParaBandeira(codigo) {
+        if (typeof codigo !== 'string' || codigo.length !== 2) return '🌐';
+        const base = 127397; // Regional Indicator Symbol A (0x1F1E6) - 'A'.charCodeAt(0)
+        const upper = codigo.toUpperCase();
+        return String.fromCodePoint(
+            base + upper.charCodeAt(0),
+            base + upper.charCodeAt(1)
+        );
     }
 }
 

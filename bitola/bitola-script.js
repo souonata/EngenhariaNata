@@ -398,22 +398,15 @@ class BitolaApp extends App {
 
     atualizarVisibilidadeTensao() {
         const tipoCorrente = document.querySelector('input[name="tipoCorrente"]:checked')?.value;
-        const secaoTensaoCA = document.getElementById('secaoTensaoCA');
         const secaoTensaoCC = document.getElementById('secaoTensaoCC');
         const tensaoCAInline = document.getElementById('tensaoCAInline');
 
         if (tipoCorrente === 'ca') {
-            if (secaoTensaoCA) secaoTensaoCA.style.display = 'block';
             if (secaoTensaoCC) secaoTensaoCC.style.display = 'none';
-            if (tensaoCAInline) {
-                tensaoCAInline.style.display = 'flex';
-            }
+            if (tensaoCAInline) tensaoCAInline.style.display = 'flex';
         } else {
-            if (secaoTensaoCA) secaoTensaoCA.style.display = 'none';
             if (secaoTensaoCC) secaoTensaoCC.style.display = 'block';
-            if (tensaoCAInline) {
-                tensaoCAInline.style.display = 'none';
-            }
+            if (tensaoCAInline) tensaoCAInline.style.display = 'none';
         }
     }
 

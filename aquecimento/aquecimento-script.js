@@ -145,7 +145,7 @@ class AquecimentoApp extends App {
     
     // Getter para traduções
     get traducoes() {
-        const idiomaAtual = i18n.getIdioma();
+        const idiomaAtual = i18n.obterIdiomaAtual();
         return this.config.traducoes[idiomaAtual];
     }
 
@@ -496,7 +496,6 @@ class AquecimentoApp extends App {
         }
         
         if (memorialSection.style.display === 'none' || memorialSection.style.display === '') {
-            this.atualizarMemorialComValores();
             memorialSection.style.display = 'block';
             if (resultadosSection) resultadosSection.style.display = 'none';
         } else {
@@ -547,7 +546,7 @@ class AquecimentoApp extends App {
     // ============================================
     
     obterModeloReferencia() {
-        const idioma = i18n.getIdioma();
+        const idioma = i18n.obterIdiomaAtual();
         return this.MODELO_REFERENCIA[idioma] || this.MODELO_REFERENCIA['pt-BR'];
     }
     
@@ -558,7 +557,7 @@ class AquecimentoApp extends App {
         if (!sliderLatitude) return;
         
         const valorAtual = parseFloat(sliderLatitude.value);
-        const idioma = i18n.getIdioma();
+        const idioma = i18n.obterIdiomaAtual();
         
         if (idioma === 'it-IT') {
             sliderLatitude.min = '36';
@@ -643,7 +642,7 @@ class AquecimentoApp extends App {
     estimarAmbientes(areaCasa) {
         const ambientes = [];
         let areaRestante = areaCasa;
-        const idioma = i18n.getIdioma();
+        const idioma = i18n.obterIdiomaAtual();
         
         // Definir tipos de ambiente por idioma
         const tiposAmbiente = idioma === 'it-IT' ? {
@@ -745,7 +744,7 @@ class AquecimentoApp extends App {
             };
         }
         
-        const idioma = i18n.getIdioma();
+        const idioma = i18n.obterIdiomaAtual();
         const matrizTermossifoes = this.MATRIZ_TERMOSSIFOES[idioma] || this.MATRIZ_TERMOSSIFOES['pt-BR'];
         const ambientes = this.estimarAmbientes(areaCasa);
         
@@ -934,7 +933,10 @@ class AquecimentoApp extends App {
         // Calcular área de coletores necessária
         const irradiacaoMedia_kWh_m2_dia = HSP;
         const fatorSeguranca = 1.25;
-        const areaNecessaria = (demandaTotal_kWh_dia * fatorSeguranca) / (irradiacaoMedia_kWh_m2_dia * eficiencia);
+        const denominadorArea = irradiacaoMedia_kWh_m2_dia * eficiencia;
+        const areaNecessaria = denominadorArea > 0
+            ? (demandaTotal_kWh_dia * fatorSeguranca) / denominadorArea
+            : 0;
         
         // Calcular número de painéis
         const numeroPaineis = Math.ceil(areaNecessaria / areaUnitaria);
@@ -944,7 +946,7 @@ class AquecimentoApp extends App {
         const volumeBoiler = calcularAgua ? numPessoas * consumoPorPessoa * 1.5 : 0;
         
         // Calcular custos
-        const idioma = i18n.getIdioma();
+        const idioma = i18n.obterIdiomaAtual();
         const moedaSimbolo = idioma === 'it-IT' ? '€' : 'R$';
         
         const precoPorPainel = idioma === 'it-IT' ? 450 : 1200;
@@ -1000,7 +1002,7 @@ class AquecimentoApp extends App {
         }
         
         // Atualizar gráficos
-        const energiaSolar_kWh_dia = energiaSolarTotal;
+        const energiaSolar_kWh_dia = areaTotal * irradiacaoMedia_kWh_m2_dia * eficiencia;
         this.atualizarGraficos(demandaAgua_kWh_dia, demandaCasa_kWh_dia, energiaSolar_kWh_dia, calcularAgua, calcularCasa);
 
         this.renderizarExplicacao({
@@ -1021,7 +1023,7 @@ class AquecimentoApp extends App {
     // ATUALIZAÇÃO DOS GRÁFICOS
     // ============================================
     atualizarGraficos(demandaAgua_kWh_dia, demandaCasa_kWh_dia, energiaSolar_kWh_dia, calcularAgua, calcularCasa) {
-        const idioma = i18n.getIdioma();
+        const idioma = i18n.obterIdiomaAtual();
         
         // Gráfico de Distribuição de Demanda
         this.atualizarGraficoDistribuicao(demandaAgua_kWh_dia, demandaCasa_kWh_dia, calcularAgua, calcularCasa, idioma);
@@ -1034,7 +1036,7 @@ class AquecimentoApp extends App {
     }
 
     renderizarExplicacao({ numeroPaineis, areaTotal, demandaAgua_kWh_dia, demandaCasa_kWh_dia, volumeBoiler, potenciaCasa_W, custoTotal, calcularAgua, calcularCasa, moedaSimbolo }) {
-        const pt = i18n.getIdioma() === 'pt-BR';
+        const pt = i18n.obterIdiomaAtual() === 'pt-BR';
         const demandaTotal = demandaAgua_kWh_dia + demandaCasa_kWh_dia;
 
         this.explicacao.renderizar({
@@ -1252,101 +1254,6 @@ class AquecimentoApp extends App {
                 }
             }
         });
-    }
-    
-    // ============================================
-    // ATUALIZAÇÃO DO MEMORIAL DE CÁLCULO
-    // ============================================
-    atualizarMemorialComValores() {
-        const memorialConteudo = document.getElementById('memorialConteudo');
-        if (!memorialConteudo) return;
-        
-        // Obter valores atuais
-        const latitude = parseFloat(document.getElementById('sliderLatitude')?.value || 0);
-        const altitude = parseFloat(document.getElementById('sliderAltitude')?.value || 0);
-        const numPessoas = parseFloat(document.getElementById('sliderPessoas')?.value || 1);
-        const areaCasa = parseFloat(document.getElementById('sliderAreaCasa')?.value || 0);
-        const alturaCasa = parseFloat(document.getElementById('sliderAlturaCasa')?.value || 2.7);
-        
-        const calcularAgua = document.getElementById('checkboxAgua')?.checked || false;
-        const calcularCasa = document.getElementById('checkboxCasa')?.checked || false;
-        
-        const tipoUsoSelecionado = document.querySelector('input[name="tipoUso"]:checked')?.value || 'Padrao';
-        const classeEnergetica = document.querySelector('input[name="classeEnergetica"]:checked')?.value || 'D';
-        
-        // Recalcular valores
-        const T_agua_fria = this.calcularTemperaturaAgua(latitude, altitude);
-        const T_ambiente_inverno = this.calcularTemperaturaAmbiente(latitude, altitude);
-        const HSP = this.calcularHorasSolPicoInverno(latitude);
-        
-        const perfilConsumo = this.MATRIZ_CONSUMO[tipoUsoSelecionado] || this.MATRIZ_CONSUMO['Padrao'];
-        const consumoPorPessoa = perfilConsumo.consumo_por_pessoa;
-        const T_desejada = perfilConsumo.T_desejada;
-        
-        // Gerar HTML do memorial
-        let html = `<h3>${this.traducoes['memorial-title'] || 'Memorial de Cálculo Detalhado'}</h3>`;
-        
-        html += `<div class="memorial-secao">`;
-        html += `<h4>${this.traducoes['memorial-dados'] || 'Dados de Entrada'}</h4>`;
-        html += `<ul>`;
-        html += `<li><strong>${this.traducoes['latitude'] || 'Latitude'}:</strong> ${this.formatarDecimal(latitude, 1)}°</li>`;
-        html += `<li><strong>${this.traducoes['altitude'] || 'Altitude'}:</strong> ${altitude} m</li>`;
-        if (calcularAgua) {
-            html += `<li><strong>${this.traducoes['num-pessoas'] || 'Número de pessoas'}:</strong> ${numPessoas}</li>`;
-            html += `<li><strong>${this.traducoes['tipo-uso'] || 'Perfil de consumo'}:</strong> ${tipoUsoSelecionado}</li>`;
-        }
-        if (calcularCasa) {
-            html += `<li><strong>${this.traducoes['area-casa'] || 'Área da casa'}:</strong> ${areaCasa} m²</li>`;
-            html += `<li><strong>${this.traducoes['altura-casa'] || 'Altura da casa'}:</strong> ${this.formatarDecimal(alturaCasa, 1)} m</li>`;
-            html += `<li><strong>${this.traducoes['classe-energetica'] || 'Classe energética'}:</strong> ${classeEnergetica}</li>`;
-        }
-        html += `</ul>`;
-        html += `</div>`;
-        
-        html += `<div class="memorial-secao">`;
-        html += `<h4>${this.traducoes['memorial-clima'] || 'Condições Climáticas'}</h4>`;
-        html += `<ul>`;
-        html += `<li><strong>HSP:</strong> ${this.formatarDecimal(HSP, 2)} h/dia</li>`;
-        html += `<li><strong>${this.traducoes['temp-agua-fria'] || 'Temp. água fria'}:</strong> ${this.formatarDecimal(T_agua_fria, 1)}°C</li>`;
-        html += `<li><strong>${this.traducoes['temp-ambiente'] || 'Temp. ambiente'}:</strong> ${this.formatarDecimal(T_ambiente_inverno, 1)}°C</li>`;
-        html += `</ul>`;
-        html += `</div>`;
-        
-        if (calcularAgua) {
-            const volumeDiario = numPessoas * consumoPorPessoa;
-            const deltaT_agua = T_desejada - T_agua_fria;
-            const demandaAgua_kWh_dia = (volumeDiario * this.CONSTANTS.densidade_agua * deltaT_agua * this.CONSTANTS.calor_especifico_agua) / 1000.0;
-            
-            html += `<div class="memorial-secao">`;
-            html += `<h4>${this.traducoes['memorial-agua'] || 'Cálculo - Aquecimento de Água'}</h4>`;
-            html += `<ul>`;
-            html += `<li><strong>${this.traducoes['consumo-pessoa'] || 'Consumo por pessoa'}:</strong> ${consumoPorPessoa} L/dia</li>`;
-            html += `<li><strong>${this.traducoes['volume-diario'] || 'Volume diário'}:</strong> ${this.formatarDecimal(volumeDiario, 0)} L</li>`;
-            html += `<li><strong>ΔT:</strong> ${this.formatarDecimal(deltaT_agua, 1)}°C</li>`;
-            html += `<li><strong>${this.traducoes['demanda-energia'] || 'Demanda energética'}:</strong> ${this.formatarDecimal(demandaAgua_kWh_dia, 2)} kWh/dia</li>`;
-            html += `</ul>`;
-            html += `</div>`;
-        }
-        
-        if (calcularCasa) {
-            const resultadoTermossifoes = this.calcularTermossifoes(areaCasa, alturaCasa, T_ambiente_inverno, classeEnergetica);
-            const potenciaCasa_W = resultadoTermossifoes.potenciaTotal;
-            const demandaCasa_kWh_dia = (potenciaCasa_W * this.HORAS_AQUECIMENTO_POR_DIA) / 1000.0;
-            
-            html += `<div class="memorial-secao">`;
-            html += `<h4>${this.traducoes['memorial-casa'] || 'Cálculo - Aquecimento da Casa'}</h4>`;
-            html += `<ul>`;
-            html += `<li><strong>${this.traducoes['potencia-necessaria'] || 'Potência necessária'}:</strong> ${this.formatarPotenciaWkW(potenciaCasa_W)}</li>`;
-            html += `<li><strong>${this.traducoes['horas-aquecimento'] || 'Horas de aquecimento'}:</strong> ${this.HORAS_AQUECIMENTO_POR_DIA} h/dia</li>`;
-            html += `<li><strong>${this.traducoes['demanda-energia'] || 'Demanda energética'}:</strong> ${this.formatarDecimal(demandaCasa_kWh_dia, 2)} kWh/dia</li>`;
-            if (resultadoTermossifoes.quantidade > 0) {
-                html += `<li><strong>${this.traducoes['resultado-termossifoes'] || 'Termossifões'}:</strong> ${resultadoTermossifoes.detalhes}</li>`;
-            }
-            html += `</ul>`;
-            html += `</div>`;
-        }
-        
-        memorialConteudo.innerHTML = html;
     }
 }
 
