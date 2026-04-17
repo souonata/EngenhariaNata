@@ -1506,13 +1506,18 @@ class MutuoApp extends App {
         const casasDecimaisTaxa = periodicidade === 'dia' ? 4 : (periodicidade === 'mes' ? 3 : 2);
         const textoTaxa = this.traducoes['memorial-rate-label'] || 'Taxa';
         const textoTaxaMensal = this.traducoes['memorial-monthly-rate-label'] || 'Taxa Mensal';
+        const formulaConversaoTaxa = periodicidade === 'ano'
+            ? `${textoTaxaMensal} (%) = [(1 + ${textoTaxa} (%) / 100)^(1/12) - 1] × 100`
+            : periodicidade === 'mes'
+                ? `${textoTaxaMensal} (%) = ${textoTaxa} (%)`
+                : `${textoTaxaMensal} (%) = [(1 + ${textoTaxa} (%) / 100)^30 - 1] × 100`;
 
         htmlConteudo += `
             <div class="memorial-item">
                 <h3>${this.traducoes['memorial-passo1-title'] || '1️⃣ Passo 1: Converter Taxa para Mensal'}</h3>
                 <p><strong>${this.traducoes['memorial-formula'] || 'Fórmula:'}</strong></p>
                 <div class="formula-box">
-                    <p><strong>${textoTaxaMensal} = f(${textoTaxa} ${periodoTexto})</strong></p>
+                    <p><strong>${formulaConversaoTaxa}</strong></p>
                 </div>
                 <p>${this.traducoes['memorial-passo1-explicacao'] || 'Todos os cálculos são feitos com taxa mensal.'}</p>
                 <p><strong>${this.traducoes['memorial-example'] || 'Exemplo:'}</strong> ${textoTaxa} ${formatarNumero(taxaExibida, casasDecimaisTaxa)}% → ${textoTaxaMensal} = ${formatarNumero(taxaMensal * 100, 4)}%</p>
