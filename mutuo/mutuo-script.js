@@ -30,6 +30,12 @@ class MutuoApp extends App {
         this.periodicidadeAnterior = 'ano'; // Rastrear periodicidade para conversão
         this.memorialSistemaSelecionado = 'price';
         this.explicacao = new ExplicacaoResultado('v2-explicacao', i18n);
+        this.valoresEntradaOverride = {
+            valor: null,
+            taxa: null,
+            prazo: null,
+            extra: null
+        };
     }
 
     get traducoes() {
@@ -117,6 +123,16 @@ class MutuoApp extends App {
                         this.ultimaParcelaSelecionada = parseInt(slider.value);
                         this.atualizarParcelaExibida();
                     } else {
+                        const mapaOverridePorSlider = {
+                            sliderValor: 'valor',
+                            sliderTaxa: 'taxa',
+                            sliderPrazo: 'prazo',
+                            sliderExtraPagamento: 'extra'
+                        };
+                        const chaveOverride = mapaOverridePorSlider[id];
+                        if (chaveOverride) {
+                            this.valoresEntradaOverride[chaveOverride] = null;
+                        }
                         this.calcular();
                     }
                 });
@@ -288,6 +304,52 @@ class MutuoApp extends App {
             let iniciouAnimacaoContinua = false;
             let direcao = 1;
 
+            const obterChaveOverridePorTarget = (targetId) => {
+                const mapa = {
+                    sliderValor: 'valor',
+                    sliderTaxa: 'taxa',
+                    sliderPrazo: 'prazo',
+                    sliderExtraPagamento: 'extra'
+                };
+                return mapa[targetId] || null;
+            };
+
+            const normalizarValorPorChave = (chave, valor) => {
+                if (chave === 'prazo') return Math.max(1, valor);
+                if (chave === 'valor' || chave === 'extra' || chave === 'taxa') return Math.max(0, valor);
+                return valor;
+            };
+
+            const obterValorEfetivo = (slider, targetId) => {
+                const chave = obterChaveOverridePorTarget(targetId);
+                if (!chave) return parseFloat(slider.value);
+
+                const override = this.valoresEntradaOverride[chave];
+                if (override != null && !Number.isNaN(override)) {
+                    return Number(override);
+                }
+
+                return parseFloat(slider.value);
+            };
+
+            const aplicarValorNoControle = (slider, targetId, valor, casasDecimais = 3) => {
+                const chave = obterChaveOverridePorTarget(targetId);
+                const valorNormalizado = normalizarValorPorChave(chave, valor);
+                const valorArredondado = Number(valorNormalizado.toFixed(Math.max(casasDecimais, 3)));
+
+                const min = parseFloat(slider.min);
+                const max = parseFloat(slider.max);
+                slider.value = Math.max(min, Math.min(max, valorArredondado));
+
+                if (chave) {
+                    this.valoresEntradaOverride[chave] = valorArredondado;
+                    this.calcular();
+                    return;
+                }
+
+                slider.dispatchEvent(new Event('input', { bubbles: true }));
+            };
+
             const animar = (timestamp) => {
                 if (!estaSegurando) return;
 
@@ -300,6 +362,7 @@ class MutuoApp extends App {
                 const min = parseFloat(slider.min);
                 const max = parseFloat(slider.max);
                 const range = max - min;
+                const chaveOverride = obterChaveOverridePorTarget(targetId);
 
                 const velocidade = range / 3000;
                 const distancia = velocidade * tempoDecorrido;
@@ -307,17 +370,18 @@ class MutuoApp extends App {
                 const valorInicial = parseFloat(btn.dataset.valorInicial);
                 let novoValor = valorInicial + (distancia * direcao);
 
-                novoValor = Math.max(min, Math.min(max, novoValor));
+                if (!chaveOverride) {
+                    novoValor = Math.max(min, Math.min(max, novoValor));
 
-                if ((direcao > 0 && novoValor >= max) || (direcao < 0 && novoValor <= min)) {
-                    slider.value = novoValor;
-                    slider.dispatchEvent(new Event('input', { bubbles: true }));
-                    pararIncremento();
-                    return;
+                    if ((direcao > 0 && novoValor >= max) || (direcao < 0 && novoValor <= min)) {
+                        slider.value = novoValor;
+                        slider.dispatchEvent(new Event('input', { bubbles: true }));
+                        pararIncremento();
+                        return;
+                    }
                 }
 
-                slider.value = novoValor;
-                slider.dispatchEvent(new Event('input', { bubbles: true }));
+                aplicarValorNoControle(slider, targetId, novoValor);
 
                 animationFrame = requestAnimationFrame(animar);
             };
@@ -332,7 +396,7 @@ class MutuoApp extends App {
                 const stepStr = btn.getAttribute('data-step');
                 direcao = parseFloat(stepStr) > 0 ? 1 : -1;
 
-                btn.dataset.valorInicial = slider.value;
+                btn.dataset.valorInicial = String(obterValorEfetivo(slider, targetId));
 
                 tempoInicio = performance.now();
                 animationFrame = requestAnimationFrame(animar);
@@ -346,17 +410,13 @@ class MutuoApp extends App {
                 const passo = parseFloat(btn.getAttribute('data-step') || '0');
                 if (!passo) return;
 
-                const min = parseFloat(slider.min);
-                const max = parseFloat(slider.max);
-                const valorAtual = parseFloat(slider.value);
+                const valorAtual = obterValorEfetivo(slider, targetId);
                 const casasDecimais = (String(Math.abs(passo)).split('.')[1] || '').length;
 
                 let novoValor = valorAtual + passo;
-                novoValor = Math.max(min, Math.min(max, novoValor));
 
                 // Evita erro de ponto flutuante em passos decimais (ex: 0.01).
-                slider.value = Number(novoValor.toFixed(Math.max(casasDecimais, 3)));
-                slider.dispatchEvent(new Event('input', { bubbles: true }));
+                aplicarValorNoControle(slider, targetId, novoValor, casasDecimais);
             };
 
             const pararIncremento = () => {
@@ -449,6 +509,7 @@ class MutuoApp extends App {
                 const numeroInteiro = parseInt(apenasDigitos, 10);
 
                 if (!isNaN(numeroInteiro)) {
+                    this.valoresEntradaOverride.valor = numeroInteiro;
                     slider.value = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), numeroInteiro));
                     this.calcular();
                 }
@@ -460,6 +521,7 @@ class MutuoApp extends App {
                 const numeroInteiro = parseInt(apenasDigitos, 10);
 
                 if (!isNaN(numeroInteiro)) {
+                    this.valoresEntradaOverride.extra = numeroInteiro;
                     slider.value = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), numeroInteiro));
                     this.calcular();
                 }
@@ -470,6 +532,11 @@ class MutuoApp extends App {
             const numero = parseFloat(valor);
 
             if (!isNaN(numero)) {
+                if (tipo === 'taxa') {
+                    this.valoresEntradaOverride.taxa = numero;
+                } else if (tipo === 'prazo') {
+                    this.valoresEntradaOverride.prazo = numero;
+                }
                 slider.value = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), numero));
                 this.calcular();
             }
@@ -767,10 +834,13 @@ class MutuoApp extends App {
         const sliderPrazo = document.getElementById('sliderPrazo');
         const sliderExtraPagamento = document.getElementById('sliderExtraPagamento');
 
-        const valor = parseFloat(sliderValor?.value || 115000);
-        const taxaInput = parseFloat(sliderTaxa?.value || 3.16);
-        const prazoAnos = parseInt(sliderPrazo?.value || 30);
-        const extraPagamento = parseFloat(sliderExtraPagamento?.value || 0);
+        const valor = this.valoresEntradaOverride.valor ?? parseFloat(sliderValor?.value || 115000);
+        const taxaInput = this.valoresEntradaOverride.taxa ?? parseFloat(sliderTaxa?.value || 3.16);
+        const prazoOverride = this.valoresEntradaOverride.prazo;
+        const prazoAnos = prazoOverride != null
+            ? Math.max(1, Math.round(prazoOverride))
+            : parseInt(sliderPrazo?.value || 30);
+        const extraPagamento = this.valoresEntradaOverride.extra ?? parseFloat(sliderExtraPagamento?.value || 0);
 
         const periodicidade = document.querySelector('input[name="periodoRapido"]:checked')?.value || 'ano';
         const sistema = document.querySelector('input[name="sistemaRapido"]:checked')?.value || 'price';
@@ -983,13 +1053,13 @@ class MutuoApp extends App {
         // Atualizar input de prazo
         const inputPrazo = document.getElementById('inputPrazo');
         if (inputPrazo) {
-            const prazo = parseInt(document.getElementById('sliderPrazo')?.value || 30);
+            const prazo = Math.max(1, Math.round((dados.numParcelas || 360) / 12));
             inputPrazo.value = prazo;
         }
 
         const inputExtraPagamento = document.getElementById('inputExtraPagamento');
         if (inputExtraPagamento) {
-            const extra = parseInt(document.getElementById('sliderExtraPagamento')?.value || 0);
+            const extra = parseInt(dados.extraPagamento || 0);
             inputExtraPagamento.value = formatarNumero(extra, 0);
         }
     }
@@ -1016,7 +1086,7 @@ class MutuoApp extends App {
         const sistemaLabel = {
             sac: pt ? 'SAC' : 'SAC',
             price: pt ? 'Price (Frances)' : 'Price (Francese)',
-            american: pt ? 'Americano' : 'Americano'
+            americano: pt ? 'Americano' : 'Americano'
         }[dados.sistema] || dados.sistema;
 
         const totalPagoStr = this.formatarMoedaLocal(totalPago);
@@ -1211,27 +1281,30 @@ class MutuoApp extends App {
                         data: dadosAmortAcum,
                         borderColor: cores.green,
                         backgroundColor: cores.greenSoft,
-                        tension: 0.4,
-                        pointRadius: 0,
-                        pointHoverRadius: 4
+                        showLine: false,
+                        pointRadius: 2,
+                        pointHoverRadius: 4,
+                        pointHitRadius: 8
                     },
                     {
                         label: i18n.t('grafico.juros'),
                         data: dadosJurosAcum,
                         borderColor: cores.orange,
                         backgroundColor: cores.orangeSoft,
-                        tension: 0.4,
-                        pointRadius: 0,
-                        pointHoverRadius: 4
+                        showLine: false,
+                        pointRadius: 2,
+                        pointHoverRadius: 4,
+                        pointHitRadius: 8
                     },
                     {
                         label: i18n.t('grafico.saldoDevedor'),
                         data: dadosSaldo,
                         borderColor: cores.blue,
                         backgroundColor: cores.blueSoft,
-                        tension: 0.4,
-                        pointRadius: 0,
-                        pointHoverRadius: 4
+                        showLine: false,
+                        pointRadius: 2,
+                        pointHoverRadius: 4,
+                        pointHitRadius: 8
                     }
                 ]
             },

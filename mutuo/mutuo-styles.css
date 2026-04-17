@@ -183,6 +183,13 @@ html[data-theme="dark"] {
     color: var(--text-secondary, #666);
 }
 
+.taxa-legenda {
+    margin: 6px 0 8px;
+    font-size: 0.8rem;
+    line-height: 1.35;
+    color: var(--text-secondary, #666);
+}
+
 .extras-especificos-lista {
     display: flex;
     flex-direction: column;
