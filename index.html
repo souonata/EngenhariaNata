@@ -386,36 +386,31 @@
         <!-- Logo Engenharia NATA com easter egg no dock -->
         <div class="dock" id="easterEggDock" data-easter-state="locked">
             <button class="dock-trigger" id="dockEasterEggTrigger" type="button" aria-label="Engenharia Nata">
-                <span class="dock-marquee-viewport">
+                <span class="dock-marquee-viewport" id="dockMarqueeViewport">
                     <span class="dock-marquee-track" id="dockMarqueeTrack">
-                        <span class="dock-marquee-sequence" id="dockMarqueeSequence">
-                            <span class="logo-container dock-brand">
-                                <svg class="logo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" fill="currentColor"/>
-                                    <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none"/>
-                                </svg>
-                                <span class="logo-text">ENGENHARIA <span class="logo-highlight">NATA</span></span>
-                            </span>
-
-                            <span class="dock-visitors-chip" aria-live="polite">
-                                <span class="dock-visitors-label" data-i18n="app-visitantes">Visitantes</span>
-                                <span class="visitors-count-led dock-visitors-value js-visitors-count" title="" data-i18n-title="app-visitantes-tooltip">—</span>
-                            </span>
+                        <span class="logo-container dock-brand" id="dockBrandPrimary">
+                            <svg class="logo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" fill="currentColor"/>
+                                <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none"/>
+                            </svg>
+                            <span class="logo-text">ENGENHARIA <span class="logo-highlight">NATA</span></span>
                         </span>
 
-                        <span class="dock-marquee-sequence" aria-hidden="true">
-                            <span class="logo-container dock-brand">
-                                <svg class="logo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" fill="currentColor"/>
-                                    <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none"/>
-                                </svg>
-                                <span class="logo-text">ENGENHARIA <span class="logo-highlight">NATA</span></span>
-                            </span>
+                        <span class="dock-spacer" id="dockGapAfterBrand" aria-hidden="true"></span>
 
-                            <span class="dock-visitors-chip">
-                                <span class="dock-visitors-label" data-i18n="app-visitantes">Visitantes</span>
-                                <span class="visitors-count-led dock-visitors-value js-visitors-count">—</span>
-                            </span>
+                        <span class="dock-visitors-chip" id="dockVisitorsChip" aria-live="polite">
+                            <span class="dock-visitors-label" data-i18n="app-visitantes">Visitantes</span>
+                            <span class="visitors-count-led dock-visitors-value js-visitors-count" title="" data-i18n-title="app-visitantes-tooltip">—</span>
+                        </span>
+
+                        <span class="dock-spacer" id="dockGapAfterVisitors" aria-hidden="true"></span>
+
+                        <span class="logo-container dock-brand dock-brand-secondary" id="dockBrandSecondary" aria-hidden="true">
+                            <svg class="logo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" fill="currentColor"/>
+                                <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none"/>
+                            </svg>
+                            <span class="logo-text">ENGENHARIA <span class="logo-highlight">NATA</span></span>
                         </span>
                     </span>
                 </span>

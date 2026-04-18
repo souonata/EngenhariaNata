@@ -45,8 +45,14 @@ class IndexApp extends App {
         this.janelaToquesEasterEggMs = 6000;
         this.easterEggDesbloqueado = false;
         this.elementoDockVisitantes = null;
-        this.elementoSequenciaDock = null;
-        this._atualizarAnimacaoDockAoRedimensionar = () => this.atualizarAnimacaoDockVisitantes();
+        this.elementoDockViewport = null;
+        this.elementoDockTrack = null;
+        this.elementoMarcaPrincipal = null;
+        this.elementoMarcaFinal = null;
+        this.elementoVisitantesChip = null;
+        this.elementoGapAposMarca = null;
+        this.elementoGapAposVisitantes = null;
+        this._atualizarAnimacaoDockAoRedimensionar = () => this.prepararDockEasterEgg();
     }
 
     async carregarTraducoes() {
@@ -208,10 +214,26 @@ class IndexApp extends App {
 
     inicializarEasterEggVisitantes() {
         this.elementoDockVisitantes = document.getElementById('easterEggDock');
-        this.elementoSequenciaDock = document.getElementById('dockMarqueeSequence');
+        this.elementoDockViewport = document.getElementById('dockMarqueeViewport');
+        this.elementoDockTrack = document.getElementById('dockMarqueeTrack');
+        this.elementoMarcaPrincipal = document.getElementById('dockBrandPrimary');
+        this.elementoMarcaFinal = document.getElementById('dockBrandSecondary');
+        this.elementoVisitantesChip = document.getElementById('dockVisitorsChip');
+        this.elementoGapAposMarca = document.getElementById('dockGapAfterBrand');
+        this.elementoGapAposVisitantes = document.getElementById('dockGapAfterVisitors');
 
         const botaoEasterEgg = document.getElementById('dockEasterEggTrigger');
-        if (!this.elementoDockVisitantes || !this.elementoSequenciaDock || !botaoEasterEgg) return;
+        if (
+            !this.elementoDockVisitantes ||
+            !this.elementoDockViewport ||
+            !this.elementoDockTrack ||
+            !this.elementoMarcaPrincipal ||
+            !this.elementoMarcaFinal ||
+            !this.elementoVisitantesChip ||
+            !this.elementoGapAposMarca ||
+            !this.elementoGapAposVisitantes ||
+            !botaoEasterEgg
+        ) return;
 
         const registrarToque = (evento) => {
             if (this.easterEggDesbloqueado) return;
@@ -230,11 +252,13 @@ class IndexApp extends App {
 
         if (document && document.fonts && document.fonts.ready) {
             document.fonts.ready.then(() => {
-                this.atualizarAnimacaoDockVisitantes();
+                this.prepararDockEasterEgg();
             }).catch(() => {
                 // Ignora: a animacao segue com as metricas disponiveis.
             });
         }
+
+        this.prepararDockEasterEgg();
     }
 
     registrarToqueEasterEgg() {
@@ -255,11 +279,11 @@ class IndexApp extends App {
 
         this.easterEggDesbloqueado = true;
         this.toquesEasterEgg = [];
-        this.elementoDockVisitantes.dataset.easterState = 'unlocked';
+        this.elementoDockVisitantes.dataset.easterState = 'running';
         this.renderizarContagemVisitantes();
 
         requestAnimationFrame(() => {
-            this.atualizarAnimacaoDockVisitantes();
+            this.executarAnimacaoDockVisitantes();
         });
     }
 
@@ -360,7 +384,7 @@ class IndexApp extends App {
             elementoContagem.textContent = texto;
         });
 
-        this.atualizarAnimacaoDockVisitantes();
+        this.prepararDockEasterEgg();
     }
 
     /**
@@ -380,18 +404,103 @@ class IndexApp extends App {
         }
     }
 
-    atualizarAnimacaoDockVisitantes() {
-        if (!this.elementoDockVisitantes || !this.elementoSequenciaDock) return;
-        if (this.elementoDockVisitantes.dataset.easterState !== 'unlocked') return;
+    prepararDockEasterEgg() {
+        if (
+            !this.elementoDockVisitantes ||
+            !this.elementoDockViewport ||
+            !this.elementoDockTrack ||
+            !this.elementoMarcaPrincipal ||
+            !this.elementoMarcaFinal ||
+            !this.elementoVisitantesChip ||
+            !this.elementoGapAposMarca ||
+            !this.elementoGapAposVisitantes
+        ) {
+            return null;
+        }
 
-        const larguraSequencia = Math.ceil(this.elementoSequenciaDock.scrollWidth);
-        if (!Number.isFinite(larguraSequencia) || larguraSequencia <= 0) return;
+        if (this.elementoDockVisitantes.dataset.easterState === 'running') {
+            return this.calcularMetricasDockEasterEgg();
+        }
+
+        this.elementoDockTrack.style.transition = 'none';
+        this.elementoDockTrack.style.transform = '';
+        this.elementoGapAposMarca.style.width = '0px';
+        this.elementoGapAposVisitantes.style.width = '0px';
+
+        return null;
+    }
+
+    calcularMetricasDockEasterEgg() {
+        const larguraViewport = Math.ceil(this.elementoDockViewport.clientWidth);
+        const larguraMarca = Math.ceil(this.elementoMarcaPrincipal.offsetWidth);
+        const larguraVisitantes = Math.ceil(this.elementoVisitantesChip.offsetWidth);
+        const larguraMarcaFinal = Math.ceil(this.elementoMarcaFinal.offsetWidth);
+
+        if (
+            !Number.isFinite(larguraViewport) || larguraViewport <= 0 ||
+            !Number.isFinite(larguraMarca) || larguraMarca <= 0 ||
+            !Number.isFinite(larguraVisitantes) || larguraVisitantes <= 0 ||
+            !Number.isFinite(larguraMarcaFinal) || larguraMarcaFinal <= 0
+        ) {
+            return null;
+        }
+
+        const gapAposMarca = Math.max(48, larguraViewport - larguraMarca);
+        const gapAposVisitantes = Math.max(48, larguraViewport - larguraVisitantes);
+
+        this.elementoGapAposMarca.style.width = `${gapAposMarca}px`;
+        this.elementoGapAposVisitantes.style.width = `${gapAposVisitantes}px`;
+
+        const inicio = (larguraViewport - larguraMarca) / 2;
+        const fim = (larguraViewport - larguraMarcaFinal) / 2 - this.elementoMarcaFinal.offsetLeft;
+        const deslocamentoInicial = inicio - this.elementoMarcaPrincipal.offsetLeft;
+        const distancia = Math.abs(deslocamentoInicial - fim);
+
+        return {
+            deslocamentoInicial,
+            deslocamentoFinal: fim,
+            distancia
+        };
+    }
+
+    executarAnimacaoDockVisitantes() {
+        if (!this.elementoDockVisitantes || !this.elementoDockTrack) return;
+        if (this.elementoDockVisitantes.dataset.easterState !== 'running') return;
+
+        const metricas = this.calcularMetricasDockEasterEgg();
+        if (!metricas) {
+            this.encerrarEasterEggVisitantes();
+            return;
+        }
 
         const velocidadePxPorSegundo = 72;
-        const duracaoSegundos = Math.max(10, larguraSequencia / velocidadePxPorSegundo);
+        const duracaoMs = Math.max(900, Math.round((metricas.distancia / velocidadePxPorSegundo) * 1000));
 
-        this.elementoDockVisitantes.style.setProperty('--dock-marquee-distance', `${larguraSequencia}px`);
-        this.elementoDockVisitantes.style.setProperty('--dock-marquee-duration', `${duracaoSegundos.toFixed(2)}s`);
+        this.elementoDockTrack.style.transition = 'none';
+        this.elementoDockTrack.style.transform = `translateX(${metricas.deslocamentoInicial}px)`;
+
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                if (!this.elementoDockTrack) return;
+
+                this.elementoDockTrack.style.transition = `transform ${duracaoMs}ms linear`;
+                this.elementoDockTrack.style.transform = `translateX(${metricas.deslocamentoFinal}px)`;
+
+                const aoFinalizar = (evento) => {
+                    if (evento.propertyName !== 'transform') return;
+                    this.elementoDockTrack.removeEventListener('transitionend', aoFinalizar);
+                    this.encerrarEasterEggVisitantes();
+                };
+
+                this.elementoDockTrack.addEventListener('transitionend', aoFinalizar);
+            });
+        });
+    }
+
+    encerrarEasterEggVisitantes() {
+        this.easterEggDesbloqueado = false;
+        this.elementoDockVisitantes.dataset.easterState = 'locked';
+        this.prepararDockEasterEgg();
     }
 }
 

@@ -313,8 +313,6 @@ body {
     min-width: 0; /* Permite que o dock encolha */
     width: 100%;
     overflow: hidden;
-    --dock-marquee-distance: 0px;
-    --dock-marquee-duration: 14s;
 }
 
 .dock-trigger {
@@ -352,17 +350,14 @@ body {
     will-change: transform;
 }
 
-.dock-marquee-sequence {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    padding-right: 24px;
-    flex: 0 0 auto;
-    min-width: 0;
-}
-
 .dock-brand {
     flex: 0 0 auto;
+}
+
+.dock-spacer {
+    flex: 0 0 auto;
+    width: 0;
+    pointer-events: none;
 }
 
 .dock-visitors-chip {
@@ -398,34 +393,28 @@ body {
 }
 
 .dock[data-easter-state="locked"] .dock-marquee-track {
-    animation: none;
     transform: none;
+    transition: none;
 }
 
-.dock[data-easter-state="locked"] .dock-marquee-sequence + .dock-marquee-sequence,
-.dock[data-easter-state="locked"] .dock-visitors-chip {
+.dock[data-easter-state="locked"] .dock-spacer,
+.dock[data-easter-state="locked"] .dock-visitors-chip,
+.dock[data-easter-state="locked"] .dock-brand-secondary {
     display: none;
 }
 
-.dock[data-easter-state="unlocked"] .dock-trigger {
+.dock[data-easter-state="running"] .dock-trigger {
     width: 100%;
 }
 
-.dock[data-easter-state="unlocked"] .dock-marquee-viewport {
+.dock[data-easter-state="running"] .dock-marquee-viewport {
     width: 100%;
 }
 
-.dock[data-easter-state="unlocked"] .dock-marquee-track {
-    animation: dockMarquee var(--dock-marquee-duration) linear infinite;
-}
-
-@keyframes dockMarquee {
-    from {
-        transform: translateX(0);
-    }
-    to {
-        transform: translateX(calc(-1 * var(--dock-marquee-distance)));
-    }
+.dock[data-easter-state="running"] .dock-spacer,
+.dock[data-easter-state="running"] .dock-visitors-chip,
+.dock[data-easter-state="running"] .dock-brand-secondary {
+    display: flex;
 }
 
 /* Recipiente da logo */
@@ -501,11 +490,6 @@ body {
 }
 
 @media (max-width: 480px) {
-    .dock-marquee-sequence {
-        gap: 18px;
-        padding-right: 18px;
-    }
-
     .dock-visitors-chip {
         gap: 10px;
     }
