@@ -524,13 +524,13 @@ body {
 }
 
 html[data-theme="dark"] .app-card {
-    background: #5d8973 !important;
-    border-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+    background: #3a5947 !important;
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
 }
 
 html[data-theme="dark"] .app-card:hover {
-    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.34);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5);
 }
 
 .app-link {
