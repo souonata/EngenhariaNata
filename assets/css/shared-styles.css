@@ -1370,9 +1370,9 @@ input[type="range"]::-moz-range-thumb:active {
         margin-bottom: 0;
     }
 
-    /* Zona de toque segura ao redor de cada slider */
+    /* 60px abaixo do slider = área de toque para rolar sem acionar o próximo input */
     .slider-com-botoes {
-        padding: 10px 0;
+        padding: 10px 0 60px;
         touch-action: pan-y;
     }
 

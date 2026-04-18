@@ -956,7 +956,7 @@ html[data-theme="dark"] {
 
     /* Espaço extra ao redor dos sliders para não acionar ao tentar rolar */
     .slider-com-botoes {
-        padding: 10px 0;
+        padding: 10px 0 60px;
         touch-action: pan-y;
     }
 
