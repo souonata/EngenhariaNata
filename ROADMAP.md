@@ -1,76 +1,45 @@
 # Roadmap de Proximos Apps
 
-Lista de melhorias e novos apps planejados para o portfolio Engenharia NATA.
-
-Observacoes:
-- A ordem abaixo pode ser usada como prioridade inicial do backlog.
-- Cada item descreve entradas principais e saidas esperadas.
-- A lista pode ser refinada conforme validarmos escopo, formulas e UX de cada app.
+Panorama atualizado do portfolio Engenharia NATA, separando o que ja foi entregue do backlog real de proximas calculadoras.
 
 ## Entregues
 
-- ✅ **Bomba d'Agua** (`bombaagua/`) — potencia, perdas de carga, consumo e faixa de bomba recomendada.
-- ✅ **Iluminacao Residencial** (`iluminacao/`) — lux, potencia de lampadas LED, numero de luminarias, temperatura de cor e custo de energia. (NBR 5413). Corrigido: inicializacao, traducao PT/IT, dark mode, botoes incremento, tabela detalhamento.
+- ✅ `sobre/` - pagina institucional do projeto
+- ✅ `mutuo/` - calculadora de emprestimos com SAC, Price e Americano
+- ✅ `solar/` - dimensionamento fotovoltaico off-grid
+- ✅ `arcondicionado/` - dimensionamento de BTU e multi-split
+- ✅ `aquecimento/` - aquecimento solar termico
+- ✅ `helice/` - calculadora de passo de helice
+- ✅ `bitola/` - calculadora de bitola de fios
+- ✅ `fazenda/` - planejador de fazenda auto-sustentavel
+- ✅ `chuva/` - captacao de agua da chuva e cisterna
+- ✅ `bombaagua/` - bomba d'agua, perdas e consumo
+- ✅ `iluminacao/` - iluminacao residencial LED
+- ✅ `ventilacao/` - ventilacao natural residencial
+- ✅ `salario/` - salario liquido Brasil/Italia com memorial e graficos
+- ✅ `bugs/` - formulario de reporte de problemas
 
+## Proximo Sugerido
 
-## Proximo
+- 🔜 `isolamento/` - calculadora de isolamento termico para paredes e cobertura
+  Entradas: area, material, clima e temperatura desejada.
+  Saidas: perda/ganho de calor, espessura sugerida e impacto em aquecimento/resfriamento.
 
-- 🔜 **Ventilacao Natural** (`ventilacao/`) — Inputs: dimensoes do ambiente, area de janelas, orientacao, clima e ocupacao. Outputs: troca de ar necessaria, qualidade da ventilacao e sugestoes para janelas e ventilacao cruzada. (NBR 15575)
+## Backlog Prioritario
 
-## Backlog
+1. `caixadagua/` - volume ideal da caixa d'agua, demanda diaria e dias de reserva.
+2. `irrigacao/` - necessidade diaria de agua, agenda de irrigacao e demanda de bomba.
+3. `composteira/` - tamanho da composteira e producao estimada de composto.
+4. `estufa/` - area de ventilacao, aquecimento e produtividade sazonal.
+5. `piscina/` - aquecimento de piscina com coletores ou resistencia.
+6. `filtroagua/` - filtragem basica, vazao e custo estimado.
+7. `gerador/` - gerador ou backup por bateria para cargas essenciais.
+8. `carregadorve/` - carregador veicular residencial e tempo de recarga.
+9. `horta/` - horta urbana com area, insolacao e produtividade.
+10. `camarafria/` - refrigeracao de camara fria pequena.
 
-1. **Isolamento Termico**
-   - Inputs: area de paredes e cobertura, materiais, clima da cidade e temperatura interna desejada.
-   - Outputs: perdas e ganhos de calor, sugestao de espessura de isolamento e economia em aquecimento ou resfriamento.
+## Notas
 
-2. **Caixa d'Agua e Consumo**
-   - Inputs: numero de pessoas, aparelhos, uso de jardim e tolerancia a falta de agua.
-   - Outputs: volume ideal da caixa d'agua, demanda diaria, dias de reserva e detalhamento do consumo.
-
-3. **Irrigacao Inteligente**
-   - Inputs: tipo de cultura, solo, clima, area e metodo de irrigacao.
-   - Outputs: necessidade diaria de agua, agenda de irrigacao e demanda de bomba ou reservatorio.
-
-4. **Composteira Domestica**
-   - Inputs: tamanho da familia, residuos organicos, area de jardim e clima.
-   - Outputs: tamanho da composteira, producao estimada de composto, tempo de processamento e equivalente em fertilizante.
-
-5. **Estufa / Greenhouse**
-   - Inputs: cultura, temperatura local, exposicao solar e dimensoes da estufa.
-   - Outputs: area de ventilacao, necessidade de aquecimento, demanda de agua e estimativa de produtividade sazonal.
-
-6. **Aquecimento de Piscina**
-   - Inputs: volume da piscina, temperatura desejada, clima local e uso de capa.
-   - Outputs: dimensionamento de aquecedor ou coletores solares, tempo de aquecimento e custo operacional.
-
-7. **Filtro de Agua / Tratamento Basico**
-   - Inputs: origem da agua, tamanho da familia, consumo diario e preocupacao com contaminacao.
-   - Outputs: etapas sugeridas de filtragem, vazao necessaria, ciclo de troca e custo estimado.
-
-8. **Gerador / Backup de Energia**
-   - Inputs: equipamentos essenciais, autonomia desejada, picos de partida e tipo de combustivel.
-   - Outputs: tamanho do gerador, consumo de combustivel e comparacao com alternativa de bateria e inversor.
-
-9. **Carregador Veicular Residencial**
-   - Inputs: modelo do veiculo eletrico, distancia diaria, tensao da residencia, janela de recarga e tarifa de energia.
-   - Outputs: potencia ideal do carregador, tempo de recarga e demanda de instalacao.
-
-10. **Planejador de Horta Urbana**
-    - Inputs: area de varanda ou quintal, horas de sol, tamanho da familia e preferencias de cultivo.
-    - Outputs: melhores culturas, produtividade esperada, calendario de plantio e quantidade de vasos ou recipientes.
-
-11. **Secagem Solar de Alimentos**
-    - Inputs: tipo de alimento, massa, umidade, clima e metodo de secagem.
-    - Outputs: tempo de secagem, area de bandejas, necessidade de ventilacao e rendimento de conservacao.
-
-12. **Refrigeracao de Camara Fria Pequena**
-    - Inputs: tamanho do ambiente, isolamento, produto armazenado, frequencia de abertura e temperatura ambiente.
-    - Outputs: carga termica, dimensionamento do compressor e estimativa de energia.
-
-13. **Autonomia Alimentar Residencial**
-    - Inputs: tamanho da familia, area de terreno, perfil alimentar e clima.
-    - Outputs: percentual possivel de autossuficiencia, distribuicao de area, mix de culturas e animais e produtividade anual.
-
-14. **Barulho / Isolamento Acustico**
-    - Inputs: dimensoes do ambiente, fonte de ruido, tipo de parede e reducao desejada.
-    - Outputs: reducao estimada em dB, sugestoes de materiais e nivel esperado de conforto.
+- O portfolio atual ja cobre energia, agua, ventilacao, agricultura, financas e utilidades residenciais.
+- Os proximos apps devem manter o padrao atual: calculo pratico, memorial explicativo, i18n pt-BR/it-IT e visualizacao grafica quando fizer sentido.
+- Sempre que um app novo entrar no `index`, lembrar de alinhar `config/versions.json`, `src/i18n/index.json`, `README.md` e `sitemap.xml`.

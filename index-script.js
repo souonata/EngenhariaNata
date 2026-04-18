@@ -14,6 +14,7 @@ import { i18n } from './src/core/i18n.js';
 
 const versoesAppsPadrao = {
     'sobre': '1.0.0',
+    'iluminacao': '1.0.0',
     'bitola': '1.2.0',
     'helice': '1.6.0',
     'mutuo': '1.2.0',
@@ -21,7 +22,11 @@ const versoesAppsPadrao = {
     'arcondicionado': '0.2.0',
     'aquecimento': '0.2.0',
     'solar': '0.20.0',
-    'fazenda': '0.1.0'
+    'fazenda': '0.1.0',
+    'chuva': '1.0.0',
+    'ventilacao': '1.0.0',
+    'bombaagua': '1.0.0',
+    'salario': '1.0.0'
 };
 
 // ============================================
@@ -52,6 +57,7 @@ class IndexApp extends App {
         this.elementoVisitantesChip = null;
         this.elementoGapAposMarca = null;
         this.elementoGapAposVisitantes = null;
+        this.timeoutEncerramentoEasterEgg = null;
         this._atualizarAnimacaoDockAoRedimensionar = () => this.prepararDockEasterEgg();
     }
 
@@ -164,6 +170,7 @@ class IndexApp extends App {
     adicionarVersoesNosIcones() {
         const hrefParaApp = {
             'sobre/sobre.html': 'sobre',
+            'iluminacao/iluminacao.html': 'iluminacao',
             'bitola/bitola.html': 'bitola',
             'helice/helice.html': 'helice',
             'mutuo/mutuo.html': 'mutuo',
@@ -171,7 +178,11 @@ class IndexApp extends App {
             'arcondicionado/arcondicionado.html': 'arcondicionado',
             'aquecimento/aquecimento.html': 'aquecimento',
             'solar/solar.html': 'solar',
-            'fazenda/fazenda.html': 'fazenda'
+            'fazenda/fazenda.html': 'fazenda',
+            'chuva/chuva.html': 'chuva',
+            'ventilacao/ventilacao.html': 'ventilacao',
+            'bombaagua/bombaagua.html': 'bombaagua',
+            'salario/salario.html': 'salario'
         };
 
         const appIcons = document.querySelectorAll('.app-icon');
@@ -474,7 +485,21 @@ class IndexApp extends App {
         }
 
         const velocidadePxPorSegundo = 72;
-        const duracaoMs = Math.max(900, Math.round((metricas.distancia / velocidadePxPorSegundo) * 1000));
+        const duracaoTotalMs = Math.max(900, Math.round((metricas.distancia / velocidadePxPorSegundo) * 1000));
+        const direcao = Math.sign(metricas.deslocamentoFinal - metricas.deslocamentoInicial) || -1;
+        const distanciaDesaceleracao = Math.min(
+            Math.max(72, Math.round(metricas.distancia * 0.22)),
+            160
+        );
+        const pontoDesaceleracao = Math.abs(metricas.distancia) > distanciaDesaceleracao
+            ? metricas.deslocamentoFinal - (distanciaDesaceleracao * direcao)
+            : metricas.deslocamentoInicial;
+        const distanciaFaseLinear = Math.abs(metricas.deslocamentoInicial - pontoDesaceleracao);
+        const distanciaFaseFinal = Math.abs(pontoDesaceleracao - metricas.deslocamentoFinal);
+        const duracaoFaseLinearMs = distanciaFaseLinear > 0
+            ? Math.max(240, Math.round((distanciaFaseLinear / Math.max(metricas.distancia, 1)) * duracaoTotalMs))
+            : 0;
+        const duracaoFaseFinalMs = Math.max(320, duracaoTotalMs - duracaoFaseLinearMs);
 
         this.elementoDockTrack.style.transition = 'none';
         this.elementoDockTrack.style.transform = `translateX(${metricas.deslocamentoInicial}px)`;
@@ -483,21 +508,48 @@ class IndexApp extends App {
             requestAnimationFrame(() => {
                 if (!this.elementoDockTrack) return;
 
-                this.elementoDockTrack.style.transition = `transform ${duracaoMs}ms linear`;
-                this.elementoDockTrack.style.transform = `translateX(${metricas.deslocamentoFinal}px)`;
-
-                const aoFinalizar = (evento) => {
-                    if (evento.propertyName !== 'transform') return;
-                    this.elementoDockTrack.removeEventListener('transitionend', aoFinalizar);
-                    this.encerrarEasterEggVisitantes();
+                const concluirAnimacao = () => {
+                    this.timeoutEncerramentoEasterEgg = window.setTimeout(() => {
+                        this.timeoutEncerramentoEasterEgg = null;
+                        this.encerrarEasterEggVisitantes();
+                    }, 140);
                 };
 
-                this.elementoDockTrack.addEventListener('transitionend', aoFinalizar);
+                const aoFinalizarDesaceleracao = (evento) => {
+                    if (evento.propertyName !== 'transform') return;
+                    this.elementoDockTrack.removeEventListener('transitionend', aoFinalizarDesaceleracao);
+                    concluirAnimacao();
+                };
+
+                const iniciarDesaceleracao = () => {
+                    this.elementoDockTrack.style.transition = `transform ${duracaoFaseFinalMs}ms cubic-bezier(0.19, 1, 0.22, 1)`;
+                    this.elementoDockTrack.style.transform = `translateX(${metricas.deslocamentoFinal}px)`;
+                    this.elementoDockTrack.addEventListener('transitionend', aoFinalizarDesaceleracao);
+                };
+
+                if (duracaoFaseLinearMs <= 0 || distanciaFaseLinear <= 0) {
+                    iniciarDesaceleracao();
+                    return;
+                }
+
+                const aoFinalizarFaseLinear = (evento) => {
+                    if (evento.propertyName !== 'transform') return;
+                    this.elementoDockTrack.removeEventListener('transitionend', aoFinalizarFaseLinear);
+                    iniciarDesaceleracao();
+                };
+
+                this.elementoDockTrack.style.transition = `transform ${duracaoFaseLinearMs}ms linear`;
+                this.elementoDockTrack.style.transform = `translateX(${pontoDesaceleracao}px)`;
+                this.elementoDockTrack.addEventListener('transitionend', aoFinalizarFaseLinear);
             });
         });
     }
 
     encerrarEasterEggVisitantes() {
+        if (this.timeoutEncerramentoEasterEgg) {
+            clearTimeout(this.timeoutEncerramentoEasterEgg);
+            this.timeoutEncerramentoEasterEgg = null;
+        }
         this.easterEggDesbloqueado = false;
         this.elementoDockVisitantes.dataset.easterState = 'locked';
         this.prepararDockEasterEgg();

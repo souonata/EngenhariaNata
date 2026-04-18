@@ -320,7 +320,7 @@ body {
     background: transparent;
     border: 0;
     color: inherit;
-    cursor: pointer;
+    cursor: default;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -328,6 +328,11 @@ body {
     min-width: 0;
     padding: 0;
     touch-action: manipulation;
+}
+
+.dock-trigger,
+.dock-trigger * {
+    cursor: default;
 }
 
 .dock-trigger:focus-visible {
