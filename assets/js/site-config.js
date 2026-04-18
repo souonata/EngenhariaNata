@@ -38,7 +38,7 @@
         ASSETS: {
             CSS_BASE: 'assets/css/',
             JS_BASE: 'assets/js/',
-            CHARTJS_CDN: '/assets/js/vendor/chart.umd.js'
+            CHARTJS_CDN: 'https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js'
         },
 
         // Configurações de interface
