@@ -13,7 +13,7 @@
 
         // Valores padrão
         DEFAULTS: {
-            language: 'pt-BR',
+            language: 'it-IT',
             TAXA_BRL_EUR: 6.19,
             BATTERY: {
                 LFP_MAX_KG: 180,
@@ -80,6 +80,15 @@
     // Agora o objeto está disponível globalmente como window.SiteConfig
     // Outros arquivos podem usar: SiteConfig.DEFAULTS.language, etc.
 })(window);
+
+function obterIdiomaSessao(SITE_LS, idiomaPadrao) {
+    return sessionStorage.getItem(SITE_LS.LANGUAGE_KEY) || idiomaPadrao;
+}
+
+function salvarIdiomaSessao(SITE_LS, idioma) {
+    sessionStorage.setItem(SITE_LS.LANGUAGE_KEY, idioma);
+}
+
 // FUNÇÕES GLOBAIS DE FORMATAÇÃO DE NÚMEROS
 // Formata número com casas decimais usando formatação brasileira
 function formatarNumero(valor, casasDecimais = 0) {
@@ -338,9 +347,9 @@ function formatarNumeroCompacto(valor) { // Se valor é maior ou igual a 1 milh�
 // Formata valores monetários com 2 casas decimais
 function formatarMoeda(valor, idioma) {
     if (!idioma) {
-        // Tenta obter do localStorage ou usa padrão
+        // Tenta obter da sessão atual ou usa padrão
         const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido' };
-        idioma = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || SiteConfig.DEFAULTS.language;
+        idioma = obterIdiomaSessao(SITE_LS, SiteConfig.DEFAULTS.language);
     }
     
     const moeda = idioma === 'pt-BR' ? SiteConfig.CURRENCY.BRL : SiteConfig.CURRENCY.EUR;
@@ -356,7 +365,7 @@ function formatarMoeda(valor, idioma) {
 function formatarMoedaSemDecimal(valor, idioma) {
     if (!idioma) {
         const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido' };
-        idioma = localStorage.getItem(SITE_LS.LANGUAGE_KEY) || SiteConfig.DEFAULTS.language;
+        idioma = obterIdiomaSessao(SITE_LS, SiteConfig.DEFAULTS.language);
     }
     
     const moeda = idioma === 'pt-BR' ? SiteConfig.CURRENCY.BRL : SiteConfig.CURRENCY.EUR;
@@ -411,10 +420,10 @@ function ajustarTamanhoInput(input, folgaCaracteres) {
     const larguraMinima = SiteConfig.UI.INPUT_MIN_WIDTH;
     input.style.width = Math.max(larguraNecessaria, larguraMinima) + 'px';
 }
-// FUNÇÕES UTILITÁRIAS DE IDIOMA // idioma atual do localStorage ou usa o padrão
+// FUNÇÕES UTILITÁRIAS DE IDIOMA // idioma atual da sessão ou usa o padrão
 function obterIdiomaAtual() {
     const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido' };
-    return localStorage.getItem(SITE_LS.LANGUAGE_KEY) || SiteConfig.DEFAULTS.language;
+    return obterIdiomaSessao(SITE_LS, SiteConfig.DEFAULTS.language);
 } // moeda correspondente ao idioma atual
 function obterMoedaPorIdioma(idioma) {
     if (!idioma) {
@@ -540,11 +549,11 @@ function trocarIdiomaGlobal(novoIdioma, traducoes, callback) {
         return;
     }
     
-    // Salva o idioma no localStorage
+    // Salva o idioma na sessão atual
     const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) 
         ? SiteConfig.LOCAL_STORAGE 
         : { LANGUAGE_KEY: 'idiomaPreferido' };
-    localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
+    salvarIdiomaSessao(SITE_LS, novoIdioma);
     
     // Atualiza elementos com data-i18n
     document.querySelectorAll('[data-i18n]').forEach(elemento => {

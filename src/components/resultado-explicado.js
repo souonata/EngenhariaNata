@@ -33,7 +33,7 @@ export class ExplicacaoResultado {
 
         const { linhas = [], destaque = '', dica = '', norma = '' } = dados;
 
-        const idioma = this.i18n?.obterIdiomaAtual?.() || this.i18n?.getIdioma?.() || 'pt-BR';
+        const idioma = this.i18n?.obterIdiomaAtual?.() || this.i18n?.getIdioma?.() || 'it-IT';
         const labelTitulo = idioma === 'it-IT' ? 'Cosa significa questo?' : 'O que isso significa?';
         const labelDica    = idioma === 'it-IT' ? '💡 Consiglio pratico' : '💡 Dica prática';
         const labelNorma   = idioma === 'it-IT' ? '📖 Riferimento' : '📖 Referência';

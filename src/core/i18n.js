@@ -1,19 +1,21 @@
 // Sistema de internacionalização centralizado
 
-import { salvarDados, carregarDados } from '../utils/storage.js';
+const IDIOMA_SESSION_KEY = 'engnata_idioma';
 
 class I18nManager {
     constructor() {
-        this.idiomaAtual = 'pt-BR';
+        this.idiomaAtual = 'it-IT';
         this.traducoes = {};
         this.callbacks = [];
     }
 
     inicializar(traducoes, idiomaInicial = null) {
         this.traducoes = traducoes;
-        
-        const idiomaSalvo = idiomaInicial || carregarDados('idioma', 'pt-BR');
-        this.trocarIdioma(idiomaSalvo);
+
+        const idiomaSessao = sessionStorage.getItem(IDIOMA_SESSION_KEY);
+        const idiomaPreferido = idiomaInicial || idiomaSessao || 'it-IT';
+        const idiomaValido = this.traducoes[idiomaPreferido] ? idiomaPreferido : 'it-IT';
+        this.trocarIdioma(idiomaValido);
     }
 
     trocarIdioma(novoIdioma) {
@@ -23,7 +25,7 @@ class I18nManager {
         }
 
         this.idiomaAtual = novoIdioma;
-        salvarDados('idioma', novoIdioma);
+        sessionStorage.setItem(IDIOMA_SESSION_KEY, novoIdioma);
         
         this.atualizarDocumento();
         this.executarCallbacks();

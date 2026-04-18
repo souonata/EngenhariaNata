@@ -1327,7 +1327,7 @@ function carregarDadosBanco(idioma) {
 }
 // TRADUÇÃO
 
-let idiomaAtual = 'pt-BR';
+let idiomaAtual = 'it-IT';
 
 function traduzir(chave) {
     return traducoes[idiomaAtual]?.[chave] || chave;
@@ -1347,17 +1347,23 @@ function aplicarTraducoes() {
 
 function trocarIdioma(novoIdioma) {
     if (!novoIdioma || (novoIdioma !== 'pt-BR' && novoIdioma !== 'it-IT')) {
-        console.warn(`[Fazenda] Idioma inválido: ${novoIdioma}, usando pt-BR`);
-        novoIdioma = 'pt-BR';
+        console.warn(`[Fazenda] Idioma inválido: ${novoIdioma}, usando it-IT`);
+        novoIdioma = 'it-IT';
+    }
+
+    i18n.trocarIdioma(novoIdioma);
+}
+
+function aplicarIdiomaFazenda(novoIdioma) {
+    if (!novoIdioma || (novoIdioma !== 'pt-BR' && novoIdioma !== 'it-IT')) {
+        novoIdioma = 'it-IT';
     }
     
     console.log(`[Fazenda] Trocando idioma para: ${novoIdioma}`);
     idiomaAtual = novoIdioma;
     
-    const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido' };
     const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { LANG_BTN: '.lang-btn', HOME_BUTTON: '.home-button-fixed' };
-    
-    localStorage.setItem(SITE_LS.LANGUAGE_KEY, novoIdioma);
+
     document.documentElement.lang = novoIdioma;
     
     // Carregar dados do banco de dados para o novo idioma
@@ -1501,10 +1507,9 @@ function inicializarApp() {
         return;
     }
     
-    // Carregar dados iniciais do banco de dados
-    const SITE_LS = (typeof SiteConfig !== 'undefined' && SiteConfig.LOCAL_STORAGE) ? SiteConfig.LOCAL_STORAGE : { LANGUAGE_KEY: 'idiomaPreferido' };
-    const idiomaSalvo = localStorage.getItem(SITE_LS.LANGUAGE_KEY);
-    const idiomaInicial = (idiomaSalvo && (idiomaSalvo === 'pt-BR' || idiomaSalvo === 'it-IT')) ? idiomaSalvo : 'pt-BR';
+    // Carregar dados iniciais com base no idioma centralizado
+    const idiomaCentral = i18n.obterIdiomaAtual();
+    const idiomaInicial = (idiomaCentral === 'pt-BR' || idiomaCentral === 'it-IT') ? idiomaCentral : 'it-IT';
     idiomaAtual = idiomaInicial;
     
     // Carregar dados do banco de dados PRIMEIRO
@@ -1768,7 +1773,15 @@ function configurarEventListeners() {
     
     // Aplicar traduções iniciais
     aplicarTraducoes();
-    if (btnPortugues) btnPortugues.classList.add('active');
+    if (btnPortugues && btnItaliano) {
+        if (idiomaAtual === 'pt-BR') {
+            btnPortugues.classList.add('active');
+            btnItaliano.classList.remove('active');
+        } else {
+            btnItaliano.classList.add('active');
+            btnPortugues.classList.remove('active');
+        }
+    }
     
     // Garantir que a seção de entradas esteja visível no carregamento
     const entradasSection = document.getElementById('secaoEntradas');
@@ -1804,7 +1817,7 @@ class FazendaApp extends App {
             appName: 'fazenda',
             callbacks: {
                 aoInicializar: () => this.inicializarFazenda(),
-                aoTrocarIdioma: () => this.atualizarInterface()
+                aoTrocarIdioma: (idioma) => this.atualizarInterface(idioma)
             }
         });
     }
@@ -1824,12 +1837,8 @@ class FazendaApp extends App {
         inicializarApp();
     }
 
-    atualizarInterface() {
-        // Quando o idioma mudar, recarregar dados
-        if (typeof carregarDadosBanco === 'function') {
-            const novoIdioma = localStorage.getItem('idiomaPreferido') || 'pt-BR';
-            carregarDadosBanco(novoIdioma);
-        }
+    atualizarInterface(novoIdioma) {
+        aplicarIdiomaFazenda(novoIdioma);
     }
 }
 

@@ -11,12 +11,12 @@ function normalizarTema(valor) {
 }
 
 function obterIdiomaAtual() {
-    const idiomaStorage = carregarDados('idioma', null);
+    const idiomaStorage = sessionStorage.getItem('engnata_idioma');
     if (typeof idiomaStorage === 'string' && idiomaStorage.startsWith('it')) {
         return 'it';
     }
 
-    const idiomaHtml = document.documentElement.lang || 'pt-BR';
+    const idiomaHtml = document.documentElement.lang || 'it-IT';
     return idiomaHtml.startsWith('it') ? 'it' : 'pt';
 }
 
