@@ -10,12 +10,14 @@ Observacoes:
 ## Entregues
 
 - ✅ **Bomba d'Agua** (`bombaagua/`) — potencia, perdas de carga, consumo e faixa de bomba recomendada.
-- ✅ **Iluminacao Residencial** (`iluminacao/`) — lux, potencia de lampadas, numero de luminarias e custo de energia. (NBR 5413)
+- ✅ **Iluminacao Residencial** (`iluminacao/`) — lux, potencia de lampadas LED, numero de luminarias, temperatura de cor e custo de energia. (NBR 5413). Corrigido: inicializacao, traducao PT/IT, dark mode, botoes incremento, tabela detalhamento.
 
+
+## Proximo
+
+- 🔜 **Ventilacao Natural** (`ventilacao/`) — Inputs: dimensoes do ambiente, area de janelas, orientacao, clima e ocupacao. Outputs: troca de ar necessaria, qualidade da ventilacao e sugestoes para janelas e ventilacao cruzada. (NBR 15575)
 
 ## Backlog
- 
-- 🔜 **Ventilacao Natural** (`ventilacao/`) — planejado: Inputs: dimensoes do ambiente, area de janelas, orientacao, clima e ocupacao. Outputs: troca de ar necessaria, qualidade da ventilacao e sugestoes para janelas e ventilacao cruzada. (NBR 15575)
 
 1. **Isolamento Termico**
    - Inputs: area de paredes e cobertura, materiais, clima da cidade e temperatura interna desejada.
