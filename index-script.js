@@ -42,6 +42,21 @@ class IndexApp extends App {
         this.versoesApps = { ...versoesAppsPadrao };
     }
 
+    async carregarTraducoes() {
+        if (this.config.traducoes && Object.keys(this.config.traducoes).length > 0) {
+            return;
+        }
+        try {
+            // index.html está na raiz do repo, então usa ./ em vez de ../
+            const response = await fetch(`./src/i18n/${this.config.appName}.json`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            this.config.traducoes = await response.json();
+        } catch (erro) {
+            console.error(`Erro ao carregar traduções de ${this.config.appName}:`, erro);
+            throw erro;
+        }
+    }
+
     async inicializarIndex() {
         await this.carregarVersoesDoServidor();
         this.configurarRelogio();
