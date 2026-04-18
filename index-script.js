@@ -71,6 +71,7 @@ class IndexApp extends App {
 
     atualizarAposTrocaIdioma() {
         this.atualizarHorario();
+        this.renderizarContagemVisitantes();
     }
 
     configurarRelogio() {
@@ -183,32 +184,77 @@ class IndexApp extends App {
     // ============================================
 
     inicializarWidgetVisitantes() {
+        this.totalVisitas = null;
         this.carregarTotalVisitas();
     }
 
     async carregarTotalVisitas() {
-        const elementoContagem = document.getElementById('visitorsCount');
-        if (!elementoContagem) return;
-
         try {
             const resposta = await fetch('https://souonata.goatcounter.com/counter/TOTAL.json', {
                 cache: 'no-store'
             });
             if (!resposta.ok) throw new Error(`HTTP ${resposta.status}`);
             const dados = await resposta.json();
-            if (dados && dados.count) {
-                elementoContagem.textContent = dados.count;
-                // Ajusta o tamanho da fonte se o número tiver muitos dígitos
-                const digitos = String(dados.count).replace(/[^0-9]/g, '').length;
-                if (digitos >= 6) {
-                    elementoContagem.classList.add('visitors-count-led--small');
-                } else if (digitos >= 4) {
-                    elementoContagem.classList.add('visitors-count-led--medium');
-                }
-            }
+            // GoatCounter retorna count como string formatada ("1,234"). Extrai apenas dígitos.
+            const raw = dados && dados.count != null ? String(dados.count).replace(/[^\d]/g, '') : '';
+            const n = raw.length > 0 ? parseInt(raw, 10) : NaN;
+            this.totalVisitas = Number.isFinite(n) ? n : null;
         } catch (_erro) {
-            elementoContagem.textContent = '—';
+            this.totalVisitas = null;
         }
+        this.renderizarContagemVisitantes();
+    }
+
+    renderizarContagemVisitantes() {
+        const elementoContagem = document.getElementById('visitorsCount');
+        if (!elementoContagem) return;
+
+        if (this.totalVisitas == null) {
+            elementoContagem.textContent = '—';
+            this.ajustarTamanhoContagem(elementoContagem, 1);
+            return;
+        }
+
+        const texto = this.formatarNumeroVisitantes(this.totalVisitas);
+        elementoContagem.textContent = texto;
+        this.ajustarTamanhoContagem(elementoContagem, texto.length);
+    }
+
+    /**
+     * Formata o número completo com separador de milhares, localizado.
+     * Exemplos: 999 → "999", 1500 → "1.500", 999960 → "999.960",
+     *           1234567 → "1.234.567" (pt-BR e it-IT usam "." como separador de milhares)
+     */
+    formatarNumeroVisitantes(n) {
+        if (!Number.isFinite(n) || n < 0) return '—';
+        const inteiro = Math.floor(n);
+        const idioma = typeof i18n.obterIdiomaAtual === 'function' ? i18n.obterIdiomaAtual() : 'pt-BR';
+        try {
+            return new Intl.NumberFormat(idioma, { useGrouping: true, maximumFractionDigits: 0 }).format(inteiro);
+        } catch (_erro) {
+            // Fallback manual: insere ponto a cada 3 dígitos da direita pra esquerda
+            return String(inteiro).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+    }
+
+    /** Ajusta o tamanho da fonte do display 7-seg baseado no comprimento do texto renderizado. */
+    ajustarTamanhoContagem(elemento, comprimento) {
+        elemento.classList.remove(
+            'visitors-count-led--medium',
+            'visitors-count-led--small',
+            'visitors-count-led--tiny'
+        );
+        if (comprimento >= 11) {
+            // 11+ chars (1.000.000.000+)
+            elemento.classList.add('visitors-count-led--tiny');
+        } else if (comprimento >= 7) {
+            // 7-10 chars (1.000.000 até 999.999.999)
+            elemento.classList.add('visitors-count-led--small');
+        } else if (comprimento >= 5) {
+            // 5-6 chars (1.000 até 999.999)
+            elemento.classList.add('visitors-count-led--medium');
+        }
+        // ≤ 4 chars: tamanho default
     }
 }
 
