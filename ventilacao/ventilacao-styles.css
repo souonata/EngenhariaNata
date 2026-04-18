@@ -1,0 +1,137 @@
+/* ============================================
+   VENTILACAO - Estilos Específicos
+   ============================================ */
+
+:root {
+    --vent-start: #00897B;
+    --vent-end:   #4DB6AC;
+    --home-bg:    linear-gradient(135deg, #00897B 0%, #4DB6AC 100%);
+    --home-shadow: rgba(0, 137, 123, 0.4);
+}
+
+/* ============================================
+   RESULTADOS
+   ============================================ */
+.resultados {
+    background: var(--memorial-bg);
+    margin-top: 8px;
+}
+
+.resultados-header-com-ajuda {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.resultados-header-com-ajuda h2 {
+    color: var(--vent-start);
+    margin: 0;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+html[data-theme="dark"] .resultados-header-com-ajuda h2 {
+    color: var(--vent-end);
+}
+
+/* ============================================
+   BADGES DE QUALIDADE
+   ============================================ */
+.qualidade-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.qualidade-excelente { background: #e8f5e9; color: #1b5e20; }
+.qualidade-boa        { background: #e0f2f1; color: #004d40; }
+.qualidade-aceitavel  { background: #fff8e1; color: #e65100; }
+.qualidade-insuficiente { background: #ffebee; color: #b71c1c; }
+
+html[data-theme="dark"] .qualidade-excelente   { background: rgba(27,94,32,0.25);  color: #a5d6a7; }
+html[data-theme="dark"] .qualidade-boa          { background: rgba(0,77,64,0.25);   color: #80cbc4; }
+html[data-theme="dark"] .qualidade-aceitavel    { background: rgba(230,81,0,0.25);  color: #ffcc80; }
+html[data-theme="dark"] .qualidade-insuficiente { background: rgba(183,28,28,0.25); color: #ef9a9a; }
+
+/* ============================================
+   BADGES DE STATUS DE JANELAS
+   ============================================ */
+.status-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.status-ok    { background: #e8f5e9; color: #2e7d32; }
+.status-falta { background: #fff3cd; color: #856404; }
+
+html[data-theme="dark"] .status-ok    { background: rgba(46,125,50,0.2); color: #a5d6a7; }
+html[data-theme="dark"] .status-falta { background: rgba(133,100,4,0.2); color: #ffe082; }
+
+/* ============================================
+   DESTAQUE NOS RESULTADOS
+   ============================================ */
+.resultado-item.destaque {
+    background: linear-gradient(135deg, rgba(0,137,123,0.08), rgba(77,182,172,0.08));
+    border-left: 4px solid var(--vent-start);
+}
+
+html[data-theme="dark"] .resultado-item.destaque {
+    background: linear-gradient(135deg, rgba(0,137,123,0.14), rgba(77,182,172,0.10));
+    border-left-color: var(--vent-end);
+}
+
+.resultado-item.destaque .valor-resultado-grande {
+    color: var(--vent-start);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+html[data-theme="dark"] .resultado-item.destaque .valor-resultado-grande {
+    color: var(--vent-end);
+}
+
+/* ============================================
+   INPUTS
+   ============================================ */
+#inputComprimento,
+#inputLargura,
+#inputPeDireito,
+#inputJanelas {
+    min-width: 52px;
+    max-width: 62px;
+    width: 62px;
+}
+
+#inputPessoas {
+    min-width: 40px;
+    max-width: 48px;
+    width: 48px;
+}
+
+/* ============================================
+   RESPONSIVIDADE MOBILE
+   ============================================ */
+@media (max-width: 768px) {
+    header h1      { font-size: 1.3rem; }
+    .subtitulo     { font-size: 0.85rem; }
+
+    .resultado-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .valor-resultado,
+    .valor-resultado-grande {
+        width: 100%;
+        text-align: right;
+    }
+}

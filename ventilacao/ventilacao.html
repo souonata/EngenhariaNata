@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="apple-touch-icon" href="../favicon.svg">
+
+    <title>Ventilação Natural — Qualidade do Ar Residencial | Engenharia NATA</title>
+    <meta name="description" content="Calculadora de ventilação natural residencial. Calcula renovações de ar por hora (ACH), qualidade da ventilação e área mínima de janelas conforme NBR 15575.">
+    <meta name="keywords" content="ventilação natural, NBR 15575, ACH, qualidade do ar, renovação de ar, janelas, ventilação cruzada, conforto térmico">
+    <meta name="author" content="Engenharia NATA">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://engnata.infinityfree.me/ventilacao/ventilacao.html">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://engnata.infinityfree.me/ventilacao/ventilacao.html">
+    <meta property="og:title" content="Ventilação Natural — Engenharia NATA">
+    <meta property="og:description" content="Calcula ACH, qualidade da ventilação e área mínima de janelas conforme NBR 15575.">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:locale:alternate" content="it_IT">
+
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:url" content="https://engnata.infinityfree.me/ventilacao/ventilacao.html">
+    <meta property="twitter:title" content="Ventilação Natural — Engenharia NATA">
+    <meta property="twitter:description" content="Calcula ACH, qualidade da ventilação e área mínima de janelas conforme NBR 15575.">
+
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.0.0">
+    <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
+    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
+    <link rel="stylesheet" href="ventilacao-styles.css?v=1.0.0">
+
+    <script data-goatcounter="https://souonata.goatcounter.com/count"
+            async src="https://gc.zgo.at/count.js"></script>
+</head>
+<body>
+    <!-- SELETOR DE IDIOMA -->
+    <div class="language-selector">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR"
+                data-i18n-aria="aria.langPt" data-i18n-title="titles.langPt">
+            <span class="flag" aria-hidden="true">🇧🇷</span>
+            <span class="lang-text">PT</span>
+        </button>
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT"
+                data-i18n-aria="aria.langIt" data-i18n-title="titles.langIt">
+            <span class="flag" aria-hidden="true">🇮🇹</span>
+            <span class="lang-text">IT</span>
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- CABEÇALHO -->
+        <header>
+            <h1 data-i18n="app.title">🌬️ Ventilação Natural</h1>
+            <p class="subtitulo" data-i18n="app.subtitle">Qualidade do ar e renovações por hora (NBR 15575)</p>
+        </header>
+
+        <!-- ENTRADAS -->
+        <section class="cartao">
+
+            <!-- Comprimento -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderComprimento" data-i18n="labels.comprimento">Comprimento do Ambiente</label>
+                    <span class="info-icon" id="infoIconComprimento" role="button" tabindex="0"
+                          data-i18n-aria="aria.clickInfo" data-i18n-title="titles.clickInfo">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputComprimento" class="valor-display valor-input"
+                               value="5" tabindex="1" inputmode="decimal"
+                               pattern="[0-9]*[.,]?[0-9]*" enterkeyhint="done" autocomplete="off">
+                        <span class="unidade" data-i18n="unidades.metro">m</span>
+                    </div>
+                </div>
+                <div class="descricao-info" id="descricaoComprimento" style="display: none;">
+                    <span data-i18n="tooltips.comprimento">Comprimento do cômodo em metros. Para ambientes irregulares, use a maior dimensão.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down"
+                            data-target="sliderComprimento" data-step="-0.5"
+                            data-i18n-aria="aria.diminuir">−</button>
+                    <input type="range" id="sliderComprimento" min="2" max="20" step="0.5" value="5">
+                    <button type="button" class="arrow-btn arrow-up"
+                            data-target="sliderComprimento" data-step="0.5"
+                            data-i18n-aria="aria.aumentar">+</button>
+                </div>
+            </div>
+
+            <!-- Largura -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderLargura" data-i18n="labels.largura">Largura do Ambiente</label>
+                    <span class="info-icon" id="infoIconLargura" role="button" tabindex="0"
+                          data-i18n-aria="aria.clickInfo" data-i18n-title="titles.clickInfo">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputLargura" class="valor-display valor-input"
+                               value="4" tabindex="2" inputmode="decimal"
+                               pattern="[0-9]*[.,]?[0-9]*" enterkeyhint="done" autocomplete="off">
+                        <span class="unidade" data-i18n="unidades.metro">m</span>
+                    </div>
+                </div>
+                <div class="descricao-info" id="descricaoLargura" style="display: none;">
+                    <span data-i18n="tooltips.largura">Largura do cômodo em metros. Para salas abertas, considere a planta total.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down"
+                            data-target="sliderLargura" data-step="-0.5"
+                            data-i18n-aria="aria.diminuir">−</button>
+                    <input type="range" id="sliderLargura" min="2" max="20" step="0.5" value="4">
+                    <button type="button" class="arrow-btn arrow-up"
+                            data-target="sliderLargura" data-step="0.5"
+                            data-i18n-aria="aria.aumentar">+</button>
+                </div>
+            </div>
+
+            <!-- Pé Direito -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderPeDireito" data-i18n="labels.peDireito">Pé Direito (Altura Piso-Teto)</label>
+                    <span class="info-icon" id="infoIconPeDireito" role="button" tabindex="0"
+                          data-i18n-aria="aria.clickInfo" data-i18n-title="titles.clickInfo">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputPeDireito" class="valor-display valor-input"
+                               value="2.7" tabindex="3" inputmode="decimal"
+                               pattern="[0-9]*[.,]?[0-9]*" enterkeyhint="done" autocomplete="off">
+                        <span class="unidade" data-i18n="unidades.metro">m</span>
+                    </div>
+                </div>
+                <div class="descricao-info" id="descricaoPeDireito" style="display: none;">
+                    <span data-i18n="tooltips.peDireito">Altura entre o piso e o teto. Padrão residencial: 2,4–3,0 m. Tetos mais altos aumentam o volume e exigem mais ventilação.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down"
+                            data-target="sliderPeDireito" data-step="-0.1"
+                            data-i18n-aria="aria.diminuir">−</button>
+                    <input type="range" id="sliderPeDireito" min="2.0" max="4.0" step="0.1" value="2.7">
+                    <button type="button" class="arrow-btn arrow-up"
+                            data-target="sliderPeDireito" data-step="0.1"
+                            data-i18n-aria="aria.aumentar">+</button>
+                </div>
+            </div>
+
+            <!-- Área de Janelas -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderJanelas" data-i18n="labels.janelas">Área Total de Janelas</label>
+                    <span class="info-icon" id="infoIconJanelas" role="button" tabindex="0"
+                          data-i18n-aria="aria.clickInfo" data-i18n-title="titles.clickInfo">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputJanelas" class="valor-display valor-input"
+                               value="2" tabindex="4" inputmode="decimal"
+                               pattern="[0-9]*[.,]?[0-9]*" enterkeyhint="done" autocomplete="off">
+                        <span class="unidade" data-i18n="unidades.m2">m²</span>
+                    </div>
+                </div>
+                <div class="descricao-info" id="descricaoJanelas" style="display: none;">
+                    <span data-i18n="tooltips.janelas">Soma das áreas abertas de todas as janelas do ambiente (largura × altura de cada folha). Ventilação cruzada (janelas em paredes opostas) é mais eficiente.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down"
+                            data-target="sliderJanelas" data-step="-0.5"
+                            data-i18n-aria="aria.diminuir">−</button>
+                    <input type="range" id="sliderJanelas" min="0.5" max="20" step="0.5" value="2">
+                    <button type="button" class="arrow-btn arrow-up"
+                            data-target="sliderJanelas" data-step="0.5"
+                            data-i18n-aria="aria.aumentar">+</button>
+                </div>
+            </div>
+
+            <!-- Ocupação -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderPessoas" data-i18n="labels.pessoas">Número de Pessoas</label>
+                    <span class="info-icon" id="infoIconPessoas" role="button" tabindex="0"
+                          data-i18n-aria="aria.clickInfo" data-i18n-title="titles.clickInfo">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputPessoas" class="valor-display valor-input"
+                               value="2" tabindex="5" inputmode="numeric"
+                               pattern="[0-9]*" enterkeyhint="done" autocomplete="off">
+                        <span class="unidade" data-i18n="unidades.pessoas">pessoas</span>
+                    </div>
+                </div>
+                <div class="descricao-info" id="descricaoPessoas" style="display: none;">
+                    <span data-i18n="tooltips.pessoas">Número de ocupantes habituais do ambiente. Cada pessoa produz CO₂ e umidade que exigem maior renovação de ar.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down"
+                            data-target="sliderPessoas" data-step="-1"
+                            data-i18n-aria="aria.diminuir">−</button>
+                    <input type="range" id="sliderPessoas" min="1" max="20" step="1" value="2">
+                    <button type="button" class="arrow-btn arrow-up"
+                            data-target="sliderPessoas" data-step="1"
+                            data-i18n-aria="aria.aumentar">+</button>
+                </div>
+            </div>
+
+            <!-- Orientação das Janelas -->
+            <div class="grupo-entrada">
+                <label data-i18n="labels.orientacao">Orientação das Janelas</label>
+                <div class="grupo-radio">
+                    <label class="opcao-radio">
+                        <input type="radio" name="orientacao" value="norte" tabindex="6">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" style="font-size:1.3rem;">🧭</span>
+                            <span class="rotulo-radio" data-i18n="opcoes.norte">Norte</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="orientacao" value="sul" checked tabindex="7">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" style="font-size:1.3rem;">🌊</span>
+                            <span class="rotulo-radio" data-i18n="opcoes.sul">Sul</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="orientacao" value="leste" tabindex="8">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" style="font-size:1.3rem;">🌅</span>
+                            <span class="rotulo-radio" data-i18n="opcoes.leste">Leste</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="orientacao" value="oeste" tabindex="9">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" style="font-size:1.3rem;">🌇</span>
+                            <span class="rotulo-radio" data-i18n="opcoes.oeste">Oeste</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Clima -->
+            <div class="grupo-entrada">
+                <label data-i18n="labels.clima">Clima da Região</label>
+                <div class="grupo-radio">
+                    <label class="opcao-radio">
+                        <input type="radio" name="clima" value="quente" checked tabindex="10">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" style="font-size:1.3rem;">☀️</span>
+                            <span class="rotulo-radio" data-i18n="opcoes.quente">Quente/Úmido</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="clima" value="temperado" tabindex="11">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" style="font-size:1.3rem;">🌤️</span>
+                            <span class="rotulo-radio" data-i18n="opcoes.temperado">Temperado</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="clima" value="frio" tabindex="12">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" style="font-size:1.3rem;">❄️</span>
+                            <span class="rotulo-radio" data-i18n="opcoes.frio">Frio/Seco</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- PAINEL V2 (explicação) -->
+        <div id="v2-explicacao"></div>
+
+        <!-- RESULTADOS -->
+        <section class="card resultados" id="resultadosSection">
+            <div class="resultados-header-com-ajuda">
+                <h2 data-i18n="resultado.titulo">Resultados</h2>
+            </div>
+
+            <!-- ACH atual — destaque principal -->
+            <div class="resultado-item destaque">
+                <span class="label-resultado" data-i18n="resultado.ach">Renovações de Ar (ACH)</span>
+                <span class="valor-resultado-grande" id="resultadoACH">—</span>
+            </div>
+
+            <!-- Qualidade -->
+            <div class="resultado-item destaque">
+                <span class="label-resultado" data-i18n="resultado.qualidade">Qualidade da Ventilação</span>
+                <span class="valor-resultado-grande" id="resultadoQualidade">—</span>
+            </div>
+
+            <!-- Volume do ambiente -->
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado.volume">Volume do Ambiente</span>
+                <span class="valor-resultado" id="resultadoVolume">—</span>
+            </div>
+
+            <!-- Vazão de ar -->
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado.vazao">Vazão de Ar</span>
+                <span class="valor-resultado" id="resultadoVazao">—</span>
+            </div>
+
+            <!-- Área mínima de janelas -->
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado.areaMinima">Área Mínima de Janelas (NBR 15575)</span>
+                <span class="valor-resultado" id="resultadoAreaMinima">—</span>
+            </div>
+
+            <!-- Status das janelas -->
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado.statusJanelas">Janelas Atuais vs. Mínimo</span>
+                <span class="valor-resultado" id="resultadoStatusJanelas">—</span>
+            </div>
+
+        </section>
+
+    </div>
+
+    <footer>
+        <p data-i18n="footer">Ventilação Natural — Engenharia NATA @ 2026</p>
+    </footer>
+
+    <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria.home">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <script type="module" src="ventilacao-script.js?v=1.0.0"></script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+{
+  "pt-BR": {
+    "app": {
+      "title": "🌬️ Ventilação Natural",
+      "subtitle": "Qualidade do ar e renovações por hora (NBR 15575)"
+    },
+    "labels": {
+      "comprimento": "Comprimento do Ambiente",
+      "largura":     "Largura do Ambiente",
+      "peDireito":   "Pé Direito (Altura Piso-Teto)",
+      "janelas":     "Área Total de Janelas",
+      "pessoas":     "Número de Pessoas",
+      "orientacao":  "Orientação das Janelas",
+      "clima":       "Clima da Região"
+    },
+    "opcoes": {
+      "norte":     "Norte",
+      "sul":       "Sul",
+      "leste":     "Leste",
+      "oeste":     "Oeste",
+      "quente":    "Quente/Úmido",
+      "temperado": "Temperado",
+      "frio":      "Frio/Seco"
+    },
+    "unidades": {
+      "metro":   "m",
+      "m2":      "m²",
+      "pessoas": "pessoas"
+    },
+    "tooltips": {
+      "comprimento": "Comprimento do cômodo em metros. Para ambientes irregulares, use a maior dimensão.",
+      "largura":     "Largura do cômodo em metros. Para salas abertas, considere a planta total.",
+      "peDireito":   "Altura entre o piso e o teto. Padrão residencial: 2,4–3,0 m. Tetos mais altos aumentam o volume e exigem mais ventilação.",
+      "janelas":     "Soma das áreas abertas de todas as janelas do ambiente (largura × altura de cada folha). Ventilação cruzada (janelas em paredes opostas) é mais eficiente.",
+      "pessoas":     "Número de ocupantes habituais do ambiente. Cada pessoa produz CO₂ e umidade que exigem maior renovação de ar."
+    },
+    "qualidade": {
+      "excelente":    "Excelente ✅",
+      "boa":          "Boa ✅",
+      "aceitavel":    "Aceitável ⚠️",
+      "insuficiente": "Insuficiente ❌"
+    },
+    "resultado": {
+      "titulo":        "Resultados",
+      "ach":           "Renovações de Ar (ACH)",
+      "qualidade":     "Qualidade da Ventilação",
+      "volume":        "Volume do Ambiente",
+      "vazao":         "Vazão de Ar",
+      "areaMinima":    "Área Mínima de Janelas (NBR 15575)",
+      "statusJanelas": "Janelas Atuais vs. Mínimo"
+    },
+    "botoes": {
+      "voltar": "← Voltar"
+    },
+    "aria": {
+      "langPt":    "Mudar para Português (Brasil)",
+      "langIt":    "Mudar para Italiano",
+      "clickInfo": "Clique para ver mais informações",
+      "diminuir":  "Diminuir valor",
+      "aumentar":  "Aumentar valor",
+      "home":      "Voltar para a tela inicial"
+    },
+    "titles": {
+      "langPt":    "Português (Brasil)",
+      "langIt":    "Italiano",
+      "clickInfo": "Mais informações"
+    },
+    "footer": "Ventilação Natural — Engenharia NATA @ 2026"
+  },
+  "it-IT": {
+    "app": {
+      "title": "🌬️ Ventilazione Naturale",
+      "subtitle": "Qualità dell'aria e ricambi orari (NBR 15575)"
+    },
+    "labels": {
+      "comprimento": "Lunghezza dell'Ambiente",
+      "largura":     "Larghezza dell'Ambiente",
+      "peDireito":   "Altezza Ambiente (Pavimento-Soffitto)",
+      "janelas":     "Area Totale Finestre",
+      "pessoas":     "Numero di Persone",
+      "orientacao":  "Orientamento delle Finestre",
+      "clima":       "Clima della Regione"
+    },
+    "opcoes": {
+      "norte":     "Nord",
+      "sul":       "Sud",
+      "leste":     "Est",
+      "oeste":     "Ovest",
+      "quente":    "Caldo/Umido",
+      "temperado": "Temperato",
+      "frio":      "Freddo/Secco"
+    },
+    "unidades": {
+      "metro":   "m",
+      "m2":      "m²",
+      "pessoas": "persone"
+    },
+    "tooltips": {
+      "comprimento": "Lunghezza della stanza in metri. Per ambienti irregolari, usare la dimensione maggiore.",
+      "largura":     "Larghezza della stanza in metri. Per sale aperte, considerare la planimetria totale.",
+      "peDireito":   "Altezza tra pavimento e soffitto. Standard residenziale: 2,4–3,0 m. Soffitti più alti aumentano il volume e richiedono più ventilazione.",
+      "janelas":     "Somma delle aree aperte di tutte le finestre dell'ambiente (larghezza × altezza di ogni anta). La ventilazione incrociata (finestre su pareti opposte) è più efficiente.",
+      "pessoas":     "Numero di occupanti abituali dell'ambiente. Ogni persona produce CO₂ e umidità che richiedono un maggiore ricambio d'aria."
+    },
+    "qualidade": {
+      "excelente":    "Eccellente ✅",
+      "boa":          "Buona ✅",
+      "aceitavel":    "Accettabile ⚠️",
+      "insuficiente": "Insufficiente ❌"
+    },
+    "resultado": {
+      "titulo":        "Risultati",
+      "ach":           "Ricambi d'Aria (ACH)",
+      "qualidade":     "Qualità della Ventilazione",
+      "volume":        "Volume dell'Ambiente",
+      "vazao":         "Portata d'Aria",
+      "areaMinima":    "Area Minima Finestre (NBR 15575)",
+      "statusJanelas": "Finestre Attuali vs. Minimo"
+    },
+    "botoes": {
+      "voltar": "← Indietro"
+    },
+    "aria": {
+      "langPt":    "Passa al Portoghese (Brasile)",
+      "langIt":    "Passa all'Italiano",
+      "clickInfo": "Fare clic per maggiori informazioni",
+      "diminuir":  "Diminuisci valore",
+      "aumentar":  "Aumenta valore",
+      "home":      "Torna alla schermata principale"
+    },
+    "titles": {
+      "langPt":    "Portoghese (Brasile)",
+      "langIt":    "Italiano",
+      "clickInfo": "Più informazioni"
+    },
+    "footer": "Ventilazione Naturale — Engenharia NATA @ 2026"
+  }
+}
