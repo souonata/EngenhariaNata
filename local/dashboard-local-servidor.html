@@ -209,6 +209,74 @@
       white-space: pre-wrap;
     }
 
+    .banner {
+      margin-bottom: 14px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(240, 86, 86, 0.14);
+      color: #ffd1d1;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .banner.hidden { display: none; }
+    .banner code {
+      background: rgba(0, 0, 0, 0.45);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: "JetBrains Mono", Consolas, monospace;
+      font-size: 0.85em;
+    }
+
+    .process-output {
+      margin-top: 14px;
+    }
+
+    .process-output h3 {
+      margin: 0 0 8px;
+      font-size: 0.9rem;
+      color: #d7e9f8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .process-output .badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(158, 180, 197, 0.18);
+      color: var(--muted);
+    }
+
+    .process-output .badge.error {
+      background: rgba(240, 86, 86, 0.2);
+      color: #ffb0b0;
+    }
+
+    .process-log {
+      max-height: 260px;
+      overflow: auto;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, 0.55);
+      padding: 10px;
+      font-size: 0.8rem;
+      font-family: "JetBrains Mono", Consolas, monospace;
+      color: #c7d8e8;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .process-log .line-stderr { color: #ffc7c7; }
+    .process-log .line-stdout { color: #c7d8e8; }
+    .process-log .line-control { color: #9fd4ff; font-style: italic; }
+    .process-log .empty { color: var(--muted); }
+
     .hint {
       margin-top: 8px;
       color: var(--muted);
@@ -232,6 +300,17 @@
     <section class="content">
       <article class="card">
         <h2>Status do Servidor</h2>
+
+        <div id="depsBanner" class="banner hidden">
+          <strong>Dependencias nao instaladas em <code>local/</code>.</strong><br>
+          Abra um terminal e rode: <code>cd local &amp;&amp; npm install</code> antes de ativar o servidor.
+        </div>
+
+        <div id="exitBanner" class="banner hidden">
+          <strong>O processo Vite foi encerrado.</strong>
+          <span id="exitInfo"></span> Veja a saida do processo logo abaixo.
+        </div>
+
         <div class="status-box">
           <div id="statusPill" class="status-pill unknown">
             <span class="dot" aria-hidden="true"></span>
@@ -251,6 +330,14 @@
         </div>
 
         <div id="log" class="log" aria-live="polite"></div>
+
+        <div class="process-output">
+          <h3>
+            <span>Saida do processo Vite</span>
+            <span id="processBadge" class="badge">sem dados</span>
+          </h3>
+          <div id="processLog" class="process-log"><span class="empty">Nenhuma saida capturada ainda. Ative o servidor para ver os logs aqui.</span></div>
+        </div>
       </article>
 
       <article class="card">
@@ -312,7 +399,63 @@
       btnRefresh: document.getElementById('btnRefresh'),
       btnStart: document.getElementById('btnStart'),
       btnStop: document.getElementById('btnStop'),
-      btnRestart: document.getElementById('btnRestart')
+      btnRestart: document.getElementById('btnRestart'),
+      depsBanner: document.getElementById('depsBanner'),
+      exitBanner: document.getElementById('exitBanner'),
+      exitInfo: document.getElementById('exitInfo'),
+      processLog: document.getElementById('processLog'),
+      processBadge: document.getElementById('processBadge')
+    };
+
+    const escapeHtml = (input) =>
+      String(input == null ? '' : input).replace(/[&<>"']/g, (ch) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[ch]);
+
+    const renderProcessOutput = (payload) => {
+      // Banner de dependencias
+      if (payload && payload.dependenciesInstalled === false) {
+        ui.depsBanner.classList.remove('hidden');
+      } else {
+        ui.depsBanner.classList.add('hidden');
+      }
+
+      // Banner de exit
+      const exit = payload && payload.lastExit;
+      if (exit && !payload.controllerRunning) {
+        const parts = [];
+        if (typeof exit.code === 'number') parts.push(`codigo ${exit.code}`);
+        if (exit.signal) parts.push(`sinal ${exit.signal}`);
+        if (exit.at) parts.push(`em ${new Date(exit.at).toLocaleString('pt-BR')}`);
+        ui.exitInfo.textContent = parts.length ? ` (${parts.join(', ')}).` : '.';
+        ui.exitBanner.classList.remove('hidden');
+      } else {
+        ui.exitBanner.classList.add('hidden');
+      }
+
+      // Saida recente
+      const output = Array.isArray(payload && payload.recentOutput) ? payload.recentOutput : [];
+      if (!output.length) {
+        ui.processLog.innerHTML = '<span class="empty">Nenhuma saida capturada ainda. Ative o servidor para ver os logs aqui.</span>';
+        ui.processBadge.textContent = 'sem dados';
+        ui.processBadge.classList.remove('error');
+        return;
+      }
+
+      const hasError = output.some((entry) => entry && entry.source === 'stderr');
+      ui.processBadge.textContent = `${output.length} linhas`;
+      ui.processBadge.classList.toggle('error', hasError);
+
+      ui.processLog.innerHTML = output.map((entry) => {
+        const source = entry && entry.source ? entry.source : 'stdout';
+        const text = escapeHtml(entry && entry.line ? entry.line : '');
+        return `<div class="line-${source}">${text}</div>`;
+      }).join('');
+      ui.processLog.scrollTop = ui.processLog.scrollHeight;
     };
 
     const toUrl = (base, path) => {
@@ -456,11 +599,13 @@
         setPill(parsed.state);
         ui.statusUpdated.textContent = `Atualizado: ${new Date().toLocaleString('pt-BR')}`;
         ui.statusRaw.textContent = `Resposta: ${JSON.stringify(parsed.raw)}`;
+        renderProcessOutput(parsed.raw);
         writeLog(`Status consultado em ${usedUrl}`);
       } catch (error) {
         setPill('desconhecido');
         ui.statusUpdated.textContent = `Atualizado: ${new Date().toLocaleString('pt-BR')}`;
         ui.statusRaw.textContent = 'Resposta: erro de conexao';
+        renderProcessOutput(null);
         writeLog(`Falha ao consultar status: ${error.message}`);
 
         if (isConnectionError(error)) {
