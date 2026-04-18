@@ -501,3 +501,52 @@ input[type="range"]::-moz-range-thumb:active {
     }
 }
 
+@media (max-width: 400px) {
+    .controles-rapidos {
+        padding: 8px 6px;
+    }
+
+    .controle-item label,
+    .controle-item label span,
+    .btn-primary,
+    .btn-secondary {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        white-space: normal;
+    }
+
+    .input-with-arrows,
+    .slider-com-botoes {
+        display: grid;
+        grid-template-columns: minmax(44px, auto) minmax(0, 1fr) minmax(44px, auto);
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .input-with-arrows > *,
+    .slider-com-botoes > * {
+        min-width: 0;
+    }
+
+    .input-with-arrows input,
+    input[type="range"] {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .radio-group {
+        justify-content: stretch;
+    }
+
+    .radio-group > * {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+
+    .radio-label {
+        width: 100%;
+        min-width: 0;
+    }
+}
+

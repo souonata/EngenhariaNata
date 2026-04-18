@@ -65,6 +65,8 @@
     --site-bg: #4e7262;
     /* Default bottom spacing to keep the floating home button from covering footer text */
     --site-bottom-padding: 110px;
+    --mobile-stack-gap: 12px;
+    --mobile-scroll-safe-gap: 72px;
     --home-shadow: rgba(102, 126, 234, 0.4);
     --home-size: 60px;
     --home-size-mobile: 50px;
@@ -256,6 +258,20 @@ body {
     position: relative;
 }
 
+img,
+svg,
+video,
+canvas {
+    max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+    max-width: 100%;
+}
+
 /* ============================================
    GLOBAL CONTAINER
    ============================================ */
@@ -266,6 +282,34 @@ body {
     padding: 0 12px;
     position: relative;
     z-index: 10;
+}
+
+:where(
+    .container,
+    .conteiner-principal,
+    .card,
+    .cartao,
+    .controles-rapidos,
+    .grupo-entrada,
+    .input-group,
+    .controle-item,
+    .resultado-item,
+    .resumo-item,
+    .graficos-container,
+    .tabela-container,
+    .comparacao,
+    .memorial-header,
+    .slider-com-botoes,
+    .input-with-arrows,
+    .grupo-radio,
+    .radio-group,
+    .valor-com-unidades,
+    .cabecalho-controle,
+    .painel-row,
+    .extra-especifico-row,
+    .extra-especifico-campo
+) {
+    min-width: 0;
 }
 
 /* ============================================
@@ -1372,11 +1416,202 @@ input[type="range"]::-moz-range-thumb:active {
 
     /* 60px abaixo do slider = área de toque para rolar sem acionar o próximo input */
     .slider-com-botoes {
-        padding: 10px 0 60px;
+        padding: 10px 0 var(--mobile-scroll-safe-gap, 72px);
         touch-action: pan-y;
     }
 
     input[type="range"] {
         margin: 6px 0;
+    }
+}
+
+@media (max-width: 400px) {
+    body {
+        gap: var(--mobile-stack-gap, 12px);
+        padding: 12px 0 var(--site-bottom-padding, 110px) 0;
+    }
+
+    .container,
+    .conteiner-principal {
+        max-width: 100%;
+        padding: 0 8px;
+    }
+
+    header,
+    footer {
+        padding-inline: 4px;
+    }
+
+    header h1 {
+        font-size: clamp(1.15rem, 5.6vw, 1.35rem);
+    }
+
+    .subtitle,
+    .subtitulo {
+        font-size: 0.82rem;
+    }
+
+    .language-selector,
+    .seletor-idioma {
+        width: min(100%, calc(100vw - 12px));
+        max-width: calc(100vw - 12px);
+        gap: 6px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .btn-idioma,
+    .lang-btn,
+    .theme-toggle-btn {
+        flex: 1 1 120px;
+        min-width: 0;
+    }
+
+    :where(
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        span,
+        strong,
+        small,
+        a,
+        label,
+        button,
+        th,
+        td,
+        li
+    ) {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    :where(
+        .card,
+        .cartao,
+        .controles-rapidos,
+        .resultado,
+        .resultados,
+        .comparacao,
+        .graficos-container,
+        .tabela-container,
+        .info-group,
+        .memorial-item,
+        .resumo-calculado,
+        .v2-explicacao-card
+    ) {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    :where(
+        .cabecalho-controle,
+        .valor-com-unidades,
+        .memorial-header,
+        .resultados-header-com-ajuda,
+        .footer-meta,
+        .exemplos-header,
+        .linha-resultado,
+        .linha-resultado-com-unidades,
+        .detalhe-item-horizontal,
+        .painel-row
+    ) {
+        flex-wrap: wrap;
+    }
+
+    .valor-com-unidades,
+    .cabecalho-controle,
+    .detalhe-item-horizontal,
+    .linha-resultado,
+    .linha-resultado-com-unidades {
+        justify-content: center;
+    }
+
+    :where(
+        .grupo-radio,
+        .radio-group,
+        .grupo-radio-compacto,
+        .radio-group-compact,
+        .memorial-system-switcher,
+        .controle-sistema-wrapper .radio-group
+    ) {
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    :where(
+        .grupo-radio > *,
+        .radio-group > *,
+        .grupo-radio-compacto > *,
+        .radio-group-compact > *,
+        .memorial-system-switcher > *,
+        .controle-sistema-wrapper .radio-group > *
+    ) {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
+
+    .opcao-radio,
+    .opcao-radio-compacto,
+    .radio-label,
+    .cartao-radio,
+    .cartao-radio-compacto {
+        width: 100%;
+        min-width: 0;
+    }
+
+    :where(
+        .comparacao table,
+        .tabela-resultados,
+        .tabela-sistemas,
+        #tabelaAmortizacao
+    ) {
+        width: 100%;
+        max-width: 100%;
+        table-layout: fixed;
+    }
+
+    :where(
+        .comparacao th,
+        .comparacao td,
+        .tabela-resultados th,
+        .tabela-resultados td,
+        .tabela-sistemas th,
+        .tabela-sistemas td,
+        #tabelaAmortizacao th,
+        #tabelaAmortizacao td
+    ) {
+        padding: 6px 4px;
+        font-size: 0.72rem;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .resumo-item-calc {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .formula-box code {
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .painel-row {
+        overflow: visible;
+    }
+
+    .wire-line {
+        min-width: 32px;
+    }
+
+    .texto-saiba-mais {
+        white-space: normal;
     }
 }
