@@ -930,24 +930,67 @@ html[data-theme="dark"] {
         grid-template-columns: 1fr;
         gap: 8px;
     }
-    
+
     .controle-item-horizontal label {
         text-align: left;
         font-size: 1rem;
     }
-    
+
     .controles-primeira-linha {
         grid-template-columns: 1fr;
-        gap: 15px;
+        gap: 24px;
     }
-    
+
+    /* Mais espaço entre cada grupo de entrada para facilitar scroll sem clicar */
+    .controles-coluna-esquerda {
+        gap: 24px;
+    }
+
+    .controles-rapidos .grupo-entrada {
+        margin-bottom: 24px;
+    }
+
+    .controles-rapidos .grupo-entrada:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Espaço extra ao redor dos sliders para não acionar ao tentar rolar */
+    .slider-com-botoes {
+        padding: 10px 0;
+        touch-action: pan-y;
+    }
+
+    /* Sliders devem ter margem extra para o dedo rolar sem acionar */
+    input[type="range"] {
+        margin: 6px 0;
+    }
+
     .controle-taxa-periodo {
         grid-template-columns: 1fr;
-        gap: 15px;
+        gap: 24px;
     }
-    
+
     .taxa-input {
         max-width: 100%;
+    }
+
+    /* Empilhar botões Ano/Mês e Semestral/Anual verticalmente no mobile
+       para dar largura suficiente ao texto */
+    .grupo-radio-compacto {
+        flex-direction: column;
+        gap: 6px;
+        align-items: stretch;
+    }
+
+    .cartao-radio-compacto {
+        padding: 6px 10px;
+        min-width: 70px;
+        font-size: 0.75rem;
+        white-space: nowrap;
+    }
+
+    .opcao-radio-compacto .rotulo-radio {
+        font-size: 0.75rem;
     }
 
     .extra-especifico-row {
@@ -971,7 +1014,7 @@ html[data-theme="dark"] {
     .btn-remover-extra-especifico {
         margin-left: 0;
     }
-    
+
     /* Estilos responsivos de controles movidos para assets/css/controls-styles.css */
 }
 
@@ -1191,15 +1234,24 @@ html[data-theme="dark"] {
         padding: 10px;
         padding-bottom: var(--site-bottom-padding, 110px);
     }
-    
+
     header h1 {
         font-size: 1.5rem;
     }
-    
+
     .card {
         padding: 12px;
     }
-    
+
+    /* Espaço generoso entre grupos no mobile pequeno */
+    .controles-grid-vertical {
+        gap: 20px;
+    }
+
+    .controles-rapidos {
+        padding: 14px 12px;
+    }
+
     /* Estilos responsivos de botões movidos para assets/css/controls-styles.css */
 }
 
