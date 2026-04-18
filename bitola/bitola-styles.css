@@ -137,6 +137,27 @@
         font-size: 0.85rem;
     }
 
+    /* Mais espaço entre cada grupo de entrada para facilitar scroll sem clicar */
+    .grupo-entrada,
+    .input-group {
+        margin-bottom: 28px;
+    }
+
+    .grupo-entrada:last-child,
+    .input-group:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Zona de toque segura ao redor dos sliders */
+    .slider-com-botoes {
+        padding: 10px 0;
+        touch-action: pan-y;
+    }
+
+    input[type="range"] {
+        margin: 6px 0;
+    }
+
     .resultado-item {
         flex-direction: column;
         align-items: flex-start;
