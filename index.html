@@ -11,7 +11,7 @@
     <meta http-equiv="Expires" content="0">
     
     <!-- Content Security Policy (fallback caso .htaccess não seja aplicado) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://docs.google.com https://script.google.com https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https://docs.google.com https://script.google.com https://*.googleapis.com https://worldtimeapi.org https://souonata.goatcounter.com; frame-src https://docs.google.com; object-src 'none'; base-uri 'self'; form-action 'self' https://docs.google.com; upgrade-insecure-requests;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://docs.google.com https://script.google.com https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https://docs.google.com https://script.google.com https://*.googleapis.com https://worldtimeapi.org https://souonata.goatcounter.com https://souonata.goatcounter.com/count; frame-src https://docs.google.com; object-src 'none'; base-uri 'self'; form-action 'self' https://docs.google.com; upgrade-insecure-requests;">
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -77,8 +77,13 @@
     <link rel="stylesheet" href="index-styles.css?v=1.0.4">
 
     <!-- Analytics: GoatCounter (privacy-friendly, LGPD/GDPR-compliant) -->
+    <script>
+        window.goatcounter = window.goatcounter || {};
+        // Permite contar acessos durante desenvolvimento local (localhost).
+        window.goatcounter.allow_local = true;
+    </script>
     <script data-goatcounter="https://souonata.goatcounter.com/count"
-            async src="//gc.zgo.at/count.js"></script>
+            async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body>
     <!-- ========================================== -->
