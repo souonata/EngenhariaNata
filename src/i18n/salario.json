@@ -1,0 +1,270 @@
+{
+  "pt-BR": {
+    "app": {
+      "title": "💼 Salário — Líquido, Férias, 13º",
+      "subtitle": "🇧🇷 CLT Brasil — INSS, IRRF, FGTS e rescisão (2025)"
+    },
+    "labels": {
+      "bruto":        "Salário Bruto Mensal",
+      "dependentes":  "Dependentes IRRF",
+      "plano":        "Plano de Saúde (desconto)",
+      "pensao":       "Pensão Alimentícia",
+      "vt":           "Vale-Transporte (desconta 6%?)",
+      "outros":       "Outros Descontos",
+      "meses":        "Meses na Empresa",
+      "horasExtra":   "Horas-Extra no Mês (50%)",
+      "adicionalNoturno": "Adicional Noturno (20%)",
+      "quattordicesima": "14ª Mensalidade (Itália)",
+      "regione":      "Região de Residência Fiscal",
+      "comunale":     "Adicional Municipal (%)",
+      "tredicesima":  "13ª Mensalidade (Itália)",
+      "tfrDestino":   "Destino do TFR"
+    },
+    "opcoes": {
+      "sim": "Sim",
+      "nao": "Não"
+    },
+    "unidades": {
+      "real":    "R$",
+      "meses":   "meses",
+      "horas":   "h"
+    },
+    "tooltips": {
+      "bruto":       "Preencha com o salário bruto mensal do contracheque ou do contrato de trabalho, antes de INSS, IRRF e outros descontos. Nao digite o valor anual aqui no modo Brasil. Se seu salario varia muito por comissao ou hora extra, use uma media mensal realista.",
+      "dependentes": "Informe quantos dependentes podem ser usados para deducao de IRRF. Exemplos comuns: filhos ate 21 anos (ou 24 se universitarios), conjuge sem renda e pais dependentes. Se nao houver, deixe 0.",
+      "plano":       "Digite o valor mensal que realmente sai do seu contracheque para plano de saude ou odonto. Se a empresa paga tudo e nao desconta nada do trabalhador, deixe 0.",
+      "pensao":      "Pensão alimentícia judicialmente determinada. Abate da base de IRRF.",
+      "vt":          "Marque Sim somente se a empresa desconta vale-transporte em folha. A simulacao considera o desconto legal de ate 6% do salario base mensal. Se voce nao recebe VT ou recebe sem desconto, marque Nao.",
+      "outros":      "Use para descontos mensais fixos que nao aparecem em campos separados, como consignado, sindicato, coparticipacoes recorrentes ou descontos internos. Se nao tiver nenhum, deixe 0.",
+      "meses":       "Quantidade total de meses trabalhados na empresa atual. Esse campo influencia 13º proporcional, ferias, FGTS acumulado e rescisao estimada. Se entrou ha 8 meses, preencha 8; se trabalha ha 3 anos, preencha 36.",
+      "horasExtra":  "Quantidade de horas extras no mês com adicional de 50% (dias úteis).",
+      "adicionalNoturno": "Aplica-se entre 22h e 5h (urbano): hora noturna vale 52,5 min e tem adicional de 20%.",
+      "regione":     "No modo Italia, selecione a regiao da sua residencia fiscal. Esse campo altera a addizionale regionale do IRPEF.",
+      "comunale":    "No modo Italia, informe a aliquota do adicional municipal se souber. Se nao souber, mantenha o valor padrao ou use 0 para uma simulacao mais conservadora.",
+      "tredicesima": "No modo Italia, marque Sim se o contrato prever 13ª mensalidade. A RAL anual sera distribuida considerando essa mensalidade extra.",
+      "quattordicesima": "No modo Italia, marque Sim apenas se o seu contrato ou CCNL prever 14ª mensalidade. Nem todos os setores possuem esse pagamento.",
+      "tfrDestino":  "No modo Italia, escolha se o TFR fica na empresa ou vai para fundo pensione. Isso muda a projecao de acumulo do TFR."
+    },
+    "resultado": {
+      "titulo":          "Resultados",
+      "liquidoMensal":   "Salário Líquido Mensal",
+      "inss":            "INSS",
+      "irrf":            "IRRF",
+      "vt":              "Vale-Transporte",
+      "plano":           "Plano de Saúde",
+      "pensao":          "Pensão Alimentícia",
+      "outros":          "Outros",
+      "totalDescontos":  "Total de Descontos",
+      "decimoTerceiro":  "13º Salário (proporcional)",
+      "ferias":          "Férias + 1/3",
+      "fgtsMensal":      "FGTS Mensal (8%)",
+      "fgtsAcumulado":   "FGTS Acumulado",
+      "rescisao":        "Rescisão (sem justa causa)",
+      "custoEmpresa":    "Custo Total para Empresa",
+      "rendaAnual":      "Renda Anual Estimada",
+      "aliqEfetiva":     "Alíquota Efetiva"
+    },
+    "grafico": {
+      "donutTitulo":     "Onde vai seu salário?",
+      "barrasTitulo":    "Renda ao longo do ano",
+      "mesLiquido":      "Líquido mensal",
+      "decimoTerceiro":  "13º",
+      "ferias":          "Férias + 1/3",
+      "fgts":            "FGTS anual"
+    },
+    "memorial": {
+      "abrir":  "📚 SAIBA MAIS",
+      "titulo": "Como seu salário é calculado — Brasil CLT",
+      "introTitulo": "🎯 Objetivo",
+      "introTexto":  "Entender passo a passo como o salário bruto se transforma em líquido, com as alíquotas oficiais de INSS e IRRF vigentes em 2025, e como são calculados 13º, férias, FGTS e rescisão.",
+      "inssTitulo": "1. INSS — Contribuição Previdenciária",
+      "inssTexto":  "O INSS é descontado progressivamente por faixas salariais (como o imposto de renda). Cada faixa tem sua alíquota; a alíquota efetiva sobre o bruto fica sempre abaixo da alíquota marginal.",
+      "inssTabela": "Tabela INSS 2025 (vigente em 2026 até nova portaria):",
+      "irrfTitulo": "2. IRRF — Imposto de Renda Retido na Fonte",
+      "irrfTexto":  "Incide sobre a base = Bruto − INSS − (Dependentes × R$ 189,59) − Pensão. A Receita aplica também um desconto simplificado automático de R$ 607,20 (MP 1.171/23), usado quando for mais vantajoso que os dependentes.",
+      "irrfTabela": "Tabela IRRF 2025 (vigente desde maio/2024):",
+      "fgtsTitulo": "3. FGTS — Fundo de Garantia",
+      "fgtsTexto":  "8% do bruto depositado pela empresa em conta vinculada na Caixa. Não é descontado do trabalhador. Sacável em demissão sem justa causa, aposentadoria, compra de imóvel, doença grave.",
+      "feriasTitulo": "4. Férias + 1/3 Constitucional",
+      "feriasTexto":  "Após 12 meses de serviço, o trabalhador tem 30 dias de férias remuneradas + 1/3 adicional (CF art. 7º). Incide INSS e IRRF normalmente.",
+      "decimoTitulo": "5. 13º Salário (Gratificação Natalina)",
+      "decimoTexto":  "1 salário extra proporcional aos meses trabalhados. Pago em 2 parcelas (até 30/nov metade sem desconto; até 20/dez o restante com INSS e IRRF).",
+      "rescisaoTitulo": "6. Rescisão Sem Justa Causa",
+      "rescisaoTexto":  "Inclui: saldo de salário + aviso prévio (30 dias + 3 por ano ≥1 ano, máx 90) + 13º proporcional + férias proporcionais + 1/3 + multa 40% sobre FGTS depositado. Trabalhador saca FGTS e pode pedir seguro-desemprego.",
+      "custoTitulo": "7. Custo Real para a Empresa",
+      "custoTexto":  "Para cada R$ 1,00 pago ao trabalhador em bruto, a empresa gasta ≈ R$ 1,60-1,80 considerando: FGTS (8%), previsão de 13º (8,33%), férias (11,11%), encargos sobre estes, seguro-acidente, SAT, terceiros (Sistema S ≈ 5,8%). Os valores variam conforme setor e regime tributário.",
+      "referenciasTitulo": "📖 Referências Oficiais",
+      "referencias": [
+        { "texto": "Receita Federal — Tabela IRRF 2024+", "url": "https://www.gov.br/receitafederal/pt-br/assuntos/meu-imposto-de-renda/tabelas/2024" },
+        { "texto": "INSS — Portaria 6/2025 (tabela de contribuição)", "url": "https://www.gov.br/inss/pt-br/assuntos/noticias/tabela-de-contribuicao-previdenciaria-para-segurados-contribuintes-individuais-e-facultativos-2024" },
+        { "texto": "Caixa Econômica — FGTS", "url": "https://www.caixa.gov.br/beneficios-trabalhador/fgts/Paginas/default.aspx" },
+        { "texto": "CLT — Consolidação das Leis do Trabalho", "url": "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm" },
+        { "texto": "Lei 14.663/2023 — Desconto simplificado IRRF", "url": "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/L14663.htm" },
+        { "texto": "eSocial — Portal do Trabalhador", "url": "https://www.gov.br/esocial/pt-br" }
+      ]
+    },
+    "botoes": {
+      "voltar": "← Voltar"
+    },
+    "aria": {
+      "langPt":    "Mudar para Português (Brasil)",
+      "langIt":    "Mudar para Italiano",
+      "clickInfo": "Clique para ver mais informações",
+      "diminuir":  "Diminuir valor",
+      "aumentar":  "Aumentar valor",
+      "home":      "Voltar para a tela inicial"
+    },
+    "titles": {
+      "langPt":    "Português (Brasil)",
+      "langIt":    "Italiano",
+      "clickInfo": "Mais informações"
+    },
+    "footer": "Salário — Engenharia NATA @ 2026"
+  },
+  "it-IT": {
+    "app": {
+      "title": "💼 Stipendio — Netto, Tredicesima, TFR",
+      "subtitle": "🇮🇹 Lavoro Dipendente — IRPEF, INPS, TFR (2025-2026)"
+    },
+    "labels": {
+      "bruto":        "RAL — Reddito Annuo Lordo",
+      "dependentes":  "Familiari a Carico (>21 anni)",
+      "plano":        "Contributi Previdenza Complementare",
+      "pensao":       "Altre Trattenute Fisse (mensili)",
+      "vt":           "Detrazione coniuge a carico",
+      "outros":       "Altre Trattenute (mensili)",
+      "meses":        "Mesi di Servizio",
+      "horasExtra":   "Ore Straordinarie al Mese",
+      "adicionalNoturno": "Quattordicesima Mensilità",
+      "quattordicesima": "Quattordicesima Mensilità",
+      "regione":      "Regione di Residenza",
+      "comunale":     "Addizionale Comunale (%)",
+      "tredicesima":  "Tredicesima Mensilità",
+      "tfrDestino":   "Destinazione TFR"
+    },
+    "opcoes": {
+      "sim": "Sì",
+      "nao": "No",
+      "azienda": "In azienda",
+      "fondo":   "Fondo pensione",
+      "regioes": {
+        "abruzzo":    "Abruzzo (1,73%)",
+        "basilicata": "Basilicata (1,23%)",
+        "calabria":   "Calabria (1,73%)",
+        "campania":   "Campania (2,03%)",
+        "emilia":     "Emilia-Romagna (1,93%)",
+        "friuli":     "Friuli-V.G. (1,23%)",
+        "lazio":      "Lazio (3,33%)",
+        "liguria":    "Liguria (1,73%)",
+        "lombardia":  "Lombardia (1,74%)",
+        "marche":     "Marche (1,73%)",
+        "molise":     "Molise (3,33%)",
+        "piemonte":   "Piemonte (3,33%)",
+        "puglia":     "Puglia (1,33%)",
+        "sardegna":   "Sardegna (1,23%)",
+        "sicilia":    "Sicilia (1,23%)",
+        "toscana":    "Toscana (1,73%)",
+        "trentino":   "Trentino-A.A. (1,23%)",
+        "umbria":     "Umbria (1,83%)",
+        "valledaosta":"Valle d'Aosta (1,23%)",
+        "veneto":     "Veneto (1,23%)"
+      }
+    },
+    "unidades": {
+      "real":    "€",
+      "meses":   "mesi",
+      "horas":   "h"
+    },
+    "tooltips": {
+      "bruto":       "Inserisci la RAL annua complessiva, cioe il lordo annuale totale previsto dal contratto o dalla Certificazione Unica. Nel valore vanno considerate anche tredicesima e quattordicesima se fanno parte della retribuzione annua. Non inserire il lordo mensile della busta paga.",
+      "dependentes": "Inserisci il numero di familiari fiscalmente a carico rilevanti per questa stima. Se non ne hai, lascia 0. I figli sotto i 21 anni in genere rientrano nell'Assegno Unico e non nella classica detrazione IRPEF.",
+      "plano":       "Inserisci il contributo mensile volontario che versi tu a previdenza complementare o fondo pensione. La simulazione lo tratta come importo mensile sulle 12 buste ordinarie e applica il limite deducibile annuo di €5.164,57. Se non versi nulla, lascia 0.",
+      "pensao":      "Detrazione fissa per coniuge a carico. Massimo €800/anno decrescente con il reddito.",
+      "vt":          "Se il coniuge è a carico (reddito <€2.840,51) si applica detrazione decrescente con la RAL.",
+      "outros":      "Usa questo campo per trattenute mensili fisse non gia coperte altrove, come quota sindacale, cessione del quinto o altre trattenute ricorrenti in busta paga. Se non hai nulla di simile, lascia 0.",
+      "meses":       "Numero totale di mesi gia lavorati nell'azienda attuale. Serve per stimare il TFR accumulato e la liquidazione. Esempio: 2 anni e 6 mesi = 30.",
+      "horasExtra":  "Ore di lavoro straordinario. Tassate normalmente (23% base, o 5% con detassazione premi di produttività, soggetto a limiti).",
+      "adicionalNoturno": "Presente in alcuni CCNL (commercio, turismo, alimentari). Versata di solito a giugno o luglio.",
+      "regione":     "Seleziona la regione della tua residenza fiscale, non quella dell'azienda. L'aliquota regionale IRPEF cambia da regione a regione e incide sul netto annuale.",
+      "comunale":    "Inserisci la percentuale dell'addizionale comunale se la conosci dalla tua busta paga o dal tuo comune. Se non la conosci, puoi lasciare il valore predefinito o mettere 0 per una simulazione piu prudente.",
+      "tredicesima": "Se il tuo contratto prevede la tredicesima, lascia Sì. La simulazione usa la RAL annua e divide il lordo sulle mensilita effettive, quindi questa scelta cambia sia il lordo mensile ordinario sia il netto della tredicesima.",
+      "quattordicesima": "Metti Sì solo se il tuo CCNL prevede anche la quattordicesima. Non tutti i settori la hanno. Anche questa opzione ridistribuisce la RAL sulle mensilita annue effettive.",
+      "tfrDestino":  "Scegli dove va il TFR: in azienda oppure in un fondo pensione. Questa scelta non cambia il netto mensile ordinario, ma cambia la stima di accumulo del TFR nel tempo."
+    },
+    "resultado": {
+      "titulo":          "Risultati",
+      "liquidoMensal":   "Stipendio Netto Mensile Ordinario",
+      "inss":            "INPS (9,19%)",
+      "irrf":            "IRPEF Netta",
+      "vt":              "Addizionale Regionale",
+      "plano":           "Addizionale Comunale",
+      "pensao":          "Detrazioni Applicate",
+      "outros":          "Altre Trattenute",
+      "totalDescontos":  "Totale Trattenute",
+      "decimoTerceiro":  "Tredicesima Netta",
+      "ferias":          "Quattordicesima Netta",
+      "fgtsMensal":      "TFR Mensile (6,91%)",
+      "fgtsAcumulado":   "TFR Accumulato",
+      "rescisao":        "Liquidazione Stimata",
+      "custoEmpresa":    "Costo Totale Azienda",
+      "rendaAnual":      "Reddito Annuo Netto",
+      "aliqEfetiva":     "Aliquota Effettiva"
+    },
+    "grafico": {
+      "donutTitulo":     "Dove va il tuo stipendio?",
+      "barrasTitulo":    "Reddito durante l'anno",
+      "mesLiquido":      "Netto mensile",
+      "decimoTerceiro":  "Tredicesima",
+      "ferias":          "Quattordicesima",
+      "fgts":            "TFR annuo"
+    },
+    "memorial": {
+      "abrir":  "📚 SCOPRI DI PIÙ",
+      "titulo": "Come viene calcolato il tuo stipendio — Italia",
+      "introTitulo": "🎯 Obiettivo",
+      "introTexto":  "Capire passo dopo passo come la RAL diventa stipendio netto, con le aliquote IRPEF ufficiali 2024-2026 (3 scaglioni), contributi INPS, addizionali regionali e comunali, TFR e tredicesima.",
+      "inssTitulo": "1. INPS — Contributi Previdenziali",
+      "inssTexto":  "Il lavoratore dipendente versa il 9,19% della retribuzione lorda all'INPS (9,49% oltre il massimale contributivo di €55.008/anno nel 2025). Il datore di lavoro versa inoltre circa il 30% come contributo aziendale.",
+      "inssTabela": "Aliquote INPS 2025:",
+      "irrfTitulo": "2. IRPEF — Imposta sul Reddito",
+      "irrfTexto":  "Dalla riforma 2024 l'IRPEF ha 3 scaglioni (prima erano 4). Si applica sull'imponibile = RAL − INPS − deducibili. Poi si sottraggono detrazioni (lavoro dipendente, familiari a carico).",
+      "irrfTabela": "Scaglioni IRPEF 2024-2026:",
+      "fgtsTitulo": "3. Addizionali Regionale e Comunale",
+      "fgtsTexto":  "Oltre all'IRPEF nazionale, ogni regione applica un'addizionale tra 1,23% e 3,33%. Il comune può aggiungere fino allo 0,9%. Lazio e Molise hanno le aliquote più alte (3,33%); Basilicata, Friuli, Sardegna, Sicilia, Trentino, Valle d'Aosta, Veneto le più basse (1,23%).",
+      "feriasTitulo": "4. Detrazioni Lavoro Dipendente",
+      "feriasTexto":  "Riducono l'imposta lorda. Art. 13 TUIR: fino a €15.000 la detrazione è €1.955; decresce linearmente fino ad azzerarsi a €50.000. C'è anche il trattamento integrativo (ex-bonus Renzi) di €1.200/anno per redditi fino €15.000 (condizionato all'imposta > detrazioni).",
+      "decimoTitulo": "5. Tredicesima e Quattordicesima",
+      "decimoTexto":  "La 13ª è obbligatoria per legge per tutti i dipendenti (pagata a dicembre). La 14ª è prevista solo da alcuni CCNL (commercio, turismo, alimentari, ecc.) e pagata in estate. Tassate come reddito ordinario ma senza detrazioni lavoro, quindi più pesanti in proporzione al netto.",
+      "rescisaoTitulo": "6. TFR — Trattamento di Fine Rapporto",
+      "rescisaoTexto":  "Accantonato dal datore ogni anno: 6,91% della retribuzione (1/13,5). Alla fine del rapporto il lavoratore riceve il montante rivalutato. Scelta del lavoratore: (a) TFR in azienda — rivalutazione 1,5% + 75% inflazione; (b) TFR in fondo pensione — rendimento di mercato (tipicamente 3-6%) + vantaggi fiscali (aliquota fino 15% invece di 23% al riscatto).",
+      "custoTitulo": "7. Costo Azienda (Cuneo Fiscale)",
+      "custoTexto":  "Per ogni €1 netto in tasca al lavoratore, l'azienda spende circa €1,70-1,90. La differenza è il \"cuneo fiscale\": contributi datoriali (~30% RAL), IRAP, TFR, ferie, malattia, maternità, assicurazione INAIL. L'Italia ha uno dei cunei più alti dell'OCSE (~46% per redditi medi).",
+      "referenciasTitulo": "📖 Riferimenti Ufficiali",
+      "referencias": [
+        { "texto": "Agenzia delle Entrate — IRPEF", "url": "https://www.agenziaentrate.gov.it/portale/web/guest/schede/dichiarazioni/irpef" },
+        { "texto": "INPS — Contributi Lavoratori Dipendenti", "url": "https://www.inps.it/it/it/previdenza/contributi.html" },
+        { "texto": "MEF — Addizionali Regionali IRPEF", "url": "https://www1.finanze.gov.it/finanze/analisi_stat/public/index.php?search_class%5B0%5D=cCOMUNE&opendata=yes" },
+        { "texto": "TUIR — Art. 13 (Detrazioni lavoro)", "url": "https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto.del.presidente.della.repubblica:1986-12-22;917" },
+        { "texto": "COVIP — Fondi Pensione", "url": "https://www.covip.it/per-il-cittadino" },
+        { "texto": "Ministero del Lavoro — CCNL", "url": "https://www.lavoro.gov.it/priorita/Pagine/CCNL.aspx" }
+      ]
+    },
+    "botoes": {
+      "voltar": "← Indietro"
+    },
+    "aria": {
+      "langPt":    "Passa al Portoghese (Brasile)",
+      "langIt":    "Passa all'Italiano",
+      "clickInfo": "Fare clic per maggiori informazioni",
+      "diminuir":  "Diminuisci valore",
+      "aumentar":  "Aumenta valore",
+      "home":      "Torna alla schermata principale"
+    },
+    "titles": {
+      "langPt":    "Portoghese (Brasile)",
+      "langIt":    "Italiano",
+      "clickInfo": "Più informazioni"
+    },
+    "footer": "Stipendio — Engenharia NATA @ 2026"
+  }
+}
