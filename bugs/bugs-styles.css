@@ -20,10 +20,12 @@ header h1 {
 }
 
 .subtitulo {
-    color: rgba(255, 255, 255, 0.88);
+    color: white;
+    opacity: 1;
     font-size: 1.05rem;
     font-weight: 500;
     margin-top: 5px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 /* Formulário */
