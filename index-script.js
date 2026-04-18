@@ -195,6 +195,15 @@ class IndexApp extends App {
     }
 
     async carregarTotalVisitas() {
+        // Primeiro tenta via API oficial do count.js (visit_count), conforme docs.
+        const totalViaVisitCount = await this.carregarTotalVisitasViaVisitCount();
+        if (Number.isFinite(totalViaVisitCount)) {
+            this.totalVisitas = totalViaVisitCount;
+            this.renderizarContagemVisitantes();
+            return;
+        }
+
+        // Fallback para endpoint JSON direto (mantem compatibilidade).
         try {
             const resposta = await fetch('https://souonata.goatcounter.com/counter/TOTAL.json', {
                 cache: 'no-store'
@@ -209,6 +218,61 @@ class IndexApp extends App {
             this.totalVisitas = null;
         }
         this.renderizarContagemVisitantes();
+    }
+
+    async carregarTotalVisitasViaVisitCount() {
+        const carregou = await this.aguardarVisitCountDisponivel(5000);
+        if (!carregou) return null;
+
+        const idContainer = `gc-total-tmp-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+        const container = document.createElement('div');
+        container.id = idContainer;
+        container.style.display = 'none';
+        container.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(container);
+
+        try {
+            window.goatcounter.visit_count({
+                append: `#${idContainer}`,
+                path: 'TOTAL',
+                type: 'html',
+                no_branding: true
+            });
+
+            // Aguarda o count.js renderizar o HTML do contador no container oculto.
+            await this.esperar(350);
+
+            const texto = (container.textContent || '').trim();
+            const apenasDigitos = texto.replace(/[^\d]/g, '');
+            if (!apenasDigitos) return null;
+
+            const numero = parseInt(apenasDigitos, 10);
+            return Number.isFinite(numero) ? numero : null;
+        } catch (_erro) {
+            return null;
+        } finally {
+            container.remove();
+        }
+    }
+
+    async aguardarVisitCountDisponivel(timeoutMs = 5000) {
+        const inicio = Date.now();
+        while (Date.now() - inicio < timeoutMs) {
+            if (
+                window.goatcounter &&
+                typeof window.goatcounter.visit_count === 'function'
+            ) {
+                return true;
+            }
+            await this.esperar(100);
+        }
+        return false;
+    }
+
+    esperar(ms) {
+        return new Promise(resolve => {
+            setTimeout(resolve, ms);
+        });
     }
 
     renderizarContagemVisitantes() {

@@ -73,7 +73,7 @@ EngenhariaNata/
    ```html
    <!-- Analytics: GoatCounter (privacy-friendly, LGPD/GDPR-compliant) -->
    <script data-goatcounter="https://souonata.goatcounter.com/count"
-           async src="//gc.zgo.at/count.js"></script>
+           async src="https://gc.zgo.at/count.js"></script>
    ```
 
 5. Registre o app em `index.html` (card na grade de apps) e em `sobre/sobre.html`.
