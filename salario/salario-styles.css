@@ -1,0 +1,305 @@
+/* ============================================
+   SALARIO - Estilos Específicos
+   Paleta: verde-azulado (folha, cédula, prosperidade)
+   ============================================ */
+
+:root {
+    --sal-start: #1E88E5;
+    --sal-end:   #00ACC1;
+    --sal-accent: #26A69A;
+    --home-bg:    linear-gradient(135deg, #1E88E5 0%, #00ACC1 100%);
+    --home-shadow: rgba(30, 136, 229, 0.4);
+}
+
+/* ============================================
+   VISIBILIDADE POR IDIOMA (.lang-br / .lang-it)
+   ============================================ */
+body.lang-br .it-only { display: none !important; }
+body.lang-it .br-only { display: none !important; }
+
+/* ============================================
+   RESULTADOS
+   ============================================ */
+.resultados {
+    background: var(--memorial-bg);
+    margin-top: 8px;
+}
+.resultados-header-com-ajuda {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.resultados-header-com-ajuda h2 {
+    color: var(--sal-start);
+    margin: 0;
+    font-size: 1.1rem;
+    text-align: center;
+}
+html[data-theme="dark"] .resultados-header-com-ajuda h2 {
+    color: var(--sal-end);
+}
+
+.secao-resultado-titulo {
+    margin: 18px 0 8px;
+    font-size: 1rem;
+    color: var(--sal-accent);
+    border-bottom: 1px dashed rgba(38, 166, 154, 0.35);
+    padding-bottom: 6px;
+}
+html[data-theme="dark"] .secao-resultado-titulo {
+    color: var(--sal-end);
+    border-bottom-color: rgba(77, 208, 225, 0.3);
+}
+
+/* ============================================
+   DESTAQUE NOS RESULTADOS
+   ============================================ */
+.resultado-item.destaque {
+    background: linear-gradient(135deg, rgba(30,136,229,0.08), rgba(0,172,193,0.08));
+    border-left: 4px solid var(--sal-start);
+}
+html[data-theme="dark"] .resultado-item.destaque {
+    background: linear-gradient(135deg, rgba(30,136,229,0.16), rgba(0,172,193,0.12));
+    border-left-color: var(--sal-end);
+}
+.resultado-item.destaque .valor-resultado-grande {
+    color: var(--sal-start);
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+html[data-theme="dark"] .resultado-item.destaque .valor-resultado-grande {
+    color: var(--sal-end);
+}
+
+/* ============================================
+   GRÁFICOS
+   ============================================ */
+.graficos-container {
+    margin: 16px 0;
+    padding: 10px;
+    background: var(--memorial-bg);
+    border-radius: 8px;
+}
+.graficos-container h3 {
+    color: var(--sal-accent);
+    font-size: 1rem;
+    margin: 0 0 10px;
+    text-align: center;
+}
+html[data-theme="dark"] .graficos-container h3 {
+    color: var(--sal-end);
+}
+.grafico-donut-wrapper {
+    position: relative;
+    height: 260px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+.grafico-barras-wrapper {
+    position: relative;
+    height: 240px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* ============================================
+   INPUTS
+   ============================================ */
+#inputBruto, #inputPlano, #inputOutros {
+    min-width: 70px;
+    max-width: 86px;
+    width: 86px;
+}
+#inputDependentes, #inputMeses, #inputComunale {
+    min-width: 50px;
+    max-width: 60px;
+    width: 60px;
+}
+
+.select-regione {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    border: 2px solid var(--border-color, #e0e0e0);
+    border-radius: 8px;
+    background: var(--input-bg, #fff);
+    color: var(--text-primary, #333);
+    margin-top: 6px;
+    transition: border-color 0.2s;
+}
+.select-regione:focus {
+    outline: none;
+    border-color: var(--sal-start);
+}
+html[data-theme="dark"] .select-regione {
+    background: #2a2d36;
+    border-color: #3a3f4b;
+    color: #e8eaed;
+}
+
+/* ============================================
+   SAIBA MAIS — Botão e Memorial
+   ============================================ */
+.botao-saiba-mais-container {
+    margin-top: 16px;
+    text-align: center;
+}
+.btn-saiba-mais {
+    background: linear-gradient(135deg, var(--sal-start), var(--sal-end));
+    color: #fff;
+    border: none;
+    padding: 12px 28px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    border-radius: 999px;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    box-shadow: 0 3px 10px rgba(30,136,229,0.3);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn-saiba-mais:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 14px rgba(30,136,229,0.42);
+}
+
+.memorial-section {
+    margin-bottom: 20px;
+}
+.memorial-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color, #eee);
+}
+.memorial-header h2 {
+    color: var(--sal-start);
+    margin: 0;
+    font-size: 1.15rem;
+}
+html[data-theme="dark"] .memorial-header h2 {
+    color: var(--sal-end);
+}
+.btn-fechar-memorial, .btn-voltar-memorial {
+    background: transparent;
+    border: 1.5px solid var(--sal-start);
+    color: var(--sal-start);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.btn-voltar-memorial {
+    display: block;
+    margin: 18px auto 0;
+}
+html[data-theme="dark"] .btn-fechar-memorial,
+html[data-theme="dark"] .btn-voltar-memorial {
+    border-color: var(--sal-end);
+    color: var(--sal-end);
+}
+
+.memorial-conteudo .mem-secao {
+    margin: 14px 0;
+    padding: 12px 14px;
+    background: rgba(30, 136, 229, 0.04);
+    border-left: 3px solid var(--sal-accent);
+    border-radius: 6px;
+}
+html[data-theme="dark"] .memorial-conteudo .mem-secao {
+    background: rgba(30, 136, 229, 0.10);
+}
+.memorial-conteudo .mem-secao h3 {
+    margin: 0 0 6px;
+    color: var(--sal-start);
+    font-size: 1rem;
+}
+html[data-theme="dark"] .memorial-conteudo .mem-secao h3 {
+    color: var(--sal-end);
+}
+.memorial-conteudo .mem-secao p {
+    margin: 4px 0;
+    line-height: 1.55;
+    color: var(--text-primary, #333);
+}
+.memorial-conteudo .mem-tabela {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 0.92rem;
+}
+.memorial-conteudo .mem-tabela th,
+.memorial-conteudo .mem-tabela td {
+    padding: 6px 8px;
+    text-align: left;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+.memorial-conteudo .mem-tabela th {
+    background: rgba(30,136,229,0.10);
+    color: var(--sal-start);
+    font-weight: 700;
+}
+html[data-theme="dark"] .memorial-conteudo .mem-tabela th {
+    background: rgba(0,172,193,0.18);
+    color: var(--sal-end);
+}
+html[data-theme="dark"] .memorial-conteudo .mem-tabela th,
+html[data-theme="dark"] .memorial-conteudo .mem-tabela td {
+    border-bottom-color: rgba(255,255,255,0.08);
+}
+
+.memorial-conteudo .mem-referencias {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.memorial-conteudo .mem-referencias li {
+    padding: 6px 0;
+    border-bottom: 1px dashed rgba(0,0,0,0.1);
+}
+html[data-theme="dark"] .memorial-conteudo .mem-referencias li {
+    border-bottom-color: rgba(255,255,255,0.08);
+}
+.memorial-conteudo .mem-referencias a {
+    color: var(--sal-start);
+    text-decoration: none;
+    font-weight: 600;
+}
+.memorial-conteudo .mem-referencias a:hover {
+    text-decoration: underline;
+}
+html[data-theme="dark"] .memorial-conteudo .mem-referencias a {
+    color: var(--sal-end);
+}
+.memorial-conteudo .mem-referencias a::before {
+    content: "🔗 ";
+}
+
+/* ============================================
+   RESPONSIVIDADE MOBILE
+   ============================================ */
+@media (max-width: 768px) {
+    header h1      { font-size: 1.3rem; }
+    .subtitulo     { font-size: 0.85rem; }
+    .resultado-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    .valor-resultado,
+    .valor-resultado-grande {
+        width: 100%;
+        text-align: right;
+    }
+    .grafico-donut-wrapper  { height: 220px; }
+    .grafico-barras-wrapper { height: 220px; }
+    .memorial-header {
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+    }
+}

@@ -1,0 +1,258 @@
+{
+  "pt-BR": {
+    "app": {
+      "title": "💼 Salário — Líquido, Férias, 13º",
+      "subtitle": "🇧🇷 CLT Brasil — INSS, IRRF, FGTS e rescisão (2025)"
+    },
+    "labels": {
+      "bruto":        "Salário Bruto Mensal",
+      "dependentes":  "Dependentes IRRF",
+      "plano":        "Plano de Saúde (desconto)",
+      "pensao":       "Pensão Alimentícia",
+      "vt":           "Vale-Transporte (desconta 6%?)",
+      "outros":       "Outros Descontos",
+      "meses":        "Meses na Empresa",
+      "horasExtra":   "Horas-Extra no Mês (50%)",
+      "adicionalNoturno": "Adicional Noturno (20%)"
+    },
+    "opcoes": {
+      "sim": "Sim",
+      "nao": "Não"
+    },
+    "unidades": {
+      "real":    "R$",
+      "meses":   "meses",
+      "horas":   "h"
+    },
+    "tooltips": {
+      "bruto":       "Salário bruto mensal registrado em carteira, antes de descontos. Use o valor do contrato ou da folha.",
+      "dependentes": "Filhos até 21 anos (ou 24 se universitários), cônjuge sem renda, pais dependentes. Cada um reduz R$ 189,59 da base do IRRF.",
+      "plano":       "Valor descontado em folha para plano de saúde (coparticipação do trabalhador).",
+      "pensao":      "Pensão alimentícia judicialmente determinada. Abate da base de IRRF.",
+      "vt":          "Se a empresa fornece vale-transporte, desconta até 6% do salário base em folha (CLT art. 4º Dec. 95.247/87).",
+      "outros":      "Contribuição sindical, empréstimo consignado, vale-alimentação descontado, etc.",
+      "meses":       "Tempo total trabalhado na empresa atual. Usado para estimar 13º proporcional, férias e rescisão.",
+      "horasExtra":  "Quantidade de horas extras no mês com adicional de 50% (dias úteis).",
+      "adicionalNoturno": "Aplica-se entre 22h e 5h (urbano): hora noturna vale 52,5 min e tem adicional de 20%."
+    },
+    "resultado": {
+      "titulo":          "Resultados",
+      "liquidoMensal":   "Salário Líquido Mensal",
+      "inss":            "INSS",
+      "irrf":            "IRRF",
+      "vt":              "Vale-Transporte",
+      "plano":           "Plano de Saúde",
+      "pensao":          "Pensão Alimentícia",
+      "outros":          "Outros",
+      "totalDescontos":  "Total de Descontos",
+      "decimoTerceiro":  "13º Salário (proporcional)",
+      "ferias":          "Férias + 1/3",
+      "fgtsMensal":      "FGTS Mensal (8%)",
+      "fgtsAcumulado":   "FGTS Acumulado",
+      "rescisao":        "Rescisão (sem justa causa)",
+      "custoEmpresa":    "Custo Total para Empresa",
+      "rendaAnual":      "Renda Anual Estimada",
+      "aliqEfetiva":     "Alíquota Efetiva"
+    },
+    "grafico": {
+      "donutTitulo":     "Onde vai seu salário?",
+      "barrasTitulo":    "Renda ao longo do ano",
+      "mesLiquido":      "Líquido mensal",
+      "decimoTerceiro":  "13º",
+      "ferias":          "Férias + 1/3",
+      "fgts":            "FGTS anual"
+    },
+    "memorial": {
+      "abrir":  "📚 SAIBA MAIS",
+      "titulo": "Como seu salário é calculado — Brasil CLT",
+      "introTitulo": "🎯 Objetivo",
+      "introTexto":  "Entender passo a passo como o salário bruto se transforma em líquido, com as alíquotas oficiais de INSS e IRRF vigentes em 2025, e como são calculados 13º, férias, FGTS e rescisão.",
+      "inssTitulo": "1. INSS — Contribuição Previdenciária",
+      "inssTexto":  "O INSS é descontado progressivamente por faixas salariais (como o imposto de renda). Cada faixa tem sua alíquota; a alíquota efetiva sobre o bruto fica sempre abaixo da alíquota marginal.",
+      "inssTabela": "Tabela INSS 2025 (vigente em 2026 até nova portaria):",
+      "irrfTitulo": "2. IRRF — Imposto de Renda Retido na Fonte",
+      "irrfTexto":  "Incide sobre a base = Bruto − INSS − (Dependentes × R$ 189,59) − Pensão. A Receita aplica também um desconto simplificado automático de R$ 607,20 (MP 1.171/23), usado quando for mais vantajoso que os dependentes.",
+      "irrfTabela": "Tabela IRRF 2025 (vigente desde maio/2024):",
+      "fgtsTitulo": "3. FGTS — Fundo de Garantia",
+      "fgtsTexto":  "8% do bruto depositado pela empresa em conta vinculada na Caixa. Não é descontado do trabalhador. Sacável em demissão sem justa causa, aposentadoria, compra de imóvel, doença grave.",
+      "feriasTitulo": "4. Férias + 1/3 Constitucional",
+      "feriasTexto":  "Após 12 meses de serviço, o trabalhador tem 30 dias de férias remuneradas + 1/3 adicional (CF art. 7º). Incide INSS e IRRF normalmente.",
+      "decimoTitulo": "5. 13º Salário (Gratificação Natalina)",
+      "decimoTexto":  "1 salário extra proporcional aos meses trabalhados. Pago em 2 parcelas (até 30/nov metade sem desconto; até 20/dez o restante com INSS e IRRF).",
+      "rescisaoTitulo": "6. Rescisão Sem Justa Causa",
+      "rescisaoTexto":  "Inclui: saldo de salário + aviso prévio (30 dias + 3 por ano ≥1 ano, máx 90) + 13º proporcional + férias proporcionais + 1/3 + multa 40% sobre FGTS depositado. Trabalhador saca FGTS e pode pedir seguro-desemprego.",
+      "custoTitulo": "7. Custo Real para a Empresa",
+      "custoTexto":  "Para cada R$ 1,00 pago ao trabalhador em bruto, a empresa gasta ≈ R$ 1,60-1,80 considerando: FGTS (8%), previsão de 13º (8,33%), férias (11,11%), encargos sobre estes, seguro-acidente, SAT, terceiros (Sistema S ≈ 5,8%). Os valores variam conforme setor e regime tributário.",
+      "referenciasTitulo": "📖 Referências Oficiais",
+      "referencias": [
+        { "texto": "Receita Federal — Tabela IRRF 2024+", "url": "https://www.gov.br/receitafederal/pt-br/assuntos/meu-imposto-de-renda/tabelas/2024" },
+        { "texto": "INSS — Portaria 6/2025 (tabela de contribuição)", "url": "https://www.gov.br/inss/pt-br/assuntos/noticias/tabela-de-contribuicao-previdenciaria-para-segurados-contribuintes-individuais-e-facultativos-2024" },
+        { "texto": "Caixa Econômica — FGTS", "url": "https://www.caixa.gov.br/beneficios-trabalhador/fgts/Paginas/default.aspx" },
+        { "texto": "CLT — Consolidação das Leis do Trabalho", "url": "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm" },
+        { "texto": "Lei 14.663/2023 — Desconto simplificado IRRF", "url": "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/L14663.htm" },
+        { "texto": "eSocial — Portal do Trabalhador", "url": "https://www.gov.br/esocial/pt-br" }
+      ]
+    },
+    "botoes": {
+      "voltar": "← Voltar"
+    },
+    "aria": {
+      "langPt":    "Mudar para Português (Brasil)",
+      "langIt":    "Mudar para Italiano",
+      "clickInfo": "Clique para ver mais informações",
+      "diminuir":  "Diminuir valor",
+      "aumentar":  "Aumentar valor",
+      "home":      "Voltar para a tela inicial"
+    },
+    "titles": {
+      "langPt":    "Português (Brasil)",
+      "langIt":    "Italiano",
+      "clickInfo": "Mais informações"
+    },
+    "footer": "Salário — Engenharia NATA @ 2026"
+  },
+  "it-IT": {
+    "app": {
+      "title": "💼 Stipendio — Netto, Tredicesima, TFR",
+      "subtitle": "🇮🇹 Lavoro Dipendente — IRPEF, INPS, TFR (2025-2026)"
+    },
+    "labels": {
+      "bruto":        "RAL — Reddito Annuo Lordo",
+      "dependentes":  "Familiari a Carico (>21 anni)",
+      "plano":        "Contributi Previdenza Complementare",
+      "pensao":       "Altre Trattenute Fisse (mensili)",
+      "vt":           "Detrazione coniuge a carico",
+      "outros":       "Altre Trattenute (mensili)",
+      "meses":        "Anni di Servizio",
+      "horasExtra":   "Ore Straordinarie al Mese",
+      "adicionalNoturno": "Quattordicesima Mensilità",
+      "regione":      "Regione di Residenza",
+      "comunale":     "Addizionale Comunale (%)",
+      "tredicesima":  "Tredicesima Mensilità",
+      "tfrDestino":   "Destinazione TFR"
+    },
+    "opcoes": {
+      "sim": "Sì",
+      "nao": "No",
+      "azienda": "In azienda",
+      "fondo":   "Fondo pensione",
+      "regioes": {
+        "abruzzo":    "Abruzzo (1,73%)",
+        "basilicata": "Basilicata (1,23%)",
+        "calabria":   "Calabria (1,73%)",
+        "campania":   "Campania (2,03%)",
+        "emilia":     "Emilia-Romagna (1,93%)",
+        "friuli":     "Friuli-V.G. (1,23%)",
+        "lazio":      "Lazio (3,33%)",
+        "liguria":    "Liguria (1,73%)",
+        "lombardia":  "Lombardia (1,74%)",
+        "marche":     "Marche (1,73%)",
+        "molise":     "Molise (3,33%)",
+        "piemonte":   "Piemonte (3,33%)",
+        "puglia":     "Puglia (1,33%)",
+        "sardegna":   "Sardegna (1,23%)",
+        "sicilia":    "Sicilia (1,23%)",
+        "toscana":    "Toscana (1,73%)",
+        "trentino":   "Trentino-A.A. (1,23%)",
+        "umbria":     "Umbria (1,83%)",
+        "valledaosta":"Valle d'Aosta (1,23%)",
+        "veneto":     "Veneto (1,23%)"
+      }
+    },
+    "unidades": {
+      "real":    "€",
+      "meses":   "anni",
+      "horas":   "h"
+    },
+    "tooltips": {
+      "bruto":       "RAL — Reddito Annuo Lordo: stipendio annuo prima di contributi e imposte, come indicato sul contratto o sul CUD.",
+      "dependentes": "Coniuge senza reddito (detrazione max €800), figli maggiorenni >21 anni (€950), altri familiari conviventi (€750). I figli <21 ricevono l'Assegno Unico (non più detrazione).",
+      "plano":       "Versamenti volontari al fondo pensione (deducibili fino a €5.164,57/anno). Riduce l'imponibile IRPEF.",
+      "pensao":      "Detrazione fissa per coniuge a carico. Massimo €800/anno decrescente con il reddito.",
+      "vt":          "Se il coniuge è a carico (reddito <€2.840,51) si applica detrazione decrescente con la RAL.",
+      "outros":      "Quote associative sindacali, cessioni del quinto, buoni pasto (esenti fino €8/giorno elettronici), ecc.",
+      "meses":       "Anni totali di servizio nell'azienda. Usato per stimare TFR accumulato.",
+      "horasExtra":  "Ore di lavoro straordinario. Tassate normalmente (23% base, o 5% con detassazione premi di produttività, soggetto a limiti).",
+      "adicionalNoturno": "Presente in alcuni CCNL (commercio, turismo, alimentari). Versata di solito a giugno o luglio.",
+      "regione":     "L'addizionale regionale IRPEF varia tra 1,23% (base) e 3,33% (max). Ogni regione fissa la propria aliquota annualmente.",
+      "comunale":    "L'addizionale comunale varia da 0% a 0,9%. Valore tipico Roma/Milano: 0,9%. Il default è 0,8%.",
+      "tredicesima": "La 13ª mensilità è obbligatoria per i lavoratori dipendenti, pagata a dicembre. Tassata come reddito ordinario ma senza detrazioni lavoro.",
+      "tfrDestino":  "Scelta del lavoratore: lasciare il TFR in azienda (rivalutato 1,5% fisso + 75% inflazione) o conferirlo a un fondo pensione (rendimento di mercato, vantaggi fiscali)."
+    },
+    "resultado": {
+      "titulo":          "Risultati",
+      "liquidoMensal":   "Stipendio Netto Mensile",
+      "inss":            "INPS (9,19%)",
+      "irrf":            "IRPEF Netta",
+      "vt":              "Addizionale Regionale",
+      "plano":           "Addizionale Comunale",
+      "pensao":          "Detrazioni Applicate",
+      "outros":          "Altre Trattenute",
+      "totalDescontos":  "Totale Trattenute",
+      "decimoTerceiro":  "Tredicesima Netta",
+      "ferias":          "Quattordicesima Netta",
+      "fgtsMensal":      "TFR Mensile (6,91%)",
+      "fgtsAcumulado":   "TFR Accumulato",
+      "rescisao":        "Liquidazione Stimata",
+      "custoEmpresa":    "Costo Totale Azienda",
+      "rendaAnual":      "Reddito Annuo Netto",
+      "aliqEfetiva":     "Aliquota Effettiva"
+    },
+    "grafico": {
+      "donutTitulo":     "Dove va il tuo stipendio?",
+      "barrasTitulo":    "Reddito durante l'anno",
+      "mesLiquido":      "Netto mensile",
+      "decimoTerceiro":  "Tredicesima",
+      "ferias":          "Quattordicesima",
+      "fgts":            "TFR annuo"
+    },
+    "memorial": {
+      "abrir":  "📚 SCOPRI DI PIÙ",
+      "titulo": "Come viene calcolato il tuo stipendio — Italia",
+      "introTitulo": "🎯 Obiettivo",
+      "introTexto":  "Capire passo dopo passo come la RAL diventa stipendio netto, con le aliquote IRPEF ufficiali 2024-2026 (3 scaglioni), contributi INPS, addizionali regionali e comunali, TFR e tredicesima.",
+      "inssTitulo": "1. INPS — Contributi Previdenziali",
+      "inssTexto":  "Il lavoratore dipendente versa il 9,19% della retribuzione lorda all'INPS (9,49% oltre il massimale contributivo di €55.008/anno nel 2025). Il datore di lavoro versa inoltre circa il 30% come contributo aziendale.",
+      "inssTabela": "Aliquote INPS 2025:",
+      "irrfTitulo": "2. IRPEF — Imposta sul Reddito",
+      "irrfTexto":  "Dalla riforma 2024 l'IRPEF ha 3 scaglioni (prima erano 4). Si applica sull'imponibile = RAL − INPS − deducibili. Poi si sottraggono detrazioni (lavoro dipendente, familiari a carico).",
+      "irrfTabela": "Scaglioni IRPEF 2024-2026:",
+      "fgtsTitulo": "3. Addizionali Regionale e Comunale",
+      "fgtsTexto":  "Oltre all'IRPEF nazionale, ogni regione applica un'addizionale tra 1,23% e 3,33%. Il comune può aggiungere fino allo 0,9%. Lazio e Molise hanno le aliquote più alte (3,33%); Basilicata, Friuli, Sardegna, Sicilia, Trentino, Valle d'Aosta, Veneto le più basse (1,23%).",
+      "feriasTitulo": "4. Detrazioni Lavoro Dipendente",
+      "feriasTexto":  "Riducono l'imposta lorda. Art. 13 TUIR: fino a €15.000 la detrazione è €1.955; decresce linearmente fino ad azzerarsi a €50.000. C'è anche il trattamento integrativo (ex-bonus Renzi) di €1.200/anno per redditi fino €15.000 (condizionato all'imposta > detrazioni).",
+      "decimoTitulo": "5. Tredicesima e Quattordicesima",
+      "decimoTexto":  "La 13ª è obbligatoria per legge per tutti i dipendenti (pagata a dicembre). La 14ª è prevista solo da alcuni CCNL (commercio, turismo, alimentari, ecc.) e pagata in estate. Tassate come reddito ordinario ma senza detrazioni lavoro, quindi più pesanti in proporzione al netto.",
+      "rescisaoTitulo": "6. TFR — Trattamento di Fine Rapporto",
+      "rescisaoTexto":  "Accantonato dal datore ogni anno: 6,91% della retribuzione (1/13,5). Alla fine del rapporto il lavoratore riceve il montante rivalutato. Scelta del lavoratore: (a) TFR in azienda — rivalutazione 1,5% + 75% inflazione; (b) TFR in fondo pensione — rendimento di mercato (tipicamente 3-6%) + vantaggi fiscali (aliquota fino 15% invece di 23% al riscatto).",
+      "custoTitulo": "7. Costo Azienda (Cuneo Fiscale)",
+      "custoTexto":  "Per ogni €1 netto in tasca al lavoratore, l'azienda spende circa €1,70-1,90. La differenza è il \"cuneo fiscale\": contributi datoriali (~30% RAL), IRAP, TFR, ferie, malattia, maternità, assicurazione INAIL. L'Italia ha uno dei cunei più alti dell'OCSE (~46% per redditi medi).",
+      "referenciasTitulo": "📖 Riferimenti Ufficiali",
+      "referencias": [
+        { "texto": "Agenzia delle Entrate — IRPEF", "url": "https://www.agenziaentrate.gov.it/portale/web/guest/schede/dichiarazioni/irpef" },
+        { "texto": "INPS — Contributi Lavoratori Dipendenti", "url": "https://www.inps.it/it/it/previdenza/contributi.html" },
+        { "texto": "MEF — Addizionali Regionali IRPEF", "url": "https://www1.finanze.gov.it/finanze/analisi_stat/public/index.php?search_class%5B0%5D=cCOMUNE&opendata=yes" },
+        { "texto": "TUIR — Art. 13 (Detrazioni lavoro)", "url": "https://www.normattiva.it/uri-res/N2Ls?urn:nir:stato:decreto.del.presidente.della.repubblica:1986-12-22;917" },
+        { "texto": "COVIP — Fondi Pensione", "url": "https://www.covip.it/per-il-cittadino" },
+        { "texto": "Ministero del Lavoro — CCNL", "url": "https://www.lavoro.gov.it/priorita/Pagine/CCNL.aspx" }
+      ]
+    },
+    "botoes": {
+      "voltar": "← Indietro"
+    },
+    "aria": {
+      "langPt":    "Passa al Portoghese (Brasile)",
+      "langIt":    "Passa all'Italiano",
+      "clickInfo": "Fare clic per maggiori informazioni",
+      "diminuir":  "Diminuisci valore",
+      "aumentar":  "Aumenta valore",
+      "home":      "Torna alla schermata principale"
+    },
+    "titles": {
+      "langPt":    "Portoghese (Brasile)",
+      "langIt":    "Italiano",
+      "clickInfo": "Più informazioni"
+    },
+    "footer": "Stipendio — Engenharia NATA @ 2026"
+  }
+}
