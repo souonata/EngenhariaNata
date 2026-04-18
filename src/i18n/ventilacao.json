@@ -1,0 +1,280 @@
+{
+  "pt-BR": {
+    "app": {
+      "title": "🌬️ Ventilação Natural",
+      "subtitle": "Dimensionamento de aberturas e qualidade do ar interno"
+    },
+    "labels": {
+      "comp": "Comprimento do Ambiente",
+      "larg": "Largura do Ambiente",
+      "peDireito": "Pé-direito (Altura Piso-Teto)",
+      "janelas": "Área Total das Aberturas (Janelas/Portas)",
+      "tipoAmbiente": "Tipo de Ambiente",
+      "clima": "Clima / Localização",
+      "orientacao": "Orientação das Aberturas"
+    },
+    "unidades": {
+      "metro": "m",
+      "m2": "m²",
+      "ach": "trocas/h"
+    },
+    "opcoes": {
+      "dormitorio": "Dormitório",
+      "sala": "Sala de Estar",
+      "cozinha": "Cozinha",
+      "banheiro": "Banheiro",
+      "escritorio": "Escritório",
+      "costeiro": "Costeiro / Litorâneo",
+      "rural": "Rural / Campo",
+      "suburbano": "Suburbano",
+      "urbano": "Urbano / Centro",
+      "favoravel": "Favorável ao Vento",
+      "neutro": "Neutro / Lateral",
+      "desfavoravel": "Desfavorável ao Vento"
+    },
+    "tooltips": {
+      "comp": "Comprimento interno do ambiente em metros. Meça a maior dimensão horizontal do cômodo.",
+      "larg": "Largura interna do ambiente em metros. Meça a menor dimensão horizontal do cômodo.",
+      "peDireito": "Altura interna entre o piso e o teto. Valor típico em residências brasileiras: 2,5 m a 3,0 m.",
+      "janelas": "Soma da área útil de abertura de todas as janelas e portas usadas para ventilação. Considera-se a área livre quando totalmente abertas.",
+      "tipoAmbiente": "Define a taxa de renovação de ar mínima recomendada para o ambiente. Ambientes com atividades intensas (cozinha) exigem mais trocas de ar.",
+      "clima": "Determina a velocidade de referência do vento local. Regiões costeiras têm ventos mais intensos; centros urbanos têm ventos mais fracos por obstáculos.",
+      "orientacao": "Relação entre a direção das aberturas e o vento predominante local. Aberturas voltadas para barlavento (contra o vento) captam mais ar."
+    },
+    "resultado": {
+      "titulo": "Resultados",
+      "ach": "Trocas de Ar por Hora (ACH)",
+      "qualidade": "Qualidade da Ventilação",
+      "areaMinima": "Área Mínima (NBR 15575)",
+      "situacao": "Situação das Aberturas"
+    },
+    "qualidade": {
+      "insuficiente": "Insuficiente",
+      "minima": "Mínima",
+      "adequada": "Adequada",
+      "boa": "Boa",
+      "excelente": "Excelente"
+    },
+    "dicas": {
+      "orientacao": "💡 Aberturas voltadas para barlavento (contra o vento dominante) captam até 3× mais ar que aberturas paralelas.",
+      "clima": "💡 Regiões costeiras têm ventos médios de 5 m/s; centros urbanos ficam abaixo de 2 m/s por obstrução de edificações."
+    },
+    "memorial": {
+      "titulo": "📚 Memorial de Cálculo — Ventilação Natural",
+      "introTitulo": "🎯 Objetivo do Cálculo",
+      "introTexto": "Este memorial explica passo a passo como é calculada a taxa de renovação de ar (ACH) de um ambiente por ventilação natural, conforme diretrizes da ASHRAE 62.1 e NBR 15575.",
+      "passo1Titulo": "1️⃣ Passo 1: Volume do Ambiente",
+      "passo1Explicacao": "O volume interno determina a quantidade de ar que precisa ser renovada a cada hora.",
+      "passo1Formula": "Volume (m³) = Comprimento × Largura × Pé-direito",
+      "passo1Exemplo": "Exemplo:",
+      "passo2Titulo": "2️⃣ Passo 2: Taxa de Renovação Necessária",
+      "passo2Explicacao": "Cada tipo de ambiente possui uma taxa mínima de renovação de ar recomendada (ACH = Air Changes per Hour).",
+      "passo2Dormitorio": "Dormitório: 6 trocas/h (ASHRAE 62.2)",
+      "passo2Sala": "Sala de estar: 7 trocas/h",
+      "passo2Cozinha": "Cozinha: 20 trocas/h (vapores e odores)",
+      "passo2Banheiro": "Banheiro: 10 trocas/h",
+      "passo2Escritorio": "Escritório: 8 trocas/h",
+      "passo3Titulo": "3️⃣ Passo 3: Velocidade do Vento e Orientação",
+      "passo3Explicacao": "A velocidade do vento varia conforme o clima e a localização. O fator de orientação considera a relação entre as aberturas e o vento predominante.",
+      "passo3Costeiro": "Costeiro / Litorâneo: 5,0 m/s",
+      "passo3Rural": "Rural / Campo: 4,0 m/s",
+      "passo3Suburbano": "Suburbano: 2,5 m/s",
+      "passo3Urbano": "Urbano / Centro: 1,5 m/s",
+      "passo3Favoravel": "Orientação favorável (barlavento): fator 1,0",
+      "passo3Neutro": "Orientação neutra (lateral): fator 0,6",
+      "passo3Desfavoravel": "Orientação desfavorável (sotavento): fator 0,3",
+      "passo4Titulo": "4️⃣ Passo 4: Vazão Natural Disponível",
+      "passo4Explicacao": "A vazão de ar pela janela usa o modelo simplificado com coeficiente de descarga Cd = 0,50.",
+      "passo4Formula": "Q (m³/s) = Cd × Área_aberturas × Velocidade × Fator_orientação",
+      "passo5Titulo": "5️⃣ Passo 5: ACH Disponível e Qualidade",
+      "passo5Explicacao": "Convertemos a vazão em trocas por hora e comparamos com o mínimo recomendado.",
+      "passo5Formula": "ACH_disponível = Q × 3600 / Volume",
+      "passo5Qualidade": "Qualidade = ACH_disponível / ACH_necessário",
+      "passo5Insuficiente": "< 0,5× necessário → Insuficiente",
+      "passo5Minima": "0,5–1,0× necessário → Mínima",
+      "passo5Adequada": "1,0–1,5× necessário → Adequada",
+      "passo5Boa": "1,5–2,5× necessário → Boa",
+      "passo5Excelente": "≥ 2,5× necessário → Excelente",
+      "passo6Titulo": "6️⃣ Passo 6: Área Mínima (NBR 15575)",
+      "passo6Explicacao": "A NBR 15575 exige que a área de ventilação equivalha a no mínimo 10% da área de piso do ambiente.",
+      "passo6Formula": "Área mínima (m²) = 0,10 × Comprimento × Largura",
+      "constantesTitulo": "Constantes e referências usadas:",
+      "constCd": "Coeficiente de descarga Cd = 0,50 (janelas convencionais)",
+      "constNbr": "Área mínima de abertura = 10% do piso (NBR 15575)",
+      "constAshrae": "Taxas de renovação baseadas em ASHRAE 62.1/62.2",
+      "norma": "Norma: NBR 15575:2021 — Desempenho de Edificações Habitacionais",
+      "resumoTitulo": "📊 Resumo Calculado",
+      "resumoComp": "Comprimento:",
+      "resumoLarg": "Largura:",
+      "resumoPeDireito": "Pé-direito:",
+      "resumoVolume": "Volume do ambiente:",
+      "resumoJanelas": "Área de aberturas:",
+      "resumoAmbiente": "Tipo de ambiente:",
+      "resumoClima": "Clima:",
+      "resumoOrientacao": "Orientação:",
+      "resumoACH": "ACH disponível:",
+      "resumoQualidade": "Qualidade:",
+      "resumoAreaMinima": "Área mínima NBR:"
+    },
+    "botoes": {
+      "saibaMais": "SAIBA MAIS!",
+      "voltar": "← Voltar"
+    },
+    "aria": {
+      "langPt": "Alterar idioma para Português",
+      "langIt": "Alterar idioma para Italiano",
+      "home": "Voltar para a tela inicial",
+      "infoComp": "Informações sobre comprimento do ambiente",
+      "infoLarg": "Informações sobre largura do ambiente",
+      "infoPeDireito": "Informações sobre pé-direito",
+      "infoJanelas": "Informações sobre área das aberturas",
+      "aumentar": "Aumentar valor",
+      "diminuir": "Diminuir valor"
+    },
+    "titles": {
+      "langPt": "Português",
+      "langIt": "Italiano",
+      "clickInfo": "Clique para mais informações"
+    },
+    "footer": "Ventilação Natural — Engenharia NATA @ 2026"
+  },
+  "it-IT": {
+    "app": {
+      "title": "🌬️ Ventilazione Naturale",
+      "subtitle": "Dimensionamento delle aperture e qualità dell'aria interna"
+    },
+    "labels": {
+      "comp": "Lunghezza dell'Ambiente",
+      "larg": "Larghezza dell'Ambiente",
+      "peDireito": "Altezza Pavimento-Soffitto",
+      "janelas": "Area Totale delle Aperture (Finestre/Porte)",
+      "tipoAmbiente": "Tipo di Ambiente",
+      "clima": "Clima / Posizione",
+      "orientacao": "Orientamento delle Aperture"
+    },
+    "unidades": {
+      "metro": "m",
+      "m2": "m²",
+      "ach": "cambi/h"
+    },
+    "opcoes": {
+      "dormitorio": "Camera da Letto",
+      "sala": "Soggiorno",
+      "cozinha": "Cucina",
+      "banheiro": "Bagno",
+      "escritorio": "Ufficio",
+      "costeiro": "Costiero / Litorale",
+      "rural": "Rurale / Campagna",
+      "suburbano": "Suburbano",
+      "urbano": "Urbano / Centro",
+      "favoravel": "Favorevole al Vento",
+      "neutro": "Neutro / Laterale",
+      "desfavoravel": "Sfavorevole al Vento"
+    },
+    "tooltips": {
+      "comp": "Lunghezza interna dell'ambiente in metri. Misurare la dimensione orizzontale maggiore del locale.",
+      "larg": "Larghezza interna dell'ambiente in metri. Misurare la dimensione orizzontale minore del locale.",
+      "peDireito": "Altezza interna tra pavimento e soffitto. Valore tipico nelle abitazioni: 2,5 m – 3,0 m.",
+      "janelas": "Somma dell'area utile di apertura di tutte le finestre e porte usate per ventilazione.",
+      "tipoAmbiente": "Definisce la portata minima di rinnovo dell'aria raccomandata. Ambienti con attività intense (cucina) richiedono più ricambi.",
+      "clima": "Determina la velocità di riferimento del vento locale. Le zone costiere hanno venti più intensi; i centri urbani hanno venti più deboli per via degli ostacoli.",
+      "orientacao": "Relazione tra la direzione delle aperture e il vento predominante locale. Le aperture rivolte sopravento catturano più aria."
+    },
+    "resultado": {
+      "titulo": "Risultati",
+      "ach": "Ricambi d'Aria all'Ora (ACH)",
+      "qualidade": "Qualità della Ventilazione",
+      "areaMinima": "Area Minima (NBR 15575)",
+      "situacao": "Situazione delle Aperture"
+    },
+    "qualidade": {
+      "insuficiente": "Insufficiente",
+      "minima": "Minima",
+      "adequada": "Adeguata",
+      "boa": "Buona",
+      "excelente": "Eccellente"
+    },
+    "dicas": {
+      "orientacao": "💡 Le aperture rivolte sopravento catturano fino a 3× più aria rispetto a quelle parallele al vento.",
+      "clima": "💡 Le zone costiere hanno venti medi di 5 m/s; i centri urbani scendono sotto 2 m/s per le ostruzioni degli edifici."
+    },
+    "memorial": {
+      "titulo": "📚 Memoria di Calcolo — Ventilazione Naturale",
+      "introTitulo": "🎯 Obiettivo del Calcolo",
+      "introTexto": "Questa memoria spiega passo dopo passo come si calcola il tasso di rinnovo dell'aria (ACH) di un ambiente tramite ventilazione naturale, secondo le linee guida ASHRAE 62.1 e NBR 15575.",
+      "passo1Titulo": "1️⃣ Passo 1: Volume dell'Ambiente",
+      "passo1Explicacao": "Il volume interno determina la quantità di aria che deve essere rinnovata ogni ora.",
+      "passo1Formula": "Volume (m³) = Lunghezza × Larghezza × Altezza",
+      "passo1Exemplo": "Esempio:",
+      "passo2Titulo": "2️⃣ Passo 2: Tasso di Rinnovo Necessario",
+      "passo2Explicacao": "Ogni tipo di ambiente ha un tasso minimo raccomandato di rinnovo dell'aria (ACH = Air Changes per Hour).",
+      "passo2Dormitorio": "Camera da letto: 6 cambi/h (ASHRAE 62.2)",
+      "passo2Sala": "Soggiorno: 7 cambi/h",
+      "passo2Cozinha": "Cucina: 20 cambi/h (vapori e odori)",
+      "passo2Banheiro": "Bagno: 10 cambi/h",
+      "passo2Escritorio": "Ufficio: 8 cambi/h",
+      "passo3Titulo": "3️⃣ Passo 3: Velocità del Vento e Orientamento",
+      "passo3Explicacao": "La velocità del vento varia in base al clima e alla posizione. Il fattore di orientamento considera il rapporto tra le aperture e il vento predominante.",
+      "passo3Costeiro": "Costiero / Litorale: 5,0 m/s",
+      "passo3Rural": "Rurale / Campagna: 4,0 m/s",
+      "passo3Suburbano": "Suburbano: 2,5 m/s",
+      "passo3Urbano": "Urbano / Centro: 1,5 m/s",
+      "passo3Favoravel": "Orientamento favorevole (sopravento): fattore 1,0",
+      "passo3Neutro": "Orientamento neutro (laterale): fattore 0,6",
+      "passo3Desfavoravel": "Orientamento sfavorevole (sottovento): fattore 0,3",
+      "passo4Titulo": "4️⃣ Passo 4: Portata Naturale Disponibile",
+      "passo4Explicacao": "La portata d'aria attraverso la finestra usa il modello semplificato con coefficiente di efflusso Cd = 0,50.",
+      "passo4Formula": "Q (m³/s) = Cd × Area_aperture × Velocità × Fattore_orientamento",
+      "passo5Titulo": "5️⃣ Passo 5: ACH Disponibile e Qualità",
+      "passo5Explicacao": "Convertiamo la portata in ricambi orari e confrontiamo con il minimo raccomandato.",
+      "passo5Formula": "ACH_disponibile = Q × 3600 / Volume",
+      "passo5Qualidade": "Qualità = ACH_disponibile / ACH_necessario",
+      "passo5Insuficiente": "< 0,5× necessario → Insufficiente",
+      "passo5Minima": "0,5–1,0× necessario → Minima",
+      "passo5Adequada": "1,0–1,5× necessario → Adeguata",
+      "passo5Boa": "1,5–2,5× necessario → Buona",
+      "passo5Excelente": "≥ 2,5× necessario → Eccellente",
+      "passo6Titulo": "6️⃣ Passo 6: Area Minima (NBR 15575)",
+      "passo6Explicacao": "La NBR 15575 richiede che l'area di ventilazione equivalga ad almeno il 10% dell'area del pavimento.",
+      "passo6Formula": "Area minima (m²) = 0,10 × Lunghezza × Larghezza",
+      "constantesTitulo": "Costanti e riferimenti usati:",
+      "constCd": "Coefficiente di efflusso Cd = 0,50 (finestre convenzionali)",
+      "constNbr": "Area minima di apertura = 10% del pavimento (NBR 15575)",
+      "constAshrae": "Tassi di rinnovo basati su ASHRAE 62.1/62.2",
+      "norma": "Norma: NBR 15575:2021 — Prestazione degli Edifici Residenziali",
+      "resumoTitulo": "📊 Riepilogo Calcolato",
+      "resumoComp": "Lunghezza:",
+      "resumoLarg": "Larghezza:",
+      "resumoPeDireito": "Altezza:",
+      "resumoVolume": "Volume ambiente:",
+      "resumoJanelas": "Area aperture:",
+      "resumoAmbiente": "Tipo di ambiente:",
+      "resumoClima": "Clima:",
+      "resumoOrientacao": "Orientamento:",
+      "resumoACH": "ACH disponibile:",
+      "resumoQualidade": "Qualità:",
+      "resumoAreaMinima": "Area minima NBR:"
+    },
+    "botoes": {
+      "saibaMais": "SCOPRI DI PIÙ!",
+      "voltar": "← Torna"
+    },
+    "aria": {
+      "langPt": "Cambia lingua in Portoghese",
+      "langIt": "Cambia lingua in Italiano",
+      "home": "Torna alla schermata iniziale",
+      "infoComp": "Informazioni sulla lunghezza dell'ambiente",
+      "infoLarg": "Informazioni sulla larghezza dell'ambiente",
+      "infoPeDireito": "Informazioni sull'altezza pavimento-soffitto",
+      "infoJanelas": "Informazioni sull'area delle aperture",
+      "aumentar": "Aumenta valore",
+      "diminuir": "Diminuisci valore"
+    },
+    "titles": {
+      "langPt": "Portoghese",
+      "langIt": "Italiano",
+      "clickInfo": "Clicca per maggiori informazioni"
+    },
+    "footer": "Ventilazione Naturale — Engenharia NATA @ 2026"
+  }
+}
