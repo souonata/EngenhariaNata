@@ -1040,28 +1040,30 @@ class MutuoApp extends App {
     }
 
     atualizarDisplays(dados) {
+        const ativo = document.activeElement;
+
         // Atualizar input de valor
         const inputValor = document.getElementById('inputValor');
-        if (inputValor) {
+        if (inputValor && ativo !== inputValor) {
             inputValor.value = formatarNumero(dados.valor, 0);
         }
 
         // Atualizar input de taxa com casas decimais variáveis
         const inputTaxa = document.getElementById('inputTaxa');
-        if (inputTaxa) {
+        if (inputTaxa && ativo !== inputTaxa) {
             const casasDecimais = dados.periodicidade === 'dia' ? 4 : (dados.periodicidade === 'mes' ? 3 : 2);
             inputTaxa.value = formatarNumero(dados.taxaExibida, casasDecimais);
         }
 
         // Atualizar input de prazo
         const inputPrazo = document.getElementById('inputPrazo');
-        if (inputPrazo) {
+        if (inputPrazo && ativo !== inputPrazo) {
             const prazo = Math.max(1, Math.round((dados.numParcelas || 360) / 12));
             inputPrazo.value = prazo;
         }
 
         const inputExtraPagamento = document.getElementById('inputExtraPagamento');
-        if (inputExtraPagamento) {
+        if (inputExtraPagamento && ativo !== inputExtraPagamento) {
             const extra = parseInt(dados.extraPagamento || 0);
             inputExtraPagamento.value = formatarNumero(extra, 0);
         }

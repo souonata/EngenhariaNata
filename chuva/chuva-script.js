@@ -15,6 +15,13 @@ import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
 // CONSTANTES
 // ============================================
 
+// Mapa slider → input de texto correspondente
+const SLIDER_TO_INPUT = {
+    sliderArea:    'inputArea',
+    sliderChuva:   'inputChuva',
+    sliderPessoas: 'inputPessoas'
+};
+
 // Coeficiente de aproveitamento do telhado (NBR 15527)
 const COEF_APROVEITAMENTO = 0.80;
 
@@ -118,32 +125,38 @@ class ChuvaApp extends App {
             const animar = (timestamp) => {
                 if (!estaSegurando) return;
 
-                const slider = document.getElementById(btn.getAttribute('data-target'));
+                const sliderId = btn.getAttribute('data-target');
+                const slider   = document.getElementById(sliderId);
+                const inputEl  = document.getElementById(SLIDER_TO_INPUT[sliderId]);
                 if (!slider) return;
 
                 const tempoDecorrido = timestamp - tempoInicio;
-                const min = parseFloat(slider.min);
-                const max = parseFloat(slider.max);
-                const velocidade = (max - min) / 3000;
+                const sliderMin = parseFloat(slider.min);
+                const sliderMax = parseFloat(slider.max);
+                const velocidade = (sliderMax - sliderMin) / 3000;
                 const valorInicial = parseFloat(btn.dataset.valorInicial);
-                let novoValor = Math.max(min, Math.min(max, valorInicial + velocidade * tempoDecorrido * direcao));
+                // Sem clamping: permite valores além dos limites do slider
+                let novoValor = valorInicial + velocidade * tempoDecorrido * direcao;
+                // Mínimo de 1 para evitar valores sem sentido
+                novoValor = Math.max(1, novoValor);
 
-                slider.value = novoValor;
-                slider.dispatchEvent(new Event('input', { bubbles: true }));
+                slider.value = novoValor; // slider clipa visualmente ao seu range
+                if (inputEl) inputEl.value = Math.round(novoValor);
+                this.atualizarResultado();
 
-                if ((direcao > 0 && novoValor >= max) || (direcao < 0 && novoValor <= min)) {
-                    pararIncremento();
-                    return;
-                }
                 animationFrame = requestAnimationFrame(animar);
             };
 
             const iniciar = () => {
                 if (animationFrame) return;
-                const slider = document.getElementById(btn.getAttribute('data-target'));
+                const sliderId = btn.getAttribute('data-target');
+                const slider   = document.getElementById(sliderId);
+                const inputEl  = document.getElementById(SLIDER_TO_INPUT[sliderId]);
                 if (!slider) return;
                 direcao = parseFloat(btn.getAttribute('data-step')) > 0 ? 1 : -1;
-                btn.dataset.valorInicial = slider.value;
+                // Lê valor atual do input (pode estar além do range do slider)
+                const valorAtual = inputEl ? this.parsearValor(inputEl.value) : parseFloat(slider.value);
+                btn.dataset.valorInicial = isNaN(valorAtual) ? parseFloat(slider.value) : valorAtual;
                 tempoInicio = performance.now();
                 animationFrame = requestAnimationFrame(animar);
             };
@@ -177,8 +190,9 @@ class ChuvaApp extends App {
 
             input.addEventListener('input', () => {
                 const valor = this.parsearValor(input.value);
-                if (!isNaN(valor)) {
-                    slider.value = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), valor));
+                if (!isNaN(valor) && valor > 0) {
+                    // Slider clipa visualmente ao seu range, mas o cálculo usa o valor real do input
+                    slider.value = valor;
                     this.atualizarResultado();
                 }
             });
@@ -226,19 +240,31 @@ class ChuvaApp extends App {
     // ATUALIZAÇÃO DA UI
     // ============================================
 
-    atualizarResultado() {
-        const area       = parseFloat(document.getElementById('sliderArea')?.value    ?? 80);
-        const precipitacao = parseFloat(document.getElementById('sliderChuva')?.value ?? 100);
-        const pessoas    = parseFloat(document.getElementById('sliderPessoas')?.value  ?? 3);
-        const tipoUso    = document.querySelector('input[name="tipoUso"]:checked')?.value ?? 'sanitario';
+    // Lê o valor do input de texto (se em foco) ou do slider, sem clampar
+    lerValor(inputId, sliderId, defaultVal) {
+        const inputEl  = document.getElementById(inputId);
+        const sliderEl = document.getElementById(sliderId);
+        if (inputEl && document.activeElement === inputEl) {
+            const v = this.parsearValor(inputEl.value);
+            return (!isNaN(v) && v > 0) ? v : defaultVal;
+        }
+        return parseFloat(sliderEl?.value ?? defaultVal);
+    }
 
-        // Sincronizar displays dos inputs de texto
+    atualizarResultado() {
+        const area         = this.lerValor('inputArea',    'sliderArea',    80);
+        const precipitacao = this.lerValor('inputChuva',   'sliderChuva',   100);
+        const pessoas      = this.lerValor('inputPessoas', 'sliderPessoas', 3);
+        const tipoUso      = document.querySelector('input[name="tipoUso"]:checked')?.value ?? 'sanitario';
+
+        // Sincroniza inputs de texto — só sobrescreve se NÃO estiver em foco
+        const ativo = document.activeElement;
         const inputArea    = document.getElementById('inputArea');
         const inputChuva   = document.getElementById('inputChuva');
         const inputPessoas = document.getElementById('inputPessoas');
-        if (inputArea)    inputArea.value    = formatarNumero(area, 0);
-        if (inputChuva)   inputChuva.value   = formatarNumero(precipitacao, 0);
-        if (inputPessoas) inputPessoas.value = formatarNumero(pessoas, 0);
+        if (inputArea    && ativo !== inputArea)    inputArea.value    = formatarNumero(area, 0);
+        if (inputChuva   && ativo !== inputChuva)   inputChuva.value   = formatarNumero(precipitacao, 0);
+        if (inputPessoas && ativo !== inputPessoas) inputPessoas.value = formatarNumero(pessoas, 0);
 
         const r = this.calcular(area, precipitacao, pessoas, tipoUso);
         const idioma = i18n.obterIdiomaAtual();
