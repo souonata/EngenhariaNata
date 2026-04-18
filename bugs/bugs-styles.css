@@ -1,0 +1,276 @@
+/* ============================================
+   BUG REPORT FORM STYLES
+   ============================================ */
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    font-size: 2rem;
+    color: var(--accent-color, #2d9fa3ff);
+    margin-bottom: 10px;
+}
+
+.subtitulo {
+    color: var(--text-secondary, #444);
+    font-size: 1.05rem;
+    font-weight: 500;
+    margin-top: 5px;
+}
+
+/* Formulário */
+.card {
+    background: var(--surface-bg, white);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.grupo-entrada {
+    margin-bottom: 25px;
+}
+
+.grupo-entrada label {
+    display: block;
+    font-weight: 600;
+    color: var(--text-primary, #333);
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+/* Textarea */
+.textarea-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--border-color, #e0e0e0);
+    background: var(--surface-bg, white);
+    color: var(--text-primary, #333);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 120px;
+    transition: border-color 0.3s ease;
+}
+
+.textarea-input:focus {
+    outline: none;
+    border-color: var(--accent-color, #2d9fa3ff);
+}
+
+/* Input de texto */
+.input-text {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--border-color, #e0e0e0);
+    background: var(--surface-bg, white);
+    color: var(--text-primary, #333);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.input-text:focus {
+    outline: none;
+    border-color: var(--accent-color, #2d9fa3ff);
+}
+
+.dica {
+    font-size: 0.85rem;
+    color: var(--text-secondary, #666);
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* Mensagem de status */
+.status-message {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.status-message.success {
+    background: var(--info-bg, #d4edda);
+    color: var(--info-text, #155724);
+    border: 1px solid var(--info-border, #c3e6cb);
+}
+
+.status-message.error {
+    background: rgba(244, 67, 54, 0.12);
+    color: var(--status-error-text, #7a1d24);
+    border: 1px solid rgba(244, 67, 54, 0.28);
+}
+
+.status-message.info {
+    background: var(--warning-bg, #d1ecf1);
+    color: var(--warning-text, #0c5460);
+    border: 1px solid var(--warning-border, #bee5eb);
+}
+
+html[data-theme="dark"] .status-message.error {
+    background: rgba(244, 67, 54, 0.2);
+    color: #ffd0d0;
+    border-color: rgba(244, 67, 54, 0.45);
+}
+
+/* Botões */
+.form-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.btn-submit {
+    flex: 1;
+    min-width: 200px;
+    padding: 15px 30px;
+    background: linear-gradient(135deg, var(--accent-color, #2d9fa3ff) 0%, var(--accent-secondary, #667eea) 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    outline: none; /* Remove outline padrão */
+}
+
+/* Melhorar acessibilidade: outline visível no foco do teclado */
+.btn-submit:focus-visible {
+    outline: 3px solid var(--accent-color, #2d9fa3ff);
+    outline-offset: 2px;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(45, 159, 163, 0.4);
+}
+
+.btn-submit:active {
+    transform: translateY(0);
+}
+
+.btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-cancel {
+    flex: 1;
+    min-width: 200px;
+    padding: 15px 30px;
+    background: var(--surface-raised, #f5f5f5);
+    color: var(--text-primary, #333);
+    border: 2px solid var(--border-color, #e0e0e0);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.2s ease;
+    display: inline-block;
+    outline: none; /* Remove outline padrão */
+}
+
+/* Melhorar acessibilidade: outline visível no foco do teclado */
+.btn-cancel:focus-visible {
+    outline: 3px solid var(--accent-color, #2d9fa3ff);
+    outline-offset: 2px;
+}
+
+.btn-cancel:hover {
+    background: var(--surface-raised-strong, #e8e8e8);
+    border-color: var(--border-color, #ccc);
+}
+
+/* Formulário customizado */
+.bugs-form-card h2 {
+    color: var(--accent-color, #2d9fa3ff);
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.bugs-form-custom-desc {
+    color: var(--text-secondary, #555);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.bugs-form {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.bugs-form .grupo-entrada:last-of-type {
+    margin-bottom: 10px;
+}
+
+.bugs-form-open-tab {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.bugs-form-open-tab a {
+    color: var(--accent-color, #2d9fa3ff);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.bugs-form-open-tab a:hover {
+    text-decoration: underline;
+}
+
+.v2-historico-section {
+    margin-top: 24px;
+}
+
+.v2-historico-header {
+    border-top: 1px solid var(--border-color, #e0e0e0);
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+.v2-historico-header:focus-visible {
+    outline: 3px solid var(--accent-color, #2d9fa3ff);
+    outline-offset: 4px;
+    border-radius: 8px;
+}
+
+.v2-historico-lista {
+    padding-right: 4px;
+}
+
+.v2-export-btn {
+    width: 100%;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    .card {
+        padding: 20px;
+    }
+
+    .form-buttons {
+        flex-direction: column;
+    }
+
+    .btn-submit,
+    .btn-cancel {
+        width: 100%;
+    }
+}

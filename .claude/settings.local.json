@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --check aquecimento/aquecimento-script.js)",
+      "Bash(node --check bitola/bitola-script.js)",
+      "Bash(node --check helice/helice-script.js)",
+      "Bash(node --check solar/config-script.js)",
+      "Bash(cat)",
+      "Bash(python /tmp/check_i18n.py)",
+      "Bash(grep -n '\\\\${nome}' fazenda/fazenda.html)",
+      "WebFetch(domain:www.goatcounter.com)",
+      "Bash(npm install *)",
+      "Bash(timeout 8 npx vite --port 5174)",
+      "Bash(node --check server-control.js)",
+      "Bash(node --check index-script.js)",
+      "Bash(curl -sI \"https://cdn.jsdelivr.net/gh/keshikan/DSEG@v0.46/fonts/DSEG7-Classic/DSEG7Classic-Bold.woff2\")",
+      "Bash(curl -s \"https://data.jsdelivr.com/v1/package/gh/keshikan/DSEG@v0.46/flat\")",
+      "Bash(curl -s \"https://data.jsdelivr.com/v1/package/npm/dseg\")",
+      "Bash(curl -sI \"https://cdn.jsdelivr.net/npm/@fontsource/dseg7-classic@5.0.0/files/dseg7-classic-latin-700-normal.woff2\")",
+      "Bash(curl -s \"https://data.jsdelivr.com/v1/package/npm/@fontsource/dseg7-classic\")",
+      "Bash(curl -s \"https://data.jsdelivr.com/v1/package/npm/@fontsource/dseg7-classic/flat\")",
+      "Bash(curl -s \"https://data.jsdelivr.com/v1/package/npm/@fontsource/dseg7-classic@5.2.5/flat\")",
+      "Bash(node -e ' *)",
+      "Bash(gh pr *)"
+    ]
+  }
+}

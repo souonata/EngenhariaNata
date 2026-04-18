@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="apple-touch-icon" href="../favicon.svg">
+    
+    <!-- SEO Meta Tags -->
+    <title>Reportar Bug - Engenharia NATA</title>
+    <meta name="description" content="Formulário para reportar bugs e problemas nos apps da Engenharia NATA">
+    <meta name="author" content="Engenharia NATA">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="https://engnata.infinityfree.me/bugs/bugs.html">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.0.0">
+    <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
+    <link rel="stylesheet" href="bugs-styles.css?v=2.0.0">
+
+    <!-- Analytics: GoatCounter (privacy-friendly, LGPD/GDPR-compliant) -->
+    <script data-goatcounter="https://souonata.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</head>
+<body>
+    <!-- Seletor de Idioma -->
+    <div class="language-selector">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" data-i18n-aria="aria.langPt" data-i18n-title="titles.langPt">
+            <span class="flag" aria-hidden="true">🇧🇷</span>
+            <span class="lang-text">PT</span>
+        </button>
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" data-i18n-aria="aria.langIt" data-i18n-title="titles.langIt">
+            <span class="flag" aria-hidden="true">🇮🇹</span>
+            <span class="lang-text">IT</span>
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- Cabeçalho -->
+        <header>
+            <h1 data-i18n="titulo">🐛 Reportar Bug</h1>
+            <p class="subtitulo" data-i18n="descricao">Ajude-nos a melhorar reportando problemas encontrados</p>
+        </header>
+
+        <section class="card bugs-form-card">
+            <h2 data-i18n="googleForms.titulo">📨 Envie seu relatório</h2>
+
+            <div id="statusMessage" class="status-message" style="display: none;"></div>
+
+            <form id="bugForm" class="bugs-form" novalidate>
+                <div class="grupo-entrada">
+                    <label for="categoriaInput" data-i18n="formulario.categoria">Categoria</label>
+                    <div id="categoriaChips" class="v2-categoria-chips" role="group" aria-label="Categoria do relatório">
+                        <button type="button" class="v2-chip ativo" data-cat="bug" data-i18n="formulario.catBug">🐛 Bug</button>
+                        <button type="button" class="v2-chip" data-cat="sugestao" data-i18n="formulario.catSugestao">💡 Sugestão</button>
+                        <button type="button" class="v2-chip" data-cat="elogio" data-i18n="formulario.catElogio">⭐ Elogio</button>
+                    </div>
+                    <input id="categoriaInput" name="categoria" type="hidden" value="bug">
+                </div>
+
+                <div class="grupo-entrada">
+                    <label for="bugDescription" data-i18n="formulario.descricao">Descrição *</label>
+                    <textarea
+                        id="bugDescription"
+                        name="descricao"
+                        class="textarea-input"
+                        rows="6"
+                        required
+                        data-i18n="formulario.descricaoPlaceholder"
+                        placeholder="Descreva o problema encontrado, o que você estava fazendo e o que esperava que acontecesse..."
+                    ></textarea>
+                </div>
+
+                <div class="grupo-entrada">
+                    <label for="bugContact" data-i18n="formulario.emailLabel">Contato (Opcional)</label>
+                    <input
+                        id="bugContact"
+                        name="contato"
+                        type="text"
+                        class="input-text"
+                        inputmode="email"
+                        autocomplete="email"
+                        data-i18n="formulario.emailPlaceholder"
+                        placeholder="seu@email.com"
+                    >
+                    <p class="dica" data-i18n="formulario.emailDica">Informe seu email apenas se quiser receber resposta.</p>
+                </div>
+
+                <div class="form-buttons">
+                    <button id="submitBtn" type="submit" class="btn-submit" data-i18n="formulario.enviar">📤 Enviar Relatório</button>
+                    <a href="../index.html" class="btn-cancel" data-i18n="formulario.voltar">← Voltar</a>
+                </div>
+            </form>
+
+        </section>
+    </div>
+    
+    <footer>
+        <p data-i18n="footer">💻 Reportar Bug - Engenharia Nata @ 2026</p>
+    </footer>
+
+    <!-- Botão de retorno à tela inicial -->
+    <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria.home">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <!-- Scripts Modulares ES6 -->
+    <script type="module" src="bugs-script.js?v=2.0.0"></script>
+</body>
+</html>
+

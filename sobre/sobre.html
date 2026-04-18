@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <!-- Meta viewport otimizada para mobile: desabilita zoom e scroll lateral -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Meta tags para DESABILITAR cache - sempre carrega arquivos atualizados -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!-- Content Security Policy (fallback caso .htaccess não seja aplicado) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://docs.google.com https://script.google.com https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https://docs.google.com https://script.google.com https://*.googleapis.com https://souonata.goatcounter.com; frame-src https://docs.google.com; object-src 'none'; base-uri 'self'; form-action 'self' https://docs.google.com; upgrade-insecure-requests;">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="apple-touch-icon" href="../favicon.svg">
+
+    <!-- SEO Meta Tags -->
+    <title>Sobre o Projeto - Engenharia NATA</title>
+    <meta name="description" content="Informações sobre o portfólio Engenharia NATA: apps web educativos para engenharia e finanças desenvolvidos com JavaScript puro, bilíngue (PT/IT) e mobile-first.">
+    <meta name="keywords" content="engenharia nata, portfólio, apps web, JavaScript, educação, engenharia, finanças">
+    <meta name="author" content="Engenharia NATA">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://engnata.infinityfree.me/sobre/sobre.html">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://engnata.infinityfree.me/sobre/sobre.html">
+    <meta property="og:title" content="Sobre o Projeto - Engenharia NATA">
+    <meta property="og:description" content="Informações sobre o portfólio Engenharia NATA: apps web educativos para engenharia e finanças.">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:locale:alternate" content="it_IT">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:url" content="https://engnata.infinityfree.me/sobre/sobre.html">
+    <meta property="twitter:title" content="Sobre o Projeto - Engenharia NATA">
+    <meta property="twitter:description" content="Informações sobre o portfólio Engenharia NATA: apps web educativos para engenharia e finanças.">
+
+    <!-- Carrega o arquivo CSS com controle de versão -->
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.0.0">
+    <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
+    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
+    <link rel="stylesheet" href="sobre-styles.css?v=1.0.2">
+</head>
+<body>
+    <!-- ========================================== -->
+    <!-- SELETOR DE IDIOMA (PADRÃO GLOBAL - FORA DO CONTAINER) -->
+    <!-- ========================================== -->
+    <div class="language-selector">
+        <!-- Botão para português (ativo definido pelo JavaScript) -->
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" data-i18n-aria="aria.langPt" data-i18n-title="titles.langPt">
+            <span class="flag" aria-hidden="true">🇧🇷</span>
+            <span class="lang-text">PT</span>
+        </button>
+        <!-- Botão para italiano -->
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" data-i18n-aria="aria.langIt" data-i18n-title="titles.langIt">
+            <span class="flag" aria-hidden="true">🇮🇹</span>
+            <span class="lang-text">IT</span>
+        </button>
+    </div>
+
+    <!-- Container principal que limita a largura máxima -->
+    <div class="container">
+
+        <!-- ========================================== -->
+        <!-- CABEÇALHO -->
+        <!-- ========================================== -->
+        <header>
+            <h1 data-i18n="page.title">📱 Sobre o Projeto</h1>
+            <p class="subtitle" data-i18n="page.subtitle">Portfólio de apps web</p>
+        </header>
+
+        <!-- CARTÃO 1: VISÃO GERAL -->
+        <div class="card card-expansivel">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                <span class="icon">🎯</span>
+                <h2 data-i18n="overview.title">Visão Geral</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <p data-i18n="overview.description">Portfólio de ferramentas práticas para o dia a dia: calculadoras de engenharia e finanças que você pode usar diretamente no navegador, sem precisar instalar nada.</p>
+
+                <ul class="tech-list">
+                    <li><strong data-i18n="apps.sobre.name">Sobre o projeto</strong> 📖 - <span data-i18n="apps.sobre.desc">Informações do projeto</span></li>
+                    <li><strong data-i18n="apps.bitola.name">Bitola</strong> 🔌 - <span data-i18n="apps.bitola.desc">Calcula o fio elétrico ideal para sua instalação de forma segura</span></li>
+                    <li><strong data-i18n="apps.helice.name">Hélice</strong> ⚓ - <span data-i18n="apps.helice.desc">Ajuda a escolher a hélice perfeita para seu barco</span></li>
+                    <li><strong data-i18n="apps.mutuo.name">Mutuo</strong> $ - <span data-i18n="apps.mutuo.desc">Compara empréstimos e mostra parcelas para você economizar</span></li>
+                    <li><strong data-i18n="apps.bugs.name">Reportar Bug</strong> 🐛 - <span data-i18n="apps.bugs.desc">Ajude a melhorar os apps reportando problemas</span></li>
+                    <li><strong data-i18n="apps.arcondicionado.name">Ar Condicionado</strong> ❄️ - <span data-i18n="apps.arcondicionado.desc">Calcula o ar condicionado ideal para seus ambientes</span></li>
+                    <li><strong data-i18n="apps.aquecimento.name">Aquecedor Solar</strong> ☀️ - <span data-i18n="apps.aquecimento.desc">Planeja seu sistema de aquecimento solar economizando energia</span></li>
+                    <li><strong data-i18n="apps.solar.name">Energia Solar</strong> 🔋 - <span data-i18n="apps.solar.desc">Dimensione painéis solares para gerar sua própria energia</span></li>
+                    <li><strong data-i18n="apps.fazenda.name">Fazenda</strong> 🌾 - <span data-i18n="apps.fazenda.desc">Planeje sua fazenda auto-sustentável para produção própria</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- CARTÃO 2: CALCULADORA DE BITOLA DE FIOS -->
+        <!-- ========================================== -->
+        <div class="card highlight card-expansivel">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                    <defs>
+                        <linearGradient id="gradient-bitola-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#8B7355;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#6B5B4F;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="60" height="60" rx="12" fill="url(#gradient-bitola-sobre)"/>
+                    <text x="30" y="40" font-size="28" text-anchor="middle">🔌</text>
+                </svg>
+                <h2 data-i18n="app.bitola">Bitola</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <p class="app-description">
+                    <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="bitola.description">Calcula o fio elétrico correto para sua instalação, evitando aquecimento e garantindo segurança.</span>
+                </p>
+
+                <div class="features-grid">
+                    <div class="feature">
+                        <span class="feature-icon">🔋🔌</span>
+                        <h4 data-i18n="features.cc-ca.title">CC e CA</h4>
+                        <p data-i18n="features.cc-ca.desc">Suporta corrente contínua (CC) e alternada (CA) com tensões típicas e valores personalizados.</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📏</span>
+                        <h4 data-i18n="features.bitola-comercial.title">Bitola Comercial</h4>
+                        <p data-i18n="features.bitola-comercial.desc">Seleciona automaticamente a bitola comercial padrão brasileiro (NBR 5410) que atende aos requisitos.</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📊</span>
+                        <h4 data-i18n="features.queda-tensao.title">Queda de Tensão</h4>
+                        <p data-i18n="features.queda-tensao.desc">Recomenda 3% de queda de tensão para projetos residenciais no Brasil (padrão mais utilizado).</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📚</span>
+                        <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
+                        <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
+                    </div>
+                </div>
+
+                <!-- Estatísticas do app (linhas de código) -->
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-number">353</span>
+                        <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">636</span>
+                        <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">135</span>
+                        <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- CARTÃO 3: CALCULADORA DE HÉLICE -->
+        <!-- ========================================== -->
+        <div class="card highlight card-expansivel">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                    <defs>
+                        <linearGradient id="gradient-helice-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#00ACC1;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#006064;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="60" height="60" rx="12" fill="url(#gradient-helice-sobre)"/>
+                    <text x="30" y="40" font-size="28" text-anchor="middle">⚓</text>
+                </svg>
+                <h2 data-i18n="app.helice">Hélice</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <p class="app-description">
+                    <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="helice.description">Ajuda a escolher a hélice perfeita para seu barco.</span>
+                </p>
+
+                <div class="features-grid">
+                    <div class="feature">
+                        <span class="feature-icon">📐</span>
+                        <h4 data-i18n="features.pitch.title">Cálculo de Passo</h4>
+                        <p data-i18n="features.pitch.desc">Determina o passo correto para atingir o RPM máximo</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🌊</span>
+                        <h4 data-i18n="features.slip.title">Análise de Slip</h4>
+                        <p data-i18n="features.slip.desc">Considera a eficiência e o deslizamento na água</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📚</span>
+                        <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
+                        <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
+                    </div>
+                </div>
+
+                <!-- Estatísticas do app (linhas de código) -->
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-number">418</span>
+                        <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">859</span>
+                        <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">229</span>
+                        <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- CARTÃO 4: CALCULADORA DE EMPRÉSTIMOS -->
+        <!-- Cartão destacado (classe highlight) com descrição completa do app -->
+        <!-- ========================================== -->
+        <div class="card highlight card-expansivel">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                    <defs>
+                        <linearGradient id="gradient-mutuo-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#2E7D32;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="60" height="60" rx="12" fill="url(#gradient-mutuo-sobre)"/>
+                    <text x="30" y="38" font-size="28" text-anchor="middle" fill="white" font-weight="bold">$</text>
+                </svg>
+                <h2 data-i18n="app.mutuo">Mutuo</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <!-- Caixa amarela com descrição do que o app faz -->
+                <p class="app-description">
+                    <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="calculator.description">Compara empréstimos e mostra parcelas para você economizar.</span>
+                </p>
+
+                <!-- Grade de funcionalidades (4 caixas) -->
+                <div class="features-grid">
+                    <!-- Funcionalidade 1: Bilíngue -->
+                    <div class="feature">
+                        <span class="feature-icon">🌍</span>
+                        <h4 data-i18n="features.bilingual.title">Bilíngue</h4>
+                        <p data-i18n="features.bilingual.desc">Português e Italiano com troca instantânea</p>
+                    </div>
+
+                    <!-- Funcionalidade 2: Gráficos -->
+                    <div class="feature">
+                        <span class="feature-icon">📊</span>
+                        <h4 data-i18n="features.charts.title">Gráficos</h4>
+                        <p data-i18n="features.charts.desc">Visualização da evolução dos juros e amortização</p>
+                    </div>
+
+                    <!-- Funcionalidade 3: Responsivo -->
+                    <div class="feature">
+                        <span class="feature-icon">📱</span>
+                        <h4 data-i18n="features.responsive.title">Responsivo</h4>
+                        <p data-i18n="features.responsive.desc">Funciona perfeitamente em celular, tablet e desktop</p>
+                    </div>
+
+                    <!-- Funcionalidade 4: Rápido -->
+                    <div class="feature">
+                        <span class="feature-icon">⚡</span>
+                        <h4 data-i18n="features.fast.title">Rápido</h4>
+                        <p data-i18n="features.fast.desc">Cálculos instantâneos ao mudar valores</p>
+                    </div>
+                </div>
+
+                <!-- Estatísticas do projeto (linhas de código) -->
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-number">519</span>
+                        <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">1233</span>
+                        <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">929</span>
+                        <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- CARTÃO 5: FORMULÁRIO DE REPORTAR BUG -->
+        <!-- ========================================== -->
+        <div class="card card-expansivel">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                    <defs>
+                        <linearGradient id="gradient-bugs-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#C92A2A;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="60" height="60" rx="12" fill="url(#gradient-bugs-sobre)"/>
+                    <text x="30" y="40" font-size="28" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">🐛</text>
+                </svg>
+                <h2 data-i18n="app.bugs">Reportar Bug</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <p class="app-description">
+                    <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="bugs.description">Ajude a melhorar os apps reportando problemas.</span>
+                </p>
+
+                <div class="features-grid">
+                    <div class="feature">
+                        <span class="feature-icon">🐛</span>
+                        <h4 data-i18n="features.bug-report.title">Report de Erros</h4>
+                        <p data-i18n="features.bug-report.desc">Formulário simples para reportar bugs e problemas de usabilidade</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📝</span>
+                        <h4 data-i18n="features.contact-info.title">Informações de Contato</h4>
+                        <p data-i18n="features.contact-info.desc">Campos opcionais para email e telefone, permitindo resposta personalizada</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🔧</span>
+                        <h4 data-i18n="features.issue-type.title">Tipo de Problema</h4>
+                        <p data-i18n="features.issue-type.desc">Classificação do problema: bug, sugestão ou melhoria</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📊</span>
+                        <h4 data-i18n="features.analytics.title">Análise</h4>
+                        <p data-i18n="features.analytics.desc">Relatórios de bugs para análise de qualidade e priorização de correções</p>
+                    </div>
+                </div>
+
+                <!-- Estatísticas do app (linhas de código) -->
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-number">122</span>
+                        <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">188</span>
+                        <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">185</span>
+                        <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- CARTÃO 6: DIMENSIONADOR DE AR CONDICIONADO -->
+        <!-- ========================================== -->
+        <div class="card highlight card-expansivel">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                    <defs>
+                        <linearGradient id="gradient-arcondicionado-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#64B5F6;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#1976D2;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="60" height="60" rx="12" fill="url(#gradient-arcondicionado-sobre)"/>
+                    <text x="30" y="40" font-size="32" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">❄</text>
+                </svg>
+                <h2 data-i18n="app.arcondicionado">Ar Condicionado</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <p class="app-description">
+                    <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="arcondicionado.description">Calcula o ar condicionado ideal para seus ambientes.</span>
+                </p>
+
+                <div class="features-grid">
+                    <div class="feature">
+                        <span class="feature-icon">🌡️</span>
+                        <h4 data-i18n="features.btu.title">Cálculo de BTU</h4>
+                        <p data-i18n="features.btu.desc">Determina a capacidade necessária em BTU baseada em área (700 BTU/m²), fator de altura, pessoas e equipamentos</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🏢</span>
+                        <h4 data-i18n="features.multisplit.title">Sistema Multi-Split</h4>
+                        <p data-i18n="features.multisplit.desc">Dimensiona sistema multi-split com múltiplas unidades internas (1-8 ambientes) e unidades externas, permitindo múltiplas unidades quando necessário</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">💰</span>
+                        <h4 data-i18n="features.custo.title">Custo Estimado</h4>
+                        <p data-i18n="features.custo.desc">Calcula custo estimado do sistema baseado em faixas de preço de mercado para unidades internas e externas</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📐</span>
+                        <h4 data-i18n="features.fatores.title">Múltiplos Fatores</h4>
+                        <p data-i18n="features.fatores.desc">Considera área total (10-300 m²), número de ambientes (1-8), altura, pessoas, equipamentos, insolação e isolamento térmico</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📚</span>
+                        <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
+                        <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
+                    </div>
+                </div>
+
+                <!-- Estatísticas do app (linhas de código) -->
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-number">533</span>
+                        <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">964</span>
+                        <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">491</span>
+                        <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- CARTÃO 3: DIMENSIONADOR DE AQUECEDOR SOLAR -->
+        <!-- ========================================== -->
+        <div class="card highlight card-expansivel">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                    <defs>
+                        <linearGradient id="gradient-aquecimento-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FF9800;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#F57C00;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="60" height="60" rx="12" fill="url(#gradient-aquecimento-sobre)"/>
+                    <text x="30" y="40" font-size="32" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">☀</text>
+                </svg>
+                <h2 data-i18n="app.aquecimento">Aquecedor Solar</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <p class="app-description">
+                    <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="aquecimento.description">Planeje seu sistema de aquecimento solar economizando energia.</span>
+                </p>
+
+                <div class="features-grid">
+                    <div class="feature">
+                        <span class="feature-icon">💧</span>
+                        <h4 data-i18n="features.agua-casa.title">Água e Casa</h4>
+                        <p data-i18n="features.agua-casa.desc">Suporta aquecimento de água de consumo e aquecimento ambiente separadamente ou combinados</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🏠</span>
+                        <h4 data-i18n="features.classe-energetica.title">Classe Energética</h4>
+                        <p data-i18n="features.classe-energetica.desc">Calcula baseado em área (m²) e classes energéticas (A4 a G) com consumo específico real em kWh/m²·ano</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🌡️</span>
+                        <h4 data-i18n="features.temperatura.title">Temperatura e Estratificação</h4>
+                        <p data-i18n="features.temperatura.desc">Considera temperatura mínima para termossifões (48°C) e estratificação térmica do boiler (65% do volume útil)</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📅</span>
+                        <h4 data-i18n="features.autonomia.title">Dias de Autonomia</h4>
+                        <p data-i18n="features.autonomia.desc">Configura dias de autonomia para água e casa, dimensionando o boiler adequadamente</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📋</span>
+                        <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
+                        <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado</p>
+                    </div>
+                </div>
+
+                <!-- Estatísticas do app (linhas de código) -->
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-number">654</span>
+                        <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">1356</span>
+                        <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">673</span>
+                        <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- CARTÃO 5: DIMENSIONADOR DE SISTEMA FOTOVOLTAICO -->
+        <!-- ========================================== -->
+        <div class="card highlight card-expansivel">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                    <defs>
+                        <linearGradient id="gradient-solar-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#00c6ff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#0072ff;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="60" height="60" rx="12" fill="url(#gradient-solar-sobre)"/>
+                    <text x="30" y="40" font-size="28" text-anchor="middle">🔋</text>
+                </svg>
+                <h2 data-i18n="app.solar">Energia Solar</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <p class="app-description">
+                    <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="solar.description">Dimensione painéis solares para gerar sua própria energia.</span>
+                </p>
+
+                <div class="features-grid">
+                    <div class="feature">
+                        <span class="feature-icon">🔋</span>
+                        <h4 data-i18n="features.battery.title">Baterias AGM/Lítio</h4>
+                        <p data-i18n-html="features.battery.desc"></p>
+                        <p class="small-note" data-i18n="features.battery.note">As configurações permitem ajustar kWh/Ah, tensão, preço e peso (sliders até 180 kg).</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">⚙️</span>
+                        <h4 data-i18n="features.config.title">Configurável</h4>
+                        <p data-i18n="features.config.desc">Customize preços, potências e especificações das baterias — mudanças salvas em `localStorage` (chave `configSolar`).</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🔌</span>
+                        <h4 data-i18n="features.inverter-mppt.title">Inversor e MPPT</h4>
+                        <p data-i18n="features.inverter-mppt.desc">Dimensiona inversor baseado no consumo típico de pico e controlador MPPT com capacidade para carregar todo o banco de baterias e suportar o pico de todos os painéis.</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📚</span>
+                        <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
+                        <p data-i18n="features.memorial.desc">Memorial didático completo que explica passo a passo todos os cálculos realizados, com fórmulas, exemplos práticos e resumo dos valores calculados.</p>
+                    </div>
+                </div>
+
+                <!-- Estatísticas do app (linhas de código) -->
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-number">832</span>
+                        <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">3434</span>
+                        <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">731</span>
+                        <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- CARTÃO 6: DIMENSIONADOR DE FAZENDA AUTO-SUSTENTÁVEL -->
+        <!-- ========================================== -->
+        <div class="card highlight card-expansivel">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                    <defs>
+                        <linearGradient id="gradient-fazenda-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#8B6F47;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#6B8E5A;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="60" height="60" rx="12" fill="url(#gradient-fazenda-sobre)"/>
+                    <text x="30" y="40" font-size="32" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">🌾</text>
+                </svg>
+                <h2 data-i18n="app.fazenda">Fazenda</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <p class="app-description">
+                    <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="fazenda.description">Planeje sua fazenda auto-sustentável para produção própria.</span>
+                </p>
+
+                <div class="features-grid">
+                    <div class="feature">
+                        <span class="feature-icon">🌱</span>
+                        <h4 data-i18n="features.plantas.title">Plantas e Animais</h4>
+                        <p data-i18n="features.plantas.desc">Seleção de frutas, verduras, legumes e animais com cálculo proporcional de produção mínima</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📊</span>
+                        <h4 data-i18n="features.producao-minima.title">Produção Mínima</h4>
+                        <p data-i18n="features.producao-minima.desc">Sliders ajustáveis para definir produção mínima diária de plantas e proteínas por pessoa</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📅</span>
+                        <h4 data-i18n="features.calendario.title">Calendário</h4>
+                        <p data-i18n="features.calendario.desc">Calendário completo de plantio, colheita e reprodução animal para manter produção contínua</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📏</span>
+                        <h4 data-i18n="features.espaco.title">Dimensionamento</h4>
+                        <p data-i18n="features.espaco.desc">Calcula área necessária, quantidade de plantas/animais e consumo diário por pessoa</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📚</span>
+                        <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
+                        <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado</p>
+                    </div>
+                </div>
+
+                <!-- Estatísticas do app (linhas de código) -->
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-number">292</span>
+                        <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">2869</span>
+                        <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">244</span>
+                        <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- ========================================== -->
+        <!-- CARTÃO 9: RECURSOS ESPECIAIS -->
+        <div class="card card-expansivel">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                <span class="icon">✨</span>
+                <h2 data-i18n="features.title">Recursos Principais</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <div class="special-features">
+
+                    <div class="special-feature">
+                        <h4 data-i18n="resource-bilingual.title">🌍 Bilíngue</h4>
+                        <p data-i18n="resource-bilingual.desc">Troca entre Português e Italiano</p>
+                    </div>
+
+                    <div class="special-feature">
+                        <h4 data-i18n="resource-charts.title">📊 Gráficos</h4>
+                        <p data-i18n="resource-charts.desc">Visualização clara dos dados</p>
+                    </div>
+
+                    <div class="special-feature">
+                        <h4 data-i18n="resource-mobile.title">📱 Mobile-First</h4>
+                        <p data-i18n="resource-mobile.desc">Funciona bem em celular e computador</p>
+                    </div>
+
+                    <div class="special-feature">
+                        <h4 data-i18n="resource-code-commented.title">💡 Código Comentado</h4>
+                        <p data-i18n="resource-code-commented.desc">Código explicado para facilitar aprendizado</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        <!-- CARTÃO 10: TECNOLOGIAS -->
+        <div class="card card-expansivel">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                <span class="icon">📚</span>
+                <h2 data-i18n="tech.title">Tecnologias Usadas</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <ul class="tech-list">
+                    <li><strong>HTML5</strong> - <span data-i18n="tech.html">Estrutura das páginas</span></li>
+                    <li><strong>CSS3</strong> - <span data-i18n="tech.css">Estilos e animações</span></li>
+                    <li><strong>JavaScript Puro</strong> - <span data-i18n="tech.js">Rápido e sem dependências</span></li>
+                    <li><strong>Chart.js</strong> - <span data-i18n="tech.chart">Gráficos interativos</span></li>
+                    <li><strong>Mobile-First</strong> - <span data-i18n="tech.mobile.desc">Funciona bem em celular e computador</span></li>
+                </ul>
+            </div>
+        </div>
+
+
+
+
+        <!-- ========================================== -->
+        <!-- FOOTER -->
+        <!-- Rodapé da página -->
+        <!-- ========================================== -->
+        <footer>
+            <p data-i18n="footer.text">💻 Portfólio Engenharia NATA</p>
+        </footer>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ========================================== -->
+    <!-- BOTÃO INÍCIO FIXO -->
+    <!-- Botão que fica sempre visível no rodapé para voltar à página inicial -->
+    <!-- ========================================== -->
+    <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria.home">
+        <!-- Ícone SVG de casinha -->
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <!-- ========================================== -->
+    <!-- SCRIPT MODULAR ES6 -->
+    <!-- ========================================== -->
+    <script type="module" src="sobre-script.js?v=1.0.2"></script>
+</body>
+</html>

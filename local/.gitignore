@@ -1,0 +1,78 @@
+# Dependências
+node_modules/
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build e dist
+dist/
+build/
+*.local
+
+# Cache e temp
+.cache/
+.temp/
+.tmp/
+_temp_*.ps1
+_temp_*.txt
+_temp_*.md
+
+# Editor
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Testing
+coverage/
+.nyc_output/
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# Backups
+*.bak
+*.backup
+*~
+
+# Arquivos temporários específicos do projeto
+COMMIT_MESSAGE.md
+DEBUG_GUIA.md
+DEPLOY.md
+PLANO_ATUALIZACAO_COMPLETA.md
+RESUMO_MELHORIAS.md
+REVISAO_APPS.md
+
+# Documentação de desenvolvimento (não necessária em produção)
+*.md
+!README.md
+*-old.html
+*-old.js
+scripts/migrate-apps.ps1
+scripts/update-versions.js
+ARQUITETURA_MODULAR.md
+CHECKLIST_VALIDACAO.md
+GLOSSARIO.md
+INFRAESTRUTURA_COMPLETA.md
+PADRAO_MIGRACAO_ES6.md
+PLANO_INFRAESTRUTURA_MODERNA.md
+REFATORACAO_RESUMO.md
+RESUMO_MIGRACAO.md
+SEGURANCA_IMPLEMENTADA.md
+SEO-INSTRUCTIONS.md

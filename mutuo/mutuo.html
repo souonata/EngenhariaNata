@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <!-- Meta viewport otimizada para mobile: desabilita zoom e scroll lateral -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Meta tags para DESABILITAR cache do navegador -->
+    <!-- Isso garante que sempre carrega a versão mais nova dos arquivos -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="apple-touch-icon" href="../favicon.svg">
+
+    <!-- SEO Meta Tags -->
+    <title>Calculadora de Empréstimos BR/IT - SAC, Price e Americano | Engenharia NATA</title>
+    <meta name="description" content="Calculadora bilíngue (PT/IT) de sistemas de amortização: SAC, Price e Americano. Gráficos interativos, tabela de amortização completa e comparação de juros totais. Ideal para planejamento financeiro.">
+    <meta name="keywords" content="calculadora empréstimos, amortização, SAC, Price, sistema americano, financiamento, juros, tabela amortização, gráficos">
+    <meta name="author" content="Engenharia NATA">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://engnata.infinityfree.me/mutuo/mutuo.html">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://engnata.infinityfree.me/mutuo/mutuo.html">
+    <meta property="og:title" content="Calculadora de Empréstimos BR/IT - Engenharia NATA">
+    <meta property="og:description" content="Calculadora bilíngue de sistemas de amortização: SAC, Price e Americano com gráficos interativos.">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:locale:alternate" content="it_IT">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:url" content="https://engnata.infinityfree.me/mutuo/mutuo.html">
+    <meta property="twitter:title" content="Calculadora de Empréstimos BR/IT">
+    <meta property="twitter:description" content="Calculadora bilíngue de sistemas de amortização: SAC, Price e Americano com gráficos interativos.">
+
+    <!-- Carrega o CSS com parâmetro de versão (?v=1.0.0) -->
+    <!-- Quando atualizar o CSS, mude a versão para forçar o navegador a baixar de novo -->
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.0.0">
+    <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
+    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
+    <link rel="stylesheet" href="mutuo-styles.css?v=1.0.2">
+
+    <!-- Analytics: GoatCounter (privacy-friendly, LGPD/GDPR-compliant) -->
+    <script data-goatcounter="https://souonata.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</head>
+<body>
+    <!-- ========================================== -->
+    <!-- SELETOR DE IDIOMA (PADRÃO GLOBAL - FORA DO CONTAINER) -->
+    <!-- ========================================== -->
+    <div class="language-selector">
+        <!-- Botão para português (ativo definido pelo JavaScript) -->
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" data-i18n-aria="aria.langPt" data-i18n-title="titles.langPt">
+            <span class="flag" aria-hidden="true">🇧🇷</span>
+            <span class="lang-text">PT</span>
+        </button>
+        <!-- Botão para italiano -->
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" data-i18n-aria="aria.langIt" data-i18n-title="titles.langIt">
+            <span class="flag" aria-hidden="true">🇮🇹</span>
+            <span class="lang-text">IT</span>
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- ========================================== -->
+        <!-- CABEÇALHO -->
+        <!-- ========================================== -->
+        <header>
+            <!-- Título principal - data-i18n indica que esse texto será traduzido -->
+            <h1 data-i18n="app.title">💰 Calculadora de Empréstimos</h1>
+            <p class="subtitulo" data-i18n="app.subtitle">Sistemas de Amortização: SAC, Price e Americano</p>
+        </header>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE MEMORIAL DE CÁLCULO -->
+        <!-- Começa escondida (display: none) -->
+        <!-- Aparece quando o usuário clica em "SAIBA MAIS" -->
+        <!-- ========================================== -->
+        <div id="memorialSection" class="card memorial-section" style="display: none;">
+            <div class="memorial-header">
+                <h2 data-i18n="memorial-title">📚 Memorial de Cálculo - Sistemas de Amortização</h2>
+                <button id="btnFecharMemorial" class="btn-fechar-memorial" data-i18n-title="botoes.voltar">
+                    <span data-i18n="botoes.voltar">← Voltar</span>
+                </button>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-intro-title">🎯 Objetivo do Cálculo</h3>
+                <p data-i18n="memorial-intro-text">Este memorial explica passo a passo como são calculados os sistemas de amortização (SAC, Price e Americano), incluindo as fórmulas matemáticas utilizadas e exemplos práticos com os valores atuais.</p>
+            </div>
+
+            <!-- Memorial dinâmico baseado no sistema selecionado -->
+            <div id="memorial-conteudo-dinamico">
+                <!-- O conteúdo será preenchido dinamicamente pelo JavaScript -->
+            </div>
+
+            <div class="resumo-calculado">
+                <h3 data-i18n="memorial-resumo-title">📊 Resumo Calculado</h3>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-valor">Valor Emprestado:</span>
+                    <span id="resumo-valor">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-taxa">Taxa de Juros:</span>
+                    <span id="resumo-taxa">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-prazo">Prazo:</span>
+                    <span id="resumo-prazo">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-sistema">Sistema:</span>
+                    <span id="resumo-sistema">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-parcela">Valor da Parcela:</span>
+                    <span id="resumo-parcela">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-total-juros">Total de Juros:</span>
+                    <span id="resumo-total-juros">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-total-pago">Total Pago:</span>
+                    <span id="resumo-total-pago">-</span>
+                </div>
+            </div>
+
+            <div class="comparacao" style="margin-bottom: 20px;">
+                <h3 data-i18n="comparison-title">🔍 Comparação dos Sistemas</h3>
+                <table class="tabela-sistemas">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th data-i18n="system-sac-short">SAC</th>
+                            <th data-i18n="system-price-short">Price</th>
+                            <th data-i18n="system-german-short">Alemão</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-i18n="table-interest">Juros</td>
+                            <td data-i18n="table-interest-balance">saldo devedor</td>
+                            <td data-i18n="table-interest-balance">saldo devedor</td>
+                            <td data-i18n="table-interest-fixed">Fixos</td>
+                        </tr>
+                        <tr>
+                            <td data-i18n="table-installment">Parcela</td>
+                            <td data-i18n="table-installment-variable">Variável</td>
+                            <td data-i18n="table-installment-fixed">Fixa</td>
+                            <td data-i18n="table-installment-fixed">Fixa</td>
+                        </tr>
+                        <tr>
+                            <td data-i18n="table-amortization">Amortização</td>
+                            <td data-i18n="table-amortization-fixed">Fixa</td>
+                            <td data-i18n="table-amortization-variable">Variável</td>
+                            <td data-i18n="table-amortization-last">última parcela</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="exemplos-header" style="margin-top: 20px;">
+                <h2 data-i18n="examples-title">📚 Entenda os Sistemas de Amortização</h2>
+            </div>
+
+            <div class="memorial-system-switcher" role="tablist" aria-label="Sistema para exemplos">
+                <button type="button" class="js-system-tab is-active" data-system="sac" aria-selected="true">
+                    <span data-i18n="system-sac-short">SAC</span>
+                </button>
+                <button type="button" class="js-system-tab" data-system="price" aria-selected="false">
+                    <span data-i18n="system-price-short">Price</span>
+                </button>
+                <button type="button" class="js-system-tab" data-system="americano" aria-selected="false">
+                    <span data-i18n="system-german-short">Alemão</span>
+                </button>
+            </div>
+
+            <!-- EXEMPLO 1: Sistema SAC -->
+            <div class="exemplo-item system-panel" data-system-panel="sac">
+                <h3 data-i18n="example-sac-title">1. Sistema SAC - Amortização Constante</h3>
+                <h4 class="section-title" data-i18n="section-definition">Definição</h4>
+                <p><strong data-i18n="used-in">Usado em:</strong> <span data-i18n="example-sac-usage">Brasil (financiamento imobiliário) e Itália (Ammortamento all'Italiana)</span></p>
+                <p><span data-i18n="example-sac-description">Você paga sempre a mesma parte do valor emprestado (amortização constante). Os juros caem todo mês porque são calculados sobre o saldo devedor. As parcelas começam mais altas e diminuem com o tempo.</span></p>
+                <div class="exemplo-calculo">
+                    <h4 class="section-title" data-i18n="section-formulas">Fórmulas</h4>
+                    <ul>
+                        <li data-i18n="formula-sac-1">Amortização = Valor Emprestado ÷ Número de Parcelas</li>
+                        <li data-i18n="formula-sac-2">Juros = Saldo Devedor × Taxa Mensal</li>
+                        <li data-i18n="formula-sac-3">Parcela = Amortização + Juros</li>
+                    </ul>
+                    <h4 class="section-title" data-i18n="section-example">Exemplo</h4>
+                    <p><strong data-i18n="example-label">Exemplo:</strong>
+                        <!-- Importante: usa ID em vez de data-i18n porque o JavaScript atualiza esse valor -->
+                        <span id="example-sac-calc">R$ 100.000 a 1% ao mês por 120 meses</span>
+                    </p>
+                    <ul>
+                        <!-- Esses valores também são atualizados dinamicamente pelo JavaScript -->
+                        <li id="example-sac-result-1">Amortização fixa: R$ 833,33</li>
+                        <li id="example-sac-result-2">Mês 1: R$ 833,33 + R$ 1.000 juros = R$ 1.833,33</li>
+                        <li id="example-sac-result-3">Mês 60: R$ 833,33 + R$ 508 juros = R$ 1.341,33</li>
+                        <li id="example-sac-result-4">Mês 120: R$ 833,33 + R$ 8 juros = R$ 841,33</li>
+                        <li id="example-sac-result-5">Total de juros: R$ 60.500</li>
+                    </ul>
+                </div>
+                <p class="vantagem" data-i18n="example-sac-advantage">✅ Melhor para: Quem pode pagar mais no início e quer pagar menos juros no total</p>
+            </div>
+
+            <!-- EXEMPLO 2: Tabela Price -->
+            <div class="exemplo-item system-panel" data-system-panel="price" hidden>
+                <h3 data-i18n="example-price-title">2. Tabela Price (Sistema Francês)</h3>
+                <h4 class="section-title" data-i18n="section-definition">Definição</h4>
+                <p><strong data-i18n="used-in">Usado em:</strong> <span data-i18n="example-price-usage">Brasil (empréstimos pessoais, consignados) e Itália (Ammortamento alla Francese - mais comum)</span></p>
+                <p><span data-i18n="example-price-description">Parcelas iguais do início ao fim. No começo, você paga mais juros e menos amortização. Com o tempo, inverte: paga menos juros e mais amortização.</span></p>
+                <div class="exemplo-calculo">
+                    <h4 class="section-title" data-i18n="section-formulas">Fórmulas</h4>
+                    <p><strong data-i18n="formula-payment">Fórmula da Parcela (PMT):</strong></p>
+                    <ul>
+                        <li data-i18n="formula-price-1">PMT = PV × [i × (1+i)^n] ÷ [(1+i)^n - 1]</li>
+                        <li data-i18n="formula-price-2">Juros = Saldo Devedor × Taxa Mensal</li>
+                        <li data-i18n="formula-price-3">Amortização = PMT - Juros</li>
+                    </ul>
+                    <h4 class="section-title" data-i18n="section-example">Exemplo</h4>
+                    <p><strong data-i18n="example-label">Exemplo:</strong> <span id="example-price-calc">R$ 100.000 a 1% ao mês por 120 meses</span></p>
+                    <ul>
+                        <li id="example-price-result-1">Parcela fixa: R$ 1.435,14</li>
+                        <li id="example-price-result-2">Mês 1: R$ 1.000 juros + R$ 435,14 amortização</li>
+                        <li id="example-price-result-3">Mês 60: R$ 628 juros + R$ 807,14 amortização</li>
+                        <li id="example-price-result-4">Mês 120: R$ 14 juros + R$ 1.421,14 amortização</li>
+                        <li id="example-price-result-5">Total de juros: R$ 72.217</li>
+                    </ul>
+                </div>
+                <p class="vantagem" data-i18n="example-price-advantage">✅ Melhor para: Orçamento previsível com parcelas iguais</p>
+            </div>
+
+            <!-- EXEMPLO 3: Sistema Americano -->
+            <div class="exemplo-item system-panel" data-system-panel="americano" hidden>
+                <h3 data-i18n="example-american-title">3. Sistema Americano</h3>
+                <h4 class="section-title" data-i18n="section-definition">Definição</h4>
+                <p><strong data-i18n="used-in">Usado em:</strong> <span data-i18n="example-american-usage">Raro no Brasil, ocasional na Itália para investidores</span></p>
+                <p><span data-i18n="example-american-description">Durante todo o período, você paga apenas os juros. No final, paga o valor total emprestado de uma só vez.</span></p>
+                <div class="exemplo-calculo">
+                    <h4 class="section-title" data-i18n="section-formulas">Fórmulas</h4>
+                    <ul>
+                        <li data-i18n="formula-american-1">Parcelas 1 a n-1: Valor Emprestado × Taxa Mensal</li>
+                        <li data-i18n="formula-american-2">Última Parcela: Valor Emprestado + Juros</li>
+                    </ul>
+                    <h4 class="section-title" data-i18n="section-example">Exemplo</h4>
+                    <p><strong data-i18n="example-label">Exemplo:</strong> <span id="example-american-calc">R$ 100.000 a 1% ao mês por 120 meses</span></p>
+                    <ul>
+                        <li id="example-american-result-1">Parcelas 1 a 119: R$ 1.000 (só juros)</li>
+                        <li id="example-american-result-2">Parcela 120: R$ 101.000 (principal + juros)</li>
+                        <li id="example-american-result-3">Total de juros: R$ 120.000</li>
+                    </ul>
+                </div>
+                <p class="vantagem" data-i18n="example-american-advantage">✅ Melhor para: Investidores que esperam receber grande valor no futuro</p>
+            </div>
+
+            <div class="comparacao comparacao-valores">
+                <h3 data-i18n="comparison-title">🔍 Comparação dos Sistemas</h3>
+                <div class="memorial-system-switcher" role="tablist" aria-label="Sistema em foco na comparacao">
+                    <button type="button" class="js-system-tab" data-system="sac" aria-selected="false">
+                        <span data-i18n="system-sac-short">SAC</span>
+                    </button>
+                    <button type="button" class="js-system-tab" data-system="price" aria-selected="false">
+                        <span data-i18n="system-price-short">Price</span>
+                    </button>
+                    <button type="button" class="js-system-tab" data-system="americano" aria-selected="false">
+                        <span data-i18n="system-german-short">Alemão</span>
+                    </button>
+                </div>
+                <p id="comparison-subtitle"><strong>Para R$ 100.000 a 10% ao ano por 120 meses:</strong></p>
+                <div class="table-scroll-wrapper">
+                    <table id="tabelaComparacaoValores">
+                    <thead>
+                        <tr data-system-row="sac">
+                            <th data-i18n="table-system">Sistema</th>
+                            <th data-i18n="table-total-interest">Total de Juros</th>
+                            <th data-i18n="table-first-installment">1ª Parcela</th>
+                            <th data-i18n="table-last-installment">Última Parcela</th>
+                            <th data-i18n="table-most-used">Mais Usado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-system-row="price">
+                            <td data-i18n="system-sac-short">SAC</td>
+                            <td>€ 48.244</td>
+                            <td>€ 1.631</td>
+                            <td>€ 840</td>
+                            <td data-i18n="table-sac-usage">🇧🇷 Imóveis</td>
+                        </tr>
+                        <tr data-system-row="americano">
+                            <td data-i18n="system-price-short">Price</td>
+                            <td>€ 55.731</td>
+                            <td>€ 1.298</td>
+                            <td>€ 1.298</td>
+                            <td data-i18n="table-price-usage">🇮🇹 Mutui / 🇧🇷 Consignado</td>
+                        </tr>
+                        <tr>
+                            <td data-i18n="table-american-name">Tedesco</td>
+                            <td>€ 95.690</td>
+                            <td>€ 797</td>
+                            <td>€ 100.797</td>
+                            <td data-i18n="table-american-usage">Raro</td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+
+            <button class="btn-voltar-memorial" data-i18n-title="botoes.voltar">
+                <span data-i18n="botoes.voltar">← Voltar</span>
+            </button>
+        </div>
+
+        <!-- Resultados -->
+        <div id="resultados" class="card resultados" style="display: block;">
+            <!-- Controles Rápidos -->
+            <div class="controles-rapidos">
+                <div class="controles-grid-vertical">
+                    <div class="sistema-amortizacao-box">
+                        <div class="controle-sistema-wrapper">
+                            <div class="label-sistema-com-ajuda">
+                                <label class="label-sistema" data-i18n="amortization-system">Sistema de Amortização</label>
+                                <button id="btnExemplos" class="btn-help" data-i18n-title="btn-examples" tabindex="10">
+                                    <span class="texto-saiba-mais" data-i18n="learn-more">SAIBA MAIS!</span>
+                                </button>
+                            </div>
+                            <div class="grupo-radio">
+                                <label class="opcao-radio">
+                                    <input type="radio" name="sistemaRapido" value="sac" tabindex="7">
+                                    <div class="cartao-radio">
+                                        <span class="rotulo-radio" data-i18n="system-sac-short">SAC</span>
+                                    </div>
+                                </label>
+                                <label class="opcao-radio">
+                                    <input type="radio" name="sistemaRapido" value="price" checked tabindex="8">
+                                    <div class="cartao-radio">
+                                        <span class="rotulo-radio" data-i18n="system-price-short">Price</span>
+                                    </div>
+                                </label>
+                                <label class="opcao-radio">
+                                    <input type="radio" name="sistemaRapido" value="americano" tabindex="9">
+                                    <div class="cartao-radio">
+                                        <span class="rotulo-radio" data-i18n="system-german-short">Alemão</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="controles-primeira-linha">
+                        <div class="controles-coluna-esquerda">
+                            <div class="grupo-entrada">
+                                <div class="cabecalho-controle">
+                                    <label for="inputValor" data-i18n="loan-amount">Valor Emprestado</label>
+                                    <span class="info-icon" id="infoIconValor" role="button" tabindex="0" data-i18n-aria="aria.infoValor" data-i18n-title="titles.clickInfo">
+                                        <span class="info-icon-symbol">ℹ️</span>
+                                    </span>
+                                    <div class="valor-com-unidades">
+                                        <input type="text" id="inputValor" class="valor-display valor-input" value="115.000" tabindex="1" inputmode="numeric" pattern="[0-9]*" enterkeyhint="done" autocomplete="off">
+                                        <span class="unidade" data-i18n="input-currency-unit">R$</span>
+                                    </div>
+                                </div>
+                                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                                <div class="descricao-info" id="descricaoValor" style="display: none;">
+                                    <span data-i18n="tooltip-valor-texto">O valor emprestado é o montante total que você está solicitando ao banco ou instituição financeira. Este valor será usado para calcular as parcelas, juros e amortização. Valores maiores resultam em parcelas maiores e mais juros totais.</span>
+                                </div>
+                                <div class="slider-com-botoes">
+                                    <button type="button" class="arrow-btn arrow-down" data-target="sliderValor" data-step="-1000" data-i18n-aria="aria.diminuirValor">−</button>
+                                    <input type="range" id="sliderValor" min="1000" max="1000000" step="1000" value="115000">
+                                    <button type="button" class="arrow-btn arrow-up" data-target="sliderValor" data-step="1000" data-i18n-aria="aria.aumentarValor">+</button>
+                                </div>
+                            </div>
+
+                            <div class="grupo-entrada">
+                                <div class="cabecalho-controle">
+                                    <label for="inputPrazo" data-i18n="loan-term">Prazo (anos)</label>
+                                    <span class="info-icon" id="infoIconPrazo" role="button" tabindex="0" data-i18n-aria="aria.infoPrazo" data-i18n-title="titles.clickInfo">
+                                        <span class="info-icon-symbol">ℹ️</span>
+                                    </span>
+                                    <div class="valor-com-unidades">
+                                        <input type="text" id="inputPrazo" class="valor-display valor-input" value="30" tabindex="2" inputmode="numeric" pattern="[0-9]*" enterkeyhint="done" autocomplete="off">
+                                        <span class="unidade" data-i18n="years">anos</span>
+                                    </div>
+                                </div>
+                                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                                <div class="descricao-info" id="descricaoPrazo" style="display: none;">
+                                    <span data-i18n="tooltip-prazo-texto">O prazo é o tempo total em anos para quitar o empréstimo. Este valor é convertido automaticamente para meses (anos × 12) para os cálculos. Prazos maiores resultam em parcelas menores, mas mais juros totais ao longo do tempo.</span>
+                                </div>
+                                <div class="slider-com-botoes">
+                                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPrazo" data-step="-1" data-i18n-aria="aria.diminuirPrazo">−</button>
+                                    <input type="range" id="sliderPrazo" min="1" max="50" step="1" value="30">
+                                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPrazo" data-step="1" data-i18n-aria="aria.aumentarPrazo">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="controle-taxa-periodo">
+                        <div class="grupo-entrada">
+                            <div class="cabecalho-controle">
+                                <label for="sliderTaxa">
+                                    <span data-i18n="interest-rate">Taxa de Juros</span>
+                                </label>
+                                <span class="info-icon" id="infoIconTaxa" role="button" tabindex="0" data-i18n-aria="aria.infoTaxa" data-i18n-title="titles.clickInfo">
+                                    <span class="info-icon-symbol">ℹ️</span>
+                                </span>
+                                <div class="valor-com-unidades">
+                                    <input type="text" id="inputTaxa" class="valor-display valor-input" value="3,16" tabindex="3" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" enterkeyhint="done" autocomplete="off">
+                                    <span class="unidade">%</span>
+                                    <div class="grupo-radio-compacto">
+                                        <label class="opcao-radio-compacto">
+                                            <input type="radio" name="periodoRapido" value="ano" checked tabindex="4">
+                                            <div class="cartao-radio-compacto">
+                                                <span class="rotulo-radio" data-i18n="period-year-short">Ano</span>
+                                            </div>
+                                        </label>
+                                        <label class="opcao-radio-compacto">
+                                            <input type="radio" name="periodoRapido" value="mes" tabindex="5">
+                                            <div class="cartao-radio-compacto">
+                                                <span class="rotulo-radio" data-i18n="period-month-short">Mês</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                            <div class="descricao-info" id="descricaoTaxa" style="display: none;">
+                                <span data-i18n="tooltip-taxa-texto">A taxa de juros é o percentual cobrado sobre o valor emprestado. Você pode informar a taxa em diferentes períodos (ano, mês ou dia). O sistema converte automaticamente para taxa mensal usando juros compostos. Taxas maiores resultam em parcelas maiores e mais juros totais.</span>
+                            </div>
+                            <div class="slider-com-botoes">
+                                <button type="button" class="arrow-btn arrow-down" data-target="sliderTaxa" data-step="-0.01" data-i18n-aria="aria.diminuirTaxa">−</button>
+                                <input type="range" id="sliderTaxa" min="0" max="20" step="0.01" value="3.16" tabindex="3">
+                                <button type="button" class="arrow-btn arrow-up" data-target="sliderTaxa" data-step="0.01" data-i18n-aria="aria.aumentarTaxa">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="controle-taxa-periodo">
+                        <div class="grupo-entrada">
+                            <div class="cabecalho-controle">
+                                <label for="sliderExtraPagamento">
+                                    <span data-i18n="extra-payment-recurring">Pagamento Extra Recorrente</span>
+                                </label>
+                                <span class="info-icon" id="infoIconExtra" role="button" tabindex="0" data-i18n-aria="aria.infoExtra" data-i18n-title="titles.clickInfo">
+                                    <span class="info-icon-symbol">ℹ️</span>
+                                </span>
+                                <div class="valor-com-unidades">
+                                    <input type="text" id="inputExtraPagamento" class="valor-display valor-input" value="0" tabindex="11" inputmode="numeric" pattern="[0-9]*" enterkeyhint="done" autocomplete="off">
+                                    <span class="unidade" data-i18n="input-currency-unit">R$</span>
+                                    <div class="grupo-radio-compacto">
+                                        <label class="opcao-radio-compacto">
+                                            <input type="radio" name="periodoExtra" value="semestral" checked tabindex="12">
+                                            <div class="cartao-radio-compacto">
+                                                <span class="rotulo-radio" data-i18n="extra-frequency-semiannual">Semestral</span>
+                                            </div>
+                                        </label>
+                                        <label class="opcao-radio-compacto">
+                                            <input type="radio" name="periodoExtra" value="anual" tabindex="13">
+                                            <div class="cartao-radio-compacto">
+                                                <span class="rotulo-radio" data-i18n="extra-frequency-annual">Anual</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="descricao-info" id="descricaoExtra" style="display: none;">
+                                <span data-i18n="tooltip-extra-texto">O pagamento extra é um valor adicional aplicado na periodicidade escolhida (mensal, semestral ou anual). Esse valor aparece nas parcelas individuais, é abatido do saldo devedor e reduz o tempo total para quitação do financiamento.</span>
+                            </div>
+                            <div class="slider-com-botoes">
+                                <button type="button" class="arrow-btn arrow-down" data-target="sliderExtraPagamento" data-step="-10" data-i18n-aria="aria.diminuirExtra">−</button>
+                                <input type="range" id="sliderExtraPagamento" min="0" max="10000" step="10" value="0" tabindex="11">
+                                <button type="button" class="arrow-btn arrow-up" data-target="sliderExtraPagamento" data-step="10" data-i18n-aria="aria.aumentarExtra">+</button>
+                            </div>
+
+                            <div class="extras-especificos-box">
+                                <div class="cabecalho-controle cabecalho-controle--extra-especifico">
+                                    <h4 data-i18n="extra-specific-payments-title">Pagamentos Extras Específicos</h4>
+                                    <span class="info-icon" id="infoIconExtraEspecifico" role="button" tabindex="0" data-i18n-aria="aria.infoExtraSpecific" data-i18n-title="titles.clickInfo">
+                                        <span class="info-icon-symbol">ℹ️</span>
+                                    </span>
+                                </div>
+                                <div class="descricao-info" id="descricaoExtraEspecifico" style="display: none;">
+                                    <span data-i18n="extra-specific-payments-help">Adicione valores extras em parcelas específicas para simular balões de amortização.</span>
+                                </div>
+
+                                <div id="extrasEspecificosLista" class="extras-especificos-lista">
+                                </div>
+
+                                <button type="button" id="btnAdicionarExtraEspecifico" class="btn-adicionar-extra-especifico" data-i18n="extra-specific-add-button">+ Adicionar pagamento específico</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="graficos-container">
+                <h3 data-i18n="evolution-charts">📊 Evolução ao Longo do Tempo</h3>
+                <div class="grafico-unico">
+                    <canvas id="graficoEvolutivo"></canvas>
+                </div>
+            </div>
+
+            <!-- Painel de Explicação V2.0 -->
+            <div id="v2-explicacao"></div>
+
+            <div class="parcelas-info parcelas-info--selector">
+                <h3><span data-i18n="selected-installment">Parcela Selecionada</span>: <span id="numeroParcela">1</span> <span data-i18n="of">de</span> <span id="totalParcelas">-</span></h3>
+
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderParcelas" data-step="-1" data-i18n-aria="aria.diminuirParcela">−</button>
+                    <input type="range" id="sliderParcelas" min="1" max="120" value="1" step="1">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderParcelas" data-step="1" data-i18n-aria="aria.aumentarParcela">+</button>
+                </div>
+
+                <div class="parcela-detalhes">
+                    <div class="parcela-composicao">
+                        <div class="composicao-item">
+                            <span id="labelAmortizacaoParcela" class="label-small" data-i18n="amortization">Amortização</span>
+                            <span class="value-medium" id="valorAmortizacao">-</span>
+                        </div>
+                        <div class="composicao-item">
+                            <span class="label-small" data-i18n="interest">Juros</span>
+                            <span class="value-medium" id="valorJurosParcela">-</span>
+                        </div>
+                        <div class="composicao-item">
+                            <span class="label-small" data-i18n="outstanding-balance">Saldo Devedor</span>
+                            <span class="value-medium" id="saldoDevedor">-</span>
+                        </div>
+                        <div class="composicao-item">
+                            <span class="label-small" data-i18n="installment-amort-interest-ratio">Proporção Amortização/Juros</span>
+                            <span class="value-medium" id="proporcaoAmortJurosParcela">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tabela-container">
+                <h3 data-i18n="amortization-table">📋 Tabela de Amortização Completa</h3>
+                <div class="tabela-scroll">
+                    <table id="tabelaAmortizacao">
+                        <thead>
+                            <tr>
+                                <th data-i18n="installment">Parcela</th>
+                                <th data-i18n="value">Valor</th>
+                                <th data-i18n="amortization">Amortização</th>
+                                <th data-i18n="interest">Juros</th>
+                                <th data-i18n="extra-payment">Pagamento Extra</th>
+                                <th data-i18n="outstanding-balance">Saldo Devedor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p data-i18n="footer.texto">Calculadora de Empréstimos - Engenharia Nata @ 2026</p>
+        <div class="footer-meta">
+            <p class="footer-oss">Open source: Chart.js © Chart.js Contributors - MIT License.</p>
+            <a class="footer-github-link" href="https://github.com/souonata/EngenhariaNata" target="_blank" rel="noopener noreferrer" aria-label="GitHub EngenhariaNata">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.58 7.58 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+                <span>github.com/souonata/EngenhariaNata</span>
+            </a>
+        </div>
+    </footer>
+    <!-- Fica sempre visível enquanto rola a página -->
+    <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria.home">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <!-- Chart.js -->
+    <script src="../assets/js/vendor/chart.umd.js"></script>
+
+    <!-- JavaScript da calculadora -->
+    <script type="module" src="mutuo-script.js?v=2.0.0"></script>
+</body>
+</html>
+

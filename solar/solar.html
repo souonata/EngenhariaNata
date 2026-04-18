@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!-- Content Security Policy (fallback caso .htaccess não seja aplicado) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://docs.google.com https://script.google.com https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https://docs.google.com https://script.google.com https://*.googleapis.com https://souonata.goatcounter.com; frame-src https://docs.google.com; object-src 'none'; base-uri 'self'; form-action 'self' https://docs.google.com; upgrade-insecure-requests;">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="apple-touch-icon" href="../favicon.svg">
+
+    <!-- SEO Meta Tags -->
+    <title>Energia Solar - Dimensionamento Fotovoltaico Off-Grid - Painéis e Baterias | Engenharia NATA</title>
+    <meta name="description" content="Dimensionamento completo de sistemas de energia solar fotovoltaicos off-grid. Calcula número de painéis solares, capacidade de baterias (AGM e LiFePO4), inversor necessário e autonomia do sistema.">
+    <meta name="keywords" content="dimensionamento solar, fotovoltaico, painéis solares, baterias AGM, LiFePO4, inversor, off-grid, energia solar, autonomia">
+    <meta name="author" content="Engenharia NATA">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://engnata.infinityfree.me/solar/solar.html">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://engnata.infinityfree.me/solar/solar.html">
+    <meta property="og:title" content="Energia Solar - Dimensionamento Fotovoltaico - Engenharia NATA">
+    <meta property="og:description" content="Dimensionamento completo de sistemas fotovoltaicos off-grid com cálculo de painéis, baterias e inversor.">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:locale:alternate" content="it_IT">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:url" content="https://engnata.infinityfree.me/solar/solar.html">
+    <meta property="twitter:title" content="Dimensionamento Solar Fotovoltaico">
+    <meta property="twitter:description" content="Dimensionamento completo de sistemas fotovoltaicos off-grid com cálculo de painéis, baterias e inversor.">
+        <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.0.0">
+        <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
+        <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
+        <link rel="stylesheet" href="solar-styles.css?v=1.0.2">
+
+</head>
+<body>
+    <!-- ========================================== -->
+    <!-- SELETOR DE IDIOMA (PADRÃO GLOBAL - FORA DO CONTAINER) -->
+    <!-- ========================================== -->
+    <div class="language-selector">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" data-i18n-aria="aria-lang-pt" data-i18n-title="title-lang-pt">
+            <span class="flag" aria-hidden="true">🇧🇷</span>
+            <span class="lang-text">PT</span>
+        </button>
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" data-i18n-aria="aria-lang-it" data-i18n-title="title-lang-it">
+            <span class="flag" aria-hidden="true">🇮🇹</span>
+            <span class="lang-text">IT</span>
+        </button>
+    </div>
+
+    <div class="conteiner-principal">
+        <!-- Cabeçalho -->
+        <header>
+            <h1 data-i18n="app-title">🔋 Energia Solar</h1>
+            <p class="subtitulo" data-i18n="app-subtitle">Dimensionamento de Sistema Fotovoltaico</p>
+        </header>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE MEMORIAL DE CÁLCULO -->
+        <!-- Começa escondida (display: none) -->
+        <!-- Aparece quando o usuário clica em "SAIBA MAIS" -->
+        <!-- ========================================== -->
+        <div id="memorialSection" class="card memorial-section" style="display: none;">
+            <div class="memorial-header">
+                <h2 data-i18n="memorial-title">📚 Memorial de Cálculo - Energia Solar</h2>
+                <!-- Botão para fechar o memorial e voltar para a calculadora -->
+                <button id="btnFecharMemorial" class="btn-fechar-memorial" data-i18n-title="botoes.voltar">
+                    <span data-i18n="botoes.voltar">← Voltar</span>
+                </button>
+            </div>
+
+            <!-- Introdução -->
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-intro-title">🎯 Objetivo do Dimensionamento</h3>
+                <p data-i18n="memorial-intro-text">Este memorial explica passo a passo como são calculados os componentes de um sistema fotovoltaico off-grid: número de painéis solares, capacidade de baterias, potência do inversor e estimativa de custos.</p>
+            </div>
+
+            <!-- Passo 1: Energia Diária -->
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo1-title">1️⃣ Passo 1: Calcular Energia Diária Necessária</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong id="memorial-formula-passo1">Energia Diária (kWh/dia) = Consumo Mensal (kWh) ÷ 30 dias</strong></p>
+                </div>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-energia-diaria">Consumo de 150 kWh/mês → 150 ÷ 30 = 5 kWh/dia</span></p>
+                <p data-i18n="memorial-passo1-explicacao">Esta é a quantidade de energia que o sistema precisa fornecer todos os dias para atender ao consumo médio.</p>
+            </div>
+
+            <!-- Passo 2: DoD e Vida Útil -->
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo2-title">2️⃣ Passo 2: Determinar DoD (Profundidade de Descarga) pela Vida Útil</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong id="memorial-formula-passo2-1">Ciclos Totais = Vida Útil (anos) × 365 dias/ano</strong></p>
+                    <p><strong id="memorial-formula-passo2-2">DoD Alvo = f(Ciclos Totais, Tipo de Bateria)</strong></p>
+                </div>
+                <p data-i18n="memorial-passo2-explicacao">O DoD (Depth of Discharge) determina quanto da capacidade da bateria pode ser usada diariamente. Quanto maior a vida útil desejada, menor deve ser o DoD para preservar a bateria.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-dod">Vida útil de 20 anos → 20 × 365 = 7300 ciclos → DoD ≈ 50-60% (LiFePO4)</span></p>
+                <div class="info-box">
+                    <p><strong data-i18n="memorial-tip">💡 Dica:</strong> <span data-i18n="memorial-dod-tip">Baterias LiFePO4 permitem DoD maiores (50-80%) que baterias AGM (30-50%) para a mesma vida útil.</span></p>
+                    <p style="margin-top: 10px;"><strong>📊 Valores de referência:</strong></p>
+                    <ul>
+                        <li>O app usa tabelas de ciclos vs DoD baseadas em dados de fabricantes e normas técnicas</li>
+                        <li>Para LiFePO4: ~5000-10000 ciclos com DoD de 25-50%</li>
+                        <li>Para AGM: ~500-1500 ciclos com DoD de 30-50%</li>
+                        <li>O DoD é calculado automaticamente interpolando entre os valores da tabela</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Passo 3: Capacidade de Baterias -->
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Calcular Capacidade Necessária de Baterias</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong id="memorial-formula-passo3-1">Capacidade por Vida Útil = Energia Diária ÷ DoD</strong></p>
+                    <p><strong id="memorial-formula-passo3-2">Capacidade por Autonomia = Energia Diária × Dias de Autonomia ÷ DoD</strong></p>
+                    <p><strong id="memorial-formula-passo3-3">Capacidade Necessária = Máximo(por Vida Útil, por Autonomia)</strong></p>
+                </div>
+                <p data-i18n="memorial-passo3-explicacao">Calculamos a capacidade necessária por dois critérios e escolhemos o maior: um para garantir a vida útil desejada e outro para garantir os dias de autonomia sem sol.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-capacidade">5 kWh/dia, DoD 60%, 3 dias autonomia → Máximo(5÷0.6=8.3 kWh, 5×3÷0.6=25 kWh) = 25 kWh</span></p>
+            </div>
+
+            <!-- Passo 4: Número de Baterias -->
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo4-title">4️⃣ Passo 4: Calcular Número de Baterias</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong id="memorial-formula-passo4-1">Número de Baterias = Arredondar para Cima(Capacidade Necessária ÷ Capacidade por Bateria)</strong></p>
+                    <p><strong id="memorial-formula-passo4-2">Capacidade Real Instalada = Número de Baterias × Capacidade por Bateria</strong></p>
+                    <p><strong id="memorial-formula-passo4-3">Energia Utilizável = Capacidade Real × DoD</strong></p>
+                </div>
+                <p data-i18n="memorial-passo4-explicacao">Arredondamos para cima para garantir que temos capacidade suficiente. Para tensões 24V e 48V, garantimos número par de baterias para facilitar a montagem em série/paralelo.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-baterias">25 kWh necessários, baterias de 4.8 kWh → 25÷4.8 = 5.2 → 6 baterias → 6×4.8 = 28.8 kWh instalados → 28.8×0.6 = 17.3 kWh utilizáveis</span></p>
+            </div>
+
+            <!-- Passo 5: Painéis Solares -->
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo5-title">5️⃣ Passo 5: Calcular Número de Painéis Solares</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong id="memorial-formula-passo5-1">Energia a Gerar = Energia Utilizável do Banco ÷ Eficiência do Sistema</strong></p>
+                    <p><strong id="memorial-formula-passo5-2">Potência Necessária (W) = Energia a Gerar (kWh/dia) × 1000 ÷ HSP (horas de sol pleno)</strong></p>
+                    <p><strong id="memorial-formula-passo5-3">Número de Painéis = Arredondar para Cima(Potência Necessária ÷ Potência por Painel)</strong></p>
+                </div>
+                <p data-i18n="memorial-passo5-explicacao">Os painéis precisam gerar energia suficiente para recarregar as baterias, considerando perdas do sistema (cabo, MPPT, inversor). Usamos HSP (Horas de Sol Pleno) para estimar a geração diária.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-paineis">17.3 kWh utilizáveis, eficiência 80%, HSP 5h → 17.3÷0.8 = 21.6 kWh/dia → 21.6×1000÷5 = 4320W → 4320÷400W = 10.8 → 11 painéis</span></p>
+                <div class="info-box">
+                    <p><strong data-i18n="memorial-constants">Valores de referência usados:</strong></p>
+                    <ul>
+                        <li data-i18n="memorial-hsp">HSP (Horas de Sol Pleno) = 5 horas/dia — Valor médio conservador para o Brasil. Representa o número médio de horas por dia que o sol fornece energia equivalente ao pico (1000 W/m²).</li>
+                        <li data-i18n="memorial-eficiencia">Eficiência do Sistema = 80% (perdas de 20%) — Considera perdas em cabos DC (2-3%), MPPT (2-5%), inversor (5-10%), baterias (5-10%), temperatura dos painéis (5-10%) e sujeira (2-5%).</li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong>⚛️ Lei Física Aplicada — Conservação de Energia:</strong></p>
+                    <p style="margin-top: 5px;">A energia não pode ser criada nem destruída, apenas transformada. Os painéis transformam luz solar em eletricidade, mas parte dessa energia se perde durante o processo (como calor, atrito, etc.). Por isso, precisamos gerar mais energia do que consumimos para compensar essas perdas.</p>
+                </div>
+            </div>
+
+            <!-- Passo 6: Inversor com MPPT Integrado -->
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo6-title">6️⃣ Passo 6: Dimensionar o Inversor com MPPT Integrado</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong id="memorial-formula-passo6-1">Consumo Médio Horário = Energia Diária (kWh) ÷ 24 horas</strong></p>
+                    <p><strong id="memorial-formula-passo6-2">Consumo de Pico = Consumo Médio Horário × Fator de Pico (5x)</strong></p>
+                    <p><strong id="memorial-formula-passo6-3">Potência Mínima do Inversor (kW) = Máximo(Consumo de Pico, 1 kW mínimo)</strong></p>
+                </div>
+                <p data-i18n="memorial-passo6-explicacao">Em sistemas off-grid, todos os inversores modernos já vêm com MPPT integrado. O inversor converte DC das baterias para AC da casa e deve ter capacidade para o consumo de pico típico de uma residência. O fator de pico de 5x considera que o consumo não é constante ao longo do dia. Além disso, o inversor escolhido deve ter capacidade MPPT suficiente para suportar a corrente máxima dos painéis.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-inversor">Consumo diário 5 kWh → 5÷24 = 0.21 kW/h × 5 = 1.05 kW pico → Inversor de 2 kW com MPPT 60A integrado</span></p>
+                <div class="info-box">
+                    <p><strong>📊 Valores de referência usados:</strong></p>
+                    <ul>
+                        <li><strong>Fator de Pico = 5.0</strong> — O consumo de pico é aproximadamente 5 vezes maior que o consumo médio horário. Baseado em práticas da indústria e normas técnicas para dimensionamento de inversores.</li>
+                        <li><strong>Inversor mínimo = 1 kW</strong> — Garante capacidade mínima para atender cargas básicas mesmo em sistemas pequenos.</li>
+                        <li><strong>MPPT Integrado</strong> — Em sistemas off-grid modernos, todos os inversores já incluem controlador MPPT integrado, eliminando a necessidade de componente separado.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Passo 7: Verificar Capacidade MPPT -->
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo7-title">7️⃣ Passo 7: Verificar Capacidade MPPT do Inversor</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong id="memorial-formula-passo7-1">Potência Total dos Painéis = Número de Painéis × Potência por Painel (W)</strong></p>
+                    <p><strong id="memorial-formula-passo7-2">Corrente Máxima Necessária = Potência Total dos Painéis ÷ Tensão do Banco (V)</strong></p>
+                    <p><strong id="memorial-formula-passo7-3">Se Capacidade MPPT do Inversor &lt; Corrente Máxima Necessária, aumenta potência do inversor até encontrar um com MPPT adequado</strong></p>
+                </div>
+                <p data-i18n="memorial-passo7-explicacao">Verifica-se se o inversor escolhido tem capacidade MPPT integrada suficiente para os painéis. A corrente necessária é calculada dividindo a potência total dos painéis pela tensão do banco de baterias. Se o inversor inicial não tiver MPPT suficiente, escolhe-se um inversor maior até encontrar um com capacidade adequada. Isso garante que o sistema funcione corretamente sem necessidade de MPPT separado.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-mppt">11 painéis × 400W = 4400W ÷ 48V = 91.7A necessários → Inversor 2kW tem MPPT 60A (insuficiente) → Escolhe Inversor 3kW com MPPT 80A (insuficiente) → Escolhe Inversor 5kW com MPPT 100A (adequado)</span></p>
+            </div>
+
+            <!-- Passo 8: Custos -->
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo8-title">8️⃣ Passo 8: Calcular Custo Total Estimado</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong id="memorial-formula-passo8-1">Custo Painéis = Número de Painéis × Preço por Painel</strong></p>
+                    <p><strong id="memorial-formula-passo8-2">Custo Baterias = Número de Baterias × Preço por Bateria</strong></p>
+                    <p><strong id="memorial-formula-passo8-3">Custo Inversor = Preço do Inversor (da tabela de preços)</strong></p>
+                    <p><strong id="memorial-formula-passo8-4">Custo MPPT = Preço do MPPT (da tabela de preços)</strong></p>
+                    <p><strong id="memorial-formula-passo8-5">Custo Total = Custo Painéis + Custo Baterias + Custo Inversor + Custo MPPT</strong></p>
+                </div>
+                <p data-i18n="memorial-passo8-explicacao">Os preços podem ser personalizados na página de configurações. Os valores são convertidos automaticamente para a moeda do idioma selecionado (R$ para português, € para italiano).</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-custos">11 painéis × R$ 1.200 + 6 baterias × R$ 12.000 + inversor R$ 2.500 + MPPT R$ 1.200 = R$ 13.200 + R$ 72.000 + R$ 2.500 + R$ 1.200 = R$ 88.900</span></p>
+            </div>
+
+            <!-- Resumo dos Cálculos Atuais -->
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-resumo-title">📊 Resumo dos Cálculos Atuais</h3>
+                <div class="resumo-calculado">
+                    <div class="resumo-item-calc">
+                        <span data-i18n="memorial-resumo-energia-diaria">Energia Diária:</span>
+                        <span id="resumo-energia-diaria">-</span>
+                    </div>
+                    <div class="resumo-item-calc">
+                        <span data-i18n="memorial-resumo-dod">DoD Alvo:</span>
+                        <span id="resumo-dod">-</span>
+                    </div>
+                    <div class="resumo-item-calc">
+                        <span data-i18n="memorial-resumo-capacidade">Capacidade Necessária:</span>
+                        <span id="resumo-capacidade">-</span>
+                    </div>
+                    <div class="resumo-item-calc">
+                        <span data-i18n="memorial-resumo-baterias">Baterias Instaladas:</span>
+                        <span id="resumo-baterias">-</span>
+                    </div>
+                    <div class="resumo-item-calc">
+                        <span data-i18n="memorial-resumo-paineis">Painéis Solares:</span>
+                        <span id="resumo-paineis">-</span>
+                    </div>
+                    <div class="resumo-item-calc">
+                        <span data-i18n="memorial-resumo-inversor">Inversor:</span>
+                        <span id="resumo-inversor">-</span>
+                    </div>
+                    <div class="resumo-item-calc">
+                        <span data-i18n="memorial-resumo-mppt">MPPT:</span>
+                        <span id="resumo-mppt">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-voltar-memorial" data-i18n-title="botoes.voltar">
+                <span data-i18n="botoes.voltar">← Voltar</span>
+            </button>
+        </div>
+
+        <!-- Inputs -->
+        <section class="cartao">
+            <!-- Consumo -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderConsumo" data-i18n="label-consumo">Consumo Médio Mensal</label>
+                    <span class="info-icon" id="infoIconConsumo" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <input type="text" id="inputConsumo" class="valor-display valor-input" value="200">
+                    <span>kWh</span>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoConsumo" style="display: none;">
+                    <span data-i18n="tooltip-consumo-texto">O consumo médio mensal representa a quantidade de energia elétrica que você utiliza por mês, medida em quilowatt-hora (kWh). Este valor é usado para calcular a energia diária necessária e dimensionar todo o sistema fotovoltaico. Você pode encontrar este valor na sua conta de luz.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn" data-target="sliderConsumo" data-step="-10" data-i18n-aria="aria-decrease">−</button>
+                    <input type="range" id="sliderConsumo" min="10" max="999" step="10" value="200">
+                    <button type="button" class="arrow-btn" data-target="sliderConsumo" data-step="10" data-i18n-aria="aria-increase">+</button>
+                </div>
+            </div>
+
+            <!-- Autonomia -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderAutonomia" data-i18n="label-autonomia">Dias de Autonomia</label>
+                    <span class="info-icon info-icon-autonomia" id="infoIconAutonomia" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <input type="text" id="inputAutonomia" class="valor-display valor-input" value="1">
+                    <span data-i18n="unit-days">dias</span>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info descricao-autonomia" id="descricaoAutonomia" style="display: none;">
+                    <span data-i18n="tooltip-autonomia-texto">Os dias de autonomia representam quantos dias consecutivos o sistema deve conseguir fornecer energia sem receber luz solar. Por exemplo, se você configurar 3 dias de autonomia, o sistema será dimensionado para armazenar energia suficiente para funcionar por 3 dias mesmo sem sol, garantindo funcionamento durante períodos nublados ou chuvosos.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn" data-target="sliderAutonomia" data-step="-1" data-i18n-aria="aria-decrease">−</button>
+                    <input type="range" id="sliderAutonomia" min="1" max="10" step="1" value="1">
+                    <button type="button" class="arrow-btn" data-target="sliderAutonomia" data-step="1" data-i18n-aria="aria-increase">+</button>
+                </div>
+            </div>
+
+            <!-- Tipo de Bateria -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-tipo-bateria">Tipo de Bateria</label>
+                <div class="grupo-radio">
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoBateria" value="chumbo">
+                        <div class="cartao-radio">
+                            <span class="icone-radio">🔋</span>
+                            <div class="rotulo-radio-container">
+                                <span class="rotulo-radio-nome">AGM</span>
+                                <span class="rotulo-radio-tipo" data-i18n="opt-chumbo">Chumbo-Ácido</span>
+                                <div class="rotulo-radio-especs" id="especsAGM">
+                                    <span class="espec-item">12V & 100Ah</span>
+                                    <span class="espec-item">1.2 kWh</span>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoBateria" value="litio" checked>
+                        <div class="cartao-radio">
+                            <span class="icone-radio">⚡</span>
+                            <div class="rotulo-radio-container">
+                                <span class="rotulo-radio-nome">LiFePO4</span>
+                                <span class="rotulo-radio-tipo" data-i18n="opt-litio">Lítio</span>
+                                <div class="rotulo-radio-especs" id="especsLitio">
+                                    <span class="espec-item">48V & 100Ah</span>
+                                    <span class="espec-item">4.8 kWh</span>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Vida Útil (Anos) -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderVidaUtil" data-i18n="label-vida-util">Vida Útil Estimada</label>
+                    <span class="info-icon" id="infoIconVidaUtil" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <input type="text" id="inputVidaUtil" class="valor-display valor-input" value="20">
+                    <span data-i18n="unit-years">anos</span>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoVidaUtil" style="display: none;">
+                    <span data-i18n="tooltip-vida-util-texto">A vida útil desejada é o número de anos que você espera que o sistema funcione antes de precisar substituir as baterias. Baterias LiFePO4 podem durar até 25 anos com uso adequado, enquanto baterias AGM (chumbo-ácido) geralmente duram de 1 a 5 anos. Quanto maior a vida útil desejada, menor será o DoD (profundidade de descarga) diário para preservar as baterias.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn" data-target="sliderVidaUtil" data-step="-1" data-i18n-aria="aria-decrease">−</button>
+                    <input type="range" id="sliderVidaUtil" min="1" max="25" step="1" value="20">
+                    <button type="button" class="arrow-btn" data-target="sliderVidaUtil" data-step="1" data-i18n-aria="aria-increase">+</button>
+                </div>
+                <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">
+                    <span id="descVidaUtil">DoD Diário: --%</span>
+                </div>
+            </div>
+
+            <!-- Custo do kWh -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderPrecoKWh" data-i18n="label-preco-kwh">Custo da Energia (kWh)</label>
+                    <span class="info-icon" id="infoIconPrecoKWh" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputPrecoKWh" class="valor-display valor-input" value="0,75">
+                        <span class="unidade" id="unidadePrecoKWh">R$</span>
+                    </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoPrecoKWh" style="display: none;">
+                    <span data-i18n="tooltip-preco-kwh-texto">O custo da energia elétrica por kWh é o preço que você paga pela energia da rede elétrica. Este valor é usado para calcular a economia financeira do sistema solar ao longo do tempo. Você pode ajustar este valor para simular diferentes cenários de tarifa ou projeções futuras.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn" data-target="sliderPrecoKWh" data-step="-0.05" data-i18n-aria="aria-decrease">−</button>
+                    <input type="range" id="sliderPrecoKWh" min="0.19" max="3.00" step="0.05" value="0.75">
+                    <button type="button" class="arrow-btn" data-target="sliderPrecoKWh" data-step="0.05" data-i18n-aria="aria-increase">+</button>
+                </div>
+                <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">
+                    <span id="notaPrecoKWh" style="font-size: 0.75rem; color: #888; font-style: italic;"></span>
+                </div>
+            </div>
+
+            <!-- Aumento Anual do Custo da Energia -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderAumentoAnualEnergia" data-i18n="label-aumento-anual-energia">Aumento Anual do Custo da Energia</label>
+                    <span class="info-icon" id="infoIconAumentoAnualEnergia" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputAumentoAnualEnergia" class="valor-display valor-input" value="8,0">
+                        <span class="unidade">%</span>
+                    </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoAumentoAnualEnergia" style="display: none;">
+                    <span data-i18n="tooltip-aumento-anual-energia-texto">O aumento anual do custo da energia representa a taxa percentual de crescimento do preço da energia elétrica ao longo dos anos. Este valor é usado para calcular a economia acumulada considerando que a energia fica mais cara com o tempo. O valor padrão é baseado no histórico dos últimos 50 anos no Brasil e na Itália.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn" data-target="sliderAumentoAnualEnergia" data-step="-0.1" data-i18n-aria="aria-decrease">−</button>
+                    <input type="range" id="sliderAumentoAnualEnergia" min="1.2" max="40.0" step="0.1" value="8.0">
+                    <button type="button" class="arrow-btn" data-target="sliderAumentoAnualEnergia" data-step="0.1" data-i18n-aria="aria-increase">+</button>
+                </div>
+                <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">
+                    <span id="notaAumentoAnualEnergia" style="font-size: 0.75rem; color: #888; font-style: italic;"></span>
+                </div>
+            </div>
+
+            <!-- Preço da Bateria por kWh -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderPrecoBateriaKWh" data-i18n="label-preco-bateria-kwh">Preço da Bateria (por kWh)</label>
+                    <span class="info-icon" id="infoIconPrecoBateriaKWh" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputPrecoBateriaKWh" class="valor-display valor-input" value="3000">
+                        <span class="unidade" id="unidadePrecoBateriaKWh">R$</span>
+                    </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoPrecoBateriaKWh" style="display: none;">
+                    <span data-i18n="tooltip-preco-bateria-kwh-texto">O preço da bateria por kWh representa o custo unitário de capacidade de armazenamento de energia. Este valor varia conforme o tipo de bateria (LiFePO4 é mais caro que AGM) e o mercado. Você pode ajustar este valor para simular diferentes custos de baterias e ver como isso afeta o custo total do sistema.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn" data-target="sliderPrecoBateriaKWh" data-step="-100" data-i18n-aria="aria-decrease">−</button>
+                    <input type="range" id="sliderPrecoBateriaKWh" min="10" max="8000" step="10" value="3000">
+                    <button type="button" class="arrow-btn" data-target="sliderPrecoBateriaKWh" data-step="100" data-i18n-aria="aria-increase">+</button>
+                </div>
+                <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">
+                    <span id="notaPrecoBateriaKWh" style="font-size: 0.75rem; color: #888; font-style: italic;"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resultados -->
+        <section class="cartao">
+            <div class="resultados-header-com-ajuda">
+                <h2 style="text-align: center; color: #2d9fa3ff; font-size: 1rem;" data-i18n="results-title">Sistema Recomendado</h2>
+                <button id="btnMemorial" class="btn-help" data-i18n-title="btn-memorial" tabindex="10">
+                    <span class="texto-saiba-mais" data-i18n="learn-more">SAIBA MAIS!</span>
+                </button>
+            </div>
+
+            <div class="grade-resultados">
+                <!-- Preço Total -->
+                <div class="item-resultado estimativa-preco">
+                    <span class="icone-resultado">💰</span>
+                    <span class="rotulo-resultado" data-i18n="res-estimativa">Custo Total</span>
+                    <span id="resPrecoEstimado" class="valor-resultado">R$ 15.000</span>
+                    <a href="config.html" class="icone-info" data-i18n-title="title-config-prices">ⓘ</a>
+                </div>
+
+                <!-- Placas -->
+                <div class="item-resultado">
+                    <div class="linha-resultado">
+                        <span class="icone-resultado">☀️</span>
+                        <span class="rotulo-resultado" data-i18n="res-placas">Placas Solares</span>
+                    </div>
+                    <span id="resQtdPlacas" class="valor-resultado">4</span>
+                    <span id="resMotivoPaineis" class="sub-resultado gargalo"></span>
+                    <span id="custoPaineis" class="sub-resultado custo-item">R$ 0</span>
+                </div>
+
+                <!-- Baterias -->
+                <div class="item-resultado">
+                    <div class="linha-resultado">
+                        <span class="icone-resultado">🔋</span>
+                        <span class="rotulo-resultado" data-i18n="res-baterias">Baterias</span>
+                    </div>
+                    <span id="resQtdBaterias" class="valor-resultado">8</span>
+                    <span id="resMotivoBaterias" class="sub-resultado gargalo"></span>
+                    <span id="custoBaterias" class="sub-resultado custo-item">R$ 0</span>
+                </div>
+
+                <!-- Inversor -->
+                <div class="item-resultado">
+                    <div class="linha-resultado">
+                        <span class="icone-resultado">🔌</span>
+                        <span class="rotulo-resultado" data-i18n="res-inversor">Inversor</span>
+                    </div>
+                    <span id="resPotenciaInversor" class="valor-resultado">3 kW</span>
+                    <span id="resMotivoInversor" class="sub-resultado gargalo"></span>
+                    <span id="custoInversor" class="sub-resultado custo-item">R$ 0</span>
+                </div>
+
+                <!-- MPPT (integrado no inversor) -->
+                <div class="item-resultado" style="display: none;" id="itemMPPT">
+                    <div class="linha-resultado">
+                        <span class="icone-resultado">⚡</span>
+                        <span class="rotulo-resultado" data-i18n="res-mppt-integrado">MPPT (Integrado)</span>
+                    </div>
+                    <span id="resCorrenteMPPT" class="valor-resultado">40 A</span>
+                    <span id="resMotivoMPPT" class="sub-resultado gargalo"></span>
+                </div>
+
+                <!-- Peso Baterias -->
+                <div class="item-resultado">
+                    <div class="linha-resultado">
+                        <span class="icone-resultado">⚖️</span>
+                        <span id="resPesoBaterias" class="valor-resultado">0 kg</span>
+                    </div>
+                    <span class="rotulo-resultado" data-i18n="res-peso">Peso Estimado</span>
+                </div>
+            </div>
+
+            <!-- Painel de Explicação V2.0 -->
+            <div id="v2-explicacao"></div>
+
+            <!-- Gráficos de Visualização -->
+            <div class="graficos-container" style="margin-top: 30px;">
+                <h3 style="color: #2d9fa3ff; margin-bottom: 15px;" data-i18n="graficos-title">📊 Visualizações</h3>
+
+                <!-- Diagrama de Ligação do Sistema -->
+                <div class="grafico-box diagrama-ligacao-box">
+                    <h4 class="grafico-box-title" data-i18n="grafico-layout-ligacao-title">Layout de Ligação do Sistema</h4>
+                    <p class="diagrama-ligacao-legenda" data-i18n="grafico-layout-ligacao-subtitle">Fluxo elétrico simplificado entre placas, inversor com MPPT integrado, baterias e cargas.</p>
+
+                    <svg id="diagramaLigacaoSolar" class="diagrama-ligacao-svg" viewBox="0 0 980 320" role="img" aria-label="Diagrama de ligação solar simplificado">
+                        <defs>
+                            <marker id="setaFluxoSolar" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#2d9fa3"></polygon>
+                            </marker>
+                        </defs>
+
+                        <rect x="38" y="70" rx="14" ry="14" width="220" height="96" class="node-bg node-paineis"></rect>
+                        <text x="148" y="100" text-anchor="middle" class="node-title" id="layoutLabelPaineis">Placas Solares</text>
+                        <text x="148" y="126" text-anchor="middle" class="node-value" id="layoutValorPaineis">--</text>
+                        <text x="148" y="148" text-anchor="middle" class="node-subvalue" id="layoutValorPaineisPot">--</text>
+
+                        <rect x="356" y="70" rx="14" ry="14" width="250" height="96" class="node-bg node-inversor"></rect>
+                        <text x="481" y="100" text-anchor="middle" class="node-title" id="layoutLabelInversor">Inversor Off-grid</text>
+                        <text x="481" y="126" text-anchor="middle" class="node-value" id="layoutValorInversor">--</text>
+                        <text x="481" y="148" text-anchor="middle" class="node-subvalue" id="layoutValorMppt">--</text>
+
+                        <rect x="720" y="70" rx="14" ry="14" width="220" height="96" class="node-bg node-cargas"></rect>
+                        <text x="830" y="100" text-anchor="middle" class="node-title" id="layoutLabelCargas">Cargas AC</text>
+                        <text x="830" y="126" text-anchor="middle" class="node-value" id="layoutValorCargas">--</text>
+                        <text x="830" y="148" text-anchor="middle" class="node-subvalue" id="layoutValorAutonomia">--</text>
+
+                        <rect x="356" y="206" rx="14" ry="14" width="250" height="96" class="node-bg node-baterias"></rect>
+                        <text x="481" y="236" text-anchor="middle" class="node-title" id="layoutLabelBaterias">Banco de Baterias</text>
+                        <text x="481" y="262" text-anchor="middle" class="node-value" id="layoutValorBaterias">--</text>
+                        <text x="481" y="284" text-anchor="middle" class="node-subvalue" id="layoutValorBancoKWh">--</text>
+
+                        <line x1="260" y1="118" x2="352" y2="118" class="fluxo-linha" marker-end="url(#setaFluxoSolar)"></line>
+                        <text x="306" y="106" text-anchor="middle" class="fluxo-legenda" id="layoutFluxoPv">DC solar</text>
+
+                        <line x1="608" y1="118" x2="716" y2="118" class="fluxo-linha" marker-end="url(#setaFluxoSolar)"></line>
+                        <text x="662" y="106" text-anchor="middle" class="fluxo-legenda" id="layoutFluxoAc">AC saída</text>
+
+                        <line x1="481" y1="168" x2="481" y2="202" class="fluxo-linha" marker-end="url(#setaFluxoSolar)"></line>
+                        <line x1="507" y1="202" x2="507" y2="168" class="fluxo-linha fluxo-reverso" marker-end="url(#setaFluxoSolar)"></line>
+                        <text x="536" y="188" class="fluxo-legenda" id="layoutFluxoBat">Carga/descarga DC</text>
+                    </svg>
+
+                    <div class="arranjo-simples-box">
+                        <p id="layoutArranjoResumoTexto" class="arranjo-simples-resumo">--</p>
+                        <p id="layoutArranjoLeigo" class="arranjo-simples-leigo">--</p>
+                        <p id="layoutArranjoEletrico" class="arranjo-simples-eletrico">--</p>
+                    </div>
+                </div>
+
+                <!-- Controle do Período de Análise do Gráfico -->
+                <div class="grupo-entrada" style="margin-bottom: 20px; max-width: 400px; margin-left: auto; margin-right: auto;">
+                    <div class="cabecalho-controle">
+                        <label for="sliderPeriodoAnalise" data-i18n="label-periodo-analise">Período de Análise do Gráfico</label>
+                        <span class="info-icon" id="infoIconPeriodoAnalise" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
+                            <span class="info-icon-symbol">ℹ️</span>
+                        </span>
+                        <div class="valor-com-unidades">
+                            <input type="text" id="inputPeriodoAnalise" class="valor-display valor-input" value="25">
+                            <span class="unidade" data-i18n="unidade-anos">anos</span>
+                        </div>
+                    </div>
+                    <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                    <div class="descricao-info" id="descricaoPeriodoAnalise" style="display: none;">
+                        <span data-i18n="tooltip-periodo-analise-texto">O período de análise do gráfico define quantos anos serão considerados na análise financeira de amortização e lucro líquido. O período mínimo é 1x a vida útil máxima da bateria selecionada (25 anos para LiFePO4, 5 anos para AGM), e o máximo é 4x esse valor. Valores maiores permitem ver projeções de longo prazo.</span>
+                    </div>
+                    <div class="slider-com-botoes">
+                        <button type="button" class="arrow-btn" data-target="sliderPeriodoAnalise" data-step="-1" data-i18n-aria="aria-decrease">−</button>
+                        <input type="range" id="sliderPeriodoAnalise" min="5" max="50" step="1" value="25">
+                        <button type="button" class="arrow-btn" data-target="sliderPeriodoAnalise" data-step="1" data-i18n-aria="aria-increase">+</button>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Amortização: Retorno do Investimento -->
+                <div class="grafico-box" style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h4 style="color: #2d9fa3ff; margin-bottom: 10px; font-size: 1rem;" data-i18n="grafico-amortizacao-title">Análise de Amortização do Sistema</h4>
+                    <canvas id="graficoAmortizacao" style="height: 400px; max-height: 400px;"></canvas>
+                    <div id="infoPayback" style="margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 5px; font-size: 0.9em; text-align: center;"></div>
+                </div>
+
+                <!-- Gráfico de Sazonalidade -->
+                <div class="grafico-box" style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h4 style="color: #2d9fa3ff; margin-bottom: 10px; font-size: 1rem;" data-i18n="grafico-sazonalidade-title">Sazonalidade de Geração Solar</h4>
+                    <canvas id="graficoSazonalidade" style="height: 300px; max-height: 300px;"></canvas>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p data-i18n="footer.texto">Energia Solar - Engenharia NATA @ 2026</p>
+    </footer>
+
+    <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria-home">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <!-- Chart.js -->
+    <script src="../assets/js/vendor/chart.umd.js"></script>
+    <script type="module" src="solar-script.js?v=2.0.0"></script>
+</body>
+</html>
+

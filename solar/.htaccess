@@ -1,0 +1,5 @@
+# DirectoryIndex especifica qual arquivo deve ser servido quando uma pasta é acessada
+DirectoryIndex solar.html
+
+# ErrorDocument define uma página personalizada para erro 404
+ErrorDocument 404 /solar/solar.html

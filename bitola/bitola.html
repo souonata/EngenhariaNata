@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="apple-touch-icon" href="../favicon.svg">
+
+    <!-- SEO Meta Tags -->
+    <title>Calculadora de Bitola de Fios Elétricos - CC e CA | Engenharia NATA</title>
+    <meta name="description" content="Calculadora de bitola de fios elétricos para circuitos CC e CA. Considera queda de tensão, corrente e distância. Seleciona automaticamente a bitola comercial padrão brasileiro (NBR 5410).">
+    <meta name="keywords" content="calculadora bitola, fios elétricos, bitola fio, queda tensão, NBR 5410, corrente elétrica, dimensionamento fios, circuito CC, circuito CA">
+    <meta name="author" content="Engenharia NATA">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://engnata.infinityfree.me/bitola/bitola.html">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://engnata.infinityfree.me/bitola/bitola.html">
+    <meta property="og:title" content="Calculadora de Bitola de Fios Elétricos - Engenharia NATA">
+    <meta property="og:description" content="Calculadora de bitola de fios elétricos para circuitos CC e CA com seleção automática da bitola comercial padrão brasileiro.">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:locale:alternate" content="it_IT">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:url" content="https://engnata.infinityfree.me/bitola/bitola.html">
+    <meta property="twitter:title" content="Calculadora de Bitola de Fios Elétricos">
+    <meta property="twitter:description" content="Calculadora de bitola de fios elétricos para circuitos CC e CA com seleção automática da bitola comercial padrão brasileiro.">
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.0.0">
+    <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
+    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
+    <link rel="stylesheet" href="bitola-styles.css?v=1.0.2">
+
+    <!-- Analytics: GoatCounter (privacy-friendly, LGPD/GDPR-compliant) -->
+    <script data-goatcounter="https://souonata.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</head>
+<body>
+    <!-- ========================================== -->
+    <!-- SELETOR DE IDIOMA (PADRÃO GLOBAL - FORA DO CONTAINER) -->
+    <!-- ========================================== -->
+    <div class="language-selector">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" data-i18n-aria="aria.langPt" data-i18n-title="titles.langPt">
+            <span class="flag" aria-hidden="true">🇧🇷</span>
+            <span class="lang-text">PT</span>
+        </button>
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" data-i18n-aria="aria.langIt" data-i18n-title="titles.langIt">
+            <span class="flag" aria-hidden="true">🇮🇹</span>
+            <span class="lang-text">IT</span>
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- ========================================== -->
+        <!-- CABEÇALHO -->
+        <!-- ========================================== -->
+        <header>
+            <h1 data-i18n="app.title">🔌 Calculadora de Bitola de Fios</h1>
+            <p class="subtitulo" data-i18n="app.subtitle">Área de Seção Mínima para Circuitos CC e CA</p>
+        </header>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE ENTRADAS -->
+        <!-- ========================================== -->
+        <section class="card">
+            <!-- Tipo de Corrente (CC ou CA) -->
+            <div class="grupo-entrada">
+                <label data-i18n="labels.tipoCorrente">Tipo de Corrente</label>
+                <div class="grupo-radio">
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoCorrente" value="cc" checked>
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" style="font-size: 1.8rem;" data-i18n-title="titles.currentDc">🔋</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoCorrente" value="ca">
+                        <div class="cartao-radio cartao-radio-ca">
+                            <span class="rotulo-radio" style="font-size: 1.8rem;" data-i18n-title="titles.currentAc">🔌</span>
+                            <!-- Tensão CA aparece ao lado da tomada quando selecionada -->
+                            <div id="tensaoCAInline" class="tensao-inline" style="display: none;">
+                                <div class="grupo-radio-compacto">
+                                    <label class="opcao-radio-compacto">
+                                        <input type="radio" name="tensaoCA" value="110" checked>
+                                        <div class="cartao-radio-compacto">
+                                            <span class="rotulo-radio">110V</span>
+                                        </div>
+                                    </label>
+                                    <label class="opcao-radio-compacto">
+                                        <input type="radio" name="tensaoCA" value="220">
+                                        <div class="cartao-radio-compacto">
+                                            <span class="rotulo-radio">220V</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Potência Máxima Nominal -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderPotencia" data-i18n="labels.potencia">Potência Máxima Nominal</label>
+                    <span class="info-icon" id="infoIconPotencia" role="button" tabindex="0" data-i18n-aria="aria.clickInfo" data-i18n-title="titles.clickInfo">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputPotencia" class="valor-display valor-input" value="1000">
+                    </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoPotencia" style="display: none;">
+                    <span data-i18n="tooltips.potencia">A potência máxima nominal representa a quantidade total de energia elétrica que será consumida pelo circuito, medida em watts (W). Este valor é usado para calcular a corrente elétrica necessária. Você pode encontrar este valor nas especificações dos equipamentos que serão conectados ao circuito.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPotencia" data-step="-dynamic" data-i18n-aria="aria.decrease">−</button>
+                    <input type="range" id="sliderPotencia" min="0" max="2000" step="1" value="1000">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPotencia" data-step="dynamic" data-i18n-aria="aria.increase">+</button>
+                </div>
+            </div>
+
+            <!-- Comprimento Total do Circuito -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderComprimento" data-i18n="labels.comprimento">Distância do Circuito</label>
+                    <span class="info-icon" id="infoIconComprimento" role="button" tabindex="0" data-i18n-aria="aria.clickInfo" data-i18n-title="titles.clickInfo">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputComprimento" class="valor-display valor-input" value="20">
+                        <span class="unidade" data-i18n="unidades.metro">m</span>
+                    </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoComprimento" style="display: none;">
+                    <span data-i18n="tooltips.comprimento">A distância do circuito é a distância entre a fonte de energia (disjuntor, transformador, etc.) e a carga (equipamento que consome energia). O cálculo considera automaticamente a ida e volta do circuito (dois condutores), então você deve informar apenas a distância simples entre os pontos.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderComprimento" data-step="-0.1" data-i18n-aria="aria.decrease">−</button>
+                    <input type="range" id="sliderComprimento" min="0.1" max="50" step="0.1" value="20">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderComprimento" data-step="0.1" data-i18n-aria="aria.increase">+</button>
+                </div>
+            </div>
+
+            <!-- Tensão (diferente para CC e CA) -->
+            <!-- Para CA: botões 110V e 220V agora aparecem ao lado da tomada -->
+            <!-- Seção removida - valores agora aparecem inline no cartão da tomada -->
+
+            <!-- Para CC: slider com valores típicos -->
+            <div id="secaoTensaoCC" class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderTensaoCC" data-i18n="labels.tensao">Tensão</label>
+                    <span class="info-icon" id="infoIconTensaoCC" role="button" tabindex="0" data-i18n-aria="aria.clickInfo" data-i18n-title="titles.clickInfo">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputTensaoCC" class="valor-display valor-input" value="12">
+                        <span class="unidade" data-i18n="unidades.volt">V</span>
+                    </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoTensaoCC" style="display: none;">
+                    <span data-i18n="tooltips.tensaoCC">A tensão é a diferença de potencial elétrico entre dois pontos do circuito, medida em volts (V). Para corrente contínua (CC), valores típicos incluem 3.3V, 5V, 9V, 12V, 15V, 20V, 24V, 36V, 48V, 60V, 72V e 96V. Este valor afeta diretamente o cálculo da corrente e da bitola necessária.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderTensaoCC" data-step="-1" data-i18n-aria="aria.decrease">−</button>
+                    <input type="range" id="sliderTensaoCC" min="0" max="12" step="1" value="3">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderTensaoCC" data-step="1" data-i18n-aria="aria.increase">+</button>
+                </div>
+            </div>
+
+            <!-- Queda de Tensão -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderQuedaTensao" data-i18n="labels.quedaTensao">Queda de Tensão Máxima</label>
+                    <span class="info-icon" id="infoIconQuedaTensao" role="button" tabindex="0" data-i18n-aria="aria.clickInfo" data-i18n-title="titles.clickInfo">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputQuedaTensao" class="valor-display valor-input" value="4">
+                        <span class="unidade">%</span>
+                    </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoQuedaTensao" style="display: none;">
+                    <span data-i18n="tooltips.quedaTensao">A queda de tensão máxima é o percentual de redução de tensão permitido ao longo do circuito. Valores menores garantem melhor desempenho dos equipamentos, mas exigem fios mais grossos. Para projetos residenciais no Brasil, recomenda-se 3% a 4% conforme a NBR 5410. Valores maiores podem causar problemas de funcionamento dos equipamentos.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderQuedaTensao" data-step="-0.5" data-i18n-aria="aria.decrease">−</button>
+                    <input type="range" id="sliderQuedaTensao" min="1" max="5" step="0.5" value="4">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderQuedaTensao" data-step="0.5" data-i18n-aria="aria.increase">+</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE MEMORIAL DE CÁLCULO -->
+        <!-- Começa escondida (display: none) -->
+        <!-- Aparece quando o usuário clica em "SAIBA MAIS" -->
+        <!-- ========================================== -->
+        <div id="memorialSection" class="card memorial-section" style="display: none;">
+            <div class="memorial-header">
+                <h2 data-i18n="memorial.titulo">📚 Memorial de Cálculo - Bitola de Fios</h2>
+                <button id="btnFecharMemorial" class="btn-fechar-memorial" data-i18n-title="botoes.voltar">
+                    <span data-i18n="botoes.voltar">← Voltar</span>
+                </button>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.introTitulo">🎯 Objetivo do Cálculo</h3>
+                <p data-i18n="memorial.introTexto">Este memorial explica passo a passo como é calculada a bitola mínima de fios elétricos para circuitos CC e CA, considerando potência, distância, tensão e queda de tensão máxima permitida.</p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo1Titulo">1️⃣ Passo 1: Calcular Corrente do Circuito</h3>
+                <p><strong data-i18n="memorial.formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong data-i18n="memorial.formulaCorrente">Corrente (A) = Potência (W) ÷ Tensão (V)</strong></p>
+                </div>
+                <p data-i18n="memorial.passo1Explicacao">A corrente é calculada dividindo a potência pela tensão. Esta é a corrente que o circuito precisa transportar.</p>
+                <p><strong data-i18n="memorial.exemplo">Exemplo:</strong> <span id="memorial-exemplo-corrente">1000W ÷ 220V = 4.55A</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo2Titulo">2️⃣ Passo 2: Calcular Área de Seção Mínima</h3>
+                <p><strong data-i18n="memorial.formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Área (mm²) = (2 × ρ × L × I) ÷ ΔV</strong></p>
+                </div>
+                <p data-i18n="memorial.passo2Explicacao">A área mínima é calculada considerando a resistividade do cobre, a distância (multiplicada por 2 para ida e volta), a corrente e a queda de tensão máxima permitida.</p>
+                <p><strong data-i18n="memorial.exemplo">Exemplo:</strong> <span id="memorial-exemplo-area">(2 × 0.0178 × 20m × 4.55A) ÷ 8.8V = 0.37 mm²</span></p>
+                <div class="info-box">
+                    <p><strong data-i18n="memorial.constantes">Valores de referência usados:</strong></p>
+                    <ul>
+                        <li data-i18n="memorial.resistividade">ρ (resistividade do cobre) = 0.0178 Ω·mm²/m a 20°C — Valor para cobre duro conforme NBR 5410. Para cobre recozido (mole), o valor é 0.017241 Ω·mm²/m (NBR NM 280). Este valor representa a resistência elétrica específica do material e varia com a temperatura e têmpera do cobre.</li>
+                        <li data-i18n="memorial.fator2">Fator 2 = considera ida e volta do circuito (dois condutores) — O circuito elétrico precisa de dois fios: um para levar a corrente até a carga e outro para retornar. Por isso, a distância total percorrida pela corrente é 2 × distância entre fonte e carga.</li>
+                        <li><strong data-i18n="memorial.quedaRecomendada">Queda de tensão recomendada:</strong> <span data-i18n="memorial.quedaRecomendadaTexto">4% — Padrão mais utilizado para projetos residenciais no Brasil, conforme normas técnicas.</span></li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong data-i18n="memorial.leiOhmTitulo">⚛️ Lei Física Aplicada — Lei de Ohm:</strong></p>
+                    <p style="margin-top: 5px;" data-i18n="memorial.leiOhmTexto">A Lei de Ohm relaciona tensão (V), corrente (I) e resistência (R): V = I × R. No cálculo de bitola, usamos esta lei para determinar a queda de tensão: quanto maior a corrente e a resistência do fio, maior a queda de tensão. A resistência do fio depende da resistividade do material (cobre), do comprimento e da área da seção transversal (bitola).</p>
+                </div>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo3Titulo">3️⃣ Passo 3: Selecionar Bitola Comercial</h3>
+                <p data-i18n="memorial.passo3Explicacao">A área mínima calculada é multiplicada por um fator de segurança de 1.25 (25% de margem) e então selecionamos a bitola comercial padrão brasileiro (NBR 5410) que atende ao requisito.</p>
+                <p><strong data-i18n="memorial.exemplo">Exemplo:</strong> <span id="memorial-exemplo-bitola">Área mínima 0.36 mm² × 1.25 = 0.45 mm² → Bitola comercial: 1.5 mm²</span></p>
+                <div class="info-box">
+                    <p><strong data-i18n="memorial.bitolas">Bitolas comerciais disponíveis:</strong></p>
+                    <p data-i18n="memorial.bitolasList">1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240 mm²</p>
+                </div>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo4Titulo">4️⃣ Passo 4: Verificar Queda de Tensão Real</h3>
+                <p><strong data-i18n="memorial.formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong data-i18n="memorial.formulaQueda">Queda Real (%) = ((2 × ρ × L × I) ÷ S) ÷ Tensão × 100</strong></p>
+                </div>
+                <p data-i18n="memorial.passo4Explicacao">Recalculamos a queda de tensão com a bitola comercial escolhida para verificar se está dentro do limite permitido.</p>
+                <p><strong data-i18n="memorial.exemplo">Exemplo:</strong> <span id="memorial-exemplo-queda">Com bitola 1.5 mm² → queda real = 1.06% (dentro do limite de 4%)</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo5Titulo">5️⃣ Passo 5: Selecionar Disjuntor Comercial</h3>
+                <p data-i18n="memorial.passo5Explicacao">O disjuntor é selecionado com base na corrente do circuito, aplicando um fator de segurança de 1.25 e escolhendo o disjuntor comercial padrão que atende ao requisito.</p>
+                <p><strong data-i18n="memorial.exemplo">Exemplo:</strong> <span id="memorial-exemplo-disjuntor">Corrente 4.55A × 1.25 = 5.69A → Disjuntor comercial: 10A</span></p>
+            </div>
+
+            <div class="resumo-calculado">
+                <h3 data-i18n="memorial.resumoTitulo">📊 Resumo Calculado</h3>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoCorrente">Corrente do Circuito:</span>
+                    <span id="resumo-corrente">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoArea">Área Mínima:</span>
+                    <span id="resumo-area">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoBitola">Bitola Comercial:</span>
+                    <span id="resumo-bitola">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoQueda">Queda Real:</span>
+                    <span id="resumo-queda">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoDisjuntor">Disjuntor:</span>
+                    <span id="resumo-disjuntor">-</span>
+                </div>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.referenciasTitulo">📚 Referências Bibliográficas e Fontes Técnicas</h3>
+                <div class="info-box">
+                    <p><strong data-i18n="memorial.referenciasNormasTitulo">Normas Técnicas:</strong></p>
+                    <ul>
+                        <li data-i18n-html="memorial.referenciasNbr5410"></li>
+                        <li data-i18n-html="memorial.referenciasNbrNm280"></li>
+                        <li data-i18n-html="memorial.referenciasCei64"></li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong data-i18n="memorial.referenciasGuiasTitulo">Guias e Padrões Internacionais:</strong></p>
+                    <ul>
+                        <li data-i18n-html="memorial.referenciasIeee525"></li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong data-i18n="memorial.referenciasFormulasTitulo">Fórmulas e Fundamentos Físicos:</strong></p>
+                    <ul>
+                        <li data-i18n-html="memorial.referenciasLeiOhm"></li>
+                        <li data-i18n-html="memorial.referenciasResistencia"></li>
+                        <li data-i18n-html="memorial.referenciasQuedaMonofasico"></li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong data-i18n="memorial.referenciasFontesTitulo">Fontes de Consulta:</strong></p>
+                    <ul>
+                        <li data-i18n="memorial.referenciasFontesLista"></li>
+                    </ul>
+                </div>
+            </div>
+
+            <button class="btn-voltar-memorial" data-i18n-title="botoes.voltar">
+                <span data-i18n="botoes.voltar">← Voltar</span>
+            </button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE RESULTADOS -->
+        <!-- ========================================== -->
+        <section class="card resultados" id="resultadosSection">
+            <div class="resultados-header-com-ajuda">
+                <h2 data-i18n="resultado.titulo">📊 Resultados</h2>
+                <button id="btnMemorial" class="btn-help" data-i18n-title="botoes.saibaMais" tabindex="10">
+                    <span class="texto-saiba-mais" data-i18n="botoes.saibaMais">SAIBA MAIS!</span>
+                </button>
+            </div>
+
+            <div class="resultado-item destaque">
+                <span class="label-resultado" data-i18n="resultado.bitolaComercial">Bitola Comercial Recomendada:</span>
+                <span class="valor-resultado-grande" id="bitolaComercial">-</span>
+            </div>
+
+            <div class="resultado-item destaque">
+                <span class="label-resultado" data-i18n="resultado.areaMinima">Área de Seção Mínima:</span>
+                <span class="valor-resultado-grande" id="areaMinima">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado.corrente">Corrente do Circuito:</span>
+                <span class="valor-resultado" id="correnteCircuito">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado.quedaReal">Queda de Tensão Real:</span>
+                <span class="valor-resultado" id="quedaReal">-</span>
+            </div>
+
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado.disjuntor">Disjuntor Comercial Recomendado:</span>
+                <span class="valor-resultado" id="disjuntorComercial">-</span>
+            </div>
+            <!-- Painel de Explicação V2.0 -->
+            <div id="v2-explicacao"></div>
+        </section>
+    </div>
+
+    <footer>
+        <p data-i18n="footer">Calculadora de Bitola de Fios - Engenharia Nata @ 2026</p>
+    </footer>
+
+    <!-- Botão de retorno à tela inicial -->
+    <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria.home">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <!-- Scripts -->
+    <script type="module" src="bitola-script.js?v=2.0.0"></script>
+</body>
+</html>
+
+

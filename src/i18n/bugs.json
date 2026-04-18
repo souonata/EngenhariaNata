@@ -1,0 +1,98 @@
+{
+  "pt-BR": {
+    "titles": {
+      "langPt": "Português",
+      "langIt": "Italiano"
+    },
+    "titulo": "Relatar Bug ou Sugestão",
+    "descricao": "Encontrou algum problema ou tem uma ideia para melhorar? Conte-nos!",
+    "googleForms": {
+      "titulo": "📨 Envie seu relatório",
+      "descricao": "Use o formulário abaixo. A interface é nativa da página, mas as respostas continuam sendo enviadas para sua base do Google Forms.",
+      "abrirNovaAba": "Abrir formulário original em nova aba"
+    },
+    "formulario": {
+      "categoria": "Categoria",
+      "catBug": "🐛 Bug",
+      "catSugestao": "💡 Sugestão",
+      "catElogio": "⭐ Elogio",
+      "emailLabel": "Contato (Opcional)",
+      "emailPlaceholder": "seu@email.com",
+      "emailDica": "Informe seu email apenas se quiser receber resposta.",
+      "descricao": "Descrição *",
+      "descricaoPlaceholder": "Descreva o problema encontrado, o que você estava fazendo e o que esperava que acontecesse...",
+      "enviar": "📤 Enviar Relatório",
+      "enviando": "Enviando...",
+      "voltar": "← Voltar"
+    },
+    "historico": {
+      "titulo": "Meus Relatórios",
+      "vazio": "Nenhum relatório enviado ainda.",
+      "exportar": "⬇ Exportar como JSON"
+    },
+    "categorias": {
+      "bug": "Bug",
+      "sugestao": "Sugestão",
+      "elogio": "Elogio"
+    },
+    "mensagens": {
+      "sucesso": "✅ Relatório enviado com sucesso. Obrigado pelo feedback.",
+      "erro": "❌ Não foi possível enviar agora. Tente novamente.",
+      "camposObrigatorios": "⚠️ Preencha a descrição antes de enviar."
+    },
+    "aria": {
+      "langPt": "Alterar idioma para Português",
+      "langIt": "Alterar idioma para Italiano",
+      "home": "Voltar à tela inicial"
+    },
+    "footer": "💻 Engenharia Nata @ 2026"
+  },
+  "it-IT": {
+    "titles": {
+      "langPt": "Portoghese",
+      "langIt": "Italiano"
+    },
+    "titulo": "Segnala Bug o Suggerimento",
+    "descricao": "Hai trovato un problema o hai un'idea per migliorare? Raccontacelo!",
+    "googleForms": {
+      "titulo": "📨 Invia la tua segnalazione",
+      "descricao": "Usa il modulo qui sotto. L'interfaccia è nativa della pagina, ma le risposte continuano a essere inviate al tuo Google Forms.",
+      "abrirNovaAba": "Apri il modulo originale in una nuova scheda"
+    },
+    "formulario": {
+      "categoria": "Categoria",
+      "catBug": "🐛 Bug",
+      "catSugestao": "💡 Suggerimento",
+      "catElogio": "⭐ Complimento",
+      "emailLabel": "Contatto (Opzionale)",
+      "emailPlaceholder": "tua@email.com",
+      "emailDica": "Inserisci la tua email solo se vuoi ricevere una risposta.",
+      "descricao": "Descrizione *",
+      "descricaoPlaceholder": "Descrivi il problema trovato, cosa stavi facendo e cosa ti aspettavi...",
+      "enviar": "📤 Invia Segnalazione",
+      "enviando": "Invio in corso...",
+      "voltar": "← Indietro"
+    },
+    "historico": {
+      "titulo": "Le Mie Segnalazioni",
+      "vazio": "Nessuna segnalazione inviata ancora.",
+      "exportar": "⬇ Esporta come JSON"
+    },
+    "categorias": {
+      "bug": "Bug",
+      "sugestao": "Suggerimento",
+      "elogio": "Complimento"
+    },
+    "mensagens": {
+      "sucesso": "✅ Segnalazione inviata con successo. Grazie per il feedback.",
+      "erro": "❌ Impossibile inviare ora. Riprova.",
+      "camposObrigatorios": "⚠️ Compila la descrizione prima di inviare."
+    },
+    "aria": {
+      "langPt": "Cambia lingua in portoghese",
+      "langIt": "Cambia lingua in italiano",
+      "home": "Torna alla schermata iniziale"
+    },
+    "footer": "💻 Engenharia Nata @ 2026"
+  }
+}

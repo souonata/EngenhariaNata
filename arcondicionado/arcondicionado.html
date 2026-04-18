@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="apple-touch-icon" href="../favicon.svg">
+
+    <!-- SEO Meta Tags -->
+    <title>Dimensionador de Ar Condicionado - Cálculo de BTU | Engenharia NATA</title>
+    <meta name="description" content="Calculadora para dimensionamento de ar condicionado. Determina a capacidade necessária (BTU) baseada em área, altura, número de pessoas, equipamentos e condições ambientais.">
+    <meta name="keywords" content="dimensionamento ar condicionado, calculadora BTU, capacidade ar condicionado, cálculo BTU, climatização, refrigeração">
+    <meta name="author" content="Engenharia NATA">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://engnata.infinityfree.me/arcondicionado/arcondicionado.html">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://engnata.infinityfree.me/arcondicionado/arcondicionado.html">
+    <meta property="og:title" content="Dimensionador de Ar Condicionado - Engenharia NATA">
+    <meta property="og:description" content="Calculadora para dimensionamento de ar condicionado com cálculo de BTU baseado em área, altura e condições ambientais.">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:locale:alternate" content="it_IT">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:url" content="https://engnata.infinityfree.me/arcondicionado/arcondicionado.html">
+    <meta property="twitter:title" content="Dimensionador de Ar Condicionado">
+    <meta property="twitter:description" content="Calculadora para dimensionamento de ar condicionado com cálculo de BTU baseado em área, altura e condições ambientais.">
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.0.0">
+    <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
+    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
+    <link rel="stylesheet" href="arcondicionado-styles.css?v=1.0.2">
+
+    <!-- Analytics: GoatCounter (privacy-friendly, LGPD/GDPR-compliant) -->
+    <script data-goatcounter="https://souonata.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+</head>
+<body>
+    <!-- ========================================== -->
+    <!-- SELETOR DE IDIOMA (PADRÃO GLOBAL - FORA DO CONTAINER) -->
+    <!-- ========================================== -->
+    <div class="language-selector">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" data-i18n-aria="aria-lang-pt" data-i18n-title="title-lang-pt">
+            <span class="flag" aria-hidden="true">🇧🇷</span>
+            <span class="lang-text">PT</span>
+        </button>
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" data-i18n-aria="aria-lang-it" data-i18n-title="title-lang-it">
+            <span class="flag" aria-hidden="true">🇮🇹</span>
+            <span class="lang-text">IT</span>
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- ========================================== -->
+        <!-- CABEÇALHO -->
+        <!-- ========================================== -->
+        <header>
+            <h1 data-i18n="app-title">❄️ Dimensionador de Ar Condicionado</h1>
+            <p class="subtitulo" data-i18n="app-subtitle">Cálculo de BTU para Ambientes Residenciais</p>
+        </header>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE ENTRADAS -->
+        <!-- ========================================== -->
+        <section class="card">
+            <!-- Número de Ambientes com Ar Condicionado -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderNumAmbientes" data-i18n="label-num-ambientes">Número de Ambientes com Ar Condicionado</label>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputNumAmbientes" class="valor-display valor-input" value="1">
+                        <span class="unidade" data-i18n="unit-rooms">ambientes</span>
+                    </div>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderNumAmbientes" data-step="-1" data-i18n-aria="aria-decrease">−</button>
+                    <input type="range" id="sliderNumAmbientes" min="1" max="8" step="1" value="1">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderNumAmbientes" data-step="1" data-i18n-aria="aria-increase">+</button>
+                </div>
+                <p class="dica" data-i18n="dica-num-ambientes">💡 Número de cômodos/ambientes que terão ar condicionado</p>
+            </div>
+
+            <!-- Soma das Áreas dos Ambientes (oculto quando apenas 1 ambiente) -->
+            <div class="grupo-entrada" id="grupoAreaTotal">
+                <div class="cabecalho-controle">
+                    <label for="sliderAreaTotal" data-i18n="label-area-total">Soma das Áreas dos Ambientes</label>
+                    <span class="info-icon" id="infoIconAreaTotal" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputAreaTotal" class="valor-display valor-input" value="20">
+                        <span class="unidade" data-i18n="unit-m2">m²</span>
+                    </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoAreaTotal" style="display: none;">
+                    <span data-i18n="tooltip-area-total-texto">A soma das áreas é a área total de todos os ambientes que terão ar condicionado em um sistema multi-split. O cálculo divide o BTU total necessário pelo número de ambientes para dimensionar cada unidade interna proporcionalmente.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderAreaTotal" data-step="-5" data-i18n-aria="aria-decrease">−</button>
+                    <input type="range" id="sliderAreaTotal" min="10" max="300" step="5" value="20">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderAreaTotal" data-step="5" data-i18n-aria="aria-increase">+</button>
+                </div>
+            </div>
+
+            <!-- Área do Ambiente (oculto quando multi-split está ativo) -->
+            <div class="grupo-entrada" id="grupoAreaIndividual">
+                <div class="cabecalho-controle">
+                    <label for="sliderArea" data-i18n="label-area">Área do Ambiente</label>
+                    <span class="info-icon" id="infoIconArea" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputArea" class="valor-display valor-input" value="20">
+                        <span class="unidade" data-i18n="unit-m2">m²</span>
+                    </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoArea" style="display: none;">
+                    <span data-i18n="tooltip-area-texto">A área do ambiente é medida em metros quadrados (m²) e representa o tamanho do espaço que será climatizado. O cálculo de BTU considera aproximadamente 700 BTU por m² como base, ajustado pela altura do pé direito, número de pessoas, equipamentos e condições ambientais.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderArea" data-step="-1" data-i18n-aria="aria-decrease">−</button>
+                    <input type="range" id="sliderArea" min="2" max="100" step="1" value="20">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderArea" data-step="1" data-i18n-aria="aria-increase">+</button>
+                </div>
+            </div>
+
+            <!-- Altura do Pé Direito -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderAltura" data-i18n="label-altura">Altura do Pé Direito</label>
+                    <span class="info-icon" id="infoIconAltura" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputAltura" class="valor-display valor-input" value="2,7">
+                        <span class="unidade" data-i18n="unit-meter">m</span>
+                    </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoAltura" style="display: none;">
+                    <span data-i18n="tooltip-altura-texto">A altura do pé direito é a distância do piso ao teto, medida em metros. Ambientes mais altos têm maior volume de ar para climatizar, aumentando a necessidade de BTU. O cálculo ajusta o BTU por m² proporcionalmente à altura, usando 2,7m como referência padrão residencial.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderAltura" data-step="-0.1" data-i18n-aria="aria-decrease">−</button>
+                    <input type="range" id="sliderAltura" min="2.0" max="4.0" step="0.1" value="2.7">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderAltura" data-step="0.1" data-i18n-aria="aria-increase">+</button>
+                </div>
+            </div>
+
+            <!-- Número de Pessoas -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderPessoas" data-i18n="label-pessoas">Número de Pessoas</label>
+                    <span class="info-icon" id="infoIconPessoas" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputPessoas" class="valor-display valor-input" value="2">
+                        <span class="unidade" data-i18n="unit-people">pessoas</span>
+                    </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoPessoas" style="display: none;">
+                    <span data-i18n="tooltip-pessoas-texto">O número de pessoas no ambiente gera calor corporal que precisa ser removido pelo ar condicionado. Cada pessoa adiciona aproximadamente 600 BTU à carga térmica. No Brasil, apenas pessoas além das primeiras 2 são consideradas; na Itália, todas as pessoas são contabilizadas.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPessoas" data-step="-1" data-i18n-aria="aria-decrease">−</button>
+                    <input type="range" id="sliderPessoas" min="1" max="10" step="1" value="2">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPessoas" data-step="1" data-i18n-aria="aria-increase">+</button>
+                </div>
+            </div>
+
+            <!-- Equipamentos Elétricos -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderEquipamentos" data-i18n="label-equipamentos">Equipamentos Elétricos</label>
+                    <span class="info-icon" id="infoIconEquipamentos" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputEquipamentos" class="valor-display valor-input" value="2">
+                        <span class="unidade" data-i18n="unit-devices">unidades</span>
+                    </div>
+                </div>
+                <!-- Descrição que aparece/desaparece ao clicar no ícone -->
+                <div class="descricao-info" id="descricaoEquipamentos" style="display: none;">
+                    <span data-i18n="tooltip-equipamentos-texto">Equipamentos elétricos geram calor durante o funcionamento, aumentando a carga térmica do ambiente. Cada equipamento (TV, computador, geladeira, etc.) adiciona aproximadamente 600 BTU ao cálculo. Conte cada aparelho como 1 unidade.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderEquipamentos" data-step="-1" data-i18n-aria="aria-decrease">−</button>
+                    <input type="range" id="sliderEquipamentos" min="0" max="10" step="1" value="2">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderEquipamentos" data-step="1" data-i18n-aria="aria-increase">+</button>
+                </div>
+            </div>
+
+            <!-- Insolação -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-insolacao">Insolação (Exposição ao Sol)</label>
+                <div class="grupo-radio">
+                    <label class="opcao-radio">
+                        <input type="radio" name="insolacao" value="baixa" checked data-i18n-value="bassa">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opt-baixa">Baixa</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="insolacao" value="media" data-i18n-value="media">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opt-media">Média</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="insolacao" value="alta" data-i18n-value="alta">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opt-alta">Alta</span>
+                        </div>
+                    </label>
+                </div>
+                <p class="dica" data-i18n="dica-insolacao">💡 Alta = muitas janelas voltadas para o sol; Baixa = pouca exposição solar</p>
+            </div>
+
+            <!-- Isolamento Térmico -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-isolamento">Isolamento Térmico</label>
+                <div class="grupo-radio">
+                    <label class="opcao-radio">
+                        <input type="radio" name="isolamento" value="ruim" data-i18n-value="scarso">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opt-ruim">Ruim</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="isolamento" value="medio" checked data-i18n-value="medio">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opt-medio">Médio</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="isolamento" value="bom" data-i18n-value="buono">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opt-bom">Bom</span>
+                        </div>
+                    </label>
+                </div>
+                <p class="dica" data-i18n="dica-isolamento">💡 Bom = isolamento adequado; Ruim = sem isolamento ou muitas aberturas</p>
+            </div>
+
+            <!-- Classe Energética -->
+            <div class="grupo-entrada">
+                <label data-i18n="label-classe-energetica">Classe Energética</label>
+                <div class="classe-energetica-container">
+                    <div class="classe-energetica-scale">
+                        <div class="classe-box" data-classe="A4" data-valor="0.40" title="≤0,40 kWh/m².ano">
+                            <div class="classe-label">A4</div>
+                            <div class="classe-valor">≤0,40</div>
+                        </div>
+                        <div class="classe-box" data-classe="A3" data-valor="0.50" title="0,40-0,60 kWh/m².ano">
+                            <div class="classe-label">A3</div>
+                            <div class="classe-valor">0,40-0,60</div>
+                        </div>
+                        <div class="classe-box" data-classe="A2" data-valor="0.70" title="0,60-0,80 kWh/m².ano">
+                            <div class="classe-label">A2</div>
+                            <div class="classe-valor">0,60-0,80</div>
+                        </div>
+                        <div class="classe-box" data-classe="A1" data-valor="0.90" title="0,80-1,00 kWh/m².ano">
+                            <div class="classe-label">A1</div>
+                            <div class="classe-valor">0,80-1,00</div>
+                        </div>
+                        <div class="classe-box" data-classe="B" data-valor="1.10" title="1,00-1,20 kWh/m².ano">
+                            <div class="classe-label">B</div>
+                            <div class="classe-valor">1,00-1,20</div>
+                        </div>
+                        <div class="classe-box" data-classe="C" data-valor="1.35" title="1,20-1,50 kWh/m².ano">
+                            <div class="classe-label">C</div>
+                            <div class="classe-valor">1,20-1,50</div>
+                        </div>
+                        <div class="classe-box classe-box-selected" data-classe="D" data-valor="1.75" title="1,50-2,00 kWh/m².ano">
+                            <div class="classe-label">D</div>
+                            <div class="classe-valor">1,50-2,00</div>
+                        </div>
+                        <div class="classe-box" data-classe="E" data-valor="2.30" title="2,00-2,60 kWh/m².ano">
+                            <div class="classe-label">E</div>
+                            <div class="classe-valor">2,00-2,60</div>
+                        </div>
+                        <div class="classe-box" data-classe="F" data-valor="3.05" title="2,60-3,50 kWh/m².ano">
+                            <div class="classe-label">F</div>
+                            <div class="classe-valor">2,60-3,50</div>
+                        </div>
+                        <div class="classe-box" data-classe="G" data-valor="4.00" title=">3,50 kWh/m².ano">
+                            <div class="classe-label">G</div>
+                            <div class="classe-valor">>3,50</div>
+                        </div>
+                    </div>
+                    <p class="classe-energetica-unidade" data-i18n="classe-energetica-unidade">* Valores em kWh/m².ano</p>
+                </div>
+                <input type="hidden" id="inputClasseEnergetica" value="1.75">
+                <p class="dica" data-i18n="dica-classe-energetica">💡 Classe energética da casa/edifício. Usado para calcular a perda de energia térmica para ambiente</p>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE MEMORIAL DE CÁLCULO -->
+        <!-- Começa escondida (display: none) -->
+        <!-- Aparece quando o usuário clica em "SAIBA MAIS" -->
+        <!-- ========================================== -->
+        <div id="memorialSection" class="card memorial-section" style="display: none;">
+            <div class="memorial-header">
+                <h2 data-i18n="memorial-title">📚 Memorial de Cálculo - Dimensionamento de Ar Condicionado</h2>
+                <button id="btnFecharMemorial" class="btn-fechar-memorial" data-i18n-title="back-to-calculator">
+                    <span data-i18n="back">← Voltar</span>
+                </button>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-intro-title">🎯 Objetivo do Dimensionamento</h3>
+                <p data-i18n="memorial-intro-text">Este memorial explica passo a passo como é calculada a capacidade necessária de ar condicionado (em BTU) para um sistema multi-split, considerando a área total dos ambientes, número de ambientes, pessoas, equipamentos, insolação e isolamento térmico.</p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo1-title">1️⃣ Passo 1: Calcular Volume Total do Sistema</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong data-i18n="memorial-formula-volume">Volume Total (m³) = Área Total (m²) × Altura (m)</strong></p>
+                </div>
+                <p data-i18n="memorial-passo1-explicacao">O volume total determina a quantidade de ar que precisa ser resfriado em todos os ambientes do sistema. A área total é a soma das áreas de todos os ambientes que terão ar condicionado.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-volume">55 m² × 3.5 m = 192.5 m³</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo2-title">2️⃣ Passo 2: Calcular BTU Base Total</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong data-i18n="memorial-formula-fator-altura">Fator Altura = Altura (m) ÷ 2.7 m (padrão)</strong></p>
+                    <p><strong data-i18n="memorial-formula-btu-area">BTU Área Total = Área Total (m²) × 700 BTU/m² × Fator Altura</strong></p>
+                    <p><strong data-i18n="memorial-formula-btu-pessoas">BTU Pessoas Total = Número Total de Pessoas × 600 BTU/pessoa</strong></p>
+                    <p><strong data-i18n="memorial-formula-btu-equipamentos">BTU Equipamentos Total = Número Total de Equipamentos × 600 BTU/equipamento</strong></p>
+                    <p><strong data-i18n="memorial-formula-btu-base">BTU Base Total = BTU Área Total + BTU Pessoas Total + BTU Equipamentos Total</strong></p>
+                </div>
+                <p data-i18n="memorial-passo2-explicacao">Cada pessoa e equipamento elétrico gera calor que precisa ser removido pelo ar condicionado. No sistema multi-split, consideramos o total de pessoas e equipamentos de todos os ambientes.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-btu-base">192.5 m³ × 600 = 115.500 BTU + 2 pessoas × 600 = 1.200 BTU + 8 equipamentos × 600 = 4.800 BTU = 121.500 BTU</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Aplicar Fatores de Ajuste (Insolação e Isolamento)</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong data-i18n="memorial-formula-btu-final">BTU Final Total = BTU Base Total × Fator Insolação × Fator Isolamento</strong></p>
+                </div>
+                <p data-i18n="memorial-passo3-explicacao">Os fatores de insolação e isolamento ajustam a capacidade necessária baseado nas condições dos ambientes. Estes são fatores multiplicadores que refletem o impacto real das condições ambientais na carga térmica.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-fatores">121.500 BTU × 1.15 (insolação média) × 1.0 (isolamento médio) = 139.725 BTU</span></p>
+                <div class="info-box">
+                    <p><strong data-i18n="memorial-fatores-title">Valores de referência utilizados:</strong></p>
+                    <ul>
+                        <li data-i18n="memorial-fatores-insolacao">Insolação: Baixa (1.0), Média (1.15), Alta (1.3) — Baseado em práticas da indústria de refrigeração</li>
+                        <li data-i18n="memorial-fatores-isolamento">Isolamento: Bom (0.8), Médio (1.0), Ruim (1.2) — Baseado em normas técnicas ASHRAE</li>
+                        <li><strong data-i18n="memorial-btu-por-m2">BTU por m²:</strong> <span data-i18n="memorial-btu-por-m2-texto">700 BTU/m² — Valor padrão amplamente aceito na indústria para dimensionamento residencial (ajustado por fator de altura do pé direito)</span></li>
+                        <li><strong data-i18n="memorial-btu-por-pessoa">BTU por Pessoa:</strong> <span data-i18n="memorial-btu-por-pessoa-texto">600 BTU/pessoa — Considera calor metabólico (calor sensível ~400 BTU/h + calor latente ~200 BTU/h)</span></li>
+                        <li><strong data-i18n="memorial-btu-por-equipamento">BTU por Equipamento:</strong> <span data-i18n="memorial-btu-por-equipamento-texto">600 BTU/equipamento — Baseado na Lei da Conservação de Energia: toda energia elétrica consumida é convertida em calor</span></li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong data-i18n="memorial-fatores-afetam-titulo">💡 Como os fatores afetam o cálculo:</strong></p>
+                    <ul>
+                        <li><strong>Insolação:</strong> <span data-i18n="memorial-fatores-insolacao-texto">Ambientes com maior exposição solar recebem mais calor, aumentando a necessidade de refrigeração. Alta insolação pode aumentar a carga térmica em até 30%.</span></li>
+                        <li><strong>Isolamento:</strong> <span data-i18n="memorial-fatores-isolamento-texto">Bom isolamento reduz a transferência de calor entre o ambiente interno e externo, diminuindo a necessidade de refrigeração em até 20%. Isolamento ruim pode aumentar a necessidade em até 20%.</span></li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong data-i18n="memorial-lei-fisica-titulo">⚛️ Lei Física Aplicada — Conservação de Energia e Transferência de Calor:</strong></p>
+                    <p style="margin-top: 5px;" data-i18n="memorial-lei-fisica-texto">Todo equipamento elétrico gera calor porque a energia elétrica consumida é transformada em calor (Lei da Conservação de Energia). O ar condicionado remove esse calor do ambiente interno e transfere para o ambiente externo (Transferência de Calor: calor sempre flui do mais quente para o mais frio).</p>
+                </div>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo4-title">4️⃣ Passo 4: Calcular BTU por Ambiente</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>BTU por Ambiente = BTU Final Total ÷ Número de Ambientes</strong></p>
+                </div>
+                <p data-i18n="memorial-passo4-explicacao">O BTU total é dividido pelo número de ambientes para determinar a capacidade necessária de cada unidade interna (evaporadora). Cada split interno será dimensionado para atender sua parte proporcional do sistema.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-btu-por-ambiente">139.725 BTU ÷ 5 ambientes = 27.945 BTU por ambiente</span></p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo5-title">5️⃣ Passo 5: Selecionar Modelos Comerciais</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Se BTU por Ambiente ≤ 60k BTU:</strong></p>
+                    <p style="margin-left: 20px;">BTU por Ambiente (Modelo) = Arredondar para cima (BTU por Ambiente Calculado)</p>
+                    <p><strong>Se BTU por Ambiente > 60k BTU:</strong></p>
+                    <p style="margin-left: 20px;">Unidades por Ambiente = Arredondar para cima (BTU por Ambiente ÷ 60k BTU)</p>
+                    <p style="margin-left: 20px;">BTU por Unidade Interna = 60k BTU (maior modelo disponível)</p>
+                    <p><strong>BTU Total Real = BTU por Unidade Interna × Unidades por Ambiente × Número de Ambientes</strong></p>
+                    <p><strong>Se BTU Total Real ≤ 180k BTU:</strong></p>
+                    <p style="margin-left: 20px;">Unidade Externa = Arredondar para cima (BTU Total Real)</p>
+                    <p><strong>Se BTU Total Real > 180k BTU:</strong></p>
+                    <p style="margin-left: 20px;">Número de Unidades Externas = Arredondar para cima (BTU Total Real ÷ 180k BTU)</p>
+                    <p style="margin-left: 20px;">BTU por Unidade Externa = 180k BTU (maior modelo disponível)</p>
+                </div>
+                <p data-i18n="memorial-passo5-explicacao">O BTU calculado por ambiente é arredondado para cima para o modelo comercial mais próximo. Se o BTU necessário por ambiente exceder 60k BTU (maior modelo interno disponível), serão usadas múltiplas unidades internas de 60k BTU por ambiente. A unidade externa (condensadora) deve ter capacidade para o BTU total real do sistema (soma das capacidades de todas as unidades internas). Se o BTU total exceder 180k BTU (maior modelo externo disponível), serão usadas múltiplas unidades externas de 180k BTU.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-modelo">27.945 BTU → Modelo comercial por ambiente: 30.000 BTU. BTU Total Real: 30.000 × 5 = 150.000 BTU. Unidade Externa: 180.000 BTU</span></p>
+                <div class="info-box">
+                    <p><strong data-i18n="memorial-modelos-title">Modelos comerciais disponíveis:</strong></p>
+                    <p><strong>Unidades Internas (Evaporadoras):</strong> 5.000, 7.000, 9.000, 12.000, 18.000, 24.000, 30.000, 36.000, 48.000, 60.000 BTU (máximo por unidade)</p>
+                    <p><strong>Unidades Externas (Condensadoras Multi-Split):</strong> 18.000, 24.000, 30.000, 36.000, 48.000, 60.000, 72.000, 84.000, 96.000, 120.000, 144.000, 180.000 BTU</p>
+                    <p style="margin-top: 15px;"><strong data-i18n="memorial-tabelas-precos-title">📊 Tabelas de Preços e Tamanhos:</strong></p>
+                    <p data-i18n="memorial-tabelas-precos-texto">Para informações detalhadas sobre preços médios de mercado (2025-2026) e dimensões padrões de unidades internas e externas, consulte o arquivo <strong>TABELAS_PRECOS_TAMANHOS.md</strong> na pasta do aplicativo. Os valores incluem faixas de preço por capacidade, dimensões físicas aproximadas e fatores que influenciam o custo final.</p>
+                </div>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-passo6-title">6️⃣ Passo 6: Calcular Custo Estimado</h3>
+                <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
+                <div class="formula-box">
+                    <p><strong>Custo Total Unidades Externas = (Preço médio da condensadora) × Número de Unidades Externas</strong></p>
+                    <p><strong>Custo Total Unidades Internas = (Preço médio da evaporadora) × Total de Unidades Internas</strong></p>
+                    <p><strong>Custo Total = Custo Total Unidades Externas + Custo Total Unidades Internas</strong></p>
+                </div>
+                <p data-i18n="memorial-passo6-explicacao">O custo é estimado com base em faixas de preço de mercado (2024-2025) para unidades externas e internas vendidas separadamente. Os valores são médias das faixas de preço pesquisadas.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-custo"></span></p>
+            </div>
+
+            <div class="resumo-calculado">
+                <h3 data-i18n="memorial-resumo-title">📊 Resumo Calculado - Sistema Multi-Split</h3>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-volume">Volume Total:</span>
+                    <span id="resumo-volume">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-btu-base">BTU Base Total:</span>
+                    <span id="resumo-btu-base">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-btu-final-calc">BTU Final Total (após fatores):</span>
+                    <span id="resumo-btu-final-calc">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-btu-por-ambiente">BTU por Ambiente:</span>
+                    <span id="resumo-btu-por-ambiente">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-unidade-interna">Unidade Interna (Modelo):</span>
+                    <span id="resumo-unidade-interna">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-btu-total-real">BTU Total Real:</span>
+                    <span id="resumo-btu-total-real">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-unidade-externa">Unidade Externa (Modelo):</span>
+                    <span id="resumo-unidade-externa">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial-resumo-custo-total">Custo Total Estimado:</span>
+                    <span id="resumo-custo-total">-</span>
+                </div>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial-fontes-title">📚 Referências Bibliográficas e Fontes</h3>
+                <div class="info-box">
+                    <p data-i18n="memorial-fontes-intro">Os valores e fórmulas utilizados neste dimensionamento são baseados em guias técnicos especializados e normas da indústria de climatização, adaptados para as características climáticas específicas de cada região:</p>
+                    <ul style="margin-top: 10px;">
+                        <li data-i18n="memorial-fonte-brasil"><strong>Brasil (Clima Tropical/Quente):</strong> Valores baseados em práticas da indústria brasileira de refrigeração, considerando temperaturas médias elevadas e alta umidade. BTU/m²: 700 (valor fixo devido ao clima quente). BTU/pessoa adicional: 600 (apenas pessoas além das primeiras 2, pois as primeiras 1-2 já estão incluídas no cálculo base por m²). BTU/equipamento: 600.</li>
+                        <li data-i18n="memorial-fonte-italia"><strong>Itália (Clima Temperado):</strong> Valores baseados em guias técnicos italianos e normas europeias, considerando clima temperado com estações bem definidas. BTU/m²: varia conforme isolamento (300 bom, 340 médio, 400 ruim). BTU/pessoa: 200. BTU/equipamento: 300.</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong data-i18n="memorial-fontes-lista-title">Fontes consultadas:</strong></p>
+                    <ul style="margin-top: 5px;">
+                        <li>Calor System - Calcolo BTU condizionatori: <a href="https://www.calor-system.com/calcolo-btu-condizionatori/" target="_blank" rel="noopener noreferrer">calor-system.com</a></li>
+                        <li>Desivero - Come calcolare quanti BTU servono: <a href="https://www.desivero.com/modod/btu-come-sapere-quanti-servono/" target="_blank" rel="noopener noreferrer">desivero.com</a></li>
+                        <li>Rifare Casa - BTU: Come calcolarli: <a href="https://www.rifarecasa.com/dossier/riscaldamento-e-climatizzazione/climatizzazione/calcolo-btu" target="_blank" rel="noopener noreferrer">rifarecasa.com</a></li>
+                        <li>GM Termoidraulica - Guida Completa 2026: <a href="https://www.gm-termoidraulica.it/content/quale-condizionatore-scegliere-guida-completa-2026" target="_blank" rel="noopener noreferrer">gm-termoidraulica.it</a></li>
+                        <li>Risud Termoidraulica - BTU e climatizzatori: <a href="https://www.risud.it/blogs/news/btu-e-climatizzatori-come-scegliere-la-potenza-giusta-per-la-tua-casa" target="_blank" rel="noopener noreferrer">risud.it</a></li>
+                        <li>OVACEN - Air conditioning BTU calculator: <a href="https://ovacen.com/en/calculator/air-conditioning-btu/" target="_blank" rel="noopener noreferrer">ovacen.com</a></li>
+                        <li>MISHub QI - Como calcular potência em BTU: <a href="https://mishubqi.com/products/como-calcular-a-potencia-de-um-ar-condicionado-em-btu-para-uma-area-especifica" target="_blank" rel="noopener noreferrer">mishubqi.com</a></li>
+                        <li><strong>Fontes Brasileiras (Regra de Cálculo por Pessoa):</strong></li>
+                        <li style="margin-left: 20px;">Consul - Como fazer cálculo de ar-condicionado: <a href="https://www.consul.com.br/facilita-consul/ihhh-agora/calculo-de-ar-condicionado/" target="_blank" rel="noopener noreferrer">consul.com.br</a></li>
+                        <li style="margin-left: 20px;">Refrimec - Calculadora BTU's: <a href="https://refrimec.com/calculadora/" target="_blank" rel="noopener noreferrer">refrimec.com</a></li>
+                        <li style="margin-left: 20px;">Leroy Merlin - Como calcular os BTUs do ar-condicionado: <a href="https://blog.leroymerlin.com.br/aprenda-a-calcular-os-btus-do-ar-condicionado/" target="_blank" rel="noopener noreferrer">leroymerlin.com.br</a></li>
+                        <li style="margin-left: 20px;">ClimaRio - Como calcular o BTU ideal: <a href="https://www.climario.com.br/blog/post/como-calcular-o-btu-ideal-do-seu-ar-condicionado-e-acertar-na-escolha" target="_blank" rel="noopener noreferrer">climario.com.br</a></li>
+                        <li>Normas técnicas ASHRAE (American Society of Heating, Refrigerating and Air-Conditioning Engineers)</li>
+                        <li>Normas técnicas ABNT (Associação Brasileira de Normas Técnicas)</li>
+                    </ul>
+                    <p style="margin-top: 15px; font-style: italic;" data-i18n="memorial-fontes-nota">Nota: Os valores foram ajustados para refletir as diferenças climáticas naturais entre Brasil (clima tropical/quente) e Itália (clima temperado). O Brasil, por natureza mais quente, requer valores mais altos de BTU/m² para compensar as temperaturas ambientais elevadas. A Itália, com clima mais frio, utiliza valores menores conforme as guias técnicas locais.</p>
+                </div>
+            </div>
+
+            <button class="btn-voltar-memorial" data-i18n-title="back-to-calculator">
+                <span data-i18n="back">← Voltar</span>
+            </button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE RESULTADOS -->
+        <!-- ========================================== -->
+        <section class="card resultados" id="resultadosSection">
+            <div class="resultados-header-com-ajuda">
+                <h2 data-i18n="resultados-title">📊 Resultados</h2>
+                <button id="btnMemorial" class="btn-help" data-i18n-title="btn-memorial" tabindex="10">
+                    <span class="texto-saiba-mais" data-i18n="learn-more">SAIBA MAIS!</span>
+                </button>
+            </div>
+
+            <!-- Sistema Multi-Split -->
+            <div class="multisplit-section">
+                <h3 class="resultado-subtitulo" data-i18n="resultado-multisplit-title">🏢 Sistema Multi-Split</h3>
+
+                <!-- 1. Custo Total em destaque primeiro -->
+                <div class="resultado-item destaque resultado-item-destaque-principal">
+                    <span class="label-resultado" data-i18n="resultado-custo-sistema">Custo Estimado do Sistema:</span>
+                    <span class="valor-resultado-grande" id="custoSistemaMultisplit">-</span>
+                </div>
+
+                <!-- 2. Detalhamento dos Custos -->
+                <div class="info-box custos-detalhe-box">
+                    <p class="custos-detalhe-titulo" data-i18n="detalhamento-custos">💰 Detalhamento dos Custos:</p>
+                    <ul class="custos-detalhe-lista">
+                        <li>
+                            <span data-i18n="custo-unidade-externa">Unidade Externa:</span>
+                            <strong id="custoUnidadeExternaMultisplit">-</strong>
+                        </li>
+                        <li>
+                            <span data-i18n="custo-unidades-internas">Unidades Internas:</span>
+                            <strong id="custoUnidadesInternasMultisplit">-</strong>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 3. Dados Técnicos -->
+                <div class="dados-tecnicos-box">
+                    <p class="dados-tecnicos-titulo" data-i18n="dados-tecnicos">⚙️ Dados Técnicos:</p>
+                    <div class="resultado-item resultado-item-tecnico">
+                        <span class="label-resultado" data-i18n="resultado-btu-total">BTU Total Necessário:</span>
+                        <span class="valor-resultado" id="btuTotalMultisplit">-</span>
+                    </div>
+                    <div class="resultado-item resultado-item-tecnico">
+                        <span class="label-resultado" data-i18n="resultado-unidade-externa">Unidade Externa (Condensadora):</span>
+                        <span class="valor-resultado" id="unidadeExternaMultisplit">-</span>
+                    </div>
+                    <div class="resultado-item resultado-item-tecnico resultado-item-tecnico-final">
+                        <span class="label-resultado" data-i18n="resultado-unidades-internas">Unidades Internas (Evaporadoras):</span>
+                        <span class="valor-resultado" id="unidadesInternasMultisplit">-</span>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div id="v2-explicacao"></div>
+        </section>
+    </div>
+
+    <footer>
+        <p data-i18n="footer">Dimensionador de Ar Condicionado - Engenharia Nata @ 2026</p>
+    </footer>
+
+    <!-- Botão de retorno à tela inicial -->
+    <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria-home">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <!-- Scripts -->
+    <!-- Chart.js local para gráficos - DEVE ser carregado ANTES do módulo -->
+    <script src="../assets/js/vendor/chart.umd.js"></script>
+    <script type="module" src="arcondicionado-script.js?v=2.0.0"></script>
+</body>
+</html>
+
+
