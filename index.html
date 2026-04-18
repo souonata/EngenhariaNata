@@ -362,27 +362,64 @@
                     <span class="app-name" data-i18n="app-bombaagua">Bomba d'Agua</span>
                 </a>
 
-                <!-- Contador de Visitantes (não é link, display retrô LED) -->
-                <div class="app-icon app-icon-static" data-i18n-aria="app-visitantes" aria-live="polite">
-                    <div class="icon icon-visitantes">
-                        <span class="visitors-count-led" id="visitorsCount" title="" data-i18n-title="app-visitantes-tooltip">—</span>
+                <!-- Ícone do aplicativo Salário -->
+                <a href="salario/salario.html" class="app-icon" data-i18n-aria="app-salario">
+                    <div class="icon">
+                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="gradient-salario" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#1E88E5;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#00ACC1;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <rect width="60" height="60" rx="12" fill="url(#gradient-salario)"/>
+                            <text x="30" y="40" font-size="28" text-anchor="middle">💼</text>
+                        </svg>
                     </div>
-                    <span class="app-name" data-i18n="app-visitantes">Visitantes</span>
-                </div>
+                    <span class="app-name" data-i18n="app-salario">Salário</span>
+                </a>
+
             </div>
         </div>
         
         <!-- Dock (barra inferior do celular) -->
-        <!-- Logo Engenharia NATA com estilo de engenharia de ponta -->
-        <div class="dock">
-            <div class="logo-container">
-                <svg class="logo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="logoTitle">
-                    <title id="logoTitle">ENGENHARIA NATA</title>
-                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" fill="currentColor"/>
-                    <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none"/>
-                </svg>
-                <span class="logo-text">ENGENHARIA <span class="logo-highlight">NATA</span></span>
-            </div>
+        <!-- Logo Engenharia NATA com easter egg no dock -->
+        <div class="dock" id="easterEggDock" data-easter-state="locked">
+            <button class="dock-trigger" id="dockEasterEggTrigger" type="button" aria-label="Engenharia Nata">
+                <span class="dock-marquee-viewport">
+                    <span class="dock-marquee-track" id="dockMarqueeTrack">
+                        <span class="dock-marquee-sequence" id="dockMarqueeSequence">
+                            <span class="logo-container dock-brand">
+                                <svg class="logo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" fill="currentColor"/>
+                                    <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none"/>
+                                </svg>
+                                <span class="logo-text">ENGENHARIA <span class="logo-highlight">NATA</span></span>
+                            </span>
+
+                            <span class="dock-visitors-chip" aria-live="polite">
+                                <span class="dock-visitors-label" data-i18n="app-visitantes">Visitantes</span>
+                                <span class="visitors-count-led dock-visitors-value js-visitors-count" title="" data-i18n-title="app-visitantes-tooltip">—</span>
+                            </span>
+                        </span>
+
+                        <span class="dock-marquee-sequence" aria-hidden="true">
+                            <span class="logo-container dock-brand">
+                                <svg class="logo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" fill="currentColor"/>
+                                    <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none"/>
+                                </svg>
+                                <span class="logo-text">ENGENHARIA <span class="logo-highlight">NATA</span></span>
+                            </span>
+
+                            <span class="dock-visitors-chip">
+                                <span class="dock-visitors-label" data-i18n="app-visitantes">Visitantes</span>
+                                <span class="visitors-count-led dock-visitors-value js-visitors-count">—</span>
+                            </span>
+                        </span>
+                    </span>
+                </span>
+            </button>
         </div>
     </div>
     
@@ -602,6 +639,27 @@
                 </div>
                 <p class="app-description" data-i18n="app-chuva-description">Dimensionador de cisternas para aproveitamento de água da chuva. Calcula volume captado, cisterna ideal e economia mensal estimada com base em área do telhado, precipitação e uso pretendido (jardim, sanitário, limpeza). Conforme NBR 15527.</p>
                 <a href="chuva/chuva.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
+            </div>
+
+            <!-- App: Salário -->
+            <div class="app-card">
+                <div class="app-card-header">
+                    <a href="salario/salario.html" data-i18n-aria="app-salario">
+                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
+                            <defs>
+                                <linearGradient id="gradient-salario-desc" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#1E88E5;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#00ACC1;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <rect width="60" height="60" rx="12" fill="url(#gradient-salario-desc)"/>
+                            <text x="30" y="40" font-size="28" text-anchor="middle">💼</text>
+                        </svg>
+                    </a>
+                    <h3><a href="salario/salario.html" data-i18n="app-salario-title">Salário Líquido — BR/IT</a></h3>
+                </div>
+                <p class="app-description" data-i18n="app-salario-description">Calculadora bilíngue de salário: Brasil (CLT — INSS, IRRF, FGTS, 13º, férias e rescisão) e Itália (IRPEF a 3 scaglioni, INPS, addizionali regionais, TFR, tredicesima). Valores oficiais 2025-2026. Inclui gráficos da decomposição do líquido, renda anual total e memorial com referências oficiais.</p>
+                <a href="salario/salario.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
             </div>
 
             <!-- App: Ventilação Natural -->

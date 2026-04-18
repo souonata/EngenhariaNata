@@ -40,6 +40,13 @@ class IndexApp extends App {
 
         this.intervaloRelogio = null;
         this.versoesApps = { ...versoesAppsPadrao };
+        this.totalVisitas = null;
+        this.toquesEasterEgg = [];
+        this.janelaToquesEasterEggMs = 6000;
+        this.easterEggDesbloqueado = false;
+        this.elementoDockVisitantes = null;
+        this.elementoSequenciaDock = null;
+        this._atualizarAnimacaoDockAoRedimensionar = () => this.atualizarAnimacaoDockVisitantes();
     }
 
     async carregarTraducoes() {
@@ -61,6 +68,7 @@ class IndexApp extends App {
         await this.carregarVersoesDoServidor();
         this.configurarRelogio();
         this.adicionarVersoesNosIcones();
+        this.inicializarEasterEggVisitantes();
         this.inicializarWidgetVisitantes();
     }
 
@@ -198,14 +206,64 @@ class IndexApp extends App {
     // CONTADOR DE VISITANTES (display LED retrô)
     // ============================================
 
-    inicializarWidgetVisitantes() {
-        this.totalVisitas = null;
-        this._canvasMedicao = null;
-        this._reajustarAoRedimensionar = () => {
-            const el = document.getElementById('visitorsCount');
-            if (el) this.ajustarGridSpan(el, el.textContent || '');
+    inicializarEasterEggVisitantes() {
+        this.elementoDockVisitantes = document.getElementById('easterEggDock');
+        this.elementoSequenciaDock = document.getElementById('dockMarqueeSequence');
+
+        const botaoEasterEgg = document.getElementById('dockEasterEggTrigger');
+        if (!this.elementoDockVisitantes || !this.elementoSequenciaDock || !botaoEasterEgg) return;
+
+        const registrarToque = (evento) => {
+            if (this.easterEggDesbloqueado) return;
+
+            if (evento.type === 'keydown') {
+                if (evento.key !== 'Enter' && evento.key !== ' ') return;
+                evento.preventDefault();
+            }
+
+            this.registrarToqueEasterEgg();
         };
-        window.addEventListener('resize', this._reajustarAoRedimensionar);
+
+        botaoEasterEgg.addEventListener('pointerdown', registrarToque);
+        botaoEasterEgg.addEventListener('keydown', registrarToque);
+        window.addEventListener('resize', this._atualizarAnimacaoDockAoRedimensionar);
+
+        if (document && document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(() => {
+                this.atualizarAnimacaoDockVisitantes();
+            }).catch(() => {
+                // Ignora: a animacao segue com as metricas disponiveis.
+            });
+        }
+    }
+
+    registrarToqueEasterEgg() {
+        const agora = performance.now();
+
+        this.toquesEasterEgg.push(agora);
+        this.toquesEasterEgg = this.toquesEasterEgg.filter((instante) => {
+            return agora - instante <= this.janelaToquesEasterEggMs;
+        });
+
+        if (this.toquesEasterEgg.length >= 9) {
+            this.desbloquearEasterEggVisitantes();
+        }
+    }
+
+    desbloquearEasterEggVisitantes() {
+        if (this.easterEggDesbloqueado || !this.elementoDockVisitantes) return;
+
+        this.easterEggDesbloqueado = true;
+        this.toquesEasterEgg = [];
+        this.elementoDockVisitantes.dataset.easterState = 'unlocked';
+        this.renderizarContagemVisitantes();
+
+        requestAnimationFrame(() => {
+            this.atualizarAnimacaoDockVisitantes();
+        });
+    }
+
+    inicializarWidgetVisitantes() {
         this.carregarTotalVisitas();
     }
 
@@ -291,18 +349,18 @@ class IndexApp extends App {
     }
 
     renderizarContagemVisitantes() {
-        const elementoContagem = document.getElementById('visitorsCount');
-        if (!elementoContagem) return;
+        const elementosContagem = document.querySelectorAll('.js-visitors-count');
+        if (!elementosContagem.length) return;
 
-        if (this.totalVisitas == null) {
-            elementoContagem.textContent = '—';
-            this.ajustarGridSpan(elementoContagem, '—');
-            return;
-        }
+        const texto = this.totalVisitas == null
+            ? '—'
+            : this.formatarNumeroVisitantes(this.totalVisitas);
 
-        const texto = this.formatarNumeroVisitantes(this.totalVisitas);
-        elementoContagem.textContent = texto;
-        this.ajustarGridSpan(elementoContagem, texto);
+        elementosContagem.forEach((elementoContagem) => {
+            elementoContagem.textContent = texto;
+        });
+
+        this.atualizarAnimacaoDockVisitantes();
     }
 
     /**
@@ -322,73 +380,18 @@ class IndexApp extends App {
         }
     }
 
-    /**
-     * Ajusta dinamicamente quantas colunas do grid o tile de visitantes ocupa,
-     * de modo que o numero completo (ex.: "1.234.567") caiba com a fonte 7-seg
-     * no tamanho 61,2% da altura do icone (36.72px para icone de 60px).
-     *
-     * Estrategia:
-     * 1. Aguarda a DSEG7Classic carregar para medir com a metrica correta.
-     * 2. Mede a largura do texto com canvas offscreen.
-     * 3. Le as colunas reais do grid via getComputedStyle (funciona com auto-fit).
-     * 4. Escolhe o menor span N tal que N*colW + (N-1)*gap >= larguraNecessaria.
-     */
-    async ajustarGridSpan(elemento, texto) {
-        const tile = elemento.closest('.app-icon-static');
-        if (!tile) return;
+    atualizarAnimacaoDockVisitantes() {
+        if (!this.elementoDockVisitantes || !this.elementoSequenciaDock) return;
+        if (this.elementoDockVisitantes.dataset.easterState !== 'unlocked') return;
 
-        // Reseta span para medir o tamanho natural de uma coluna
-        tile.style.gridColumn = '';
+        const larguraSequencia = Math.ceil(this.elementoSequenciaDock.scrollWidth);
+        if (!Number.isFinite(larguraSequencia) || larguraSequencia <= 0) return;
 
-        // Aguarda a fonte DSEG7 carregar para medicao acurada
-        try {
-            if (document && document.fonts && typeof document.fonts.load === 'function') {
-                await document.fonts.load('700 36.72px "DSEG7Classic"');
-            }
-        } catch (_erro) {
-            // Fallback silencioso para fonte monoespacada
-        }
+        const velocidadePxPorSegundo = 72;
+        const duracaoSegundos = Math.max(10, larguraSequencia / velocidadePxPorSegundo);
 
-        const textoMedir = (texto ?? elemento.textContent ?? '').toString() || '—';
-
-        // Canvas reaproveitavel
-        if (!this._canvasMedicao) {
-            this._canvasMedicao = document.createElement('canvas');
-        }
-        const ctx = this._canvasMedicao.getContext('2d');
-        // Mesma font-stack do CSS, no tamanho final renderizado
-        ctx.font = '700 36.72px "DSEG7Classic", "Courier New", "Consolas", monospace';
-        const larguraTexto = Math.ceil(ctx.measureText(textoMedir).width);
-
-        // .icon-visitantes tem padding lateral de 4px de cada lado + borda interna 1px
-        const paddingIcone = 8 + 2;
-        const larguraNecessaria = larguraTexto + paddingIcone;
-
-        // Le colunas reais do grid (auto-fit expande "1fr" em pixeis resolvidos)
-        const grid = tile.parentElement;
-        if (!grid) return;
-
-        const cs = getComputedStyle(grid);
-        const cols = cs.gridTemplateColumns
-            .split(/\s+/)
-            .map((valor) => parseFloat(valor))
-            .filter((valor) => Number.isFinite(valor) && valor > 0);
-
-        if (cols.length === 0) {
-            tile.style.gridColumn = '';
-            return;
-        }
-
-        const larguraCol = Math.min(...cols);
-        const gap = parseFloat(cs.columnGap || cs.gap || '0') || 0;
-
-        let span = 1;
-        if (larguraNecessaria > larguraCol) {
-            span = Math.ceil((larguraNecessaria + gap) / (larguraCol + gap));
-        }
-        span = Math.max(1, Math.min(span, cols.length));
-
-        tile.style.gridColumn = span > 1 ? `span ${span}` : '';
+        this.elementoDockVisitantes.style.setProperty('--dock-marquee-distance', `${larguraSequencia}px`);
+        this.elementoDockVisitantes.style.setProperty('--dock-marquee-duration', `${duracaoSegundos.toFixed(2)}s`);
     }
 }
 

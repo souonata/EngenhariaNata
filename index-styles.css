@@ -311,6 +311,121 @@ body {
     min-height: 70px;
     flex: 0 0 auto;
     min-width: 0; /* Permite que o dock encolha */
+    width: 100%;
+    overflow: hidden;
+    --dock-marquee-distance: 0px;
+    --dock-marquee-duration: 14s;
+}
+
+.dock-trigger {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    min-width: 0;
+    padding: 0;
+    touch-action: manipulation;
+}
+
+.dock-trigger:focus-visible {
+    outline: 2px solid rgba(0, 255, 136, 0.8);
+    outline-offset: 4px;
+    border-radius: 20px;
+}
+
+.dock-marquee-viewport {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.dock-marquee-track {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    width: max-content;
+    will-change: transform;
+}
+
+.dock-marquee-sequence {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding-right: 24px;
+    flex: 0 0 auto;
+    min-width: 0;
+}
+
+.dock-brand {
+    flex: 0 0 auto;
+}
+
+.dock-visitors-chip {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 0 0 auto;
+    min-width: 0;
+    white-space: nowrap;
+}
+
+.dock-visitors-label {
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 0 8px rgba(255, 140, 0, 0.28);
+}
+
+.dock-visitors-value {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: auto;
+    height: auto;
+    line-height: 1;
+    flex: 0 0 auto;
+}
+
+.dock[data-easter-state="locked"] .dock-trigger {
+    width: auto;
+}
+
+.dock[data-easter-state="locked"] .dock-marquee-track {
+    animation: none;
+    transform: none;
+}
+
+.dock[data-easter-state="locked"] .dock-marquee-sequence + .dock-marquee-sequence,
+.dock[data-easter-state="locked"] .dock-visitors-chip {
+    display: none;
+}
+
+.dock[data-easter-state="unlocked"] .dock-trigger {
+    width: 100%;
+}
+
+.dock[data-easter-state="unlocked"] .dock-marquee-viewport {
+    width: 100%;
+}
+
+.dock[data-easter-state="unlocked"] .dock-marquee-track {
+    animation: dockMarquee var(--dock-marquee-duration) linear infinite;
+}
+
+@keyframes dockMarquee {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(calc(-1 * var(--dock-marquee-distance)));
+    }
 }
 
 /* Recipiente da logo */
@@ -382,6 +497,22 @@ body {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .dock-marquee-sequence {
+        gap: 18px;
+        padding-right: 18px;
+    }
+
+    .dock-visitors-chip {
+        gap: 10px;
+    }
+
+    .dock-visitors-label {
+        font-size: 14px;
+        letter-spacing: 1.4px;
     }
 }
 
