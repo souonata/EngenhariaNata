@@ -341,51 +341,86 @@ footer p {
     flex-shrink: 0;
 }
 
-/* Widget de visitantes no rodapé */
-.visitors-widget {
-    margin-top: 6px;
-    display: inline-flex;
-    flex-wrap: wrap;
+/* Contador de Visitantes - Display LED retrô estilo relógio vintage */
+.app-icon.app-icon-static {
+    cursor: default;
+    transition: none;
+}
+
+.app-icon.app-icon-static:hover,
+.app-icon.app-icon-static:active,
+.app-icon.app-icon-static:focus-visible {
+    transform: none;
+}
+
+.app-icon.app-icon-static:hover .icon {
+    /* Não altera sombra no hover do contador */
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 140, 0, 0.2),
+        inset 0 0 12px rgba(255, 140, 0, 0.12),
+        0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.icon-visitantes {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.12);
-    font-size: 0.72rem;
-    line-height: 1.2;
-    color: white;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    /* Fundo preto com leve gradiente para simular vidro/LCD vintage */
+    background:
+        radial-gradient(ellipse at 30% 20%, rgba(255, 140, 0, 0.08) 0%, transparent 60%),
+        linear-gradient(135deg, #111 0%, #000 60%, #0a0a0a 100%);
+    /* Moldura sutil para parecer um mostrador */
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 140, 0, 0.2),
+        inset 0 0 12px rgba(255, 140, 0, 0.12),
+        0 2px 6px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    position: relative;
 }
 
-.visitors-widget .visitors-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
+/* Linhas de scanline horizontais (efeito CRT/LCD) */
+.icon-visitantes::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.18) 0px,
+        rgba(0, 0, 0, 0.18) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    pointer-events: none;
+    border-radius: inherit;
 }
 
-.visitors-widget .visitors-icon,
-.visitors-widget .visitors-flag {
-    font-size: 0.9rem;
+.visitors-count-led {
+    color: #ff8c00;
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
     line-height: 1;
+    text-align: center;
+    text-shadow:
+        0 0 4px rgba(255, 140, 0, 0.9),
+        0 0 8px rgba(255, 140, 0, 0.65),
+        0 0 14px rgba(255, 140, 0, 0.4);
+    position: relative;
+    z-index: 1;
 }
 
-.visitors-widget .visitors-count {
-    font-weight: 600;
-    letter-spacing: 0.01em;
+.visitors-count-led--medium {
+    font-size: 15px;
+    letter-spacing: 0.5px;
 }
 
-.visitors-widget .visitors-separator {
-    opacity: 0.6;
-}
-
-@media (max-width: 360px) {
-    .visitors-widget {
-        font-size: 0.68rem;
-        padding: 4px 8px;
-        gap: 4px;
-    }
+.visitors-count-led--small {
+    font-size: 12px;
+    letter-spacing: 0.3px;
 }
 
 /* For elements that create their own scrollbars (eg. inside the simulated

@@ -58,11 +58,8 @@
     "aria-sync-time": "Sincronizando horário",
     "aria-home": "Voltar para a tela inicial",
     "footer": "💻 Portfólio Engenharia NATA @ 2026",
-    "counter-visits": "visitas",
-    "counter-detecting": "detectando país…",
-    "counter-country-unknown": "país desconhecido",
-    "counter-visits-tooltip": "Total de visitas ao portfólio",
-    "counter-country-tooltip": "Seu país detectado pelo IP"
+    "app-visitantes": "Visitantes",
+    "app-visitantes-tooltip": "Total de visitas ao portfólio"
   },
   "it-IT": {
     "app-about": "Sul Progetto",
@@ -123,11 +120,8 @@
     "aria-sync-time": "Sincronizzazione orario",
     "aria-home": "Torna alla schermata iniziale",
     "footer": "💻 Portafoglio Ingegneria NATA @ 2026",
-    "counter-visits": "visite",
-    "counter-detecting": "rilevamento paese…",
-    "counter-country-unknown": "paese sconosciuto",
-    "counter-visits-tooltip": "Totale visite al portafoglio",
-    "counter-country-tooltip": "Paese rilevato dal tuo IP"
+    "app-visitantes": "Visitatori",
+    "app-visitantes-tooltip": "Totale visite al portafoglio"
   }
 }
 

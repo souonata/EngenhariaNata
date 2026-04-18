@@ -71,7 +71,6 @@ class IndexApp extends App {
 
     atualizarAposTrocaIdioma() {
         this.atualizarHorario();
-        this.atualizarNomePaisVisitante();
     }
 
     configurarRelogio() {
@@ -180,13 +179,11 @@ class IndexApp extends App {
     }
 
     // ============================================
-    // WIDGET DE VISITANTES
+    // CONTADOR DE VISITANTES (display LED retrô)
     // ============================================
 
     inicializarWidgetVisitantes() {
-        this.codigoPaisVisitante = null;
         this.carregarTotalVisitas();
-        this.detectarPaisVisitante();
     }
 
     async carregarTotalVisitas() {
@@ -201,62 +198,17 @@ class IndexApp extends App {
             const dados = await resposta.json();
             if (dados && dados.count) {
                 elementoContagem.textContent = dados.count;
+                // Ajusta o tamanho da fonte se o número tiver muitos dígitos
+                const digitos = String(dados.count).replace(/[^0-9]/g, '').length;
+                if (digitos >= 6) {
+                    elementoContagem.classList.add('visitors-count-led--small');
+                } else if (digitos >= 4) {
+                    elementoContagem.classList.add('visitors-count-led--medium');
+                }
             }
         } catch (_erro) {
             elementoContagem.textContent = '—';
         }
-    }
-
-    async detectarPaisVisitante() {
-        try {
-            const resposta = await fetch('https://api.country.is/', {
-                cache: 'no-store'
-            });
-            if (!resposta.ok) throw new Error(`HTTP ${resposta.status}`);
-            const dados = await resposta.json();
-            if (dados && typeof dados.country === 'string' && dados.country.length === 2) {
-                this.codigoPaisVisitante = dados.country.toUpperCase();
-                this.atualizarNomePaisVisitante();
-            }
-        } catch (_erro) {
-            const flag = document.getElementById('visitorsFlag');
-            const nome = document.getElementById('visitorsCountry');
-            if (flag) flag.textContent = '🌐';
-            if (nome) nome.textContent = i18n.t('counter-country-unknown') || '—';
-        }
-    }
-
-    atualizarNomePaisVisitante() {
-        const codigo = this.codigoPaisVisitante;
-        if (!codigo) return;
-
-        const flag = document.getElementById('visitorsFlag');
-        const nome = document.getElementById('visitorsCountry');
-        if (!flag || !nome) return;
-
-        flag.textContent = this.codigoParaBandeira(codigo);
-
-        let nomePais = codigo;
-        try {
-            const idioma = typeof i18n.obterIdiomaAtual === 'function'
-                ? i18n.obterIdiomaAtual()
-                : 'pt-BR';
-            const display = new Intl.DisplayNames([idioma], { type: 'region' });
-            nomePais = display.of(codigo) || codigo;
-        } catch (_erro) {
-            // Mantém código ISO se Intl.DisplayNames falhar
-        }
-        nome.textContent = nomePais;
-    }
-
-    codigoParaBandeira(codigo) {
-        if (typeof codigo !== 'string' || codigo.length !== 2) return '🌐';
-        const base = 127397; // Regional Indicator Symbol A (0x1F1E6) - 'A'.charCodeAt(0)
-        const upper = codigo.toUpperCase();
-        return String.fromCodePoint(
-            base + upper.charCodeAt(0),
-            base + upper.charCodeAt(1)
-        );
     }
 }
 

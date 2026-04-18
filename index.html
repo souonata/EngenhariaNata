@@ -11,7 +11,7 @@
     <meta http-equiv="Expires" content="0">
     
     <!-- Content Security Policy (fallback caso .htaccess não seja aplicado) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://docs.google.com https://script.google.com https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https://docs.google.com https://script.google.com https://*.googleapis.com https://worldtimeapi.org https://souonata.goatcounter.com https://api.country.is; frame-src https://docs.google.com; object-src 'none'; base-uri 'self'; form-action 'self' https://docs.google.com; upgrade-insecure-requests;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://docs.google.com https://script.google.com https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https://docs.google.com https://script.google.com https://*.googleapis.com https://worldtimeapi.org https://souonata.goatcounter.com; frame-src https://docs.google.com; object-src 'none'; base-uri 'self'; form-action 'self' https://docs.google.com; upgrade-insecure-requests;">
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -288,6 +288,14 @@
                     </div>
                     <span class="app-name" data-i18n="app-fazenda">Fazenda</span>
                 </a>
+
+                <!-- Contador de Visitantes (não é link, display retrô LED) -->
+                <div class="app-icon app-icon-static" data-i18n-aria="app-visitantes" aria-live="polite">
+                    <div class="icon icon-visitantes">
+                        <span class="visitors-count-led" id="visitorsCount" title="" data-i18n-title="app-visitantes-tooltip">—</span>
+                    </div>
+                    <span class="app-name" data-i18n="app-visitantes">Visitantes</span>
+                </div>
             </div>
         </div>
         
@@ -514,20 +522,6 @@
                 </svg>
                 <span>github.com/souonata/EngenhariaNata</span>
             </a>
-        </div>
-
-        <!-- Widget de Visitantes -->
-        <div class="visitors-widget" id="visitorsWidget" aria-live="polite">
-            <span class="visitors-item" title="" data-i18n-title="counter-visits-tooltip">
-                <span class="visitors-icon" aria-hidden="true">👁</span>
-                <span class="visitors-count" id="visitorsCount">—</span>
-                <span class="visitors-label" data-i18n="counter-visits">visitas</span>
-            </span>
-            <span class="visitors-separator" aria-hidden="true">·</span>
-            <span class="visitors-item visitors-country-wrapper" title="" data-i18n-title="counter-country-tooltip">
-                <span class="visitors-flag" id="visitorsFlag" aria-hidden="true">🌐</span>
-                <span class="visitors-country" id="visitorsCountry" data-i18n="counter-detecting">detectando país…</span>
-            </span>
         </div>
     </footer>
     
