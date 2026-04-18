@@ -8,17 +8,23 @@
 /* ========================================== */
 
 :root {
-    --cor-primaria: #FFD700;      /* Dourado - tema de iluminação */
-    --cor-primaria-escura: #FFA500; /* Laranja */
-    --cor-destaque: #FF6B35;      /* Laranja avermelhado */
+    --cor-primaria:       #FFD700;  /* Dourado */
+    --cor-primaria-escura: #B8860B; /* Dark Goldenrod — contraste 5:1 sobre branco */
+    --cor-destaque:        #C87000;
+}
+
+html[data-theme="dark"] {
+    --cor-primaria:       #FFD700;
+    --cor-primaria-escura: #FFD700; /* amarelo puro tem bom contraste sobre fundo escuro */
+    --cor-destaque:        #FFD700;
 }
 
 /* ========================================== */
-/* CARD DE RESULTADO - DESTAQUE */
+/* CARD DE RESULTADO — DESTAQUE */
 /* ========================================== */
 
 .resultado-item.destaque {
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1));
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.12), rgba(255, 165, 0, 0.12));
     border-left: 4px solid var(--cor-primaria-escura);
     font-weight: 600;
 }
@@ -26,6 +32,10 @@
 .resultado-item.destaque .resultado-valor {
     color: var(--cor-primaria-escura);
     font-size: 1.3rem;
+}
+
+html[data-theme="dark"] .resultado-item.destaque {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(184, 134, 11, 0.1));
 }
 
 /* ========================================== */
@@ -36,7 +46,7 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
-    background-color: var(--cor-fundo-card);
+    background-color: var(--surface-bg, #fff);
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -44,7 +54,12 @@
 
 .tabela-resultados thead {
     background-color: var(--cor-primaria);
-    color: #000;
+    color: #000;           /* preto sobre amarelo — contraste 19:1 */
+}
+
+html[data-theme="dark"] .tabela-resultados thead {
+    background-color: #7a5c00; /* dourado escuro — contraste ~10:1 sobre texto claro */
+    color: #f0e6b0;
 }
 
 .tabela-resultados thead th {
@@ -55,12 +70,13 @@
 }
 
 .tabela-resultados tbody tr {
-    border-bottom: 1px solid var(--cor-borda);
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
     transition: background-color 0.2s ease;
+    color: var(--text-primary, #333);
 }
 
 .tabela-resultados tbody tr:hover {
-    background-color: rgba(255, 215, 0, 0.05);
+    background-color: rgba(255, 215, 0, 0.07);
 }
 
 .tabela-resultados tbody td {
@@ -72,6 +88,16 @@
     border-bottom: none;
 }
 
+/* Linha de total na tabela */
+.tabela-total-row {
+    background-color: rgba(255, 215, 0, 0.08);
+    border-top: 2px solid var(--cor-primaria-escura) !important;
+}
+
+html[data-theme="dark"] .tabela-total-row {
+    background-color: rgba(255, 215, 0, 0.06);
+}
+
 /* ========================================== */
 /* DICAS E INFORMAÇÕES */
 /* ========================================== */
@@ -79,12 +105,17 @@
 .dica {
     margin-top: 8px;
     padding: 10px 12px;
-    background-color: rgba(255, 215, 0, 0.1);
-    border-left: 3px solid var(--cor-primaria);
+    background-color: rgba(255, 215, 0, 0.12);
+    border-left: 3px solid var(--cor-primaria-escura);
     border-radius: 4px;
     font-size: 0.9rem;
-    color: var(--cor-texto-secundario);
+    /* usa --text-primary para garantir contraste em ambos os temas */
+    color: var(--text-primary, #333);
     line-height: 1.4;
+}
+
+html[data-theme="dark"] .dica {
+    background-color: rgba(255, 215, 0, 0.08);
 }
 
 /* ========================================== */
@@ -106,6 +137,15 @@ input[type="radio"]:checked + .cartao-radio {
     transform: scale(1.02);
 }
 
+/* Corrigir texto "Clara" que aparece sobre fundo quase branco em dark mode */
+html[data-theme="dark"] .opcao-radio:has(input[value="clara"]) .cartao-radio {
+    background: linear-gradient(135deg, #4a4a4a, #3a3a3a) !important;
+}
+
+html[data-theme="dark"] .opcao-radio:has(input[value="clara"]) .rotulo-radio {
+    color: #f0f0f0;
+}
+
 /* ========================================== */
 /* RESPONSIVIDADE */
 /* ========================================== */
@@ -117,7 +157,7 @@ input[type="radio"]:checked + .cartao-radio {
 
     .tabela-resultados thead th,
     .tabela-resultados tbody td {
-        padding: 8px 12px;
+        padding: 8px 10px;
     }
 
     .resultado-grid {
@@ -135,12 +175,12 @@ input[type="radio"]:checked + .cartao-radio {
 
 @media (max-width: 480px) {
     .tabela-resultados {
-        font-size: 0.85rem;
+        font-size: 0.82rem;
     }
 
     .tabela-resultados thead th,
     .tabela-resultados tbody td {
-        padding: 6px 10px;
+        padding: 6px 8px;
     }
 
     .resultado-item .resultado-valor {
@@ -157,15 +197,9 @@ input[type="radio"]:checked + .cartao-radio {
 /* ========================================== */
 
 @keyframes pulse-light {
-    0% {
-        text-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7);
-    }
-    70% {
-        text-shadow: 0 0 0 10px rgba(255, 215, 0, 0);
-    }
-    100% {
-        text-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
-    }
+    0%   { text-shadow: 0 0 0 0   rgba(255, 215, 0, 0.7); }
+    70%  { text-shadow: 0 0 0 10px rgba(255, 215, 0, 0);   }
+    100% { text-shadow: 0 0 0 0   rgba(255, 215, 0, 0);    }
 }
 
 .resultado-item.destaque .resultado-label {
@@ -173,29 +207,12 @@ input[type="radio"]:checked + .cartao-radio {
 }
 
 /* ========================================== */
-/* ICONES DE ATIVIDADE */
+/* ÍCONES DE TIPO DE ATIVIDADE */
 /* ========================================== */
 
-.opcao-radio:has(input[value="sala"]) .cartao-radio::before {
-    content: "🛋️";
-}
-
-.opcao-radio:has(input[value="quarto"]) .cartao-radio::before {
-    content: "🛏️";
-}
-
-.opcao-radio:has(input[value="cozinha"]) .cartao-radio::before {
-    content: "🍳";
-}
-
-.opcao-radio:has(input[value="banheiro"]) .cartao-radio::before {
-    content: "🚿";
-}
-
-.opcao-radio:has(input[value="escritorio"]) .cartao-radio::before {
-    content: "💻";
-}
-
-.opcao-radio:has(input[value="corredor"]) .cartao-radio::before {
-    content: "🚪";
-}
+.opcao-radio:has(input[value="sala"])      .cartao-radio::before { content: "🛋️"; }
+.opcao-radio:has(input[value="quarto"])    .cartao-radio::before { content: "🛏️"; }
+.opcao-radio:has(input[value="cozinha"])   .cartao-radio::before { content: "🍳"; }
+.opcao-radio:has(input[value="banheiro"])  .cartao-radio::before { content: "🚿"; }
+.opcao-radio:has(input[value="escritorio"]).cartao-radio::before { content: "💻"; }
+.opcao-radio:has(input[value="corredor"]) .cartao-radio::before { content: "🚪"; }

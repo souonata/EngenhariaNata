@@ -55,9 +55,9 @@
       "detalhamento": "Detalhamento de Luminárias"
     },
     "tabela": {
-      "quantidade": "Quantidade",
-      "potenciaUnitaria": "Potência Unitária",
-      "tipoLampada": "Tipo de Lâmpada"
+      "quantidade": "Qtd",
+      "potenciaUnitaria": "Potência / Lúmens",
+      "tipoLampada": "Tipo LED"
     },
     "botoes": {
       "voltar": "← Voltar",
@@ -132,9 +132,9 @@
       "detalhamento": "Dettagli delle Lampade"
     },
     "tabela": {
-      "quantidade": "Quantità",
-      "potenciaUnitaria": "Potenza Unitaria",
-      "tipoLampada": "Tipo di Lampada"
+      "quantidade": "Qtà",
+      "potenciaUnitaria": "Potenza / Lumen",
+      "tipoLampada": "Tipo LED"
     },
     "botoes": {
       "voltar": "← Indietro",
