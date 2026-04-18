@@ -1140,8 +1140,7 @@ class MutuoApp extends App {
             ],
             dica: pt
                 ? 'Pagamentos extras reduzem juros totais e o tempo de quitacao.'
-                : 'Pagamenti extra riducono interessi totali e tempo di estinzione.',
-            norma: pt ? 'Sistemas SAC, Price e Americano' : 'Sistemi SAC, Price e Americano'
+                : 'Pagamenti extra riducono interessi totali e tempo di estinzione.'
         });
     }
 
