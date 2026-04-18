@@ -1,0 +1,156 @@
+{
+  "pt-BR": {
+    "app": {
+      "title": "💡 Calculadora de Iluminação Residencial",
+      "subtitle": "Dimensionador de Lâmpadas e Custos de Energia"
+    },
+    "labels": {
+      "area": "Tamanho do Ambiente",
+      "atividade": "Tipo de Atividade/Cômodo",
+      "corParedes": "Cor das Paredes",
+      "peDireito": "Pé Direito (Altura Piso-Teto)",
+      "luzNatural": "Disponibilidade de Luz Natural",
+      "tarifa": "Tarifa de Energia Elétrica"
+    },
+    "opcoes": {
+      "sala": "Sala de Estar",
+      "quarto": "Quarto",
+      "cozinha": "Cozinha",
+      "banheiro": "Banheiro",
+      "escritorio": "Escritório",
+      "corredor": "Corredor/Hall",
+      "clara": "Clara",
+      "media": "Média",
+      "escura": "Escura",
+      "muita": "Muita",
+      "pouca": "Pouca",
+      "nenhuma": "Nenhuma"
+    },
+    "unidades": {
+      "m2": "m²",
+      "metro": "m",
+      "watt": "W",
+      "kwh": "kWh",
+      "lux": "lux",
+      "unidade": "un.",
+      "reaisPorKwh": "R$/kWh"
+    },
+    "dicas": {
+      "corParedes": "💡 Paredes claras refletem mais luz, reduzindo a quantidade de luminária necessária",
+      "luzNatural": "💡 Ambientes com mais luz natural necessitam de menos iluminação artificial"
+    },
+    "tooltips": {
+      "area": "Área total do cômodo em metros quadrados. Multiplique o comprimento pela largura do ambiente.",
+      "peDireito": "Altura entre o piso e o teto do ambiente. Valores típicos variam entre 2.4m e 3.5m em residências.",
+      "tarifa": "Tarifa média de energia elétrica da sua região. Você encontra este valor na conta de luz (em R$/kWh ou R$/MWh). Use 1.2 como valor padrão se não souber."
+    },
+    "resultado": {
+      "titulo": "📊 Resultados",
+      "luxRecomendado": "Lux Recomendado:",
+      "potenciaTotal": "Potência Total de Lâmpadas:",
+      "numLuminarias": "Número de Luminárias:",
+      "consumoMensal": "Consumo Mensal:",
+      "custoMensal": "Custo Mensal de Energia:",
+      "custoAnual": "Custo Anual de Energia:",
+      "detalhamento": "Detalhamento de Luminárias"
+    },
+    "tabela": {
+      "quantidade": "Quantidade",
+      "potenciaUnitaria": "Potência Unitária",
+      "tipoLampada": "Tipo de Lâmpada"
+    },
+    "botoes": {
+      "voltar": "← Voltar",
+      "saibaMais": "SAIBA MAIS!"
+    },
+    "aria": {
+      "langPt": "Mudar para Português (Brasil)",
+      "langIt": "Mudar para Italiano",
+      "clickInfo": "Clique para ver mais informações",
+      "decrease": "Diminuir valor",
+      "increase": "Aumentar valor"
+    },
+    "titles": {
+      "langPt": "Português (Brasil)",
+      "langIt": "Italiano",
+      "clickInfo": "Mais informações"
+    }
+  },
+  "it-IT": {
+    "app": {
+      "title": "💡 Calcolatore di Illuminazione Residenziale",
+      "subtitle": "Dimensionatore di Lampade e Costi Energetici"
+    },
+    "labels": {
+      "area": "Dimensione dell'Ambiente",
+      "atividade": "Tipo di Attività/Ambiente",
+      "corParedes": "Colore delle Pareti",
+      "peDireito": "Altezza Ambiente (Pavimento-Soffitto)",
+      "luzNatural": "Disponibilità di Luce Naturale",
+      "tarifa": "Tariffa di Energia Elettrica"
+    },
+    "opcoes": {
+      "sala": "Soggiorno",
+      "quarto": "Camera da Letto",
+      "cozinha": "Cucina",
+      "banheiro": "Bagno",
+      "escritorio": "Ufficio",
+      "corredor": "Corridoio/Ingresso",
+      "clara": "Chiara",
+      "media": "Media",
+      "escura": "Scura",
+      "muita": "Molta",
+      "pouca": "Poca",
+      "nenhuma": "Nessuna"
+    },
+    "unidades": {
+      "m2": "m²",
+      "metro": "m",
+      "watt": "W",
+      "kwh": "kWh",
+      "lux": "lux",
+      "unidade": "pz",
+      "reaisPorKwh": "R$/kWh"
+    },
+    "dicas": {
+      "corParedes": "💡 Le pareti chiare riflettono più luce, riducendo la quantità di lampade necessarie",
+      "luzNatural": "💡 Gli ambienti con più luce naturale richiedono meno illuminazione artificiale"
+    },
+    "tooltips": {
+      "area": "Area totale della stanza in metri quadrati. Moltiplicare la lunghezza per la larghezza dell'ambiente.",
+      "peDireito": "Altezza tra il pavimento e il soffitto dell'ambiente. I valori tipici variano tra 2,4 m e 3,5 m nelle abitazioni residenziali.",
+      "tarifa": "Tariffa media di energia elettrica della vostra regione. Troverete questo valore nella fattura della luce (in R$/kWh o R$/MWh). Utilizzare 1,2 come valore predefinito se non siete sicuri."
+    },
+    "resultado": {
+      "titulo": "📊 Risultati",
+      "luxRecomendado": "Lux Consigliato:",
+      "potenciaTotal": "Potenza Totale delle Lampade:",
+      "numLuminarias": "Numero di Lampade:",
+      "consumoMensal": "Consumo Mensile:",
+      "custoMensal": "Costo Mensile dell'Energia:",
+      "custoAnual": "Costo Annuale dell'Energia:",
+      "detalhamento": "Dettagli delle Lampade"
+    },
+    "tabela": {
+      "quantidade": "Quantità",
+      "potenciaUnitaria": "Potenza Unitaria",
+      "tipoLampada": "Tipo di Lampada"
+    },
+    "botoes": {
+      "voltar": "← Indietro",
+      "saibaMais": "SCOPRI DI PIÙ!"
+    },
+    "aria": {
+      "langPt": "Passa al Portoghese (Brasile)",
+      "langIt": "Passa all'Italiano",
+      "clickInfo": "Fare clic per maggiori informazioni",
+      "decrease": "Diminuisci valore",
+      "increase": "Aumenta valore"
+    },
+    "titles": {
+      "langPt": "Portoghese (Brasile)",
+      "langIt": "Italiano",
+      "clickInfo": "Più informazioni"
+    }
+  }
+}

@@ -40,10 +40,12 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(projectRoot, 'index.html'),
+        bombaagua: resolve(projectRoot, 'bombaagua/bombaagua.html'),
         aquecimento: resolve(projectRoot, 'aquecimento/aquecimento.html'),
         arcondicionado: resolve(projectRoot, 'arcondicionado/arcondicionado.html'),
         bitola: resolve(projectRoot, 'bitola/bitola.html'),
         bugs: resolve(projectRoot, 'bugs/bugs.html'),
+        chuva: resolve(projectRoot, 'chuva/chuva.html'),
         fazenda: resolve(projectRoot, 'fazenda/fazenda.html'),
         helice: resolve(projectRoot, 'helice/helice.html'),
         mutuo: resolve(projectRoot, 'mutuo/mutuo.html'),

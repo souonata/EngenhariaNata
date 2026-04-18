@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="apple-touch-icon" href="../favicon.svg">
+
+    <!-- SEO Meta Tags -->
+    <title>Calculadora de Iluminação Residencial - Dimensionador de Lâmpadas | Engenharia NATA</title>
+    <meta name="description" content="Calculadora de iluminação residencial. Dimensiona quantidade de lâmpadas, potência necessária, lux recomendado e custo mensal de energia conforme NBR 5413.">
+    <meta name="keywords" content="calculadora iluminação, iluminação residencial, dimensionamento lâmpadas, lux, NBR 5413, custo energia, luminária">
+    <meta name="author" content="Engenharia NATA">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://engnata.infinityfree.me/iluminacao/iluminacao.html">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://engnata.infinityfree.me/iluminacao/iluminacao.html">
+    <meta property="og:title" content="Calculadora de Iluminação Residencial - Engenharia NATA">
+    <meta property="og:description" content="Dimensiona lâmpadas, lux recomendado e custo mensal de energia para iluminação residencial conforme NBR 5413.">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:locale:alternate" content="it_IT">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:url" content="https://engnata.infinityfree.me/iluminacao/iluminacao.html">
+    <meta property="twitter:title" content="Calculadora de Iluminação Residencial">
+    <meta property="twitter:description" content="Dimensiona lâmpadas, lux recomendado e custo mensal de energia para iluminação residencial conforme NBR 5413.">
+
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.0.0">
+    <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
+    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
+    <link rel="stylesheet" href="iluminacao-styles.css?v=1.0.0">
+
+    <!-- Analytics: GoatCounter (privacy-friendly, LGPD/GDPR-compliant) -->
+    <script data-goatcounter="https://souonata.goatcounter.com/count"
+            async src="https://gc.zgo.at/count.js"></script>
+</head>
+<body>
+    <!-- ========================================== -->
+    <!-- SELETOR DE IDIOMA -->
+    <!-- ========================================== -->
+    <div class="language-selector">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" data-i18n-aria="aria.langPt" data-i18n-title="titles.langPt">
+            <span class="flag" aria-hidden="true">🇧🇷</span>
+            <span class="lang-text">PT</span>
+        </button>
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" data-i18n-aria="aria.langIt" data-i18n-title="titles.langIt">
+            <span class="flag" aria-hidden="true">🇮🇹</span>
+            <span class="lang-text">IT</span>
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- ========================================== -->
+        <!-- CABEÇALHO -->
+        <!-- ========================================== -->
+        <header>
+            <h1 data-i18n="app.title">💡 Calculadora de Iluminação Residencial</h1>
+            <p class="subtitulo" data-i18n="app.subtitle">Dimensionador de Lâmpadas e Custos de Energia</p>
+        </header>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE ENTRADAS -->
+        <!-- ========================================== -->
+        <section class="card">
+            <!-- Tamanho do Ambiente -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderArea" data-i18n="labels.area">Tamanho do Ambiente</label>
+                    <span class="info-icon" id="infoIconArea" role="button" tabindex="0" data-i18n-aria="aria.clickInfo" data-i18n-title="titles.clickInfo">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputArea" class="valor-display valor-input" value="20">
+                        <span class="unidade" data-i18n="unidades.m2">m²</span>
+                    </div>
+                </div>
+                <div class="descricao-info" id="descricaoArea" style="display: none;">
+                    <span data-i18n="tooltips.area">Área total do cômodo em metros quadrados. Multiplique o comprimento pela largura do ambiente.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderArea" data-step="-1" data-i18n-aria="aria.decrease">−</button>
+                    <input type="range" id="sliderArea" min="5" max="100" step="0.5" value="20">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderArea" data-step="1" data-i18n-aria="aria.increase">+</button>
+                </div>
+            </div>
+
+            <!-- Tipo de Atividade -->
+            <div class="grupo-entrada">
+                <label data-i18n="labels.atividade">Tipo de Atividade/Cômodo</label>
+                <div class="grupo-radio">
+                    <label class="opcao-radio">
+                        <input type="radio" name="atividade" value="sala" checked>
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opcoes.sala">Sala de Estar</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="atividade" value="quarto">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opcoes.quarto">Quarto</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="atividade" value="cozinha">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opcoes.cozinha">Cozinha</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="atividade" value="banheiro">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opcoes.banheiro">Banheiro</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="atividade" value="escritorio">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opcoes.escritorio">Escritório</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="atividade" value="corredor">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" data-i18n="opcoes.corredor">Corredor/Hall</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Cor das Paredes -->
+            <div class="grupo-entrada">
+                <label data-i18n="labels.corParedes">Cor das Paredes</label>
+                <div class="grupo-radio">
+                    <label class="opcao-radio">
+                        <input type="radio" name="corParedes" value="clara" checked>
+                        <div class="cartao-radio" style="background: linear-gradient(135deg, #f5f5f5, #e8e8e8);">
+                            <span class="rotulo-radio" data-i18n="opcoes.clara">Clara</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="corParedes" value="media">
+                        <div class="cartao-radio" style="background: linear-gradient(135deg, #d4af9a, #c9a876);">
+                            <span class="rotulo-radio" style="color: white;" data-i18n="opcoes.media">Média</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="corParedes" value="escura">
+                        <div class="cartao-radio" style="background: linear-gradient(135deg, #4a4a4a, #3a3a3a);">
+                            <span class="rotulo-radio" style="color: white;" data-i18n="opcoes.escura">Escura</span>
+                        </div>
+                    </label>
+                </div>
+                <p class="dica" data-i18n="dicas.corParedes">💡 Paredes claras refletem mais luz, reduzindo a quantidade de luminária necessária</p>
+            </div>
+
+            <!-- Pé Direito (Altura do Piso ao Teto) -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderPeDireito" data-i18n="labels.peDireito">Pé Direito (Altura Piso-Teto)</label>
+                    <span class="info-icon" id="infoIconPeDireito" role="button" tabindex="0" data-i18n-aria="aria.clickInfo" data-i18n-title="titles.clickInfo">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputPeDireito" class="valor-display valor-input" value="2.7">
+                        <span class="unidade" data-i18n="unidades.metro">m</span>
+                    </div>
+                </div>
+                <div class="descricao-info" id="descricaoPeDireito" style="display: none;">
+                    <span data-i18n="tooltips.peDireito">Altura entre o piso e o teto do ambiente. Valores típicos variam entre 2.4m e 3.5m em residências.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPeDireito" data-step="-0.1" data-i18n-aria="aria.decrease">−</button>
+                    <input type="range" id="sliderPeDireito" min="2.0" max="4.0" step="0.1" value="2.7">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPeDireito" data-step="0.1" data-i18n-aria="aria.increase">+</button>
+                </div>
+            </div>
+
+            <!-- Luz Natural -->
+            <div class="grupo-entrada">
+                <label data-i18n="labels.luzNatural">Disponibilidade de Luz Natural</label>
+                <div class="grupo-radio">
+                    <label class="opcao-radio">
+                        <input type="radio" name="luzNatural" value="muita" checked>
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">☀️</span>
+                            <span class="rotulo-radio" data-i18n="opcoes.muita">Muita</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="luzNatural" value="media">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">🌤️</span>
+                            <span class="rotulo-radio" data-i18n="opcoes.media">Média</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="luzNatural" value="pouca">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">🌥️</span>
+                            <span class="rotulo-radio" data-i18n="opcoes.pouca">Pouca</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="luzNatural" value="nenhuma">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio">🌙</span>
+                            <span class="rotulo-radio" data-i18n="opcoes.nenhuma">Nenhuma</span>
+                        </div>
+                    </label>
+                </div>
+                <p class="dica" data-i18n="dicas.luzNatural">💡 Ambientes com mais luz natural necessitam de menos iluminação artificial</p>
+            </div>
+
+            <!-- Tarifa de Energia -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderTarifa" data-i18n="labels.tarifa">Tarifa de Energia Elétrica</label>
+                    <span class="info-icon" id="infoIconTarifa" role="button" tabindex="0" data-i18n-aria="aria.clickInfo" data-i18n-title="titles.clickInfo">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputTarifa" class="valor-display valor-input" value="1.2">
+                        <span class="unidade" data-i18n="unidades.reaisPorKwh">R$/kWh</span>
+                    </div>
+                </div>
+                <div class="descricao-info" id="descricaoTarifa" style="display: none;">
+                    <span data-i18n="tooltips.tarifa">Tarifa média de energia elétrica da sua região. Você encontra este valor na conta de luz (em R$/kWh ou R$/MWh). Use 1.2 como valor padrão se não souber.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down" data-target="sliderTarifa" data-step="-0.05" data-i18n-aria="aria.decrease">−</button>
+                    <input type="range" id="sliderTarifa" min="0.5" max="3.0" step="0.01" value="1.2">
+                    <button type="button" class="arrow-btn arrow-up" data-target="sliderTarifa" data-step="0.05" data-i18n-aria="aria.increase">+</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- SEÇÃO DE RESULTADOS -->
+        <!-- ========================================== -->
+        <section class="card resultado-card">
+            <h2 data-i18n="resultado.titulo">📊 Resultados</h2>
+            
+            <div class="resultado-grid">
+                <!-- Lux Recomendado -->
+                <div class="resultado-item">
+                    <span class="resultado-label" data-i18n="resultado.luxRecomendado">Lux Recomendado:</span>
+                    <div class="resultado-valor">
+                        <span id="resultadoLux">300</span>
+                        <span class="unidade" data-i18n="unidades.lux">lux</span>
+                    </div>
+                </div>
+
+                <!-- Potência Total -->
+                <div class="resultado-item">
+                    <span class="resultado-label" data-i18n="resultado.potenciaTotal">Potência Total de Lâmpadas:</span>
+                    <div class="resultado-valor">
+                        <span id="resultadoPotencia">150</span>
+                        <span class="unidade" data-i18n="unidades.watt">W</span>
+                    </div>
+                </div>
+
+                <!-- Número de Luminárias -->
+                <div class="resultado-item">
+                    <span class="resultado-label" data-i18n="resultado.numLuminarias">Número de Luminárias:</span>
+                    <div class="resultado-valor">
+                        <span id="resultadoQuantidade">3</span>
+                        <span class="unidade" data-i18n="unidades.unidade">un.</span>
+                    </div>
+                </div>
+
+                <!-- Consumo Mensal -->
+                <div class="resultado-item">
+                    <span class="resultado-label" data-i18n="resultado.consumoMensal">Consumo Mensal:</span>
+                    <div class="resultado-valor">
+                        <span id="resultadoConsumo">10.8</span>
+                        <span class="unidade" data-i18n="unidades.kwh">kWh</span>
+                    </div>
+                </div>
+
+                <!-- Custo Mensal -->
+                <div class="resultado-item destaque">
+                    <span class="resultado-label" data-i18n="resultado.custoMensal">Custo Mensal de Energia:</span>
+                    <div class="resultado-valor">
+                        <span id="resultadoCusto">R$ 13,00</span>
+                    </div>
+                </div>
+
+                <!-- Custo Anual -->
+                <div class="resultado-item destaque">
+                    <span class="resultado-label" data-i18n="resultado.custoAnual">Custo Anual de Energia:</span>
+                    <div class="resultado-valor">
+                        <span id="resultadoCustoAnual">R$ 156,00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detalhamento das Luminárias -->
+            <div id="detalhamentoLuminarias" style="margin-top: 20px;">
+                <h3 data-i18n="resultado.detalhamento">Detalhamento de Luminárias</h3>
+                <table id="tabelaLuminarias" class="tabela-resultados">
+                    <thead>
+                        <tr>
+                            <th data-i18n="tabela.quantidade">Quantidade</th>
+                            <th data-i18n="tabela.potenciaUnitaria">Potência Unitária</th>
+                            <th data-i18n="tabela.tipoLampada">Tipo de Lâmpada</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabelaLuminarias">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- V2 Explicação -->
+        <section id="v2-explicacao"></section>
+
+        <!-- ========================================== -->
+        <!-- RODAPÉ COM LINK DE VOLTAR -->
+        <!-- ========================================== -->
+        <footer>
+            <a href="../index.html" class="btn-voltar" data-i18n="botoes.voltar">← Voltar</a>
+        </footer>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SCRIPTS -->
+    <!-- ========================================== -->
+    <script type="module" src="iluminacao-script.js?v=1.0.0"></script>
+</body>
+</html>

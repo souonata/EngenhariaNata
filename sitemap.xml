@@ -31,6 +31,16 @@
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.infinityfree.me/mutuo/mutuo.html"/>
         <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.infinityfree.me/mutuo/mutuo.html"/>
     </url>
+
+    <!-- Calculadora de Bomba d'Agua -->
+    <url>
+        <loc>https://engnata.infinityfree.me/bombaagua/bombaagua.html</loc>
+        <lastmod>2026-04-18</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.infinityfree.me/bombaagua/bombaagua.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.infinityfree.me/bombaagua/bombaagua.html"/>
+    </url>
     
     <!-- Calculadora de Hélice -->
     <url>
@@ -100,6 +110,16 @@
         <priority>0.9</priority>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.infinityfree.me/fazenda/fazenda.html"/>
         <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.infinityfree.me/fazenda/fazenda.html"/>
+    </url>
+
+    <!-- Captação de Água da Chuva -->
+    <url>
+        <loc>https://engnata.infinityfree.me/chuva/chuva.html</loc>
+        <lastmod>2026-04-18</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.infinityfree.me/chuva/chuva.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.infinityfree.me/chuva/chuva.html"/>
     </url>
     
     <!-- Formulário de Reporte de Bugs -->

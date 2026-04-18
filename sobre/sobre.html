@@ -85,6 +85,7 @@
 
                 <ul class="tech-list">
                     <li><strong data-i18n="apps.sobre.name">Sobre o projeto</strong> 📖 - <span data-i18n="apps.sobre.desc">Informações do projeto</span></li>
+                    <li><strong data-i18n="apps.iluminacao.name">Iluminação Residencial</strong> 💡 - <span data-i18n="apps.iluminacao.desc">Dimensiona lâmpadas e calcula custos de energia para seu ambiente</span></li>
                     <li><strong data-i18n="apps.bitola.name">Bitola</strong> 🔌 - <span data-i18n="apps.bitola.desc">Calcula o fio elétrico ideal para sua instalação de forma segura</span></li>
                     <li><strong data-i18n="apps.helice.name">Hélice</strong> ⚓ - <span data-i18n="apps.helice.desc">Ajuda a escolher a hélice perfeita para seu barco</span></li>
                     <li><strong data-i18n="apps.mutuo.name">Mutuo</strong> $ - <span data-i18n="apps.mutuo.desc">Compara empréstimos e mostra parcelas para você economizar</span></li>
@@ -93,6 +94,8 @@
                     <li><strong data-i18n="apps.aquecimento.name">Aquecedor Solar</strong> ☀️ - <span data-i18n="apps.aquecimento.desc">Planeja seu sistema de aquecimento solar economizando energia</span></li>
                     <li><strong data-i18n="apps.solar.name">Energia Solar</strong> 🔋 - <span data-i18n="apps.solar.desc">Dimensione painéis solares para gerar sua própria energia</span></li>
                     <li><strong data-i18n="apps.fazenda.name">Fazenda</strong> 🌾 - <span data-i18n="apps.fazenda.desc">Planeje sua fazenda auto-sustentável para produção própria</span></li>
+                    <li><strong data-i18n="apps.chuva.name">Chuva</strong> 🌧️ - <span data-i18n="apps.chuva.desc">Calcula captação de água pluvial, cisterna e economia mensal</span></li>
+                    <li><strong data-i18n="apps.bombaagua.name">Bomba d'Agua</strong> 💧 - <span data-i18n="apps.bombaagua.desc">Estima perdas, potência da bomba e faixa comercial recomendada</span></li>
                 </ul>
             </div>
         </div>
@@ -625,6 +628,74 @@
                     </div>
                     <div class="stat">
                         <span class="stat-number">244</span>
+                        <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- CARTÃO 7: CALCULADORA DE BOMBA D'AGUA -->
+        <!-- ========================================== -->
+        <div class="card highlight card-expansivel">
+            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                    <defs>
+                        <linearGradient id="gradient-bombaagua-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0F9B8E;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#1B6CA8;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="60" height="60" rx="12" fill="url(#gradient-bombaagua-sobre)"/>
+                    <text x="30" y="40" font-size="28" text-anchor="middle">💧</text>
+                </svg>
+                <h2 data-i18n="app.bombaagua">Bomba d'Agua</h2>
+                <span class="seta-expansao">▼</span>
+            </div>
+            <div class="card-content conteudo-expansivel">
+                <p class="app-description">
+                    <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="bombaagua.description">Calcula a bomba d'agua necessária para pequenos sistemas, estimando perdas, potência e consumo horário.</span>
+                </p>
+
+                <div class="features-grid">
+                    <div class="feature">
+                        <span class="feature-icon">📐</span>
+                        <h4 data-i18n="features.altura-vazao.title">Altura e Vazão</h4>
+                        <p data-i18n="features.altura-vazao.desc">Relaciona altura de elevação, comprimento e vazão para estimar a carga hidráulica do sistema.</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🌊</span>
+                        <h4 data-i18n="features.darcy.title">Perdas de Carga</h4>
+                        <p data-i18n="features.darcy.desc">Aplica Darcy-Weisbach com hipótese de tubo liso tipo PVC para perdas lineares e acessórios.</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">⚙️</span>
+                        <h4 data-i18n="features.faixa-bomba.title">Faixa Comercial</h4>
+                        <p data-i18n="features.faixa-bomba.desc">Converte a potência calculada em faixa de CV recomendada para facilitar a escolha da bomba.</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">⚡</span>
+                        <h4 data-i18n="features.energia-bomba.title">Consumo Horário</h4>
+                        <p data-i18n="features.energia-bomba.desc">Mostra o consumo específico por hora e como diâmetro e perdas afetam a energia exigida.</p>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📚</span>
+                        <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
+                        <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-number">324</span>
+                        <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">403</span>
+                        <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">57</span>
                         <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
                     </div>
                 </div>

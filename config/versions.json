@@ -1,5 +1,7 @@
 {
   "index": "2.0.0",
+  "bombaagua": "1.0.0",
+  "iluminacao": "1.0.0",
   "solar": "0.9.0",
   "bitola": "1.0.0",
   "helice": "1.0.0",
@@ -7,6 +9,7 @@
   "arcondicionado": "0.9.0",
   "aquecimento": "0.9.0",
   "fazenda": "0.1.0",
+  "chuva": "1.0.0",
   "bugs": "1.0.0",
   "sobre": "1.0.0",
   "lastUpdate": "2026-04-18T00:00:00.000Z"

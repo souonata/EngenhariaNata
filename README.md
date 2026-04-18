@@ -7,6 +7,10 @@ Portfólio de apps web educativos de engenharia e finanças, com foco em cálcul
 
 ## Aplicativos
 
+- `bombaagua/` - Calculadora de bomba d'água — potência, perdas de carga e consumo
+ - `iluminacao/` - Calculadora de iluminação residencial — lux, lâmpadas e custo de energia (NBR 5413)
+ - `ventilacao/` - (planejado) Calculadora de ventilação natural — ACH, qualidade do ar e área mínima (NBR 15575)
+- `chuva/` - Captação de água da chuva e dimensionamento de cisterna (NBR 15527)
 - `mutuo/` - Calculadora de empréstimos com SAC, Price e Americano
 - `helice/` - Calculadora de hélice náutica
 - `solar/` - Dimensionamento fotovoltaico off-grid
@@ -16,6 +20,10 @@ Portfólio de apps web educativos de engenharia e finanças, com foco em cálcul
 - `fazenda/` - Planejador de fazenda auto-sustentável
 - `bugs/` - Formulário para reporte de problemas
 - `sobre/` - Página institucional
+
+## Proximas Melhorias
+
+- Backlog de novos apps e expansoes: [ROADMAP.md](./ROADMAP.md)
 
 ## Tecnologias
 
@@ -51,6 +59,10 @@ EngenhariaNata/
 ├── index.html
 ├── assets/
 ├── src/
+├── bombaagua/
+├── iluminacao/
+├── ventilacao/ (planejado)
+├── chuva/
 ├── aquecimento/
 ├── arcondicionado/
 ├── bitola/

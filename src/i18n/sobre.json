@@ -14,6 +14,10 @@
         "name": "Empréstimo",
         "desc": "Compara sistemas de amortização e facilita decisões financeiras com mais clareza"
       },
+      "iluminacao": {
+        "name": "Iluminação Residencial",
+        "desc": "Dimensiona lâmpadas e calcula custos de energia para seu ambiente"
+      },
       "helice": {
         "name": "Hélice",
         "desc": "Apoia a escolha de hélice com base em desempenho e parâmetros reais de navegação"
@@ -37,6 +41,14 @@
       "fazenda": {
         "name": "Fazenda",
         "desc": "Planeja produção alimentar auto-sustentável com dados técnicos e calendário de produção"
+      },
+      "chuva": {
+        "name": "Chuva",
+        "desc": "Calcula captação de água pluvial, cisterna e economia mensal"
+      },
+      "bombaagua": {
+        "name": "Bomba d'Agua",
+        "desc": "Estima perdas, potência da bomba e faixa comercial recomendada"
       },
       "sobre": {
         "name": "Sobre o projeto",
@@ -67,6 +79,9 @@
     "fazenda": {
       "description": "Planeje sua fazenda auto-sustentável para produção própria."
     },
+    "bombaagua": {
+      "description": "Calcula a bomba d'agua necessária para pequenos sistemas, estimando perdas, potência e consumo horário."
+    },
     "app": {
       "bitola": "Calculadora de Bitola de Fios",
       "helice": "Calculadora de Hélice Náutica",
@@ -75,7 +90,8 @@
       "arcondicionado": "Calculadora de Ar Condicionado",
       "aquecimento": "Calculadora de Aquecedor Solar",
       "solar": "Calculadora de Energia Solar",
-      "fazenda": "Planejador de Fazenda"
+      "fazenda": "Planejador de Fazenda",
+      "bombaagua": "Calculadora de Bomba d'Agua"
     },
     "bitola": {
       "description": "Calcula o fio elétrico correto para sua instalação, evitando aquecimento e garantindo segurança."
@@ -221,6 +237,22 @@
         "title": "Dimensionamento",
         "desc": "Calcula área necessária, quantidade de plantas/animais e consumo diário por pessoa"
       },
+      "altura-vazao": {
+        "title": "Altura e Vazão",
+        "desc": "Relaciona altura de elevação, comprimento e vazão para estimar a carga hidráulica do sistema."
+      },
+      "darcy": {
+        "title": "Perdas de Carga",
+        "desc": "Aplica Darcy-Weisbach com hipótese de tubo liso tipo PVC para perdas lineares e acessórios."
+      },
+      "faixa-bomba": {
+        "title": "Faixa Comercial",
+        "desc": "Converte a potência calculada em faixa de CV recomendada para facilitar a escolha da bomba."
+      },
+      "energia-bomba": {
+        "title": "Consumo Horário",
+        "desc": "Mostra o consumo específico por hora e como diâmetro e perdas afetam a energia exigida."
+      },
       "regional": {
         "title": "Banco de Dados Regional",
         "desc": "Informações técnicas detalhadas para Brasil e Itália (clima, solo, técnicas)"
@@ -298,6 +330,10 @@
         "name": "Mutuo",
         "desc": "Confronta sistemi di ammortamento e supporta decisioni finanziarie più chiare"
       },
+      "iluminacao": {
+        "name": "Illuminazione Residenziale",
+        "desc": "Dimensiona le lampade e calcola i costi energetici per il tuo ambiente"
+      },
       "helice": {
         "name": "Elica",
         "desc": "Supporta la scelta dell'elica in base a prestazioni e parametri reali di navigazione"
@@ -321,6 +357,14 @@
       "fazenda": {
         "name": "Fattoria",
         "desc": "Pianifica produzione alimentare auto-sostenibile con dati tecnici e calendario operativo"
+      },
+      "chuva": {
+        "name": "Pioggia",
+        "desc": "Calcola raccolta dell'acqua piovana, cisterna e risparmio mensile"
+      },
+      "bombaagua": {
+        "name": "Pompa d'Acqua",
+        "desc": "Stima perdite, potenza della pompa e fascia commerciale consigliata"
       },
       "sobre": {
         "name": "Sul progetto",
@@ -351,6 +395,9 @@
     "fazenda": {
       "description": "Pianifica la tua fattoria auto-sostenibile per produzione propria."
     },
+    "bombaagua": {
+      "description": "Calcola la pompa d'acqua necessaria per piccoli impianti, stimando perdite, potenza e consumo orario."
+    },
     "app": {
       "bitola": "Calcolatrice Sezione Cavi",
       "helice": "Calcolatrice Elica Nautica",
@@ -359,7 +406,8 @@
       "arcondicionado": "Calcolatrice Climatizzatore",
       "aquecimento": "Calcolatrice Riscaldatore Solare",
       "solar": "Calcolatrice Energia Solare",
-      "fazenda": "Pianificatore Fattoria"
+      "fazenda": "Pianificatore Fattoria",
+      "bombaagua": "Calcolatrice Pompa d'Acqua"
     },
     "bitola": {
       "description": "Calcola il cavo elettrico corretto per la tua installazione, evitando surriscaldamento e garantendo sicurezza."
@@ -504,6 +552,22 @@
       "espaco": {
         "title": "Dimensionamento",
         "desc": "Calcola area necessaria, quantità di piante/animali e consumo giornaliero per persona"
+      },
+      "altura-vazao": {
+        "title": "Prevalenza e Portata",
+        "desc": "Mette in relazione prevalenza, lunghezza e portata per stimare il carico idraulico del sistema."
+      },
+      "darcy": {
+        "title": "Perdite di Carico",
+        "desc": "Applica Darcy-Weisbach con ipotesi di tubo liscio tipo PVC per perdite lineari e accessori."
+      },
+      "faixa-bomba": {
+        "title": "Fascia Commerciale",
+        "desc": "Converte la potenza calcolata in una fascia di CV consigliata per facilitare la scelta della pompa."
+      },
+      "energia-bomba": {
+        "title": "Consumo Orario",
+        "desc": "Mostra il consumo specifico per ora e come diametro e perdite influenzano l'energia richiesta."
       },
       "regional": {
         "title": "Database Regionale",

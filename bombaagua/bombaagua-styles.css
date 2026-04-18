@@ -1,0 +1,67 @@
+/* ============================================
+   BOMBA D'AGUA - Estilos Especificos
+   ============================================ */
+
+:root {
+    --bombaagua-gradient-start: #0f9b8e;
+    --bombaagua-gradient-end: #1b6ca8;
+    --home-bg: linear-gradient(135deg, #0f9b8e 0%, #1b6ca8 100%);
+    --home-shadow: rgba(15, 155, 142, 0.35);
+}
+
+.resultados {
+    background: var(--memorial-bg);
+    margin-top: 8px;
+}
+
+.resultados-header-com-ajuda {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.resultados-header-com-ajuda h2 {
+    color: var(--accent-color, #2d9fa3ff);
+    margin: 0;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+#inputAltura {
+    min-width: 62px;
+    max-width: 72px;
+    width: 72px;
+}
+
+#inputComprimento,
+#inputVazao,
+#inputDiametro {
+    min-width: 52px;
+    max-width: 62px;
+    width: 62px;
+}
+
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.3rem;
+    }
+
+    .subtitulo {
+        font-size: 0.86rem;
+    }
+
+    .resultado-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .valor-resultado,
+    .valor-resultado-grande {
+        width: 100%;
+        text-align: right;
+    }
+}

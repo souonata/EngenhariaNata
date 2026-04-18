@@ -1,0 +1,196 @@
+{
+  "pt-BR": {
+    "app": {
+      "title": "💧 Bomba d'Agua",
+      "subtitle": "Potencia requerida, perdas de carga e consumo por hora"
+    },
+    "labels": {
+      "altura": "Altura de Elevação",
+      "comprimento": "Comprimento da Tubulacao",
+      "vazao": "Vazao Desejada",
+      "diametro": "Diametro Interno do Tubo"
+    },
+    "unidades": {
+      "m": "m",
+      "mm": "mm",
+      "lmin": "L/min"
+    },
+    "tooltips": {
+      "altura": "Desnivel vertical entre a captacao e o ponto de entrega da agua.",
+      "comprimento": "Comprimento total aproximado da tubulacao principal por onde a agua vai circular.",
+      "vazao": "Quantidade de agua que o sistema precisa fornecer por minuto.",
+      "diametro": "Diametro interno util da tubulacao. Tubos maiores reduzem perdas de carga."
+    },
+    "resultado": {
+      "titulo": "Resultados",
+      "potencia": "Potencia Requerida da Bomba",
+      "faixa": "Faixa Recomendada",
+      "perdas": "Perdas de Carga",
+      "alturaTotal": "Altura Manometrica Total",
+      "energia": "Consumo por Hora",
+      "pressao": "Pressao Equivalente"
+    },
+    "memorial": {
+      "titulo": "📚 Memorial de Cálculo — Bomba d'Agua",
+      "introTitulo": "🎯 Objetivo do Cálculo",
+      "introTexto": "Este memorial estima a altura manometrica total, as perdas de carga e a potencia da bomba usando um modelo simplificado para agua limpa em tubulacao lisa.",
+      "passo1Titulo": "1️⃣ Passo 1: Converter Vazao e Calcular Velocidade",
+      "passo1Explicacao": "Primeiro convertemos a vazao para m³/s e calculamos a area interna do tubo para descobrir a velocidade da agua.",
+      "passo1Formula": "Q = Vazao / 60000 e v = Q / A",
+      "passo2Titulo": "2️⃣ Passo 2: Reynolds e Fator de Atrito",
+      "passo2Explicacao": "Com a velocidade e o diametro, calculamos o numero de Reynolds e estimamos o fator de atrito da formula de Darcy-Weisbach.",
+      "passo2Formula": "Re = v × D / nu e f = funcao(Re, rugosidade)",
+      "passo3Titulo": "3️⃣ Passo 3: Perdas de Carga",
+      "passo3Explicacao": "As perdas lineares dependem do comprimento, do diametro e da velocidade. Nesta versao somamos ainda 15% para valvulas, curvas e conexoes.",
+      "passo3Formula": "hf = f × (L / D) × (v² / 2g)",
+      "passo4Titulo": "4️⃣ Passo 4: Altura Manometrica Total",
+      "passo4Explicacao": "A altura total que a bomba precisa vencer e a soma da altura estatica com as perdas de carga.",
+      "passo4Formula": "Htotal = Altura estatica + perdas",
+      "passo5Titulo": "5️⃣ Passo 5: Potencia e Consumo",
+      "passo5Explicacao": "Com a altura total e a vazao calculamos a potencia hidraulica. Depois corrigimos pela eficiencia para estimar a potencia da bomba.",
+      "passo5Formula": "P = rho × g × Q × H / eficiencia",
+      "exemploLabel": "Exemplo:",
+      "constantesTitulo": "Constantes e hipoteses usadas:",
+      "constanteAgua": "Agua limpa a 20 °C: densidade 1000 kg/m³",
+      "constanteViscosidade": "Viscosidade cinematica: 1,004 × 10^-6 m²/s",
+      "constanteRugosidade": "Tubulacao lisa tipo PVC: rugosidade 0,0015 mm",
+      "constanteEficiencia": "Eficiencia global da bomba: 55%",
+      "constanteAcessorios": "Perdas locais estimadas: 15% sobre as perdas lineares",
+      "referencia": "Referencia: metodo simplificado de Darcy-Weisbach para agua limpa",
+      "resumoTitulo": "📊 Resumo Calculado",
+      "resumoAltura": "Altura estatica:",
+      "resumoComprimento": "Comprimento:",
+      "resumoVazao": "Vazao:",
+      "resumoDiametro": "Diametro:",
+      "resumoVelocidade": "Velocidade:",
+      "resumoPerdas": "Perdas de carga:",
+      "resumoAlturaTotal": "Altura total:",
+      "resumoPotencia": "Potencia requerida:",
+      "resumoFaixa": "Faixa recomendada:"
+    },
+    "botoes": {
+      "voltar": "← Voltar",
+      "saibaMais": "SAIBA MAIS!"
+    },
+    "titles": {
+      "langPt": "Português",
+      "langIt": "Italiano",
+      "clickInfo": "Clique para ver mais informacoes"
+    },
+    "aria": {
+      "langPt": "Alterar idioma para Português",
+      "langIt": "Alterar idioma para Italiano",
+      "home": "Voltar para a tela inicial",
+      "infoAltura": "Informacoes sobre altura de elevacao",
+      "infoComprimento": "Informacoes sobre comprimento da tubulacao",
+      "infoVazao": "Informacoes sobre vazao desejada",
+      "infoDiametro": "Informacoes sobre diametro do tubo",
+      "diminuirAltura": "Diminuir altura",
+      "aumentarAltura": "Aumentar altura",
+      "diminuirComprimento": "Diminuir comprimento",
+      "aumentarComprimento": "Aumentar comprimento",
+      "diminuirVazao": "Diminuir vazao",
+      "aumentarVazao": "Aumentar vazao",
+      "diminuirDiametro": "Diminuir diametro",
+      "aumentarDiametro": "Aumentar diametro"
+    },
+    "footer": "Bomba d'Agua — Engenharia NATA @ 2026"
+  },
+  "it-IT": {
+    "app": {
+      "title": "💧 Pompa d'Acqua",
+      "subtitle": "Potenza richiesta, perdite di carico e consumo orario"
+    },
+    "labels": {
+      "altura": "Prevalenza Statica",
+      "comprimento": "Lunghezza della Tubazione",
+      "vazao": "Portata Desiderata",
+      "diametro": "Diametro Interno del Tubo"
+    },
+    "unidades": {
+      "m": "m",
+      "mm": "mm",
+      "lmin": "L/min"
+    },
+    "tooltips": {
+      "altura": "Dislivello verticale tra la captazione e il punto di consegna dell acqua.",
+      "comprimento": "Lunghezza totale approssimativa della tubazione principale in cui l acqua circola.",
+      "vazao": "Quantita di acqua che l impianto deve fornire al minuto.",
+      "diametro": "Diametro interno utile del tubo. Diametri maggiori riducono le perdite di carico."
+    },
+    "resultado": {
+      "titulo": "Risultati",
+      "potencia": "Potenza Richiesta della Pompa",
+      "faixa": "Fascia Raccomandata",
+      "perdas": "Perdite di Carico",
+      "alturaTotal": "Prevalenza Totale",
+      "energia": "Consumo per Ora",
+      "pressao": "Pressione Equivalente"
+    },
+    "memorial": {
+      "titulo": "📚 Memoriale di Calcolo — Pompa d'Acqua",
+      "introTitulo": "🎯 Obiettivo del Calcolo",
+      "introTexto": "Questo memoriale stima la prevalenza totale, le perdite di carico e la potenza della pompa usando un modello semplificato per acqua pulita in tubazione liscia.",
+      "passo1Titulo": "1️⃣ Passo 1: Convertire la Portata e Calcolare la Velocita",
+      "passo1Explicacao": "Prima convertiamo la portata in m³/s e calcoliamo l area interna del tubo per ottenere la velocita dell acqua.",
+      "passo1Formula": "Q = Portata / 60000 e v = Q / A",
+      "passo2Titulo": "2️⃣ Passo 2: Reynolds e Fattore di Attrito",
+      "passo2Explicacao": "Con velocita e diametro calcoliamo il numero di Reynolds e stimiamo il fattore di attrito della formula di Darcy-Weisbach.",
+      "passo2Formula": "Re = v × D / nu e f = funzione(Re, rugosita)",
+      "passo3Titulo": "3️⃣ Passo 3: Perdite di Carico",
+      "passo3Explicacao": "Le perdite lineari dipendono da lunghezza, diametro e velocita. In questa versione aggiungiamo anche il 15% per valvole, curve e raccordi.",
+      "passo3Formula": "hf = f × (L / D) × (v² / 2g)",
+      "passo4Titulo": "4️⃣ Passo 4: Prevalenza Totale",
+      "passo4Explicacao": "La prevalenza totale che la pompa deve vincere e la somma della prevalenza statica con le perdite di carico.",
+      "passo4Formula": "Htot = Prevalenza statica + perdite",
+      "passo5Titulo": "5️⃣ Passo 5: Potenza e Consumo",
+      "passo5Explicacao": "Con prevalenza totale e portata calcoliamo la potenza idraulica. Poi correggiamo con l efficienza per stimare la potenza della pompa.",
+      "passo5Formula": "P = rho × g × Q × H / efficienza",
+      "exemploLabel": "Esempio:",
+      "constantesTitulo": "Costanti e ipotesi usate:",
+      "constanteAgua": "Acqua pulita a 20 °C: densita 1000 kg/m³",
+      "constanteViscosidade": "Viscosita cinematica: 1,004 × 10^-6 m²/s",
+      "constanteRugosidade": "Tubazione liscia tipo PVC: rugosita 0,0015 mm",
+      "constanteEficiencia": "Efficienza globale della pompa: 55%",
+      "constanteAcessorios": "Perdite locali stimate: 15% sulle perdite lineari",
+      "referencia": "Riferimento: metodo semplificato Darcy-Weisbach per acqua pulita",
+      "resumoTitulo": "📊 Riepilogo Calcolato",
+      "resumoAltura": "Prevalenza statica:",
+      "resumoComprimento": "Lunghezza:",
+      "resumoVazao": "Portata:",
+      "resumoDiametro": "Diametro:",
+      "resumoVelocidade": "Velocita:",
+      "resumoPerdas": "Perdite di carico:",
+      "resumoAlturaTotal": "Prevalenza totale:",
+      "resumoPotencia": "Potenza richiesta:",
+      "resumoFaixa": "Fascia raccomandata:"
+    },
+    "botoes": {
+      "voltar": "← Indietro",
+      "saibaMais": "SCOPRI DI PIÙ!"
+    },
+    "titles": {
+      "langPt": "Portoghese",
+      "langIt": "Italiano",
+      "clickInfo": "Clicca per vedere piu informazioni"
+    },
+    "aria": {
+      "langPt": "Cambia lingua in portoghese",
+      "langIt": "Cambia lingua in italiano",
+      "home": "Torna alla schermata iniziale",
+      "infoAltura": "Informazioni sulla prevalenza statica",
+      "infoComprimento": "Informazioni sulla lunghezza della tubazione",
+      "infoVazao": "Informazioni sulla portata desiderata",
+      "infoDiametro": "Informazioni sul diametro del tubo",
+      "diminuirAltura": "Diminuisci prevalenza",
+      "aumentarAltura": "Aumenta prevalenza",
+      "diminuirComprimento": "Diminuisci lunghezza",
+      "aumentarComprimento": "Aumenta lunghezza",
+      "diminuirVazao": "Diminuisci portata",
+      "aumentarVazao": "Aumenta portata",
+      "diminuirDiametro": "Diminuisci diametro",
+      "aumentarDiametro": "Aumenta diametro"
+    },
+    "footer": "Pompa d'Acqua — Ingegneria NATA @ 2026"
+  }
+}
