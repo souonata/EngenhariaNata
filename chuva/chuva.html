@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="apple-touch-icon" href="../favicon.svg">
+
+    <title>Captação de Água da Chuva — Cisterna e Economia | Engenharia NATA</title>
+    <meta name="description" content="Calculadora de captação de água da chuva. Dimensiona cisterna, estima volume mensal captado, risco de overflow e economia na conta de água. Conforme NBR 15527.">
+    <meta name="keywords" content="captação água chuva, cisterna, aproveitamento água pluvial, NBR 15527, economia água, dimensionamento cisterna">
+    <meta name="author" content="Engenharia NATA">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://engnata.infinityfree.me/chuva/chuva.html">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://engnata.infinityfree.me/chuva/chuva.html">
+    <meta property="og:title" content="Captação de Água da Chuva — Engenharia NATA">
+    <meta property="og:description" content="Dimensiona cisterna, estima volume captado e economia com aproveitamento de água da chuva.">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:locale:alternate" content="it_IT">
+
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:url" content="https://engnata.infinityfree.me/chuva/chuva.html">
+    <meta property="twitter:title" content="Captação de Água da Chuva">
+    <meta property="twitter:description" content="Dimensiona cisterna, estima volume captado e economia com aproveitamento de água da chuva.">
+
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.0.0">
+    <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
+    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
+    <link rel="stylesheet" href="chuva-styles.css?v=1.0.0">
+
+    <script data-goatcounter="https://souonata.goatcounter.com/count"
+            async src="https://gc.zgo.at/count.js"></script>
+</head>
+<body>
+    <!-- SELETOR DE IDIOMA -->
+    <div class="language-selector">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR"
+                data-i18n-aria="aria.langPt" data-i18n-title="titles.langPt">
+            <span class="flag" aria-hidden="true">🇧🇷</span>
+            <span class="lang-text">PT</span>
+        </button>
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT"
+                data-i18n-aria="aria.langIt" data-i18n-title="titles.langIt">
+            <span class="flag" aria-hidden="true">🇮🇹</span>
+            <span class="lang-text">IT</span>
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- CABEÇALHO -->
+        <header>
+            <h1 data-i18n="app.title">🌧️ Captação de Água da Chuva</h1>
+            <p class="subtitulo" data-i18n="app.subtitle">Dimensionamento de cisterna e estimativa de economia</p>
+        </header>
+
+        <!-- ENTRADAS -->
+        <section class="cartao">
+
+            <!-- Área do Telhado -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderArea" data-i18n="labels.area">Área do Telhado</label>
+                    <span class="info-icon" id="infoIconArea" role="button" tabindex="0"
+                          data-i18n-aria="aria.infoArea" data-i18n-title="titles.clickInfo">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputArea" class="valor-display valor-input"
+                               value="80" tabindex="1" inputmode="numeric"
+                               pattern="[0-9]*" enterkeyhint="done" autocomplete="off">
+                        <span class="unidade" data-i18n="unidades.m2">m²</span>
+                    </div>
+                </div>
+                <div class="descricao-info" id="descricaoArea" style="display: none;">
+                    <span data-i18n="tooltips.area">Área projetada horizontalmente do telhado.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down"
+                            data-target="sliderArea" data-step="-5"
+                            data-i18n-aria="aria.diminuirArea">−</button>
+                    <input type="range" id="sliderArea" min="10" max="500" step="5" value="80">
+                    <button type="button" class="arrow-btn arrow-up"
+                            data-target="sliderArea" data-step="5"
+                            data-i18n-aria="aria.aumentarArea">+</button>
+                </div>
+            </div>
+
+            <!-- Precipitação -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderChuva" data-i18n="labels.chuva">Precipitação Média Mensal</label>
+                    <span class="info-icon" id="infoIconChuva" role="button" tabindex="0"
+                          data-i18n-aria="aria.infoChuva" data-i18n-title="titles.clickInfo">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputChuva" class="valor-display valor-input"
+                               value="100" tabindex="2" inputmode="numeric"
+                               pattern="[0-9]*" enterkeyhint="done" autocomplete="off">
+                        <span class="unidade" data-i18n="unidades.mm">mm/mês</span>
+                    </div>
+                </div>
+                <div class="descricao-info" id="descricaoChuva" style="display: none;">
+                    <span data-i18n="tooltips.chuva">Precipitação média mensal da sua cidade em mm.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down"
+                            data-target="sliderChuva" data-step="-5"
+                            data-i18n-aria="aria.diminuirChuva">−</button>
+                    <input type="range" id="sliderChuva" min="20" max="400" step="5" value="100">
+                    <button type="button" class="arrow-btn arrow-up"
+                            data-target="sliderChuva" data-step="5"
+                            data-i18n-aria="aria.aumentarChuva">+</button>
+                </div>
+            </div>
+
+            <!-- Número de Pessoas -->
+            <div class="grupo-entrada">
+                <div class="cabecalho-controle">
+                    <label for="sliderPessoas" data-i18n="labels.pessoas">Número de Pessoas</label>
+                    <span class="info-icon" id="infoIconPessoas" role="button" tabindex="0"
+                          data-i18n-aria="aria.infoPessoas" data-i18n-title="titles.clickInfo">
+                        <span class="info-icon-symbol">ℹ️</span>
+                    </span>
+                    <div class="valor-com-unidades">
+                        <input type="text" id="inputPessoas" class="valor-display valor-input"
+                               value="3" tabindex="3" inputmode="numeric"
+                               pattern="[0-9]*" enterkeyhint="done" autocomplete="off">
+                        <span class="unidade" data-i18n="unidades.pessoas">pessoas</span>
+                    </div>
+                </div>
+                <div class="descricao-info" id="descricaoPessoas" style="display: none;">
+                    <span data-i18n="tooltips.pessoas">Número de moradores que usarão a água captada.</span>
+                </div>
+                <div class="slider-com-botoes">
+                    <button type="button" class="arrow-btn arrow-down"
+                            data-target="sliderPessoas" data-step="-1"
+                            data-i18n-aria="aria.diminuirPessoas">−</button>
+                    <input type="range" id="sliderPessoas" min="1" max="10" step="1" value="3">
+                    <button type="button" class="arrow-btn arrow-up"
+                            data-target="sliderPessoas" data-step="1"
+                            data-i18n-aria="aria.aumentarPessoas">+</button>
+                </div>
+            </div>
+
+            <!-- Uso Pretendido -->
+            <div class="grupo-entrada">
+                <label data-i18n="labels.uso">Uso Pretendido da Água</label>
+                <div class="grupo-radio">
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoUso" value="jardim" tabindex="4">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" style="font-size:1.4rem;">🌱</span>
+                            <span class="rotulo-radio" data-i18n="uso.jardim">Jardim</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoUso" value="sanitario" checked tabindex="5">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" style="font-size:1.4rem;">🚽</span>
+                            <span class="rotulo-radio" data-i18n="uso.sanitario">Sanitário</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoUso" value="limpeza" tabindex="6">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" style="font-size:1.4rem;">🧹</span>
+                            <span class="rotulo-radio" data-i18n="uso.limpeza">Limpeza</span>
+                        </div>
+                    </label>
+                    <label class="opcao-radio">
+                        <input type="radio" name="tipoUso" value="completo" tabindex="7">
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" style="font-size:1.4rem;">🏠</span>
+                            <span class="rotulo-radio" data-i18n="uso.completo">Completo</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- PAINEL V2 -->
+        <div id="v2-explicacao"></div>
+
+        <!-- MEMORIAL DE CÁLCULO (escondido inicialmente) -->
+        <div id="memorialSection" class="card memorial-section" style="display: none;">
+            <div class="memorial-header">
+                <h2 data-i18n="memorial.titulo">📚 Memorial de Cálculo — Captação de Água da Chuva</h2>
+                <button id="btnFecharMemorial" class="btn-fechar-memorial" data-i18n-title="botoes.voltar">
+                    <span data-i18n="botoes.voltar">← Voltar</span>
+                </button>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.introTitulo">🎯 Objetivo do Cálculo</h3>
+                <p data-i18n="memorial.introTexto">Este memorial explica passo a passo como é calculado o volume captado, o dimensionamento da cisterna e a economia estimada.</p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo1Titulo">1️⃣ Passo 1: Volume Captado por Mês</h3>
+                <p data-i18n="memorial.passo1Explicacao">A captação depende da área do telhado, da precipitação e do coeficiente de aproveitamento.</p>
+                <div class="formula-box">
+                    <p><strong data-i18n="memorial.passo1Formula">Captação (L) = Área (m²) × Precipitação (mm) × 0,80</strong></p>
+                </div>
+                <p><strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
+                    <span id="memorial-exemplo-captacao">80 m² × 100 mm × 0,80 = 6.400 L/mês</span>
+                </p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo2Titulo">2️⃣ Passo 2: Demanda Mensal por Uso</h3>
+                <p data-i18n="memorial.passo2Explicacao">A demanda varia conforme o uso pretendido.</p>
+                <div class="info-box">
+                    <ul>
+                        <li data-i18n="memorial.passo2Sanitario">Sanitário: 40 L × pessoas × 30 dias</li>
+                        <li data-i18n="memorial.passo2Jardim">Jardim: 6 L × pessoas × 30 dias</li>
+                        <li data-i18n="memorial.passo2Limpeza">Limpeza: 20 L × pessoas × 30 dias</li>
+                        <li data-i18n="memorial.passo2Completo">Completo: soma dos três usos</li>
+                    </ul>
+                </div>
+                <p><strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
+                    <span id="memorial-exemplo-demanda">3 pessoas × sanitário = 3.600 L/mês</span>
+                </p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo3Titulo">3️⃣ Passo 3: Dimensionamento da Cisterna</h3>
+                <p data-i18n="memorial.passo3Explicacao">A cisterna deve armazenar a demanda mensal com 20% de margem de segurança.</p>
+                <div class="formula-box">
+                    <p><strong data-i18n="memorial.passo3Formula">Cisterna (L) = Demanda × 1,20 → volume comercial</strong></p>
+                </div>
+                <p><strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
+                    <span id="memorial-exemplo-cisterna">3.600 × 1,20 = 4.320 L → cisterna de 5.000 L</span>
+                </p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo4Titulo">4️⃣ Passo 4: Risco de Overflow</h3>
+                <p data-i18n="memorial.passo4Explicacao">Quando a captação supera a demanda, o excesso transbordará.</p>
+                <div class="formula-box">
+                    <p><strong data-i18n="memorial.passo4Formula">Overflow (%) = máx(0, (Captação − Demanda) / Captação × 100)</strong></p>
+                </div>
+                <p><strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
+                    <span id="memorial-exemplo-overflow">6.400 − 3.600 = 2.800 L excesso → 43,8%</span>
+                </p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo5Titulo">5️⃣ Passo 5: Economia Estimada</h3>
+                <p data-i18n="memorial.passo5Explicacao">A economia é calculada sobre o volume efetivamente aproveitado.</p>
+                <div class="formula-box">
+                    <p><strong data-i18n="memorial.passo5Formula">Economia = mín(Captação, Demanda) × 0,001 × Tarifa</strong></p>
+                </div>
+                <p><strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
+                    <span id="memorial-exemplo-economia">mín(6.400, 3.600) = 3.600 L × R$ 7,50/m³ = R$ 27,00</span>
+                </p>
+            </div>
+
+            <div class="memorial-item">
+                <div class="info-box">
+                    <p><strong data-i18n="memorial.constantesTitulo">Constantes e referências usadas:</strong></p>
+                    <ul>
+                        <li data-i18n="memorial.coefAproveitamento">Coeficiente de aproveitamento = 0,80 (NBR 15527)</li>
+                        <li data-i18n="memorial.tarifaReferencia">Tarifa de referência: R$ 7,50/m³</li>
+                        <li data-i18n="memorial.cisternas">Volumes comerciais: 500, 1.000, 2.000, 5.000, 10.000 L</li>
+                    </ul>
+                    <p style="margin-top:10px;"><strong data-i18n="memorial.norma">Norma: NBR 15527:2019</strong></p>
+                </div>
+            </div>
+
+            <div class="resumo-calculado">
+                <h3 data-i18n="memorial.resumoTitulo">📊 Resumo Calculado</h3>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoArea">Área do telhado:</span>
+                    <span id="resumo-area">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoChuva">Precipitação mensal:</span>
+                    <span id="resumo-chuva">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoPessoas">Número de pessoas:</span>
+                    <span id="resumo-pessoas">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoUso">Uso pretendido:</span>
+                    <span id="resumo-uso">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoCaptacao">Captação mensal:</span>
+                    <span id="resumo-captacao">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoCisterna">Cisterna recomendada:</span>
+                    <span id="resumo-cisterna">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoOverflow">Risco de overflow:</span>
+                    <span id="resumo-overflow">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoEconomia">Economia estimada/mês:</span>
+                    <span id="resumo-economia">-</span>
+                </div>
+            </div>
+
+            <button class="btn-voltar-memorial" data-i18n-title="botoes.voltar">
+                <span data-i18n="botoes.voltar">← Voltar</span>
+            </button>
+        </div>
+
+        <!-- RESULTADOS -->
+        <section class="card resultados" id="resultadosSection">
+            <div class="resultados-header-com-ajuda">
+                <h2 data-i18n="resultado.titulo">Resultados</h2>
+                <button id="btnMemorial" class="btn-help" data-i18n-title="botoes.saibaMais" tabindex="8">
+                    <span class="texto-saiba-mais" data-i18n="botoes.saibaMais">SAIBA MAIS!</span>
+                </button>
+            </div>
+
+            <!-- Captação mensal — destaque principal -->
+            <div class="resultado-item destaque">
+                <span class="label-resultado" data-i18n="resultado.captacao">Captação Mensal</span>
+                <span class="valor-resultado-grande" id="resultadoCaptacao">—</span>
+            </div>
+
+            <!-- Cisterna recomendada — destaque secundário -->
+            <div class="resultado-item destaque">
+                <span class="label-resultado" data-i18n="resultado.cisterna">Cisterna Recomendada</span>
+                <span class="valor-resultado-grande" id="resultadoCisterna">—</span>
+            </div>
+
+            <!-- Risco de overflow -->
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado.overflow">Risco de Overflow</span>
+                <span class="valor-resultado" id="resultadoOverflow">—</span>
+            </div>
+
+            <!-- Economia estimada -->
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado.economia">Economia Estimada/mês</span>
+                <span class="valor-resultado" id="resultadoEconomia">—</span>
+            </div>
+
+            <!-- Painel explicação V2 -->
+            <div id="v2-explicacao"></div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p data-i18n="footer">Captação de Água da Chuva — Engenharia NATA @ 2026</p>
+    </footer>
+
+    <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria.home">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <script type="module" src="chuva-script.js?v=1.0.0"></script>
+</body>
+</html>

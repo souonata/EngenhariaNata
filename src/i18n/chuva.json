@@ -1,0 +1,234 @@
+{
+  "pt-BR": {
+    "app": {
+      "title": "🌧️ Captação de Água da Chuva",
+      "subtitle": "Dimensionamento de cisterna e estimativa de economia"
+    },
+    "labels": {
+      "area": "Área do Telhado",
+      "chuva": "Precipitação Média Mensal",
+      "pessoas": "Número de Pessoas",
+      "uso": "Uso Pretendido da Água"
+    },
+    "unidades": {
+      "m2": "m²",
+      "mm": "mm/mês",
+      "pessoas": "pessoas"
+    },
+    "uso": {
+      "jardim": "Jardim",
+      "sanitario": "Sanitário",
+      "limpeza": "Limpeza",
+      "completo": "Completo"
+    },
+    "tooltips": {
+      "area": "Área projetada horizontalmente do telhado (não a área inclinada). Para um telhado de duas águas de 10m × 8m, a área é 80m². Telhados maiores captam mais água.",
+      "chuva": "Precipitação média mensal da sua cidade em mm. 1 mm de chuva equivale a 1 litro por m² de telhado. Consulte dados do INMET para sua região.",
+      "pessoas": "Número de moradores que usarão a água captada. Mais pessoas aumentam a demanda mensal estimada.",
+      "uso": "Define para que a água será usada. Sanitário (descarga): ~40 L/pessoa/dia. Jardim: ~6 L/pessoa/dia. Limpeza: ~20 L/pessoa/dia. Completo: soma dos três usos."
+    },
+    "resultado": {
+      "titulo": "Resultados",
+      "captacao": "Captação Mensal",
+      "cisterna": "Cisterna Recomendada",
+      "overflow": "Risco de Overflow",
+      "economia": "Economia Estimada/mês"
+    },
+    "overflow": {
+      "baixo": "Baixo",
+      "medio": "Médio",
+      "alto": "Alto"
+    },
+    "grafico": {
+      "titulo": "💧 Balanço Hídrico Mensal",
+      "captacao": "Captação",
+      "demanda": "Demanda",
+      "eixoY": "Volume (litros)"
+    },
+    "memorial": {
+      "titulo": "📚 Memorial de Cálculo — Captação de Água da Chuva",
+      "introTitulo": "🎯 Objetivo do Cálculo",
+      "introTexto": "Este memorial explica passo a passo como é calculado o volume captado, o dimensionamento da cisterna e a economia estimada com o aproveitamento da água da chuva, conforme a NBR 15527.",
+      "passo1Titulo": "1️⃣ Passo 1: Volume Captado por Mês",
+      "passo1Explicacao": "A captação depende da área do telhado, da precipitação e do coeficiente de aproveitamento (perdas por evaporação, descarte da primeira chuva e eficiência do sistema de coleta).",
+      "passo1Formula": "Captação (L) = Área (m²) × Precipitação (mm) × 0,80",
+      "passo1Exemplo": "Exemplo:",
+      "passo2Titulo": "2️⃣ Passo 2: Demanda Mensal por Uso",
+      "passo2Explicacao": "A demanda varia conforme o uso pretendido. Os valores abaixo são referências típicas para residências brasileiras:",
+      "passo2Sanitario": "Sanitário (descarga): 40 L × pessoas × 30 dias",
+      "passo2Jardim": "Jardim: 6 L × pessoas × 30 dias",
+      "passo2Limpeza": "Limpeza: 20 L × pessoas × 30 dias",
+      "passo2Completo": "Completo: soma dos três usos acima",
+      "passo3Titulo": "3️⃣ Passo 3: Dimensionamento da Cisterna",
+      "passo3Explicacao": "A cisterna deve armazenar a demanda mensal com 20% de margem de segurança, arredondado para o volume comercial mais próximo (500, 1.000, 2.000, 5.000, 10.000 L).",
+      "passo3Formula": "Cisterna (L) = Demanda mensal × 1,20 → volume comercial ≥ resultado",
+      "passo4Titulo": "4️⃣ Passo 4: Risco de Overflow",
+      "passo4Explicacao": "Quando a captação supera a demanda, o excesso transbordará. O risco de overflow indica quanto da captação sobra.",
+      "passo4Formula": "Overflow (%) = máx(0, (Captação − Demanda) / Captação × 100)",
+      "passo5Titulo": "5️⃣ Passo 5: Economia Estimada",
+      "passo5Explicacao": "A economia é calculada sobre o volume efetivamente aproveitado (mínimo entre captação e demanda), com tarifa de referência da água potável.",
+      "passo5Formula": "Economia = mín(Captação, Demanda) × 0,001 m³/L × Tarifa (R$/m³)",
+      "constantesTitulo": "Constantes e referências usadas:",
+      "coefAproveitamento": "Coeficiente de aproveitamento = 0,80 (NBR 15527 — considera descarte da primeira chuva e perdas)",
+      "tarifaReferencia": "Tarifa de referência: R$ 7,50/m³ (média SABESP — ajuste para sua cidade)",
+      "cisternas": "Volumes comerciais de cisterna: 500, 1.000, 2.000, 5.000, 10.000 L",
+      "norma": "Norma: NBR 15527:2019 — Aproveitamento de Água de Chuva em Coberturas para Fins Não Potáveis",
+      "resumoTitulo": "📊 Resumo Calculado",
+      "resumoArea": "Área do telhado:",
+      "resumoChuva": "Precipitação mensal:",
+      "resumoPessoas": "Número de pessoas:",
+      "resumoUso": "Uso pretendido:",
+      "resumoCaptacao": "Captação mensal:",
+      "resumoCisterna": "Cisterna recomendada:",
+      "resumoOverflow": "Risco de overflow:",
+      "resumoEconomia": "Economia estimada/mês:"
+    },
+    "botoes": {
+      "saibaMais": "SAIBA MAIS!",
+      "voltar": "← Voltar"
+    },
+    "aria": {
+      "langPt": "Alterar idioma para Português",
+      "langIt": "Alterar idioma para Italiano",
+      "home": "Voltar para a tela inicial",
+      "infoArea": "Informações sobre área do telhado",
+      "infoChuva": "Informações sobre precipitação",
+      "infoPessoas": "Informações sobre número de pessoas",
+      "infoUso": "Informações sobre uso pretendido",
+      "aumentarArea": "Aumentar área",
+      "diminuirArea": "Diminuir área",
+      "aumentarChuva": "Aumentar precipitação",
+      "diminuirChuva": "Diminuir precipitação",
+      "aumentarPessoas": "Aumentar pessoas",
+      "diminuirPessoas": "Diminuir pessoas"
+    },
+    "titles": {
+      "langPt": "Português",
+      "langIt": "Italiano",
+      "clickInfo": "Clique para mais informações"
+    },
+    "v2": {
+      "destaquePrefix": "Com",
+      "destaqueMid": "de telhado e",
+      "destaqueSuffix": "de chuva/mês, você capta",
+      "tituloSecao": "🔍 Resumo do Dimensionamento"
+    },
+    "footer": "Captação de Água da Chuva — Engenharia NATA @ 2026"
+  },
+  "it-IT": {
+    "app": {
+      "title": "🌧️ Raccolta Acqua Piovana",
+      "subtitle": "Dimensionamento della cisterna e stima del risparmio"
+    },
+    "labels": {
+      "area": "Area del Tetto",
+      "chuva": "Precipitazione Media Mensile",
+      "pessoas": "Numero di Persone",
+      "uso": "Uso Previsto dell'Acqua"
+    },
+    "unidades": {
+      "m2": "m²",
+      "mm": "mm/mese",
+      "pessoas": "persone"
+    },
+    "uso": {
+      "jardim": "Giardino",
+      "sanitario": "Sanitari",
+      "limpeza": "Pulizia",
+      "completo": "Completo"
+    },
+    "tooltips": {
+      "area": "Area proiettata orizzontalmente del tetto (non l'area inclinata). Per un tetto a due falde di 10m × 8m, l'area è 80m². Tetti più grandi raccolgono più acqua.",
+      "chuva": "Precipitazione media mensile della tua città in mm. 1 mm di pioggia equivale a 1 litro per m² di tetto.",
+      "pessoas": "Numero di residenti che utilizzeranno l'acqua raccolta. Più persone aumentano la domanda mensile stimata.",
+      "uso": "Definisce per cosa verrà utilizzata l'acqua. Sanitari (scarico): ~40 L/pers/giorno. Giardino: ~6 L/pers/giorno. Pulizia: ~20 L/pers/giorno."
+    },
+    "resultado": {
+      "titulo": "Risultati",
+      "captacao": "Raccolta Mensile",
+      "cisterna": "Cisterna Consigliata",
+      "overflow": "Rischio Overflow",
+      "economia": "Risparmio Stimato/mese"
+    },
+    "overflow": {
+      "baixo": "Basso",
+      "medio": "Medio",
+      "alto": "Alto"
+    },
+    "grafico": {
+      "titulo": "💧 Bilancio Idrico Mensile",
+      "captacao": "Raccolta",
+      "demanda": "Domanda",
+      "eixoY": "Volume (litri)"
+    },
+    "memorial": {
+      "titulo": "📚 Memoria di Calcolo — Raccolta Acqua Piovana",
+      "introTitulo": "🎯 Obiettivo del Calcolo",
+      "introTexto": "Questa memoria spiega passo dopo passo come viene calcolato il volume raccolto, il dimensionamento della cisterna e il risparmio stimato con il recupero dell'acqua piovana, secondo la norma NBR 15527.",
+      "passo1Titulo": "1️⃣ Passo 1: Volume Raccolto al Mese",
+      "passo1Explicacao": "La raccolta dipende dall'area del tetto, dalla precipitazione e dal coefficiente di utilizzo (perdite per evaporazione, scarto della prima pioggia e efficienza del sistema di raccolta).",
+      "passo1Formula": "Raccolta (L) = Area (m²) × Precipitazione (mm) × 0,80",
+      "passo1Exemplo": "Esempio:",
+      "passo2Titulo": "2️⃣ Passo 2: Domanda Mensile per Utilizzo",
+      "passo2Explicacao": "La domanda varia in base all'uso previsto. I valori seguenti sono riferimenti tipici:",
+      "passo2Sanitario": "Sanitari (scarico): 40 L × persone × 30 giorni",
+      "passo2Jardim": "Giardino: 6 L × persone × 30 giorni",
+      "passo2Limpeza": "Pulizia: 20 L × persone × 30 giorni",
+      "passo2Completo": "Completo: somma dei tre usi sopra",
+      "passo3Titulo": "3️⃣ Passo 3: Dimensionamento della Cisterna",
+      "passo3Explicacao": "La cisterna deve contenere la domanda mensile con il 20% di margine di sicurezza, arrotondato al volume commerciale più vicino (500, 1.000, 2.000, 5.000, 10.000 L).",
+      "passo3Formula": "Cisterna (L) = Domanda mensile × 1,20 → volume commerciale ≥ risultato",
+      "passo4Titulo": "4️⃣ Passo 4: Rischio di Overflow",
+      "passo4Explicacao": "Quando la raccolta supera la domanda, l'eccesso trabocca. Il rischio di overflow indica quanto della raccolta è in eccesso.",
+      "passo4Formula": "Overflow (%) = max(0, (Raccolta − Domanda) / Raccolta × 100)",
+      "passo5Titulo": "5️⃣ Passo 5: Risparmio Stimato",
+      "passo5Explicacao": "Il risparmio è calcolato sul volume effettivamente utilizzato (minimo tra raccolta e domanda), con tariffa di riferimento dell'acqua potabile.",
+      "passo5Formula": "Risparmio = min(Raccolta, Domanda) × 0,001 m³/L × Tariffa (€/m³)",
+      "constantesTitulo": "Costanti e riferimenti usati:",
+      "coefAproveitamento": "Coefficiente di utilizzo = 0,80 (NBR 15527 — considera scarto della prima pioggia e perdite)",
+      "tarifaReferencia": "Tariffa di riferimento: € 2,50/m³ (media ACEA — adattare alla propria città)",
+      "cisternas": "Volumi commerciali cisterna: 500, 1.000, 2.000, 5.000, 10.000 L",
+      "norma": "Norma: NBR 15527:2019 — Recupero Acqua Piovana da Coperture per Usi Non Potabili",
+      "resumoTitulo": "📊 Riepilogo Calcolato",
+      "resumoArea": "Area del tetto:",
+      "resumoChuva": "Precipitazione mensile:",
+      "resumoPessoas": "Numero di persone:",
+      "resumoUso": "Uso previsto:",
+      "resumoCaptacao": "Raccolta mensile:",
+      "resumoCisterna": "Cisterna consigliata:",
+      "resumoOverflow": "Rischio overflow:",
+      "resumoEconomia": "Risparmio stimato/mese:"
+    },
+    "botoes": {
+      "saibaMais": "SCOPRI DI PIÙ!",
+      "voltar": "← Torna"
+    },
+    "aria": {
+      "langPt": "Cambia lingua in Portoghese",
+      "langIt": "Cambia lingua in Italiano",
+      "home": "Torna alla schermata iniziale",
+      "infoArea": "Informazioni sull'area del tetto",
+      "infoChuva": "Informazioni sulle precipitazioni",
+      "infoPessoas": "Informazioni sul numero di persone",
+      "infoUso": "Informazioni sull'uso previsto",
+      "aumentarArea": "Aumenta area",
+      "diminuirArea": "Diminuisci area",
+      "aumentarChuva": "Aumenta precipitazione",
+      "diminuirChuva": "Diminuisci precipitazione",
+      "aumentarPessoas": "Aumenta persone",
+      "diminuirPessoas": "Diminuisci persone"
+    },
+    "titles": {
+      "langPt": "Portoghese",
+      "langIt": "Italiano",
+      "clickInfo": "Clicca per maggiori informazioni"
+    },
+    "v2": {
+      "destaquePrefix": "Con",
+      "destaqueMid": "di tetto e",
+      "destaqueSuffix": "di pioggia/mese, si raccolgono",
+      "tituloSecao": "🔍 Riepilogo del Dimensionamento"
+    },
+    "footer": "Raccolta Acqua Piovana — Engenharia NATA @ 2026"
+  }
+}

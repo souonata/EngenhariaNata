@@ -294,6 +294,23 @@
                     <span class="app-name" data-i18n="app-fazenda">Fazenda</span>
                 </a>
 
+                <!-- Ícone do aplicativo Captação de Água da Chuva -->
+                <a href="chuva/chuva.html" class="app-icon" data-i18n-aria="app-chuva">
+                    <div class="icon">
+                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="gradient-chuva" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#0288D1;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#26C6DA;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <rect width="60" height="60" rx="12" fill="url(#gradient-chuva)"/>
+                            <text x="30" y="40" font-size="28" text-anchor="middle">🌧️</text>
+                        </svg>
+                    </div>
+                    <span class="app-name" data-i18n="app-chuva">Chuva</span>
+                </a>
+
                 <!-- Contador de Visitantes (não é link, display retrô LED) -->
                 <div class="app-icon app-icon-static" data-i18n-aria="app-visitantes" aria-live="polite">
                     <div class="icon icon-visitantes">
@@ -494,6 +511,27 @@
                 <a href="solar/solar.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
             </div>
             
+            <!-- App: Chuva -->
+            <div class="app-card">
+                <div class="app-card-header">
+                    <a href="chuva/chuva.html" data-i18n-aria="app-chuva">
+                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
+                            <defs>
+                                <linearGradient id="gradient-chuva-desc" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#0288D1;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#26C6DA;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <rect width="60" height="60" rx="12" fill="url(#gradient-chuva-desc)"/>
+                            <text x="30" y="40" font-size="28" text-anchor="middle">🌧️</text>
+                        </svg>
+                    </a>
+                    <h3><a href="chuva/chuva.html" data-i18n="app-chuva-title">Captação de Água da Chuva</a></h3>
+                </div>
+                <p class="app-description" data-i18n="app-chuva-description">Dimensionador de cisternas para aproveitamento de água da chuva. Calcula volume captado, cisterna ideal e economia mensal estimada com base em área do telhado, precipitação e uso pretendido (jardim, sanitário, limpeza). Conforme NBR 15527.</p>
+                <a href="chuva/chuva.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
+            </div>
+
             <!-- App: Fazenda -->
             <div class="app-card">
                 <div class="app-card-header">
