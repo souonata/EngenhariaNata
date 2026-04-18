@@ -1229,8 +1229,8 @@ function carregarDadosBanco(idioma) {
     }
     
     if (!banco[idioma]) {
-        console.warn(`Banco de dados não encontrado para idioma ${idioma}, usando pt-BR`);
-        idioma = 'pt-BR';
+        console.warn(`Banco de dados não encontrado para idioma ${idioma}, usando it-IT`);
+        idioma = 'it-IT';
     }
     
     const dados = banco[idioma];
