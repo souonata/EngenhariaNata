@@ -16,9 +16,7 @@ import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
 
 class ArcondicionadoApp extends App {
         atualizarValoresRadiosPorIdioma() {
-            const idioma = (window.i18n && typeof window.i18n.obterIdiomaAtual === 'function')
-                ? window.i18n.obterIdiomaAtual()
-                : (localStorage.getItem('idiomaPreferido') || 'pt-BR');
+            const idioma = this.obterIdiomaAtual();
 
             // Insolação
             const radiosInsolacao = document.querySelectorAll('input[name="insolacao"]');
@@ -28,9 +26,7 @@ class ArcondicionadoApp extends App {
             radiosInsolacao.forEach((radio, idx) => {
                 radio.value = valoresInsolacao[idx];
             });
-            // Força seleção do primeiro radio
-            if (radiosInsolacao.length > 0) {
-                radiosInsolacao.forEach(r => r.checked = false);
+            if (radiosInsolacao.length > 0 && !Array.from(radiosInsolacao).some(r => r.checked)) {
                 radiosInsolacao[0].checked = true;
             }
 
@@ -42,9 +38,7 @@ class ArcondicionadoApp extends App {
             radiosIsolamento.forEach((radio, idx) => {
                 radio.value = valoresIsolamento[idx];
             });
-            // Força seleção do primeiro radio
-            if (radiosIsolamento.length > 0) {
-                radiosIsolamento.forEach(r => r.checked = false);
+            if (radiosIsolamento.length > 0 && !Array.from(radiosIsolamento).some(r => r.checked)) {
                 radiosIsolamento[0].checked = true;
             }
 
@@ -491,11 +485,13 @@ class ArcondicionadoApp extends App {
     // ============================================
     // FUNÇÕES DE CÁLCULO BTU
     // ============================================
+
+    obterIdiomaAtual() {
+        return i18n.obterIdiomaAtual();
+    }
     
     getBTUPorM2(isolamento = 'medio') {
-        const idioma = (window.i18n && typeof window.i18n.obterIdiomaAtual === 'function')
-            ? window.i18n.obterIdiomaAtual()
-            : (localStorage.getItem('idiomaPreferido') || 'pt-BR');
+        const idioma = this.obterIdiomaAtual();
         if (idioma === 'it-IT') {
             switch (isolamento) {
                 case 'buono': return 300;
@@ -509,16 +505,12 @@ class ArcondicionadoApp extends App {
     }
     
     getBTUPorPessoa() {
-        const idioma = (window.i18n && typeof window.i18n.obterIdiomaAtual === 'function')
-            ? window.i18n.obterIdiomaAtual()
-            : (localStorage.getItem('idiomaPreferido') || 'pt-BR');
+        const idioma = this.obterIdiomaAtual();
         return idioma === 'it-IT' ? 200 : 600;
     }
     
     calcularBTUPessoas(pessoas) {
-        const idioma = (window.i18n && typeof window.i18n.obterIdiomaAtual === 'function')
-            ? window.i18n.obterIdiomaAtual()
-            : (localStorage.getItem('idiomaPreferido') || 'pt-BR');
+        const idioma = this.obterIdiomaAtual();
         if (idioma === 'it-IT') {
             return pessoas * this.getBTUPorPessoa();
         } else {
@@ -529,16 +521,12 @@ class ArcondicionadoApp extends App {
     }
     
     getBTUPorEquipamento() {
-        const idioma = (window.i18n && typeof window.i18n.obterIdiomaAtual === 'function')
-            ? window.i18n.obterIdiomaAtual()
-            : (localStorage.getItem('idiomaPreferido') || 'pt-BR');
+        const idioma = this.obterIdiomaAtual();
         return idioma === 'it-IT' ? 300 : 600;
     }
     
     getFatorInsolacao(nivel) {
-        const idioma = (window.i18n && typeof window.i18n.obterIdiomaAtual === 'function')
-            ? window.i18n.obterIdiomaAtual()
-            : (localStorage.getItem('idiomaPreferido') || 'pt-BR');
+        const idioma = this.obterIdiomaAtual();
         if (idioma === 'it-IT') {
             const fatores = { bassa: 0.9, media: 1.0, alta: 1.2 };
             return fatores[nivel] || 1.0;
@@ -549,9 +537,7 @@ class ArcondicionadoApp extends App {
     }
     
     getFatorIsolamento(nivel) {
-        const idioma = (window.i18n && typeof window.i18n.obterIdiomaAtual === 'function')
-            ? window.i18n.obterIdiomaAtual()
-            : (localStorage.getItem('idiomaPreferido') || 'pt-BR');
+        const idioma = this.obterIdiomaAtual();
         if (idioma === 'it-IT') {
             // O isolamento já está embutido no BTU/m² na Itália, retorna 1
             return 1.0;
@@ -563,9 +549,6 @@ class ArcondicionadoApp extends App {
     
     calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equipamentos, insolacao, isolamento) {
         // Cálculo BTU base
-        const idioma = (window.i18n && typeof window.i18n.obterIdiomaAtual === 'function')
-            ? window.i18n.obterIdiomaAtual()
-            : (localStorage.getItem('idiomaPreferido') || 'pt-BR');
         const fatorAltura = altura / 2.7;
         const btuAreaTotal = areaTotal * this.getBTUPorM2(isolamento) * fatorAltura;
         const btuPessoasTotal = this.calcularBTUPessoas(pessoas);
@@ -656,69 +639,65 @@ class ArcondicionadoApp extends App {
     
     calcularCustoUnidadeInterna(btu) {
         // Faixas de preço para unidades internas (2025-2026)
-        const idioma = (window.i18n && typeof window.i18n.obterIdiomaAtual === 'function')
-            ? window.i18n.obterIdiomaAtual()
-            : (localStorage.getItem('idiomaPreferido') || 'pt-BR');
+        const idioma = this.obterIdiomaAtual();
         let faixas;
         if (idioma === 'it-IT') {
             faixas = [
-                { min: 0, max: 9000, preco: 500 },
-                { min: 9001, max: 12000, preco: 600 },
-                { min: 12001, max: 18000, preco: 800 },
-                { min: 18001, max: 24000, preco: 1100 },
-                { min: 24001, max: 30000, preco: 1400 },
-                { min: 30001, max: 36000, preco: 1700 },
-                { min: 36001, max: 48000, preco: 2100 },
-                { min: 48001, max: 60000, preco: 2600 },
-                { min: 60001, max: 120000, preco: 5000 },
-                { min: 120001, max: 180000, preco: 7000 }
+                { min: 0, max: 9000, preco: 220 },
+                { min: 9001, max: 12000, preco: 280 },
+                { min: 12001, max: 18000, preco: 360 },
+                { min: 18001, max: 24000, preco: 460 },
+                { min: 24001, max: 30000, preco: 560 },
+                { min: 30001, max: 36000, preco: 680 },
+                { min: 36001, max: 48000, preco: 860 },
+                { min: 48001, max: 60000, preco: 1050 },
+                { min: 60001, max: 120000, preco: 1900 },
+                { min: 120001, max: 180000, preco: 2600 }
             ];
         } else {
             faixas = [
-                { min: 0, max: 7000, preco: 1500 },
-                { min: 7001, max: 9000, preco: 1800 },
-                { min: 9001, max: 12000, preco: 2200 },
-                { min: 12001, max: 18000, preco: 2800 },
-                { min: 18001, max: 24000, preco: 3500 },
-                { min: 24001, max: 30000, preco: 4200 },
-                { min: 30001, max: 36000, preco: 5000 },
-                { min: 36001, max: 48000, preco: 6500 },
-                { min: 48001, max: 60000, preco: 8000 }
+                { min: 0, max: 7000, preco: 700 },
+                { min: 7001, max: 9000, preco: 850 },
+                { min: 9001, max: 12000, preco: 1050 },
+                { min: 12001, max: 18000, preco: 1400 },
+                { min: 18001, max: 24000, preco: 1850 },
+                { min: 24001, max: 30000, preco: 2300 },
+                { min: 30001, max: 36000, preco: 2800 },
+                { min: 36001, max: 48000, preco: 3600 },
+                { min: 48001, max: 60000, preco: 4500 }
             ];
         }
         const faixa = faixas.find(f => btu >= f.min && btu <= f.max);
-        return faixa ? faixa.preco : (idioma === 'it-IT' ? 2100 : 8000);
+        return faixa ? faixa.preco : (idioma === 'it-IT' ? 1050 : 4500);
     }
     
     calcularCustoUnidadeExterna(btu) {
         // Faixas de preço para unidades externas (2025-2026)
-        const idioma = (window.i18n && typeof window.i18n.obterIdiomaAtual === 'function')
-            ? window.i18n.obterIdiomaAtual()
-            : (localStorage.getItem('idiomaPreferido') || 'pt-BR');
+        const idioma = this.obterIdiomaAtual();
         let faixas;
         if (idioma === 'it-IT') {
             faixas = [
-                { min: 0, max: 24000, preco: 1100 },
-                { min: 24001, max: 36000, preco: 1400 },
-                { min: 36001, max: 48000, preco: 1800 },
-                { min: 48001, max: 60000, preco: 2300 },
-                { min: 60001, max: 84000, preco: 3500 },
-                { min: 84001, max: 120000, preco: 5000 },
-                { min: 120001, max: 180000, preco: 7000 }
+                { min: 0, max: 24000, preco: 260 },
+                { min: 24001, max: 36000, preco: 380 },
+                { min: 36001, max: 48000, preco: 520 },
+                { min: 48001, max: 60000, preco: 680 },
+                { min: 60001, max: 84000, preco: 980 },
+                { min: 84001, max: 120000, preco: 1400 },
+                { min: 120001, max: 180000, preco: 2100 }
             ];
         } else {
             faixas = [
-                { min: 0, max: 24000, preco: 3000 },
-                { min: 24001, max: 36000, preco: 4500 },
-                { min: 36001, max: 48000, preco: 6000 },
-                { min: 48001, max: 60000, preco: 7500 },
-                { min: 60001, max: 84000, preco: 10000 },
-                { min: 84001, max: 120000, preco: 15000 },
-                { min: 120001, max: 180000, preco: 22000 }
+                { min: 0, max: 24000, preco: 1500 },
+                { min: 24001, max: 36000, preco: 2600 },
+                { min: 36001, max: 48000, preco: 3600 },
+                { min: 48001, max: 60000, preco: 4800 },
+                { min: 60001, max: 84000, preco: 7000 },
+                { min: 84001, max: 120000, preco: 9800 },
+                { min: 120001, max: 180000, preco: 14000 }
             ];
         }
         const faixa = faixas.find(f => btu >= f.min && btu <= f.max);
-        return faixa ? faixa.preco : (idioma === 'it-IT' ? 4000 : 22000);
+        return faixa ? faixa.preco : (idioma === 'it-IT' ? 680 : 14000);
     }
     
     // ============================================
@@ -869,9 +848,7 @@ class ArcondicionadoApp extends App {
         const btuBaseTotal = btuAreaTotal + btuPessoasTotal + btuEquipamentosTotal;
         
         const fatorInsolacao = this.getFatorInsolacao(insolacao);
-        const idioma = (window.i18n && typeof window.i18n.obterIdiomaAtual === 'function')
-            ? window.i18n.obterIdiomaAtual()
-            : (localStorage.getItem('idiomaPreferido') || 'pt-BR');
+        const idioma = this.obterIdiomaAtual();
         const fatorIsolamento = idioma === 'it-IT' ? 1.0 : this.getFatorIsolamento(isolamento);
         const btuFinalTotal = btuBaseTotal * fatorInsolacao * fatorIsolamento;
         
@@ -945,9 +922,7 @@ class ArcondicionadoApp extends App {
     }
     
     formatarMoedaComConversao(valor) {
-        const idioma = (window.i18n && typeof window.i18n.obterIdiomaAtual === 'function')
-            ? window.i18n.obterIdiomaAtual()
-            : (localStorage.getItem('idiomaPreferido') || 'pt-BR');
+        const idioma = this.obterIdiomaAtual();
         if (idioma === 'it-IT') {
             return `€ ${Math.round(valor).toLocaleString('it-IT')}`;
         } else {
