@@ -904,6 +904,9 @@ class MutuoApp extends App {
         // Atualizar resultados
         this.atualizarResultados(dados);
 
+        // Atualizar comparação dos sistemas
+        this.atualizarComparacaoValores(dados);
+
         // Atualizar slider de parcelas
         const sliderParcelas = document.getElementById('sliderParcelas');
         if (sliderParcelas) {
@@ -1231,6 +1234,49 @@ class MutuoApp extends App {
             <td>-</td>
         `;
         tbody.appendChild(trTotal);
+    }
+
+    atualizarComparacaoValores(dados) {
+        const tabela = document.getElementById('tabelaComparacaoValores');
+        if (!tabela) return;
+
+        // Atualizar subtítulo com valores reais
+        const subtitle = document.getElementById('comparison-subtitle');
+        if (subtitle) {
+            const valorStr = this.formatarMoedaLocal(dados.valor);
+            const casasDecimais = dados.periodicidade === 'dia' ? 4 : (dados.periodicidade === 'mes' ? 3 : 2);
+            const taxaStr = formatarNumero(dados.taxaExibida, casasDecimais) + '%';
+            const periodoStr = dados.periodicidade === 'ano'
+                ? (this.traducoes['unidades']?.aoAno || 'ao ano')
+                : dados.periodicidade === 'mes'
+                    ? (this.traducoes['unidades']?.aoMes || 'ao mês')
+                    : 'ao dia';
+            const pt = i18n.obterIdiomaAtual() === 'pt-BR';
+            const paraLabel = pt ? 'Para' : 'Per';
+            const porLabel = pt ? 'por' : 'per';
+            const mesesLabel = pt ? 'meses' : 'mesi';
+            subtitle.innerHTML = `<strong>${paraLabel} ${valorStr} a ${taxaStr} ${periodoStr} ${porLabel} ${dados.numParcelas} ${mesesLabel}:</strong>`;
+        }
+
+        // Calcular os 3 sistemas com os valores atuais
+        const sistemas = ['sac', 'price', 'americano'];
+        const resultados = sistemas.map(sistema => {
+            const tabAmort = this.calcularAmortizacao({ ...dados, sistema });
+            const totalJuros = tabAmort.reduce((sum, p) => sum + p.juros, 0);
+            const primeira = tabAmort[0]?.parcela || 0;
+            const ultima = tabAmort[tabAmort.length - 1]?.parcela || 0;
+            return { totalJuros, primeira, ultima };
+        });
+
+        const rows = tabela.querySelectorAll('tbody tr');
+        rows.forEach((row, idx) => {
+            const cells = row.querySelectorAll('td');
+            if (cells.length >= 4 && resultados[idx]) {
+                cells[1].textContent = this.formatarMoedaLocal(resultados[idx].totalJuros);
+                cells[2].textContent = this.formatarMoedaLocal(resultados[idx].primeira);
+                cells[3].textContent = this.formatarMoedaLocal(resultados[idx].ultima);
+            }
+        });
     }
 
     atualizarGrafico() {
