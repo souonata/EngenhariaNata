@@ -42,6 +42,34 @@
     width: 5ch;
 }
 
+/* sliderPrecoKWh: max=3,00 → 4 chars */
+#inputPrecoKWh {
+    max-width: 5ch;
+    min-width: 4ch;
+    width: 5ch;
+}
+
+/* sliderAumentoAnualEnergia: max=40,0 → 4 chars */
+#inputAumentoAnualEnergia {
+    max-width: 5ch;
+    min-width: 4ch;
+    width: 5ch;
+}
+
+/* sliderPrecoBateriaKWh: max=8000 → "8.000" = 5 chars */
+#inputPrecoBateriaKWh {
+    max-width: 6ch;
+    min-width: 4ch;
+    width: 6ch;
+}
+
+/* sliderPeriodoAnalise: max=50 → 2 chars */
+#inputPeriodoAnalise {
+    max-width: 4ch;
+    min-width: 3ch;
+    width: 4ch;
+}
+
 /* Container e header movidos para shared-styles.css */
 /* Mantendo apenas estilos específicos do Solar */
 .conteiner-principal {

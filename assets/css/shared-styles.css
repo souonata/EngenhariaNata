@@ -1348,9 +1348,35 @@ input[type="range"]::-moz-range-thumb:active {
         font-size: 0.7rem;
         padding: 6px 10px;
     }
-    
+
     .info-icon {
         margin-left: 12px;
         margin-right: 6px;
+    }
+}
+
+/* ============================================
+   MOBILE - Espaçamento entre inputs e sliders
+   ============================================ */
+@media (max-width: 768px) {
+    /* 50px entre cada grupo de entrada para rolar sem acionar campos */
+    .grupo-entrada,
+    .input-group {
+        margin-bottom: 50px;
+    }
+
+    .grupo-entrada:last-child,
+    .input-group:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Zona de toque segura ao redor de cada slider */
+    .slider-com-botoes {
+        padding: 10px 0;
+        touch-action: pan-y;
+    }
+
+    input[type="range"] {
+        margin: 6px 0;
     }
 }
