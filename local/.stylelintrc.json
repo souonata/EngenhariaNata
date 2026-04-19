@@ -12,9 +12,5 @@
     "property-no-vendor-prefix": null,
     "value-no-vendor-prefix": null
   },
-  "ignoreFiles": [
-    "node_modules/**",
-    "dist/**",
-    "**/*.min.css"
-  ]
+  "ignoreFiles": ["node_modules/**", "dist/**", "**/*.min.css"]
 }

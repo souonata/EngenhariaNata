@@ -10,7 +10,25 @@
       "corParedes": "Cor das Paredes",
       "peDireito": "Pé Direito (Altura Piso-Teto)",
       "luzNatural": "Disponibilidade de Luz Natural",
-      "tarifa": "Tarifa de Energia Elétrica"
+      "tarifa": "Tarifa de Energia Elétrica",
+      "novoAmbienteTipo": "Adicionar ambiente",
+      "nomeAmbienteAtual": "Nome para identificar este ambiente"
+    },
+    "placeholders": {
+      "nomeAmbiente": "Ex.: Sala principal"
+    },
+    "ambientes": {
+      "titulo": "🏠 Ambientes da Residência",
+      "descricao": "Escolha os ambientes que deseja dimensionar, ajuste os dados de cada um e acompanhe o parcial de cada cômodo mais o total da residência.",
+      "contadorLabel": "Ambientes selecionados",
+      "toolbarTexto": "Depois de adicionar, toque no ambiente para editar os dados dele.",
+      "nomePadrao": "{tipo} {numero}"
+    },
+    "editor": {
+      "titulo": "⚙️ Dados do Ambiente Selecionado",
+      "editando": "Editando:",
+      "tarifaTitulo": "💸 Tarifa da Residência",
+      "tarifaSubtitulo": "A mesma tarifa é usada para consolidar o custo de todos os ambientes."
     },
     "opcoes": {
       "sala": "Sala de Estar",
@@ -46,13 +64,27 @@
     },
     "resultado": {
       "titulo": "📊 Resultados",
+      "ambienteSelecionado": "Resultado do Ambiente Selecionado",
+      "parciaisAmbientes": "Parciais por Ambiente",
+      "totalResidencia": "Total da Residência",
       "luxRecomendado": "Lux Recomendado:",
       "potenciaTotal": "Potência Total de Lâmpadas:",
       "numLuminarias": "Número de Luminárias:",
       "consumoMensal": "Consumo Mensal:",
       "custoMensal": "Custo Mensal de Energia:",
       "custoAnual": "Custo Anual de Energia:",
-      "detalhamento": "Detalhamento de Luminárias"
+      "detalhamento": "Detalhamento de Luminárias",
+      "totalAmbientes": "Ambientes calculados:",
+      "areaTotal": "Área total:",
+      "potenciaResidencia": "Potência instalada total:",
+      "luminariasResidencia": "Total de luminárias:",
+      "consumoResidencia": "Consumo mensal total:",
+      "custoMensalResidencia": "Custo mensal total:",
+      "custoAnualResidencia": "Custo anual total:",
+      "numLuminariasCard": "Luminárias",
+      "potenciaCard": "Potência",
+      "consumoCard": "Consumo mensal",
+      "custoCard": "Custo mensal"
     },
     "tabela": {
       "quantidade": "Qtd",
@@ -61,14 +93,18 @@
     },
     "botoes": {
       "voltar": "← Voltar",
-      "saibaMais": "SAIBA MAIS!"
+      "saibaMais": "SAIBA MAIS!",
+      "adicionarAmbiente": "+ Adicionar ambiente",
+      "editarAmbiente": "Editar"
     },
     "aria": {
       "langPt": "Mudar para Português (Brasil)",
       "langIt": "Mudar para Italiano",
       "clickInfo": "Clique para ver mais informações",
       "decrease": "Diminuir valor",
-      "increase": "Aumentar valor"
+      "increase": "Aumentar valor",
+      "removerAmbiente": "Remover {ambiente}",
+      "home": "Voltar para a página inicial"
     },
     "titles": {
       "langPt": "Português (Brasil)",
@@ -100,6 +136,7 @@
       "constHoras": "Uso médio: 5 h/dia × 30 dias/mês × 12 meses/ano",
       "norma": "Norma: NBR 5413:1992 — Iluminância de Interiores",
       "resumoTitulo": "📊 Resumo Calculado",
+      "resumoAmbiente": "Ambiente selecionado:",
       "resumoArea": "Área do ambiente:",
       "resumoAtividade": "Tipo de ambiente:",
       "resumoCorParedes": "Cor das paredes:",
@@ -110,7 +147,8 @@
       "resumoLuminarias": "Luminárias escolhidas:",
       "resumoConsumo": "Consumo mensal:",
       "resumoCustoMensal": "Custo mensal:"
-    }
+    },
+    "footer": "Iluminação Residencial — Engenharia NATA @ 2026"
   },
   "it-IT": {
     "app": {
@@ -123,7 +161,25 @@
       "corParedes": "Colore delle Pareti",
       "peDireito": "Altezza Ambiente (Pavimento-Soffitto)",
       "luzNatural": "Disponibilità di Luce Naturale",
-      "tarifa": "Tariffa di Energia Elettrica"
+      "tarifa": "Tariffa di Energia Elettrica",
+      "novoAmbienteTipo": "Aggiungi ambiente",
+      "nomeAmbienteAtual": "Nome per identificare questo ambiente"
+    },
+    "placeholders": {
+      "nomeAmbiente": "Es.: Soggiorno principale"
+    },
+    "ambientes": {
+      "titulo": "🏠 Ambienti della Casa",
+      "descricao": "Scegli gli ambienti che vuoi dimensionare, regola i dati di ciascuno e confronta il parziale di ogni stanza con il totale dell'abitazione.",
+      "contadorLabel": "Ambienti selezionati",
+      "toolbarTexto": "Dopo aver aggiunto un ambiente, toccalo per modificarne i dati.",
+      "nomePadrao": "{tipo} {numero}"
+    },
+    "editor": {
+      "titulo": "⚙️ Dati dell'Ambiente Selezionato",
+      "editando": "In modifica:",
+      "tarifaTitulo": "💸 Tariffa della Casa",
+      "tarifaSubtitulo": "La stessa tariffa viene usata per consolidare il costo di tutti gli ambienti."
     },
     "opcoes": {
       "sala": "Soggiorno",
@@ -159,13 +215,27 @@
     },
     "resultado": {
       "titulo": "📊 Risultati",
+      "ambienteSelecionado": "Risultato dell'Ambiente Selezionato",
+      "parciaisAmbientes": "Parziali per Ambiente",
+      "totalResidencia": "Totale della Casa",
       "luxRecomendado": "Lux Consigliato:",
       "potenciaTotal": "Potenza Totale delle Lampade:",
       "numLuminarias": "Numero di Lampade:",
       "consumoMensal": "Consumo Mensile:",
       "custoMensal": "Costo Mensile dell'Energia:",
       "custoAnual": "Costo Annuale dell'Energia:",
-      "detalhamento": "Dettagli delle Lampade"
+      "detalhamento": "Dettagli delle Lampade",
+      "totalAmbientes": "Ambienti calcolati:",
+      "areaTotal": "Area totale:",
+      "potenciaResidencia": "Potenza totale installata:",
+      "luminariasResidencia": "Totale lampade:",
+      "consumoResidencia": "Consumo mensile totale:",
+      "custoMensalResidencia": "Costo mensile totale:",
+      "custoAnualResidencia": "Costo annuale totale:",
+      "numLuminariasCard": "Lampade",
+      "potenciaCard": "Potenza",
+      "consumoCard": "Consumo mensile",
+      "custoCard": "Costo mensile"
     },
     "tabela": {
       "quantidade": "Qtà",
@@ -174,14 +244,18 @@
     },
     "botoes": {
       "voltar": "← Indietro",
-      "saibaMais": "SCOPRI DI PIÙ!"
+      "saibaMais": "SCOPRI DI PIÙ!",
+      "adicionarAmbiente": "+ Aggiungi ambiente",
+      "editarAmbiente": "Modifica"
     },
     "aria": {
       "langPt": "Passa al Portoghese (Brasile)",
       "langIt": "Passa all'Italiano",
       "clickInfo": "Fare clic per maggiori informazioni",
       "decrease": "Diminuisci valore",
-      "increase": "Aumenta valore"
+      "increase": "Aumenta valore",
+      "removerAmbiente": "Rimuovi {ambiente}",
+      "home": "Torna alla pagina iniziale"
     },
     "titles": {
       "langPt": "Portoghese (Brasile)",
@@ -213,6 +287,7 @@
       "constHoras": "Uso medio: 5 h/giorno × 30 giorni/mese × 12 mesi/anno",
       "norma": "Norma: NBR 5413:1992 — Illuminamento degli Interni",
       "resumoTitulo": "📊 Riepilogo Calcolato",
+      "resumoAmbiente": "Ambiente selezionato:",
       "resumoArea": "Area dell'ambiente:",
       "resumoAtividade": "Tipo di ambiente:",
       "resumoCorParedes": "Colore delle pareti:",
@@ -223,6 +298,7 @@
       "resumoLuminarias": "Lampade scelte:",
       "resumoConsumo": "Consumo mensile:",
       "resumoCustoMensal": "Costo mensile:"
-    }
+    },
+    "footer": "Illuminazione Residenziale — Ingegneria NATA @ 2026"
   }
 }
