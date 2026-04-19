@@ -57,6 +57,14 @@
       "bugs": {
         "name": "Reportar Bug",
         "desc": "Canal direto para reportar problemas e sugerir melhorias"
+      },
+      "ventilacao": {
+        "name": "Ventilação Natural",
+        "desc": "Calcula trocas de ar (ACH), qualidade do ar e área mínima de ventilação (NBR 15575)"
+      },
+      "salario": {
+        "name": "Salário Líquido",
+        "desc": "Calculadora bilíngue de salário líquido Brasil/Itália com memorial e gráficos"
       }
     },
     "what": {
@@ -373,6 +381,14 @@
       "bugs": {
         "name": "Segnala Bug",
         "desc": "Canale diretto per segnalare problemi e proporre miglioramenti"
+      },
+      "ventilacao": {
+        "name": "Ventilazione Naturale",
+        "desc": "Calcola ricambi d'aria (ACH), qualità dell'aria e area minima di ventilazione (NBR 15575)"
+      },
+      "salario": {
+        "name": "Stipendio Netto",
+        "desc": "Calcolatore bilingue di stipendio netto Brasile/Italia con memoriale e grafici"
       }
     },
     "what": {

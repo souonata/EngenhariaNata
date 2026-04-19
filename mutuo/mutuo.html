@@ -499,8 +499,13 @@
                 </div>
             </div>
 
-            <div class="graficos-container">
-                <h3 data-i18n="evolution-charts">📊 Evolução ao Longo do Tempo</h3>
+            <div class="graficos-container" id="graficosContainer">
+                <div class="graficos-header">
+                    <h3 data-i18n="evolution-charts">📊 Evolução ao Longo do Tempo</h3>
+                    <button type="button" id="btnToggleGrafico" class="btn-toggle-grafico" aria-expanded="true" data-i18n-title="titles.toggleGrafico" data-i18n-aria="aria.toggleGrafico" title="Minimizar gráfico">
+                        <span class="btn-toggle-grafico-icon" aria-hidden="true">▾</span>
+                    </button>
+                </div>
                 <div class="grafico-unico">
                     <canvas id="graficoEvolutivo"></canvas>
                 </div>

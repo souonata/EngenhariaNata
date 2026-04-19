@@ -74,6 +74,42 @@
       "langPt": "Português (Brasil)",
       "langIt": "Italiano",
       "clickInfo": "Mais informações"
+    },
+    "memorial": {
+      "titulo": "📚 Memorial de Cálculo — Iluminação Residencial",
+      "introTitulo": "🎯 Objetivo do Cálculo",
+      "introTexto": "Este memorial explica passo a passo como a calculadora dimensiona a quantidade de lâmpadas LED, o consumo mensal e o custo de energia a partir da NBR 5413 (iluminância) e do método dos lumens.",
+      "passo1Titulo": "1️⃣ Passo 1: Lux Recomendado",
+      "passo1Explicacao": "A norma NBR 5413 define valores de lux ideais por tipo de atividade. Aplica-se um fator de redução quando há luz natural disponível.",
+      "passo1Formula": "Lux ajustado = Lux base × fator luz natural",
+      "passo1Exemplo": "Exemplo:",
+      "passo2Titulo": "2️⃣ Passo 2: Lumens Necessários",
+      "passo2Explicacao": "O total de lumens depende da área, da cor das paredes (reflexão) e do pé-direito (ajuste de 10 %/metro acima de 2,7 m).",
+      "passo2Formula": "Lumens = (Área × Lux) ÷ [FatorReflexão × (1 − 0,1 × (pé-direito/2,7 − 1))]",
+      "passo3Titulo": "3️⃣ Passo 3: Escolha das Lâmpadas LED",
+      "passo3Explicacao": "Entre as potências LED disponíveis (6 W, 9 W, 12 W, 15 W) a calculadora escolhe a combinação que entrega os lumens necessários com a menor potência total instalada (100 lm/W).",
+      "passo3Formula": "Quantidade = teto(Lumens ÷ (Watt × 100))",
+      "passo4Titulo": "4️⃣ Passo 4: Consumo e Custo de Energia",
+      "passo4Explicacao": "Assume-se 5 h/dia de funcionamento, 30 dias por mês e 12 meses por ano.",
+      "passo4Formula": "Consumo (kWh) = Potência × 5 h × 30 ÷ 1000   |   Custo = Consumo × Tarifa",
+      "constantesTitulo": "Constantes e referências:",
+      "constLux": "Valores de lux: NBR 5413 (sala 150, quarto 100, cozinha 300, banheiro 200, escritório 300, corredor 100)",
+      "constLuzNatural": "Fatores luz natural: muita 0,50 | média 0,65 | pouca 0,85 | nenhuma 1,00",
+      "constReflexao": "Reflexão paredes: clara 0,80 | média 0,50 | escura 0,30",
+      "constLampadas": "LED disponíveis: 6 W, 9 W, 12 W, 15 W — eficiência 100 lm/W",
+      "constHoras": "Uso médio: 5 h/dia × 30 dias/mês × 12 meses/ano",
+      "norma": "Norma: NBR 5413:1992 — Iluminância de Interiores",
+      "resumoTitulo": "📊 Resumo Calculado",
+      "resumoArea": "Área do ambiente:",
+      "resumoAtividade": "Tipo de ambiente:",
+      "resumoCorParedes": "Cor das paredes:",
+      "resumoPeDireito": "Pé-direito:",
+      "resumoLuzNatural": "Luz natural:",
+      "resumoLux": "Lux recomendado:",
+      "resumoLumens": "Lumens necessários:",
+      "resumoLuminarias": "Luminárias escolhidas:",
+      "resumoConsumo": "Consumo mensal:",
+      "resumoCustoMensal": "Custo mensal:"
     }
   },
   "it-IT": {
@@ -110,7 +146,7 @@
       "kwh": "kWh",
       "lux": "lux",
       "unidade": "pz",
-      "reaisPorKwh": "R$/kWh"
+      "reaisPorKwh": "€/kWh"
     },
     "dicas": {
       "corParedes": "💡 Le pareti chiare riflettono più luce, riducendo la quantità di lampade necessarie",
@@ -119,7 +155,7 @@
     "tooltips": {
       "area": "Area totale della stanza in metri quadrati. Moltiplicare la lunghezza per la larghezza dell'ambiente.",
       "peDireito": "Altezza tra il pavimento e il soffitto dell'ambiente. I valori tipici variano tra 2,4 m e 3,5 m nelle abitazioni residenziali.",
-      "tarifa": "Tariffa media di energia elettrica della vostra regione. Troverete questo valore nella fattura della luce (in R$/kWh o R$/MWh). Utilizzare 1,2 come valore predefinito se non siete sicuri."
+      "tarifa": "Tariffa media di energia elettrica della vostra regione. Troverete questo valore nella fattura della luce (in €/kWh o €/MWh). Utilizzare 0,30 come valore predefinito se non siete sicuri."
     },
     "resultado": {
       "titulo": "📊 Risultati",
@@ -151,6 +187,42 @@
       "langPt": "Portoghese (Brasile)",
       "langIt": "Italiano",
       "clickInfo": "Più informazioni"
+    },
+    "memorial": {
+      "titulo": "📚 Memoriale di Calcolo — Illuminazione Residenziale",
+      "introTitulo": "🎯 Obiettivo del Calcolo",
+      "introTexto": "Questo memoriale spiega passo dopo passo come il calcolatore dimensiona il numero di lampade LED, il consumo mensile e il costo dell'energia a partire dalla NBR 5413 (illuminamento) e dal metodo dei lumen.",
+      "passo1Titulo": "1️⃣ Passo 1: Lux Consigliato",
+      "passo1Explicacao": "La norma NBR 5413 definisce i valori di lux ideali per tipo di attività. Si applica un fattore di riduzione quando è disponibile luce naturale.",
+      "passo1Formula": "Lux effettivo = Lux base × fattore luce naturale",
+      "passo1Exemplo": "Esempio:",
+      "passo2Titulo": "2️⃣ Passo 2: Lumen Necessari",
+      "passo2Explicacao": "Il totale dei lumen dipende dall'area, dal colore delle pareti (riflessione) e dall'altezza del soffitto (correzione del 10 %/metro sopra 2,7 m).",
+      "passo2Formula": "Lumen = (Area × Lux) ÷ [FattoreRiflessione × (1 − 0,1 × (altezza/2,7 − 1))]",
+      "passo3Titulo": "3️⃣ Passo 3: Scelta delle Lampade LED",
+      "passo3Explicacao": "Tra le potenze LED disponibili (6 W, 9 W, 12 W, 15 W) il calcolatore seleziona la combinazione che fornisce i lumen necessari con la minore potenza totale installata (100 lm/W).",
+      "passo3Formula": "Quantità = ⌈Lumen ÷ (Watt × 100)⌉",
+      "passo4Titulo": "4️⃣ Passo 4: Consumo e Costo dell'Energia",
+      "passo4Explicacao": "Si ipotizzano 5 h/giorno di funzionamento, 30 giorni al mese e 12 mesi all'anno.",
+      "passo4Formula": "Consumo (kWh) = Potenza × 5 h × 30 ÷ 1000   |   Costo = Consumo × Tariffa",
+      "constantesTitulo": "Costanti e riferimenti:",
+      "constLux": "Valori di lux: NBR 5413 (soggiorno 150, camera 100, cucina 300, bagno 200, ufficio 300, corridoio 100)",
+      "constLuzNatural": "Fattori luce naturale: molta 0,50 | media 0,65 | poca 0,85 | nessuna 1,00",
+      "constReflexao": "Riflessione pareti: chiara 0,80 | media 0,50 | scura 0,30",
+      "constLampadas": "LED disponibili: 6 W, 9 W, 12 W, 15 W — efficienza 100 lm/W",
+      "constHoras": "Uso medio: 5 h/giorno × 30 giorni/mese × 12 mesi/anno",
+      "norma": "Norma: NBR 5413:1992 — Illuminamento degli Interni",
+      "resumoTitulo": "📊 Riepilogo Calcolato",
+      "resumoArea": "Area dell'ambiente:",
+      "resumoAtividade": "Tipo di ambiente:",
+      "resumoCorParedes": "Colore delle pareti:",
+      "resumoPeDireito": "Altezza soffitto:",
+      "resumoLuzNatural": "Luce naturale:",
+      "resumoLux": "Lux consigliato:",
+      "resumoLumens": "Lumen necessari:",
+      "resumoLuminarias": "Lampade scelte:",
+      "resumoConsumo": "Consumo mensile:",
+      "resumoCustoMensal": "Costo mensile:"
     }
   }
 }

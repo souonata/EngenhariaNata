@@ -61,6 +61,8 @@
 
         <!-- ENTRADAS -->
         <section class="cartao">
+            <div class="controles-rapidos">
+                <div class="controles-grid-vertical">
 
             <!-- Comprimento -->
             <div class="grupo-entrada">
@@ -270,15 +272,133 @@
                 </div>
             </div>
 
+                </div>
+            </div>
         </section>
 
         <!-- PAINEL V2 (explicação) -->
         <div id="v2-explicacao"></div>
 
+        <!-- MEMORIAL DE CÁLCULO (escondido inicialmente) -->
+        <div id="memorialSection" class="card memorial-section" style="display: none;">
+            <div class="memorial-header">
+                <h2 data-i18n="memorial.titulo">📚 Memorial de Cálculo — Ventilação Natural</h2>
+                <button id="btnFecharMemorial" class="btn-fechar-memorial" data-i18n-title="botoes.voltar">
+                    <span data-i18n="botoes.voltar">← Voltar</span>
+                </button>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.introTitulo">🎯 Objetivo do Cálculo</h3>
+                <p data-i18n="memorial.introTexto">Este memorial explica passo a passo o cálculo de ventilação.</p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo1Titulo">1️⃣ Volume do Ambiente</h3>
+                <p data-i18n="memorial.passo1Explicacao">Área do piso × pé-direito.</p>
+                <div class="formula-box">
+                    <p><strong data-i18n="memorial.passo1Formula">Área = C × L    |    Volume = Área × Pé-direito</strong></p>
+                </div>
+                <p><strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
+                    <span id="memorial-exemplo-volume">5 × 4 = 20 m² → 20 × 2,7 = 54 m³</span>
+                </p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo2Titulo">2️⃣ Vazão de Ar</h3>
+                <p data-i18n="memorial.passo2Explicacao">Método Bernoulli simplificado com Cd = 0,60.</p>
+                <div class="formula-box">
+                    <p><strong data-i18n="memorial.passo2Formula">Q = Área_janelas × V × Fator × 0,60 × 3600</strong></p>
+                </div>
+                <p><strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
+                    <span id="memorial-exemplo-vazao">2,0 × 2,5 × 1,00 × 0,60 × 3600 = 10.800 m³/h</span>
+                </p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo3Titulo">3️⃣ Renovações de Ar (ACH)</h3>
+                <p data-i18n="memorial.passo3Explicacao">Vazão ÷ Volume.</p>
+                <div class="formula-box">
+                    <p><strong data-i18n="memorial.passo3Formula">ACH = Vazão ÷ Volume</strong></p>
+                </div>
+                <p><strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
+                    <span id="memorial-exemplo-ach">10.800 ÷ 54 = 200 ACH</span>
+                </p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo4Titulo">4️⃣ ACH Mínimo Necessário</h3>
+                <p data-i18n="memorial.passo4Explicacao">máx(6, pessoas × 27 ÷ volume).</p>
+                <div class="formula-box">
+                    <p><strong data-i18n="memorial.passo4Formula">ACH_min = máx(6 , Pessoas × 27 ÷ Volume)</strong></p>
+                </div>
+                <p><strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
+                    <span id="memorial-exemplo-achmin">máx(6 ; 4 × 27 ÷ 54 = 2,0) = 6 ACH</span>
+                </p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo5Titulo">5️⃣ Área Mínima de Janelas</h3>
+                <p data-i18n="memorial.passo5Explicacao">NBR 15575 — pelo menos 1/8 da área do piso.</p>
+                <div class="formula-box">
+                    <p><strong data-i18n="memorial.passo5Formula">Área mínima = Área piso ÷ 8</strong></p>
+                </div>
+                <p><strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
+                    <span id="memorial-exemplo-areamin">20 ÷ 8 = 2,5 m²</span>
+                </p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo6Titulo">6️⃣ Qualidade</h3>
+                <p data-i18n="memorial.passo6Explicacao">Compara ACH real com o necessário.</p>
+                <div class="info-box">
+                    <p data-i18n="memorial.passo6Lista">Excelente ≥ 1,5× · Boa ≥ 1× · Aceitável ≥ 0,5× · Insuficiente abaixo</p>
+                </div>
+            </div>
+
+            <div class="memorial-item">
+                <div class="info-box">
+                    <p><strong data-i18n="memorial.constantesTitulo">Constantes e referências:</strong></p>
+                    <ul>
+                        <li data-i18n="memorial.constCd">Cd = 0,60 (janelas comuns)</li>
+                        <li data-i18n="memorial.constVento">Vento: quente 2,5 · temperado 2,0 · frio 1,5 m/s</li>
+                        <li data-i18n="memorial.constOri">Orientação: sul 1,00 · leste 0,90 · norte 0,80 · oeste 0,70</li>
+                        <li data-i18n="memorial.constACH">ACH mínimo residencial = 6</li>
+                        <li data-i18n="memorial.constPessoa">Vazão por pessoa = 27 m³/h</li>
+                        <li data-i18n="memorial.constArea">Área mínima janelas = 1/8 da área de piso</li>
+                    </ul>
+                    <p style="margin-top:10px;"><strong data-i18n="memorial.norma">Normas: NBR 15575:2021 · ASHRAE 62.1/62.2</strong></p>
+                </div>
+            </div>
+
+            <div class="resumo-calculado">
+                <h3 data-i18n="memorial.resumoTitulo">📊 Resumo Calculado</h3>
+                <div class="resumo-item-calc"><span data-i18n="memorial.resumoDimensoes">Dimensões:</span><span id="resumo-dims">-</span></div>
+                <div class="resumo-item-calc"><span data-i18n="memorial.resumoPeDireito">Pé-direito:</span><span id="resumo-pd">-</span></div>
+                <div class="resumo-item-calc"><span data-i18n="memorial.resumoJanelas">Área de janelas:</span><span id="resumo-janelas">-</span></div>
+                <div class="resumo-item-calc"><span data-i18n="memorial.resumoPessoas">Pessoas:</span><span id="resumo-pessoas">-</span></div>
+                <div class="resumo-item-calc"><span data-i18n="memorial.resumoOrientacao">Orientação:</span><span id="resumo-ori">-</span></div>
+                <div class="resumo-item-calc"><span data-i18n="memorial.resumoClima">Clima:</span><span id="resumo-clima">-</span></div>
+                <div class="resumo-item-calc"><span data-i18n="memorial.resumoVolume">Volume:</span><span id="resumo-volume">-</span></div>
+                <div class="resumo-item-calc"><span data-i18n="memorial.resumoVazao">Vazão:</span><span id="resumo-vazao">-</span></div>
+                <div class="resumo-item-calc"><span data-i18n="memorial.resumoACH">ACH real:</span><span id="resumo-ach">-</span></div>
+                <div class="resumo-item-calc"><span data-i18n="memorial.resumoACHMin">ACH mínimo:</span><span id="resumo-achmin">-</span></div>
+                <div class="resumo-item-calc"><span data-i18n="memorial.resumoAreaMin">Área mínima janelas:</span><span id="resumo-areamin">-</span></div>
+                <div class="resumo-item-calc"><span data-i18n="memorial.resumoQualidade">Qualidade:</span><span id="resumo-qualidade">-</span></div>
+            </div>
+
+            <button class="btn-voltar-memorial" data-i18n-title="botoes.voltar">
+                <span data-i18n="botoes.voltar">← Voltar</span>
+            </button>
+        </div>
+
         <!-- RESULTADOS -->
         <section class="card resultados" id="resultadosSection">
             <div class="resultados-header-com-ajuda">
                 <h2 data-i18n="resultado.titulo">Resultados</h2>
+                <button id="btnMemorial" class="btn-help" data-i18n-title="botoes.saibaMais">
+                    <span class="texto-saiba-mais" data-i18n="botoes.saibaMais">SAIBA MAIS!</span>
+                </button>
             </div>
 
             <!-- ACH atual — destaque principal -->
@@ -323,6 +443,12 @@
 
     <footer>
         <p data-i18n="footer">Ventilação Natural — Engenharia NATA @ 2026</p>
+        <div class="footer-meta">
+            <a class="footer-github-link" href="https://github.com/souonata/EngenhariaNata" target="_blank" rel="noopener noreferrer" aria-label="GitHub EngenhariaNata">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.58 7.58 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+                <span>github.com/souonata/EngenhariaNata</span>
+            </a>
+        </div>
     </footer>
 
     <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria.home">

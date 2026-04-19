@@ -117,9 +117,12 @@ class ChuvaApp extends App {
 
     configurarBotoesIncremento() {
         document.querySelectorAll('.arrow-btn').forEach(btn => {
+            const HOLD_DELAY_MS = 180;
             let animationFrame = null;
+            let timeoutSegurar = null;
             let tempoInicio = 0;
             let estaSegurando = false;
+            let iniciouAnimacaoContinua = false;
             let direcao = 1;
 
             const animar = (timestamp) => {
@@ -135,43 +138,79 @@ class ChuvaApp extends App {
                 const sliderMax = parseFloat(slider.max);
                 const velocidade = (sliderMax - sliderMin) / 3000;
                 const valorInicial = parseFloat(btn.dataset.valorInicial);
-                // Sem clamping: permite valores além dos limites do slider
                 let novoValor = valorInicial + velocidade * tempoDecorrido * direcao;
-                // Mínimo de 1 para evitar valores sem sentido
                 novoValor = Math.max(1, novoValor);
 
-                slider.value = novoValor; // slider clipa visualmente ao seu range
+                slider.value = novoValor;
                 if (inputEl) inputEl.value = Math.round(novoValor);
                 this.atualizarResultado();
 
                 animationFrame = requestAnimationFrame(animar);
             };
 
-            const iniciar = () => {
+            const iniciarAnimacao = () => {
                 if (animationFrame) return;
                 const sliderId = btn.getAttribute('data-target');
                 const slider   = document.getElementById(sliderId);
                 const inputEl  = document.getElementById(SLIDER_TO_INPUT[sliderId]);
                 if (!slider) return;
                 direcao = parseFloat(btn.getAttribute('data-step')) > 0 ? 1 : -1;
-                // Lê valor atual do input (pode estar além do range do slider)
                 const valorAtual = inputEl ? this.parsearValor(inputEl.value) : parseFloat(slider.value);
                 btn.dataset.valorInicial = isNaN(valorAtual) ? parseFloat(slider.value) : valorAtual;
                 tempoInicio = performance.now();
                 animationFrame = requestAnimationFrame(animar);
             };
 
+            const aplicarIncrementoUnico = () => {
+                const sliderId = btn.getAttribute('data-target');
+                const slider   = document.getElementById(sliderId);
+                const inputEl  = document.getElementById(SLIDER_TO_INPUT[sliderId]);
+                if (!slider) return;
+                const passo = parseFloat(btn.getAttribute('data-step') || '0');
+                if (!passo) return;
+
+                const valorBase = inputEl ? this.parsearValor(inputEl.value) : parseFloat(slider.value);
+                const valorAtual = isNaN(valorBase) ? parseFloat(slider.value) : valorBase;
+                const casasDecimais = (String(Math.abs(passo)).split('.')[1] || '').length;
+                let novoValor = valorAtual + passo;
+                novoValor = Math.max(1, Number(novoValor.toFixed(Math.max(casasDecimais, 3))));
+
+                slider.value = novoValor;
+                if (inputEl) inputEl.value = casasDecimais ? novoValor.toFixed(casasDecimais) : Math.round(novoValor);
+                this.atualizarResultado();
+            };
+
             const pararIncremento = () => {
                 estaSegurando = false;
+                iniciouAnimacaoContinua = false;
+                if (timeoutSegurar) { clearTimeout(timeoutSegurar); timeoutSegurar = null; }
                 if (animationFrame) { cancelAnimationFrame(animationFrame); animationFrame = null; }
                 delete btn.dataset.valorInicial;
             };
 
-            btn.addEventListener('mousedown', e => { e.preventDefault(); estaSegurando = true; iniciar(); });
-            btn.addEventListener('mouseup', e => { e.preventDefault(); pararIncremento(); });
+            const aoPressionar = (e) => {
+                e.preventDefault();
+                estaSegurando = true;
+                iniciouAnimacaoContinua = false;
+                timeoutSegurar = setTimeout(() => {
+                    if (!estaSegurando) return;
+                    iniciouAnimacaoContinua = true;
+                    iniciarAnimacao();
+                }, HOLD_DELAY_MS);
+            };
+
+            const aoSoltar = (e) => {
+                if (e) e.preventDefault();
+                const foiToqueRapido = estaSegurando && !iniciouAnimacaoContinua;
+                pararIncremento();
+                if (foiToqueRapido) aplicarIncrementoUnico();
+            };
+
+            btn.addEventListener('mousedown', aoPressionar);
+            btn.addEventListener('mouseup', aoSoltar);
             btn.addEventListener('mouseleave', () => pararIncremento());
-            btn.addEventListener('touchstart', e => { e.preventDefault(); estaSegurando = true; iniciar(); });
-            btn.addEventListener('touchend', e => { e.preventDefault(); pararIncremento(); });
+            btn.addEventListener('touchstart', aoPressionar);
+            btn.addEventListener('touchend', aoSoltar);
             btn.addEventListener('touchcancel', () => pararIncremento());
         });
     }

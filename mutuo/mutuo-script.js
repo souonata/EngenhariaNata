@@ -155,6 +155,22 @@ class MutuoApp extends App {
             radio.addEventListener('change', () => this.calcular());
         });
 
+        // Toggle minimizar gráfico
+        const btnToggleGrafico = document.getElementById('btnToggleGrafico');
+        const graficosContainer = document.getElementById('graficosContainer');
+        if (btnToggleGrafico && graficosContainer) {
+            const STORAGE_KEY = 'mutuoGraficoMinimizado';
+            if (localStorage.getItem(STORAGE_KEY) === '1') {
+                graficosContainer.classList.add('grafico-minimizado');
+                btnToggleGrafico.setAttribute('aria-expanded', 'false');
+            }
+            btnToggleGrafico.addEventListener('click', () => {
+                const minimizado = graficosContainer.classList.toggle('grafico-minimizado');
+                btnToggleGrafico.setAttribute('aria-expanded', minimizado ? 'false' : 'true');
+                localStorage.setItem(STORAGE_KEY, minimizado ? '1' : '0');
+            });
+        }
+
         // Botões da tabela
         const btnTabela = document.getElementById('btnTabela');
         if (btnTabela) {

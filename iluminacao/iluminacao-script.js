@@ -56,6 +56,12 @@ const TEMP_COR_LED = {
 // Horas de funcionamento por dia (média residencial)
 const HORAS_FUNCIONAMENTO_DIA = 5;
 
+// Limites do slider de tarifa por idioma (BR em R$/kWh, IT em €/kWh)
+const TARIFA_CONFIG = {
+    'pt-BR': { min: 0.5,  max: 3.0,  step: 0.01, defaultValue: 1.2,  decimals: 2 },
+    'it-IT': { min: 0.10, max: 0.80, step: 0.01, defaultValue: 0.30, decimals: 2 }
+};
+
 // Mapa slider → input de texto correspondente
 const SLIDER_TO_INPUT = {
     sliderArea:       'inputArea',
@@ -73,10 +79,31 @@ class IluminacaoApp extends App {
             appName: 'iluminacao',
             callbacks: {
                 aoInicializar: () => this.inicializarIluminacao(),
-                aoTrocarIdioma: () => this.atualizarResultado()
+                aoTrocarIdioma: () => {
+                    this.aplicarLimitesTarifaPorIdioma();
+                    this.atualizarResultado();
+                }
             }
         });
         this.explicacao = new ExplicacaoResultado('v2-explicacao', i18n);
+    }
+
+    aplicarLimitesTarifaPorIdioma() {
+        const idioma = i18n.obterIdiomaAtual();
+        const config = TARIFA_CONFIG[idioma] || TARIFA_CONFIG['pt-BR'];
+        const slider = document.getElementById('sliderTarifa');
+        const input  = document.getElementById('inputTarifa');
+        if (!slider || !input) return;
+
+        const valorAtual = parseFloat(input.value);
+        slider.min  = String(config.min);
+        slider.max  = String(config.max);
+        slider.step = String(config.step);
+
+        const foraDaFaixa = isNaN(valorAtual) || valorAtual < config.min || valorAtual > config.max;
+        const novoValor = foraDaFaixa ? config.defaultValue : valorAtual;
+        slider.value = String(novoValor);
+        input.value  = novoValor.toFixed(config.decimals);
     }
 
     get traducoes() {
@@ -86,6 +113,7 @@ class IluminacaoApp extends App {
 
     inicializarIluminacao() {
         this.configurarEventos();
+        this.aplicarLimitesTarifaPorIdioma();
         document.addEventListener('engnata:themechange', () => this.atualizarResultado());
         this.atualizarResultado();
     }
@@ -105,6 +133,55 @@ class IluminacaoApp extends App {
             r.addEventListener('change', () => this.atualizarResultado()));
         document.querySelectorAll('input[name="luzNatural"]').forEach(r =>
             r.addEventListener('change', () => this.atualizarResultado()));
+
+        // Memorial
+        document.getElementById('btnMemorial')?.addEventListener('click', () => this.toggleMemorial());
+        document.getElementById('btnFecharMemorial')?.addEventListener('click', () => this.toggleMemorial());
+        document.querySelectorAll('.btn-voltar-memorial').forEach(btn =>
+            btn.addEventListener('click', () => this.toggleMemorial()));
+    }
+
+    toggleMemorial() {
+        const memorial   = document.getElementById('memorialSection');
+        const resultados = document.getElementById('resultadosSection');
+        if (!memorial || !resultados) return;
+        const mostrar = memorial.style.display === 'none';
+        memorial.style.display   = mostrar ? 'block' : 'none';
+        resultados.style.display = mostrar ? 'none'  : 'block';
+        if (mostrar) memorial.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    atualizarMemorial(valores, luxRec, lumens, config, consumo) {
+        const t = this.traducoes;
+        const isIt = i18n.obterIdiomaAtual() === 'it-IT';
+        const moeda = isIt ? 'EUR' : 'BRL';
+        const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+        const luxBase = LUX_RECOMENDADO[valores.atividade] || 150;
+        const fatorLuz = FATORES_LUZ_NATURAL[valores.luzNatural] || 1.0;
+        const fatorReflexao = FATORES_REFLEXAO[valores.corParedes] || 0.5;
+        const fatorPD = valores.peDireito / 2.7;
+        const denom = fatorReflexao * (1 - 0.1 * (fatorPD - 1));
+
+        set('memorial-exemplo-lux',
+            `${luxBase} × ${fatorLuz.toFixed(2)} = ${luxRec} lux`);
+        set('memorial-exemplo-lumens',
+            `(${valores.area} × ${luxRec}) ÷ (${fatorReflexao.toFixed(2)} × ${(1 - 0.1 * (fatorPD - 1)).toFixed(3)}) = ${formatarNumero(lumens, 0)} lm`);
+        set('memorial-exemplo-luminarias',
+            `⌈${formatarNumero(lumens, 0)} ÷ (${config.wattagem} × 100)⌉ = ${config.quantidade} × ${config.wattagem}W = ${config.potenciaTotal}W`);
+        set('memorial-exemplo-custo',
+            `${config.potenciaTotal}W × 5h × 30 ÷ 1000 = ${formatarNumero(consumo.consumoMensal, 2)} kWh → ${formatarMoeda(consumo.custoMensal, moeda)}`);
+
+        set('resumo-area',       `${valores.area} m²`);
+        set('resumo-atividade',  t?.opcoes?.[valores.atividade] ?? valores.atividade);
+        set('resumo-cor',        t?.opcoes?.[valores.corParedes] ?? valores.corParedes);
+        set('resumo-pd',         `${valores.peDireito} m`);
+        set('resumo-luz',        t?.opcoes?.[valores.luzNatural] ?? valores.luzNatural);
+        set('resumo-lux',        `${luxRec} lux`);
+        set('resumo-lumens',     `${formatarNumero(lumens, 0)} lm`);
+        set('resumo-luminarias', `${config.quantidade} × ${config.wattagem}W (${config.potenciaTotal}W)`);
+        set('resumo-consumo',    `${formatarNumero(consumo.consumoMensal, 1)} kWh`);
+        set('resumo-custo',      formatarMoeda(consumo.custoMensal, moeda));
     }
 
     configurarIconesInfo() {
@@ -129,9 +206,12 @@ class IluminacaoApp extends App {
 
     configurarBotoesIncremento() {
         document.querySelectorAll('.arrow-btn').forEach(btn => {
+            const HOLD_DELAY_MS = 180;
             let animationFrame = null;
+            let timeoutSegurar = null;
             let tempoInicio = 0;
             let estaSegurando = false;
+            let iniciouAnimacaoContinua = false;
             let direcao = 1;
 
             const animar = (timestamp) => {
@@ -160,29 +240,72 @@ class IluminacaoApp extends App {
                 animationFrame = requestAnimationFrame(animar);
             };
 
-            const iniciarPressao = (e) => {
-                e.preventDefault();
+            const iniciarAnimacao = () => {
+                if (animationFrame) return;
                 const sliderId = btn.getAttribute('data-target');
                 const slider = document.getElementById(sliderId);
                 if (!slider) return;
                 const stepRaw = parseFloat(btn.getAttribute('data-step')) || 1;
                 direcao = stepRaw > 0 ? 1 : -1;
-                estaSegurando = true;
                 btn.dataset.valorInicial = parseFloat(slider.value);
                 tempoInicio = performance.now();
                 animationFrame = requestAnimationFrame(animar);
             };
 
-            const pararPressao = () => {
-                estaSegurando = false;
-                if (animationFrame) cancelAnimationFrame(animationFrame);
+            const aplicarIncrementoUnico = () => {
+                const sliderId = btn.getAttribute('data-target');
+                const slider = document.getElementById(sliderId);
+                const inputId = SLIDER_TO_INPUT[sliderId];
+                const inputEl = inputId ? document.getElementById(inputId) : null;
+                if (!slider) return;
+                const passo = parseFloat(btn.getAttribute('data-step') || '0');
+                if (!passo) return;
+
+                const min = parseFloat(slider.min);
+                const max = parseFloat(slider.max);
+                const casasDecimais = (String(Math.abs(passo)).split('.')[1] || '').length;
+                let novoValor = parseFloat(slider.value) + passo;
+                novoValor = Math.max(min, Math.min(max, novoValor));
+                novoValor = Number(novoValor.toFixed(Math.max(casasDecimais, 3)));
+
+                slider.value = novoValor;
+                if (inputEl) {
+                    const decimals = this.decimaisPorSlider(slider);
+                    inputEl.value = parseFloat(slider.value).toFixed(decimals);
+                }
+                this.atualizarResultado();
             };
 
-            btn.addEventListener('mousedown', iniciarPressao);
-            btn.addEventListener('touchstart', iniciarPressao, { passive: false });
-            btn.addEventListener('mouseup', pararPressao);
+            const pararPressao = () => {
+                estaSegurando = false;
+                iniciouAnimacaoContinua = false;
+                if (timeoutSegurar) { clearTimeout(timeoutSegurar); timeoutSegurar = null; }
+                if (animationFrame) { cancelAnimationFrame(animationFrame); animationFrame = null; }
+            };
+
+            const aoPressionar = (e) => {
+                e.preventDefault();
+                estaSegurando = true;
+                iniciouAnimacaoContinua = false;
+                timeoutSegurar = setTimeout(() => {
+                    if (!estaSegurando) return;
+                    iniciouAnimacaoContinua = true;
+                    iniciarAnimacao();
+                }, HOLD_DELAY_MS);
+            };
+
+            const aoSoltar = (e) => {
+                if (e) e.preventDefault();
+                const foiToqueRapido = estaSegurando && !iniciouAnimacaoContinua;
+                pararPressao();
+                if (foiToqueRapido) aplicarIncrementoUnico();
+            };
+
+            btn.addEventListener('mousedown', aoPressionar);
+            btn.addEventListener('touchstart', aoPressionar, { passive: false });
+            btn.addEventListener('mouseup', aoSoltar);
             btn.addEventListener('mouseleave', pararPressao);
-            btn.addEventListener('touchend', pararPressao);
+            btn.addEventListener('touchend', aoSoltar);
             btn.addEventListener('touchcancel', pararPressao);
         });
     }
@@ -298,6 +421,7 @@ class IluminacaoApp extends App {
         const consumoECusto      = this.calcularConsumoECusto(configLuminarias.potenciaTotal, valores.tarifa);
 
         this.atualizarDOM(luxRecomendado, configLuminarias, consumoECusto);
+        this.atualizarMemorial(valores, luxRecomendado, lumensNecessarios, configLuminarias, consumoECusto);
         this.explicacao.renderizar(
             this.gerarExplicacao(valores, luxRecomendado, lumensNecessarios, configLuminarias, consumoECusto)
         );
@@ -386,7 +510,7 @@ class IluminacaoApp extends App {
                     titulo: isIt ? 'Costo mensile stimato' : 'Custo mensal estimado',
                     valor: formatarMoeda(consumo.custoMensal, moeda),
                     descricao: isIt
-                        ? `${consumo.consumoMensal.toFixed(1)} kWh/mese × ${valores.tarifa.toFixed(2)} R$/kWh (${HORAS_FUNCIONAMENTO_DIA}h/giorno, 30 giorni).`
+                        ? `${consumo.consumoMensal.toFixed(1)} kWh/mese × €${valores.tarifa.toFixed(2)}/kWh (${HORAS_FUNCIONAMENTO_DIA}h/giorno, 30 giorni).`
                         : `${consumo.consumoMensal.toFixed(1)} kWh/mês × R$ ${valores.tarifa.toFixed(2)}/kWh (${HORAS_FUNCIONAMENTO_DIA}h/dia, 30 dias).`
                 }
             ],

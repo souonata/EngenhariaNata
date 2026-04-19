@@ -494,9 +494,12 @@ class SalarioApp extends App {
 
     configurarBotoesIncremento() {
         document.querySelectorAll('.arrow-btn').forEach(btn => {
+            const HOLD_DELAY_MS = 180;
             let animationFrame = null;
+            let timeoutSegurar = null;
             let tempoInicio = 0;
             let estaSegurando = false;
+            let iniciouAnimacaoContinua = false;
             let direcao = 1;
 
             const animar = (timestamp) => {
@@ -523,28 +526,70 @@ class SalarioApp extends App {
                 animationFrame = requestAnimationFrame(animar);
             };
 
-            const iniciar = (e) => {
-                e.preventDefault();
+            const iniciarAnimacao = () => {
+                if (animationFrame) return;
                 const sliderId = btn.getAttribute('data-target');
                 const slider   = document.getElementById(sliderId);
                 if (!slider) return;
                 direcao = parseFloat(btn.getAttribute('data-step')) > 0 ? 1 : -1;
-                estaSegurando = true;
                 btn.dataset.valorInicial = parseFloat(slider.value);
                 tempoInicio = performance.now();
                 animationFrame = requestAnimationFrame(animar);
             };
 
-            const parar = () => {
-                estaSegurando = false;
-                if (animationFrame) cancelAnimationFrame(animationFrame);
+            const aplicarIncrementoUnico = () => {
+                const sliderId = btn.getAttribute('data-target');
+                const slider   = document.getElementById(sliderId);
+                const inputId  = SLIDER_TO_INPUT[sliderId];
+                const inputEl  = inputId ? document.getElementById(inputId) : null;
+                if (!slider) return;
+                const passo = parseFloat(btn.getAttribute('data-step') || '0');
+                if (!passo) return;
+
+                const min = parseFloat(slider.min);
+                const max = parseFloat(slider.max);
+                const casasDecimais = (String(Math.abs(passo)).split('.')[1] || '').length;
+                let novoValor = parseFloat(slider.value) + passo;
+                novoValor = Math.max(min, Math.min(max, novoValor));
+                novoValor = Number(novoValor.toFixed(Math.max(casasDecimais, 3)));
+
+                slider.value = novoValor;
+                if (inputEl) {
+                    inputEl.value = parseFloat(slider.value).toFixed(this.decimaisPorSlider(slider));
+                }
+                this.atualizarResultado();
             };
 
-            btn.addEventListener('mousedown',   iniciar);
-            btn.addEventListener('touchstart',  iniciar, { passive: false });
-            btn.addEventListener('mouseup',     parar);
+            const parar = () => {
+                estaSegurando = false;
+                iniciouAnimacaoContinua = false;
+                if (timeoutSegurar) { clearTimeout(timeoutSegurar); timeoutSegurar = null; }
+                if (animationFrame) { cancelAnimationFrame(animationFrame); animationFrame = null; }
+            };
+
+            const aoPressionar = (e) => {
+                e.preventDefault();
+                estaSegurando = true;
+                iniciouAnimacaoContinua = false;
+                timeoutSegurar = setTimeout(() => {
+                    if (!estaSegurando) return;
+                    iniciouAnimacaoContinua = true;
+                    iniciarAnimacao();
+                }, HOLD_DELAY_MS);
+            };
+
+            const aoSoltar = (e) => {
+                if (e) e.preventDefault();
+                const foiToqueRapido = estaSegurando && !iniciouAnimacaoContinua;
+                parar();
+                if (foiToqueRapido) aplicarIncrementoUnico();
+            };
+
+            btn.addEventListener('mousedown',   aoPressionar);
+            btn.addEventListener('touchstart',  aoPressionar, { passive: false });
+            btn.addEventListener('mouseup',     aoSoltar);
             btn.addEventListener('mouseleave',  parar);
-            btn.addEventListener('touchend',    parar);
+            btn.addEventListener('touchend',    aoSoltar);
             btn.addEventListener('touchcancel', parar);
         });
     }

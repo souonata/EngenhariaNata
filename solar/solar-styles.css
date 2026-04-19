@@ -883,3 +883,119 @@ footer p {
     }
 }
 
+@media (max-width: 400px) {
+    .rotulo-radio-nome {
+        font-size: 0.92rem;
+    }
+
+    .rotulo-radio-tipo {
+        font-size: 0.78rem;
+    }
+
+    .rotulo-radio-especs {
+        font-size: 0.62rem;
+    }
+
+    .linha-resultado {
+        flex-wrap: wrap;
+    }
+
+    .estimativa-preco {
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 12px 10px;
+    }
+
+    .estimativa-preco .valor-resultado {
+        font-size: 1.2rem;
+        text-align: center;
+    }
+
+    .icone-info {
+        position: static;
+        transform: none;
+        margin-top: 2px;
+    }
+
+    .icone-info:hover {
+        transform: scale(1.08);
+    }
+
+    .diagrama-ligacao-box,
+    .grafico-box,
+    .memorial-item,
+    .resumo-calculado {
+        padding: 10px;
+    }
+
+    .grafico-box-title,
+    .arranjo-simples-resumo {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .arranjo-paineis-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .arranjo-pill {
+        align-self: flex-start;
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .arranjo-strings {
+        grid-template-columns: 1fr;
+    }
+
+    .wire-rail,
+    .painel-row {
+        flex-wrap: wrap;
+        overflow: visible;
+    }
+
+    .painel-contador-extra {
+        margin-left: 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    .btn-fechar-memorial,
+    .btn-voltar-memorial {
+        width: 100%;
+        max-width: 100%;
+        white-space: normal;
+    }
+
+    .memorial-header {
+        align-items: stretch;
+    }
+
+    .memorial-header h2 {
+        font-size: 1rem;
+    }
+
+    .resumo-item-calc span:last-child {
+        font-size: 1rem;
+    }
+
+    #graficoAmortizacao {
+        height: 280px !important;
+        max-height: 280px !important;
+    }
+
+    #graficoSazonalidade {
+        height: 240px !important;
+        max-height: 240px !important;
+    }
+
+    #infoPayback {
+        font-size: 0.82rem !important;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+}
+

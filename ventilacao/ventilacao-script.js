@@ -91,6 +91,52 @@ class VentilacaoApp extends App {
             r.addEventListener('change', () => this.atualizarResultado()));
         document.querySelectorAll('input[name="clima"]').forEach(r =>
             r.addEventListener('change', () => this.atualizarResultado()));
+
+        // Memorial
+        document.getElementById('btnMemorial')?.addEventListener('click', () => this.toggleMemorial());
+        document.getElementById('btnFecharMemorial')?.addEventListener('click', () => this.toggleMemorial());
+        document.querySelectorAll('.btn-voltar-memorial').forEach(btn =>
+            btn.addEventListener('click', () => this.toggleMemorial()));
+    }
+
+    toggleMemorial() {
+        const memorial   = document.getElementById('memorialSection');
+        const resultados = document.getElementById('resultadosSection');
+        if (!memorial || !resultados) return;
+        const mostrar = memorial.style.display === 'none';
+        memorial.style.display   = mostrar ? 'block' : 'none';
+        resultados.style.display = mostrar ? 'none'  : 'block';
+        if (mostrar) memorial.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    atualizarMemorial(v, res) {
+        const t = this.traducoes;
+        const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        const achPessoas = (v.pessoas * VAZAO_POR_PESSOA) / res.volume;
+
+        set('memorial-exemplo-volume',
+            `${v.comprimento} × ${v.largura} = ${formatarNumero(res.areaPiso, 1)} m² → ${formatarNumero(res.areaPiso, 1)} × ${v.peDireito} = ${formatarNumero(res.volume, 1)} m³`);
+        set('memorial-exemplo-vazao',
+            `${v.janelas} × ${res.velVento} × ${res.fatorOri.toFixed(2)} × 0,60 × 3600 = ${formatarNumero(res.vazao, 0)} m³/h`);
+        set('memorial-exemplo-ach',
+            `${formatarNumero(res.vazao, 0)} ÷ ${formatarNumero(res.volume, 1)} = ${formatarNumero(res.ach, 1)} ACH`);
+        set('memorial-exemplo-achmin',
+            `máx(6 ; ${v.pessoas} × 27 ÷ ${formatarNumero(res.volume, 1)} = ${formatarNumero(achPessoas, 1)}) = ${formatarNumero(res.achNecessario, 1)} ACH`);
+        set('memorial-exemplo-areamin',
+            `${formatarNumero(res.areaPiso, 1)} ÷ 8 = ${formatarNumero(res.areaMinima, 2)} m²`);
+
+        set('resumo-dims',     `${v.comprimento} × ${v.largura} m`);
+        set('resumo-pd',       `${v.peDireito} m`);
+        set('resumo-janelas',  `${v.janelas} m²`);
+        set('resumo-pessoas',  `${v.pessoas}`);
+        set('resumo-ori',      t?.opcoes?.[v.orientacao] ?? v.orientacao);
+        set('resumo-clima',    t?.opcoes?.[v.clima] ?? v.clima);
+        set('resumo-volume',   `${formatarNumero(res.volume, 1)} m³`);
+        set('resumo-vazao',    `${formatarNumero(res.vazao, 0)} m³/h`);
+        set('resumo-ach',      `${formatarNumero(res.ach, 1)} ACH`);
+        set('resumo-achmin',   `${formatarNumero(res.achNecessario, 1)} ACH`);
+        set('resumo-areamin',  `${formatarNumero(res.areaMinima, 2)} m²`);
+        set('resumo-qualidade', t?.qualidade?.[res.qualidadeKey] ?? res.qualidadeKey);
     }
 
     configurarIconesInfo() {
@@ -116,9 +162,12 @@ class VentilacaoApp extends App {
 
     configurarBotoesIncremento() {
         document.querySelectorAll('.arrow-btn').forEach(btn => {
+            const HOLD_DELAY_MS = 180;
             let animationFrame = null;
+            let timeoutSegurar = null;
             let tempoInicio = 0;
             let estaSegurando = false;
+            let iniciouAnimacaoContinua = false;
             let direcao = 1;
 
             const animar = (timestamp) => {
@@ -145,28 +194,70 @@ class VentilacaoApp extends App {
                 animationFrame = requestAnimationFrame(animar);
             };
 
-            const iniciarPressao = (e) => {
-                e.preventDefault();
+            const iniciarAnimacao = () => {
+                if (animationFrame) return;
                 const sliderId = btn.getAttribute('data-target');
                 const slider   = document.getElementById(sliderId);
                 if (!slider) return;
                 direcao = parseFloat(btn.getAttribute('data-step')) > 0 ? 1 : -1;
-                estaSegurando = true;
                 btn.dataset.valorInicial = parseFloat(slider.value);
                 tempoInicio = performance.now();
                 animationFrame = requestAnimationFrame(animar);
             };
 
-            const pararPressao = () => {
-                estaSegurando = false;
-                if (animationFrame) cancelAnimationFrame(animationFrame);
+            const aplicarIncrementoUnico = () => {
+                const sliderId = btn.getAttribute('data-target');
+                const slider   = document.getElementById(sliderId);
+                const inputId  = SLIDER_TO_INPUT[sliderId];
+                const inputEl  = inputId ? document.getElementById(inputId) : null;
+                if (!slider) return;
+                const passo = parseFloat(btn.getAttribute('data-step') || '0');
+                if (!passo) return;
+
+                const min = parseFloat(slider.min);
+                const max = parseFloat(slider.max);
+                const casasDecimais = (String(Math.abs(passo)).split('.')[1] || '').length;
+                let novoValor = parseFloat(slider.value) + passo;
+                novoValor = Math.max(min, Math.min(max, novoValor));
+                novoValor = Number(novoValor.toFixed(Math.max(casasDecimais, 3)));
+
+                slider.value = novoValor;
+                if (inputEl) {
+                    inputEl.value = parseFloat(slider.value).toFixed(this.decimaisPorSlider(slider));
+                }
+                this.atualizarResultado();
             };
 
-            btn.addEventListener('mousedown',   iniciarPressao);
-            btn.addEventListener('touchstart',  iniciarPressao, { passive: false });
-            btn.addEventListener('mouseup',     pararPressao);
+            const pararPressao = () => {
+                estaSegurando = false;
+                iniciouAnimacaoContinua = false;
+                if (timeoutSegurar) { clearTimeout(timeoutSegurar); timeoutSegurar = null; }
+                if (animationFrame) { cancelAnimationFrame(animationFrame); animationFrame = null; }
+            };
+
+            const aoPressionar = (e) => {
+                e.preventDefault();
+                estaSegurando = true;
+                iniciouAnimacaoContinua = false;
+                timeoutSegurar = setTimeout(() => {
+                    if (!estaSegurando) return;
+                    iniciouAnimacaoContinua = true;
+                    iniciarAnimacao();
+                }, HOLD_DELAY_MS);
+            };
+
+            const aoSoltar = (e) => {
+                if (e) e.preventDefault();
+                const foiToqueRapido = estaSegurando && !iniciouAnimacaoContinua;
+                pararPressao();
+                if (foiToqueRapido) aplicarIncrementoUnico();
+            };
+
+            btn.addEventListener('mousedown',   aoPressionar);
+            btn.addEventListener('touchstart',  aoPressionar, { passive: false });
+            btn.addEventListener('mouseup',     aoSoltar);
             btn.addEventListener('mouseleave',  pararPressao);
-            btn.addEventListener('touchend',    pararPressao);
+            btn.addEventListener('touchend',    aoSoltar);
             btn.addEventListener('touchcancel', pararPressao);
         });
     }
@@ -262,6 +353,7 @@ class VentilacaoApp extends App {
         const res = this.calcular(v);
 
         this.atualizarDOM(v, res);
+        this.atualizarMemorial(v, res);
         this.explicacao.renderizar(this.gerarExplicacao(v, res));
     }
 

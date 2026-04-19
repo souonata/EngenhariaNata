@@ -95,9 +95,12 @@ class BombaAguaApp extends App {
 
     configurarBotoesIncremento() {
         document.querySelectorAll('.arrow-btn').forEach((btn) => {
+            const HOLD_DELAY_MS = 180;
             let animationFrame = null;
+            let timeoutSegurar = null;
             let tempoInicio = 0;
             let estaSegurando = false;
+            let iniciouAnimacaoContinua = false;
             let direcao = 1;
 
             const animar = (timestamp) => {
@@ -125,7 +128,7 @@ class BombaAguaApp extends App {
                 animationFrame = requestAnimationFrame(animar);
             };
 
-            const iniciar = () => {
+            const iniciarAnimacao = () => {
                 if (animationFrame) return;
                 const sliderId = btn.getAttribute('data-target');
                 const slider = document.getElementById(sliderId);
@@ -139,8 +142,32 @@ class BombaAguaApp extends App {
                 animationFrame = requestAnimationFrame(animar);
             };
 
+            const aplicarIncrementoUnico = () => {
+                const sliderId = btn.getAttribute('data-target');
+                const slider = document.getElementById(sliderId);
+                const inputEl = document.getElementById(SLIDER_TO_INPUT[sliderId]);
+                if (!slider) return;
+                const passo = parseFloat(btn.getAttribute('data-step') || '0');
+                if (!passo) return;
+
+                const min = parseFloat(slider.min);
+                const max = parseFloat(slider.max);
+                const valorBase = inputEl ? this.parsearValor(inputEl.value) : parseFloat(slider.value);
+                const valorAtual = isNaN(valorBase) ? parseFloat(slider.value) : valorBase;
+                const casasDecimais = (String(Math.abs(passo)).split('.')[1] || '').length;
+                let novoValor = valorAtual + passo;
+                novoValor = Math.max(min, Math.min(max, novoValor));
+                novoValor = Number(novoValor.toFixed(Math.max(casasDecimais, 3)));
+
+                slider.value = novoValor;
+                if (inputEl) inputEl.value = this.formatarValorCampo(sliderId, novoValor);
+                this.atualizarResultado();
+            };
+
             const parar = () => {
                 estaSegurando = false;
+                iniciouAnimacaoContinua = false;
+                if (timeoutSegurar) { clearTimeout(timeoutSegurar); timeoutSegurar = null; }
                 if (animationFrame) {
                     cancelAnimationFrame(animationFrame);
                     animationFrame = null;
@@ -148,25 +175,29 @@ class BombaAguaApp extends App {
                 delete btn.dataset.valorInicial;
             };
 
-            btn.addEventListener('mousedown', (event) => {
+            const aoPressionar = (event) => {
                 event.preventDefault();
                 estaSegurando = true;
-                iniciar();
-            });
-            btn.addEventListener('mouseup', (event) => {
-                event.preventDefault();
+                iniciouAnimacaoContinua = false;
+                timeoutSegurar = setTimeout(() => {
+                    if (!estaSegurando) return;
+                    iniciouAnimacaoContinua = true;
+                    iniciarAnimacao();
+                }, HOLD_DELAY_MS);
+            };
+
+            const aoSoltar = (event) => {
+                if (event) event.preventDefault();
+                const foiToqueRapido = estaSegurando && !iniciouAnimacaoContinua;
                 parar();
-            });
+                if (foiToqueRapido) aplicarIncrementoUnico();
+            };
+
+            btn.addEventListener('mousedown', aoPressionar);
+            btn.addEventListener('mouseup', aoSoltar);
             btn.addEventListener('mouseleave', parar);
-            btn.addEventListener('touchstart', (event) => {
-                event.preventDefault();
-                estaSegurando = true;
-                iniciar();
-            });
-            btn.addEventListener('touchend', (event) => {
-                event.preventDefault();
-                parar();
-            });
+            btn.addEventListener('touchstart', aoPressionar);
+            btn.addEventListener('touchend', aoSoltar);
             btn.addEventListener('touchcancel', parar);
         });
     }

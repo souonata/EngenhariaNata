@@ -70,6 +70,8 @@
         <!-- SEÇÃO DE ENTRADAS -->
         <!-- ========================================== -->
         <section class="card">
+            <div class="controles-rapidos">
+                <div class="controles-grid-vertical">
             <!-- Tamanho do Ambiente -->
             <div class="grupo-entrada">
                 <div class="cabecalho-controle">
@@ -240,14 +242,144 @@
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderTarifa" data-step="0.05" data-i18n-aria="aria.increase">+</button>
                 </div>
             </div>
+                </div>
+            </div>
         </section>
+
+        <!-- ========================================== -->
+        <!-- MEMORIAL DE CÁLCULO (escondido inicialmente) -->
+        <!-- ========================================== -->
+        <div id="memorialSection" class="card memorial-section" style="display: none;">
+            <div class="memorial-header">
+                <h2 data-i18n="memorial.titulo">📚 Memorial de Cálculo — Iluminação Residencial</h2>
+                <button id="btnFecharMemorial" class="btn-fechar-memorial" data-i18n-title="botoes.voltar">
+                    <span data-i18n="botoes.voltar">← Voltar</span>
+                </button>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.introTitulo">🎯 Objetivo do Cálculo</h3>
+                <p data-i18n="memorial.introTexto">Este memorial explica passo a passo como a calculadora dimensiona a iluminação.</p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo1Titulo">1️⃣ Passo 1: Lux Recomendado</h3>
+                <p data-i18n="memorial.passo1Explicacao">A norma NBR 5413 define valores de lux ideais por tipo de atividade.</p>
+                <div class="formula-box">
+                    <p><strong data-i18n="memorial.passo1Formula">Lux ajustado = Lux base × fator luz natural</strong></p>
+                </div>
+                <p><strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
+                    <span id="memorial-exemplo-lux">150 × 0,5 = 75 lux</span>
+                </p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo2Titulo">2️⃣ Passo 2: Lumens Necessários</h3>
+                <p data-i18n="memorial.passo2Explicacao">Depende da área, reflexão das paredes e pé-direito.</p>
+                <div class="formula-box">
+                    <p><strong data-i18n="memorial.passo2Formula">Lumens = (Área × Lux) ÷ [FatorReflexão × (1 − 0,1 × (pé-direito/2,7 − 1))]</strong></p>
+                </div>
+                <p><strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
+                    <span id="memorial-exemplo-lumens">(20 × 75) ÷ (0,80 × 1,00) = 1.875 lm</span>
+                </p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo3Titulo">3️⃣ Passo 3: Escolha das Lâmpadas LED</h3>
+                <p data-i18n="memorial.passo3Explicacao">Seleciona a combinação com menor potência total entre LED de 6, 9, 12 e 15 W.</p>
+                <div class="formula-box">
+                    <p><strong data-i18n="memorial.passo3Formula">Quantidade = ⌈Lumens ÷ (Watt × 100)⌉</strong></p>
+                </div>
+                <p><strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
+                    <span id="memorial-exemplo-luminarias">⌈1.875 ÷ (9 × 100)⌉ = 3 × 9W = 27W</span>
+                </p>
+            </div>
+
+            <div class="memorial-item">
+                <h3 data-i18n="memorial.passo4Titulo">4️⃣ Passo 4: Consumo e Custo</h3>
+                <p data-i18n="memorial.passo4Explicacao">5 h/dia, 30 dias/mês.</p>
+                <div class="formula-box">
+                    <p><strong data-i18n="memorial.passo4Formula">Consumo = Potência × 5 × 30 ÷ 1000    Custo = Consumo × Tarifa</strong></p>
+                </div>
+                <p><strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
+                    <span id="memorial-exemplo-custo">27W × 5h × 30 ÷ 1000 = 4,05 kWh → R$ 4,86</span>
+                </p>
+            </div>
+
+            <div class="memorial-item">
+                <div class="info-box">
+                    <p><strong data-i18n="memorial.constantesTitulo">Constantes e referências:</strong></p>
+                    <ul>
+                        <li data-i18n="memorial.constLux">Valores de lux NBR 5413 por ambiente</li>
+                        <li data-i18n="memorial.constLuzNatural">Fatores luz natural: muita 0,50 | média 0,65 | pouca 0,85 | nenhuma 1,00</li>
+                        <li data-i18n="memorial.constReflexao">Reflexão paredes: clara 0,80 | média 0,50 | escura 0,30</li>
+                        <li data-i18n="memorial.constLampadas">LED disponíveis: 6 W, 9 W, 12 W, 15 W — 100 lm/W</li>
+                        <li data-i18n="memorial.constHoras">Uso médio: 5 h/dia × 30 dias/mês × 12 meses/ano</li>
+                    </ul>
+                    <p style="margin-top:10px;"><strong data-i18n="memorial.norma">Norma: NBR 5413:1992</strong></p>
+                </div>
+            </div>
+
+            <div class="resumo-calculado">
+                <h3 data-i18n="memorial.resumoTitulo">📊 Resumo Calculado</h3>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoArea">Área do ambiente:</span>
+                    <span id="resumo-area">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoAtividade">Tipo de ambiente:</span>
+                    <span id="resumo-atividade">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoCorParedes">Cor das paredes:</span>
+                    <span id="resumo-cor">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoPeDireito">Pé-direito:</span>
+                    <span id="resumo-pd">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoLuzNatural">Luz natural:</span>
+                    <span id="resumo-luz">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoLux">Lux recomendado:</span>
+                    <span id="resumo-lux">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoLumens">Lumens necessários:</span>
+                    <span id="resumo-lumens">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoLuminarias">Luminárias escolhidas:</span>
+                    <span id="resumo-luminarias">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoConsumo">Consumo mensal:</span>
+                    <span id="resumo-consumo">-</span>
+                </div>
+                <div class="resumo-item-calc">
+                    <span data-i18n="memorial.resumoCustoMensal">Custo mensal:</span>
+                    <span id="resumo-custo">-</span>
+                </div>
+            </div>
+
+            <button class="btn-voltar-memorial" data-i18n-title="botoes.voltar">
+                <span data-i18n="botoes.voltar">← Voltar</span>
+            </button>
+        </div>
 
         <!-- ========================================== -->
         <!-- SEÇÃO DE RESULTADOS -->
         <!-- ========================================== -->
-        <section class="card resultado-card">
-            <h2 data-i18n="resultado.titulo">📊 Resultados</h2>
-            
+        <section class="card resultado-card" id="resultadosSection">
+            <div class="resultados-header-com-ajuda">
+                <h2 data-i18n="resultado.titulo">📊 Resultados</h2>
+                <button id="btnMemorial" class="btn-help" data-i18n-title="botoes.saibaMais">
+                    <span class="texto-saiba-mais" data-i18n="botoes.saibaMais">SAIBA MAIS!</span>
+                </button>
+            </div>
+
             <div class="resultado-grid">
                 <!-- Lux Recomendado -->
                 <div class="resultado-item">
@@ -322,13 +454,23 @@
         <!-- V2 Explicação -->
         <section id="v2-explicacao"></section>
 
-        <!-- ========================================== -->
-        <!-- RODAPÉ COM LINK DE VOLTAR -->
-        <!-- ========================================== -->
-        <footer>
-            <a href="../index.html" class="btn-voltar" data-i18n="botoes.voltar">← Voltar</a>
-        </footer>
     </div>
+
+    <footer>
+        <p data-i18n="footer">Iluminação Residencial — Engenharia NATA @ 2026</p>
+        <div class="footer-meta">
+            <a class="footer-github-link" href="https://github.com/souonata/EngenhariaNata" target="_blank" rel="noopener noreferrer" aria-label="GitHub EngenhariaNata">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.58 7.58 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+                <span>github.com/souonata/EngenhariaNata</span>
+            </a>
+        </div>
+    </footer>
+
+    <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria.home">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
 
     <!-- ========================================== -->
     <!-- SCRIPTS -->

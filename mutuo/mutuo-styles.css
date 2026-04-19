@@ -1110,6 +1110,57 @@ html[data-theme="dark"] {
     text-align: center;
 }
 
+.graficos-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.graficos-header h3 {
+    margin-bottom: 0;
+}
+
+.btn-toggle-grafico {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--mutuo-surface-soft, #f1f5f9);
+    color: #2d9fa3ff;
+    border: 1px solid rgba(45, 159, 163, 0.25);
+    border-radius: 999px;
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-toggle-grafico:hover {
+    background: rgba(45, 159, 163, 0.15);
+}
+
+.btn-toggle-grafico-icon {
+    display: inline-block;
+    transition: transform 0.25s ease;
+}
+
+.graficos-container.grafico-minimizado .grafico-unico {
+    display: none;
+}
+
+.graficos-container.grafico-minimizado .btn-toggle-grafico-icon {
+    transform: rotate(-90deg);
+}
+
 .grafico-unico {
     background: var(--mutuo-surface-soft, #f9f9f9);
     padding: 8px;
