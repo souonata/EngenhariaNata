@@ -51,14 +51,12 @@ export default defineConfig({
                 mutuo: resolve(projectRoot, 'mutuo/mutuo.html'),
                 solar: resolve(projectRoot, 'solar/solar.html'),
                 solarConfig: resolve(projectRoot, 'solar/config.html'),
-                sobre: resolve(projectRoot, 'sobre/sobre.html')
+                sobre: resolve(projectRoot, 'sobre/sobre.html'),
+                iluminacao: resolve(projectRoot, 'iluminacao/iluminacao.html'),
+                ventilacao: resolve(projectRoot, 'ventilacao/ventilacao.html'),
+                salario: resolve(projectRoot, 'salario/salario.html')
             },
             output: {
-                // Code splitting para otimização
-                manualChunks: {
-                    'site-config': ['./assets/js/site-config.js'],
-                    'ajustar-valor': ['./assets/js/ajustarValorUtil.js']
-                },
                 // Nome dos chunks com hash para cache-busting
                 chunkFileNames: 'assets/js/[name]-[hash].js',
                 entryFileNames: 'assets/js/[name]-[hash].js',

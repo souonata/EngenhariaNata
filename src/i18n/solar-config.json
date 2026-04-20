@@ -1,4 +1,5 @@
 {
+  "$schema": "./schema.json",
   "pt-BR": {
     "config-title": "⚙️ Configurações",
     "config-subtitle": "Valores de Referência 2024",

@@ -18,9 +18,10 @@
     "version:patch": "node scripts/update-versions.js patch",
     "version:minor": "node scripts/update-versions.js minor",
     "version:major": "node scripts/update-versions.js major",
+    "checkup": "rg \"console\\.log|debugger\" --glob \"*.js\" --glob \"!**/node_modules/**\" --glob \"!**/dist/**\" --glob \"!**/*.min.js\" -n .. || echo 'OK: nenhum console.log ou debugger encontrado'",
     "test": "echo \"Tests not configured yet\" && exit 0",
     "validate": "npm run lint:check && npm run format:check && npm run style:check",
-    "prebuild": "npm run version:patch"
+    "prebuild": "npm run lint:check"
   },
   "keywords": [
     "engenharia",
@@ -40,7 +41,7 @@
     "type": "git",
     "url": "https://github.com/souonata/EngenhariaNata.git"
   },
-  "homepage": "https://engnata.infinityfree.me",
+  "homepage": "https://souonata.github.io/EngenhariaNata",
   "devDependencies": {
     "chart.js": "4.4.1",
     "eslint": "^8.56.0",

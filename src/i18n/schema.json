@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EngenhariaNata i18n Translation File",
+  "description": "Arquivo de traduções bilíngue PT-BR / IT-IT",
+  "type": "object",
+  "required": ["pt-BR", "it-IT"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "pt-BR": {
+      "type": "object",
+      "description": "Traduções em Português Brasileiro",
+      "additionalProperties": true
+    },
+    "it-IT": {
+      "type": "object",
+      "description": "Traduzioni in Italiano",
+      "additionalProperties": true
+    }
+  }
+}

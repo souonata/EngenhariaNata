@@ -1,4 +1,5 @@
 {
+  "$schema": "./schema.json",
   "pt-BR": {
     "app-title": "🔋 Energia Solar",
     "app-subtitle": "Dimensionamento de Sistema Fotovoltaico",
@@ -48,6 +49,7 @@
     "ano": "ano",
     "moeda": "R$",
     "aria-home": "Voltar para a tela inicial",
+    "aria": { "home": "Voltar para a tela inicial" },
     "learn-more": "SAIBA MAIS!",
     "back": "← Voltar",
     "back-to-calculator": "Voltar para a Calculadora",
@@ -164,6 +166,7 @@
     "custo-total": "Totale",
     "footer": "Solare - Engenharia NATA @ 2026",
     "aria-home": "Torna alla schermata iniziale",
+    "aria": { "home": "Torna alla schermata iniziale" },
     "learn-more": "SCOPRI DI PIÙ!",
     "back": "← Indietro",
     "btn-memorial": "Vedi Memoriale di Calcolo",

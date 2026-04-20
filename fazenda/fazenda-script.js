@@ -1268,7 +1268,6 @@ function carregarDadosBanco(idioma) {
                 // Armazenar dados completos com informações técnicas
                 DADOS_COMPLETOS.plantas.frutas[key] = item;
             });
-            console.log(`[Fazenda] Carregadas ${Object.keys(DADOS_PLANTAS.frutas).length} frutas do banco de dados (${idioma})`);
         }
         if (dados.plantas.verduras) {
             Object.keys(dados.plantas.verduras).forEach(key => {
@@ -1282,7 +1281,6 @@ function carregarDadosBanco(idioma) {
                 };
                 DADOS_COMPLETOS.plantas.verduras[key] = item;
             });
-            console.log(`[Fazenda] Carregadas ${Object.keys(DADOS_PLANTAS.verduras).length} verduras do banco de dados (${idioma})`);
         }
         if (dados.plantas.legumes) {
             Object.keys(dados.plantas.legumes).forEach(key => {
@@ -1296,7 +1294,6 @@ function carregarDadosBanco(idioma) {
                 };
                 DADOS_COMPLETOS.plantas.legumes[key] = item;
             });
-            console.log(`[Fazenda] Carregados ${Object.keys(DADOS_PLANTAS.legumes).length} legumes do banco de dados (${idioma})`);
         }
     }
     
@@ -1320,10 +1317,7 @@ function carregarDadosBanco(idioma) {
             // Armazenar dados completos com informações técnicas
             DADOS_COMPLETOS.animais[key] = item;
         });
-        console.log(`[Fazenda] Carregados ${Object.keys(DADOS_ANIMAIS).length} animais do banco de dados (${idioma})`);
     }
-    
-    console.log(`[Fazenda] Banco de dados carregado com sucesso para ${idioma}`);
 }
 // TRADUÇÃO
 
@@ -1359,7 +1353,6 @@ function aplicarIdiomaFazenda(novoIdioma) {
         novoIdioma = 'it-IT';
     }
     
-    console.log(`[Fazenda] Trocando idioma para: ${novoIdioma}`);
     idiomaAtual = novoIdioma;
     
     const SITE_SEL = (typeof SiteConfig !== 'undefined' && SiteConfig.SELECTORS) ? SiteConfig.SELECTORS : { LANG_BTN: '.lang-btn', HOME_BUTTON: '.home-button-fixed' };
@@ -1530,8 +1523,6 @@ function inicializarApp() {
         return;
     }
     
-    console.log(`[Fazenda] Inicializando com ${totalFrutas} frutas, ${totalVerduras} verduras, ${totalLegumes} legumes e ${totalAnimais} animais`);
-    
     // Verificar se os elementos DOM existem
     const grupoFrutas = document.getElementById('grupoFrutas');
     const grupoVerduras = document.getElementById('grupoVerduras');
@@ -1550,40 +1541,32 @@ function inicializarApp() {
     grupoAnimais.innerHTML = '';
     
     // Criar checkboxes de plantas (ordenados alfabeticamente)
-    console.log('[Fazenda] Criando checkboxes de frutas...');
     const frutasKeys = Object.keys(DADOS_PLANTAS.frutas).sort((a, b) => {
         // Ordenar por nome traduzido
         const nomeA = traduzir(a).toLowerCase();
         const nomeB = traduzir(b).toLowerCase();
         return nomeA.localeCompare(nomeB, idiomaAtual);
     });
-    console.log(`[Fazenda] ${frutasKeys.length} frutas encontradas (ordenadas):`, frutasKeys);
     frutasKeys.forEach(nome => {
         const btn = criarCheckboxPlantas('frutas', nome);
         grupoFrutas.appendChild(btn);
     });
-    
-    console.log('[Fazenda] Criando checkboxes de verduras...');
+
     const verdurasKeys = Object.keys(DADOS_PLANTAS.verduras).sort((a, b) => {
-        // Ordenar por nome traduzido
         const nomeA = traduzir(a).toLowerCase();
         const nomeB = traduzir(b).toLowerCase();
         return nomeA.localeCompare(nomeB, idiomaAtual);
     });
-    console.log(`[Fazenda] ${verdurasKeys.length} verduras encontradas (ordenadas):`, verdurasKeys);
     verdurasKeys.forEach(nome => {
         const btn = criarCheckboxPlantas('verduras', nome);
         grupoVerduras.appendChild(btn);
     });
-    
-    console.log('[Fazenda] Criando checkboxes de legumes...');
+
     const legumesKeys = Object.keys(DADOS_PLANTAS.legumes).sort((a, b) => {
-        // Ordenar por nome traduzido
         const nomeA = traduzir(a).toLowerCase();
         const nomeB = traduzir(b).toLowerCase();
         return nomeA.localeCompare(nomeB, idiomaAtual);
     });
-    console.log(`[Fazenda] ${legumesKeys.length} legumes encontrados (ordenados):`, legumesKeys);
     legumesKeys.forEach(nome => {
         const btn = criarCheckboxPlantas('legumes', nome);
         grupoLegumes.appendChild(btn);
@@ -1805,7 +1788,6 @@ function configurarEventListeners() {
         if (inputConsumoProteinas) ajustarTamanhoInput(inputConsumoProteinas);
     }
     
-    console.log('[Fazenda] App inicializado com sucesso!');
 }
 // ============================================
 // INICIALIZAÇÃO COM ARQUITETURA MODULAR
@@ -1823,7 +1805,6 @@ class FazendaApp extends App {
     }
 
     inicializarFazenda() {
-        console.log('[Fazenda] Inicializando app modular...');
         const banco = obterBancoFazenda();
         
         // Verificar se o banco de dados está disponível

@@ -65,7 +65,6 @@ REVISAO_APPS.md
 *-old.html
 *-old.js
 scripts/migrate-apps.ps1
-scripts/update-versions.js
 ARQUITETURA_MODULAR.md
 CHECKLIST_VALIDACAO.md
 GLOSSARIO.md

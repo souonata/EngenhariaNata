@@ -166,8 +166,6 @@ class AquecimentoApp extends App {
     // INICIALIZAÇÃO
     // ============================================
     inicializarAquecimento() {
-        console.log('✅ Inicializando Aquecimento...');
-
         document.addEventListener('engnata:themechange', () => {
             this.atualizarResultados();
         });
@@ -192,8 +190,6 @@ class AquecimentoApp extends App {
             this.atualizarVisibilidadeCampos();
             this.atualizarResultados();
         }, 100);
-        
-        console.log('✅ Aquecimento inicializado com sucesso!');
     }
     
     // ============================================
@@ -508,7 +504,6 @@ class AquecimentoApp extends App {
     // ATUALIZAÇÃO APÓS TROCA DE IDIOMA
     // ============================================
     atualizarAposTrocaIdioma() {
-        console.log('🌐 Atualizando após troca de idioma...');
         this.atualizarLimitesLatitude();
         this.atualizarResultados();
     }

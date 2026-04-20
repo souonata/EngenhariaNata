@@ -1,5 +1,5 @@
 /**
- * index-script-new.js
+ * index-script.js
  * Landing Page - Versão Modular
  *
  * Página inicial do portfólio com cards de apps e relógio/data
@@ -15,13 +15,13 @@ import { i18n } from './src/core/i18n.js';
 const versoesAppsPadrao = {
     'sobre': '1.0.0',
     'iluminacao': '1.0.0',
-    'bitola': '1.2.0',
-    'helice': '1.6.0',
-    'mutuo': '1.2.0',
+    'bitola': '1.0.0',
+    'helice': '1.0.0',
+    'mutuo': '2.0.0',
     'bugs': '1.0.0',
-    'arcondicionado': '0.2.0',
-    'aquecimento': '0.2.0',
-    'solar': '0.20.0',
+    'arcondicionado': '0.9.0',
+    'aquecimento': '0.9.0',
+    'solar': '0.9.0',
     'fazenda': '0.1.0',
     'chuva': '1.0.0',
     'ventilacao': '1.0.0',

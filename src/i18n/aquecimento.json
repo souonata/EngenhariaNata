@@ -1,4 +1,5 @@
 {
+  "$schema": "./schema.json",
   "pt-BR": {
     "app-title": "☀️ Dimensionador de Aquecedor Solar Térmico",
     "app-subtitle": "Cálculo para Sistema Termossifão com Tubos a Vácuo",
@@ -89,6 +90,7 @@
     "back": "← Voltar",
     "footer": "Dimensionador de Aquecedor Solar - Engenharia Nata @ 2026",
     "aria-home": "Voltar para a tela inicial",
+    "aria": { "home": "Voltar para a tela inicial" },
     "aria-lang-pt": "Alterar idioma para Português",
     "aria-lang-it": "Alterar idioma para Italiano",
     "title-lang-pt": "Português",
@@ -194,6 +196,7 @@
     "back": "← Indietro",
     "footer": "Dimensionatore Riscaldatore Solare - Engenharia Nata @ 2026",
     "aria-home": "Torna alla schermata iniziale",
+    "aria": { "home": "Torna alla schermata iniziale" },
     "aria-lang-pt": "Cambia lingua in portoghese",
     "aria-lang-it": "Cambia lingua in italiano",
     "title-lang-pt": "Portoghese",

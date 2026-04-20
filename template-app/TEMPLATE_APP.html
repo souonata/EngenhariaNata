@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="apple-touch-icon" href="../favicon.svg">
+
+    <title>NOME DO APP — Engenharia NATA</title>
+    <meta name="description" content="DESCRIÇÃO DO APP">
+    <meta name="keywords" content="PALAVRAS-CHAVE">
+    <meta name="author" content="Engenharia NATA">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://souonata.github.io/EngenhariaNata/NOME-APP/NOME-APP.html">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://souonata.github.io/EngenhariaNata/NOME-APP/NOME-APP.html">
+    <meta property="og:title" content="NOME DO APP — Engenharia NATA">
+    <meta property="og:description" content="DESCRIÇÃO CURTA">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:locale:alternate" content="it_IT">
+
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:url" content="https://souonata.github.io/EngenhariaNata/NOME-APP/NOME-APP.html">
+    <meta property="twitter:title" content="NOME DO APP — Engenharia NATA">
+    <meta property="twitter:description" content="DESCRIÇÃO CURTA">
+
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.0.0">
+    <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
+    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
+    <link rel="stylesheet" href="NOME-APP-styles.css?v=1.0.0">
+
+    <script data-goatcounter="https://souonata.goatcounter.com/count"
+            async src="https://gc.zgo.at/count.js"></script>
+</head>
+<body>
+    <!-- SELETOR DE IDIOMA -->
+    <div class="language-selector">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR"
+                data-i18n-aria="aria.langPt" data-i18n-title="titles.langPt">
+            <span class="flag" aria-hidden="true">🇧🇷</span>
+            <span class="lang-text">PT</span>
+        </button>
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT"
+                data-i18n-aria="aria.langIt" data-i18n-title="titles.langIt">
+            <span class="flag" aria-hidden="true">🇮🇹</span>
+            <span class="lang-text">IT</span>
+        </button>
+    </div>
+
+    <!-- CABEÇALHO -->
+    <header class="app-header">
+        <h1 data-i18n="app.title">TÍTULO DO APP</h1>
+        <p class="subtitle" data-i18n="app.subtitle">Subtítulo descritivo</p>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="app-container">
+
+        <!-- SEÇÃO DE ENTRADA -->
+        <section class="input-section">
+            <!-- Exemplo de campo com slider -->
+            <div class="input-group">
+                <label class="input-label" for="sliderExemplo" data-i18n="labels.exemplo">Label Exemplo</label>
+                <div class="slider-container">
+                    <button type="button" class="arrow-btn arrow-down"
+                            data-target="sliderExemplo" data-step="-1"
+                            data-i18n-aria="aria.decrease">−</button>
+                    <input type="range" id="sliderExemplo" class="slider"
+                           min="1" max="100" value="10" step="1">
+                    <button type="button" class="arrow-btn arrow-up"
+                            data-target="sliderExemplo" data-step="1"
+                            data-i18n-aria="aria.increase">+</button>
+                </div>
+                <div class="input-display">
+                    <input type="number" id="inputExemplo" class="input-number"
+                           min="1" max="100" value="10">
+                    <span class="input-unit" data-i18n="units.exemplo">unidade</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO DE RESULTADOS -->
+        <section class="results-section">
+            <h2 data-i18n="resultado.titulo">Resultados</h2>
+            <div class="resultado-item">
+                <span class="label-resultado" data-i18n="resultado.valor">Valor Calculado</span>
+                <span class="valor-resultado" id="resultadoValor">—</span>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer>
+        <p data-i18n="footer">NOME APP — Engenharia NATA @ 2026</p>
+        <div class="footer-meta">
+            <a class="footer-github-link" href="https://github.com/souonata/EngenhariaNata"
+               target="_blank" rel="noopener noreferrer" aria-label="GitHub EngenhariaNata">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.58 7.58 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+                <span>github.com/souonata/EngenhariaNata</span>
+            </a>
+        </div>
+    </footer>
+
+    <!-- BOTÃO HOME -->
+    <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria.home">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <script type="module" src="NOME-APP-script.js?v=1.0.0"></script>
+</body>
+</html>

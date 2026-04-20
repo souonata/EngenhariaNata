@@ -1,4 +1,5 @@
 {
+  "$schema": "./schema.json",
   "pt-BR": {
     "app-title": "❄️ Dimensionador de Ar Condicionado",
     "app-subtitle": "Cálculo de BTU para Ambientes Residenciais",
@@ -52,6 +53,7 @@
     "info-modelos": "💡 Modelos Comerciais Comuns:",
     "footer": "Dimensionador de Ar Condicionado - Engenharia Nata @ 2026",
     "aria-home": "Voltar para a tela inicial",
+    "aria": { "home": "Voltar para a tela inicial" },
     "aria-lang-pt": "Alterar idioma para Português",
     "aria-lang-it": "Alterar idioma para Italiano",
     "title-lang-pt": "Português",
@@ -186,6 +188,7 @@
     "info-modelos": "💡 Modelli Commerciali Comuni:",
     "footer": "Dimensionatore Climatizzatore - Engenharia Nata @ 2026",
     "aria-home": "Torna alla schermata iniziale",
+    "aria": { "home": "Torna alla schermata iniziale" },
     "aria-lang-pt": "Cambia lingua in portoghese",
     "aria-lang-it": "Cambia lingua in italiano",
     "title-lang-pt": "Portoghese",

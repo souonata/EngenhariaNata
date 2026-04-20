@@ -1,4 +1,5 @@
 {
+  "$schema": "./schema.json",
   "pt-BR": {
     "app-title": "🌾 Dimensionador de Fazenda Auto-Sustentável",
     "app-subtitle": "Planejamento completo de produção de alimentos",
@@ -9,6 +10,7 @@
     "aria-decrease": "Diminuir valor",
     "aria-increase": "Aumentar valor",
     "aria-home": "Voltar à tela inicial",
+    "aria": { "home": "Voltar à tela inicial" },
     "btn-memorial": "Abrir memorial de cálculo",
     "label-pessoas": "Número de Pessoas",
     "unit-people": "pessoas",
@@ -48,6 +50,7 @@
     "aria-decrease": "Riduci valore",
     "aria-increase": "Aumenta valore",
     "aria-home": "Torna alla schermata iniziale",
+    "aria": { "home": "Torna alla schermata iniziale" },
     "btn-memorial": "Apri memoriale di calcolo",
     "label-pessoas": "Numero di Persone",
     "unit-people": "persone",

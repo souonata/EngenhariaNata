@@ -942,12 +942,10 @@ class ArcondicionadoApp extends App {
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        console.log('✅ Arcondicionado: DOM carregado, inicializando...');
         const app = new ArcondicionadoApp();
         app.inicializar();
     });
 } else {
-    console.log('✅ Arcondicionado: DOM já carregado, inicializando imediatamente...');
     const app = new ArcondicionadoApp();
     app.inicializar();
 }

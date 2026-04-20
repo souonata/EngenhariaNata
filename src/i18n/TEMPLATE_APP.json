@@ -1,0 +1,59 @@
+{
+  "$schema": "./schema.json",
+  "pt-BR": {
+    "app": {
+      "title": "EMOJI NOME DO APP",
+      "subtitle": "Subtítulo descritivo"
+    },
+    "labels": {
+      "exemplo": "Label Exemplo"
+    },
+    "units": {
+      "exemplo": "unidade"
+    },
+    "resultado": {
+      "titulo": "Resultados",
+      "valor": "Valor Calculado"
+    },
+    "aria": {
+      "home": "Voltar para a tela inicial",
+      "langPt": "Alterar idioma para Português",
+      "langIt": "Alterar idioma para Italiano",
+      "decrease": "Diminuir valor",
+      "increase": "Aumentar valor"
+    },
+    "titles": {
+      "langPt": "Português",
+      "langIt": "Italiano"
+    },
+    "footer": "NOME APP — Engenharia NATA @ 2026"
+  },
+  "it-IT": {
+    "app": {
+      "title": "EMOJI NOME DELL'APP",
+      "subtitle": "Sottotitolo descrittivo"
+    },
+    "labels": {
+      "exemplo": "Etichetta Esempio"
+    },
+    "units": {
+      "exemplo": "unità"
+    },
+    "resultado": {
+      "titulo": "Risultati",
+      "valor": "Valore Calcolato"
+    },
+    "aria": {
+      "home": "Torna alla schermata iniziale",
+      "langPt": "Cambia lingua in portoghese",
+      "langIt": "Cambia lingua in italiano",
+      "decrease": "Riduci valore",
+      "increase": "Aumenta valore"
+    },
+    "titles": {
+      "langPt": "Portoghese",
+      "langIt": "Italiano"
+    },
+    "footer": "NOME APP — Ingegneria NATA @ 2026"
+  }
+}
