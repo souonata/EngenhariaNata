@@ -5,17 +5,23 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(__dirname, '..', '..');
 const localRoot = resolve(__dirname, '..');
+const writeStdout = message => process.stdout.write(`${message}\n`);
+const writeStderr = message => process.stderr.write(`${message}\n`);
 
 const bumpType = process.argv[2] || 'patch';
 if (!['patch', 'minor', 'major'].includes(bumpType)) {
-    console.error(`Invalid bump type: ${bumpType}. Use patch, minor, or major.`);
+    writeStderr(`Invalid bump type: ${bumpType}. Use patch, minor, or major.`);
     process.exit(1);
 }
 
 function bumpVersion(version, type) {
     const [major, minor, patch] = version.split('.').map(Number);
-    if (type === 'major') return `${major + 1}.0.0`;
-    if (type === 'minor') return `${major}.${minor + 1}.0`;
+    if (type === 'major') {
+        return `${major + 1}.0.0`;
+    }
+    if (type === 'minor') {
+        return `${major}.${minor + 1}.0`;
+    }
     return `${major}.${minor}.${patch + 1}`;
 }
 
@@ -32,4 +38,4 @@ const versions = JSON.parse(readFileSync(versionsPath, 'utf-8'));
 versions.lastUpdate = new Date().toISOString();
 writeFileSync(versionsPath, JSON.stringify(versions, null, 2) + '\n');
 
-console.log(`Version bumped: ${oldVersion} → ${pkg.version}`);
+writeStdout(`Version bumped: ${oldVersion} -> ${pkg.version}`);

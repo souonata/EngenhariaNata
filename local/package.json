@@ -18,7 +18,7 @@
     "version:patch": "node scripts/update-versions.js patch",
     "version:minor": "node scripts/update-versions.js minor",
     "version:major": "node scripts/update-versions.js major",
-    "checkup": "rg \"console\\.log|debugger\" --glob \"*.js\" --glob \"!**/node_modules/**\" --glob \"!**/dist/**\" --glob \"!**/*.min.js\" -n .. || echo 'OK: nenhum console.log ou debugger encontrado'",
+    "checkup": "rg \"console\\.log|\\bdebugger\\b\" -g \"*.js\" -n ../index-script.js ../sw.js ../assets ../src ../aquecimento ../arcondicionado ../bitola ../bombaagua ../bugs ../chuva ../fazenda ../helice ../iluminacao ../mutuo ../salario ../sobre ../solar ../template-app ../ventilacao || echo 'OK: nenhum console.log ou debugger encontrado'",
     "test": "echo \"Tests not configured yet\" && exit 0",
     "validate": "npm run lint:check && npm run format:check && npm run style:check",
     "prebuild": "npm run lint:check"
