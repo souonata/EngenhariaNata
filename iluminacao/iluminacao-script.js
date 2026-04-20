@@ -142,7 +142,6 @@ class IluminacaoApp extends App {
       inputTarifa: document.getElementById("inputTarifa"),
       memorialSection: document.getElementById("memorialSection"),
       resultadosSection: document.getElementById("resultadosSection"),
-      corpoTabelaLuminarias: document.getElementById("corpoTabelaLuminarias"),
     };
   }
 
@@ -796,9 +795,8 @@ class IluminacaoApp extends App {
     const totais = this.calcularTotais(resultados);
 
     this.renderizarListaAmbientes(resultados);
-    this.renderizarResultadosParciais(resultados);
-    this.renderizarResultadoAmbienteAtivo(ambienteAtivo);
     this.renderizarTotaisResidencia(totais);
+    this.renderizarResultadosParciais(resultados);
     this.atualizarMemorial(
       ambienteAtivo.nome,
       ambienteAtivo.ambiente,
@@ -808,14 +806,7 @@ class IluminacaoApp extends App {
       ambienteAtivo.calculo.consumoECusto,
     );
     this.explicacao.renderizar(
-      this.gerarExplicacao(
-        ambienteAtivo.nome,
-        ambienteAtivo.ambiente,
-        ambienteAtivo.calculo.luxRecomendado,
-        ambienteAtivo.calculo.lumensNecessarios,
-        ambienteAtivo.calculo.configLuminarias,
-        ambienteAtivo.calculo.consumoECusto,
-      ),
+      this.gerarExplicacaoCasa(totais, resultados),
     );
   }
 
@@ -899,44 +890,6 @@ class IluminacaoApp extends App {
       .join("");
   }
 
-  renderizarResultadoAmbienteAtivo(item) {
-    const moeda = i18n.obterMoeda();
-    const config = item.calculo.configLuminarias;
-    const consumo = item.calculo.consumoECusto;
-
-    if (this.dom.nomeAmbienteAtivo) {
-      this.dom.nomeAmbienteAtivo.textContent = item.nome;
-    }
-    if (this.dom.resultadoNomeAmbiente) {
-      this.dom.resultadoNomeAmbiente.textContent = item.nome;
-    }
-
-    document.getElementById("resultadoLux").textContent = formatarNumero(
-      item.calculo.luxRecomendado,
-      0,
-    );
-    document.getElementById("resultadoPotencia").textContent = formatarNumero(
-      config.potenciaTotal,
-      0,
-    );
-    document.getElementById("resultadoQuantidade").textContent = String(
-      config.quantidade,
-    );
-    document.getElementById("resultadoConsumo").textContent = formatarNumero(
-      consumo.consumoMensal,
-      1,
-    );
-    document.getElementById("resultadoCusto").textContent = formatarMoeda(
-      consumo.custoMensal,
-      moeda,
-    );
-    document.getElementById("resultadoCustoAnual").textContent = formatarMoeda(
-      consumo.custoAnual,
-      moeda,
-    );
-
-    this.atualizarTabelaLuminarias(config);
-  }
 
   renderizarTotaisResidencia(totais) {
     const moeda = i18n.obterMoeda();
@@ -960,29 +913,6 @@ class IluminacaoApp extends App {
       formatarMoeda(totais.custoAnual, moeda);
   }
 
-  atualizarTabelaLuminarias(config) {
-    if (!this.dom.corpoTabelaLuminarias) {
-      return;
-    }
-
-    const idioma = i18n.obterIdiomaAtual();
-    const tempCor = TEMP_COR_LED[config.wattagem] || TEMP_COR_LED[9];
-    const tipoLabel = idioma === "it-IT" ? tempCor.it : tempCor.pt;
-    const totalLabel = idioma === "it-IT" ? "Totale" : "Total";
-
-    this.dom.corpoTabelaLuminarias.innerHTML = `
-            <tr>
-                <td>${config.quantidade}×</td>
-                <td>${config.wattagem}W / ${config.lumensUnitario} lm</td>
-                <td>${tipoLabel}</td>
-            </tr>
-            <tr class="tabela-total-row">
-                <td><strong>= ${config.quantidade}×</strong></td>
-                <td><strong>${config.potenciaTotal}W / ${config.lumensReais} lm</strong></td>
-                <td><em>${totalLabel}</em></td>
-            </tr>
-        `;
-  }
 
   atualizarMemorial(nomeAmbiente, valores, luxRec, lumens, config, consumo) {
     const t = this.traducoes;
@@ -1032,70 +962,52 @@ class IluminacaoApp extends App {
     set("resumo-custo", formatarMoeda(consumo.custoMensal, moeda));
   }
 
-  gerarExplicacao(
-    nomeAmbiente,
-    valores,
-    luxRecomendado,
-    lumensNecessarios,
-    config,
-    consumo,
-  ) {
-    const t = this.traducoes;
+  gerarExplicacaoCasa(totais, resultados) {
     const idioma = i18n.obterIdiomaAtual();
     const isIt = idioma === "it-IT";
     const moeda = i18n.obterMoeda();
-
-    const nomeAtividade = t.opcoes?.[valores.tipo] || valores.tipo;
-    const nomeLuzNatural = t.opcoes?.[valores.luzNatural] || valores.luzNatural;
-    const nomeParedes = t.opcoes?.[valores.corParedes] || valores.corParedes;
-
-    const reducaoPct = Math.round(
-      (1 - FATORES_LUZ_NATURAL[valores.luzNatural]) * 100,
-    );
-    const reflexaoPct = Math.round(FATORES_REFLEXAO[valores.corParedes] * 100);
+    const tarifa = this.obterTarifaResidencia();
 
     return {
       linhas: [
         {
+          icone: "🏠",
+          titulo: isIt ? "Residenza completa" : "Residência completa",
+          valor: isIt
+            ? `${totais.totalAmbientes} ambienti — ${formatarNumero(totais.areaTotal, 1)} m²`
+            : `${totais.totalAmbientes} ambientes — ${formatarNumero(totais.areaTotal, 1)} m²`,
+          descricao: isIt
+            ? `Dimensionamento conforme NBR 5413 per ${totais.totalAmbientes} ambienti residenziali.`
+            : `Dimensionamento conforme NBR 5413 para ${totais.totalAmbientes} ambientes residenciais.`,
+        },
+        {
           icone: "💡",
-          titulo: isIt
-            ? "Lux consigliato (NBR 5413)"
-            : "Lux recomendado (NBR 5413)",
-          valor: `${luxRecomendado} lux`,
+          titulo: isIt ? "Lampade LED totali" : "Luminárias LED totais",
+          valor: `${totais.quantidadeLuminarias} un.`,
           descricao: isIt
-            ? `${nomeAtividade}: base ${LUX_RECOMENDADO[valores.tipo]} lux — ridotto del ${reducaoPct}% per luce naturale "${nomeLuzNatural}".`
-            : `${nomeAtividade}: base ${LUX_RECOMENDADO[valores.tipo]} lux — reduzido ${reducaoPct}% pela luz natural "${nomeLuzNatural}".`,
+            ? `Potenza installata totale: ${formatarNumero(totais.potenciaTotal, 0)} W.`
+            : `Potência instalada total: ${formatarNumero(totais.potenciaTotal, 0)} W.`,
         },
         {
-          icone: "🔆",
-          titulo: isIt ? "Flusso luminoso totale" : "Lumens totais necessários",
-          valor: `${lumensNecessarios} lm`,
+          icone: "⚡",
+          titulo: isIt ? "Consumo mensile" : "Consumo mensal",
+          valor: `${formatarNumero(totais.consumoMensal, 1)} kWh`,
           descricao: isIt
-            ? `Pareti ${nomeParedes} (riflessione ${reflexaoPct}%), altezza ${valores.peDireito} m, area ${valores.area} m².`
-            : `Paredes ${nomeParedes} (reflexão ${reflexaoPct}%), pé-direito ${valores.peDireito} m, área ${valores.area} m².`,
-        },
-        {
-          icone: "🔌",
-          titulo: isIt
-            ? "Lampade LED consigliate"
-            : "Lâmpadas LED recomendadas",
-          valor: `${config.quantidade}× ${config.wattagem}W LED`,
-          descricao: isIt
-            ? `Totale installata: ${config.potenciaTotal} W — ${config.lumensReais} lm prodotti (${LUMENS_POR_WATT} lm/W).`
-            : `Potência instalada: ${config.potenciaTotal} W — ${config.lumensReais} lm produzidos (${LUMENS_POR_WATT} lm/W).`,
+            ? `${formatarNumero(totais.potenciaTotal, 0)} W × ${HORAS_FUNCIONAMENTO_DIA}h/giorno × 30 giorni ÷ 1000.`
+            : `${formatarNumero(totais.potenciaTotal, 0)} W × ${HORAS_FUNCIONAMENTO_DIA}h/dia × 30 dias ÷ 1000.`,
         },
         {
           icone: "💰",
           titulo: isIt ? "Costo mensile stimato" : "Custo mensal estimado",
-          valor: formatarMoeda(consumo.custoMensal, moeda),
+          valor: formatarMoeda(totais.custoMensal, moeda),
           descricao: isIt
-            ? `${consumo.consumoMensal.toFixed(1)} kWh/mese × ${formatarMoeda(this.obterTarifaResidencia(), moeda)}/kWh (${HORAS_FUNCIONAMENTO_DIA}h/giorno, 30 giorni).`
-            : `${consumo.consumoMensal.toFixed(1)} kWh/mês × ${formatarMoeda(this.obterTarifaResidencia(), moeda)}/kWh (${HORAS_FUNCIONAMENTO_DIA}h/dia, 30 dias).`,
+            ? `${formatarNumero(totais.consumoMensal, 1)} kWh/mese × ${formatarMoeda(tarifa, moeda)}/kWh. Annuale: ${formatarMoeda(totais.custoAnual, moeda)}.`
+            : `${formatarNumero(totais.consumoMensal, 1)} kWh/mês × ${formatarMoeda(tarifa, moeda)}/kWh. Anual: ${formatarMoeda(totais.custoAnual, moeda)}.`,
         },
       ],
       destaque: isIt
-        ? `${escapeHtml(nomeAmbiente)}: ${config.quantidade} lampade LED ${config.wattagem}W per ${valores.area} m²`
-        : `${escapeHtml(nomeAmbiente)}: ${config.quantidade} lâmpadas LED de ${config.wattagem}W para ${valores.area} m²`,
+        ? `${totais.totalAmbientes} ambienti: ${totais.quantidadeLuminarias} lampade LED, ${formatarMoeda(totais.custoMensal, moeda)}/mese`
+        : `${totais.totalAmbientes} ambientes: ${totais.quantidadeLuminarias} luminárias LED, ${formatarMoeda(totais.custoMensal, moeda)}/mês`,
       dica: isIt
         ? "Confronta i parziali per capire quali ambienti concentrano la maggior parte del consumo di illuminazione della casa."
         : "Compare os parciais para identificar quais ambientes concentram a maior parte do consumo de iluminação da casa.",

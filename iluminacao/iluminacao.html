@@ -839,88 +839,8 @@
           </button>
         </div>
 
-        <div class="bloco-resultados">
-          <div class="bloco-resultados-header">
-            <h3 data-i18n="resultado.ambienteSelecionado">
-              Resultado do Ambiente Selecionado
-            </h3>
-            <span class="badge-ambiente" id="resultadoNomeAmbiente"
-              >Sala de Estar</span
-            >
-          </div>
-
-          <div class="resultado-grid">
-            <div class="resultado-item">
-              <span class="resultado-label" data-i18n="resultado.luxRecomendado"
-                >Lux Recomendado:</span
-              >
-              <div class="resultado-valor">
-                <span id="resultadoLux">300</span>
-                <span class="unidade" data-i18n="unidades.lux">lux</span>
-              </div>
-            </div>
-
-            <div class="resultado-item">
-              <span class="resultado-label" data-i18n="resultado.potenciaTotal"
-                >Potência Total de Lâmpadas:</span
-              >
-              <div class="resultado-valor">
-                <span id="resultadoPotencia">150</span>
-                <span class="unidade" data-i18n="unidades.watt">W</span>
-              </div>
-            </div>
-
-            <div class="resultado-item">
-              <span class="resultado-label" data-i18n="resultado.numLuminarias"
-                >Número de Luminárias:</span
-              >
-              <div class="resultado-valor">
-                <span id="resultadoQuantidade">3</span>
-                <span class="unidade" data-i18n="unidades.unidade">un.</span>
-              </div>
-            </div>
-
-            <div class="resultado-item">
-              <span class="resultado-label" data-i18n="resultado.consumoMensal"
-                >Consumo Mensal:</span
-              >
-              <div class="resultado-valor">
-                <span id="resultadoConsumo">10.8</span>
-                <span class="unidade" data-i18n="unidades.kwh">kWh</span>
-              </div>
-            </div>
-
-            <div class="resultado-item destaque">
-              <span class="resultado-label" data-i18n="resultado.custoMensal"
-                >Custo Mensal de Energia:</span
-              >
-              <div class="resultado-valor">
-                <span id="resultadoCusto">R$ 13,00</span>
-              </div>
-            </div>
-
-            <div class="resultado-item destaque">
-              <span class="resultado-label" data-i18n="resultado.custoAnual"
-                >Custo Anual de Energia:</span
-              >
-              <div class="resultado-valor">
-                <span id="resultadoCustoAnual">R$ 156,00</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bloco-resultados">
-          <div class="bloco-resultados-header">
-            <h3 data-i18n="resultado.parciaisAmbientes">
-              Parciais por Ambiente
-            </h3>
-          </div>
-          <div
-            id="listaResultadosAmbientes"
-            class="lista-resultados-ambientes"
-          ></div>
-        </div>
+        <!-- O que isso significa? — dados da casa toda -->
+        <div id="v2-explicacao"></div>
 
         <div class="bloco-resultados">
           <div class="bloco-resultados-header">
@@ -1002,27 +922,18 @@
           </div>
         </div>
 
-        <div id="detalhamentoLuminarias" class="bloco-resultados">
+        <div class="bloco-resultados">
           <div class="bloco-resultados-header">
-            <h3 data-i18n="resultado.detalhamento">
-              Detalhamento de Luminárias
+            <h3 data-i18n="resultado.parciaisAmbientes">
+              Parciais por Ambiente
             </h3>
           </div>
-          <table id="tabelaLuminarias" class="tabela-resultados">
-            <thead>
-              <tr>
-                <th data-i18n="tabela.quantidade">Qtd</th>
-                <th data-i18n="tabela.potenciaUnitaria">Potência / Lúmens</th>
-                <th data-i18n="tabela.tipoLampada">Tipo LED</th>
-              </tr>
-            </thead>
-            <tbody id="corpoTabelaLuminarias"></tbody>
-          </table>
+          <div
+            id="listaResultadosAmbientes"
+            class="lista-resultados-ambientes"
+          ></div>
         </div>
       </section>
-
-      <!-- V2 Explicação -->
-      <section id="v2-explicacao"></section>
     </div>
 
     <footer>
