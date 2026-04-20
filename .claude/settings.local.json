@@ -21,7 +21,17 @@
       "Bash(curl -s \"https://data.jsdelivr.com/v1/package/npm/@fontsource/dseg7-classic/flat\")",
       "Bash(curl -s \"https://data.jsdelivr.com/v1/package/npm/@fontsource/dseg7-classic@5.2.5/flat\")",
       "Bash(node -e ' *)",
-      "Bash(gh pr *)"
+      "Bash(gh pr *)",
+      "Bash(claude --version)",
+      "Bash(where claude *)",
+      "Bash(npm list *)",
+      "Bash(claude update *)",
+      "Bash(git *)",
+      "Bash(chmod +x *)",
+      "Bash(grep -n \"aria-home\\\\|^{$\\\\|^}\" /c/Users/abros/OneDrive/Documentos/ClaudeCodeWorkspace/EngenhariaNata/src/i18n/aquecimento.json)",
+      "Read(//c/Users/abros/.claude/projects/C--Users-abros-OneDrive-Documentos-ClaudeCodeWorkspace-EngenhariaNata/**)",
+      "Read(//c/Users/abros/.claude/projects/C--Users-abros-OneDrive-Documentos-ClaudeCodeWorkspace-EngenhariaNata/memory/**)",
+      "Bash(grep -E \"\\\\.css$\")"
     ]
   }
 }

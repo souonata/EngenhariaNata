@@ -66,7 +66,7 @@
     /* Default bottom spacing to keep the floating home button from covering footer text */
     --site-bottom-padding: 110px;
     --mobile-stack-gap: 12px;
-    --mobile-scroll-safe-gap: 72px;
+    --mobile-scroll-safe-gap: clamp(56px, 11vw, 76px);
     --home-shadow: rgba(102, 126, 234, 0.4);
     --home-size: 60px;
     --home-size-mobile: 50px;
@@ -1403,10 +1403,10 @@ input[type="range"]::-moz-range-thumb:active {
    MOBILE - Espaçamento entre inputs e sliders
    ============================================ */
 @media (max-width: 768px) {
-    /* 50px entre cada grupo de entrada para rolar sem acionar campos */
+    /* Espaçamento geral menor; a área segura principal fica logo abaixo dos sliders. */
     .grupo-entrada,
     .input-group {
-        margin-bottom: 50px;
+        margin-bottom: 24px;
     }
 
     .grupo-entrada:last-child,
@@ -1414,7 +1414,7 @@ input[type="range"]::-moz-range-thumb:active {
         margin-bottom: 0;
     }
 
-    /* 60px abaixo do slider = área de toque para rolar sem acionar o próximo input */
+    /* Faixa segura para arrastar a tela sem encostar em sliders e botões. */
     .slider-com-botoes {
         padding: 10px 0 var(--mobile-scroll-safe-gap, 72px);
         touch-action: pan-y;

@@ -938,36 +938,29 @@ html[data-theme="dark"] {
 
     .controles-primeira-linha {
         grid-template-columns: 1fr;
-        gap: 50px;
+        gap: 24px;
     }
 
-    /* Mais espaço entre cada grupo de entrada para facilitar scroll sem clicar */
     .controles-coluna-esquerda {
-        gap: 50px;
+        gap: 24px;
     }
 
     .controles-rapidos .grupo-entrada {
-        margin-bottom: 50px;
-    }
-
-    .controles-rapidos .grupo-entrada:last-child {
         margin-bottom: 0;
     }
 
-    /* Espaço extra ao redor dos sliders para não acionar ao tentar rolar */
     .slider-com-botoes {
-        padding: 10px 0 60px;
+        padding: 10px 0 0;
         touch-action: pan-y;
     }
 
-    /* Sliders devem ter margem extra para o dedo rolar sem acionar */
     input[type="range"] {
         margin: 6px 0;
     }
 
     .controle-taxa-periodo {
         grid-template-columns: 1fr;
-        gap: 50px;
+        gap: 24px;
     }
 
     .taxa-input {
@@ -1296,7 +1289,7 @@ html[data-theme="dark"] {
 
     /* Espaço generoso entre grupos no mobile pequeno */
     .controles-grid-vertical {
-        gap: 50px;
+        gap: 24px;
     }
 
     .controles-rapidos {
@@ -1388,4 +1381,3 @@ html[data-theme="dark"] {
    MEMORIAL DE CÁLCULO
    ============================================ */
 /* Estilos globais de memorial movidos para assets/css/shared-styles.css */
-
