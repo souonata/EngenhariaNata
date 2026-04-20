@@ -135,6 +135,15 @@ html[data-theme="dark"] .dica {
 /* GRADIENTE DE CORES DAS PAREDES */
 /* ========================================== */
 
+.grupo-radio {
+  flex-wrap: wrap;
+}
+
+.rotulo-radio {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .cartao-radio {
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
