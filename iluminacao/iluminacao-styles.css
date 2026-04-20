@@ -31,6 +31,11 @@ html[data-theme="dark"] {
   );
   border-left: 4px solid var(--cor-primaria-escura);
   font-weight: 600;
+  color: var(--text-primary, #333);
+}
+
+.resultado-item.destaque .resultado-label {
+  color: var(--text-primary, #333);
 }
 
 .resultado-item.destaque .resultado-valor {
