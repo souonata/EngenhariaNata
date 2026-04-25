@@ -283,6 +283,10 @@
       "title": "💡 Código Comentado",
       "desc": "Código explicado para facilitar aprendizado"
     },
+    "resource-tested": {
+      "title": "🧪 Testado e Auditado",
+      "desc": "Cálculos críticos cobertos por suíte automatizada (Vitest) com auditoria fiscal/engenharia e regras tributárias 2026"
+    },
     "tech": {
       "title": "Tecnologias Usadas",
       "html": "Estrutura das páginas",
@@ -308,6 +312,10 @@
     "resource-code-commented": {
       "title": "💡 Código Comentado",
       "desc": "Código explicado para facilitar aprendizado"
+    },
+    "resource-tested": {
+      "title": "🧪 Testado e Auditado",
+      "desc": "Cálculos críticos cobertos por suíte automatizada (Vitest) com auditoria fiscal/engenharia e regras tributárias 2026"
     },
     "titles": {
       "langPt": "Português",
@@ -607,6 +615,10 @@
       "title": "💡 Codice Commentato",
       "desc": "Codice spiegato per facilitare l'apprendimento"
     },
+    "resource-tested": {
+      "title": "🧪 Testato e Verificato",
+      "desc": "Calcoli critici coperti da suite automatizzata (Vitest) con audit fiscale/ingegneristico e regole fiscali 2026"
+    },
     "tech": {
       "title": "Tecnologie Utilizzate",
       "html": "Struttura delle pagine",
@@ -632,6 +644,10 @@
     "resource-code-commented": {
       "title": "💡 Codice Commentato",
       "desc": "Codice ben documentato per facilitare l'apprendimento"
+    },
+    "resource-tested": {
+      "title": "🧪 Testato e Verificato",
+      "desc": "Calcoli critici coperti da suite automatizzata (Vitest) con audit fiscale/ingegneristico e regole fiscali 2026"
     },
     "titles": {
       "langPt": "Portoghese",

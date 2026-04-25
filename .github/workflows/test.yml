@@ -1,0 +1,35 @@
+name: Tests
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+jobs:
+  test:
+    name: Vitest + build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Nota: local/package-lock.json é gitignored (ver local/.gitignore),
+      # por isso usamos `npm install` em vez de `npm ci`.
+      - name: Install dependencies
+        working-directory: local
+        run: npm install
+
+      - name: Run unit tests
+        working-directory: local
+        run: npm test
+
+      - name: Production build (smoke)
+        working-directory: local
+        run: npm run build

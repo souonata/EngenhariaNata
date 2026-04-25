@@ -1,14 +1,26 @@
 /**
- * mutuo-script-new.js
- * Calculadora de Empréstimos - Versão Modular
+ * Papel no projeto:
+ * - Comparador de financiamento com SAC, Price e Americano.
+ * - Gera tabela de amortização, gráficos e memorial do sistema selecionado.
  *
- * Sistemas: SAC, Price (Francês) e Americano
+ * Pontos seguros para IA editar:
+ * - fórmulas dos sistemas financeiros;
+ * - geração da tabela e do gráfico de evolução;
+ * - conversões de periodicidade e textos do memorial.
+ *
+ * Cuidados antes de mexer:
+ * - periodicidade, taxa e prazo são interdependentes;
+ * - preserve a separação entre cálculo puro, seleção de parcela e renderização.
  */
 
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { formatarNumero, formatarMoeda } from '../src/utils/formatters.js';
 import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
+import {
+    converterTaxaParaMensal,
+    calcularAmortizacao as calcularAmortizacaoPuro
+} from './mutuo-calc.js';
 
 // ============================================
 // CLASSE PRINCIPAL
@@ -26,7 +38,7 @@ class MutuoApp extends App {
 
         this.tabelaAmortizacao = [];
         this.ultimaParcelaSelecionada = 1;
-        this.graficos = { evolucao: null };
+        this.graficos = { evolucao: null, extraRecorrente: null };
         this.periodicidadeAnterior = 'ano'; // Rastrear periodicidade para conversão
         this.memorialSistemaSelecionado = 'price';
         this.explicacao = new ExplicacaoResultado('v2-explicacao', i18n);
@@ -225,6 +237,7 @@ class MutuoApp extends App {
         document.addEventListener('engnata:themechange', () => {
             if (this.tabelaAmortizacao.length > 0) {
                 this.atualizarGrafico();
+                this.atualizarGraficoExtraRecorrente(this.obterDadosEntrada());
             }
         });
 
@@ -868,16 +881,7 @@ class MutuoApp extends App {
         // Converter taxa para mensal baseado na periodicidade
         let taxaMensal;
 
-        if (periodicidade === 'ano') {
-            // Taxa anual -> converter para mensal equivalente
-            taxaMensal = Math.pow(1 + taxaInput / 100, 1 / 12) - 1;
-        } else if (periodicidade === 'mes') {
-            // Taxa já está em mensal
-            taxaMensal = taxaInput / 100;
-        } else { // dia
-            // Taxa diária -> converter para mensal (30 dias)
-            taxaMensal = Math.pow(1 + taxaInput / 100, 30) - 1;
-        }
+        taxaMensal = converterTaxaParaMensal(taxaInput, periodicidade);
 
         const pagamentosExtrasEspecificos = [];
         document.querySelectorAll('.extra-especifico-row').forEach((linha) => {
@@ -936,6 +940,7 @@ class MutuoApp extends App {
         this.atualizarParcelaExibida();
         this.gerarTabelaCompleta();
         this.atualizarGrafico();
+        this.atualizarGraficoExtraRecorrente(dados);
         try {
             this.atualizarMemorial(dados);
         } catch (error) {
@@ -944,115 +949,7 @@ class MutuoApp extends App {
     }
 
     calcularAmortizacao(dados) {
-        const { valor, taxaMensal, numParcelas, sistema, extraPagamento, periodicidadeExtra, pagamentosExtrasEspecificos = [] } = dados;
-        const tabela = [];
-
-        const mapaExtrasEspecificos = pagamentosExtrasEspecificos.reduce((acc, item) => {
-            const parcela = parseInt(item.parcela, 10);
-            const valorExtra = parseFloat(item.valor);
-
-            if (!isNaN(parcela) && !isNaN(valorExtra) && valorExtra > 0) {
-                acc.set(parcela, (acc.get(parcela) || 0) + valorExtra);
-            }
-
-            return acc;
-        }, new Map());
-
-        const deveAplicarExtra = (numeroParcela) => {
-            if (!extraPagamento || extraPagamento <= 0) return false;
-            if (periodicidadeExtra === 'semestral') return numeroParcela % 6 === 0;
-            if (periodicidadeExtra === 'anual') return numeroParcela % 12 === 0;
-            return false;
-        };
-
-        if (sistema === 'sac') {
-            // SAC: Amortização constante
-            const amortizacaoFixa = valor / numParcelas;
-            let saldo = valor;
-
-            for (let i = 1; i <= numParcelas; i++) {
-                if (saldo <= 0) break;
-
-                const juros = saldo * taxaMensal;
-                const amortizacao = Math.min(amortizacaoFixa, saldo);
-                const parcelaBase = amortizacao + juros;
-                const saldoAposBase = saldo - amortizacao;
-                const extraRecorrente = deveAplicarExtra(i) ? extraPagamento : 0;
-                const extraEspecifico = mapaExtrasEspecificos.get(i) || 0;
-                const extraSolicitado = extraRecorrente + extraEspecifico;
-                const extraAplicado = Math.min(extraSolicitado, saldoAposBase);
-                const parcela = parcelaBase + extraAplicado;
-                saldo = saldoAposBase - extraAplicado;
-
-                tabela.push({
-                    numero: i,
-                    parcela: parcela,
-                    amortizacao: amortizacao,
-                    juros: juros,
-                    extraPagamento: extraAplicado,
-                    saldo: Math.max(0, saldo)
-                });
-            }
-        } else if (sistema === 'price') {
-            // Price: Parcela fixa (PMT)
-            const pmt = valor * (taxaMensal * Math.pow(1 + taxaMensal, numParcelas)) /
-                        (Math.pow(1 + taxaMensal, numParcelas) - 1);
-            let saldo = valor;
-
-            for (let i = 1; i <= numParcelas; i++) {
-                if (saldo <= 0) break;
-
-                const juros = saldo * taxaMensal;
-                const amortizacaoBase = Math.max(0, pmt - juros);
-                const amortizacao = Math.min(amortizacaoBase, saldo);
-                const parcelaBase = amortizacao + juros;
-                const saldoAposBase = saldo - amortizacao;
-                const extraRecorrente = deveAplicarExtra(i) ? extraPagamento : 0;
-                const extraEspecifico = mapaExtrasEspecificos.get(i) || 0;
-                const extraSolicitado = extraRecorrente + extraEspecifico;
-                const extraAplicado = Math.min(extraSolicitado, saldoAposBase);
-                const parcela = parcelaBase + extraAplicado;
-                saldo = saldoAposBase - extraAplicado;
-
-                tabela.push({
-                    numero: i,
-                    parcela: parcela,
-                    amortizacao: amortizacao,
-                    juros: juros,
-                    extraPagamento: extraAplicado,
-                    saldo: Math.max(0, saldo)
-                });
-            }
-        } else if (sistema === 'americano') {
-            // Americano: Só juros, principal no final
-            let saldo = valor;
-
-            for (let i = 1; i <= numParcelas; i++) {
-                if (saldo <= 0) break;
-
-                const juros = saldo * taxaMensal;
-                const amortizacao = i === numParcelas ? saldo : 0;
-                const parcelaBase = amortizacao + juros;
-                const saldoAposBase = saldo - amortizacao;
-                const extraRecorrente = (i < numParcelas && deveAplicarExtra(i)) ? extraPagamento : 0;
-                const extraEspecifico = (i < numParcelas) ? (mapaExtrasEspecificos.get(i) || 0) : 0;
-                const extraSolicitado = extraRecorrente + extraEspecifico;
-                const extraAplicado = Math.min(extraSolicitado, saldoAposBase);
-                const parcela = parcelaBase + extraAplicado;
-                saldo = saldoAposBase - extraAplicado;
-
-                tabela.push({
-                    numero: i,
-                    parcela: parcela,
-                    amortizacao: amortizacao,
-                    juros: juros,
-                    extraPagamento: extraAplicado,
-                    saldo: Math.max(0, saldo)
-                });
-            }
-        }
-
-        return tabela;
+        return calcularAmortizacaoPuro(dados);
     }
 
     atualizarDisplays(dados) {
@@ -1293,6 +1190,155 @@ class MutuoApp extends App {
                 cells[1].textContent = this.formatarMoedaLocal(resultados[idx].totalJuros);
                 cells[2].textContent = this.formatarMoedaLocal(resultados[idx].primeira);
                 cells[3].textContent = this.formatarMoedaLocal(resultados[idx].ultima);
+            }
+        });
+    }
+
+    obterResumoJuros(tabela, valorBase) {
+        const jurosTotais = tabela.reduce((sum, parcela) => sum + parcela.juros, 0);
+        const percentualJuros = valorBase > 0 ? (jurosTotais / valorBase) * 100 : 0;
+
+        return {
+            jurosTotais,
+            percentualJuros
+        };
+    }
+
+    gerarPontosGraficoExtraRecorrente(dados) {
+        const valorMaximoExtra = 10000;
+        const passo = 250;
+        const pontos = [];
+
+        for (let extra = 0; extra <= valorMaximoExtra; extra += passo) {
+            const tabela = this.calcularAmortizacao({ ...dados, extraPagamento: extra });
+            const { jurosTotais, percentualJuros } = this.obterResumoJuros(tabela, dados.valor);
+
+            pontos.push({
+                x: extra,
+                y: Number(percentualJuros.toFixed(3)),
+                jurosTotais
+            });
+        }
+
+        return pontos;
+    }
+
+    atualizarGraficoExtraRecorrente(dados) {
+        const canvas = document.getElementById('graficoExtraRecorrente');
+        if (!canvas || typeof Chart === 'undefined') return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        if (this.graficos.extraRecorrente) {
+            this.graficos.extraRecorrente.destroy();
+        }
+
+        const pontos = this.gerarPontosGraficoExtraRecorrente(dados);
+        const cores = this.obterCoresGrafico();
+        const extraAtual = Math.max(0, Number(dados.extraPagamento) || 0);
+        const pontoAtual = (extraAtual <= 10000)
+            ? (() => {
+                const tabelaAtual = this.calcularAmortizacao(dados);
+                const { jurosTotais, percentualJuros } = this.obterResumoJuros(tabelaAtual, dados.valor);
+                return [{
+                    x: extraAtual,
+                    y: Number(percentualJuros.toFixed(3)),
+                    jurosTotais
+                }];
+            })()
+            : [];
+
+        const tituloEixoX = `${this.traducoes['extra-chart-axis-x'] || 'Pagamento extra recorrente'} (${this.traducoes['input-currency-unit'] || 'R$'})`;
+        const tituloEixoY = this.traducoes['extra-chart-axis-y'] || '% total de juros';
+
+        this.graficos.extraRecorrente = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [
+                    {
+                        label: this.traducoes['extra-chart-series'] || '% Total de Juros',
+                        data: pontos,
+                        borderColor: cores.orange,
+                        backgroundColor: cores.orangeSoft,
+                        tension: 0.28,
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 4,
+                        pointHitRadius: 10
+                    },
+                    {
+                        type: 'scatter',
+                        label: this.traducoes['extra-chart-current-point'] || 'Extra atual',
+                        data: pontoAtual,
+                        borderColor: cores.blue,
+                        backgroundColor: cores.blue,
+                        pointRadius: pontoAtual.length ? 4 : 0,
+                        pointHoverRadius: pontoAtual.length ? 5 : 0,
+                        pointHitRadius: pontoAtual.length ? 10 : 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: (items) => {
+                                const ponto = items[0]?.raw;
+                                return `${this.traducoes['extra-chart-axis-x'] || 'Pagamento extra recorrente'}: ${this.formatarMoedaLocal(ponto?.x || 0)}`;
+                            },
+                            label: (contexto) => {
+                                const percentual = Number(contexto.parsed.y || 0);
+                                return `${this.traducoes['extra-chart-axis-y'] || '% total de juros'}: ${formatarNumero(percentual, 1)}%`;
+                            },
+                            afterLabel: (contexto) => {
+                                const jurosTotais = contexto.raw?.jurosTotais || 0;
+                                return `${this.traducoes['extra-chart-tooltip-total-interest'] || 'Total de juros'}: ${this.formatarMoedaLocal(jurosTotais)}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'linear',
+                        min: 0,
+                        max: 10000,
+                        ticks: {
+                            color: cores.text,
+                            maxTicksLimit: 6,
+                            callback: (valor) => formatarNumero(Number(valor), 0)
+                        },
+                        grid: {
+                            color: cores.grid
+                        },
+                        title: {
+                            display: true,
+                            text: tituloEixoX,
+                            color: cores.text
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: cores.text,
+                            callback: (valor) => `${formatarNumero(Number(valor), 0)}%`
+                        },
+                        grid: {
+                            color: cores.grid
+                        },
+                        title: {
+                            display: true,
+                            text: tituloEixoY,
+                            color: cores.text
+                        }
+                    }
+                }
             }
         });
     }
@@ -1769,4 +1815,3 @@ if (document.readyState === 'loading') {
     const app = new MutuoApp();
     app.inicializar();
 }
-

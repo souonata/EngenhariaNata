@@ -1,71 +1,27 @@
 /**
- * salario-script.js
- * Calculadora de salário líquido, benefícios e rescisão.
+ * Papel no projeto:
+ * - Calculadora salarial bilíngue com regras de Brasil e Itália.
+ * - Consolida descontos, benefícios, custo empresa e cenários de rescisão.
  *
- * Modo BR (pt-BR): CLT — INSS, IRRF, FGTS, 13º, férias, rescisão (valores 2025).
- * Modo IT (it-IT): Lavoro dipendente — IRPEF 3 scaglioni 2024, INPS, addizionali, TFR, tredicesima.
+ * Pontos seguros para IA editar:
+ * - tabelas tributárias/previdenciárias;
+ * - lógica específica de país;
+ * - memorial textual e composição dos cards/ gráficos.
+ *
+ * Cuidados antes de mexer:
+ * - este arquivo mistura legislação, conversão temporal e UX em uma única fonte;
+ * - qualquer atualização fiscal precisa manter datas e hipóteses explícitas no comentário e na UI.
  */
 
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { formatarNumero, formatarMoeda } from '../src/utils/formatters.js';
 import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
-
-// ============================================
-// CONSTANTES — BRASIL (Tabelas 2025)
-// ============================================
-
-// INSS 2025 — faixas progressivas
-const INSS_BR_FAIXAS = [
-    { ate: 1518.00, aliq: 0.075 },
-    { ate: 2793.88, aliq: 0.09  },
-    { ate: 4190.83, aliq: 0.12  },
-    { ate: 8157.41, aliq: 0.14  }
-];
-const INSS_BR_TETO = 8157.41; // salário máximo
-
-// IRRF 2025 (vigente desde maio/2024)
-const IRRF_BR_FAIXAS = [
-    { ate: 2259.20, aliq: 0,     deduzir: 0      },
-    { ate: 2826.65, aliq: 0.075, deduzir: 169.44 },
-    { ate: 3751.05, aliq: 0.15,  deduzir: 381.44 },
-    { ate: 4664.68, aliq: 0.225, deduzir: 662.77 },
-    { ate: Infinity, aliq: 0.275, deduzir: 896.00 }
-];
-const IRRF_BR_DEP = 189.59;            // dedução por dependente
-const IRRF_BR_SIMPLIFICADO = 607.20;   // desconto simplificado (substitui dependentes se melhor)
-
-const FGTS_ALIQ = 0.08;
-const VT_MAX_ALIQ = 0.06;
-const FGTS_MULTA_RESCISAO = 0.40;
-const CUSTO_EMPRESA_FATOR = 1.70; // aproximado Simples+INSS patronal+Sistema S+férias+13º
-
-// ============================================
-// CONSTANTES — ITÁLIA (2025-2026)
-// ============================================
-
-// IRPEF 3 scaglioni (riforma 2024)
-const IRPEF_IT_FAIXAS = [
-    { ate: 28000,    aliq: 0.23 },
-    { ate: 50000,    aliq: 0.35 },
-    { ate: Infinity, aliq: 0.43 }
-];
-
-const INPS_IT_ALIQ = 0.0919;          // lavoratore dipendente
-const INPS_IT_MASSIMALE = 55008;      // 2025
-
-// Addizionali regionali (aliquota unica ou media aproximada)
-const ADD_REGIONAL_IT = {
-    abruzzo: 1.73, basilicata: 1.23, calabria: 1.73, campania: 2.03,
-    emilia: 1.93, friuli: 1.23, lazio: 3.33, liguria: 1.73,
-    lombardia: 1.74, marche: 1.73, molise: 3.33, piemonte: 3.33,
-    puglia: 1.33, sardegna: 1.23, sicilia: 1.23, toscana: 1.73,
-    trentino: 1.23, umbria: 1.83, valledaosta: 1.23, veneto: 1.23
-};
-
-const TFR_IT_DIVISOR = 13.5;          // TFR = RAL / 13.5 = 7.41% (6.91% após contribuzione INPS 0.5%)
-const TFR_IT_ALIQ_NETA = 0.0691;      // quota accantonata per TFR
-const COSTO_AZIENDA_IT = 1.40;        // RAL + oneri patronali ~30%
+import {
+    INSS_BR_TETO,
+    calcularBR,
+    calcularIT
+} from './salario-calc.js';
 
 // ============================================
 // MAPEAMENTO SLIDER → INPUT
@@ -83,291 +39,6 @@ const CONFIG_BRUTO_POR_MODO = {
     br: { min: 1000, max: 50000, step: 100, valorPadrao: 5000 },
     it: { min: 12000, max: 250000, step: 500, valorPadrao: 35000 }
 };
-
-// ============================================
-// FUNÇÕES DE CÁLCULO — BRASIL
-// ============================================
-
-function calcularINSS(bruto) {
-    if (bruto <= 0) return 0;
-    const base = Math.min(bruto, INSS_BR_TETO);
-    let inss = 0;
-    let anterior = 0;
-    for (const faixa of INSS_BR_FAIXAS) {
-        if (base > faixa.ate) {
-            inss += (faixa.ate - anterior) * faixa.aliq;
-            anterior = faixa.ate;
-        } else {
-            inss += (base - anterior) * faixa.aliq;
-            break;
-        }
-    }
-    return inss;
-}
-
-function calcularIRRF(baseBruto, inss, dependentes) {
-    // Base tradicional
-    const baseTrad = Math.max(0, baseBruto - inss - dependentes * IRRF_BR_DEP);
-    // Base simplificada
-    const baseSimp = Math.max(0, baseBruto - inss - IRRF_BR_SIMPLIFICADO);
-
-    const irTrad = calcularIRRFBase(baseTrad);
-    const irSimp = calcularIRRFBase(baseSimp);
-
-    // Usa o menor
-    return Math.min(irTrad, irSimp);
-}
-
-function calcularIRRFBase(base) {
-    for (const f of IRRF_BR_FAIXAS) {
-        if (base <= f.ate) {
-            return Math.max(0, base * f.aliq - f.deduzir);
-        }
-    }
-    return 0;
-}
-
-function calcularBR(v) {
-    const bruto = v.bruto;
-    const meses = v.meses;
-
-    const inss = calcularINSS(bruto);
-    const irrf = calcularIRRF(bruto, inss, v.dependentes);
-
-    const vt = v.vt === 'sim' ? bruto * VT_MAX_ALIQ : 0;
-    const plano = v.plano;
-    const outros = v.outros;
-    const totalDescontos = inss + irrf + vt + plano + outros;
-    const liquido = bruto - totalDescontos;
-
-    const fgtsMensal = bruto * FGTS_ALIQ;
-    const fgtsAcumulado = fgtsMensal * meses;
-
-    // 13º proporcional (baseado no mês atual — aproximação: usa meses % 12)
-    const mesesAtual = ((meses - 1) % 12) + 1;
-    const decimoBruto = (bruto / 12) * mesesAtual;
-    const decimoINSS = calcularINSS(decimoBruto);
-    const decimoIRRF = calcularIRRFBase(Math.max(0, decimoBruto - decimoINSS - v.dependentes * IRRF_BR_DEP));
-    const decimoLiquido = decimoBruto - decimoINSS - decimoIRRF;
-
-    // Férias + 1/3 (se tiver ≥12 meses de empresa)
-    let feriasLiquido = 0, feriasBruto = 0;
-    if (meses >= 12) {
-        feriasBruto = bruto + (bruto / 3);
-        const fINSS = calcularINSS(feriasBruto);
-        const fIRRF = calcularIRRFBase(Math.max(0, feriasBruto - fINSS - v.dependentes * IRRF_BR_DEP));
-        feriasLiquido = feriasBruto - fINSS - fIRRF;
-    }
-
-    // Rescisão sem justa causa
-    const anos = Math.floor(meses / 12);
-    const diasAviso = Math.min(90, 30 + (anos >= 1 ? anos * 3 : 0));
-    const aviso = (bruto / 30) * diasAviso;
-    const feriasProp = (bruto + bruto / 3) * ((meses % 12) / 12);
-    const decimoProp = decimoBruto;
-    const multaFgts = fgtsAcumulado * FGTS_MULTA_RESCISAO;
-    const rescisao = aviso + decimoProp + feriasProp + multaFgts + fgtsAcumulado;
-
-    // Custo empresa (mensal)
-    const custoEmpresa = bruto * CUSTO_EMPRESA_FATOR;
-
-    // Renda anual
-    const rendaAnual = liquido * 12 + decimoLiquido + feriasLiquido;
-
-    const aliqEfetiva = bruto > 0 ? (totalDescontos / bruto) * 100 : 0;
-
-    return {
-        pais: 'br',
-        bruto, inss, irrf, vt, plano, outros,
-        totalDescontos, liquido, aliqEfetiva,
-        fgtsMensal, fgtsAcumulado,
-        decimoBruto, decimoLiquido,
-        feriasBruto, feriasLiquido,
-        rescisao, custoEmpresa, rendaAnual,
-        // para explicações
-        avisoDias: diasAviso, multaFgts,
-        dependentes: v.dependentes, meses
-    };
-}
-
-// ============================================
-// FUNÇÕES DE CÁLCULO — ITÁLIA
-// ============================================
-
-function calcularINPS(ralMensile) {
-    const massimaleMensile = INPS_IT_MASSIMALE / 12;
-    if (ralMensile <= massimaleMensile) {
-        return ralMensile * INPS_IT_ALIQ;
-    }
-    return massimaleMensile * INPS_IT_ALIQ + (ralMensile - massimaleMensile) * (INPS_IT_ALIQ + 0.01);
-}
-
-function calcularINPSAnnuo(ralAnnuo) {
-    if (ralAnnuo <= 0) return 0;
-    const base = Math.min(ralAnnuo, INPS_IT_MASSIMALE);
-    const excedente = Math.max(0, ralAnnuo - INPS_IT_MASSIMALE);
-    return base * INPS_IT_ALIQ + excedente * (INPS_IT_ALIQ + 0.01);
-}
-
-function obterMensilitaIT(v) {
-    return 12 + (v.tredicesima === 'sim' ? 1 : 0) + (v.quattordicesima === 'sim' ? 1 : 0);
-}
-
-function calcularIRPEFLorda(imponibile) {
-    if (imponibile <= 0) return 0;
-    let ir = 0;
-    let anterior = 0;
-    for (const f of IRPEF_IT_FAIXAS) {
-        if (imponibile > f.ate) {
-            ir += (f.ate - anterior) * f.aliq;
-            anterior = f.ate;
-        } else {
-            ir += (imponibile - anterior) * f.aliq;
-            break;
-        }
-    }
-    return ir;
-}
-
-// Detrazione lavoro dipendente (art. 13 TUIR, aggiornato 2024)
-function calcularDetrazioneLavoro(redditoAnnuo) {
-    if (redditoAnnuo <= 15000) {
-        return 1955;
-    } else if (redditoAnnuo <= 28000) {
-        return 1910 + 1190 * ((28000 - redditoAnnuo) / 13000);
-    } else if (redditoAnnuo <= 50000) {
-        return 1910 * ((50000 - redditoAnnuo) / 22000);
-    }
-    return 0;
-}
-
-// Detrazione familiari a carico (simplificado: só >21 anni e outros, sem cônjuge detalhado)
-function calcularDetrazioneFamiliari(numFamiliari, redditoAnnuo) {
-    if (numFamiliari <= 0) return 0;
-    // €750/familiar com decréscimo linear até €80.000
-    const base = 750;
-    const fator = Math.max(0, (80000 - redditoAnnuo) / 80000);
-    return numFamiliari * base * fator;
-}
-
-function calcularIT(v) {
-    const ral = v.bruto;
-    const mensilita = obterMensilitaIT(v);
-    const ralMensile = mensilita > 0 ? ral / mensilita : 0;
-    const inpsAnnuo = calcularINPSAnnuo(ral);
-
-    // Previdenza complementare (deducibile até €5.164,57/anno)
-    const previdenza = Math.min(v.plano * 12, 5164.57);
-    const imponibileAnnuo = Math.max(0, ral - inpsAnnuo - previdenza);
-
-    const irpefLorda = calcularIRPEFLorda(imponibileAnnuo);
-    const detrLavoro = calcularDetrazioneLavoro(imponibileAnnuo);
-    const detrFamiliari = calcularDetrazioneFamiliari(v.dependentes, imponibileAnnuo);
-    const detrazioni = detrLavoro + detrFamiliari;
-
-    const irpefNetta = Math.max(0, irpefLorda - detrazioni);
-
-    // Trattamento integrativo (ex-bonus Renzi): €1200/anno se reddito ≤ €15k e imposta > detrazioni
-    let trattamentoIntegrativo = 0;
-    if (imponibileAnnuo <= 15000 && irpefLorda > detrLavoro) {
-        trattamentoIntegrativo = 1200;
-    }
-
-    // Addizionali (applicate sull'imponibile)
-    const addReg = (ADD_REGIONAL_IT[v.regione] || 1.23) / 100;
-    const addCom = (v.comunale || 0) / 100;
-    const addRegionalAnnua = imponibileAnnuo * addReg;
-    const addComunaleAnnua = imponibileAnnuo * addCom;
-
-    // Tredicesima
-    let tredicesimaNetta = 0, tredicesimaBruta = 0;
-    let tredicesimaInps = 0, tredicesimaIrpef = 0;
-    if (v.tredicesima === 'sim') {
-        tredicesimaBruta = ralMensile;
-        tredicesimaInps = calcularINPS(tredicesimaBruta);
-    }
-
-    // Quattordicesima
-    let quattordicesimaNetta = 0, quattordicesimaBruta = 0;
-    let quattordicesimaInps = 0, quattordicesimaIrpef = 0;
-    if (v.quattordicesima === 'sim') {
-        quattordicesimaBruta = ralMensile;
-        quattordicesimaInps = calcularINPS(quattordicesimaBruta);
-    }
-
-    const imponibileTredicesima = Math.max(0, tredicesimaBruta - tredicesimaInps);
-    const imponibileQuattordicesima = Math.max(0, quattordicesimaBruta - quattordicesimaInps);
-    let imponibileBaseMensilitaOrdinarie = Math.max(
-        0,
-        imponibileAnnuo - imponibileTredicesima - imponibileQuattordicesima
-    );
-
-    if (tredicesimaBruta > 0) {
-        tredicesimaIrpef = calcularIRPEFMarginal(imponibileBaseMensilitaOrdinarie, imponibileTredicesima);
-        tredicesimaNetta = tredicesimaBruta - tredicesimaInps - tredicesimaIrpef;
-        imponibileBaseMensilitaOrdinarie += imponibileTredicesima;
-    }
-
-    if (quattordicesimaBruta > 0) {
-        quattordicesimaIrpef = calcularIRPEFMarginal(imponibileBaseMensilitaOrdinarie, imponibileQuattordicesima);
-        quattordicesimaNetta = quattordicesimaBruta - quattordicesimaInps - quattordicesimaIrpef;
-    }
-
-    // Mensile ordinario (12 buste paga base)
-    const addRegionalMensile = addRegionalAnnua / 12;
-    const addComunaleMensile = addComunaleAnnua / 12;
-    const trattamentoMensile = trattamentoIntegrativo / 12;
-    const irpefMensile = Math.max(0, irpefNetta - tredicesimaIrpef - quattordicesimaIrpef) / 12;
-    const inpsMensile = Math.max(0, inpsAnnuo - tredicesimaInps - quattordicesimaInps) / 12;
-
-    const outros = v.outros;
-    const totalDescontos = inpsMensile + irpefMensile + addRegionalMensile + addComunaleMensile + outros + v.plano - trattamentoMensile;
-    const liquido = ralMensile - totalDescontos;
-
-    // TFR
-    const tfrMensile = (ral * TFR_IT_ALIQ_NETA) / 12;
-    let tfrAccumulato;
-    if (v.tfrDestino === 'fondo') {
-        // Fondo pensione — assume rendimento 4%/anno
-        const ai = 0.04 / 12;
-        tfrAccumulato = tfrMensile * ((Math.pow(1 + ai, v.meses) - 1) / ai);
-    } else {
-        // In azienda — rivalutazione 1,5% + 75% inflazione (assume 2% → 1,5% eff.) = ~3%/anno
-        const ai = 0.03 / 12;
-        tfrAccumulato = tfrMensile * ((Math.pow(1 + ai, v.meses) - 1) / ai);
-    }
-
-    // Liquidazione (TFR accumulato, senza anticipi)
-    const liquidazione = tfrAccumulato;
-
-    // Costo azienda médio mensal ao longo do ano
-    const custoEmpresa = (ral * COSTO_AZIENDA_IT) / 12;
-
-    const rendaAnual = liquido * 12 + tredicesimaNetta + quattordicesimaNetta;
-    const aliqEfetiva = ralMensile > 0 ? (totalDescontos / ralMensile) * 100 : 0;
-
-    return {
-        pais: 'it',
-        bruto: ralMensile, ral,
-        inss: inpsMensile, irrf: irpefMensile,
-        vt: addRegionalMensile,    // reuse field for "addizionale regionale" on BR=vt
-        plano: addComunaleMensile, // reuse for addComunale (IT)
-        outros, totalDescontos, liquido, aliqEfetiva,
-        detrazioni, detrLavoro, detrFamiliari, trattamentoIntegrativo,
-        fgtsMensal: tfrMensile, fgtsAcumulado: tfrAccumulato,
-        decimoBruto: tredicesimaBruta, decimoLiquido: tredicesimaNetta,
-        feriasBruto: quattordicesimaBruta, feriasLiquido: quattordicesimaNetta,
-        rescisao: liquidazione, custoEmpresa, rendaAnual,
-        regione: v.regione, meses: v.meses, dependentes: v.dependentes,
-        tfrDestino: v.tfrDestino, mensilita
-    };
-}
-
-function calcularIRPEFMarginal(imponibileBase, importoExtra) {
-    const totalCom = calcularIRPEFLorda(imponibileBase + importoExtra);
-    const totalSem = calcularIRPEFLorda(imponibileBase);
-    return totalCom - totalSem;
-}
 
 // ============================================
 // CLASSE PRINCIPAL
@@ -706,7 +377,7 @@ class SalarioApp extends App {
                 icone: '📊',
                 titulo: 'IRPEF + Addizionali',
                 valor: this.fMoeda(r.irrf + r.vt + r.plano),
-                descricao: `IRPEF a 3 scaglioni (23%/35%/43%) meno detrazioni (€${Math.round(r.detrazioni)}/anno). Addizionali regionale e comunale applicate separatamente.`
+                descricao: `IRPEF a 3 scaglioni (23%/33%/43% — riforma 2026) meno detrazioni (€${Math.round(r.detrazioni)}/anno). Addizionali regionale e comunale applicate separatamente.`
             },
             {
                 icone: '🎁',
@@ -725,7 +396,7 @@ class SalarioApp extends App {
                 icone: '🏛️',
                 titulo: 'INSS (progressivo)',
                 valor: this.fMoeda(r.inss),
-                descricao: `Contribuição previdenciária por faixas: 7,5% / 9% / 12% / 14%. Teto 2025: R$ ${formatarNumero(INSS_BR_TETO, 2)} (contribuição máx. ≈ R$ 951,62).`
+                descricao: `Contribuição previdenciária por faixas: 7,5% / 9% / 12% / 14%. Teto 2026: R$ ${formatarNumero(INSS_BR_TETO, 2)} (contribuição máx. ≈ R$ 988,09).`
             },
             {
                 icone: '📊',
@@ -756,8 +427,8 @@ class SalarioApp extends App {
                 ? 'Conferire il TFR a un fondo pensione può offrire rendimenti migliori (tipicamente 3-6% vs 1,5% fisso in azienda) e vantaggi fiscali al riscatto (aliquota fino 15% invece di 23%).'
                 : 'Para simular rescisão, ajuste "Meses na Empresa". Direitos acumulam: 13º proporcional, férias + 1/3 após 12 meses, e multa de 40% sobre FGTS em demissão sem justa causa.',
             norma: isIt
-                ? 'Riforma IRPEF 2024 (3 scaglioni) • TUIR art. 13 • INPS 2025'
-                : 'INSS 2025 (Port. 6/2025) • IRRF 2024 (MP 1.206/24) • CLT'
+                ? 'Riforma IRPEF 2026 (23/33/43%) • TUIR art. 13 • INPS Circolare 6/2026'
+                : 'INSS 2026 (reajuste 3,9%) • IRRF (tabela tradicional) • CLT'
         };
     }
 
@@ -925,17 +596,17 @@ class SalarioApp extends App {
                  <thead><tr><th>Categoria</th><th>Aliquota</th></tr></thead>
                  <tbody>
                    <tr><td>Lavoratore dipendente</td><td>9,19%</td></tr>
-                   <tr><td>Oltre massimale (€55.008/anno)</td><td>+1%</td></tr>
+                   <tr><td>Oltre soglia (€56.224/anno)</td><td>+1%</td></tr>
                    <tr><td>Datore di lavoro</td><td>~30%</td></tr>
                  </tbody>
                </table>`
             : `<table class="mem-tabela">
                  <thead><tr><th>Faixa (R$)</th><th>Alíquota</th></tr></thead>
                  <tbody>
-                   <tr><td>até 1.518,00</td><td>7,5%</td></tr>
-                   <tr><td>1.518,01 – 2.793,88</td><td>9%</td></tr>
-                   <tr><td>2.793,89 – 4.190,83</td><td>12%</td></tr>
-                   <tr><td>4.190,84 – 8.157,41</td><td>14%</td></tr>
+                   <tr><td>até 1.621,00</td><td>7,5%</td></tr>
+                   <tr><td>1.621,01 – 2.902,84</td><td>9%</td></tr>
+                   <tr><td>2.902,85 – 4.354,27</td><td>12%</td></tr>
+                   <tr><td>4.354,28 – 8.475,55</td><td>14%</td></tr>
                  </tbody>
                </table>`;
 
@@ -944,7 +615,7 @@ class SalarioApp extends App {
                  <thead><tr><th>Scaglione (€)</th><th>Aliquota</th></tr></thead>
                  <tbody>
                    <tr><td>fino a 28.000</td><td>23%</td></tr>
-                   <tr><td>28.001 – 50.000</td><td>35%</td></tr>
+                   <tr><td>28.001 – 50.000</td><td>33%</td></tr>
                    <tr><td>oltre 50.000</td><td>43%</td></tr>
                  </tbody>
                </table>`
