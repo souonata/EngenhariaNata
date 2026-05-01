@@ -324,6 +324,37 @@
     "footer": {
       "text": "💻 Portfólio Engenharia NATA"
     },
+    "canal": {
+      "title": "Canal Eng. NATA",
+      "disclosure": "Eng. NATA é uma personagem animada gerada por IA. Os cálculos, fontes e conclusões são humanos e verificados.",
+      "what": "Canal de vídeos curtos (YouTube Shorts, TikTok, Instagram Reels) em PT-BR e IT. Cada episódio de 60–90 segundos parte de uma situação real e mostra a camada de engenharia por baixo, usando os visuais que os engenheiros usam. Todos os vídeos encaminham para uma calculadora em engnata.eu.",
+      "prod": {
+        "mascot": {
+          "title": "Personagem",
+          "desc": "Gerado por IA (Midjourney / Flux). Nunca apresentado como pessoa real."
+        },
+        "voice": {
+          "title": "Voz",
+          "desc": "Síntese de voz por IA (ElevenLabs), em PT-BR e IT, com ID de voz fixo por idioma."
+        },
+        "script": {
+          "title": "Guião",
+          "desc": "Redigido e revisto por humano. Nunca publicado sem aprovação humana explícita."
+        },
+        "calcs": {
+          "title": "Cálculos e Fontes",
+          "desc": "Verificados por humano antes de publicar. Cada vídeo tem um bloco de fontes com a norma ou fonte de cada número."
+        },
+        "diagrams": {
+          "title": "Diagramas",
+          "desc": "Gerados por código (D3.js / Matplotlib) a partir dos dados do guião. Consistentes e reprodutíveis."
+        },
+        "accuracy": {
+          "title": "Correção de Erros",
+          "desc": "Erros de cálculo corrigidos em 48h com comentário fixado. Erros significativos recebem vídeo de correção."
+        }
+      }
+    },
     "aria": {
       "langPt": "Alterar idioma para Português",
       "langIt": "Alterar idioma para Italiano",
@@ -655,6 +686,37 @@
     },
     "footer": {
       "text": "💻 Portfolio Ingegneria NATA"
+    },
+    "canal": {
+      "title": "Canale Eng. NATA",
+      "disclosure": "Eng. NATA è un personaggio animato generato da IA. I calcoli, le fonti e le conclusioni sono umani e verificati.",
+      "what": "Canale di video brevi (YouTube Shorts, TikTok, Instagram Reels) in PT-BR e IT. Ogni episodio di 60–90 secondi parte da una situazione reale e mostra il livello ingegneristico sottostante, usando i visual che gli ingegneri usano. Tutti i video rimandano a una calcolatrice su engnata.eu.",
+      "prod": {
+        "mascot": {
+          "title": "Personaggio",
+          "desc": "Generato da IA (Midjourney / Flux). Mai presentato come persona reale."
+        },
+        "voice": {
+          "title": "Voce",
+          "desc": "Sintesi vocale IA (ElevenLabs), in PT-BR e IT, con ID voce fisso per lingua."
+        },
+        "script": {
+          "title": "Sceneggiatura",
+          "desc": "Redatta e revisionata da un umano. Mai pubblicata senza approvazione umana esplicita."
+        },
+        "calcs": {
+          "title": "Calcoli e Fonti",
+          "desc": "Verificati da un umano prima della pubblicazione. Ogni video ha un blocco fonti con la norma o la fonte di ogni numero."
+        },
+        "diagrams": {
+          "title": "Diagrammi",
+          "desc": "Generati da codice (D3.js / Matplotlib) dai dati della sceneggiatura. Coerenti e riproducibili."
+        },
+        "accuracy": {
+          "title": "Correzione Errori",
+          "desc": "Errori di calcolo corretti entro 48h con commento fissato. Errori significativi ricevono un video di correzione."
+        }
+      }
     },
     "aria": {
       "langPt": "Cambia lingua in portoghese",
