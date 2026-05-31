@@ -1172,7 +1172,7 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   // gráfico) para acompanhar a tela. Diâmetro da bola = passo entre horas
   // (tangentes); a fonte das horas usa o mesmo tamanho das bolas de temperatura.
   const dotPct = (n === 1) ? 20 : 100 / (n + 1);
-  const ballPct = dotPct * 0.75;                // 3/4 da largura de cada faixa de hora
+  const ballPct = dotPct * 0.90;
   const fcqw   = (ballPct * 0.8).toFixed(2);   // fonte ampla — pode leve overflow do círculo
 
   // ── Única linha horizontal de referência: a temperatura-alvo da estação atual. ──
