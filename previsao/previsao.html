@@ -229,7 +229,7 @@
     display:flex;flex-direction:column;
     height:100%;min-height:48px;gap:1px;min-width:0;
   }
-  .spark-wrap{position:relative;flex:1 1 auto;min-height:0;container-type:inline-size}
+  .spark-wrap{position:relative;flex:1 1 auto;min-height:0;container-type:size}
   .spark{width:100%;height:100%;display:block}
   /* Rótulos de valor: SEM fundo/borda; legibilidade por sombra de texto. */
   .lbl{
@@ -341,7 +341,7 @@
     flex:0 0 auto;
     height:10px;
     margin-top:1px;
-    container-type:inline-size;     /* fonte das horas em cqw, igual às bolas */
+    container-type:size;            /* fonte das horas em cqw; relógio capado pela altura (cqh) */
   }
   .hour-axis span{
     position:absolute;
@@ -1134,10 +1134,10 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
 
   // Legenda com TODAS as horas (00–24), abaixo de cada dia; e também acima no
   // dia de hoje. As horas-chave (máx/mín/vento/chuva) saem coloridas.
-  const icoCqw = (dotPct * 0.9).toFixed(2);            // relógio ocupa o slot reservado à esquerda
+  const icoCqw = (dotPct * 0.9).toFixed(2);            // largura desejada; capada pela altura do eixo (cqh)
   const axisHTML = (todayAxis) => `
         <div class="hour-axis dense">
-          <span class="axis-ico" title="${T().today === 'Hoje' ? 'Horas' : 'Ore'} (00–24)" style="font-size:${icoCqw}cqw">🕐</span>
+          <span class="axis-ico" title="${T().today === 'Hoje' ? 'Horas' : 'Ore'} (00–24)" style="font-size:min(${icoCqw}cqw, 92cqh)">⏰</span>
           ${hours.map((h, i) => {
             const pct = xAt(i) / VBW * 100;
             const base = `left:${pct.toFixed(1)}%;transform:translateX(-50%);font-size:${fcqw}cqw`;
@@ -1182,9 +1182,12 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   const icoX = (0.7 * dotPct).toFixed(2);             // centro do slot esquerdo (em %)
   // 🌡️ na altura em que a linha começa, limitada a ≤56% p/ não colidir com o 💨.
   const tempIcoTop = clamp(yAt(temps[0]) / H * 100, 6, 56).toFixed(1);
-  const tempIco = `<span class="ser-ico" title="${T().tempLabel}" style="left:${icoX}%;top:${tempIcoTop}%;font-size:${serIcoCqw}cqw">🌡️</span>`;
+  // font-size = min(largura, altura): em telas baixas o cqh encolhe o ícone p/
+  // não ultrapassar a altura disponível do gráfico daquele dia.
+  const serIcoFs = `min(${serIcoCqw}cqw, 24cqh)`;
+  const tempIco = `<span class="ser-ico" title="${T().tempLabel}" style="left:${icoX}%;top:${tempIcoTop}%;font-size:${serIcoFs}">🌡️</span>`;
   const windIco = windMax > 0
-    ? `<span class="ser-ico" title="${T().windLabel} (km/h)" style="left:${icoX}%;top:88%;font-size:${serIcoCqw}cqw">💨</span>`
+    ? `<span class="ser-ico" title="${T().windLabel} (km/h)" style="left:${icoX}%;top:88%;font-size:${serIcoFs}">💨</span>`
     : '';
 
   return `
