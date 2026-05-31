@@ -255,6 +255,15 @@
   }
   .deg-set{ font-size:.54rem; }
 
+  /* Rótulo do pico de vento do dia (no horário de maior intensidade) */
+  .lbl-wind{
+    position:absolute; bottom:1px; transform:translateX(-50%);
+    font-size:.5rem; font-weight:700; line-height:1; white-space:nowrap;
+    color:#aab6df; pointer-events:none;
+    background:rgba(11,18,32,.6); padding:1px 3px; border-radius:3px;
+    backdrop-filter:blur(2px);
+  }
+
   /* Trigger strip */
   .triggers{
     flex:0 0 auto;
@@ -345,6 +354,7 @@
     .lbl-set{font-size:.72rem}
     .deg{font-size:.58rem}
     .deg-set{font-size:.66rem}
+    .lbl-wind{font-size:.62rem}
     .c-stats{font-size:.78rem}
     .triggers{font-size:.68rem;min-height:11px;gap:10px}
     .hour-axis{height:12px}
@@ -420,7 +430,7 @@
    ============================================================ */
 
 const CITIES = [
-  { id:'milao',     name:'Milão',     lat: 45.4642, lon:   9.1900 },
+  { id:'milao',     name:'Milão',     nameIt:'Milano', lat: 45.4642, lon:   9.1900 },
   { id:'turate',    name:'Turate',    lat: 45.7333, lon:   9.0500 },
   { id:'curitiba',  name:'Curitiba',  lat:-25.4284, lon: -49.2733 },
   { id:'bauru',     name:'Bauru',     lat:-22.3147, lon: -49.0606 },
@@ -452,6 +462,7 @@ const I18N = {
 };
 let LANG = (() => { try { const s = sessionStorage.getItem('engnata_idioma'); return (s === 'it-IT' || s === 'pt-BR') ? s : 'pt-BR'; } catch (e) { return 'pt-BR'; } })();
 const T = () => I18N[LANG];
+const cityName = c => (LANG.startsWith('it') && c.nameIt) ? c.nameIt : c.name;
 
 /* Tema: usa a mesma chave do site (engnata_theme_mode, em JSON). O previsao é
    dark por padrão; só vira light com data-theme="light". */
@@ -514,7 +525,7 @@ function wireControls(){
       LANG = b.dataset.lang;
       try { sessionStorage.setItem('engnata_idioma', LANG); } catch (e) {}
       applyLangStatic();
-      if (cityData.length) renderDays();
+      if (cityData.length) { renderCityButtons(); renderDays(); }
     });
   });
   const tbtn = document.getElementById('themeBtn');
@@ -567,7 +578,7 @@ function buildCityButtonShells(){
     btn.dataset.idx = i;
     btn.innerHTML = `
       <span class="cb-row1">
-        <span class="cb-name">${c.name}</span>
+        <span class="cb-name">${cityName(c)}</span>
         <span class="cb-emoji">—</span>
       </span>
       <span class="cb-temp">—°</span>
@@ -640,7 +651,7 @@ function renderCityButtons(){
     btn.dataset.idx = i;
     btn.innerHTML = `
       <span class="cb-row1">
-        <span class="cb-name">${c.name}</span>
+        <span class="cb-name">${cityName(c)}</span>
         <span class="cb-emoji">${emo}</span>
       </span>
       <span class="cb-temp">${Math.round(cur.temperature_2m)}°</span>
@@ -758,8 +769,8 @@ function renderDays(){
 
   const c = cd.city;
   document.getElementById('footLoc').textContent =
-    `📍 ${c.name} · ${c.lat.toFixed(2)}°, ${c.lon.toFixed(2)}°`;
-  document.title = `Previsão · ${c.name}`;
+    `📍 ${cityName(c)} · ${c.lat.toFixed(2)}°, ${c.lon.toFixed(2)}°`;
+  document.title = `Previsão · ${cityName(c)}`;
 }
 
 /* ──── Build one row with SVG sparkline ──── */
@@ -825,6 +836,14 @@ function buildRow(day, hours, isToday, scaleMax, lat){
     const op  = (0.18 + 0.6 * frac).toFixed(2);
     return `<rect x="${(xAt(i) - wBarW/2).toFixed(1)}" y="${(H - hgt).toFixed(1)}" width="${wBarW.toFixed(1)}" height="${hgt.toFixed(1)}" fill="#9aa7d6" opacity="${op}"/>`;
   }).join('');
+
+  // Pico de vento do dia → rótulo com valor e unidade (km/h) no horário de maior intensidade.
+  let iWindMax = 0, windMax = 0;
+  hours.forEach((h, i) => { const w = h.wind || 0; if (w > windMax) { windMax = w; iWindMax = i; } });
+  const windPct = clamp(xAt(iWindMax) / VBW * 100, 8, 82);
+  const windLbl = windMax > 0
+    ? `<span class="lbl-wind" style="left:${windPct.toFixed(1)}%">💨 ${Math.round(windMax)} km/h</span>`
+    : '';
 
   // ── Chuva: cada hora com chuva preenche a ALTURA TODA com hachura de linhas
   //    tracejadas inclinadas (simula chuva). Inclinação ∝ vento; densidade e
@@ -934,6 +953,7 @@ function buildRow(day, hours, isToday, scaleMax, lat){
           </svg>
           <span class="lbl lbl-max" style="left:${xMaxPct.toFixed(1)}%;color:${maxCol}">▲ ${Math.round(tMax)}°</span>
           <span class="lbl lbl-min" style="left:${xMinPct.toFixed(1)}%;color:${minCol}">▼ ${Math.round(tMin)}°</span>
+          ${windLbl}
           ${degAxis}
         </div>
         <div class="triggers">
