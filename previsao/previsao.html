@@ -1168,7 +1168,7 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   // a 00h não fica cortada, a última hora chega à borda e as bolas de cada hora
   // continuam tangentes entre si.
   const stepX = (n === 1) ? 0 : VBW / (n + 1);
-  const padXL = 1.5 * stepX;
+  const padXL = 1 * stepX;
   const xAt = i => (n === 1 ? VBW / 2 : padXL + i * stepX);
   const yAt = t => padT + ch * (1 - (t - yLow) / yRange);
 
@@ -1322,7 +1322,7 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   // temperatura começa e 💨 na faixa das barras de vento — identificam o que é
   // cada série, alinhados com o relógio 🕐 da legenda de horas logo abaixo.
   const serIcoCqw = (dotPct * 0.4).toFixed(2);
-  const icoX = (0.7 * dotPct).toFixed(2);             // centro do slot esquerdo (em %)
+  const icoX = (0.5 * dotPct).toFixed(2);
   const tempIcoTop = (yAt(temps[0]) / H * 100).toFixed(1);
   // clamp garante tamanho legível em mobile (mín. 10px) sem transbordar em desktop.
   const serIcoFs = `clamp(10px, ${serIcoCqw}cqw, 1rem)`;
