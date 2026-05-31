@@ -1288,8 +1288,9 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   }).join('');
 
   // Bola do PICO de vento do dia (no topo da barra mais alta), com a velocidade.
+  // Mesmo tamanho e estilo que os números de temperatura (t-num), na cor das barras.
   const windBall = windMax > 0
-    ? `<span class="val-dot" title="${T().windPeak} ${Math.round(windMax)} km/h · ${String(hours[iWindMax].hour).padStart(2,'0')}h" style="left:${(xAt(iWindMax)/VBW*100).toFixed(2)}%;top:${(windTopY/H*100).toFixed(1)}%;font-size:${fcqw}cqw;background:#9aa7d6;color:${GRAPH}">${Math.round(windMax)}</span>`
+    ? `<span class="t-num" data-h="${hours[iWindMax].hour}" data-t="${Math.round(hours[iWindMax].temp)}" data-w="${Math.round(windMax)}" data-wd="${Math.round(hours[iWindMax].windDir||0)}" data-pop="${Math.round(hours[iWindMax].pop||0)}" data-mm="${(hours[iWindMax].mm||0).toFixed(1)}" title="${T().windPeak} ${Math.round(windMax)} km/h · ${String(hours[iWindMax].hour).padStart(2,'0')}h" style="left:${(xAt(iWindMax)/VBW*100).toFixed(2)}%;top:${(windTopY/H*100).toFixed(1)}%;font-size:${fcqw}cqw;color:#9aa7d6">${Math.round(windMax)}</span>`
     : '';
 
   // Ícones de série no slot reservado à esquerda: 🌡️ na altura em que a linha de
