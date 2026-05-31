@@ -47,6 +47,14 @@ body {
     overflow: visible;
 }
 
+/* No tema light (padrão, sem data-theme="dark"), o celular usa um verde da
+   mesma família do site — mais claro/quente que o quase-preto frio — para
+   combinar com o fundo. O tema dark mantém o gradiente escuro original. */
+html:not([data-theme="dark"]) .device-screen {
+    background: linear-gradient(180deg, #3a5a4b 0%, #2c463a 100%);
+    box-shadow: 0 20px 60px rgba(20, 40, 32, 0.45);
+}
+
 /* Barra de status no topo */
 .barra-status {
     display: flex;

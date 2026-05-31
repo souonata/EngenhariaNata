@@ -515,6 +515,18 @@ footer p {
 .home-button-fixed:hover { transform: translateX(-50%) scale(1.08); }
 .home-button-fixed svg { width: calc(var(--home-size) * 0.45); height: calc(var(--home-size) * 0.45); fill: white; }
 
+/* No tema light (padrão, sem data-theme="dark"), o botão home fica claro
+   (teal suave) com ícone em teal escuro, combinando com os controles do tema
+   claro. Sobrepõe o --home-bg de cada app. O tema dark mantém o gradiente
+   colorido de cada página. */
+html:not([data-theme="dark"]) .home-button-fixed {
+    background: linear-gradient(135deg, #e6f6f7 0%, #c2e7e9 100%);
+    border: 1px solid rgba(45, 159, 163, 0.35);
+    box-shadow: 0 8px 20px rgba(45, 159, 163, 0.28);
+    color: var(--accent-hover, #1e7e82);
+}
+html:not([data-theme="dark"]) .home-button-fixed svg { fill: var(--accent-hover, #1e7e82); }
+
 @media (max-width: 480px){
     .home-button-fixed { bottom: 20px; width: var(--home-size-mobile); height: var(--home-size-mobile); }
     .home-button-fixed svg { width: calc(var(--home-size-mobile) * 0.5); height: calc(var(--home-size-mobile) * 0.5); }
