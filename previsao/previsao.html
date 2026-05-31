@@ -291,6 +291,15 @@
     font-weight:800; line-height:1; letter-spacing:-.02em;
     box-shadow:0 0 0 .5px var(--bg);
   }
+  /* Número por hora (não-extremos): só texto na cor do gradiente, com halo da
+     cor do fundo para "interromper" a linha atrás e manter a leitura fácil. */
+  .t-num{
+    position:absolute; transform:translate(-50%,-50%);
+    font-weight:800; line-height:1; white-space:nowrap; pointer-events:auto;
+    text-shadow:
+      0 0 2px var(--bg), 0 0 2px var(--bg), 0 0 2px var(--bg),
+      0 0 3px var(--bg), 1px 1px 1px var(--bg), -1px -1px 1px var(--bg);
+  }
   /* Bolota que une ponto + valor (número em grafite dentro, sem unidade) */
   .val-dot{
     position:absolute; transform:translate(-50%,-50%);
@@ -1146,10 +1155,19 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   // largura do gráfico) → as bolas ficam tangentes, escalando com a tela.
   const GRAPH = '#2b2f36';
   const tempBalls = hours.map((h, i) => {
-    const hh = String(h.hour).padStart(2,'0');
-    const v  = Math.round(h.temp);
+    const hh  = String(h.hour).padStart(2,'0');
+    const v   = Math.round(h.temp);
     const tip = `${T().tempLabel} ${hh}h: ${v}°`;
-    return `<span class="t-ball" title="${tip}" style="left:${(xAt(i)/VBW*100).toFixed(2)}%;top:${(yAt(h.temp)/H*100).toFixed(1)}%;width:${dotPct.toFixed(2)}cqw;font-size:${fcqw}cqw;background:rgb(${tempColor(h.temp, setpoint, yLow, yHigh)});color:${GRAPH}">${v}</span>`;
+    const left = (xAt(i) / VBW * 100).toFixed(2);
+    const top  = (yAt(h.temp) / H * 100).toFixed(1);
+    const rgb  = tempColor(h.temp, setpoint, yLow, yHigh);
+    // Bola cheia SÓ na máx/mín do dia (destaque). Nas demais horas, só o número
+    // (cor da letra = gradiente da temperatura), com um halo que interrompe a
+    // linha atrás dele para ler fácil — sem a poluição das bolas em toda hora.
+    if (i === iMax || i === iMin) {
+      return `<span class="t-ball" title="${tip}" style="left:${left}%;top:${top}%;width:${dotPct.toFixed(2)}cqw;font-size:${fcqw}cqw;background:rgb(${rgb});color:${GRAPH}">${v}</span>`;
+    }
+    return `<span class="t-num" title="${tip}" style="left:${left}%;top:${top}%;font-size:${fcqw}cqw;color:rgb(${rgb})">${v}</span>`;
   }).join('');
 
   // Bola do PICO de vento do dia (no topo da barra mais alta), com a velocidade.
