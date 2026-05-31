@@ -457,6 +457,7 @@ const CITIES = [
   { id:'duartina',  name:'Duartina',  lat:-22.4150, lon: -49.4080 },
   { id:'camboriu',  name:'B. Camboriú', lat:-26.9906, lon: -48.6347 },
   { id:'recife',    name:'Recife',    lat: -8.0539, lon: -34.8811 },
+  { id:'toronto',   name:'Toronto',   lat: 43.6532, lon: -79.3832 },
 ];
 const LS_CITY = 'previsao_city_v1';
 const LS_HISTMAX = 'previsao_histmax_v1';   // teto fixo da escala de chuva (máx. horário em 365 dias)
@@ -831,7 +832,7 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   const tMin = Math.min(...temps), tMax = Math.max(...temps);
   const iMin = temps.indexOf(tMin), iMax = temps.indexOf(tMax);
 
-  const W = 240, H = 60, GUT = 26, VBW = W + GUT;   // GUT = faixa livre à direita p/ os rótulos de grau
+  const W = 240, H = 60, GUT = 18, VBW = W + GUT;   // pequena margem à direita (p/ o rótulo das 24h)
   const padT = 9, padB = 3;
   const ch = H - padT - padB;
 
@@ -854,23 +855,15 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
     return `left:${(xv/VBW*100).toFixed(1)}%;top:${(yv/H*100).toFixed(1)}%;transform:translate(${dx}, ${dy})`;
   };
 
-  // ── Linhas horizontais por GRAU, coloridas pela cor da temperatura; o número
-  //    de cada grau vai na faixa livre à direita, na mesma cor. ──
+  // ── Linhas horizontais por GRAU, coloridas pela cor da temperatura (grade). ──
   const dLo = Math.ceil(yLow - 1e-6), dHi = Math.floor(yHigh + 1e-6);
-  const degSpan = dHi - dLo;
-  const labelStep = degSpan > 16 ? 3 : degSpan > 10 ? 2 : 1;   // evita rótulos sobrepostos em faixas grandes
-  const degLines = [], degLabels = [];
+  const degLines = [];
   for (let d = dLo; d <= dHi; d++) {
-    const y = yAt(d).toFixed(1);
     const col = tempColor(d, setpoint, yLow, yHigh);
     const isSet = (d === setpoint);
-    degLines.push(`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="rgb(${col})" stroke-opacity="${isSet ? '.5' : '.16'}" stroke-width="1" vector-effect="non-scaling-stroke"/>`);
-    if (isSet || (dHi - d) % labelStep === 0) {
-      degLabels.push(`<span class="deg${isSet ? ' deg-set' : ''}" style="top:${(yAt(d)/H*100).toFixed(1)}%;color:rgb(${col})">${d}°</span>`);
-    }
+    degLines.push(`<line x1="0" y1="${yAt(d).toFixed(1)}" x2="${W}" y2="${yAt(d).toFixed(1)}" stroke="rgb(${col})" stroke-opacity="${isSet ? '.5' : '.16'}" stroke-width="1" vector-effect="non-scaling-stroke"/>`);
   }
   const degLinesSvg = degLines.join('');
-  const degAxis = degLabels.join('');
 
   // ── Grade vertical por hora (de 3 em 3 h mais marcada) ──
   const hourGrid = hours.map((h, i) => {
@@ -994,10 +987,9 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
             <circle cx="${xAt(iMin).toFixed(1)}" cy="${yAt(tMin).toFixed(1)}" r="3" fill="${minCol}"
                     vector-effect="non-scaling-stroke"/>
           </svg>
-          <span class="lbl lbl-max" style="${diag(xAt(iMax), yAt(tMax), false)};color:${maxCol}">▲ ${Math.round(tMax)}°</span>
-          <span class="lbl lbl-min" style="${diag(xAt(iMin), yAt(tMin), true)};color:${minCol}">▼ ${Math.round(tMin)}°</span>
+          <span class="lbl lbl-max" style="${diag(xAt(iMax), yAt(tMax), false)};color:${maxCol}">${Math.round(tMax)}°</span>
+          <span class="lbl lbl-min" style="${diag(xAt(iMin), yAt(tMin), true)};color:${minCol}">${Math.round(tMin)}°</span>
           ${windLbl}
-          ${degAxis}
         </div>
         ${hourAxis}
       </div>
