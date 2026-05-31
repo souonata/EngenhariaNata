@@ -246,6 +246,15 @@
     color:#9fe6b5; pointer-events:none; white-space:nowrap;
   }
 
+  /* Rótulos de grau (faixa livre à direita do gráfico), na cor da temperatura */
+  .deg{
+    position:absolute; right:2px; transform:translateY(-50%);
+    font-size:.46rem; font-weight:700; line-height:1; white-space:nowrap;
+    pointer-events:none;
+    text-shadow:0 0 2px var(--bg), 0 0 2px var(--bg);
+  }
+  .deg-set{ font-size:.54rem; }
+
   /* Trigger strip */
   .triggers{
     flex:0 0 auto;
@@ -334,6 +343,8 @@
     .dow{font-size:.95rem}.dnum{font-size:.72rem}.emo{font-size:1.15rem}
     .lbl{font-size:.72rem}
     .lbl-set{font-size:.72rem}
+    .deg{font-size:.58rem}
+    .deg-set{font-size:.66rem}
     .c-stats{font-size:.78rem}
     .triggers{font-size:.68rem;min-height:11px;gap:10px}
     .hour-axis{height:12px}
@@ -427,7 +438,7 @@ const I18N = {
     today:'Hoje', dow:['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],
     source:'Fonte', footer:'💻 Portfólio Engenharia NATA @ 2026',
     home:'Voltar para a tela inicial', targetTitle:'Temperatura-alvo de interior',
-    upTitle:'Temperatura sobe acima de 24°C', dnTitle:'Temperatura cai abaixo de 24°C',
+    upTitle:'Temperatura sobe acima do alvo', dnTitle:'Temperatura cai abaixo do alvo',
     rainTitle:'Chuva: prob >30% e >0,5mm'
   },
   'it-IT': {
@@ -435,7 +446,7 @@ const I18N = {
     today:'Oggi', dow:['Dom','Lun','Mar','Mer','Gio','Ven','Sab'],
     source:'Fonte', footer:'💻 Portafoglio Ingegneria NATA @ 2026',
     home:'Torna alla schermata iniziale', targetTitle:'Temperatura interna obiettivo',
-    upTitle:'La temperatura sale sopra 24°C', dnTitle:'La temperatura scende sotto 24°C',
+    upTitle:'La temperatura sale sopra l\'obiettivo', dnTitle:'La temperatura scende sotto l\'obiettivo',
     rainTitle:'Pioggia: prob >30% e >0,5mm'
   }
 };
@@ -573,7 +584,7 @@ async function loadAll(){
   url.search = new URLSearchParams({
     latitude:  CITIES.map(c => c.lat).join(','),
     longitude: CITIES.map(c => c.lon).join(','),
-    hourly:    'temperature_2m,precipitation_probability,precipitation,weather_code',
+    hourly:    'temperature_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m',
     current:   'temperature_2m,apparent_temperature,weather_code,wind_speed_10m',
     daily:     'weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max',
     timezone:  'auto',
@@ -596,7 +607,8 @@ async function loadAll(){
         temp: d.hourly.temperature_2m[k],
         pop:  d.hourly.precipitation_probability[k] ?? 0,
         mm:   d.hourly.precipitation[k] ?? 0,
-        code: d.hourly.weather_code[k]
+        code: d.hourly.weather_code[k],
+        wind: d.hourly.wind_speed_10m ? (d.hourly.wind_speed_10m[k] ?? 0) : 0
       });
     });
     const daily = d.daily.time.map((iso, k) => ({
@@ -759,7 +771,7 @@ function buildRow(day, hours, isToday, scaleMax, lat){
   const dt = new Date(day.date + 'T12:00:00');
   const dow = isToday ? T().today : T().dow[dt.getDay()];
   const dnum = `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}`;
-  const [emo] = wmo(dominantDayCode(hours));   // ícone = clima prevalente das 8h às 20h
+  const [emo] = wmo(dominantDayCode(hours, day.code));   // clima prevalente 8h–20h (tempestade tem prioridade)
 
   const temps = hours.map(h => h.temp);
   const mms   = hours.map(h => h.mm);
@@ -768,7 +780,7 @@ function buildRow(day, hours, isToday, scaleMax, lat){
   const tMin = Math.min(...temps), tMax = Math.max(...temps);
   const iMin = temps.indexOf(tMin), iMax = temps.indexOf(tMax);
 
-  const W = 240, H = 60;
+  const W = 240, H = 60, GUT = 26, VBW = W + GUT;   // GUT = faixa livre à direita p/ os rótulos de grau
   const padT = 9, padB = 3;
   const ch = H - padT - padB;
 
@@ -782,59 +794,85 @@ function buildRow(day, hours, isToday, scaleMax, lat){
   const xAt = i => (n === 1 ? W/2 : i * (W / (n - 1)));
   const yAt = t => padT + ch * (1 - (t - yLow) / yRange);
 
-  // Linha de referência na altura do alvo (agora sempre dentro do gráfico).
-  const gridY = clamp(yAt(setpoint), padT, padT + ch);
+  // ── Linhas horizontais por GRAU, coloridas pela cor da temperatura; o número
+  //    de cada grau vai na faixa livre à direita, na mesma cor. ──
+  const dLo = Math.ceil(yLow - 1e-6), dHi = Math.floor(yHigh + 1e-6);
+  const degLines = [], degLabels = [];
+  for (let d = dLo; d <= dHi; d++) {
+    const y = yAt(d).toFixed(1);
+    const col = tempColor(d, setpoint, yLow, yHigh);
+    const isSet = (d === setpoint);
+    degLines.push(`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="rgb(${col})" stroke-opacity="${isSet ? '.5' : '.16'}" stroke-width="1" vector-effect="non-scaling-stroke"/>`);
+    degLabels.push(`<span class="deg${isSet ? ' deg-set' : ''}" style="top:${(yAt(d)/H*100).toFixed(1)}%;color:rgb(${col})">${d}°</span>`);
+  }
+  const degLinesSvg = degLines.join('');
+  const degAxis = degLabels.join('');
 
-  // Linhas de grade verticais por hora (presentes em todos os dias, alinhadas
-  // em coluna → "atravessam" os dias). As de 3 em 3 horas são um pouco mais
-  // marcadas e servem de referência para os rótulos abaixo do dia de hoje.
+  // ── Grade vertical por hora (de 3 em 3 h mais marcada) ──
   const hourGrid = hours.map((h, i) => {
     const x = xAt(i).toFixed(1);
     const major = (h.hour % 3 === 0);
     return `<line x1="${x}" y1="${padT}" x2="${x}" y2="${(padT+ch).toFixed(1)}" class="${major ? 'g-maj' : 'g-min'}" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
   }).join('');
 
-  // Barras de chuva POR HORA, em escala FIXA: a altura de cada hora é
-  // proporcional ao quanto choveu nela em relação ao teto fixo (scaleMax =
-  // maior chuva horária dos últimos 365 dias). Assim a mesma quantidade tem a
-  // mesma altura em qualquer dia → dá para comparar os dias entre si.
-  const rainScaleMax = Math.max(scaleMax || 0, 0.1);
-  const rainZoneH = ch * 0.85;
-  const rBarW = (W / n) * 0.7;
-  const mmBars = mms.map((m, i) => {
-    if (m <= 0.05) return '';
-    const barH = rainZoneH * Math.min(m / rainScaleMax, 1);
-    if (barH < 0.4) return '';
-    // Altura = quantidade (mm); opacidade = probabilidade de chuva da hora
-    // (0–100%), com um piso para a barra não sumir em mm de baixa probabilidade.
-    const pop = hours[i].pop || 0;
-    const op = Math.max(0.12, (pop / 100) * 0.8);
-    return `<rect x="${(xAt(i) - rBarW/2).toFixed(1)}" y="${(padT + ch - barH).toFixed(1)}" width="${rBarW.toFixed(1)}" height="${barH.toFixed(1)}" fill="rgba(126,227,193,${op.toFixed(2)})"/>`;
+  // ── Força do vento por hora: barrinha na base, altura e opacidade ∝ velocidade ──
+  const WIND_MAX = 35;                              // km/h ~ barra cheia
+  const wBarW = (W / n) * 0.92;
+  const windBars = hours.map((h, i) => {
+    const frac = clamp((h.wind || 0) / WIND_MAX, 0, 1);
+    if (frac < 0.04) return '';
+    const hgt = 1.5 + 5 * frac;                     // 1.5..6.5 unidades
+    const op  = (0.18 + 0.6 * frac).toFixed(2);
+    return `<rect x="${(xAt(i) - wBarW/2).toFixed(1)}" y="${(H - hgt).toFixed(1)}" width="${wBarW.toFixed(1)}" height="${hgt.toFixed(1)}" fill="#9aa7d6" opacity="${op}"/>`;
   }).join('');
+
+  // ── Chuva: cada hora com chuva preenche a ALTURA TODA com hachura de linhas
+  //    tracejadas inclinadas (simula chuva). Inclinação ∝ vento; densidade e
+  //    espessura ∝ quantidade (relativa ao teto fixo de 365 dias); opacidade ∝
+  //    probabilidade. ──
+  const rainScaleMax = Math.max(scaleMax || 0, 0.1);
+  const rBarW = (W / n) * 0.92;
+  const rainDefs = [], rainRects = [];
+  mms.forEach((m, i) => {
+    if (m <= 0.05) return;
+    const pop  = hours[i].pop  || 0;
+    const wind = hours[i].wind || 0;
+    const frac = clamp(m / rainScaleMax, 0, 1);
+    const spacing = 6 - 4 * frac;                   // mais chuva → linhas mais juntas
+    const thick   = (0.5 + 1.7 * frac).toFixed(2);  // mais chuva → linhas mais grossas
+    const angle   = clamp(wind * 1.1, 8, 60).toFixed(0); // mais vento → mais inclinada
+    const op      = Math.max(0.14, (pop / 100) * 0.85).toFixed(2); // probabilidade
+    const x = (xAt(i) - rBarW/2).toFixed(1);
+    const pid = `rn${day.date.replace(/-/g,'')}_${currentIdx}_${i}`;
+    rainDefs.push(`<pattern id="${pid}" patternUnits="userSpaceOnUse" width="${spacing.toFixed(2)}" height="${spacing.toFixed(2)}" patternTransform="rotate(${angle})"><line x1="0" y1="-0.5" x2="0" y2="${(spacing+0.5).toFixed(2)}" stroke="#8fe9cf" stroke-width="${thick}" stroke-dasharray="${(spacing*0.5).toFixed(2)} ${(spacing*0.55).toFixed(2)}"/></pattern>`);
+    rainRects.push(`<rect x="${x}" y="${padT}" width="${rBarW.toFixed(1)}" height="${ch}" fill="url(#${pid})" opacity="${op}"/>`);
+  });
+  const rainDefsSvg = rainDefs.join('');
+  const rainSvg = rainRects.join('');
 
   const pts = temps.map((t, i) => `${xAt(i).toFixed(1)},${yAt(t).toFixed(1)}`);
   const linePath = 'M' + pts.join(' L');
 
   const gid = 'g' + day.date.replace(/-/g,'') + '_' + currentIdx;
 
-  // Gradiente da linha de temperatura: vermelho (quente) no topo → verde no
-  // alvo sazonal de interior → azul (frio) embaixo, com transição suave.
+  // Gradiente da linha de temperatura: vermelho (quente) → verde (alvo) → azul (frio).
   const tgid = 't' + gid;
-  const oSet = (1 - (setpoint - yLow) / yRange);   // fração vertical (0 = topo/quente) do alvo sazonal
+  const oSet = (1 - (setpoint - yLow) / yRange);
   let tempStops;
   if (oSet <= 0)      tempStops = '<stop offset="0%" stop-color="#3fb950"/><stop offset="100%" stop-color="#4aa8ff"/>';
   else if (oSet >= 1) tempStops = '<stop offset="0%" stop-color="#ff5b4a"/><stop offset="100%" stop-color="#3fb950"/>';
   else                tempStops = `<stop offset="0%" stop-color="#ff5b4a"/><stop offset="${(oSet*100).toFixed(1)}%" stop-color="#3fb950"/><stop offset="100%" stop-color="#4aa8ff"/>`;
 
-  const xMaxPct = clamp(iMax/(n-1)*100, 10, 90);
-  const xMinPct = clamp(iMin/(n-1)*100, 10, 90);
+  const xMaxPct = clamp(xAt(iMax)/VBW*100, 7, 82);
+  const xMinPct = clamp(xAt(iMin)/VBW*100, 7, 82);
 
-  // Posição vertical (% da altura do gráfico) do rótulo do alvo, na linha de
-  // referência — sempre mostrado, mesmo que a temperatura do dia não o alcance.
-  const setTopPct = (gridY / H * 100).toFixed(1);
+  // Cores dos rótulos de máx/mín: se a máxima não alcança o alvo, fica verde (em
+  // vez de vermelho); se a mínima fica acima do alvo, verde (em vez de azul).
+  const maxCol = (tMax < setpoint) ? '#3fb950' : '#ff5b4a';
+  const minCol = (tMin > setpoint) ? '#3fb950' : '#4aa8ff';
 
-  // Triggers (smart-home thresholds)
-  const T_THRESH = 24;
+  // Gatilhos: cruzamentos da temperatura-alvo da estação.
+  const T_THRESH = setpoint;
   const tempUps = [], tempDns = [];
   for (let i = 1; i < temps.length; i++) {
     const a = temps[i-1], b = temps[i];
@@ -853,13 +891,12 @@ function buildRow(day, hours, isToday, scaleMax, lat){
     return `<line x1="${x}" y1="${padT}" x2="${x}" y2="${(padT+ch).toFixed(1)}" class="g-cross" stroke-width="1" stroke-dasharray="2 2" vector-effect="non-scaling-stroke"/>`;
   }).join('');
 
-  // Rótulos de hora compactos (de 3 em 3 h), exibidos só abaixo do dia de hoje;
-  // alinham-se com as linhas de grade marcadas, que seguem pelos demais dias.
+  // Rótulos de hora compactos (de 3 em 3 h), só abaixo do dia de hoje.
   const hourAxis = isToday ? `
         <div class="hour-axis">
           ${hours.map((h, i) => {
             if (h.hour % 3 !== 0) return '';
-            const pct = i / (n - 1) * 100;
+            const pct = xAt(i) / VBW * 100;
             const style = i === 0
               ? 'left:0;transform:none'
               : `left:${pct.toFixed(1)}%;transform:translateX(-50%)`;
@@ -876,31 +913,32 @@ function buildRow(day, hours, isToday, scaleMax, lat){
       </div>
       <div class="c-chart">
         <div class="spark-wrap">
-          <svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+          <svg class="spark" viewBox="0 0 ${VBW} ${H}" preserveAspectRatio="none">
             <defs>
               <linearGradient id="${tgid}" gradientUnits="userSpaceOnUse" x1="0" y1="${padT}" x2="0" y2="${(padT+ch).toFixed(1)}">
                 ${tempStops}
               </linearGradient>
+              ${rainDefsSvg}
             </defs>
-            <line x1="0" y1="${gridY.toFixed(1)}" x2="${W}" y2="${gridY.toFixed(1)}"
-                  class="g-ref" stroke-width="1" vector-effect="non-scaling-stroke"/>
+            ${degLinesSvg}
             ${hourGrid}
-            ${mmBars}
+            ${windBars}
+            ${rainSvg}
             ${crossLines}
             <path d="${linePath}" fill="none" stroke="url(#${tgid})" stroke-width="3"
                   vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>
-            <circle cx="${xAt(iMax).toFixed(1)}" cy="${yAt(tMax).toFixed(1)}" r="3" fill="#ff5b4a"
+            <circle cx="${xAt(iMax).toFixed(1)}" cy="${yAt(tMax).toFixed(1)}" r="3" fill="${maxCol}"
                     vector-effect="non-scaling-stroke"/>
-            <circle cx="${xAt(iMin).toFixed(1)}" cy="${yAt(tMin).toFixed(1)}" r="3" fill="#4aa8ff"
+            <circle cx="${xAt(iMin).toFixed(1)}" cy="${yAt(tMin).toFixed(1)}" r="3" fill="${minCol}"
                     vector-effect="non-scaling-stroke"/>
           </svg>
-          <span class="lbl lbl-max" style="left:${xMaxPct}%">▲ ${Math.round(tMax)}°</span>
-          <span class="lbl lbl-min" style="left:${xMinPct}%">▼ ${Math.round(tMin)}°</span>
-          <span class="lbl-set" style="top:${setTopPct}%" title="${T().targetTitle} (${setpoint}°)">${setpoint}°</span>
+          <span class="lbl lbl-max" style="left:${xMaxPct.toFixed(1)}%;color:${maxCol}">▲ ${Math.round(tMax)}°</span>
+          <span class="lbl lbl-min" style="left:${xMinPct.toFixed(1)}%;color:${minCol}">▼ ${Math.round(tMin)}°</span>
+          ${degAxis}
         </div>
         <div class="triggers">
-          ${upStr   ? `<span class="trig-up"   title="${T().upTitle}">▲24° ${upStr}</span>` : ''}
-          ${dnStr   ? `<span class="trig-dn"   title="${T().dnTitle}">▼24° ${dnStr}</span>` : ''}
+          ${upStr   ? `<span class="trig-up"   title="${T().upTitle} (${setpoint}°)">▲${setpoint}° ${upStr}</span>` : ''}
+          ${dnStr   ? `<span class="trig-dn"   title="${T().dnTitle} (${setpoint}°)">▼${setpoint}° ${dnStr}</span>` : ''}
           ${rainStr ? `<span class="trig-rain" title="${T().rainTitle}">💧 ${rainStr}</span>` : ''}
         </div>
         ${hourAxis}
@@ -915,7 +953,7 @@ function clamp(v, lo, hi){ return Math.min(hi, Math.max(lo, v)); }
 /* Ícone do dia = clima prevalente entre 8h e 20h (sol, nuvem, nublado, chuva ou
    tempestade), pela maior frequência das categorias dos códigos WMO horários.
    Em empate, prevalece a categoria mais significativa (tempestade > chuva > …). */
-function dominantDayCode(hours){
+function dominantDayCode(hours, dailyCode){
   const dayHrs = hours.filter(h => h.hour >= 8 && h.hour <= 20);
   const src = dayHrs.length ? dayHrs : hours;
   const cat = c => {
@@ -928,15 +966,38 @@ function dominantDayCode(hours){
     return 'clear';                              // 0, 1
   };
   const counts = {};
-  src.forEach(h => { const k = cat(h.code); counts[k] = (counts[k] || 0) + 1; });
-  const sev = ['clear','partly','cloud','fog','snow','rain','storm'];
+  let maxMm = 0;
+  src.forEach(h => { const k = cat(h.code); counts[k] = (counts[k] || 0) + 1; if ((h.mm||0) > maxMm) maxMm = h.mm; });
+  // Tempestade tem prioridade: código diário de trovoada, qualquer hora de
+  // trovoada no dia, ou chuva horária muito intensa (convectiva) → ⛈.
+  if ((dailyCode != null && dailyCode >= 95) || (counts.storm || 0) >= 1 || maxMm >= 10) return 95;
+  // senão, categoria mais frequente (empate → mais severa)
+  const sev = ['clear','partly','cloud','fog','snow','rain'];
   let best = 'clear', bestN = 0;
-  for (let i = sev.length - 1; i >= 0; i--) {    // do mais severo ao menos → empate vai p/ severo
+  for (let i = sev.length - 1; i >= 0; i--) {
     const k = sev[i], c = counts[k] || 0;
     if (c > bestN) { bestN = c; best = k; }
   }
-  const rep = { clear:0, partly:2, cloud:3, fog:45, rain:63, snow:73, storm:95 };
+  const rep = { clear:0, partly:2, cloud:3, fog:45, rain:63, snow:73 };
   return rep[best];
+}
+
+/* Cor de uma temperatura na escala azul(frio)→verde(alvo)→vermelho(quente),
+   coerente com o gradiente da linha. Retorna "r,g,b". */
+function lerpRgb(a, b, t){
+  return [Math.round(a[0]+(b[0]-a[0])*t), Math.round(a[1]+(b[1]-a[1])*t), Math.round(a[2]+(b[2]-a[2])*t)];
+}
+function tempColor(temp, setpoint, lo, hi){
+  const COLD = [74,168,255], GREEN = [63,185,80], HOT = [255,91,74];
+  let rgb;
+  if (temp >= setpoint){
+    const t = hi > setpoint ? clamp((temp - setpoint) / (hi - setpoint), 0, 1) : 0;
+    rgb = lerpRgb(GREEN, HOT, t);
+  } else {
+    const t = setpoint > lo ? clamp((setpoint - temp) / (setpoint - lo), 0, 1) : 0;
+    rgb = lerpRgb(GREEN, COLD, t);
+  }
+  return rgb.join(',');
 }
 
 /* Temperatura-alvo de interior conforme a estação ASTRONÔMICA da data (limites
