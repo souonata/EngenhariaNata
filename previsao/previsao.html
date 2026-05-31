@@ -495,7 +495,6 @@ function buildRow(day, hours, isToday, weekMaxMM){
 
   const pts = temps.map((t, i) => `${xAt(i).toFixed(1)},${yAt(t).toFixed(1)}`);
   const linePath = 'M' + pts.join(' L');
-  const areaPath = linePath + ` L${xAt(n-1).toFixed(1)},${(padT+ch).toFixed(1)} L0,${(padT+ch).toFixed(1)} Z`;
 
   const gid = 'g' + day.date.replace(/-/g,'') + '_' + currentIdx;
 
@@ -566,10 +565,9 @@ function buildRow(day, hours, isToday, weekMaxMM){
             <line x1="0" y1="${gridY.toFixed(1)}" x2="${W}" y2="${gridY.toFixed(1)}"
                   stroke="rgba(255,255,255,.05)" stroke-width="1" vector-effect="non-scaling-stroke"/>
             ${hourGrid}
-            <path d="${areaPath}" fill="url(#${tgid})" fill-opacity=".13"/>
             ${mmBars}
             ${crossLines}
-            <path d="${linePath}" fill="none" stroke="url(#${tgid})" stroke-width="2"
+            <path d="${linePath}" fill="none" stroke="url(#${tgid})" stroke-width="3"
                   vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>
             <circle cx="${xAt(iMax).toFixed(1)}" cy="${yAt(tMax).toFixed(1)}" r="3" fill="#ff5b4a"
                     vector-effect="non-scaling-stroke"/>
