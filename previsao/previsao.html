@@ -1143,8 +1143,8 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   // ESQUERDA (slot para o relógio da legenda) e 0,5 passo à direita, de modo que
   // a 00h não fica cortada, a última hora chega à borda e as bolas de cada hora
   // continuam tangentes entre si.
-  const stepX = (n === 1) ? 0 : VBW / (n + 1);
-  const padXL = 1.5 * stepX;
+  const stepX = (n === 1) ? 0 : VBW / (n + 1.5);
+  const padXL = 2 * stepX;
   const xAt = i => (n === 1 ? VBW / 2 : padXL + i * stepX);
   const yAt = t => padT + ch * (1 - (t - yLow) / yRange);
 
