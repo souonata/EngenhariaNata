@@ -23,6 +23,7 @@
     --grid-maj:rgba(255,255,255,.13);
     --grid-ref:rgba(255,255,255,.05);
     --grid-cross:rgba(255,255,255,.18);
+    --rain:#8fe9cf;                /* hachura de chuva (tema-aware) */
   }
 
   /* ─── Tema claro ─── */
@@ -37,6 +38,7 @@
     --grid-maj:rgba(0,0,0,.16);
     --grid-ref:rgba(0,0,0,.08);
     --grid-cross:rgba(0,0,0,.22);
+    --rain:#2c8fb0;                /* tom de água, mais escuro p/ aparecer no claro */
   }
   html[data-theme="light"] body{ background:#e7edf5; }
   html[data-theme="light"] .app{ background:#ffffff; }
@@ -54,6 +56,7 @@
   .g-maj{ stroke:var(--grid-maj); }
   .g-ref{ stroke:var(--grid-ref); }
   .g-cross{ stroke:var(--grid-cross); }
+  .rain-hatch{ stroke:var(--rain); }   /* cor da hachura de chuva pelo tema */
 
   /* ─── Barra superior: idioma + tema (oculta no topo ao abrir) ─── */
   .topbar{
@@ -917,7 +920,7 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
     const op      = Math.max(0.14, (pop / 100) * 0.85).toFixed(2); // probabilidade
     const x = (xAt(i) - rBarW/2).toFixed(1);
     const pid = `rn${day.date.replace(/-/g,'')}_${currentIdx}_${i}`;
-    rainDefs.push(`<pattern id="${pid}" patternUnits="userSpaceOnUse" width="${spacing.toFixed(2)}" height="${spacing.toFixed(2)}" patternTransform="rotate(${angle})"><line x1="0" y1="-0.5" x2="0" y2="${(spacing+0.5).toFixed(2)}" stroke="#8fe9cf" stroke-width="${thick}" stroke-dasharray="${(spacing*0.5).toFixed(2)} ${(spacing*0.55).toFixed(2)}"/></pattern>`);
+    rainDefs.push(`<pattern id="${pid}" patternUnits="userSpaceOnUse" width="${spacing.toFixed(2)}" height="${spacing.toFixed(2)}" patternTransform="rotate(${angle})"><line x1="0" y1="-0.5" x2="0" y2="${(spacing+0.5).toFixed(2)}" class="rain-hatch" stroke-width="${thick}" stroke-dasharray="${(spacing*0.5).toFixed(2)} ${(spacing*0.55).toFixed(2)}"/></pattern>`);
     rainRects.push(`<rect x="${x}" y="${padT}" width="${rBarW.toFixed(1)}" height="${ch}" fill="url(#${pid})" opacity="${op}"/>`);
   });
   const rainDefsSvg = rainDefs.join('');
@@ -983,6 +986,7 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   const needRainAction = rainMarks.length > 0;   // chuva que pede fechar janela / recolher roupa
 
   // Rótulos de hora compactos (de 3 em 3 h), só abaixo do dia de hoje.
+  const x24 = (n) * (W / (n - 1));   // posição da 24h (extrapolada) = 00h do dia seguinte
   const hourAxis = isToday ? `
         <div class="hour-axis">
           ${hours.map((h, i) => {
@@ -993,6 +997,7 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
               : `left:${pct.toFixed(1)}%;transform:translateX(-50%)`;
             return `<span style="${style}">${String(h.hour).padStart(2,'0')}h</span>`;
           }).join('')}
+          <span style="left:${(x24/VBW*100).toFixed(1)}%;transform:translateX(-50%)" title="00h do dia seguinte">24h</span>
         </div>` : '';
 
   return `
