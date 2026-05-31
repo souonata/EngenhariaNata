@@ -964,13 +964,33 @@ function showTip(cx, cy, el){
 function closeTip(){ document.getElementById('hourTip').style.display = 'none'; }
 function wireTip(){
   document.getElementById('days').addEventListener('click', e => {
+    // Clique direto num valor: usa os dados do próprio elemento.
     const el = e.target.closest('.t-num,.t-ball');
-    if(!el){ closeTip(); return; }
-    showTip(e.clientX, e.clientY, el);
-    e.stopPropagation();
+    if (el) { showTip(e.clientX, e.clientY, el); e.stopPropagation(); return; }
+
+    // Clique em qualquer área do gráfico: encontra a hora mais próxima pelo x%.
+    const chartArea = e.target.closest('.c-chart');
+    if (!chartArea) { closeTip(); return; }
+    const row = chartArea.closest('.row');
+    const refEl = chartArea.querySelector('.wind-wrap') || chartArea.querySelector('.spark-wrap');
+    if (!refEl) { closeTip(); return; }
+    const rect = refEl.getBoundingClientRect();
+    const xPct = (e.clientX - rect.left) / rect.width * 100;
+    const axisSpans = [...(chartArea.querySelector('.hour-axis') || document.createElement('div'))
+      .querySelectorAll('span:not(.axis-ico)')];
+    let best = null, bd = Infinity;
+    axisSpans.forEach(s => {
+      const d = Math.abs(parseFloat(s.style.left) - xPct);
+      if (d < bd) { bd = d; best = s; }
+    });
+    if (!best) { closeTip(); return; }
+    const h = parseInt(best.textContent, 10);
+    const dataEl = row.querySelector(`.t-ball[data-h="${h}"],.t-num[data-h="${h}"]`);
+    if (dataEl) { showTip(e.clientX, e.clientY, dataEl); e.stopPropagation(); }
+    else closeTip();
   });
   document.addEventListener('click', e => {
-    if(!e.target.closest('#hourTip,.t-num,.t-ball')) closeTip();
+    if (!e.target.closest('#hourTip,.c-chart')) closeTip();
   });
 }
 
