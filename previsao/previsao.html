@@ -994,15 +994,8 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   const xAt = i => (n === 1 ? W/2 : i * (W / (n - 1)));
   const yAt = t => padT + ch * (1 - (t - yLow) / yRange);
 
-  // ── Linhas horizontais por GRAU, coloridas pela cor da temperatura (grade). ──
-  const dLo = Math.ceil(yLow - 1e-6), dHi = Math.floor(yHigh + 1e-6);
-  const degLines = [];
-  for (let d = dLo; d <= dHi; d++) {
-    const col = tempColor(d, setpoint, yLow, yHigh);
-    const isSet = (d === setpoint);
-    degLines.push(`<line x1="0" y1="${yAt(d).toFixed(1)}" x2="${W}" y2="${yAt(d).toFixed(1)}" stroke="rgb(${col})" stroke-opacity="${isSet ? '.5' : '.16'}" stroke-width="1" vector-effect="non-scaling-stroke"/>`);
-  }
-  const degLinesSvg = degLines.join('');
+  // ── Única linha horizontal de referência: a temperatura-alvo da estação atual. ──
+  const degLinesSvg = `<line x1="0" y1="${yAt(setpoint).toFixed(1)}" x2="${W}" y2="${yAt(setpoint).toFixed(1)}" stroke="#3fb950" stroke-opacity=".55" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
 
   // ── Grade vertical por hora (3 em 3 h mais marcada; a hora ATUAL, só no
   //    dia de hoje, fica realçada). ──
