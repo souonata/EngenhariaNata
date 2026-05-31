@@ -742,22 +742,24 @@ async function ensureHistMax(){
 
 /* ──── WMO codes ──── */
 function wmo(code){
+  // Seletor de variação ️ (U+FE0F) força a apresentação COLORIDA do emoji; sem
+  // ele, vários destes glifos viram texto monocromático (preto no tema claro).
   if (code === 0)              return ['☀️','Céu limpo'];
-  if (code === 1)              return ['🌤','Quase limpo'];
+  if (code === 1)              return ['🌤️','Quase limpo'];
   if (code === 2)              return ['⛅','Parc. nublado'];
   if (code === 3)              return ['☁️','Nublado'];
-  if (code === 45 || code===48)return ['🌫','Nevoeiro'];
-  if (code >= 51 && code <= 57)return ['🌦','Chuvisco'];
-  if (code === 61)             return ['🌧','Chuva fraca'];
-  if (code === 63)             return ['🌧','Chuva'];
-  if (code === 65)             return ['🌧','Chuva forte'];
-  if (code >= 66 && code <= 67)return ['🌧','Chuva congel.'];
+  if (code === 45 || code===48)return ['🌫️','Nevoeiro'];
+  if (code >= 51 && code <= 57)return ['🌦️','Chuvisco'];
+  if (code === 61)             return ['🌧️','Chuva fraca'];
+  if (code === 63)             return ['🌧️','Chuva'];
+  if (code === 65)             return ['🌧️','Chuva forte'];
+  if (code >= 66 && code <= 67)return ['🌧️','Chuva congel.'];
   if (code >= 71 && code <= 77)return ['❄️','Neve'];
-  if (code >= 80 && code <= 82)return ['🌦','Aguaceiros'];
-  if (code === 85 || code===86)return ['🌨','Aguac. neve'];
-  if (code === 95)             return ['⛈','Trovoada'];
-  if (code >= 96 && code <= 99)return ['⛈','Trov./granizo'];
-  return ['🌡','—'];
+  if (code >= 80 && code <= 82)return ['🌦️','Aguaceiros'];
+  if (code === 85 || code===86)return ['🌨️','Aguac. neve'];
+  if (code === 95)             return ['⛈️','Trovoada'];
+  if (code >= 96 && code <= 99)return ['⛈️','Trov./granizo'];
+  return ['🌡️','—'];
 }
 
 /* ──── Render days table ──── */
@@ -778,10 +780,26 @@ function renderDays(){
   const hist = histMaxByCity[cd.city.id];
   const scaleMax = (typeof hist === 'number' && hist > 0) ? hist : weekMaxMM;
 
+  // Escala vertical de temperatura PADRONIZADA: mín/máx de toda a semana,
+  // incluindo os alvos da estação (20/22/24) caso não sejam atingidos. Assim
+  // todos os dias usam a mesma régua e ficam comparáveis entre si.
+  let weekTMin = Infinity, weekTMax = -Infinity, setLo = Infinity, setHi = -Infinity;
+  cd.daily.forEach(day => {
+    (cd.hourlyByDay[day.date] || []).forEach(h => {
+      if (h.temp < weekTMin) weekTMin = h.temp;
+      if (h.temp > weekTMax) weekTMax = h.temp;
+    });
+    const sp = seasonSetpoint(day.date, cd.city.lat);
+    if (sp < setLo) setLo = sp;
+    if (sp > setHi) setHi = sp;
+  });
+  const yLowG  = Math.min(weekTMin, setLo);
+  const yHighG = Math.max(weekTMax, setHi);
+
   cd.daily.forEach(day => {
     const hours = cd.hourlyByDay[day.date] || [];
     if (hours.length < 2) return;
-    wrap.insertAdjacentHTML('beforeend', buildRow(day, hours, day.date === todayISO, scaleMax, cd.city.lat));
+    wrap.insertAdjacentHTML('beforeend', buildRow(day, hours, day.date === todayISO, scaleMax, cd.city.lat, yLowG, yHighG));
   });
 
   const c = cd.city;
@@ -791,7 +809,7 @@ function renderDays(){
 }
 
 /* ──── Build one row with SVG sparkline ──── */
-function buildRow(day, hours, isToday, scaleMax, lat){
+function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   // Temperatura-alvo de interior para a estação do dia (verão 24°, inverno 20°,
   // primavera/outono 22°), com hemisfério pela latitude (estações invertidas
   // no Brasil). Vale para a linha de referência e para o verde do gradiente.
@@ -812,11 +830,11 @@ function buildRow(day, hours, isToday, scaleMax, lat){
   const padT = 9, padB = 3;
   const ch = H - padT - padB;
 
-  // A escala vertical inclui SEMPRE o alvo sazonal. Assim, em dias frios
-  // (máx < alvo) a curva fica na parte de baixo e a linha-alvo no alto, sem ser
-  // alcançada; em dias quentes (mín > alvo) a curva sobe; em dias normais, igual.
-  const yLow  = Math.min(tMin, setpoint);
-  const yHigh = Math.max(tMax, setpoint);
+  // Escala vertical PADRONIZADA da semana (mesma régua em todos os dias), já
+  // incluindo os alvos da estação. Em dias frios a curva fica embaixo (linha-
+  // alvo no alto, sem ser alcançada); em dias quentes, em cima; tudo comparável.
+  const yLow  = yLowG;
+  const yHigh = yHighG;
   const yRange = Math.max(0.5, yHigh - yLow);
 
   const xAt = i => (n === 1 ? W/2 : i * (W / (n - 1)));
@@ -825,13 +843,17 @@ function buildRow(day, hours, isToday, scaleMax, lat){
   // ── Linhas horizontais por GRAU, coloridas pela cor da temperatura; o número
   //    de cada grau vai na faixa livre à direita, na mesma cor. ──
   const dLo = Math.ceil(yLow - 1e-6), dHi = Math.floor(yHigh + 1e-6);
+  const degSpan = dHi - dLo;
+  const labelStep = degSpan > 16 ? 3 : degSpan > 10 ? 2 : 1;   // evita rótulos sobrepostos em faixas grandes
   const degLines = [], degLabels = [];
   for (let d = dLo; d <= dHi; d++) {
     const y = yAt(d).toFixed(1);
     const col = tempColor(d, setpoint, yLow, yHigh);
     const isSet = (d === setpoint);
     degLines.push(`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="rgb(${col})" stroke-opacity="${isSet ? '.5' : '.16'}" stroke-width="1" vector-effect="non-scaling-stroke"/>`);
-    degLabels.push(`<span class="deg${isSet ? ' deg-set' : ''}" style="top:${(yAt(d)/H*100).toFixed(1)}%;color:rgb(${col})">${d}°</span>`);
+    if (isSet || (dHi - d) % labelStep === 0) {
+      degLabels.push(`<span class="deg${isSet ? ' deg-set' : ''}" style="top:${(yAt(d)/H*100).toFixed(1)}%;color:rgb(${col})">${d}°</span>`);
+    }
   }
   const degLinesSvg = degLines.join('');
   const degAxis = degLabels.join('');
