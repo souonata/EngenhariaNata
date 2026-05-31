@@ -501,7 +501,7 @@ function renderDays(){
   cd.daily.forEach(day => {
     const hours = cd.hourlyByDay[day.date] || [];
     if (hours.length < 2) return;
-    wrap.insertAdjacentHTML('beforeend', buildRow(day, hours, day.date === todayISO, scaleMax));
+    wrap.insertAdjacentHTML('beforeend', buildRow(day, hours, day.date === todayISO, scaleMax, cd.city.lat));
   });
 
   const c = cd.city;
@@ -511,7 +511,11 @@ function renderDays(){
 }
 
 /* ──── Build one row with SVG sparkline ──── */
-function buildRow(day, hours, isToday, scaleMax){
+function buildRow(day, hours, isToday, scaleMax, lat){
+  // Temperatura-alvo de interior para a estação do dia (verão 24°, inverno 20°,
+  // primavera/outono 22°), com hemisfério pela latitude (estações invertidas
+  // no Brasil). Vale para a linha de referência e para o verde do gradiente.
+  const setpoint = seasonSetpoint(day.date, lat);
   const dt = new Date(day.date + 'T12:00:00');
   const dow = isToday ? 'Hoje' : DOW[dt.getDay()];
   const dnum = `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}`;
@@ -535,7 +539,9 @@ function buildRow(day, hours, isToday, scaleMax){
   const xAt = i => (n === 1 ? W/2 : i * (W / (n - 1)));
   const yAt = t => padT + ch * (1 - (t - tMin) / tRange);
 
-  const gridY = padT + ch / 2;
+  // Linha de referência na altura da temperatura-alvo; presa às bordas se o
+  // alvo estiver fora da faixa de temperaturas do dia.
+  const gridY = clamp(yAt(setpoint), padT, padT + ch);
 
   // Linhas de grade verticais por hora (presentes em todos os dias, alinhadas
   // em coluna → "atravessam" os dias). As de 6 em 6 horas são um pouco mais
@@ -566,13 +572,13 @@ function buildRow(day, hours, isToday, scaleMax){
   const gid = 'g' + day.date.replace(/-/g,'') + '_' + currentIdx;
 
   // Gradiente da linha de temperatura: vermelho (quente) no topo → verde no
-  // limiar ideal de 24° → azul (frio) embaixo, com transição suave.
+  // alvo sazonal de interior → azul (frio) embaixo, com transição suave.
   const tgid = 't' + gid;
-  const o24 = (1 - (24 - tMin) / tRange);   // fração vertical (0 = topo/quente) do limiar de 24°
+  const oSet = (1 - (setpoint - tMin) / tRange);   // fração vertical (0 = topo/quente) do alvo sazonal
   let tempStops;
-  if (o24 <= 0)      tempStops = '<stop offset="0%" stop-color="#3fb950"/><stop offset="100%" stop-color="#4aa8ff"/>';
-  else if (o24 >= 1) tempStops = '<stop offset="0%" stop-color="#ff5b4a"/><stop offset="100%" stop-color="#3fb950"/>';
-  else               tempStops = `<stop offset="0%" stop-color="#ff5b4a"/><stop offset="${(o24*100).toFixed(1)}%" stop-color="#3fb950"/><stop offset="100%" stop-color="#4aa8ff"/>`;
+  if (oSet <= 0)      tempStops = '<stop offset="0%" stop-color="#3fb950"/><stop offset="100%" stop-color="#4aa8ff"/>';
+  else if (oSet >= 1) tempStops = '<stop offset="0%" stop-color="#ff5b4a"/><stop offset="100%" stop-color="#3fb950"/>';
+  else                tempStops = `<stop offset="0%" stop-color="#ff5b4a"/><stop offset="${(oSet*100).toFixed(1)}%" stop-color="#3fb950"/><stop offset="100%" stop-color="#4aa8ff"/>`;
 
   const xMaxPct = clamp(iMax/(n-1)*100, 10, 90);
   const xMinPct = clamp(iMin/(n-1)*100, 10, 90);
@@ -661,6 +667,24 @@ function buildRow(day, hours, isToday, scaleMax){
 
 function formatHr(h){ return String(h).padStart(2,'0') + 'h'; }
 function clamp(v, lo, hi){ return Math.min(hi, Math.max(lo, v)); }
+
+/* Temperatura-alvo de interior conforme a estação meteorológica da data, com
+   hemisfério pela latitude (negativa = Sul, estações invertidas):
+   verão 24°, inverno 20°, primavera/outono 22°. */
+function seasonSetpoint(dateISO, lat){
+  const m = parseInt(dateISO.slice(5,7), 10);   // mês 1..12
+  let season;                                    // estação no Hemisfério Norte
+  if (m === 12 || m <= 2)      season = 'inverno';
+  else if (m <= 5)             season = 'primavera';
+  else if (m <= 8)             season = 'verao';
+  else                         season = 'outono';
+  if (lat < 0) {                                 // Hemisfério Sul → inverte
+    season = { inverno:'verao', verao:'inverno', primavera:'outono', outono:'primavera' }[season];
+  }
+  if (season === 'verao')   return 24;
+  if (season === 'inverno') return 20;
+  return 22;                                     // primavera e outono
+}
 
 function groupHours(hs){
   if (!hs.length) return '';
