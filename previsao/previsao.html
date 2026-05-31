@@ -269,6 +269,16 @@
     color:var(--muted); pointer-events:none;
     text-shadow:0 0 2px var(--bg),0 0 2px var(--bg);
   }
+  /* Bolota que une ponto + valor (número em grafite dentro, sem unidade) */
+  .val-dot{
+    position:absolute; transform:translate(-50%,-50%);
+    min-width:15px; height:15px; padding:0 2px; box-sizing:border-box;
+    border-radius:9px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:.46rem; font-weight:800; line-height:1;
+    pointer-events:none;
+    box-shadow:0 0 0 1.5px var(--bg);
+  }
 
   /* Marcadores na posição da hora: cruzamento do alvo (▲/▼) e chuva (💧) */
   .cross-mark{
@@ -382,6 +392,7 @@
     .hour-axis{height:12px}
     .hour-axis span{font-size:.62rem}
     .hour-axis.dense span{font-size:.5rem}
+    .val-dot{min-width:18px;height:18px;font-size:.56rem}
     .footer{padding:8px 18px;font-size:.7rem}
   }
   @media (max-width:767px){.app{flex:1;display:flex;flex-direction:column;min-height:0}}
@@ -854,25 +865,6 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   const xAt = i => (n === 1 ? W/2 : i * (W / (n - 1)));
   const yAt = t => padT + ch * (1 - (t - yLow) / yRange);
 
-  // Posiciona um rótulo (sem fundo) junto ao ponto (xv,yv), deslocado em DIAGONAL
-  // para dentro do plot. up=true → sobe (mín/vento); false → desce (máx). O lado
-  // horizontal vai para o interior (se o ponto está à esquerda, desloca p/ direita).
-  const diag = (xv, yv, up) => {
-    const dx = (xv < W * 0.5) ? '6px' : 'calc(-100% - 6px)';
-    const dy = up ? 'calc(-100% - 5px)' : '5px';
-    return `left:${(xv/VBW*100).toFixed(1)}%;top:${(yv/H*100).toFixed(1)}%;transform:translate(${dx}, ${dy})`;
-  };
-
-  // Posiciona o rótulo na BORDA do plot (topo OU base) com mais espaço livre
-  // naquele x — o lado oposto ao da curva, o mais longe possível dela.
-  const edgeLabel = (xv, curveY) => {
-    const toBottom = ((padT + ch) - curveY) >= (curveY - padT);
-    const yv = toBottom ? (padT + ch) : padT;
-    const dy = toBottom ? 'calc(-100% - 1px)' : '1px';
-    const lx = clamp(xv / VBW * 100, 8, (W / VBW * 100) - 2);
-    return `left:${lx.toFixed(1)}%;top:${(yv/H*100).toFixed(1)}%;transform:translate(-50%, ${dy})`;
-  };
-
   // ── Linhas horizontais por GRAU, coloridas pela cor da temperatura (grade). ──
   const dLo = Math.ceil(yLow - 1e-6), dHi = Math.floor(yHigh + 1e-6);
   const degLines = [];
@@ -901,17 +893,11 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
     return `<rect x="${(xAt(i) - wBarW/2).toFixed(1)}" y="${(H - hgt).toFixed(1)}" width="${wBarW.toFixed(1)}" height="${hgt.toFixed(1)}" fill="#9aa7d6" opacity="${op}"/>`;
   }).join('');
 
-  // Pico de vento do dia → ponto + valor/unidade/hora (km/h) no horário de maior intensidade.
+  // Pico de vento do dia (a velocidade vai dentro da bolinha no ponto de leitura).
   let iWindMax = 0, windMax = 0;
   hours.forEach((h, i) => { const w = h.wind || 0; if (w > windMax) { windMax = w; iWindMax = i; } });
   const windFrac = clamp(windMax / WIND_MAX, 0, 1);
   const windTopY = H - (1.5 + 5 * windFrac);            // topo da barra de pico (ponto de leitura)
-  const windDot = windMax > 0
-    ? `<circle cx="${xAt(iWindMax).toFixed(1)}" cy="${windTopY.toFixed(1)}" r="2" fill="#9aa7d6" vector-effect="non-scaling-stroke"/>`
-    : '';
-  const windLbl = windMax > 0
-    ? `<span class="lbl-wind" style="${diag(xAt(iWindMax), windTopY, true)}">💨 ${Math.round(windMax)} · ${String(hours[iWindMax].hour).padStart(2,'0')}h</span>`
-    : '';
 
   // ── Chuva: cada hora com chuva preenche a ALTURA TODA com hachura de linhas
   //    tracejadas inclinadas (simula chuva). Inclinação ∝ vento; densidade e
@@ -950,9 +936,6 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   else if (oSet >= 1) tempStops = '<stop offset="0%" stop-color="#ff5b4a"/><stop offset="100%" stop-color="#3fb950"/>';
   else                tempStops = `<stop offset="0%" stop-color="#ff5b4a"/><stop offset="${(oSet*100).toFixed(1)}%" stop-color="#3fb950"/><stop offset="100%" stop-color="#4aa8ff"/>`;
 
-  const xMaxPct = clamp(xAt(iMax)/VBW*100, 7, 82);
-  const xMinPct = clamp(xAt(iMin)/VBW*100, 7, 82);
-
   // Cores dos rótulos de máx/mín: se a máxima não alcança o alvo, fica verde (em
   // vez de vermelho); se a mínima fica acima do alvo, verde (em vez de azul).
   const maxCol = (tMax < setpoint) ? '#3fb950' : '#ff5b4a';
@@ -962,23 +945,40 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   // (ignora a 24h, que é dado do dia seguinte)
   const needRainAction = hours.some(h => h.hour < 24 && h.pop > 30 && h.mm > 0.5);
 
-  // Rótulos de hora compactos (de 3 em 3 h), só abaixo do dia de hoje.
-  // Legenda de horas. Hoje: TODAS as horas (acima e abaixo do gráfico). Demais
-  // dias: só múltiplos de 3 (abaixo). A 24h é um ponto real (00h do dia seguinte).
-  const axisHTML = (everyHour) => `
-        <div class="hour-axis${everyHour ? ' dense' : ''}">
+  // Horas que recebem cor na legenda: máx/mín de temperatura (suas cores), pico
+  // de vento (cor do vento) e horas de chuva (cor da chuva, se não forem máx/mín).
+  const maxHour = hours[iMax].hour, minHour = hours[iMin].hour;
+  const windHour = windMax > 0 ? hours[iWindMax].hour : -1;
+  const rainHourSet = new Set(hours.filter(h => h.hour < 24 && h.pop > 30 && h.mm > 0.5).map(h => h.hour));
+  const hourColor = (h) => {
+    if (h.hour === maxHour) return maxCol;
+    if (h.hour === minHour) return minCol;
+    if (h.hour === windHour) return '#9aa7d6';
+    if (rainHourSet.has(h.hour)) return 'var(--rain)';
+    return '';
+  };
+
+  // Legenda com TODAS as horas (00–24), abaixo de cada dia; e também acima no
+  // dia de hoje. As horas-chave (máx/mín/vento/chuva) saem coloridas.
+  const axisHTML = () => `
+        <div class="hour-axis dense">
           ${hours.map((h, i) => {
-            if (!everyHour && h.hour % 3 !== 0) return '';
             const pct = xAt(i) / VBW * 100;
-            const style = i === 0
-              ? 'left:0;transform:none'
-              : `left:${pct.toFixed(1)}%;transform:translateX(-50%)`;
-            const txt = everyHour ? String(h.hour).padStart(2,'0') : String(h.hour).padStart(2,'0') + 'h';
-            return `<span style="${style}">${txt}</span>`;
+            const base = i === 0 ? 'left:0;transform:none' : `left:${pct.toFixed(1)}%;transform:translateX(-50%)`;
+            const col = hourColor(h);
+            return `<span style="${base}${col ? `;color:${col};font-weight:700` : ''}">${String(h.hour).padStart(2,'0')}</span>`;
           }).join('')}
         </div>`;
-  const hourAxisAbove = isToday ? axisHTML(true) : '';
-  const hourAxisBelow = isToday ? axisHTML(true) : axisHTML(false);
+  const hourAxisAbove = isToday ? axisHTML() : '';
+  const hourAxisBelow = axisHTML();
+
+  // Bolinhas que UNEM o ponto e o valor: número (sem unidade) em grafite dentro
+  // de uma bolota colorida (cor da temperatura / do vento) no ponto exato.
+  const GRAPH = '#2b2f36';
+  const valDots =
+    `<span class="val-dot" style="left:${(xAt(iMax)/VBW*100).toFixed(1)}%;top:${(yAt(tMax)/H*100).toFixed(1)}%;background:${maxCol};color:${GRAPH}">${Math.round(tMax)}</span>` +
+    `<span class="val-dot" style="left:${(xAt(iMin)/VBW*100).toFixed(1)}%;top:${(yAt(tMin)/H*100).toFixed(1)}%;background:${minCol};color:${GRAPH}">${Math.round(tMin)}</span>` +
+    (windMax > 0 ? `<span class="val-dot" style="left:${(xAt(iWindMax)/VBW*100).toFixed(1)}%;top:${(windTopY/H*100).toFixed(1)}%;background:#9aa7d6;color:${GRAPH}">${Math.round(windMax)}</span>` : '');
 
   return `
     <div class="row${isToday ? ' today' : ''}">
@@ -1004,15 +1004,8 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
             ${rainSvg}
             <path d="${linePath}" fill="none" stroke="url(#${tgid})" stroke-width="3"
                   vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>
-            ${windDot}
-            <circle cx="${xAt(iMax).toFixed(1)}" cy="${yAt(tMax).toFixed(1)}" r="3" fill="${maxCol}"
-                    vector-effect="non-scaling-stroke"/>
-            <circle cx="${xAt(iMin).toFixed(1)}" cy="${yAt(tMin).toFixed(1)}" r="3" fill="${minCol}"
-                    vector-effect="non-scaling-stroke"/>
           </svg>
-          <span class="lbl lbl-max" style="${edgeLabel(xAt(iMax), yAt(tMax))};color:${maxCol}">${Math.round(tMax)}° · ${String(hours[iMax].hour).padStart(2,'0')}h</span>
-          <span class="lbl lbl-min" style="${edgeLabel(xAt(iMin), yAt(tMin))};color:${minCol}">${Math.round(tMin)}° · ${String(hours[iMin].hour).padStart(2,'0')}h</span>
-          ${windLbl}
+          ${valDots}
         </div>
         ${hourAxisBelow}
       </div>
