@@ -138,8 +138,8 @@
     backdrop-filter:blur(2px);
     pointer-events:none;white-space:nowrap;
   }
-  .lbl-max{ color:var(--temp); top:1px; }
-  .lbl-min{ color:#9bd0ff; bottom:1px; }
+  .lbl-max{ color:#ff7a5c; top:1px; }
+  .lbl-min{ color:#7cc4ff; bottom:1px; }
 
   /* Trigger strip */
   .triggers{
@@ -230,18 +230,6 @@
 <div class="app" id="app" style="display:none;flex:1;flex-direction:column;min-height:0">
 
   <nav class="cities" id="cityBtns"></nav>
-
-  <div class="col-head">
-    <span>Dia</span>
-    <div class="c-chart">
-      <div class="legend">
-        <span class="lg"><span class="dot" style="background:var(--temp)"></span>Temp</span>
-        <span class="lg"><span class="bar" style="background:rgba(74,168,255,.4);border:1px solid var(--prob)"></span>%</span>
-        <span class="lg"><span class="bar" style="background:var(--mm)"></span>mm</span>
-      </div>
-    </div>
-    <span style="text-align:right">Chuva</span>
-  </div>
 
   <main class="days" id="days"></main>
 
@@ -455,30 +443,33 @@ function buildRow(day, hours, isToday){
 
   const gridY = padT + ch / 2;
 
-  const popBarsH = ch * 0.55;
-  const barW = (W / n) * 0.85;
-  const popBars = pops.map((p, i) => {
-    if (!p) return '';
-    const h = popBarsH * (p / 100);
-    return `<rect x="${(xAt(i) - barW/2).toFixed(1)}" y="${(padT+ch-h).toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" fill="rgba(74,168,255,.32)"/>`;
-  }).join('');
-
-  // Rain mm bars — fixed scale 0..100mm; >100mm capped + red
+  // Barra única de quantidade de chuva do dia: altura proporcional ao total
+  // de mm, com escala fixa onde a altura cheia equivale a 100 mm.
+  // Ex.: 45 mm ≈ 45% da altura; acima de 100 mm satura e fica vermelha.
   const MM_MAX = 100;
-  const mmBarW = barW * 0.45;
-  const mmBars = mms.map((m, i) => {
-    if (m <= 0.05) return '';
-    const capped = Math.min(m, MM_MAX);
-    const h = popBarsH * (capped / MM_MAX);
-    const fill = m > MM_MAX ? '#ff4d4d' : '#7ee3c1';
-    return `<rect x="${(xAt(i) - mmBarW/2).toFixed(1)}" y="${(padT+ch-h).toFixed(1)}" width="${mmBarW.toFixed(1)}" height="${h.toFixed(1)}" fill="${fill}"/>`;
-  }).join('');
+  const rainOver = mmTotal > MM_MAX;
+  const rainH = ch * (Math.min(mmTotal, MM_MAX) / MM_MAX);
+  const rainBar = rainH > 0.4 ? `
+            <rect x="0" y="${(padT + ch - rainH).toFixed(1)}" width="${W}" height="${rainH.toFixed(1)}"
+                  fill="${rainOver ? 'rgba(255,77,77,.16)' : 'rgba(126,227,193,.15)'}"/>
+            <line x1="0" y1="${(padT + ch - rainH).toFixed(1)}" x2="${W}" y2="${(padT + ch - rainH).toFixed(1)}"
+                  stroke="${rainOver ? '#ff6b6b' : '#7ee3c1'}" stroke-width="1" stroke-opacity=".55"
+                  vector-effect="non-scaling-stroke"/>` : '';
 
   const pts = temps.map((t, i) => `${xAt(i).toFixed(1)},${yAt(t).toFixed(1)}`);
   const linePath = 'M' + pts.join(' L');
   const areaPath = linePath + ` L${xAt(n-1).toFixed(1)},${(padT+ch).toFixed(1)} L0,${(padT+ch).toFixed(1)} Z`;
 
   const gid = 'g' + day.date.replace(/-/g,'') + '_' + currentIdx;
+
+  // Gradiente da linha de temperatura: vermelho (quente) no topo → verde no
+  // limiar ideal de 24° → azul (frio) embaixo, com transição suave.
+  const tgid = 't' + gid;
+  const o24 = (1 - (24 - tMin) / tRange);   // fração vertical (0 = topo/quente) do limiar de 24°
+  let tempStops;
+  if (o24 <= 0)      tempStops = '<stop offset="0%" stop-color="#3fb950"/><stop offset="100%" stop-color="#4aa8ff"/>';
+  else if (o24 >= 1) tempStops = '<stop offset="0%" stop-color="#ff5b4a"/><stop offset="100%" stop-color="#3fb950"/>';
+  else               tempStops = `<stop offset="0%" stop-color="#ff5b4a"/><stop offset="${(o24*100).toFixed(1)}%" stop-color="#3fb950"/><stop offset="100%" stop-color="#4aa8ff"/>`;
 
   const xMaxPct = clamp(iMax/(n-1)*100, 10, 90);
   const xMinPct = clamp(iMin/(n-1)*100, 10, 90);
@@ -517,22 +508,20 @@ function buildRow(day, hours, isToday){
         <div class="spark-wrap">
           <svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
             <defs>
-              <linearGradient id="${gid}" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stop-color="rgba(255,140,66,.45)"/>
-                <stop offset="100%" stop-color="rgba(255,140,66,0)"/>
+              <linearGradient id="${tgid}" gradientUnits="userSpaceOnUse" x1="0" y1="${padT}" x2="0" y2="${(padT+ch).toFixed(1)}">
+                ${tempStops}
               </linearGradient>
             </defs>
             <line x1="0" y1="${gridY.toFixed(1)}" x2="${W}" y2="${gridY.toFixed(1)}"
                   stroke="rgba(255,255,255,.05)" stroke-width="1" vector-effect="non-scaling-stroke"/>
+            ${rainBar}
             ${crossLines}
-            ${popBars}
-            ${mmBars}
-            <path d="${areaPath}" fill="url(#${gid})"/>
-            <path d="${linePath}" fill="none" stroke="#ff8c42" stroke-width="2"
+            <path d="${areaPath}" fill="url(#${tgid})" fill-opacity=".13"/>
+            <path d="${linePath}" fill="none" stroke="url(#${tgid})" stroke-width="2"
                   vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>
-            <circle cx="${xAt(iMax).toFixed(1)}" cy="${yAt(tMax).toFixed(1)}" r="3" fill="#ff8c42"
+            <circle cx="${xAt(iMax).toFixed(1)}" cy="${yAt(tMax).toFixed(1)}" r="3" fill="#ff5b4a"
                     vector-effect="non-scaling-stroke"/>
-            <circle cx="${xAt(iMin).toFixed(1)}" cy="${yAt(tMin).toFixed(1)}" r="3" fill="#9bd0ff"
+            <circle cx="${xAt(iMin).toFixed(1)}" cy="${yAt(tMin).toFixed(1)}" r="3" fill="#4aa8ff"
                     vector-effect="non-scaling-stroke"/>
           </svg>
           <span class="lbl lbl-max" style="left:${xMaxPct}%">▲ ${Math.round(tMax)}°</span>

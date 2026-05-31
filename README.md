@@ -4,7 +4,7 @@ Portfólio de apps web educativos para engenharia, energia, utilidades residenci
 
 - Site: `https://souonata.github.io/EngenhariaNata/`
 - Stack principal: HTML, CSS e JavaScript modular (ESM)
-- Status atual: 12 calculadoras ativas + 2 páginas de suporte (`sobre/` e `bugs/`)
+- Status atual: 12 calculadoras ativas + 1 painel de previsão do tempo (`previsao/`) + 2 páginas de suporte (`sobre/` e `bugs/`)
 - Cobertura de testes: **109 testes automatizados** (Vitest) cobrindo `salario` e `mutuo`
 - Backlog e prioridades: [ROADMAP.md](./ROADMAP.md)
 - Checklist de release/commit: [PRE_COMMIT.md](./PRE_COMMIT.md)
@@ -25,6 +25,7 @@ Portfólio de apps web educativos para engenharia, energia, utilidades residenci
 | `aquecimento/`    | Energia térmica         | Dimensiona aquecimento solar de água e ambiente                |                |
 | `salario/`        | Finanças                | Calcula salário líquido Brasil/Itália com memorial e gráficos  |        ✅       |
 | `fazenda/`        | Planejamento rural      | Planeja produção auto-sustentável com base regional            |                |
+| `previsao/`       | Meteorologia            | Previsão de 7 dias (Open-Meteo): temperatura horária e chuva   |       n/a      |
 | `bugs/`           | Suporte                 | Canal de reporte de problemas e sugestões                      |       n/a      |
 | `sobre/`          | Institucional           | Página de visão geral do projeto e apps ativos                 |       n/a      |
 

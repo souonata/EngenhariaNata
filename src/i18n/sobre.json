@@ -66,6 +66,10 @@
       "salario": {
         "name": "Salário Líquido",
         "desc": "Calculadora bilíngue de salário líquido Brasil/Itália com memorial e gráficos"
+      },
+      "previsao": {
+        "name": "Previsão 7 dias",
+        "desc": "Previsão meteorológica de 7 dias (Open-Meteo) com gráfico de temperatura e chuva"
       }
     },
     "what": {
@@ -429,6 +433,10 @@
       "salario": {
         "name": "Stipendio Netto",
         "desc": "Calcolatore bilingue di stipendio netto Brasile/Italia con memoriale e grafici"
+      },
+      "previsao": {
+        "name": "Previsioni 7 giorni",
+        "desc": "Previsioni meteo a 7 giorni (Open-Meteo) con grafico di temperatura e pioggia"
       }
     },
     "what": {
