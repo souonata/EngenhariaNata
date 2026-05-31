@@ -1250,13 +1250,13 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
 
   // Legenda com TODAS as horas (00–24), abaixo de cada dia; e também acima no
   // dia de hoje. As horas-chave (máx/mín/vento/chuva) saem coloridas.
-  const icoCqw = (dotPct * 0.9).toFixed(2);            // largura desejada; capada pela altura do eixo (cqh)
+  const icoCqw = (dotPct * 0.9).toFixed(2);
   const axisHTML = (todayAxis) => `
         <div class="hour-axis dense">
-          <span class="axis-ico" title="${T().today === 'Hoje' ? 'Horas' : 'Ore'} (00–24)" style="font-size:min(${icoCqw}cqw, 92cqh)">⏰</span>
+          <span class="axis-ico" title="${T().today === 'Hoje' ? 'Horas' : 'Ore'} (00–24)" style="font-size:clamp(8px, ${icoCqw}cqw, 0.9rem)">⏰</span>
           ${hours.map((h, i) => {
             const pct = xAt(i) / VBW * 100;
-            const base = `left:${pct.toFixed(1)}%;transform:translateX(-50%);font-size:${fcqw}cqw`;
+            const base = `left:${pct.toFixed(1)}%;transform:translateX(-50%);font-size:clamp(7px,${fcqw}cqw,0.85rem)`;
             const col = hourColor(h);
             const isNow = todayAxis && h.hour === nowH;
             const extra = (col ? `;color:${col};font-weight:700` : '') + (isNow ? `;font-weight:800${col ? '' : ';color:var(--text)'}` : '');
@@ -1301,17 +1301,13 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   // cada série, alinhados com o relógio 🕐 da legenda de horas logo abaixo.
   const serIcoCqw = (dotPct * 0.4).toFixed(2);
   const icoX = (0.7 * dotPct).toFixed(2);             // centro do slot esquerdo (em %)
-  // 🌡️ exatamente na altura da temperatura das 00h (início da linha). Não precisa
-  // de limite: a área da temperatura termina acima da faixa do vento (gap), então
-  // o termômetro nunca desce até o 💨.
   const tempIcoTop = (yAt(temps[0]) / H * 100).toFixed(1);
-  // font-size = min(largura, altura): em telas baixas o cqh encolhe o ícone p/
-  // não ultrapassar a altura disponível do gráfico daquele dia.
-  const serIcoFs = `min(${serIcoCqw}cqw, 24cqh)`;
+  // clamp garante tamanho legível em mobile (mín. 10px) sem transbordar em desktop.
+  const serIcoFs = `clamp(10px, ${serIcoCqw}cqw, 1rem)`;
   const tempIco = `<span class="ser-ico" title="${T().tempLabel}" style="left:${icoX}%;top:${tempIcoTop}%;font-size:${serIcoFs}">🌡️</span>`;
-  // 💨 na altura do topo da barra de pico (windTopY), com offset de meio-ícone
-  // para ficar visualmente alinhado com a barra mais alta do dia.
-  const windIcoTop = clamp(windTopY / H * 100, 70, 95).toFixed(1);
+  // 💨 alinhado com o topo da barra de pico; clampado dentro da faixa das barras
+  // (≥83% = mín da área de vento em relação ao viewBox H=60).
+  const windIcoTop = clamp(windTopY / H * 100, 83, 97).toFixed(1);
   const windIco = windMax > 0
     ? `<span class="ser-ico" title="${T().windLabel} (km/h)" style="left:${icoX}%;top:${windIcoTop}%;font-size:${serIcoFs}">💨</span>`
     : '';
