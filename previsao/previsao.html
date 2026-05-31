@@ -154,6 +154,22 @@
   .trig-dn   { color:#5edaff; }
   .trig-rain { color:var(--mm); }
 
+  /* Eixo de horas (só sob o dia de hoje) */
+  .hour-axis{
+    position:relative;
+    flex:0 0 auto;
+    height:10px;
+    margin-top:1px;
+  }
+  .hour-axis span{
+    position:absolute;
+    top:0;
+    font-size:.5rem;
+    line-height:1;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+
   /* Stats cell */
   .c-stats{
     display:flex;flex-direction:column;align-items:flex-end;
@@ -213,6 +229,8 @@
     .lbl{font-size:.72rem}
     .c-stats{font-size:.78rem}
     .triggers{font-size:.68rem;min-height:11px;gap:10px}
+    .hour-axis{height:12px}
+    .hour-axis span{font-size:.62rem}
     .footer{padding:8px 18px;font-size:.7rem}
   }
   @media (max-width:767px){.app{flex:1;display:flex;flex-direction:column;min-height:0}}
@@ -222,6 +240,7 @@
     .cb-temp{font-size:.95rem}
     .cb-meta{display:none}
     .triggers{display:none}
+    .hour-axis{display:none}
   }
 </style>
 </head>
@@ -451,6 +470,15 @@ function buildRow(day, hours, isToday, weekMaxMM){
 
   const gridY = padT + ch / 2;
 
+  // Linhas de grade verticais por hora (presentes em todos os dias, alinhadas
+  // em coluna → "atravessam" os dias). As de 6 em 6 horas são um pouco mais
+  // marcadas e servem de referência para os rótulos abaixo do dia de hoje.
+  const hourGrid = hours.map((h, i) => {
+    const x = xAt(i).toFixed(1);
+    const major = (h.hour % 6 === 0);
+    return `<line x1="${x}" y1="${padT}" x2="${x}" y2="${(padT+ch).toFixed(1)}" stroke="rgba(255,255,255,${major ? '.13' : '.045'})" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
+  }).join('');
+
   // Barras de chuva POR HORA, em escala FIXA para a semana inteira: a altura de
   // cada hora é proporcional ao quanto choveu nela em relação ao pico horário
   // da semana (weekMaxMM). Assim a mesma quantidade tem a mesma altura em
@@ -508,6 +536,20 @@ function buildRow(day, hours, isToday, weekMaxMM){
     return `<line x1="${x}" y1="${padT}" x2="${x}" y2="${(padT+ch).toFixed(1)}" stroke="rgba(255,255,255,.18)" stroke-width="1" stroke-dasharray="2 2" vector-effect="non-scaling-stroke"/>`;
   }).join('');
 
+  // Rótulos de hora compactos (de 6 em 6 h), exibidos só abaixo do dia de hoje;
+  // alinham-se com as linhas de grade marcadas, que seguem pelos demais dias.
+  const hourAxis = isToday ? `
+        <div class="hour-axis">
+          ${hours.map((h, i) => {
+            if (h.hour % 6 !== 0) return '';
+            const pct = i / (n - 1) * 100;
+            const style = i === 0
+              ? 'left:0;transform:none'
+              : `left:${pct.toFixed(1)}%;transform:translateX(-50%)`;
+            return `<span style="${style}">${String(h.hour).padStart(2,'0')}h</span>`;
+          }).join('')}
+        </div>` : '';
+
   return `
     <div class="row${isToday ? ' today' : ''}">
       <div class="c-date">
@@ -525,6 +567,7 @@ function buildRow(day, hours, isToday, weekMaxMM){
             </defs>
             <line x1="0" y1="${gridY.toFixed(1)}" x2="${W}" y2="${gridY.toFixed(1)}"
                   stroke="rgba(255,255,255,.05)" stroke-width="1" vector-effect="non-scaling-stroke"/>
+            ${hourGrid}
             <path d="${areaPath}" fill="url(#${tgid})" fill-opacity=".13"/>
             ${mmBars}
             ${crossLines}
@@ -543,6 +586,7 @@ function buildRow(day, hours, isToday, weekMaxMM){
           ${dnStr   ? `<span class="trig-dn"   title="Temperatura cai abaixo de 24°C">▼24° ${dnStr}</span>` : ''}
           ${rainStr ? `<span class="trig-rain" title="Chuva: prob >30% e >0,5mm">💧 ${rainStr}</span>` : ''}
         </div>
+        ${hourAxis}
       </div>
       <div class="c-stats">
         <span class="stat-pop ${popClass}">💧 ${popMax}%</span>
