@@ -227,25 +227,20 @@
   }
   .spark-wrap{position:relative;flex:1 1 auto;min-height:0}
   .spark{width:100%;height:100%;display:block}
+  /* Rótulos de valor: SEM fundo/borda; legibilidade por sombra de texto. */
   .lbl{
     position:absolute;
-    transform:translateX(-50%);
     font-size:.62rem;font-weight:700;line-height:1;
-    padding:1px 3px;border-radius:3px;
-    background:rgba(11,18,32,.7);
-    backdrop-filter:blur(2px);
     pointer-events:none;white-space:nowrap;
+    text-shadow:0 0 3px var(--bg),0 0 3px var(--bg),0 0 2px var(--bg);
   }
-  .lbl-max{ color:#ff7a5c; top:1px; }
-  .lbl-min{ color:#7cc4ff; bottom:1px; }
-  /* Rótulo do alvo sazonal, sempre visível na altura da linha de referência (à direita) */
+  .lbl-max{ color:#ff7a5c; }
+  .lbl-min{ color:#7cc4ff; }
   .lbl-set{
     position:absolute; right:3px; transform:translateY(-50%);
     font-size:.6rem; font-weight:700; line-height:1;
-    padding:1px 4px; border-radius:3px;
-    background:rgba(11,18,32,.72);
-    backdrop-filter:blur(2px);
     color:#9fe6b5; pointer-events:none; white-space:nowrap;
+    text-shadow:0 0 2px var(--bg),0 0 2px var(--bg);
   }
 
   /* Rótulos de grau (faixa livre à direita do gráfico), na cor da temperatura */
@@ -257,13 +252,19 @@
   }
   .deg-set{ font-size:.54rem; }
 
-  /* Rótulo do pico de vento do dia (no horário de maior intensidade) */
+  /* Rótulo do pico de vento (sem fundo) */
   .lbl-wind{
-    position:absolute; bottom:1px; transform:translateX(-50%);
+    position:absolute;
     font-size:.5rem; font-weight:700; line-height:1; white-space:nowrap;
-    color:#aab6df; pointer-events:none;
-    background:rgba(11,18,32,.6); padding:1px 3px; border-radius:3px;
-    backdrop-filter:blur(2px);
+    color:#9aa7d6; pointer-events:none;
+    text-shadow:0 0 3px var(--bg),0 0 3px var(--bg),0 0 2px var(--bg);
+  }
+  /* Hora discreta do cruzamento (puxada por um traço) */
+  .ev-hr{
+    position:absolute; transform:translate(-50%,-50%);
+    font-size:.5rem; font-weight:700; line-height:1; white-space:nowrap;
+    color:var(--muted); pointer-events:none;
+    text-shadow:0 0 2px var(--bg),0 0 2px var(--bg);
   }
 
   /* Marcadores na posição da hora: cruzamento do alvo (▲/▼) e chuva (💧) */
@@ -368,6 +369,7 @@
     .deg{font-size:.58rem}
     .deg-set{font-size:.66rem}
     .lbl-wind{font-size:.62rem}
+    .ev-hr{font-size:.58rem}
     .cross-mark{font-size:.74rem}
     .rain-mark{font-size:.72rem}
     .c-stats{font-size:.78rem}
@@ -840,6 +842,15 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   const xAt = i => (n === 1 ? W/2 : i * (W / (n - 1)));
   const yAt = t => padT + ch * (1 - (t - yLow) / yRange);
 
+  // Posiciona um rótulo (sem fundo) junto ao ponto (xv,yv), deslocado em DIAGONAL
+  // para dentro do plot. up=true → sobe (mín/vento); false → desce (máx). O lado
+  // horizontal vai para o interior (se o ponto está à esquerda, desloca p/ direita).
+  const diag = (xv, yv, up) => {
+    const dx = (xv < W * 0.5) ? '6px' : 'calc(-100% - 6px)';
+    const dy = up ? 'calc(-100% - 5px)' : '5px';
+    return `left:${(xv/VBW*100).toFixed(1)}%;top:${(yv/H*100).toFixed(1)}%;transform:translate(${dx}, ${dy})`;
+  };
+
   // ── Linhas horizontais por GRAU, coloridas pela cor da temperatura; o número
   //    de cada grau vai na faixa livre à direita, na mesma cor. ──
   const dLo = Math.ceil(yLow - 1e-6), dHi = Math.floor(yHigh + 1e-6);
@@ -876,12 +887,16 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
     return `<rect x="${(xAt(i) - wBarW/2).toFixed(1)}" y="${(H - hgt).toFixed(1)}" width="${wBarW.toFixed(1)}" height="${hgt.toFixed(1)}" fill="#9aa7d6" opacity="${op}"/>`;
   }).join('');
 
-  // Pico de vento do dia → rótulo com valor e unidade (km/h) no horário de maior intensidade.
+  // Pico de vento do dia → ponto + valor/unidade/hora (km/h) no horário de maior intensidade.
   let iWindMax = 0, windMax = 0;
   hours.forEach((h, i) => { const w = h.wind || 0; if (w > windMax) { windMax = w; iWindMax = i; } });
-  const windPct = clamp(xAt(iWindMax) / VBW * 100, 8, 82);
+  const windFrac = clamp(windMax / WIND_MAX, 0, 1);
+  const windTopY = H - (1.5 + 5 * windFrac);            // topo da barra de pico (ponto de leitura)
+  const windDot = windMax > 0
+    ? `<circle cx="${xAt(iWindMax).toFixed(1)}" cy="${windTopY.toFixed(1)}" r="2" fill="#9aa7d6" vector-effect="non-scaling-stroke"/>`
+    : '';
   const windLbl = windMax > 0
-    ? `<span class="lbl-wind" style="left:${windPct.toFixed(1)}%">💨 ${Math.round(windMax)} km/h</span>`
+    ? `<span class="lbl-wind" style="${diag(xAt(iWindMax), windTopY, true)}">💨 ${Math.round(windMax)} km/h · ${String(hours[iWindMax].hour).padStart(2,'0')}h</span>`
     : '';
 
   // ── Chuva: cada hora com chuva preenche a ALTURA TODA com hachura de linhas
@@ -929,23 +944,32 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   const maxCol = (tMax < setpoint) ? '#3fb950' : '#ff5b4a';
   const minCol = (tMin > setpoint) ? '#3fb950' : '#4aa8ff';
 
-  // Cruzamentos da temperatura-alvo da estação → marcadores ▲/▼ no próprio ponto
-  // de cruzamento (na hora em que ocorre), sobre a linha do alvo.
+  // Cruzamentos da temperatura-alvo: símbolo ▲/▼ no ponto exato; a hora é escrita
+  // de forma discreta numa faixa, com um traço (leader) puxando do símbolo até o
+  // texto — deslocando os rótulos para não se sobreporem quando se intercalam.
   const T_THRESH = setpoint;
-  const setPct = (yAt(setpoint) / H * 100).toFixed(1);
-  const tempUps = [], tempDns = [];
+  const setY = yAt(setpoint);
+  const setPct = (setY / H * 100).toFixed(1);
+  const ups = [], dns = [];
   for (let i = 1; i < temps.length; i++) {
     const a = temps[i-1], b = temps[i];
-    if (a < T_THRESH && b >= T_THRESH)      tempUps.push(i);
-    else if (a >= T_THRESH && b < T_THRESH) tempDns.push(i);
+    if (a < T_THRESH && b >= T_THRESH)      ups.push(i);
+    else if (a >= T_THRESH && b < T_THRESH) dns.push(i);
   }
-  const crossLines = [...tempUps, ...tempDns].map(idx => {
-    const x = xAt(idx).toFixed(1);
-    return `<line x1="${x}" y1="${padT}" x2="${x}" y2="${(padT+ch).toFixed(1)}" class="g-cross" stroke-width="1" stroke-dasharray="2 2" vector-effect="non-scaling-stroke"/>`;
-  }).join('');
-  const crossMarks =
-    tempUps.map(idx => `<span class="cross-mark" style="left:${clamp(xAt(idx)/VBW*100,3,86).toFixed(1)}%;top:${setPct}%;color:#ff5b4a">▲</span>`).join('') +
-    tempDns.map(idx => `<span class="cross-mark" style="left:${clamp(xAt(idx)/VBW*100,3,86).toFixed(1)}%;top:${setPct}%;color:#4aa8ff">▼</span>`).join('');
+  const crossEvents = [
+    ...ups.map(i => ({ x: xAt(i), col: '#ff5b4a', gly: '▲', hour: hours[i].hour })),
+    ...dns.map(i => ({ x: xAt(i), col: '#4aa8ff', gly: '▼', hour: hours[i].hour }))
+  ].sort((a, b) => a.x - b.x);
+  const MINGAP = 28;                                   // separação mínima entre rótulos (unidades do viewBox)
+  let lastLx = -Infinity;
+  crossEvents.forEach(e => { e.lx = Math.min(W - 4, Math.max(e.x, lastLx + MINGAP)); lastLx = e.lx; });
+  const laneY = clamp(setY - 11, padT + 2, padT + ch - 9);   // faixa dos rótulos de hora (acima da linha do alvo)
+  const crossSymbols = crossEvents.map(e =>
+    `<span class="cross-mark" style="left:${clamp(e.x/VBW*100,2,86).toFixed(1)}%;top:${setPct}%;color:${e.col}">${e.gly}</span>`).join('');
+  const crossLeaders = crossEvents.map(e =>
+    `<line x1="${e.x.toFixed(1)}" y1="${setY.toFixed(1)}" x2="${e.lx.toFixed(1)}" y2="${(laneY+3).toFixed(1)}" stroke="var(--muted)" stroke-opacity=".55" stroke-width="1" vector-effect="non-scaling-stroke"/>`).join('');
+  const crossHours = crossEvents.map(e =>
+    `<span class="ev-hr" style="left:${clamp(e.lx/VBW*100,2,86).toFixed(1)}%;top:${(laneY/H*100).toFixed(1)}%">${String(e.hour).padStart(2,'0')}h</span>`).join('');
 
   // Horas de chuva → 💧 no centro de cada faixa contígua de chuva (na sua posição).
   const rainMarks = [];
@@ -992,18 +1016,20 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
             ${hourGrid}
             ${windBars}
             ${rainSvg}
-            ${crossLines}
+            ${crossLeaders}
             <path d="${linePath}" fill="none" stroke="url(#${tgid})" stroke-width="3"
                   vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>
+            ${windDot}
             <circle cx="${xAt(iMax).toFixed(1)}" cy="${yAt(tMax).toFixed(1)}" r="3" fill="${maxCol}"
                     vector-effect="non-scaling-stroke"/>
             <circle cx="${xAt(iMin).toFixed(1)}" cy="${yAt(tMin).toFixed(1)}" r="3" fill="${minCol}"
                     vector-effect="non-scaling-stroke"/>
           </svg>
-          <span class="lbl lbl-max" style="left:${xMaxPct.toFixed(1)}%;color:${maxCol}">▲ ${Math.round(tMax)}°</span>
-          <span class="lbl lbl-min" style="left:${xMinPct.toFixed(1)}%;color:${minCol}">▼ ${Math.round(tMin)}°</span>
+          <span class="lbl lbl-max" style="${diag(xAt(iMax), yAt(tMax), false)};color:${maxCol}">▲ ${Math.round(tMax)}°</span>
+          <span class="lbl lbl-min" style="${diag(xAt(iMin), yAt(tMin), true)};color:${minCol}">▼ ${Math.round(tMin)}°</span>
           ${windLbl}
-          ${crossMarks}
+          ${crossSymbols}
+          ${crossHours}
           ${rainMarksSvg}
           ${degAxis}
         </div>
