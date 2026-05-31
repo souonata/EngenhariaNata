@@ -544,11 +544,11 @@ function buildRow(day, hours, isToday, scaleMax, lat){
   const gridY = clamp(yAt(setpoint), padT, padT + ch);
 
   // Linhas de grade verticais por hora (presentes em todos os dias, alinhadas
-  // em coluna → "atravessam" os dias). As de 6 em 6 horas são um pouco mais
+  // em coluna → "atravessam" os dias). As de 3 em 3 horas são um pouco mais
   // marcadas e servem de referência para os rótulos abaixo do dia de hoje.
   const hourGrid = hours.map((h, i) => {
     const x = xAt(i).toFixed(1);
-    const major = (h.hour % 6 === 0);
+    const major = (h.hour % 3 === 0);
     return `<line x1="${x}" y1="${padT}" x2="${x}" y2="${(padT+ch).toFixed(1)}" stroke="rgba(255,255,255,${major ? '.13' : '.045'})" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
   }).join('');
 
@@ -606,12 +606,12 @@ function buildRow(day, hours, isToday, scaleMax, lat){
     return `<line x1="${x}" y1="${padT}" x2="${x}" y2="${(padT+ch).toFixed(1)}" stroke="rgba(255,255,255,.18)" stroke-width="1" stroke-dasharray="2 2" vector-effect="non-scaling-stroke"/>`;
   }).join('');
 
-  // Rótulos de hora compactos (de 6 em 6 h), exibidos só abaixo do dia de hoje;
+  // Rótulos de hora compactos (de 3 em 3 h), exibidos só abaixo do dia de hoje;
   // alinham-se com as linhas de grade marcadas, que seguem pelos demais dias.
   const hourAxis = isToday ? `
         <div class="hour-axis">
           ${hours.map((h, i) => {
-            if (h.hour % 6 !== 0) return '';
+            if (h.hour % 3 !== 0) return '';
             const pct = i / (n - 1) * 100;
             const style = i === 0
               ? 'left:0;transform:none'
