@@ -149,8 +149,18 @@
     cursor:pointer;
     transition:background .12s,border-color .12s,transform .08s;
     min-width:0;text-align:center;
+    position:relative;                /* para posicionar a lixeira no canto */
     -webkit-tap-highlight-color:transparent;
   }
+  /* Lixeira no canto superior direito do slot: limpa e abre a busca */
+  .slot-clear{
+    position:absolute; top:3px; right:4px;
+    background:transparent; border:none; cursor:pointer;
+    font-size:.68rem; line-height:1; padding:2px;
+    color:var(--muted); opacity:.55;
+    transition:opacity .12s;
+  }
+  .slot-clear:hover{ opacity:1; }
   .city-btn:hover{background:var(--surface)}
   .city-btn:active{transform:scale(.96)}
   .city-btn.active{
@@ -546,17 +556,35 @@
    Múltiplas coordenadas em uma única requisição.
    ============================================================ */
 
-const CITIES = [
-  { id:'milao',     name:'Milão',     nameIt:'Milano', lat: 45.4642, lon:   9.1900 },
-  { id:'curitiba',  name:'Curitiba',  lat:-25.4284, lon: -49.2733 },
-  { id:'bauru',     name:'Bauru',     lat:-22.3147, lon: -49.0606 },
-  { id:'camboriu',  name:'B. Camboriú', lat:-26.9906, lon: -48.6347 },
-  { id:'recife',    name:'Recife',    lat: -8.0539, lon: -34.8811 },
-  { id:'toronto',   name:'Toronto',   lat: 43.6532, lon: -79.3832 },
+// Cidades fixas (sempre presentes) + 2 slots persistentes (localStorage por slot).
+const FIXED_CITIES = [
+  { id:'milao',    name:'Milão',    nameIt:'Milano', lat: 45.4642, lon:  9.1900 },
+  { id:'curitiba', name:'Curitiba', lat:-25.4284,    lon:-49.2733 },
 ];
-const LS_CITY = 'previsao_city_v1';
-const LS_HISTMAX = 'previsao_histmax_v1';   // teto fixo da escala de chuva (máx. horário em 365 dias)
-const HISTMAX_TTL_DAYS = 7;                 // revalida o histórico no máximo 1×/semana
+const N_SLOTS = 2;
+const LS_SLOT    = i => `previsao_slot_${i}_v1`;   // cidade salva em cada slot
+const LS_CITY    = 'previsao_city_v1';
+const LS_HISTMAX = 'previsao_histmax_v1';
+const HISTMAX_TTL_DAYS = 7;
+
+function loadSlotCity(i){
+  try { const r=JSON.parse(localStorage.getItem(LS_SLOT(i))); return (r&&r.id&&r.lat)?r:null; }
+  catch(e){ return null; }
+}
+function saveSlotCity(i,city){ try{ localStorage.setItem(LS_SLOT(i),JSON.stringify({id:city.id,name:city.name,lat:city.lat,lon:city.lon})); }catch(e){} }
+function clearSlotCity(i){ try{ localStorage.removeItem(LS_SLOT(i)); }catch(e){} }
+
+// slotCities[0..1] = city object ou null
+let slotCities = Array.from({length:N_SLOTS}, (_,i) => loadSlotCity(i));
+
+// CITIES = [milao, curitiba, ...slots não-nulos em ordem]
+function buildCities(){ return [...FIXED_CITIES, ...slotCities.filter(Boolean)]; }
+let CITIES = buildCities();
+
+// índice em CITIES para o slot si (considera quantos slots anteriores estão preenchidos)
+function cityIdxForSlot(si){
+  let n=2; for(let i=0;i<si;i++) if(slotCities[i]) n++; return n;
+}
 /* i18n mínimo (PT/IT) — usa a mesma chave de idioma do site (engnata_idioma). */
 const I18N = {
   'pt-BR': {
@@ -593,7 +621,7 @@ const cityName = c => (LANG.startsWith('it') && c.nameIt) ? c.nameIt : c.name;
 let THEME = (() => { try { return JSON.parse(localStorage.getItem('engnata_theme_mode')) || 'dark'; } catch (e) { return 'dark'; } })();
 
 let cityData = [];              // dados de cada cidade (índices alinhados com CITIES)
-let currentIdx = Math.max(0, CITIES.findIndex(c => c.id === localStorage.getItem(LS_CITY)));
+let currentIdx = (() => { const i=CITIES.findIndex(c=>c.id===localStorage.getItem(LS_CITY)); return Math.max(0,i); })();
 
 // Máx. horário de chuva (mm) dos últimos 365 dias, por cidade — usado como teto
 // FIXO da escala das barras. Carrega do cache (mesmo se vencido) para uso imediato.
@@ -641,7 +669,6 @@ function applyLangStatic(){
   const home = document.querySelector('.home-button-fixed');
   if (home) { home.title = t.home; home.setAttribute('aria-label', t.home); }
   const si = document.getElementById('searchInput'); if (si) si.placeholder = t.searchPh;
-  const sb = document.getElementById('searchBtn'); if (sb) sb.title = t.search;
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === LANG));
 }
 
@@ -698,35 +725,41 @@ function setupHomeFade(){
 function buildCityButtonShells(){
   const wrap = document.getElementById('cityBtns');
   wrap.innerHTML = '';
-  CITIES.forEach((c, i) => {
+  FIXED_CITIES.forEach((c, i) => {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'city-btn loading' + (i === currentIdx ? ' active' : '');
-    btn.dataset.idx = i;
-    btn.innerHTML = `
-      <span class="cb-row1">
-        <span class="cb-name">${cityName(c)}</span>
-        <span class="cb-emoji">—</span>
-      </span>
-      <span class="cb-temp">—°</span>
-      <span class="cb-meta">— · —</span>
-    `;
+    btn.innerHTML = `<span class="cb-row1"><span class="cb-name">${cityName(c)}</span><span class="cb-emoji">—</span></span><span class="cb-temp">—°</span><span class="cb-meta">— · —</span>`;
     btn.addEventListener('click', () => selectCity(i));
     wrap.appendChild(btn);
   });
-  appendSearchBtn(wrap);
+  for(let si=0; si<N_SLOTS; si++) wrap.appendChild(makeSlotBtn(si, false));
 }
 
-/* ──── Botão de lupa (busca de qualquer cidade) ──── */
-function appendSearchBtn(wrap){
-  const b = document.createElement('button');
-  b.type = 'button';
-  b.className = 'city-btn search-btn';
-  b.id = 'searchBtn';
-  b.title = T().search;
-  b.innerHTML = '<span class="lupa">🔍</span>';
-  b.addEventListener('click', openSearch);
-  wrap.appendChild(b);
+/* Cria o botão de um slot — vazio (lupa) ou com cidade (dados + lixeira). */
+function makeSlotBtn(si, withData){
+  const city = slotCities[si];
+  const btn  = document.createElement('button');
+  btn.type   = 'button';
+  btn.dataset.slot = si;
+  if(!city){
+    btn.className = 'city-btn search-btn';
+    btn.title = T().search;
+    btn.innerHTML = '<span class="lupa">🔍</span>';
+    btn.addEventListener('click', () => openSearch(si));
+    return btn;
+  }
+  const ci = cityIdxForSlot(si);
+  btn.className = 'city-btn' + (!withData ? ' loading' : '') + (ci === currentIdx ? ' active' : '');
+  if(withData && cityData[ci]){
+    const cur = cityData[ci].current, [emo,desc] = wmo(cur.weather_code);
+    btn.innerHTML = `<span class="cb-row1"><span class="cb-name">${cityName(city)}</span><span class="cb-emoji" title="${desc}">${emo}</span></span><span class="cb-temp" title="${T().tempLabel}">${Math.round(cur.temperature_2m)}°</span><span class="cb-meta" title="🌡 ${T().feelsLabel} · 💨 ${T().windLabel} (km/h)">🌡${Math.round(cur.apparent_temperature)}° · 💨${Math.round(cur.wind_speed_10m)} km/h</span><button type="button" class="slot-clear" title="${T().search}">🗑️</button>`;
+  } else {
+    btn.innerHTML = `<span class="cb-row1"><span class="cb-name">${cityName(city)}</span><span class="cb-emoji">—</span></span><span class="cb-temp">—°</span><span class="cb-meta">— · —</span><button type="button" class="slot-clear" title="${T().search}">🗑️</button>`;
+  }
+  btn.addEventListener('click', (e) => { if(!e.target.closest('.slot-clear')) selectCity(ci); });
+  btn.querySelector('.slot-clear').addEventListener('click', (e) => { e.stopPropagation(); clearSlot(si); });
+  return btn;
 }
 
 /* ──── Fetch (todas as cidades em uma requisição) ──── */
@@ -783,29 +816,23 @@ async function loadAll(){
 function renderCityButtons(){
   const wrap = document.getElementById('cityBtns');
   wrap.innerHTML = '';
-  cityData.forEach((cd, i) => {
-    const c = cd.city, cur = cd.current, [emo, desc] = wmo(cur.weather_code);
+  FIXED_CITIES.forEach((c, i) => {
+    const cur = cityData[i].current, [emo,desc] = wmo(cur.weather_code);
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'city-btn' + (i === currentIdx ? ' active' : '');
-    btn.dataset.idx = i;
-    btn.innerHTML = `
-      <span class="cb-row1">
-        <span class="cb-name">${cityName(c)}</span>
-        <span class="cb-emoji" title="${desc}">${emo}</span>
-      </span>
-      <span class="cb-temp" title="${T().tempLabel}">${Math.round(cur.temperature_2m)}°</span>
-      <span class="cb-meta" title="🌡 ${T().feelsLabel} · 💨 ${T().windLabel} (km/h)">🌡${Math.round(cur.apparent_temperature)}° · 💨${Math.round(cur.wind_speed_10m)} km/h</span>
-    `;
+    btn.innerHTML = `<span class="cb-row1"><span class="cb-name">${cityName(c)}</span><span class="cb-emoji" title="${desc}">${emo}</span></span><span class="cb-temp" title="${T().tempLabel}">${Math.round(cur.temperature_2m)}°</span><span class="cb-meta" title="🌡 ${T().feelsLabel} · 💨 ${T().windLabel} (km/h)">🌡${Math.round(cur.apparent_temperature)}° · 💨${Math.round(cur.wind_speed_10m)} km/h</span>`;
     btn.addEventListener('click', () => selectCity(i));
     wrap.appendChild(btn);
   });
-  appendSearchBtn(wrap);
+  for(let si=0; si<N_SLOTS; si++) wrap.appendChild(makeSlotBtn(si, true));
 }
 
-/* ──── Busca de cidade (geocoding Open-Meteo) — adiciona na sessão ──── */
+/* ──── Busca de cidade (geocoding Open-Meteo) — salva no slot no localStorage ──── */
 let searchTimer = null;
-function openSearch(){
+let currentSearchSlot = 0;
+function openSearch(si){
+  currentSearchSlot = si;
   const inp = document.getElementById('searchInput');
   document.getElementById('searchResults').innerHTML = '';
   inp.value = '';
@@ -832,16 +859,34 @@ function renderSearchResults(results){
     el.addEventListener('click', () => addCityFromResult(results[+el.dataset.i])));
 }
 async function addCityFromResult(r){
-  const id = 'q_' + r.latitude.toFixed(3) + '_' + r.longitude.toFixed(3);
-  let idx = CITIES.findIndex(c => c.id === id);
-  if (idx < 0) { CITIES.push({ id, name: r.name, lat: r.latitude, lon: r.longitude }); idx = CITIES.length - 1; }
-  currentIdx = idx;
-  try { localStorage.setItem(LS_CITY, id); } catch (e) {}
+  const id   = 'q_' + r.latitude.toFixed(3) + '_' + r.longitude.toFixed(3);
+  const city = { id, name: r.name, lat: r.latitude, lon: r.longitude };
+  slotCities[currentSearchSlot] = city;
+  saveSlotCity(currentSearchSlot, city);
+  CITIES     = buildCities();
+  currentIdx = cityIdxForSlot(currentSearchSlot);
+  try { localStorage.setItem(LS_CITY, id); } catch(e){}
   closeSearch();
   document.getElementById('loading').style.display = 'flex';
-  document.getElementById('app').style.display = 'none';
+  document.getElementById('app').style.display    = 'none';
   try { await loadAll(); ensureHistMax(); }
-  catch (e) { showError(e.message); }
+  catch(e){ showError(e.message); }
+}
+
+/* Limpa o slot, remove do localStorage, volta para a cidade 0 se estava activa. */
+async function clearSlot(si){
+  const wasActive = slotCities[si] && currentIdx === cityIdxForSlot(si);
+  slotCities[si] = null;
+  clearSlotCity(si);
+  CITIES = buildCities();
+  if(wasActive || currentIdx >= CITIES.length){
+    currentIdx = 0;
+    try{ localStorage.setItem(LS_CITY, CITIES[0].id); }catch(e){}
+  }
+  document.getElementById('loading').style.display = 'flex';
+  document.getElementById('app').style.display    = 'none';
+  try { await loadAll(); ensureHistMax(); }
+  catch(e){ showError(e.message); }
 }
 function wireSearch(){
   const inp = document.getElementById('searchInput');
@@ -865,9 +910,8 @@ function wireSearch(){
 function selectCity(i){
   if (i === currentIdx) return;
   currentIdx = i;
-  localStorage.setItem(LS_CITY, CITIES[i].id);
-  document.querySelectorAll('.city-btn').forEach((b, k) =>
-    b.classList.toggle('active', k === i));
+  try{ localStorage.setItem(LS_CITY, CITIES[i].id); }catch(e){}
+  renderCityButtons();
   renderDays();
 }
 
@@ -1015,8 +1059,12 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   const iMin = temps.indexOf(tMin), iMax = temps.indexOf(tMax);
 
   const W = 240, H = 60, GUT = 14, VBW = W + GUT;   // pequena margem à direita (p/ o rótulo das 24h)
-  const padT = 9, padB = 3;
-  const ch = H - padT - padB;
+  const padT = 9;
+  const WIND_BASE = 2, WIND_SPAN = 8;          // barra de vento: 2..10 unidades de altura
+  const WIND_GAP  = 9;                          // espaço entre a área de temperatura e a faixa do vento
+  // Área útil da TEMPERATURA: deixa reservada embaixo a faixa do vento (altura
+  // máx. da barra) + um espaço, de modo que a curva nunca encoste nas barras.
+  const ch = H - padT - (WIND_BASE + WIND_SPAN) - WIND_GAP;
 
   // Escala vertical PADRONIZADA da semana (mesma régua em todos os dias), já
   // incluindo os alvos da estação. Em dias frios a curva fica embaixo (linha-
@@ -1055,7 +1103,6 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
 
   // ── Força do vento por hora: barrinha na base, altura e opacidade ∝ velocidade ──
   const WIND_MAX = 35;                              // km/h ~ barra cheia
-  const WIND_BASE = 2, WIND_SPAN = 8;              // altura da barra: 2..10 unidades (espaço p/ o ícone de vento)
   const wBarW = stepX * 0.9;
   const windBars = hours.map((h, i) => {
     const frac = clamp((h.wind || 0) / WIND_MAX, 0, 1);
@@ -1165,14 +1212,16 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
     // (cor da letra = gradiente da temperatura), com um halo que interrompe a
     // linha atrás dele para ler fácil — sem a poluição das bolas em toda hora.
     if (i === iMax || i === iMin) {
-      return `<span class="t-ball" title="${tip}" style="left:${left}%;top:${top}%;width:${dotPct.toFixed(2)}cqw;font-size:${fcqw}cqw;background:rgb(${rgb});color:${GRAPH}">${v}</span>`;
+      // Bola capada pela altura (cqh) p/ não invadir a faixa do vento e não ficar
+      // gigante em gráficos baixos; a fonte acompanha o tamanho da bola.
+      return `<span class="t-ball" title="${tip}" style="left:${left}%;top:${top}%;width:min(${dotPct.toFixed(2)}cqw, 26cqh);font-size:min(${fcqw}cqw, 10cqh);background:rgb(${rgb});color:${GRAPH}">${v}</span>`;
     }
     return `<span class="t-num" title="${tip}" style="left:${left}%;top:${top}%;font-size:${fcqw}cqw;color:rgb(${rgb})">${v}</span>`;
   }).join('');
 
   // Bola do PICO de vento do dia (no topo da barra mais alta), com a velocidade.
   const windBall = windMax > 0
-    ? `<span class="val-dot" title="${T().windPeak} ${Math.round(windMax)} km/h · ${String(hours[iWindMax].hour).padStart(2,'0')}h" style="left:${(xAt(iWindMax)/VBW*100).toFixed(2)}%;top:${(windTopY/H*100).toFixed(1)}%;background:#9aa7d6;color:${GRAPH}">${Math.round(windMax)}</span>`
+    ? `<span class="val-dot" title="${T().windPeak} ${Math.round(windMax)} km/h · ${String(hours[iWindMax].hour).padStart(2,'0')}h" style="left:${(xAt(iWindMax)/VBW*100).toFixed(2)}%;top:${(windTopY/H*100).toFixed(1)}%;font-size:${fcqw}cqw;background:#9aa7d6;color:${GRAPH}">${Math.round(windMax)}</span>`
     : '';
 
   // Ícones de série no slot reservado à esquerda: 🌡️ na altura em que a linha de
@@ -1180,8 +1229,10 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   // cada série, alinhados com o relógio 🕐 da legenda de horas logo abaixo.
   const serIcoCqw = (dotPct * 0.4).toFixed(2);
   const icoX = (0.7 * dotPct).toFixed(2);             // centro do slot esquerdo (em %)
-  // 🌡️ na altura em que a linha começa, limitada a ≤56% p/ não colidir com o 💨.
-  const tempIcoTop = clamp(yAt(temps[0]) / H * 100, 6, 56).toFixed(1);
+  // 🌡️ exatamente na altura da temperatura das 00h (início da linha). Não precisa
+  // de limite: a área da temperatura termina acima da faixa do vento (gap), então
+  // o termômetro nunca desce até o 💨.
+  const tempIcoTop = (yAt(temps[0]) / H * 100).toFixed(1);
   // font-size = min(largura, altura): em telas baixas o cqh encolhe o ícone p/
   // não ultrapassar a altura disponível do gráfico daquele dia.
   const serIcoFs = `min(${serIcoCqw}cqw, 24cqh)`;
