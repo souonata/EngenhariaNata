@@ -404,10 +404,18 @@ function renderDays(){
   wrap.innerHTML = '';
   const todayISO = cd.daily[0] ? cd.daily[0].date : new Date().toISOString().slice(0,10);
 
+  // Pico horário de chuva da semana inteira → escala FIXA compartilhada por
+  // todos os dias, para que a mesma quantidade tenha a mesma altura e os dias
+  // sejam comparáveis visualmente (não normaliza por dia).
+  let weekMaxMM = 0;
+  cd.daily.forEach(day => {
+    (cd.hourlyByDay[day.date] || []).forEach(h => { if (h.mm > weekMaxMM) weekMaxMM = h.mm; });
+  });
+
   cd.daily.forEach(day => {
     const hours = cd.hourlyByDay[day.date] || [];
     if (hours.length < 2) return;
-    wrap.insertAdjacentHTML('beforeend', buildRow(day, hours, day.date === todayISO));
+    wrap.insertAdjacentHTML('beforeend', buildRow(day, hours, day.date === todayISO, weekMaxMM));
   });
 
   const c = cd.city;
@@ -417,7 +425,7 @@ function renderDays(){
 }
 
 /* ──── Build one row with SVG sparkline ──── */
-function buildRow(day, hours, isToday){
+function buildRow(day, hours, isToday, weekMaxMM){
   const dt = new Date(day.date + 'T12:00:00');
   const dow = isToday ? 'Hoje' : DOW[dt.getDay()];
   const dnum = `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}`;
@@ -443,18 +451,21 @@ function buildRow(day, hours, isToday){
 
   const gridY = padT + ch / 2;
 
-  // Barra única de quantidade de chuva do dia: altura proporcional ao total
-  // de mm, com escala fixa onde a altura cheia equivale a 100 mm.
-  // Ex.: 45 mm ≈ 45% da altura; acima de 100 mm satura e fica vermelha.
-  const MM_MAX = 100;
-  const rainOver = mmTotal > MM_MAX;
-  const rainH = ch * (Math.min(mmTotal, MM_MAX) / MM_MAX);
-  const rainBar = rainH > 0.4 ? `
-            <rect x="0" y="${(padT + ch - rainH).toFixed(1)}" width="${W}" height="${rainH.toFixed(1)}"
-                  fill="${rainOver ? 'rgba(255,77,77,.16)' : 'rgba(126,227,193,.15)'}"/>
-            <line x1="0" y1="${(padT + ch - rainH).toFixed(1)}" x2="${W}" y2="${(padT + ch - rainH).toFixed(1)}"
-                  stroke="${rainOver ? '#ff6b6b' : '#7ee3c1'}" stroke-width="1" stroke-opacity=".55"
-                  vector-effect="non-scaling-stroke"/>` : '';
+  // Barras de chuva POR HORA, em escala FIXA para a semana inteira: a altura de
+  // cada hora é proporcional ao quanto choveu nela em relação ao pico horário
+  // da semana (weekMaxMM). Assim a mesma quantidade tem a mesma altura em
+  // qualquer dia → dá para comparar os dias entre si. Um leve fundo marca o
+  // teto fixo dessa escala em todos os dias.
+  const rainScaleMax = Math.max(weekMaxMM || 0, 0.1);
+  const rainZoneH = ch * 0.85;
+  const rBarW = (W / n) * 0.7;
+  const rainBg = `<rect x="0" y="${(padT + ch - rainZoneH).toFixed(1)}" width="${W}" height="${rainZoneH.toFixed(1)}" fill="rgba(126,227,193,.05)"/>`;
+  const mmBars = rainBg + mms.map((m, i) => {
+    if (m <= 0.05) return '';
+    const barH = rainZoneH * Math.min(m / rainScaleMax, 1);
+    if (barH < 0.4) return '';
+    return `<rect x="${(xAt(i) - rBarW/2).toFixed(1)}" y="${(padT + ch - barH).toFixed(1)}" width="${rBarW.toFixed(1)}" height="${barH.toFixed(1)}" fill="rgba(126,227,193,.34)"/>`;
+  }).join('');
 
   const pts = temps.map((t, i) => `${xAt(i).toFixed(1)},${yAt(t).toFixed(1)}`);
   const linePath = 'M' + pts.join(' L');
@@ -514,9 +525,9 @@ function buildRow(day, hours, isToday){
             </defs>
             <line x1="0" y1="${gridY.toFixed(1)}" x2="${W}" y2="${gridY.toFixed(1)}"
                   stroke="rgba(255,255,255,.05)" stroke-width="1" vector-effect="non-scaling-stroke"/>
-            ${rainBar}
-            ${crossLines}
             <path d="${areaPath}" fill="url(#${tgid})" fill-opacity=".13"/>
+            ${mmBars}
+            ${crossLines}
             <path d="${linePath}" fill="none" stroke="url(#${tgid})" stroke-width="2"
                   vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>
             <circle cx="${xAt(iMax).toFixed(1)}" cy="${yAt(tMax).toFixed(1)}" r="3" fill="#ff5b4a"
