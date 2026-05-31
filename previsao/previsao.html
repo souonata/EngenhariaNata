@@ -1003,6 +1003,7 @@ function wireTip(){
     else closeTip();
   });
   document.addEventListener('click', e => {
+    if (tipOpen) { closeTip(); return; }
     if (!e.target.closest('#hourTip,.c-chart')) closeTip();
   });
 }
