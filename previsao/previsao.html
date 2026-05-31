@@ -161,6 +161,17 @@
     transition:opacity .12s;
   }
   .slot-clear:hover{ opacity:1; }
+
+  /* Tooltip flutuante por hora (aparece ao tocar/clicar num número de temperatura) */
+  #hourTip{
+    position:fixed; z-index:200;
+    background:var(--surface); border:1px solid var(--border); border-radius:11px;
+    padding:9px 13px; font-size:.78rem; line-height:1.7;
+    box-shadow:0 8px 28px rgba(0,0,0,.45);
+    pointer-events:none; white-space:nowrap;
+  }
+  #hourTip b{ font-size:.85rem; display:block; margin-bottom:2px; color:var(--text); }
+  #hourTip .tip-row{ display:flex; align-items:center; gap:5px; color:var(--muted); }
   .city-btn:hover{background:var(--surface)}
   .city-btn:active{transform:scale(.96)}
   .city-btn.active{
@@ -550,6 +561,8 @@
   </div>
 </div>
 
+<div id="hourTip" style="display:none" aria-live="polite"></div>
+
 <script>
 /* ============================================================
    Open-Meteo — API meteorológica europeia, gratuita, sem chave
@@ -646,6 +659,7 @@ applyTheme(false);   // aplica o tema antes de tudo (inclui a tela de carregamen
 applyLangStatic();   // textos fixos (loading/erro/rodapé/home) no idioma atual
 wireControls();      // botões de idioma e tema
 wireSearch();        // campo de busca de cidade (lupa)
+wireTip();           // tooltip por hora (temperatura, vento, chuva)
 
 (async function init(){
   buildCityButtonShells();
@@ -771,7 +785,7 @@ async function loadAll(){
   url.search = new URLSearchParams({
     latitude:  CITIES.map(c => c.lat).join(','),
     longitude: CITIES.map(c => c.lon).join(','),
-    hourly:    'temperature_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m',
+    hourly:    'temperature_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m,wind_direction_10m',
     current:   'temperature_2m,apparent_temperature,weather_code,wind_speed_10m',
     daily:     'weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max',
     timezone:  'auto',
@@ -795,7 +809,8 @@ async function loadAll(){
         pop:  d.hourly.precipitation_probability[k] ?? 0,
         mm:   d.hourly.precipitation[k] ?? 0,
         code: d.hourly.weather_code[k],
-        wind: d.hourly.wind_speed_10m ? (d.hourly.wind_speed_10m[k] ?? 0) : 0
+        wind:    d.hourly.wind_speed_10m    ? (d.hourly.wind_speed_10m[k]    ?? 0) : 0,
+        windDir: d.hourly.wind_direction_10m ? (d.hourly.wind_direction_10m[k] ?? 0) : 0
       });
     });
     const daily = d.daily.time.map((iso, k) => ({
@@ -910,6 +925,52 @@ function wireSearch(){
   });
   document.getElementById('searchClose').addEventListener('click', closeSearch);
   document.getElementById('search').addEventListener('click', (e) => { if (e.target.id === 'search') closeSearch(); });
+}
+
+/* ──── Tooltip por hora ──── */
+function windDirLabel(deg){
+  const d = Math.round(+deg/45)%8;
+  const ptDirs = ['N','NE','L','SE','S','SO','O','NO'];
+  const itDirs = ['N','NE','E','SE','S','SO','O','NO'];
+  return (LANG.startsWith('it') ? itDirs : ptDirs)[d];
+}
+function showTip(cx, cy, el){
+  const hr  = el.dataset.h;
+  const t   = el.dataset.t;
+  const w   = el.dataset.w;
+  const wd  = el.dataset.wd;
+  const pop = el.dataset.pop;
+  const mm  = el.dataset.mm;
+  const tt  = T();
+  const dir = windDirLabel(wd);
+  const tip = document.getElementById('hourTip');
+  tip.innerHTML =
+    `<b>${String(hr).padStart(2,'0')}h</b>` +
+    `<div class="tip-row">🌡️ <span>${t}°C</span></div>` +
+    `<div class="tip-row">💨 <span>${w} km/h ${dir}</span></div>` +
+    `<div class="tip-row">🌧️ <span>${pop}% · ${mm} mm</span></div>`;
+  tip.style.display = 'block';
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const tw = tip.offsetWidth  || 160;
+  const th = tip.offsetHeight || 90;
+  let lx = cx + 14, ly = cy - th / 2;
+  if (lx + tw > vw - 4) lx = cx - tw - 14;
+  if (ly < 4) ly = 4;
+  if (ly + th > vh - 4) ly = vh - th - 4;
+  tip.style.left = lx + 'px';
+  tip.style.top  = ly + 'px';
+}
+function closeTip(){ document.getElementById('hourTip').style.display = 'none'; }
+function wireTip(){
+  document.getElementById('days').addEventListener('click', e => {
+    const el = e.target.closest('.t-num,.t-ball');
+    if(!el){ closeTip(); return; }
+    showTip(e.clientX, e.clientY, el);
+    e.stopPropagation();
+  });
+  document.addEventListener('click', e => {
+    if(!e.target.closest('#hourTip,.t-num,.t-ball')) closeTip();
+  });
 }
 
 function selectCity(i){
@@ -1217,12 +1278,11 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
     // Bola cheia SÓ na máx/mín do dia (destaque). Nas demais horas, só o número
     // (cor da letra = gradiente da temperatura), com um halo que interrompe a
     // linha atrás dele para ler fácil — sem a poluição das bolas em toda hora.
+    const da = `data-h="${h.hour}" data-t="${v}" data-w="${Math.round(h.wind||0)}" data-wd="${Math.round(h.windDir||0)}" data-pop="${Math.round(h.pop||0)}" data-mm="${(h.mm||0).toFixed(1)}"`;
     if (i === iMax || i === iMin) {
-      // Bola capada pela altura (cqh) p/ não invadir a faixa do vento e não ficar
-      // gigante em gráficos baixos; a fonte acompanha o tamanho da bola.
-      return `<span class="t-ball" title="${tip}" style="left:${left}%;top:${top}%;width:min(${ballPct.toFixed(2)}cqw, 26cqh);font-size:min(${fcqw}cqw, 10cqh);background:rgb(${rgb});color:${GRAPH}">${v}</span>`;
+      return `<span class="t-ball" ${da} style="left:${left}%;top:${top}%;width:min(${ballPct.toFixed(2)}cqw, 26cqh);font-size:min(${fcqw}cqw, 10cqh);background:rgb(${rgb});color:${GRAPH}">${v}</span>`;
     }
-    return `<span class="t-num" title="${tip}" style="left:${left}%;top:${top}%;font-size:${fcqw}cqw;color:rgb(${rgb})">${v}</span>`;
+    return `<span class="t-num" ${da} style="left:${left}%;top:${top}%;font-size:${fcqw}cqw;color:rgb(${rgb})">${v}</span>`;
   }).join('');
 
   // Bola do PICO de vento do dia (no topo da barra mais alta), com a velocidade.
@@ -1243,8 +1303,11 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   // não ultrapassar a altura disponível do gráfico daquele dia.
   const serIcoFs = `min(${serIcoCqw}cqw, 24cqh)`;
   const tempIco = `<span class="ser-ico" title="${T().tempLabel}" style="left:${icoX}%;top:${tempIcoTop}%;font-size:${serIcoFs}">🌡️</span>`;
+  // 💨 na altura do topo da barra de pico (windTopY), com offset de meio-ícone
+  // para ficar visualmente alinhado com a barra mais alta do dia.
+  const windIcoTop = clamp(windTopY / H * 100, 70, 95).toFixed(1);
   const windIco = windMax > 0
-    ? `<span class="ser-ico" title="${T().windLabel} (km/h)" style="left:${icoX}%;top:88%;font-size:${serIcoFs}">💨</span>`
+    ? `<span class="ser-ico" title="${T().windLabel} (km/h)" style="left:${icoX}%;top:${windIcoTop}%;font-size:${serIcoFs}">💨</span>`
     : '';
 
   return `
