@@ -56,6 +56,7 @@
   .g-maj{ stroke:var(--grid-maj); }
   .g-ref{ stroke:var(--grid-ref); }
   .g-cross{ stroke:var(--grid-cross); }
+  .g-now{ stroke:var(--text); stroke-opacity:.6; }   /* hora atual realçada (hoje) */
   .rain-hatch{ stroke:var(--rain); }   /* cor da hachura de chuva pelo tema */
 
   /* ─── Barra superior: idioma + tema (oculta no topo ao abrir) ─── */
@@ -269,6 +270,12 @@
     color:var(--muted); pointer-events:none;
     text-shadow:0 0 2px var(--bg),0 0 2px var(--bg);
   }
+  /* Bolinha por hora na curva (cor do gradiente da temperatura daquela hora) */
+  .h-dot{
+    position:absolute; transform:translate(-50%,-50%);
+    width:5px; height:5px; border-radius:50%;
+    pointer-events:none; box-shadow:0 0 0 1px var(--bg);
+  }
   /* Bolota que une ponto + valor (número em grafite dentro, sem unidade) */
   .val-dot{
     position:absolute; transform:translate(-50%,-50%);
@@ -393,6 +400,7 @@
     .hour-axis span{font-size:.62rem}
     .hour-axis.dense span{font-size:.5rem}
     .val-dot{min-width:18px;height:18px;font-size:.56rem}
+    .h-dot{width:6px;height:6px}
     .footer{padding:8px 18px;font-size:.7rem}
   }
   @media (max-width:767px){.app{flex:1;display:flex;flex-direction:column;min-height:0}}
@@ -875,11 +883,14 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   }
   const degLinesSvg = degLines.join('');
 
-  // ── Grade vertical por hora (de 3 em 3 h mais marcada) ──
+  // ── Grade vertical por hora (3 em 3 h mais marcada; a hora ATUAL, só no
+  //    dia de hoje, fica realçada). ──
+  const nowH = new Date().getHours();
   const hourGrid = hours.map((h, i) => {
     const x = xAt(i).toFixed(1);
-    const major = (h.hour % 3 === 0);
-    return `<line x1="${x}" y1="${padT}" x2="${x}" y2="${(padT+ch).toFixed(1)}" class="${major ? 'g-maj' : 'g-min'}" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
+    const isNow = isToday && h.hour === nowH;
+    const cls = isNow ? 'g-now' : (h.hour % 3 === 0 ? 'g-maj' : 'g-min');
+    return `<line x1="${x}" y1="${padT}" x2="${x}" y2="${(padT+ch).toFixed(1)}" class="${cls}" stroke-width="${isNow ? '1.6' : '1'}" vector-effect="non-scaling-stroke"/>`;
   }).join('');
 
   // ── Força do vento por hora: barrinha na base, altura e opacidade ∝ velocidade ──
@@ -960,17 +971,26 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
 
   // Legenda com TODAS as horas (00–24), abaixo de cada dia; e também acima no
   // dia de hoje. As horas-chave (máx/mín/vento/chuva) saem coloridas.
-  const axisHTML = () => `
+  const axisHTML = (todayAxis) => `
         <div class="hour-axis dense">
           ${hours.map((h, i) => {
             const pct = xAt(i) / VBW * 100;
             const base = i === 0 ? 'left:0;transform:none' : `left:${pct.toFixed(1)}%;transform:translateX(-50%)`;
             const col = hourColor(h);
-            return `<span style="${base}${col ? `;color:${col};font-weight:700` : ''}">${String(h.hour).padStart(2,'0')}</span>`;
+            const isNow = todayAxis && h.hour === nowH;
+            const extra = (col ? `;color:${col};font-weight:700` : '') + (isNow ? `;font-weight:800${col ? '' : ';color:var(--text)'}` : '');
+            return `<span class="${isNow ? 'now' : ''}" style="${base}${extra}">${String(h.hour).padStart(2,'0')}</span>`;
           }).join('')}
         </div>`;
-  const hourAxisAbove = isToday ? axisHTML() : '';
-  const hourAxisBelow = axisHTML();
+  const hourAxisAbove = isToday ? axisHTML(true) : '';
+  const hourAxisBelow = axisHTML(isToday);
+
+  // Uma bolinha por hora, no ponto da curva, com a cor do gradiente para aquela
+  // temperatura (a máx/mín já têm a bolota com o valor).
+  const hourDots = hours.map((h, i) => {
+    if (i === iMax || i === iMin) return '';
+    return `<span class="h-dot" style="left:${(xAt(i)/VBW*100).toFixed(1)}%;top:${(yAt(h.temp)/H*100).toFixed(1)}%;background:rgb(${tempColor(h.temp, setpoint, yLow, yHigh)})"></span>`;
+  }).join('');
 
   // Bolinhas que UNEM o ponto e o valor: número (sem unidade) em grafite dentro
   // de uma bolota colorida (cor da temperatura / do vento) no ponto exato.
@@ -1005,6 +1025,7 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
             <path d="${linePath}" fill="none" stroke="url(#${tgid})" stroke-width="3"
                   vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>
           </svg>
+          ${hourDots}
           ${valDots}
         </div>
         ${hourAxisBelow}
