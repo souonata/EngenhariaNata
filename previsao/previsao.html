@@ -1282,7 +1282,10 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
     // linha atrás dele para ler fácil — sem a poluição das bolas em toda hora.
     const da = `data-h="${h.hour}" data-t="${v}" data-w="${Math.round(h.wind||0)}" data-wd="${Math.round(h.windDir||0)}" data-pop="${Math.round(h.pop||0)}" data-mm="${(h.mm||0).toFixed(1)}"`;
     if (h.temp === tMax || h.temp === tMin) {
-      return `<span class="t-ball" ${da} style="left:${left}%;top:${top}%;width:min(${ballPct.toFixed(2)}cqw, 26cqh);font-size:${fcqw}cqw;background:rgb(${rgb});color:${GRAPH}">${v}</span>`;
+      // Máxima: vermelho se acima do alvo sazonal, verde se abaixo.
+      // Mínima: azul se abaixo do alvo sazonal, verde se acima.
+      const ballBg = (h.temp === tMax) ? maxCol : minCol;
+      return `<span class="t-ball" ${da} style="left:${left}%;top:${top}%;width:min(${ballPct.toFixed(2)}cqw, 26cqh);font-size:${fcqw}cqw;background:${ballBg};color:${GRAPH}">${v}</span>`;
     }
     return `<span class="t-num" ${da} style="left:${left}%;top:${top}%;font-size:${fcqw}cqw;color:rgb(${rgb})">${v}</span>`;
   }).join('');
