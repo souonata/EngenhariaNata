@@ -18,7 +18,67 @@
     --prob:#4aa8ff;
     --mm:#7ee3c1;
     --today:#3fb950;
+    /* cores das linhas de grade (tema-aware) */
+    --grid-min:rgba(255,255,255,.045);
+    --grid-maj:rgba(255,255,255,.13);
+    --grid-ref:rgba(255,255,255,.05);
+    --grid-cross:rgba(255,255,255,.18);
   }
+
+  /* ─── Tema claro ─── */
+  html[data-theme="light"]{
+    --bg:#e7edf5;
+    --surface:#ffffff;
+    --surface2:#eef3fa;
+    --border:#ccd6e4;
+    --text:#16202f;
+    --muted:#5d6b82;
+    --grid-min:rgba(0,0,0,.06);
+    --grid-maj:rgba(0,0,0,.16);
+    --grid-ref:rgba(0,0,0,.08);
+    --grid-cross:rgba(0,0,0,.22);
+  }
+  html[data-theme="light"] body{ background:#e7edf5; }
+  html[data-theme="light"] .app{ background:#ffffff; }
+  html[data-theme="light"] .city-btn.active{
+    background:linear-gradient(160deg,#dcefff,#eef3fa);
+    box-shadow:0 0 0 1px rgba(74,168,255,.25), 0 4px 14px rgba(74,168,255,.18);
+  }
+  html[data-theme="light"] .home-button-fixed{
+    background:linear-gradient(135deg,#e9f4ff,#d6e9fb);
+    color:#1e6fa8;
+  }
+
+  /* linhas de grade do SVG (cor pelo tema) */
+  .g-min{ stroke:var(--grid-min); }
+  .g-maj{ stroke:var(--grid-maj); }
+  .g-ref{ stroke:var(--grid-ref); }
+  .g-cross{ stroke:var(--grid-cross); }
+
+  /* ─── Barra superior: idioma + tema (oculta no topo ao abrir) ─── */
+  .topbar{
+    flex:0 0 auto;
+    display:flex; align-items:center; justify-content:center; gap:12px;
+    padding:10px;
+  }
+  .lang-switch{
+    display:flex; gap:3px;
+    background:var(--surface2); border:1px solid var(--border);
+    border-radius:999px; padding:3px;
+  }
+  .lang-btn{
+    border:none; background:transparent; color:var(--muted);
+    font-family:inherit; font-size:.72rem; font-weight:700; cursor:pointer;
+    padding:5px 13px; border-radius:999px;
+    transition:background .15s, color .15s;
+  }
+  .lang-btn.active{ background:var(--prob); color:#fff; }
+  .theme-btn{
+    border:1px solid var(--border); background:var(--surface2); color:var(--text);
+    font-family:inherit; font-size:.72rem; font-weight:700; cursor:pointer;
+    padding:6px 15px; border-radius:999px;
+  }
+
   html{overscroll-behavior:none}
   body{
     background:radial-gradient(1200px 800px at 0% 0%,#172241 0%,var(--bg) 60%);
@@ -293,6 +353,14 @@
 </head>
 <body>
 
+<div class="topbar">
+  <div class="lang-switch">
+    <button type="button" class="lang-btn" data-lang="pt-BR">PT</button>
+    <button type="button" class="lang-btn" data-lang="it-IT">IT</button>
+  </div>
+  <button type="button" class="theme-btn" id="themeBtn">Light</button>
+</div>
+
 <div class="screen">
   <div class="app" id="app" style="display:none;flex:1;flex-direction:column;min-height:0">
 
@@ -302,13 +370,13 @@
 
     <footer class="footer">
       <span id="footLoc">📍 —</span>
-      <span>Fonte: <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a></span>
+      <span><span id="sourceLbl">Fonte: </span><a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a></span>
     </footer>
   </div>
 </div>
 
 <footer class="site-footer">
-  <p>💻 Portfólio Engenharia NATA @ 2026</p>
+  <p id="footerBrand">💻 Portfólio Engenharia NATA @ 2026</p>
   <div class="footer-meta">
     <a class="footer-github-link" href="https://github.com/souonata/EngenhariaNata" target="_blank" rel="noopener noreferrer" aria-label="GitHub EngenhariaNata">
       <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.58 7.58 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
@@ -325,13 +393,13 @@
 
 <div id="loading" class="overlay">
   <div class="spinner"></div>
-  <div class="err-msg">Carregando previsão…</div>
+  <div class="err-msg" id="loadingMsg">Carregando previsão…</div>
 </div>
 
 <div id="error" class="overlay" style="display:none">
   <div class="err-ico">⚠️</div>
   <div class="err-msg" id="errMsg">Erro ao carregar dados.</div>
-  <button class="btn" onclick="location.reload()">Tentar novamente</button>
+  <button class="btn" id="retryBtn" onclick="location.reload()">Tentar novamente</button>
 </div>
 
 <script>
@@ -341,15 +409,42 @@
    ============================================================ */
 
 const CITIES = [
-  { id:'turbigo',  name:'Turbigo',  lat: 45.5333, lon:  8.7333 },
-  { id:'milao',    name:'Milão',    lat: 45.4642, lon:  9.1900 },
-  { id:'turate',   name:'Turate',   lat: 45.7333, lon:  9.0500 },
-  { id:'curitiba', name:'Curitiba', lat:-25.4284, lon:-49.2733 },
+  { id:'milao',     name:'Milão',     lat: 45.4642, lon:   9.1900 },
+  { id:'turate',    name:'Turate',    lat: 45.7333, lon:   9.0500 },
+  { id:'curitiba',  name:'Curitiba',  lat:-25.4284, lon: -49.2733 },
+  { id:'bauru',     name:'Bauru',     lat:-22.3147, lon: -49.0606 },
+  { id:'duartina',  name:'Duartina',  lat:-22.4150, lon: -49.4080 },
+  { id:'camboriu',  name:'B. Camboriú', lat:-26.9906, lon: -48.6347 },
+  { id:'recife',    name:'Recife',    lat: -8.0539, lon: -34.8811 },
 ];
 const LS_CITY = 'previsao_city_v1';
 const LS_HISTMAX = 'previsao_histmax_v1';   // teto fixo da escala de chuva (máx. horário em 365 dias)
 const HISTMAX_TTL_DAYS = 7;                 // revalida o histórico no máximo 1×/semana
-const DOW = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+/* i18n mínimo (PT/IT) — usa a mesma chave de idioma do site (engnata_idioma). */
+const I18N = {
+  'pt-BR': {
+    loading:'Carregando previsão…', error:'Erro ao carregar dados.', retry:'Tentar novamente',
+    today:'Hoje', dow:['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],
+    source:'Fonte', footer:'💻 Portfólio Engenharia NATA @ 2026',
+    home:'Voltar para a tela inicial', targetTitle:'Temperatura-alvo de interior',
+    upTitle:'Temperatura sobe acima de 24°C', dnTitle:'Temperatura cai abaixo de 24°C',
+    rainTitle:'Chuva: prob >30% e >0,5mm'
+  },
+  'it-IT': {
+    loading:'Caricamento previsioni…', error:'Errore nel caricamento dei dati.', retry:'Riprova',
+    today:'Oggi', dow:['Dom','Lun','Mar','Mer','Gio','Ven','Sab'],
+    source:'Fonte', footer:'💻 Portafoglio Ingegneria NATA @ 2026',
+    home:'Torna alla schermata iniziale', targetTitle:'Temperatura interna obiettivo',
+    upTitle:'La temperatura sale sopra 24°C', dnTitle:'La temperatura scende sotto 24°C',
+    rainTitle:'Pioggia: prob >30% e >0,5mm'
+  }
+};
+let LANG = (() => { try { const s = sessionStorage.getItem('engnata_idioma'); return (s === 'it-IT' || s === 'pt-BR') ? s : 'pt-BR'; } catch (e) { return 'pt-BR'; } })();
+const T = () => I18N[LANG];
+
+/* Tema: usa a mesma chave do site (engnata_theme_mode, em JSON). O previsao é
+   dark por padrão; só vira light com data-theme="light". */
+let THEME = (() => { try { return JSON.parse(localStorage.getItem('engnata_theme_mode')) || 'dark'; } catch (e) { return 'dark'; } })();
 
 let cityData = [];              // dados de cada cidade (índices alinhados com CITIES)
 let currentIdx = Math.max(0, CITIES.findIndex(c => c.id === localStorage.getItem(LS_CITY)));
@@ -362,15 +457,69 @@ let histMaxByCity = (() => {
 })();
 
 /* ──── Boot ──── */
+applyTheme(false);   // aplica o tema antes de tudo (inclui a tela de carregamento)
+applyLangStatic();   // textos fixos (loading/erro/rodapé/home) no idioma atual
+wireControls();      // botões de idioma e tema
+
 (async function init(){
   buildCityButtonShells();
   try {
     await loadAll();
-    ensureHistMax();   // em background: atualiza o teto da escala e re-renderiza
-    setupHomeFade();   // botão home aparece em degradê só ao rolar até o rodapé
+    ensureHistMax();      // em background: atualiza o teto da escala e re-renderiza
+    setupHomeFade();      // botão home aparece em degradê só ao rolar até o rodapé
+    scrollPastTopbar();   // abre já rolado abaixo da barra de idioma/tema (gráfico no topo)
   }
   catch (err) { showError(err.message); }
 })();
+
+/* ──── Idioma e tema ──── */
+function applyTheme(persist){
+  const html = document.documentElement;
+  if (THEME === 'light') html.setAttribute('data-theme', 'light');
+  else html.removeAttribute('data-theme');         // dark = base do app
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.textContent = THEME === 'light' ? 'Dark' : 'Light';
+  if (persist) { try { localStorage.setItem('engnata_theme_mode', JSON.stringify(THEME)); } catch (e) {} }
+}
+
+function applyLangStatic(){
+  const t = T();
+  document.documentElement.lang = LANG;
+  const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+  set('loadingMsg', t.loading);
+  set('errMsg', t.error);
+  set('retryBtn', t.retry);
+  set('footerBrand', t.footer);
+  set('sourceLbl', t.source + ': ');
+  const home = document.querySelector('.home-button-fixed');
+  if (home) { home.title = t.home; home.setAttribute('aria-label', t.home); }
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === LANG));
+}
+
+function wireControls(){
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      if (b.dataset.lang === LANG) return;
+      LANG = b.dataset.lang;
+      try { sessionStorage.setItem('engnata_idioma', LANG); } catch (e) {}
+      applyLangStatic();
+      if (cityData.length) renderDays();
+    });
+  });
+  const tbtn = document.getElementById('themeBtn');
+  if (tbtn) tbtn.addEventListener('click', () => {
+    THEME = THEME === 'light' ? 'dark' : 'light';
+    applyTheme(true);
+  });
+}
+
+function scrollPastTopbar(){
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  requestAnimationFrame(() => {
+    const screen = document.querySelector('.screen');
+    if (screen) screen.scrollIntoView({ block: 'start' });  // alinha o gráfico ao topo, escondendo a barra
+  });
+}
 
 /* ──── Botão home: aparece em degradê de transparência conforme a página rola
    até perto do rodapé (abaixo do gráfico), deixando a tela limpa no topo. ──── */
@@ -446,7 +595,8 @@ async function loadAll(){
         hour: +iso.slice(11,13),
         temp: d.hourly.temperature_2m[k],
         pop:  d.hourly.precipitation_probability[k] ?? 0,
-        mm:   d.hourly.precipitation[k] ?? 0
+        mm:   d.hourly.precipitation[k] ?? 0,
+        code: d.hourly.weather_code[k]
       });
     });
     const daily = d.daily.time.map((iso, k) => ({
@@ -607,9 +757,9 @@ function buildRow(day, hours, isToday, scaleMax, lat){
   // no Brasil). Vale para a linha de referência e para o verde do gradiente.
   const setpoint = seasonSetpoint(day.date, lat);
   const dt = new Date(day.date + 'T12:00:00');
-  const dow = isToday ? 'Hoje' : DOW[dt.getDay()];
+  const dow = isToday ? T().today : T().dow[dt.getDay()];
   const dnum = `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}`;
-  const [emo] = wmo(day.code);
+  const [emo] = wmo(dominantDayCode(hours));   // ícone = clima prevalente das 8h às 20h
 
   const temps = hours.map(h => h.temp);
   const mms   = hours.map(h => h.mm);
@@ -617,17 +767,22 @@ function buildRow(day, hours, isToday, scaleMax, lat){
 
   const tMin = Math.min(...temps), tMax = Math.max(...temps);
   const iMin = temps.indexOf(tMin), iMax = temps.indexOf(tMax);
-  const tRange = Math.max(0.5, tMax - tMin);
 
   const W = 240, H = 60;
   const padT = 9, padB = 3;
   const ch = H - padT - padB;
 
-  const xAt = i => (n === 1 ? W/2 : i * (W / (n - 1)));
-  const yAt = t => padT + ch * (1 - (t - tMin) / tRange);
+  // A escala vertical inclui SEMPRE o alvo sazonal. Assim, em dias frios
+  // (máx < alvo) a curva fica na parte de baixo e a linha-alvo no alto, sem ser
+  // alcançada; em dias quentes (mín > alvo) a curva sobe; em dias normais, igual.
+  const yLow  = Math.min(tMin, setpoint);
+  const yHigh = Math.max(tMax, setpoint);
+  const yRange = Math.max(0.5, yHigh - yLow);
 
-  // Linha de referência na altura da temperatura-alvo; presa às bordas se o
-  // alvo estiver fora da faixa de temperaturas do dia.
+  const xAt = i => (n === 1 ? W/2 : i * (W / (n - 1)));
+  const yAt = t => padT + ch * (1 - (t - yLow) / yRange);
+
+  // Linha de referência na altura do alvo (agora sempre dentro do gráfico).
   const gridY = clamp(yAt(setpoint), padT, padT + ch);
 
   // Linhas de grade verticais por hora (presentes em todos os dias, alinhadas
@@ -636,7 +791,7 @@ function buildRow(day, hours, isToday, scaleMax, lat){
   const hourGrid = hours.map((h, i) => {
     const x = xAt(i).toFixed(1);
     const major = (h.hour % 3 === 0);
-    return `<line x1="${x}" y1="${padT}" x2="${x}" y2="${(padT+ch).toFixed(1)}" stroke="rgba(255,255,255,${major ? '.13' : '.045'})" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
+    return `<line x1="${x}" y1="${padT}" x2="${x}" y2="${(padT+ch).toFixed(1)}" class="${major ? 'g-maj' : 'g-min'}" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
   }).join('');
 
   // Barras de chuva POR HORA, em escala FIXA: a altura de cada hora é
@@ -665,7 +820,7 @@ function buildRow(day, hours, isToday, scaleMax, lat){
   // Gradiente da linha de temperatura: vermelho (quente) no topo → verde no
   // alvo sazonal de interior → azul (frio) embaixo, com transição suave.
   const tgid = 't' + gid;
-  const oSet = (1 - (setpoint - tMin) / tRange);   // fração vertical (0 = topo/quente) do alvo sazonal
+  const oSet = (1 - (setpoint - yLow) / yRange);   // fração vertical (0 = topo/quente) do alvo sazonal
   let tempStops;
   if (oSet <= 0)      tempStops = '<stop offset="0%" stop-color="#3fb950"/><stop offset="100%" stop-color="#4aa8ff"/>';
   else if (oSet >= 1) tempStops = '<stop offset="0%" stop-color="#ff5b4a"/><stop offset="100%" stop-color="#3fb950"/>';
@@ -695,7 +850,7 @@ function buildRow(day, hours, isToday, scaleMax, lat){
     const idx = hours.findIndex(x => x.hour === h);
     if (idx < 0) return '';
     const x = xAt(idx).toFixed(1);
-    return `<line x1="${x}" y1="${padT}" x2="${x}" y2="${(padT+ch).toFixed(1)}" stroke="rgba(255,255,255,.18)" stroke-width="1" stroke-dasharray="2 2" vector-effect="non-scaling-stroke"/>`;
+    return `<line x1="${x}" y1="${padT}" x2="${x}" y2="${(padT+ch).toFixed(1)}" class="g-cross" stroke-width="1" stroke-dasharray="2 2" vector-effect="non-scaling-stroke"/>`;
   }).join('');
 
   // Rótulos de hora compactos (de 3 em 3 h), exibidos só abaixo do dia de hoje;
@@ -728,7 +883,7 @@ function buildRow(day, hours, isToday, scaleMax, lat){
               </linearGradient>
             </defs>
             <line x1="0" y1="${gridY.toFixed(1)}" x2="${W}" y2="${gridY.toFixed(1)}"
-                  stroke="rgba(255,255,255,.05)" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                  class="g-ref" stroke-width="1" vector-effect="non-scaling-stroke"/>
             ${hourGrid}
             ${mmBars}
             ${crossLines}
@@ -741,12 +896,12 @@ function buildRow(day, hours, isToday, scaleMax, lat){
           </svg>
           <span class="lbl lbl-max" style="left:${xMaxPct}%">▲ ${Math.round(tMax)}°</span>
           <span class="lbl lbl-min" style="left:${xMinPct}%">▼ ${Math.round(tMin)}°</span>
-          <span class="lbl-set" style="top:${setTopPct}%" title="Temperatura-alvo de interior (${setpoint}°)">${setpoint}°</span>
+          <span class="lbl-set" style="top:${setTopPct}%" title="${T().targetTitle} (${setpoint}°)">${setpoint}°</span>
         </div>
         <div class="triggers">
-          ${upStr   ? `<span class="trig-up"   title="Temperatura sobe acima de 24°C">▲24° ${upStr}</span>` : ''}
-          ${dnStr   ? `<span class="trig-dn"   title="Temperatura cai abaixo de 24°C">▼24° ${dnStr}</span>` : ''}
-          ${rainStr ? `<span class="trig-rain" title="Chuva: prob >30% e >0,5mm">💧 ${rainStr}</span>` : ''}
+          ${upStr   ? `<span class="trig-up"   title="${T().upTitle}">▲24° ${upStr}</span>` : ''}
+          ${dnStr   ? `<span class="trig-dn"   title="${T().dnTitle}">▼24° ${dnStr}</span>` : ''}
+          ${rainStr ? `<span class="trig-rain" title="${T().rainTitle}">💧 ${rainStr}</span>` : ''}
         </div>
         ${hourAxis}
       </div>
@@ -757,16 +912,46 @@ function buildRow(day, hours, isToday, scaleMax, lat){
 function formatHr(h){ return String(h).padStart(2,'0') + 'h'; }
 function clamp(v, lo, hi){ return Math.min(hi, Math.max(lo, v)); }
 
-/* Temperatura-alvo de interior conforme a estação meteorológica da data, com
-   hemisfério pela latitude (negativa = Sul, estações invertidas):
-   verão 24°, inverno 20°, primavera/outono 22°. */
+/* Ícone do dia = clima prevalente entre 8h e 20h (sol, nuvem, nublado, chuva ou
+   tempestade), pela maior frequência das categorias dos códigos WMO horários.
+   Em empate, prevalece a categoria mais significativa (tempestade > chuva > …). */
+function dominantDayCode(hours){
+  const dayHrs = hours.filter(h => h.hour >= 8 && h.hour <= 20);
+  const src = dayHrs.length ? dayHrs : hours;
+  const cat = c => {
+    if (c >= 95) return 'storm';
+    if ((c >= 51 && c <= 67) || (c >= 80 && c <= 82)) return 'rain';
+    if ((c >= 71 && c <= 77) || c === 85 || c === 86) return 'snow';
+    if (c === 45 || c === 48) return 'fog';
+    if (c === 3) return 'cloud';
+    if (c === 2) return 'partly';
+    return 'clear';                              // 0, 1
+  };
+  const counts = {};
+  src.forEach(h => { const k = cat(h.code); counts[k] = (counts[k] || 0) + 1; });
+  const sev = ['clear','partly','cloud','fog','snow','rain','storm'];
+  let best = 'clear', bestN = 0;
+  for (let i = sev.length - 1; i >= 0; i--) {    // do mais severo ao menos → empate vai p/ severo
+    const k = sev[i], c = counts[k] || 0;
+    if (c > bestN) { bestN = c; best = k; }
+  }
+  const rep = { clear:0, partly:2, cloud:3, fog:45, rain:63, snow:73, storm:95 };
+  return rep[best];
+}
+
+/* Temperatura-alvo de interior conforme a estação ASTRONÔMICA da data (limites
+   nos equinócios/solstícios ~20–21), com hemisfério pela latitude (negativa =
+   Sul, estações invertidas): verão 24°, inverno 20°, primavera/outono 22°.
+   Ex.: início de junho na Itália ainda é primavera (verão só a partir de ~21/06). */
 function seasonSetpoint(dateISO, lat){
-  const m = parseInt(dateISO.slice(5,7), 10);   // mês 1..12
+  const m = parseInt(dateISO.slice(5,7), 10);
+  const d = parseInt(dateISO.slice(8,10), 10);
+  const md = m * 100 + d;                        // ex.: 21/06 → 621
   let season;                                    // estação no Hemisfério Norte
-  if (m === 12 || m <= 2)      season = 'inverno';
-  else if (m <= 5)             season = 'primavera';
-  else if (m <= 8)             season = 'verao';
-  else                         season = 'outono';
+  if      (md >= 320 && md <= 620) season = 'primavera';   // ~20/03 – 20/06
+  else if (md >= 621 && md <= 922) season = 'verao';       // ~21/06 – 22/09
+  else if (md >= 923 && md <= 1220) season = 'outono';     // ~23/09 – 20/12
+  else                              season = 'inverno';    // ~21/12 – 19/03
   if (lat < 0) {                                 // Hemisfério Sul → inverte
     season = { inverno:'verao', verao:'inverno', primavera:'outono', outono:'primavera' }[season];
   }
