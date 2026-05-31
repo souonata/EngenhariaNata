@@ -802,8 +802,13 @@ function renderDays(){
   const yLowG  = Math.min(weekTMin, setLo);
   const yHighG = Math.max(weekTMax, setHi);
 
-  cd.daily.forEach(day => {
-    const hours = cd.hourlyByDay[day.date] || [];
+  cd.daily.forEach((day, di) => {
+    let hours = cd.hourlyByDay[day.date] || [];
+    const next = cd.daily[di + 1];               // 24h = 00h do dia seguinte (o último dia morre em 23h)
+    if (next) {
+      const nh = (cd.hourlyByDay[next.date] || [])[0];
+      if (nh) hours = hours.concat([{ ...nh, hour: 24 }]);
+    }
     if (hours.length < 2) return;
     wrap.insertAdjacentHTML('beforeend', buildRow(day, hours, day.date === todayISO, scaleMax, cd.city.lat, yLowG, yHighG));
   });
@@ -832,7 +837,7 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   const tMin = Math.min(...temps), tMax = Math.max(...temps);
   const iMin = temps.indexOf(tMin), iMax = temps.indexOf(tMax);
 
-  const W = 240, H = 60, GUT = 18, VBW = W + GUT;   // pequena margem à direita (p/ o rótulo das 24h)
+  const W = 240, H = 60, GUT = 14, VBW = W + GUT;   // pequena margem à direita (p/ o rótulo das 24h)
   const padT = 9, padB = 3;
   const ch = H - padT - padB;
 
@@ -853,6 +858,16 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
     const dx = (xv < W * 0.5) ? '6px' : 'calc(-100% - 6px)';
     const dy = up ? 'calc(-100% - 5px)' : '5px';
     return `left:${(xv/VBW*100).toFixed(1)}%;top:${(yv/H*100).toFixed(1)}%;transform:translate(${dx}, ${dy})`;
+  };
+
+  // Posiciona o rótulo na BORDA do plot (topo OU base) com mais espaço livre
+  // naquele x — o lado oposto ao da curva, o mais longe possível dela.
+  const edgeLabel = (xv, curveY) => {
+    const toBottom = ((padT + ch) - curveY) >= (curveY - padT);
+    const yv = toBottom ? (padT + ch) : padT;
+    const dy = toBottom ? 'calc(-100% - 1px)' : '1px';
+    const lx = clamp(xv / VBW * 100, 8, (W / VBW * 100) - 2);
+    return `left:${lx.toFixed(1)}%;top:${(yv/H*100).toFixed(1)}%;transform:translate(-50%, ${dy})`;
   };
 
   // ── Linhas horizontais por GRAU, coloridas pela cor da temperatura (grade). ──
@@ -940,12 +955,14 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   const maxCol = (tMax < setpoint) ? '#3fb950' : '#ff5b4a';
   const minCol = (tMin > setpoint) ? '#3fb950' : '#4aa8ff';
 
-  // Há chuva relevante no dia? (prob >30% e >0,5mm em alguma hora) → aviso ao lado do dia.
-  const needRainAction = hours.some(h => h.pop > 30 && h.mm > 0.5);
+  // Há chuva relevante no dia? (prob >30% e >0,5mm) → aviso ao lado do dia.
+  // (ignora a 24h, que é dado do dia seguinte)
+  const needRainAction = hours.some(h => h.hour < 24 && h.pop > 30 && h.mm > 0.5);
 
   // Rótulos de hora compactos (de 3 em 3 h), só abaixo do dia de hoje.
-  const x24 = (n) * (W / (n - 1));   // posição da 24h (extrapolada) = 00h do dia seguinte
-  const hourAxis = isToday ? `
+  // Legenda de horas (00,03,…,24h) sob CADA dia. A 24h é um ponto real agora
+  // (00h do dia seguinte); no último dia o eixo termina em 23h.
+  const hourAxis = `
         <div class="hour-axis">
           ${hours.map((h, i) => {
             if (h.hour % 3 !== 0) return '';
@@ -955,8 +972,7 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
               : `left:${pct.toFixed(1)}%;transform:translateX(-50%)`;
             return `<span style="${style}">${String(h.hour).padStart(2,'0')}h</span>`;
           }).join('')}
-          <span style="left:${(x24/VBW*100).toFixed(1)}%;transform:translateX(-50%)" title="00h do dia seguinte">24h</span>
-        </div>` : '';
+        </div>`;
 
   return `
     <div class="row${isToday ? ' today' : ''}">
@@ -987,8 +1003,8 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
             <circle cx="${xAt(iMin).toFixed(1)}" cy="${yAt(tMin).toFixed(1)}" r="3" fill="${minCol}"
                     vector-effect="non-scaling-stroke"/>
           </svg>
-          <span class="lbl lbl-max" style="${diag(xAt(iMax), yAt(tMax), false)};color:${maxCol}">${Math.round(tMax)}°</span>
-          <span class="lbl lbl-min" style="${diag(xAt(iMin), yAt(tMin), true)};color:${minCol}">${Math.round(tMin)}°</span>
+          <span class="lbl lbl-max" style="${edgeLabel(xAt(iMax), yAt(tMax))};color:${maxCol}">${Math.round(tMax)}° · ${String(hours[iMax].hour).padStart(2,'0')}h</span>
+          <span class="lbl lbl-min" style="${edgeLabel(xAt(iMin), yAt(tMin))};color:${minCol}">${Math.round(tMin)}° · ${String(hours[iMin].hour).padStart(2,'0')}h</span>
           ${windLbl}
         </div>
         ${hourAxis}
