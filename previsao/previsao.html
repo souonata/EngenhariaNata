@@ -935,6 +935,7 @@ function windDirLabel(deg){
   const itDirs = ['N','NE','E','SE','S','SO','O','NO'];
   return (LANG.startsWith('it') ? itDirs : ptDirs)[d];
 }
+let tipOpen = false;
 function showTip(cx, cy, el){
   const hr  = el.dataset.h;
   const t   = el.dataset.t;
@@ -951,6 +952,7 @@ function showTip(cx, cy, el){
     `<div class="tip-row">💨 <span>${w} km/h ${dir}</span></div>` +
     `<div class="tip-row">🌧️ <span>${pop}% · ${mm} mm</span></div>`;
   tip.style.display = 'block';
+  tipOpen = true;
   const vw = window.innerWidth, vh = window.innerHeight;
   const tw = tip.offsetWidth  || 160;
   const th = tip.offsetHeight || 90;
@@ -961,9 +963,11 @@ function showTip(cx, cy, el){
   tip.style.left = lx + 'px';
   tip.style.top  = ly + 'px';
 }
-function closeTip(){ document.getElementById('hourTip').style.display = 'none'; }
+function closeTip(){ document.getElementById('hourTip').style.display = 'none'; tipOpen = false; }
 function wireTip(){
   document.getElementById('days').addEventListener('click', e => {
+    // Se tooltip aberto: primeiro clique só fecha, não abre outro.
+    if (tipOpen) { closeTip(); e.stopPropagation(); return; }
     // Clique direto num valor: usa os dados do próprio elemento.
     const el = e.target.closest('.t-num,.t-ball');
     if (el) { showTip(e.clientX, e.clientY, el); e.stopPropagation(); return; }

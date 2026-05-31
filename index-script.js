@@ -83,6 +83,7 @@ class IndexApp extends App {
         this.adicionarVersoesNosIcones();
         this.inicializarEasterEggVisitantes();
         this.inicializarWidgetVisitantes();
+        this.sortAppsForLocale();
     }
 
     async carregarVersoesDoServidor() {
@@ -108,6 +109,55 @@ class IndexApp extends App {
     atualizarAposTrocaIdioma() {
         this.atualizarHorario();
         this.renderizarContagemVisitantes();
+        this.sortAppsForLocale();
+    }
+
+    sortAppsForLocale() {
+        const lang   = typeof i18n.obterIdiomaAtual === 'function' ? i18n.obterIdiomaAtual() : 'pt-BR';
+        const locale = lang.startsWith('it') ? 'it' : 'pt';
+        const ABOUT  = 'app-about';
+        const BUGS   = 'app-bugs';
+
+        const getName = (key) => {
+            const span = document.querySelector(`.apps-grid .app-icon[data-i18n-aria="${key}"] .app-name`);
+            return span ? span.textContent.trim() : key;
+        };
+
+        const grid = document.querySelector('.apps-grid');
+        if (grid) {
+            const icons  = [...grid.querySelectorAll(':scope > .app-icon')];
+            const about  = icons.find(el => el.dataset.i18nAria === ABOUT);
+            const bugs   = icons.find(el => el.dataset.i18nAria === BUGS);
+            const others = icons.filter(el => el.dataset.i18nAria !== ABOUT && el.dataset.i18nAria !== BUGS);
+            others.sort((a, b) =>
+                (a.querySelector('.app-name')?.textContent || '').localeCompare(
+                 b.querySelector('.app-name')?.textContent || '', locale));
+            const frag = document.createDocumentFragment();
+            if (about) frag.appendChild(about);
+            others.forEach(el => frag.appendChild(el));
+            if (bugs)  frag.appendChild(bugs);
+            grid.appendChild(frag);
+        }
+
+        const list = document.querySelector('.apps-list');
+        if (list) {
+            const cards  = [...list.querySelectorAll(':scope > .app-card')];
+            const about  = cards.find(el => el.querySelector(`[data-i18n-aria="${ABOUT}"]`));
+            const bugs   = cards.find(el => el.querySelector(`[data-i18n-aria="${BUGS}"]`));
+            const others = cards.filter(el =>
+                !el.querySelector(`[data-i18n-aria="${ABOUT}"]`) &&
+                !el.querySelector(`[data-i18n-aria="${BUGS}"]`));
+            others.sort((a, b) => {
+                const keyA = a.querySelector('[data-i18n-aria]')?.getAttribute('data-i18n-aria') || '';
+                const keyB = b.querySelector('[data-i18n-aria]')?.getAttribute('data-i18n-aria') || '';
+                return getName(keyA).localeCompare(getName(keyB), locale);
+            });
+            const frag = document.createDocumentFragment();
+            if (about) frag.appendChild(about);
+            others.forEach(el => frag.appendChild(el));
+            if (bugs)  frag.appendChild(bugs);
+            list.appendChild(frag);
+        }
     }
 
     configurarRelogio() {
