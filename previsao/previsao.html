@@ -19,15 +19,51 @@
     --mm:#7ee3c1;
     --today:#3fb950;
   }
-  html,body{height:100%;overscroll-behavior:none}
+  html{overscroll-behavior:none}
   body{
     background:radial-gradient(1200px 800px at 0% 0%,#172241 0%,var(--bg) 60%);
+    background-attachment:fixed;
     color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-    height:100dvh;overflow:hidden;
+    min-height:100dvh;
     display:flex;flex-direction:column;
     padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
+
+  /* Primeira "tela" — mantém o gráfico ocupando o viewport; o rodapé do site e
+     o botão home ficam abaixo e aparecem ao rolar. */
+  .screen{ min-height:100dvh; display:flex; flex-direction:column; }
+
+  /* Rodapé padrão do site (revelado ao rolar) */
+  .site-footer{
+    flex:0 0 auto; text-align:center;
+    color:var(--muted); font-size:.72rem;
+    padding:18px 14px 88px;   /* espaço extra embaixo para o botão home aparecer abaixo do rodapé */
+  }
+  .site-footer p{ margin:0; }
+  .site-footer .footer-meta{ margin-top:6px; display:flex; justify-content:center; }
+  .site-footer .footer-github-link{
+    display:inline-flex; align-items:center; gap:5px;
+    color:var(--muted); text-decoration:none; font-size:.68rem;
+  }
+  .site-footer .footer-github-link:hover{ color:var(--text); }
+  .site-footer .footer-github-link svg{ width:13px; height:13px; fill:currentColor; }
+
+  /* Botão home — só aparece (em degradê) ao rolar até perto do rodapé */
+  .home-button-fixed{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    width:50px; height:50px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,#1d3759,#1c2740);
+    border:1px solid var(--prob);
+    box-shadow:0 8px 22px rgba(74,168,255,.28);
+    color:var(--prob); text-decoration:none;
+    opacity:0; pointer-events:none;
+    transition:opacity .28s ease, transform .2s ease;
+    z-index:60;
+  }
+  .home-button-fixed:hover{ transform:translateX(-50%) scale(1.08); }
+  .home-button-fixed svg{ width:24px; height:24px; fill:currentColor; }
 
   /* ─── City buttons (header) ─── */
   .cities{
@@ -81,7 +117,7 @@
   .col-head{
     flex:0 0 auto;
     display:grid;
-    grid-template-columns: 60px 1fr 58px;
+    grid-template-columns: 60px 1fr;
     gap:6px;
     padding:5px 10px;
     font-size:.6rem;
@@ -106,7 +142,7 @@
   .row{
     flex:1 1 0;
     display:grid;
-    grid-template-columns: 60px 1fr 58px;
+    grid-template-columns: 60px 1fr;
     gap:6px;
     align-items:center;
     padding:4px 10px;
@@ -140,6 +176,15 @@
   }
   .lbl-max{ color:#ff7a5c; top:1px; }
   .lbl-min{ color:#7cc4ff; bottom:1px; }
+  /* Rótulo do alvo sazonal, sempre visível na altura da linha de referência (à direita) */
+  .lbl-set{
+    position:absolute; right:3px; transform:translateY(-50%);
+    font-size:.6rem; font-weight:700; line-height:1;
+    padding:1px 4px; border-radius:3px;
+    background:rgba(11,18,32,.72);
+    backdrop-filter:blur(2px);
+    color:#9fe6b5; pointer-events:none; white-space:nowrap;
+  }
 
   /* Trigger strip */
   .triggers{
@@ -209,7 +254,8 @@
 
   /* ─── Desktop ─── */
   @media (min-width:768px){
-    body{align-items:center;justify-content:center;background:#070b14}
+    body{background:#070b14}
+    .screen{align-items:center;justify-content:center}
     .app{
       width:min(100%,860px);
       height:min(100dvh,740px);
@@ -224,9 +270,10 @@
     .cb-emoji{font-size:1rem}
     .cb-temp{font-size:1.6rem;margin-top:4px}
     .cb-meta{font-size:.7rem;margin-top:3px}
-    .col-head, .row{grid-template-columns: 80px 1fr 80px;padding-left:18px;padding-right:18px}
+    .col-head, .row{grid-template-columns: 80px 1fr;padding-left:18px;padding-right:18px}
     .dow{font-size:.95rem}.dnum{font-size:.72rem}.emo{font-size:1.15rem}
     .lbl{font-size:.72rem}
+    .lbl-set{font-size:.72rem}
     .c-stats{font-size:.78rem}
     .triggers{font-size:.68rem;min-height:11px;gap:10px}
     .hour-axis{height:12px}
@@ -246,17 +293,35 @@
 </head>
 <body>
 
-<div class="app" id="app" style="display:none;flex:1;flex-direction:column;min-height:0">
+<div class="screen">
+  <div class="app" id="app" style="display:none;flex:1;flex-direction:column;min-height:0">
 
-  <nav class="cities" id="cityBtns"></nav>
+    <nav class="cities" id="cityBtns"></nav>
 
-  <main class="days" id="days"></main>
+    <main class="days" id="days"></main>
 
-  <footer class="footer">
-    <span id="footLoc">📍 —</span>
-    <span>Fonte: <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a></span>
-  </footer>
+    <footer class="footer">
+      <span id="footLoc">📍 —</span>
+      <span>Fonte: <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a></span>
+    </footer>
+  </div>
 </div>
+
+<footer class="site-footer">
+  <p>💻 Portfólio Engenharia NATA @ 2026</p>
+  <div class="footer-meta">
+    <a class="footer-github-link" href="https://github.com/souonata/EngenhariaNata" target="_blank" rel="noopener noreferrer" aria-label="GitHub EngenhariaNata">
+      <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.58 7.58 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+      <span>github.com/souonata/EngenhariaNata</span>
+    </a>
+  </div>
+</footer>
+
+<a href="../index.html" class="home-button-fixed" title="Voltar para a tela inicial" aria-label="Voltar para a tela inicial">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+  </svg>
+</a>
 
 <div id="loading" class="overlay">
   <div class="spinner"></div>
@@ -302,9 +367,34 @@ let histMaxByCity = (() => {
   try {
     await loadAll();
     ensureHistMax();   // em background: atualiza o teto da escala e re-renderiza
+    setupHomeFade();   // botão home aparece em degradê só ao rolar até o rodapé
   }
   catch (err) { showError(err.message); }
 })();
+
+/* ──── Botão home: aparece em degradê de transparência conforme a página rola
+   até perto do rodapé (abaixo do gráfico), deixando a tela limpa no topo. ──── */
+function setupHomeFade(){
+  const btn = document.querySelector('.home-button-fixed');
+  if (!btn) return;
+  const FAIXA = 100;   // px de transição da aparição perto do fundo
+  const atualizar = () => {
+    const doc = document.documentElement;
+    const rolavel = doc.scrollHeight - window.innerHeight;
+    let op;
+    if (rolavel <= 4) {
+      op = 1;                                   // não rola → sempre visível (fail-safe)
+    } else {
+      const distFundo = rolavel - window.scrollY;
+      op = Math.min(1, Math.max(0, 1 - distFundo / FAIXA));
+    }
+    btn.style.opacity = op.toFixed(3);
+    btn.style.pointerEvents = op > 0.05 ? 'auto' : 'none';
+  };
+  atualizar();
+  window.addEventListener('scroll', atualizar, { passive: true });
+  window.addEventListener('resize', atualizar);
+}
 
 /* ──── Constrói botões vazios (antes dos dados chegarem) ──── */
 function buildCityButtonShells(){
@@ -522,15 +612,12 @@ function buildRow(day, hours, isToday, scaleMax, lat){
   const [emo] = wmo(day.code);
 
   const temps = hours.map(h => h.temp);
-  const pops  = hours.map(h => h.pop);
   const mms   = hours.map(h => h.mm);
   const n     = temps.length;
 
   const tMin = Math.min(...temps), tMax = Math.max(...temps);
   const iMin = temps.indexOf(tMin), iMax = temps.indexOf(tMax);
   const tRange = Math.max(0.5, tMax - tMin);
-  const popMax = Math.round(Math.max(...pops));
-  const mmTotal = mms.reduce((a,b)=>a+b, 0);
 
   const W = 240, H = 60;
   const padT = 9, padB = 3;
@@ -563,7 +650,11 @@ function buildRow(day, hours, isToday, scaleMax, lat){
     if (m <= 0.05) return '';
     const barH = rainZoneH * Math.min(m / rainScaleMax, 1);
     if (barH < 0.4) return '';
-    return `<rect x="${(xAt(i) - rBarW/2).toFixed(1)}" y="${(padT + ch - barH).toFixed(1)}" width="${rBarW.toFixed(1)}" height="${barH.toFixed(1)}" fill="rgba(126,227,193,.34)"/>`;
+    // Altura = quantidade (mm); opacidade = probabilidade de chuva da hora
+    // (0–100%), com um piso para a barra não sumir em mm de baixa probabilidade.
+    const pop = hours[i].pop || 0;
+    const op = Math.max(0.12, (pop / 100) * 0.8);
+    return `<rect x="${(xAt(i) - rBarW/2).toFixed(1)}" y="${(padT + ch - barH).toFixed(1)}" width="${rBarW.toFixed(1)}" height="${barH.toFixed(1)}" fill="rgba(126,227,193,${op.toFixed(2)})"/>`;
   }).join('');
 
   const pts = temps.map((t, i) => `${xAt(i).toFixed(1)},${yAt(t).toFixed(1)}`);
@@ -583,8 +674,9 @@ function buildRow(day, hours, isToday, scaleMax, lat){
   const xMaxPct = clamp(iMax/(n-1)*100, 10, 90);
   const xMinPct = clamp(iMin/(n-1)*100, 10, 90);
 
-  const popClass = popMax >= 30 ? '' : 'dry';
-  const mmClass  = mmTotal >= 0.1 ? '' : 'zero';
+  // Posição vertical (% da altura do gráfico) do rótulo do alvo, na linha de
+  // referência — sempre mostrado, mesmo que a temperatura do dia não o alcance.
+  const setTopPct = (gridY / H * 100).toFixed(1);
 
   // Triggers (smart-home thresholds)
   const T_THRESH = 24;
@@ -649,6 +741,7 @@ function buildRow(day, hours, isToday, scaleMax, lat){
           </svg>
           <span class="lbl lbl-max" style="left:${xMaxPct}%">▲ ${Math.round(tMax)}°</span>
           <span class="lbl lbl-min" style="left:${xMinPct}%">▼ ${Math.round(tMin)}°</span>
+          <span class="lbl-set" style="top:${setTopPct}%" title="Temperatura-alvo de interior (${setpoint}°)">${setpoint}°</span>
         </div>
         <div class="triggers">
           ${upStr   ? `<span class="trig-up"   title="Temperatura sobe acima de 24°C">▲24° ${upStr}</span>` : ''}
@@ -656,10 +749,6 @@ function buildRow(day, hours, isToday, scaleMax, lat){
           ${rainStr ? `<span class="trig-rain" title="Chuva: prob >30% e >0,5mm">💧 ${rainStr}</span>` : ''}
         </div>
         ${hourAxis}
-      </div>
-      <div class="c-stats">
-        <span class="stat-pop ${popClass}">💧 ${popMax}%</span>
-        <span class="stat-mm ${mmClass}">${mmTotal.toFixed(1)} mm</span>
       </div>
     </div>
   `;

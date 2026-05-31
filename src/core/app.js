@@ -30,6 +30,7 @@ export class App {
             configurarBotoesIdioma();
 
             this.configurarBotaoHome();
+            this.configurarFadeBotaoHome();
             this.configurarEventosComuns();
             this.configurarInputsNumericosMoveis();
 
@@ -68,6 +69,33 @@ export class App {
                 window.location.href = '../index.html';
             });
         }
+    }
+
+    // Botão home some quando o conteúdo está em foco e só aparece (em degradê de
+    // transparência) quando a página rola até perto do rodapé, deixando o uso do
+    // app mais limpo. Se a página não rola, fica sempre visível (fail-safe).
+    configurarFadeBotaoHome() {
+        const btn = document.querySelector('.home-button-fixed');
+        if (!btn) return;
+
+        const FAIXA = 150; // px de transição da aparição perto do fundo
+        const atualizar = () => {
+            const doc = document.documentElement;
+            const rolavel = doc.scrollHeight - window.innerHeight;
+            let op;
+            if (rolavel <= 4) {
+                op = 1;                                   // não rola → sempre visível
+            } else {
+                const distFundo = rolavel - window.scrollY;
+                op = Math.min(1, Math.max(0, 1 - distFundo / FAIXA));
+            }
+            btn.style.opacity = op.toFixed(3);
+            btn.style.pointerEvents = op > 0.05 ? 'auto' : 'none';
+        };
+
+        atualizar();
+        window.addEventListener('scroll', atualizar, { passive: true });
+        window.addEventListener('resize', atualizar);
     }
 
     configurarEventosComuns() {
