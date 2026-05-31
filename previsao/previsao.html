@@ -482,13 +482,11 @@ function buildRow(day, hours, isToday, weekMaxMM){
   // Barras de chuva POR HORA, em escala FIXA para a semana inteira: a altura de
   // cada hora é proporcional ao quanto choveu nela em relação ao pico horário
   // da semana (weekMaxMM). Assim a mesma quantidade tem a mesma altura em
-  // qualquer dia → dá para comparar os dias entre si. Um leve fundo marca o
-  // teto fixo dessa escala em todos os dias.
+  // qualquer dia → dá para comparar os dias entre si.
   const rainScaleMax = Math.max(weekMaxMM || 0, 0.1);
   const rainZoneH = ch * 0.85;
   const rBarW = (W / n) * 0.7;
-  const rainBg = `<rect x="0" y="${(padT + ch - rainZoneH).toFixed(1)}" width="${W}" height="${rainZoneH.toFixed(1)}" fill="rgba(126,227,193,.05)"/>`;
-  const mmBars = rainBg + mms.map((m, i) => {
+  const mmBars = mms.map((m, i) => {
     if (m <= 0.05) return '';
     const barH = rainZoneH * Math.min(m / rainScaleMax, 1);
     if (barH < 0.4) return '';
