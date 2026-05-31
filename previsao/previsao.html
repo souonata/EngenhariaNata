@@ -899,7 +899,7 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
     ? `<circle cx="${xAt(iWindMax).toFixed(1)}" cy="${windTopY.toFixed(1)}" r="2" fill="#9aa7d6" vector-effect="non-scaling-stroke"/>`
     : '';
   const windLbl = windMax > 0
-    ? `<span class="lbl-wind" style="${diag(xAt(iWindMax), windTopY, true)}">💨 ${Math.round(windMax)} km/h · ${String(hours[iWindMax].hour).padStart(2,'0')}h</span>`
+    ? `<span class="lbl-wind" style="${diag(xAt(iWindMax), windTopY, true)}">💨 ${Math.round(windMax)} · ${String(hours[iWindMax].hour).padStart(2,'0')}h</span>`
     : '';
 
   // ── Chuva: cada hora com chuva preenche a ALTURA TODA com hachura de linhas
@@ -947,43 +947,8 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   const maxCol = (tMax < setpoint) ? '#3fb950' : '#ff5b4a';
   const minCol = (tMin > setpoint) ? '#3fb950' : '#4aa8ff';
 
-  // Cruzamentos da temperatura-alvo: símbolo ▲/▼ no ponto exato; a hora é escrita
-  // de forma discreta numa faixa, com um traço (leader) puxando do símbolo até o
-  // texto — deslocando os rótulos para não se sobreporem quando se intercalam.
-  const T_THRESH = setpoint;
-  const setY = yAt(setpoint);
-  const setPct = (setY / H * 100).toFixed(1);
-  const ups = [], dns = [];
-  for (let i = 1; i < temps.length; i++) {
-    const a = temps[i-1], b = temps[i];
-    if (a < T_THRESH && b >= T_THRESH)      ups.push(i);
-    else if (a >= T_THRESH && b < T_THRESH) dns.push(i);
-  }
-  const crossEvents = [
-    ...ups.map(i => ({ x: xAt(i), col: '#ff5b4a', gly: '▲', hour: hours[i].hour })),
-    ...dns.map(i => ({ x: xAt(i), col: '#4aa8ff', gly: '▼', hour: hours[i].hour }))
-  ].sort((a, b) => a.x - b.x);
-  const MINGAP = 28;                                   // separação mínima entre rótulos (unidades do viewBox)
-  let lastLx = -Infinity;
-  crossEvents.forEach(e => { e.lx = Math.min(W - 4, Math.max(e.x, lastLx + MINGAP)); lastLx = e.lx; });
-  const laneY = clamp(setY - 11, padT + 2, padT + ch - 9);   // faixa dos rótulos de hora (acima da linha do alvo)
-  const crossSymbols = crossEvents.map(e =>
-    `<span class="cross-mark" style="left:${clamp(e.x/VBW*100,2,86).toFixed(1)}%;top:${setPct}%;color:${e.col}">${e.gly}</span>`).join('');
-  const crossLeaders = crossEvents.map(e =>
-    `<line x1="${e.x.toFixed(1)}" y1="${setY.toFixed(1)}" x2="${e.lx.toFixed(1)}" y2="${(laneY+3).toFixed(1)}" stroke="var(--muted)" stroke-opacity=".55" stroke-width="1" vector-effect="non-scaling-stroke"/>`).join('');
-  const crossHours = crossEvents.map(e =>
-    `<span class="ev-hr" style="left:${clamp(e.lx/VBW*100,2,86).toFixed(1)}%;top:${(laneY/H*100).toFixed(1)}%">${String(e.hour).padStart(2,'0')}h</span>`).join('');
-
-  // Horas de chuva → 💧 no centro de cada faixa contígua de chuva (na sua posição).
-  const rainMarks = [];
-  let rs = null, rp = null;
-  const flushRain = () => { if (rs != null) { const mid = Math.round((rs + rp) / 2); rainMarks.push(`<span class="rain-mark" style="left:${clamp(xAt(mid)/VBW*100,3,86).toFixed(1)}%">💧</span>`); } };
-  hours.forEach((h, i) => {
-    if (h.pop > 30 && h.mm > 0.5) { if (rs == null) { rs = rp = i; } else if (i === rp + 1) { rp = i; } else { flushRain(); rs = rp = i; } }
-  });
-  flushRain();
-  const rainMarksSvg = rainMarks.join('');
-  const needRainAction = rainMarks.length > 0;   // chuva que pede fechar janela / recolher roupa
+  // Há chuva relevante no dia? (prob >30% e >0,5mm em alguma hora) → aviso ao lado do dia.
+  const needRainAction = hours.some(h => h.pop > 30 && h.mm > 0.5);
 
   // Rótulos de hora compactos (de 3 em 3 h), só abaixo do dia de hoje.
   const x24 = (n) * (W / (n - 1));   // posição da 24h (extrapolada) = 00h do dia seguinte
@@ -1021,7 +986,6 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
             ${hourGrid}
             ${windBars}
             ${rainSvg}
-            ${crossLeaders}
             <path d="${linePath}" fill="none" stroke="url(#${tgid})" stroke-width="3"
                   vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>
             ${windDot}
@@ -1033,9 +997,6 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
           <span class="lbl lbl-max" style="${diag(xAt(iMax), yAt(tMax), false)};color:${maxCol}">▲ ${Math.round(tMax)}°</span>
           <span class="lbl lbl-min" style="${diag(xAt(iMin), yAt(tMin), true)};color:${minCol}">▼ ${Math.round(tMin)}°</span>
           ${windLbl}
-          ${crossSymbols}
-          ${crossHours}
-          ${rainMarksSvg}
           ${degAxis}
         </div>
         ${hourAxis}
