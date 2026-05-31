@@ -264,6 +264,17 @@
     backdrop-filter:blur(2px);
   }
 
+  /* Marcadores na posição da hora: cruzamento do alvo (▲/▼) e chuva (💧) */
+  .cross-mark{
+    position:absolute; transform:translate(-50%,-50%);
+    font-size:.62rem; font-weight:700; line-height:1; pointer-events:none;
+    text-shadow:0 0 2px var(--bg), 0 0 2px var(--bg);
+  }
+  .rain-mark{
+    position:absolute; top:1px; transform:translateX(-50%);
+    font-size:.6rem; line-height:1; pointer-events:none;
+  }
+
   /* Trigger strip */
   .triggers{
     flex:0 0 auto;
@@ -355,6 +366,8 @@
     .deg{font-size:.58rem}
     .deg-set{font-size:.66rem}
     .lbl-wind{font-size:.62rem}
+    .cross-mark{font-size:.74rem}
+    .rain-mark{font-size:.72rem}
     .c-stats{font-size:.78rem}
     .triggers{font-size:.68rem;min-height:11px;gap:10px}
     .hour-axis{height:12px}
@@ -890,25 +903,33 @@ function buildRow(day, hours, isToday, scaleMax, lat){
   const maxCol = (tMax < setpoint) ? '#3fb950' : '#ff5b4a';
   const minCol = (tMin > setpoint) ? '#3fb950' : '#4aa8ff';
 
-  // Gatilhos: cruzamentos da temperatura-alvo da estação.
+  // Cruzamentos da temperatura-alvo da estação → marcadores ▲/▼ no próprio ponto
+  // de cruzamento (na hora em que ocorre), sobre a linha do alvo.
   const T_THRESH = setpoint;
+  const setPct = (yAt(setpoint) / H * 100).toFixed(1);
   const tempUps = [], tempDns = [];
   for (let i = 1; i < temps.length; i++) {
     const a = temps[i-1], b = temps[i];
-    if (a < T_THRESH && b >= T_THRESH)      tempUps.push(hours[i].hour);
-    else if (a >= T_THRESH && b < T_THRESH) tempDns.push(hours[i].hour);
+    if (a < T_THRESH && b >= T_THRESH)      tempUps.push(i);
+    else if (a >= T_THRESH && b < T_THRESH) tempDns.push(i);
   }
-  const rainHrs  = hours.filter(h => h.pop > 30 && h.mm > 0.5).map(h => h.hour);
-  const upStr    = tempUps.map(formatHr).join(' ');
-  const dnStr    = tempDns.map(formatHr).join(' ');
-  const rainStr  = groupHours(rainHrs);
-
-  const crossLines = [...tempUps, ...tempDns].map(h => {
-    const idx = hours.findIndex(x => x.hour === h);
-    if (idx < 0) return '';
+  const crossLines = [...tempUps, ...tempDns].map(idx => {
     const x = xAt(idx).toFixed(1);
     return `<line x1="${x}" y1="${padT}" x2="${x}" y2="${(padT+ch).toFixed(1)}" class="g-cross" stroke-width="1" stroke-dasharray="2 2" vector-effect="non-scaling-stroke"/>`;
   }).join('');
+  const crossMarks =
+    tempUps.map(idx => `<span class="cross-mark" style="left:${clamp(xAt(idx)/VBW*100,3,86).toFixed(1)}%;top:${setPct}%;color:#ff5b4a">▲</span>`).join('') +
+    tempDns.map(idx => `<span class="cross-mark" style="left:${clamp(xAt(idx)/VBW*100,3,86).toFixed(1)}%;top:${setPct}%;color:#4aa8ff">▼</span>`).join('');
+
+  // Horas de chuva → 💧 no centro de cada faixa contígua de chuva (na sua posição).
+  const rainMarks = [];
+  let rs = null, rp = null;
+  const flushRain = () => { if (rs != null) { const mid = Math.round((rs + rp) / 2); rainMarks.push(`<span class="rain-mark" style="left:${clamp(xAt(mid)/VBW*100,3,86).toFixed(1)}%">💧</span>`); } };
+  hours.forEach((h, i) => {
+    if (h.pop > 30 && h.mm > 0.5) { if (rs == null) { rs = rp = i; } else if (i === rp + 1) { rp = i; } else { flushRain(); rs = rp = i; } }
+  });
+  flushRain();
+  const rainMarksSvg = rainMarks.join('');
 
   // Rótulos de hora compactos (de 3 em 3 h), só abaixo do dia de hoje.
   const hourAxis = isToday ? `
@@ -954,12 +975,9 @@ function buildRow(day, hours, isToday, scaleMax, lat){
           <span class="lbl lbl-max" style="left:${xMaxPct.toFixed(1)}%;color:${maxCol}">▲ ${Math.round(tMax)}°</span>
           <span class="lbl lbl-min" style="left:${xMinPct.toFixed(1)}%;color:${minCol}">▼ ${Math.round(tMin)}°</span>
           ${windLbl}
+          ${crossMarks}
+          ${rainMarksSvg}
           ${degAxis}
-        </div>
-        <div class="triggers">
-          ${upStr   ? `<span class="trig-up"   title="${T().upTitle} (${setpoint}°)">▲${setpoint}° ${upStr}</span>` : ''}
-          ${dnStr   ? `<span class="trig-dn"   title="${T().dnTitle} (${setpoint}°)">▼${setpoint}° ${dnStr}</span>` : ''}
-          ${rainStr ? `<span class="trig-rain" title="${T().rainTitle}">💧 ${rainStr}</span>` : ''}
         </div>
         ${hourAxis}
       </div>
