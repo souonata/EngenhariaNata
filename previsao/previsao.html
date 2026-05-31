@@ -282,15 +282,27 @@ const CITIES = [
   { id:'curitiba', name:'Curitiba', lat:-25.4284, lon:-49.2733 },
 ];
 const LS_CITY = 'previsao_city_v1';
+const LS_HISTMAX = 'previsao_histmax_v1';   // teto fixo da escala de chuva (máx. horário em 365 dias)
+const HISTMAX_TTL_DAYS = 7;                 // revalida o histórico no máximo 1×/semana
 const DOW = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 
 let cityData = [];              // dados de cada cidade (índices alinhados com CITIES)
 let currentIdx = Math.max(0, CITIES.findIndex(c => c.id === localStorage.getItem(LS_CITY)));
 
+// Máx. horário de chuva (mm) dos últimos 365 dias, por cidade — usado como teto
+// FIXO da escala das barras. Carrega do cache (mesmo se vencido) para uso imediato.
+let histMaxByCity = (() => {
+  try { const raw = JSON.parse(localStorage.getItem(LS_HISTMAX) || 'null'); return (raw && raw.values) || {}; }
+  catch (e) { return {}; }
+})();
+
 /* ──── Boot ──── */
 (async function init(){
   buildCityButtonShells();
-  try { await loadAll(); }
+  try {
+    await loadAll();
+    ensureHistMax();   // em background: atualiza o teto da escala e re-renderiza
+  }
   catch (err) { showError(err.message); }
 })();
 
@@ -396,6 +408,58 @@ function selectCity(i){
   renderDays();
 }
 
+/* ──── Histórico: maior chuva horária (mm) dos últimos 365 dias por cidade ──── */
+function histCacheFresh(){
+  try {
+    const raw = JSON.parse(localStorage.getItem(LS_HISTMAX) || 'null');
+    if (!raw || !raw.date || !raw.values) return false;
+    if (!CITIES.every(c => typeof raw.values[c.id] === 'number')) return false;
+    const ageDays = (Date.now() - new Date(raw.date + 'T00:00:00').getTime()) / 86400000;
+    return ageDays >= 0 && ageDays < HISTMAX_TTL_DAYS;
+  } catch (e) { return false; }
+}
+
+async function fetchHistMax(){
+  // API de arquivo histórico do Open-Meteo (latência de alguns dias → end = hoje-5).
+  const end = new Date();   end.setDate(end.getDate() - 5);
+  const start = new Date(end); start.setDate(start.getDate() - 364);
+  const fmt = d => d.toISOString().slice(0, 10);
+
+  const url = new URL('https://archive-api.open-meteo.com/v1/archive');
+  url.search = new URLSearchParams({
+    latitude:  CITIES.map(c => c.lat).join(','),
+    longitude: CITIES.map(c => c.lon).join(','),
+    start_date: fmt(start),
+    end_date:   fmt(end),
+    hourly:    'precipitation',
+    timezone:  'auto'
+  });
+
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  const arr = await res.json();
+  const list = Array.isArray(arr) ? arr : [arr];
+
+  const out = {};
+  CITIES.forEach((c, i) => {
+    const p = (list[i] && list[i].hourly && list[i].hourly.precipitation) || [];
+    let m = 0;
+    for (const v of p) { if (v != null && v > m) m = v; }
+    out[c.id] = m;
+  });
+  return out;
+}
+
+async function ensureHistMax(){
+  if (histCacheFresh()) return;            // cache ainda válido → não refaz a requisição pesada
+  try {
+    const vals = await fetchHistMax();
+    histMaxByCity = vals;
+    localStorage.setItem(LS_HISTMAX, JSON.stringify({ date: new Date().toISOString().slice(0,10), values: vals }));
+    if (cityData.length) renderDays();      // re-renderiza com o teto histórico
+  } catch (e) { /* mantém o fallback (semana) */ }
+}
+
 /* ──── WMO codes ──── */
 function wmo(code){
   if (code === 0)              return ['☀️','Céu limpo'];
@@ -423,18 +487,21 @@ function renderDays(){
   wrap.innerHTML = '';
   const todayISO = cd.daily[0] ? cd.daily[0].date : new Date().toISOString().slice(0,10);
 
-  // Pico horário de chuva da semana inteira → escala FIXA compartilhada por
-  // todos os dias, para que a mesma quantidade tenha a mesma altura e os dias
-  // sejam comparáveis visualmente (não normaliza por dia).
+  // Teto FIXO da escala das barras de chuva = maior chuva horária dos últimos
+  // 365 dias para esta cidade (histMaxByCity). Assim a mesma quantidade tem a
+  // mesma altura em todos os dias e dá para comparar os dias entre si. Enquanto
+  // o histórico não chega, usa o pico da semana como fallback.
   let weekMaxMM = 0;
   cd.daily.forEach(day => {
     (cd.hourlyByDay[day.date] || []).forEach(h => { if (h.mm > weekMaxMM) weekMaxMM = h.mm; });
   });
+  const hist = histMaxByCity[cd.city.id];
+  const scaleMax = (typeof hist === 'number' && hist > 0) ? hist : weekMaxMM;
 
   cd.daily.forEach(day => {
     const hours = cd.hourlyByDay[day.date] || [];
     if (hours.length < 2) return;
-    wrap.insertAdjacentHTML('beforeend', buildRow(day, hours, day.date === todayISO, weekMaxMM));
+    wrap.insertAdjacentHTML('beforeend', buildRow(day, hours, day.date === todayISO, scaleMax));
   });
 
   const c = cd.city;
@@ -444,7 +511,7 @@ function renderDays(){
 }
 
 /* ──── Build one row with SVG sparkline ──── */
-function buildRow(day, hours, isToday, weekMaxMM){
+function buildRow(day, hours, isToday, scaleMax){
   const dt = new Date(day.date + 'T12:00:00');
   const dow = isToday ? 'Hoje' : DOW[dt.getDay()];
   const dnum = `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}`;
@@ -479,11 +546,11 @@ function buildRow(day, hours, isToday, weekMaxMM){
     return `<line x1="${x}" y1="${padT}" x2="${x}" y2="${(padT+ch).toFixed(1)}" stroke="rgba(255,255,255,${major ? '.13' : '.045'})" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
   }).join('');
 
-  // Barras de chuva POR HORA, em escala FIXA para a semana inteira: a altura de
-  // cada hora é proporcional ao quanto choveu nela em relação ao pico horário
-  // da semana (weekMaxMM). Assim a mesma quantidade tem a mesma altura em
-  // qualquer dia → dá para comparar os dias entre si.
-  const rainScaleMax = Math.max(weekMaxMM || 0, 0.1);
+  // Barras de chuva POR HORA, em escala FIXA: a altura de cada hora é
+  // proporcional ao quanto choveu nela em relação ao teto fixo (scaleMax =
+  // maior chuva horária dos últimos 365 dias). Assim a mesma quantidade tem a
+  // mesma altura em qualquer dia → dá para comparar os dias entre si.
+  const rainScaleMax = Math.max(scaleMax || 0, 0.1);
   const rainZoneH = ch * 0.85;
   const rBarW = (W / n) * 0.7;
   const mmBars = mms.map((m, i) => {
