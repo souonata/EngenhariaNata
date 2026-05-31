@@ -217,6 +217,8 @@
   .row.today .dow{color:#3fb950}
   .dnum{font-size:.62rem;color:var(--muted);margin-top:1px}
   .emo{font-size:.95rem;margin-top:1px}
+  /* Aviso de chuva do dia (fechar janela / recolher roupa do varal) */
+  .day-rain{font-size:.95rem;margin-top:2px;line-height:1;filter:drop-shadow(0 0 2px rgba(74,168,255,.5))}
 
   /* Chart cell */
   .c-chart{
@@ -360,7 +362,7 @@
     .cb-temp{font-size:1.6rem;margin-top:4px}
     .cb-meta{font-size:.7rem;margin-top:3px}
     .col-head, .row{grid-template-columns: 80px 1fr;padding-left:18px;padding-right:18px}
-    .dow{font-size:.95rem}.dnum{font-size:.72rem}.emo{font-size:1.15rem}
+    .dow{font-size:.95rem}.dnum{font-size:.72rem}.emo{font-size:1.15rem}.day-rain{font-size:1.15rem}
     .lbl{font-size:.72rem}
     .lbl-set{font-size:.72rem}
     .deg{font-size:.58rem}
@@ -462,7 +464,8 @@ const I18N = {
     source:'Fonte', footer:'💻 Portfólio Engenharia NATA @ 2026',
     home:'Voltar para a tela inicial', targetTitle:'Temperatura-alvo de interior',
     upTitle:'Temperatura sobe acima do alvo', dnTitle:'Temperatura cai abaixo do alvo',
-    rainTitle:'Chuva: prob >30% e >0,5mm'
+    rainTitle:'Chuva: prob >30% e >0,5mm',
+    rainAction:'Vai chover — feche a janela e recolha a roupa do varal'
   },
   'it-IT': {
     loading:'Caricamento previsioni…', error:'Errore nel caricamento dei dati.', retry:'Riprova',
@@ -470,7 +473,8 @@ const I18N = {
     source:'Fonte', footer:'💻 Portafoglio Ingegneria NATA @ 2026',
     home:'Torna alla schermata iniziale', targetTitle:'Temperatura interna obiettivo',
     upTitle:'La temperatura sale sopra l\'obiettivo', dnTitle:'La temperatura scende sotto l\'obiettivo',
-    rainTitle:'Pioggia: prob >30% e >0,5mm'
+    rainTitle:'Pioggia: prob >30% e >0,5mm',
+    rainAction:'Pioggia in arrivo — chiudi la finestra e ritira il bucato'
   }
 };
 let LANG = (() => { try { const s = sessionStorage.getItem('engnata_idioma'); return (s === 'it-IT' || s === 'pt-BR') ? s : 'pt-BR'; } catch (e) { return 'pt-BR'; } })();
@@ -930,6 +934,7 @@ function buildRow(day, hours, isToday, scaleMax, lat){
   });
   flushRain();
   const rainMarksSvg = rainMarks.join('');
+  const needRainAction = rainMarks.length > 0;   // chuva que pede fechar janela / recolher roupa
 
   // Rótulos de hora compactos (de 3 em 3 h), só abaixo do dia de hoje.
   const hourAxis = isToday ? `
@@ -950,6 +955,7 @@ function buildRow(day, hours, isToday, scaleMax, lat){
         <span class="dow">${dow}</span>
         <span class="dnum">${dnum}</span>
         <span class="emo">${emo}</span>
+        ${needRainAction ? `<span class="day-rain" title="${T().rainAction}">💧</span>` : ''}
       </div>
       <div class="c-chart">
         <div class="spark-wrap">
