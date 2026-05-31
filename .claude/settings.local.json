@@ -31,7 +31,19 @@
       "Bash(grep -n \"aria-home\\\\|^{$\\\\|^}\" /c/Users/abros/OneDrive/Documentos/ClaudeCodeWorkspace/EngenhariaNata/src/i18n/aquecimento.json)",
       "Read(//c/Users/abros/.claude/projects/C--Users-abros-OneDrive-Documentos-ClaudeCodeWorkspace-EngenhariaNata/**)",
       "Read(//c/Users/abros/.claude/projects/C--Users-abros-OneDrive-Documentos-ClaudeCodeWorkspace-EngenhariaNata/memory/**)",
-      "Bash(grep -E \"\\\\.css$\")"
+      "Bash(grep -E \"\\\\.css$\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/i18n/index.json','utf8'\\)\\); console.log\\('index.json OK'\\)\")",
+      "Bash(npm run *)",
+      "Bash(npm test *)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(rg -o \"html:not\\\\\\(\\\\[data-theme=.dark.\\\\]\\\\\\) \\\\.device-screen\\\\{[^}]*\\\\}\" dist/assets/css/*.css)",
+      "Bash(rg -o \"html:not\\\\\\(\\\\[data-theme=.dark.\\\\]\\\\\\) \\\\.home-button-fixed\\\\{[^}]*\\\\}\" dist/assets/css/*.css)",
+      "Bash(rg -o \"data-theme=.dark.\\\\]\\\\\\) ?\\\\.device-screen[^}]*}\" dist/assets/css/*.css)",
+      "Bash(rg -o \".{0,55}3a5a4b.{0,60}\" dist/assets/css/main-DkPcTKQa.css)",
+      "Bash(rg -o \".{0,70}c2e7e9.{0,80}\" dist/assets/css/main-DkPcTKQa.css)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('src/i18n/sobre.json','utf8'\\)\\);JSON.parse\\(require\\('fs'\\).readFileSync\\('src/i18n/index.json','utf8'\\)\\);console.log\\('sobre.json + index.json OK'\\)\")",
+      "Bash(rg -c \"configurarFadeBotaoHome\" dist/assets/js/*.js)",
+      "Bash(rg -l \"home-button-fixed|configurarBotaoHome\" dist/assets/js/*.js)"
     ]
   }
 }

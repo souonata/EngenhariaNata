@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "site",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vite", "--config", "local/vite.config.js", "--port", "5173"],
+      "port": 5173
+    },
+    {
+      "name": "root",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8098"],
+      "port": 8098
+    }
+  ]
+}
