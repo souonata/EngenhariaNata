@@ -309,6 +309,8 @@
     color:var(--muted);
     white-space:nowrap;
   }
+  /* Eixo denso (Hoje, todas as horas) — fonte menor p/ caber 0–24 */
+  .hour-axis.dense span{ font-size:.4rem; }
 
   /* Stats cell */
   .c-stats{
@@ -379,6 +381,7 @@
     .triggers{font-size:.68rem;min-height:11px;gap:10px}
     .hour-axis{height:12px}
     .hour-axis span{font-size:.62rem}
+    .hour-axis.dense span{font-size:.5rem}
     .footer{padding:8px 18px;font-size:.7rem}
   }
   @media (max-width:767px){.app{flex:1;display:flex;flex-direction:column;min-height:0}}
@@ -960,19 +963,22 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   const needRainAction = hours.some(h => h.hour < 24 && h.pop > 30 && h.mm > 0.5);
 
   // Rótulos de hora compactos (de 3 em 3 h), só abaixo do dia de hoje.
-  // Legenda de horas (00,03,…,24h) sob CADA dia. A 24h é um ponto real agora
-  // (00h do dia seguinte); no último dia o eixo termina em 23h.
-  const hourAxis = `
-        <div class="hour-axis">
+  // Legenda de horas. Hoje: TODAS as horas (acima e abaixo do gráfico). Demais
+  // dias: só múltiplos de 3 (abaixo). A 24h é um ponto real (00h do dia seguinte).
+  const axisHTML = (everyHour) => `
+        <div class="hour-axis${everyHour ? ' dense' : ''}">
           ${hours.map((h, i) => {
-            if (h.hour % 3 !== 0) return '';
+            if (!everyHour && h.hour % 3 !== 0) return '';
             const pct = xAt(i) / VBW * 100;
             const style = i === 0
               ? 'left:0;transform:none'
               : `left:${pct.toFixed(1)}%;transform:translateX(-50%)`;
-            return `<span style="${style}">${String(h.hour).padStart(2,'0')}h</span>`;
+            const txt = everyHour ? String(h.hour).padStart(2,'0') : String(h.hour).padStart(2,'0') + 'h';
+            return `<span style="${style}">${txt}</span>`;
           }).join('')}
         </div>`;
+  const hourAxisAbove = isToday ? axisHTML(true) : '';
+  const hourAxisBelow = isToday ? axisHTML(true) : axisHTML(false);
 
   return `
     <div class="row${isToday ? ' today' : ''}">
@@ -983,6 +989,7 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
         ${needRainAction ? `<span class="day-rain" title="${T().rainAction}">💧</span>` : ''}
       </div>
       <div class="c-chart">
+        ${hourAxisAbove}
         <div class="spark-wrap">
           <svg class="spark" viewBox="0 0 ${VBW} ${H}" preserveAspectRatio="none">
             <defs>
@@ -1007,7 +1014,7 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
           <span class="lbl lbl-min" style="${edgeLabel(xAt(iMin), yAt(tMin))};color:${minCol}">${Math.round(tMin)}° · ${String(hours[iMin].hour).padStart(2,'0')}h</span>
           ${windLbl}
         </div>
-        ${hourAxis}
+        ${hourAxisBelow}
       </div>
     </div>
   `;
