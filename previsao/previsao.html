@@ -1153,7 +1153,7 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   // (tangentes); a fonte das horas usa o mesmo tamanho das bolas de temperatura.
   const dotPct = (n === 1) ? 20 : 100 / (n + 1);
   const ballPct = dotPct * 0.75;                // 3/4 da largura de cada faixa de hora
-  const fcqw   = (ballPct * 0.4).toFixed(2);
+  const fcqw   = (ballPct * 0.8).toFixed(2);   // fonte ampla — pode leve overflow do círculo
 
   // ── Única linha horizontal de referência: a temperatura-alvo da estação atual. ──
   const degLinesSvg = `<line x1="0" y1="${yAt(setpoint).toFixed(1)}" x2="${VBW}" y2="${yAt(setpoint).toFixed(1)}" stroke="#3fb950" stroke-opacity=".55" stroke-width="1" vector-effect="non-scaling-stroke"><title>${T().targetTitle}: ${setpoint}°</title></line>`;
@@ -1280,7 +1280,7 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
     // linha atrás dele para ler fácil — sem a poluição das bolas em toda hora.
     const da = `data-h="${h.hour}" data-t="${v}" data-w="${Math.round(h.wind||0)}" data-wd="${Math.round(h.windDir||0)}" data-pop="${Math.round(h.pop||0)}" data-mm="${(h.mm||0).toFixed(1)}"`;
     if (i === iMax || i === iMin) {
-      return `<span class="t-ball" ${da} style="left:${left}%;top:${top}%;width:min(${ballPct.toFixed(2)}cqw, 26cqh);font-size:min(${fcqw}cqw, 10cqh);background:rgb(${rgb});color:${GRAPH}">${v}</span>`;
+      return `<span class="t-ball" ${da} style="left:${left}%;top:${top}%;width:min(${ballPct.toFixed(2)}cqw, 26cqh);font-size:${fcqw}cqw;background:rgb(${rgb});color:${GRAPH}">${v}</span>`;
     }
     return `<span class="t-num" ${da} style="left:${left}%;top:${top}%;font-size:${fcqw}cqw;color:rgb(${rgb})">${v}</span>`;
   }).join('');
