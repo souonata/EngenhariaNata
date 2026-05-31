@@ -556,34 +556,45 @@
    Múltiplas coordenadas em uma única requisição.
    ============================================================ */
 
-// Cidades fixas (sempre presentes) + 2 slots persistentes (localStorage por slot).
-const FIXED_CITIES = [
-  { id:'milao',    name:'Milão',    nameIt:'Milano', lat: 45.4642, lon:  9.1900 },
-  { id:'curitiba', name:'Curitiba', lat:-25.4284,    lon:-49.2733 },
-];
-const N_SLOTS = 2;
-const LS_SLOT    = i => `previsao_slot_${i}_v1`;   // cidade salva em cada slot
+// 4 slots persistentes no localStorage. Os dois primeiros têm defaults (Milano e
+// Curitiba) que são gravados no boot se o slot ainda não foi definido pelo usuário.
+// Qualquer slot pode ser apagado com a lixeira e substituído por uma busca.
+const N_SLOTS = 4;
+const LS_SLOT    = i => `previsao_slot_${i}_v1`;
 const LS_CITY    = 'previsao_city_v1';
 const LS_HISTMAX = 'previsao_histmax_v1';
 const HISTMAX_TTL_DAYS = 7;
+
+const SLOT_DEFAULTS = [
+  { id:'milao',    name:'Milão',    nameIt:'Milano', lat: 45.4642, lon:  9.1900 },
+  { id:'curitiba', name:'Curitiba', lat:-25.4284,    lon:-49.2733 },
+  null, null
+];
 
 function loadSlotCity(i){
   try { const r=JSON.parse(localStorage.getItem(LS_SLOT(i))); return (r&&r.id&&r.lat)?r:null; }
   catch(e){ return null; }
 }
-function saveSlotCity(i,city){ try{ localStorage.setItem(LS_SLOT(i),JSON.stringify({id:city.id,name:city.name,lat:city.lat,lon:city.lon})); }catch(e){} }
+function saveSlotCity(i,city){ try{ localStorage.setItem(LS_SLOT(i),JSON.stringify({id:city.id,name:city.name,nameIt:city.nameIt||undefined,lat:city.lat,lon:city.lon})); }catch(e){} }
 function clearSlotCity(i){ try{ localStorage.removeItem(LS_SLOT(i)); }catch(e){} }
 
-// slotCities[0..1] = city object ou null
+// Na primeira visita, grava os defaults nos slots que ainda não têm nada salvo.
+(function seedDefaults(){
+  for(let i=0;i<N_SLOTS;i++){
+    if(!localStorage.getItem(LS_SLOT(i)) && SLOT_DEFAULTS[i]) saveSlotCity(i, SLOT_DEFAULTS[i]);
+  }
+})();
+
+// slotCities[0..3] = city object ou null
 let slotCities = Array.from({length:N_SLOTS}, (_,i) => loadSlotCity(i));
 
-// CITIES = [milao, curitiba, ...slots não-nulos em ordem]
-function buildCities(){ return [...FIXED_CITIES, ...slotCities.filter(Boolean)]; }
+// CITIES = slots não-nulos em ordem (sem nulls)
+function buildCities(){ return slotCities.filter(Boolean); }
 let CITIES = buildCities();
 
-// índice em CITIES para o slot si (considera quantos slots anteriores estão preenchidos)
+// índice em CITIES para o slot si
 function cityIdxForSlot(si){
-  let n=2; for(let i=0;i<si;i++) if(slotCities[i]) n++; return n;
+  let n=0; for(let i=0;i<si;i++) if(slotCities[i]) n++; return n;
 }
 /* i18n mínimo (PT/IT) — usa a mesma chave de idioma do site (engnata_idioma). */
 const I18N = {
@@ -725,14 +736,6 @@ function setupHomeFade(){
 function buildCityButtonShells(){
   const wrap = document.getElementById('cityBtns');
   wrap.innerHTML = '';
-  FIXED_CITIES.forEach((c, i) => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'city-btn loading' + (i === currentIdx ? ' active' : '');
-    btn.innerHTML = `<span class="cb-row1"><span class="cb-name">${cityName(c)}</span><span class="cb-emoji">—</span></span><span class="cb-temp">—°</span><span class="cb-meta">— · —</span>`;
-    btn.addEventListener('click', () => selectCity(i));
-    wrap.appendChild(btn);
-  });
   for(let si=0; si<N_SLOTS; si++) wrap.appendChild(makeSlotBtn(si, false));
 }
 
@@ -816,15 +819,6 @@ async function loadAll(){
 function renderCityButtons(){
   const wrap = document.getElementById('cityBtns');
   wrap.innerHTML = '';
-  FIXED_CITIES.forEach((c, i) => {
-    const cur = cityData[i].current, [emo,desc] = wmo(cur.weather_code);
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'city-btn' + (i === currentIdx ? ' active' : '');
-    btn.innerHTML = `<span class="cb-row1"><span class="cb-name">${cityName(c)}</span><span class="cb-emoji" title="${desc}">${emo}</span></span><span class="cb-temp" title="${T().tempLabel}">${Math.round(cur.temperature_2m)}°</span><span class="cb-meta" title="🌡 ${T().feelsLabel} · 💨 ${T().windLabel} (km/h)">🌡${Math.round(cur.apparent_temperature)}° · 💨${Math.round(cur.wind_speed_10m)} km/h</span>`;
-    btn.addEventListener('click', () => selectCity(i));
-    wrap.appendChild(btn);
-  });
   for(let si=0; si<N_SLOTS; si++) wrap.appendChild(makeSlotBtn(si, true));
 }
 
@@ -873,12 +867,23 @@ async function addCityFromResult(r){
   catch(e){ showError(e.message); }
 }
 
-/* Limpa o slot, remove do localStorage, volta para a cidade 0 se estava activa. */
+/* Limpa o slot, remove do localStorage. Se estava activo ou se não há mais
+   cidades, volta para o primeiro slot preenchido (ou mostra só lupas). */
 async function clearSlot(si){
   const wasActive = slotCities[si] && currentIdx === cityIdxForSlot(si);
   slotCities[si] = null;
   clearSlotCity(si);
   CITIES = buildCities();
+  if(CITIES.length === 0){
+    // Todos os slots vazios — só mostra as lupas, sem fetch
+    cityData = [];
+    currentIdx = 0;
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('app').style.display     = 'flex';
+    renderCityButtons();
+    document.getElementById('days').innerHTML = '';
+    return;
+  }
   if(wasActive || currentIdx >= CITIES.length){
     currentIdx = 0;
     try{ localStorage.setItem(LS_CITY, CITIES[0].id); }catch(e){}
