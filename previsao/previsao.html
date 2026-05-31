@@ -326,6 +326,7 @@
     flex:0 0 auto;
     height:10px;
     margin-top:1px;
+    container-type:inline-size;     /* fonte das horas em cqw, igual às bolas */
   }
   .hour-axis span{
     position:absolute;
@@ -337,6 +338,11 @@
   }
   /* Eixo denso (Hoje, todas as horas) — fonte menor p/ caber 0–24 */
   .hour-axis.dense span{ font-size:.4rem; }
+  /* Relógio identificando a série das horas (à esquerda da legenda) */
+  .hour-axis .axis-ico{
+    left:0; top:50%; transform:translateY(-50%);
+    color:var(--muted); pointer-events:none;
+  }
 
   /* Stats cell */
   .c-stats{
@@ -1004,12 +1010,20 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   const yHigh = yHighG;
   const yRange = Math.max(0.5, yHigh - yLow);
 
-  // Margem horizontal = meio passo, para a 00h e a 24h não ficarem cortadas na
-  // borda e para as bolas de cada hora caberem inteiras (tangentes, sem clipar).
-  const padX  = VBW / (2 * n);
-  const stepX = (n === 1) ? 0 : (VBW - 2 * padX) / (n - 1);   // = VBW/n
-  const xAt = i => (n === 1 ? VBW / 2 : padX + i * stepX);
+  // Geometria horizontal: passo entre horas = VBW/(n+1). Reservamos 1,5 passo à
+  // ESQUERDA (slot para o relógio da legenda) e 0,5 passo à direita, de modo que
+  // a 00h não fica cortada, a última hora chega à borda e as bolas de cada hora
+  // continuam tangentes entre si.
+  const stepX = (n === 1) ? 0 : VBW / (n + 1);
+  const padXL = 1.5 * stepX;
+  const xAt = i => (n === 1 ? VBW / 2 : padXL + i * stepX);
   const yAt = t => padT + ch * (1 - (t - yLow) / yRange);
+
+  // Diâmetro das bolas e fonte da legenda de horas, em cqw (% da largura do
+  // gráfico) para acompanhar a tela. Diâmetro da bola = passo entre horas
+  // (tangentes); a fonte das horas usa o mesmo tamanho das bolas de temperatura.
+  const dotPct = (n === 1) ? 20 : 100 / (n + 1);
+  const fcqw   = (dotPct * 0.4).toFixed(2);
 
   // ── Única linha horizontal de referência: a temperatura-alvo da estação atual. ──
   const degLinesSvg = `<line x1="0" y1="${yAt(setpoint).toFixed(1)}" x2="${VBW}" y2="${yAt(setpoint).toFixed(1)}" stroke="#3fb950" stroke-opacity=".55" stroke-width="1" vector-effect="non-scaling-stroke"><title>${T().targetTitle}: ${setpoint}°</title></line>`;
@@ -1104,11 +1118,13 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
 
   // Legenda com TODAS as horas (00–24), abaixo de cada dia; e também acima no
   // dia de hoje. As horas-chave (máx/mín/vento/chuva) saem coloridas.
+  const icoCqw = (dotPct * 0.9).toFixed(2);            // relógio ocupa o slot reservado à esquerda
   const axisHTML = (todayAxis) => `
         <div class="hour-axis dense">
+          <span class="axis-ico" title="${T().today === 'Hoje' ? 'Horas' : 'Ore'} (00–24)" style="font-size:${icoCqw}cqw">🕐</span>
           ${hours.map((h, i) => {
             const pct = xAt(i) / VBW * 100;
-            const base = `left:${pct.toFixed(1)}%;transform:translateX(-50%)`;
+            const base = `left:${pct.toFixed(1)}%;transform:translateX(-50%);font-size:${fcqw}cqw`;
             const col = hourColor(h);
             const isNow = todayAxis && h.hour === nowH;
             const extra = (col ? `;color:${col};font-weight:700` : '') + (isNow ? `;font-weight:800${col ? '' : ';color:var(--text)'}` : '');
@@ -1122,8 +1138,6 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   // temperatura. O diâmetro = espaçamento entre horas (em cqw, relativo à
   // largura do gráfico) → as bolas ficam tangentes, escalando com a tela.
   const GRAPH = '#2b2f36';
-  const dotPct = 100 / n;                          // diâmetro = passo → tangentes
-  const fcqw   = (dotPct * 0.4).toFixed(2);        // fonte acompanha o tamanho da bola
   const tempBalls = hours.map((h, i) => {
     const hh = String(h.hour).padStart(2,'0');
     const v  = Math.round(h.temp);
