@@ -229,7 +229,7 @@
     display:flex;flex-direction:column;
     height:100%;min-height:48px;gap:1px;min-width:0;
   }
-  .spark-wrap{position:relative;flex:1 1 auto;min-height:0}
+  .spark-wrap{position:relative;flex:1 1 auto;min-height:0;container-type:inline-size}
   .spark{width:100%;height:100%;display:block}
   /* Rótulos de valor: SEM fundo/borda; legibilidade por sombra de texto. */
   .lbl{
@@ -275,6 +275,15 @@
     position:absolute; transform:translate(-50%,-50%);
     width:5px; height:5px; border-radius:50%;
     pointer-events:none; box-shadow:0 0 0 1px var(--bg);
+  }
+  /* Bola por hora: temperatura dentro, cor do gradiente; diâmetro em cqw (% da
+     largura do gráfico) para ficarem tangentes e escalarem com a tela. */
+  .t-ball{
+    position:absolute; transform:translate(-50%,-50%);
+    aspect-ratio:1; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; line-height:1; letter-spacing:-.02em;
+    box-shadow:0 0 0 .5px var(--bg);
   }
   /* Bolota que une ponto + valor (número em grafite dentro, sem unidade) */
   .val-dot{
@@ -537,7 +546,9 @@ const I18N = {
     upTitle:'Temperatura sobe acima do alvo', dnTitle:'Temperatura cai abaixo do alvo',
     rainTitle:'Chuva: prob >30% e >0,5mm',
     rainAction:'Vai chover — feche a janela e recolha a roupa do varal',
-    search:'Buscar', searchPh:'Digite uma cidade…', searching:'Buscando…', noResults:'Nenhuma cidade encontrada'
+    search:'Buscar', searchPh:'Digite uma cidade…', searching:'Buscando…', noResults:'Nenhuma cidade encontrada',
+    tempLabel:'Temperatura', windLabel:'Vento', rainLabel:'Chuva', windPeak:'Vento máx.',
+    feelsLabel:'Sensação térmica', probLabel:'prob.'
   },
   'it-IT': {
     loading:'Caricamento previsioni…', error:'Errore nel caricamento dei dati.', retry:'Riprova',
@@ -547,7 +558,9 @@ const I18N = {
     upTitle:'La temperatura sale sopra l\'obiettivo', dnTitle:'La temperatura scende sotto l\'obiettivo',
     rainTitle:'Pioggia: prob >30% e >0,5mm',
     rainAction:'Pioggia in arrivo — chiudi la finestra e ritira il bucato',
-    search:'Cerca', searchPh:'Scrivi una città…', searching:'Ricerca…', noResults:'Nessuna città trovata'
+    search:'Cerca', searchPh:'Scrivi una città…', searching:'Ricerca…', noResults:'Nessuna città trovata',
+    tempLabel:'Temperatura', windLabel:'Vento', rainLabel:'Pioggia', windPeak:'Vento max',
+    feelsLabel:'Temperatura percepita', probLabel:'prob.'
   }
 };
 let LANG = (() => { try { const s = sessionStorage.getItem('engnata_idioma'); return (s === 'it-IT' || s === 'pt-BR') ? s : 'pt-BR'; } catch (e) { return 'pt-BR'; } })();
@@ -750,7 +763,7 @@ function renderCityButtons(){
   const wrap = document.getElementById('cityBtns');
   wrap.innerHTML = '';
   cityData.forEach((cd, i) => {
-    const c = cd.city, cur = cd.current, [emo] = wmo(cur.weather_code);
+    const c = cd.city, cur = cd.current, [emo, desc] = wmo(cur.weather_code);
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'city-btn' + (i === currentIdx ? ' active' : '');
@@ -758,10 +771,10 @@ function renderCityButtons(){
     btn.innerHTML = `
       <span class="cb-row1">
         <span class="cb-name">${cityName(c)}</span>
-        <span class="cb-emoji">${emo}</span>
+        <span class="cb-emoji" title="${desc}">${emo}</span>
       </span>
-      <span class="cb-temp">${Math.round(cur.temperature_2m)}°</span>
-      <span class="cb-meta">🌡${Math.round(cur.apparent_temperature)}° · 💨${Math.round(cur.wind_speed_10m)}</span>
+      <span class="cb-temp" title="${T().tempLabel}">${Math.round(cur.temperature_2m)}°</span>
+      <span class="cb-meta" title="🌡 ${T().feelsLabel} · 💨 ${T().windLabel} (km/h)">🌡${Math.round(cur.apparent_temperature)}° · 💨${Math.round(cur.wind_speed_10m)} km/h</span>
     `;
     btn.addEventListener('click', () => selectCity(i));
     wrap.appendChild(btn);
@@ -971,7 +984,7 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   const dt = new Date(day.date + 'T12:00:00');
   const dow = isToday ? T().today : T().dow[dt.getDay()];
   const dnum = `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}`;
-  const [emo] = wmo(dominantDayCode(hours, day.code));   // clima prevalente 8h–20h (tempestade tem prioridade)
+  const [emo, emoDesc] = wmo(dominantDayCode(hours, day.code));   // clima prevalente 8h–20h (tempestade tem prioridade)
 
   const temps = hours.map(h => h.temp);
   const mms   = hours.map(h => h.mm);
@@ -991,11 +1004,15 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   const yHigh = yHighG;
   const yRange = Math.max(0.5, yHigh - yLow);
 
-  const xAt = i => (n === 1 ? W/2 : i * (W / (n - 1)));
+  // Margem horizontal = meio passo, para a 00h e a 24h não ficarem cortadas na
+  // borda e para as bolas de cada hora caberem inteiras (tangentes, sem clipar).
+  const padX  = VBW / (2 * n);
+  const stepX = (n === 1) ? 0 : (VBW - 2 * padX) / (n - 1);   // = VBW/n
+  const xAt = i => (n === 1 ? VBW / 2 : padX + i * stepX);
   const yAt = t => padT + ch * (1 - (t - yLow) / yRange);
 
   // ── Única linha horizontal de referência: a temperatura-alvo da estação atual. ──
-  const degLinesSvg = `<line x1="0" y1="${yAt(setpoint).toFixed(1)}" x2="${W}" y2="${yAt(setpoint).toFixed(1)}" stroke="#3fb950" stroke-opacity=".55" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
+  const degLinesSvg = `<line x1="0" y1="${yAt(setpoint).toFixed(1)}" x2="${VBW}" y2="${yAt(setpoint).toFixed(1)}" stroke="#3fb950" stroke-opacity=".55" stroke-width="1" vector-effect="non-scaling-stroke"><title>${T().targetTitle}: ${setpoint}°</title></line>`;
 
   // ── Grade vertical por hora (3 em 3 h mais marcada; a hora ATUAL, só no
   //    dia de hoje, fica realçada). ──
@@ -1009,13 +1026,14 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
 
   // ── Força do vento por hora: barrinha na base, altura e opacidade ∝ velocidade ──
   const WIND_MAX = 35;                              // km/h ~ barra cheia
-  const wBarW = (W / n) * 0.92;
+  const wBarW = stepX * 0.9;
   const windBars = hours.map((h, i) => {
     const frac = clamp((h.wind || 0) / WIND_MAX, 0, 1);
     if (frac < 0.04) return '';
     const hgt = 1.5 + 5 * frac;                     // 1.5..6.5 unidades
     const op  = (0.18 + 0.6 * frac).toFixed(2);
-    return `<rect x="${(xAt(i) - wBarW/2).toFixed(1)}" y="${(H - hgt).toFixed(1)}" width="${wBarW.toFixed(1)}" height="${hgt.toFixed(1)}" fill="#9aa7d6" opacity="${op}"/>`;
+    const tip = `${T().windLabel} ${String(h.hour).padStart(2,'0')}h: ${Math.round(h.wind||0)} km/h`;
+    return `<rect x="${(xAt(i) - wBarW/2).toFixed(1)}" y="${(H - hgt).toFixed(1)}" width="${wBarW.toFixed(1)}" height="${hgt.toFixed(1)}" fill="#9aa7d6" opacity="${op}"><title>${tip}</title></rect>`;
   }).join('');
 
   // Pico de vento do dia (a velocidade vai dentro da bolinha no ponto de leitura).
@@ -1029,7 +1047,7 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   //    espessura ∝ quantidade (relativa ao teto fixo de 365 dias); opacidade ∝
   //    probabilidade. ──
   const rainScaleMax = Math.max(scaleMax || 0, 0.1);
-  const rBarW = (W / n) * 0.92;
+  const rBarW = stepX * 0.9;
   const rainDefs = [], rainRects = [];
   mms.forEach((m, i) => {
     if (m <= 0.05) return;
@@ -1043,7 +1061,8 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
     const x = (xAt(i) - rBarW/2).toFixed(1);
     const pid = `rn${day.date.replace(/-/g,'')}_${currentIdx}_${i}`;
     rainDefs.push(`<pattern id="${pid}" patternUnits="userSpaceOnUse" width="${spacing.toFixed(2)}" height="${spacing.toFixed(2)}" patternTransform="rotate(${angle})"><line x1="0" y1="-0.5" x2="0" y2="${(spacing+0.5).toFixed(2)}" class="rain-hatch" stroke-width="${thick}" stroke-dasharray="${(spacing*0.5).toFixed(2)} ${(spacing*0.55).toFixed(2)}"/></pattern>`);
-    rainRects.push(`<rect x="${x}" y="${padT}" width="${rBarW.toFixed(1)}" height="${ch}" fill="url(#${pid})" opacity="${op}"/>`);
+    const rainTip = `${T().rainLabel} ${String(hours[i].hour).padStart(2,'0')}h: ${m.toFixed(1)} mm · ${Math.round(pop)}% ${T().probLabel}`;
+    rainRects.push(`<rect x="${x}" y="${padT}" width="${rBarW.toFixed(1)}" height="${ch}" fill="url(#${pid})" opacity="${op}"><title>${rainTip}</title></rect>`);
   });
   const rainDefsSvg = rainDefs.join('');
   const rainSvg = rainRects.join('');
@@ -1089,7 +1108,7 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
         <div class="hour-axis dense">
           ${hours.map((h, i) => {
             const pct = xAt(i) / VBW * 100;
-            const base = i === 0 ? 'left:0;transform:none' : `left:${pct.toFixed(1)}%;transform:translateX(-50%)`;
+            const base = `left:${pct.toFixed(1)}%;transform:translateX(-50%)`;
             const col = hourColor(h);
             const isNow = todayAxis && h.hour === nowH;
             const extra = (col ? `;color:${col};font-weight:700` : '') + (isNow ? `;font-weight:800${col ? '' : ';color:var(--text)'}` : '');
@@ -1099,27 +1118,30 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
   const hourAxisAbove = isToday ? axisHTML(true) : '';
   const hourAxisBelow = axisHTML(isToday);
 
-  // Uma bolinha por hora, no ponto da curva, com a cor do gradiente para aquela
-  // temperatura (a máx/mín já têm a bolota com o valor).
-  const hourDots = hours.map((h, i) => {
-    if (i === iMax || i === iMin) return '';
-    return `<span class="h-dot" style="left:${(xAt(i)/VBW*100).toFixed(1)}%;top:${(yAt(h.temp)/H*100).toFixed(1)}%;background:rgb(${tempColor(h.temp, setpoint, yLow, yHigh)})"></span>`;
+  // Uma bola POR HORA com a temperatura dentro, na cor do gradiente daquela
+  // temperatura. O diâmetro = espaçamento entre horas (em cqw, relativo à
+  // largura do gráfico) → as bolas ficam tangentes, escalando com a tela.
+  const GRAPH = '#2b2f36';
+  const dotPct = 100 / n;                          // diâmetro = passo → tangentes
+  const fcqw   = (dotPct * 0.4).toFixed(2);        // fonte acompanha o tamanho da bola
+  const tempBalls = hours.map((h, i) => {
+    const hh = String(h.hour).padStart(2,'0');
+    const v  = Math.round(h.temp);
+    const tip = `${T().tempLabel} ${hh}h: ${v}°`;
+    return `<span class="t-ball" title="${tip}" style="left:${(xAt(i)/VBW*100).toFixed(2)}%;top:${(yAt(h.temp)/H*100).toFixed(1)}%;width:${dotPct.toFixed(2)}cqw;font-size:${fcqw}cqw;background:rgb(${tempColor(h.temp, setpoint, yLow, yHigh)});color:${GRAPH}">${v}</span>`;
   }).join('');
 
-  // Bolinhas que UNEM o ponto e o valor: número (sem unidade) em grafite dentro
-  // de uma bolota colorida (cor da temperatura / do vento) no ponto exato.
-  const GRAPH = '#2b2f36';
-  const valDots =
-    `<span class="val-dot" style="left:${(xAt(iMax)/VBW*100).toFixed(1)}%;top:${(yAt(tMax)/H*100).toFixed(1)}%;background:${maxCol};color:${GRAPH}">${Math.round(tMax)}</span>` +
-    `<span class="val-dot" style="left:${(xAt(iMin)/VBW*100).toFixed(1)}%;top:${(yAt(tMin)/H*100).toFixed(1)}%;background:${minCol};color:${GRAPH}">${Math.round(tMin)}</span>` +
-    (windMax > 0 ? `<span class="val-dot" style="left:${(xAt(iWindMax)/VBW*100).toFixed(1)}%;top:${(windTopY/H*100).toFixed(1)}%;background:#9aa7d6;color:${GRAPH}">${Math.round(windMax)}</span>` : '');
+  // Bola do PICO de vento do dia (no topo da barra mais alta), com a velocidade.
+  const windBall = windMax > 0
+    ? `<span class="val-dot" title="${T().windPeak} ${Math.round(windMax)} km/h · ${String(hours[iWindMax].hour).padStart(2,'0')}h" style="left:${(xAt(iWindMax)/VBW*100).toFixed(2)}%;top:${(windTopY/H*100).toFixed(1)}%;background:#9aa7d6;color:${GRAPH}">${Math.round(windMax)}</span>`
+    : '';
 
   return `
     <div class="row${isToday ? ' today' : ''}">
       <div class="c-date">
         <span class="dow">${dow}</span>
         <span class="dnum">${dnum}</span>
-        <span class="emo">${emo}</span>
+        <span class="emo" title="${emoDesc}">${emo}</span>
         ${needRainAction ? `<span class="day-rain" title="${T().rainAction}">💧</span>` : ''}
       </div>
       <div class="c-chart">
@@ -1137,10 +1159,10 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
             ${windBars}
             ${rainSvg}
             <path d="${linePath}" fill="none" stroke="url(#${tgid})" stroke-width="3"
-                  vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>
+                  vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"><title>${T().tempLabel}</title></path>
           </svg>
-          ${hourDots}
-          ${valDots}
+          ${tempBalls}
+          ${windBall}
         </div>
         ${hourAxisBelow}
       </div>
