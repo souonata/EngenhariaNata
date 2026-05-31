@@ -26,7 +26,8 @@ const versoesAppsPadrao = {
     'chuva': '1.0.0',
     'ventilacao': '1.0.0',
     'bombaagua': '1.0.0',
-    'salario': '1.0.0'
+    'salario': '1.0.0',
+    'previsao': '1.0.0'
 };
 
 // ============================================
@@ -182,7 +183,8 @@ class IndexApp extends App {
             'chuva/chuva.html': 'chuva',
             'ventilacao/ventilacao.html': 'ventilacao',
             'bombaagua/bombaagua.html': 'bombaagua',
-            'salario/salario.html': 'salario'
+            'salario/salario.html': 'salario',
+            'previsao/previsao.html': 'previsao'
         };
 
         const appIcons = document.querySelectorAll('.app-icon');

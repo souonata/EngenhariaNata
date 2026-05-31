@@ -54,7 +54,8 @@ export default defineConfig({
                 sobre: resolve(projectRoot, 'sobre/sobre.html'),
                 iluminacao: resolve(projectRoot, 'iluminacao/iluminacao.html'),
                 ventilacao: resolve(projectRoot, 'ventilacao/ventilacao.html'),
-                salario: resolve(projectRoot, 'salario/salario.html')
+                salario: resolve(projectRoot, 'salario/salario.html'),
+                previsao: resolve(projectRoot, 'previsao/previsao.html')
             },
             output: {
                 // Nome dos chunks com hash para cache-busting

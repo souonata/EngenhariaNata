@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<title>Previsão 7 dias</title>
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#0b1220;
+    --surface:#141c2e;
+    --surface2:#1c2740;
+    --border:#2a3550;
+    --text:#e6edf6;
+    --muted:#8b96b0;
+    --temp:#ff8c42;
+    --prob:#4aa8ff;
+    --mm:#7ee3c1;
+    --today:#3fb950;
+  }
+  html,body{height:100%;overscroll-behavior:none}
+  body{
+    background:radial-gradient(1200px 800px at 0% 0%,#172241 0%,var(--bg) 60%);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    height:100dvh;overflow:hidden;
+    display:flex;flex-direction:column;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  /* ─── City buttons (header) ─── */
+  .cities{
+    flex:0 0 auto;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:5px;
+    padding:6px 6px;
+    border-bottom:1px solid var(--border);
+  }
+  .city-btn{
+    background:var(--surface2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:5px 3px 5px;
+    display:flex;flex-direction:column;align-items:center;gap:1px;
+    color:var(--text);
+    font-family:inherit;
+    cursor:pointer;
+    transition:background .12s,border-color .12s,transform .08s;
+    min-width:0;text-align:center;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .city-btn:hover{background:var(--surface)}
+  .city-btn:active{transform:scale(.96)}
+  .city-btn.active{
+    background:linear-gradient(160deg,#1d3759,#1c2740);
+    border-color:var(--prob);
+    box-shadow:0 0 0 1px rgba(74,168,255,.25), 0 4px 14px rgba(74,168,255,.18);
+  }
+  .cb-row1{display:flex;align-items:center;gap:3px;line-height:1}
+  .cb-name{
+    font-size:.62rem;font-weight:700;
+    text-transform:uppercase;letter-spacing:.04em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60px;
+  }
+  .cb-emoji{font-size:.78rem;line-height:1}
+  .cb-temp{
+    font-size:1.15rem;font-weight:300;color:var(--temp);
+    letter-spacing:-1px;line-height:1;margin-top:2px;
+  }
+  .cb-meta{
+    font-size:.54rem;color:var(--muted);
+    line-height:1.1;margin-top:1px;
+    white-space:nowrap;
+  }
+  .city-btn.active .cb-meta{color:#b9c5dd}
+  .city-btn.loading .cb-temp,.city-btn.loading .cb-meta{opacity:.4}
+
+  /* ─── Column headers ─── */
+  .col-head{
+    flex:0 0 auto;
+    display:grid;
+    grid-template-columns: 60px 1fr 58px;
+    gap:6px;
+    padding:5px 10px;
+    font-size:.6rem;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    border-bottom:1px solid var(--border);
+    background:var(--surface);
+  }
+  .col-head .c-chart{display:flex;justify-content:space-between;align-items:center}
+  .legend{display:flex;gap:8px;text-transform:none;letter-spacing:0;font-size:.6rem}
+  .lg{display:flex;align-items:center;gap:3px}
+  .lg .dot{width:6px;height:6px;border-radius:50%}
+  .lg .bar{width:8px;height:5px;border-radius:1px}
+
+  /* ─── Days table ─── */
+  .days{
+    flex:1 1 auto;
+    min-height:0;
+    display:flex;flex-direction:column;
+  }
+  .row{
+    flex:1 1 0;
+    display:grid;
+    grid-template-columns: 60px 1fr 58px;
+    gap:6px;
+    align-items:center;
+    padding:4px 10px;
+    border-bottom:1px solid var(--border);
+    min-height:0;
+  }
+  .row:last-child{border-bottom:none}
+  .row.today{background:linear-gradient(90deg,rgba(63,185,80,.08),transparent 60%)}
+
+  .c-date{display:flex;flex-direction:column;line-height:1.1;min-width:0}
+  .dow{font-size:.78rem;font-weight:700}
+  .row.today .dow{color:#3fb950}
+  .dnum{font-size:.62rem;color:var(--muted);margin-top:1px}
+  .emo{font-size:.95rem;margin-top:1px}
+
+  /* Chart cell */
+  .c-chart{
+    display:flex;flex-direction:column;
+    height:100%;min-height:48px;gap:1px;min-width:0;
+  }
+  .spark-wrap{position:relative;flex:1 1 auto;min-height:0}
+  .spark{width:100%;height:100%;display:block}
+  .lbl{
+    position:absolute;
+    transform:translateX(-50%);
+    font-size:.62rem;font-weight:700;line-height:1;
+    padding:1px 3px;border-radius:3px;
+    background:rgba(11,18,32,.7);
+    backdrop-filter:blur(2px);
+    pointer-events:none;white-space:nowrap;
+  }
+  .lbl-max{ color:var(--temp); top:1px; }
+  .lbl-min{ color:#9bd0ff; bottom:1px; }
+
+  /* Trigger strip */
+  .triggers{
+    flex:0 0 auto;
+    display:flex;gap:7px;
+    font-size:.56rem;line-height:1;
+    white-space:nowrap;overflow:hidden;
+    padding:1px 0 0;font-weight:700;
+    min-height:9px;
+  }
+  .trig-up   { color:#ff6b4a; }
+  .trig-dn   { color:#5edaff; }
+  .trig-rain { color:var(--mm); }
+
+  /* Stats cell */
+  .c-stats{
+    display:flex;flex-direction:column;align-items:flex-end;
+    line-height:1.15;font-size:.66rem;
+  }
+  .stat-pop{color:var(--prob)}
+  .stat-pop.dry{color:var(--muted)}
+  .stat-mm{color:var(--mm);margin-top:1px}
+  .stat-mm.zero{color:var(--muted)}
+
+  /* ─── Footer ─── */
+  .footer{
+    flex:0 0 auto;
+    padding:4px 10px;
+    font-size:.58rem;color:var(--muted);
+    display:flex;justify-content:space-between;align-items:center;
+    border-top:1px solid var(--border);
+  }
+  .footer a{color:var(--muted)}
+
+  /* ─── Loading / Error ─── */
+  .overlay{
+    position:fixed;inset:0;background:var(--bg);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:14px;z-index:50;padding:24px;text-align:center;
+  }
+  .spinner{
+    width:34px;height:34px;border:3px solid var(--border);
+    border-top-color:var(--prob);border-radius:50%;
+    animation:spin .7s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .err-ico{font-size:2.4rem}
+  .err-msg{color:var(--muted);font-size:.85rem;max-width:300px}
+  .btn{background:var(--prob);color:#fff;border:none;border-radius:8px;
+       padding:9px 18px;font-size:.85rem;cursor:pointer;font-family:inherit}
+
+  /* ─── Desktop ─── */
+  @media (min-width:768px){
+    body{align-items:center;justify-content:center;background:#070b14}
+    .app{
+      width:min(100%,860px);
+      height:min(100dvh,740px);
+      border:1px solid var(--border);border-radius:18px;
+      overflow:hidden;display:flex;flex-direction:column;
+      background:radial-gradient(900px 600px at 0% 0%,#172241 0%,var(--bg) 60%);
+      box-shadow:0 24px 60px rgba(0,0,0,.5);
+    }
+    .cities{padding:10px 14px;gap:10px}
+    .city-btn{padding:9px 6px;border-radius:12px}
+    .cb-name{font-size:.78rem;max-width:none}
+    .cb-emoji{font-size:1rem}
+    .cb-temp{font-size:1.6rem;margin-top:4px}
+    .cb-meta{font-size:.7rem;margin-top:3px}
+    .col-head, .row{grid-template-columns: 80px 1fr 80px;padding-left:18px;padding-right:18px}
+    .dow{font-size:.95rem}.dnum{font-size:.72rem}.emo{font-size:1.15rem}
+    .lbl{font-size:.72rem}
+    .c-stats{font-size:.78rem}
+    .triggers{font-size:.68rem;min-height:11px;gap:10px}
+    .footer{padding:8px 18px;font-size:.7rem}
+  }
+  @media (max-width:767px){.app{flex:1;display:flex;flex-direction:column;min-height:0}}
+  @media (max-height:480px){
+    .cities{padding:3px 4px;gap:3px}
+    .city-btn{padding:3px 2px}
+    .cb-temp{font-size:.95rem}
+    .cb-meta{display:none}
+    .triggers{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app" style="display:none;flex:1;flex-direction:column;min-height:0">
+
+  <nav class="cities" id="cityBtns"></nav>
+
+  <div class="col-head">
+    <span>Dia</span>
+    <div class="c-chart">
+      <div class="legend">
+        <span class="lg"><span class="dot" style="background:var(--temp)"></span>Temp</span>
+        <span class="lg"><span class="bar" style="background:rgba(74,168,255,.4);border:1px solid var(--prob)"></span>%</span>
+        <span class="lg"><span class="bar" style="background:var(--mm)"></span>mm</span>
+      </div>
+    </div>
+    <span style="text-align:right">Chuva</span>
+  </div>
+
+  <main class="days" id="days"></main>
+
+  <footer class="footer">
+    <span id="footLoc">📍 —</span>
+    <span>Fonte: <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a></span>
+  </footer>
+</div>
+
+<div id="loading" class="overlay">
+  <div class="spinner"></div>
+  <div class="err-msg">Carregando previsão…</div>
+</div>
+
+<div id="error" class="overlay" style="display:none">
+  <div class="err-ico">⚠️</div>
+  <div class="err-msg" id="errMsg">Erro ao carregar dados.</div>
+  <button class="btn" onclick="location.reload()">Tentar novamente</button>
+</div>
+
+<script>
+/* ============================================================
+   Open-Meteo — API meteorológica europeia, gratuita, sem chave
+   Múltiplas coordenadas em uma única requisição.
+   ============================================================ */
+
+const CITIES = [
+  { id:'turbigo',  name:'Turbigo',  lat: 45.5333, lon:  8.7333 },
+  { id:'milao',    name:'Milão',    lat: 45.4642, lon:  9.1900 },
+  { id:'turate',   name:'Turate',   lat: 45.7333, lon:  9.0500 },
+  { id:'curitiba', name:'Curitiba', lat:-25.4284, lon:-49.2733 },
+];
+const LS_CITY = 'previsao_city_v1';
+const DOW = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+let cityData = [];              // dados de cada cidade (índices alinhados com CITIES)
+let currentIdx = Math.max(0, CITIES.findIndex(c => c.id === localStorage.getItem(LS_CITY)));
+
+/* ──── Boot ──── */
+(async function init(){
+  buildCityButtonShells();
+  try { await loadAll(); }
+  catch (err) { showError(err.message); }
+})();
+
+/* ──── Constrói botões vazios (antes dos dados chegarem) ──── */
+function buildCityButtonShells(){
+  const wrap = document.getElementById('cityBtns');
+  wrap.innerHTML = '';
+  CITIES.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'city-btn loading' + (i === currentIdx ? ' active' : '');
+    btn.dataset.idx = i;
+    btn.innerHTML = `
+      <span class="cb-row1">
+        <span class="cb-name">${c.name}</span>
+        <span class="cb-emoji">—</span>
+      </span>
+      <span class="cb-temp">—°</span>
+      <span class="cb-meta">— · —</span>
+    `;
+    btn.addEventListener('click', () => selectCity(i));
+    wrap.appendChild(btn);
+  });
+}
+
+/* ──── Fetch (todas as cidades em uma requisição) ──── */
+async function loadAll(){
+  const url = new URL('https://api.open-meteo.com/v1/forecast');
+  url.search = new URLSearchParams({
+    latitude:  CITIES.map(c => c.lat).join(','),
+    longitude: CITIES.map(c => c.lon).join(','),
+    hourly:    'temperature_2m,precipitation_probability,precipitation,weather_code',
+    current:   'temperature_2m,apparent_temperature,weather_code,wind_speed_10m',
+    daily:     'weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max',
+    timezone:  'auto',
+    forecast_days: 7
+  });
+
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  const arr = await res.json();
+  // Sempre array com múltiplas coords
+  const list = Array.isArray(arr) ? arr : [arr];
+
+  cityData = CITIES.map((c, i) => {
+    const d = list[i];
+    const hourlyByDay = {};
+    d.hourly.time.forEach((iso, k) => {
+      const day = iso.slice(0,10);
+      (hourlyByDay[day] = hourlyByDay[day] || []).push({
+        hour: +iso.slice(11,13),
+        temp: d.hourly.temperature_2m[k],
+        pop:  d.hourly.precipitation_probability[k] ?? 0,
+        mm:   d.hourly.precipitation[k] ?? 0
+      });
+    });
+    const daily = d.daily.time.map((iso, k) => ({
+      date: iso,
+      tMax: d.daily.temperature_2m_max[k],
+      tMin: d.daily.temperature_2m_min[k],
+      mmSum: d.daily.precipitation_sum[k],
+      popMax: d.daily.precipitation_probability_max[k] ?? 0,
+      code: d.daily.weather_code[k]
+    }));
+    return { city:c, current:d.current, hourlyByDay, daily };
+  });
+
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  renderCityButtons();
+  renderDays();
+}
+
+/* ──── Botões (já com dados) ──── */
+function renderCityButtons(){
+  const wrap = document.getElementById('cityBtns');
+  wrap.innerHTML = '';
+  cityData.forEach((cd, i) => {
+    const c = cd.city, cur = cd.current, [emo] = wmo(cur.weather_code);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'city-btn' + (i === currentIdx ? ' active' : '');
+    btn.dataset.idx = i;
+    btn.innerHTML = `
+      <span class="cb-row1">
+        <span class="cb-name">${c.name}</span>
+        <span class="cb-emoji">${emo}</span>
+      </span>
+      <span class="cb-temp">${Math.round(cur.temperature_2m)}°</span>
+      <span class="cb-meta">🌡${Math.round(cur.apparent_temperature)}° · 💨${Math.round(cur.wind_speed_10m)}</span>
+    `;
+    btn.addEventListener('click', () => selectCity(i));
+    wrap.appendChild(btn);
+  });
+}
+
+function selectCity(i){
+  if (i === currentIdx) return;
+  currentIdx = i;
+  localStorage.setItem(LS_CITY, CITIES[i].id);
+  document.querySelectorAll('.city-btn').forEach((b, k) =>
+    b.classList.toggle('active', k === i));
+  renderDays();
+}
+
+/* ──── WMO codes ──── */
+function wmo(code){
+  if (code === 0)              return ['☀️','Céu limpo'];
+  if (code === 1)              return ['🌤','Quase limpo'];
+  if (code === 2)              return ['⛅','Parc. nublado'];
+  if (code === 3)              return ['☁️','Nublado'];
+  if (code === 45 || code===48)return ['🌫','Nevoeiro'];
+  if (code >= 51 && code <= 57)return ['🌦','Chuvisco'];
+  if (code === 61)             return ['🌧','Chuva fraca'];
+  if (code === 63)             return ['🌧','Chuva'];
+  if (code === 65)             return ['🌧','Chuva forte'];
+  if (code >= 66 && code <= 67)return ['🌧','Chuva congel.'];
+  if (code >= 71 && code <= 77)return ['❄️','Neve'];
+  if (code >= 80 && code <= 82)return ['🌦','Aguaceiros'];
+  if (code === 85 || code===86)return ['🌨','Aguac. neve'];
+  if (code === 95)             return ['⛈','Trovoada'];
+  if (code >= 96 && code <= 99)return ['⛈','Trov./granizo'];
+  return ['🌡','—'];
+}
+
+/* ──── Render days table ──── */
+function renderDays(){
+  const wrap = document.getElementById('days');
+  const cd = cityData[currentIdx];
+  wrap.innerHTML = '';
+  const todayISO = cd.daily[0] ? cd.daily[0].date : new Date().toISOString().slice(0,10);
+
+  cd.daily.forEach(day => {
+    const hours = cd.hourlyByDay[day.date] || [];
+    if (hours.length < 2) return;
+    wrap.insertAdjacentHTML('beforeend', buildRow(day, hours, day.date === todayISO));
+  });
+
+  const c = cd.city;
+  document.getElementById('footLoc').textContent =
+    `📍 ${c.name} · ${c.lat.toFixed(2)}°, ${c.lon.toFixed(2)}°`;
+  document.title = `Previsão · ${c.name}`;
+}
+
+/* ──── Build one row with SVG sparkline ──── */
+function buildRow(day, hours, isToday){
+  const dt = new Date(day.date + 'T12:00:00');
+  const dow = isToday ? 'Hoje' : DOW[dt.getDay()];
+  const dnum = `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}`;
+  const [emo] = wmo(day.code);
+
+  const temps = hours.map(h => h.temp);
+  const pops  = hours.map(h => h.pop);
+  const mms   = hours.map(h => h.mm);
+  const n     = temps.length;
+
+  const tMin = Math.min(...temps), tMax = Math.max(...temps);
+  const iMin = temps.indexOf(tMin), iMax = temps.indexOf(tMax);
+  const tRange = Math.max(0.5, tMax - tMin);
+  const popMax = Math.round(Math.max(...pops));
+  const mmTotal = mms.reduce((a,b)=>a+b, 0);
+
+  const W = 240, H = 60;
+  const padT = 9, padB = 3;
+  const ch = H - padT - padB;
+
+  const xAt = i => (n === 1 ? W/2 : i * (W / (n - 1)));
+  const yAt = t => padT + ch * (1 - (t - tMin) / tRange);
+
+  const gridY = padT + ch / 2;
+
+  const popBarsH = ch * 0.55;
+  const barW = (W / n) * 0.85;
+  const popBars = pops.map((p, i) => {
+    if (!p) return '';
+    const h = popBarsH * (p / 100);
+    return `<rect x="${(xAt(i) - barW/2).toFixed(1)}" y="${(padT+ch-h).toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" fill="rgba(74,168,255,.32)"/>`;
+  }).join('');
+
+  // Rain mm bars — fixed scale 0..100mm; >100mm capped + red
+  const MM_MAX = 100;
+  const mmBarW = barW * 0.45;
+  const mmBars = mms.map((m, i) => {
+    if (m <= 0.05) return '';
+    const capped = Math.min(m, MM_MAX);
+    const h = popBarsH * (capped / MM_MAX);
+    const fill = m > MM_MAX ? '#ff4d4d' : '#7ee3c1';
+    return `<rect x="${(xAt(i) - mmBarW/2).toFixed(1)}" y="${(padT+ch-h).toFixed(1)}" width="${mmBarW.toFixed(1)}" height="${h.toFixed(1)}" fill="${fill}"/>`;
+  }).join('');
+
+  const pts = temps.map((t, i) => `${xAt(i).toFixed(1)},${yAt(t).toFixed(1)}`);
+  const linePath = 'M' + pts.join(' L');
+  const areaPath = linePath + ` L${xAt(n-1).toFixed(1)},${(padT+ch).toFixed(1)} L0,${(padT+ch).toFixed(1)} Z`;
+
+  const gid = 'g' + day.date.replace(/-/g,'') + '_' + currentIdx;
+
+  const xMaxPct = clamp(iMax/(n-1)*100, 10, 90);
+  const xMinPct = clamp(iMin/(n-1)*100, 10, 90);
+
+  const popClass = popMax >= 30 ? '' : 'dry';
+  const mmClass  = mmTotal >= 0.1 ? '' : 'zero';
+
+  // Triggers (smart-home thresholds)
+  const T_THRESH = 24;
+  const tempUps = [], tempDns = [];
+  for (let i = 1; i < temps.length; i++) {
+    const a = temps[i-1], b = temps[i];
+    if (a < T_THRESH && b >= T_THRESH)      tempUps.push(hours[i].hour);
+    else if (a >= T_THRESH && b < T_THRESH) tempDns.push(hours[i].hour);
+  }
+  const rainHrs  = hours.filter(h => h.pop > 30 && h.mm > 0.5).map(h => h.hour);
+  const upStr    = tempUps.map(formatHr).join(' ');
+  const dnStr    = tempDns.map(formatHr).join(' ');
+  const rainStr  = groupHours(rainHrs);
+
+  const crossLines = [...tempUps, ...tempDns].map(h => {
+    const idx = hours.findIndex(x => x.hour === h);
+    if (idx < 0) return '';
+    const x = xAt(idx).toFixed(1);
+    return `<line x1="${x}" y1="${padT}" x2="${x}" y2="${(padT+ch).toFixed(1)}" stroke="rgba(255,255,255,.18)" stroke-width="1" stroke-dasharray="2 2" vector-effect="non-scaling-stroke"/>`;
+  }).join('');
+
+  return `
+    <div class="row${isToday ? ' today' : ''}">
+      <div class="c-date">
+        <span class="dow">${dow}</span>
+        <span class="dnum">${dnum}</span>
+        <span class="emo">${emo}</span>
+      </div>
+      <div class="c-chart">
+        <div class="spark-wrap">
+          <svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="${gid}" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="rgba(255,140,66,.45)"/>
+                <stop offset="100%" stop-color="rgba(255,140,66,0)"/>
+              </linearGradient>
+            </defs>
+            <line x1="0" y1="${gridY.toFixed(1)}" x2="${W}" y2="${gridY.toFixed(1)}"
+                  stroke="rgba(255,255,255,.05)" stroke-width="1" vector-effect="non-scaling-stroke"/>
+            ${crossLines}
+            ${popBars}
+            ${mmBars}
+            <path d="${areaPath}" fill="url(#${gid})"/>
+            <path d="${linePath}" fill="none" stroke="#ff8c42" stroke-width="2"
+                  vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>
+            <circle cx="${xAt(iMax).toFixed(1)}" cy="${yAt(tMax).toFixed(1)}" r="3" fill="#ff8c42"
+                    vector-effect="non-scaling-stroke"/>
+            <circle cx="${xAt(iMin).toFixed(1)}" cy="${yAt(tMin).toFixed(1)}" r="3" fill="#9bd0ff"
+                    vector-effect="non-scaling-stroke"/>
+          </svg>
+          <span class="lbl lbl-max" style="left:${xMaxPct}%">▲ ${Math.round(tMax)}°</span>
+          <span class="lbl lbl-min" style="left:${xMinPct}%">▼ ${Math.round(tMin)}°</span>
+        </div>
+        <div class="triggers">
+          ${upStr   ? `<span class="trig-up"   title="Temperatura sobe acima de 24°C">▲24° ${upStr}</span>` : ''}
+          ${dnStr   ? `<span class="trig-dn"   title="Temperatura cai abaixo de 24°C">▼24° ${dnStr}</span>` : ''}
+          ${rainStr ? `<span class="trig-rain" title="Chuva: prob >30% e >0,5mm">💧 ${rainStr}</span>` : ''}
+        </div>
+      </div>
+      <div class="c-stats">
+        <span class="stat-pop ${popClass}">💧 ${popMax}%</span>
+        <span class="stat-mm ${mmClass}">${mmTotal.toFixed(1)} mm</span>
+      </div>
+    </div>
+  `;
+}
+
+function formatHr(h){ return String(h).padStart(2,'0') + 'h'; }
+function clamp(v, lo, hi){ return Math.min(hi, Math.max(lo, v)); }
+
+function groupHours(hs){
+  if (!hs.length) return '';
+  const sorted = [...new Set(hs)].sort((a,b)=>a-b);
+  const out = [];
+  let s = sorted[0], p = sorted[0];
+  for (let i = 1; i < sorted.length; i++){
+    if (sorted[i] === p + 1) { p = sorted[i]; }
+    else { out.push(s === p ? formatHr(s) : `${formatHr(s)}-${formatHr(p)}`); s = p = sorted[i]; }
+  }
+  out.push(s === p ? formatHr(s) : `${formatHr(s)}-${formatHr(p)}`);
+  return out.join(' ');
+}
+
+function showError(msg){
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('errMsg').textContent = msg;
+  document.getElementById('error').style.display = 'flex';
+}
+</script>
+</body>
+</html>

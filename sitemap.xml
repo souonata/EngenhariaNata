@@ -161,6 +161,16 @@
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://souonata.github.io/EngenhariaNata/bugs/bugs.html"/>
         <xhtml:link rel="alternate" hreflang="it-IT" href="https://souonata.github.io/EngenhariaNata/bugs/bugs.html"/>
     </url>
-    
+
+    <!-- Previsão 7 dias -->
+    <url>
+        <loc>https://souonata.github.io/EngenhariaNata/previsao/previsao.html</loc>
+        <lastmod>2026-05-31</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://souonata.github.io/EngenhariaNata/previsao/previsao.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://souonata.github.io/EngenhariaNata/previsao/previsao.html"/>
+    </url>
+
 </urlset>
 

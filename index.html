@@ -379,6 +379,23 @@
                     <span class="app-name" data-i18n="app-salario">Salário</span>
                 </a>
 
+                <!-- Ícone do aplicativo Previsão 7 dias -->
+                <a href="previsao/previsao.html" class="app-icon" data-i18n-aria="app-previsao">
+                    <div class="icon">
+                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="gradient-previsao" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#1565C0;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#42A5F5;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <rect width="60" height="60" rx="12" fill="url(#gradient-previsao)"/>
+                            <text x="30" y="40" font-size="28" text-anchor="middle">⛅</text>
+                        </svg>
+                    </div>
+                    <span class="app-name" data-i18n="app-previsao">Previsão</span>
+                </a>
+
             </div>
         </div>
         
@@ -655,6 +672,27 @@
                 </div>
                 <p class="app-description" data-i18n="app-salario-description">Calculadora bilíngue de salário: Brasil (CLT — INSS, IRRF, FGTS, 13º, férias e rescisão) e Itália (IRPEF a 3 scaglioni, INPS, addizionali regionais, TFR, tredicesima). Valores oficiais 2025-2026. Inclui gráficos da decomposição do líquido, renda anual total e memorial com referências oficiais.</p>
                 <a href="salario/salario.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
+            </div>
+
+            <!-- App: Previsão 7 dias -->
+            <div class="app-card">
+                <div class="app-card-header">
+                    <a href="previsao/previsao.html" data-i18n-aria="app-previsao">
+                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
+                            <defs>
+                                <linearGradient id="gradient-previsao-desc" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#1565C0;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#42A5F5;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <rect width="60" height="60" rx="12" fill="url(#gradient-previsao-desc)"/>
+                            <text x="30" y="40" font-size="28" text-anchor="middle">⛅</text>
+                        </svg>
+                    </a>
+                    <h3><a href="previsao/previsao.html" data-i18n="app-previsao-title">Previsão 7 dias</a></h3>
+                </div>
+                <p class="app-description" data-i18n="app-previsao-description">Previsão meteorológica de 7 dias com dados da Open-Meteo. Mostra temperatura horária, probabilidade e volume de chuva (mm), com gráfico sparkline por dia e gatilhos inteligentes (cruzamento de 24°C e janelas de chuva). Cidades: Turbigo, Milão, Turate e Curitiba.</p>
+                <a href="previsao/previsao.html" class="app-link" data-i18n="app-link-forecast">Ver previsão →</a>
             </div>
 
             <!-- App: Ventilação Natural -->
