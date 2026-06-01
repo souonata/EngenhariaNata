@@ -13,5 +13,12 @@
       "runtimeArgs": ["-m", "http.server", "8098"],
       "port": 8098
     }
+  ,
+    {
+      "name": "dalie",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8099", "--directory", "dalie"],
+      "port": 8099
+    }
   ]
 }
