@@ -20,54 +20,46 @@
 /* ============================================
    AJUSTES DE LARGURA DOS CAMPOS DE INPUT
    ============================================ */
-/* Largura dos campos de input baseada no valor máximo do slider + 1 caractere de folga */
-/* sliderConsumo: max=999 (3 caracteres) → permite expansão dinâmica até 8 caracteres */
+/* Largura dos campos de input
+   Nota: min-width em px para não ser sobreposto pelo min-width: 70px do .valor-display,
+   mas garantindo que o valor + padding (10px cada lado) caiba confortavelmente. */
 #inputConsumo {
-    max-width: 8ch; /* 8 caracteres para valores até 9999 */
-    min-width: 4ch;
-    /* width removido para permitir expansão dinâmica via ajustarTamanhoInput */
+    min-width: 60px;
+    width: auto;
 }
 
-/* sliderAutonomia: max=10 (2 caracteres) → 5 caracteres */
 #inputAutonomia {
-    max-width: 5ch; /* 5 caracteres */
-    min-width: 3ch;
-    width: 5ch;
+    min-width: 52px;
+    width: 52px;
 }
 
-/* sliderVidaUtil: max=25 (2 caracteres para litio) → 5 caracteres */
 #inputVidaUtil {
-    max-width: 5ch; /* 5 caracteres */
-    min-width: 3ch;
-    width: 5ch;
+    min-width: 52px;
+    width: 52px;
 }
 
-/* sliderPrecoKWh: max=3,00 → 4 chars */
+/* "0,30" a "3,00" — 4 chars + vírgula */
 #inputPrecoKWh {
-    max-width: 5ch;
-    min-width: 4ch;
-    width: 5ch;
+    min-width: 62px;
+    width: 62px;
 }
 
-/* sliderAumentoAnualEnergia: max=40,0 → 4 chars */
+/* "1,2" a "40,0" — 4 chars + vírgula */
 #inputAumentoAnualEnergia {
-    max-width: 5ch;
-    min-width: 4ch;
-    width: 5ch;
+    min-width: 62px;
+    width: 62px;
 }
 
-/* sliderPrecoBateriaKWh: max=8000 → "8.000" = 5 chars */
+/* "10" a "8.000" — até 5 chars com separador */
 #inputPrecoBateriaKWh {
-    max-width: 6ch;
-    min-width: 4ch;
-    width: 6ch;
+    min-width: 72px;
+    width: 72px;
 }
 
-/* sliderPeriodoAnalise: max=50 → 2 chars */
+/* "5" a "50" — 2 chars */
 #inputPeriodoAnalise {
-    max-width: 4ch;
-    min-width: 3ch;
-    width: 4ch;
+    min-width: 52px;
+    width: 52px;
 }
 
 /* Container e header movidos para shared-styles.css */
