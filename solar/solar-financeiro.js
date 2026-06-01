@@ -1,328 +1,253 @@
 /**
  * solar-financeiro.js
- * Módulo com funções de cálculos financeiros e gráfico de amortização
- * Para integrar no solar-script-new.js
+ * Gráfico de retorno do investimento e análise financeira do sistema solar
  */
 
-// Preços médios de energia elétrica (2024-2025)
 export const PRECO_KWH = {
-    'pt-BR': 0.75,  // R$/kWh
-    'it-IT': 0.30   // €/kWh
+    'pt-BR': 0.75,
+    'it-IT': 0.30
 };
 
-// Aumento anual do custo da energia (%)
 export const AUMENTO_ANUAL_ENERGIA = {
-    'pt-BR': 8.0,   // % ao ano (Brasil)
-    'it-IT': 6.0    // % ao ano (Itália)
+    'pt-BR': 8.0,
+    'it-IT': 6.0
 };
 
-/**
- * Formata moeda com vírgula como separador decimal
- * Nota: moeda aqui é o símbolo (€ ou R$), não o código
- */
-function formatarMoedaComVirgula(valor, moeda, casasDecimais = 2) {
-    if (isNaN(valor) || valor === null || valor === undefined) return `${moeda} 0,00`;
-    return `${moeda} ${valor.toLocaleString('pt-BR', {
-        minimumFractionDigits: casasDecimais,
-        maximumFractionDigits: casasDecimais
+function formatarMoedaComVirgula(valor, moeda, casas = 2) {
+    if (isNaN(valor) || valor == null) return `${moeda} 0,00`;
+    return `${moeda} ${Math.abs(valor).toLocaleString('pt-BR', {
+        minimumFractionDigits: casas,
+        maximumFractionDigits: casas
     })}`;
 }
 
-/**
- * Cria e atualiza o gráfico de amortização financeira
- */
+function lerInputOuSlider(idInput, idSlider, padrao) {
+    const inp = document.getElementById(idInput);
+    const sld = document.getElementById(idSlider);
+    const v = parseFloat((inp?.value || '').replace(',', '.'));
+    if (!isNaN(v) && v > 0) return v;
+    if (sld) return parseFloat(sld.value) || padrao;
+    return padrao;
+}
+
 export function criarGraficoAmortizacao(dados, idiomaAtual) {
     const ctx = document.getElementById('graficoAmortizacao');
-    if (!ctx) {
-        console.warn('[Solar] Canvas graficoAmortizacao não encontrado');
-        return null;
-    }
-    
-    // Validar dados necessários
-    if (!dados || !dados.custoTotal || !dados.consumoMensal) {
-        console.warn('[Solar] Dados insuficientes para o gráfico');
-        return null;
-    }
-    
+    if (!ctx || !dados?.custoTotal || !dados?.consumoMensal) return null;
+
     const {
         custoTotal,
         consumoMensal,
-        custoBaterias,
-        vidaUtil = 20,
-        tipoBateria = 'litio'
+        custoBaterias = 0,
+        vidaUtil = 20
     } = dados;
-    
-    // Obter período de análise — input permite até 200 anos, slider até 60
-    const sliderPeriodoAnalise = document.getElementById('sliderPeriodoAnalise');
-    const inputPeriodoAnalise = document.getElementById('inputPeriodoAnalise');
-    let anosAnalise = 25;
 
-    {
-        const valorInput = inputPeriodoAnalise ? parseInt(inputPeriodoAnalise.value) : NaN;
-        const valorSlider = sliderPeriodoAnalise ? (parseInt(sliderPeriodoAnalise.value) || 25) : 25;
-        const valorBruto = (!isNaN(valorInput) && valorInput > 0) ? valorInput : valorSlider;
-        anosAnalise = Math.max(5, Math.min(200, valorBruto));
-    }
-    
+    const pt = idiomaAtual === 'pt-BR';
+    const moeda = pt ? 'R$' : '€';
+
+    // Período de análise
+    const inputPA = document.getElementById('inputPeriodoAnalise');
+    const sliderPA = document.getElementById('sliderPeriodoAnalise');
+    const valorPA = parseInt(inputPA?.value) || parseInt(sliderPA?.value) || 25;
+    const anosAnalise = Math.max(5, Math.min(200, valorPA));
     const mesesAnalise = anosAnalise * 12;
-    
-    // Obter preço do kWh
-    const sliderPrecoKWh = document.getElementById('sliderPrecoKWh');
-    const precoKWh = sliderPrecoKWh ? parseFloat(sliderPrecoKWh.value) : PRECO_KWH[idiomaAtual];
-    
-    // Obter aumento anual
-    const sliderAumentoAnual = document.getElementById('sliderAumentoAnualEnergia');
-    const aumentoAnualPercentual = sliderAumentoAnual 
-        ? parseFloat(sliderAumentoAnual.value) 
-        : AUMENTO_ANUAL_ENERGIA[idiomaAtual];
-    const fatorAumentoAnual = 1 + (aumentoAnualPercentual / 100);
-    
-    // Calcular economia mensal
+
+    // Parâmetros financeiros
+    const precoKWh = lerInputOuSlider('inputPrecoKWh', 'sliderPrecoKWh', PRECO_KWH[idiomaAtual]);
+    const aumentoAnual = lerInputOuSlider('inputAumentoAnualEnergia', 'sliderAumentoAnualEnergia', AUMENTO_ANUAL_ENERGIA[idiomaAtual]);
+    const fator = 1 + aumentoAnual / 100;
     const economiaMensal = consumoMensal * precoKWh;
-    const moeda = idiomaAtual === 'it-IT' ? '€' : 'R$';
-    
-    // Calcular substituições de baterias
-    const substituicoesBaterias = [];
-    if (vidaUtil > 0 && vidaUtil < anosAnalise && custoBaterias > 0) {
-        let anoSubstituicao = vidaUtil;
-        while (anoSubstituicao < anosAnalise) {
-            if (anoSubstituicao % 25 !== 0) {
-                substituicoesBaterias.push({
-                    ano: anoSubstituicao,
-                    mes: Math.round(anoSubstituicao * 12)
-                });
+
+    // Eventos de custo (substituição de baterias e renovação do sistema)
+    const eventos = [];
+    if (vidaUtil > 0 && custoBaterias > 0) {
+        let a = vidaUtil;
+        while (a < anosAnalise) {
+            if (a % 25 !== 0) {
+                eventos.push({ mes: Math.round(a * 12), ano: a, tipo: 'bateria', valor: custoBaterias });
             }
-            anoSubstituicao += vidaUtil;
+            a += vidaUtil;
         }
     }
-    
-    // Calcular substituições completas do sistema (a cada 25 anos)
-    const substituicoesSistemaCompleto = [];
-    let anoSubstituicaoCompleta = 25;
-    while (anoSubstituicaoCompleta <= anosAnalise) {
-        substituicoesSistemaCompleto.push({
-            ano: anoSubstituicaoCompleta,
-            mes: Math.round(anoSubstituicaoCompleta * 12)
-        });
-        anoSubstituicaoCompleta += 25;
+    let aRenov = 25;
+    while (aRenov <= anosAnalise) {
+        eventos.push({ mes: Math.round(aRenov * 12), ano: aRenov, tipo: 'sistema', valor: custoTotal });
+        aRenov += 25;
     }
-    
-    // Calcular payback inicial
+    eventos.sort((a, b) => a.mes - b.mes);
+
+    // Custos acumulados até o mês M (O(|eventos|) por chamada)
+    function custosAcumAteMes(m) {
+        let c = custoTotal;
+        for (const ev of eventos) {
+            if (m >= ev.mes) c += ev.valor;
+        }
+        return c;
+    }
+
+    // Calcular saldos em O(mesesAnalise) passagem única
+    // saldo[m] = economia_acumulada_ate_m - custos_acumulados_ate_m
+    let economiaAcum = 0;
+    const saldosPorMes = [0 - custoTotal]; // m=0: saldo = -investimento
+    for (let m = 1; m <= mesesAnalise; m++) {
+        economiaAcum += economiaMensal * Math.pow(fator, Math.floor((m - 1) / 12));
+        saldosPorMes.push(economiaAcum - custosAcumAteMes(m));
+    }
+
+    // Payback: primeiro mês onde saldo >= 0
     let paybackMeses = null;
-    let economiaAcumuladaPayback = 0;
-    for (let mes = 0; mes <= mesesAnalise; mes++) {
-        const anoAtual = Math.floor(mes / 12);
-        const economiaMensalAtual = economiaMensal * Math.pow(fatorAumentoAnual, anoAtual);
-        economiaAcumuladaPayback += economiaMensalAtual;
-        if (economiaAcumuladaPayback >= custoTotal && paybackMeses === null) {
-            paybackMeses = mes;
-            break;
+    for (let m = 1; m <= mesesAnalise; m++) {
+        if (saldosPorMes[m] >= 0) { paybackMeses = m; break; }
+    }
+
+    // Construir set de meses de dados: intervalo base + pontos extras nos eventos
+    const intervalo = anosAnalise <= 30 ? 6 : 12;
+    const mesesDados = new Set();
+    for (let m = 0; m <= mesesAnalise; m += intervalo) mesesDados.add(m);
+    for (const ev of eventos) {
+        if (ev.mes > 0 && ev.mes <= mesesAnalise) {
+            mesesDados.add(ev.mes - 1);
+            mesesDados.add(ev.mes);
         }
     }
-    
-    if (paybackMeses === null) {
-        paybackMeses = Math.ceil(custoTotal / economiaMensal);
-    }
-    
-    // Criar arrays de dados
-    const labels = [];
-    const investimentoInicial = [];
-    const economiaAcumulada = [];
-    const custoSubstituicoesBaterias = [];
-    const custoSubstituicoesSistemaCompleto = [];
-    const lucroPrejuizoLiquido = [];
-    
-    const intervaloMeses = 6;
-    
-    // Definir anos para mostrar no eixo X
-    const anosParaMostrar = [];
-    for (let ano = 0; ano <= anosAnalise; ano += 5) {
-        anosParaMostrar.push(ano);
-    }
-    if (!anosParaMostrar.includes(anosAnalise)) {
-        anosParaMostrar.push(anosAnalise);
-        anosParaMostrar.sort((a, b) => a - b);
-    }
-    
-    for (let mes = 0; mes <= mesesAnalise; mes += intervaloMeses) {
-        const ano = Math.floor(mes / 12);
-        const mesNoAno = mes % 12;
-        
-        // Criar labels
-        if (anosParaMostrar.includes(ano) && mesNoAno < intervaloMeses) {
-            labels.push(ano === 0 ? '0' : `${ano}${idiomaAtual === 'pt-BR' ? 'a' : 'a'}`);
-        } else {
-            labels.push('');
+    if (paybackMeses !== null) mesesDados.add(paybackMeses);
+
+    const mesOrdenados = [...mesesDados].sort((a, b) => a - b);
+
+    // Labels (ano, apenas em múltiplos de 5 ou no fim)
+    const labels = mesOrdenados.map(m => {
+        const a = m / 12;
+        if (a === 0 || (Number.isInteger(a) && a % 5 === 0) || a === anosAnalise) {
+            return `${a}${pt ? 'a' : 'a'}`;
         }
-        
-        // Calcular custos acumulados
-        let custoTotalSubstituicoesBateriasAteMes = 0;
-        for (const subst of substituicoesBaterias) {
-            if (mes >= subst.mes) {
-                custoTotalSubstituicoesBateriasAteMes += custoBaterias;
-            }
-        }
-        
-        let custoTotalSubstituicoesSistemaAteMes = 0;
-        for (const subst of substituicoesSistemaCompleto) {
-            if (mes >= subst.mes) {
-                custoTotalSubstituicoesSistemaAteMes += custoTotal;
-            }
-        }
-        
-        investimentoInicial.push(-custoTotal);
-        
-        // Calcular economia acumulada
-        let economiaAcumuladaTotal = 0;
-        for (let m = 0; m < mes; m++) {
-            const anoAtual = Math.floor(m / 12);
-            const economiaMensalAtual = economiaMensal * Math.pow(fatorAumentoAnual, anoAtual);
-            economiaAcumuladaTotal += economiaMensalAtual;
-        }
-        economiaAcumulada.push(economiaAcumuladaTotal);
-        
-        custoSubstituicoesBaterias.push(-custoTotalSubstituicoesBateriasAteMes);
-        custoSubstituicoesSistemaCompleto.push(-custoTotalSubstituicoesSistemaAteMes);
-        
-        // Lucro/Prejuízo líquido
-        const custoTotalSubstituicoesAteMes = custoTotalSubstituicoesBateriasAteMes + custoTotalSubstituicoesSistemaAteMes;
-        const lucroPrejuizo = economiaAcumuladaTotal - custoTotal - custoTotalSubstituicoesAteMes;
-        lucroPrejuizoLiquido.push(lucroPrejuizo);
+        return '';
+    });
+
+    const saldos = mesOrdenados.map(m => saldosPorMes[m]);
+
+    const paybackIdx = paybackMeses !== null
+        ? mesOrdenados.findIndex(m => m >= paybackMeses)
+        : -1;
+
+    // Mapear quais índices são pontos de evento
+    const eventosPorMes = {};
+    for (const ev of eventos) {
+        eventosPorMes[ev.mes] = eventosPorMes[ev.mes] || [];
+        eventosPorMes[ev.mes].push(ev);
     }
-    
-    // Encontrar índice do payback
-    const paybackIndex = lucroPrejuizoLiquido.findIndex(lucro => lucro >= 0);
-    
-    // Criar gráfico
+
+    // Cores CSS computadas
+    const style = getComputedStyle(document.documentElement);
+    const corTexto = style.getPropertyValue('--text-primary').trim() || '#333';
+    const corGrid = style.getPropertyValue('--chart-grid').trim() || 'rgba(0,0,0,0.08)';
+
+    const datasets = [
+        {
+            label: pt ? 'Investimento a Recuperar' : 'Investimento da Recuperare',
+            data: saldos.map(v => v < 0 ? v : null),
+            borderColor: 'rgba(244, 67, 54, 0.9)',
+            backgroundColor: 'rgba(244, 67, 54, 0.12)',
+            borderWidth: 2.5,
+            fill: true,
+            tension: 0.25,
+            pointRadius: 0,
+            spanGaps: false
+        },
+        {
+            label: pt ? 'Lucro Acumulado' : 'Profitto Accumulato',
+            data: saldos.map(v => v >= 0 ? v : null),
+            borderColor: 'rgba(25, 118, 210, 0.9)',
+            backgroundColor: 'rgba(25, 118, 210, 0.12)',
+            borderWidth: 2.5,
+            fill: true,
+            tension: 0.25,
+            pointRadius: 0,
+            spanGaps: false
+        },
+        {
+            // Linha de equilíbrio Y=0 — com ponto destacado no break-even
+            label: pt ? 'Equilíbrio' : 'Equilibrio',
+            data: saldos.map(() => 0),
+            borderColor: 'rgba(128,128,128,0.35)',
+            backgroundColor: 'transparent',
+            borderWidth: 1,
+            borderDash: [5, 5],
+            fill: false,
+            tension: 0,
+            pointRadius: saldos.map((_, i) => i === paybackIdx ? 10 : 0),
+            pointBackgroundColor: saldos.map((_, i) => i === paybackIdx ? '#4CAF50' : 'transparent'),
+            pointBorderColor: saldos.map((_, i) => i === paybackIdx ? '#fff' : 'transparent'),
+            pointBorderWidth: saldos.map((_, i) => i === paybackIdx ? 2 : 0),
+            pointHoverRadius: saldos.map((_, i) => i === paybackIdx ? 12 : 0)
+        }
+    ];
+
     const grafico = new Chart(ctx.getContext('2d'), {
         type: 'line',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: idiomaAtual === 'pt-BR' ? 'Investimento Inicial' : 'Investimento Iniziale',
-                    data: investimentoInicial,
-                    borderColor: 'rgba(244, 67, 54, 1)',
-                    backgroundColor: 'rgba(244, 67, 54, 0.1)',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    fill: false,
-                    pointRadius: 0
-                },
-                {
-                    label: idiomaAtual === 'pt-BR' ? 'Economia Acumulada' : 'Risparmio Accumulato',
-                    data: economiaAcumulada,
-                    borderColor: 'rgba(76, 175, 80, 1)',
-                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 2,
-                    pointHoverRadius: 4
-                },
-                {
-                    label: idiomaAtual === 'pt-BR' ? 'Custo Substituições Baterias' : 'Costo Sostituzioni Batterie',
-                    data: custoSubstituicoesBaterias,
-                    borderColor: 'rgba(255, 152, 0, 1)',
-                    backgroundColor: 'rgba(255, 152, 0, 0.1)',
-                    borderWidth: 2,
-                    borderDash: [3, 3],
-                    fill: false,
-                    pointRadius: 0,
-                    hidden: substituicoesBaterias.length === 0
-                },
-                {
-                    label: idiomaAtual === 'pt-BR' ? 'Custo Substituições Sistema Completo' : 'Costo Sostituzioni Sistema Completo',
-                    data: custoSubstituicoesSistemaCompleto,
-                    borderColor: 'rgba(156, 39, 176, 1)',
-                    backgroundColor: 'rgba(156, 39, 176, 0.1)',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    fill: false,
-                    pointRadius: 0,
-                    hidden: substituicoesSistemaCompleto.length === 0
-                },
-                {
-                    label: idiomaAtual === 'pt-BR' ? 'Prejuízo Líquido' : 'Perdita Netta',
-                    data: lucroPrejuizoLiquido.map(v => v < 0 ? v : null),
-                    borderColor: 'rgba(244, 67, 54, 1)',
-                    backgroundColor: 'rgba(244, 67, 54, 0.2)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 2,
-                    pointHoverRadius: 4,
-                    spanGaps: false
-                },
-                {
-                    label: idiomaAtual === 'pt-BR' ? 'Lucro Líquido' : 'Profitto Netto',
-                    data: lucroPrejuizoLiquido.map(v => v >= 0 ? v : null),
-                    borderColor: 'rgba(25, 118, 210, 1)',
-                    backgroundColor: 'rgba(25, 118, 210, 0.2)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 2,
-                    pointHoverRadius: 4,
-                    spanGaps: false
-                }
-            ]
-        },
+        data: { labels, datasets },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             animation: false,
-            interaction: {
-                intersect: false,
-                mode: 'index'
-            },
+            interaction: { intersect: false, mode: 'index' },
             plugins: {
                 legend: {
                     position: 'top',
                     labels: {
                         font: { size: 12, weight: 'bold' },
-                        padding: 15
+                        color: corTexto,
+                        padding: 14,
+                        filter: item => item.text !== (pt ? 'Equilíbrio' : 'Equilibrio')
                     }
                 },
                 tooltip: {
                     callbacks: {
-                        label: function(context) {
-                            const valor = context.parsed.y;
-                            if (valor === null) return null;
-                            const prefixo = valor < 0 ? '-' : '';
-                            const valorFormatado = Math.abs(valor).toLocaleString(idiomaAtual, {
-                                minimumFractionDigits: 0,
-                                maximumFractionDigits: 0
-                            });
-                            return `${context.dataset.label}: ${prefixo}${moeda} ${valorFormatado}`;
+                        label: ctx => {
+                            const v = ctx.parsed.y;
+                            if (v === null || v === undefined) return null;
+                            const label = ctx.dataset.label;
+                            if (label === (pt ? 'Equilíbrio' : 'Equilibrio')) return null;
+                            const prefix = v < 0 ? '-' : '';
+                            return `${label}: ${prefix}${formatarMoedaComVirgula(Math.abs(v), moeda, 0)}`;
                         },
-                        filter: function(tooltipItem) {
-                            return tooltipItem.parsed.y !== null;
+                        filter: item => {
+                            const label = item.dataset.label;
+                            if (label === (pt ? 'Equilíbrio' : 'Equilibrio')) return false;
+                            return item.parsed.y !== null && item.parsed.y !== undefined;
                         },
-                        footer: function(tooltipItems) {
-                            if (paybackIndex >= 0 && tooltipItems[0].dataIndex === paybackIndex) {
-                                const anosPayback = Math.floor(paybackMeses / 12);
-                                const mesesPayback = paybackMeses % 12;
-                                
-                                if (idiomaAtual === 'pt-BR') {
-                                    if (anosPayback > 0 && mesesPayback > 0) {
-                                        return `✓ Payback: ${anosPayback} ano${anosPayback > 1 ? 's' : ''} e ${mesesPayback} mês${mesesPayback > 1 ? 'es' : ''}`;
-                                    } else if (anosPayback > 0) {
-                                        return `✓ Payback: ${anosPayback} ano${anosPayback > 1 ? 's' : ''}`;
-                                    } else {
-                                        return `✓ Payback: ${mesesPayback} mês${mesesPayback > 1 ? 'es' : ''}`;
-                                    }
-                                } else {
-                                    if (anosPayback > 0 && mesesPayback > 0) {
-                                        return `✓ Payback: ${anosPayback} anno${anosPayback > 1 ? 'i' : ''} e ${mesesPayback} mese${mesesPayback > 1 ? 'i' : ''}`;
-                                    } else if (anosPayback > 0) {
-                                        return `✓ Payback: ${anosPayback} anno${anosPayback > 1 ? 'i' : ''}`;
-                                    } else {
-                                        return `✓ Payback: ${mesesPayback} mese${mesesPayback > 1 ? 'i' : ''}`;
-                                    }
+                        footer: tooltipItems => {
+                            const dataIdx = tooltipItems[0]?.dataIndex;
+                            if (dataIdx == null) return '';
+                            const mesAtual = mesOrdenados[dataIdx];
+                            const linhas = [];
+
+                            // Mostrar eventos de custo que aconteceram neste ponto
+                            if (eventosPorMes[mesAtual]) {
+                                for (const ev of eventosPorMes[mesAtual]) {
+                                    const nome = ev.tipo === 'bateria'
+                                        ? (pt ? '🔋 Subst. baterias' : '🔋 Sost. batterie')
+                                        : (pt ? '⚙️ Renovação do sistema' : '⚙️ Rinnovo del sistema');
+                                    linhas.push(`${nome}: -${formatarMoedaComVirgula(ev.valor, moeda, 0)}`);
                                 }
                             }
-                            return '';
+
+                            // Destacar o ponto de equilíbrio
+                            if (dataIdx === paybackIdx) {
+                                const anos = Math.floor(paybackMeses / 12);
+                                const meses = paybackMeses % 12;
+                                let texto = '';
+                                if (pt) {
+                                    if (anos > 0 && meses > 0) texto = `${anos}a e ${meses}m`;
+                                    else if (anos > 0) texto = `${anos} ano${anos > 1 ? 's' : ''}`;
+                                    else texto = `${meses} mês${meses !== 1 ? 'es' : ''}`;
+                                    linhas.push(`⚖️ Ponto de equilíbrio: ${texto}`);
+                                } else {
+                                    if (anos > 0 && meses > 0) texto = `${anos}a e ${meses}m`;
+                                    else if (anos > 0) texto = `${anos} anno${anos > 1 ? 'i' : ''}`;
+                                    else texto = `${meses} mese${meses !== 1 ? 'i' : ''}`;
+                                    linhas.push(`⚖️ Punto di equilibrio: ${texto}`);
+                                }
+                            }
+                            return linhas;
                         }
                     }
                 }
@@ -331,160 +256,203 @@ export function criarGraficoAmortizacao(dados, idiomaAtual) {
                 x: {
                     title: {
                         display: true,
-                        text: idiomaAtual === 'pt-BR' ? 'Tempo (anos)' : 'Tempo (anni)',
-                        font: { size: 12, weight: 'bold' }
+                        text: pt ? 'Tempo (anos)' : 'Tempo (anni)',
+                        font: { size: 12, weight: 'bold' },
+                        color: corTexto
                     },
                     ticks: {
                         maxRotation: 0,
                         minRotation: 0,
-                        maxTicksLimit: anosParaMostrar.length,
                         autoSkip: false,
-                        includeBounds: true
-                    }
+                        color: corTexto
+                    },
+                    grid: { color: corGrid }
                 },
                 y: {
                     title: {
                         display: true,
-                        text: idiomaAtual === 'pt-BR' ? `Valor (${moeda})` : `Valore (${moeda})`,
-                        font: { size: 12, weight: 'bold' }
+                        text: pt ? `Saldo Financeiro (${moeda})` : `Saldo Finanziario (${moeda})`,
+                        font: { size: 12, weight: 'bold' },
+                        color: corTexto
                     },
                     ticks: {
-                        callback: function(value) {
-                            return `${moeda} ${value.toLocaleString(idiomaAtual, {
-                                minimumFractionDigits: 0,
-                                maximumFractionDigits: 0
-                            })}`;
+                        color: corTexto,
+                        callback: v => {
+                            const abs = Math.abs(v);
+                            const k = abs >= 1000 ? `${(abs / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 0 })}k` : abs.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+                            return v < 0 ? `-${moeda} ${k}` : `${moeda} ${k}`;
                         }
-                    }
+                    },
+                    grid: { color: corGrid }
                 }
             }
         }
     });
-    
-    // Atualizar informações de payback
-    atualizarInfoPayback(dados, paybackMeses, anosAnalise, substituicoesBaterias, substituicoesSistemaCompleto, idiomaAtual);
-    
+
+    atualizarPainelFinanceiro(dados, paybackMeses, anosAnalise, eventos, economiaMensal, aumentoAnual, fator, precoKWh, moeda, idiomaAtual);
+
     return grafico;
 }
 
-/**
- * Atualiza as informações de payback e análise financeira
- */
-function atualizarInfoPayback(dados, paybackMeses, anosAnalise, substituicoesBaterias, substituicoesSistemaCompleto, idiomaAtual) {
-    const infoPaybackEl = document.getElementById('infoPayback');
-    if (!infoPaybackEl) return;
-    
-    const { custoTotal, consumoMensal, custoBaterias, vidaUtil } = dados;
-    
-    const sliderPrecoKWh = document.getElementById('sliderPrecoKWh');
-    const precoKWh = sliderPrecoKWh ? parseFloat(sliderPrecoKWh.value) : PRECO_KWH[idiomaAtual];
-    
-    const sliderAumentoAnual = document.getElementById('sliderAumentoAnualEnergia');
-    const aumentoAnualPercentual = sliderAumentoAnual 
-        ? parseFloat(sliderAumentoAnual.value) 
-        : AUMENTO_ANUAL_ENERGIA[idiomaAtual];
-    const fatorAumentoAnual = 1 + (aumentoAnualPercentual / 100);
-    
-    const economiaMensal = consumoMensal * precoKWh;
-    const economiaAnual = economiaMensal * 12;
-    const moeda = idiomaAtual === 'it-IT' ? '€' : 'R$';
-    
-    // Calcular economia total no período
-    let economiaTotalPeriodo = 0;
-    if (Math.abs(fatorAumentoAnual - 1) < 0.0001) {
-        economiaTotalPeriodo = economiaAnual * anosAnalise;
+function atualizarPainelFinanceiro(dados, paybackMeses, anosAnalise, eventos, economiaMensal, aumentoAnual, fator, precoKWh, moeda, idiomaAtual) {
+    const el = document.getElementById('infoPayback');
+    if (!el) return;
+
+    const { custoTotal, consumoMensal, custoBaterias = 0, vidaUtil = 20 } = dados;
+    const pt = idiomaAtual === 'pt-BR';
+
+    // --- Seção 1: O que gera a economia ---
+    const economiaAnual1 = economiaMensal * 12;
+    const economiaAnual10 = economiaMensal * 12 * Math.pow(fator, 9);
+    const economiaAnualN = economiaMensal * 12 * Math.pow(fator, anosAnalise - 1);
+
+    // Economia total no período (série geométrica)
+    let economiaTotalPeriodo;
+    if (Math.abs(fator - 1) < 0.0001) {
+        economiaTotalPeriodo = economiaAnual1 * anosAnalise;
     } else {
-        economiaTotalPeriodo = economiaAnual * (Math.pow(fatorAumentoAnual, anosAnalise) - 1) / (fatorAumentoAnual - 1);
+        economiaTotalPeriodo = economiaAnual1 * (Math.pow(fator, anosAnalise) - 1) / (fator - 1);
     }
-    
-    const custoTotalSubstituicoesBaterias = substituicoesBaterias.length * custoBaterias;
-    const custoTotalSubstituicoesSistema = substituicoesSistemaCompleto.length * custoTotal;
-    const custoTotalSubstituicoes = custoTotalSubstituicoesBaterias + custoTotalSubstituicoesSistema;
-    
-    const lucroTotalPeriodo = economiaTotalPeriodo - custoTotal - custoTotalSubstituicoes;
-    const isPrejuizo = lucroTotalPeriodo < 0;
-    
-    const anosPayback = Math.floor(paybackMeses / 12);
-    const mesesPayback = paybackMeses % 12;
-    
-    // Montar HTML
-    if (idiomaAtual === 'pt-BR') {
-        let textoPayback = anosPayback > 0 && mesesPayback > 0
-            ? `${anosPayback} ano${anosPayback > 1 ? 's' : ''} e ${mesesPayback} mês${mesesPayback > 1 ? 'es' : ''}`
-            : anosPayback > 0
-                ? `${anosPayback} ano${anosPayback > 1 ? 's' : ''}`
-                : `${mesesPayback} mês${mesesPayback > 1 ? 'es' : ''}`;
-        
-        let infoSubstituicoes = '';
-        if (substituicoesBaterias.length > 0 || substituicoesSistemaCompleto.length > 0) {
-            const partesInfo = [];
-            
-            if (substituicoesBaterias.length > 0) {
-                const anosSubstBaterias = substituicoesBaterias.map(s => s.ano).join(', ');
-                partesInfo.push(`<span style="color: #FF9800;">🔋 Substituições de baterias (vida útil: ${vidaUtil} anos): <strong>${substituicoesBaterias.length} vez${substituicoesBaterias.length > 1 ? 'es' : ''}</strong> aos ${anosSubstBaterias} ano${substituicoesBaterias.length > 1 ? 's' : ''} | Custo total: <strong>${formatarMoedaComVirgula(custoTotalSubstituicoesBaterias, moeda, 2)}</strong></span>`);
-            }
-            
-            if (substituicoesSistemaCompleto.length > 0) {
-                const anosSubstSistema = substituicoesSistemaCompleto.map(s => s.ano).join(', ');
-                partesInfo.push(`<span style="color: #9C27B0;">⚙️ Substituições completas do sistema (a cada 25 anos): <strong>${substituicoesSistemaCompleto.length} vez${substituicoesSistemaCompleto.length > 1 ? 'es' : ''}</strong> aos ${anosSubstSistema} ano${substituicoesSistemaCompleto.length > 1 ? 's' : ''} | Custo total: <strong>${formatarMoedaComVirgula(custoTotalSubstituicoesSistema, moeda, 2)}</strong></span>`);
-            }
-            
-            if (partesInfo.length > 0) {
-                infoSubstituicoes = '<br>' + partesInfo.join('<br>');
-            }
+
+    // --- Seção 2: Estrutura de custos ---
+    const eventosBateria = eventos.filter(e => e.tipo === 'bateria');
+    const eventosSistema = eventos.filter(e => e.tipo === 'sistema');
+    const custoTotalBaterias = eventosBateria.reduce((s, e) => s + e.valor, 0);
+    const custoTotalSistema = eventosSistema.reduce((s, e) => s + e.valor, 0);
+    const custoTotalPeriodo = custoTotal + custoTotalBaterias + custoTotalSistema;
+
+    // --- Seção 3: Resultado ---
+    const saldoFinal = economiaTotalPeriodo - custoTotalPeriodo;
+    const lucro = saldoFinal >= 0;
+
+    const fmt = (v, c = 0) => formatarMoedaComVirgula(v, moeda, c);
+    const pct = v => `${v.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`;
+
+    // Texto de payback
+    let textoPayback;
+    if (paybackMeses === null) {
+        textoPayback = pt ? 'fora do período analisado' : 'fuori dal periodo analizzato';
+    } else {
+        const a = Math.floor(paybackMeses / 12);
+        const m = paybackMeses % 12;
+        if (pt) {
+            textoPayback = a > 0 && m > 0 ? `${a} ano${a > 1 ? 's' : ''} e ${m} mês${m !== 1 ? 'es' : ''}`
+                : a > 0 ? `${a} ano${a > 1 ? 's' : ''}`
+                : `${m} mês${m !== 1 ? 'es' : ''}`;
+        } else {
+            textoPayback = a > 0 && m > 0 ? `${a} anno${a > 1 ? 'i' : ''} e ${m} mese${m !== 1 ? 'i' : ''}`
+                : a > 0 ? `${a} anno${a > 1 ? 'i' : ''}`
+                : `${m} mese${m !== 1 ? 'i' : ''}`;
         }
-        
-        infoPaybackEl.innerHTML = `
-            <strong>💰 Análise Financeira:</strong><br>
-            <div style="margin: 8px 0;">
-                <strong style="font-size: 0.95em;">Economia com Energia da Concessionária:</strong>
-                <table style="width: auto; border-collapse: collapse; margin: 4px 0; font-size: 0.9em; margin-left: auto; margin-right: auto;">
-                    <tr>
-                        <td style="padding: 2px 4px; text-align: left; white-space: nowrap;">Mensal:</td>
-                        <td style="padding: 2px 4px; text-align: right; font-weight: bold; white-space: nowrap;">${formatarMoedaComVirgula(economiaMensal, moeda, 2)}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 2px 4px; text-align: left; white-space: nowrap;">Anual:</td>
-                        <td style="padding: 2px 4px; text-align: right; font-weight: bold; white-space: nowrap;">${formatarMoedaComVirgula(economiaAnual, moeda, 2)}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 2px 4px; text-align: left; white-space: nowrap;">${anosAnalise} anos:</td>
-                        <td style="padding: 2px 4px; text-align: right; font-weight: bold; white-space: nowrap;">${formatarMoedaComVirgula(economiaTotalPeriodo, moeda, 2)}</td>
-                    </tr>
-                </table>
-            </div>
-            <span style="color: #1976D2;">⏱️ Payback inicial: <strong>${textoPayback}</strong></span>${infoSubstituicoes}<br>
-            <span style="color: ${isPrejuizo ? '#F44336' : '#4CAF50'};">💵 ${isPrejuizo ? 'Prejuízo líquido' : 'Lucro líquido'} em ${anosAnalise} anos: <strong>${formatarMoedaComVirgula(Math.abs(lucroTotalPeriodo), moeda, 2)}</strong></span>
-        `;
-    } else {
-        // Versão em italiano (similar)
-        let textoPayback = anosPayback > 0 && mesesPayback > 0
-            ? `${anosPayback} anno${anosPayback > 1 ? 'i' : ''} e ${mesesPayback} mese${mesesPayback > 1 ? 'i' : ''}`
-            : anosPayback > 0
-                ? `${anosPayback} anno${anosPayback > 1 ? 'i' : ''}`
-                : `${mesesPayback} mese${mesesPayback > 1 ? 'i' : ''}`;
-        
-        infoPaybackEl.innerHTML = `
-            <strong>💰 Analisi Finanziaria:</strong><br>
-            <div style="margin: 8px 0;">
-                <strong style="font-size: 0.95em;">Risparmio con Energia della Concessionaria:</strong>
-                <table style="width: auto; border-collapse: collapse; margin: 4px 0; font-size: 0.9em; margin-left: auto; margin-right: auto;">
-                    <tr>
-                        <td style="padding: 2px 4px; text-align: left; white-space: nowrap;">Mensile:</td>
-                        <td style="padding: 2px 4px; text-align: right; font-weight: bold; white-space: nowrap;">${formatarMoedaComVirgula(economiaMensal, moeda, 2)}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 2px 4px; text-align: left; white-space: nowrap;">Annuale:</td>
-                        <td style="padding: 2px 4px; text-align: right; font-weight: bold; white-space: nowrap;">${formatarMoedaComVirgula(economiaAnual, moeda, 2)}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 2px 4px; text-align: left; white-space: nowrap;">${anosAnalise} anni:</td>
-                        <td style="padding: 2px 4px; text-align: right; font-weight: bold; white-space: nowrap;">${formatarMoedaComVirgula(economiaTotalPeriodo, moeda, 2)}</td>
-                    </tr>
-                </table>
-            </div>
-            <span style="color: #1976D2;">⏱️ Payback iniziale: <strong>${textoPayback}</strong></span><br>
-            <span style="color: ${isPrejuizo ? '#F44336' : '#4CAF50'};">💵 ${isPrejuizo ? 'Perdita netta' : 'Profitto netto'} in ${anosAnalise} anni: <strong>${formatarMoedaComVirgula(Math.abs(lucroTotalPeriodo), moeda, 2)}</strong></span>
-        `;
     }
+
+    // Helper para linha de tabela
+    const tr = (a, b, destaque = false) =>
+        `<tr style="${destaque ? 'font-weight:700;border-top:1px solid var(--border-color)' : ''}">
+            <td style="padding:3px 6px;text-align:left;white-space:nowrap;">${a}</td>
+            <td style="padding:3px 6px;text-align:right;white-space:nowrap;">${b}</td>
+        </tr>`;
+
+    const secao = (titulo, conteudo) =>
+        `<div style="margin:10px 0 4px;padding:10px 12px;background:var(--surface-muted);border-radius:8px;font-size:0.88em;">
+            <div style="font-weight:700;font-size:0.93em;margin-bottom:6px;">${titulo}</div>
+            ${conteudo}
+        </div>`;
+
+    let html = '';
+
+    if (pt) {
+        // SEÇÃO 1 — Economia
+        let rowsEconomia = tr('Consumo protegido', `${consumoMensal.toLocaleString('pt-BR', {maximumFractionDigits: 1})} kWh/mês`)
+            + tr('Tarifa atual (kWh)', `${moeda} ${precoKWh.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`)
+            + tr('Economia no 1º ano', `${fmt(economiaAnual1)}`)
+            + tr(`Aumento anual previsto`, `${pct(aumentoAnual)}/ano`);
+        if (anosAnalise >= 10) rowsEconomia += tr(`Economia no 10º ano`, `${fmt(economiaAnual10)}`);
+        if (anosAnalise > 10) rowsEconomia += tr(`Economia no ${anosAnalise}º ano`, `${fmt(economiaAnualN)}`);
+        rowsEconomia += tr(`Economia total em ${anosAnalise} anos`, `${fmt(economiaTotalPeriodo)}`, true);
+
+        html += secao('📈 O que gera sua economia com o solar',
+            `<table style="width:100%;border-collapse:collapse;">${rowsEconomia}</table>`);
+
+        // SEÇÃO 2 — Custos
+        let rowsCustos = tr('Investimento inicial (hoje)', fmt(custoTotal));
+        if (eventosBateria.length > 0) {
+            const anosB = eventosBateria.map(e => `${e.ano}a`).join(', ');
+            rowsCustos += tr(
+                `Subst. baterias (a cada ${vidaUtil}a) × ${eventosBateria.length}`,
+                `${fmt(custoBaterias)}/vez = ${fmt(custoTotalBaterias)}`
+            );
+            rowsCustos += `<tr><td colspan="2" style="padding:0 6px 3px;font-size:0.9em;color:var(--text-secondary);">
+                → Prevista${eventosBateria.length > 1 ? 's' : ''} nos anos: ${anosB}</td></tr>`;
+        }
+        if (eventosSistema.length > 0) {
+            const anosS = eventosSistema.map(e => `${e.ano}a`).join(', ');
+            rowsCustos += tr(
+                `Renovação completa (a cada 25a) × ${eventosSistema.length}`,
+                `${fmt(custoTotal)}/vez = ${fmt(custoTotalSistema)}`
+            );
+            rowsCustos += `<tr><td colspan="2" style="padding:0 6px 3px;font-size:0.9em;color:var(--text-secondary);">
+                → Prevista${eventosSistema.length > 1 ? 's' : ''} nos anos: ${anosS}</td></tr>`;
+        }
+        rowsCustos += tr(`Total de custos em ${anosAnalise} anos`, fmt(custoTotalPeriodo), true);
+
+        html += secao('💸 Estrutura de custos do sistema',
+            `<table style="width:100%;border-collapse:collapse;">${rowsCustos}</table>`);
+
+        // SEÇÃO 3 — Resultado
+        const corResultado = lucro ? '#1976D2' : '#F44336';
+        html += `<div style="margin-top:10px;padding:10px 12px;background:${lucro ? 'rgba(25,118,210,0.08)' : 'rgba(244,67,54,0.08)'};border-radius:8px;border-left:4px solid ${corResultado};font-size:0.88em;">
+            <div style="margin-bottom:4px;">⚖️ <strong>Ponto de equilíbrio:</strong> ${paybackMeses ? `<span style="color:${corResultado};font-weight:700;">${textoPayback}</span>` : textoPayback}</div>
+            <div>💵 <strong>${lucro ? 'Lucro' : 'Prejuízo'} líquido em ${anosAnalise} anos:</strong>
+                <span style="color:${corResultado};font-weight:700;"> ${fmt(Math.abs(saldoFinal))}</span>
+            </div>
+        </div>`;
+
+    } else {
+        // --- versão italiana ---
+        let rowsEconomia = tr('Consumo protetto', `${consumoMensal.toLocaleString('it-IT', {maximumFractionDigits: 1})} kWh/mese`)
+            + tr('Tariffa attuale (kWh)', `${moeda} ${precoKWh.toLocaleString('it-IT', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`)
+            + tr('Risparmio nel 1° anno', `${fmt(economiaAnual1)}`)
+            + tr('Aumento annuo previsto', `${pct(aumentoAnual)}/anno`);
+        if (anosAnalise >= 10) rowsEconomia += tr('Risparmio nel 10° anno', `${fmt(economiaAnual10)}`);
+        if (anosAnalise > 10) rowsEconomia += tr(`Risparmio nel ${anosAnalise}° anno`, `${fmt(economiaAnualN)}`);
+        rowsEconomia += tr(`Risparmio totale in ${anosAnalise} anni`, `${fmt(economiaTotalPeriodo)}`, true);
+
+        html += secao('📈 Cosa genera il tuo risparmio con il solare',
+            `<table style="width:100%;border-collapse:collapse;">${rowsEconomia}</table>`);
+
+        let rowsCustos = tr('Investimento iniziale (oggi)', fmt(custoTotal));
+        if (eventosBateria.length > 0) {
+            const anosB = eventosBateria.map(e => `${e.ano}a`).join(', ');
+            rowsCustos += tr(
+                `Sost. batterie (ogni ${vidaUtil}a) × ${eventosBateria.length}`,
+                `${fmt(custoBaterias)}/volta = ${fmt(custoTotalBaterias)}`
+            );
+            rowsCustos += `<tr><td colspan="2" style="padding:0 6px 3px;font-size:0.9em;color:var(--text-secondary);">
+                → Prevista${eventosBateria.length > 1 ? 'e' : ''} negli anni: ${anosB}</td></tr>`;
+        }
+        if (eventosSistema.length > 0) {
+            const anosS = eventosSistema.map(e => `${e.ano}a`).join(', ');
+            rowsCustos += tr(
+                `Rinnovo completo (ogni 25a) × ${eventosSistema.length}`,
+                `${fmt(custoTotal)}/volta = ${fmt(custoTotalSistema)}`
+            );
+            rowsCustos += `<tr><td colspan="2" style="padding:0 6px 3px;font-size:0.9em;color:var(--text-secondary);">
+                → Previsto negli anni: ${anosS}</td></tr>`;
+        }
+        rowsCustos += tr(`Costo totale in ${anosAnalise} anni`, fmt(custoTotalPeriodo), true);
+
+        html += secao('💸 Struttura dei costi del sistema',
+            `<table style="width:100%;border-collapse:collapse;">${rowsCustos}</table>`);
+
+        const corR = lucro ? '#1976D2' : '#F44336';
+        html += `<div style="margin-top:10px;padding:10px 12px;background:${lucro ? 'rgba(25,118,210,0.08)' : 'rgba(244,67,54,0.08)'};border-radius:8px;border-left:4px solid ${corR};font-size:0.88em;">
+            <div style="margin-bottom:4px;">⚖️ <strong>Punto di equilibrio:</strong> ${paybackMeses ? `<span style="color:${corR};font-weight:700;">${textoPayback}</span>` : textoPayback}</div>
+            <div>💵 <strong>${lucro ? 'Profitto' : 'Perdita'} nett${lucro ? 'o' : 'a'} in ${anosAnalise} anni:</strong>
+                <span style="color:${corR};font-weight:700;"> ${fmt(Math.abs(saldoFinal))}</span>
+            </div>
+        </div>`;
+    }
+
+    el.innerHTML = `<div style="margin-top:8px;">${html}</div>`;
 }
