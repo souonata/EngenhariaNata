@@ -796,6 +796,7 @@ class IluminacaoApp extends App {
 
     this.renderizarListaAmbientes(resultados);
     this.renderizarTotaisResidencia(totais);
+    this.renderizarMatrizLampadas(resultados);
     this.renderizarResultadosParciais(resultados);
     this.atualizarMemorial(
       ambienteAtivo.nome,
@@ -890,6 +891,87 @@ class IluminacaoApp extends App {
       .join("");
   }
 
+
+  renderizarMatrizLampadas(resultados) {
+    const container = document.getElementById('matrizLampadas');
+    const bloco = document.getElementById('blocoMatrizLampadas');
+    if (!container || !bloco) return;
+
+    // Só mostra a matriz com 2 ou mais ambientes
+    if (resultados.length < 2) {
+      bloco.style.display = 'none';
+      return;
+    }
+    bloco.style.display = '';
+
+    const pt = i18n.obterIdiomaAtual() === 'pt-BR';
+
+    // Coletar quais potências são efetivamente usadas
+    const potenciasUsadas = new Set(resultados.map(r => r.calculo.configLuminarias.wattagem));
+    const colunas = TIPOS_LAMPADAS.filter(w => potenciasUsadas.has(w));
+
+    // Totais por potência
+    const totalPorPotencia = {};
+    colunas.forEach(w => { totalPorPotencia[w] = 0; });
+    let totalLampadas = 0;
+    let totalWatts = 0;
+
+    resultados.forEach(r => {
+      const { wattagem, quantidade, potenciaTotal } = r.calculo.configLuminarias;
+      if (totalPorPotencia[wattagem] !== undefined) totalPorPotencia[wattagem] += quantidade;
+      totalLampadas += quantidade;
+      totalWatts += potenciaTotal;
+    });
+
+    const th = (txt, cls = '') =>
+      `<th class="mtz-th ${cls}" scope="col">${txt}</th>`;
+    const td = (txt, cls = '') =>
+      `<td class="mtz-td ${cls}">${txt}</td>`;
+
+    // Cabeçalho
+    let headerCols = colunas.map(w => th(`${w}W`, 'mtz-th-watt')).join('');
+    const lblTotal = pt ? 'Total' : 'Totale';
+    const lblWatt  = pt ? 'Potência' : 'Potenza';
+    let thead = `<thead><tr>
+      <th class="mtz-th mtz-th-comodo" scope="col">${pt ? 'Cômodo' : 'Ambiente'}</th>
+      ${headerCols}
+      <th class="mtz-th mtz-th-total" scope="col">${lblTotal}</th>
+      <th class="mtz-th mtz-th-total" scope="col">${lblWatt}</th>
+    </tr></thead>`;
+
+    // Linhas de cômodos
+    let rows = resultados.map(r => {
+      const { wattagem, quantidade, potenciaTotal } = r.calculo.configLuminarias;
+      const icone = ICONE_AMBIENTE[r.ambiente.tipo] || '💡';
+      const cellsCols = colunas.map(w => {
+        if (w === wattagem) return td(`<strong>${quantidade}</strong>`, 'mtz-td-usado');
+        return td('—', 'mtz-td-vazio');
+      }).join('');
+      return `<tr>
+        <td class="mtz-td mtz-td-nome"><span class="mtz-icone">${icone}</span>${escapeHtml(r.nome)}</td>
+        ${cellsCols}
+        ${td(String(quantidade), 'mtz-td-total')}
+        ${td(`${potenciaTotal}W`, 'mtz-td-total')}
+      </tr>`;
+    }).join('');
+
+    // Linha de totais
+    let totalCols = colunas.map(w =>
+      td(totalPorPotencia[w] > 0 ? `<strong>${totalPorPotencia[w]}</strong>` : '—', 'mtz-td-total mtz-td-usado')
+    ).join('');
+    let tfoot = `<tfoot><tr class="mtz-linha-total">
+      <td class="mtz-td mtz-td-nome mtz-td-total"><strong>${pt ? 'Total casa' : 'Totale casa'}</strong></td>
+      ${totalCols}
+      ${td(`<strong>${totalLampadas}</strong>`, 'mtz-td-total mtz-td-usado')}
+      ${td(`<strong>${totalWatts}W</strong>`, 'mtz-td-total mtz-td-usado')}
+    </tr></tfoot>`;
+
+    container.innerHTML = `<div class="mtz-scroll-wrapper">
+      <table class="mtz-tabela">
+        ${thead}<tbody>${rows}</tbody>${tfoot}
+      </table>
+    </div>`;
+  }
 
   renderizarTotaisResidencia(totais) {
     const moeda = i18n.obterMoeda();
