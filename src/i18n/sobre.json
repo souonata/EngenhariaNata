@@ -104,7 +104,12 @@
       "aquecimento": "Calculadora de Aquecedor Solar",
       "solar": "Calculadora de Energia Solar",
       "fazenda": "Planejador de Fazenda",
-      "bombaagua": "Calculadora de Bomba d'Agua"
+      "bombaagua": "Calculadora de Bomba d'Agua",
+      "chuva": "Captação de Água da Chuva",
+      "iluminacao": "Calculadora de Iluminação",
+      "previsao": "Previsão Meteorológica",
+      "salario": "Calculadora de Salário",
+      "ventilacao": "Ventilação Natural"
     },
     "bitola": {
       "description": "Calcula o fio elétrico correto para sua instalação, evitando aquecimento e garantindo segurança."
@@ -117,6 +122,21 @@
     },
     "bugs": {
       "description": "Canal para reportar falhas, compartilhar sugestões e apoiar a evolução contínua dos apps."
+    },
+    "chuva": {
+      "description": "Dimensiona cisternas para aproveitamento de água da chuva, calcula volume captado e economia mensal conforme NBR 15527."
+    },
+    "iluminacao": {
+      "description": "Dimensiona lâmpadas para cada cômodo e calcula consumo e custo de energia conforme NBR 5413."
+    },
+    "previsao": {
+      "description": "Previsão meteorológica de 7 dias com dados horários de temperatura e chuva via Open-Meteo (sem chave de API)."
+    },
+    "salario": {
+      "description": "Calcula salário líquido para Brasil (CLT) e Itália (IRPEF/INPS) com memorial detalhado e gráficos."
+    },
+    "ventilacao": {
+      "description": "Calcula renovações de ar (ACH) e área mínima de ventilação natural conforme NBR 15575."
     },
     "stat": {
       "html": "linhas HTML",
@@ -269,6 +289,74 @@
       "regional": {
         "title": "Banco de Dados Regional",
         "desc": "Informações técnicas detalhadas para Brasil e Itália (clima, solo, técnicas)"
+      },
+      "captacao": {
+        "title": "Captação Pluvial",
+        "desc": "Calcula o volume captado com base na área do telhado, coeficiente de escoamento e precipitação mensal local"
+      },
+      "cisterna": {
+        "title": "Cisterna",
+        "desc": "Dimensiona o volume ideal da cisterna para atender à demanda de uso selecionada"
+      },
+      "economia-chuva": {
+        "title": "Economia Mensal",
+        "desc": "Estima a economia na conta de água com base no uso planejado (jardim, sanitário, limpeza)"
+      },
+      "lux": {
+        "title": "Iluminância (Lux)",
+        "desc": "Calcula lux mínimo e recomendado por tipo de ambiente e atividade conforme NBR 5413"
+      },
+      "tipos-lampada": {
+        "title": "Tipos de Lâmpada",
+        "desc": "Compara LED, fluorescente e incandescente com fator de eficiência e potência ajustável"
+      },
+      "custo-energia": {
+        "title": "Custo de Energia",
+        "desc": "Estima consumo mensal em kWh e custo com base na tarifa configurável"
+      },
+      "matriz-lampadas": {
+        "title": "Matriz por Cômodo",
+        "desc": "Tabela de quantas lâmpadas de cada potência são necessárias por ambiente em casas com múltiplos cômodos"
+      },
+      "previsao-api": {
+        "title": "Open-Meteo API",
+        "desc": "Dados gratuitos, sem chave de API, com atualização automática para 7 dias"
+      },
+      "temp-horaria": {
+        "title": "Temperatura Horária",
+        "desc": "Gráfico sparkline por dia com cruzamento do limiar de 24°C e janelas de chuva destacadas"
+      },
+      "chuva-previsao": {
+        "title": "Chuva em mm",
+        "desc": "Probabilidade e volume de precipitação horária com destaque para eventos expressivos"
+      },
+      "cidades-previsao": {
+        "title": "4 Cidades",
+        "desc": "Turbigo, Milão, Turate (IT) e Curitiba (BR) — troca com um clique, horário local da cidade"
+      },
+      "br-clt": {
+        "title": "Brasil — CLT",
+        "desc": "INSS, IRRF, FGTS, 13º salário, férias e verbas rescisórias conforme tabelas 2025-2026"
+      },
+      "it-irpef": {
+        "title": "Itália — IRPEF",
+        "desc": "IRPEF em 3 escaglioni, INPS, addizionali regionali, TFR e tredicesima"
+      },
+      "graficos-salario": {
+        "title": "Gráficos de Decomposição",
+        "desc": "Visualiza líquido, descontos e renda anual total em gráfico de barras interativo"
+      },
+      "ach": {
+        "title": "ACH — Renovações de Ar",
+        "desc": "Calcula trocas de ar por hora com base em dimensões do ambiente, área de janelas e ocupação"
+      },
+      "nbr15575": {
+        "title": "NBR 15575",
+        "desc": "Verifica área mínima de ventilação conforme norma de desempenho residencial"
+      },
+      "qualidade-ventilacao": {
+        "title": "Qualidade da Ventilação",
+        "desc": "Resultado qualitativo (insuficiente / adequado / excelente) com orientações práticas"
       }
     },
     "resource-bilingual": {
@@ -471,7 +559,12 @@
       "aquecimento": "Calcolatrice Riscaldatore Solare",
       "solar": "Calcolatrice Energia Solare",
       "fazenda": "Pianificatore Fattoria",
-      "bombaagua": "Calcolatrice Pompa d'Acqua"
+      "bombaagua": "Calcolatrice Pompa d'Acqua",
+      "chuva": "Raccolta Acqua Piovana",
+      "iluminacao": "Calcolatrice Illuminazione",
+      "previsao": "Previsioni Meteorologiche",
+      "salario": "Calcolatrice Stipendio",
+      "ventilacao": "Ventilazione Naturale"
     },
     "bitola": {
       "description": "Calcola il cavo elettrico corretto per la tua installazione, evitando surriscaldamento e garantendo sicurezza."
@@ -484,6 +577,21 @@
     },
     "bugs": {
       "description": "Canale per segnalare problemi, inviare suggerimenti e supportare il miglioramento continuo delle app."
+    },
+    "chuva": {
+      "description": "Dimensiona cisterne per il recupero dell'acqua piovana, calcola il volume raccolto e il risparmio mensile conforme NBR 15527."
+    },
+    "iluminacao": {
+      "description": "Dimensiona le lampade per ogni stanza e calcola consumo e costo dell'energia conforme NBR 5413."
+    },
+    "previsao": {
+      "description": "Previsioni meteo a 7 giorni con dati orari di temperatura e pioggia via Open-Meteo (senza chiave API)."
+    },
+    "salario": {
+      "description": "Calcola lo stipendio netto per Brasile (CLT) e Italia (IRPEF/INPS) con memoriale dettagliato e grafici."
+    },
+    "ventilacao": {
+      "description": "Calcola i ricambi d'aria (ACH) e l'area minima di ventilazione naturale conforme NBR 15575."
     },
     "stat": {
       "html": "righe HTML",
@@ -636,6 +744,74 @@
       "regional": {
         "title": "Database Regionale",
         "desc": "Informazioni tecniche dettagliate per Brasile e Italia (clima, suolo, tecniche)"
+      },
+      "captacao": {
+        "title": "Raccolta Pluviale",
+        "desc": "Calcola il volume raccolto in base all'area del tetto, coefficiente di deflusso e precipitazioni mensili locali"
+      },
+      "cisterna": {
+        "title": "Cisterna",
+        "desc": "Dimensiona il volume ideale della cisterna per soddisfare la domanda d'uso selezionata"
+      },
+      "economia-chuva": {
+        "title": "Risparmio Mensile",
+        "desc": "Stima il risparmio sulla bolletta dell'acqua in base all'uso pianificato (giardino, WC, pulizie)"
+      },
+      "lux": {
+        "title": "Illuminanza (Lux)",
+        "desc": "Calcola lux minimo e raccomandato per tipo di ambiente e attività conforme NBR 5413"
+      },
+      "tipos-lampada": {
+        "title": "Tipi di Lampada",
+        "desc": "Confronta LED, fluorescente e incandescente con fattore di efficienza e potenza regolabile"
+      },
+      "custo-energia": {
+        "title": "Costo Energetico",
+        "desc": "Stima il consumo mensile in kWh e il costo in base alla tariffa configurabile"
+      },
+      "matriz-lampadas": {
+        "title": "Matrice per Stanza",
+        "desc": "Tabella di quante lampade di ogni potenza sono necessarie per stanza in case con più ambienti"
+      },
+      "previsao-api": {
+        "title": "Open-Meteo API",
+        "desc": "Dati gratuiti, senza chiave API, con aggiornamento automatico per 7 giorni"
+      },
+      "temp-horaria": {
+        "title": "Temperatura Oraria",
+        "desc": "Grafico sparkline per giorno con soglia di 24°C e finestre di pioggia evidenziate"
+      },
+      "chuva-previsao": {
+        "title": "Pioggia in mm",
+        "desc": "Probabilità e volume di precipitazione oraria con evidenza degli eventi significativi"
+      },
+      "cidades-previsao": {
+        "title": "4 Città",
+        "desc": "Turbigo, Milano, Turate (IT) e Curitiba (BR) — cambio con un clic, ora locale della città"
+      },
+      "br-clt": {
+        "title": "Brasile — CLT",
+        "desc": "INSS, IRRF, FGTS, tredicesima, ferie e TFR conforme tabelle 2025-2026"
+      },
+      "it-irpef": {
+        "title": "Italia — IRPEF",
+        "desc": "IRPEF su 3 scaglioni, INPS, addizionali regionali, TFR e tredicesima"
+      },
+      "graficos-salario": {
+        "title": "Grafici di Decomposizione",
+        "desc": "Visualizza netto, detrazioni e reddito annuo totale in un grafico a barre interattivo"
+      },
+      "ach": {
+        "title": "ACH — Ricambi d'Aria",
+        "desc": "Calcola i ricambi d'aria per ora in base alle dimensioni dell'ambiente, area finestre e occupazione"
+      },
+      "nbr15575": {
+        "title": "NBR 15575",
+        "desc": "Verifica l'area minima di ventilazione secondo la norma di prestazione residenziale"
+      },
+      "qualidade-ventilacao": {
+        "title": "Qualità della Ventilazione",
+        "desc": "Risultato qualitativo (insufficiente / adeguato / eccellente) con indicazioni pratiche"
       }
     },
     "resource-bilingual": {

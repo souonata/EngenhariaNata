@@ -50,24 +50,18 @@
     <!-- SELETOR DE IDIOMA (PADRÃO GLOBAL - FORA DO CONTAINER) -->
     <!-- ========================================== -->
     <div class="language-selector">
-        <!-- Botão para português (ativo definido pelo JavaScript) -->
         <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" data-i18n-aria="aria.langPt" data-i18n-title="titles.langPt">
             <span class="flag" aria-hidden="true">🇧🇷</span>
             <span class="lang-text">PT</span>
         </button>
-        <!-- Botão para italiano -->
         <button id="btnItaliano" class="lang-btn" data-lang="it-IT" data-i18n-aria="aria.langIt" data-i18n-title="titles.langIt">
             <span class="flag" aria-hidden="true">🇮🇹</span>
             <span class="lang-text">IT</span>
         </button>
     </div>
 
-    <!-- Container principal que limita a largura máxima -->
     <div class="container">
 
-        <!-- ========================================== -->
-        <!-- CABEÇALHO -->
-        <!-- ========================================== -->
         <header>
             <h1 data-i18n="page.title">📱 Sobre o Projeto</h1>
             <p class="subtitle" data-i18n="page.subtitle">Portfólio de apps web</p>
@@ -103,611 +97,7 @@
             </div>
         </div>
 
-        <!-- ========================================== -->
-        <!-- CARTÃO 3: DIMENSIONADOR DE AQUECEDOR SOLAR -->
-        <!-- ========================================== -->
-        <div class="card highlight card-expansivel">
-            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
-                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
-                    <defs>
-                        <linearGradient id="gradient-aquecimento-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#FF9800;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#F57C00;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <rect width="60" height="60" rx="12" fill="url(#gradient-aquecimento-sobre)"/>
-                    <text x="30" y="40" font-size="32" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">☀</text>
-                </svg>
-                <h2 data-i18n="app.aquecimento">Aquecedor Solar</h2>
-                <span class="seta-expansao">▼</span>
-            </div>
-            <div class="card-content conteudo-expansivel">
-                <p class="app-description">
-                    <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="aquecimento.description">Planeje seu sistema de aquecimento solar economizando energia.</span>
-                </p>
-
-                <div class="features-grid">
-                    <div class="feature">
-                        <span class="feature-icon">💧</span>
-                        <h4 data-i18n="features.agua-casa.title">Água e Casa</h4>
-                        <p data-i18n="features.agua-casa.desc">Suporta aquecimento de água de consumo e aquecimento ambiente separadamente ou combinados</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">🏠</span>
-                        <h4 data-i18n="features.classe-energetica.title">Classe Energética</h4>
-                        <p data-i18n="features.classe-energetica.desc">Calcula baseado em área (m²) e classes energéticas (A4 a G) com consumo específico real em kWh/m²·ano</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">🌡️</span>
-                        <h4 data-i18n="features.temperatura.title">Temperatura e Estratificação</h4>
-                        <p data-i18n="features.temperatura.desc">Considera temperatura mínima para termossifões (48°C) e estratificação térmica do boiler (65% do volume útil)</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📅</span>
-                        <h4 data-i18n="features.autonomia.title">Dias de Autonomia</h4>
-                        <p data-i18n="features.autonomia.desc">Configura dias de autonomia para água e casa, dimensionando o boiler adequadamente</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📋</span>
-                        <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
-                        <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado</p>
-                    </div>
-                </div>
-
-                <!-- Estatísticas do app (linhas de código) -->
-                <div class="stats">
-                    <div class="stat">
-                        <span class="stat-number">702</span>
-                        <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">1267</span>
-                        <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">783</span>
-                        <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- CARTÃO 6: DIMENSIONADOR DE AR CONDICIONADO -->
-        <!-- ========================================== -->
-        <div class="card highlight card-expansivel">
-            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
-                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
-                    <defs>
-                        <linearGradient id="gradient-arcondicionado-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#64B5F6;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#1976D2;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <rect width="60" height="60" rx="12" fill="url(#gradient-arcondicionado-sobre)"/>
-                    <text x="30" y="40" font-size="32" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">❄</text>
-                </svg>
-                <h2 data-i18n="app.arcondicionado">Ar Condicionado</h2>
-                <span class="seta-expansao">▼</span>
-            </div>
-            <div class="card-content conteudo-expansivel">
-                <p class="app-description">
-                    <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="arcondicionado.description">Calcula o ar condicionado ideal para seus ambientes.</span>
-                </p>
-
-                <div class="features-grid">
-                    <div class="feature">
-                        <span class="feature-icon">🌡️</span>
-                        <h4 data-i18n="features.btu.title">Cálculo de BTU</h4>
-                        <p data-i18n="features.btu.desc">Determina a capacidade necessária em BTU baseada em área (700 BTU/m²), fator de altura, pessoas e equipamentos</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">🏢</span>
-                        <h4 data-i18n="features.multisplit.title">Sistema Multi-Split</h4>
-                        <p data-i18n="features.multisplit.desc">Dimensiona sistema multi-split com múltiplas unidades internas (1-8 ambientes) e unidades externas, permitindo múltiplas unidades quando necessário</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">💰</span>
-                        <h4 data-i18n="features.custo.title">Custo Estimado</h4>
-                        <p data-i18n="features.custo.desc">Calcula custo estimado do sistema baseado em faixas de preço de mercado para unidades internas e externas</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📐</span>
-                        <h4 data-i18n="features.fatores.title">Múltiplos Fatores</h4>
-                        <p data-i18n="features.fatores.desc">Considera área total (10-300 m²), número de ambientes (1-8), altura, pessoas, equipamentos, insolação e isolamento térmico</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📚</span>
-                        <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
-                        <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
-                    </div>
-                </div>
-
-                <!-- Estatísticas do app (linhas de código) -->
-                <div class="stats">
-                    <div class="stat">
-                        <span class="stat-number">575</span>
-                        <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">951</span>
-                        <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">575</span>
-                        <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- CARTÃO 2: CALCULADORA DE BITOLA DE FIOS -->
-        <!-- ========================================== -->
-        <div class="card highlight card-expansivel">
-            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
-                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
-                    <defs>
-                        <linearGradient id="gradient-bitola-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#8B7355;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#6B5B4F;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <rect width="60" height="60" rx="12" fill="url(#gradient-bitola-sobre)"/>
-                    <text x="30" y="40" font-size="28" text-anchor="middle">🔌</text>
-                </svg>
-                <h2 data-i18n="app.bitola">Bitola</h2>
-                <span class="seta-expansao">▼</span>
-            </div>
-            <div class="card-content conteudo-expansivel">
-                <p class="app-description">
-                    <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="bitola.description">Calcula o fio elétrico correto para sua instalação, evitando aquecimento e garantindo segurança.</span>
-                </p>
-
-                <div class="features-grid">
-                    <div class="feature">
-                        <span class="feature-icon">🔋🔌</span>
-                        <h4 data-i18n="features.cc-ca.title">CC e CA</h4>
-                        <p data-i18n="features.cc-ca.desc">Suporta corrente contínua (CC) e alternada (CA) com tensões típicas e valores personalizados.</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📏</span>
-                        <h4 data-i18n="features.bitola-comercial.title">Bitola Comercial</h4>
-                        <p data-i18n="features.bitola-comercial.desc">Seleciona automaticamente a bitola comercial padrão brasileiro (NBR 5410) que atende aos requisitos.</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📊</span>
-                        <h4 data-i18n="features.queda-tensao.title">Queda de Tensão</h4>
-                        <p data-i18n="features.queda-tensao.desc">Recomenda 3% de queda de tensão para projetos residenciais no Brasil (padrão mais utilizado).</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📚</span>
-                        <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
-                        <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
-                    </div>
-                </div>
-
-                <!-- Estatísticas do app (linhas de código) -->
-                <div class="stats">
-                    <div class="stat">
-                        <span class="stat-number">389</span>
-                        <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">740</span>
-                        <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">168</span>
-                        <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- CARTÃO 7: CALCULADORA DE BOMBA D'AGUA -->
-        <!-- ========================================== -->
-        <div class="card highlight card-expansivel">
-            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
-                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
-                    <defs>
-                        <linearGradient id="gradient-bombaagua-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#0F9B8E;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#1B6CA8;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <rect width="60" height="60" rx="12" fill="url(#gradient-bombaagua-sobre)"/>
-                    <text x="30" y="40" font-size="28" text-anchor="middle">💧</text>
-                </svg>
-                <h2 data-i18n="app.bombaagua">Bomba d'Agua</h2>
-                <span class="seta-expansao">▼</span>
-            </div>
-            <div class="card-content conteudo-expansivel">
-                <p class="app-description">
-                    <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="bombaagua.description">Calcula a bomba d'agua necessária para pequenos sistemas, estimando perdas, potência e consumo horário.</span>
-                </p>
-
-                <div class="features-grid">
-                    <div class="feature">
-                        <span class="feature-icon">📐</span>
-                        <h4 data-i18n="features.altura-vazao.title">Altura e Vazão</h4>
-                        <p data-i18n="features.altura-vazao.desc">Relaciona altura de elevação, comprimento e vazão para estimar a carga hidráulica do sistema.</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">🌊</span>
-                        <h4 data-i18n="features.darcy.title">Perdas de Carga</h4>
-                        <p data-i18n="features.darcy.desc">Aplica Darcy-Weisbach com hipótese de tubo liso tipo PVC para perdas lineares e acessórios.</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">⚙️</span>
-                        <h4 data-i18n="features.faixa-bomba.title">Faixa Comercial</h4>
-                        <p data-i18n="features.faixa-bomba.desc">Converte a potência calculada em faixa de CV recomendada para facilitar a escolha da bomba.</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">⚡</span>
-                        <h4 data-i18n="features.energia-bomba.title">Consumo Horário</h4>
-                        <p data-i18n="features.energia-bomba.desc">Mostra o consumo específico por hora e como diâmetro e perdas afetam a energia exigida.</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📚</span>
-                        <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
-                        <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
-                    </div>
-                </div>
-
-                <div class="stats">
-                    <div class="stat">
-                        <span class="stat-number">366</span>
-                        <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">492</span>
-                        <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">67</span>
-                        <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- CARTÃO 5: DIMENSIONADOR DE SISTEMA FOTOVOLTAICO -->
-        <!-- ========================================== -->
-        <div class="card highlight card-expansivel">
-            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
-                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
-                    <defs>
-                        <linearGradient id="gradient-solar-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#00c6ff;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#0072ff;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <rect width="60" height="60" rx="12" fill="url(#gradient-solar-sobre)"/>
-                    <text x="30" y="40" font-size="28" text-anchor="middle">🔋</text>
-                </svg>
-                <h2 data-i18n="app.solar">Energia Solar</h2>
-                <span class="seta-expansao">▼</span>
-            </div>
-            <div class="card-content conteudo-expansivel">
-                <p class="app-description">
-                    <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="solar.description">Dimensione painéis solares para gerar sua própria energia.</span>
-                </p>
-
-                <div class="features-grid">
-                    <div class="feature">
-                        <span class="feature-icon">🔋</span>
-                        <h4 data-i18n="features.battery.title">Baterias AGM/Lítio</h4>
-                        <p data-i18n-html="features.battery.desc"></p>
-                        <p class="small-note" data-i18n="features.battery.note">As configurações permitem ajustar kWh/Ah, tensão, preço e peso (sliders até 180 kg).</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">⚙️</span>
-                        <h4 data-i18n="features.config.title">Configurável</h4>
-                        <p data-i18n="features.config.desc">Customize preços, potências e especificações das baterias — mudanças salvas em `localStorage` (chave `configSolar`).</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">🔌</span>
-                        <h4 data-i18n="features.inverter-mppt.title">Inversor e MPPT</h4>
-                        <p data-i18n="features.inverter-mppt.desc">Dimensiona inversor baseado no consumo típico de pico e controlador MPPT com capacidade para carregar todo o banco de baterias e suportar o pico de todos os painéis.</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📚</span>
-                        <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
-                        <p data-i18n="features.memorial.desc">Memorial didático completo que explica passo a passo todos os cálculos realizados, com fórmulas, exemplos práticos e resumo dos valores calculados.</p>
-                    </div>
-                </div>
-
-                <!-- Estatísticas do app (linhas de código) -->
-                <div class="stats">
-                    <div class="stat">
-                        <span class="stat-number">620</span>
-                        <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">2900</span>
-                        <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">1001</span>
-                        <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- CARTÃO 6: DIMENSIONADOR DE FAZENDA AUTO-SUSTENTÁVEL -->
-        <!-- ========================================== -->
-        <div class="card highlight card-expansivel">
-            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
-                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
-                    <defs>
-                        <linearGradient id="gradient-fazenda-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#8B6F47;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#6B8E5A;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <rect width="60" height="60" rx="12" fill="url(#gradient-fazenda-sobre)"/>
-                    <text x="30" y="40" font-size="32" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">🌾</text>
-                </svg>
-                <h2 data-i18n="app.fazenda">Fazenda</h2>
-                <span class="seta-expansao">▼</span>
-            </div>
-            <div class="card-content conteudo-expansivel">
-                <p class="app-description">
-                    <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="fazenda.description">Planeje sua fazenda auto-sustentável para produção própria.</span>
-                </p>
-
-                <div class="features-grid">
-                    <div class="feature">
-                        <span class="feature-icon">🌱</span>
-                        <h4 data-i18n="features.plantas.title">Plantas e Animais</h4>
-                        <p data-i18n="features.plantas.desc">Seleção de frutas, verduras, legumes e animais com cálculo proporcional de produção mínima</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📊</span>
-                        <h4 data-i18n="features.producao-minima.title">Produção Mínima</h4>
-                        <p data-i18n="features.producao-minima.desc">Sliders ajustáveis para definir produção mínima diária de plantas e proteínas por pessoa</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📅</span>
-                        <h4 data-i18n="features.calendario.title">Calendário</h4>
-                        <p data-i18n="features.calendario.desc">Calendário completo de plantio, colheita e reprodução animal para manter produção contínua</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📏</span>
-                        <h4 data-i18n="features.espaco.title">Dimensionamento</h4>
-                        <p data-i18n="features.espaco.desc">Calcula área necessária, quantidade de plantas/animais e consumo diário por pessoa</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📚</span>
-                        <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
-                        <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado</p>
-                    </div>
-                </div>
-
-                <!-- Estatísticas do app (linhas de código) -->
-                <div class="stats">
-                    <div class="stat">
-                        <span class="stat-number">322</span>
-                        <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">1830</span>
-                        <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">282</span>
-                        <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- CARTÃO 3: CALCULADORA DE HÉLICE -->
-        <!-- ========================================== -->
-        <div class="card highlight card-expansivel">
-            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
-                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
-                    <defs>
-                        <linearGradient id="gradient-helice-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#00ACC1;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#006064;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <rect width="60" height="60" rx="12" fill="url(#gradient-helice-sobre)"/>
-                    <text x="30" y="40" font-size="28" text-anchor="middle">⚓</text>
-                </svg>
-                <h2 data-i18n="app.helice">Hélice</h2>
-                <span class="seta-expansao">▼</span>
-            </div>
-            <div class="card-content conteudo-expansivel">
-                <p class="app-description">
-                    <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="helice.description">Ajuda a escolher a hélice perfeita para seu barco.</span>
-                </p>
-
-                <div class="features-grid">
-                    <div class="feature">
-                        <span class="feature-icon">📐</span>
-                        <h4 data-i18n="features.pitch.title">Cálculo de Passo</h4>
-                        <p data-i18n="features.pitch.desc">Determina o passo correto para atingir o RPM máximo</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">🌊</span>
-                        <h4 data-i18n="features.slip.title">Análise de Slip</h4>
-                        <p data-i18n="features.slip.desc">Considera a eficiência e o deslizamento na água</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📚</span>
-                        <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
-                        <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
-                    </div>
-                </div>
-
-                <!-- Estatísticas do app (linhas de código) -->
-                <div class="stats">
-                    <div class="stat">
-                        <span class="stat-number">456</span>
-                        <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">1111</span>
-                        <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">271</span>
-                        <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- CARTÃO 4: CALCULADORA DE EMPRÉSTIMOS -->
-        <!-- Cartão destacado (classe highlight) com descrição completa do app -->
-        <!-- ========================================== -->
-        <div class="card highlight card-expansivel">
-            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
-                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
-                    <defs>
-                        <linearGradient id="gradient-mutuo-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#2E7D32;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <rect width="60" height="60" rx="12" fill="url(#gradient-mutuo-sobre)"/>
-                    <text x="30" y="38" font-size="28" text-anchor="middle" fill="white" font-weight="bold">$</text>
-                </svg>
-                <h2 data-i18n="app.mutuo">Mutuo</h2>
-                <span class="seta-expansao">▼</span>
-            </div>
-            <div class="card-content conteudo-expansivel">
-                <!-- Caixa amarela com descrição do que o app faz -->
-                <p class="app-description">
-                    <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="calculator.description">Compara empréstimos e mostra parcelas para você economizar.</span>
-                </p>
-
-                <!-- Grade de funcionalidades (4 caixas) -->
-                <div class="features-grid">
-                    <!-- Funcionalidade 1: Bilíngue -->
-                    <div class="feature">
-                        <span class="feature-icon">🌍</span>
-                        <h4 data-i18n="features.bilingual.title">Bilíngue</h4>
-                        <p data-i18n="features.bilingual.desc">Português e Italiano com troca instantânea</p>
-                    </div>
-
-                    <!-- Funcionalidade 2: Gráficos -->
-                    <div class="feature">
-                        <span class="feature-icon">📊</span>
-                        <h4 data-i18n="features.charts.title">Gráficos</h4>
-                        <p data-i18n="features.charts.desc">Visualização da evolução dos juros e amortização</p>
-                    </div>
-
-                    <!-- Funcionalidade 3: Responsivo -->
-                    <div class="feature">
-                        <span class="feature-icon">📱</span>
-                        <h4 data-i18n="features.responsive.title">Responsivo</h4>
-                        <p data-i18n="features.responsive.desc">Funciona perfeitamente em celular, tablet e desktop</p>
-                    </div>
-
-                    <!-- Funcionalidade 4: Rápido -->
-                    <div class="feature">
-                        <span class="feature-icon">⚡</span>
-                        <h4 data-i18n="features.fast.title">Rápido</h4>
-                        <p data-i18n="features.fast.desc">Cálculos instantâneos ao mudar valores</p>
-                    </div>
-                </div>
-
-                <!-- Estatísticas do projeto (linhas de código) -->
-                <div class="stats">
-                    <div class="stat">
-                        <span class="stat-number">593</span>
-                        <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">1772</span>
-                        <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">1383</span>
-                        <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- CARTÃO 5: FORMULÁRIO DE REPORTAR BUG -->
-        <!-- ========================================== -->
-        <div class="card card-expansivel">
-            <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
-                <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
-                    <defs>
-                        <linearGradient id="gradient-bugs-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#C92A2A;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <rect width="60" height="60" rx="12" fill="url(#gradient-bugs-sobre)"/>
-                    <text x="30" y="40" font-size="28" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">🐛</text>
-                </svg>
-                <h2 data-i18n="app.bugs">Reportar Bug</h2>
-                <span class="seta-expansao">▼</span>
-            </div>
-            <div class="card-content conteudo-expansivel">
-                <p class="app-description">
-                    <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="bugs.description">Ajude a melhorar os apps reportando problemas.</span>
-                </p>
-
-                <div class="features-grid">
-                    <div class="feature">
-                        <span class="feature-icon">🐛</span>
-                        <h4 data-i18n="features.bug-report.title">Report de Erros</h4>
-                        <p data-i18n="features.bug-report.desc">Formulário simples para reportar bugs e problemas de usabilidade</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📝</span>
-                        <h4 data-i18n="features.contact-info.title">Informações de Contato</h4>
-                        <p data-i18n="features.contact-info.desc">Campos opcionais para email e telefone, permitindo resposta personalizada</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">🔧</span>
-                        <h4 data-i18n="features.issue-type.title">Tipo de Problema</h4>
-                        <p data-i18n="features.issue-type.desc">Classificação do problema: bug, sugestão ou melhoria</p>
-                    </div>
-                    <div class="feature">
-                        <span class="feature-icon">📊</span>
-                        <h4 data-i18n="features.analytics.title">Análise</h4>
-                        <p data-i18n="features.analytics.desc">Relatórios de bugs para análise de qualidade e priorização de correções</p>
-                    </div>
-                </div>
-
-                <!-- Estatísticas do app (linhas de código) -->
-                <div class="stats">
-                    <div class="stat">
-                        <span class="stat-number">118</span>
-                        <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">146</span>
-                        <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">278</span>
-                        <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-
-        <!-- ========================================== -->
-        <!-- CARTÃO 9: RECURSOS ESPECIAIS -->
+        <!-- CARTÃO 2: RECURSOS PRINCIPAIS -->
         <div class="card card-expansivel">
             <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
                 <span class="icon">✨</span>
@@ -716,27 +106,22 @@
             </div>
             <div class="card-content conteudo-expansivel">
                 <div class="special-features">
-
                     <div class="special-feature">
                         <h4 data-i18n="resource-bilingual.title">🌍 Bilíngue</h4>
                         <p data-i18n="resource-bilingual.desc">Troca entre Português e Italiano</p>
                     </div>
-
                     <div class="special-feature">
                         <h4 data-i18n="resource-charts.title">📊 Gráficos</h4>
                         <p data-i18n="resource-charts.desc">Visualização clara dos dados</p>
                     </div>
-
                     <div class="special-feature">
                         <h4 data-i18n="resource-mobile.title">📱 Mobile-First</h4>
                         <p data-i18n="resource-mobile.desc">Funciona bem em celular e computador</p>
                     </div>
-
                     <div class="special-feature">
                         <h4 data-i18n="resource-code-commented.title">💡 Código Comentado</h4>
                         <p data-i18n="resource-code-commented.desc">Código explicado para facilitar aprendizado</p>
                     </div>
-
                     <div class="special-feature">
                         <h4 data-i18n="resource-tested.title">🧪 Testado e Auditado</h4>
                         <p data-i18n="resource-tested.desc">Cálculos críticos cobertos por suíte automatizada (Vitest) com auditoria fiscal/engenharia e regras tributárias 2026</p>
@@ -745,11 +130,7 @@
             </div>
         </div>
 
-
-
-
-
-        <!-- CARTÃO 10: TECNOLOGIAS -->
+        <!-- CARTÃO 3: TECNOLOGIAS -->
         <div class="card card-expansivel">
             <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
                 <span class="icon">📚</span>
@@ -767,33 +148,863 @@
             </div>
         </div>
 
-
-
-
         <!-- ========================================== -->
-        <!-- FOOTER -->
-        <!-- Rodapé da página -->
+        <!-- APPS — ordenados alfabeticamente por idioma via JS -->
         <!-- ========================================== -->
+        <div id="apps-cards-container">
+
+            <!-- AQUECEDOR SOLAR -->
+            <div class="card highlight card-expansivel" data-app-key="aquecimento">
+                <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                        <defs>
+                            <linearGradient id="gradient-aquecimento-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#FF9800;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#F57C00;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="60" height="60" rx="12" fill="url(#gradient-aquecimento-sobre)"/>
+                        <text x="30" y="40" font-size="32" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">☀</text>
+                    </svg>
+                    <h2 data-i18n="app.aquecimento">Aquecedor Solar</h2>
+                    <span class="seta-expansao">▼</span>
+                </div>
+                <div class="card-content conteudo-expansivel">
+                    <p class="app-description">
+                        <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="aquecimento.description">Planeje seu sistema de aquecimento solar economizando energia.</span>
+                    </p>
+                    <div class="features-grid">
+                        <div class="feature">
+                            <span class="feature-icon">💧</span>
+                            <h4 data-i18n="features.agua-casa.title">Água e Casa</h4>
+                            <p data-i18n="features.agua-casa.desc">Suporta aquecimento de água de consumo e aquecimento ambiente separadamente ou combinados</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🏠</span>
+                            <h4 data-i18n="features.classe-energetica.title">Classe Energética</h4>
+                            <p data-i18n="features.classe-energetica.desc">Calcula baseado em área (m²) e classes energéticas (A4 a G) com consumo específico real em kWh/m²·ano</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🌡️</span>
+                            <h4 data-i18n="features.temperatura.title">Temperatura e Estratificação</h4>
+                            <p data-i18n="features.temperatura.desc">Considera temperatura mínima para termossifões (48°C) e estratificação térmica do boiler (65% do volume útil)</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📅</span>
+                            <h4 data-i18n="features.autonomia.title">Dias de Autonomia</h4>
+                            <p data-i18n="features.autonomia.desc">Configura dias de autonomia para água e casa, dimensionando o boiler adequadamente</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📋</span>
+                            <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
+                            <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado</p>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-number">702</span>
+                            <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">1267</span>
+                            <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">783</span>
+                            <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AR CONDICIONADO -->
+            <div class="card highlight card-expansivel" data-app-key="arcondicionado">
+                <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                        <defs>
+                            <linearGradient id="gradient-arcondicionado-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#64B5F6;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#1976D2;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="60" height="60" rx="12" fill="url(#gradient-arcondicionado-sobre)"/>
+                        <text x="30" y="40" font-size="32" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">❄</text>
+                    </svg>
+                    <h2 data-i18n="app.arcondicionado">Ar Condicionado</h2>
+                    <span class="seta-expansao">▼</span>
+                </div>
+                <div class="card-content conteudo-expansivel">
+                    <p class="app-description">
+                        <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="arcondicionado.description">Calcula o ar condicionado ideal para seus ambientes.</span>
+                    </p>
+                    <div class="features-grid">
+                        <div class="feature">
+                            <span class="feature-icon">🌡️</span>
+                            <h4 data-i18n="features.btu.title">Cálculo de BTU</h4>
+                            <p data-i18n="features.btu.desc">Determina a capacidade necessária em BTU baseada em área (700 BTU/m²), fator de altura, pessoas e equipamentos</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🏢</span>
+                            <h4 data-i18n="features.multisplit.title">Sistema Multi-Split</h4>
+                            <p data-i18n="features.multisplit.desc">Dimensiona sistema multi-split com múltiplas unidades internas (1-8 ambientes) e unidades externas, permitindo múltiplas unidades quando necessário</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">💰</span>
+                            <h4 data-i18n="features.custo.title">Custo Estimado</h4>
+                            <p data-i18n="features.custo.desc">Calcula custo estimado do sistema baseado em faixas de preço de mercado para unidades internas e externas</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📐</span>
+                            <h4 data-i18n="features.fatores.title">Múltiplos Fatores</h4>
+                            <p data-i18n="features.fatores.desc">Considera área total (10-300 m²), número de ambientes (1-8), altura, pessoas, equipamentos, insolação e isolamento térmico</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📚</span>
+                            <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
+                            <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-number">575</span>
+                            <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">951</span>
+                            <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">575</span>
+                            <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BITOLA -->
+            <div class="card highlight card-expansivel" data-app-key="bitola">
+                <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                        <defs>
+                            <linearGradient id="gradient-bitola-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#8B7355;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#6B5B4F;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="60" height="60" rx="12" fill="url(#gradient-bitola-sobre)"/>
+                        <text x="30" y="40" font-size="28" text-anchor="middle">🔌</text>
+                    </svg>
+                    <h2 data-i18n="app.bitola">Bitola</h2>
+                    <span class="seta-expansao">▼</span>
+                </div>
+                <div class="card-content conteudo-expansivel">
+                    <p class="app-description">
+                        <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="bitola.description">Calcula o fio elétrico correto para sua instalação, evitando aquecimento e garantindo segurança.</span>
+                    </p>
+                    <div class="features-grid">
+                        <div class="feature">
+                            <span class="feature-icon">🔋🔌</span>
+                            <h4 data-i18n="features.cc-ca.title">CC e CA</h4>
+                            <p data-i18n="features.cc-ca.desc">Suporta corrente contínua (CC) e alternada (CA) com tensões típicas e valores personalizados.</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📏</span>
+                            <h4 data-i18n="features.bitola-comercial.title">Bitola Comercial</h4>
+                            <p data-i18n="features.bitola-comercial.desc">Seleciona automaticamente a bitola comercial padrão brasileiro (NBR 5410) que atende aos requisitos.</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📊</span>
+                            <h4 data-i18n="features.queda-tensao.title">Queda de Tensão</h4>
+                            <p data-i18n="features.queda-tensao.desc">Recomenda 3% de queda de tensão para projetos residenciais no Brasil (padrão mais utilizado).</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📚</span>
+                            <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
+                            <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-number">389</span>
+                            <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">740</span>
+                            <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">168</span>
+                            <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOMBA D'AGUA -->
+            <div class="card highlight card-expansivel" data-app-key="bombaagua">
+                <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                        <defs>
+                            <linearGradient id="gradient-bombaagua-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#0F9B8E;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#1B6CA8;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="60" height="60" rx="12" fill="url(#gradient-bombaagua-sobre)"/>
+                        <text x="30" y="40" font-size="28" text-anchor="middle">💧</text>
+                    </svg>
+                    <h2 data-i18n="app.bombaagua">Bomba d'Agua</h2>
+                    <span class="seta-expansao">▼</span>
+                </div>
+                <div class="card-content conteudo-expansivel">
+                    <p class="app-description">
+                        <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="bombaagua.description">Calcula a bomba d'agua necessária para pequenos sistemas, estimando perdas, potência e consumo horário.</span>
+                    </p>
+                    <div class="features-grid">
+                        <div class="feature">
+                            <span class="feature-icon">📐</span>
+                            <h4 data-i18n="features.altura-vazao.title">Altura e Vazão</h4>
+                            <p data-i18n="features.altura-vazao.desc">Relaciona altura de elevação, comprimento e vazão para estimar a carga hidráulica do sistema.</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🌊</span>
+                            <h4 data-i18n="features.darcy.title">Perdas de Carga</h4>
+                            <p data-i18n="features.darcy.desc">Aplica Darcy-Weisbach com hipótese de tubo liso tipo PVC para perdas lineares e acessórios.</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">⚙️</span>
+                            <h4 data-i18n="features.faixa-bomba.title">Faixa Comercial</h4>
+                            <p data-i18n="features.faixa-bomba.desc">Converte a potência calculada em faixa de CV recomendada para facilitar a escolha da bomba.</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">⚡</span>
+                            <h4 data-i18n="features.energia-bomba.title">Consumo Horário</h4>
+                            <p data-i18n="features.energia-bomba.desc">Mostra o consumo específico por hora e como diâmetro e perdas afetam a energia exigida.</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📚</span>
+                            <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
+                            <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-number">366</span>
+                            <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">492</span>
+                            <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">67</span>
+                            <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MUTUO / EMPRÉSTIMOS -->
+            <div class="card highlight card-expansivel" data-app-key="mutuo">
+                <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                        <defs>
+                            <linearGradient id="gradient-mutuo-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#2E7D32;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="60" height="60" rx="12" fill="url(#gradient-mutuo-sobre)"/>
+                        <text x="30" y="38" font-size="28" text-anchor="middle" fill="white" font-weight="bold">$</text>
+                    </svg>
+                    <h2 data-i18n="app.mutuo">Mutuo</h2>
+                    <span class="seta-expansao">▼</span>
+                </div>
+                <div class="card-content conteudo-expansivel">
+                    <p class="app-description">
+                        <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="mutuo.description">Calcula e compara sistemas de amortização (SAC, Price e Americano) para você tomar a melhor decisão financeira.</span>
+                    </p>
+                    <div class="features-grid">
+                        <div class="feature">
+                            <span class="feature-icon">🌍</span>
+                            <h4 data-i18n="features.bilingual.title">Bilíngue</h4>
+                            <p data-i18n="features.bilingual.desc">Português e Italiano com troca instantânea</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📊</span>
+                            <h4 data-i18n="features.charts.title">Gráficos</h4>
+                            <p data-i18n="features.charts.desc">Visualização da evolução dos juros e amortização</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📱</span>
+                            <h4 data-i18n="features.responsive.title">Responsivo</h4>
+                            <p data-i18n="features.responsive.desc">Funciona perfeitamente em celular, tablet e desktop</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">⚡</span>
+                            <h4 data-i18n="features.fast.title">Rápido</h4>
+                            <p data-i18n="features.fast.desc">Cálculos instantâneos ao mudar valores</p>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-number">593</span>
+                            <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">1772</span>
+                            <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">1383</span>
+                            <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ENERGIA SOLAR -->
+            <div class="card highlight card-expansivel" data-app-key="solar">
+                <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                        <defs>
+                            <linearGradient id="gradient-solar-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#00c6ff;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#0072ff;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="60" height="60" rx="12" fill="url(#gradient-solar-sobre)"/>
+                        <text x="30" y="40" font-size="28" text-anchor="middle">🔋</text>
+                    </svg>
+                    <h2 data-i18n="app.solar">Energia Solar</h2>
+                    <span class="seta-expansao">▼</span>
+                </div>
+                <div class="card-content conteudo-expansivel">
+                    <p class="app-description">
+                        <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="solar.description">Dimensione painéis solares para gerar sua própria energia.</span>
+                    </p>
+                    <div class="features-grid">
+                        <div class="feature">
+                            <span class="feature-icon">🔋</span>
+                            <h4 data-i18n="features.battery.title">Baterias AGM/Lítio</h4>
+                            <p data-i18n-html="features.battery.desc"></p>
+                            <p class="small-note" data-i18n="features.battery.note">As configurações permitem ajustar kWh/Ah, tensão, preço e peso (sliders até 180 kg).</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">⚙️</span>
+                            <h4 data-i18n="features.config.title">Configurável</h4>
+                            <p data-i18n="features.config.desc">Customize preços, potências e especificações das baterias — mudanças salvas em `localStorage` (chave `configSolar`).</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🔌</span>
+                            <h4 data-i18n="features.inverter-mppt.title">Inversor e MPPT</h4>
+                            <p data-i18n="features.inverter-mppt.desc">Dimensiona inversor baseado no consumo típico de pico e controlador MPPT com capacidade para carregar todo o banco de baterias e suportar o pico de todos os painéis.</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📚</span>
+                            <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
+                            <p data-i18n="features.memorial.desc">Memorial didático completo que explica passo a passo todos os cálculos realizados, com fórmulas, exemplos práticos e resumo dos valores calculados.</p>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-number">620</span>
+                            <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">2900</span>
+                            <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">1001</span>
+                            <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HÉLICE -->
+            <div class="card highlight card-expansivel" data-app-key="helice">
+                <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                        <defs>
+                            <linearGradient id="gradient-helice-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#00ACC1;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#006064;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="60" height="60" rx="12" fill="url(#gradient-helice-sobre)"/>
+                        <text x="30" y="40" font-size="28" text-anchor="middle">⚓</text>
+                    </svg>
+                    <h2 data-i18n="app.helice">Hélice</h2>
+                    <span class="seta-expansao">▼</span>
+                </div>
+                <div class="card-content conteudo-expansivel">
+                    <p class="app-description">
+                        <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="helice.description">Ajuda a escolher a hélice perfeita para seu barco.</span>
+                    </p>
+                    <div class="features-grid">
+                        <div class="feature">
+                            <span class="feature-icon">📐</span>
+                            <h4 data-i18n="features.pitch.title">Cálculo de Passo</h4>
+                            <p data-i18n="features.pitch.desc">Determina o passo correto para atingir o RPM máximo</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🌊</span>
+                            <h4 data-i18n="features.slip.title">Análise de Slip</h4>
+                            <p data-i18n="features.slip.desc">Considera a eficiência e o deslizamento na água</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📚</span>
+                            <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
+                            <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-number">456</span>
+                            <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">1111</span>
+                            <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">271</span>
+                            <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ILUMINAÇÃO RESIDENCIAL -->
+            <div class="card highlight card-expansivel" data-app-key="iluminacao">
+                <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                        <defs>
+                            <linearGradient id="gradient-iluminacao-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="60" height="60" rx="12" fill="url(#gradient-iluminacao-sobre)"/>
+                        <text x="30" y="40" font-size="28" text-anchor="middle">💡</text>
+                    </svg>
+                    <h2 data-i18n="app.iluminacao">Calculadora de Iluminação</h2>
+                    <span class="seta-expansao">▼</span>
+                </div>
+                <div class="card-content conteudo-expansivel">
+                    <p class="app-description">
+                        <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="iluminacao.description">Dimensiona lâmpadas para cada cômodo e calcula consumo e custo de energia conforme NBR 5413.</span>
+                    </p>
+                    <div class="features-grid">
+                        <div class="feature">
+                            <span class="feature-icon">💡</span>
+                            <h4 data-i18n="features.lux.title">Iluminância (Lux)</h4>
+                            <p data-i18n="features.lux.desc">Calcula lux mínimo e recomendado por tipo de ambiente e atividade conforme NBR 5413</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🔧</span>
+                            <h4 data-i18n="features.tipos-lampada.title">Tipos de Lâmpada</h4>
+                            <p data-i18n="features.tipos-lampada.desc">Compara LED, fluorescente e incandescente com fator de eficiência e potência ajustável</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">💰</span>
+                            <h4 data-i18n="features.custo-energia.title">Custo de Energia</h4>
+                            <p data-i18n="features.custo-energia.desc">Estima consumo mensal em kWh e custo com base na tarifa configurável</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🗂️</span>
+                            <h4 data-i18n="features.matriz-lampadas.title">Matriz por Cômodo</h4>
+                            <p data-i18n="features.matriz-lampadas.desc">Tabela de quantas lâmpadas de cada potência são necessárias por ambiente em casas com múltiplos cômodos</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📚</span>
+                            <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
+                            <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-number">990</span>
+                            <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">1102</span>
+                            <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">680</span>
+                            <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SALÁRIO LÍQUIDO -->
+            <div class="card highlight card-expansivel" data-app-key="salario">
+                <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                        <defs>
+                            <linearGradient id="gradient-salario-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1E88E5;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#00ACC1;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="60" height="60" rx="12" fill="url(#gradient-salario-sobre)"/>
+                        <text x="30" y="40" font-size="28" text-anchor="middle">💼</text>
+                    </svg>
+                    <h2 data-i18n="app.salario">Calculadora de Salário</h2>
+                    <span class="seta-expansao">▼</span>
+                </div>
+                <div class="card-content conteudo-expansivel">
+                    <p class="app-description">
+                        <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="salario.description">Calcula salário líquido para Brasil (CLT) e Itália (IRPEF/INPS) com memorial detalhado e gráficos.</span>
+                    </p>
+                    <div class="features-grid">
+                        <div class="feature">
+                            <span class="feature-icon">🇧🇷</span>
+                            <h4 data-i18n="features.br-clt.title">Brasil — CLT</h4>
+                            <p data-i18n="features.br-clt.desc">INSS, IRRF, FGTS, 13º salário, férias e verbas rescisórias conforme tabelas 2025-2026</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🇮🇹</span>
+                            <h4 data-i18n="features.it-irpef.title">Itália — IRPEF</h4>
+                            <p data-i18n="features.it-irpef.desc">IRPEF em 3 escaglioni, INPS, addizionali regionali, TFR e tredicesima</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📊</span>
+                            <h4 data-i18n="features.graficos-salario.title">Gráficos de Decomposição</h4>
+                            <p data-i18n="features.graficos-salario.desc">Visualiza líquido, descontos e renda anual total em gráfico de barras interativo</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📚</span>
+                            <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
+                            <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-number">564</span>
+                            <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">682</span>
+                            <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">305</span>
+                            <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CAPTAÇÃO DE ÁGUA DA CHUVA -->
+            <div class="card highlight card-expansivel" data-app-key="chuva">
+                <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                        <defs>
+                            <linearGradient id="gradient-chuva-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#0288D1;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#26C6DA;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="60" height="60" rx="12" fill="url(#gradient-chuva-sobre)"/>
+                        <text x="30" y="40" font-size="28" text-anchor="middle">🌧️</text>
+                    </svg>
+                    <h2 data-i18n="app.chuva">Captação de Água da Chuva</h2>
+                    <span class="seta-expansao">▼</span>
+                </div>
+                <div class="card-content conteudo-expansivel">
+                    <p class="app-description">
+                        <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="chuva.description">Dimensiona cisternas para aproveitamento de água da chuva, calcula volume captado e economia mensal conforme NBR 15527.</span>
+                    </p>
+                    <div class="features-grid">
+                        <div class="feature">
+                            <span class="feature-icon">🌧️</span>
+                            <h4 data-i18n="features.captacao.title">Captação Pluvial</h4>
+                            <p data-i18n="features.captacao.desc">Calcula o volume captado com base na área do telhado, coeficiente de escoamento e precipitação mensal local</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🏗️</span>
+                            <h4 data-i18n="features.cisterna.title">Cisterna</h4>
+                            <p data-i18n="features.cisterna.desc">Dimensiona o volume ideal da cisterna para atender à demanda de uso selecionada</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">💰</span>
+                            <h4 data-i18n="features.economia-chuva.title">Economia Mensal</h4>
+                            <p data-i18n="features.economia-chuva.desc">Estima a economia na conta de água com base no uso planejado (jardim, sanitário, limpeza)</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📚</span>
+                            <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
+                            <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-number">380</span>
+                            <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">476</span>
+                            <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">100</span>
+                            <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAZENDA AUTO-SUSTENTÁVEL -->
+            <div class="card highlight card-expansivel" data-app-key="fazenda">
+                <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                        <defs>
+                            <linearGradient id="gradient-fazenda-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#8B6F47;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#6B8E5A;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="60" height="60" rx="12" fill="url(#gradient-fazenda-sobre)"/>
+                        <text x="30" y="40" font-size="32" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">🌾</text>
+                    </svg>
+                    <h2 data-i18n="app.fazenda">Fazenda</h2>
+                    <span class="seta-expansao">▼</span>
+                </div>
+                <div class="card-content conteudo-expansivel">
+                    <p class="app-description">
+                        <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="fazenda.description">Planeje sua fazenda auto-sustentável para produção própria.</span>
+                    </p>
+                    <div class="features-grid">
+                        <div class="feature">
+                            <span class="feature-icon">🌱</span>
+                            <h4 data-i18n="features.plantas.title">Plantas e Animais</h4>
+                            <p data-i18n="features.plantas.desc">Seleção de frutas, verduras, legumes e animais com cálculo proporcional de produção mínima</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📊</span>
+                            <h4 data-i18n="features.producao-minima.title">Produção Mínima</h4>
+                            <p data-i18n="features.producao-minima.desc">Sliders ajustáveis para definir produção mínima diária de plantas e proteínas por pessoa</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📅</span>
+                            <h4 data-i18n="features.calendario.title">Calendário</h4>
+                            <p data-i18n="features.calendario.desc">Calendário completo de plantio, colheita e reprodução animal para manter produção contínua</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📏</span>
+                            <h4 data-i18n="features.espaco.title">Dimensionamento</h4>
+                            <p data-i18n="features.espaco.desc">Calcula área necessária, quantidade de plantas/animais e consumo diário por pessoa</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📚</span>
+                            <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
+                            <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado</p>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-number">322</span>
+                            <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">1830</span>
+                            <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">282</span>
+                            <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PREVISÃO METEOROLÓGICA -->
+            <div class="card highlight card-expansivel" data-app-key="previsao">
+                <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                        <defs>
+                            <linearGradient id="gradient-previsao-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1565C0;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#42A5F5;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="60" height="60" rx="12" fill="url(#gradient-previsao-sobre)"/>
+                        <text x="30" y="40" font-size="28" text-anchor="middle">⛅</text>
+                    </svg>
+                    <h2 data-i18n="app.previsao">Previsão Meteorológica</h2>
+                    <span class="seta-expansao">▼</span>
+                </div>
+                <div class="card-content conteudo-expansivel">
+                    <p class="app-description">
+                        <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="previsao.description">Previsão meteorológica de 7 dias com dados horários de temperatura e chuva via Open-Meteo (sem chave de API).</span>
+                    </p>
+                    <div class="features-grid">
+                        <div class="feature">
+                            <span class="feature-icon">🌐</span>
+                            <h4 data-i18n="features.previsao-api.title">Open-Meteo API</h4>
+                            <p data-i18n="features.previsao-api.desc">Dados gratuitos, sem chave de API, com atualização automática para 7 dias</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🌡️</span>
+                            <h4 data-i18n="features.temp-horaria.title">Temperatura Horária</h4>
+                            <p data-i18n="features.temp-horaria.desc">Gráfico sparkline por dia com cruzamento do limiar de 24°C e janelas de chuva destacadas</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🌧️</span>
+                            <h4 data-i18n="features.chuva-previsao.title">Chuva em mm</h4>
+                            <p data-i18n="features.chuva-previsao.desc">Probabilidade e volume de precipitação horária com destaque para eventos expressivos</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🏙️</span>
+                            <h4 data-i18n="features.cidades-previsao.title">4 Cidades</h4>
+                            <p data-i18n="features.cidades-previsao.desc">Turbigo, Milão, Turate (IT) e Curitiba (BR) — troca com um clique, horário local da cidade</p>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-number">1492</span>
+                            <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VENTILAÇÃO NATURAL -->
+            <div class="card highlight card-expansivel" data-app-key="ventilacao">
+                <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                        <defs>
+                            <linearGradient id="gradient-ventilacao-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#00897B;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#4DB6AC;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="60" height="60" rx="12" fill="url(#gradient-ventilacao-sobre)"/>
+                        <text x="30" y="40" font-size="28" text-anchor="middle">🌬️</text>
+                    </svg>
+                    <h2 data-i18n="app.ventilacao">Ventilação Natural</h2>
+                    <span class="seta-expansao">▼</span>
+                </div>
+                <div class="card-content conteudo-expansivel">
+                    <p class="app-description">
+                        <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="ventilacao.description">Calcula renovações de ar (ACH) e área mínima de ventilação natural conforme NBR 15575.</span>
+                    </p>
+                    <div class="features-grid">
+                        <div class="feature">
+                            <span class="feature-icon">🌬️</span>
+                            <h4 data-i18n="features.ach.title">ACH — Renovações de Ar</h4>
+                            <p data-i18n="features.ach.desc">Calcula trocas de ar por hora com base em dimensões do ambiente, área de janelas e ocupação</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📐</span>
+                            <h4 data-i18n="features.nbr15575.title">NBR 15575</h4>
+                            <p data-i18n="features.nbr15575.desc">Verifica área mínima de ventilação conforme norma de desempenho residencial</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">✅</span>
+                            <h4 data-i18n="features.qualidade-ventilacao.title">Qualidade da Ventilação</h4>
+                            <p data-i18n="features.qualidade-ventilacao.desc">Resultado qualitativo (insuficiente / adequado / excelente) com orientações práticas</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📚</span>
+                            <h4 data-i18n="features.memorial.title">Memorial de Cálculo</h4>
+                            <p data-i18n="features.memorial.desc">Exibe detalhamento completo de todos os cálculos realizados para transparência e aprendizado.</p>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-number">462</span>
+                            <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">455</span>
+                            <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">137</span>
+                            <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REPORTAR BUG (sempre por último) -->
+            <div class="card card-expansivel" data-app-key="bugs">
+                <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                        <defs>
+                            <linearGradient id="gradient-bugs-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#C92A2A;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="60" height="60" rx="12" fill="url(#gradient-bugs-sobre)"/>
+                        <text x="30" y="40" font-size="28" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">🐛</text>
+                    </svg>
+                    <h2 data-i18n="app.bugs">Reportar Bug</h2>
+                    <span class="seta-expansao">▼</span>
+                </div>
+                <div class="card-content conteudo-expansivel">
+                    <p class="app-description">
+                        <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="bugs.description">Canal para reportar falhas, compartilhar sugestões e apoiar a evolução contínua dos apps.</span>
+                    </p>
+                    <div class="features-grid">
+                        <div class="feature">
+                            <span class="feature-icon">🐛</span>
+                            <h4 data-i18n="features.bug-report.title">Reporte de Problemas</h4>
+                            <p data-i18n="features.bug-report.desc">Formulário objetivo para registrar bugs e problemas de usabilidade</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📝</span>
+                            <h4 data-i18n="features.contact-info.title">Informações de Contato</h4>
+                            <p data-i18n="features.contact-info.desc">Campos opcionais para retorno personalizado sobre cada reporte</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🔧</span>
+                            <h4 data-i18n="features.issue-type.title">Tipo de Problema</h4>
+                            <p data-i18n="features.issue-type.desc">Classificação do problema: bug, sugestão ou melhoria</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📊</span>
+                            <h4 data-i18n="features.analytics.title">Análise</h4>
+                            <p data-i18n="features.analytics.desc">Relatórios que ajudam a priorizar correções e melhorias de qualidade</p>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-number">118</span>
+                            <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">146</span>
+                            <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">278</span>
+                            <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- #apps-cards-container -->
+
         <footer>
             <p data-i18n="footer.text">💻 Portfólio Engenharia NATA</p>
         </footer>
     </div>
 
-    <!-- ========================================== -->
-    <!-- ========================================== -->
-    <!-- BOTÃO INÍCIO FIXO -->
-    <!-- Botão que fica sempre visível no rodapé para voltar à página inicial -->
-    <!-- ========================================== -->
     <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria.home">
-        <!-- Ícone SVG de casinha -->
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
             <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
         </svg>
     </a>
 
-    <!-- ========================================== -->
-    <!-- SCRIPT MODULAR ES6 -->
-    <!-- ========================================== -->
-    <script type="module" src="sobre-script.js?v=1.0.2"></script>
+    <script type="module" src="sobre-script.js?v=1.0.3"></script>
 </body>
 </html>

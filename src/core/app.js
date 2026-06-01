@@ -52,7 +52,7 @@ export class App {
         }
 
         try {
-            const response = await fetch(`../src/i18n/${this.config.appName}.json`);
+            const response = await fetch(`../src/i18n/${this.config.appName}.json`, { cache: 'no-store' });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }

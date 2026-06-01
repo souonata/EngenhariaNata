@@ -1,8 +1,6 @@
 /**
  * sobre-script.js
  * Página Sobre - Versão Modular ES6
- * 
- * Exibe informações sobre o projeto e os apps disponíveis
  */
 
 import { App } from '../src/core/app.js';
@@ -18,59 +16,61 @@ class SobreApp extends App {
         });
     }
 
-    /**
-     * Callback executado após inicialização
-     */
     inicializarSobre() {
         this.configurarAccordion();
+        this.reordenarCardsApps();
     }
 
-    /**
-     * Callback executado após troca de idioma
-     */
     atualizarAposTrocaIdioma() {
-        // Nenhuma ação especial necessária
-        // As traduções são aplicadas automaticamente pelo i18n
+        this.reordenarCardsApps();
     }
 
     /**
-     * Configura o sistema de accordion (expansão/retração de cards)
+     * Reordena os cards de apps alfabeticamente pelo h2 traduzido,
+     * mantendo o card de bugs sempre no final.
      */
+    reordenarCardsApps() {
+        const container = document.getElementById('apps-cards-container');
+        if (!container) return;
+
+        const cards = Array.from(container.querySelectorAll('[data-app-key]'));
+        const bugsCard = cards.find(c => c.dataset.appKey === 'bugs');
+        const appCards = cards.filter(c => c.dataset.appKey !== 'bugs');
+
+        appCards.sort((a, b) => {
+            const tA = (a.querySelector('h2')?.textContent || '').trim();
+            const tB = (b.querySelector('h2')?.textContent || '').trim();
+            return tA.localeCompare(tB, undefined, { sensitivity: 'base' });
+        });
+
+        [...appCards, bugsCard].forEach(card => container.appendChild(card));
+    }
+
     configurarAccordion() {
         const headers = document.querySelectorAll('.card-header-clicavel');
-        
+
         headers.forEach(header => {
-            // Evento de clique
             header.addEventListener('click', () => {
                 const card = header.closest('.card-expansivel');
                 if (card) {
                     card.classList.toggle('expandido');
-                    // Atualiza aria-expanded
-                    const isExpanded = card.classList.contains('expandido');
-                    header.setAttribute('aria-expanded', isExpanded);
+                    header.setAttribute('aria-expanded', card.classList.contains('expandido'));
                 }
             });
 
-            // Suporte a teclado (Enter/Space)
             header.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     const card = header.closest('.card-expansivel');
                     if (card) {
                         card.classList.toggle('expandido');
-                        // Atualiza aria-expanded
-                        const isExpanded = card.classList.contains('expandido');
-                        header.setAttribute('aria-expanded', isExpanded);
+                        header.setAttribute('aria-expanded', card.classList.contains('expandido'));
                     }
                 }
             });
         });
     }
 }
-
-// ============================================
-// INICIALIZAÇÃO
-// ============================================
 
 const app = new SobreApp();
 app.inicializar();
