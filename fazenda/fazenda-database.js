@@ -12,7 +12,7 @@ const FAZENDA_DATABASE = {
             frutas: {
                 // Frutas tropicais nativas e adaptadas
                 'banana': {
-                    producao: 18, // kg/m²/ano (clima tropical favorece)
+                    producao: 2.5, // kg/m2/ano - 25 ton/ha tipico BR
                     ciclo: 365,
                     plantio: 'Ano todo',
                     colheita: 'Contínua',
@@ -22,47 +22,47 @@ const FAZENDA_DATABASE = {
                     solo: 'Rico em matéria orgânica, pH 5.5-7.0'
                 },
                 'manga': {
-                    producao: 10, // kg/m²/ano
+                    producao: 1.5, // kg/m2/ano - 15 ton/ha media BR
                     ciclo: 730,
                     plantio: 'Verão (dezembro a fevereiro)',
                     colheita: 'Verão (dezembro a março)',
-                    areaMin: 16,
+                    areaMin: 64, // m2 - espacamento 8x8m,
                     tecnica: 'Plantar mudas enxertadas. Espaçamento de 8x8m. Podas de formação nos primeiros 3 anos. Adubação com esterco curtido.',
                     clima: 'Tropical e subtropical',
                     solo: 'Profundo, bem drenado, pH 5.5-7.5'
                 },
                 'laranja': {
-                    producao: 15, // kg/m²/ano
+                    producao: 2.5, // kg/m2/ano - 25 ton/ha BR
                     ciclo: 1095,
                     plantio: 'Outono (março a maio)',
                     colheita: 'Inverno/Primavera (junho a outubro)',
-                    areaMin: 12,
+                    areaMin: 36, // m2 - espacamento 6x6m,
                     tecnica: 'Plantar mudas enxertadas em espaçamento de 6x6m. Irrigação por gotejamento. Controle de pragas com calda sulfocálcica.',
                     clima: 'Subtropical',
                     solo: 'Bem drenado, pH 6.0-7.0'
                 },
                 'limao': {
-                    producao: 12, // kg/m²/ano
+                    producao: 2.0, // kg/m2/ano - 20 ton/ha BR
                     ciclo: 730,
                     plantio: 'Primavera (setembro a novembro)',
                     colheita: 'Ano todo',
-                    areaMin: 9,
+                    areaMin: 25, // m2 - espacamento 5x5m,
                     tecnica: 'Plantar mudas enxertadas. Espaçamento de 5x5m. Podas anuais após colheita. Adubação com NPK 20-5-20.',
                     clima: 'Tropical e subtropical',
                     solo: 'Bem drenado, pH 5.5-7.0'
                 },
                 'abacate': {
-                    producao: 8, // kg/m²/ano
+                    producao: 1.0, // kg/m2/ano - 10 ton/ha BR
                     ciclo: 1095,
                     plantio: 'Primavera (setembro a novembro)',
                     colheita: 'Verão/Outono (dezembro a maio)',
-                    areaMin: 20,
+                    areaMin: 64, // m2 - espacamento 8x8m,
                     tecnica: 'Plantar mudas enxertadas em espaçamento de 8x8m. Requer polinização cruzada. Adubação orgânica rica em potássio.',
                     clima: 'Subtropical',
                     solo: 'Profundo, bem drenado, pH 6.0-7.0'
                 },
                 'mamao': {
-                    producao: 25, // kg/m²/ano (produção muito alta no Brasil)
+                    producao: 6.0, // kg/m2/ano - 60 ton/ha BR (altamente produtivo)
                     ciclo: 365,
                     plantio: 'Ano todo',
                     colheita: 'Ano todo',
@@ -72,37 +72,37 @@ const FAZENDA_DATABASE = {
                     solo: 'Rico em matéria orgânica, pH 6.0-7.0'
                 },
                 'goiaba': {
-                    producao: 15, // kg/m²/ano
+                    producao: 2.5, // kg/m2/ano - 25 ton/ha BR
                     ciclo: 730,
                     plantio: 'Primavera (setembro a novembro)',
                     colheita: 'Verão/Outono (dezembro a maio)',
-                    areaMin: 9,
+                    areaMin: 25, // m2 - espacamento 5x5m,
                     tecnica: 'Plantar mudas ou estacas. Espaçamento de 5x5m. Podas de formação e produção. Adubação com esterco de curral.',
                     clima: 'Tropical e subtropical',
                     solo: 'Bem drenado, pH 5.5-7.0'
                 },
                 'maracuja': {
-                    producao: 10, // kg/m²/ano
+                    producao: 2.5, // kg/m2/ano - 20-25 ton/ha BR
                     ciclo: 365,
                     plantio: 'Primavera (setembro a novembro)',
                     colheita: 'Verão/Outono (dezembro a maio)',
-                    areaMin: 2,
+                    areaMin: 9, // m2 - espacamento 3x3m em espaldeira,
                     tecnica: 'Plantar sementes ou mudas. Requer suporte (espaldeira). Espaçamento de 3x3m. Polinização manual aumenta produção.',
                     clima: 'Tropical e subtropical',
                     solo: 'Bem drenado, pH 6.0-7.0'
                 },
                 'uva': {
-                    producao: 12, // kg/m²/ano
+                    producao: 1.5, // kg/m2/ano - 15 ton/ha uva de mesa BR
                     ciclo: 365,
                     plantio: 'Inverno (junho a agosto)',
                     colheita: 'Verão (dezembro a fevereiro)',
-                    areaMin: 3,
+                    areaMin: 6, // m2 - espacamento 2x3m,
                     tecnica: 'Plantar mudas enxertadas em espaldeira. Espaçamento de 2x3m. Podas de inverno e verão. Controle de doenças fúngicas.',
                     clima: 'Subtropical (regiões mais frias)',
                     solo: 'Bem drenado, pH 6.0-7.0'
                 },
                 'acai': {
-                    producao: 6, // kg/m²/ano
+                    producao: 0.6, // kg/m2/ano - 6 ton/ha acai Amazonia
                     ciclo: 1095,
                     plantio: 'Ano todo',
                     colheita: 'Ano todo',
@@ -113,51 +113,51 @@ const FAZENDA_DATABASE = {
                 },
                 // Frutas nativas brasileiras
                 'jabuticaba': {
-                    producao: 8, // kg/m²/ano
-                    ciclo: 1095,
+                    producao: 0.8, // kg/m2/ano - 8 ton/ha BR
+                    ciclo: 1460, // dias - ~4 anos p/ 1a colheita (muda enxertada),
                     plantio: 'Primavera (setembro a novembro)',
                     colheita: 'Verão/Outono (dezembro a maio)',
-                    areaMin: 12,
+                    areaMin: 36, // m2 - espacamento 6x6m,
                     tecnica: 'Plantar mudas ou sementes. Espaçamento de 6x6m. Árvore nativa, muito adaptada ao clima brasileiro. Adubação orgânica.',
                     clima: 'Tropical e subtropical',
                     solo: 'Bem drenado, pH 5.5-7.0'
                 },
                 'pitanga': {
-                    producao: 7, // kg/m²/ano
+                    producao: 0.5, // kg/m2/ano - 5 ton/ha BR
                     ciclo: 730,
                     plantio: 'Primavera (setembro a novembro)',
                     colheita: 'Verão/Outono (dezembro a maio)',
-                    areaMin: 9,
+                    areaMin: 16, // m2 - espacamento 4x4m,
                     tecnica: 'Plantar mudas ou sementes. Espaçamento de 4x4m. Árvore nativa, resistente a pragas. Pode ser cultivada em vasos grandes.',
                     clima: 'Tropical e subtropical',
                     solo: 'Bem drenado, pH 5.5-7.0'
                 },
                 'caju': {
-                    producao: 9, // kg/m²/ano
+                    producao: 0.8, // kg/m2/ano - 8 ton/ha pseudofruto Nordeste BR
                     ciclo: 1095,
                     plantio: 'Verão (dezembro a fevereiro)',
                     colheita: 'Verão (dezembro a março)',
-                    areaMin: 20,
+                    areaMin: 64, // m2 - espacamento 8x8m,
                     tecnica: 'Plantar mudas enxertadas. Espaçamento de 8x8m. Árvore nativa do Nordeste. Muito resistente à seca após estabelecida.',
                     clima: 'Tropical (especialmente Nordeste)',
                     solo: 'Bem drenado, arenoso, pH 5.5-7.0'
                 },
                 'acerola': {
-                    producao: 14, // kg/m²/ano
+                    producao: 3.0, // kg/m2/ano - 30 ton/ha (muito produtiva) BR
                     ciclo: 365,
                     plantio: 'Primavera (setembro a novembro)',
                     colheita: 'Ano todo (picos no verão)',
-                    areaMin: 6,
+                    areaMin: 9, // m2 - espacamento 3x3m,
                     tecnica: 'Plantar mudas ou estacas. Espaçamento de 3x3m. Muito rica em vitamina C. Podas de formação e produção.',
                     clima: 'Tropical e subtropical',
                     solo: 'Bem drenado, pH 5.5-7.0'
                 },
                 'coco': {
-                    producao: 5, // kg/m²/ano
-                    ciclo: 1095,
+                    producao: 1.5, // kg/m2/ano - 15 ton/ha litoral BR
+                    ciclo: 1460, // dias - ~4 anos para 1a colheita,
                     plantio: 'Verão (dezembro a fevereiro)',
                     colheita: 'Ano todo',
-                    areaMin: 30,
+                    areaMin: 49, // m2 - espacamento 7x7m,
                     tecnica: 'Plantar cocos maduros diretamente no solo. Espaçamento de 7x7m. Requer muito sol e água. Adubação com matéria orgânica.',
                     clima: 'Tropical (litoral)',
                     solo: 'Arenoso, bem drenado, pH 5.5-7.0'
@@ -367,7 +367,7 @@ const FAZENDA_DATABASE = {
                     solo: 'Bem drenado, rico em matéria orgânica'
                 },
                 'feijao': {
-                    producao: 3, // kg/m²/ano
+                    producao: 0.5, // kg/m2/ano - grao seco, 5 ton/ha BR
                     ciclo: 80,
                     plantio: 'Ano todo',
                     colheita: 'Ano todo',
@@ -387,7 +387,7 @@ const FAZENDA_DATABASE = {
                     solo: 'Bem drenado, rico em matéria orgânica'
                 },
                 'batata': {
-                    producao: 5, // kg/m²/ano
+                    producao: 3.0, // kg/m2/ano - 30 ton/ha BR por ciclo
                     ciclo: 100,
                     plantio: 'Inverno/Primavera (junho a setembro)',
                     colheita: 'Primavera/Verão (setembro a dezembro)',
@@ -407,7 +407,7 @@ const FAZENDA_DATABASE = {
                     solo: 'Bem drenado, pH 6.0-7.0'
                 },
                 'alho': {
-                    producao: 4, // kg/m²/ano
+                    producao: 1.5, // kg/m2/ano - 12 ton/ha BR, 1 ciclo/ano
                     ciclo: 150,
                     plantio: 'Outono (março a maio)',
                     colheita: 'Primavera (setembro a novembro)',
@@ -566,121 +566,121 @@ const FAZENDA_DATABASE = {
             frutas: {
                 // Frutti tipici italiani
                 'uva': {
-                    producao: 14, // kg/m²/ano (clima mediterrâneo favorece)
+                    producao: 1.5, // kg/m2/ano - 15 ton/ha uva de mesa IT
                     ciclo: 365,
                     plantio: 'Inverno (dicembre a febbraio)',
                     colheita: 'Estate/Autunno (agosto a ottobre)',
-                    areaMin: 3,
+                    areaMin: 6, // m2 - espacamento 2x3m,
                     tecnica: 'Piantare viti innestate su filari. Spaziatura di 2x3m. Potatura invernale e estiva. Controllo malattie fungine. Varietà: Sangiovese, Nebbiolo, Trebbiano.',
                     clima: 'Mediterraneo e temperato',
                     solo: 'Ben drenato, pH 6.0-7.5'
                 },
                 'oliva': {
-                    producao: 6, // kg/m²/ano (azeitona)
+                    producao: 0.8, // kg/m2/ano - 8 ton/ha oliva IT
                     ciclo: 1095,
                     plantio: 'Autunno/Primavera (ottobre a marzo)',
                     colheita: 'Autunno (ottobre a dicembre)',
-                    areaMin: 16,
+                    areaMin: 36, // m2 - espacamento 6x6m,
                     tecnica: 'Piantare olivi innestati. Spaziatura di 6x6m. Potatura annuale. Molto resistente alla siccità. Varietà: Frantoio, Leccino, Coratina.',
                     clima: 'Mediterraneo',
                     solo: 'Ben drenato, calcareo, pH 6.0-8.0'
                 },
                 'figo': {
-                    producao: 12, // kg/m²/ano
+                    producao: 1.0, // kg/m2/ano - 10 ton/ha fichi IT
                     ciclo: 730,
                     plantio: 'Autunno/Primavera (ottobre a marzo)',
                     colheita: 'Estate/Autunno (luglio a settembre)',
-                    areaMin: 9,
+                    areaMin: 25, // m2 - espacamento 5x5m,
                     tecnica: 'Piantare talee o piante innestate. Spaziatura di 5x5m. Molto resistente. Potatura leggera. Varietà: Dottato, Brogiotto.',
                     clima: 'Mediterraneo e temperato',
                     solo: 'Ben drenato, pH 6.0-7.5'
                 },
                 'pesca': {
-                    producao: 11, // kg/m²/ano
+                    producao: 2.0, // kg/m2/ano - 20 ton/ha pesche IT
                     ciclo: 730,
                     plantio: 'Autunno/Primavera (ottobre a marzo)',
                     colheita: 'Estate (giugno a settembre)',
-                    areaMin: 12,
+                    areaMin: 25, // m2 - espacamento 5x5m,
                     tecnica: 'Piantare piante innestate. Spaziatura di 5x5m. Potatura annuale. Controllo afidi. Varietà: Pesca gialla, Pesca bianca, Nettarina.',
                     clima: 'Temperato',
                     solo: 'Ben drenato, pH 6.0-7.0'
                 },
                 'albicocca': {
-                    producao: 10, // kg/m²/ano
+                    producao: 1.5, // kg/m2/ano - 15 ton/ha albicocche IT
                     ciclo: 730,
                     plantio: 'Autunno/Primavera (ottobre a marzo)',
                     colheita: 'Estate (giugno a luglio)',
-                    areaMin: 10,
+                    areaMin: 25, // m2 - espacamento 5x5m,
                     tecnica: 'Piantare piante innestate. Spaziatura di 5x5m. Potatura annuale. Fioritura precoce. Varietà: Reale d\'Imola, Val Venosta.',
                     clima: 'Temperato',
                     solo: 'Ben drenato, pH 6.0-7.0'
                 },
                 'prugna': {
-                    producao: 9, // kg/m²/ano
+                    producao: 1.2, // kg/m2/ano - 12 ton/ha susine IT
                     ciclo: 730,
                     plantio: 'Autunno/Primavera (ottobre a marzo)',
                     colheita: 'Estate/Autunno (luglio a settembre)',
-                    areaMin: 10,
+                    areaMin: 25, // m2 - espacamento 5x5m,
                     tecnica: 'Piantare piante innestate. Spaziatura di 5x5m. Potatura annuale. Varietà: Susina gialla, Susina nera, Regina Claudia.',
                     clima: 'Temperato',
                     solo: 'Ben drenato, pH 6.0-7.0'
                 },
                 'pera': {
-                    producao: 13, // kg/m²/ano
+                    producao: 2.0, // kg/m2/ano - 20 ton/ha pere IT
                     ciclo: 1095,
                     plantio: 'Autunno/Primavera (ottobre a marzo)',
                     colheita: 'Estate/Autunno (agosto a ottobre)',
-                    areaMin: 12,
+                    areaMin: 25, // m2 - espacamento 5x5m,
                     tecnica: 'Piantare piante innestate. Spaziatura di 5x5m. Potatura annuale. Richiede impollinazione incrociata. Varietà: Abate Fetel, Williams, Conference.',
                     clima: 'Temperato',
                     solo: 'Ben drenato, pH 6.0-7.0'
                 },
                 'mela': {
-                    producao: 15, // kg/m²/ano
+                    producao: 3.0, // kg/m2/ano - 30 ton/ha mele IT
                     ciclo: 1095,
                     plantio: 'Autunno/Primavera (ottobre a marzo)',
                     colheita: 'Autunno (settembre a novembre)',
-                    areaMin: 12,
+                    areaMin: 25, // m2 - espacamento 5x5m,
                     tecnica: 'Piantare piante innestate. Spaziatura di 5x5m. Potatura annuale. Controllo malattie. Varietà: Golden Delicious, Granny Smith, Fuji, Gala.',
                     clima: 'Temperato (regioni più fredde)',
                     solo: 'Ben drenato, pH 6.0-7.0'
                 },
                 'limone': {
-                    producao: 13, // kg/m²/ano
+                    producao: 2.0, // kg/m2/ano - 20 ton/ha limoni IT
                     ciclo: 730,
                     plantio: 'Primavera (marzo a maggio)',
                     colheita: 'Anno intero (picchi in inverno)',
-                    areaMin: 9,
+                    areaMin: 25, // m2 - espacamento 5x5m,
                     tecnica: 'Piantare piante innestate. Spaziatura di 5x5m. Potatura annuale. Protezione dal freddo in inverno. Varietà: Femminello, Monachello.',
                     clima: 'Mediterraneo (specialmente Sud)',
                     solo: 'Ben drenato, pH 5.5-7.0'
                 },
                 'arancia': {
-                    producao: 16, // kg/m²/ano
+                    producao: 2.5, // kg/m2/ano - 25 ton/ha arance Sicilia
                     ciclo: 1095,
                     plantio: 'Autunno (ottobre a dicembre)',
                     colheita: 'Inverno/Primavera (dicembre a maggio)',
-                    areaMin: 12,
+                    areaMin: 36, // m2 - espacamento 6x6m,
                     tecnica: 'Piantare piante innestate. Spaziatura di 6x6m. Irrigazione a goccia. Controllo parassiti. Varietà: Tarocco, Moro, Navel, Sanguinello.',
                     clima: 'Mediterraneo (specialmente Sicilia)',
                     solo: 'Ben drenato, pH 6.0-7.0'
                 },
                 'kiwi': {
-                    producao: 8, // kg/m²/ano
+                    producao: 2.0, // kg/m2/ano - 20 ton/ha kiwi Nord IT
                     ciclo: 1095,
                     plantio: 'Autunno/Primavera (ottobre a marzo)',
                     colheita: 'Autunno (ottobre a novembre)',
-                    areaMin: 6,
+                    areaMin: 16, // m2 - espacamento 4x4m (pergolato),
                     tecnica: 'Piantare piante maschili e femminili. Spaziatura di 4x4m. Richiede pergolato. Potatura annuale. Varietà: Hayward, Bruno.',
                     clima: 'Temperato (regioni settentrionali)',
                     solo: 'Ben drenato, ricco di materia organica, pH 6.0-7.0'
                 },
                 'castagna': {
-                    producao: 5, // kg/m²/ano
+                    producao: 0.3, // kg/m2/ano - 3 ton/ha castagne IT
                     ciclo: 1095,
                     plantio: 'Autunno/Primavera (ottobre a marzo)',
                     colheita: 'Autunno (settembre a novembre)',
-                    areaMin: 25,
+                    areaMin: 64, // m2 - espacamento 8x8m,
                     tecnica: 'Piantare castagni innestati. Spaziatura di 8x8m. Potatura annuale. Molto resistente. Varietà: Marrone, Castagna comune.',
                     clima: 'Temperato (regioni montane)',
                     solo: 'Ben drenato, acido, pH 5.0-6.5'
@@ -860,7 +860,7 @@ const FAZENDA_DATABASE = {
                     solo: 'Ben drenato, ricco di materia organica'
                 },
                 'fagioli': {
-                    producao: 3.5, // kg/m²/ano
+                    producao: 0.8, // kg/m2/ano - grao seco, 8 ton/ha IT
                     ciclo: 80,
                     plantio: 'Primavera/Estate (marzo a luglio)',
                     colheita: 'Estate/Autunno (giugno a ottobre)',
@@ -870,7 +870,7 @@ const FAZENDA_DATABASE = {
                     solo: 'Ben drenato, pH 6.0-7.0'
                 },
                 'ceci': {
-                    producao: 2.5, // kg/m²/ano
+                    producao: 0.3, // kg/m2/ano - 3 ton/ha ceci IT
                     ciclo: 120,
                     plantio: 'Primavera (marzo a maggio)',
                     colheita: 'Estate (luglio a settembre)',
@@ -880,7 +880,7 @@ const FAZENDA_DATABASE = {
                     solo: 'Ben drenato, pH 6.0-7.5'
                 },
                 'lenticchie': {
-                    producao: 2, // kg/m²/ano
+                    producao: 0.2, // kg/m2/ano - 2 ton/ha lenticchie IT // kg/m²/ano
                     ciclo: 100,
                     plantio: 'Autunno/Primavera (ottobre a marzo)',
                     colheita: 'Estate (luglio a agosto)',
@@ -900,7 +900,7 @@ const FAZENDA_DATABASE = {
                     solo: 'Ben drenato, pH 6.0-7.0'
                 },
                 'aglio': {
-                    producao: 5, // kg/m²/ano
+                    producao: 1.5, // kg/m2/ano - 12 ton/ha aglio IT, 1 ciclo/ano // kg/m²/ano
                     ciclo: 150,
                     plantio: 'Autunno (ottobre a dicembre)',
                     colheita: 'Primavera/Estate (maggio a luglio)',
@@ -910,7 +910,7 @@ const FAZENDA_DATABASE = {
                     solo: 'Ben drenato, pH 6.0-7.0'
                 },
                 'patata': {
-                    producao: 6, // kg/m²/ano
+                    producao: 3.0, // kg/m2/ano - 30 ton/ha patate IT // kg/m²/ano
                     ciclo: 100,
                     plantio: 'Primavera (marzo a maggio)',
                     colheita: 'Estate/Autunno (luglio a settembre)',
@@ -920,7 +920,7 @@ const FAZENDA_DATABASE = {
                     solo: 'Terreno sciolto, ben drenato, pH 5.0-6.5'
                 },
                 'fagiolini': {
-                    producao: 7, // kg/m²/ano
+                    producao: 1.5, // kg/m2/ano - vagem fresca, 15 ton/ha IT // kg/m²/ano
                     ciclo: 70,
                     plantio: 'Primavera/Estate (marzo a luglio)',
                     colheita: 'Estate/Autunno (giugno a ottobre)',
