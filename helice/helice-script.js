@@ -535,7 +535,7 @@ class HeliceApp extends App {
         }
 
         const script = document.createElement('script');
-        script.src = '/assets/js/vendor/chart.umd.js';
+        script.src = '../assets/js/vendor/chart.umd.js';
         script.onload = () => this.atualizarGrafico();
         document.head.appendChild(script);
     }
