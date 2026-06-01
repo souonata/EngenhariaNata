@@ -1128,6 +1128,10 @@ function renderDays(){
   const yLowG  = Math.min(weekTMin, setLo);
   const yHighG = Math.max(weekTMax, setHi);
 
+  // Hora atual no fuso da cidade — vem do campo current.time da API ("2024-01-15T14:00"),
+  // que já é horário local. Fallback para o dispositivo só se a API falhar.
+  const nowH = cd.current ? parseInt(cd.current.time.slice(11, 13), 10) : new Date().getHours();
+
   cd.daily.forEach((day, di) => {
     let hours = cd.hourlyByDay[day.date] || [];
     const next = cd.daily[di + 1];               // 24h = 00h do dia seguinte (o último dia morre em 23h)
@@ -1136,7 +1140,7 @@ function renderDays(){
       if (nh) hours = hours.concat([{ ...nh, hour: 24 }]);
     }
     if (hours.length < 2) return;
-    wrap.insertAdjacentHTML('beforeend', buildRow(day, hours, day.date === todayISO, scaleMax, cd.city.lat, yLowG, yHighG));
+    wrap.insertAdjacentHTML('beforeend', buildRow(day, hours, day.date === todayISO, nowH, scaleMax, cd.city.lat, yLowG, yHighG));
   });
 
   const c = cd.city;
@@ -1146,7 +1150,7 @@ function renderDays(){
 }
 
 /* ──── Build one row with SVG sparkline ──── */
-function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
+function buildRow(day, hours, isToday, nowH, scaleMax, lat, yLowG, yHighG){
   // Temperatura-alvo de interior para a estação do dia (verão 24°, inverno 20°,
   // primavera/outono 22°), com hemisfério pela latitude (estações invertidas
   // no Brasil). Vale para a linha de referência e para o verde do gradiente.
@@ -1198,7 +1202,6 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
 
   // ── Grade vertical por hora (3 em 3 h mais marcada; a hora ATUAL, só no
   //    dia de hoje, fica realçada). ──
-  const nowH = new Date().getHours();
   const hourGrid = hours.map((h, i) => {
     const x = xAt(i).toFixed(1);
     const isNow = isToday && h.hour === nowH;
