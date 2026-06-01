@@ -155,54 +155,6 @@ function obterCoresGraficoSolar() {
     };
 }
 
-function atualizarDiagramaLigacaoSistema({
-    qtdPaineis,
-    potenciaPainel,
-    potenciaTotalPaineis,
-    tensaoBanco,
-    potenciaInversor,
-    correnteMPPT,
-    paineisExtras = 0,
-    qtdBaterias,
-    energiaPorBateria,
-    capacidadeRealKWh,
-    energiaDiaria,
-    autonomia
-}) {
-    const setTexto = (id, valor) => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.textContent = valor;
-        }
-    };
-
-    const pt = idiomaAtual === 'pt-BR';
-    const sufixoDia = pt ? 'dia' : 'giorno';
-    const sufixoDias = pt ? 'dias' : 'giorni';
-
-    setTexto('layoutLabelPaineis', pt ? 'Placas Solares' : 'Pannelli Solari');
-    setTexto('layoutValorPaineis', `${qtdPaineis} x ${formatarNumeroComSufixo(potenciaPainel, 0)}W`);
-    setTexto('layoutValorPaineisPot', `${formatarNumeroDecimal(potenciaTotalPaineis / 1000, 2)} kWp`);
-
-    setTexto('layoutLabelInversor', pt ? 'Inversor Off-grid' : 'Inverter Off-grid');
-    setTexto('layoutValorInversor', `${potenciaInversor} kW`);
-    setTexto('layoutValorMppt', `MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)}A`);
-
-    setTexto('layoutLabelBaterias', pt ? 'Banco de Baterias' : 'Banco Batterie');
-    setTexto('layoutValorBaterias', `${qtdBaterias} x ${formatarNumeroDecimal(energiaPorBateria, 1)} kWh`);
-    setTexto('layoutValorBancoKWh', `${formatarNumeroDecimal(capacidadeRealKWh, 1)} kWh ${pt ? 'instalados' : 'installati'}`);
-
-    setTexto('layoutLabelCargas', pt ? 'Cargas AC' : 'Carichi AC');
-    setTexto('layoutValorCargas', `${formatarNumeroDecimal(energiaDiaria, 2)} kWh/${pt ? 'dia' : 'giorno'}`);
-    setTexto('layoutValorAutonomia', `${autonomia} ${autonomia > 1 ? sufixoDias : sufixoDia} ${pt ? 'de autonomia' : 'di autonomia'}`);
-
-    setTexto('layoutFluxoPv', pt ? 'DC solar' : 'DC solare');
-    setTexto('layoutFluxoAc', pt ? 'AC saída' : 'AC uscita');
-    setTexto('layoutFluxoBat', pt ? 'Carga/descarga DC' : 'Carica/scarica DC');
-
-    atualizarArranjoPaineis(qtdPaineis, tensaoBanco, potenciaInversor, paineisExtras, potenciaPainel);
-}
-
 function obterFaixaMpptEstimada(potenciaInversor) {
     if (potenciaInversor <= 1) {
         return { min: 30, max: 100 };
@@ -301,42 +253,6 @@ function sugerirArranjoPaineis(qtdPaineis, tensaoBanco, potenciaInversor, potenc
     };
 }
 
-function atualizarArranjoPaineis(qtdPaineis, tensaoBanco, potenciaInversor, paineisExtras = 0, potenciaPainel = 400) {
-    const resumoTexto = document.getElementById('layoutArranjoResumoTexto');
-    const leigoTexto = document.getElementById('layoutArranjoLeigo');
-    const eletricoTexto = document.getElementById('layoutArranjoEletrico');
-    if (!resumoTexto || !leigoTexto || !eletricoTexto) {
-        return;
-    }
-
-    const pt = idiomaAtual === 'pt-BR';
-    const arranjo = sugerirArranjoPaineis(qtdPaineis, tensaoBanco, potenciaInversor, potenciaPainel);
-    const extrasEfetivos = Math.max(paineisExtras || 0, arranjo.paineisExtras || 0);
-
-    const qtdStrings = arranjo.strings.length;
-    if (qtdStrings === 0) {
-        resumoTexto.textContent = '--';
-        leigoTexto.textContent = '--';
-        eletricoTexto.textContent = '--';
-        return;
-    }
-
-    const serieNominal = arranjo.serieBase;
-    const notacao = `${qtdStrings}P${serieNominal}S`;
-    resumoTexto.textContent = pt
-        ? `Arranjo sugerido para ${qtdPaineis} placas: ${notacao}.`
-        : `Configurazione suggerita per ${qtdPaineis} pannelli: ${notacao}.`;
-
-    leigoTexto.textContent = pt
-        ? `${qtdStrings}P${serieNominal}S significa ${qtdStrings} grupos em paralelo, cada grupo com ${serieNominal} placas em série. Em série aumenta a tensão; em paralelo aumenta a corrente.`
-        : `${qtdStrings}P${serieNominal}S significa ${qtdStrings} gruppi in parallelo, con ${serieNominal} pannelli in serie per gruppo. In serie aumenta la tensione; in parallelo aumenta la corrente.`;
-
-    const tensaoMaxString = formatarNumeroDecimal(arranjo.vocFrioString, 1);
-    const correnteMaxArray = formatarNumeroDecimal(arranjo.correnteArray, 1);
-    eletricoTexto.textContent = pt
-        ? `Tensão máxima da stringa: ${tensaoMaxString} Vdc. Corrente máxima do arranjo: ${correnteMaxArray} A.`
-        : `Tensione massima della stringa: ${tensaoMaxString} Vdc. Corrente massima dell'array: ${correnteMaxArray} A.`;
-}
 // Função formatarMoedaComVirgula agora é importada de ../src/utils/formatters.js
 // Formata moeda sempre com vírgula como separador decimal
 function formatarMoedaComVirgula(valor, moeda, casasDecimais = 2) {
@@ -571,7 +487,7 @@ function atualizarNotasValoresPadrao() {
         // Atualizar valor atual para o padrão do idioma
         sliderAumentoAnualEnergia.value = valorPadrao.toFixed(1);
         if (inputAumentoAnualEnergia) {
-            inputAumentoAnualEnergia.value = formatarDecimalComVirgula(valorPadrao, 1);
+            inputAumentoAnualEnergia.value = formatarNumeroDecimal(valorPadrao, 1);
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAumentoAnualEnergia);
         }
     }
@@ -596,11 +512,11 @@ function atualizarNotasValoresPadrao() {
         if (valorAtual < parseFloat(sliderPrecoKWh.min)) {
             sliderPrecoKWh.value = sliderPrecoKWh.min;
             const inputPrecoKWh = document.getElementById('inputPrecoKWh');
-            if (inputPrecoKWh) inputPrecoKWh.value = formatarDecimalComVirgula(parseFloat(sliderPrecoKWh.min), 2);
+            if (inputPrecoKWh) inputPrecoKWh.value = formatarNumeroDecimal(parseFloat(sliderPrecoKWh.min), 2);
         } else if (valorAtual > parseFloat(sliderPrecoKWh.max)) {
             sliderPrecoKWh.value = sliderPrecoKWh.max;
             const inputPrecoKWh = document.getElementById('inputPrecoKWh');
-            if (inputPrecoKWh) inputPrecoKWh.value = formatarDecimalComVirgula(parseFloat(sliderPrecoKWh.max), 2);
+            if (inputPrecoKWh) inputPrecoKWh.value = formatarNumeroDecimal(parseFloat(sliderPrecoKWh.max), 2);
         }
     }
     
@@ -768,7 +684,7 @@ function ajustarValor(targetId, step) {
         // Para slider de preço kWh, atualiza o input correspondente
         const inputPrecoKWh = document.getElementById('inputPrecoKWh');
         if (inputPrecoKWh) {
-            inputPrecoKWh.value = formatarDecimalComVirgula(valor, 2);
+            inputPrecoKWh.value = formatarNumeroDecimal(valor, 2);
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPrecoKWh);
         }
         // Dispara evento input para atualizar a interface
@@ -777,7 +693,7 @@ function ajustarValor(targetId, step) {
         // Para slider de aumento anual, atualiza o input correspondente
         const inputAumentoAnualEnergia = document.getElementById('inputAumentoAnualEnergia');
         if (inputAumentoAnualEnergia) {
-            inputAumentoAnualEnergia.value = formatarDecimalComVirgula(valor, 1);
+            inputAumentoAnualEnergia.value = formatarNumeroDecimal(valor, 1);
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputAumentoAnualEnergia);
         }
         // Dispara evento input para atualizar a interface
@@ -2049,21 +1965,6 @@ function calcularSistema(dodAlvo) {
     // Exemplo: custoTotal = 25200 + 168000 + 5500 = 198700 BRL
     const custoTotal = custoPaineis + custoBaterias + custoInversor;
 
-    atualizarDiagramaLigacaoSistema({
-        qtdPaineis,
-        potenciaPainel: POTENCIA_PAINEL,
-        potenciaTotalPaineis,
-        tensaoBanco,
-        potenciaInversor,
-        correnteMPPT,
-        paineisExtras,
-        qtdBaterias,
-        energiaPorBateria,
-        capacidadeRealKWh,
-        energiaDiaria,
-        autonomia
-    });
-
     // 6. Exibir Resultados (verificando se os elementos existem)
     const resQtdPlacas = document.getElementById('resQtdPlacas');
     if (resQtdPlacas) resQtdPlacas.textContent = `${qtdPaineis} x ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W`;
@@ -2376,7 +2277,7 @@ class SolarApp extends App {
             valor = Math.round(valor * 100) / 100;
             sliderPrecoKWhEl.value = valor.toFixed(2);
             const inputPrecoKWhEl = document.getElementById('inputPrecoKWh');
-            if (inputPrecoKWhEl) inputPrecoKWhEl.value = formatarDecimalComVirgula(valor, 2);
+            if (inputPrecoKWhEl) inputPrecoKWhEl.value = formatarNumeroDecimal(valor, 2);
             atualizarInterface();
         };
         const sliderPrecoKWhEl = document.getElementById('sliderPrecoKWh');
@@ -2393,7 +2294,7 @@ class SolarApp extends App {
             const valorLimitado = Math.max(valorPadrao / 5, Math.min(valorPadrao * 5, valor));
             sliderAumentoAnualEnergiaEl.value = Math.round(valorLimitado * 10) / 10;
             const inputAumentoAnualEnergiaEl = document.getElementById('inputAumentoAnualEnergia');
-            if (inputAumentoAnualEnergiaEl) inputAumentoAnualEnergiaEl.value = formatarDecimalComVirgula(valorLimitado, 1);
+            if (inputAumentoAnualEnergiaEl) inputAumentoAnualEnergiaEl.value = formatarNumeroDecimal(valorLimitado, 1);
             atualizarInterface();
         };
         const sliderAumentoAnualEnergiaEl = document.getElementById('sliderAumentoAnualEnergia');
@@ -2482,7 +2383,7 @@ class SolarApp extends App {
                         const valorLimitado = Math.max(minVal, Math.min(maxVal, valor));
                         if (valorLimitado >= minVal && valorLimitado <= maxVal) {
                             sliderPrecoKWhEl2.value = valorLimitado.toFixed(2);
-                            inputPrecoKWhEl.value = formatarDecimalComVirgula(valorLimitado, 2);
+                            inputPrecoKWhEl.value = formatarNumeroDecimal(valorLimitado, 2);
                         }
                     }
                     atualizarInterface();
@@ -2566,7 +2467,7 @@ class SolarApp extends App {
         if (sliderPrecoKWhInit && inputPrecoKWhInit) {
             const valorPadrao = PRECO_KWH[idiomaAtual] || PRECO_KWH['pt-BR'];
             sliderPrecoKWhInit.value = valorPadrao.toFixed(2);
-            inputPrecoKWhInit.value = formatarDecimalComVirgula(valorPadrao, 2);
+            inputPrecoKWhInit.value = formatarNumeroDecimal(valorPadrao, 2);
         }
         if (unidadePrecoKWhInit) unidadePrecoKWhInit.textContent = idiomaAtual === 'it-IT' ? '€' : 'R$';
 
@@ -2581,7 +2482,7 @@ class SolarApp extends App {
             sliderAumentoAnualEnergiaInit.min = (Math.floor(minValorAumento / 0.1) * 0.1).toFixed(1);
             sliderAumentoAnualEnergiaInit.max = (Math.ceil(maxValorAumento / 0.1) * 0.1).toFixed(1);
             sliderAumentoAnualEnergiaInit.value = valorPadraoAumento.toFixed(1);
-            inputAumentoAnualEnergiaInit.value = formatarDecimalComVirgula(valorPadraoAumento, 1);
+            inputAumentoAnualEnergiaInit.value = formatarNumeroDecimal(valorPadraoAumento, 1);
         }
         if (notaAumentoAnualEnergiaInit) {
             const chaveNota = idiomaAtual === 'pt-BR' ? 'nota-aumento-anual-energia-pt' : 'nota-aumento-anual-energia-it';
@@ -2631,7 +2532,7 @@ class SolarApp extends App {
         if (sliderPrecoKWh && inputPrecoKWh) {
             const valorPadrao = PRECO_KWH[idiomaAtual] || PRECO_KWH['pt-BR'];
             sliderPrecoKWh.value = valorPadrao.toFixed(2);
-            inputPrecoKWh.value = formatarDecimalComVirgula(valorPadrao, 2);
+            inputPrecoKWh.value = formatarNumeroDecimal(valorPadrao, 2);
         }
         if (unidadePrecoKWh) unidadePrecoKWh.textContent = idiomaAtual === 'it-IT' ? '€' : 'R$';
 
