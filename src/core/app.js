@@ -38,6 +38,7 @@ export class App {
                 await this.config.callbacks.aoInicializar();
             }
 
+            this.configurarFeedbackVisualSliders();
             loading.ocultar();
         } catch (erro) {
             console.error('Erro ao inicializar app:', erro);
@@ -153,6 +154,36 @@ export class App {
     fecharModais() {
         document.querySelectorAll('.modal.active').forEach(modal => {
             modal.classList.remove('active');
+        });
+    }
+
+    // Quando o input text conectado a um slider contém valor fora do range do slider,
+    // deixa o slider cinza e na extremidade mais próxima para sinalizar que o input
+    // está no comando. Quando o slider é arrastado diretamente, volta ao azul.
+    configurarFeedbackVisualSliders() {
+        // Slider arrastado diretamente → sempre dentro do range → remove estado cinza
+        document.addEventListener('input', (e) => {
+            if (e.target.matches('input[type="range"]')) {
+                e.target.classList.remove('slider-fora-faixa');
+            }
+        });
+
+        // inputX muda → checa se excede o range do sliderX correspondente
+        document.querySelectorAll('input[type="range"][id^="slider"]').forEach(slider => {
+            const suffix = slider.id.slice(6); // "sliderPotencia" → "Potencia"
+            const input = document.getElementById('input' + suffix);
+            if (!input) return;
+
+            input.addEventListener('input', () => {
+                const valor = parseFloat((input.value || '').replace(',', '.'));
+                const min = parseFloat(slider.min);
+                const max = parseFloat(slider.max);
+                if (!isNaN(valor) && (valor < min || valor > max)) {
+                    slider.classList.add('slider-fora-faixa');
+                } else {
+                    slider.classList.remove('slider-fora-faixa');
+                }
+            });
         });
     }
 }

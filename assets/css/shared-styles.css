@@ -7,6 +7,7 @@
 :root {
     --text-primary: #333;
     --text-secondary: #666;
+    --text-muted: #9e9e9e;
     --surface-bg: #ffffff;
     --surface-raised: #6a9580;
     --surface-raised-strong: #5d8973;
@@ -134,6 +135,7 @@ html[data-theme="dark"] {
     --site-bg: #1e1e1e;
     --text-primary: #e6e6e6;
     --text-secondary: #b8b8b8;
+    --text-muted: #757575;
     --surface-bg: #252526;
     --surface-raised: #2a2d33;
     --surface-raised-strong: #31363d;
@@ -788,6 +790,27 @@ input[type="range"]::-moz-range-thumb:hover {
 input[type="range"]::-moz-range-thumb:active {
     cursor: grabbing;
     transform: scale(1.15);
+}
+
+/* Slider fora da faixa: input text excede o range do slider */
+input[type="range"].slider-fora-faixa {
+    opacity: 0.55;
+}
+input[type="range"].slider-fora-faixa::-webkit-slider-thumb {
+    background: var(--text-muted, #9e9e9e);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+input[type="range"].slider-fora-faixa::-webkit-slider-thumb:hover {
+    transform: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+input[type="range"].slider-fora-faixa::-moz-range-thumb {
+    background: var(--text-muted, #9e9e9e);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+input[type="range"].slider-fora-faixa::-moz-range-thumb:hover {
+    transform: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
 }
 
 /* ============================================
