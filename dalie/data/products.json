@@ -15,8 +15,8 @@
     "estacao": [
       "inverno"
     ],
-    "preco": 230,
-    "precoAntigo": 290,
+    "preco": 2.3,
+    "precoAntigo": 2.9,
     "avaliacao": 4,
     "numAvaliacoes": 100,
     "imagem": "https://loremflickr.com/400/520/dress,fashion,woman?lock=1",
@@ -46,8 +46,8 @@
     "estacao": [
       "inverno"
     ],
-    "preco": 620,
-    "precoAntigo": 850,
+    "preco": 6.2,
+    "precoAntigo": 8.5,
     "avaliacao": 4,
     "numAvaliacoes": 128,
     "imagem": "https://loremflickr.com/400/520/dress,fashion,woman?lock=2",
@@ -78,7 +78,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 400,
+    "preco": 4,
     "precoAntigo": null,
     "avaliacao": 3.5,
     "numAvaliacoes": 342,
@@ -109,7 +109,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 350,
+    "preco": 3.5,
     "precoAntigo": null,
     "avaliacao": 3.5,
     "numAvaliacoes": 184,
@@ -140,8 +140,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 610,
-    "precoAntigo": 860,
+    "preco": 6.1,
+    "precoAntigo": 8.6,
     "avaliacao": 4,
     "numAvaliacoes": 24,
     "imagem": "https://loremflickr.com/400/520/dress,fashion,woman?lock=5",
@@ -172,8 +172,8 @@
       "primavera",
       "inverno"
     ],
-    "preco": 270,
-    "precoAntigo": 310,
+    "preco": 2.7,
+    "precoAntigo": 3.1,
     "avaliacao": 4,
     "numAvaliacoes": 58,
     "imagem": "https://loremflickr.com/400/520/dress,fashion,woman?lock=6",
@@ -202,7 +202,7 @@
       "inverno",
       "verao"
     ],
-    "preco": 280,
+    "preco": 2.8,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 22,
@@ -235,7 +235,7 @@
       "primavera",
       "inverno"
     ],
-    "preco": 430,
+    "preco": 4.3,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 181,
@@ -267,8 +267,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 260,
-    "precoAntigo": 380,
+    "preco": 2.6,
+    "precoAntigo": 3.8,
     "avaliacao": 4,
     "numAvaliacoes": 94,
     "imagem": "https://loremflickr.com/400/520/dress,fashion,woman?lock=9",
@@ -299,8 +299,8 @@
       "primavera",
       "verao"
     ],
-    "preco": 260,
-    "precoAntigo": 340,
+    "preco": 2.6,
+    "precoAntigo": 3.4,
     "avaliacao": 4.5,
     "numAvaliacoes": 15,
     "imagem": "https://loremflickr.com/400/520/dress,fashion,woman?lock=10",
@@ -332,7 +332,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 570,
+    "preco": 5.7,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 398,
@@ -363,7 +363,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 570,
+    "preco": 5.7,
     "precoAntigo": null,
     "avaliacao": 3.5,
     "numAvaliacoes": 316,
@@ -394,8 +394,8 @@
       "inverno",
       "outono"
     ],
-    "preco": 370,
-    "precoAntigo": 470,
+    "preco": 3.7,
+    "precoAntigo": 4.7,
     "avaliacao": 4,
     "numAvaliacoes": 389,
     "imagem": "https://loremflickr.com/400/520/dress,fashion,woman?lock=13",
@@ -426,8 +426,8 @@
     "estacao": [
       "inverno"
     ],
-    "preco": 510,
-    "precoAntigo": 620,
+    "preco": 5.1,
+    "precoAntigo": 6.2,
     "avaliacao": 4,
     "numAvaliacoes": 43,
     "imagem": "https://loremflickr.com/400/520/dress,fashion,woman?lock=14",
@@ -458,7 +458,7 @@
       "primavera",
       "inverno"
     ],
-    "preco": 320,
+    "preco": 3.2,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 346,
@@ -489,7 +489,7 @@
       "inverno",
       "verao"
     ],
-    "preco": 460,
+    "preco": 4.6,
     "precoAntigo": null,
     "avaliacao": 3.5,
     "numAvaliacoes": 58,
@@ -519,7 +519,7 @@
       "primavera",
       "inverno"
     ],
-    "preco": 210,
+    "preco": 2.1,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 310,
@@ -547,7 +547,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 460,
+    "preco": 4.6,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 465,
@@ -577,8 +577,8 @@
     "estacao": [
       "inverno"
     ],
-    "preco": 240,
-    "precoAntigo": 330,
+    "preco": 2.4,
+    "precoAntigo": 3.3,
     "avaliacao": 5,
     "numAvaliacoes": 418,
     "imagem": "https://loremflickr.com/400/520/dress,fashion,woman?lock=19",
@@ -607,8 +607,8 @@
       "primavera",
       "verao"
     ],
-    "preco": 650,
-    "precoAntigo": 740,
+    "preco": 6.5,
+    "precoAntigo": 7.4,
     "avaliacao": 5,
     "numAvaliacoes": 100,
     "imagem": "https://loremflickr.com/400/520/dress,fashion,woman?lock=20",
@@ -640,7 +640,7 @@
       "primavera",
       "verao"
     ],
-    "preco": 560,
+    "preco": 5.6,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 130,
@@ -674,8 +674,8 @@
       "inverno",
       "outono"
     ],
-    "preco": 280,
-    "precoAntigo": 400,
+    "preco": 2.8,
+    "precoAntigo": 4,
     "avaliacao": 5,
     "numAvaliacoes": 271,
     "imagem": "https://loremflickr.com/400/520/dress,fashion,woman?lock=22",
@@ -707,8 +707,8 @@
       "primavera",
       "verao"
     ],
-    "preco": 620,
-    "precoAntigo": 820,
+    "preco": 6.2,
+    "precoAntigo": 8.2,
     "avaliacao": 5,
     "numAvaliacoes": 206,
     "imagem": "https://loremflickr.com/400/520/dress,fashion,woman?lock=23",
@@ -741,7 +741,7 @@
       "primavera",
       "verao"
     ],
-    "preco": 220,
+    "preco": 2.2,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 378,
@@ -771,8 +771,8 @@
       "primavera",
       "inverno"
     ],
-    "preco": 350,
-    "precoAntigo": 420,
+    "preco": 3.5,
+    "precoAntigo": 4.2,
     "avaliacao": 3.5,
     "numAvaliacoes": 257,
     "imagem": "https://loremflickr.com/400/520/dress,fashion,woman?lock=25",
@@ -801,7 +801,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 230,
+    "preco": 2.3,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 261,
@@ -833,7 +833,7 @@
       "inverno",
       "primavera"
     ],
-    "preco": 190,
+    "preco": 1.9,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 144,
@@ -866,7 +866,7 @@
       "primavera",
       "verao"
     ],
-    "preco": 170,
+    "preco": 1.7,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 440,
@@ -895,8 +895,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 170,
-    "precoAntigo": 190,
+    "preco": 1.7,
+    "precoAntigo": 1.9,
     "avaliacao": 5,
     "numAvaliacoes": 181,
     "imagem": "https://loremflickr.com/400/520/fashion,woman,blouse?lock=29",
@@ -925,7 +925,7 @@
       "primavera",
       "outono"
     ],
-    "preco": 240,
+    "preco": 2.4,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 402,
@@ -955,7 +955,7 @@
     "estacao": [
       "inverno"
     ],
-    "preco": 270,
+    "preco": 2.7,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 278,
@@ -988,7 +988,7 @@
       "primavera",
       "outono"
     ],
-    "preco": 130,
+    "preco": 1.3,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 433,
@@ -1020,7 +1020,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 90,
+    "preco": 0.9,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 159,
@@ -1052,7 +1052,7 @@
       "inverno",
       "primavera"
     ],
-    "preco": 120,
+    "preco": 1.2,
     "precoAntigo": null,
     "avaliacao": 3.5,
     "numAvaliacoes": 384,
@@ -1085,7 +1085,7 @@
       "inverno",
       "verao"
     ],
-    "preco": 100,
+    "preco": 1,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 375,
@@ -1117,8 +1117,8 @@
       "outono",
       "inverno"
     ],
-    "preco": 90,
-    "precoAntigo": 130,
+    "preco": 0.9,
+    "precoAntigo": 1.3,
     "avaliacao": 4,
     "numAvaliacoes": 196,
     "imagem": "https://loremflickr.com/400/520/fashion,woman,blouse?lock=36",
@@ -1148,7 +1148,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 180,
+    "preco": 1.8,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 22,
@@ -1179,7 +1179,7 @@
       "outono",
       "verao"
     ],
-    "preco": 100,
+    "preco": 1,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 141,
@@ -1212,8 +1212,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 260,
-    "precoAntigo": 340,
+    "preco": 2.6,
+    "precoAntigo": 3.4,
     "avaliacao": 5,
     "numAvaliacoes": 148,
     "imagem": "https://loremflickr.com/400/520/fashion,woman,blouse?lock=39",
@@ -1244,7 +1244,7 @@
       "inverno",
       "verao"
     ],
-    "preco": 270,
+    "preco": 2.7,
     "precoAntigo": null,
     "avaliacao": 3.5,
     "numAvaliacoes": 199,
@@ -1277,7 +1277,7 @@
       "inverno",
       "verao"
     ],
-    "preco": 250,
+    "preco": 2.5,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 322,
@@ -1310,7 +1310,7 @@
       "primavera",
       "inverno"
     ],
-    "preco": 100,
+    "preco": 1,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 56,
@@ -1340,7 +1340,7 @@
       "verao",
       "primavera"
     ],
-    "preco": 90,
+    "preco": 0.9,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 132,
@@ -1371,8 +1371,8 @@
       "primavera",
       "inverno"
     ],
-    "preco": 200,
-    "precoAntigo": 280,
+    "preco": 2,
+    "precoAntigo": 2.8,
     "avaliacao": 3.5,
     "numAvaliacoes": 424,
     "imagem": "https://loremflickr.com/400/520/fashion,woman,blouse?lock=44",
@@ -1401,8 +1401,8 @@
     "estacao": [
       "inverno"
     ],
-    "preco": 170,
-    "precoAntigo": 230,
+    "preco": 1.7,
+    "precoAntigo": 2.3,
     "avaliacao": 4,
     "numAvaliacoes": 71,
     "imagem": "https://loremflickr.com/400/520/fashion,woman,blouse?lock=45",
@@ -1434,8 +1434,8 @@
       "inverno",
       "verao"
     ],
-    "preco": 250,
-    "precoAntigo": 330,
+    "preco": 2.5,
+    "precoAntigo": 3.3,
     "avaliacao": 4.5,
     "numAvaliacoes": 132,
     "imagem": "https://loremflickr.com/400/520/fashion,woman,blouse?lock=46",
@@ -1466,7 +1466,7 @@
       "outono",
       "inverno"
     ],
-    "preco": 180,
+    "preco": 1.8,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 242,
@@ -1495,7 +1495,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 140,
+    "preco": 1.4,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 210,
@@ -1524,8 +1524,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 140,
-    "precoAntigo": 180,
+    "preco": 1.4,
+    "precoAntigo": 1.8,
     "avaliacao": 3.5,
     "numAvaliacoes": 299,
     "imagem": "https://loremflickr.com/400/520/fashion,woman,blouse?lock=49",
@@ -1557,7 +1557,7 @@
       "inverno",
       "verao"
     ],
-    "preco": 250,
+    "preco": 2.5,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 240,
@@ -1587,7 +1587,7 @@
       "inverno",
       "primavera"
     ],
-    "preco": 410,
+    "preco": 4.1,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 74,
@@ -1620,8 +1620,8 @@
       "inverno",
       "outono"
     ],
-    "preco": 160,
-    "precoAntigo": 190,
+    "preco": 1.6,
+    "precoAntigo": 1.9,
     "avaliacao": 5,
     "numAvaliacoes": 157,
     "imagem": "https://loremflickr.com/400/520/fashion,pants,clothing?lock=52",
@@ -1651,7 +1651,7 @@
       "inverno",
       "verao"
     ],
-    "preco": 210,
+    "preco": 2.1,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 18,
@@ -1684,8 +1684,8 @@
       "primavera",
       "inverno"
     ],
-    "preco": 300,
-    "precoAntigo": 390,
+    "preco": 3,
+    "precoAntigo": 3.9,
     "avaliacao": 5,
     "numAvaliacoes": 355,
     "imagem": "https://loremflickr.com/400/520/fashion,pants,clothing?lock=54",
@@ -1715,7 +1715,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 390,
+    "preco": 3.9,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 165,
@@ -1746,7 +1746,7 @@
       "outono",
       "inverno"
     ],
-    "preco": 450,
+    "preco": 4.5,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 124,
@@ -1779,8 +1779,8 @@
       "inverno",
       "outono"
     ],
-    "preco": 420,
-    "precoAntigo": 600,
+    "preco": 4.2,
+    "precoAntigo": 6,
     "avaliacao": 3.5,
     "numAvaliacoes": 70,
     "imagem": "https://loremflickr.com/400/520/fashion,pants,clothing?lock=57",
@@ -1809,7 +1809,7 @@
       "primavera",
       "inverno"
     ],
-    "preco": 300,
+    "preco": 3,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 444,
@@ -1841,8 +1841,8 @@
     "estacao": [
       "inverno"
     ],
-    "preco": 420,
-    "precoAntigo": 560,
+    "preco": 4.2,
+    "precoAntigo": 5.6,
     "avaliacao": 4,
     "numAvaliacoes": 406,
     "imagem": "https://loremflickr.com/400/520/fashion,pants,clothing?lock=59",
@@ -1874,8 +1874,8 @@
       "primavera",
       "inverno"
     ],
-    "preco": 200,
-    "precoAntigo": 290,
+    "preco": 2,
+    "precoAntigo": 2.9,
     "avaliacao": 4,
     "numAvaliacoes": 140,
     "imagem": "https://loremflickr.com/400/520/fashion,pants,clothing?lock=60",
@@ -1906,8 +1906,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 270,
-    "precoAntigo": 380,
+    "preco": 2.7,
+    "precoAntigo": 3.8,
     "avaliacao": 4.5,
     "numAvaliacoes": 194,
     "imagem": "https://loremflickr.com/400/520/fashion,pants,clothing?lock=61",
@@ -1935,8 +1935,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 200,
-    "precoAntigo": 270,
+    "preco": 2,
+    "precoAntigo": 2.7,
     "avaliacao": 3.5,
     "numAvaliacoes": 170,
     "imagem": "https://loremflickr.com/400/520/fashion,pants,clothing?lock=62",
@@ -1965,7 +1965,7 @@
       "primavera",
       "inverno"
     ],
-    "preco": 410,
+    "preco": 4.1,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 143,
@@ -1998,8 +1998,8 @@
     "estacao": [
       "inverno"
     ],
-    "preco": 400,
-    "precoAntigo": 550,
+    "preco": 4,
+    "precoAntigo": 5.5,
     "avaliacao": 4,
     "numAvaliacoes": 455,
     "imagem": "https://loremflickr.com/400/520/fashion,pants,clothing?lock=64",
@@ -2030,7 +2030,7 @@
       "primavera",
       "verao"
     ],
-    "preco": 360,
+    "preco": 3.6,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 92,
@@ -2063,8 +2063,8 @@
       "inverno",
       "outono"
     ],
-    "preco": 270,
-    "precoAntigo": 350,
+    "preco": 2.7,
+    "precoAntigo": 3.5,
     "avaliacao": 5,
     "numAvaliacoes": 290,
     "imagem": "https://loremflickr.com/400/520/fashion,pants,clothing?lock=66",
@@ -2097,7 +2097,7 @@
       "primavera",
       "inverno"
     ],
-    "preco": 160,
+    "preco": 1.6,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 11,
@@ -2130,8 +2130,8 @@
       "inverno",
       "primavera"
     ],
-    "preco": 390,
-    "precoAntigo": 450,
+    "preco": 3.9,
+    "precoAntigo": 4.5,
     "avaliacao": 4.5,
     "numAvaliacoes": 375,
     "imagem": "https://loremflickr.com/400/520/fashion,pants,clothing?lock=68",
@@ -2161,7 +2161,7 @@
       "primavera",
       "verao"
     ],
-    "preco": 210,
+    "preco": 2.1,
     "precoAntigo": null,
     "avaliacao": 3.5,
     "numAvaliacoes": 362,
@@ -2194,7 +2194,7 @@
     "estacao": [
       "inverno"
     ],
-    "preco": 310,
+    "preco": 3.1,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 394,
@@ -2224,7 +2224,7 @@
       "inverno",
       "primavera"
     ],
-    "preco": 760,
+    "preco": 7.6,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 499,
@@ -2256,7 +2256,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 810,
+    "preco": 8.1,
     "precoAntigo": null,
     "avaliacao": 3.5,
     "numAvaliacoes": 83,
@@ -2288,8 +2288,8 @@
       "primavera",
       "verao"
     ],
-    "preco": 660,
-    "precoAntigo": 860,
+    "preco": 6.6,
+    "precoAntigo": 8.6,
     "avaliacao": 4,
     "numAvaliacoes": 132,
     "imagem": "https://loremflickr.com/400/520/jacket,fashion,coat?lock=73",
@@ -2317,8 +2317,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 610,
-    "precoAntigo": 780,
+    "preco": 6.1,
+    "precoAntigo": 7.8,
     "avaliacao": 3.5,
     "numAvaliacoes": 123,
     "imagem": "https://loremflickr.com/400/520/jacket,fashion,coat?lock=74",
@@ -2350,7 +2350,7 @@
       "inverno",
       "verao"
     ],
-    "preco": 310,
+    "preco": 3.1,
     "precoAntigo": null,
     "avaliacao": 3.5,
     "numAvaliacoes": 16,
@@ -2382,7 +2382,7 @@
       "verao",
       "primavera"
     ],
-    "preco": 810,
+    "preco": 8.1,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 54,
@@ -2413,8 +2413,8 @@
       "primavera",
       "outono"
     ],
-    "preco": 310,
-    "precoAntigo": 440,
+    "preco": 3.1,
+    "precoAntigo": 4.4,
     "avaliacao": 5,
     "numAvaliacoes": 353,
     "imagem": "https://loremflickr.com/400/520/jacket,fashion,coat?lock=77",
@@ -2445,7 +2445,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 300,
+    "preco": 3,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 299,
@@ -2476,8 +2476,8 @@
       "primavera",
       "verao"
     ],
-    "preco": 560,
-    "precoAntigo": 780,
+    "preco": 5.6,
+    "precoAntigo": 7.8,
     "avaliacao": 4,
     "numAvaliacoes": 297,
     "imagem": "https://loremflickr.com/400/520/jacket,fashion,coat?lock=79",
@@ -2506,8 +2506,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 700,
-    "precoAntigo": 900,
+    "preco": 7,
+    "precoAntigo": 9,
     "avaliacao": 4,
     "numAvaliacoes": 217,
     "imagem": "https://loremflickr.com/400/520/jacket,fashion,coat?lock=80",
@@ -2538,7 +2538,7 @@
       "inverno",
       "verao"
     ],
-    "preco": 770,
+    "preco": 7.7,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 248,
@@ -2571,7 +2571,7 @@
       "verao",
       "inverno"
     ],
-    "preco": 790,
+    "preco": 7.9,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 127,
@@ -2606,7 +2606,7 @@
       "inverno",
       "primavera"
     ],
-    "preco": 480,
+    "preco": 4.8,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 125,
@@ -2636,7 +2636,7 @@
       "inverno",
       "verao"
     ],
-    "preco": 450,
+    "preco": 4.5,
     "precoAntigo": null,
     "avaliacao": 3.5,
     "numAvaliacoes": 303,
@@ -2668,7 +2668,7 @@
       "outono",
       "verao"
     ],
-    "preco": 730,
+    "preco": 7.3,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 439,
@@ -2700,7 +2700,7 @@
       "primavera",
       "inverno"
     ],
-    "preco": 870,
+    "preco": 8.7,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 28,
@@ -2734,8 +2734,8 @@
       "verao",
       "inverno"
     ],
-    "preco": 620,
-    "precoAntigo": 800,
+    "preco": 6.2,
+    "precoAntigo": 8,
     "avaliacao": 4,
     "numAvaliacoes": 124,
     "imagem": "https://loremflickr.com/400/520/jacket,fashion,coat?lock=87",
@@ -2763,8 +2763,8 @@
       "primavera",
       "verao"
     ],
-    "preco": 760,
-    "precoAntigo": 890,
+    "preco": 7.6,
+    "precoAntigo": 8.9,
     "avaliacao": 3.5,
     "numAvaliacoes": 388,
     "imagem": "https://loremflickr.com/400/520/jacket,fashion,coat?lock=88",
@@ -2795,8 +2795,8 @@
       "inverno",
       "verao"
     ],
-    "preco": 700,
-    "precoAntigo": 850,
+    "preco": 7,
+    "precoAntigo": 8.5,
     "avaliacao": 4.5,
     "numAvaliacoes": 266,
     "imagem": "https://loremflickr.com/400/520/jacket,fashion,coat?lock=89",
@@ -2827,7 +2827,7 @@
       "primavera",
       "outono"
     ],
-    "preco": 790,
+    "preco": 7.9,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 358,
@@ -2860,8 +2860,8 @@
       "primavera",
       "outono"
     ],
-    "preco": 120,
-    "precoAntigo": 170,
+    "preco": 1.2,
+    "precoAntigo": 1.7,
     "avaliacao": 5,
     "numAvaliacoes": 171,
     "imagem": "https://loremflickr.com/400/520/skirt,fashion,woman?lock=91",
@@ -2889,7 +2889,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 300,
+    "preco": 3,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 420,
@@ -2921,8 +2921,8 @@
       "primavera",
       "inverno"
     ],
-    "preco": 340,
-    "precoAntigo": 420,
+    "preco": 3.4,
+    "precoAntigo": 4.2,
     "avaliacao": 4,
     "numAvaliacoes": 143,
     "imagem": "https://loremflickr.com/400/520/skirt,fashion,woman?lock=93",
@@ -2952,7 +2952,7 @@
       "verao",
       "inverno"
     ],
-    "preco": 190,
+    "preco": 1.9,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 286,
@@ -2984,7 +2984,7 @@
       "verao",
       "inverno"
     ],
-    "preco": 130,
+    "preco": 1.3,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 497,
@@ -3015,8 +3015,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 270,
-    "precoAntigo": 380,
+    "preco": 2.7,
+    "precoAntigo": 3.8,
     "avaliacao": 4.5,
     "numAvaliacoes": 212,
     "imagem": "https://loremflickr.com/400/520/skirt,fashion,woman?lock=96",
@@ -3047,8 +3047,8 @@
       "verao",
       "primavera"
     ],
-    "preco": 200,
-    "precoAntigo": 250,
+    "preco": 2,
+    "precoAntigo": 2.5,
     "avaliacao": 4.5,
     "numAvaliacoes": 213,
     "imagem": "https://loremflickr.com/400/520/skirt,fashion,woman?lock=97",
@@ -3077,7 +3077,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 260,
+    "preco": 2.6,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 216,
@@ -3108,8 +3108,8 @@
       "verao",
       "inverno"
     ],
-    "preco": 170,
-    "precoAntigo": 220,
+    "preco": 1.7,
+    "precoAntigo": 2.2,
     "avaliacao": 5,
     "numAvaliacoes": 263,
     "imagem": "https://loremflickr.com/400/520/skirt,fashion,woman?lock=99",
@@ -3139,8 +3139,8 @@
       "inverno",
       "outono"
     ],
-    "preco": 200,
-    "precoAntigo": 260,
+    "preco": 2,
+    "precoAntigo": 2.6,
     "avaliacao": 4.5,
     "numAvaliacoes": 469,
     "imagem": "https://loremflickr.com/400/520/skirt,fashion,woman?lock=100",
@@ -3173,8 +3173,8 @@
       "primavera",
       "outono"
     ],
-    "preco": 200,
-    "precoAntigo": 290,
+    "preco": 2,
+    "precoAntigo": 2.9,
     "avaliacao": 4,
     "numAvaliacoes": 463,
     "imagem": "https://loremflickr.com/400/520/skirt,fashion,woman?lock=101",
@@ -3202,8 +3202,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 240,
-    "precoAntigo": 310,
+    "preco": 2.4,
+    "precoAntigo": 3.1,
     "avaliacao": 4,
     "numAvaliacoes": 268,
     "imagem": "https://loremflickr.com/400/520/skirt,fashion,woman?lock=102",
@@ -3233,7 +3233,7 @@
       "verao",
       "inverno"
     ],
-    "preco": 160,
+    "preco": 1.6,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 353,
@@ -3265,8 +3265,8 @@
       "inverno",
       "verao"
     ],
-    "preco": 310,
-    "precoAntigo": 380,
+    "preco": 3.1,
+    "precoAntigo": 3.8,
     "avaliacao": 4,
     "numAvaliacoes": 429,
     "imagem": "https://loremflickr.com/400/520/skirt,fashion,woman?lock=104",
@@ -3296,8 +3296,8 @@
       "primavera",
       "outono"
     ],
-    "preco": 200,
-    "precoAntigo": 230,
+    "preco": 2,
+    "precoAntigo": 2.3,
     "avaliacao": 4,
     "numAvaliacoes": 369,
     "imagem": "https://loremflickr.com/400/520/skirt,fashion,woman?lock=105",
@@ -3325,8 +3325,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 320,
-    "precoAntigo": 380,
+    "preco": 3.2,
+    "precoAntigo": 3.8,
     "avaliacao": 5,
     "numAvaliacoes": 141,
     "imagem": "https://loremflickr.com/400/520/skirt,fashion,woman?lock=106",
@@ -3356,8 +3356,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 180,
-    "precoAntigo": 220,
+    "preco": 1.8,
+    "precoAntigo": 2.2,
     "avaliacao": 4.5,
     "numAvaliacoes": 448,
     "imagem": "https://loremflickr.com/400/520/skirt,fashion,woman?lock=107",
@@ -3387,8 +3387,8 @@
       "inverno",
       "verao"
     ],
-    "preco": 280,
-    "precoAntigo": 370,
+    "preco": 2.8,
+    "precoAntigo": 3.7,
     "avaliacao": 4.5,
     "numAvaliacoes": 292,
     "imagem": "https://loremflickr.com/400/520/skirt,fashion,woman?lock=108",
@@ -3420,8 +3420,8 @@
       "verao",
       "primavera"
     ],
-    "preco": 310,
-    "precoAntigo": 420,
+    "preco": 3.1,
+    "precoAntigo": 4.2,
     "avaliacao": 4,
     "numAvaliacoes": 343,
     "imagem": "https://loremflickr.com/400/520/skirt,fashion,woman?lock=109",
@@ -3451,7 +3451,7 @@
       "verao",
       "outono"
     ],
-    "preco": 240,
+    "preco": 2.4,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 436,
@@ -3484,7 +3484,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 220,
+    "preco": 2.2,
     "precoAntigo": null,
     "avaliacao": 3.5,
     "numAvaliacoes": 82,
@@ -3516,7 +3516,7 @@
       "primavera",
       "verao"
     ],
-    "preco": 200,
+    "preco": 2,
     "precoAntigo": null,
     "avaliacao": 3.5,
     "numAvaliacoes": 378,
@@ -3548,7 +3548,7 @@
       "verao",
       "inverno"
     ],
-    "preco": 120,
+    "preco": 1.2,
     "precoAntigo": null,
     "avaliacao": 3.5,
     "numAvaliacoes": 263,
@@ -3578,7 +3578,7 @@
     "estacao": [
       "inverno"
     ],
-    "preco": 200,
+    "preco": 2,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 164,
@@ -3607,8 +3607,8 @@
       "primavera",
       "verao"
     ],
-    "preco": 150,
-    "precoAntigo": 190,
+    "preco": 1.5,
+    "precoAntigo": 1.9,
     "avaliacao": 4.5,
     "numAvaliacoes": 89,
     "imagem": "https://loremflickr.com/400/520/fashion,summer,casual?lock=115",
@@ -3641,8 +3641,8 @@
       "outono",
       "verao"
     ],
-    "preco": 200,
-    "precoAntigo": 240,
+    "preco": 2,
+    "precoAntigo": 2.4,
     "avaliacao": 4,
     "numAvaliacoes": 498,
     "imagem": "https://loremflickr.com/400/520/fashion,summer,casual?lock=116",
@@ -3671,8 +3671,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 130,
-    "precoAntigo": 170,
+    "preco": 1.3,
+    "precoAntigo": 1.7,
     "avaliacao": 4,
     "numAvaliacoes": 277,
     "imagem": "https://loremflickr.com/400/520/fashion,summer,casual?lock=117",
@@ -3703,8 +3703,8 @@
     "estacao": [
       "inverno"
     ],
-    "preco": 190,
-    "precoAntigo": 260,
+    "preco": 1.9,
+    "precoAntigo": 2.6,
     "avaliacao": 4.5,
     "numAvaliacoes": 298,
     "imagem": "https://loremflickr.com/400/520/fashion,summer,casual?lock=118",
@@ -3734,7 +3734,7 @@
       "primavera",
       "verao"
     ],
-    "preco": 170,
+    "preco": 1.7,
     "precoAntigo": null,
     "avaliacao": 3.5,
     "numAvaliacoes": 313,
@@ -3765,7 +3765,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 230,
+    "preco": 2.3,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 389,
@@ -3794,8 +3794,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 150,
-    "precoAntigo": 190,
+    "preco": 1.5,
+    "precoAntigo": 1.9,
     "avaliacao": 3.5,
     "numAvaliacoes": 294,
     "imagem": "https://loremflickr.com/400/520/fashion,summer,casual?lock=121",
@@ -3825,7 +3825,7 @@
       "primavera",
       "verao"
     ],
-    "preco": 190,
+    "preco": 1.9,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 460,
@@ -3856,7 +3856,7 @@
     "estacao": [
       "inverno"
     ],
-    "preco": 120,
+    "preco": 1.2,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 224,
@@ -3886,7 +3886,7 @@
       "primavera",
       "inverno"
     ],
-    "preco": 160,
+    "preco": 1.6,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 272,
@@ -3919,7 +3919,7 @@
       "inverno",
       "verao"
     ],
-    "preco": 140,
+    "preco": 1.4,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 17,
@@ -3948,8 +3948,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 500,
-    "precoAntigo": 710,
+    "preco": 5,
+    "precoAntigo": 7.1,
     "avaliacao": 4,
     "numAvaliacoes": 392,
     "imagem": "https://loremflickr.com/400/520/jumpsuit,fashion,woman?lock=126",
@@ -3980,8 +3980,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 360,
-    "precoAntigo": 420,
+    "preco": 3.6,
+    "precoAntigo": 4.2,
     "avaliacao": 5,
     "numAvaliacoes": 23,
     "imagem": "https://loremflickr.com/400/520/jumpsuit,fashion,woman?lock=127",
@@ -4011,7 +4011,7 @@
       "inverno",
       "outono"
     ],
-    "preco": 490,
+    "preco": 4.9,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 281,
@@ -4041,7 +4041,7 @@
       "inverno",
       "outono"
     ],
-    "preco": 320,
+    "preco": 3.2,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 295,
@@ -4070,8 +4070,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 340,
-    "precoAntigo": 480,
+    "preco": 3.4,
+    "precoAntigo": 4.8,
     "avaliacao": 4,
     "numAvaliacoes": 309,
     "imagem": "https://loremflickr.com/400/520/jumpsuit,fashion,woman?lock=130",
@@ -4102,8 +4102,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 550,
-    "precoAntigo": 720,
+    "preco": 5.5,
+    "precoAntigo": 7.2,
     "avaliacao": 5,
     "numAvaliacoes": 254,
     "imagem": "https://loremflickr.com/400/520/jumpsuit,fashion,woman?lock=131",
@@ -4133,7 +4133,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 350,
+    "preco": 3.5,
     "precoAntigo": null,
     "avaliacao": 3.5,
     "numAvaliacoes": 361,
@@ -4164,8 +4164,8 @@
       "inverno",
       "verao"
     ],
-    "preco": 250,
-    "precoAntigo": 290,
+    "preco": 2.5,
+    "precoAntigo": 2.9,
     "avaliacao": 4,
     "numAvaliacoes": 196,
     "imagem": "https://loremflickr.com/400/520/jumpsuit,fashion,woman?lock=133",
@@ -4198,8 +4198,8 @@
       "inverno",
       "primavera"
     ],
-    "preco": 390,
-    "precoAntigo": 510,
+    "preco": 3.9,
+    "precoAntigo": 5.1,
     "avaliacao": 3.5,
     "numAvaliacoes": 423,
     "imagem": "https://loremflickr.com/400/520/jumpsuit,fashion,woman?lock=134",
@@ -4230,8 +4230,8 @@
       "outono",
       "verao"
     ],
-    "preco": 310,
-    "precoAntigo": 350,
+    "preco": 3.1,
+    "precoAntigo": 3.5,
     "avaliacao": 4.5,
     "numAvaliacoes": 357,
     "imagem": "https://loremflickr.com/400/520/jumpsuit,fashion,woman?lock=135",
@@ -4260,8 +4260,8 @@
       "verao",
       "inverno"
     ],
-    "preco": 370,
-    "precoAntigo": 470,
+    "preco": 3.7,
+    "precoAntigo": 4.7,
     "avaliacao": 4.5,
     "numAvaliacoes": 94,
     "imagem": "https://loremflickr.com/400/520/jumpsuit,fashion,woman?lock=136",
@@ -4292,7 +4292,7 @@
       "inverno",
       "primavera"
     ],
-    "preco": 240,
+    "preco": 2.4,
     "precoAntigo": null,
     "avaliacao": 3.5,
     "numAvaliacoes": 301,
@@ -4323,8 +4323,8 @@
       "inverno",
       "verao"
     ],
-    "preco": 440,
-    "precoAntigo": 570,
+    "preco": 4.4,
+    "precoAntigo": 5.7,
     "avaliacao": 5,
     "numAvaliacoes": 47,
     "imagem": "https://loremflickr.com/400/520/jumpsuit,fashion,woman?lock=138",
@@ -4354,8 +4354,8 @@
       "inverno",
       "primavera"
     ],
-    "preco": 440,
-    "precoAntigo": 560,
+    "preco": 4.4,
+    "precoAntigo": 5.6,
     "avaliacao": 4,
     "numAvaliacoes": 370,
     "imagem": "https://loremflickr.com/400/520/jumpsuit,fashion,woman?lock=139",
@@ -4386,8 +4386,8 @@
       "inverno",
       "outono"
     ],
-    "preco": 360,
-    "precoAntigo": 420,
+    "preco": 3.6,
+    "precoAntigo": 4.2,
     "avaliacao": 4.5,
     "numAvaliacoes": 67,
     "imagem": "https://loremflickr.com/400/520/jumpsuit,fashion,woman?lock=140",
@@ -4418,7 +4418,7 @@
       "verao",
       "inverno"
     ],
-    "preco": 840,
+    "preco": 8.4,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 87,
@@ -4449,7 +4449,7 @@
       "verao",
       "inverno"
     ],
-    "preco": 520,
+    "preco": 5.2,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 121,
@@ -4482,7 +4482,7 @@
       "verao",
       "outono"
     ],
-    "preco": 890,
+    "preco": 8.9,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 492,
@@ -4512,7 +4512,7 @@
     "estacao": [
       "inverno"
     ],
-    "preco": 450,
+    "preco": 4.5,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 166,
@@ -4544,8 +4544,8 @@
       "verao",
       "outono"
     ],
-    "preco": 830,
-    "precoAntigo": 1070,
+    "preco": 8.3,
+    "precoAntigo": 10.7,
     "avaliacao": 4.5,
     "numAvaliacoes": 438,
     "imagem": "https://loremflickr.com/400/520/blazer,suit,fashion?lock=145",
@@ -4578,8 +4578,8 @@
       "verao",
       "inverno"
     ],
-    "preco": 340,
-    "precoAntigo": 390,
+    "preco": 3.4,
+    "precoAntigo": 3.9,
     "avaliacao": 4,
     "numAvaliacoes": 33,
     "imagem": "https://loremflickr.com/400/520/blazer,suit,fashion?lock=146",
@@ -4608,8 +4608,8 @@
       "primavera",
       "inverno"
     ],
-    "preco": 830,
-    "precoAntigo": 1130,
+    "preco": 8.3,
+    "precoAntigo": 11.3,
     "avaliacao": 4,
     "numAvaliacoes": 322,
     "imagem": "https://loremflickr.com/400/520/blazer,suit,fashion?lock=147",
@@ -4641,7 +4641,7 @@
       "inverno",
       "verao"
     ],
-    "preco": 410,
+    "preco": 4.1,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 149,
@@ -4673,8 +4673,8 @@
       "inverno",
       "verao"
     ],
-    "preco": 650,
-    "precoAntigo": 900,
+    "preco": 6.5,
+    "precoAntigo": 9,
     "avaliacao": 4,
     "numAvaliacoes": 440,
     "imagem": "https://loremflickr.com/400/520/blazer,suit,fashion?lock=149",
@@ -4705,7 +4705,7 @@
       "inverno",
       "verao"
     ],
-    "preco": 590,
+    "preco": 5.9,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 157,
@@ -4737,8 +4737,8 @@
       "inverno",
       "outono"
     ],
-    "preco": 690,
-    "precoAntigo": 810,
+    "preco": 6.9,
+    "precoAntigo": 8.1,
     "avaliacao": 4.5,
     "numAvaliacoes": 497,
     "imagem": "https://loremflickr.com/400/520/blazer,suit,fashion?lock=151",
@@ -4770,7 +4770,7 @@
       "verao",
       "inverno"
     ],
-    "preco": 430,
+    "preco": 4.3,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 88,
@@ -4804,8 +4804,8 @@
       "verao",
       "primavera"
     ],
-    "preco": 690,
-    "precoAntigo": 900,
+    "preco": 6.9,
+    "precoAntigo": 9,
     "avaliacao": 5,
     "numAvaliacoes": 256,
     "imagem": "https://loremflickr.com/400/520/blazer,suit,fashion?lock=153",
@@ -4833,8 +4833,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 670,
-    "precoAntigo": 760,
+    "preco": 6.7,
+    "precoAntigo": 7.6,
     "avaliacao": 4.5,
     "numAvaliacoes": 410,
     "imagem": "https://loremflickr.com/400/520/blazer,suit,fashion?lock=154",
@@ -4863,7 +4863,7 @@
       "primavera",
       "inverno"
     ],
-    "preco": 610,
+    "preco": 6.1,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 410,
@@ -4897,8 +4897,8 @@
       "verao",
       "inverno"
     ],
-    "preco": 570,
-    "precoAntigo": 650,
+    "preco": 5.7,
+    "precoAntigo": 6.5,
     "avaliacao": 4,
     "numAvaliacoes": 437,
     "imagem": "https://loremflickr.com/400/520/blazer,suit,fashion?lock=156",
@@ -4928,7 +4928,7 @@
     "estacao": [
       "inverno"
     ],
-    "preco": 600,
+    "preco": 6,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 232,
@@ -4962,8 +4962,8 @@
       "inverno",
       "outono"
     ],
-    "preco": 380,
-    "precoAntigo": 510,
+    "preco": 3.8,
+    "precoAntigo": 5.1,
     "avaliacao": 3.5,
     "numAvaliacoes": 70,
     "imagem": "https://loremflickr.com/400/520/blazer,suit,fashion?lock=158",
@@ -4993,7 +4993,7 @@
       "primavera",
       "verao"
     ],
-    "preco": 550,
+    "preco": 5.5,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 22,
@@ -5025,8 +5025,8 @@
       "primavera",
       "verao"
     ],
-    "preco": 500,
-    "precoAntigo": 620,
+    "preco": 5,
+    "precoAntigo": 6.2,
     "avaliacao": 5,
     "numAvaliacoes": 374,
     "imagem": "https://loremflickr.com/400/520/blazer,suit,fashion?lock=160",
@@ -5057,8 +5057,8 @@
       "primavera",
       "verao"
     ],
-    "preco": 370,
-    "precoAntigo": 460,
+    "preco": 3.7,
+    "precoAntigo": 4.6,
     "avaliacao": 4,
     "numAvaliacoes": 10,
     "imagem": "https://loremflickr.com/400/520/sweater,knit,fashion?lock=161",
@@ -5086,8 +5086,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 150,
-    "precoAntigo": 180,
+    "preco": 1.5,
+    "precoAntigo": 1.8,
     "avaliacao": 4,
     "numAvaliacoes": 451,
     "imagem": "https://loremflickr.com/400/520/sweater,knit,fashion?lock=162",
@@ -5115,8 +5115,8 @@
       "inverno",
       "primavera"
     ],
-    "preco": 310,
-    "precoAntigo": 420,
+    "preco": 3.1,
+    "precoAntigo": 4.2,
     "avaliacao": 4.5,
     "numAvaliacoes": 104,
     "imagem": "https://loremflickr.com/400/520/sweater,knit,fashion?lock=163",
@@ -5144,7 +5144,7 @@
     "estacao": [
       "inverno"
     ],
-    "preco": 240,
+    "preco": 2.4,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 87,
@@ -5176,7 +5176,7 @@
       "inverno",
       "primavera"
     ],
-    "preco": 250,
+    "preco": 2.5,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 314,
@@ -5205,7 +5205,7 @@
     "estacao": [
       "inverno"
     ],
-    "preco": 290,
+    "preco": 2.9,
     "precoAntigo": null,
     "avaliacao": 3.5,
     "numAvaliacoes": 220,
@@ -5235,8 +5235,8 @@
       "primavera",
       "verao"
     ],
-    "preco": 310,
-    "precoAntigo": 390,
+    "preco": 3.1,
+    "precoAntigo": 3.9,
     "avaliacao": 4,
     "numAvaliacoes": 235,
     "imagem": "https://loremflickr.com/400/520/sweater,knit,fashion?lock=167",
@@ -5266,8 +5266,8 @@
       "primavera",
       "inverno"
     ],
-    "preco": 220,
-    "precoAntigo": 310,
+    "preco": 2.2,
+    "precoAntigo": 3.1,
     "avaliacao": 4.5,
     "numAvaliacoes": 160,
     "imagem": "https://loremflickr.com/400/520/sweater,knit,fashion?lock=168",
@@ -5298,8 +5298,8 @@
       "inverno",
       "outono"
     ],
-    "preco": 210,
-    "precoAntigo": 270,
+    "preco": 2.1,
+    "precoAntigo": 2.7,
     "avaliacao": 4.5,
     "numAvaliacoes": 435,
     "imagem": "https://loremflickr.com/400/520/sweater,knit,fashion?lock=169",
@@ -5329,8 +5329,8 @@
       "verao",
       "inverno"
     ],
-    "preco": 350,
-    "precoAntigo": 450,
+    "preco": 3.5,
+    "precoAntigo": 4.5,
     "avaliacao": 4,
     "numAvaliacoes": 208,
     "imagem": "https://loremflickr.com/400/520/sweater,knit,fashion?lock=170",
@@ -5360,7 +5360,7 @@
       "inverno",
       "outono"
     ],
-    "preco": 190,
+    "preco": 1.9,
     "precoAntigo": null,
     "avaliacao": 3.5,
     "numAvaliacoes": 382,
@@ -5388,8 +5388,8 @@
     "estacao": [
       "inverno"
     ],
-    "preco": 410,
-    "precoAntigo": 520,
+    "preco": 4.1,
+    "precoAntigo": 5.2,
     "avaliacao": 4,
     "numAvaliacoes": 273,
     "imagem": "https://loremflickr.com/400/520/sweater,knit,fashion?lock=172",
@@ -5419,8 +5419,8 @@
       "inverno",
       "primavera"
     ],
-    "preco": 250,
-    "precoAntigo": 330,
+    "preco": 2.5,
+    "precoAntigo": 3.3,
     "avaliacao": 4.5,
     "numAvaliacoes": 92,
     "imagem": "https://loremflickr.com/400/520/sweater,knit,fashion?lock=173",
@@ -5451,7 +5451,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 270,
+    "preco": 2.7,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 385,
@@ -5482,7 +5482,7 @@
       "inverno",
       "outono"
     ],
-    "preco": 160,
+    "preco": 1.6,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 305,
@@ -5516,8 +5516,8 @@
       "verao",
       "primavera"
     ],
-    "preco": 320,
-    "precoAntigo": 420,
+    "preco": 3.2,
+    "precoAntigo": 4.2,
     "avaliacao": 4.5,
     "numAvaliacoes": 479,
     "imagem": "https://loremflickr.com/400/520/sweater,knit,fashion?lock=176",
@@ -5550,8 +5550,8 @@
       "inverno",
       "primavera"
     ],
-    "preco": 260,
-    "precoAntigo": 300,
+    "preco": 2.6,
+    "precoAntigo": 3,
     "avaliacao": 4,
     "numAvaliacoes": 464,
     "imagem": "https://loremflickr.com/400/520/sweater,knit,fashion?lock=177",
@@ -5581,7 +5581,7 @@
       "verao",
       "inverno"
     ],
-    "preco": 350,
+    "preco": 3.5,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 259,
@@ -5611,7 +5611,7 @@
       "inverno",
       "primavera"
     ],
-    "preco": 400,
+    "preco": 4,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 86,
@@ -5642,8 +5642,8 @@
       "inverno",
       "outono"
     ],
-    "preco": 410,
-    "precoAntigo": 550,
+    "preco": 4.1,
+    "precoAntigo": 5.5,
     "avaliacao": 4.5,
     "numAvaliacoes": 325,
     "imagem": "https://loremflickr.com/400/520/sweater,knit,fashion?lock=180",
@@ -5671,7 +5671,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 340,
+    "preco": 3.4,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 134,
@@ -5702,8 +5702,8 @@
       "primavera",
       "verao"
     ],
-    "preco": 730,
-    "precoAntigo": 830,
+    "preco": 7.3,
+    "precoAntigo": 8.3,
     "avaliacao": 4,
     "numAvaliacoes": 468,
     "imagem": "https://loremflickr.com/400/520/outfit,fashion,woman?lock=182",
@@ -5733,7 +5733,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 370,
+    "preco": 3.7,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 68,
@@ -5765,8 +5765,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 510,
-    "precoAntigo": 700,
+    "preco": 5.1,
+    "precoAntigo": 7,
     "avaliacao": 3.5,
     "numAvaliacoes": 354,
     "imagem": "https://loremflickr.com/400/520/outfit,fashion,woman?lock=184",
@@ -5795,7 +5795,7 @@
       "primavera",
       "verao"
     ],
-    "preco": 690,
+    "preco": 6.9,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 100,
@@ -5827,7 +5827,7 @@
       "inverno",
       "verao"
     ],
-    "preco": 470,
+    "preco": 4.7,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 224,
@@ -5859,7 +5859,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 450,
+    "preco": 4.5,
     "precoAntigo": null,
     "avaliacao": 4.5,
     "numAvaliacoes": 384,
@@ -5887,8 +5887,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 350,
-    "precoAntigo": 400,
+    "preco": 3.5,
+    "precoAntigo": 4,
     "avaliacao": 3.5,
     "numAvaliacoes": 63,
     "imagem": "https://loremflickr.com/400/520/outfit,fashion,woman?lock=188",
@@ -5917,8 +5917,8 @@
       "inverno",
       "verao"
     ],
-    "preco": 330,
-    "precoAntigo": 380,
+    "preco": 3.3,
+    "precoAntigo": 3.8,
     "avaliacao": 4,
     "numAvaliacoes": 195,
     "imagem": "https://loremflickr.com/400/520/outfit,fashion,woman?lock=189",
@@ -5950,7 +5950,7 @@
     "estacao": [
       "inverno"
     ],
-    "preco": 400,
+    "preco": 4,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 313,
@@ -5981,8 +5981,8 @@
       "verao",
       "primavera"
     ],
-    "preco": 380,
-    "precoAntigo": 520,
+    "preco": 3.8,
+    "precoAntigo": 5.2,
     "avaliacao": 4.5,
     "numAvaliacoes": 409,
     "imagem": "https://loremflickr.com/400/520/outfit,fashion,woman?lock=191",
@@ -6012,7 +6012,7 @@
       "verao",
       "outono"
     ],
-    "preco": 460,
+    "preco": 4.6,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 373,
@@ -6041,8 +6041,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 470,
-    "precoAntigo": 620,
+    "preco": 4.7,
+    "precoAntigo": 6.2,
     "avaliacao": 4,
     "numAvaliacoes": 116,
     "imagem": "https://loremflickr.com/400/520/outfit,fashion,woman?lock=193",
@@ -6070,8 +6070,8 @@
     "estacao": [
       "verao"
     ],
-    "preco": 680,
-    "precoAntigo": 890,
+    "preco": 6.8,
+    "precoAntigo": 8.9,
     "avaliacao": 4.5,
     "numAvaliacoes": 389,
     "imagem": "https://loremflickr.com/400/520/outfit,fashion,woman?lock=194",
@@ -6105,8 +6105,8 @@
       "inverno",
       "verao"
     ],
-    "preco": 600,
-    "precoAntigo": 730,
+    "preco": 6,
+    "precoAntigo": 7.3,
     "avaliacao": 3.5,
     "numAvaliacoes": 297,
     "imagem": "https://loremflickr.com/400/520/outfit,fashion,woman?lock=195",
@@ -6137,8 +6137,8 @@
       "inverno",
       "primavera"
     ],
-    "preco": 540,
-    "precoAntigo": 720,
+    "preco": 5.4,
+    "precoAntigo": 7.2,
     "avaliacao": 3.5,
     "numAvaliacoes": 109,
     "imagem": "https://loremflickr.com/400/520/outfit,fashion,woman?lock=196",
@@ -6168,8 +6168,8 @@
       "primavera",
       "verao"
     ],
-    "preco": 740,
-    "precoAntigo": 1030,
+    "preco": 7.4,
+    "precoAntigo": 10.3,
     "avaliacao": 3.5,
     "numAvaliacoes": 264,
     "imagem": "https://loremflickr.com/400/520/outfit,fashion,woman?lock=197",
@@ -6199,7 +6199,7 @@
       "inverno",
       "verao"
     ],
-    "preco": 570,
+    "preco": 5.7,
     "precoAntigo": null,
     "avaliacao": 5,
     "numAvaliacoes": 99,
@@ -6228,7 +6228,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 620,
+    "preco": 6.2,
     "precoAntigo": null,
     "avaliacao": 3.5,
     "numAvaliacoes": 295,
@@ -6259,7 +6259,7 @@
     "estacao": [
       "verao"
     ],
-    "preco": 420,
+    "preco": 4.2,
     "precoAntigo": null,
     "avaliacao": 4,
     "numAvaliacoes": 257,
