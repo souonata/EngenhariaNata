@@ -96,14 +96,15 @@
 
             <!-- Passo 2: DoD e Vida Útil -->
             <div class="memorial-item">
-                <h3 data-i18n="memorial-passo2-title">2️⃣ Passo 2: Determinar DoD (Profundidade de Descarga) pela Vida Útil</h3>
+                <h3 data-i18n="memorial-passo2-title">2️⃣ Passo 2: Determinar DoD (Profundidade de Descarga) pela Vida Útil e Autonomia</h3>
                 <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                 <div class="formula-box">
-                    <p><strong id="memorial-formula-passo2-1">Ciclos Totais = Vida Útil (anos) × 365 dias/ano</strong></p>
-                    <p><strong id="memorial-formula-passo2-2">DoD Alvo = f(Ciclos Totais, Tipo de Bateria)</strong></p>
+                    <p><strong id="memorial-formula-passo2-1">Ciclos por Ano = 365 ÷ Dias de Autonomia</strong></p>
+                    <p><strong id="memorial-formula-passo2-2">Ciclos Totais = Vida Útil (anos) × Ciclos por Ano</strong></p>
+                    <p><strong id="memorial-formula-passo2-3">DoD Alvo = f(Ciclos Totais, Tipo de Bateria)</strong></p>
                 </div>
-                <p data-i18n="memorial-passo2-explicacao">O DoD (Depth of Discharge) determina quanto da capacidade da bateria pode ser usada diariamente. Quanto maior a vida útil desejada, menor deve ser o DoD para preservar a bateria.</p>
-                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-dod">Vida útil de 20 anos → 20 × 365 = 7300 ciclos → DoD ≈ 50-60% (LiFePO4)</span></p>
+                <p data-i18n="memorial-passo2-explicacao">O DoD determina quanto da capacidade da bateria pode ser usada por ciclo. Com mais dias de autonomia, a bateria faz menos ciclos por ano (365 ÷ dias de autonomia), o que permite um DoD maior mantendo a mesma vida útil.</p>
+                <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-dod">Vida útil de 20 anos, 1 dia autonomia → 20 × (365÷1) = 7300 ciclos → DoD ≈ 43% (LiFePO4)</span></p>
                 <div class="info-box">
                     <p><strong data-i18n="memorial-tip">💡 Dica:</strong> <span data-i18n="memorial-dod-tip">Baterias LiFePO4 permitem DoD maiores (50-80%) que baterias AGM (30-50%) para a mesma vida útil.</span></p>
                     <p style="margin-top: 10px;"><strong>📊 Valores de referência:</strong></p>

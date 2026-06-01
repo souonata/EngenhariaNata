@@ -795,7 +795,9 @@ function atualizarInterface() {
     }
 
     // 5. Calcular DoD Alvo
-    const ciclos = vidaUtil * 365;
+    // Com autonomia > 1 dia, a bateria faz 365/autonomia ciclos/ano
+    const ciclosPorAno = 365 / autonomia;
+    const ciclos = Math.round(vidaUtil * ciclosPorAno);
     let dodAlvo = obterDoDPorCiclos(ciclos, tipoBateria);
     
     // Validação: garante que dodAlvo seja válido
@@ -2563,6 +2565,7 @@ function atualizarFormulasMemorial(idioma) {
         'memorial-formula-passo1',
         'memorial-formula-passo2-1',
         'memorial-formula-passo2-2',
+        'memorial-formula-passo2-3',
         'memorial-formula-passo3-1',
         'memorial-formula-passo3-2',
         'memorial-formula-passo3-3',
@@ -2635,7 +2638,8 @@ function atualizarMemorialComValores() {
     
     // Calcular valores
     const energiaDiaria = consumoMensal / 30;
-    const ciclos = vidaUtil * 365;
+    const ciclosPorAno = 365 / autonomia;
+    const ciclos = Math.round(vidaUtil * ciclosPorAno);
     const dodAlvo = obterDoDPorCiclos(ciclos, tipoBateria);
     const dodDecimal = dodAlvo / 100;
     
@@ -2698,7 +2702,13 @@ function atualizarMemorialComValores() {
     
     const exemploDod = document.getElementById('memorial-exemplo-dod');
     if (exemploDod) {
-        exemploDod.textContent = `Vida útil de ${vidaUtil} anos → ${vidaUtil} × 365 = ${ciclos} ciclos → DoD ≈ ${Math.round(dodAlvo)}% (${tipoBateria === 'litio' ? 'LiFePO4' : 'AGM'})`;
+        const pt = idiomaAtual === 'pt-BR';
+        const ciclosPorAnoStr = autonomia === 1 ? '365' : `365÷${autonomia}=${formatarNumeroDecimal(ciclosPorAno, 1)}`;
+        if (pt) {
+            exemploDod.textContent = `Vida útil de ${vidaUtil} anos, ${autonomia} dia(s) autonomia → ${vidaUtil} × (${ciclosPorAnoStr}) = ${ciclos} ciclos → DoD ≈ ${Math.round(dodAlvo)}% (${tipoBateria === 'litio' ? 'LiFePO4' : 'AGM'})`;
+        } else {
+            exemploDod.textContent = `Vita utile di ${vidaUtil} anni, ${autonomia} giorno/i autonomia → ${vidaUtil} × (${ciclosPorAnoStr}) = ${ciclos} cicli → DoD ≈ ${Math.round(dodAlvo)}% (${tipoBateria === 'litio' ? 'LiFePO4' : 'AGM'})`;
+        }
     }
     
     const exemploCapacidade = document.getElementById('memorial-exemplo-capacidade');
