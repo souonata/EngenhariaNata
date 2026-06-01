@@ -188,16 +188,17 @@
     border-color:var(--prob);
     box-shadow:0 0 0 1px rgba(74,168,255,.25), 0 4px 14px rgba(74,168,255,.18);
   }
-  .cb-row1{display:flex;align-items:center;gap:3px;line-height:1}
   .cb-name{
-    font-size:.62rem;font-weight:700;
+    font-size:.52rem;font-weight:700;
     text-transform:uppercase;letter-spacing:.04em;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:72px;
+    line-height:1;
   }
-  .cb-emoji{font-size:.78rem;line-height:1}
+  .cb-row1{display:flex;align-items:center;justify-content:center;gap:3px;line-height:1;margin-top:2px}
+  .cb-emoji{font-size:.88rem;line-height:1}
   .cb-temp{
-    font-size:1.15rem;font-weight:300;color:var(--temp);
-    letter-spacing:-1px;line-height:1;margin-top:2px;
+    font-size:1.05rem;font-weight:300;color:var(--temp);
+    letter-spacing:-1px;line-height:1;
   }
   .cb-meta{
     font-size:.54rem;color:var(--muted);
@@ -780,9 +781,9 @@ function makeSlotBtn(si, withData){
   btn.className = 'city-btn' + (!withData ? ' loading' : '') + (ci === currentIdx ? ' active' : '');
   if(withData && cityData[ci]){
     const cur = cityData[ci].current, [emo,desc] = wmo(cur.weather_code);
-    btn.innerHTML = `<span class="cb-row1"><span class="cb-name">${cityName(city)}</span><span class="cb-emoji" title="${desc}">${emo}</span></span><span class="cb-temp" title="${T().tempLabel}">${Math.round(cur.temperature_2m)}°</span><span class="cb-meta" title="🌡 ${T().feelsLabel} · 💨 ${T().windLabel} (km/h)">🌡${Math.round(cur.apparent_temperature)}° · 💨${Math.round(cur.wind_speed_10m)} km/h</span><button type="button" class="slot-clear" title="${T().search}">🗑️</button>`;
+    btn.innerHTML = `<span class="cb-name">${cityName(city)}</span><span class="cb-row1"><span class="cb-emoji" title="${desc}">${emo}</span><span class="cb-temp" title="${T().tempLabel}">${Math.round(cur.temperature_2m)}°</span></span><span class="cb-meta" title="🌡 ${T().feelsLabel} · 💨 ${T().windLabel} (km/h)">🌡${Math.round(cur.apparent_temperature)}° · 💨${Math.round(cur.wind_speed_10m)} km/h</span><button type="button" class="slot-clear" title="${T().search}">🗑️</button>`;
   } else {
-    btn.innerHTML = `<span class="cb-row1"><span class="cb-name">${cityName(city)}</span><span class="cb-emoji">—</span></span><span class="cb-temp">—°</span><span class="cb-meta">— · —</span><button type="button" class="slot-clear" title="${T().search}">🗑️</button>`;
+    btn.innerHTML = `<span class="cb-name">${cityName(city)}</span><span class="cb-row1"><span class="cb-emoji">—</span><span class="cb-temp">—°</span></span><span class="cb-meta">— · —</span><button type="button" class="slot-clear" title="${T().search}">🗑️</button>`;
   }
   btn.addEventListener('click', (e) => { if(!e.target.closest('.slot-clear')) selectCity(ci); });
   btn.querySelector('.slot-clear').addEventListener('click', (e) => { e.stopPropagation(); clearSlot(si); });
