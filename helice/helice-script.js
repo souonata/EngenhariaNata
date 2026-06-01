@@ -34,55 +34,6 @@ const CONVERSAO_PASSO = {
     mm: 25.4          // 1 polegada = 25.4 mm
 };
 
-const MODELOS_IPS_VOLVO = {
-    T: {
-        label: 'IPS T',
-        velocidade: null,
-        slip: null
-    },
-    N: {
-        label: 'IPS N',
-        velocidade: null,
-        slip: null
-    },
-    P: {
-        label: 'IPS P',
-        velocidade: null,
-        slip: null
-    },
-    Q: {
-        label: 'IPS Q',
-        velocidade: null,
-        slip: null
-    },
-    H: {
-        label: 'Aquamatic H',
-        velocidade: null,
-        slip: null
-    }
-};
-
-const SLIP_PADROES = {
-    single: {
-        min: 10,
-        max: 15,
-        padrao: 12.5,
-        texto: 'Slip tipico para rabeta Aquamatic SX com helice de aluminio single prop: 10-15% em cruzeiro.'
-    },
-    duoprop: {
-        min: 8,
-        max: 12,
-        padrao: 10,
-        texto: 'Duoprop (helice H) costuma operar com slip menor: 8-12% em cruzeiro, se o conjunto estiver bem dimensionado.'
-    },
-    ips: {
-        min: 8,
-        max: 12,
-        padrao: 10,
-        texto: 'IPS com helices duplas voltadas para frente tende a slip menor: 8-12% em cruzeiro.'
-    }
-};
-
 // Variável global para o gráfico Chart.js
 let graficoHelice = null;
 
@@ -156,9 +107,6 @@ class HeliceApp extends App {
         // Inputs de texto
         this.configurarInputsTexto();
 
-        // Selecao de tipo de helice (Single Prop vs IPS)
-        this.configurarSelecaoPropulsao();
-
         // Sliders - atualizar resultado em tempo real
         ['sliderVelocidade', 'sliderReducao', 'sliderRPM', 'sliderSlip'].forEach(id => {
             const slider = document.getElementById(id);
@@ -209,125 +157,6 @@ class HeliceApp extends App {
                     this.atualizarResultado();
                 }
             });
-        }
-    }
-
-    configurarSelecaoPropulsao() {
-        const secaoModeloIPS = document.getElementById('secaoModeloIPS');
-        const infoIPSSection = document.getElementById('infoIPSSection');
-        const ipsSpecs = document.getElementById('ipsSpecs');
-        const ipsSpecsText = document.getElementById('ipsSpecsText');
-
-        const atualizarIPS = () => {
-            const tipoSelecionado = document.querySelector('input[name="tipoHelice"]:checked')?.value;
-            if (tipoSelecionado !== 'ips') {
-                if (secaoModeloIPS) secaoModeloIPS.style.display = 'none';
-                if (infoIPSSection) infoIPSSection.style.display = 'none';
-                if (ipsSpecs) ipsSpecs.style.display = 'none';
-                this.atualizarSlipSugestao('single');
-                return;
-            }
-
-            if (secaoModeloIPS) secaoModeloIPS.style.display = 'block';
-            if (infoIPSSection) infoIPSSection.style.display = 'block';
-
-            const modelo = document.querySelector('input[name="modeloIPS"]:checked')?.value;
-            const config = modelo ? MODELOS_IPS_VOLVO[modelo] : null;
-            if (!config) return;
-
-            if (ipsSpecs && ipsSpecsText) {
-                ipsSpecs.style.display = 'block';
-
-                const textoPadrao = this.traducoes?.helice?.ipsSpecsPlaceholder || 'Selecione um modelo para ver faixas sugeridas.';
-                let texto = textoPadrao;
-
-                if (config.velocidade && config.slip) {
-                    texto = `${config.label} - Vel: ${config.velocidade.min}-${config.velocidade.max} nos | Slip: ${config.slip.min}-${config.slip.max}%`;
-                }
-
-                ipsSpecsText.textContent = texto;
-            }
-
-            this.aplicarFaixasIps(config);
-            this.atualizarSlipSugestao(modelo === 'H' ? 'duoprop' : 'ips');
-        };
-
-        document.querySelectorAll('input[name="tipoHelice"]').forEach(radio => {
-            radio.addEventListener('change', () => {
-                atualizarIPS();
-                this.atualizarResultado();
-            });
-        });
-
-        document.querySelectorAll('input[name="modeloIPS"]').forEach(radio => {
-            radio.addEventListener('change', () => {
-                atualizarIPS();
-                this.atualizarResultado();
-            });
-        });
-
-        atualizarIPS();
-    }
-
-    atualizarSlipSugestao(tipo) {
-        const sliderSlip = document.getElementById('sliderSlip');
-        const inputSlip = document.getElementById('inputSlip');
-        const descricaoSlip = document.getElementById('descricaoSlip');
-        const textoSlip = descricaoSlip?.querySelector('[data-i18n="tooltips.slip"]') || descricaoSlip?.querySelector('span');
-
-        const config = SLIP_PADROES[tipo] || SLIP_PADROES.single;
-        const centroFaixa = Math.round(((config.min + config.max) / 2) * 2) / 2;
-
-        if (sliderSlip && inputSlip) {
-            sliderSlip.min = config.min;
-            sliderSlip.max = config.max;
-            sliderSlip.step = 0.5;
-
-            sliderSlip.value = centroFaixa;
-            inputSlip.value = centroFaixa;
-        }
-
-        if (textoSlip) {
-            textoSlip.textContent = config.texto;
-        }
-    }
-
-    obterFaixaSlipAtual() {
-        const tipoSelecionado = document.querySelector('input[name="tipoHelice"]:checked')?.value;
-        if (tipoSelecionado !== 'ips') {
-            return SLIP_PADROES.single;
-        }
-
-        const modelo = document.querySelector('input[name="modeloIPS"]:checked')?.value;
-        if (modelo === 'H') {
-            return SLIP_PADROES.duoprop;
-        }
-
-        return SLIP_PADROES.ips;
-    }
-
-    aplicarFaixasIps(config) {
-        if (!config?.velocidade || !config?.slip) return;
-
-        const sliderVelocidade = document.getElementById('sliderVelocidade');
-        const inputVelocidade = document.getElementById('inputVelocidade');
-        const sliderSlip = document.getElementById('sliderSlip');
-        const inputSlip = document.getElementById('inputSlip');
-
-        if (sliderVelocidade && inputVelocidade) {
-            sliderVelocidade.min = config.velocidade.min;
-            sliderVelocidade.max = config.velocidade.max;
-            const valorVel = Math.min(Math.max(parseFloat(inputVelocidade.value) || config.velocidade.min, config.velocidade.min), config.velocidade.max);
-            sliderVelocidade.value = valorVel;
-            inputVelocidade.value = valorVel;
-        }
-
-        if (sliderSlip && inputSlip) {
-            sliderSlip.min = config.slip.min;
-            sliderSlip.max = config.slip.max;
-            const valorSlip = Math.min(Math.max(parseFloat(inputSlip.value) || config.slip.min, config.slip.min), config.slip.max);
-            sliderSlip.value = valorSlip;
-            inputSlip.value = valorSlip;
         }
     }
 
