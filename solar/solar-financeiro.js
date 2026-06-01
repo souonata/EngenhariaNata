@@ -58,9 +58,9 @@ export function criarGraficoAmortizacao(dados, idiomaAtual) {
     
     if (sliderPeriodoAnalise) {
         sliderPeriodoAnalise.min = '5';
-        sliderPeriodoAnalise.max = '50';
+        sliderPeriodoAnalise.max = '60';
         anosAnalise = parseInt(sliderPeriodoAnalise.value) || 25;
-        anosAnalise = Math.max(5, Math.min(50, anosAnalise));
+        anosAnalise = Math.max(5, Math.min(60, anosAnalise));
     }
     
     const mesesAnalise = anosAnalise * 12;

@@ -839,7 +839,7 @@ const AUMENTO_ANUAL_ENERGIA = {
     'it-IT': 6.0    // % ao ano (Itália)
 };
 const PERIODO_ANALISE_MIN_ANOS = 5;
-const PERIODO_ANALISE_MAX_ANOS = 50;
+const PERIODO_ANALISE_MAX_ANOS = 60;
 const PRECO_PAINEL_PADRAO_EUR = {
     'it-IT': 220
 };
@@ -993,7 +993,7 @@ function atualizarGraficoAmortizacao(dados) {
     const aumentoAnualPercentual = sliderAumentoAnual ? (parseFloat(sliderAumentoAnual.value) || AUMENTO_ANUAL_ENERGIA[idiomaAtual] || AUMENTO_ANUAL_ENERGIA['pt-BR']) : (AUMENTO_ANUAL_ENERGIA[idiomaAtual] || AUMENTO_ANUAL_ENERGIA['pt-BR']);
     const fatorAumentoAnual = 1 + (aumentoAnualPercentual / 100);
     
-    // Obter período de análise do slider em faixa fixa de 5 a 50 anos
+    // Obter período de análise do slider em faixa fixa de 5 a 60 anos
     const sliderPeriodoAnalise = document.getElementById('sliderPeriodoAnalise');
     let anosAnalise = 25;
     
