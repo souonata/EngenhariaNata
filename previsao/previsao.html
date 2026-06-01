@@ -974,9 +974,13 @@ function showTip(cx, cy, el){
 }
 function closeTip(){ document.getElementById('hourTip').style.display = 'none'; tipOpen = false; }
 function wireTip(){
-  document.getElementById('days').addEventListener('click', e => {
-    // Se tooltip aberto: primeiro clique só fecha, não abre outro.
+  // Fase de captura: interceta qualquer clique antes de todos os outros handlers.
+  // Se tooltip aberto, fecha e consome o evento — nada mais abre.
+  document.addEventListener('click', e => {
     if (tipOpen) { closeTip(); e.stopPropagation(); return; }
+  }, true);
+
+  document.getElementById('days').addEventListener('click', e => {
     // Clique direto num valor: usa os dados do próprio elemento.
     const el = e.target.closest('.t-num,.t-ball');
     if (el) { showTip(e.clientX, e.clientY, el); e.stopPropagation(); return; }
@@ -1003,7 +1007,6 @@ function wireTip(){
     else closeTip();
   });
   document.addEventListener('click', e => {
-    if (tipOpen) { closeTip(); return; }
     if (!e.target.closest('#hourTip,.c-chart')) closeTip();
   });
 }
