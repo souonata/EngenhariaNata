@@ -987,18 +987,21 @@ function atualizarGraficoAmortizacao(dados) {
     }
     const mesesAnalise = anosAnalise * 12;
 
-    // Eventos de custo
+    // Eventos de custo:
+    // - Baterias: a cada vidaUtil anos (sem exceção — custo individualizado)
+    // - Sistema (painéis + inversor + cabos): a cada 25 anos, sem baterias
+    const custoSistema = custoTotal - custoBaterias;
     const eventos = [];
     if (vidaUtil > 0 && custoBaterias > 0) {
         let a = vidaUtil;
         while (a < anosAnalise) {
-            if (a % 25 !== 0) eventos.push({ mes: Math.round(a * 12), ano: a, tipo: 'bateria', valor: custoBaterias });
+            eventos.push({ mes: Math.round(a * 12), ano: a, tipo: 'bateria', valor: custoBaterias });
             a += vidaUtil;
         }
     }
     let aR = 25;
     while (aR <= anosAnalise) {
-        eventos.push({ mes: Math.round(aR * 12), ano: aR, tipo: 'sistema', valor: custoTotal });
+        eventos.push({ mes: Math.round(aR * 12), ano: aR, tipo: 'sistema', valor: custoSistema });
         aR += 25;
     }
     eventos.sort((a, b) => a.mes - b.mes);
@@ -1118,7 +1121,7 @@ function atualizarGraficoAmortizacao(dados) {
                                 for (const ev of eventosPorMes[m]) {
                                     const nome = ev.tipo === 'bateria'
                                         ? (pt ? '🔋 Subst. baterias' : '🔋 Sost. batterie')
-                                        : (pt ? '⚙️ Renovação do sistema' : '⚙️ Rinnovo sistema');
+                                        : (pt ? '⚙️ Renov. painéis+inversor+cabos' : '⚙️ Rinnovo pannelli+inverter+cavi');
                                     linhas.push(`${nome}: -${moeda} ${ev.valor.toLocaleString(idiomaAtual, {maximumFractionDigits: 0})}`);
                                 }
                             }
@@ -1218,7 +1221,7 @@ function atualizarGraficoAmortizacao(dados) {
             rC += `<tr><td colspan="2" style="padding:0 6px 4px;font-size:0.9em;color:var(--text-secondary);">→ Anos: ${evBat.map(e=>`${e.ano}a`).join(', ')}</td></tr>`;
         }
         if (evSis.length > 0) {
-            rC += tr(`Renovação completa (a cada 25a) × ${evSis.length}`, `${fmt(custoTotal)}/vez = ${fmt(custoTotalSis)}`);
+            rC += tr(`Renov. painéis+inversor+cabos (a cada 25a) × ${evSis.length}`, `${fmt(evSis[0].valor)}/vez = ${fmt(custoTotalSis)}`);
             rC += `<tr><td colspan="2" style="padding:0 6px 4px;font-size:0.9em;color:var(--text-secondary);">→ Anos: ${evSis.map(e=>`${e.ano}a`).join(', ')}</td></tr>`;
         }
         rC += tr(`Total de custos em ${anosAnalise} anos`, fmt(custoTotalPeriodo), true);
@@ -1240,7 +1243,7 @@ function atualizarGraficoAmortizacao(dados) {
             rC += `<tr><td colspan="2" style="padding:0 6px 4px;font-size:0.9em;color:var(--text-secondary);">→ Anni: ${evBat.map(e=>`${e.ano}a`).join(', ')}</td></tr>`;
         }
         if (evSis.length > 0) {
-            rC += tr(`Rinnovo completo (ogni 25a) × ${evSis.length}`, `${fmt(custoTotal)}/volta = ${fmt(custoTotalSis)}`);
+            rC += tr(`Rinnovo pannelli+inverter+cavi (ogni 25a) × ${evSis.length}`, `${fmt(evSis[0].valor)}/volta = ${fmt(custoTotalSis)}`);
             rC += `<tr><td colspan="2" style="padding:0 6px 4px;font-size:0.9em;color:var(--text-secondary);">→ Anni: ${evSis.map(e=>`${e.ano}a`).join(', ')}</td></tr>`;
         }
         rC += tr(`Costo totale in ${anosAnalise} anni`, fmt(custoTotalPeriodo), true);
