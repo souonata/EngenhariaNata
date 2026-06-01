@@ -19,11 +19,11 @@
     --mm:#7ee3c1;
     --today:#3fb950;
     /* cores das linhas de grade (tema-aware) */
-    --grid-min:rgba(255,255,255,.045);
-    --grid-h3 :rgba(255,255,255,.08);
-    --grid-h6 :rgba(255,255,255,.11);
-    --grid-h12:rgba(255,255,255,.15);
-    --grid-maj:rgba(255,255,255,.15);
+    --grid-min:rgba(255,255,255,.04);
+    --grid-h3 :rgba(255,255,255,.10);
+    --grid-h6 :rgba(255,255,255,.22);
+    --grid-h12:rgba(255,255,255,.40);
+    --grid-maj:rgba(255,255,255,.40);
     --grid-ref:rgba(255,255,255,.05);
     --grid-cross:rgba(255,255,255,.18);
     --rain:#8fe9cf;                /* hachura de chuva (tema-aware) */
@@ -37,11 +37,11 @@
     --border:#ccd6e4;
     --text:#16202f;
     --muted:#5d6b82;
-    --grid-min:rgba(0,0,0,.06);
-    --grid-h3 :rgba(0,0,0,.10);
-    --grid-h6 :rgba(0,0,0,.14);
-    --grid-h12:rgba(0,0,0,.19);
-    --grid-maj:rgba(0,0,0,.19);
+    --grid-min:rgba(0,0,0,.05);
+    --grid-h3 :rgba(0,0,0,.12);
+    --grid-h6 :rgba(0,0,0,.26);
+    --grid-h12:rgba(0,0,0,.45);
+    --grid-maj:rgba(0,0,0,.45);
     --grid-ref:rgba(0,0,0,.08);
     --grid-cross:rgba(0,0,0,.22);
     --rain:#2c8fb0;                /* tom de água, mais escuro p/ aparecer no claro */
@@ -65,7 +65,7 @@
   .g-maj{ stroke:var(--grid-maj); }
   .g-ref{ stroke:var(--grid-ref); }
   .g-cross{ stroke:var(--grid-cross); }
-  .g-now{ stroke:var(--text); stroke-opacity:.6; }   /* hora atual realçada (hoje) */
+  .g-now{ stroke:#ff5fa0; stroke-opacity:.85; }   /* hora atual: rosa */
   .rain-hatch{ stroke:var(--rain); }   /* cor da hachura de chuva pelo tema */
 
   /* ─── Barra superior: idioma + tema (oculta no topo ao abrir) ─── */
@@ -1207,7 +1207,7 @@ function buildRow(day, hours, isToday, scaleMax, lat, yLowG, yHighG){
       : h.hour % 6  === 0 ? 'g-h6'
       : h.hour % 3  === 0 ? 'g-h3'
       : 'g-min';
-    return `<line x1="${x}" y1="${padT}" x2="${x}" y2="${(padT+ch).toFixed(1)}" class="${cls}" stroke-width="${isNow ? '1.6' : '1'}" vector-effect="non-scaling-stroke"/>`;
+    return `<line x1="${x}" y1="${padT}" x2="${x}" y2="${(padT+ch).toFixed(1)}" class="${cls}" stroke-width="${isNow ? '1.2' : '1'}" vector-effect="non-scaling-stroke"/>`;
   }).join('');
 
   // ── Força do vento por hora: barrinha na base, altura e opacidade ∝ velocidade ──
