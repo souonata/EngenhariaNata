@@ -840,6 +840,7 @@ const AUMENTO_ANUAL_ENERGIA = {
 };
 const PERIODO_ANALISE_MIN_ANOS = 5;
 const PERIODO_ANALISE_MAX_ANOS = 60;
+const PERIODO_ANALISE_MAX_MANUAL = 200;
 const PRECO_PAINEL_PADRAO_EUR = {
     'it-IT': 220
 };
@@ -993,24 +994,25 @@ function atualizarGraficoAmortizacao(dados) {
     const aumentoAnualPercentual = sliderAumentoAnual ? (parseFloat(sliderAumentoAnual.value) || AUMENTO_ANUAL_ENERGIA[idiomaAtual] || AUMENTO_ANUAL_ENERGIA['pt-BR']) : (AUMENTO_ANUAL_ENERGIA[idiomaAtual] || AUMENTO_ANUAL_ENERGIA['pt-BR']);
     const fatorAumentoAnual = 1 + (aumentoAnualPercentual / 100);
     
-    // Obter período de análise do slider em faixa fixa de 5 a 60 anos
+    // Obter período de análise — input permite até PERIODO_ANALISE_MAX_MANUAL, slider até PERIODO_ANALISE_MAX_ANOS
     const sliderPeriodoAnalise = document.getElementById('sliderPeriodoAnalise');
+    const inputPeriodoAnaliseRead = document.getElementById('inputPeriodoAnalise');
     let anosAnalise = 25;
-    
+
     if (sliderPeriodoAnalise) {
         sliderPeriodoAnalise.min = PERIODO_ANALISE_MIN_ANOS.toString();
         sliderPeriodoAnalise.max = PERIODO_ANALISE_MAX_ANOS.toString();
-        
-        anosAnalise = parseInt(sliderPeriodoAnalise.value) || 25;
-        
-        anosAnalise = Math.max(PERIODO_ANALISE_MIN_ANOS, Math.min(PERIODO_ANALISE_MAX_ANOS, anosAnalise));
-        
-        // Atualizar slider e input se necessário
-        sliderPeriodoAnalise.value = anosAnalise.toString();
-        const inputPeriodoAnalise = document.getElementById('inputPeriodoAnalise');
-        if (inputPeriodoAnalise) {
-            inputPeriodoAnalise.value = anosAnalise.toString();
-            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPeriodoAnalise);
+
+        const valorInput = inputPeriodoAnaliseRead ? parseInt(inputPeriodoAnaliseRead.value) : NaN;
+        const valorSlider = parseInt(sliderPeriodoAnalise.value) || 25;
+        const valorBruto = (!isNaN(valorInput) && valorInput > 0) ? valorInput : valorSlider;
+        anosAnalise = Math.max(PERIODO_ANALISE_MIN_ANOS, Math.min(PERIODO_ANALISE_MAX_MANUAL, valorBruto));
+
+        // Slider clampado ao seu máximo; input mostra o valor real
+        sliderPeriodoAnalise.value = Math.min(PERIODO_ANALISE_MAX_ANOS, anosAnalise).toString();
+        if (inputPeriodoAnaliseRead) {
+            inputPeriodoAnaliseRead.value = anosAnalise.toString();
+            if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPeriodoAnaliseRead);
         }
     }
     
@@ -2448,10 +2450,10 @@ class SolarApp extends App {
             inputPeriodoAnaliseEl.addEventListener('focus', (e) => e.target.select());
             inputPeriodoAnaliseEl.addEventListener('input', throttleFn(() => {
                 const valor = parseInt(inputPeriodoAnaliseEl.value);
-                if (!isNaN(valor) && valor > 0) {
-                    const valorLimitado = Math.max(PERIODO_ANALISE_MIN_ANOS, Math.min(PERIODO_ANALISE_MAX_ANOS, valor));
-                    if (sliderPeriodoAnaliseEl) sliderPeriodoAnaliseEl.value = valorLimitado.toString();
-                    inputPeriodoAnaliseEl.value = valorLimitado.toString();
+                if (!isNaN(valor) && valor >= PERIODO_ANALISE_MIN_ANOS) {
+                    const valorLimitado = Math.min(PERIODO_ANALISE_MAX_MANUAL, valor);
+                    // Slider só vai até seu máximo; input reflete o valor real
+                    if (sliderPeriodoAnaliseEl) sliderPeriodoAnaliseEl.value = Math.min(PERIODO_ANALISE_MAX_ANOS, valorLimitado).toString();
                     atualizarInterface();
                 }
             }, 200));

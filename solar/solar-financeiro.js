@@ -52,15 +52,16 @@ export function criarGraficoAmortizacao(dados, idiomaAtual) {
         tipoBateria = 'litio'
     } = dados;
     
-    // Obter período de análise em faixa fixa de 5 a 50 anos
+    // Obter período de análise — input permite até 200 anos, slider até 60
     const sliderPeriodoAnalise = document.getElementById('sliderPeriodoAnalise');
+    const inputPeriodoAnalise = document.getElementById('inputPeriodoAnalise');
     let anosAnalise = 25;
-    
-    if (sliderPeriodoAnalise) {
-        sliderPeriodoAnalise.min = '5';
-        sliderPeriodoAnalise.max = '60';
-        anosAnalise = parseInt(sliderPeriodoAnalise.value) || 25;
-        anosAnalise = Math.max(5, Math.min(60, anosAnalise));
+
+    {
+        const valorInput = inputPeriodoAnalise ? parseInt(inputPeriodoAnalise.value) : NaN;
+        const valorSlider = sliderPeriodoAnalise ? (parseInt(sliderPeriodoAnalise.value) || 25) : 25;
+        const valorBruto = (!isNaN(valorInput) && valorInput > 0) ? valorInput : valorSlider;
+        anosAnalise = Math.max(5, Math.min(200, valorBruto));
     }
     
     const mesesAnalise = anosAnalise * 12;

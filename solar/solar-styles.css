@@ -56,10 +56,10 @@
     width: 72px;
 }
 
-/* "5" a "50" — 2 chars */
+/* "5" a "200" — até 3 chars */
 #inputPeriodoAnalise {
     min-width: 52px;
-    width: 52px;
+    width: 62px;
 }
 
 /* Container e header movidos para shared-styles.css */
