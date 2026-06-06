@@ -52,6 +52,9 @@ const KEY_ROWS = [
 const SKIN_KEYS = buildSkinKeys();
 
 const DISPLAY_LIMIT = 12;
+const SYNTHETIC_CLICK_SUPPRESSION_MS = 700;
+let lastTouchActivationAt = 0;
+
 const state = {
   mode: "rpn",
   stack: { x: 0, y: 0, z: 0, t: 0 },
@@ -114,8 +117,8 @@ function renderKeyboard() {
 }
 
 function buildSkinKeys() {
-  const width = 1584;
-  const height = 969;
+  const width = 1604;
+  const height = 981;
   const keyWidth = 110;
   const keyHeight = 96;
   const columns = [106, 249, 389, 530, 669, 810, 950, 1089, 1229, 1369];
@@ -177,18 +180,41 @@ function buildSkinKeys() {
 
 function attachEvents() {
   keyboard.addEventListener("click", (event) => {
+    if (shouldSuppressSyntheticClick()) {
+      event.preventDefault();
+      return;
+    }
+
     const key = event.target.closest("[data-action]");
     if (!key) return;
-    animateKey(key);
-    handleAction(key.dataset.action);
+    activateActionButton(key);
   });
 
-  document.querySelector("[data-action='power']").addEventListener("click", () => {
-    handleAction("power");
+  keyboard.addEventListener("touchend", handleTouchActivation, { passive: false });
+  keyboard.addEventListener("dblclick", preventDoubleTapZoom);
+
+  const stageControls = document.querySelector(".stage-controls");
+  stageControls.addEventListener("touchend", handleTouchActivation, { passive: false });
+  stageControls.addEventListener("dblclick", preventDoubleTapZoom);
+
+  document.querySelector("[data-action='power']").addEventListener("click", (event) => {
+    if (shouldSuppressSyntheticClick()) {
+      event.preventDefault();
+      return;
+    }
+
+    activateActionButton(event.currentTarget);
   });
 
   document.querySelectorAll("[data-mode]").forEach((button) => {
-    button.addEventListener("click", () => setMode(button.dataset.mode));
+    button.addEventListener("click", (event) => {
+      if (shouldSuppressSyntheticClick()) {
+        event.preventDefault();
+        return;
+      }
+
+      setMode(button.dataset.mode);
+    });
   });
 
   window.addEventListener("keydown", (event) => {
@@ -204,6 +230,41 @@ function attachEvents() {
   window.addEventListener("orientationchange", updateViewportFit);
 }
 
+function handleTouchActivation(event) {
+  const actionButton = event.target.closest("[data-action]");
+  const modeButton = event.target.closest("[data-mode]");
+
+  if (!actionButton && !modeButton) return;
+
+  event.preventDefault();
+  markTouchActivation();
+
+  if (actionButton) {
+    activateActionButton(actionButton);
+    return;
+  }
+
+  setMode(modeButton.dataset.mode);
+}
+
+function activateActionButton(button) {
+  const key = button.closest(".key");
+  if (key) animateKey(key);
+  handleAction(button.dataset.action);
+}
+
+function preventDoubleTapZoom(event) {
+  event.preventDefault();
+}
+
+function markTouchActivation() {
+  lastTouchActivationAt = performance.now();
+}
+
+function shouldSuppressSyntheticClick() {
+  return performance.now() - lastTouchActivationAt < SYNTHETIC_CLICK_SUPPRESSION_MS;
+}
+
 function updateViewportFit() {
   const isPhoneLandscape = window.matchMedia(
     "(orientation: landscape) and (max-height: 540px) and (max-width: 980px)",
@@ -214,7 +275,7 @@ function updateViewportFit() {
     return;
   }
 
-  const ratio = 1584 / 969;
+  const ratio = 1604 / 981;
   const padding = 16;
   const availableWidth = Math.max(320, window.innerWidth - padding);
   const availableHeight = Math.max(220, window.innerHeight - padding);

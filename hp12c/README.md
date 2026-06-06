@@ -1,13 +1,13 @@
-# HP 12C Platinum Emulator
+# HP 12C Niobium Emulator
 
-Site estático para emular uma HP 12C Platinum em tela cheia.
+Site estático para emular uma HP 12C com skin BR/Niobium em tela cheia.
 
 ## Arquivos
 
 - `index.html`: estrutura da aplicação.
 - `styles.css`: skin fotográfica, layout responsivo e painel de registradores.
 - `app.js`: lógica RPN/ALG, pilha, memória simples, percentuais e TVM.
-- `imagem calculadora.png`: skin principal usada na calculadora.
+- `imagem calculadora.png`: skin BR/Niobium principal usada na calculadora.
 - `assets/hp-12c-platinum.jpg`: foto de referência em alta resolução mantida no projeto.
 - `assets/fonts/DSEG7ClassicMini-Regular.woff2`: fonte 7 segmentos usada no display.
 - `assets/fonts/DSEG-LICENSE.txt`: licença da fonte DSEG.
