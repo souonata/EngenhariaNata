@@ -51,7 +51,7 @@ const KEY_ROWS = [
 
 const SKIN_KEYS = buildSkinKeys();
 
-const DISPLAY_LIMIT = 12;
+const DISPLAY_DIGIT_LIMIT = 10;
 const SYNTHETIC_CLICK_SUPPRESSION_MS = 700;
 let lastTouchActivationAt = 0;
 
@@ -119,10 +119,10 @@ function renderKeyboard() {
 function buildSkinKeys() {
   const width = 1604;
   const height = 981;
-  const keyWidth = 110;
-  const keyHeight = 96;
-  const columns = [106, 249, 389, 530, 669, 810, 950, 1089, 1229, 1369];
-  const rows = [340, 496, 651, 807];
+  const keyWidth = 112;
+  const keyHeight = 99;
+  const columns = [104, 247, 390, 532, 674, 817, 960, 1102, 1244, 1385];
+  const rows = [337, 495, 652, 813];
 
   const pct = (value, total) => Number(((value / total) * 100).toFixed(3));
   const box = (label, action, col, row, tone = "function", options = {}) => ({
@@ -161,7 +161,7 @@ function buildSkinKeys() {
     box("R down", "roll", 2, 2),
     box("x swap y", "swap", 3, 2),
     box("CLx", "clear-entry", 4, 2),
-    box("ENTER", "enter", 5, 2, "operator", { height: 252 }),
+    box("ENTER", "enter", 5, 2, "operator", { height: 260 }),
     box("1", "digit:1", 6, 2, "number"),
     box("2", "digit:2", 7, 2, "number"),
     box("3", "digit:3", 8, 2, "number"),
@@ -526,7 +526,7 @@ function beginNumericEntry() {
 
 function limitEntry() {
   const bare = state.entry.replace(/[-.eE+]/g, "");
-  if (bare.length > 16) {
+  if (bare.length > DISPLAY_DIGIT_LIMIT) {
     state.entry = state.entry.slice(0, -1);
   }
 }
@@ -1006,20 +1006,63 @@ function formatDisplayValue(value) {
   if (!Number.isFinite(value)) return "Error";
   const normalized = normalizeZero(value);
   const abs = Math.abs(normalized);
-  if (abs !== 0 && (abs >= 10 ** DISPLAY_LIMIT || abs < 10 ** -state.fixed)) {
-    return normalized.toExponential(Math.min(6, state.fixed + 2)).replace("+", "").toUpperCase();
+  if (abs !== 0 && (integerDigitCount(abs) > DISPLAY_DIGIT_LIMIT || abs < 10 ** -state.fixed)) {
+    return formatExponentialDisplay(normalized);
   }
 
   let decimals = state.fixed;
-  let text = normalized.toFixed(decimals);
-  while (text.length > DISPLAY_LIMIT && decimals > 0) {
+  let text = formatGroupedDecimal(normalized, decimals);
+  while (countDigits(text) > DISPLAY_DIGIT_LIMIT && decimals > 0) {
     decimals -= 1;
-    text = normalized.toFixed(decimals);
+    text = formatGroupedDecimal(normalized, decimals);
   }
-  if (text.length > DISPLAY_LIMIT) {
-    text = normalized.toExponential(5).replace("+", "").toUpperCase();
+  if (countDigits(text) > DISPLAY_DIGIT_LIMIT) {
+    return formatExponentialDisplay(normalized);
   }
   return text;
+}
+
+function formatEntryDisplay(entry) {
+  if (!entry) return "0";
+  if (/[eE]/.test(entry)) return entry.replace("e", "E").replace(".", ",");
+
+  const isNegative = entry.startsWith("-");
+  const unsigned = isNegative ? entry.slice(1) : entry;
+  const hasDecimal = unsigned.includes(".");
+  const [integer = "0", fraction = ""] = unsigned.split(".");
+  const groupedInteger = groupInteger(integer || "0");
+  return `${isNegative ? "-" : ""}${groupedInteger}${hasDecimal ? `,${fraction}` : ""}`;
+}
+
+function formatGroupedDecimal(value, decimals) {
+  const isNegative = value < 0;
+  const fixed = Math.abs(value).toFixed(decimals);
+  const [integer, fraction = ""] = fixed.split(".");
+  const groupedInteger = groupInteger(integer);
+  return `${isNegative ? "-" : ""}${groupedInteger}${decimals > 0 ? `,${fraction}` : ""}`;
+}
+
+function formatExponentialDisplay(value) {
+  let decimals = Math.min(5, state.fixed + 2);
+  while (decimals >= 0) {
+    const text = value.toExponential(decimals).replace("+", "").replace(".", ",").toUpperCase();
+    if (text.replace("-", "").length <= DISPLAY_DIGIT_LIMIT) return text;
+    decimals -= 1;
+  }
+  return value.toExponential(0).replace("+", "").replace(".", ",").toUpperCase();
+}
+
+function groupInteger(integer) {
+  return integer.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+function countDigits(text) {
+  return (text.match(/\d/g) || []).length;
+}
+
+function integerDigitCount(value) {
+  if (value < 1) return 1;
+  return Math.floor(Math.log10(value)) + 1;
 }
 
 function formatRegister(value) {
@@ -1035,13 +1078,12 @@ function formatRegister(value) {
 
 function currentDisplayText() {
   if (state.error) return state.error;
-  if (state.entryActive) return state.entry.replace("e", "E") || "0";
+  if (state.entryActive) return formatEntryDisplay(state.entry);
   return formatDisplayValue(state.stack.x);
 }
 
 function toScreenText(text) {
-  if (text === "Error") return text;
-  return text.replace(/\./g, ",");
+  return text;
 }
 
 function updateUI() {
