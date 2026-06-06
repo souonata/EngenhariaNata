@@ -51,9 +51,13 @@ const KEY_ROWS = [
 
 const SKIN_KEYS = buildSkinKeys();
 
-const DISPLAY_DIGIT_LIMIT = 10;
+const DISPLAY_DIGIT_LIMIT = 12;
+const DISPLAY_BASE_FONT_CQW = 4.85;
+const LONG_PRESS_HOLD_MS = 520;
 const SYNTHETIC_CLICK_SUPPRESSION_MS = 700;
 let lastTouchActivationAt = 0;
+const activePointerPresses = new Map();
+const heldActionButtons = new Map();
 
 const state = {
   mode: "rpn",
@@ -187,10 +191,22 @@ function attachEvents() {
 
     const key = event.target.closest("[data-action]");
     if (!key) return;
+    if (heldActionButtons.has(key.dataset.action)) {
+      releaseHeldAction(key.dataset.action);
+      return;
+    }
+
     activateActionButton(key);
   });
 
-  keyboard.addEventListener("touchend", handleTouchActivation, { passive: false });
+  if (window.PointerEvent) {
+    keyboard.addEventListener("pointerdown", handleActionPointerDown);
+    keyboard.addEventListener("pointerup", handleActionPointerUp);
+    keyboard.addEventListener("pointercancel", handleActionPointerCancel);
+    keyboard.addEventListener("lostpointercapture", handleActionPointerCancel);
+  } else {
+    keyboard.addEventListener("touchend", handleTouchActivation, { passive: false });
+  }
   keyboard.addEventListener("dblclick", preventDoubleTapZoom);
 
   const stageControls = document.querySelector(".stage-controls");
@@ -247,10 +263,102 @@ function handleTouchActivation(event) {
   setMode(modeButton.dataset.mode);
 }
 
+function handleActionPointerDown(event) {
+  if (event.pointerType === "mouse") return;
+
+  const actionButton = event.target.closest("[data-action]");
+  if (!actionButton) return;
+
+  event.preventDefault();
+  markTouchActivation();
+
+  const action = actionButton.dataset.action;
+  const releaseHeld = heldActionButtons.has(action);
+  if (!releaseHeld) pressActionButton(actionButton);
+
+  const press = {
+    button: actionButton,
+    action,
+    longPressed: false,
+    releaseHeld,
+    timer: releaseHeld
+      ? null
+      : window.setTimeout(() => {
+          const currentPress = activePointerPresses.get(event.pointerId);
+          if (!currentPress) return;
+          currentPress.longPressed = true;
+          holdActionButton(actionButton);
+        }, LONG_PRESS_HOLD_MS),
+  };
+
+  activePointerPresses.set(event.pointerId, press);
+
+  if (actionButton.setPointerCapture) {
+    actionButton.setPointerCapture(event.pointerId);
+  }
+}
+
+function handleActionPointerUp(event) {
+  const press = activePointerPresses.get(event.pointerId);
+  if (!press) return;
+
+  event.preventDefault();
+  markTouchActivation();
+  activePointerPresses.delete(event.pointerId);
+  if (press.timer) window.clearTimeout(press.timer);
+
+  if (press.releaseHeld) {
+    releaseHeldAction(press.action);
+    return;
+  }
+
+  if (press.longPressed) return;
+
+  releasePressedButton(press.button);
+  activateActionButton(press.button);
+}
+
+function handleActionPointerCancel(event) {
+  const press = activePointerPresses.get(event.pointerId);
+  if (!press) return;
+
+  activePointerPresses.delete(event.pointerId);
+  if (press.timer) window.clearTimeout(press.timer);
+  if (!press.longPressed && !press.releaseHeld) releasePressedButton(press.button);
+}
+
 function activateActionButton(button) {
   const key = button.closest(".key");
   if (key) animateKey(key);
   handleAction(button.dataset.action);
+}
+
+function pressActionButton(button) {
+  const key = button.closest(".key");
+  if (key) key.classList.add("is-pressed");
+}
+
+function releasePressedButton(button) {
+  const key = button.closest(".key");
+  if (!key || heldActionButtons.has(button.dataset.action)) return;
+  key.classList.remove("is-pressed");
+}
+
+function holdActionButton(button) {
+  const key = button.closest(".key");
+  if (!key) return;
+  heldActionButtons.set(button.dataset.action, button);
+  key.classList.add("is-held", "is-pressed");
+  button.setAttribute("aria-pressed", "true");
+}
+
+function releaseHeldAction(action) {
+  const button = heldActionButtons.get(action);
+  if (!button) return;
+  const key = button.closest(".key");
+  if (key) key.classList.remove("is-held", "is-pressed");
+  button.removeAttribute("aria-pressed");
+  heldActionButtons.delete(action);
 }
 
 function preventDoubleTapZoom(event) {
@@ -285,8 +393,11 @@ function updateViewportFit() {
 }
 
 function animateKey(key) {
+  if (key.classList.contains("is-held")) return;
   key.classList.add("is-pressed");
-  window.setTimeout(() => key.classList.remove("is-pressed"), 120);
+  window.setTimeout(() => {
+    if (!key.classList.contains("is-held")) key.classList.remove("is-pressed");
+  }, 120);
 }
 
 function actionFromKeyboard(event) {
@@ -1006,7 +1117,7 @@ function formatDisplayValue(value) {
   if (!Number.isFinite(value)) return "Error";
   const normalized = normalizeZero(value);
   const abs = Math.abs(normalized);
-  if (abs !== 0 && (integerDigitCount(abs) > DISPLAY_DIGIT_LIMIT || abs < 10 ** -state.fixed)) {
+  if (abs !== 0 && integerDigitCount(abs) > DISPLAY_DIGIT_LIMIT) {
     return formatExponentialDisplay(normalized);
   }
 
@@ -1067,13 +1178,7 @@ function integerDigitCount(value) {
 
 function formatRegister(value) {
   if (value === null || value === undefined || Number.isNaN(value)) return "--";
-  if (!Number.isFinite(value)) return "Error";
-  const abs = Math.abs(value);
-  if (abs !== 0 && (abs >= 1e9 || abs < 1e-5)) return value.toExponential(4).replace("+", "").toUpperCase();
-  return Number(value.toFixed(6)).toLocaleString("en-US", {
-    useGrouping: false,
-    maximumFractionDigits: 6,
-  });
+  return formatDisplayValue(value);
 }
 
 function currentDisplayText() {
@@ -1087,7 +1192,9 @@ function toScreenText(text) {
 }
 
 function updateUI() {
-  display.textContent = toScreenText(currentDisplayText());
+  const screenText = toScreenText(currentDisplayText());
+  display.textContent = screenText;
+  fitDisplayText(screenText);
 
   shiftIndicator.textContent = state.shift ? state.shift : "";
   shiftIndicator.className = state.shift ? `shift-${state.shift}` : "";
@@ -1137,4 +1244,9 @@ function updateUI() {
     const element = document.querySelector(`[data-status="${field}"]`);
     if (element) element.textContent = value;
   });
+}
+
+function fitDisplayText(text) {
+  const scale = Math.min(1, DISPLAY_DIGIT_LIMIT / Math.max(text.length, 1));
+  display.style.setProperty("--display-font-size", `${(DISPLAY_BASE_FONT_CQW * scale).toFixed(3)}cqw`);
 }
