@@ -43,7 +43,7 @@ const KEY_ROWS = [
     { main: "R↓", f: "R↑", g: "", action: "roll" },
     { main: "<-", f: "", g: "", action: "backspace" },
     { main: "0", f: "FIX 0", g: "", action: "digit:0", tone: "number" },
-    { main: ".", f: "FIX 4", g: "", action: "decimal", tone: "number" },
+    { main: ",", f: "FIX 4", g: "", action: "decimal", tone: "number" },
     { main: "+/-", f: "FIX 5", g: "", action: "chs", tone: "number" },
     { main: "+", f: "M+", g: "", action: "op:+", tone: "operator" },
   ],
@@ -53,6 +53,8 @@ const SKIN_KEYS = buildSkinKeys();
 
 const DISPLAY_DIGIT_LIMIT = 12;
 const DISPLAY_BASE_FONT_CQW = 4.85;
+const DECIMAL_SEPARATOR = ",";
+const THOUSANDS_SEPARATOR = ".";
 const LONG_PRESS_HOLD_MS = 520;
 const SYNTHETIC_CLICK_SUPPRESSION_MS = 700;
 let lastTouchActivationAt = 0;
@@ -176,7 +178,7 @@ function buildSkinKeys() {
     box("STO", "sto", 3, 3),
     box("RCL", "rcl", 4, 3),
     box("0", "digit:0", 6, 3, "number"),
-    box(".", "decimal", 7, 3, "number"),
+    box(",", "decimal", 7, 3, "number"),
     box("sum plus", "percent-total", 8, 3),
     box("+", "op:+", 9, 3, "operator"),
   ];
@@ -1135,14 +1137,14 @@ function formatDisplayValue(value) {
 
 function formatEntryDisplay(entry) {
   if (!entry) return "0";
-  if (/[eE]/.test(entry)) return entry.replace("e", "E").replace(".", ",");
+  if (/[eE]/.test(entry)) return entry.replace("e", "E").replace(".", DECIMAL_SEPARATOR);
 
   const isNegative = entry.startsWith("-");
   const unsigned = isNegative ? entry.slice(1) : entry;
   const hasDecimal = unsigned.includes(".");
   const [integer = "0", fraction = ""] = unsigned.split(".");
   const groupedInteger = groupInteger(integer || "0");
-  return `${isNegative ? "-" : ""}${groupedInteger}${hasDecimal ? `,${fraction}` : ""}`;
+  return `${isNegative ? "-" : ""}${groupedInteger}${hasDecimal ? `${DECIMAL_SEPARATOR}${fraction}` : ""}`;
 }
 
 function formatGroupedDecimal(value, decimals) {
@@ -1150,21 +1152,21 @@ function formatGroupedDecimal(value, decimals) {
   const fixed = Math.abs(value).toFixed(decimals);
   const [integer, fraction = ""] = fixed.split(".");
   const groupedInteger = groupInteger(integer);
-  return `${isNegative ? "-" : ""}${groupedInteger}${decimals > 0 ? `,${fraction}` : ""}`;
+  return `${isNegative ? "-" : ""}${groupedInteger}${decimals > 0 ? `${DECIMAL_SEPARATOR}${fraction}` : ""}`;
 }
 
 function formatExponentialDisplay(value) {
   let decimals = Math.min(5, state.fixed + 2);
   while (decimals >= 0) {
-    const text = value.toExponential(decimals).replace("+", "").replace(".", ",").toUpperCase();
+    const text = value.toExponential(decimals).replace("+", "").replace(".", DECIMAL_SEPARATOR).toUpperCase();
     if (text.replace("-", "").length <= DISPLAY_DIGIT_LIMIT) return text;
     decimals -= 1;
   }
-  return value.toExponential(0).replace("+", "").replace(".", ",").toUpperCase();
+  return value.toExponential(0).replace("+", "").replace(".", DECIMAL_SEPARATOR).toUpperCase();
 }
 
 function groupInteger(integer) {
-  return integer.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return integer.replace(/\B(?=(\d{3})+(?!\d))/g, THOUSANDS_SEPARATOR);
 }
 
 function countDigits(text) {
