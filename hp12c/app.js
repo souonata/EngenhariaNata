@@ -114,12 +114,12 @@ function renderKeyboard() {
 }
 
 function buildSkinKeys() {
-  const width = 1591;
-  const height = 989;
+  const width = 1584;
+  const height = 969;
   const keyWidth = 110;
   const keyHeight = 96;
   const columns = [106, 249, 389, 530, 669, 810, 950, 1089, 1229, 1369];
-  const rows = [343, 499, 654, 810];
+  const rows = [340, 496, 651, 807];
 
   const pct = (value, total) => Number(((value / total) * 100).toFixed(3));
   const box = (label, action, col, row, tone = "function", options = {}) => ({
@@ -214,7 +214,7 @@ function updateViewportFit() {
     return;
   }
 
-  const ratio = 1591 / 989;
+  const ratio = 1584 / 969;
   const padding = 16;
   const availableWidth = Math.max(320, window.innerWidth - padding);
   const availableHeight = Math.max(220, window.innerHeight - padding);
@@ -1013,4 +1013,25 @@ function updateUI() {
   });
 
   document.querySelector("[data-memory]").textContent = formatRegister(state.memory);
+
+  const pendingStatus = state.pendingStore
+    ? "STO"
+    : state.pendingRecall
+      ? "RCL"
+      : state.pendingOperator
+        ? state.pendingOperator.replace("pow", "y^x")
+        : "--";
+
+  const statusValues = {
+    mode: state.mode.toUpperCase(),
+    shift: state.shift ? state.shift.toUpperCase() : "--",
+    fixed: String(state.fixed),
+    begin: state.tvm.begin ? "BEG" : "END",
+    pending: pendingStatus,
+  };
+
+  Object.entries(statusValues).forEach(([field, value]) => {
+    const element = document.querySelector(`[data-status="${field}"]`);
+    if (element) element.textContent = value;
+  });
 }

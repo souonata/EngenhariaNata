@@ -2,6 +2,10 @@
   color-scheme: dark;
   --bg: #141412;
   --bg-deep: #080807;
+  --engnata-dark: #1e1e1e;
+  --engnata-light: #4e7262;
+  --engnata-accent-light: #2d9fa3;
+  --engnata-accent-dark: #5cc9d0;
   --wine: #7d2535;
   --body: #1e1e1b;
   --body-edge: #0b0b0a;
@@ -25,6 +29,14 @@
     sans-serif;
 }
 
+@font-face {
+  font-family: "DSEG7ClassicMini";
+  src: url("./assets/fonts/DSEG7ClassicMini-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -37,8 +49,9 @@ body {
 body {
   margin: 0;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0 1px, transparent 1px 16px),
-    linear-gradient(145deg, #11110f 0%, #262821 48%, #6b2431 100%);
+    radial-gradient(circle at 18% 8%, rgba(92, 201, 208, 0.2), transparent 34%),
+    radial-gradient(circle at 82% 92%, rgba(45, 159, 163, 0.24), transparent 34%),
+    linear-gradient(135deg, var(--engnata-dark) 0%, #2f4f45 48%, var(--engnata-light) 100%);
   color: #f5f3ec;
 }
 
@@ -238,15 +251,15 @@ a {
 
 #display {
   align-self: center;
-  justify-self: end;
+  justify-self: start;
   max-width: 100%;
   overflow: hidden;
   color: #151b11;
-  font-family: "Consolas", "Lucida Console", ui-monospace, monospace;
+  font-family: "DSEG7ClassicMini", "Consolas", "Lucida Console", ui-monospace, monospace;
   font-size: 3.3rem;
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1;
-  text-align: right;
+  text-align: left;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.24);
   white-space: nowrap;
 }
@@ -392,8 +405,7 @@ a {
   align-content: center;
 }
 
-.panel-block,
-.reference-photo {
+.panel-block {
   min-width: 0;
   margin: 0;
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -456,32 +468,6 @@ a {
   white-space: nowrap;
 }
 
-.reference-photo {
-  overflow: hidden;
-}
-
-.reference-photo img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 3313 / 2030;
-  object-fit: cover;
-}
-
-.reference-photo figcaption {
-  padding: 10px 12px 12px;
-  color: #ced5d0;
-  font-size: 0.72rem;
-  line-height: 1.35;
-}
-
-.credits {
-  width: min(1800px, 100%);
-  margin: -10px auto 0;
-  padding: 0 24px 18px;
-  color: rgba(245, 243, 236, 0.78);
-  font-size: 0.72rem;
-}
-
 @media (max-width: 1080px) {
   .workspace {
     grid-template-columns: 1fr;
@@ -491,10 +477,6 @@ a {
   .register-panel {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: start;
-  }
-
-  .reference-photo {
-    grid-column: 1 / -1;
   }
 }
 
@@ -508,8 +490,7 @@ a {
   .calculator-stage,
   .stage-controls,
   .calculator,
-  .register-panel,
-  .credits {
+  .register-panel {
     width: calc(100vw - 24px);
     max-width: calc(100vw - 24px);
   }
@@ -755,8 +736,7 @@ a {
     font-size: clamp(0.52rem, 3svh, 0.9rem);
   }
 
-  .register-panel,
-  .credits {
+  .register-panel {
     display: none;
   }
 }
@@ -769,8 +749,7 @@ a {
   .calculator-stage,
   .stage-controls,
   .calculator,
-  .register-panel,
-  .credits {
+  .register-panel {
     width: calc(100vw - 16px);
     max-width: calc(100vw - 16px);
   }
@@ -811,7 +790,7 @@ a {
 .calculator {
   position: relative;
   container-type: inline-size;
-  aspect-ratio: 1591 / 989;
+  aspect-ratio: 1584 / 969;
   padding: 0;
   border: 0;
   border-radius: 8px;
@@ -850,10 +829,10 @@ a {
 
 .lcd {
   position: absolute;
-  left: 17.75%;
-  top: 7.85%;
-  width: 47.25%;
-  height: 16.3%;
+  left: 17.832%;
+  top: 7.695%;
+  width: 47.459%;
+  height: 16.636%;
   min-width: 0;
   min-height: 0;
   display: grid;
@@ -881,10 +860,13 @@ a {
 
 #display {
   color: #030503;
-  font-family: "Consolas", "Lucida Console", ui-monospace, monospace;
-  font-size: clamp(1.25rem, 6.2cqw, 5rem);
-  font-weight: 800;
+  font-family: "DSEG7ClassicMini", "Consolas", "Lucida Console", ui-monospace, monospace;
+  font-size: clamp(1.08rem, 5.7cqw, 4.6rem);
+  font-weight: 400;
   line-height: 0.95;
+  letter-spacing: 0.035em;
+  justify-self: start;
+  text-align: left;
   text-shadow: none;
 }
 
@@ -937,10 +919,6 @@ a {
 .keyboard .key:focus-visible {
   outline: 3px solid rgba(104, 199, 229, 0.8);
   outline-offset: 2px;
-}
-
-.reference-photo img {
-  aspect-ratio: 1591 / 989;
 }
 
 @media (orientation: landscape) and (max-height: 540px) and (max-width: 980px) {
