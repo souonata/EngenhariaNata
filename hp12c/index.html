@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HP 12C Platinum Emulator</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="workspace" aria-label="Emulador HP 12C Platinum">
+      <section class="calculator-stage" aria-label="Calculadora HP 12C Platinum">
+        <div class="stage-controls">
+          <button class="utility-button" type="button" data-action="power" title="ON">ON</button>
+          <div class="mode-switch" role="group" aria-label="Modo de cálculo">
+            <button type="button" data-mode="rpn" aria-pressed="true">RPN</button>
+            <button type="button" data-mode="alg" aria-pressed="false">ALG</button>
+          </div>
+        </div>
+
+        <section class="calculator" aria-label="HP 12C Platinum">
+          <div class="faceplate">
+            <div class="display-strip">
+              <div class="brand-block" aria-label="hp 12c platinum financial calculator">
+                <span class="hp-mark">hp</span>
+                <span class="model-name">12c platinum</span>
+                <span class="model-kind">financial calculator</span>
+              </div>
+
+              <div class="lcd" role="status" aria-live="polite">
+                <div class="lcd-indicators">
+                  <span id="shiftIndicator"></span>
+                  <span id="modeIndicator">RPN</span>
+                  <span id="angleIndicator">END</span>
+                  <span id="pendingIndicator"></span>
+                </div>
+                <output id="display">0.00</output>
+              </div>
+            </div>
+
+            <div class="keyboard" id="keyboard" aria-label="Teclado"></div>
+          </div>
+        </section>
+      </section>
+
+      <aside class="register-panel" aria-label="Registradores">
+        <section class="panel-block" aria-label="Pilha">
+          <div class="panel-title">Pilha</div>
+          <dl class="register-grid">
+            <div><dt>T</dt><dd data-stack="t">0.00</dd></div>
+            <div><dt>Z</dt><dd data-stack="z">0.00</dd></div>
+            <div><dt>Y</dt><dd data-stack="y">0.00</dd></div>
+            <div><dt>X</dt><dd data-stack="x">0.00</dd></div>
+          </dl>
+        </section>
+
+        <section class="panel-block" aria-label="Financeiro">
+          <div class="panel-title">TVM</div>
+          <dl class="register-grid tvm-grid">
+            <div><dt>n</dt><dd data-tvm="n">--</dd></div>
+            <div><dt>i</dt><dd data-tvm="i">--</dd></div>
+            <div><dt>PV</dt><dd data-tvm="PV">--</dd></div>
+            <div><dt>PMT</dt><dd data-tvm="PMT">--</dd></div>
+            <div><dt>FV</dt><dd data-tvm="FV">--</dd></div>
+            <div><dt>M</dt><dd data-memory>0.00</dd></div>
+          </dl>
+        </section>
+
+        <figure class="reference-photo">
+          <img src="./imagem calculadora.png" alt="Skin frontal da calculadora HP 12C Platinum">
+          <figcaption>
+            Skin local usada como base visual da calculadora.
+          </figcaption>
+        </figure>
+      </aside>
+    </main>
+
+    <footer class="credits" id="credits">
+      Skin base: imagem calculadora.png.
+    </footer>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
