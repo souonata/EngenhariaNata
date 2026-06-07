@@ -1,6 +1,6 @@
-# HP 12C Niobium Emulator
+# BR 12C Niobium Emulator
 
-Site estático para emular uma HP 12C com skin BR/Niobium em tela cheia.
+Site estático da BR 12C Niobium — calculadora financeira em tela cheia no estilo HP-12C, com skin BR/Niobium.
 
 ## Arquivos
 

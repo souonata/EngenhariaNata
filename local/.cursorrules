@@ -23,7 +23,7 @@ Este arquivo contém as regras e diretrizes que devem ser seguidas ao trabalhar 
 ## 📁 Arquivos Importantes
 
 - `.github/copilot-instructions.md` - Instruções completas e detalhadas
-- `assets/js/site-config.js` - Funções compartilhadas (SEMPRE use estas funções)
+- `src/core/` e `src/utils/` - Núcleo e utilitários compartilhados em ESM (App, i18n, formatters, validators, storage). Use estes módulos via `import`.
 - `README.md` - Documentação principal do projeto
 
 ## 🚫 NÃO Faça
@@ -36,7 +36,7 @@ Este arquivo contém as regras e diretrizes que devem ser seguidas ao trabalhar 
 
 ## ✅ Sempre Faça
 
-- ✅ Use funções de `site-config.js` para formatação
+- ✅ Use `src/utils/formatters.js` (ESM) para formatação de números e moeda
 - ✅ Implemente traduções PT-BR e IT-IT
 - ✅ Sincronize sliders com inputs
 - ✅ Use throttling/debouncing para eventos frequentes

@@ -912,15 +912,7 @@ function atualizarGraficosSolar(dados) {
     
     // Carrega Chart.js dinamicamente se ainda não estiver carregado
     if (typeof Chart === 'undefined') {
-        if (typeof carregarChartJS === 'function') {
-            carregarChartJS(() => {
-                atualizarGraficosSolar(dados);
-            }).catch(err => {
-                console.error('[Solar] Erro ao carregar Chart.js:', err);
-            });
-        } else {
-            console.warn('[Solar] Função carregarChartJS não disponível');
-        }
+        console.warn('[Solar] Chart.js não carregado (verifique o <script> do vendor em solar.html)');
         return;
     }
     

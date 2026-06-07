@@ -3,25 +3,28 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>HP 12C Niobium Emulator</title>
+    <title>BR 12C Niobium Emulator</title>
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
-    <main class="workspace" aria-label="Emulador HP 12C Niobium">
-      <section class="calculator-stage" aria-label="Calculadora HP 12C Niobium">
+    <main class="workspace" aria-label="Emulador BR 12C Niobium">
+      <section class="calculator-stage" aria-label="Calculadora BR 12C Niobium">
         <div class="stage-controls">
-          <button class="utility-button" type="button" data-action="power" title="ON">ON</button>
+          <div class="stage-controls-group">
+            <button class="utility-button" type="button" data-action="power" title="ON">ON</button>
+            <button class="utility-button guide-button" type="button" data-action="guide" aria-haspopup="dialog" aria-controls="guideOverlay" title="Guia do usuário (PDF)">📘 Guia</button>
+          </div>
           <div class="mode-switch" role="group" aria-label="Modo de cálculo">
             <button type="button" data-mode="rpn" aria-pressed="true">RPN</button>
             <button type="button" data-mode="alg" aria-pressed="false">ALG</button>
           </div>
         </div>
 
-        <section class="calculator" aria-label="HP 12C Niobium">
+        <section class="calculator" aria-label="BR 12C Niobium">
           <div class="faceplate">
             <div class="display-strip">
-              <div class="brand-block" aria-label="hp 12c niobium financial calculator">
-                <span class="hp-mark">hp</span>
+              <div class="brand-block" aria-label="br 12c niobium financial calculator">
+                <span class="hp-mark">br</span>
                 <span class="model-name">12c niobium</span>
                 <span class="model-kind">financial calculator</span>
               </div>
@@ -78,6 +81,20 @@
       </aside>
     </main>
 
+    <div class="guide-overlay" id="guideOverlay" role="dialog" aria-modal="true" aria-labelledby="guideTitle" hidden>
+      <div class="guide-modal">
+        <header class="guide-modal-bar">
+          <span class="guide-modal-title" id="guideTitle">📘 Guia do usuário — HP 12C Platinum (EN)</span>
+          <a class="guide-modal-open" href="https://literature.hpcalc.org/official/hp12cplatinum-ug-en.pdf" target="_blank" rel="noopener noreferrer">Abrir em nova aba ↗</a>
+          <button class="guide-modal-close" type="button" data-action="guide-close" aria-label="Fechar guia">✕</button>
+        </header>
+        <div class="guide-modal-body">
+          <iframe class="guide-frame" id="guideFrame" title="Guia do usuário HP 12C Platinum (PDF)" referrerpolicy="no-referrer" data-src="https://literature.hpcalc.org/official/hp12cplatinum-ug-en.pdf#view=FitH"></iframe>
+        </div>
+      </div>
+    </div>
+
     <script src="./app.js"></script>
+    <script src="./guide.js"></script>
   </body>
 </html>
