@@ -20,11 +20,9 @@ jobs:
         with:
           node-version: '20'
 
-      # Nota: local/package-lock.json é gitignored (ver local/.gitignore),
-      # por isso usamos `npm install` em vez de `npm ci`.
       - name: Install dependencies
         working-directory: local
-        run: npm install
+        run: npm ci
 
       - name: Run unit tests
         working-directory: local

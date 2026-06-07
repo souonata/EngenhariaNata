@@ -39,11 +39,9 @@ jobs:
         with:
           node-version: '20'
 
-      # local/package-lock.json é gitignored (ver risco #9 da auditoria), por isso
-      # usamos `npm install`. Trocar por `npm ci` quando o lockfile for versionado.
       - name: Install dependencies
         working-directory: local
-        run: npm install
+        run: npm ci
 
       - name: Build de produção
         working-directory: local
