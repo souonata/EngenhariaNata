@@ -7,6 +7,7 @@ import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { formatarNumeroComSufixo, formatarNumeroDecimal } from '../src/utils/formatters.js';
 import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
+import { ajustarTamanhoInput, configurarBotoesSliderComAceleracao } from '../src/utils/ui-controls.js';
 
 const explicacaoFazenda = new ExplicacaoResultado('v2-explicacao', i18n);
 

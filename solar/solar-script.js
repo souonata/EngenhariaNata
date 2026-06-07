@@ -66,6 +66,7 @@ import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
 import { formatarNumero, formatarNumeroDecimal, formatarNumeroComSufixo } from '../src/utils/formatters.js';
+import { ajustarTamanhoInput } from '../src/utils/ui-controls.js';
 
 // Idioma atual - mantido para compatibilidade com funções de cálculo e display
 let idiomaAtual = 'pt-BR';
