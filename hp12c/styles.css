@@ -1107,3 +1107,47 @@ a {
     resize: none;
   }
 }
+
+/* ---- Painéis colapsáveis (TVM, Estado) ---- */
+.panel-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #dfe2dc;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  text-align: left;
+  cursor: pointer;
+}
+
+.panel-chevron {
+  flex: none;
+  font-size: 0.7rem;
+  opacity: 0.75;
+  transition: transform 0.18s ease;
+}
+
+.panel-block.is-collapsed .panel-toggle {
+  margin-bottom: 0;
+}
+
+.panel-block.is-collapsed .panel-chevron {
+  transform: rotate(-90deg);
+}
+
+.panel-block.is-collapsed .register-grid {
+  display: none;
+}
+
+.panel-toggle:focus-visible {
+  outline: 3px solid rgba(104, 199, 229, 0.75);
+  outline-offset: 2px;
+}
