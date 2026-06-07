@@ -1,0 +1,88 @@
+name: Deploy to GitHub Pages
+
+# PREPARADO, MAS NÃO ATIVO.
+# Hoje o site é servido pelo repositório cru (Pages "deploy from branch" = main).
+# Este workflow publica o build minificado do Vite (local/dist) no Pages.
+#
+# Para ATIVAR o deploy pelo build:
+#   1) Trocar a fonte do Pages para GitHub Actions:
+#        Settings -> Pages -> Build and deployment -> Source: GitHub Actions
+#        (ou: gh api -X PUT repos/souonata/EngenhariaNata/pages -f build_type=workflow)
+#   2) Adicionar o gatilho de push abaixo (descomentar) para deploy contínuo.
+#
+# Enquanto a fonte do Pages for "branch", o job `deploy` falha de propósito
+# (o build sobe normalmente). Use o `workflow_dispatch` para validar o build no CI.
+on:
+  workflow_dispatch:
+  # push:
+  #   branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build (Vite)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # local/package-lock.json é gitignored (ver risco #9 da auditoria), por isso
+      # usamos `npm install`. Trocar por `npm ci` quando o lockfile for versionado.
+      - name: Install dependencies
+        working-directory: local
+        run: npm install
+
+      - name: Build de produção
+        working-directory: local
+        run: npm run build
+
+      # O Vite só bundla scripts type="module". Os scripts clássicos abaixo ficam
+      # com a referência relativa intacta no HTML, então precisam ser copiados com
+      # o caminho preservado. (Se adicionar novo script clássico, inclua-o aqui.)
+      - name: Copiar scripts clássicos não-bundlados
+        run: |
+          mkdir -p local/dist/assets/js/vendor
+          cp assets/js/vendor/chart.umd.js local/dist/assets/js/vendor/
+          cp fazenda/fazenda-database.js local/dist/fazenda/
+
+      # hp12c é standalone (excluído do bundle): copiado como está.
+      - name: Copiar app standalone hp12c
+        run: cp -r hp12c local/dist/
+
+      # Arquivos estáticos não referenciados por HTML (o Vite não os inclui).
+      # Mantidos na raiz do repo para o serving cru; copiados para o artefato aqui.
+      - name: Copiar estáticos de passagem
+        run: |
+          for f in robots.txt sitemap.xml favicon.svg .nojekyll googlee25d94076d09e414.html; do
+            [ -e "$f" ] && cp "$f" local/dist/ || true
+          done
+
+      - name: Upload do artefato do Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: local/dist
+
+  deploy:
+    name: Deploy ao GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
