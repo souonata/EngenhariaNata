@@ -799,13 +799,16 @@
     <!-- Script Modular -->
     <script type="module" src="index-script.js?v=1.0.2"></script>
     
-    <!-- Limpeza de legado: o site nao usa Service Worker. Desregistra qualquer SW
-         antigo que tenha ficado registrado em visitantes recorrentes (sem limpar
-         cache a cada carregamento, para o navegador cachear normalmente). -->
+    <!-- Limpeza de legado: remove Service Workers antigos do site, mas PRESERVA o
+         do guia offline do BR 12C Niobium (escopo /hp12c/). -->
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then((registrations) => {
-                registrations.forEach((registration) => registration.unregister());
+                registrations.forEach((registration) => {
+                    if (!registration.scope.includes('/hp12c/')) {
+                        registration.unregister();
+                    }
+                });
             });
         }
     </script>
