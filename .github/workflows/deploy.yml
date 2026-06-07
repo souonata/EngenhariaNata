@@ -1,21 +1,13 @@
 name: Deploy to GitHub Pages
 
-# PREPARADO, MAS NÃO ATIVO.
-# Hoje o site é servido pelo repositório cru (Pages "deploy from branch" = main).
-# Este workflow publica o build minificado do Vite (local/dist) no Pages.
-#
-# Para ATIVAR o deploy pelo build:
-#   1) Trocar a fonte do Pages para GitHub Actions:
-#        Settings -> Pages -> Build and deployment -> Source: GitHub Actions
-#        (ou: gh api -X PUT repos/souonata/EngenhariaNata/pages -f build_type=workflow)
-#   2) Adicionar o gatilho de push abaixo (descomentar) para deploy contínuo.
-#
-# Enquanto a fonte do Pages for "branch", o job `deploy` falha de propósito
-# (o build sobe normalmente). Use o `workflow_dispatch` para validar o build no CI.
+# ATIVO: a fonte do Pages é "GitHub Actions" (build_type=workflow). Este workflow
+# publica o build minificado do Vite (local/dist) no Pages a cada push em main.
+# Para reverter ao repositório cru: Settings -> Pages -> Source: Deploy from a branch
+# (ou: gh api -X PUT repos/souonata/EngenhariaNata/pages -f build_type=legacy ...).
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
-  # push:
-  #   branches: [main]
 
 permissions:
   contents: read
