@@ -56,8 +56,11 @@
           </dl>
         </section>
 
-        <section class="panel-block" aria-label="Financeiro">
-          <div class="panel-title">TVM</div>
+        <section class="panel-block" aria-label="Financeiro" data-panel="tvm">
+          <button class="panel-toggle" type="button" aria-expanded="true">
+            <span>TVM</span>
+            <span class="panel-chevron" aria-hidden="true">▾</span>
+          </button>
           <dl class="register-grid tvm-grid">
             <div><dt>n</dt><dd data-tvm="n">--</dd></div>
             <div><dt>i</dt><dd data-tvm="i">--</dd></div>
@@ -68,8 +71,11 @@
           </dl>
         </section>
 
-        <section class="panel-block" aria-label="Estado">
-          <div class="panel-title">Estado</div>
+        <section class="panel-block" aria-label="Estado" data-panel="estado">
+          <button class="panel-toggle" type="button" aria-expanded="true">
+            <span>Estado</span>
+            <span class="panel-chevron" aria-hidden="true">▾</span>
+          </button>
           <dl class="register-grid">
             <div><dt>Modo</dt><dd data-status="mode">RPN</dd></div>
             <div><dt>Shift</dt><dd data-status="shift">--</dd></div>
@@ -96,5 +102,6 @@
 
     <script src="./app.js"></script>
     <script src="./guide.js"></script>
+    <script src="./panels.js"></script>
   </body>
 </html>
