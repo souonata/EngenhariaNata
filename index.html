@@ -5,13 +5,8 @@
     <!-- Meta viewport otimizada para mobile: permite zoom mas limita escala máxima -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     
-    <!-- Meta tags para DESABILITAR cache - sempre carrega arquivos atualizados -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    
     <!-- Content Security Policy (fallback caso .htaccess não seja aplicado) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://docs.google.com https://script.google.com https://gc.zgo.at; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https://docs.google.com https://script.google.com https://*.googleapis.com https://worldtimeapi.org https://souonata.goatcounter.com; frame-src https://docs.google.com; object-src 'none'; base-uri 'self'; form-action 'self' https://docs.google.com; upgrade-insecure-requests;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://souonata.goatcounter.com https://*.open-meteo.com https://docs.google.com https://script.google.com; frame-src https://docs.google.com; object-src 'none'; base-uri 'self'; form-action 'self' https://docs.google.com; upgrade-insecure-requests;">
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -64,7 +59,7 @@
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": "Engenharia NATA",
-        "url": "https://engnata.eu/",
+        "url": "https://souonata.github.io/EngenhariaNata/",
         "logo": "https://souonata.github.io/EngenhariaNata/favicon.svg",
         "description": "Apps web educativos de engenharia e finanças",
         "sameAs": []
@@ -73,7 +68,7 @@
     
     <!-- Carrega o arquivo CSS com controle de versão -->
     <!-- Mude ?v=1.0.0 para ?v=1.0.1 quando atualizar o CSS -->
-    <link rel="stylesheet" href="assets/css/shared-styles.css?v=1.0.4">
+    <link rel="stylesheet" href="assets/css/shared-styles.css?v=2.0.1">
     <link rel="stylesheet" href="index-styles.css?v=1.0.4">
 
     <!-- Analytics: GoatCounter (privacy-friendly, LGPD/GDPR-compliant) -->
@@ -316,7 +311,7 @@
                     <span class="app-name" data-i18n="app-mutuo">Mutuo</span>
                 </a>
 
-                <!-- Ícone do aplicativo HP12C -->
+                <!-- Ícone do aplicativo BR 12C Niobium -->
                 <a href="hp12c/index.html" class="app-icon" data-i18n-aria="app-hp12c">
                     <div class="icon">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -327,11 +322,11 @@
                                 </linearGradient>
                             </defs>
                             <rect width="60" height="60" rx="12" fill="url(#gradient-hp12c)"/>
-                            <text x="30" y="25" font-size="12" text-anchor="middle" fill="#F5D47B" font-family="Arial, sans-serif" font-weight="700">HP</text>
+                            <text x="30" y="25" font-size="12" text-anchor="middle" fill="#F5D47B" font-family="Arial, sans-serif" font-weight="700">BR</text>
                             <text x="30" y="42" font-size="18" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="800">12C</text>
                         </svg>
                     </div>
-                    <span class="app-name" data-i18n="app-hp12c">HP12C</span>
+                    <span class="app-name" data-i18n="app-hp12c">BR 12C Niobium</span>
                 </a>
 
                 <!-- Ícone do aplicativo Previsão 7 dias -->
@@ -680,7 +675,7 @@
                 <a href="mutuo/mutuo.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
             </div>
 
-            <!-- App: HP12C -->
+            <!-- App: BR 12C Niobium -->
             <div class="app-card">
                 <div class="app-card-header">
                     <a href="hp12c/index.html" data-i18n-aria="app-hp12c">
@@ -692,13 +687,13 @@
                                 </linearGradient>
                             </defs>
                             <rect width="60" height="60" rx="12" fill="url(#gradient-hp12c-desc)"/>
-                            <text x="30" y="25" font-size="12" text-anchor="middle" fill="#F5D47B" font-family="Arial, sans-serif" font-weight="700">HP</text>
+                            <text x="30" y="25" font-size="12" text-anchor="middle" fill="#F5D47B" font-family="Arial, sans-serif" font-weight="700">BR</text>
                             <text x="30" y="42" font-size="18" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="800">12C</text>
                         </svg>
                     </a>
-                    <h3><a href="hp12c/index.html" data-i18n="app-hp12c-title">HP12C - Simulador Financeiro</a></h3>
+                    <h3><a href="hp12c/index.html" data-i18n="app-hp12c-title">BR 12C Niobium - Simulador Financeiro</a></h3>
                 </div>
-                <p class="app-description" data-i18n="app-hp12c-description">Simulador standalone da calculadora financeira HP12C, hospedado no Engenharia NATA para acesso direto pelo app no celular. Mantém sua própria interface em tela cheia, sem cabeçalho e rodapé padrão dos demais apps.</p>
+                <p class="app-description" data-i18n="app-hp12c-description">Simulador standalone da calculadora financeira BR 12C Niobium, hospedado no Engenharia NATA para acesso direto pelo app no celular. Mantém sua própria interface em tela cheia, sem cabeçalho e rodapé padrão dos demais apps.</p>
                 <a href="hp12c/index.html" class="app-link" data-i18n="app-link-open-simulator">Abrir simulador →</a>
             </div>
 
@@ -804,29 +799,14 @@
     <!-- Script Modular -->
     <script type="module" src="index-script.js?v=1.0.2"></script>
     
-    <!-- Desregistra qualquer Service Worker existente para garantir que sempre carregue do servidor -->
+    <!-- Limpeza de legado: o site nao usa Service Worker. Desregistra qualquer SW
+         antigo que tenha ficado registrado em visitantes recorrentes (sem limpar
+         cache a cada carregamento, para o navegador cachear normalmente). -->
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then((registrations) => {
-                for (let registration of registrations) {
-                    registration.unregister().then((success) => {
-                        if (success) {
-                            console.log('[SW] Service Worker desregistrado com sucesso');
-                        }
-                    });
-                }
+                registrations.forEach((registration) => registration.unregister());
             });
-            
-            // Limpa todos os caches
-            if ('caches' in window) {
-                caches.keys().then((cacheNames) => {
-                    cacheNames.forEach((cacheName) => {
-                        caches.delete(cacheName).then(() => {
-                            console.log('[Cache] Cache removido:', cacheName);
-                        });
-                    });
-                });
-            }
         }
     </script>
 </body>

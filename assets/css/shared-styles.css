@@ -391,14 +391,14 @@ footer p {
    Contador de Visitantes - Display 7-segmentos estilo relógio digital vintage
    ========================================================================== */
 
-/* Fonte DSEG7 Classic (licença SIL OFL) - serviço via jsDelivr.
-   O arquivo .woff2 é carregado via font-src (CSP permite https:). */
+/* Fonte DSEG7 Classic (licença SIL OFL) - auto-hospedada localmente.
+   Antes vinha do jsDelivr; agora é local para a CSP poder dispensar CDN. */
 @font-face {
     font-family: 'DSEG7Classic';
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url('https://cdn.jsdelivr.net/npm/@fontsource/dseg7-classic@5.2.5/files/dseg7-classic-latin-700-normal.woff2') format('woff2');
+    src: url('../fonts/dseg7-classic-latin-700-normal.woff2') format('woff2');
 }
 
 .app-icon.app-icon-static {
