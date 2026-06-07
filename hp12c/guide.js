@@ -46,4 +46,14 @@
   document.addEventListener('keydown', (evento) => {
     if (evento.key === 'Escape' && !overlay.hidden) fechar();
   });
+
+  // Registra o Service Worker do guia (escopo /hp12c/) para funcionar offline
+  // depois do primeiro acesso online.
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('./sw.js').catch(function () {
+        /* sem SW: o guia segue funcionando online normalmente */
+      });
+    });
+  }
 })();
