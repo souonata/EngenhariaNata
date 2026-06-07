@@ -10,14 +10,7 @@
     <main class="workspace" aria-label="Emulador BR 12C Niobium">
       <section class="calculator-stage" aria-label="Calculadora BR 12C Niobium">
         <div class="stage-controls">
-          <div class="stage-controls-group">
-            <button class="utility-button" type="button" data-action="power" title="ON">ON</button>
-            <button class="utility-button guide-button" type="button" data-action="guide" aria-haspopup="dialog" aria-controls="guideOverlay" title="Guia do usuário (PDF)">📘 Guia</button>
-          </div>
-          <div class="mode-switch" role="group" aria-label="Modo de cálculo">
-            <button type="button" data-mode="rpn" aria-pressed="true">RPN</button>
-            <button type="button" data-mode="alg" aria-pressed="false">ALG</button>
-          </div>
+          <button class="utility-button guide-button" type="button" data-action="guide" aria-haspopup="dialog" aria-controls="guideOverlay" title="Guia do usuário (PDF)">📘 Guia</button>
         </div>
 
         <section class="calculator" aria-label="BR 12C Niobium">
@@ -87,7 +80,7 @@
       </aside>
     </main>
 
-    <div class="guide-overlay" id="guideOverlay" role="dialog" aria-modal="true" aria-labelledby="guideTitle" hidden>
+    <div class="guide-overlay" id="guideOverlay" role="complementary" aria-labelledby="guideTitle" hidden>
       <div class="guide-modal">
         <header class="guide-modal-bar">
           <span class="guide-modal-title" id="guideTitle">📘 Guia do usuário — HP 12C Platinum (EN)</span>

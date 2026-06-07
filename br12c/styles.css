@@ -972,50 +972,34 @@ a {
 }
 
 /* ---- Visualizador do guia do usuário (PDF) ---- */
-.stage-controls-group {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-
 .guide-button {
   color: #f8f7f1;
   border-color: rgba(242, 198, 77, 0.55);
   white-space: nowrap;
 }
 
+/* O guia abre DOCADO, sem cobrir a calculadora (dá pra ler enquanto opera).
+   Padrão (telas pequenas): ocupa a tela inteira; docagem por orientação abaixo. */
 .guide-overlay {
   position: fixed;
   inset: 0;
   z-index: 60;
-  display: grid;
-  place-items: center;
-  padding: 16px;
-  background: rgba(4, 5, 4, 0.66);
-  backdrop-filter: blur(4px);
+  display: flex;
 }
 
 .guide-overlay[hidden] {
   display: none;
 }
 
-/* PC: janela redimensionável (arraste o canto inferior direito). */
 .guide-modal {
   display: flex;
+  flex: 1;
   flex-direction: column;
-  width: min(980px, 94vw);
-  height: min(90vh, 1180px);
-  max-width: 100%;
-  max-height: 100%;
-  min-width: 300px;
-  min-height: 320px;
+  min-width: 0;
+  min-height: 0;
   background: var(--plate);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.62);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.55);
   overflow: hidden;
-  resize: both;
 }
 
 .guide-modal-bar {
@@ -1089,22 +1073,33 @@ a {
   outline-offset: 2px;
 }
 
-/* Celular: ocupa a tela inteira, sem handle de redimensionar. */
-@media (max-width: 720px) {
+/* PC LARGO (paisagem): guia DOCADO À DIREITA; a calculadora fica à esquerda. */
+@media (min-width: 900px) and (min-height: 560px) and (orientation: landscape) {
   .guide-overlay {
-    padding: 0;
+    inset: 0 0 0 auto;
+    width: min(46vw, 760px);
+    border-left: 1px solid rgba(255, 255, 255, 0.18);
   }
 
-  .guide-modal {
-    width: 100vw;
-    height: 100svh;
-    max-width: 100vw;
-    max-height: 100svh;
-    min-width: 0;
-    min-height: 0;
-    border: 0;
-    border-radius: 0;
-    resize: none;
+  body.guide-open {
+    padding-right: min(46vw, 760px);
+  }
+
+  body.guide-open .workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* PC ALTO (retrato): guia DOCADO EMBAIXO; a calculadora fica em cima. */
+@media (min-width: 700px) and (min-height: 760px) and (orientation: portrait) {
+  .guide-overlay {
+    inset: auto 0 0 0;
+    height: 46vh;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
+  body.guide-open {
+    padding-bottom: 46vh;
   }
 }
 

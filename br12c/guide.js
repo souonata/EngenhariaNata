@@ -12,26 +12,31 @@
   let ultimoFoco = null;
 
   function abrir() {
+    if (document.body.classList.contains('guide-open')) return;
     // Carrega o PDF só agora, evitando baixar o arquivo grande sem necessidade.
     if (!frame.getAttribute('src') && frame.dataset.src) {
       frame.setAttribute('src', frame.dataset.src);
     }
     ultimoFoco = document.activeElement;
     overlay.hidden = false;
-    document.body.style.overflow = 'hidden';
+    // Docado (não cobre a calc): NÃO trava o scroll do corpo.
+    document.body.classList.add('guide-open');
     const fechar = overlay.querySelector('[data-action="guide-close"]');
     if (fechar) fechar.focus();
   }
 
   function fechar() {
     overlay.hidden = true;
-    document.body.style.overflow = '';
+    document.body.classList.remove('guide-open');
     if (ultimoFoco && typeof ultimoFoco.focus === 'function') {
       ultimoFoco.focus();
     }
   }
 
   openBtn.addEventListener('click', abrir);
+
+  // Abertura disparada pelo app.js (ex.: toque no botão Guia em telas touch).
+  document.addEventListener('br12c:guide', abrir);
 
   // Fecha ao clicar no fundo escuro (fora da janela do modal).
   overlay.addEventListener('click', (evento) => {

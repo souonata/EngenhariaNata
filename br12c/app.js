@@ -216,14 +216,19 @@ function attachEvents() {
   stageControls.addEventListener("touchend", handleTouchActivation, { passive: false });
   stageControls.addEventListener("dblclick", preventDoubleTapZoom);
 
-  document.querySelector("[data-action='power']").addEventListener("click", (event) => {
-    if (shouldSuppressSyntheticClick()) {
-      event.preventDefault();
-      return;
-    }
+  // O botão ON do topo foi removido (a tecla ON da calculadora faz isso).
+  // Mantém o handler guardado caso o botão exista em alguma variação.
+  const stagePowerBtn = document.querySelector(".stage-controls [data-action='power']");
+  if (stagePowerBtn) {
+    stagePowerBtn.addEventListener("click", (event) => {
+      if (shouldSuppressSyntheticClick()) {
+        event.preventDefault();
+        return;
+      }
 
-    activateActionButton(event.currentTarget);
-  });
+      activateActionButton(event.currentTarget);
+    });
+  }
 
   document.querySelectorAll("[data-mode]").forEach((button) => {
     button.addEventListener("click", (event) => {
@@ -485,6 +490,7 @@ function handleAction(action) {
       rcl: beginRecall,
       sto: beginStore,
       power: togglePower,
+      guide: () => document.dispatchEvent(new CustomEvent("br12c:guide")),
     };
 
     if (handlers[action]) handlers[action]();
