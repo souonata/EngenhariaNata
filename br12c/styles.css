@@ -1085,8 +1085,25 @@ a {
     padding-right: min(46vw, 760px);
   }
 
+  /* Com o guia docado, a área da esquerda fica estreita: layout compacto e
+     centralizado (calc + painéis empilhados), independente do zoom do browser. */
   body.guide-open .workspace {
     grid-template-columns: 1fr;
+    width: 100%;
+    justify-items: center;
+    align-content: start;
+  }
+
+  body.guide-open .calculator-stage {
+    width: 100%;
+    max-width: 600px;
+  }
+
+  body.guide-open .register-panel {
+    grid-template-columns: 1fr;
+    width: 100%;
+    max-width: 600px;
+    justify-self: center;
   }
 }
 
