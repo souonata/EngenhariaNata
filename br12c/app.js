@@ -60,6 +60,7 @@ const SYNTHETIC_CLICK_SUPPRESSION_MS = 700;
 let lastTouchActivationAt = 0;
 const activePointerPresses = new Map();
 const heldActionButtons = new Map();
+let latchMode = false;
 
 const state = {
   power: true,
@@ -194,10 +195,6 @@ function attachEvents() {
 
     const key = event.target.closest("[data-action]");
     if (!key) return;
-    if (heldActionButtons.has(key.dataset.action)) {
-      releaseHeldAction(key.dataset.action);
-      return;
-    }
 
     activateActionButton(key);
   });
@@ -227,6 +224,18 @@ function attachEvents() {
       }
 
       activateActionButton(event.currentTarget);
+    });
+  }
+
+  // Botão "Segurar": liga/desliga o modo de travar teclas (sticky).
+  const holdBtn = document.getElementById("holdModeBtn");
+  if (holdBtn) {
+    holdBtn.addEventListener("click", (event) => {
+      if (shouldSuppressSyntheticClick()) {
+        event.preventDefault();
+        return;
+      }
+      setLatchMode(!latchMode);
     });
   }
 
@@ -336,9 +345,24 @@ function handleActionPointerCancel(event) {
 }
 
 function activateActionButton(button) {
+  const action = button.dataset.action;
+
+  // Modo Segurar: tocar trava/solta a tecla (não executa).
+  if (latchMode) {
+    if (heldActionButtons.has(action)) releaseHeldAction(action);
+    else holdActionButton(button);
+    return;
+  }
+
+  // Fora do modo: tocar numa tecla já travada solta ela.
+  if (heldActionButtons.has(action)) {
+    releaseHeldAction(action);
+    return;
+  }
+
   const key = button.closest(".key");
   if (key) animateKey(key);
-  handleAction(button.dataset.action);
+  handleAction(action);
 }
 
 function pressActionButton(button) {
@@ -358,6 +382,7 @@ function holdActionButton(button) {
   heldActionButtons.set(button.dataset.action, button);
   key.classList.add("is-held", "is-pressed");
   button.setAttribute("aria-pressed", "true");
+  updateUI();
 }
 
 function releaseHeldAction(action) {
@@ -367,6 +392,21 @@ function releaseHeldAction(action) {
   if (key) key.classList.remove("is-held", "is-pressed");
   button.removeAttribute("aria-pressed");
   heldActionButtons.delete(action);
+  updateUI();
+}
+
+// f/g TRAVADO (modo segurar) = shift sustentado, aplicado a cada tecla seguinte.
+function getHeldShift() {
+  if (heldActionButtons.has("shift:f")) return "f";
+  if (heldActionButtons.has("shift:g")) return "g";
+  return null;
+}
+
+function setLatchMode(on) {
+  latchMode = on;
+  document.body.classList.toggle("latch-mode", on);
+  const btn = document.getElementById("holdModeBtn");
+  if (btn) btn.setAttribute("aria-pressed", on ? "true" : "false");
 }
 
 function preventDoubleTapZoom(event) {
@@ -446,9 +486,13 @@ function handleAction(action) {
     return;
   }
 
-  if (state.shift) {
-    const handled = handleShiftedAction(state.shift, action);
-    state.shift = null;
+  // Shift sustentado: f/g TRAVADO (modo segurar) aplica-se a cada tecla e NÃO é
+  // consumido; senão, usa o shift de uma vez só (state.shift).
+  const shiftTravado = getHeldShift();
+  const shiftEfetivo = shiftTravado || state.shift;
+  if (shiftEfetivo) {
+    const handled = handleShiftedAction(shiftEfetivo, action);
+    if (!shiftTravado) state.shift = null;
     if (handled) {
       updateUI();
       return;
@@ -1238,8 +1282,9 @@ function updateUI() {
   display.textContent = screenText;
   fitDisplayText(screenText);
 
-  shiftIndicator.textContent = state.shift ? state.shift : "";
-  shiftIndicator.className = state.shift ? `shift-${state.shift}` : "";
+  const shiftVisivel = getHeldShift() || state.shift;
+  shiftIndicator.textContent = shiftVisivel || "";
+  shiftIndicator.className = shiftVisivel ? `shift-${shiftVisivel}` : "";
   modeIndicator.textContent = state.notice || state.mode.toUpperCase();
   angleIndicator.textContent = state.tvm.begin ? "BEG" : "END";
   pendingIndicator.textContent = state.pendingOperator ? state.pendingOperator.replace("pow", "y^x") : "";
@@ -1276,7 +1321,7 @@ function updateUI() {
 
   const statusValues = {
     mode: state.mode.toUpperCase(),
-    shift: state.shift ? state.shift.toUpperCase() : "--",
+    shift: shiftVisivel ? shiftVisivel.toUpperCase() : "--",
     fixed: String(state.fixed),
     begin: state.tvm.begin ? "BEG" : "END",
     pending: pendingStatus,

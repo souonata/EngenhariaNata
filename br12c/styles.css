@@ -978,6 +978,25 @@ a {
   white-space: nowrap;
 }
 
+.hold-button {
+  white-space: nowrap;
+}
+
+/* Modo Segurar ligado: botão destacado em dourado. */
+.hold-button[aria-pressed="true"] {
+  background: linear-gradient(#f5cc55, #b88620);
+  border-color: rgba(242, 198, 77, 0.85);
+  color: #211a05;
+  font-weight: 800;
+}
+
+/* Enquanto o modo Segurar está ligado, realça o teclado (toque p/ travar). */
+body.latch-mode .keyboard {
+  outline: 2px dashed rgba(242, 198, 77, 0.6);
+  outline-offset: 6px;
+  border-radius: 8px;
+}
+
 /* O guia abre DOCADO, sem cobrir a calculadora (dá pra ler enquanto opera).
    Padrão (telas pequenas): ocupa a tela inteira; docagem por orientação abaixo. */
 .guide-overlay {
