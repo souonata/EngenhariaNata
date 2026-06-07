@@ -312,7 +312,7 @@
                 </a>
 
                 <!-- Ícone do aplicativo BR 12C Niobium -->
-                <a href="hp12c/index.html" class="app-icon" data-i18n-aria="app-hp12c">
+                <a href="br12c/index.html" class="app-icon" data-i18n-aria="app-hp12c">
                     <div class="icon">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <defs>
@@ -678,7 +678,7 @@
             <!-- App: BR 12C Niobium -->
             <div class="app-card">
                 <div class="app-card-header">
-                    <a href="hp12c/index.html" data-i18n-aria="app-hp12c">
+                    <a href="br12c/index.html" data-i18n-aria="app-hp12c">
                         <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
                             <defs>
                                 <linearGradient id="gradient-hp12c-desc" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -691,10 +691,10 @@
                             <text x="30" y="42" font-size="18" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="800">12C</text>
                         </svg>
                     </a>
-                    <h3><a href="hp12c/index.html" data-i18n="app-hp12c-title">BR 12C Niobium - Simulador Financeiro</a></h3>
+                    <h3><a href="br12c/index.html" data-i18n="app-hp12c-title">BR 12C Niobium - Simulador Financeiro</a></h3>
                 </div>
                 <p class="app-description" data-i18n="app-hp12c-description">Simulador standalone da calculadora financeira BR 12C Niobium, hospedado no Engenharia NATA para acesso direto pelo app no celular. Mantém sua própria interface em tela cheia, sem cabeçalho e rodapé padrão dos demais apps.</p>
-                <a href="hp12c/index.html" class="app-link" data-i18n="app-link-open-simulator">Abrir simulador →</a>
+                <a href="br12c/index.html" class="app-link" data-i18n="app-link-open-simulator">Abrir simulador →</a>
             </div>
 
             <!-- App: Previsão 7 dias -->
@@ -800,12 +800,12 @@
     <script type="module" src="index-script.js?v=1.0.2"></script>
     
     <!-- Limpeza de legado: remove Service Workers antigos do site, mas PRESERVA o
-         do guia offline do BR 12C Niobium (escopo /hp12c/). -->
+         do guia offline do BR 12C Niobium (escopo /br12c/). -->
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then((registrations) => {
                 registrations.forEach((registration) => {
-                    if (!registration.scope.includes('/hp12c/')) {
+                    if (!registration.scope.includes('/br12c/')) {
                         registration.unregister();
                     }
                 });

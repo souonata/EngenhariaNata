@@ -1,12 +1,12 @@
-// Service Worker do guia BR 12C Niobium — escopo /hp12c/.
+// Service Worker do guia BR 12C Niobium — escopo /br12c/.
 // Objetivo: o app e o PDF do guia funcionarem offline depois do 1º acesso online.
 // Estratégia:
 //   - PDF/fontes/imagens (estáticos): cache-first (servem offline; não rebaixam).
 //   - HTML/JS/CSS (casca do app): network-first (atualizam online; caem para o
 //     cache quando offline).
-// Não intercepta nada fora de /hp12c/ nem outras origens (ex.: GoatCounter).
+// Não intercepta nada fora de /br12c/ nem outras origens (ex.: GoatCounter).
 
-const CACHE = 'br12c-guide-v1';
+const CACHE = 'br12c-guide-v2';
 const ESTATICO = /\.(?:pdf|woff2?|png|jpe?g|gif|svg|webp)$/i;
 
 // Casca do app pré-cacheada já na instalação (o PDF não entra aqui: é grande e
@@ -60,8 +60,8 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET') return;
 
   const url = new URL(req.url);
-  // Só o próprio escopo (mesma origem, dentro de /hp12c/).
-  if (url.origin !== self.location.origin || !url.pathname.includes('/hp12c/')) {
+  // Só o próprio escopo (mesma origem, dentro de /br12c/).
+  if (url.origin !== self.location.origin || !url.pathname.includes('/br12c/')) {
     return;
   }
 

@@ -48,9 +48,9 @@ jobs:
           cp assets/js/vendor/chart.umd.js local/dist/assets/js/vendor/
           cp fazenda/fazenda-database.js local/dist/fazenda/
 
-      # hp12c é standalone (excluído do bundle): copiado como está.
-      - name: Copiar app standalone hp12c
-        run: cp -r hp12c local/dist/
+      # br12c é standalone (excluído do bundle): copiado como está.
+      - name: Copiar app standalone br12c
+        run: cp -r br12c local/dist/
 
       # Arquivos estáticos não referenciados por HTML (o Vite não os inclui).
       # Mantidos na raiz do repo para o serving cru; copiados para o artefato aqui.

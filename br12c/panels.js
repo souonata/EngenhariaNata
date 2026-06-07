@@ -3,7 +3,7 @@
 (function () {
   'use strict';
 
-  var PREFIX = 'engnata_hp12c_panel_';
+  var PREFIX = 'engnata_br12c_panel_';
   var toggles = document.querySelectorAll('.panel-block .panel-toggle');
 
   function aplicar(bloco, botao, colapsado) {

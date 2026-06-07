@@ -6,7 +6,7 @@ const projectRoot = resolve(__dirname, '..');
 
 // Descobre automaticamente todas as páginas .html para as entradas multipage do
 // build. Evita o esquecimento de apps novos na lista de inputs (foi o que deixou
-// o hp12c de fora). Pastas em IGNORAR ficam sempre fora do build.
+// o br12c de fora). Pastas em IGNORAR ficam sempre fora do build.
 const IGNORAR = new Set([
     'node_modules',
     'dist',
@@ -16,9 +16,9 @@ const IGNORAR = new Set([
     'public',
     'dalie',
     'template-app',
-    // hp12c é standalone (scripts clássicos próprios). Não passa pelo bundle:
+    // br12c é standalone (scripts clássicos próprios). Não passa pelo bundle:
     // é copiado verbatim para o dist pelo workflow de deploy.
-    'hp12c'
+    'br12c'
 ]);
 
 function descobrirPaginasHtml(dir, acc = {}) {
