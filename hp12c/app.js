@@ -62,6 +62,7 @@ const activePointerPresses = new Map();
 const heldActionButtons = new Map();
 
 const state = {
+  power: true,
   mode: "rpn",
   stack: { x: 0, y: 0, z: 0, t: 0 },
   entry: "",
@@ -425,6 +426,11 @@ function actionFromKeyboard(event) {
 }
 
 function handleAction(action) {
+  // Calculadora desligada: só a tecla ON (power) responde.
+  if (!state.power && action !== "power") {
+    return;
+  }
+
   if (state.error && !["power", "clear-entry", "backspace"].includes(action)) {
     clearError();
   }
@@ -478,7 +484,7 @@ function handleAction(action) {
       roll,
       rcl: beginRecall,
       sto: beginStore,
-      power: clearAll,
+      power: togglePower,
     };
 
     if (handlers[action]) handlers[action]();
@@ -1087,6 +1093,23 @@ function clearAll() {
   flash("ON");
 }
 
+// Liga/desliga a calculadora (tecla ON). Desligada, a tela apaga e só o ON
+// volta a responder; o estado/memória são preservados ao religar.
+function togglePower() {
+  state.power = !state.power;
+  state.shift = null;
+  if (state.power) {
+    clearError();
+    flash("ON");
+  } else {
+    if (state.noticeTimer) {
+      window.clearTimeout(state.noticeTimer);
+      state.noticeTimer = null;
+    }
+    state.notice = "";
+  }
+}
+
 function setError() {
   state.error = "Error";
   state.entry = "";
@@ -1194,6 +1217,17 @@ function toScreenText(text) {
 }
 
 function updateUI() {
+  if (!state.power) {
+    display.textContent = "";
+    fitDisplayText("");
+    shiftIndicator.textContent = "";
+    shiftIndicator.className = "";
+    modeIndicator.textContent = "";
+    angleIndicator.textContent = "";
+    pendingIndicator.textContent = "";
+    return;
+  }
+
   const screenText = toScreenText(currentDisplayText());
   display.textContent = screenText;
   fitDisplayText(screenText);
