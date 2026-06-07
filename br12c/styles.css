@@ -1073,20 +1073,55 @@ a {
   outline-offset: 2px;
 }
 
-/* PC LARGO (paisagem): guia DOCADO À DIREITA; a calculadora fica à esquerda. */
+/* Divisória arrastável entre a calculadora e o guia. Escondida na tela cheia
+   (celular); posicionada por orientação nas media queries abaixo. */
+.guide-resizer {
+  display: none;
+  position: absolute;
+  z-index: 3;
+  background: transparent;
+  touch-action: none;
+}
+
+.guide-resizer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.guide-resizer:hover,
+.guide-resizer:focus-visible {
+  background: rgba(104, 199, 229, 0.28);
+  outline: none;
+}
+
+body.guide-resizing {
+  user-select: none;
+}
+
+/* durante o arraste, o iframe não pode capturar o ponteiro */
+body.guide-resizing .guide-frame {
+  pointer-events: none;
+}
+
+/* PC LARGO (paisagem): guia DOCADO À DIREITA; a calculadora fica à esquerda.
+   Largura do guia e padding da calc seguem --guide-w (divisória horizontal). */
 @media (min-width: 900px) and (min-height: 560px) and (orientation: landscape) {
   .guide-overlay {
     inset: 0 0 0 auto;
-    width: min(46vw, 760px);
+    width: var(--guide-w, clamp(340px, calc(100vw - 600px), 86vw));
     border-left: 1px solid rgba(255, 255, 255, 0.18);
   }
 
   body.guide-open {
-    padding-right: min(46vw, 760px);
+    padding-right: var(--guide-w, clamp(340px, calc(100vw - 600px), 86vw));
   }
 
-  /* Com o guia docado, a área da esquerda fica estreita: layout compacto e
-     centralizado (calc + painéis empilhados), independente do zoom do browser. */
+  /* área da esquerda em coluna única (calc + painéis empilhados), preenchendo
+     a largura definida pela divisória. */
   body.guide-open .workspace {
     grid-template-columns: 1fr;
     width: 100%;
@@ -1094,29 +1129,65 @@ a {
     align-content: start;
   }
 
-  body.guide-open .calculator-stage {
+  body.guide-open .calculator-stage,
+  body.guide-open .register-panel {
     width: 100%;
-    max-width: 600px;
+    max-width: 100%;
   }
 
   body.guide-open .register-panel {
     grid-template-columns: 1fr;
-    width: 100%;
-    max-width: 600px;
-    justify-self: center;
+    justify-self: stretch;
+  }
+
+  .guide-resizer {
+    display: block;
+    left: -4px;
+    top: 0;
+    bottom: 0;
+    width: 14px;
+    cursor: col-resize;
+  }
+
+  .guide-resizer::before {
+    width: 4px;
+    height: 46px;
+  }
+
+  body.guide-resizing {
+    cursor: col-resize;
   }
 }
 
-/* PC ALTO (retrato): guia DOCADO EMBAIXO; a calculadora fica em cima. */
+/* PC ALTO (retrato): guia DOCADO EMBAIXO; a calculadora fica em cima.
+   Altura do guia e padding da calc seguem --guide-h (divisória vertical). */
 @media (min-width: 700px) and (min-height: 760px) and (orientation: portrait) {
   .guide-overlay {
     inset: auto 0 0 0;
-    height: 46vh;
+    height: var(--guide-h, 46vh);
     border-top: 1px solid rgba(255, 255, 255, 0.18);
   }
 
   body.guide-open {
-    padding-bottom: 46vh;
+    padding-bottom: var(--guide-h, 46vh);
+  }
+
+  .guide-resizer {
+    display: block;
+    top: -4px;
+    left: 0;
+    right: 0;
+    height: 14px;
+    cursor: row-resize;
+  }
+
+  .guide-resizer::before {
+    width: 46px;
+    height: 4px;
+  }
+
+  body.guide-resizing {
+    cursor: row-resize;
   }
 }
 

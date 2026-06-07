@@ -61,4 +61,74 @@
       });
     });
   }
+
+  // --- Divisória arrastável entre a calculadora e o guia ---
+  const resizer = document.getElementById('guideResizer');
+  if (resizer) {
+    const root = document.documentElement;
+    const LS_W = 'engnata_br12c_guide_w';
+    const LS_H = 'engnata_br12c_guide_h';
+
+    const lerLS = (k) => {
+      try { return localStorage.getItem(k); } catch (e) { return null; }
+    };
+    const salvarLS = (k, v) => {
+      try { localStorage.setItem(k, v); } catch (e) { /* ignora */ }
+    };
+
+    // Restaura tamanhos salvos (um para paisagem, outro para retrato).
+    const savedW = lerLS(LS_W);
+    const savedH = lerLS(LS_H);
+    if (savedW) root.style.setProperty('--guide-w', savedW);
+    if (savedH) root.style.setProperty('--guide-h', savedH);
+
+    const dockH = () =>
+      window.matchMedia('(min-width: 900px) and (min-height: 560px) and (orientation: landscape)').matches;
+    const dockV = () =>
+      window.matchMedia('(min-width: 700px) and (min-height: 760px) and (orientation: portrait)').matches;
+
+    const setLargura = (px) => {
+      px = Math.max(300, Math.min(window.innerWidth - 240, px));
+      root.style.setProperty('--guide-w', px + 'px');
+      salvarLS(LS_W, px + 'px');
+    };
+    const setAltura = (px) => {
+      px = Math.max(180, Math.min(window.innerHeight - 280, px));
+      root.style.setProperty('--guide-h', px + 'px');
+      salvarLS(LS_H, px + 'px');
+    };
+
+    const fimResize = (evento) => {
+      if (!document.body.classList.contains('guide-resizing')) return;
+      document.body.classList.remove('guide-resizing');
+      try { resizer.releasePointerCapture(evento.pointerId); } catch (_e) { /* ignora */ }
+    };
+
+    resizer.addEventListener('pointerdown', (evento) => {
+      if (!dockH() && !dockV()) return; // tela cheia (celular): não redimensiona
+      evento.preventDefault();
+      try { resizer.setPointerCapture(evento.pointerId); } catch (_e) { /* ignora */ }
+      document.body.classList.add('guide-resizing');
+    });
+    resizer.addEventListener('pointermove', (evento) => {
+      if (!document.body.classList.contains('guide-resizing')) return;
+      if (dockH()) setLargura(window.innerWidth - evento.clientX);
+      else if (dockV()) setAltura(window.innerHeight - evento.clientY);
+    });
+    resizer.addEventListener('pointerup', fimResize);
+    resizer.addEventListener('pointercancel', fimResize);
+
+    // Acessibilidade: setas ajustam a divisória (Shift = passo maior).
+    resizer.addEventListener('keydown', (evento) => {
+      const passo = evento.shiftKey ? 48 : 16;
+      const r = overlay.getBoundingClientRect();
+      if (dockH()) {
+        if (evento.key === 'ArrowLeft') { setLargura(r.width + passo); evento.preventDefault(); }
+        else if (evento.key === 'ArrowRight') { setLargura(r.width - passo); evento.preventDefault(); }
+      } else if (dockV()) {
+        if (evento.key === 'ArrowUp') { setAltura(r.height + passo); evento.preventDefault(); }
+        else if (evento.key === 'ArrowDown') { setAltura(r.height - passo); evento.preventDefault(); }
+      }
+    });
+  }
 })();
