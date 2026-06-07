@@ -1,14 +1,53 @@
 import { defineConfig } from 'vite';
-import { resolve } from 'path';
+import { resolve, relative } from 'path';
+import { readdirSync, statSync } from 'fs';
 
 const projectRoot = resolve(__dirname, '..');
 
-export default defineConfig({
+// Descobre automaticamente todas as páginas .html para as entradas multipage do
+// build. Evita o esquecimento de apps novos na lista de inputs (foi o que deixou
+// o hp12c de fora). Pastas em IGNORAR ficam sempre fora do build.
+const IGNORAR = new Set([
+    'node_modules',
+    'dist',
+    '.vite',
+    '.git',
+    'local',
+    'public',
+    'dalie',
+    'template-app',
+    // hp12c é standalone (scripts clássicos próprios). Não passa pelo bundle:
+    // é copiado verbatim para o dist pelo workflow de deploy.
+    'hp12c'
+]);
+
+function descobrirPaginasHtml(dir, acc = {}) {
+    for (const nome of readdirSync(dir)) {
+        if (IGNORAR.has(nome) || nome.startsWith('.')) {
+            continue;
+        }
+        const full = resolve(dir, nome);
+        if (statSync(full).isDirectory()) {
+            descobrirPaginasHtml(full, acc);
+        } else if (nome.endsWith('.html')) {
+            const rel = relative(projectRoot, full).replace(/\\/g, '/');
+            const chave = rel === 'index.html' ? 'main' : rel.replace(/\.html$/, '').replace(/\//g, '-');
+            acc[chave] = full;
+        }
+    }
+    return acc;
+}
+
+export default defineConfig(({ command }) => ({
     // Diretório raiz do projeto
     root: projectRoot,
 
-    // Diretório público (assets não processados)
+    // Diretório público (assets não processados, copiados como estão)
     publicDir: resolve(projectRoot, 'public'),
+
+    // Produção: GitHub Pages de projeto em https://souonata.github.io/EngenhariaNata/.
+    // Em dev/preview mantém a raiz ('/') para não quebrar o fluxo local.
+    base: command === 'build' ? '/EngenhariaNata/' : '/',
 
     // Configurações do servidor de desenvolvimento
     server: {
@@ -22,6 +61,7 @@ export default defineConfig({
     build: {
         outDir: resolve(__dirname, 'dist'),
         assetsDir: 'assets',
+        emptyOutDir: true,
         sourcemap: true,
         minify: 'terser',
 
@@ -36,27 +76,9 @@ export default defineConfig({
             }
         },
 
-        // Configurações do Rollup
+        // Entradas multipage descobertas automaticamente
         rollupOptions: {
-            input: {
-                main: resolve(projectRoot, 'index.html'),
-                bombaagua: resolve(projectRoot, 'bombaagua/bombaagua.html'),
-                aquecimento: resolve(projectRoot, 'aquecimento/aquecimento.html'),
-                arcondicionado: resolve(projectRoot, 'arcondicionado/arcondicionado.html'),
-                bitola: resolve(projectRoot, 'bitola/bitola.html'),
-                bugs: resolve(projectRoot, 'bugs/bugs.html'),
-                chuva: resolve(projectRoot, 'chuva/chuva.html'),
-                fazenda: resolve(projectRoot, 'fazenda/fazenda.html'),
-                helice: resolve(projectRoot, 'helice/helice.html'),
-                mutuo: resolve(projectRoot, 'mutuo/mutuo.html'),
-                solar: resolve(projectRoot, 'solar/solar.html'),
-                solarConfig: resolve(projectRoot, 'solar/config.html'),
-                sobre: resolve(projectRoot, 'sobre/sobre.html'),
-                iluminacao: resolve(projectRoot, 'iluminacao/iluminacao.html'),
-                ventilacao: resolve(projectRoot, 'ventilacao/ventilacao.html'),
-                salario: resolve(projectRoot, 'salario/salario.html'),
-                previsao: resolve(projectRoot, 'previsao/previsao.html')
-            },
+            input: descobrirPaginasHtml(projectRoot),
             output: {
                 // Nome dos chunks com hash para cache-busting
                 chunkFileNames: 'assets/js/[name]-[hash].js',
@@ -87,4 +109,4 @@ export default defineConfig({
     css: {
         devSourcemap: true
     }
-});
+}));

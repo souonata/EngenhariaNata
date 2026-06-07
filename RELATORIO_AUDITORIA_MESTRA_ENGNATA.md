@@ -8,6 +8,46 @@ Escopo: arquitetura front-end, performance e cache, segurança (CSP/XSS/dependê
 
 ---
 
+## Rodada de Execução - 2026-06-07 - Build = produção, preparado (risco #2)
+
+Escopo desta rodada: preparar o deploy do build do Vite no GitHub Pages. **Decisão do dono: preparar sem ativar** — toda a config pronta e verificada, mas a fonte do Pages continua "deploy from branch" (repo cru), então o site no ar **não muda** até a ativação.
+
+Resultado geral: **Pipeline de deploy pronto e verificado de ponta a ponta; ativação é um passo manual reversível.**
+
+Diagnóstico (por que publicar o `dist/` cru quebraria a produção):
+
+- **Base path errado**: o Vite gerava assets em `/assets/...`, mas o site é servido em `/EngenhariaNata/` → todo CSS/JS daria 404.
+- **hp12c fora do build**: não estava nos inputs → BR 12C Niobium sumiria.
+- **Estáticos faltando**: `robots.txt`, `sitemap.xml`, `favicon.svg`, `.nojekyll`, verificação Google não iam para o `dist`.
+- **Scripts clássicos não bundlados**: o Vite só empacota `type="module"`. Ficavam de fora `assets/js/vendor/chart.umd.js` (5 apps + helice via runtime), `fazenda/fazenda-database.js` e os scripts do hp12c.
+
+Ações aplicadas:
+
+- `local/vite.config.js`: `base` condicional (`/EngenhariaNata/` no build, `/` em dev/preview para não quebrar o fluxo local); **inputs descobertos por glob** (inclui o hp12c... na verdade o exclui — veja abaixo — e qualquer app novo automaticamente, eliminando o risco #25 de esquecer páginas); exclui `template-app` (scaffold) e `hp12c` (standalone).
+- `.github/workflows/deploy.yml` (**só `workflow_dispatch`, não dispara em push ainda**): `npm install` + `npm run build`, depois copia para o artefato os scripts clássicos (`vendor/chart.umd.js`, `fazenda-database.js`), o `hp12c/` verbatim e os estáticos de passagem; então `upload-pages-artifact` + `deploy-pages`.
+- **Não alterado**: a fonte do Pages segue `legacy` (branch `main`). O site no ar continua sendo o repo cru.
+
+Validações desta rodada:
+
+| Validação | Resultado |
+|---|---|
+| `npm run lint:check` | **passou** |
+| `npm run build` | **passou** (~0,95 s; avisos esperados dos scripts clássicos + 1 css pré-existente) |
+| `dist` montado (build + cópias) | completo: todos os apps, hp12c (app.js/guide.js/imagem), chart.umd.js, fazenda-database.js e estáticos presentes |
+| `vite preview` em `/EngenhariaNata/` | **200** em home, hp12c, hp12c/app.js, hp12c/guide.js, vendor/chart.umd.js, fazenda-database.js, robots.txt e no asset hasheado |
+
+Como **ativar** (quando quiser servir o build minificado):
+
+1. Trocar a fonte do Pages para Actions: *Settings → Pages → Source: GitHub Actions* (ou `gh api -X PUT repos/souonata/EngenhariaNata/pages -f build_type=workflow`).
+2. Descomentar o gatilho `push: { branches: [main] }` em `deploy.yml` (deploy contínuo) ou rodar o workflow manualmente.
+3. Reversível: basta voltar a fonte do Pages para "branch".
+
+Riscos restantes / follow-ups:
+
+1. **Fragilidade**: novos scripts clássicos (não-module) precisam ser adicionados à lista de cópia do `deploy.yml`. Refatorá-los para módulos (ou auto-hospedar Chart.js como import) eliminaria isso.
+2. **#9**: `package-lock.json` versionado + `npm ci` para deploy reprodutível (hoje usa `npm install`).
+3. Após ativar e validar, dá para aposentar o versionamento manual `?v=` (o hash dos assets passa a cuidar do cache).
+
 ## Rodada de Execução - 2026-06-07 - Endurecimento de CSP (risco #4, parte do #6)
 
 Escopo desta rodada: estreitar a Content-Security-Policy sem quebrar funcionalidade — remover o que é perigoso (`'unsafe-eval'`) e o que é morto (CDN/domínios não usados).
