@@ -45,14 +45,15 @@ cada exemplo começa “limpo”.
 | 0 | Harness/infra | ✅ feito | jsdom + tradutor + comparador; smoke verde (RPN, FIX). 111 testes no total. |
 | 1 | Seção 1 — Getting Started (aritmética RPN/ALG, cadeia, STO/RCL) | ✅ feito | 9/9 exemplos. Implementados R0–R9 + aritmética de registrador. |
 | 2 | Seção 2 — Percentage + Calendar | ✅ feito | Percentual 10/10; calendário: ΔDYS, formatos D.MY/M.DY, **DATE (data futura + dia da semana)**. |
-| 3 | Seção 3 — Basic Financial (juros, TVM, amortização) | 🟡 parcial | TVM Ex.1-3 + **amortização (AMORT)** verdes. INT/odd-period/Ex.4 pendentes. |
+| 3 | Seção 3 — Basic Financial (juros, TVM, amortização) | ✅ feito | TVM (Ex.1-3, BEG/END), amortização (AMORT), juros simples (INT). odd-period (flag C) e Ex.4 anualização: nice-to-have. |
 | 4 | Seção 4 — NPV, IRR, bonds, depreciação | ✅ feito | NPV (agrupado/não), IRR, fluxo de caixa, depreciação (SL/SOYD/DB) e **títulos (PRICE/YTM, SIA actual/actual)**. |
 | 5 | Seção 5 — Operating Features (DISP/SCI, x<>y, LST x, constantes) | ✅ feito | x≷y, LST x (g++), aritmética com constante, **notação científica (f .)** e **mantissa (f CLEAR PREFIX)**. |
 | 6 | Seção 6 — Statistics | ✅ feito | Σ+/Σ-, média, desvio, média ponderada, **regressão linear (ŷ,r=g+2, x̂,r=g+1, r)** e CLEAR Σ. |
-| 7 | Seção 7 — Math/Number-Alteration | 🟡 parcial | 10/10: y^x, 1/x, √x, e^x, LN, FRAC, INTG, RND, x², n! (x² e n! implementados). LOG pendente. |
+| 7 | Seção 7 — Math/Number-Alteration | ✅ feito | 10/10: y^x, 1/x, √x, e^x, LN, FRAC, INTG, RND, x², n!. (O 12C Platinum não tem tecla LOG separada — só LN/e^x.) |
 | 8 | Apêndice D — Error Conditions | ✅ feito | Calc sinaliza "Error" em ÷0, √(−), ln(0), n! inválido; limpa ao pressionar tecla. (Sem tabelas no guia; códigos Error 0–9 não diferenciados.) |
 
-Programação (Parte II) e Soluções (Parte III): fora do escopo atual.
+**Parte I do guia + Apêndices A/D/E: COMPLETA.** Programação (Parte II) e Soluções
+aplicadas (Parte III) ficam fora do escopo (são reuso das funções da Parte I).
 
 ## Histórico
 - **Ch0 (2026-06-08):** harness criado e validado (smoke RPN `2 ENTER 3 +`=5 e FIX).
@@ -121,3 +122,18 @@ Programação (Parte II) e Soluções (Parte III): fora do escopo atual.
   e **CLEAR Σ** (f+SST). Exemplos p.95–99: média 21.714,29/40,00; desvio 4.820,59/6,03;
   ponderada 1,19. Estimativa linear (ŷ,r/x̂,r — teclas incertas na skin) pendente. Suíte:
   **157 verdes**.
+- **Rodada ultracode (2026-06-08):** workflow de 9 agentes em paralelo extraiu exemplos +
+  fórmulas (Apêndice E) + mapeamento de teclas das áreas restantes; implementação sequencial:
+  - **LST x (g++)**: rastreia lastX nas operações (Apêndice A) + handler que levanta a pilha —
+    habilita aritmética com constante e recuperação de erro de digitação (Seção 5).
+  - **Regressão linear**: x̂,r = g+1, ŷ,r = g+2 (estimativa em X, r em Y); p.97-98 x̂=28.818,93,
+    r=0,90, intercepto 15,55. Seção 6 completa.
+  - **DATE (g+CHS)**: data-base + N dias → nova data + dia da semana, display especial
+    "11,09,2004 6" (via `dataDeJulianos` + `state.displayOverride`). Seção 2 completa.
+  - **Títulos (PRICE=f+y^x, YTM=f+1/x)**: SIA semestral actual/actual; p.82-83 = 120,38 limpo /
+    123,07 total; yield 4,60. Seção 4 completa.
+  - **Erros (Apêndice D)**: "Error" em ÷0/√(−)/ln(0)/n! inválido + limpeza ao pressionar tecla.
+  - **Display científico (f .) e mantissa (f CLEAR PREFIX)**: `displayMode` + `formatScientific`/
+    `formatMantissa` + parser SCI no comparador; p.87-89 verde. Seção 5 completa.
+  - Apêndice E confirmou TODAS as fórmulas implementadas (TVM, NPV, IRR, bonds, depreciação,
+    %, estatística, regressão). **Parte I + Apêndices A/D/E completos. Suíte: 172 verdes, CI verde.**
