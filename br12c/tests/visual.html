@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Robô do guia — BR 12C Niobium</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, sans-serif;
+        background: #1c2620;
+        color: #e8eae6;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+      header {
+        padding: 10px 14px;
+        background: #11160f;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        border-bottom: 1px solid #2a3a2e;
+      }
+      header h1 {
+        font-size: 1rem;
+        margin: 0 8px 0 0;
+        color: #f2c64d;
+      }
+      select,
+      button,
+      label,
+      input {
+        font: inherit;
+      }
+      select,
+      button {
+        background: #2a3a2e;
+        color: #e8eae6;
+        border: 1px solid #3c5142;
+        border-radius: 6px;
+        padding: 6px 10px;
+        cursor: pointer;
+      }
+      button.primary {
+        background: #2e7d4f;
+        border-color: #3fa06a;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      #status {
+        margin-left: auto;
+        font-weight: 700;
+        color: #b9e5f1;
+      }
+      #wrap {
+        flex: 1;
+        display: flex;
+        min-height: 0;
+      }
+      #calcBox {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        background: #22301f;
+      }
+      iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+      }
+      #side {
+        width: 400px;
+        max-width: 44vw;
+        overflow: auto;
+        background: #161d14;
+        border-left: 1px solid #2a3a2e;
+        padding: 10px;
+      }
+      .linha {
+        padding: 6px 8px;
+        border-radius: 6px;
+        margin-bottom: 4px;
+        font-size: 0.84rem;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .ok {
+        background: rgba(46, 125, 79, 0.25);
+      }
+      .fail {
+        background: rgba(210, 70, 70, 0.32);
+      }
+      .keys {
+        color: #b9e5f1;
+        font-family: ui-monospace, monospace;
+      }
+      .got {
+        font-family: ui-monospace, monospace;
+        white-space: nowrap;
+      }
+      .resumo {
+        font-weight: 800;
+        margin: 10px 0;
+        font-size: 0.95rem;
+      }
+      .dica {
+        color: #9aa79a;
+        font-size: 0.8rem;
+        margin-bottom: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>🤖 Robô do guia</h1>
+      <select id="ex" title="Escolha um exemplo do guia"></select>
+      <label>Velocidade <input id="vel" type="range" min="80" max="900" value="320" /></label>
+      <button id="play" class="primary">▶ Tocar</button>
+      <button id="playAll">▶▶ Tocar tudo</button>
+      <span id="status"></span>
+    </header>
+    <div id="wrap">
+      <div id="calcBox"><iframe id="calc" title="Calculadora" src="../index.html"></iframe></div>
+      <div id="side">
+        <div class="dica">
+          O robô clica as teclas reais (destacadas) e compara o display com o guia. Cada linha:
+          <span class="keys">teclas</span> → resultado obtido ✓/✗.
+        </div>
+        <div id="log"></div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { traduzir } from "./keystrokes.js";
+      import { conferir } from "./comparar.js";
+      import { secao1 } from "./fixtures/secao-1.js";
+      import { secao2Percentual, secao2Calendario } from "./fixtures/secao-2.js";
+      import { secao3 } from "./fixtures/secao-3.js";
+      import { secao4 } from "./fixtures/secao-4.js";
+
+      const grupos = [
+        ["Seção 1 — Getting Started", secao1],
+        ["Seção 2 — Percentual", secao2Percentual],
+        ["Seção 2 — Calendário", secao2Calendario],
+        ["Seção 3 — Financeiras", secao3],
+        ["Seção 4 — NPV/IRR", secao4],
+      ];
+      const exemplos = [];
+      for (const [grupo, arr] of grupos) for (const ex of arr) exemplos.push({ ...ex, grupo });
+
+      const elEx = document.getElementById("ex");
+      exemplos.forEach((ex, i) => {
+        const o = document.createElement("option");
+        o.value = i;
+        o.textContent = `${ex.grupo} · ${ex.nome}`;
+        elEx.appendChild(o);
+      });
+
+      const frame = document.getElementById("calc");
+      const log = document.getElementById("log");
+      const statusEl = document.getElementById("status");
+      const vel = document.getElementById("vel");
+      const btnPlay = document.getElementById("play");
+      const btnAll = document.getElementById("playAll");
+
+      const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+      const doc = () => frame.contentDocument;
+      const win = () => frame.contentWindow;
+      const display = () => doc().querySelector("#display").textContent;
+
+      async function resetCalc() {
+        await new Promise((res) => {
+          frame.onload = () => res();
+          frame.src = "../index.html?t=" + Date.now();
+        });
+        for (let i = 0; i < 120; i += 1) {
+          if (win().__BR12C_KEYS__ && doc().querySelector('#keyboard [data-action]')) break;
+          await sleep(30);
+        }
+      }
+
+      async function pressActions(acoes) {
+        const passo = Number(vel.value);
+        for (const acao of acoes) {
+          const btn = doc().querySelector(`#keyboard [data-action="${acao}"]`);
+          if (btn) {
+            btn.classList.add("is-pressed");
+            btn.dispatchEvent(new (win().MouseEvent)("click", { bubbles: true }));
+            await sleep(Math.max(70, passo * 0.45));
+            btn.classList.remove("is-pressed");
+          }
+          await sleep(passo * 0.55);
+        }
+      }
+
+      async function tocar(ex) {
+        log.innerHTML = "";
+        statusEl.textContent = "▶ tocando…";
+        await resetCalc();
+        const KEYS = win().__BR12C_KEYS__;
+        if (ex.modo === "alg") await pressActions(traduzir(["f", "ALG"], KEYS));
+        let ok = 0;
+        for (const linha of ex.linhas) {
+          await pressActions(traduzir(linha.keys, KEYS));
+          const r = conferir(display(), linha.display);
+          if (r.ok) ok += 1;
+          const div = document.createElement("div");
+          div.className = "linha " + (r.ok ? "ok" : "fail");
+          div.innerHTML =
+            `<span class="keys">${linha.keys.join(" ")}</span>` +
+            `<span class="got">${r.atual} ${r.ok ? "✓" : "✗ (esp. " + r.esperado + ")"}</span>`;
+          log.appendChild(div);
+          div.scrollIntoView({ block: "nearest" });
+          await sleep(220);
+        }
+        const total = ex.linhas.length;
+        const resumo = document.createElement("div");
+        resumo.className = "resumo";
+        resumo.textContent = `${ok}/${total} ${ok === total ? "✓ tudo certo" : "✗ com falhas"}`;
+        log.appendChild(resumo);
+        statusEl.textContent = `${ok}/${total}`;
+        return ok === total;
+      }
+
+      function setBusy(b) {
+        btnPlay.disabled = b;
+        btnAll.disabled = b;
+        elEx.disabled = b;
+      }
+
+      btnPlay.onclick = async () => {
+        setBusy(true);
+        await tocar(exemplos[Number(elEx.value)]);
+        setBusy(false);
+      };
+      btnAll.onclick = async () => {
+        setBusy(true);
+        for (let i = 0; i < exemplos.length; i += 1) {
+          elEx.value = String(i);
+          await tocar(exemplos[i]);
+          await sleep(700);
+        }
+        setBusy(false);
+      };
+    </script>
+  </body>
+</html>

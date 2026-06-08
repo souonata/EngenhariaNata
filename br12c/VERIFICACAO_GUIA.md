@@ -10,6 +10,12 @@ npm --prefix local test -- guia      # só as suítes do guia (br12c/tests/*.gui
 npm --prefix local test              # tudo (apps + guia)
 ```
 
+## Runner VISUAL (assistir o robô)
+`br12c/tests/visual.html` — carrega a calc real num iframe e o robô **clica as teclas
+com destaque/pausa** mostrando display vs esperado (✓/✗). Sobe um servidor e abra
+`http://localhost:PORT/br12c/tests/visual.html` (ou no ar: `/EngenhariaNata/br12c/tests/visual.html`).
+Reusa os mesmos fixtures + tradutor + comparador dos testes headless.
+
 ## Arquitetura (Capítulo 0 — pronto)
 - `tests/harness.js` — `criarCalculadora()`: instancia jsdom à mão (importado de
   `local/node_modules` via alias no `vitest.config.js`), injeta o corpo de
@@ -102,3 +108,10 @@ Programação (Parte II) e Soluções (Parte III): fora do escopo atual.
   NPV agrupado p.76–77 = 907,77; **IRR p.78 = 13,72%** (via `solveRoot` no VPL). `state.cf`/
   `state.cfN` guardam os fluxos; `f CLEAR REG` os zera. Títulos (PRICE/YTM) e depreciação
   (SL/SOYD/DB) pendentes. Suíte: **153 testes verdes**.
+- **Juros simples (INT, f+i) (2026-06-08):** guia p.42–43 — juros 360 dias em X, 365 em Z,
+  -PV em Y. Ex.: $450/7%/60d → 5,25 (total 455,25) e 5,18 (total 455,18). Seção 3 completa.
+- **Runner VISUAL + bug do boot (2026-06-08):** criado `tests/visual.html` (assistir o robô
+  clicando as teclas reais). Ele revelou um **bug real**: `lastTouchActivationAt` iniciava `0`,
+  então `shouldSuppressSyntheticClick` suprimia TODO clique enquanto `performance.now() < 700ms`
+  — as **teclas ficavam mortas nos primeiros ~0,7 s após abrir a calc** (no headless o timer do
+  Node é grande, então não aparecia). Corrigido init para `-Infinity`. Suíte: **155 verdes**.

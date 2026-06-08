@@ -66,7 +66,10 @@ const DECIMAL_SEPARATOR = ",";
 const THOUSANDS_SEPARATOR = ".";
 const LONG_PRESS_HOLD_MS = 520;
 const SYNTHETIC_CLICK_SUPPRESSION_MS = 700;
-let lastTouchActivationAt = 0;
+// -Infinity (e não 0) para que cliques logo após o carregamento NÃO sejam
+// suprimidos: com 0, performance.now() < 700 ms no boot deixava as teclas mortas
+// nos primeiros ~0,7 s. Só um toque real (markTouchActivation) atualiza isto.
+let lastTouchActivationAt = -Infinity;
 const activePointerPresses = new Map();
 const heldActionButtons = new Map();
 let latchMode = false;
