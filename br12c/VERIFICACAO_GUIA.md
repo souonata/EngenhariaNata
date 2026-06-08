@@ -39,7 +39,7 @@ cada exemplo começa “limpo”.
 | 0 | Harness/infra | ✅ feito | jsdom + tradutor + comparador; smoke verde (RPN, FIX). 111 testes no total. |
 | 1 | Seção 1 — Getting Started (aritmética RPN/ALG, cadeia, STO/RCL) | ✅ feito | 9/9 exemplos. Implementados R0–R9 + aritmética de registrador. |
 | 2 | Seção 2 — Percentage + Calendar | 🟡 parcial | Percentual 10/10 (corrigidos `%` e `%T` em ALG). Calendário pendente. |
-| 3 | Seção 3 — Basic Financial (juros, TVM, amortização) | ⬜ a fazer | AMORT/INT a implementar; TVM existe (verificar) |
+| 3 | Seção 3 — Basic Financial (juros, TVM, amortização) | 🟡 parcial | TVM Ex.1-3 (p.12-14) verde (PV/FV/PMT, BEG/END). Corrigidos default 0 e 12×/12÷ armazena n/i. AMORT/INT/odd-period pendentes. |
 | 4 | Seção 4 — NPV, IRR, bonds, depreciação | ⬜ a fazer | tudo a implementar |
 | 5 | Seção 5 — Operating Features (DISP/SCI, x<>y, LST x, constantes) | ⬜ a fazer | |
 | 6 | Seção 6 — Statistics | ⬜ a fazer | a implementar |
@@ -77,3 +77,9 @@ Programação (Parte II) e Soluções (Parte III): fora do escopo atual.
   implementadas (AMORT/INT/NPV/IRR/PRICE/YTM/SL/SOYD/DB e calendário/estatística) consomem
   o prefixo sem disparar a função primária. Novo teste `teclado.guia.test.js` (6) trava o
   mapeamento. Resolve o achado "f-vs-g" do Ch1. Suíte: **136 testes verdes**.
+- **Ch3-TVM (2026-06-08):** Seção 3 — exemplos canônicos 1–3 (p.12–14, depósito/FV/PMT com
+  BEG e END) **verdes**. **Correções reais:** (a) registradores financeiros iniciavam `null`
+  e o solve exigia todos não-null → no HP12C valem **0** (init + `resetFinancial` → 0), senão
+  `PV` não resolvia; (b) **`12×`/`12÷` (g+n / g+i) agora ARMAZENAM** o resultado em n/i (antes
+  só multiplicavam X) — por isso o solve dava 0. AMORT/INT/odd-period e o Exemplo 4
+  (anualização) ainda pendentes. Suíte: **137 testes verdes**.

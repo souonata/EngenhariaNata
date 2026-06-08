@@ -88,11 +88,11 @@ const state = {
   fixed: 2,
   memory: 0,
   tvm: {
-    n: null,
-    i: null,
-    PV: null,
-    PMT: null,
-    FV: null,
+    n: 0,
+    i: 0,
+    PV: 0,
+    PMT: 0,
+    FV: 0,
     begin: false,
   },
   error: "",
@@ -615,13 +615,22 @@ function handleShiftedAction(shift, action) {
       flash("END");
       return true;
     }
-    // 12× = g+n, 12÷ = g+i.
+    // 12× = g+n: multiplica X por 12 E armazena em n (anos -> meses).
     if (action === "tvm:n") {
-      unary((x) => x * 12);
+      commitEntry();
+      setX(state.stack.x * 12);
+      state.tvm.n = state.stack.x;
+      state.liftStack = true;
+      flash("12×");
       return true;
     }
+    // 12÷ = g+i: divide X por 12 E armazena em i (taxa anual -> mensal).
     if (action === "tvm:i") {
-      unary((x) => x / 12);
+      commitEntry();
+      setX(state.stack.x / 12);
+      state.tvm.i = state.stack.x;
+      state.liftStack = true;
+      flash("12÷");
       return true;
     }
     // Matemática (g na linha do y^x): √x, e^x, LN, FRAC, INTG.
@@ -1195,11 +1204,11 @@ function bisect(fn, left, right) {
 }
 
 function resetFinancial() {
-  state.tvm.n = null;
-  state.tvm.i = null;
-  state.tvm.PV = null;
-  state.tvm.PMT = null;
-  state.tvm.FV = null;
+  state.tvm.n = 0;
+  state.tvm.i = 0;
+  state.tvm.PV = 0;
+  state.tvm.PMT = 0;
+  state.tvm.FV = 0;
   state.memory = 0;
 }
 
