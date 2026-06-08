@@ -654,9 +654,21 @@ function handleShiftedAction(shift, action) {
       flash("IRR");
       return true;
     }
-    // Demais funções f (INT, PRICE, YTM, SL, SOYD, DB, ...)
-    // chegam nos capítulos seguintes; por ora consome o prefixo (não dispara a
-    // função primária da tecla por engano).
+    // Depreciação: SL = f+%T, SOYD = f+Δ%, DB = f+% (ano vem do display).
+    if (action === "percent-total") {
+      depreciacao("SL");
+      return true;
+    }
+    if (action === "delta-percent") {
+      depreciacao("SOYD");
+      return true;
+    }
+    if (action === "percent") {
+      depreciacao("DB");
+      return true;
+    }
+    // Demais funções f (PRICE, YTM — títulos) chegam depois; por ora consome o
+    // prefixo (não dispara a função primária da tecla por engano).
     return true;
   }
 
@@ -1390,6 +1402,40 @@ function valorPresenteLiquido(taxaPct) {
     }
   }
   return npv;
+}
+
+// --- Depreciação ---
+// Depreciação do ano `ano` (vem do display); valor depreciável remanescente em Y.
+// PV=custo, FV=salvado, n=vida; DB usa i (%) como fator. Guia, p.84–85.
+function depreciacao(metodo) {
+  commitEntry();
+  const ano = Math.round(state.stack.x);
+  const custo = state.tvm.PV;
+  const salvado = state.tvm.FV;
+  const vida = state.tvm.n;
+  const base = custo - salvado;
+  let dep = 0;
+  let remanescente = 0;
+  if (metodo === "SL") {
+    dep = base / vida;
+    remanescente = base - ano * dep;
+  } else if (metodo === "SOYD") {
+    const soma = (vida * (vida + 1)) / 2;
+    dep = (base * (vida - ano + 1)) / soma;
+    let acum = 0;
+    for (let k = 1; k <= ano; k += 1) acum += (base * (vida - k + 1)) / soma;
+    remanescente = base - acum;
+  } else {
+    const taxa = state.tvm.i / 100 / vida;
+    let book = custo;
+    for (let k = 1; k < ano; k += 1) book -= book * taxa;
+    dep = book * taxa;
+    remanescente = book - dep - salvado;
+  }
+  state.stack.y = remanescente;
+  setX(dep);
+  state.liftStack = true;
+  flash(metodo);
 }
 
 // --- Estatística ---

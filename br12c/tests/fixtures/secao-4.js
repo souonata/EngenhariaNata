@@ -38,4 +38,20 @@ export const secao4 = [
       { keys: ["f", "IRR"], display: "13.72" },
     ],
   },
+  {
+    nome: "p84-85 — Depreciação (declining-balance 200%, máquina $10k)",
+    modo: "rpn",
+    linhas: [
+      { keys: ["10000", "PV"], display: "10,000.00" },
+      { keys: ["500", "FV"], display: "500.00" },
+      { keys: ["5", "n"], display: "5.00" },
+      { keys: ["200", "i"], display: "200.00" },
+      { keys: ["1", "f", "DB"], display: "4,000.00" },
+      { keys: ["x≷y"], display: "5,500.00" },
+      { keys: ["2", "f", "DB"], display: "2,400.00" },
+      { keys: ["x≷y"], display: "3,100.00" },
+      { keys: ["3", "f", "DB"], display: "1,440.00" },
+      { keys: ["x≷y"], display: "1,660.00" },
+    ],
+  },
 ];
