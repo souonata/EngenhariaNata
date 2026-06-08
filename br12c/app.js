@@ -24,12 +24,12 @@ const KEY_ROWS = [
     { main: "EEX", f: "ALG", g: "ΔDYS", action: "eex" },
     { main: "4", f: "", g: "D.MY", action: "digit:4", tone: "number" },
     { main: "5", f: "", g: "M.DY", action: "digit:5", tone: "number" },
-    { main: "6", f: "", g: "Σw", action: "digit:6", tone: "number" },
+    { main: "6", f: "", g: "x̄w", action: "digit:6", tone: "number" },
     { main: "×", f: "", g: "x²", action: "op:*", tone: "operator" },
   ],
   [
     { main: "R/S", f: "P/R", g: "PSE", action: "noop" },
-    { main: "SST", f: "Σ", g: "BST", action: "noop" },
+    { main: "SST", f: "Σ", g: "BST", action: "sst" },
     { main: "R↓", f: "PRGM", g: "GTO", action: "roll" },
     { main: "x≷y", f: "FIN", g: "x≤y", action: "swap" },
     { main: "CLx", f: "REG", g: "x=0", action: "clear-entry" },
@@ -47,7 +47,7 @@ const KEY_ROWS = [
     { main: "RCL", f: "", g: "", action: "rcl" },
     { main: "0", f: "", g: "x̄", action: "digit:0", tone: "number" },
     { main: ".", f: "", g: "s", action: "decimal", tone: "number" },
-    { main: "Σ+", f: "", g: "Σ-", action: "percent-total", tone: "number" },
+    { main: "Σ+", f: "", g: "Σ-", action: "sum-plus", tone: "number" },
     { main: "+", f: "", g: "LST x", action: "op:+", tone: "operator" },
   ],
 ];
@@ -93,6 +93,7 @@ const state = {
   dateFormat: "mdy",
   cf: [],
   cfN: [],
+  stats: { n: 0, sx: 0, sx2: 0, sy: 0, sy2: 0, sxy: 0 },
   tvm: {
     n: 0,
     i: 0,
@@ -182,7 +183,7 @@ function buildSkinKeys() {
     box("6", "digit:6", 8, 1, "number"),
     box("x", "op:*", 9, 1, "operator"),
     box("R/S", "noop", 0, 2),
-    box("SST", "noop", 1, 2),
+    box("SST", "sst", 1, 2),
     box("R down", "roll", 2, 2),
     box("x swap y", "swap", 3, 2),
     box("CLx", "clear-entry", 4, 2),
@@ -198,7 +199,7 @@ function buildSkinKeys() {
     box("RCL", "rcl", 4, 3),
     box("0", "digit:0", 6, 3, "number"),
     box(",", "decimal", 7, 3, "number"),
-    box("sum plus", "percent-total", 8, 3),
+    box("sum plus", "sum-plus", 8, 3),
     box("+", "op:+", 9, 3, "operator"),
   ];
 }
@@ -555,6 +556,7 @@ function handleAction(action) {
       sto: beginStore,
       power: togglePower,
       guide: () => document.dispatchEvent(new CustomEvent("br12c:guide")),
+      "sum-plus": acumularEstatistica,
     };
 
     if (handlers[action]) handlers[action]();
@@ -583,6 +585,13 @@ function handleShiftedAction(shift, action) {
     if (action === "clear-entry") {
       clearRegisters();
       flash("REG");
+      return true;
+    }
+    // CLEAR Σ = f+SST: zera os registradores estatísticos, a pilha e o display.
+    if (action === "sst") {
+      state.stats = { n: 0, sx: 0, sx2: 0, sy: 0, sy2: 0, sxy: 0 };
+      state.stack = { x: 0, y: 0, z: 0, t: 0 };
+      flash("Σ");
       return true;
     }
     if (action === "enter") {
@@ -769,7 +778,53 @@ function handleShiftedAction(shift, action) {
       flash("ΔDYS");
       return true;
     }
-    // Demais funções g (DATE, estatística, programa) — capítulos seguintes.
+    // Estatística: Σ- = g+Σ+, x̄ = g+0, s = g+. , x̄w = g+6.
+    if (action === "sum-plus") {
+      commitEntry();
+      const s = state.stats;
+      s.n -= 1;
+      s.sx -= state.stack.x;
+      s.sx2 -= state.stack.x * state.stack.x;
+      s.sy -= state.stack.y;
+      s.sy2 -= state.stack.y * state.stack.y;
+      s.sxy -= state.stack.x * state.stack.y;
+      setX(s.n);
+      state.liftStack = false;
+      flash("Σ-");
+      return true;
+    }
+    if (action === "digit:0") {
+      const s = state.stats;
+      if (s.n === 0) {
+        setError();
+      } else {
+        state.stack.y = s.sy / s.n;
+        setX(s.sx / s.n);
+      }
+      state.liftStack = true;
+      flash("x̄");
+      return true;
+    }
+    if (action === "decimal") {
+      const s = state.stats;
+      if (s.n < 2) {
+        setError();
+      } else {
+        state.stack.y = Math.sqrt(Math.max(0, (s.sy2 - (s.sy * s.sy) / s.n) / (s.n - 1)));
+        setX(Math.sqrt(Math.max(0, (s.sx2 - (s.sx * s.sx) / s.n) / (s.n - 1))));
+      }
+      state.liftStack = true;
+      flash("s");
+      return true;
+    }
+    if (action === "digit:6") {
+      const s = state.stats;
+      setX(s.sx === 0 ? NaN : s.sxy / s.sx);
+      state.liftStack = true;
+      flash("x̄w");
+      return true;
+    }
+    // Demais funções g (DATE, estimativa linear, programa) — capítulos seguintes.
     return true;
   }
 
@@ -783,6 +838,7 @@ function clearRegisters() {
   resetFinancial();
   state.cf = [];
   state.cfN = [];
+  state.stats = { n: 0, sx: 0, sx2: 0, sy: 0, sy2: 0, sxy: 0 };
   state.stack = { x: 0, y: 0, z: 0, t: 0 };
   state.entry = "";
   state.entryActive = false;
@@ -1334,6 +1390,24 @@ function valorPresenteLiquido(taxaPct) {
     }
   }
   return npv;
+}
+
+// --- Estatística ---
+// Σ+ acumula o par (x = display, y = registrador Y) nos registradores R1–R6.
+function acumularEstatistica() {
+  commitEntry();
+  const x = state.stack.x;
+  const y = state.stack.y;
+  const s = state.stats;
+  s.n += 1;
+  s.sx += x;
+  s.sx2 += x * x;
+  s.sy += y;
+  s.sy2 += y * y;
+  s.sxy += x * y;
+  setX(s.n);
+  state.liftStack = false;
+  flash("Σ+");
 }
 
 // --- Calendário ---
