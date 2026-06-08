@@ -37,7 +37,7 @@ cada exemplo começa “limpo”.
 | Cap | Seção do guia | Status | Notas |
 |-----|---------------|--------|-------|
 | 0 | Harness/infra | ✅ feito | jsdom + tradutor + comparador; smoke verde (RPN, FIX). 111 testes no total. |
-| 1 | Seção 1 — Getting Started + Apêndices A/B (aritmética RPN/ALG, pilha, registradores) | ⬜ a fazer | |
+| 1 | Seção 1 — Getting Started (aritmética RPN/ALG, cadeia, STO/RCL) | ✅ feito | 9/9 exemplos. Implementados R0–R9 + aritmética de registrador. |
 | 2 | Seção 2 — Percentage + Calendar | ⬜ a fazer | %CHG/%T e calendário a implementar |
 | 3 | Seção 3 — Basic Financial (juros, TVM, amortização) | ⬜ a fazer | AMORT/INT a implementar; TVM existe (verificar) |
 | 4 | Seção 4 — NPV, IRR, bonds, depreciação | ⬜ a fazer | tudo a implementar |
@@ -52,3 +52,13 @@ Programação (Parte II) e Soluções (Parte III): fora do escopo atual.
 - **Ch0 (2026-06-08):** harness criado e validado (smoke RPN `2 ENTER 3 +`=5 e FIX).
   `jsdom` adicionado como devDependency; alias no `vitest.config.js`; hook
   `globalThis.__BR12C_KEYS__` no `app.js`. Suíte: 111 testes verdes.
+- **Ch1 (2026-06-08):** Seção 1 — **9/9 exemplos verdes** (aritmética RPN/ALG, cadeia,
+  fatura STO/RCL, aritmética de registrador). **Correção real:** implementados os
+  registradores numéricos **R0–R9** e a **aritmética de registrador** (`STO ± N`, guia p.29)
+  — não existiam (o dígito do registrador era anexado ao número, ex.: `1250 STO 0`→`12500`).
+  O atalho "M" via `STO 9`/`STO +` foi removido (colidia com R9 e com `STO + N`); o display
+  "M" ficou vestigial.
+  **Achados p/ tratar depois:** (a) troca RPN/ALG — a calc usa `g+7`(ALG)/`g+8`(RPN), mas o
+  guia diz `f ALG`/`f RPN` (os testes usam a tecla da calc; alinhar a tecla correta depois);
+  (b) não há tecla on-screen de **backspace**; (c) **parênteses** (ALG), **EEX/científico**
+  → Seção 5; (d) `√x` na cadeia → Seção 7. Suíte: **120 testes verdes**.

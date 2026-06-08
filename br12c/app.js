@@ -79,6 +79,8 @@ const state = {
   pendingValue: null,
   pendingStore: false,
   pendingRecall: false,
+  pendingStoreOp: null,
+  registers: {},
   shift: null,
   fixed: 2,
   memory: 0,
@@ -514,6 +516,7 @@ function handleAction(action) {
     }
     state.pendingStore = false;
     state.pendingRecall = false;
+    state.pendingStoreOp = null;
   }
 
   if (action.startsWith("digit:")) {
@@ -908,6 +911,7 @@ function beginRecall() {
 }
 
 function handleRegisterTarget(action) {
+  // Registradores financeiros (STO/RCL n, i, PV, PMT, FV).
   if (action.startsWith("tvm:")) {
     const field = action.slice(4);
     if (state.pendingStore) {
@@ -920,24 +924,56 @@ function handleRegisterTarget(action) {
     }
     state.pendingStore = false;
     state.pendingRecall = false;
+    state.pendingStoreOp = null;
     return true;
   }
 
-  if (action === "op:+" || action === "digit:9") {
+  // Aritmética de registrador: STO seguido de + - × ÷ fica pendente até o dígito
+  // (ex.: STO - 0  ->  R0 = R0 - x). Guia, p.29.
+  if (state.pendingStore && action.startsWith("op:")) {
+    state.pendingStoreOp = action.slice(3);
+    return true;
+  }
+
+  // Registradores numéricos de dados R0–R9.
+  if (action.startsWith("digit:")) {
+    const reg = action.slice(6);
     if (state.pendingStore) {
       commitEntry();
-      state.memory = state.stack.x;
-      flash("STO M");
+      if (state.pendingStoreOp) {
+        const atual = Number(state.registers[reg] || 0);
+        state.registers[reg] = aplicarOperacao(state.pendingStoreOp, atual, state.stack.x);
+        flash(`STO ${state.pendingStoreOp} ${reg}`);
+      } else {
+        state.registers[reg] = state.stack.x;
+        flash(`STO ${reg}`);
+      }
     } else {
-      recallValue(state.memory);
-      flash("RCL M");
+      recallValue(Number(state.registers[reg] || 0));
+      flash(`RCL ${reg}`);
     }
     state.pendingStore = false;
     state.pendingRecall = false;
+    state.pendingStoreOp = null;
     return true;
   }
 
   return false;
+}
+
+function aplicarOperacao(op, a, b) {
+  switch (op) {
+    case "+":
+      return a + b;
+    case "-":
+      return a - b;
+    case "*":
+      return a * b;
+    case "/":
+      return b === 0 ? a : a / b;
+    default:
+      return b;
+  }
 }
 
 function recallValue(value) {
@@ -1145,6 +1181,7 @@ function clearAll() {
   state.pendingValue = null;
   state.pendingStore = false;
   state.pendingRecall = false;
+  state.pendingStoreOp = null;
   state.shift = null;
   state.liftStack = false;
   clearError();

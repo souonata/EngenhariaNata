@@ -15,6 +15,9 @@
 
 export const ALIASES = {
   // variações de grafia do guia vs rótulos do KEY_ROWS
+  "÷": "op:/",
+  "×": "op:*",
+  X: "op:*",
   "12÷": "tvm:i",
   "12/": "tvm:i",
   CFo: "tvm:PV",
