@@ -131,6 +131,7 @@
       <label>Velocidade (ms/tecla) <input id="vel" type="range" min="300" max="2500" value="1000" step="100" /></label>
       <button id="play" class="primary">▶ Tocar</button>
       <button id="playAll">▶▶ Tocar tudo</button>
+      <button id="parar" disabled>⏹ Parar</button>
       <span id="tecla"></span>
       <span id="status"></span>
     </header>
@@ -179,6 +180,8 @@
       const vel = document.getElementById("vel");
       const btnPlay = document.getElementById("play");
       const btnAll = document.getElementById("playAll");
+      const btnStop = document.getElementById("parar");
+      let parar = false;
 
       const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
       const doc = () => frame.contentDocument;
@@ -209,11 +212,16 @@
       async function pressActions(acoes) {
         const passo = Number(vel.value); // ms por tecla
         for (const acao of acoes) {
+          if (parar) return;
           const btn = doc().querySelector(`#keyboard [data-action="${acao}"]`);
           if (btn) {
             teclaEl.textContent = "⌨ " + (btn.getAttribute("aria-label") || acao);
             btn.classList.add("robo-press");
             await sleep(passo * 0.18);
+            if (parar) {
+              btn.classList.remove("robo-press");
+              return;
+            }
             btn.dispatchEvent(new (win().MouseEvent)("click", { bubbles: true }));
             await sleep(passo * 0.62);
             btn.classList.remove("robo-press");
@@ -229,11 +237,14 @@
         log.innerHTML = "";
         statusEl.textContent = "▶ tocando…";
         await resetCalc();
+        if (parar) return false;
         const KEYS = win().__BR12C_KEYS__;
         if (ex.modo === "alg") await pressActions(traduzir(["f", "ALG"], KEYS));
         let ok = 0;
         for (const linha of ex.linhas) {
+          if (parar) break;
           await pressActions(traduzir(linha.keys, KEYS));
+          if (parar) break;
           const r = conferir(display(), linha.display);
           if (r.ok) ok += 1;
           const div = document.createElement("div");
@@ -244,6 +255,11 @@
           log.appendChild(div);
           div.scrollIntoView({ block: "nearest" });
           await sleep(220);
+        }
+        if (parar) {
+          teclaEl.textContent = "";
+          statusEl.textContent = "⏹ parado";
+          return false;
         }
         const total = ex.linhas.length;
         const resumo = document.createElement("div");
@@ -258,18 +274,27 @@
         btnPlay.disabled = b;
         btnAll.disabled = b;
         elEx.disabled = b;
+        btnStop.disabled = !b;
       }
 
+      btnStop.onclick = () => {
+        parar = true;
+      };
+
       btnPlay.onclick = async () => {
+        parar = false;
         setBusy(true);
         await tocar(exemplos[Number(elEx.value)]);
         setBusy(false);
       };
       btnAll.onclick = async () => {
+        parar = false;
         setBusy(true);
         for (let i = 0; i < exemplos.length; i += 1) {
+          if (parar) break;
           elEx.value = String(i);
           await tocar(exemplos[i]);
+          if (parar) break;
           await sleep(700);
         }
         setBusy(false);
