@@ -54,6 +54,31 @@ export const secao4 = [
     ],
   },
   {
+    nome: "p82 — Bond Price (T-bond 6.75%, yield 4.75%) = 120.38 limpo / 123.07 total",
+    modo: "rpn",
+    linhas: [
+      { keys: ["4.75", "i"], display: "4.75" },
+      { keys: ["6.75", "PMT"], display: "6.75" },
+      { keys: ["g", "M.DY"], display: "6.75" },
+      { keys: ["4.282004", "ENTER"], display: "4.28" },
+      { keys: ["6.042018"], display: "6.042018" },
+      { keys: ["f", "PRICE"], display: "120.38" },
+      { keys: ["+"], display: "123.07" },
+    ],
+  },
+  {
+    nome: "p83 — Bond Yield (preço cotado 122.125%) = 4.60",
+    modo: "rpn",
+    linhas: [
+      { keys: ["122.125", "PV"], display: "122.13" },
+      { keys: ["6.75", "PMT"], display: "6.75" },
+      { keys: ["g", "M.DY"], display: "6.75" },
+      { keys: ["4.282004", "ENTER"], display: "4.28" },
+      { keys: ["6.042018"], display: "6.042018" },
+      { keys: ["f", "YTM"], display: "4.60" },
+    ],
+  },
+  {
     nome: "p84-85 — Depreciação (declining-balance 200%, máquina $10k)",
     modo: "rpn",
     linhas: [

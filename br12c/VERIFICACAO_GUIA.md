@@ -46,7 +46,7 @@ cada exemplo começa “limpo”.
 | 1 | Seção 1 — Getting Started (aritmética RPN/ALG, cadeia, STO/RCL) | ✅ feito | 9/9 exemplos. Implementados R0–R9 + aritmética de registrador. |
 | 2 | Seção 2 — Percentage + Calendar | ✅ feito | Percentual 10/10; calendário: ΔDYS, formatos D.MY/M.DY, **DATE (data futura + dia da semana)**. |
 | 3 | Seção 3 — Basic Financial (juros, TVM, amortização) | 🟡 parcial | TVM Ex.1-3 + **amortização (AMORT)** verdes. INT/odd-period/Ex.4 pendentes. |
-| 4 | Seção 4 — NPV, IRR, bonds, depreciação | 🟡 parcial | **NPV + IRR + fluxo de caixa + depreciação (SL/SOYD/DB)** verdes. Títulos (bonds) pendentes. |
+| 4 | Seção 4 — NPV, IRR, bonds, depreciação | ✅ feito | NPV (agrupado/não), IRR, fluxo de caixa, depreciação (SL/SOYD/DB) e **títulos (PRICE/YTM, SIA actual/actual)**. |
 | 5 | Seção 5 — Operating Features (DISP/SCI, x<>y, LST x, constantes) | 🟡 parcial | **x≷y, LST x (g++), aritmética com constante** verdes. Notação científica (f .) e mantissa (f CLEAR PREFIX) pendentes. |
 | 6 | Seção 6 — Statistics | ✅ feito | Σ+/Σ-, média, desvio, média ponderada, **regressão linear (ŷ,r=g+2, x̂,r=g+1, r)** e CLEAR Σ. |
 | 7 | Seção 7 — Math/Number-Alteration | 🟡 parcial | 10/10: y^x, 1/x, √x, e^x, LN, FRAC, INTG, RND, x², n! (x² e n! implementados). LOG pendente. |

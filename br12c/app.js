@@ -658,6 +658,36 @@ function handleShiftedAction(shift, action) {
       flash("IRR");
       return true;
     }
+    // Bond Price = f+y^x: liquidação (Y) + vencimento (X) -> preço limpo em X,
+    // juro acumulado em Y (somar com + dá o preço total). Yield em i, cupom em PMT.
+    if (action === "pow") {
+      commitEntry();
+      const r = precoLimpoTitulo(
+        state.tvm.i,
+        parseDate(state.stack.y, state.dateFormat),
+        parseDate(state.stack.x, state.dateFormat),
+        state.tvm.PMT,
+      );
+      state.stack.y = r.accrued;
+      setX(r.clean);
+      state.liftStack = true;
+      flash("PRICE");
+      return true;
+    }
+    // Bond Yield = f+1/x: yield (% a.a.) dado o preço cotado (limpo) em PV.
+    if (action === "reciprocal") {
+      commitEntry();
+      const liq = parseDate(state.stack.y, state.dateFormat);
+      const venc = parseDate(state.stack.x, state.dateFormat);
+      const cotado = state.tvm.PV;
+      const cpn = state.tvm.PMT;
+      const ytm = solveRoot((yy) => precoLimpoTitulo(yy, liq, venc, cpn).clean - cotado, 0, 100);
+      state.tvm.i = ytm;
+      setX(ytm);
+      state.liftStack = true;
+      flash("YTM");
+      return true;
+    }
     // Depreciação: SL = f+%T, SOYD = f+Δ%, DB = f+% (ano vem do display).
     if (action === "percent-total") {
       depreciacao("SL");
@@ -1557,6 +1587,52 @@ function dataDeJulianos(jdn) {
     m: m + 3 - 12 * Math.floor(m / 10),
     y: 100 * b + d - 4800 + Math.floor(m / 10),
   };
+}
+
+function mais6meses({ y, m, d }) {
+  let mm = m + 6;
+  let yy = y;
+  if (mm > 12) {
+    mm -= 12;
+    yy += 1;
+  }
+  return { y: yy, m: mm, d };
+}
+
+function menos6meses({ y, m, d }) {
+  let mm = m - 6;
+  let yy = y;
+  if (mm < 1) {
+    mm += 12;
+    yy -= 1;
+  }
+  return { y: yy, m: mm, d };
+}
+
+// Preço de título (SIA, cupom semestral, base actual/actual, resgate=100).
+// Y = yield anual %, CPN = cupom anual %. Retorna { clean, accrued }.
+function precoLimpoTitulo(Y, liq, venc, CPN) {
+  const jdnLiq = diasJulianos(liq);
+  const jdnVenc = diasJulianos(venc);
+  let prev = { y: venc.y, m: venc.m, d: venc.d };
+  while (diasJulianos(prev) > jdnLiq) prev = menos6meses(prev);
+  const next = mais6meses(prev);
+  const E = diasJulianos(next) - diasJulianos(prev);
+  const DSC = diasJulianos(next) - jdnLiq;
+  const A = E - DSC;
+  let N = 0;
+  let c = { y: next.y, m: next.m, d: next.d };
+  while (diasJulianos(c) <= jdnVenc) {
+    N += 1;
+    c = mais6meses(c);
+  }
+  const yld = Y / 200;
+  let pv = 100 / Math.pow(1 + yld, N - 1 + DSC / E);
+  for (let k = 1; k <= N; k += 1) {
+    pv += CPN / 2 / Math.pow(1 + yld, k - 1 + DSC / E);
+  }
+  const accrued = (A / E) * (CPN / 2);
+  return { clean: pv - accrued, accrued };
 }
 
 // Interpreta um número como data conforme o formato (mdy: M.DDYYYY; dmy: D.MMYYYY).
