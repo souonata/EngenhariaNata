@@ -92,6 +92,7 @@ const state = {
   memory: 0,
   dateFormat: "mdy",
   lastX: 0,
+  displayOverride: null,
   cf: [],
   cfN: [],
   stats: { n: 0, sx: 0, sx2: 0, sy: 0, sy2: 0, sxy: 0 },
@@ -497,6 +498,8 @@ function handleAction(action) {
     return;
   }
 
+  state.displayOverride = null;
+
   if (state.error && !["power", "clear-entry", "backspace"].includes(action)) {
     clearError();
   }
@@ -789,6 +792,26 @@ function handleShiftedAction(shift, action) {
       setX(diasJulianos(d2) - diasJulianos(d1));
       state.liftStack = true;
       flash("ΔDYS");
+      return true;
+    }
+    // DATE = g+CHS: data-base (Y) + N dias (X) -> nova data + dia da semana.
+    if (action === "chs") {
+      commitEntry();
+      const base = parseDate(state.stack.y, state.dateFormat);
+      const novoJdn = diasJulianos(base) + Math.round(state.stack.x);
+      const nd = dataDeJulianos(novoJdn);
+      const dow = (novoJdn % 7) + 1; // 1=segunda .. 7=domingo
+      const mm = String(nd.m).padStart(2, "0");
+      const dd = String(nd.d).padStart(2, "0");
+      if (state.dateFormat === "dmy") {
+        state.stack.x = Number(`${nd.d}.${mm}${nd.y}`);
+        state.displayOverride = `${dd},${mm},${nd.y} ${dow}`;
+      } else {
+        state.stack.x = Number(`${nd.m}.${dd}${nd.y}`);
+        state.displayOverride = `${mm},${dd},${nd.y} ${dow}`;
+      }
+      state.liftStack = true;
+      flash("DATE");
       return true;
     }
     // LST x = g++: recupera o último X (antes da última operação), levantando a pilha.
@@ -1521,6 +1544,21 @@ function diasJulianos({ y, m, d }) {
   );
 }
 
+// Inverso de diasJulianos: número-de-dia -> { y, m, d } (gregoriano).
+function dataDeJulianos(jdn) {
+  const a = jdn + 32044;
+  const b = Math.floor((4 * a + 3) / 146097);
+  const c = a - Math.floor((146097 * b) / 4);
+  const d = Math.floor((4 * c + 3) / 1461);
+  const e = c - Math.floor((1461 * d) / 4);
+  const m = Math.floor((5 * e + 2) / 153);
+  return {
+    d: e - Math.floor((153 * m + 2) / 5) + 1,
+    m: m + 3 - 12 * Math.floor(m / 10),
+    y: 100 * b + d - 4800 + Math.floor(m / 10),
+  };
+}
+
 // Interpreta um número como data conforme o formato (mdy: M.DDYYYY; dmy: D.MMYYYY).
 function parseDate(num, fmt) {
   const inteiro = Math.trunc(Math.abs(num));
@@ -1734,6 +1772,7 @@ function updateUI() {
   const screenText = toScreenText(currentDisplayText());
   display.textContent = screenText;
   fitDisplayText(screenText);
+  if (state.displayOverride) display.textContent = state.displayOverride;
 
   const shiftVisivel = getHeldShift() || state.shift;
   shiftIndicator.textContent = shiftVisivel || "";

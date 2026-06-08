@@ -22,6 +22,11 @@ function casasDecimais(s) {
 export function conferir(atual, esperado) {
   const esp = String(esperado).trim();
 
+  // Resultado de g DATE: "DD,MM,YYYY W" (ou MM,DD,YYYY W) — comparação textual exata.
+  if (/^\d{1,2},\d{2},\d{4}\s\d$/.test(esp)) {
+    return { ok: String(atual).trim() === esp, atual, esperado };
+  }
+
   // Texto especial (contém letras): comparação textual tolerante.
   if (/[a-zA-Z]/.test(esp)) {
     return {

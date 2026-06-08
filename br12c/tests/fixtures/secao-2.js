@@ -104,4 +104,13 @@ export const secao2Calendario = [
       { keys: ["x≷y"], display: "491.00" },
     ],
   },
+  {
+    nome: "p39 — Data futura (g DATE): 14 mai 2004 + 120 dias = 11 set 2004 (sáb)",
+    modo: "rpn",
+    linhas: [
+      { keys: ["g", "D.MY"], display: "0.00" },
+      { keys: ["14.052004", "ENTER"], display: "14.05" },
+      { keys: ["120", "g", "DATE"], display: "11,09,2004 6" },
+    ],
+  },
 ];
