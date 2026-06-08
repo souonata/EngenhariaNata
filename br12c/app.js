@@ -87,6 +87,7 @@ const state = {
   shift: null,
   fixed: 2,
   memory: 0,
+  dateFormat: "mdy",
   tvm: {
     n: 0,
     i: 0,
@@ -678,7 +679,29 @@ function handleShiftedAction(shift, action) {
       flash("n!");
       return true;
     }
-    // Demais funções g (calendário, estatística, programa) — capítulos seguintes.
+    // Formato de data: D.MY = g+4, M.DY = g+5.
+    if (action === "digit:4") {
+      state.dateFormat = "dmy";
+      flash("D.MY");
+      return true;
+    }
+    if (action === "digit:5") {
+      state.dateFormat = "mdy";
+      flash("M.DY");
+      return true;
+    }
+    // ΔDYS = g+EEX: dias entre duas datas (reais em X, base 30/360 em Y).
+    if (action === "eex") {
+      commitEntry();
+      const d1 = parseDate(state.stack.y, state.dateFormat);
+      const d2 = parseDate(state.stack.x, state.dateFormat);
+      state.stack.y = dias360(d1, d2);
+      setX(diasJulianos(d2) - diasJulianos(d1));
+      state.liftStack = true;
+      flash("ΔDYS");
+      return true;
+    }
+    // Demais funções g (DATE, estatística, programa) — capítulos seguintes.
     return true;
   }
 
@@ -1225,6 +1248,42 @@ function bisect(fn, left, right) {
     }
   }
   return (left + right) / 2;
+}
+
+// --- Calendário ---
+// Número-de-dia (contínuo) de uma data gregoriana, p/ diferenças e dia-da-semana.
+function diasJulianos({ y, m, d }) {
+  const a = Math.floor((14 - m) / 12);
+  const yy = y + 4800 - a;
+  const mm = m + 12 * a - 3;
+  return (
+    d +
+    Math.floor((153 * mm + 2) / 5) +
+    365 * yy +
+    Math.floor(yy / 4) -
+    Math.floor(yy / 100) +
+    Math.floor(yy / 400) -
+    32045
+  );
+}
+
+// Interpreta um número como data conforme o formato (mdy: M.DDYYYY; dmy: D.MMYYYY).
+function parseDate(num, fmt) {
+  const inteiro = Math.trunc(Math.abs(num));
+  const frac = Math.abs(num).toFixed(6).split(".")[1] || "000000";
+  const ddmm = parseInt(frac.slice(0, 2), 10);
+  const ano = parseInt(frac.slice(2, 6), 10);
+  if (fmt === "dmy") return { y: ano, m: ddmm, d: inteiro };
+  return { y: ano, m: inteiro, d: ddmm };
+}
+
+// Dias entre datas pela base 30/360.
+function dias360(d1, d2) {
+  let a = d1.d;
+  let b = d2.d;
+  if (a === 31) a = 30;
+  if (b === 31 && a === 30) b = 30;
+  return (d2.y - d1.y) * 360 + (d2.m - d1.m) * 30 + (b - a);
 }
 
 function resetFinancial() {

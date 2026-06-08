@@ -92,3 +92,16 @@ export const secao2Percentual = [
     ],
   },
 ];
+
+export const secao2Calendario = [
+  {
+    nome: "p40 — Dias entre datas (ΔDYS): 3 jun 2004 → 14 out 2005",
+    modo: "rpn",
+    linhas: [
+      { keys: ["g", "M.DY"], display: "0.00" },
+      { keys: ["6.032004", "ENTER"], display: "6.03" },
+      { keys: ["10.142005", "g", "ΔDYS"], display: "498.00" },
+      { keys: ["x≷y"], display: "491.00" },
+    ],
+  },
+];

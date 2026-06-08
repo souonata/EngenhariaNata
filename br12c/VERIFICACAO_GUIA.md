@@ -38,7 +38,7 @@ cada exemplo começa “limpo”.
 |-----|---------------|--------|-------|
 | 0 | Harness/infra | ✅ feito | jsdom + tradutor + comparador; smoke verde (RPN, FIX). 111 testes no total. |
 | 1 | Seção 1 — Getting Started (aritmética RPN/ALG, cadeia, STO/RCL) | ✅ feito | 9/9 exemplos. Implementados R0–R9 + aritmética de registrador. |
-| 2 | Seção 2 — Percentage + Calendar | 🟡 parcial | Percentual 10/10 (corrigidos `%` e `%T` em ALG). Calendário pendente. |
+| 2 | Seção 2 — Percentage + Calendar | 🟡 parcial | Percentual 10/10 + **ΔDYS (dias entre datas) + formatos D.MY/M.DY** verdes. DATE (data futura, display especial) pendente. |
 | 3 | Seção 3 — Basic Financial (juros, TVM, amortização) | 🟡 parcial | TVM Ex.1-3 + **amortização (AMORT)** verdes. INT/odd-period/Ex.4 pendentes. |
 | 4 | Seção 4 — NPV, IRR, bonds, depreciação | ⬜ a fazer | tudo a implementar |
 | 5 | Seção 5 — Operating Features (DISP/SCI, x<>y, LST x, constantes) | ⬜ a fazer | |
@@ -92,3 +92,8 @@ Programação (Parte II) e Soluções (Parte III): fora do escopo atual.
   principal = -PMT - juros, saldo -= principal; atualiza PV e n; sinal segue o PMT. Suíte:
   **150 testes verdes**. Criada **tarefa agendada** `br12c-guia-verificacao` (a cada 6h)
   que retoma esta verificação sozinha do estado commitado, até o guia passar inteiro.
+- **Ch2-calendário (2026-06-08):** Implementados **ΔDYS (g+EEX)** = dias entre datas (reais
+  em X via número-de-dia juliano + base **30/360** em Y) e os **formatos de data D.MY (g+4) /
+  M.DY (g+5)**. Exemplo p.40 (3 jun 2004 → 14 out 2005): 498 reais, 491 (30/360). Helpers
+  `diasJulianos`/`parseDate`/`dias360`. DATE (data futura, com display especial "DD,MM,YYYY W")
+  ainda pendente. Suíte: **151 testes verdes**.
