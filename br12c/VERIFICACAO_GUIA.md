@@ -52,8 +52,10 @@ cada exemplo começa “limpo”.
 | 7 | Seção 7 — Math/Number-Alteration | ✅ feito | 10/10: y^x, 1/x, √x, e^x, LN, FRAC, INTG, RND, x², n!. (O 12C Platinum não tem tecla LOG separada — só LN/e^x.) |
 | 8 | Apêndice D — Error Conditions | ✅ feito | Calc sinaliza "Error" em ÷0, √(−), ln(0), n! inválido; limpa ao pressionar tecla. (Sem tabelas no guia; códigos Error 0–9 não diferenciados.) |
 
-**Parte I do guia + Apêndices A/D/E: COMPLETA.** Programação (Parte II) e Soluções
-aplicadas (Parte III) ficam fora do escopo (são reuso das funções da Parte I).
+**Parte I do guia + Apêndices A/D/E: COMPLETA.**
+
+| III | Parte III — Soluções aplicadas (Seções 12–16) | 🟡 amostra | 4 exemplos não-programáveis verdes (APR+pontos, preço de hipoteca, lease via NPV, taxa contínua→efetiva) — validam TVM/NPV/%/e^x/Δ% contra problemas reais. Demais soluções exigem modo programa (Parte II). |
+| II | Parte II — Programação | ⬜ avaliando | Recurso novo grande (memória de programa, P/R, PRGM, GTO, R/S, SST/BST). Mecânica extraída; escopo em avaliação. |
 
 ## Histórico
 - **Ch0 (2026-06-08):** harness criado e validado (smoke RPN `2 ENTER 3 +`=5 e FIX).
