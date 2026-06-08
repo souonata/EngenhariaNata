@@ -49,4 +49,26 @@ export const secao3 = [
       { keys: ["RCL", "n"], display: "24.00" },
     ],
   },
+  {
+    nome: "p43 — Juros simples (360 dias): $450 a 7%, 60 dias = 5.25",
+    modo: "rpn",
+    linhas: [
+      { keys: ["60", "n"], display: "60.00" },
+      { keys: ["7", "i"], display: "7.00" },
+      { keys: ["450", "CHS", "PV"], display: "-450.00" },
+      { keys: ["f", "INT"], display: "5.25" },
+      { keys: ["+"], display: "455.25" },
+    ],
+  },
+  {
+    nome: "p43 — Juros simples (365 dias) = 5.18",
+    modo: "rpn",
+    linhas: [
+      { keys: ["60", "n"], display: "60.00" },
+      { keys: ["7", "i"], display: "7.00" },
+      { keys: ["450", "CHS", "PV"], display: "-450.00" },
+      { keys: ["f", "INT", "R↓", "x≷y"], display: "5.18" },
+      { keys: ["+"], display: "455.18" },
+    ],
+  },
 ];

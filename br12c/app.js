@@ -605,6 +605,19 @@ function handleShiftedAction(shift, action) {
       amortize();
       return true;
     }
+    // INT = f+i: juros simples. Juros 360 dias em X, 365 dias em Z, e -PV
+    // (principal) em Y para somar (+) e obter o montante. Guia, p.42–43.
+    if (action === "tvm:i") {
+      commitEntry();
+      const pv = state.tvm.PV;
+      const taxaDia = (state.tvm.i / 100) * state.tvm.n;
+      state.stack.z = (-pv * taxaDia) / 365;
+      state.stack.y = -pv;
+      setX((-pv * taxaDia) / 360);
+      state.liftStack = true;
+      flash("INT");
+      return true;
+    }
     // NPV = f+PV: VPL do fluxo de caixa à taxa i.
     if (action === "tvm:PV") {
       commitEntry();
