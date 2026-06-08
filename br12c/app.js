@@ -34,8 +34,8 @@ const KEY_ROWS = [
     { main: "x≷y", f: "FIN", g: "x≤y", action: "swap" },
     { main: "CLx", f: "REG", g: "x=0", action: "clear-entry" },
     { main: "ENTER", f: "PREFIX", g: "", action: "enter", tone: "operator" },
-    { main: "1", f: "", g: "", action: "digit:1", tone: "number" },
-    { main: "2", f: "", g: "", action: "digit:2", tone: "number" },
+    { main: "1", f: "", g: "x̂,r", action: "digit:1", tone: "number" },
+    { main: "2", f: "", g: "ŷ,r", action: "digit:2", tone: "number" },
     { main: "3", f: "", g: "n!", action: "digit:3", tone: "number" },
     { main: "-", f: "", g: "", action: "op:-", tone: "operator" },
   ],
@@ -91,6 +91,7 @@ const state = {
   fixed: 2,
   memory: 0,
   dateFormat: "mdy",
+  lastX: 0,
   cf: [],
   cfN: [],
   stats: { n: 0, sx: 0, sx2: 0, sy: 0, sy2: 0, sxy: 0 },
@@ -790,6 +791,36 @@ function handleShiftedAction(shift, action) {
       flash("ΔDYS");
       return true;
     }
+    // LST x = g++: recupera o último X (antes da última operação), levantando a pilha.
+    if (action === "op:+") {
+      const levanta = state.liftStack || state.entryActive;
+      if (state.entryActive) commitEntry();
+      if (state.mode === "rpn" && levanta) liftStack();
+      state.stack.x = state.lastX;
+      state.entryActive = false;
+      state.liftStack = true;
+      flash("LST x");
+      return true;
+    }
+    // Regressão linear: x̂,r = g+1, ŷ,r = g+2 (estimativa em X, correlação r em Y).
+    if (action === "digit:1") {
+      commitEntry();
+      const reg = regressao();
+      state.stack.y = reg.r;
+      setX(reg.B === 0 ? NaN : (state.stack.x - reg.A) / reg.B);
+      state.liftStack = true;
+      flash("x̂,r");
+      return true;
+    }
+    if (action === "digit:2") {
+      commitEntry();
+      const reg = regressao();
+      state.stack.y = reg.r;
+      setX(reg.A + reg.B * state.stack.x);
+      state.liftStack = true;
+      flash("ŷ,r");
+      return true;
+    }
     // Estatística: Σ- = g+Σ+, x̄ = g+0, s = g+. , x̄w = g+6.
     if (action === "sum-plus") {
       commitEntry();
@@ -975,6 +1006,7 @@ function equals() {
 
 function applyOperator(operator) {
   commitEntry();
+  state.lastX = state.stack.x;
   if (state.mode === "alg") {
     if (state.pendingOperator !== null) {
       const result = calculate(state.pendingValue, state.stack.x, state.pendingOperator);
@@ -1016,6 +1048,7 @@ function calculate(left, right, operator) {
 
 function unary(fn) {
   commitEntry();
+  state.lastX = state.stack.x;
   setX(fn(state.stack.x));
   state.liftStack = true;
 }
@@ -1030,6 +1063,7 @@ function setX(value) {
 
 function percent() {
   commitEntry();
+  state.lastX = state.stack.x;
   if (state.mode === "alg") {
     // ALG: % divide por 100; exceto após + ou - (calcula a % da base pendente).
     if (state.pendingOperator === "+" || state.pendingOperator === "-") {
@@ -1045,6 +1079,7 @@ function percent() {
 
 function deltaPercent() {
   commitEntry();
+  state.lastX = state.stack.x;
   const base = state.stack.y;
   setX(base === 0 ? NaN : ((state.stack.x - base) / base) * 100);
   state.liftStack = true;
@@ -1052,6 +1087,7 @@ function deltaPercent() {
 
 function percentTotal() {
   commitEntry();
+  state.lastX = state.stack.x;
   const base = state.stack.y;
   setX(base === 0 ? NaN : (state.stack.x / base) * 100);
   state.liftStack = true;
@@ -1454,6 +1490,18 @@ function acumularEstatistica() {
   setX(s.n);
   state.liftStack = false;
   flash("Σ+");
+}
+
+// Coeficientes da reta de regressão y = A + B·x e correlação r.
+function regressao() {
+  const s = state.stats;
+  const Sxx = s.n * s.sx2 - s.sx * s.sx;
+  const Syy = s.n * s.sy2 - s.sy * s.sy;
+  const Sxy = s.n * s.sxy - s.sx * s.sy;
+  const B = Sxx === 0 ? 0 : Sxy / Sxx;
+  const A = s.n === 0 ? 0 : (s.sy - B * s.sx) / s.n;
+  const r = Sxx * Syy <= 0 ? 0 : Sxy / Math.sqrt(Sxx * Syy);
+  return { A, B, r };
 }
 
 // --- Calendário ---

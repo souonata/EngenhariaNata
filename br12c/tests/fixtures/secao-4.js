@@ -39,6 +39,21 @@ export const secao4 = [
     ],
   },
   {
+    nome: "p74-75 — NPV fluxos não-agrupados (duplex $80k, 13%) = 212.18",
+    modo: "rpn",
+    linhas: [
+      { keys: ["f", "REG"], display: "0.00" },
+      { keys: ["80000", "CHS", "g", "CFo"], display: "-80,000.00" },
+      { keys: ["500", "CHS", "g", "CFj"], display: "-500.00" },
+      { keys: ["4500", "g", "CFj"], display: "4,500.00" },
+      { keys: ["5500", "g", "CFj"], display: "5,500.00" },
+      { keys: ["4500", "g", "CFj"], display: "4,500.00" },
+      { keys: ["130000", "g", "CFj"], display: "130,000.00" },
+      { keys: ["13", "i"], display: "13.00" },
+      { keys: ["f", "NPV"], display: "212.18" },
+    ],
+  },
+  {
     nome: "p84-85 — Depreciação (declining-balance 200%, máquina $10k)",
     modo: "rpn",
     linhas: [

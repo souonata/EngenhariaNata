@@ -47,8 +47,8 @@ cada exemplo começa “limpo”.
 | 2 | Seção 2 — Percentage + Calendar | 🟡 parcial | Percentual 10/10 + **ΔDYS (dias entre datas) + formatos D.MY/M.DY** verdes. DATE (data futura, display especial) pendente. |
 | 3 | Seção 3 — Basic Financial (juros, TVM, amortização) | 🟡 parcial | TVM Ex.1-3 + **amortização (AMORT)** verdes. INT/odd-period/Ex.4 pendentes. |
 | 4 | Seção 4 — NPV, IRR, bonds, depreciação | 🟡 parcial | **NPV + IRR + fluxo de caixa + depreciação (SL/SOYD/DB)** verdes. Títulos (bonds) pendentes. |
-| 5 | Seção 5 — Operating Features (DISP/SCI, x<>y, LST x, constantes) | ⬜ a fazer | |
-| 6 | Seção 6 — Statistics | 🟡 parcial | **Σ+/Σ-, média (x̄/ȳ), desvio (s), média ponderada (x̄w), CLEAR Σ** verdes. Estimativa linear (ŷ,r/x̂,r) pendente. |
+| 5 | Seção 5 — Operating Features (DISP/SCI, x<>y, LST x, constantes) | 🟡 parcial | **x≷y, LST x (g++), aritmética com constante** verdes. Notação científica (f .) e mantissa (f CLEAR PREFIX) pendentes. |
+| 6 | Seção 6 — Statistics | ✅ feito | Σ+/Σ-, média, desvio, média ponderada, **regressão linear (ŷ,r=g+2, x̂,r=g+1, r)** e CLEAR Σ. |
 | 7 | Seção 7 — Math/Number-Alteration | 🟡 parcial | 10/10: y^x, 1/x, √x, e^x, LN, FRAC, INTG, RND, x², n! (x² e n! implementados). LOG pendente. |
 | 8 | Apêndice D — Error Conditions | ⬜ a fazer | |
 
