@@ -14,17 +14,16 @@
 // guia e desambigua rótulos repetidos; cresce capítulo a capítulo.
 
 export const ALIASES = {
-  // variações de grafia do guia vs rótulos do KEY_ROWS
+  // variações de grafia do guia vs rótulos do KEY_ROWS (a maioria já é resolvida
+  // pelo mapa de rótulos; aqui só as grafias que diferem da skin).
   "÷": "op:/",
   "×": "op:*",
   X: "op:*",
-  "12÷": "tvm:i",
-  "12/": "tvm:i",
-  CFo: "tvm:PV",
-  CF0: "tvm:PV",
+  "12x": "tvm:n", // skin usa "12×"
+  "12X": "tvm:n",
+  "12/": "tvm:i", // skin usa "12÷"
+  CF0: "tvm:PV", // skin usa "CFo"
   "=": "enter",
-  RPN: "digit:8", // g+RPN (tecla 8)
-  ALG: "digit:7", // g+ALG (tecla 7)
 };
 
 // Constrói { rótulo -> ação } a partir de KEY_ROWS. Primeira ocorrência vence

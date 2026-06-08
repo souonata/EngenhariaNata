@@ -1,51 +1,54 @@
+// Metadados das teclas conforme a SKIN real (HP 12C Platinum): rótulo branco
+// (primário), f (dourado, em cima) e g (azul, embaixo). As `action` batem com o
+// teclado renderizado (buildSkinKeys). Fonte de verdade do tradutor de testes
+// (exposto em globalThis.__BR12C_KEYS__) e de handleShiftedAction.
 const KEY_ROWS = [
   [
-    { main: "n", f: "AMORT", g: "12x", action: "tvm:n" },
-    { main: "i", f: "INT", g: "12/", action: "tvm:i" },
-    { main: "PV", f: "NPV", g: "CF0", action: "tvm:PV" },
-    { main: "PMT", f: "IRR", g: "CFj", action: "tvm:PMT" },
-    { main: "FV", f: "Nj", g: "SUM", action: "tvm:FV" },
-    { main: "CHS", f: "DATE", g: "D.MY", action: "chs" },
-    { main: "7", f: "BEG", g: "ALG", action: "digit:7", tone: "number" },
-    { main: "8", f: "END", g: "RPN", action: "digit:8", tone: "number" },
-    { main: "9", f: "MEM", g: "", action: "digit:9", tone: "number" },
-    { main: "/", f: "REG", g: "", action: "op:/", tone: "operator" },
+    { main: "n", f: "AMORT", g: "12×", action: "tvm:n" },
+    { main: "i", f: "INT", g: "12÷", action: "tvm:i" },
+    { main: "PV", f: "NPV", g: "CFo", action: "tvm:PV" },
+    { main: "PMT", f: "RND", g: "CFj", action: "tvm:PMT" },
+    { main: "FV", f: "IRR", g: "Nj", action: "tvm:FV" },
+    { main: "CHS", f: "RPN", g: "DATE", action: "chs" },
+    { main: "7", f: "", g: "BEG", action: "digit:7", tone: "number" },
+    { main: "8", f: "", g: "END", action: "digit:8", tone: "number" },
+    { main: "9", f: "", g: "MEM", action: "digit:9", tone: "number" },
+    { main: "÷", f: "", g: "", action: "op:/", tone: "operator" },
   ],
   [
-    { main: "y^x", f: "PRICE", g: "SL", action: "pow" },
-    { main: "1/x", f: "YTM", g: "SOYD", action: "reciprocal" },
-    { main: "%T", f: "BOND", g: "DB", action: "percent-total" },
-    { main: "Δ%", f: "DAYS", g: "DATE", action: "delta-percent" },
-    { main: "%", f: "%CHG", g: "INT", action: "percent" },
-    { main: "EEX", f: "DISP", g: "SCI", action: "eex" },
-    { main: "4", f: "P/R", g: "", action: "digit:4", tone: "number" },
-    { main: "5", f: "ROUND", g: "", action: "digit:5", tone: "number" },
-    { main: "6", f: "CF", g: "", action: "digit:6", tone: "number" },
-    { main: "x", f: "MARGIN", g: "", action: "op:*", tone: "operator" },
+    { main: "y^x", f: "PRICE", g: "√x", action: "pow" },
+    { main: "1/x", f: "YTM", g: "e^x", action: "reciprocal" },
+    { main: "%T", f: "SL", g: "LN", action: "percent-total" },
+    { main: "Δ%", f: "SOYD", g: "FRAC", action: "delta-percent" },
+    { main: "%", f: "DB", g: "INTG", action: "percent" },
+    { main: "EEX", f: "ALG", g: "ΔDYS", action: "eex" },
+    { main: "4", f: "", g: "D.MY", action: "digit:4", tone: "number" },
+    { main: "5", f: "", g: "M.DY", action: "digit:5", tone: "number" },
+    { main: "6", f: "", g: "Σw", action: "digit:6", tone: "number" },
+    { main: "×", f: "", g: "x²", action: "op:*", tone: "operator" },
   ],
   [
-    { main: "sqrt", f: "x^2", g: "e^x", action: "sqrt" },
-    { main: "LN", f: "LOG", g: "ln", action: "ln" },
-    { main: "RCL", f: "PSE", g: "", action: "rcl" },
-    { main: "STO", f: "CLEAR", g: "", action: "sto" },
-    { main: "ENTER", f: "=", g: "", action: "enter" },
-    { main: "CLx", f: "CLEAR", g: "<-", action: "clear-entry" },
-    { main: "1", f: "FIX 1", g: "", action: "digit:1", tone: "number" },
-    { main: "2", f: "FIX 2", g: "", action: "digit:2", tone: "number" },
-    { main: "3", f: "FIX 3", g: "", action: "digit:3", tone: "number" },
-    { main: "-", f: "M-", g: "", action: "op:-", tone: "operator" },
+    { main: "R/S", f: "P/R", g: "PSE", action: "noop" },
+    { main: "SST", f: "Σ", g: "BST", action: "noop" },
+    { main: "R↓", f: "PRGM", g: "GTO", action: "roll" },
+    { main: "x≷y", f: "FIN", g: "x≤y", action: "swap" },
+    { main: "CLx", f: "REG", g: "x=0", action: "clear-entry" },
+    { main: "ENTER", f: "PREFIX", g: "", action: "enter", tone: "operator" },
+    { main: "1", f: "", g: "", action: "digit:1", tone: "number" },
+    { main: "2", f: "", g: "", action: "digit:2", tone: "number" },
+    { main: "3", f: "", g: "n!", action: "digit:3", tone: "number" },
+    { main: "-", f: "", g: "", action: "op:-", tone: "operator" },
   ],
   [
-    { main: "ON", f: "", g: "", action: "power", tone: "danger" },
+    { main: "ON", f: "OFF", g: "", action: "power", tone: "danger" },
     { main: "f", f: "", g: "", action: "shift:f", tone: "gold" },
     { main: "g", f: "", g: "", action: "shift:g", tone: "blue" },
-    { main: "x<>y", f: "LAST", g: "", action: "swap" },
-    { main: "R↓", f: "R↑", g: "", action: "roll" },
-    { main: "<-", f: "", g: "", action: "backspace" },
-    { main: "0", f: "FIX 0", g: "", action: "digit:0", tone: "number" },
-    { main: ",", f: "FIX 4", g: "", action: "decimal", tone: "number" },
-    { main: "+/-", f: "FIX 5", g: "", action: "chs", tone: "number" },
-    { main: "+", f: "M+", g: "", action: "op:+", tone: "operator" },
+    { main: "STO", f: "", g: "", action: "sto" },
+    { main: "RCL", f: "", g: "", action: "rcl" },
+    { main: "0", f: "", g: "x̄", action: "digit:0", tone: "number" },
+    { main: ".", f: "", g: "s", action: "decimal", tone: "number" },
+    { main: "Σ+", f: "", g: "Σ-", action: "percent-total", tone: "number" },
+    { main: "+", f: "", g: "LST x", action: "op:+", tone: "operator" },
   ],
 ];
 
@@ -556,15 +559,52 @@ function handleAction(action) {
 
 function handleShiftedAction(shift, action) {
   if (shift === "f") {
-    if (action === "clear-entry") {
-      clearAll();
+    // Modos: RPN = f+CHS, ALG = f+EEX (skin).
+    if (action === "chs") {
+      setMode("rpn");
       return true;
     }
-    if (action === "op:/") {
+    if (action === "eex") {
+      setMode("alg");
+      return true;
+    }
+    // CLEAR: FIN = f+x≷y, REG = f+CLx, PREFIX = f+ENTER.
+    if (action === "swap") {
       resetFinancial();
+      flash("FIN");
+      return true;
+    }
+    if (action === "clear-entry") {
+      clearRegisters();
       flash("REG");
       return true;
     }
+    if (action === "enter") {
+      flash("PREFIX");
+      return true;
+    }
+    // FIX n = f + dígito (0–9).
+    if (action.startsWith("digit:")) {
+      state.fixed = Number(action.slice(6));
+      flash(`FIX ${state.fixed}`);
+      return true;
+    }
+    // RND = f+PMT (arredonda X às casas do display).
+    if (action === "tvm:PMT") {
+      commitEntry();
+      const fator = Math.pow(10, state.fixed);
+      setX(Math.round(state.stack.x * fator) / fator);
+      flash("RND");
+      return true;
+    }
+    // Demais funções f (AMORT, INT, NPV, IRR, PRICE, YTM, SL, SOYD, DB, ...)
+    // chegam nos capítulos seguintes; por ora consome o prefixo (não dispara a
+    // função primária da tecla por engano).
+    return true;
+  }
+
+  if (shift === "g") {
+    // BEG/END (modo de pagamento) = g+7 / g+8.
     if (action === "digit:7") {
       state.tvm.begin = true;
       flash("BEG");
@@ -575,56 +615,7 @@ function handleShiftedAction(shift, action) {
       flash("END");
       return true;
     }
-    if (action.startsWith("digit:")) {
-      state.fixed = Number(action.slice(6));
-      flash(`FIX ${state.fixed}`);
-      return true;
-    }
-    if (action === "decimal") {
-      state.fixed = 4;
-      flash("FIX 4");
-      return true;
-    }
-    if (action === "chs") {
-      state.fixed = 5;
-      flash("FIX 5");
-      return true;
-    }
-    if (action === "sqrt") {
-      unary((x) => x * x);
-      return true;
-    }
-    if (action === "ln") {
-      unary((x) => Math.log10(x));
-      return true;
-    }
-    if (action === "op:+") {
-      commitEntry();
-      state.memory += state.stack.x;
-      flash("M+");
-      return true;
-    }
-    if (action === "op:-") {
-      commitEntry();
-      state.memory -= state.stack.x;
-      flash("M-");
-      return true;
-    }
-    if (action === "enter") {
-      equals();
-      return true;
-    }
-  }
-
-  if (shift === "g") {
-    if (action === "digit:7") {
-      setMode("alg");
-      return true;
-    }
-    if (action === "digit:8") {
-      setMode("rpn");
-      return true;
-    }
+    // 12× = g+n, 12÷ = g+i.
     if (action === "tvm:n") {
       unary((x) => x * 12);
       return true;
@@ -633,22 +624,49 @@ function handleShiftedAction(shift, action) {
       unary((x) => x / 12);
       return true;
     }
-    if (action === "sqrt") {
+    // Matemática (g na linha do y^x): √x, e^x, LN, FRAC, INTG.
+    if (action === "pow") {
+      unary((x) => (x < 0 ? NaN : Math.sqrt(x)));
+      return true;
+    }
+    if (action === "reciprocal") {
       unary((x) => Math.exp(x));
       return true;
     }
-    if (action === "ln") {
-      unary((x) => Math.log(x));
+    if (action === "percent-total") {
+      unary((x) => (x <= 0 ? NaN : Math.log(x)));
       return true;
     }
-    if (action === "clear-entry") {
-      backspace();
+    if (action === "delta-percent") {
+      unary((x) => x - Math.trunc(x));
       return true;
     }
+    if (action === "percent") {
+      unary((x) => Math.trunc(x));
+      return true;
+    }
+    // Demais funções g (calendário, estatística, programa) — capítulos seguintes.
+    return true;
   }
 
   flash(shift.toUpperCase());
   return false;
+}
+
+// CLEAR REG (f+CLx): zera registradores de dados, financeiros, pilha e display.
+function clearRegisters() {
+  state.registers = {};
+  resetFinancial();
+  state.stack = { x: 0, y: 0, z: 0, t: 0 };
+  state.entry = "";
+  state.entryActive = false;
+  state.pendingOperator = null;
+  state.pendingValue = null;
+  state.pendingStore = false;
+  state.pendingRecall = false;
+  state.pendingStoreOp = null;
+  state.liftStack = false;
+  clearError();
 }
 
 function setMode(mode) {

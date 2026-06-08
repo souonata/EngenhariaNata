@@ -9,7 +9,7 @@ export function rodarSecao(titulo, exemplos) {
     for (const ex of exemplos) {
       it(ex.nome, async () => {
         const calc = await criarCalculadora();
-        if (ex.modo === "alg") calc.pressGuia(["g", "ALG"]);
+        if (ex.modo === "alg") calc.pressGuia(["f", "ALG"]);
         if (ex.preparar) ex.preparar(calc);
         for (const linha of ex.linhas) {
           calc.pressGuia(linha.keys);

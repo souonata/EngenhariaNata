@@ -68,3 +68,12 @@ Programação (Parte II) e Soluções (Parte III): fora do escopo atual.
   agora `beginNumericEntry` faz *lift* também em ALG após um resultado (total fica em Y); o
   `applyOperator` zera `liftStack`, sem afetar cadeias. Runner compartilhado `tests/_runner.js`.
   Calendário (DATE/ΔDYS/formatos) ainda **pendente**. Suíte: **130 testes verdes**.
+- **Remapeamento do teclado (2026-06-08):** `KEY_ROWS` e `handleShiftedAction` estavam
+  embaralhados vs a SKIN real. Corrigido conforme a foto: **RPN = f+CHS, ALG = f+EEX**
+  (eram g+8/g+7); **BEG = g+7, END = g+8** (eram f+7/f+8); **FIX n = f+dígito** (FIX 7/8
+  voltaram a ser acessíveis); 12×=g+n, 12÷=g+i; **CLEAR FIN = f+x≷y, CLEAR REG = f+CLx,
+  PREFIX = f+ENTER**; RND = f+PMT; math g na linha do y^x: **√x, e^x, LN, FRAC, INTG**.
+  Removidos M+/M- (não existem na skin) e o atalho de backspace. Funções f/g ainda não
+  implementadas (AMORT/INT/NPV/IRR/PRICE/YTM/SL/SOYD/DB e calendário/estatística) consomem
+  o prefixo sem disparar a função primária. Novo teste `teclado.guia.test.js` (6) trava o
+  mapeamento. Resolve o achado "f-vs-g" do Ch1. Suíte: **136 testes verdes**.
