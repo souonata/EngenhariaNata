@@ -654,6 +654,25 @@ function handleShiftedAction(shift, action) {
       unary((x) => Math.trunc(x));
       return true;
     }
+    // x² = g+× ; n! = g+3.
+    if (action === "op:*") {
+      unary((x) => x * x);
+      return true;
+    }
+    if (action === "digit:3") {
+      commitEntry();
+      const x = state.stack.x;
+      if (x < 0 || !Number.isInteger(x) || x > 170) {
+        setError();
+      } else {
+        let resultado = 1;
+        for (let k = 2; k <= x; k += 1) resultado *= k;
+        setX(resultado);
+      }
+      state.liftStack = true;
+      flash("n!");
+      return true;
+    }
     // Demais funções g (calendário, estatística, programa) — capítulos seguintes.
     return true;
   }

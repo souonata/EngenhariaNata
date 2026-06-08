@@ -43,7 +43,7 @@ cada exemplo começa “limpo”.
 | 4 | Seção 4 — NPV, IRR, bonds, depreciação | ⬜ a fazer | tudo a implementar |
 | 5 | Seção 5 — Operating Features (DISP/SCI, x<>y, LST x, constantes) | ⬜ a fazer | |
 | 6 | Seção 6 — Statistics | ⬜ a fazer | a implementar |
-| 7 | Seção 7 — Math/Number-Alteration | ⬜ a fazer | sqrt/ln existem; resto a implementar |
+| 7 | Seção 7 — Math/Number-Alteration | 🟡 parcial | 10/10: y^x, 1/x, √x, e^x, LN, FRAC, INTG, RND, x², n! (x² e n! implementados). LOG pendente. |
 | 8 | Apêndice D — Error Conditions | ⬜ a fazer | |
 
 Programação (Parte II) e Soluções (Parte III): fora do escopo atual.
@@ -83,3 +83,6 @@ Programação (Parte II) e Soluções (Parte III): fora do escopo atual.
   `PV` não resolvia; (b) **`12×`/`12÷` (g+n / g+i) agora ARMAZENAM** o resultado em n/i (antes
   só multiplicavam X) — por isso o solve dava 0. AMORT/INT/odd-period e o Exemplo 4
   (anualização) ainda pendentes. Suíte: **137 testes verdes**.
+- **Ch7-math (2026-06-08):** Seção 7 — funções matemáticas **10/10** (y^x, 1/x, √x, e^x, LN,
+  FRAC, INTG, RND, x², n!). Implementados **x² (g+×)** e **n! (g+3)** que faltavam; os demais
+  já vieram corretos do remapeamento. Suíte: **147 testes verdes**.
