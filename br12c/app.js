@@ -597,7 +597,12 @@ function handleShiftedAction(shift, action) {
       flash("RND");
       return true;
     }
-    // Demais funções f (AMORT, INT, NPV, IRR, PRICE, YTM, SL, SOYD, DB, ...)
+    // AMORT = f+n: amortiza os próximos N pagamentos (N vem do display).
+    if (action === "tvm:n") {
+      amortize();
+      return true;
+    }
+    // Demais funções f (INT, NPV, IRR, PRICE, YTM, SL, SOYD, DB, ...)
     // chegam nos capítulos seguintes; por ora consome o prefixo (não dispara a
     // função primária da tecla por engano).
     return true;
@@ -1229,6 +1234,38 @@ function resetFinancial() {
   state.tvm.PMT = 0;
   state.tvm.FV = 0;
   state.memory = 0;
+}
+
+// AMORT (f+n): amortiza os próximos `count` pagamentos (count vem do display).
+// Cada parcela: juros = arred(saldo × i/100) às casas do FIX; principal = -PMT -
+// juros; saldo -= principal. Atualiza PV (saldo) e n (total amortizado). Deixa o
+// total de juros em X e o total de principal em Y (x≷y mostra o principal). O
+// sinal segue o do PMT (saída de caixa => negativo). Guia, p.69–71.
+function amortize() {
+  commitEntry();
+  const count = Math.round(state.stack.x);
+  const taxa = state.tvm.i / 100;
+  const pmt = state.tvm.PMT;
+  const fator = Math.pow(10, state.fixed);
+  const arred = (v) => Math.round(v * fator) / fator;
+
+  let totalJuros = 0;
+  let totalPrincipal = 0;
+  for (let j = 0; j < count; j += 1) {
+    const semJuros = state.tvm.begin && (state.tvm.n || 0) === 0 && j === 0;
+    const juros = semJuros ? 0 : arred(state.tvm.PV * taxa);
+    const principal = -pmt - juros;
+    state.tvm.PV -= principal;
+    totalJuros += juros;
+    totalPrincipal += principal;
+  }
+  state.tvm.n = (state.tvm.n || 0) + count;
+
+  const sinal = pmt < 0 ? -1 : 1;
+  state.stack.y = sinal * totalPrincipal;
+  setX(sinal * totalJuros);
+  state.liftStack = true;
+  flash("AMORT");
 }
 
 function clearAll() {

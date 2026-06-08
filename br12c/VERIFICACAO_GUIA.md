@@ -39,7 +39,7 @@ cada exemplo começa “limpo”.
 | 0 | Harness/infra | ✅ feito | jsdom + tradutor + comparador; smoke verde (RPN, FIX). 111 testes no total. |
 | 1 | Seção 1 — Getting Started (aritmética RPN/ALG, cadeia, STO/RCL) | ✅ feito | 9/9 exemplos. Implementados R0–R9 + aritmética de registrador. |
 | 2 | Seção 2 — Percentage + Calendar | 🟡 parcial | Percentual 10/10 (corrigidos `%` e `%T` em ALG). Calendário pendente. |
-| 3 | Seção 3 — Basic Financial (juros, TVM, amortização) | 🟡 parcial | TVM Ex.1-3 (p.12-14) verde (PV/FV/PMT, BEG/END). Corrigidos default 0 e 12×/12÷ armazena n/i. AMORT/INT/odd-period pendentes. |
+| 3 | Seção 3 — Basic Financial (juros, TVM, amortização) | 🟡 parcial | TVM Ex.1-3 + **amortização (AMORT)** verdes. INT/odd-period/Ex.4 pendentes. |
 | 4 | Seção 4 — NPV, IRR, bonds, depreciação | ⬜ a fazer | tudo a implementar |
 | 5 | Seção 5 — Operating Features (DISP/SCI, x<>y, LST x, constantes) | ⬜ a fazer | |
 | 6 | Seção 6 — Statistics | ⬜ a fazer | a implementar |
@@ -86,3 +86,9 @@ Programação (Parte II) e Soluções (Parte III): fora do escopo atual.
 - **Ch7-math (2026-06-08):** Seção 7 — funções matemáticas **10/10** (y^x, 1/x, √x, e^x, LN,
   FRAC, INTG, RND, x², n!). Implementados **x² (g+×)** e **n! (g+3)** que faltavam; os demais
   já vieram corretos do remapeamento. Suíte: **147 testes verdes**.
+- **Ch3-AMORT (2026-06-08):** Implementada **amortização (AMORT = f+n)** — guia p.69–70
+  (hipoteca $250k/25 anos/5.25%): juros -13.006,53, principal -4.970,91 (x≷y), saldo
+  245.029,09 (RCL PV), n=12; 2º ano também. Por parcela: juros = arred(saldo×i/100) ao FIX,
+  principal = -PMT - juros, saldo -= principal; atualiza PV e n; sinal segue o PMT. Suíte:
+  **150 testes verdes**. Criada **tarefa agendada** `br12c-guia-verificacao` (a cada 6h)
+  que retoma esta verificação sozinha do estado commitado, até o guia passar inteiro.
