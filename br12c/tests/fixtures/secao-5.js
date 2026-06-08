@@ -30,4 +30,18 @@ export const secao5 = [
       { keys: ["429000", "ENTER", "987", "÷"], display: "434.65" },
     ],
   },
+  {
+    nome: "p87-89 — Formatos de display: FIX, científico (f .) e mantissa (f CLEAR PREFIX)",
+    modo: "rpn",
+    linhas: [
+      { keys: ["19.8745632", "ENTER", "5", "-"], display: "14.87" },
+      { keys: ["f", "4"], display: "14.8746" },
+      { keys: ["f", "1"], display: "14.9" },
+      { keys: ["f", "0"], display: "15." },
+      { keys: ["f", "9"], display: "14.87456320" },
+      { keys: ["f", "."], display: "1.487456 01" },
+      { keys: ["f", "PREFIX"], display: "1487456320" },
+      { keys: ["f", "2"], display: "14.87" },
+    ],
+  },
 ];

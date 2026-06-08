@@ -93,6 +93,7 @@ const state = {
   dateFormat: "mdy",
   lastX: 0,
   displayOverride: null,
+  displayMode: "fix",
   cf: [],
   cfN: [],
   stats: { n: 0, sx: 0, sx2: 0, sy: 0, sy2: 0, sxy: 0 },
@@ -598,13 +599,24 @@ function handleShiftedAction(shift, action) {
       flash("Σ");
       return true;
     }
+    // Mantissa = f CLEAR PREFIX (f+ENTER): mostra os 10 dígitos do número (momentâneo).
     if (action === "enter") {
+      commitEntry();
+      state.displayOverride = formatMantissa(state.stack.x);
       flash("PREFIX");
       return true;
     }
-    // FIX n = f + dígito (0–9).
+    // Notação científica = f + "." (ponto). Persiste até um FIX (f dígito).
+    if (action === "decimal") {
+      commitEntry();
+      state.displayMode = "sci";
+      flash("SCI");
+      return true;
+    }
+    // FIX n = f + dígito (0–9). Volta ao formato fixo.
     if (action.startsWith("digit:")) {
       state.fixed = Number(action.slice(6));
+      state.displayMode = "fix";
       flash(`FIX ${state.fixed}`);
       return true;
     }
@@ -1826,7 +1838,40 @@ function formatRegister(value) {
 function currentDisplayText() {
   if (state.error) return state.error;
   if (state.entryActive) return formatEntryDisplay(state.entry);
+  if (state.displayMode === "sci") return formatScientific(state.stack.x);
   return formatDisplayValue(state.stack.x);
+}
+
+// Notação científica: mantissa (1 dígito + até 6 decimais) + 2 dígitos de expoente.
+function formatScientific(value) {
+  const v = normalizeZero(value);
+  if (!Number.isFinite(v)) return "Error";
+  if (v === 0) return `0${DECIMAL_SEPARATOR}000000 00`;
+  const neg = v < 0;
+  const abs = Math.abs(v);
+  let exp = Math.floor(Math.log10(abs));
+  let mant = Number((abs / Math.pow(10, exp)).toFixed(6));
+  if (mant >= 10) {
+    mant /= 10;
+    exp += 1;
+  }
+  const mantStr = mant.toFixed(6).replace(".", DECIMAL_SEPARATOR);
+  const expStr = String(Math.abs(exp)).padStart(2, "0");
+  return `${neg ? "-" : ""}${mantStr}${exp < 0 ? "-" : " "}${expStr}`;
+}
+
+// Mantissa (f CLEAR PREFIX): os 10 dígitos significativos, sem separador decimal.
+function formatMantissa(value) {
+  const v = normalizeZero(value);
+  if (!Number.isFinite(v)) return "Error";
+  if (v === 0) return "0000000000";
+  const abs = Math.abs(v);
+  const exp = Math.floor(Math.log10(abs));
+  const digitos = Math.round((abs / Math.pow(10, exp)) * 1e9)
+    .toString()
+    .padEnd(10, "0")
+    .slice(0, 10);
+  return `${v < 0 ? "-" : ""}${digitos}`;
 }
 
 function toScreenText(text) {

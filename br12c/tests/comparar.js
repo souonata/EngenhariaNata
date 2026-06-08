@@ -18,6 +18,17 @@ function casasDecimais(s) {
   return m ? m[1].length : 0;
 }
 
+// Notação científica "M.MMMMMM EE" / "M,MMMMMM-EE" -> valor numérico.
+function parseSci(s) {
+  const m = String(s)
+    .trim()
+    .match(/^(-?\d[.,]\d{1,6})\s?(-?)(\d{2})$/);
+  if (!m) return NaN;
+  const mant = Number(m[1].replace(",", "."));
+  const exp = (m[2] === "-" ? -1 : 1) * Number(m[3]);
+  return mant * Math.pow(10, exp);
+}
+
 // Retorna { ok, atual, esperado, aNum, eNum }.
 export function conferir(atual, esperado) {
   const esp = String(esperado).trim();
@@ -25,6 +36,14 @@ export function conferir(atual, esperado) {
   // Resultado de g DATE: "DD,MM,YYYY W" (ou MM,DD,YYYY W) — comparação textual exata.
   if (/^\d{1,2},\d{2},\d{4}\s\d$/.test(esp)) {
     return { ok: String(atual).trim() === esp, atual, esperado };
+  }
+
+  // Notação científica (display f .): compara por valor (mantissa 6 dígitos).
+  if (/^-?\d[.,]\d{1,6}[\s-]\d{2}$/.test(esp)) {
+    const a = parseSci(atual);
+    const e = parseSci(esp);
+    const ok = Number.isFinite(a) && Number.isFinite(e) && Math.abs(a - e) <= Math.abs(e) * 1e-6 + 1e-9;
+    return { ok, atual, esperado, aNum: a, eNum: e };
   }
 
   // Texto especial (contém letras): comparação textual tolerante.
