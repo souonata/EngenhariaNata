@@ -139,3 +139,18 @@ cada exemplo começa “limpo”.
     `formatMantissa` + parser SCI no comparador; p.87-89 verde. Seção 5 completa.
   - Apêndice E confirmou TODAS as fórmulas implementadas (TVM, NPV, IRR, bonds, depreciação,
     %, estatística, regressão). **Parte I + Apêndices A/D/E completos. Suíte: 172 verdes, CI verde.**
+- **Odd-period + flag C (2026-06-08):** STO EEX liga/desliga o indicador C; n não-inteiro entra
+  em Odd-Period (INTG/FRAC, juros simples C off / composto C on). `handleTvm` passou a armazenar
+  valor recém-calculado (`freshValue`, ex.: "36 + n"). p.65-68: composto -135,17; simples 13,95%.
+- **Parte III — soluções (2026-06-08):** 4 problemas aplicados não-programáveis (APR+pontos 5,68%,
+  preço de hipoteca -158.361,78, lease/NPV 12.831,75, taxa contínua→efetiva 5,39%) — validam os
+  motores existentes, todos verdes de primeira.
+- **Parte II — Programação (2026-06-08):** modo programa completo (Seções 8–11). Workflows
+  extraíram a mecânica + programas-exemplo. Implementado: P/R, gravação de instruções com keycode
+  (linha-posição, incl. multi-tecla STO+1=`44 40 1`), SST/BST, g GTO . nnn (posiciona) / g GTO nnn
+  (grava desvio), f CLEAR PRGM, R/S roda (replica via executor real), g PSE; **condicionais x≤y
+  (43,34) / x=0 (43,35) com DO-if-TRUE**; **GTO como desvio/loop**; **edição por substituição
+  (Seção 10)**; **múltiplos programas com separador GTO 000 + g GTO nnn em run (Seção 11)**.
+  Comparador ganhou comparação de linha-de-programa. Programas-exemplo verdes: desconto+frete
+  (473,75), fatura+acumuladores (950,61), imposto condicional (3.000/4.000/6.250), edição (505),
+  dois programas (×/+). **Manual inteiro (Partes I–III + Apêndices A/D/E) coberto. Suíte: 185 verdes, CI verde.**
