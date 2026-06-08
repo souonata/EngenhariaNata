@@ -55,7 +55,7 @@ cada exemplo começa “limpo”.
 **Parte I do guia + Apêndices A/D/E: COMPLETA.**
 
 | III | Parte III — Soluções aplicadas (Seções 12–16) | 🟡 amostra | 4 exemplos não-programáveis verdes (APR+pontos, preço de hipoteca, lease via NPV, taxa contínua→efetiva) — validam TVM/NPV/%/e^x/Δ% contra problemas reais. Demais soluções exigem modo programa (Parte II). |
-| II | Parte II — Programação | ⬜ avaliando | Recurso novo grande (memória de programa, P/R, PRGM, GTO, R/S, SST/BST). Mecânica extraída; escopo em avaliação. |
+| II | Parte II — Programação | ✅ núcleo | **Modo programa implementado**: P/R (f+R/S), gravação com keycodes, SST/BST, g GTO . nnn, f CLEAR PRGM, R/S roda. Ex. p.108/117 (desconto+frete) grava e roda 625→473,75. Branching condicional (x≤y/x=0, Seção 9) fora do núcleo. |
 
 ## Histórico
 - **Ch0 (2026-06-08):** harness criado e validado (smoke RPN `2 ENTER 3 +`=5 e FIX).

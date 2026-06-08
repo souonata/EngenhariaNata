@@ -28,7 +28,7 @@ const KEY_ROWS = [
     { main: "×", f: "", g: "x²", action: "op:*", tone: "operator" },
   ],
   [
-    { main: "R/S", f: "P/R", g: "PSE", action: "noop" },
+    { main: "R/S", f: "P/R", g: "PSE", action: "run-stop" },
     { main: "SST", f: "Σ", g: "BST", action: "sst" },
     { main: "R↓", f: "PRGM", g: "GTO", action: "roll" },
     { main: "x≷y", f: "FIN", g: "x≤y", action: "swap" },
@@ -96,6 +96,11 @@ const state = {
   displayMode: "fix",
   flagC: false,
   freshValue: false,
+  prgmMode: false,
+  running: false,
+  program: [],
+  pointer: 0,
+  pendingGoto: null,
   cf: [],
   cfN: [],
   stats: { n: 0, sx: 0, sx2: 0, sy: 0, sy2: 0, sxy: 0 },
@@ -187,7 +192,7 @@ function buildSkinKeys() {
     box("5", "digit:5", 7, 1, "number"),
     box("6", "digit:6", 8, 1, "number"),
     box("x", "op:*", 9, 1, "operator"),
-    box("R/S", "noop", 0, 2),
+    box("R/S", "run-stop", 0, 2),
     box("SST", "sst", 1, 2),
     box("R down", "roll", 2, 2),
     box("x swap y", "swap", 3, 2),
@@ -517,6 +522,30 @@ function handleAction(action) {
   // consumido; senão, usa o shift de uma vez só (state.shift).
   const shiftTravado = getHeldShift();
   const shiftEfetivo = shiftTravado || state.shift;
+
+  // P/R (f + R/S): alterna modo Programa <-> Run (vale nos dois modos).
+  if (shiftEfetivo === "f" && action === "run-stop") {
+    if (!shiftTravado) state.shift = null;
+    togglePrgm();
+    updateUI();
+    return;
+  }
+
+  // Modo Programa: teclas são gravadas (ou editam/navegam), não executadas.
+  if (state.prgmMode) {
+    if (!shiftTravado) state.shift = null;
+    handleProgramMode(action, shiftEfetivo);
+    updateUI();
+    return;
+  }
+
+  // Run mode: R/S inicia a execução do programa a partir da linha atual.
+  if (!shiftEfetivo && action === "run-stop") {
+    runProgram();
+    updateUI();
+    return;
+  }
+
   if (shiftEfetivo) {
     const handled = handleShiftedAction(shiftEfetivo, action);
     if (!shiftTravado) state.shift = null;
@@ -1890,6 +1919,127 @@ function integerDigitCount(value) {
 function formatRegister(value) {
   if (value === null || value === undefined || Number.isNaN(value)) return "--";
   return formatDisplayValue(value);
+}
+
+// ===== Modo Programa (Parte II do guia) =====
+// Keycode de cada tecla (linha-posição do teclado). Dígitos exibem o próprio dígito.
+const KEYCODES = {
+  "tvm:n": "11", "tvm:i": "12", "tvm:PV": "13", "tvm:PMT": "14", "tvm:FV": "15",
+  chs: "16", "op:/": "10",
+  pow: "21", reciprocal: "22", "percent-total": "23", "delta-percent": "24",
+  percent: "25", eex: "26", "op:*": "20",
+  "run-stop": "31", sst: "32", roll: "33", swap: "34", "clear-entry": "35",
+  enter: "36", "op:-": "30",
+  power: "41", "shift:f": "42", "shift:g": "43", sto: "44", rcl: "45",
+  decimal: "48", "sum-plus": "49", "op:+": "40",
+};
+
+function keycodeFor(action) {
+  if (action.startsWith("digit:")) return action.slice(6);
+  return KEYCODES[action] || "??";
+}
+
+function togglePrgm() {
+  state.prgmMode = !state.prgmMode;
+  if (state.prgmMode) {
+    state.shift = null;
+    state.pendingGoto = null;
+    mostrarLinhaPrograma();
+  } else {
+    state.pointer = 0;
+    state.displayOverride = null;
+  }
+}
+
+function mostrarLinhaPrograma() {
+  const linha = String(state.pointer).padStart(3, "0");
+  if (state.pointer === 0) {
+    state.displayOverride = `${linha},`;
+    return;
+  }
+  const instr = state.program[state.pointer - 1];
+  state.displayOverride = instr ? `${linha}, ${instr.keycode}` : `${linha}, 43,33,000`;
+}
+
+function handleProgramMode(action, shift) {
+  if (state.pendingGoto) {
+    programGoto(action);
+    return;
+  }
+  if (shift === "f" && action === "roll") return limparPrograma(); // CLEAR PRGM
+  if (shift === "g" && action === "roll") {
+    state.pendingGoto = { dot: false, digits: "" }; // GTO
+    return;
+  }
+  if (shift === "g" && action === "sst") return passoPrograma(-1); // BST
+  if (shift === "g" && action === "digit:9") return mostrarMem(); // MEM
+  if (!shift && action === "sst") return passoPrograma(1); // SST
+  gravarInstrucao(action, shift);
+}
+
+function gravarInstrucao(action, shift) {
+  const actions = shift ? [`shift:${shift}`, action] : [action];
+  const keycode = shift ? `${KEYCODES[`shift:${shift}`]} ${keycodeFor(action)}` : keycodeFor(action);
+  state.pointer += 1;
+  state.program[state.pointer - 1] = { actions, keycode };
+  mostrarLinhaPrograma();
+}
+
+function passoPrograma(delta) {
+  const max = Math.max(state.program.length, 8);
+  state.pointer = Math.min(max, Math.max(0, state.pointer + delta));
+  mostrarLinhaPrograma();
+}
+
+function programGoto(action) {
+  const g = state.pendingGoto;
+  if (action === "decimal") {
+    g.dot = true;
+    return;
+  }
+  if (action.startsWith("digit:")) {
+    g.digits += action.slice(6);
+    if (g.digits.length >= 3) {
+      state.pointer = Number(g.digits);
+      state.pendingGoto = null;
+      mostrarLinhaPrograma();
+    }
+    return;
+  }
+  state.pendingGoto = null;
+}
+
+function limparPrograma() {
+  state.program = [];
+  state.pointer = 0;
+  mostrarLinhaPrograma();
+}
+
+function mostrarMem() {
+  const linhas = Math.max(state.program.length, 8);
+  state.displayOverride = `P-${String(linhas).padStart(3, "0")}  r-20`;
+}
+
+function runProgram() {
+  state.running = true;
+  let pc = state.pointer;
+  let guarda = 0;
+  while (pc < state.program.length && guarda < 5000) {
+    guarda += 1;
+    const instr = state.program[pc];
+    if (instr.actions.length === 1 && instr.actions[0] === "run-stop") {
+      pc += 1;
+      break;
+    }
+    for (const a of instr.actions) handleAction(a);
+    if (state.error) {
+      state.running = false;
+      return;
+    }
+    pc += 1;
+  }
+  state.pointer = 0;
+  state.running = false;
 }
 
 function currentDisplayText() {

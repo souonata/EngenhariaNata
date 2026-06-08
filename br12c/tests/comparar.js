@@ -38,6 +38,16 @@ export function conferir(atual, esperado) {
     return { ok: String(atual).trim() === esp, atual, esperado };
   }
 
+  // Linha de programa (modo PRGM): "LLL," ou "LLL, keycode" — comparação ignorando
+  // espaços. Exige espaço/fim após a vírgula para não casar números US (130,000.00).
+  if (/^\d{3},(\s|$)/.test(esp)) {
+    return {
+      ok: String(atual).replace(/\s+/g, "") === esp.replace(/\s+/g, ""),
+      atual,
+      esperado,
+    };
+  }
+
   // Notação científica (display f .): compara por valor (mantissa 6 dígitos).
   if (/^-?\d[.,]\d{1,6}[\s-]\d{2}$/.test(esp)) {
     const a = parseSci(atual);
