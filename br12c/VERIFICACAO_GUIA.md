@@ -40,7 +40,7 @@ cada exemplo começa “limpo”.
 | 1 | Seção 1 — Getting Started (aritmética RPN/ALG, cadeia, STO/RCL) | ✅ feito | 9/9 exemplos. Implementados R0–R9 + aritmética de registrador. |
 | 2 | Seção 2 — Percentage + Calendar | 🟡 parcial | Percentual 10/10 + **ΔDYS (dias entre datas) + formatos D.MY/M.DY** verdes. DATE (data futura, display especial) pendente. |
 | 3 | Seção 3 — Basic Financial (juros, TVM, amortização) | 🟡 parcial | TVM Ex.1-3 + **amortização (AMORT)** verdes. INT/odd-period/Ex.4 pendentes. |
-| 4 | Seção 4 — NPV, IRR, bonds, depreciação | ⬜ a fazer | tudo a implementar |
+| 4 | Seção 4 — NPV, IRR, bonds, depreciação | 🟡 parcial | **NPV + IRR + fluxo de caixa (CFo/CFj/Nj)** verdes. Títulos e depreciação pendentes. |
 | 5 | Seção 5 — Operating Features (DISP/SCI, x<>y, LST x, constantes) | ⬜ a fazer | |
 | 6 | Seção 6 — Statistics | ⬜ a fazer | a implementar |
 | 7 | Seção 7 — Math/Number-Alteration | 🟡 parcial | 10/10: y^x, 1/x, √x, e^x, LN, FRAC, INTG, RND, x², n! (x² e n! implementados). LOG pendente. |
@@ -97,3 +97,8 @@ Programação (Parte II) e Soluções (Parte III): fora do escopo atual.
   M.DY (g+5)**. Exemplo p.40 (3 jun 2004 → 14 out 2005): 498 reais, 491 (30/360). Helpers
   `diasJulianos`/`parseDate`/`dias360`. DATE (data futura, com display especial "DD,MM,YYYY W")
   ainda pendente. Suíte: **151 testes verdes**.
+- **Ch4-NPV/IRR (2026-06-08):** Implementados **fluxo de caixa** (CFo=g+PV, CFj=g+PMT,
+  Nj=g+FV), **NPV (f+PV)** e **IRR (f+FV)**. Exemplos: NPV não-agrupado p.74–75 = 212,18;
+  NPV agrupado p.76–77 = 907,77; **IRR p.78 = 13,72%** (via `solveRoot` no VPL). `state.cf`/
+  `state.cfN` guardam os fluxos; `f CLEAR REG` os zera. Títulos (PRICE/YTM) e depreciação
+  (SL/SOYD/DB) pendentes. Suíte: **153 testes verdes**.

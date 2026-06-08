@@ -88,6 +88,8 @@ const state = {
   fixed: 2,
   memory: 0,
   dateFormat: "mdy",
+  cf: [],
+  cfN: [],
   tvm: {
     n: 0,
     i: 0,
@@ -603,7 +605,31 @@ function handleShiftedAction(shift, action) {
       amortize();
       return true;
     }
-    // Demais funções f (INT, NPV, IRR, PRICE, YTM, SL, SOYD, DB, ...)
+    // NPV = f+PV: VPL do fluxo de caixa à taxa i.
+    if (action === "tvm:PV") {
+      commitEntry();
+      const npv = valorPresenteLiquido(state.tvm.i);
+      state.tvm.PV = npv;
+      setX(npv);
+      state.liftStack = true;
+      flash("NPV");
+      return true;
+    }
+    // IRR = f+FV: taxa periódica (%) que zera o VPL.
+    if (action === "tvm:FV") {
+      commitEntry();
+      const irr = solveRoot((taxa) => valorPresenteLiquido(taxa), 0, 1000);
+      if (Number.isFinite(irr)) {
+        state.tvm.i = irr;
+        setX(irr);
+      } else {
+        setError();
+      }
+      state.liftStack = true;
+      flash("IRR");
+      return true;
+    }
+    // Demais funções f (INT, PRICE, YTM, SL, SOYD, DB, ...)
     // chegam nos capítulos seguintes; por ora consome o prefixo (não dispara a
     // função primária da tecla por engano).
     return true;
@@ -637,6 +663,32 @@ function handleShiftedAction(shift, action) {
       state.tvm.i = state.stack.x;
       state.liftStack = true;
       flash("12÷");
+      return true;
+    }
+    // Fluxo de caixa: CFo = g+PV, CFj = g+PMT, Nj = g+FV.
+    if (action === "tvm:PV") {
+      commitEntry();
+      state.cf = [state.stack.x];
+      state.cfN = [1];
+      state.tvm.n = 0;
+      state.liftStack = true;
+      flash("CFo");
+      return true;
+    }
+    if (action === "tvm:PMT") {
+      commitEntry();
+      state.cf.push(state.stack.x);
+      state.cfN.push(1);
+      state.tvm.n = (state.tvm.n || 0) + 1;
+      state.liftStack = true;
+      flash("CFj");
+      return true;
+    }
+    if (action === "tvm:FV") {
+      commitEntry();
+      if (state.cfN.length > 1) state.cfN[state.cfN.length - 1] = Math.round(state.stack.x);
+      state.liftStack = true;
+      flash("Nj");
       return true;
     }
     // Matemática (g na linha do y^x): √x, e^x, LN, FRAC, INTG.
@@ -713,6 +765,8 @@ function handleShiftedAction(shift, action) {
 function clearRegisters() {
   state.registers = {};
   resetFinancial();
+  state.cf = [];
+  state.cfN = [];
   state.stack = { x: 0, y: 0, z: 0, t: 0 };
   state.entry = "";
   state.entryActive = false;
@@ -1248,6 +1302,22 @@ function bisect(fn, left, right) {
     }
   }
   return (left + right) / 2;
+}
+
+// VPL (NPV) do fluxo de caixa armazenado (cf[0]=CF0 em t=0; cf[j] repetido cfN[j]
+// vezes em períodos consecutivos), à taxa periódica taxaPct (%). Usado por NPV e IRR.
+function valorPresenteLiquido(taxaPct) {
+  const r = taxaPct / 100;
+  let t = 0;
+  let npv = state.cf.length ? state.cf[0] : 0;
+  for (let j = 1; j < state.cf.length; j += 1) {
+    const vezes = state.cfN[j] || 1;
+    for (let k = 0; k < vezes; k += 1) {
+      t += 1;
+      npv += state.cf[j] / Math.pow(1 + r, t);
+    }
+  }
+  return npv;
 }
 
 // --- Calendário ---
