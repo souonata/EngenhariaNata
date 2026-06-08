@@ -50,7 +50,7 @@ cada exemplo começa “limpo”.
 | 5 | Seção 5 — Operating Features (DISP/SCI, x<>y, LST x, constantes) | 🟡 parcial | **x≷y, LST x (g++), aritmética com constante** verdes. Notação científica (f .) e mantissa (f CLEAR PREFIX) pendentes. |
 | 6 | Seção 6 — Statistics | ✅ feito | Σ+/Σ-, média, desvio, média ponderada, **regressão linear (ŷ,r=g+2, x̂,r=g+1, r)** e CLEAR Σ. |
 | 7 | Seção 7 — Math/Number-Alteration | 🟡 parcial | 10/10: y^x, 1/x, √x, e^x, LN, FRAC, INTG, RND, x², n! (x² e n! implementados). LOG pendente. |
-| 8 | Apêndice D — Error Conditions | ⬜ a fazer | |
+| 8 | Apêndice D — Error Conditions | ✅ feito | Calc sinaliza "Error" em ÷0, √(−), ln(0), n! inválido; limpa ao pressionar tecla. (Sem tabelas no guia; códigos Error 0–9 não diferenciados.) |
 
 Programação (Parte II) e Soluções (Parte III): fora do escopo atual.
 
