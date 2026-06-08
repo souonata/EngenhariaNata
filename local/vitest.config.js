@@ -25,8 +25,8 @@ export default defineConfig({
     // apontando para local/node_modules.
     resolve: {
         alias: {
-            jsdom: resolve(__dirname, 'node_modules/jsdom'),
-        },
+            jsdom: resolve(__dirname, 'node_modules/jsdom')
+        }
     },
     test: {
         environment: 'node',
