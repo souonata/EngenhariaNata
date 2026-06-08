@@ -38,7 +38,7 @@ cada exemplo começa “limpo”.
 |-----|---------------|--------|-------|
 | 0 | Harness/infra | ✅ feito | jsdom + tradutor + comparador; smoke verde (RPN, FIX). 111 testes no total. |
 | 1 | Seção 1 — Getting Started (aritmética RPN/ALG, cadeia, STO/RCL) | ✅ feito | 9/9 exemplos. Implementados R0–R9 + aritmética de registrador. |
-| 2 | Seção 2 — Percentage + Calendar | ⬜ a fazer | %CHG/%T e calendário a implementar |
+| 2 | Seção 2 — Percentage + Calendar | 🟡 parcial | Percentual 10/10 (corrigidos `%` e `%T` em ALG). Calendário pendente. |
 | 3 | Seção 3 — Basic Financial (juros, TVM, amortização) | ⬜ a fazer | AMORT/INT a implementar; TVM existe (verificar) |
 | 4 | Seção 4 — NPV, IRR, bonds, depreciação | ⬜ a fazer | tudo a implementar |
 | 5 | Seção 5 — Operating Features (DISP/SCI, x<>y, LST x, constantes) | ⬜ a fazer | |
@@ -62,3 +62,9 @@ Programação (Parte II) e Soluções (Parte III): fora do escopo atual.
   guia diz `f ALG`/`f RPN` (os testes usam a tecla da calc; alinhar a tecla correta depois);
   (b) não há tecla on-screen de **backspace**; (c) **parênteses** (ALG), **EEX/científico**
   → Seção 5; (d) `√x` na cadeia → Seção 7. Suíte: **120 testes verdes**.
+- **Ch2-percentual (2026-06-08):** Seção 2 (parte %) — **10/10 verde**. **Correções reais:**
+  (a) `%` em **ALG** retornava 0 (usava `stack.y`, lógica RPN) — agora divide por 100, exceto
+  após `+`/`−`, quando calcula a % da base pendente (guia p.32); (b) `%T` em ALG dava Erro —
+  agora `beginNumericEntry` faz *lift* também em ALG após um resultado (total fica em Y); o
+  `applyOperator` zera `liftStack`, sem afetar cadeias. Runner compartilhado `tests/_runner.js`.
+  Calendário (DATE/ΔDYS/formatos) ainda **pendente**. Suíte: **130 testes verdes**.

@@ -696,7 +696,10 @@ function inputExponent() {
 
 function beginNumericEntry() {
   clearError();
-  if (state.mode === "rpn" && state.liftStack) {
+  // Lift ao iniciar um novo número quando pendente (RPN sempre; ALG após um
+  // resultado, para %T/Δ% poderem usar o total em Y). applyOperator zera
+  // liftStack durante a cadeia, então isto não afeta cálculos encadeados.
+  if (state.liftStack) {
     liftStack();
   }
   state.entry = "";
@@ -815,7 +818,16 @@ function setX(value) {
 
 function percent() {
   commitEntry();
-  setX((state.stack.y * state.stack.x) / 100);
+  if (state.mode === "alg") {
+    // ALG: % divide por 100; exceto após + ou - (calcula a % da base pendente).
+    if (state.pendingOperator === "+" || state.pendingOperator === "-") {
+      setX((state.pendingValue * state.stack.x) / 100);
+    } else {
+      setX(state.stack.x / 100);
+    }
+  } else {
+    setX((state.stack.y * state.stack.x) / 100);
+  }
   state.liftStack = true;
 }
 
