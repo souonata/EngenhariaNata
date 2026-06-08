@@ -2005,8 +2005,18 @@ function acumularInstrucao(action) {
 function gravarInstrucao(action, shift) {
   const actions = shift ? [`shift:${shift}`, action] : [action];
   const keycode = shift ? `${KEYCODES[`shift:${shift}`]} ${keycodeFor(action)}` : keycodeFor(action);
+  const instr = { actions, keycode };
+  // Testes condicionais (Seção 9): g x≤y (g+swap) e g x=0 (g+CLx).
+  if (shift === "g" && action === "swap") {
+    instr.isCond = true;
+    instr.cond = "x<=y";
+  }
+  if (shift === "g" && action === "clear-entry") {
+    instr.isCond = true;
+    instr.cond = "x=0";
+  }
   state.pointer += 1;
-  state.program[state.pointer - 1] = { actions, keycode };
+  state.program[state.pointer - 1] = instr;
   mostrarLinhaPrograma();
 }
 
@@ -2019,19 +2029,37 @@ function passoPrograma(delta) {
 function programGoto(action) {
   const g = state.pendingGoto;
   if (action === "decimal") {
-    g.dot = true;
+    g.dot = true; // g GTO . nnn = posiciona (edição); sem ponto = grava desvio
     return;
   }
   if (action.startsWith("digit:")) {
     g.digits += action.slice(6);
     if (g.digits.length >= 3) {
-      state.pointer = Number(g.digits);
+      const nnn = Number(g.digits);
+      if (g.dot) {
+        state.pointer = nnn; // posiciona o cursor de edição
+      } else {
+        // grava uma instrução de desvio: g GTO nnn (keycode 43,33,nnn)
+        state.pointer += 1;
+        state.program[state.pointer - 1] = {
+          actions: [],
+          keycode: `43,33,${String(nnn).padStart(3, "0")}`,
+          isGoto: true,
+          target: nnn,
+        };
+      }
       state.pendingGoto = null;
       mostrarLinhaPrograma();
     }
     return;
   }
   state.pendingGoto = null;
+}
+
+// Avalia um teste condicional no estado atual da pilha (regra DO-if-TRUE).
+function avaliarCondicao(cond) {
+  if (cond === "x=0") return state.stack.x === 0;
+  return state.stack.x <= state.stack.y; // x<=y
 }
 
 function limparPrograma() {
@@ -2046,12 +2074,27 @@ function mostrarMem() {
 }
 
 function runProgram() {
+  // R/S termina a entrada do dado e deixa a pilha pronta (o 1º RCL/número levanta).
+  commitEntry();
+  state.liftStack = true;
   state.running = true;
   let pc = state.pointer;
   let guarda = 0;
-  while (pc < state.program.length && guarda < 5000) {
+  while (pc < state.program.length && guarda < 10000) {
     guarda += 1;
     const instr = state.program[pc];
+    // Desvio GTO nnn: salta o ponteiro para a linha nnn (000 = halta).
+    if (instr.isGoto) {
+      if (instr.target === 0) break;
+      pc = instr.target - 1;
+      continue;
+    }
+    // Teste condicional: regra DO-if-TRUE (falso pula a próxima linha).
+    if (instr.isCond) {
+      pc += avaliarCondicao(instr.cond) ? 1 : 2;
+      continue;
+    }
+    // R/S como instrução: halta para mostrar/pedir dado.
     if (instr.actions.length === 1 && instr.actions[0] === "run-stop") {
       pc += 1;
       break;

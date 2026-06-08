@@ -55,7 +55,7 @@ cada exemplo começa “limpo”.
 **Parte I do guia + Apêndices A/D/E: COMPLETA.**
 
 | III | Parte III — Soluções aplicadas (Seções 12–16) | 🟡 amostra | 4 exemplos não-programáveis verdes (APR+pontos, preço de hipoteca, lease via NPV, taxa contínua→efetiva) — validam TVM/NPV/%/e^x/Δ% contra problemas reais. Demais soluções exigem modo programa (Parte II). |
-| II | Parte II — Programação | ✅ núcleo | **Modo programa**: P/R (f+R/S), gravação com keycodes (incl. multi-tecla STO+1=`44 40 1`), SST/BST, g GTO . nnn, f CLEAR PRGM, R/S roda, PSE. Ex.: desconto+frete (625→473,75) e **fatura com acumuladores** (item 13×68,50 → 950,61; RCL 1/2/3). Branching condicional (x≤y/x=0, Seção 9) fora do núcleo. |
+| II | Parte II — Programação (Seções 8–9) | ✅ feito | **Modo programa**: P/R (f+R/S), gravação com keycodes (incl. multi-tecla STO+1=`44 40 1`), SST/BST, g GTO . nnn, f CLEAR PRGM, R/S roda, PSE; **branching/looping (Seção 9): x≤y/x=0 (DO-if-TRUE) + GTO nnn como desvio/loop**. Ex.: desconto+frete (625→473,75), fatura+acumuladores (→950,61) e **imposto 20%/25% com condicional** (15k→3.000, 20k→4.000, 25k→6.250). |
 
 ## Histórico
 - **Ch0 (2026-06-08):** harness criado e validado (smoke RPN `2 ENTER 3 +`=5 e FIX).
