@@ -346,22 +346,24 @@ function handleActionPointerCancel(event) {
 
 function activateActionButton(button) {
   const action = button.dataset.action;
-
-  // Modo Segurar: tocar trava/solta a tecla (não executa).
-  if (latchMode) {
-    if (heldActionButtons.has(action)) releaseHeldAction(action);
-    else holdActionButton(button);
-    return;
-  }
-
-  // Fora do modo: tocar numa tecla já travada solta ela.
-  if (heldActionButtons.has(action)) {
-    releaseHeldAction(action);
-    return;
-  }
-
   const key = button.closest(".key");
-  if (key) animateKey(key);
+
+  // O modo Segurar só vale para teclas da calculadora (ex.: o ícone do guia não).
+  if (key) {
+    // Modo Segurar: tocar trava/solta a tecla (não executa).
+    if (latchMode) {
+      if (heldActionButtons.has(action)) releaseHeldAction(action);
+      else holdActionButton(button);
+      return;
+    }
+    // Fora do modo: tocar numa tecla já travada solta ela.
+    if (heldActionButtons.has(action)) {
+      releaseHeldAction(action);
+      return;
+    }
+    animateKey(key);
+  }
+
   handleAction(action);
 }
 

@@ -80,19 +80,13 @@ a {
 
 .calculator-stage {
   min-width: 0;
+  position: relative;
 }
 
+/* Sem caixa: os ícones (manual/segurar) são posicionados SOBRE a calculadora,
+   liberando o espaço que a barra ocupava acima dela. */
 .stage-controls {
-  width: min(100%, 1320px);
-  margin: 0 auto 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  touch-action: manipulation;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
+  display: contents;
 }
 
 .utility-button,
@@ -971,23 +965,51 @@ a {
   }
 }
 
-/* ---- Visualizador do guia do usuário (PDF) ---- */
-.guide-button {
-  color: #f8f7f1;
-  border-color: rgba(242, 198, 77, 0.55);
-  white-space: nowrap;
+/* ---- Ícones sobre a calculadora: manual (📖) e Segurar (🔒) ---- */
+/* Apenas o ícone, sem caixa/borda, fixados nos cantos superiores da calc. */
+.stage-icon {
+  position: absolute;
+  top: clamp(4px, 1.2vw, 14px);
+  z-index: 6;
+  pointer-events: auto;
+  border: 0;
+  background: transparent;
+  padding: 4px;
+  font-size: clamp(1.05rem, 2.6vw, 1.5rem);
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.92;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
-.hold-button {
-  white-space: nowrap;
+.guide-icon {
+  right: clamp(6px, 1.8vw, 18px);
 }
 
-/* Modo Segurar ligado: botão destacado em dourado. */
-.hold-button[aria-pressed="true"] {
-  background: linear-gradient(#f5cc55, #b88620);
-  border-color: rgba(242, 198, 77, 0.85);
-  color: #211a05;
-  font-weight: 800;
+.hold-icon {
+  left: clamp(6px, 1.8vw, 18px);
+}
+
+.stage-icon:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.stage-icon:focus-visible {
+  outline: 3px solid rgba(104, 199, 229, 0.75);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Modo Segurar ligado: cadeado destacado com um halo dourado. */
+.hold-icon[aria-pressed="true"] {
+  opacity: 1;
+  background: radial-gradient(circle at center, rgba(242, 198, 77, 0.95) 58%, rgba(242, 198, 77, 0) 72%);
+  border-radius: 50%;
 }
 
 /* Enquanto o modo Segurar está ligado, realça o teclado (toque p/ travar). */
@@ -996,6 +1018,8 @@ body.latch-mode .keyboard {
   outline-offset: 6px;
   border-radius: 8px;
 }
+
+/* ---- Visualizador do guia do usuário (PDF) ---- */
 
 /* O guia abre DOCADO, sem cobrir a calculadora (dá pra ler enquanto opera).
    Padrão (telas pequenas): ocupa a tela inteira; docagem por orientação abaixo. */
