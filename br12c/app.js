@@ -94,6 +94,8 @@ const state = {
   lastX: 0,
   displayOverride: null,
   displayMode: "fix",
+  flagC: false,
+  freshValue: false,
   cf: [],
   cfN: [],
   stats: { n: 0, sx: 0, sx2: 0, sy: 0, sy2: 0, sxy: 0 },
@@ -1091,6 +1093,7 @@ function applyOperator(operator) {
   state.stack.y = state.stack.z;
   state.stack.z = state.stack.t;
   state.liftStack = true;
+  state.freshValue = true; // resultado fresco: próxima tecla n/i/PV/PMT/FV armazena
   if (!Number.isFinite(result)) setError();
 }
 
@@ -1236,6 +1239,16 @@ function beginRecall() {
 }
 
 function handleRegisterTarget(action) {
+  // STO EEX: liga/desliga o indicador C (juros compostos no período odd). Toggle.
+  if (state.pendingStore && action === "eex") {
+    state.flagC = !state.flagC;
+    state.pendingStore = false;
+    state.pendingRecall = false;
+    state.pendingStoreOp = null;
+    flash(state.flagC ? "C" : "C ·");
+    return true;
+  }
+
   // Registradores financeiros (STO/RCL n, i, PV, PMT, FV).
   if (action.startsWith("tvm:")) {
     const field = action.slice(4);
@@ -1313,9 +1326,12 @@ function recallValue(value) {
 }
 
 function handleTvm(field) {
-  if (state.entryActive) {
+  // Armazena quando há valor digitado (entryActive) OU recém-calculado por
+  // aritmética (ex.: "36 + n" no odd-period); senão resolve o campo.
+  if (state.entryActive || state.freshValue) {
     commitEntry();
     state.tvm[field] = state.stack.x;
+    state.freshValue = false;
     flash(field);
     state.liftStack = true;
     return;
@@ -1352,19 +1368,57 @@ function solveTvm(target) {
   const fv = tvm.FV;
   const begin = tvm.begin;
 
+  // Modo Odd-Period: n não-inteiro -> juros simples (C off) ou composto (C on) no
+  // fragmento. Calcular n sai do modo (usa a equação padrão).
+  const odd = !Number.isInteger(n) && target !== "n";
+
   try {
     let value;
-    if (target === "FV") value = solveFV(n, r, pv, pmt, begin);
-    if (target === "PV") value = solvePV(n, r, pmt, fv, begin);
-    if (target === "PMT") value = solvePMT(n, r, pv, fv, begin);
-    if (target === "n") value = solveN(r, pv, pmt, fv, begin);
-    if (target === "i") value = solveRate(n, pv, pmt, fv, begin) * 100;
+    if (odd) {
+      value = solveTvmOdd(target, n, r, pv, pmt, fv, begin);
+    } else {
+      if (target === "FV") value = solveFV(n, r, pv, pmt, begin);
+      if (target === "PV") value = solvePV(n, r, pmt, fv, begin);
+      if (target === "PMT") value = solvePMT(n, r, pv, fv, begin);
+      if (target === "n") value = solveN(r, pv, pmt, fv, begin);
+      if (target === "i") value = solveRate(n, pv, pmt, fv, begin) * 100;
+    }
 
     if (!Number.isFinite(value)) return { ok: false };
     return { ok: true, value: normalizeZero(value) };
   } catch {
     return { ok: false };
   }
+}
+
+// Equação TVM no modo Odd-Period: parte inteira (k) descontada normalmente; o
+// fragmento f cresce o PV por juros simples (1+r·f) ou compostos (1+r)^f.
+function tvmEquationOdd(r, n, pv, pmt, fv, begin) {
+  const k = Math.floor(n);
+  const f = n - k;
+  const S = begin ? 1 : 0;
+  if (Math.abs(r) < 1e-12) return pv + pmt * k + fv;
+  const pvFactor = state.flagC ? Math.pow(1 + r, f) : 1 + r * f;
+  const disc = Math.pow(1 + r, -k);
+  const annuity = (1 - disc) / r;
+  return pv * pvFactor + pmt * (1 + r * S) * annuity + fv * disc;
+}
+
+function solveTvmOdd(target, n, r, pv, pmt, fv, begin) {
+  if (target === "i") {
+    return solveRateWith((rate) => tvmEquationOdd(rate, n, pv, pmt, fv, begin)) * 100;
+  }
+  const k = Math.floor(n);
+  const f = n - k;
+  const S = begin ? 1 : 0;
+  const pvFactor = state.flagC ? Math.pow(1 + r, f) : 1 + r * f;
+  const disc = Math.pow(1 + r, -k);
+  const annuity = Math.abs(r) < 1e-12 ? k : (1 - disc) / r;
+  const pmtCoef = (1 + r * S) * annuity;
+  if (target === "FV") return disc === 0 ? NaN : -(pv * pvFactor + pmt * pmtCoef) / disc;
+  if (target === "PV") return pvFactor === 0 ? NaN : -(pmt * pmtCoef + fv * disc) / pvFactor;
+  if (target === "PMT") return pmtCoef === 0 ? NaN : -(pv * pvFactor + fv * disc) / pmtCoef;
+  return NaN;
 }
 
 function annuityFactor(n, r) {
@@ -1402,7 +1456,10 @@ function solveN(r, pv, pmt, fv, begin) {
 }
 
 function solveRate(n, pv, pmt, fv, begin) {
-  const f = (rate) => tvmEquation(rate, n, pv, pmt, fv, begin);
+  return solveRateWith((rate) => tvmEquation(rate, n, pv, pmt, fv, begin));
+}
+
+function solveRateWith(f) {
   if (Math.abs(f(0)) < 1e-7) return 0;
 
   const newton = newtonRate(f, 0.01);

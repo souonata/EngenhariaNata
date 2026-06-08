@@ -45,7 +45,7 @@ cada exemplo começa “limpo”.
 | 0 | Harness/infra | ✅ feito | jsdom + tradutor + comparador; smoke verde (RPN, FIX). 111 testes no total. |
 | 1 | Seção 1 — Getting Started (aritmética RPN/ALG, cadeia, STO/RCL) | ✅ feito | 9/9 exemplos. Implementados R0–R9 + aritmética de registrador. |
 | 2 | Seção 2 — Percentage + Calendar | ✅ feito | Percentual 10/10; calendário: ΔDYS, formatos D.MY/M.DY, **DATE (data futura + dia da semana)**. |
-| 3 | Seção 3 — Basic Financial (juros, TVM, amortização) | ✅ feito | TVM (Ex.1-3, BEG/END), amortização (AMORT), juros simples (INT). odd-period (flag C) e Ex.4 anualização: nice-to-have. |
+| 3 | Seção 3 — Basic Financial (juros, TVM, amortização) | ✅ feito | TVM (Ex.1-3, BEG/END), amortização (AMORT), juros simples (INT), **odd-period (n fracionário) + flag C (STO EEX, simples/composto)**. |
 | 4 | Seção 4 — NPV, IRR, bonds, depreciação | ✅ feito | NPV (agrupado/não), IRR, fluxo de caixa, depreciação (SL/SOYD/DB) e **títulos (PRICE/YTM, SIA actual/actual)**. |
 | 5 | Seção 5 — Operating Features (DISP/SCI, x<>y, LST x, constantes) | ✅ feito | x≷y, LST x (g++), aritmética com constante, **notação científica (f .)** e **mantissa (f CLEAR PREFIX)**. |
 | 6 | Seção 6 — Statistics | ✅ feito | Σ+/Σ-, média, desvio, média ponderada, **regressão linear (ŷ,r=g+2, x̂,r=g+1, r)** e CLEAR Σ. |
