@@ -39,8 +39,8 @@ export function conferir(atual, esperado) {
   }
 
   // Linha de programa (modo PRGM): "LLL," ou "LLL, keycode" — comparação ignorando
-  // espaços. Exige espaço/fim após a vírgula para não casar números US (130,000.00).
-  if (/^\d{3},(\s|$)/.test(esp)) {
+  // espaços. Começa com 3 dígitos + vírgula e NÃO é um número US válido (130,000.00).
+  if (/^\d{3},/.test(esp) && !/^\d{1,3}(,\d{3})*(\.\d+)?$/.test(esp)) {
     return {
       ok: String(atual).replace(/\s+/g, "") === esp.replace(/\s+/g, ""),
       atual,

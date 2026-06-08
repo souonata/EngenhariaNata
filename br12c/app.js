@@ -101,6 +101,7 @@ const state = {
   program: [],
   pointer: 0,
   pendingGoto: null,
+  prgmAcc: null,
   cf: [],
   cfN: [],
   stats: { n: 0, sx: 0, sx2: 0, sy: 0, sy2: 0, sxy: 0 },
@@ -1966,6 +1967,10 @@ function handleProgramMode(action, shift) {
     programGoto(action);
     return;
   }
+  if (state.prgmAcc) {
+    acumularInstrucao(action);
+    return;
+  }
   if (shift === "f" && action === "roll") return limparPrograma(); // CLEAR PRGM
   if (shift === "g" && action === "roll") {
     state.pendingGoto = { dot: false, digits: "" }; // GTO
@@ -1974,7 +1979,27 @@ function handleProgramMode(action, shift) {
   if (shift === "g" && action === "sst") return passoPrograma(-1); // BST
   if (shift === "g" && action === "digit:9") return mostrarMem(); // MEM
   if (!shift && action === "sst") return passoPrograma(1); // SST
+  // STO/RCL iniciam uma instrução multi-tecla (ex.: STO + 1, RCL 0) numa só linha.
+  if (!shift && (action === "sto" || action === "rcl")) {
+    state.prgmAcc = { actions: [action], keycodes: [keycodeFor(action)], expectOp: false };
+    return;
+  }
   gravarInstrucao(action, shift);
+}
+
+function acumularInstrucao(action) {
+  const acc = state.prgmAcc;
+  acc.actions.push(action);
+  acc.keycodes.push(keycodeFor(action));
+  // STO/RCL seguido de operador (+ - × ÷) ainda espera o dígito do registrador.
+  if (!acc.expectOp && action.startsWith("op:")) {
+    acc.expectOp = true;
+    return;
+  }
+  state.prgmAcc = null;
+  state.pointer += 1;
+  state.program[state.pointer - 1] = { actions: acc.actions, keycode: acc.keycodes.join(" ") };
+  mostrarLinhaPrograma();
 }
 
 function gravarInstrucao(action, shift) {
