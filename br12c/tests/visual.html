@@ -128,9 +128,10 @@
     <header>
       <h1>🤖 Robô do guia</h1>
       <select id="ex" title="Escolha um exemplo do guia"></select>
-      <label>Velocidade <input id="vel" type="range" min="80" max="900" value="320" /></label>
+      <label>Velocidade (ms/tecla) <input id="vel" type="range" min="300" max="2500" value="1000" step="100" /></label>
       <button id="play" class="primary">▶ Tocar</button>
       <button id="playAll">▶▶ Tocar tudo</button>
+      <span id="tecla"></span>
       <span id="status"></span>
     </header>
     <div id="wrap">
@@ -151,6 +152,7 @@
       import { secao2Percentual, secao2Calendario } from "./fixtures/secao-2.js";
       import { secao3 } from "./fixtures/secao-3.js";
       import { secao4 } from "./fixtures/secao-4.js";
+      import { secao6 } from "./fixtures/secao-6.js";
 
       const grupos = [
         ["Seção 1 — Getting Started", secao1],
@@ -158,6 +160,7 @@
         ["Seção 2 — Calendário", secao2Calendario],
         ["Seção 3 — Financeiras", secao3],
         ["Seção 4 — NPV/IRR", secao4],
+        ["Seção 6 — Estatística", secao6],
       ];
       const exemplos = [];
       for (const [grupo, arr] of grupos) for (const ex of arr) exemplos.push({ ...ex, grupo });
@@ -181,6 +184,7 @@
       const doc = () => frame.contentDocument;
       const win = () => frame.contentWindow;
       const display = () => doc().querySelector("#display").textContent;
+      const teclaEl = document.getElementById("tecla");
 
       async function resetCalc() {
         await new Promise((res) => {
@@ -191,20 +195,34 @@
           if (win().__BR12C_KEYS__ && doc().querySelector('#keyboard [data-action]')) break;
           await sleep(30);
         }
+        // Realce forte da tecla pressionada, injetado dentro do iframe.
+        try {
+          const st = doc().createElement("style");
+          st.textContent =
+            "#keyboard [data-action].robo-press{outline:4px solid #f2c64d!important;outline-offset:1px;background:rgba(242,198,77,.30)!important;border-radius:8px;}";
+          doc().head.appendChild(st);
+        } catch (e) {
+          /* ignora */
+        }
       }
 
       async function pressActions(acoes) {
-        const passo = Number(vel.value);
+        const passo = Number(vel.value); // ms por tecla
         for (const acao of acoes) {
           const btn = doc().querySelector(`#keyboard [data-action="${acao}"]`);
           if (btn) {
-            btn.classList.add("is-pressed");
+            teclaEl.textContent = "⌨ " + (btn.getAttribute("aria-label") || acao);
+            btn.classList.add("robo-press");
+            await sleep(passo * 0.18);
             btn.dispatchEvent(new (win().MouseEvent)("click", { bubbles: true }));
-            await sleep(Math.max(70, passo * 0.45));
-            btn.classList.remove("is-pressed");
+            await sleep(passo * 0.62);
+            btn.classList.remove("robo-press");
+            await sleep(passo * 0.2);
+          } else {
+            await sleep(passo);
           }
-          await sleep(passo * 0.55);
         }
+        teclaEl.textContent = "";
       }
 
       async function tocar(ex) {
