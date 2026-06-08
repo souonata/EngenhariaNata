@@ -990,8 +990,10 @@ a {
   right: clamp(6px, 1.8vw, 18px);
 }
 
+/* Cadeado ao lado ESQUERDO do display (alinhado verticalmente com o LCD). */
 .hold-icon {
-  left: clamp(6px, 1.8vw, 18px);
+  top: 12%;
+  left: 9%;
 }
 
 .stage-icon:hover {
