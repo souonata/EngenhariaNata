@@ -49,6 +49,12 @@ const KEY_ROWS = [
   ],
 ];
 
+// Hook de teste (inerte em produção): expõe a metadata das teclas para o robô
+// de verificação do guia (br12c/tests/). Não afeta a calculadora em uso.
+if (typeof globalThis !== "undefined") {
+  globalThis.__BR12C_KEYS__ = KEY_ROWS;
+}
+
 const SKIN_KEYS = buildSkinKeys();
 
 const DISPLAY_DIGIT_LIMIT = 12;

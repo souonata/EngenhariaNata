@@ -20,10 +20,18 @@ const projectRoot = resolve(__dirname, '..');
 
 export default defineConfig({
     root: projectRoot,
+    // A raiz do projeto não tem node_modules próprio (deps ficam em local/),
+    // então pacotes usados pelos testes do guia (jsdom) são resolvidos via alias
+    // apontando para local/node_modules.
+    resolve: {
+        alias: {
+            jsdom: resolve(__dirname, 'node_modules/jsdom'),
+        },
+    },
     test: {
         environment: 'node',
         globals: false,
-        include: ['**/*-calc.test.js'],
+        include: ['**/*-calc.test.js', 'br12c/tests/**/*.test.js'],
         exclude: [
             '**/node_modules/**',
             '**/dist/**',
