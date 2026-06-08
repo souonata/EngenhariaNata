@@ -44,7 +44,7 @@ cada exemplo começa “limpo”.
 |-----|---------------|--------|-------|
 | 0 | Harness/infra | ✅ feito | jsdom + tradutor + comparador; smoke verde (RPN, FIX). 111 testes no total. |
 | 1 | Seção 1 — Getting Started (aritmética RPN/ALG, cadeia, STO/RCL) | ✅ feito | 9/9 exemplos. Implementados R0–R9 + aritmética de registrador. |
-| 2 | Seção 2 — Percentage + Calendar | 🟡 parcial | Percentual 10/10 + **ΔDYS (dias entre datas) + formatos D.MY/M.DY** verdes. DATE (data futura, display especial) pendente. |
+| 2 | Seção 2 — Percentage + Calendar | ✅ feito | Percentual 10/10; calendário: ΔDYS, formatos D.MY/M.DY, **DATE (data futura + dia da semana)**. |
 | 3 | Seção 3 — Basic Financial (juros, TVM, amortização) | 🟡 parcial | TVM Ex.1-3 + **amortização (AMORT)** verdes. INT/odd-period/Ex.4 pendentes. |
 | 4 | Seção 4 — NPV, IRR, bonds, depreciação | 🟡 parcial | **NPV + IRR + fluxo de caixa + depreciação (SL/SOYD/DB)** verdes. Títulos (bonds) pendentes. |
 | 5 | Seção 5 — Operating Features (DISP/SCI, x<>y, LST x, constantes) | 🟡 parcial | **x≷y, LST x (g++), aritmética com constante** verdes. Notação científica (f .) e mantissa (f CLEAR PREFIX) pendentes. |
