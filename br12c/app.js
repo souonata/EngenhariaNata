@@ -123,6 +123,9 @@ const keyboard = document.querySelector("#keyboard");
 const shiftIndicator = document.querySelector("#shiftIndicator");
 const modeIndicator = document.querySelector("#modeIndicator");
 const angleIndicator = document.querySelector("#angleIndicator");
+const prgmIndicator = document.querySelector("#prgmIndicator");
+const dmyIndicator = document.querySelector("#dmyIndicator");
+const cIndicator = document.querySelector("#cIndicator");
 const pendingIndicator = document.querySelector("#pendingIndicator");
 
 renderKeyboard();
@@ -2207,6 +2210,9 @@ function updateUI() {
     shiftIndicator.className = "";
     modeIndicator.textContent = "";
     angleIndicator.textContent = "";
+    prgmIndicator.textContent = "";
+    dmyIndicator.textContent = "";
+    cIndicator.textContent = "";
     pendingIndicator.textContent = "";
     return;
   }
@@ -2220,7 +2226,11 @@ function updateUI() {
   shiftIndicator.textContent = shiftVisivel || "";
   shiftIndicator.className = shiftVisivel ? `shift-${shiftVisivel}` : "";
   modeIndicator.textContent = state.notice || state.mode.toUpperCase();
-  angleIndicator.textContent = state.tvm.begin ? "BEG" : "END";
+  // Anunciadores de status do LCD (fiel à 12C: só acendem quando ativos).
+  angleIndicator.textContent = state.tvm.begin ? "BEGIN" : "";
+  prgmIndicator.textContent = state.prgmMode ? "PRGM" : "";
+  dmyIndicator.textContent = state.dateFormat === "dmy" ? "D.MY" : "";
+  cIndicator.textContent = state.flagC ? "C" : "";
   pendingIndicator.textContent = state.pendingOperator ? state.pendingOperator.replace("pow", "y^x") : "";
 
   document.querySelectorAll("[data-mode]").forEach((button) => {

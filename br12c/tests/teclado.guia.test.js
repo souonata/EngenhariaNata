@@ -16,12 +16,12 @@ describe("Teclado — funções f (dourado) / g (azul) conforme a skin", () => {
     expect(txt(calc, "#modeIndicator")).toBe("RPN");
   });
 
-  it("BEG = g+7, END = g+8", async () => {
+  it("BEG = g+7, END = g+8 (LCD acende só BEGIN, como na 12C real)", async () => {
     const calc = await criarCalculadora();
     calc.pressGuia(["g", "BEG"]);
-    expect(txt(calc, "#angleIndicator")).toBe("BEG");
+    expect(txt(calc, "#angleIndicator")).toBe("BEGIN");
     calc.pressGuia(["g", "END"]);
-    expect(txt(calc, "#angleIndicator")).toBe("END");
+    expect(txt(calc, "#angleIndicator")).toBe("");
   });
 
   it("FIX n = f + dígito (FIX 7 antes inacessível)", async () => {

@@ -250,6 +250,15 @@ a {
   font-weight: 800;
 }
 
+/* Anunciadores vazios não ocupam espaço (a 12C só acende os ativos). */
+.lcd-indicators span:empty {
+  display: none;
+}
+
+#cIndicator {
+  color: #0e6278;
+}
+
 #shiftIndicator.shift-f {
   color: #785a00;
 }
