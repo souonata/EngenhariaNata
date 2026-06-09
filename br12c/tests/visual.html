@@ -53,6 +53,19 @@
         background: #2e7d4f;
         border-color: #3fa06a;
       }
+      a.voltar {
+        background: #3a2e11;
+        border: 1px solid #6a531e;
+        color: #f2c64d;
+        border-radius: 6px;
+        padding: 6px 10px;
+        text-decoration: none;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      a.voltar:hover {
+        background: #4a3a16;
+      }
       button:disabled {
         opacity: 0.5;
         cursor: default;
@@ -126,6 +139,7 @@
   </head>
   <body>
     <header>
+      <a class="voltar" href="../index.html" title="Voltar para a calculadora">← Calculadora</a>
       <h1>🤖 Robô do guia</h1>
       <select id="ex" title="Escolha um exemplo do guia"></select>
       <label>Velocidade (ms/tecla) <input id="vel" type="range" min="300" max="2500" value="1000" step="100" /></label>
