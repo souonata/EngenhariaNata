@@ -64,6 +64,12 @@ Bônus de fidelidade visual (junto do #7/#8): adicionados os anunciadores **PRGM
   mouse, o combo é feito pelo **modo Segurar** (🔒): ativa Segurar, trava **ON**,
   toca **.** → alterna entre pt-BR (1.234,56) e US (1,234.56). Separador mutável
   ligado a `state.radixComma` (persistido na Continuous Memory). Teste `separador`.
+- **Limite de 10 dígitos no display** ✅ — `DISPLAY_DIGIT_LIMIT` 12 → 10 (entrada de
+  mantissa e exibição), como a 12C original; ajuste de fonte usa orçamento separado
+  (`DISPLAY_FIT_CHARS`) para não encolher números longos. Verificado: 11 díg → 10.
+- **Botão do sistema de testes no app final** ✅ — 🧪 na calc abre o runner ao vivo
+  (`tests/visual.html`); "← Calculadora" no runner volta. Disponível no site
+  publicado (o deploy copia `br12c/` inteiro, incluindo `tests/`).
 
 ## Testes criados (todos simulam pressionamento real de teclas)
 
