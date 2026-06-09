@@ -70,6 +70,11 @@ Bônus de fidelidade visual (junto do #7/#8): adicionados os anunciadores **PRGM
 - **Botão do sistema de testes no app final** ✅ — 🧪 na calc abre o runner ao vivo
   (`tests/visual.html`); "← Calculadora" no runner volta. Disponível no site
   publicado (o deploy copia `br12c/` inteiro, incluindo `tests/`).
+- **Autoteste de teclado/display** ✅ — o diagnóstico da 12C ("segurar ÷, ON"), feito
+  pelo modo Segurar (🔒 → trava ÷ → ON): acende todos os segmentos, depois pede as
+  40 teclas na ordem física (ENTER 2×) varrendo 4 segmentos (linha 1) / 2 (linhas
+  2-4); termina em **12**; ordem errada → **Error 9** (ENTER limpa e refaz). Teste
+  `autoteste`.
 
 ## Testes criados (todos simulam pressionamento real de teclas)
 

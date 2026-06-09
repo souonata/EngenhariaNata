@@ -107,6 +107,7 @@ const state = {
   resumeAt: -1,
   pendingGoto: null,
   prgmAcc: null,
+  keyboardTest: null, // autoteste de teclado/display ("segurar ÷, ON")
   cf: [],
   cfN: [],
   stats: { n: 0, sx: 0, sx2: 0, sy: 0, sy2: 0, sxy: 0 },
@@ -409,10 +410,26 @@ function activateActionButton(button) {
   const action = button.dataset.action;
   const key = button.closest(".key");
 
+  // Autoteste de teclado/display ativo: TODAS as teclas vão para o teste, em ordem.
+  if (state.keyboardTest) {
+    if (key) animateKey(key);
+    handleTesteTeclado(action);
+    updateUI();
+    return;
+  }
+
   // O modo Segurar só vale para teclas da calculadora (ex.: o ícone do guia não).
   if (key) {
     // Modo Segurar: tocar trava/solta a tecla (não executa).
     if (latchMode) {
+      // Combo "segurar ÷, ON" -> autoteste de teclado/display (com ÷ travado, ON).
+      if (action === "power" && heldActionButtons.has("op:/")) {
+        releaseHeldAction("op:/");
+        setLatchMode(false);
+        entrarTesteTeclado();
+        updateUI();
+        return;
+      }
       // Combo "ON + ." (troca o separador decimal . <-> ,): com ON travado, tocar
       // a tecla "." alterna entre pt-BR (1.234,56) e US (1,234.56), como na 12C real.
       if (action === "decimal" && heldActionButtons.has("power")) {
@@ -2297,6 +2314,48 @@ function passoSST() {
     state.pointer = prox < 0 || prox >= state.program.length ? 0 : prox + 1;
   }
   state.resumeAt = -1;
+}
+
+// ===== Autoteste de teclado/display (HP 12C: "segurar ÷, ON") =====
+// Ordem física das teclas (esquerda->direita, linha 1->4). ENTER aparece DUAS
+// vezes (linhas 3 e 4) porque é tecla alta que ocupa as duas linhas.
+const SEQUENCIA_TESTE = [
+  "tvm:n", "tvm:i", "tvm:PV", "tvm:PMT", "tvm:FV", "chs", "digit:7", "digit:8", "digit:9", "op:/",
+  "pow", "reciprocal", "percent-total", "delta-percent", "percent", "eex", "digit:4", "digit:5", "digit:6", "op:*",
+  "run-stop", "sst", "roll", "swap", "clear-entry", "enter", "digit:1", "digit:2", "digit:3", "op:-",
+  "power", "shift:f", "shift:g", "sto", "rcl", "enter", "digit:0", "decimal", "sum-plus", "op:+",
+];
+
+function entrarTesteTeclado() {
+  state.keyboardTest = { index: 0 };
+  state.error = "";
+  state.shift = null;
+  state.displayOverride = "8888888888"; // todos os segmentos acesos (checagem de pixel)
+}
+
+// Padrão de segmentos exibido a cada tecla certa: varre 1 célula por vez —
+// 4 segmentos ("4") na linha 1, 2 segmentos ("1") nas linhas 2-4.
+function padraoSegmentos(passo) {
+  const linha = Math.floor(passo / 10);
+  const col = passo % 10;
+  return " ".repeat(col) + (linha === 0 ? "4" : "1");
+}
+
+function handleTesteTeclado(action) {
+  const t = state.keyboardTest;
+  if (action === SEQUENCIA_TESTE[t.index]) {
+    t.index += 1;
+    if (t.index >= SEQUENCIA_TESTE.length) {
+      state.keyboardTest = null;
+      state.displayOverride = "12"; // teste concluído sem erro
+    } else {
+      state.displayOverride = padraoSegmentos(t.index - 1);
+    }
+  } else {
+    state.keyboardTest = null; // ordem errada -> Error 9 (ENTER limpa e refaz)
+    state.displayOverride = null;
+    state.error = "Error 9";
+  }
 }
 
 function currentDisplayText() {
