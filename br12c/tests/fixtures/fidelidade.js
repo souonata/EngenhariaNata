@@ -89,4 +89,15 @@ export const fidelidade = [
       { keys: ["R/S"], display: "17.00" }, // retoma: 15+2=17
     ],
   },
+  {
+    // BCD 10 dígitos: √2 = 1,414213562 (10 sig); x² = 1,999999999 (NÃO 2), como na
+    // 12C real, porque cada resultado é arredondado a 10 algarismos significativos.
+    nome: "BCD 10 dígitos — √2 então x² = 1,999999999 (não 2,000000000)",
+    modo: "rpn",
+    linhas: [
+      { keys: ["f", "9"], display: "0.000000000" },
+      { keys: ["2", "g", "√x"], display: "1.414213562" },
+      { keys: ["g", "x²"], display: "1.999999999" },
+    ],
+  },
 ];

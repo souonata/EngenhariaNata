@@ -1158,7 +1158,7 @@ function applyOperator(operator) {
     return;
   }
 
-  const result = calculate(state.stack.y, state.stack.x, operator);
+  const result = arredondar10(calculate(state.stack.y, state.stack.x, operator));
   state.stack.x = result;
   state.stack.y = state.stack.z;
   state.stack.z = state.stack.t;
@@ -1196,7 +1196,7 @@ function setX(value) {
     setError();
     return;
   }
-  state.stack.x = normalizeZero(value);
+  state.stack.x = normalizeZero(arredondar10(value));
 }
 
 function percent() {
@@ -1938,6 +1938,18 @@ function flash(message) {
 
 function normalizeZero(value) {
   return Object.is(value, -0) || Math.abs(value) < 1e-12 ? 0 : value;
+}
+
+// A HP 12C opera com 10 dígitos significativos (BCD): cada resultado é arredondado
+// a 10 algarismos. Por isso √2 x² = 1,999999999 e 1/3 ×3 = 0,9999999999 na máquina
+// real. Os solvers iterativos usam precisão plena internamente; só o resultado
+// exibido/armazenado passa por aqui.
+function arredondar10(value) {
+  if (!Number.isFinite(value) || value === 0) return value;
+  const exp = Math.floor(Math.log10(Math.abs(value)));
+  if (exp > 99 || exp < -99) return value; // overflow/underflow tratados em outro lugar
+  const fator = Math.pow(10, 9 - exp);
+  return Math.round(value * fator) / fator;
 }
 
 function formatRaw(value) {
