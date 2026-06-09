@@ -24,10 +24,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
 
@@ -49,6 +49,17 @@ jobs:
           cp assets/js/error-overlay.js local/dist/assets/js/
           cp fazenda/fazenda-database.js local/dist/fazenda/
 
+      # Dados buscados em runtime via fetch() por string de caminho. O Vite NÃO os
+      # enxerga (não são imports nem referências no HTML), então não vão pro dist.
+      # Sem isto, TODA página dá 404 nas traduções e CONGELA (tela viva, JS morto).
+      # Ver GUIA_FALHA_CONGELAMENTO.md (causa C3). Se um app novo buscar outro
+      # arquivo em runtime, inclua-o aqui.
+      - name: Copiar dados buscados em runtime (i18n + config)
+        run: |
+          mkdir -p local/dist/src/i18n local/dist/config
+          cp src/i18n/*.json local/dist/src/i18n/
+          cp config/*.json local/dist/config/
+
       # br12c é standalone (excluído do bundle): copiado como está.
       - name: Copiar app standalone br12c
         run: cp -r br12c local/dist/
@@ -62,9 +73,12 @@ jobs:
           done
 
       - name: Upload do artefato do Pages
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: local/dist
+          # v4+ exclui dotfiles do artefato por padrao; precisamos manter o
+          # .nojekyll copiado acima (passo "Copiar estaticos de passagem").
+          include-hidden-files: 'true'
 
   deploy:
     name: Deploy ao GitHub Pages
@@ -76,4 +90,4 @@ jobs:
     steps:
       - name: Deploy
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
