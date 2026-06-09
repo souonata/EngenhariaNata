@@ -118,6 +118,16 @@ const state = {
   noticeTimer: null,
 };
 
+// Continuous Memory: subconjunto serializável do estado que sobrevive ao
+// desligar/recarregar (não inclui flags transitórias: shift, entry, erro,
+// prgmMode, displayOverride, pendingStore/Recall). Declarado antes do boot
+// para que hidratarEstado() o enxergue (evita temporal dead zone).
+const PERSIST_KEYS = [
+  "stack", "registers", "tvm", "fixed", "mode", "flagC", "dateFormat",
+  "displayMode", "memory", "lastX", "program", "pointer", "stats", "cf", "cfN",
+];
+const PERSIST_CHAVE = "br12c.continuousMemory";
+
 const display = document.querySelector("#display");
 const keyboard = document.querySelector("#keyboard");
 const shiftIndicator = document.querySelector("#shiftIndicator");
@@ -130,6 +140,7 @@ const pendingIndicator = document.querySelector("#pendingIndicator");
 
 renderKeyboard();
 attachEvents();
+hidratarEstado();
 updateViewportFit();
 updateUI();
 
@@ -2275,6 +2286,33 @@ function updateUI() {
     const element = document.querySelector(`[data-status="${field}"]`);
     if (element) element.textContent = value;
   });
+
+  persistirEstado();
+}
+
+function persistirEstado() {
+  if (typeof localStorage === "undefined") return;
+  try {
+    const dados = {};
+    for (const k of PERSIST_KEYS) dados[k] = state[k];
+    localStorage.setItem(PERSIST_CHAVE, JSON.stringify(dados));
+  } catch {
+    /* localStorage indisponível/cheio: ignora (não quebra a calculadora). */
+  }
+}
+
+function hidratarEstado() {
+  if (typeof localStorage === "undefined") return;
+  try {
+    const bruto = localStorage.getItem(PERSIST_CHAVE);
+    if (!bruto) return;
+    const dados = JSON.parse(bruto);
+    for (const k of PERSIST_KEYS) {
+      if (dados[k] !== undefined && dados[k] !== null) state[k] = dados[k];
+    }
+  } catch {
+    /* JSON corrompido/indisponível: começa do estado padrão. */
+  }
 }
 
 function fitDisplayText(text) {
