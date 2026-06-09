@@ -109,6 +109,17 @@ Cada página faz `fetch('../src/i18n/<app>.json')`. Se o arquivo some ou tem
 **Correção:** confira que existe `src/i18n/<app>.json` e que é **JSON válido**
 (cole em https://jsonlint.com ou rode o build).
 
+> 🔴 **Caso real (produção):** os JSON de `src/i18n/` e o `config/versions.json` são
+> buscados por `fetch()` **em runtime, por string de caminho**. O Vite **não os
+> enxerga** (não são `import` nem referência no HTML), então **não vão para o
+> `dist`** — e produção (que serve o build) dava **404 em todas as páginas →
+> site inteiro congelado**, mesmo com o repo cru funcionando local. **Correção:**
+> esses diretórios são copiados explicitamente no `.github/workflows/deploy.yml`
+> (passo "Copiar dados buscados em runtime"). **Regra:** qualquer arquivo novo
+> buscado por `fetch()` em runtime precisa ser copiado lá, senão dá 404 só em
+> produção. Teste pós-deploy: `curl -I https://souonata.github.io/EngenhariaNata/src/i18n/index.json`
+> tem que dar **200**, não 404.
+
 ### C4 — CSP bloqueando script ou conexão
 
 Sintoma no Console:

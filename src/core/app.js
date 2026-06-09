@@ -42,6 +42,12 @@ export class App {
             loading.ocultar();
         } catch (erro) {
             console.error('Erro ao inicializar app:', erro);
+            // A página fica inutilizável quando a init falha (ex.: 404 em
+            // src/i18n/<app>.json). Sem isto o congelamento é mudo. O overlay
+            // global (assets/js/error-overlay.js) transforma em aviso visível.
+            if (window.__engnataReportError) {
+                window.__engnataReportError('Falha ao inicializar "' + this.config.appName + '": ' + ((erro && erro.message) || erro));
+            }
             loading.ocultar();
         }
     }

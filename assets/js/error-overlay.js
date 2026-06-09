@@ -92,19 +92,34 @@
         return s;
     }
 
+    function mesmaOrigem(url) {
+        try { return !url || new URL(url, location.href).origin === location.origin; }
+        catch (e) { return true; }
+    }
+
     // Erros de runtime, sintaxe e — em fase de captura — falha de carregamento
     // de <script>/<link> (inclui módulo ESM que não baixou).
     window.addEventListener('error', function (ev) {
         try {
             var alvo = ev.target;
             if (alvo && alvo !== window && (alvo.tagName === 'SCRIPT' || alvo.tagName === 'LINK')) {
-                registrar('Falha ao carregar: ' + local(alvo.src || alvo.href));
+                var url = alvo.src || alvo.href;
+                // Recurso de terceiros (ex.: analytics bloqueado por adblock) não
+                // trava a página — ignora pra não dar falso alarme. Só alerta
+                // sobre recurso same-origin, que aí sim indica deploy quebrado.
+                if (!mesmaOrigem(url)) return;
+                registrar('Falha ao carregar: ' + local(url));
                 return;
             }
             var msg = (ev.error && ev.error.message) || ev.message || 'Erro desconhecido';
             registrar(msg + '  [' + local(ev.filename, ev.lineno, ev.colno) + ']');
         } catch (e) {}
     }, true);
+
+    // Repórter manual: para erros que o app CAPTURA (try/catch) mas que ainda
+    // deixam a página inutilizável — ex.: falha ao carregar src/i18n/<app>.json,
+    // que congela a página sem lançar erro não-tratado. O catch da init chama isto.
+    window.__engnataReportError = function (msg) { registrar(String(msg)); };
 
     // Promises rejeitadas sem catch (ex.: fetch de tradução que falhou).
     window.addEventListener('unhandledrejection', function (ev) {
