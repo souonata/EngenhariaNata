@@ -60,7 +60,8 @@ if (typeof globalThis !== "undefined") {
 
 const SKIN_KEYS = buildSkinKeys();
 
-const DISPLAY_DIGIT_LIMIT = 12;
+const DISPLAY_DIGIT_LIMIT = 10; // dígitos significativos exibidos (HP 12C original)
+const DISPLAY_FIT_CHARS = 13; // orçamento de caracteres p/ ajuste de fonte (com separadores)
 const DISPLAY_BASE_FONT_CQW = 4.85;
 // Separador decimal/milhar mutável (ON + . alterna entre pt-BR e US, como na 12C).
 let DECIMAL_SEPARATOR = ",";
@@ -2445,6 +2446,6 @@ function hidratarEstado() {
 }
 
 function fitDisplayText(text) {
-  const scale = Math.min(1, DISPLAY_DIGIT_LIMIT / Math.max(text.length, 1));
+  const scale = Math.min(1, DISPLAY_FIT_CHARS / Math.max(text.length, 1));
   display.style.setProperty("--display-font-size", `${(DISPLAY_BASE_FONT_CQW * scale).toFixed(3)}cqw`);
 }
