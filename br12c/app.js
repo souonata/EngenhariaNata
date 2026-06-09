@@ -668,8 +668,10 @@ function handleShiftedAction(shift, action) {
     // RND = f+PMT (arredonda X às casas do display).
     if (action === "tvm:PMT") {
       commitEntry();
+      state.lastX = state.stack.x; // RND é operação de 1 número: salva LAST X (pré-arred.)
       const fator = Math.pow(10, state.fixed);
       setX(Math.round(state.stack.x * fator) / fator);
+      state.liftStack = true; // e habilita o lift (próximo número levanta a pilha).
       flash("RND");
       return true;
     }
@@ -709,7 +711,7 @@ function handleShiftedAction(shift, action) {
         state.tvm.i = irr;
         setX(irr);
       } else {
-        setError();
+        setError("3"); // IRR não convergiu
       }
       state.liftStack = true;
       flash("IRR");
@@ -949,7 +951,7 @@ function handleShiftedAction(shift, action) {
     if (action === "digit:0") {
       const s = state.stats;
       if (s.n === 0) {
-        setError();
+        setError("2"); // estatística: sem dados
       } else {
         state.stack.y = s.sy / s.n;
         setX(s.sx / s.n);
@@ -961,7 +963,7 @@ function handleShiftedAction(shift, action) {
     if (action === "decimal") {
       const s = state.stats;
       if (s.n < 2) {
-        setError();
+        setError("2"); // estatística: dados insuficientes
       } else {
         state.stack.y = Math.sqrt(Math.max(0, (s.sy2 - (s.sy * s.sy) / s.n) / (s.n - 1)));
         setX(Math.sqrt(Math.max(0, (s.sx2 - (s.sx * s.sx) / s.n) / (s.n - 1))));
@@ -1323,8 +1325,13 @@ function handleRegisterTarget(action) {
       commitEntry();
       if (state.pendingStoreOp) {
         const atual = Number(state.registers[reg] || 0);
-        state.registers[reg] = aplicarOperacao(state.pendingStoreOp, atual, state.stack.x);
-        flash(`STO ${state.pendingStoreOp} ${reg}`);
+        const resultado = aplicarOperacao(state.pendingStoreOp, atual, state.stack.x);
+        if (Number.isFinite(resultado)) {
+          state.registers[reg] = resultado;
+          flash(`STO ${state.pendingStoreOp} ${reg}`);
+        } else {
+          setError();
+        }
       } else {
         state.registers[reg] = state.stack.x;
         flash(`STO ${reg}`);
@@ -1351,7 +1358,7 @@ function aplicarOperacao(op, a, b) {
     case "*":
       return a * b;
     case "/":
-      return b === 0 ? a : a / b;
+      return b === 0 ? NaN : a / b; // divisão por zero -> Error (não silencioso)
     default:
       return b;
   }
@@ -1423,7 +1430,7 @@ function solveTvm(target) {
       if (target === "FV") value = solveFV(n, r, pv, pmt, begin);
       if (target === "PV") value = solvePV(n, r, pmt, fv, begin);
       if (target === "PMT") value = solvePMT(n, r, pv, fv, begin);
-      if (target === "n") value = solveN(r, pv, pmt, fv, begin);
+      if (target === "n") value = arredondarN(solveN(r, pv, pmt, fv, begin));
       if (target === "i") value = solveRate(n, pv, pmt, fv, begin) * 100;
     }
 
@@ -1487,6 +1494,14 @@ function solvePMT(n, r, pv, fv, begin) {
   const q = Math.pow(1 + r, n);
   const factor = paymentFactor(n, r, begin);
   return factor === 0 ? NaN : -(pv * q + fv) / factor;
+}
+
+// A HP 12C arredonda o n CALCULADO para inteiro: se a parte fracionária for menor
+// que 0,005 arredonda para baixo; caso contrário para cima (quirk documentado).
+function arredondarN(n) {
+  if (!Number.isFinite(n)) return n;
+  const piso = Math.floor(n);
+  return n - piso < 0.005 ? piso : Math.ceil(n);
 }
 
 function solveN(r, pv, pmt, fv, begin) {
@@ -1839,8 +1854,10 @@ function togglePower() {
   }
 }
 
-function setError() {
-  state.error = "Error";
+// A HP 12C exibe "Error" seguido de um dígito (Apêndice D): 0 matemática,
+// 2 estatística, 3 IRR, etc. Default 0 (operação matemática imprópria).
+function setError(codigo = "0") {
+  state.error = `Error ${codigo}`;
   state.entry = "";
   state.entryActive = false;
 }
