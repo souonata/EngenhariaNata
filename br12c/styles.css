@@ -140,12 +140,6 @@ a {
   font-size: 0.95rem;
 }
 
-.stage-tool-desc {
-  font-size: 0.78rem;
-  line-height: 1.35;
-  color: rgba(248, 247, 241, 0.74);
-}
-
 /* Modo Segurar ativo: borda/halo dourado no botão. */
 .hold-tool[aria-pressed="true"] {
   border-color: rgba(242, 198, 77, 0.9);
@@ -768,10 +762,6 @@ a {
   .stage-tool-title {
     font-size: 0.78rem;
     white-space: nowrap;
-  }
-
-  .stage-tool-desc {
-    display: none;
   }
 
   .mode-switch {
