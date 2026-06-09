@@ -47,16 +47,22 @@ Bônus de fidelidade visual (junto do #7/#8): adicionados os anunciadores **PRGM
   próprio guia (Seção 8, p.113) afirma que após `f CLEAR PRGM` as linhas 001–008
   contêm `g GTO 000` por padrão — então exibir `43,33,000` em linha vazia é fiel.
   Mantido. **A confirmar** o comportamento exato em linhas acima da 008.
-- **Precisão de 10 dígitos (BCD)**: a 12C real usa aritmética BCD de 10 dígitos
-  significativos, arredondando cada resultado; o app usa `double` IEEE-754. Não foi
-  encontrado caso de teste do guia que falhasse por isso, mas é um gap de fidelidade
-  real em casos-limite. Ver "Sugestões futuras".
+## Implementado após a auditoria
+
+- **Precisão BCD de 10 dígitos** ✅ — `arredondar10(value)` arredonda cada resultado
+  a 10 algarismos significativos (aplicado em `setX` e no resultado de
+  `applyOperator`; os solvers iterativos usam precisão plena internamente). Reproduz
+  o comportamento clássico: `√2` então `x²` = **1,999999999** (não 2); `1/3 ×3` =
+  0,9999999999. Teste `fidelidade` (√2 x²). Sem regressão (afeta só o 11º+ dígito).
+- **R/S resume** ✅ — um `R/S` no programa pára marcando a linha seguinte
+  (`state.resumeAt`); pressionar `R/S` de novo retoma dali (`pararPrograma`). Teste
+  `fidelidade` (programa ×5 ; R/S ; +2 → 15 → 17).
 
 ## Testes criados (todos simulam pressionamento real de teclas)
 
 | Arquivo | Cobre |
 |---------|-------|
-| `tests/fidelidade.guia.test.js` | #1 (n→14), #3 (Error 2), #4 (SST 625→473,75), #5 (RND lift), #6 (STO÷0) |
+| `tests/fidelidade.guia.test.js` | #1 (n→14), #3 (Error 2), #4 (SST 625→473,75), #5 (RND lift), #6 (STO÷0), BCD (√2 x²=1,999999999), R/S resume (15→17) |
 | `tests/indicadores.guia.test.js` | anunciadores C / PRGM / D.MY |
 | `tests/persistencia.guia.test.js` | Continuous Memory sobrevive a reload (2 boots, mesmo localStorage) |
 | `tests/memoria.guia.test.js` | 400 linhas → 401ª = Error 4 |
@@ -69,18 +75,12 @@ Formato dos casos (exemplo, #1): **teclas** `f REG │ 1.5 i │ 0 PV │ 25 CHS
 
 ## Sugestões futuras (sem reescrever o projeto)
 
-1. **Camada de precisão de 10 dígitos**: isolar uma função `arredondar10(x)` aplicada
-   a resultados de operações/registradores para emular o BCD da 12C (mudança
-   contida em `setX`/`calculate`). Validar com casos conhecidos (ex.: encadeamentos
-   longos) antes de ligar por padrão.
-2. **R/S "resume"**: programa que pára num `R/S` deveria retomar da linha seguinte
-   ao pressionar `R/S` de novo (hoje `runProgram` sempre volta o ponteiro a 000).
-3. **`g PSE` com pausa real** (~1 s) no runner ao vivo (hoje é no-op imediato).
-4. **Modelo de memória compartilhada** linhas↔registradores (resolve #10) + `g MEM`
+1. **`g PSE` com pausa real** (~1 s) no runner ao vivo (hoje é no-op imediato).
+2. **Modelo de memória compartilhada** linhas↔registradores (resolve #10) + `g MEM`
    dinâmico, após confirmar a fórmula da Platinum.
-5. **Teclado físico / mobile**: confirmar mapeamento de `keydown` e ergonomia touch
+3. **Teclado físico / mobile**: confirmar mapeamento de `keydown` e ergonomia touch
    (a auditoria não confirmou bug, mas vale um passe de UX dedicado).
-6. **Reset de Continuous Memory**: atalho para limpar o `localStorage` persistido
+4. **Reset de Continuous Memory**: atalho para limpar o `localStorage` persistido
    (equivalente ao reset da memória contínua da 12C).
 
 ## Guia de validação manual contra uma HP 12C Platinum real
