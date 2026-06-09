@@ -71,4 +71,22 @@ export const fidelidade = [
       { keys: ["SST"], display: "473.75" }, // linha 007 +
     ],
   },
+  {
+    // R/S resume: o programa pára num R/S e retoma da linha seguinte ao R/S seguinte.
+    // Programa: ×5 ; R/S ; +2. Entrada 3 -> 15 (pára) -> R/S -> 17.
+    nome: "R/S resume — programa pausa em R/S e retoma (3 → 15 → 17)",
+    modo: "rpn",
+    linhas: [
+      { keys: ["f", "P/R"], display: "000," },
+      { keys: ["f", "PRGM"], display: "000," },
+      { keys: ["5"], display: "001,         5" },
+      { keys: ["×"], display: "002,        20" },
+      { keys: ["R/S"], display: "003,        31" },
+      { keys: ["2"], display: "004,         2" },
+      { keys: ["+"], display: "005,        40" },
+      { keys: ["f", "P/R"], display: "0.00" },
+      { keys: ["3", "R/S"], display: "15.00" }, // 3×5=15, pára no R/S
+      { keys: ["R/S"], display: "17.00" }, // retoma: 15+2=17
+    ],
+  },
 ];

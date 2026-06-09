@@ -86,6 +86,7 @@ const state = {
   pendingStore: false,
   pendingRecall: false,
   pendingStoreOp: null,
+  pendingDot: false,
   registers: {},
   shift: null,
   fixed: 2,
@@ -100,6 +101,7 @@ const state = {
   running: false,
   program: [],
   pointer: 0,
+  resumeAt: -1,
   pendingGoto: null,
   prgmAcc: null,
   cf: [],
@@ -598,6 +600,7 @@ function handleAction(action) {
     state.pendingStore = false;
     state.pendingRecall = false;
     state.pendingStoreOp = null;
+    state.pendingDot = false;
   }
 
   if (action.startsWith("digit:")) {
@@ -1023,6 +1026,7 @@ function clearRegisters() {
   state.pendingStore = false;
   state.pendingRecall = false;
   state.pendingStoreOp = null;
+  state.pendingDot = false;
   state.liftStack = false;
   clearError();
 }
@@ -1295,16 +1299,52 @@ function toggleExponentSign(entry) {
 function beginStore() {
   state.pendingStore = true;
   state.pendingRecall = false;
+  state.pendingDot = false;
   flash("STO");
 }
 
 function beginRecall() {
   state.pendingRecall = true;
   state.pendingStore = false;
+  state.pendingDot = false;
   flash("RCL");
 }
 
 function handleRegisterTarget(action) {
+  // Prefixo de ponto: STO/RCL . endereça os registradores R.0–R.9 (Guia p.27,
+  // "Key in ... .0 through .9"). O ponto entra num sub-estado que aguarda o
+  // próximo dígito; só então grava/recupera de R.<n> (chave ".n" no map, distinta
+  // de "n" para não colidir com R0–R9).
+  if (state.pendingDot) {
+    if (action.startsWith("digit:")) {
+      const n = action.slice(6);
+      const reg = `.${n}`;
+      if (state.pendingStore) {
+        // Sem aritmética de registrador com ponto: o Guia (p.29) restringe
+        // STO +/-/×/÷ a R0–R4, então STO op . n grava o valor direto (ignora o op).
+        commitEntry();
+        state.registers[reg] = state.stack.x;
+        flash(`STO . ${n}`);
+      } else {
+        recallValue(Number(state.registers[reg] || 0));
+        flash(`RCL . ${n}`);
+      }
+      state.pendingStore = false;
+      state.pendingRecall = false;
+      state.pendingStoreOp = null;
+      state.pendingDot = false;
+      return true;
+    }
+    // Qualquer não-dígito após o ponto cancela o endereçamento (volta ao fluxo normal).
+    state.pendingDot = false;
+    return false;
+  }
+
+  if (action === "decimal") {
+    state.pendingDot = true;
+    return true;
+  }
+
   // STO EEX: liga/desliga o indicador C (juros compostos no período odd). Toggle.
   if (state.pendingStore && action === "eex") {
     state.flagC = !state.flagC;
@@ -2162,9 +2202,24 @@ function executarInstrucao(pc) {
   if (!instr) return -1;
   if (instr.isGoto) return instr.target === 0 ? -1 : instr.target - 1; // desvio
   if (instr.isCond) return pc + (avaliarCondicao(instr.cond) ? 1 : 2); // DO-if-TRUE
-  if (instr.actions.length === 1 && instr.actions[0] === "run-stop") return -1; // R/S
+  if (instr.actions.length === 1 && instr.actions[0] === "run-stop") {
+    state.resumeAt = pc + 1; // R/S: pára e marca a linha seguinte para retomar
+    return -1;
+  }
   for (const a of instr.actions) handleAction(a);
   return state.error ? -1 : pc + 1;
+}
+
+// Define o ponteiro após uma parada: se foi um R/S no programa, retoma na linha
+// seguinte ao pressionar R/S de novo; senão (GTO 000 / fim / erro) reinicia em 000.
+function pararPrograma() {
+  state.running = false;
+  if (state.resumeAt >= 0 && state.resumeAt < state.program.length) {
+    state.pointer = state.resumeAt + 1; // 1-based: próxima execução começa em resumeAt
+  } else {
+    state.pointer = 0;
+  }
+  state.resumeAt = -1;
 }
 
 function runProgram() {
@@ -2172,6 +2227,7 @@ function runProgram() {
   commitEntry();
   state.liftStack = true;
   state.running = true;
+  state.resumeAt = -1;
   // ponteiro 0 = linha 000 (roda da linha 001); ponteiro nnn = roda da linha nnn.
   let pc = state.pointer === 0 ? 0 : state.pointer - 1;
   let guarda = 0;
@@ -2179,8 +2235,7 @@ function runProgram() {
     guarda += 1;
     pc = executarInstrucao(pc);
   }
-  state.pointer = 0;
-  state.running = false;
+  pararPrograma();
 }
 
 // SST em Run mode: executa UMA instrução (single-step de depuração). O 1º passo
@@ -2191,6 +2246,7 @@ function passoSST() {
     commitEntry();
     state.liftStack = true;
   }
+  state.resumeAt = -1;
   let pc = state.pointer === 0 ? 0 : state.pointer - 1;
   if (pc < 0 || pc >= state.program.length) {
     state.pointer = 0;
@@ -2199,7 +2255,12 @@ function passoSST() {
   state.running = true;
   const prox = executarInstrucao(pc);
   state.running = false;
-  state.pointer = prox < 0 || prox >= state.program.length ? 0 : prox + 1;
+  if (state.resumeAt >= 0 && state.resumeAt < state.program.length) {
+    state.pointer = state.resumeAt + 1; // passo sobre R/S: segue na linha seguinte
+  } else {
+    state.pointer = prox < 0 || prox >= state.program.length ? 0 : prox + 1;
+  }
+  state.resumeAt = -1;
 }
 
 function currentDisplayText() {
