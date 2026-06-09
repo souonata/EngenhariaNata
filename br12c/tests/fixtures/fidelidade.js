@@ -45,4 +45,30 @@ export const fidelidade = [
       { keys: ["g", "x̄"], display: "Error 2" },
     ],
   },
+  {
+    // #4: SST em Run mode executa uma instrução por vez (single-step). Grava o
+    // programa "preço −25% +5" e percorre com SST (entrada 625), linha a linha.
+    nome: "#4 — SST single-step em Run mode (625 → 473.75)",
+    modo: "rpn",
+    linhas: [
+      { keys: ["f", "P/R"], display: "000," },
+      { keys: ["f", "PRGM"], display: "000," },
+      { keys: ["ENTER"], display: "001,        36" },
+      { keys: ["2"], display: "002,         2" },
+      { keys: ["5"], display: "003,         5" },
+      { keys: ["%"], display: "004,        25" },
+      { keys: ["-"], display: "005,        30" },
+      { keys: ["5"], display: "006,         5" },
+      { keys: ["+"], display: "007,        40" },
+      { keys: ["f", "P/R"], display: "0.00" },
+      { keys: ["625"], display: "625." },
+      { keys: ["SST"], display: "625.00" }, // linha 001 ENTER
+      { keys: ["SST"], display: "2." }, // linha 002 dígito 2
+      { keys: ["SST"], display: "25." }, // linha 003 dígito 5 (acumula → 25)
+      { keys: ["SST"], display: "156.25" }, // linha 004 %
+      { keys: ["SST"], display: "468.75" }, // linha 005 −
+      { keys: ["SST"], display: "5." }, // linha 006 dígito 5
+      { keys: ["SST"], display: "473.75" }, // linha 007 +
+    ],
+  },
 ];

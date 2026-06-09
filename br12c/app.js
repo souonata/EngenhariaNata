@@ -574,6 +574,13 @@ function handleAction(action) {
     return;
   }
 
+  // Run mode: SST executa uma única instrução (single-step de depuração).
+  if (!shiftEfetivo && action === "sst" && state.program.length > 0) {
+    passoSST();
+    updateUI();
+    return;
+  }
+
   if (shiftEfetivo) {
     const handled = handleShiftedAction(shiftEfetivo, action);
     if (!shiftTravado) state.shift = null;
@@ -2031,6 +2038,17 @@ function handleProgramMode(action, shift) {
   gravarInstrucao(action, shift);
 }
 
+// A memória de programa da 12C Platinum vai até 400 linhas; ao esgotar, gravar
+// gera Error 4 (memória cheia).
+const LIMITE_LINHAS = 400;
+function memoriaCheia() {
+  if (state.pointer >= LIMITE_LINHAS) {
+    state.displayOverride = "Error 4";
+    return true;
+  }
+  return false;
+}
+
 function acumularInstrucao(action) {
   const acc = state.prgmAcc;
   acc.actions.push(action);
@@ -2041,12 +2059,14 @@ function acumularInstrucao(action) {
     return;
   }
   state.prgmAcc = null;
+  if (memoriaCheia()) return;
   state.pointer += 1;
   state.program[state.pointer - 1] = { actions: acc.actions, keycode: acc.keycodes.join(" ") };
   mostrarLinhaPrograma();
 }
 
 function gravarInstrucao(action, shift) {
+  if (memoriaCheia()) return;
   const actions = shift ? [`shift:${shift}`, action] : [action];
   const keycode = shift ? `${KEYCODES[`shift:${shift}`]} ${keycodeFor(action)}` : keycodeFor(action);
   const instr = { actions, keycode };
@@ -2082,6 +2102,9 @@ function programGoto(action) {
       const nnn = Number(g.digits);
       if (g.dot) {
         state.pointer = nnn; // posiciona o cursor de edição
+      } else if (memoriaCheia()) {
+        state.pendingGoto = null;
+        return;
       } else {
         // grava uma instrução de desvio: g GTO nnn (keycode 43,33,nnn)
         state.pointer += 1;
@@ -2132,6 +2155,18 @@ function mostrarMem() {
   state.displayOverride = `P-${String(linhas).padStart(3, "0")}  r-20`;
 }
 
+// Executa a instrução na linha pc (índice 0-based) e devolve o próximo pc.
+// Retorna -1 para haltar: GTO 000, instrução R/S, fim do programa ou Error.
+function executarInstrucao(pc) {
+  const instr = state.program[pc];
+  if (!instr) return -1;
+  if (instr.isGoto) return instr.target === 0 ? -1 : instr.target - 1; // desvio
+  if (instr.isCond) return pc + (avaliarCondicao(instr.cond) ? 1 : 2); // DO-if-TRUE
+  if (instr.actions.length === 1 && instr.actions[0] === "run-stop") return -1; // R/S
+  for (const a of instr.actions) handleAction(a);
+  return state.error ? -1 : pc + 1;
+}
+
 function runProgram() {
   // R/S termina a entrada do dado e deixa a pilha pronta (o 1º RCL/número levanta).
   commitEntry();
@@ -2140,34 +2175,31 @@ function runProgram() {
   // ponteiro 0 = linha 000 (roda da linha 001); ponteiro nnn = roda da linha nnn.
   let pc = state.pointer === 0 ? 0 : state.pointer - 1;
   let guarda = 0;
-  while (pc < state.program.length && guarda < 10000) {
+  while (pc >= 0 && pc < state.program.length && guarda < 10000) {
     guarda += 1;
-    const instr = state.program[pc];
-    // Desvio GTO nnn: salta o ponteiro para a linha nnn (000 = halta).
-    if (instr.isGoto) {
-      if (instr.target === 0) break;
-      pc = instr.target - 1;
-      continue;
-    }
-    // Teste condicional: regra DO-if-TRUE (falso pula a próxima linha).
-    if (instr.isCond) {
-      pc += avaliarCondicao(instr.cond) ? 1 : 2;
-      continue;
-    }
-    // R/S como instrução: halta para mostrar/pedir dado.
-    if (instr.actions.length === 1 && instr.actions[0] === "run-stop") {
-      pc += 1;
-      break;
-    }
-    for (const a of instr.actions) handleAction(a);
-    if (state.error) {
-      state.running = false;
-      return;
-    }
-    pc += 1;
+    pc = executarInstrucao(pc);
   }
   state.pointer = 0;
   state.running = false;
+}
+
+// SST em Run mode: executa UMA instrução (single-step de depuração). O 1º passo
+// termina a entrada do dado; passos seguintes preservam a entrada (dígitos em
+// linhas consecutivas acumulam, como na 12C real).
+function passoSST() {
+  if (state.pointer === 0) {
+    commitEntry();
+    state.liftStack = true;
+  }
+  let pc = state.pointer === 0 ? 0 : state.pointer - 1;
+  if (pc < 0 || pc >= state.program.length) {
+    state.pointer = 0;
+    return;
+  }
+  state.running = true;
+  const prox = executarInstrucao(pc);
+  state.running = false;
+  state.pointer = prox < 0 || prox >= state.program.length ? 0 : prox + 1;
 }
 
 function currentDisplayText() {
