@@ -9,10 +9,30 @@
   <body>
     <main class="workspace" aria-label="Emulador BR 12C Niobium">
       <section class="calculator-stage" aria-label="Calculadora BR 12C Niobium">
-        <div class="stage-controls">
-          <button class="stage-icon hold-icon" type="button" id="holdModeBtn" aria-pressed="false" aria-label="Modo Segurar: trava teclas para usar em sequência" title="Modo Segurar: trava teclas (ex.: f, g). Toque numa tecla travada para soltar.">🔒</button>
-          <button class="stage-icon guide-icon" type="button" data-action="guide" aria-haspopup="dialog" aria-controls="guideOverlay" aria-label="Abrir o guia do usuário (manual)" title="Guia do usuário (manual)">📖</button>
-          <a class="stage-icon test-icon" href="./tests/visual.html" aria-label="Abrir o sistema de testes ao vivo" title="Sistema de testes — rodar os exemplos do guia na calculadora">🧪</a>
+        <div class="stage-controls" role="toolbar" aria-label="Ferramentas da calculadora">
+          <button class="stage-tool hold-tool" type="button" id="holdModeBtn" aria-pressed="false" aria-label="Modo Segurar: trava teclas para usar em sequência">
+            <span class="stage-tool-icon" aria-hidden="true">🔒</span>
+            <span class="stage-tool-text">
+              <span class="stage-tool-title">Modo Segurar</span>
+              <span class="stage-tool-desc">Trava teclas (f, g…) para tocar uma de cada vez. Toque de novo na tecla travada para soltar.</span>
+            </span>
+          </button>
+
+          <button class="stage-tool guide-tool" type="button" data-action="guide" aria-haspopup="dialog" aria-controls="guideOverlay" aria-label="Abrir o guia do usuário (manual)">
+            <span class="stage-tool-icon" aria-hidden="true">📖</span>
+            <span class="stage-tool-text">
+              <span class="stage-tool-title">Guia do usuário</span>
+              <span class="stage-tool-desc">Abre o manual da calculadora (PDF) ao lado da tela.</span>
+            </span>
+          </button>
+
+          <a class="stage-tool test-tool" href="./tests/visual.html" aria-label="Abrir o sistema de testes ao vivo">
+            <span class="stage-tool-icon" aria-hidden="true">🧪</span>
+            <span class="stage-tool-text">
+              <span class="stage-tool-title">Sistema de testes</span>
+              <span class="stage-tool-desc">Roda os exemplos do guia ao vivo na calculadora.</span>
+            </span>
+          </a>
         </div>
 
         <section class="calculator" aria-label="BR 12C Niobium">
