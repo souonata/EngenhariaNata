@@ -62,8 +62,9 @@ const SKIN_KEYS = buildSkinKeys();
 
 const DISPLAY_DIGIT_LIMIT = 12;
 const DISPLAY_BASE_FONT_CQW = 4.85;
-const DECIMAL_SEPARATOR = ",";
-const THOUSANDS_SEPARATOR = ".";
+// Separador decimal/milhar mutável (ON + . alterna entre pt-BR e US, como na 12C).
+let DECIMAL_SEPARATOR = ",";
+let THOUSANDS_SEPARATOR = ".";
 const LONG_PRESS_HOLD_MS = 520;
 const SYNTHETIC_CLICK_SUPPRESSION_MS = 700;
 // -Infinity (e não 0) para que cliques logo após o carregamento NÃO sejam
@@ -95,6 +96,7 @@ const state = {
   lastX: 0,
   displayOverride: null,
   displayMode: "fix",
+  radixComma: true, // true = vírgula decimal / ponto milhar (pt-BR); false = US
   flagC: false,
   freshValue: false,
   prgmMode: false,
@@ -127,7 +129,20 @@ const state = {
 const PERSIST_KEYS = [
   "stack", "registers", "tvm", "fixed", "mode", "flagC", "dateFormat",
   "displayMode", "memory", "lastX", "program", "pointer", "stats", "cf", "cfN",
+  "radixComma",
 ];
+
+// Aplica o separador decimal/milhar conforme state.radixComma (chamado no boot e
+// ao alternar). alternarSeparador é o "ON + ." da 12C real.
+function aplicarSeparador() {
+  DECIMAL_SEPARATOR = state.radixComma ? "," : ".";
+  THOUSANDS_SEPARATOR = state.radixComma ? "." : ",";
+}
+
+function alternarSeparador() {
+  state.radixComma = !state.radixComma;
+  aplicarSeparador();
+}
 const PERSIST_CHAVE = "br12c.continuousMemory";
 
 const display = document.querySelector("#display");
@@ -397,6 +412,14 @@ function activateActionButton(button) {
   if (key) {
     // Modo Segurar: tocar trava/solta a tecla (não executa).
     if (latchMode) {
+      // Combo "ON + ." (troca o separador decimal . <-> ,): com ON travado, tocar
+      // a tecla "." alterna entre pt-BR (1.234,56) e US (1,234.56), como na 12C real.
+      if (action === "decimal" && heldActionButtons.has("power")) {
+        releaseHeldAction("power");
+        alternarSeparador();
+        updateUI();
+        return;
+      }
       if (heldActionButtons.has(action)) releaseHeldAction(action);
       else holdActionButton(button);
       return;
@@ -2415,6 +2438,7 @@ function hidratarEstado() {
     for (const k of PERSIST_KEYS) {
       if (dados[k] !== undefined && dados[k] !== null) state[k] = dados[k];
     }
+    aplicarSeparador(); // sincroniza o separador restaurado
   } catch {
     /* JSON corrompido/indisponível: começa do estado padrão. */
   }

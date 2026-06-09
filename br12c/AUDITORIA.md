@@ -57,6 +57,13 @@ Bônus de fidelidade visual (junto do #7/#8): adicionados os anunciadores **PRGM
 - **R/S resume** ✅ — um `R/S` no programa pára marcando a linha seguinte
   (`state.resumeAt`); pressionar `R/S` de novo retoma dali (`pararPrograma`). Teste
   `fidelidade` (programa ×5 ; R/S ; +2 → 15 → 17).
+- **Vírgula decimal completa no display** ✅ — a fonte 7-seg (DSEG7) tem o rabinho
+  da vírgula abaixo da baseline e era cortado pelo `overflow:hidden`; `line-height`
+  + `padding-bottom` (em `#display`) dão folga vertical. Verificado no navegador.
+- **Troca do separador `.`↔`,`** ✅ — como não dá para "segurar ON + tocar ." com o
+  mouse, o combo é feito pelo **modo Segurar** (🔒): ativa Segurar, trava **ON**,
+  toca **.** → alterna entre pt-BR (1.234,56) e US (1,234.56). Separador mutável
+  ligado a `state.radixComma` (persistido na Continuous Memory). Teste `separador`.
 
 ## Testes criados (todos simulam pressionamento real de teclas)
 

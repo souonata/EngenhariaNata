@@ -271,13 +271,16 @@ a {
   align-self: center;
   justify-self: start;
   max-width: 100%;
+  /* line-height + padding dão folga vertical para o rabinho da vírgula (descendente
+     da fonte DSEG7) não ser cortado pelo recorte horizontal de números longos. */
   overflow: hidden;
   color: #151b11;
   font-family: "DSEG7ClassicMini", "Consolas", "Lucida Console", ui-monospace, monospace;
   font-size: clamp(0.82rem, var(--display-font-size, 2.95rem), 2.95rem);
   font-weight: 400;
   font-variant-numeric: tabular-nums;
-  line-height: 1;
+  line-height: 1.18;
+  padding-bottom: 0.1em;
   text-align: left;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.24);
   white-space: nowrap;
@@ -898,7 +901,9 @@ a {
   font-size: clamp(0.82rem, var(--display-font-size, 4.85cqw), 3.95rem);
   font-weight: 400;
   font-variant-numeric: tabular-nums;
-  line-height: 0.95;
+  /* folga vertical para o rabinho da vírgula (descendente da DSEG7) não ser cortado */
+  line-height: 1.08;
+  padding-bottom: 0.12em;
   letter-spacing: 0.01em;
   justify-self: start;
   text-align: left;
