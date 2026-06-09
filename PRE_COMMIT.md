@@ -4,6 +4,14 @@ Checklist enxuta para manter o projeto consistente antes de cada `git commit`.
 
 > Regra prática: se a mudança mexe em app, rode a checklist inteira. Se mexe só em docs/config/tooling local, foque nas seções `0`, `5`, `6` e `7`.
 
+> ⚠️ **Falha crônica nº 1 — site "congelado" (tela viva, nada responde):** se trocar
+> idioma não funciona, a home fica sem relógio, inputs não respondem e cálculos não
+> aparecem **em todas as páginas**, é **um erro fatal de ESM no carregamento** (1 módulo
+> compartilhado quebrado derruba o site inteiro). Diagnóstico: **F12 → Console → linha
+> vermelha = o arquivo culpado.** Causas e prevenção completas em
+> [`GUIA_FALHA_CONGELAMENTO.md`](GUIA_FALHA_CONGELAMENTO.md). **Nunca teste abrindo via
+> `file://`** — sirva por HTTP a partir da raiz, senão TODO ESM morre igual.
+
 ---
 
 ## 0. Diagnóstico rápido

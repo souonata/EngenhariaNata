@@ -46,6 +46,7 @@ jobs:
         run: |
           mkdir -p local/dist/assets/js/vendor
           cp assets/js/vendor/chart.umd.js local/dist/assets/js/vendor/
+          cp assets/js/error-overlay.js local/dist/assets/js/
           cp fazenda/fazenda-database.js local/dist/fazenda/
 
       # br12c é standalone (excluído do bundle): copiado como está.
