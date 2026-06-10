@@ -5,7 +5,7 @@
 
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
-import { formatarNumeroComSufixo, formatarNumeroDecimal } from '../src/utils/formatters.js';
+import { formatarNumeroComSufixo, formatarNumeroDecimal, parsearNumero } from '../src/utils/formatters.js';
 import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
 import { ajustarTamanhoInput, configurarBotoesSliderComAceleracao } from '../src/utils/ui-controls.js';
 
@@ -384,7 +384,7 @@ const traducoes = {
         'memorial-resumo-area-plantas': 'Area Totale Piante:',
         'memorial-resumo-area-animais': 'Area Totale Animali:',
         'memorial-resumo-area-total': 'Area Totale:',
-        'learn-more': 'SAIBA MAIS!',
+        'learn-more': 'SCOPRI DI PIÙ!',
         'back': '← Indietro',
         'back-to-calculator': 'Torna al Calcolatore',
         'ver-info-tecnica': 'Vedi Informazioni Tecniche',
@@ -399,6 +399,14 @@ const traducoes = {
     }
 };
 // FUNÇÕES DE CÁLCULO
+
+function parsearEntradaFazenda(valor, fallback) {
+    if (valor === null || valor === undefined) return fallback;
+    const texto = valor.toString();
+    if (!/[0-9]/.test(texto)) return fallback;
+    const numero = parsearNumero(texto);
+    return Number.isFinite(numero) ? numero : fallback;
+}
 
 function calcularAreaNecessaria(tipo, nome, quantidadePessoas, consumoDiarioPorPessoa) {
     const dados = DADOS_PLANTAS[tipo][nome];
@@ -436,7 +444,7 @@ function calcularAnimaisNecessarios(tipoAnimal, quantidadePessoas, consumoDiario
         const ovosPorDiaTotal = ovosPorDiaPorPessoa * quantidadePessoas;
         const ovosPorDiaPorAnimal = dados.producaoDiaria; // ovos/dia por animal
         quantidade = Math.ceil(ovosPorDiaTotal / ovosPorDiaPorAnimal);
-    } else if (tipoAnimal === 'frango-corte' || tipoAnimal === 'pollo-corte') {
+    } else if (tipoAnimal === 'frango-corte' || tipoAnimal === 'pollo-corte' || tipoAnimal === 'anatra-corte') {
         // Para frangos de corte, calcular baseado no consumo de carne
         const consumoAnualPorPessoa = consumoDiarioPorPessoa * 365;
         const consumoAnualTotal = consumoAnualPorPessoa * quantidadePessoas;
@@ -530,6 +538,7 @@ function criarCheckboxPlantas(tipo, nome) {
     div.type = 'button';
     div.setAttribute('data-tipo', tipo);
     div.setAttribute('data-nome', nome);
+    div.setAttribute('aria-pressed', 'false');
     const icone = ICONES_PRODUTOS[nome] || '🌱';
     div.innerHTML = `
         <div class="cartao-checkbox">
@@ -541,6 +550,7 @@ function criarCheckboxPlantas(tipo, nome) {
     // Adicionar event listener para toggle de seleção
     div.addEventListener('click', function() {
         this.classList.toggle('selected');
+        this.setAttribute('aria-pressed', this.classList.contains('selected') ? 'true' : 'false');
         atualizarResultados();
     });
     
@@ -552,6 +562,7 @@ function criarCheckboxAnimais(nome) {
     div.className = 'opcao-checkbox';
     div.type = 'button';
     div.setAttribute('data-nome', nome);
+    div.setAttribute('aria-pressed', 'false');
     const icone = ICONES_PRODUTOS[nome] || '🐾';
     div.innerHTML = `
         <div class="cartao-checkbox">
@@ -563,6 +574,7 @@ function criarCheckboxAnimais(nome) {
     // Adicionar event listener para toggle de seleção
     div.addEventListener('click', function() {
         this.classList.toggle('selected');
+        this.setAttribute('aria-pressed', this.classList.contains('selected') ? 'true' : 'false');
         atualizarResultados();
     });
     
@@ -576,13 +588,13 @@ function atualizarResultados() {
         return;
     }
     
-    const quantidadePessoas = parseInt(document.getElementById('inputPessoas').value) || 4;
+    const quantidadePessoas = Math.max(1, Math.round(parsearEntradaFazenda(document.getElementById('inputPessoas')?.value, 4)));
     
     // Ler valores dos sliders de consumo (remover formatação se houver)
     const inputConsumoPlantas = document.getElementById('inputConsumoPlantas');
     const inputConsumoProteinas = document.getElementById('inputConsumoProteinas');
-    const consumoPlantasDiario = parseFloat(inputConsumoPlantas.value.toString().replace(/\./g, '').replace(',', '.')) || 0.5;
-    const consumoProteinasDiario = parseFloat(inputConsumoProteinas.value.toString().replace(/\./g, '').replace(',', '.')) || 0.5;
+    const consumoPlantasDiario = parsearEntradaFazenda(inputConsumoPlantas?.value, 0.5);
+    const consumoProteinasDiario = parsearEntradaFazenda(inputConsumoProteinas?.value, 0.5);
     
     // Coletar plantas selecionadas
     const plantasSelecionadas = {
@@ -1000,12 +1012,12 @@ function renderizarExplicacaoFazenda({ quantidadePessoas, areaTotal, areaTotalPl
 function atualizarMemorialComValores() {
     const textos = traducoes[idiomaAtual] || traducoes['pt-BR'];
     
-    const quantidadePessoas = parseInt(document.getElementById('inputPessoas').value) || 4;
+    const quantidadePessoas = Math.max(1, Math.round(parsearEntradaFazenda(document.getElementById('inputPessoas')?.value, 4)));
     // Converter valores formatados para números (remove formatação brasileira)
     const inputConsumoPlantas = document.getElementById('inputConsumoPlantas');
     const inputConsumoProteinas = document.getElementById('inputConsumoProteinas');
-    const consumoPlantasDiario = inputConsumoPlantas ? parseFloat(inputConsumoPlantas.value.replace(/\./g, '').replace(',', '.')) || 0.5 : 0.5;
-    const consumoProteinasDiario = inputConsumoProteinas ? parseFloat(inputConsumoProteinas.value.replace(/\./g, '').replace(',', '.')) || 0.5 : 0.5;
+    const consumoPlantasDiario = parsearEntradaFazenda(inputConsumoPlantas?.value, 0.5);
+    const consumoProteinasDiario = parsearEntradaFazenda(inputConsumoProteinas?.value, 0.5);
     
     // Coletar plantas selecionadas
     const plantasSelecionadas = {
@@ -1624,7 +1636,7 @@ function configurarEventListeners() {
         
         inputPessoas.addEventListener('input', debounceFn(() => {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputPessoas);
-            let valor = parseInt(inputPessoas.value) || 1;
+            let valor = Math.round(parsearEntradaFazenda(inputPessoas.value, 1));
             valor = Math.max(1, Math.min(20, valor));
             inputPessoas.value = valor;
             sliderPessoas.value = valor;
@@ -1649,7 +1661,7 @@ function configurarEventListeners() {
         
         inputConsumoPlantas.addEventListener('input', debounceFn(() => {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoPlantas);
-            let valor = parseFloat(inputConsumoPlantas.value.replace(',', '.')) || 0.1;
+            let valor = parsearEntradaFazenda(inputConsumoPlantas.value, 0.1);
             valor = Math.max(0.1, Math.min(2.0, valor));
             inputConsumoPlantas.value = formatarNumeroDecimal(valor, 1);
             sliderConsumoPlantas.value = valor;
@@ -1674,7 +1686,7 @@ function configurarEventListeners() {
         
         inputConsumoProteinas.addEventListener('input', debounceFn(() => {
             if (typeof ajustarTamanhoInput === 'function') ajustarTamanhoInput(inputConsumoProteinas);
-            let valor = parseFloat(inputConsumoProteinas.value.replace(',', '.')) || 0.1;
+            let valor = parsearEntradaFazenda(inputConsumoProteinas.value, 0.1);
             valor = Math.max(0.1, Math.min(2.0, valor));
             inputConsumoProteinas.value = formatarNumeroDecimal(valor, 1);
             sliderConsumoProteinas.value = valor;
