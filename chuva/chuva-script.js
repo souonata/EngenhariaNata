@@ -8,7 +8,7 @@
 
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
-import { formatarNumero, formatarMoeda } from '../src/utils/formatters.js';
+import { formatarNumero, formatarMoeda, parsearNumero } from '../src/utils/formatters.js';
 import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
 
 // ============================================
@@ -139,7 +139,7 @@ class ChuvaApp extends App {
                 const velocidade = (sliderMax - sliderMin) / 3000;
                 const valorInicial = parseFloat(btn.dataset.valorInicial);
                 let novoValor = valorInicial + velocidade * tempoDecorrido * direcao;
-                novoValor = Math.max(1, novoValor);
+                novoValor = Math.max(sliderMin, Math.min(sliderMax, novoValor));
 
                 slider.value = novoValor;
                 if (inputEl) inputEl.value = Math.round(novoValor);
@@ -169,11 +169,13 @@ class ChuvaApp extends App {
                 const passo = parseFloat(btn.getAttribute('data-step') || '0');
                 if (!passo) return;
 
+                const sliderMin = parseFloat(slider.min);
+                const sliderMax = parseFloat(slider.max);
                 const valorBase = inputEl ? this.parsearValor(inputEl.value) : parseFloat(slider.value);
                 const valorAtual = isNaN(valorBase) ? parseFloat(slider.value) : valorBase;
                 const casasDecimais = (String(Math.abs(passo)).split('.')[1] || '').length;
                 let novoValor = valorAtual + passo;
-                novoValor = Math.max(1, Number(novoValor.toFixed(Math.max(casasDecimais, 3))));
+                novoValor = Math.max(sliderMin, Math.min(sliderMax, Number(novoValor.toFixed(Math.max(casasDecimais, 3)))));
 
                 slider.value = novoValor;
                 if (inputEl) inputEl.value = casasDecimais ? novoValor.toFixed(casasDecimais) : Math.round(novoValor);
@@ -239,10 +241,8 @@ class ChuvaApp extends App {
     }
 
     parsearValor(texto) {
-        const normalizado = texto.toString().trim()
-            .replace(/[^\d,.-]/g, '')
-            .replace(',', '.');
-        return parseFloat(normalizado);
+        if (!texto || !/[0-9]/.test(texto.toString())) return NaN;
+        return parsearNumero(texto.toString().trim());
     }
 
     // ============================================
