@@ -642,7 +642,8 @@ class SalarioApp extends App {
             { titulo: m.feriasTitulo,   texto: m.feriasTexto },
             { titulo: m.decimoTitulo,   texto: m.decimoTexto },
             { titulo: m.rescisaoTitulo, texto: m.rescisaoTexto },
-            { titulo: m.custoTitulo,    texto: m.custoTexto }
+            { titulo: m.custoTitulo,    texto: m.custoTexto },
+            { titulo: m.avisoTitulo,    texto: m.avisoTexto }
         ];
 
         const html = secoes

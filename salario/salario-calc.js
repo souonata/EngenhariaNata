@@ -44,6 +44,8 @@ export const IRRF_BR_SIMPLIFICADO = 607.20;
 export const FGTS_ALIQ = 0.08;
 export const VT_MAX_ALIQ = 0.06;
 export const FGTS_MULTA_RESCISAO = 0.40;
+// Estimativa típica de encargos no regime CLT (FGTS + 13º + férias + INSS
+// patronal + SAT/terceiros). Varia por setor/regime — uso educativo.
 export const CUSTO_EMPRESA_FATOR = 1.70;
 
 // ============================================
@@ -75,6 +77,7 @@ export const ADD_REGIONAL_IT = {
 
 export const TFR_IT_DIVISOR = 13.5;
 export const TFR_IT_ALIQ_NETA = 0.0691;
+// Estimativa típica de contributi datoriali + TFR + INAIL sobre a RAL — uso educativo.
 export const COSTO_AZIENDA_IT = 1.40;
 
 // ============================================
@@ -246,6 +249,7 @@ export function calcularIT(v) {
     const ralMensile = mensilita > 0 ? ral / mensilita : 0;
     const inpsAnnuo = calcularINPSAnnuo(ral);
 
+    // Teto legal de dedutibilidade da previdência complementar (art. 8 D.Lgs. 252/2005).
     const previdenza = Math.min(v.plano * 12, 5164.57);
     const imponibileAnnuo = Math.max(0, ral - inpsAnnuo - previdenza);
 
@@ -256,9 +260,10 @@ export function calcularIT(v) {
 
     const irpefNetta = Math.max(0, irpefLorda - detrazioni);
 
-    // Trattamento integrativo (ex-bonus Renzi):
+    // Trattamento integrativo (ex-bonus Renzi) — MODELO EDUCATIVO SIMPLIFICADO:
     // - €1200/anno abaixo de €15.000 (capienza positiva: imposta lorda > detrazione lavoro);
-    // - decai linearmente entre €15.000 e €28.000;
+    // - aqui decai linearmente entre €15.000 e €28.000; a regra legal nessa faixa
+    //   depende da soma de detrazioni específicas vs imposta lorda (não modelada);
     // - zero acima de €28.000.
     let trattamentoIntegrativo = 0;
     if (irpefLorda > detrLavoro) {
@@ -321,6 +326,9 @@ export function calcularIT(v) {
     const liquido = ralMensile - totalDescontos;
 
     const tfrMensile = (ral * TFR_IT_ALIQ_NETA) / 12;
+    // Rendimentos ASSUMIDOS para projeção educativa: fondo pensione ~4% a.a.
+    // (média de mercado) e TFR em azienda ~3% a.a. (proxy de 1,5% + 75% da
+    // inflação). O valor real varia com mercado e inflação.
     let tfrAccumulato;
     if (v.tfrDestino === 'fondo') {
         const ai = 0.04 / 12;
