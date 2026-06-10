@@ -3,7 +3,7 @@
  * Página Sobre - Versão Modular ES6
  */
 
-import { App } from '../src/core/app.js';
+import { App, i18n } from '../src/core/app.js';
 
 class SobreApp extends App {
     constructor() {
@@ -19,10 +19,13 @@ class SobreApp extends App {
     inicializarSobre() {
         this.configurarAccordion();
         this.reordenarCardsApps();
+        this.atualizarAcessibilidadeAccordions();
     }
 
     atualizarAposTrocaIdioma() {
         this.reordenarCardsApps();
+        this.atualizarAcessibilidadeAccordions();
+        document.title = i18n.t('page.titleFull');
     }
 
     /**
@@ -43,32 +46,46 @@ class SobreApp extends App {
             return tA.localeCompare(tB, undefined, { sensitivity: 'base' });
         });
 
-        [...appCards, bugsCard].forEach(card => container.appendChild(card));
+        [...appCards, bugsCard].filter(Boolean).forEach(card => container.appendChild(card));
     }
 
     configurarAccordion() {
         const headers = document.querySelectorAll('.card-header-clicavel');
 
         headers.forEach(header => {
+            header.setAttribute('tabindex', '0');
+
             header.addEventListener('click', () => {
-                const card = header.closest('.card-expansivel');
-                if (card) {
-                    card.classList.toggle('expandido');
-                    header.setAttribute('aria-expanded', card.classList.contains('expandido'));
-                }
+                this.alternarCard(header);
             });
 
             header.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    const card = header.closest('.card-expansivel');
-                    if (card) {
-                        card.classList.toggle('expandido');
-                        header.setAttribute('aria-expanded', card.classList.contains('expandido'));
-                    }
+                    this.alternarCard(header);
                 }
             });
         });
+    }
+
+    alternarCard(header) {
+        const card = header.closest('.card-expansivel');
+        if (!card) return;
+
+        card.classList.toggle('expandido');
+        this.atualizarHeaderAccordion(header, card.classList.contains('expandido'));
+    }
+
+    atualizarAcessibilidadeAccordions() {
+        document.querySelectorAll('.card-header-clicavel').forEach(header => {
+            const card = header.closest('.card-expansivel');
+            this.atualizarHeaderAccordion(header, Boolean(card?.classList.contains('expandido')));
+        });
+    }
+
+    atualizarHeaderAccordion(header, expandido) {
+        header.setAttribute('aria-expanded', expandido ? 'true' : 'false');
+        header.setAttribute('aria-label', i18n.t(expandido ? 'aria.collapseCard' : 'aria.expandCard'));
     }
 }
 
