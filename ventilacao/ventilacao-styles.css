@@ -135,3 +135,13 @@ html[data-theme="dark"] .resultado-item.destaque .valor-resultado-grande {
         text-align: right;
     }
 }
+
+/* Nota de estimativa educacional ao pé do card de resultados */
+.nota-educacional {
+    margin-top: 14px;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--text-secondary, #6b7280);
+    border-top: 1px dashed var(--border-color, #d1d5db);
+    padding-top: 10px;
+}

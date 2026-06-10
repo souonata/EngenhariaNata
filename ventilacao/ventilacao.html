@@ -9,7 +9,7 @@
     <link rel="apple-touch-icon" href="../favicon.svg">
 
     <title>Ventilação Natural — Qualidade do Ar Residencial | Engenharia NATA</title>
-    <meta name="description" content="Calculadora de ventilação natural residencial. Calcula renovações de ar por hora (ACH), qualidade da ventilação e área mínima de janelas conforme NBR 15575.">
+    <meta name="description" content="Calculadora educativa de ventilação natural residencial. Estima renovações de ar por hora (ACH), qualidade da ventilação e área mínima de janelas (regra de 1/8 do piso).">
     <meta name="keywords" content="ventilação natural, NBR 15575, ACH, qualidade do ar, renovação de ar, janelas, ventilação cruzada, conforto térmico">
     <meta name="author" content="Engenharia NATA">
     <meta name="robots" content="index, follow">
@@ -18,14 +18,14 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://souonata.github.io/EngenhariaNata/ventilacao/ventilacao.html">
     <meta property="og:title" content="Ventilação Natural — Engenharia NATA">
-    <meta property="og:description" content="Calcula ACH, qualidade da ventilação e área mínima de janelas conforme NBR 15575.">
+    <meta property="og:description" content="Estima ACH, qualidade da ventilação e área mínima de janelas (modelo educativo de efeito vento).">
     <meta property="og:locale" content="pt_BR">
     <meta property="og:locale:alternate" content="it_IT">
 
     <meta property="twitter:card" content="summary">
     <meta property="twitter:url" content="https://souonata.github.io/EngenhariaNata/ventilacao/ventilacao.html">
     <meta property="twitter:title" content="Ventilação Natural — Engenharia NATA">
-    <meta property="twitter:description" content="Calcula ACH, qualidade da ventilação e área mínima de janelas conforme NBR 15575.">
+    <meta property="twitter:description" content="Estima ACH, qualidade da ventilação e área mínima de janelas (modelo educativo de efeito vento).">
 
     <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.0.1">
     <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
@@ -56,7 +56,7 @@
         <!-- CABEÇALHO -->
         <header>
             <h1 data-i18n="app.title">🌬️ Ventilação Natural</h1>
-            <p class="subtitulo" data-i18n="app.subtitle">Qualidade do ar e renovações por hora (NBR 15575)</p>
+            <p class="subtitulo" data-i18n="app.subtitle">Qualidade do ar e renovações por hora (modelo educativo)</p>
         </header>
 
         <!-- ENTRADAS -->
@@ -74,7 +74,7 @@
                     </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputComprimento" class="valor-display valor-input"
-                               value="5" tabindex="1" inputmode="decimal"
+                               value="5" inputmode="decimal"
                                pattern="[0-9]*[.,]?[0-9]*" enterkeyhint="done" autocomplete="off">
                         <span class="unidade" data-i18n="unidades.metro">m</span>
                     </div>
@@ -103,7 +103,7 @@
                     </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputLargura" class="valor-display valor-input"
-                               value="4" tabindex="2" inputmode="decimal"
+                               value="4" inputmode="decimal"
                                pattern="[0-9]*[.,]?[0-9]*" enterkeyhint="done" autocomplete="off">
                         <span class="unidade" data-i18n="unidades.metro">m</span>
                     </div>
@@ -132,7 +132,7 @@
                     </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputPeDireito" class="valor-display valor-input"
-                               value="2.7" tabindex="3" inputmode="decimal"
+                               value="2.7" inputmode="decimal"
                                pattern="[0-9]*[.,]?[0-9]*" enterkeyhint="done" autocomplete="off">
                         <span class="unidade" data-i18n="unidades.metro">m</span>
                     </div>
@@ -161,7 +161,7 @@
                     </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputJanelas" class="valor-display valor-input"
-                               value="2" tabindex="4" inputmode="decimal"
+                               value="2" inputmode="decimal"
                                pattern="[0-9]*[.,]?[0-9]*" enterkeyhint="done" autocomplete="off">
                         <span class="unidade" data-i18n="unidades.m2">m²</span>
                     </div>
@@ -190,7 +190,7 @@
                     </span>
                     <div class="valor-com-unidades">
                         <input type="text" id="inputPessoas" class="valor-display valor-input"
-                               value="2" tabindex="5" inputmode="numeric"
+                               value="2" inputmode="numeric"
                                pattern="[0-9]*" enterkeyhint="done" autocomplete="off">
                         <span class="unidade" data-i18n="unidades.pessoas">pessoas</span>
                     </div>
@@ -209,36 +209,50 @@
                 </div>
             </div>
 
-            <!-- Orientação das Janelas -->
+            <!-- Tipo de Ventilação -->
             <div class="grupo-entrada">
-                <label data-i18n="labels.orientacao">Orientação das Janelas</label>
+                <label data-i18n="labels.tipoVentilacao">Tipo de Ventilação</label>
                 <div class="grupo-radio">
                     <label class="opcao-radio">
-                        <input type="radio" name="orientacao" value="norte" tabindex="6">
+                        <input type="radio" name="tipoVentilacao" value="unilateral" checked>
                         <div class="cartao-radio">
-                            <span class="rotulo-radio" style="font-size:1.3rem;">🧭</span>
-                            <span class="rotulo-radio" data-i18n="opcoes.norte">Norte</span>
+                            <span class="rotulo-radio" style="font-size:1.3rem;">🪟</span>
+                            <span class="rotulo-radio" data-i18n="opcoes.unilateral">Unilateral (uma fachada)</span>
                         </div>
                     </label>
                     <label class="opcao-radio">
-                        <input type="radio" name="orientacao" value="sul" checked tabindex="7">
+                        <input type="radio" name="tipoVentilacao" value="cruzada">
                         <div class="cartao-radio">
-                            <span class="rotulo-radio" style="font-size:1.3rem;">🌊</span>
-                            <span class="rotulo-radio" data-i18n="opcoes.sul">Sul</span>
+                            <span class="rotulo-radio" style="font-size:1.3rem;">↔️</span>
+                            <span class="rotulo-radio" data-i18n="opcoes.cruzada">Cruzada (fachadas opostas)</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Exposição das janelas ao vento -->
+            <div class="grupo-entrada">
+                <label data-i18n="labels.orientacao">Exposição das Janelas ao Vento</label>
+                <div class="grupo-radio">
+                    <label class="opcao-radio">
+                        <input type="radio" name="exposicao" value="favoravel" checked>
+                        <div class="cartao-radio">
+                            <span class="rotulo-radio" style="font-size:1.3rem;">💨</span>
+                            <span class="rotulo-radio" data-i18n="opcoes.favoravel">A favor do vento</span>
                         </div>
                     </label>
                     <label class="opcao-radio">
-                        <input type="radio" name="orientacao" value="leste" tabindex="8">
+                        <input type="radio" name="exposicao" value="obliqua">
                         <div class="cartao-radio">
-                            <span class="rotulo-radio" style="font-size:1.3rem;">🌅</span>
-                            <span class="rotulo-radio" data-i18n="opcoes.leste">Leste</span>
+                            <span class="rotulo-radio" style="font-size:1.3rem;">↗️</span>
+                            <span class="rotulo-radio" data-i18n="opcoes.obliqua">Vento oblíquo</span>
                         </div>
                     </label>
                     <label class="opcao-radio">
-                        <input type="radio" name="orientacao" value="oeste" tabindex="9">
+                        <input type="radio" name="exposicao" value="abrigada">
                         <div class="cartao-radio">
-                            <span class="rotulo-radio" style="font-size:1.3rem;">🌇</span>
-                            <span class="rotulo-radio" data-i18n="opcoes.oeste">Oeste</span>
+                            <span class="rotulo-radio" style="font-size:1.3rem;">🏠</span>
+                            <span class="rotulo-radio" data-i18n="opcoes.abrigada">Abrigada do vento</span>
                         </div>
                     </label>
                 </div>
@@ -249,21 +263,21 @@
                 <label data-i18n="labels.clima">Clima da Região</label>
                 <div class="grupo-radio">
                     <label class="opcao-radio">
-                        <input type="radio" name="clima" value="quente" checked tabindex="10">
+                        <input type="radio" name="clima" value="quente" checked>
                         <div class="cartao-radio">
                             <span class="rotulo-radio" style="font-size:1.3rem;">☀️</span>
                             <span class="rotulo-radio" data-i18n="opcoes.quente">Quente/Úmido</span>
                         </div>
                     </label>
                     <label class="opcao-radio">
-                        <input type="radio" name="clima" value="temperado" tabindex="11">
+                        <input type="radio" name="clima" value="temperado">
                         <div class="cartao-radio">
                             <span class="rotulo-radio" style="font-size:1.3rem;">🌤️</span>
                             <span class="rotulo-radio" data-i18n="opcoes.temperado">Temperado</span>
                         </div>
                     </label>
                     <label class="opcao-radio">
-                        <input type="radio" name="clima" value="frio" tabindex="12">
+                        <input type="radio" name="clima" value="frio">
                         <div class="cartao-radio">
                             <span class="rotulo-radio" style="font-size:1.3rem;">❄️</span>
                             <span class="rotulo-radio" data-i18n="opcoes.frio">Frio/Seco</span>
@@ -306,12 +320,12 @@
 
             <div class="memorial-item">
                 <h3 data-i18n="memorial.passo2Titulo">2️⃣ Vazão de Ar</h3>
-                <p data-i18n="memorial.passo2Explicacao">Método Bernoulli simplificado com Cd = 0,60.</p>
+                <p data-i18n="memorial.passo2Explicacao">Efeito vento: Q = Cv × A × V. Cv depende do tipo de ventilação.</p>
                 <div class="formula-box">
-                    <p><strong data-i18n="memorial.passo2Formula">Q = Área_janelas × V × Fator × 0,60 × 3600</strong></p>
+                    <p><strong data-i18n="memorial.passo2Formula">Q = Área_janelas × V_vento × Fator_exposição × Cv × 3600</strong></p>
                 </div>
                 <p><strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
-                    <span id="memorial-exemplo-vazao">2,0 × 2,5 × 1,00 × 0,60 × 3600 = 10.800 m³/h</span>
+                    <span id="memorial-exemplo-vazao">2,0 × 2,5 × 1,00 × 0,025 × 3600 = 450 m³/h</span>
                 </p>
             </div>
 
@@ -322,24 +336,24 @@
                     <p><strong data-i18n="memorial.passo3Formula">ACH = Vazão ÷ Volume</strong></p>
                 </div>
                 <p><strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
-                    <span id="memorial-exemplo-ach">10.800 ÷ 54 = 200 ACH</span>
+                    <span id="memorial-exemplo-ach">450 ÷ 54 = 8,3 ACH</span>
                 </p>
             </div>
 
             <div class="memorial-item">
                 <h3 data-i18n="memorial.passo4Titulo">4️⃣ ACH Mínimo Necessário</h3>
-                <p data-i18n="memorial.passo4Explicacao">máx(6, pessoas × 27 ÷ volume).</p>
+                <p data-i18n="memorial.passo4Explicacao">max(6, pessoas × 27 ÷ volume) — alvo educativo de qualidade do ar.</p>
                 <div class="formula-box">
-                    <p><strong data-i18n="memorial.passo4Formula">ACH_min = máx(6 , Pessoas × 27 ÷ Volume)</strong></p>
+                    <p><strong data-i18n="memorial.passo4Formula">ACH_alvo = max(6 , Pessoas × 27 ÷ Volume)</strong></p>
                 </div>
                 <p><strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
-                    <span id="memorial-exemplo-achmin">máx(6 ; 4 × 27 ÷ 54 = 2,0) = 6 ACH</span>
+                    <span id="memorial-exemplo-achmin">max(6 ; 2 × 27 ÷ 54 = 1,0) = 6 ACH</span>
                 </p>
             </div>
 
             <div class="memorial-item">
                 <h3 data-i18n="memorial.passo5Titulo">5️⃣ Área Mínima de Janelas</h3>
-                <p data-i18n="memorial.passo5Explicacao">NBR 15575 — pelo menos 1/8 da área do piso.</p>
+                <p data-i18n="memorial.passo5Explicacao">Regra típica de código de obras — pelo menos 1/8 da área do piso (a NBR 15575-4 define percentuais por zona bioclimática).</p>
                 <div class="formula-box">
                     <p><strong data-i18n="memorial.passo5Formula">Área mínima = Área piso ÷ 8</strong></p>
                 </div>
@@ -360,14 +374,14 @@
                 <div class="info-box">
                     <p><strong data-i18n="memorial.constantesTitulo">Constantes e referências:</strong></p>
                     <ul>
-                        <li data-i18n="memorial.constCd">Cd = 0,60 (janelas comuns)</li>
+                        <li data-i18n="memorial.constCd">Cv: cruzada 0,60 (ASHRAE) · unilateral 0,025 (BS 5925)</li>
                         <li data-i18n="memorial.constVento">Vento: quente 2,5 · temperado 2,0 · frio 1,5 m/s</li>
-                        <li data-i18n="memorial.constOri">Orientação: sul 1,00 · leste 0,90 · norte 0,80 · oeste 0,70</li>
-                        <li data-i18n="memorial.constACH">ACH mínimo residencial = 6</li>
+                        <li data-i18n="memorial.constOri">Exposição ao vento: favorável 1,00 · oblíqua 0,85 · abrigada 0,70</li>
+                        <li data-i18n="memorial.constACH">Alvo educativo de ACH = 6 (qualidade do ar)</li>
                         <li data-i18n="memorial.constPessoa">Vazão por pessoa = 27 m³/h</li>
-                        <li data-i18n="memorial.constArea">Área mínima janelas = 1/8 da área de piso</li>
+                        <li data-i18n="memorial.constArea">Área mínima janelas = 1/8 do piso (código de obras típico)</li>
                     </ul>
-                    <p style="margin-top:10px;"><strong data-i18n="memorial.norma">Normas: NBR 15575:2021 · ASHRAE 62.1/62.2</strong></p>
+                    <p style="margin-top:10px;"><strong data-i18n="memorial.norma">Referências: ASHRAE Fundamentals · BS 5925 · ASHRAE 62.1 · NBR 15575-4 e código de obras local</strong></p>
                 </div>
             </div>
 
@@ -377,7 +391,8 @@
                 <div class="resumo-item-calc"><span data-i18n="memorial.resumoPeDireito">Pé-direito:</span><span id="resumo-pd">-</span></div>
                 <div class="resumo-item-calc"><span data-i18n="memorial.resumoJanelas">Área de janelas:</span><span id="resumo-janelas">-</span></div>
                 <div class="resumo-item-calc"><span data-i18n="memorial.resumoPessoas">Pessoas:</span><span id="resumo-pessoas">-</span></div>
-                <div class="resumo-item-calc"><span data-i18n="memorial.resumoOrientacao">Orientação:</span><span id="resumo-ori">-</span></div>
+                <div class="resumo-item-calc"><span data-i18n="memorial.resumoTipo">Tipo de ventilação:</span><span id="resumo-tipo">-</span></div>
+                <div class="resumo-item-calc"><span data-i18n="memorial.resumoOrientacao">Exposição ao vento:</span><span id="resumo-ori">-</span></div>
                 <div class="resumo-item-calc"><span data-i18n="memorial.resumoClima">Clima:</span><span id="resumo-clima">-</span></div>
                 <div class="resumo-item-calc"><span data-i18n="memorial.resumoVolume">Volume:</span><span id="resumo-volume">-</span></div>
                 <div class="resumo-item-calc"><span data-i18n="memorial.resumoVazao">Vazão:</span><span id="resumo-vazao">-</span></div>
@@ -393,7 +408,7 @@
         </div>
 
         <!-- RESULTADOS -->
-        <section class="card resultados" id="resultadosSection">
+        <section class="card resultados" id="resultadosSection" aria-live="polite">
             <div class="resultados-header-com-ajuda">
                 <h2 data-i18n="resultado.titulo">Resultados</h2>
                 <button id="btnMemorial" class="btn-help" data-i18n-title="botoes.saibaMais">
@@ -427,7 +442,7 @@
 
             <!-- Área mínima de janelas -->
             <div class="resultado-item">
-                <span class="label-resultado" data-i18n="resultado.areaMinima">Área Mínima de Janelas (NBR 15575)</span>
+                <span class="label-resultado" data-i18n="resultado.areaMinima">Área Mínima de Janelas (referência: 1/8 do piso)</span>
                 <span class="valor-resultado" id="resultadoAreaMinima">—</span>
             </div>
 
@@ -436,6 +451,8 @@
                 <span class="label-resultado" data-i18n="resultado.statusJanelas">Janelas Atuais vs. Mínimo</span>
                 <span class="valor-resultado" id="resultadoStatusJanelas">—</span>
             </div>
+
+            <p class="nota-educacional" data-i18n="resultado.avisoEducacional">Estimativa educacional — modelo simplificado de efeito vento (sem efeito chaminé), com janelas totalmente abertas e vento constante. O ACH avalia a vazão estimada; a área mínima é exigência construtiva independente. Não substitui projeto de ventilação.</p>
 
         </section>
 
