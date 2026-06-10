@@ -11,7 +11,21 @@
 
   let ultimoFoco = null;
 
+  // Navegadores móveis não renderizam PDF utilizável dentro de <iframe> (iOS mostra
+  // só a 1ª página congelada, sem scroll/zoom; Android idem ou pior). Nesses casos
+  // o 📖 abre o PDF direto no visualizador nativo (nova aba), que rola e dá zoom.
+  // iPadOS 13+ se identifica como Mac, mas tem multi-touch (maxTouchPoints > 1).
+  const PDF_EM_IFRAME_OK = !(
+    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+    (navigator.maxTouchPoints > 1 && /Mac/i.test(navigator.userAgent))
+  );
+
   function abrir() {
+    if (!PDF_EM_IFRAME_OK) {
+      const url = (frame.dataset.src || frame.getAttribute('src') || '').split('#')[0];
+      if (url) window.open(url, '_blank', 'noopener');
+      return;
+    }
     if (document.body.classList.contains('guide-open')) return;
     // Carrega o PDF só agora, evitando baixar o arquivo grande sem necessidade.
     if (!frame.getAttribute('src') && frame.dataset.src) {
