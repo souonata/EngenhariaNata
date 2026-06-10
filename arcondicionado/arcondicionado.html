@@ -257,7 +257,7 @@
             <div class="grupo-entrada">
                 <label data-i18n="label-classe-energetica">Classe Energética</label>
                 <div class="classe-energetica-container">
-                    <div class="classe-energetica-scale">
+                    <div class="classe-energetica-scale" role="radiogroup" data-i18n-aria="label-classe-energetica">
                         <div class="classe-box" data-classe="A4" data-valor="0.40" title="≤0,40 kWh/m².ano">
                             <div class="classe-label">A4</div>
                             <div class="classe-valor">≤0,40</div>
@@ -352,9 +352,9 @@
                 <h3 data-i18n="memorial-passo3-title">3️⃣ Passo 3: Aplicar Fatores de Ajuste (Insolação e Isolamento)</h3>
                 <p><strong data-i18n="memorial-formula">Fórmula:</strong></p>
                 <div class="formula-box">
-                    <p><strong data-i18n="memorial-formula-btu-final">BTU Final Total = BTU Base Total × Fator Insolação × Fator Isolamento</strong></p>
+                    <p><strong data-i18n="memorial-formula-btu-final">BTU Final Total = BTU Base Total × Fator Insolação × Fator Isolamento × Fator Classe Energética</strong></p>
                 </div>
-                <p data-i18n="memorial-passo3-explicacao">Os fatores de insolação e isolamento ajustam a capacidade necessária baseado nas condições dos ambientes. Estes são fatores multiplicadores que refletem o impacto real das condições ambientais na carga térmica.</p>
+                <p data-i18n="memorial-passo3-explicacao">Os fatores de insolação, isolamento e classe energética ajustam a capacidade necessária baseado nas condições dos ambientes. Estes são fatores multiplicadores que refletem o impacto real das condições ambientais na carga térmica.</p>
                 <p><strong data-i18n="memorial-example">Exemplo:</strong> <span id="memorial-exemplo-fatores">121.500 BTU × 1.15 (insolação média) × 1.0 (isolamento médio) = 139.725 BTU</span></p>
                 <div class="info-box">
                     <p><strong data-i18n="memorial-fatores-title">Valores de referência utilizados:</strong></p>
@@ -435,7 +435,7 @@
                     <span id="resumo-btu-base">-</span>
                 </div>
                 <div class="resumo-item-calc">
-                    <span data-i18n="memorial-resumo-btu-final-calc">BTU Final Total (após fatores):</span>
+                    <span data-i18n="memorial-resumo-btu-final-calc">BTU Final Total (após fatores e classe energética):</span>
                     <span id="resumo-btu-final-calc">-</span>
                 </div>
                 <div class="resumo-item-calc">
