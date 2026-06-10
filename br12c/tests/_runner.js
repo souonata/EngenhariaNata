@@ -9,7 +9,8 @@ export function rodarSecao(titulo, exemplos) {
     for (const ex of exemplos) {
       it(ex.nome, async () => {
         const calc = await criarCalculadora();
-        if (ex.modo === "alg") calc.pressGuia(["f", "ALG"]);
+        // Modo explícito SEMPRE (independência: nenhum teste herda o modo anterior).
+        calc.pressGuia(["f", ex.modo === "alg" ? "ALG" : "RPN"]);
         if (ex.preparar) ex.preparar(calc);
         for (const linha of ex.linhas) {
           calc.pressGuia(linha.keys);

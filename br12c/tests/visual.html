@@ -172,18 +172,27 @@
       import { erros } from "./fixtures/erros.js";
       import { solucoes } from "./fixtures/solucoes.js";
       import { programa } from "./fixtures/programa.js";
+      import { secao7, apendiceA, apendiceB, apendiceC } from "./fixtures/extras.js";
 
+      // Índice em inglês, seguindo o índice do User Guide (HP 12C Platinum):
+      // Part I (Sections 1–7) · Part II (Sections 8–11) · Part III (Sections 12–16)
+      // · Appendices A–E. (F: Battery/Service e G: regulatório não têm keystrokes
+      // testáveis no guia.)
       const grupos = [
-        ["Seção 1 — Getting Started", secao1],
-        ["Seção 2 — Percentual", secao2Percentual],
-        ["Seção 2 — Calendário", secao2Calendario],
-        ["Seção 3 — Financeiras", secao3],
-        ["Seção 4 — NPV/IRR", secao4],
-        ["Seção 5 — Operating Features", secao5],
-        ["Seção 6 — Estatística", secao6],
-        ["Apêndice D — Erros", erros],
-        ["Parte III — Soluções aplicadas", solucoes],
-        ["Parte II — Programação", programa],
+        ["Part I · Section 1: Getting Started", secao1],
+        ["Part I · Section 2: Percentage Functions", secao2Percentual],
+        ["Part I · Section 2: Calendar Functions", secao2Calendario],
+        ["Part I · Section 3: Basic Financial Functions", secao3],
+        ["Part I · Section 4: Additional Financial Functions", secao4],
+        ["Part I · Section 5: Additional Operating Features", secao5],
+        ["Part I · Section 6: Statistics Functions", secao6],
+        ["Part I · Section 7: Mathematics Functions", secao7],
+        ["Part II · Sections 8–11: Programming", programa],
+        ["Part III · Sections 12–16: Solutions", solucoes],
+        ["Appendix A: RPN and the Stack", apendiceA],
+        ["Appendix B: Algebraic Mode (ALG)", apendiceB],
+        ["Appendix C: More About IRR", apendiceC],
+        ["Appendix D: Error Conditions", erros],
       ];
       const exemplos = [];
       for (const [grupo, arr] of grupos) for (const ex of arr) exemplos.push({ ...ex, grupo });
@@ -212,6 +221,13 @@
       const teclaEl = document.getElementById("tecla");
 
       async function resetCalc() {
+        // Independência: limpa a Continuous Memory persistida (mesma origem) para
+        // o iframe nascer no estado de fábrica (RPN, FIX 2, registradores zerados).
+        try {
+          localStorage.removeItem("br12c.continuousMemory");
+        } catch (e) {
+          /* indisponível: segue */
+        }
         await new Promise((res) => {
           frame.onload = () => res();
           frame.src = "../index.html?t=" + Date.now();
@@ -261,7 +277,8 @@
         await resetCalc();
         if (parar) return false;
         const KEYS = win().__BR12C_KEYS__;
-        if (ex.modo === "alg") await pressActions(traduzir(["f", "ALG"], KEYS));
+        // Modo explícito SEMPRE (f RPN / f ALG) — nenhum teste herda o modo anterior.
+        await pressActions(traduzir(["f", ex.modo === "alg" ? "ALG" : "RPN"], KEYS));
         let ok = 0;
         for (const linha of ex.linhas) {
           if (parar) break;
