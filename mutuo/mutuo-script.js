@@ -194,14 +194,6 @@ class MutuoApp extends App {
             btnFecharTabela.addEventListener('click', () => this.toggleTabela());
         }
 
-        // Exemplos
-        document.querySelectorAll('[data-exemplo]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const exemplo = e.currentTarget.dataset.exemplo;
-                this.aplicarExemplo(exemplo);
-            });
-        });
-
         // Botão SAIBA MAIS
         const btnExemplos = document.getElementById('btnExemplos');
         if (btnExemplos) {
@@ -540,8 +532,9 @@ class MutuoApp extends App {
                 if (!isNaN(numeroInteiro)) {
                     this.valoresEntradaOverride.valor = numeroInteiro;
                     slider.value = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), numeroInteiro));
-                    this.calcular();
                 }
+                // Entrada inválida: recalcula para restaurar o display anterior.
+                this.calcular();
                 return;
             }
 
@@ -552,8 +545,8 @@ class MutuoApp extends App {
                 if (!isNaN(numeroInteiro)) {
                     this.valoresEntradaOverride.extra = numeroInteiro;
                     slider.value = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), numeroInteiro));
-                    this.calcular();
                 }
+                this.calcular();
                 return;
             }
 
@@ -567,8 +560,8 @@ class MutuoApp extends App {
                     this.valoresEntradaOverride.prazo = numero;
                 }
                 slider.value = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), numero));
-                this.calcular();
             }
+            this.calcular();
         };
 
         const camposCiclicos = [
@@ -768,7 +761,13 @@ class MutuoApp extends App {
     converterTaxa() {
         const sliderTaxa = document.getElementById('sliderTaxa');
         const inputTaxa = document.getElementById('inputTaxa');
-        const taxaAtual = parseFloat(sliderTaxa?.value || 10);
+        // A taxa efetiva pode vir de digitação livre (override), inclusive além
+        // do range do slider — ela também precisa ser convertida ao trocar a
+        // periodicidade, senão o mesmo número seria reinterpretado no novo
+        // período (ex.: 12% a.a. virar 12% a.m.).
+        const overrideTaxa = this.valoresEntradaOverride.taxa;
+        const temOverrideTaxa = overrideTaxa != null && !Number.isNaN(overrideTaxa);
+        const taxaAtual = temOverrideTaxa ? Number(overrideTaxa) : parseFloat(sliderTaxa?.value || 10);
         const periodoNovo = document.querySelector('input[name="periodoRapido"]:checked')?.value || 'ano';
 
         const obterPassoTaxa = (periodo) => {
@@ -838,13 +837,18 @@ class MutuoApp extends App {
                 sliderTaxa.step = obterPassoTaxa(periodoNovo);
             }
 
-            // Garantir que a taxa convertida não exceda o máximo
-            taxaConvertida = Math.min(taxaConvertida, parseFloat(sliderTaxa.max));
-
-            // Atualizar slider e input
-            sliderTaxa.value = taxaConvertida;
+            // O slider respeita o próprio máximo; o override preserva o valor
+            // convertido integral (digitação livre pode exceder o slider).
+            const taxaConvertidaSlider = Math.min(taxaConvertida, parseFloat(sliderTaxa.max));
+            sliderTaxa.value = taxaConvertidaSlider;
+            if (temOverrideTaxa) {
+                this.valoresEntradaOverride.taxa = Number(taxaConvertida.toFixed(6));
+            }
             if (inputTaxa) {
-                inputTaxa.value = formatarNumero(taxaConvertida, casasDecimais);
+                inputTaxa.value = formatarNumero(
+                    temOverrideTaxa ? taxaConvertida : taxaConvertidaSlider,
+                    casasDecimais
+                );
             }
 
             // Atualizar periodicidade anterior
@@ -1002,8 +1006,8 @@ class MutuoApp extends App {
         const anos = Math.floor(mesesQuitacao / 12);
         const meses = mesesQuitacao % 12;
         const sistemaLabel = {
-            sac: pt ? 'SAC' : 'SAC',
-            price: pt ? 'Price (Frances)' : 'Price (Francese)',
+            sac: pt ? 'SAC' : 'SAC (Italiano)',
+            price: pt ? 'Price (Francês)' : 'Price (Francese)',
             americano: pt ? 'Americano' : 'Americano'
         }[dados.sistema] || dados.sistema;
 
@@ -1013,36 +1017,36 @@ class MutuoApp extends App {
         const primeiraParcela = this.tabelaAmortizacao[0]?.parcela || 0;
         const ultimaParcela = this.tabelaAmortizacao[this.tabelaAmortizacao.length - 1]?.parcela || 0;
         const tempoStr = anos > 0
-            ? (pt ? `${anos} ano(s) e ${meses} mes(es)` : `${anos} anno/i e ${meses} mese/i`)
+            ? (pt ? `${anos} ano(s) e ${meses} mês(es)` : `${anos} anno/i e ${meses} mese/i`)
             : (pt ? `${meses} meses` : `${meses} mesi`);
 
         this.explicacao.renderizar({
             destaque: pt
-                ? `Para ${valorStr} emprestado no sistema ${sistemaLabel}, voce pagara ${jurosTotaisStr} de juros (${formatarNumero(percJuros, 1)}% a mais).`
-                : `Per ${valorStr} preso in prestito con il sistema ${sistemaLabel}, pagherai ${jurosTotaisStr} di interessi (${formatarNumero(percJuros, 1)}% in piu).`,
+                ? `Para ${valorStr} emprestado no sistema ${sistemaLabel}, você pagará ${jurosTotaisStr} de juros (${formatarNumero(percJuros, 1)}% a mais).`
+                : `Per ${valorStr} preso in prestito con il sistema ${sistemaLabel}, pagherai ${jurosTotaisStr} di interessi (${formatarNumero(percJuros, 1)}% in più).`,
             linhas: [
                 {
                     icone: '💸',
                     titulo: pt ? 'Total em Juros' : 'Totale Interessi',
                     valor: `${jurosTotaisStr} (${formatarNumero(percJuros, 1)}%)`,
                     descricao: pt
-                        ? `Quanto a mais voce paga alem dos ${valorStr} emprestados.`
-                        : `Quanto paghi in piu rispetto ai ${valorStr} presi in prestito.`
+                        ? `Quanto a mais você paga além dos ${valorStr} emprestados.`
+                        : `Quanto paghi in più rispetto ai ${valorStr} presi in prestito.`
                 },
                 {
                     icone: '📅',
-                    titulo: pt ? 'Prazo de Quitacao' : 'Durata del Prestito',
+                    titulo: pt ? 'Prazo de Quitação' : 'Durata del Prestito',
                     valor: tempoStr,
                     descricao: pt ? `${mesesQuitacao} parcelas mensais.` : `${mesesQuitacao} rate mensili.`
                 },
                 {
                     icone: '💳',
-                    titulo: pt ? '1a Parcela' : '1a Rata',
+                    titulo: pt ? '1ª Parcela' : '1ª Rata',
                     valor: this.formatarMoedaLocal(primeiraParcela),
                     descricao: pt
                         ? (dados.sistema === 'sac'
-                            ? `No SAC a parcela cai com o tempo. Ultima: ${this.formatarMoedaLocal(ultimaParcela)}.`
-                            : 'No Price as parcelas sao fixas.')
+                            ? `No SAC a parcela cai com o tempo. Última: ${this.formatarMoedaLocal(ultimaParcela)}.`
+                            : 'No Price as parcelas são fixas.')
                         : (dados.sistema === 'sac'
                             ? `Nel SAC la rata diminuisce nel tempo. Ultima: ${this.formatarMoedaLocal(ultimaParcela)}.`
                             : 'Nel Price le rate sono fisse.')
@@ -1057,7 +1061,7 @@ class MutuoApp extends App {
                 }
             ],
             dica: pt
-                ? 'Pagamentos extras reduzem juros totais e o tempo de quitacao.'
+                ? 'Pagamentos extras reduzem juros totais e o tempo de quitação.'
                 : 'Pagamenti extra riducono interessi totali e tempo di estinzione.'
         });
     }
@@ -1748,7 +1752,7 @@ class MutuoApp extends App {
         htmlConteudo += `
             <div class="memorial-item">
                 <h3>${this.traducoes['memorial-passo3-title'] || '3️⃣ Passo 3: Calcular Tabela de Amortização'}</h3>
-                <div class="memorial-system-switcher" role="tablist" aria-label="Sistema para formulas">
+                <div class="memorial-system-switcher" role="tablist" aria-label="${i18n.obterIdiomaAtual() === 'it-IT' ? 'Sistema per le formule' : 'Sistema para fórmulas'}">
                     <button type="button" class="js-system-tab" data-system="sac" aria-selected="false">
                         <span>${this.traducoes['system-sac-short'] || 'SAC'}</span>
                     </button>
@@ -1767,38 +1771,6 @@ class MutuoApp extends App {
 
         conteudoDinamico.innerHTML = htmlConteudo;
         this.selecionarSistemaMemorial(this.memorialSistemaSelecionado || sistema || 'price');
-    }
-    aplicarExemplo(tipo) {
-        const exemplos = {
-            'casa-popular': { valor: 150000, taxa: 9, prazo: 20, periodicidade: 'anual', sistema: 'sac' },
-            'apartamento': { valor: 300000, taxa: 10, prazo: 30, periodicidade: 'anual', sistema: 'sac' },
-            'carro-novo': { valor: 60000, taxa: 18, prazo: 5, periodicidade: 'anual', sistema: 'price' },
-            'carro-usado': { valor: 30000, taxa: 24, prazo: 4, periodicidade: 'anual', sistema: 'price' },
-            'moto': { valor: 15000, taxa: 20, prazo: 3, periodicidade: 'anual', sistema: 'price' },
-            'pessoal': { valor: 5000, taxa: 3, prazo: 2, periodicidade: 'mensal', sistema: 'price' }
-        };
-
-        const exemplo = exemplos[tipo];
-        if (!exemplo) return;
-
-        // Aplicar valores
-        const sliderValor = document.getElementById('sliderValor');
-        const sliderTaxa = document.getElementById('sliderTaxa');
-        const sliderPrazo = document.getElementById('sliderPrazo');
-
-        if (sliderValor) sliderValor.value = exemplo.valor;
-        if (sliderTaxa) sliderTaxa.value = exemplo.taxa;
-        if (sliderPrazo) sliderPrazo.value = exemplo.prazo;
-
-        // Selecionar periodicidade
-        const radioPeriodicidade = document.querySelector(`input[name="periodicidade"][value="${exemplo.periodicidade}"]`);
-        if (radioPeriodicidade) radioPeriodicidade.checked = true;
-
-        // Selecionar sistema
-        const radioSistema = document.querySelector(`input[name="sistema"][value="${exemplo.sistema}"]`);
-        if (radioSistema) radioSistema.checked = true;
-
-        this.calcular();
     }
 }
 
