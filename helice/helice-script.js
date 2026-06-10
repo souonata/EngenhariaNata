@@ -18,8 +18,9 @@ import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
 // CONSTANTES
 // ============================================
 
-// Constante de conversão de nós para polegadas/minuto (padrão da indústria náutica)
-const CONSTANTE_CONVERSAO = 1056;
+// 1 no = 1 milha nautica/h = 6076,12 pes/h = 1215,22 polegadas/min.
+// A constante 1056 vale para mph; este app converte a velocidade para nos.
+const CONSTANTE_CONVERSAO = 1215.2;
 
 // Fatores de conversão de velocidade
 const CONVERSAO_VELOCIDADE = {
@@ -240,6 +241,18 @@ class HeliceApp extends App {
 
                 const stepStr = btn.getAttribute('data-step');
                 direcao = parseFloat(stepStr) > 0 ? 1 : -1;
+                const step = Math.abs(parseFloat(stepStr) || parseFloat(slider.step) || 1);
+                const min = parseFloat(slider.min);
+                const max = parseFloat(slider.max);
+                const valorAtual = parseFloat(slider.value);
+                const valorComPasso = Math.max(min, Math.min(max, valorAtual + (step * direcao)));
+
+                slider.value = valorComPasso;
+                slider.dispatchEvent(new Event('input', { bubbles: true }));
+
+                if ((direcao > 0 && valorComPasso >= max) || (direcao < 0 && valorComPasso <= min)) {
+                    return;
+                }
 
                 btn.dataset.valorInicial = slider.value;
 
@@ -613,10 +626,10 @@ class HeliceApp extends App {
             exRpm.textContent = `${this.traducoes.exemplo.motor} ${formatarNumero(rpmMotor, 0)} RPM, ${this.traducoes.exemplo.reducao} ${formatarNumero(reducao, 2)}:1 → ${formatarNumero(rpmMotor, 0)} ÷ ${formatarNumero(reducao, 2)} = ${formatarNumero(resultado.rpmHelice, 0)} RPM na hélice`;
         }
         if (exPasso) {
-            exPasso.textContent = `${formatarNumero(velocidadeKnots, 0)} ${this.traducoes.unidades.nos}, ${this.traducoes.exemplo.reducao} ${formatarNumero(reducao, 2)}:1, ${formatarNumero(rpmMotor, 0)} RPM, ${this.traducoes.exemplo.slip} ${formatarNumero(slipPercent, 0)}% → (${formatarNumero(velocidadeKnots, 0)} × 1056 × ${formatarNumero(reducao, 2)}) ÷ (${formatarNumero(rpmMotor, 0)} × ${formatarNumero(1 - slipPercent/100, 2)}) = ${formatarNumero(resultado.passo, 1)} ${this.traducoes.unidades.polegadas}`;
+            exPasso.textContent = `${formatarNumero(velocidadeKnots, 0)} ${this.traducoes.unidades.nos}, ${this.traducoes.exemplo.reducao} ${formatarNumero(reducao, 2)}:1, ${formatarNumero(rpmMotor, 0)} RPM, ${this.traducoes.exemplo.slip} ${formatarNumero(slipPercent, 0)}% → (${formatarNumero(velocidadeKnots, 0)} × ${formatarNumero(CONSTANTE_CONVERSAO, 1)} × ${formatarNumero(reducao, 2)}) ÷ (${formatarNumero(rpmMotor, 0)} × ${formatarNumero(1 - slipPercent/100, 2)}) = ${formatarNumero(resultado.passo, 1)} ${this.traducoes.unidades.polegadas}`;
         }
         if (exVelocidade) {
-            exVelocidade.textContent = `${this.traducoes.exemplo.passo} ${formatarNumero(resultado.passo, 1)}", ${formatarNumero(rpmMotor, 0)} RPM, ${this.traducoes.exemplo.reducao} ${formatarNumero(reducao, 2)}:1 → (${formatarNumero(resultado.passo, 1)} × ${formatarNumero(rpmMotor, 0)}) ÷ (1056 × ${formatarNumero(reducao, 2)}) = ${formatarNumero(resultado.velocidadeTeorica, 1)} ${this.traducoes.unidades.nos}`;
+            exVelocidade.textContent = `${this.traducoes.exemplo.passo} ${formatarNumero(resultado.passo, 1)}", ${formatarNumero(rpmMotor, 0)} RPM, ${this.traducoes.exemplo.reducao} ${formatarNumero(reducao, 2)}:1 → (${formatarNumero(resultado.passo, 1)} × ${formatarNumero(rpmMotor, 0)}) ÷ (${formatarNumero(CONSTANTE_CONVERSAO, 1)} × ${formatarNumero(reducao, 2)}) = ${formatarNumero(resultado.velocidadeTeorica, 1)} ${this.traducoes.unidades.nos}`;
         }
 
         // Atualizar resumo
@@ -700,8 +713,8 @@ class HeliceApp extends App {
                 ? 'Hélices de 3 pás são padrão para uso recreativo. 4 pás oferecem mais torque e menor vibração a altas velocidades.'
                 : 'Eliche a 3 pale sono standard per uso ricreativo. 4 pale offrono più coppia e meno vibrazioni ad alta velocità.',
             norma: pt
-                ? 'Fórmula ABYC — Constante 1056 (conversão pés × nós × RPM)'
-                : 'Formula ABYC — Costante 1056 (conversione piedi × nodi × RPM)'
+                ? 'Formula nautica com constante 1215,2 para velocidade em nós'
+                : 'Formula nautica con costante 1215,2 per velocità in nodi'
         });
     }
 
