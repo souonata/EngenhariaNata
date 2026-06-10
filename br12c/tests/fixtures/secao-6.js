@@ -2,7 +2,7 @@
 
 export const secao6 = [
   {
-    nome: "p95-96 — Média e desvio-padrão (7 vendedores)",
+    nome: "p95-96 — Mean and standard deviation (7 salespersons)",
     modo: "rpn",
     linhas: [
       { keys: ["f", "Σ"], display: "0.00" },
@@ -20,7 +20,7 @@ export const secao6 = [
     ],
   },
   {
-    nome: "p99 — Média ponderada (gasolina) = 1.19",
+    nome: "p99 — Weighted mean (gasoline) = 1.19",
     modo: "rpn",
     linhas: [
       { keys: ["f", "Σ"], display: "0.00" },
@@ -32,7 +32,7 @@ export const secao6 = [
     ],
   },
   {
-    nome: "p97-98 — Regressão linear: x̂, correlação r e intercepto",
+    nome: "p97-98 — Linear estimation: x̂, correlation r and intercept",
     modo: "rpn",
     linhas: [
       { keys: ["f", "Σ"], display: "0.00" },

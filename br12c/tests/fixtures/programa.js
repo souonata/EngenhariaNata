@@ -3,7 +3,7 @@
 
 export const programa = [
   {
-    nome: "p108/117 — Programa desconto+frete: grava (001-007) e roda 625 → 473.75",
+    nome: "p108/117 — Discount+handling program: keyed in (001-007), run 625 → 473.75",
     modo: "rpn",
     linhas: [
       { keys: ["f", "P/R"], display: "000," },
@@ -20,7 +20,7 @@ export const programa = [
     ],
   },
   {
-    nome: "p112 — SST avança e g BST retrocede em modo Programa",
+    nome: "p112 — SST steps forward, g BST steps back in Program mode",
     modo: "rpn",
     linhas: [
       { keys: ["f", "P/R"], display: "000," },
@@ -33,7 +33,7 @@ export const programa = [
     ],
   },
   {
-    nome: "p116 — g GTO . 000 posiciona na linha 000",
+    nome: "p116 — g GTO . 000 sets the pointer to line 000",
     modo: "rpn",
     linhas: [
       { keys: ["f", "P/R"], display: "000," },
@@ -42,7 +42,7 @@ export const programa = [
     ],
   },
   {
-    nome: "p119-123 — Programa de fatura (PSE + acumuladores): item 13×68.50",
+    nome: "p119-123 — Invoice program (PSE + accumulators): item 13×68.50",
     modo: "rpn",
     linhas: [
       { keys: ["6.75", "STO", "0"], display: "6.75" },
@@ -65,7 +65,7 @@ export const programa = [
     ],
   },
   {
-    nome: "p133-137 — Imposto 20%/25% (Seção 9: x≤y + GTO): grava, inicializa, roda 3 casos",
+    nome: "p133-137 — 20%/25% income tax (Section 9: x≤y + GTO): key in, init, run 3 cases",
     modo: "rpn",
     linhas: [
       { keys: ["f", "P/R"], display: "000," },
@@ -88,7 +88,7 @@ export const programa = [
     ],
   },
   {
-    nome: "p141-144 — Seção 10: editar linha 003 por substituição (25%→20%); roda 625→505",
+    nome: "p141-144 — Section 10: edit line 003 by replacement (25%→20%); run 625→505",
     modo: "rpn",
     linhas: [
       { keys: ["f", "P/R"], display: "000," },
@@ -109,7 +109,7 @@ export const programa = [
     ],
   },
   {
-    nome: "p151-155 — Seção 11: dois programas (× e +) separados por GTO 000; roda o 2º via g GTO 003",
+    nome: "p151-155 — Section 11: two programs (× and +) split by GTO 000; run the 2nd via g GTO 003",
     modo: "rpn",
     linhas: [
       { keys: ["f", "P/R"], display: "000," },

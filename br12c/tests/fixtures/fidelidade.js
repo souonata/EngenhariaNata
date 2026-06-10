@@ -5,7 +5,7 @@ export const fidelidade = [
   {
     // #1 (Alto): o n CALCULADO é arredondado ao próximo inteiro (quirk do 12C).
     // 1.5% / PV 0 / PMT -25 / FV 365 -> n bruto ≈ 13,30 -> HP mostra 14.
-    nome: "#1 — n calculado arredonda para inteiro (≈13,30 → 14)",
+    nome: "#1 — computed n rounds up to integer (≈13.30 → 14)",
     modo: "rpn",
     linhas: [
       { keys: ["f", "REG"], display: "0.00" },
@@ -19,7 +19,7 @@ export const fidelidade = [
   {
     // #5 (RPN): RND habilita o stack lift; o próximo número levanta a pilha.
     // 1,236 -> RND(FIX 2)=1,24; 8 levanta; 1,24 + 8 = 9,24.
-    nome: "#5 — f RND reabilita o stack lift (1.236 RND 8 + = 9.24)",
+    nome: "#5 — f RND re-enables stack lift (1.236 RND 8 + = 9.24)",
     modo: "rpn",
     linhas: [
       { keys: ["f", "REG"], display: "0.00" },
@@ -29,7 +29,7 @@ export const fidelidade = [
   },
   {
     // #6: STO ÷ 0 deve sinalizar Error (não deixar o registrador mudo).
-    nome: "#6 — STO ÷ 0 gera Error 0",
+    nome: "#6 — STO ÷ 0 raises Error 0",
     modo: "rpn",
     linhas: [
       { keys: ["100", "STO", "5"], display: "100.00" },
@@ -38,7 +38,7 @@ export const fidelidade = [
   },
   {
     // #3: estatística sem dados -> Error 2 (código de erro da 12C).
-    nome: "#3 — média sem dados gera Error 2",
+    nome: "#3 — mean with no data raises Error 2",
     modo: "rpn",
     linhas: [
       { keys: ["f", "Σ"], display: "0.00" },
@@ -48,7 +48,7 @@ export const fidelidade = [
   {
     // #4: SST em Run mode executa uma instrução por vez (single-step). Grava o
     // programa "preço −25% +5" e percorre com SST (entrada 625), linha a linha.
-    nome: "#4 — SST single-step em Run mode (625 → 473.75)",
+    nome: "#4 — SST single-steps in Run mode (625 → 473.75)",
     modo: "rpn",
     linhas: [
       { keys: ["f", "P/R"], display: "000," },
@@ -74,7 +74,7 @@ export const fidelidade = [
   {
     // R/S resume: o programa pára num R/S e retoma da linha seguinte ao R/S seguinte.
     // Programa: ×5 ; R/S ; +2. Entrada 3 -> 15 (pára) -> R/S -> 17.
-    nome: "R/S resume — programa pausa em R/S e retoma (3 → 15 → 17)",
+    nome: "R/S resume — program halts at R/S and resumes (3 → 15 → 17)",
     modo: "rpn",
     linhas: [
       { keys: ["f", "P/R"], display: "000," },
@@ -92,7 +92,7 @@ export const fidelidade = [
   {
     // BCD 10 dígitos: √2 = 1,414213562 (10 sig); x² = 1,999999999 (NÃO 2), como na
     // 12C real, porque cada resultado é arredondado a 10 algarismos significativos.
-    nome: "BCD 10 dígitos — √2 então x² = 1,999999999 (não 2,000000000)",
+    nome: "10-digit BCD — √2 then x² = 1.999999999 (not 2.000000000)",
     modo: "rpn",
     linhas: [
       { keys: ["f", "9"], display: "0.000000000" },

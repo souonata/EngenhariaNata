@@ -33,6 +33,12 @@ function parseSci(s) {
 export function conferir(atual, esperado) {
   const esp = String(esperado).trim();
 
+  // Prefixo "=": comparação textual EXATA (ex.: validar o formato do separador
+  // decimal após ON+. — "1,234.56" exato, não o valor numérico).
+  if (esp.startsWith("=")) {
+    return { ok: String(atual).trim() === esp.slice(1), atual, esperado: esp.slice(1) };
+  }
+
   // Resultado de g DATE: "DD,MM,YYYY W" (ou MM,DD,YYYY W) — comparação textual exata.
   if (/^\d{1,2},\d{2},\d{4}\s\d$/.test(esp)) {
     return { ok: String(atual).trim() === esp, atual, esperado };

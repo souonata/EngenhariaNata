@@ -4,7 +4,7 @@
 
 export const secao3 = [
   {
-    nome: "p12-14 — Juros compostos (Ex.1-3): PV / FV / PMT, BEG e END",
+    nome: "p12-14 — Compound interest (Ex.1-3): PV / FV / PMT, BEG and END",
     modo: "rpn",
     linhas: [
       // Exemplo 1: depósito necessário (PV), modo BEGIN.
@@ -31,7 +31,7 @@ export const secao3 = [
     ],
   },
   {
-    nome: "p69-70 — Amortização (25 anos, $250k a 5.25%): 1º e 2º anos",
+    nome: "p69-70 — Amortization (25 years, $250k at 5.25%): 1st and 2nd years",
     modo: "rpn",
     linhas: [
       { keys: ["f", "FIN"], display: "0.00" },
@@ -50,7 +50,7 @@ export const secao3 = [
     ],
   },
   {
-    nome: "p43 — Juros simples (360 dias): $450 a 7%, 60 dias = 5.25",
+    nome: "p43 — Simple interest (360-day basis): $450 at 7%, 60 days = 5.25",
     modo: "rpn",
     linhas: [
       { keys: ["60", "n"], display: "60.00" },
@@ -61,7 +61,7 @@ export const secao3 = [
     ],
   },
   {
-    nome: "p43 — Juros simples (365 dias) = 5.18",
+    nome: "p43 — Simple interest (365-day basis) = 5.18",
     modo: "rpn",
     linhas: [
       { keys: ["60", "n"], display: "60.00" },
@@ -72,7 +72,7 @@ export const secao3 = [
     ],
   },
   {
-    nome: "p65-66 — Odd-period juros COMPOSTOS (C on): $4500/36m/5% → PMT -135.17",
+    nome: "p65-66 — Odd-period COMPOUND interest (C on): $4500/36mo/5% → PMT -135.17",
     modo: "rpn",
     linhas: [
       { keys: ["f", "FIN"], display: "0.00" },
@@ -91,7 +91,7 @@ export const secao3 = [
     ],
   },
   {
-    nome: "p67-68 — Odd-period juros SIMPLES (C off): $3950/42m → i 1.16 / APR 13.95",
+    nome: "p67-68 — Odd-period SIMPLE interest (C off): $3950/42mo → i 1.16 / APR 13.95",
     modo: "rpn",
     linhas: [
       { keys: ["f", "FIN"], display: "0.00" },

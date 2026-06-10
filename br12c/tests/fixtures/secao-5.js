@@ -11,7 +11,7 @@ export const secao5 = [
     ],
   },
   {
-    nome: "p91 — Aritmética com constante via LST x (×4.38)",
+    nome: "p91 — Constant arithmetic via LST x (×4.38)",
     modo: "rpn",
     linhas: [
       { keys: ["15", "ENTER", "4.38", "×"], display: "65.70" },
@@ -22,7 +22,7 @@ export const secao5 = [
     ],
   },
   {
-    nome: "p91-92 — Recuperar de erro de digitação via LST x",
+    nome: "p91-92 — Recovering from a digit-entry error via LST x",
     modo: "rpn",
     linhas: [
       { keys: ["429000", "ENTER", "9987", "÷"], display: "42.96" },
@@ -31,7 +31,7 @@ export const secao5 = [
     ],
   },
   {
-    nome: "p87-89 — Formatos de display: FIX, científico (f .) e mantissa (f CLEAR PREFIX)",
+    nome: "p87-89 — Display formats: FIX, scientific (f .) and mantissa (f CLEAR PREFIX)",
     modo: "rpn",
     linhas: [
       { keys: ["19.8745632", "ENTER", "5", "-"], display: "14.87" },

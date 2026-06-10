@@ -3,7 +3,7 @@
 
 export const solucoes = [
   {
-    nome: "p159 — APR com pontos (hipoteca $160k/30a/5.5% + 2 pts) = 5.68%",
+    nome: "p159 — APR with points ($160k/30yr/5.5% mortgage + 2 pts) = 5.68%",
     modo: "rpn",
     linhas: [
       { keys: ["f", "FIN"], display: "0.00" },
@@ -18,7 +18,7 @@ export const solucoes = [
     ],
   },
   {
-    nome: "p162 — Preço de hipoteca p/ render 12% (saldo $249.350, 6.5%, 26a) = -158.361,78",
+    nome: "p162 — Mortgage price for a 12% yield ($249,350 balance, 6.5%, 26yr) = -158,361.78",
     modo: "rpn",
     linhas: [
       { keys: ["g", "END"], display: "0.00" },
@@ -32,7 +32,7 @@ export const solucoes = [
     ],
   },
   {
-    nome: "p172-173 — Lease step-up via NPV (500/600/750, 13.5%/a) = 12.831,75",
+    nome: "p172-173 — Step-up lease via NPV (500/600/750, 13.5%/yr) = 12,831.75",
     modo: "rpn",
     linhas: [
       { keys: ["f", "REG"], display: "0.00" },
@@ -48,7 +48,7 @@ export const solucoes = [
     ],
   },
   {
-    nome: "p220 — Taxa contínua -> efetiva (5.25% cap. contínua) = 5.39%",
+    nome: "p220 — Continuous → effective rate (5.25% continuous compounding) = 5.39%",
     modo: "rpn",
     linhas: [
       { keys: ["1", "ENTER", "5.25", "%"], display: "0.05" },

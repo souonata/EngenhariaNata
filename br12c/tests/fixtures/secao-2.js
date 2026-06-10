@@ -2,7 +2,7 @@
 
 export const secao2Percentual = [
   {
-    nome: "p31 — % (RPN): 14% de 300 = 42",
+    nome: "p31 — % (RPN): 14% of 300 = 42",
     modo: "rpn",
     linhas: [
       { keys: ["300", "ENTER"], display: "300.00" },
@@ -10,7 +10,7 @@ export const secao2Percentual = [
     ],
   },
   {
-    nome: "p32 — % (ALG): 14% de 300 = 42",
+    nome: "p32 — % (ALG): 14% of 300 = 42",
     modo: "alg",
     linhas: [
       { keys: ["300", "×"], display: "300.00" },
@@ -19,7 +19,7 @@ export const secao2Percentual = [
     ],
   },
   {
-    nome: "p32 — % (ALG) após ×: 25% de 200 = 50",
+    nome: "p32 — % (ALG) after ×: 25% of 200 = 50",
     modo: "alg",
     linhas: [{ keys: ["200", "×", "25", "%", "="], display: "50.00" }],
   },
@@ -35,7 +35,7 @@ export const secao2Percentual = [
     ],
   },
   {
-    nome: "p33 — Juros simples via % (ALG): 1250 +7% = 1,337.50",
+    nome: "p33 — Simple interest via % (ALG): 1250 +7% = 1,337.50",
     modo: "alg",
     linhas: [
       { keys: ["1250", "+", "7", "%"], display: "87.50" },
@@ -61,7 +61,7 @@ export const secao2Percentual = [
     ],
   },
   {
-    nome: "p35 — %T (RPN): % do total = 29.69 / 49.31 / 21.01",
+    nome: "p35 — %T (RPN): percent of total = 29.69 / 49.31 / 21.01",
     modo: "rpn",
     linhas: [
       { keys: ["3.92", "ENTER"], display: "3.92" },
@@ -74,7 +74,7 @@ export const secao2Percentual = [
     ],
   },
   {
-    nome: "p36 — %T (RPN, total conhecido): 2.36 de 7.95 = 29.69",
+    nome: "p36 — %T (RPN, known total): 2.36 of 7.95 = 29.69",
     modo: "rpn",
     linhas: [
       { keys: ["7.95", "ENTER"], display: "7.95" },
@@ -83,7 +83,7 @@ export const secao2Percentual = [
     ],
   },
   {
-    nome: "p36 — %T (ALG): % do total = 29.69",
+    nome: "p36 — %T (ALG): percent of total = 29.69",
     modo: "alg",
     linhas: [
       { keys: ["3.92", "+", "2.36", "+", "1.67", "="], display: "7.95" },
@@ -95,7 +95,7 @@ export const secao2Percentual = [
 
 export const secao2Calendario = [
   {
-    nome: "p40 — Dias entre datas (ΔDYS): 3 jun 2004 → 14 out 2005",
+    nome: "p40 — Days between dates (ΔDYS): 3 Jun 2004 → 14 Oct 2005",
     modo: "rpn",
     linhas: [
       { keys: ["g", "M.DY"], display: "0.00" },
@@ -105,7 +105,7 @@ export const secao2Calendario = [
     ],
   },
   {
-    nome: "p39 — Data futura (g DATE): 14 mai 2004 + 120 dias = 11 set 2004 (sáb)",
+    nome: "p39 — Future date (g DATE): 14 May 2004 + 120 days = 11 Sep 2004 (Sat)",
     modo: "rpn",
     linhas: [
       { keys: ["g", "D.MY"], display: "0.00" },

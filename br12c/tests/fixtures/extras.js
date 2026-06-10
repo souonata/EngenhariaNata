@@ -10,7 +10,7 @@ export const secao7 = [
     linhas: [{ keys: ["2", "ENTER", "3", "y^x"], display: "8.00" }],
   },
   {
-    nome: "p101 — √x e n!: √4 = 2; 5 n! = 120",
+    nome: "p101 — √x and n!: √4 = 2; 5 n! = 120",
     modo: "rpn",
     linhas: [
       { keys: ["4", "g", "√x"], display: "2.00" },
@@ -18,7 +18,7 @@ export const secao7 = [
     ],
   },
   {
-    nome: "p102 — INTG e FRAC de 2.5",
+    nome: "p102 — INTG and FRAC of 2.5",
     modo: "rpn",
     linhas: [
       { keys: ["2.5", "g", "INTG"], display: "2.00" },
@@ -29,12 +29,12 @@ export const secao7 = [
 
 export const apendiceA = [
   {
-    nome: "p235 — R↓ gira a pilha: 1↑2↑3↑4 R↓ → 3",
+    nome: "p235 — R↓ rolls the stack: 1↑2↑3↑4 R↓ → 3",
     modo: "rpn",
     linhas: [{ keys: ["1", "ENTER", "2", "ENTER", "3", "ENTER", "4", "R↓"], display: "3.00" }],
   },
   {
-    nome: "p238 — LST x recupera o operando: 12÷3, LSTx, × → 12",
+    nome: "p238 — LST x recalls the operand: 12÷3, LSTx, × → 12",
     modo: "rpn",
     linhas: [
       { keys: ["12", "ENTER", "3", "÷"], display: "4.00" },
@@ -46,7 +46,7 @@ export const apendiceA = [
 
 export const apendiceB = [
   {
-    nome: "p242 — Aritmética em ALG: 2 + 3 = 5",
+    nome: "p242 — Arithmetic in ALG: 2 + 3 = 5",
     modo: "alg",
     linhas: [{ keys: ["2", "+", "3", "="], display: "5.00" }],
   },
@@ -62,7 +62,7 @@ export const apendiceB = [
 
 export const apendiceC = [
   {
-    nome: "p248 — IRR (fluxos agrupados p.76-78, setup completo) = 13.72",
+    nome: "p248 — IRR (grouped cash flows p.76-78, full setup) = 13.72",
     modo: "rpn",
     linhas: [
       { keys: ["f", "REG"], display: "0.00" },
@@ -77,6 +77,29 @@ export const apendiceC = [
       { keys: ["4500", "g", "CFj"], display: "4,500.00" },
       { keys: ["100000", "g", "CFj"], display: "100,000.00" },
       { keys: ["f", "IRR"], display: "13.72" },
+    ],
+  },
+];
+
+// Appendix F — Verifying Proper Operation (self-test do teclado/display): na 12C
+// real entra-se "segurando ÷ e ligando ON"; aqui o combo usa o modo Segurar (HOLD).
+// Acende todos os segmentos, depois exige as 40 teclas na ordem fisica (ENTER 2x,
+// linhas 3 e 4); termina em 12. Ordem errada -> Error 9.
+export const apendiceF = [
+  {
+    nome: "p266 — Keyboard/display self-test: ÷+ON, all 40 keys in order → 12",
+    modo: "rpn",
+    linhas: [
+      { keys: ["HOLD", "÷", "ON"], display: "8888888888" },
+      {
+        keys: [
+          "n", "i", "PV", "PMT", "FV", "CHS", "7", "8", "9", "÷",
+          "y^x", "1/x", "%T", "Δ%", "%", "EEX", "4", "5", "6", "×",
+          "R/S", "SST", "R↓", "x≷y", "CLx", "ENTER", "1", "2", "3", "-",
+          "ON", "f", "g", "STO", "RCL", "ENTER", "0", ".", "Σ+", "+",
+        ],
+        display: "12",
+      },
     ],
   },
 ];

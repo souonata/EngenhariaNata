@@ -4,32 +4,32 @@
 
 export const erros = [
   {
-    nome: "Error: divisão por zero (5 ÷ 0)",
+    nome: "Error: division by zero (5 ÷ 0)",
     modo: "rpn",
     linhas: [{ keys: ["5", "ENTER", "0", "÷"], display: "Error 0" }],
   },
   {
-    nome: "Error: 1/x de zero",
+    nome: "Error: 1/x of zero",
     modo: "rpn",
     linhas: [{ keys: ["0", "1/x"], display: "Error 0" }],
   },
   {
-    nome: "Error: raiz quadrada de negativo",
+    nome: "Error: square root of a negative",
     modo: "rpn",
     linhas: [{ keys: ["4", "CHS", "g", "√x"], display: "Error 0" }],
   },
   {
-    nome: "Error: LN de zero",
+    nome: "Error: LN of zero",
     modo: "rpn",
     linhas: [{ keys: ["0", "g", "LN"], display: "Error 0" }],
   },
   {
-    nome: "Error: fatorial de não-inteiro",
+    nome: "Error: factorial of a non-integer",
     modo: "rpn",
     linhas: [{ keys: ["1.5", "g", "n!"], display: "Error 0" }],
   },
   {
-    nome: "Erro é limpo ao pressionar uma tecla (digita 7 após ÷0)",
+    nome: "Error clears on next keypress (type 7 after ÷0)",
     modo: "rpn",
     linhas: [
       { keys: ["5", "ENTER", "0", "÷"], display: "Error 0" },

@@ -7,7 +7,7 @@ export const smoke = [
     linhas: [{ keys: ["2", "ENTER", "3", "+"], display: "5.00" }],
   },
   {
-    nome: "f + dígito muda as casas (FIX)",
+    nome: "f + digit sets decimal places (FIX)",
     linhas: [
       { keys: ["2", "ENTER", "3", "+"], display: "5.00" },
       { keys: ["f", "1"], display: "5.0" },

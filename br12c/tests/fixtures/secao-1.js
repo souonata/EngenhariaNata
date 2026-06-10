@@ -7,7 +7,7 @@
 
 export const secao1 = [
   {
-    nome: "p21 — Aritmética simples (RPN): 13 ÷ 2 = 6.50",
+    nome: "p21 — Simple arithmetic (RPN): 13 ÷ 2 = 6.50",
     modo: "rpn",
     linhas: [
       { keys: ["13", "ENTER"], display: "13.00" },
@@ -15,7 +15,7 @@ export const secao1 = [
     ],
   },
   {
-    nome: "p22 — Aritmética simples (ALG): 21.1 + 23.8 = 44.90",
+    nome: "p22 — Simple arithmetic (ALG): 21.1 + 23.8 = 44.90",
     modo: "alg",
     linhas: [
       { keys: ["CLx", "CLx"], display: "0.00" },
@@ -25,7 +25,7 @@ export const secao1 = [
     ],
   },
   {
-    nome: "p22 — Cadeia (ALG): 77.35 − 90.89 = −13.54",
+    nome: "p22 — Chain calculation (ALG): 77.35 − 90.89 = −13.54",
     modo: "alg",
     linhas: [
       { keys: ["CLx", "CLx"], display: "0.00" },
@@ -34,7 +34,7 @@ export const secao1 = [
     ],
   },
   {
-    nome: "p23 — Cadeia talão de cheques (RPN) = 1,064.54",
+    nome: "p23 — Checkbook chain calculation (RPN) = 1,064.54",
     modo: "rpn",
     linhas: [
       { keys: ["58.33", "ENTER"], display: "58.33" },
@@ -54,7 +54,7 @@ export const secao1 = [
     ],
   },
   {
-    nome: "p26 — Cadeia longa (ALG): 456−75÷18.5×68÷1.9 = 737.07",
+    nome: "p26 — Long chain (ALG): 456−75÷18.5×68÷1.9 = 737.07",
     modo: "alg",
     linhas: [
       { keys: ["CLx", "CLx"], display: "0.00" },
@@ -65,7 +65,7 @@ export const secao1 = [
     ],
   },
   {
-    nome: "p28 — Fatura STO/RCL (RPN) = 8,000.00",
+    nome: "p28 — Invoice with STO/RCL (RPN) = 8,000.00",
     modo: "rpn",
     linhas: [
       { keys: ["1250", "STO", "0"], display: "1,250.00" },
@@ -77,7 +77,7 @@ export const secao1 = [
     ],
   },
   {
-    nome: "p28 — Fatura STO/RCL (ALG) = 8,000.00",
+    nome: "p28 — Invoice with STO/RCL (ALG) = 8,000.00",
     modo: "alg",
     linhas: [
       { keys: ["1250", "STO", "0"], display: "1,250.00" },
@@ -89,7 +89,7 @@ export const secao1 = [
     ],
   },
   {
-    nome: "p29 — Aritmética de registrador (RPN): saldo do talão = 1,064.54",
+    nome: "p29 — Storage register arithmetic (RPN): checkbook balance = 1,064.54",
     modo: "rpn",
     linhas: [
       { keys: ["58.33", "STO", "0"], display: "58.33" },
@@ -98,6 +98,17 @@ export const secao1 = [
       { keys: ["10.14", "STO", "-", "0"], display: "10.14" },
       { keys: ["1053", "STO", "+", "0"], display: "1,053.00" },
       { keys: ["RCL", "0"], display: "1,064.54" },
+    ],
+  },
+  {
+    // Digit separators (p.17): na 12C real e "segurar . e ligar ON"; aqui o combo
+    // usa o modo Segurar (HOLD): trava ON, toca "." -> alterna . <-> , e vice-versa.
+    nome: "p17 — Digit separators: ON + . swaps point and comma (via Hold mode)",
+    modo: "rpn",
+    linhas: [
+      { keys: ["1234.56", "ENTER"], display: "1,234.56" },
+      { keys: ["HOLD", "ON", "."], display: "=1,234.56" },
+      { keys: ["ON", ".", "HOLD"], display: "=1.234,56" },
     ],
   },
 ];

@@ -22,6 +22,7 @@ export const ALIASES = {
   "12x": "tvm:n", // skin usa "12×"
   "12X": "tvm:n",
   "12/": "tvm:i", // skin usa "12÷"
+  HOLD: "hold-mode", // botão Segurar (🔒) — combos tipo "segurar ÷, ON" / "ON + ."
   LSTx: "op:+", // LST x = g++
   "LST x": "op:+",
   CF0: "tvm:PV", // skin usa "CFo"

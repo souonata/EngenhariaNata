@@ -119,7 +119,11 @@ export async function criarCalculadora() {
 
   const press = (acoes) => {
     for (const acao of acoes) {
-      const botao = win.document.querySelector(`#keyboard [data-action="${acao}"]`);
+      // "hold-mode" é o botão Segurar (🔒), fora do #keyboard.
+      const botao =
+        acao === "hold-mode"
+          ? win.document.querySelector("#holdModeBtn")
+          : win.document.querySelector(`#keyboard [data-action="${acao}"]`);
       if (!botao) throw new Error(`Tecla não encontrada para ação: ${acao}`);
       botao.dispatchEvent(new win.MouseEvent("click", { bubbles: true }));
     }

@@ -2,7 +2,7 @@
 
 export const secao4 = [
   {
-    nome: "p74-75 — NPV (fluxo não-agrupado): duplex = 212.18",
+    nome: "p74-75 — NPV (ungrouped cash flows): duplex = 212.18",
     modo: "rpn",
     linhas: [
       { keys: ["f", "REG"], display: "0.00" },
@@ -18,7 +18,7 @@ export const secao4 = [
     ],
   },
   {
-    nome: "p76-78 — NPV (fluxo agrupado) = 907.77 e IRR = 13.72",
+    nome: "p76-78 — NPV (grouped cash flows) = 907.77 and IRR = 13.72",
     modo: "rpn",
     linhas: [
       { keys: ["f", "REG"], display: "0.00" },
@@ -39,7 +39,7 @@ export const secao4 = [
     ],
   },
   {
-    nome: "p82 — Bond Price (T-bond 6.75%, yield 4.75%) = 120.38 limpo / 123.07 total",
+    nome: "p82 — Bond price (T-bond 6.75%, yield 4.75%) = 120.38 clean / 123.07 total",
     modo: "rpn",
     linhas: [
       { keys: ["4.75", "i"], display: "4.75" },
@@ -52,7 +52,7 @@ export const secao4 = [
     ],
   },
   {
-    nome: "p83 — Bond Yield (preço cotado 122.125%) = 4.60",
+    nome: "p83 — Bond yield (quoted price 122.125%) = 4.60",
     modo: "rpn",
     linhas: [
       { keys: ["122.125", "PV"], display: "122.13" },
@@ -64,7 +64,7 @@ export const secao4 = [
     ],
   },
   {
-    nome: "p84-85 — Depreciação (declining-balance 200%, máquina $10k)",
+    nome: "p84-85 — Depreciation (200% declining-balance, $10k machine)",
     modo: "rpn",
     linhas: [
       { keys: ["10000", "PV"], display: "10,000.00" },
