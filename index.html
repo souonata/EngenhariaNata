@@ -114,9 +114,22 @@
         window.goatcounter = window.goatcounter || {};
         // Permite contar acessos durante desenvolvimento local (localhost).
         window.goatcounter.allow_local = true;
+        window.goatcounter.scriptLoaded = false;
+        window.goatcounter.scriptBlocked = false;
+        (function() {
+            var gcScript = document.createElement('script');
+            gcScript.async = true;
+            gcScript.src = 'https://gc.zgo.at/count.js';
+            gcScript.dataset.goatcounter = 'https://souonata.goatcounter.com/count';
+            gcScript.onload = function() {
+                window.goatcounter.scriptLoaded = true;
+            };
+            gcScript.onerror = function() {
+                window.goatcounter.scriptBlocked = true;
+            };
+            document.head.appendChild(gcScript);
+        })();
     </script>
-    <script data-goatcounter="https://souonata.goatcounter.com/count"
-            async src="https://gc.zgo.at/count.js"></script>
     <!-- Rede de seguranca global de erros (ver GUIA_FALHA_CONGELAMENTO.md) -->
     <script src="assets/js/error-overlay.js"></script>
 </head>
