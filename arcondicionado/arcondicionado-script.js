@@ -108,13 +108,28 @@ class ArcondicionadoApp extends App {
 
     configurarClasseEnergetica() {
         const boxes = document.querySelectorAll('.classe-box');
+        const selecionadoInicial = document.querySelector('.classe-box-selected');
+
+        if (selecionadoInicial) {
+            this.estado.classeEnergetica = selecionadoInicial.getAttribute('data-classe') || this.estado.classeEnergetica;
+            this.estado.valorClasseEnergetica = parseFloat(selecionadoInicial.getAttribute('data-valor')) || this.estado.valorClasseEnergetica;
+        }
+
         boxes.forEach(box => {
             box.setAttribute('tabindex', '0');
+            box.setAttribute('role', 'radio');
+            box.setAttribute('aria-label', `${box.getAttribute('data-classe')} - ${box.getAttribute('title')}`);
+            if (box.dataset.classeConfigurada === 'true') return;
+
+            box.dataset.classeConfigurada = 'true';
             box.addEventListener('click', () => {
                 boxes.forEach(b => b.classList.remove('classe-box-selected'));
                 box.classList.add('classe-box-selected');
                 this.estado.classeEnergetica = box.getAttribute('data-classe');
                 this.estado.valorClasseEnergetica = parseFloat(box.getAttribute('data-valor'));
+                const inputClasse = document.getElementById('inputClasseEnergetica');
+                if (inputClasse) inputClasse.value = this.estado.valorClasseEnergetica;
+                this.atualizarAtributosClasseEnergetica(boxes);
                 this.atualizarResultados();
             });
             box.addEventListener('keydown', (e) => {
@@ -123,6 +138,14 @@ class ArcondicionadoApp extends App {
                     box.click();
                 }
             });
+        });
+        this.atualizarAtributosClasseEnergetica(boxes);
+    }
+
+    atualizarAtributosClasseEnergetica(boxes = document.querySelectorAll('.classe-box')) {
+        boxes.forEach(box => {
+            const selecionado = box.classList.contains('classe-box-selected');
+            box.setAttribute('aria-checked', selecionado ? 'true' : 'false');
         });
     }
     
@@ -335,7 +358,7 @@ class ArcondicionadoApp extends App {
     configurarInfoIcons() {
         const infoIcons = document.querySelectorAll('.info-icon');
         infoIcons.forEach(icon => {
-            icon.addEventListener('click', (e) => {
+            const alternarDescricao = (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 
@@ -347,6 +370,13 @@ class ArcondicionadoApp extends App {
                         const estaVisivel = descricao.style.display === 'block';
                         descricao.style.display = estaVisivel ? 'none' : 'block';
                     }
+                }
+            };
+
+            icon.addEventListener('click', alternarDescricao);
+            icon.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    alternarDescricao(e);
                 }
             });
         });
@@ -478,8 +508,6 @@ class ArcondicionadoApp extends App {
         sliders.forEach(id => {
             this.aoMudarSlider(id);
         });
-        // Atualiza UI dos botões de classe energética
-        this.configurarClasseEnergetica();
     }
     
     // ============================================
@@ -633,7 +661,8 @@ class ArcondicionadoApp extends App {
             btuTotalExterno,
             custoTotalUnidadesExternas,
             custoTotalUnidadesInternas,
-            custoTotal
+            custoTotal,
+            fatorClasseEnergetica
         };
     }
     
@@ -787,8 +816,8 @@ class ArcondicionadoApp extends App {
                     titulo: pt ? 'BTU Necessário' : 'BTU Necessario',
                     valor: this.formatarBTU(resultado.btuTotal),
                     descricao: pt
-                        ? 'Carga térmica calculada com área, altura, pessoas, equipamentos, insolação e isolamento.'
-                        : 'Carico termico calcolato con area, altezza, persone, apparecchi, insolazione e isolamento.'
+                        ? 'Carga térmica calculada com área, altura, pessoas, equipamentos, insolação, isolamento e classe energética.'
+                        : 'Carico termico calcolato con area, altezza, persone, apparecchi, insolazione, isolamento e classe energetica.'
                 },
                 {
                     icone: '🏢',
@@ -850,7 +879,9 @@ class ArcondicionadoApp extends App {
         const fatorInsolacao = this.getFatorInsolacao(insolacao);
         const idioma = this.obterIdiomaAtual();
         const fatorIsolamento = idioma === 'it-IT' ? 1.0 : this.getFatorIsolamento(isolamento);
-        const btuFinalTotal = btuBaseTotal * fatorInsolacao * fatorIsolamento;
+        const fatorClasseEnergetica = resultado.fatorClasseEnergetica;
+        const btuFinalTotal = resultado.btuTotal;
+        const classeEnergetica = this.estado.classeEnergetica || 'D';
         
         // Atualizar exemplos no memorial
         const exemploVolume = document.getElementById('memorial-exemplo-volume');
@@ -867,7 +898,7 @@ class ArcondicionadoApp extends App {
         
         const exemploFatores = document.getElementById('memorial-exemplo-fatores');
         if (exemploFatores) {
-            exemploFatores.textContent = `${this.formatarBTU(btuBaseTotal)} × ${this.formatarDecimal(fatorInsolacao, 2)} × ${this.formatarDecimal(fatorIsolamento, 2)} = ${this.formatarBTU(btuFinalTotal)}`;
+            exemploFatores.textContent = `${this.formatarBTU(btuBaseTotal)} × ${this.formatarDecimal(fatorInsolacao, 2)} × ${this.formatarDecimal(fatorIsolamento, 2)} × ${this.formatarDecimal(fatorClasseEnergetica, 2)} (${classeEnergetica}) = ${this.formatarBTU(btuFinalTotal)}`;
         }
         
         const exemploBtuPorAmbiente = document.getElementById('memorial-exemplo-btu-por-ambiente');
@@ -888,6 +919,20 @@ class ArcondicionadoApp extends App {
         
         const resumoBtuPorAmbiente = document.getElementById('resumo-btu-por-ambiente');
         if (resumoBtuPorAmbiente) resumoBtuPorAmbiente.textContent = this.formatarBTU(resultado.btuPorAmbiente);
+
+        const exemploModelo = document.getElementById('memorial-exemplo-modelo');
+        if (exemploModelo) {
+            const modelosInternos = Object.keys(resultado.unidadesInternasPorModelo)
+                .map(modelo => {
+                    const qtd = resultado.unidadesInternasPorModelo[modelo];
+                    return `${qtd} × ${this.formatarBTU(parseInt(modelo))}`;
+                })
+                .join(' + ');
+            const modelosExternos = resultado.combinacaoExterna.map(m => this.formatarBTU(m)).join(' + ');
+            exemploModelo.textContent = idioma === 'pt-BR'
+                ? `${this.formatarBTU(resultado.btuPorAmbiente)} por ambiente → internas: ${modelosInternos}. BTU total real: ${this.formatarBTU(resultado.btuTotalReal)}. Externa: ${modelosExternos}.`
+                : `${this.formatarBTU(resultado.btuPorAmbiente)} per ambiente → interne: ${modelosInternos}. BTU totale reale: ${this.formatarBTU(resultado.btuTotalReal)}. Esterna: ${modelosExternos}.`;
+        }
         
         const resumoUnidadeInterna = document.getElementById('resumo-unidade-interna');
         if (resumoUnidadeInterna) {
@@ -910,6 +955,13 @@ class ArcondicionadoApp extends App {
         
         const resumoCustoTotal = document.getElementById('resumo-custo-total');
         if (resumoCustoTotal) resumoCustoTotal.textContent = this.formatarMoedaComConversao(resultado.custoTotal);
+
+        const exemploCusto = document.getElementById('memorial-exemplo-custo');
+        if (exemploCusto) {
+            exemploCusto.textContent = idioma === 'pt-BR'
+                ? `${this.formatarMoedaComConversao(resultado.custoTotalUnidadesExternas)} (externa) + ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesInternas)} (internas) = ${this.formatarMoedaComConversao(resultado.custoTotal)}`
+                : `${this.formatarMoedaComConversao(resultado.custoTotalUnidadesExternas)} (esterna) + ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesInternas)} (interne) = ${this.formatarMoedaComConversao(resultado.custoTotal)}`;
+        }
     }
     
     // ============================================

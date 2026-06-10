@@ -62,8 +62,23 @@ export function formatarPercentual(valor, casasDecimais = 1) {
 }
 
 export function parsearNumero(valorString) {
+    if (typeof valorString === 'number') {
+        return Number.isFinite(valorString) ? valorString : 0;
+    }
+
     if (!valorString || typeof valorString !== 'string') {
         return 0;
     }
-    return parseFloat(valorString.replace(/\./g, '').replace(',', '.')) || 0;
+
+    const texto = valorString.trim().replace(/\s/g, '');
+    if (!texto) {
+        return 0;
+    }
+
+    const normalizado = texto.includes(',')
+        ? texto.replace(/\./g, '').replace(',', '.')
+        : texto;
+
+    const numero = Number(normalizado);
+    return Number.isFinite(numero) ? numero : 0;
 }

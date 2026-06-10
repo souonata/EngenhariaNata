@@ -1,9 +1,10 @@
 /**
  * ventilacao-script.js
- * Calculadora de Ventilação Natural Residencial
+ * Calculadora de Ventilação Natural Residencial (modelo educativo)
  *
- * Calcula renovações de ar por hora (ACH), qualidade da ventilação
- * e área mínima de janelas conforme NBR 15575.
+ * Estima renovações de ar por hora (ACH) pelo efeito vento (Q = Cv·A·V) e
+ * compara a área de janelas com a regra típica de 1/8 do piso de códigos de
+ * obras. Referências: ASHRAE Fundamentals, BS 5925/CIBSE, ASHRAE 62.1.
  */
 
 import { App } from '../src/core/app.js';
@@ -30,25 +31,37 @@ const VEL_VENTO = {
     frio:      1.5
 };
 
-// Fator de eficiência por orientação (relativo aos ventos predominantes no Brasil)
-// Sul e Leste recebem ventos mais favoráveis; Norte e Oeste são menos favorecidos
-const FATOR_ORIENTACAO = {
-    norte:  0.80,
-    sul:    1.00,
-    leste:  0.90,
-    oeste:  0.70
+// Exposição da fachada das janelas ao vento dominante LOCAL. Não existe
+// orientação cardeal universalmente favorável (os ventos dominantes variam
+// por região); o que importa é a janela estar a favor do vento.
+const FATOR_EXPOSICAO = {
+    favoravel: 1.00,   // fachada a favor do vento (vento ~perpendicular)
+    obliqua:   0.85,   // vento oblíquo à fachada
+    abrigada:  0.70    // fachada abrigada/sotavento
 };
 
-// Coeficiente de descarga de janelas comuns (Cd)
-const CD = 0.60;
+// Coeficiente efetivo de vazão por tipo de ventilação (só efeito vento,
+// janelas totalmente abertas; efeito chaminé não modelado):
+// - cruzada: Q = Cv·A·V com Cv ≈ 0,60 (ASHRAE Fundamentals, vento
+//   perpendicular; A = área de abertura da fachada de ENTRADA, a menor);
+// - unilateral (janelas numa só fachada — caso residencial típico):
+//   Q ≈ 0,025·A·V (BS 5925 / CIBSE AM10).
+const COEF_VENTILACAO = {
+    unilateral: 0.025,
+    cruzada:    0.60
+};
 
-// ACH mínimo residencial (ASHRAE 62.2 / NBR 15575)
-const ACH_MIN_RESIDENCIAL = 6;
+// Alvo educativo de qualidade do ar interior (recomendações sanitárias de
+// renovação, ex. CDC ≥5 ACH). NÃO é exigência da NBR 15575 (~1 ren/h de
+// referência) nem da ASHRAE 62.2 (fórmula por área + ocupantes).
+const ACH_ALVO = 6;
 
 // Vazão de ar fresco por pessoa (m³/h) — ASHRAE 62.1
 const VAZAO_POR_PESSOA = 27; // 7,5 L/s × 3,6
 
-// Fração mínima da área do piso para ventilação — NBR 15575
+// Referência educativa de área ventilável mínima: regra típica de código de
+// obras municipal (1/8 do piso). A NBR 15575-4 define percentuais por zona
+// bioclimática (tipicamente 7–12%) — verificar a exigência local.
 const FRACAO_AREA_MINIMA = 1 / 8; // 12,5%
 
 // ============================================
@@ -87,7 +100,9 @@ class VentilacaoApp extends App {
         this.configurarBotoesIncremento();
         this.configurarSlidersEInputs();
 
-        document.querySelectorAll('input[name="orientacao"]').forEach(r =>
+        document.querySelectorAll('input[name="tipoVentilacao"]').forEach(r =>
+            r.addEventListener('change', () => this.atualizarResultado()));
+        document.querySelectorAll('input[name="exposicao"]').forEach(r =>
             r.addEventListener('change', () => this.atualizarResultado()));
         document.querySelectorAll('input[name="clima"]').forEach(r =>
             r.addEventListener('change', () => this.atualizarResultado()));
@@ -117,11 +132,11 @@ class VentilacaoApp extends App {
         set('memorial-exemplo-volume',
             `${v.comprimento} × ${v.largura} = ${formatarNumero(res.areaPiso, 1)} m² → ${formatarNumero(res.areaPiso, 1)} × ${v.peDireito} = ${formatarNumero(res.volume, 1)} m³`);
         set('memorial-exemplo-vazao',
-            `${v.janelas} × ${res.velVento} × ${res.fatorOri.toFixed(2)} × 0,60 × 3600 = ${formatarNumero(res.vazao, 0)} m³/h`);
+            `${formatarNumero(v.janelas, 1)} × ${formatarNumero(res.velVento, 1)} × ${formatarNumero(res.fatorExp, 2)} × ${formatarNumero(res.coef, 3)} × 3600 = ${formatarNumero(res.vazao, 0)} m³/h`);
         set('memorial-exemplo-ach',
             `${formatarNumero(res.vazao, 0)} ÷ ${formatarNumero(res.volume, 1)} = ${formatarNumero(res.ach, 1)} ACH`);
         set('memorial-exemplo-achmin',
-            `máx(6 ; ${v.pessoas} × 27 ÷ ${formatarNumero(res.volume, 1)} = ${formatarNumero(achPessoas, 1)}) = ${formatarNumero(res.achNecessario, 1)} ACH`);
+            `max(${ACH_ALVO} ; ${v.pessoas} × 27 ÷ ${formatarNumero(res.volume, 1)} = ${formatarNumero(achPessoas, 1)}) = ${formatarNumero(res.achNecessario, 1)} ACH`);
         set('memorial-exemplo-areamin',
             `${formatarNumero(res.areaPiso, 1)} ÷ 8 = ${formatarNumero(res.areaMinima, 2)} m²`);
 
@@ -129,7 +144,8 @@ class VentilacaoApp extends App {
         set('resumo-pd',       `${v.peDireito} m`);
         set('resumo-janelas',  `${v.janelas} m²`);
         set('resumo-pessoas',  `${v.pessoas}`);
-        set('resumo-ori',      t?.opcoes?.[v.orientacao] ?? v.orientacao);
+        set('resumo-tipo',     t?.opcoes?.[v.tipoVentilacao] ?? v.tipoVentilacao);
+        set('resumo-ori',      t?.opcoes?.[v.exposicao] ?? v.exposicao);
         set('resumo-clima',    t?.opcoes?.[v.clima] ?? v.clima);
         set('resumo-volume',   `${formatarNumero(res.volume, 1)} m³`);
         set('resumo-vazao',    `${formatarNumero(res.vazao, 0)} m³/h`);
@@ -151,8 +167,11 @@ class VentilacaoApp extends App {
             const desc = document.getElementById(descricaoId);
             if (!icon || !desc) return;
             const toggle = () => {
-                desc.style.display = desc.style.display === 'none' ? 'block' : 'none';
+                const aberto = desc.style.display === 'none';
+                desc.style.display = aberto ? 'block' : 'none';
+                icon.setAttribute('aria-expanded', String(aberto));
             };
+            icon.setAttribute('aria-expanded', 'false');
             icon.addEventListener('click', toggle);
             icon.addEventListener('keydown', e => {
                 if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
@@ -183,10 +202,9 @@ class VentilacaoApp extends App {
                 const sliderMax  = parseFloat(slider.max);
                 const velocidade = (sliderMax - sliderMin) / 3000;
                 const valorInicial = parseFloat(btn.dataset.valorInicial);
-                let novoValor = valorInicial + velocidade * tempoDecorrido * direcao;
-                novoValor = Math.max(sliderMin * 0.5, novoValor);
+                const novoValor = valorInicial + velocidade * tempoDecorrido * direcao;
 
-                slider.value = novoValor;
+                slider.value = Math.max(sliderMin, Math.min(sliderMax, novoValor));
                 if (inputEl) {
                     inputEl.value = parseFloat(slider.value).toFixed(this.decimaisPorSlider(slider));
                 }
@@ -277,8 +295,12 @@ class VentilacaoApp extends App {
                 const valor = parseFloat(input.value.replace(',', '.'));
                 if (!isNaN(valor)) {
                     slider.value = valor;
-                    input.value  = parseFloat(slider.value).toFixed(this.decimaisPorSlider(slider));
                 }
+                // Entrada inválida ou clampada: o display volta ao valor do
+                // slider e o estado visual de fora-de-faixa é limpo (o clamp
+                // programático não dispara 'input' — ver src/core/app.js).
+                input.value = parseFloat(slider.value).toFixed(this.decimaisPorSlider(slider));
+                slider.classList.remove('slider-fora-faixa');
                 this.atualizarResultado();
             });
         });
@@ -303,7 +325,8 @@ class VentilacaoApp extends App {
             peDireito:   parseFloat(document.getElementById('inputPeDireito').value)   || 2.7,
             janelas:     parseFloat(document.getElementById('inputJanelas').value)     || 2,
             pessoas:     parseInt(document.getElementById('inputPessoas').value)       || 2,
-            orientacao:  document.querySelector('input[name="orientacao"]:checked')?.value || 'sul',
+            tipoVentilacao: document.querySelector('input[name="tipoVentilacao"]:checked')?.value || 'unilateral',
+            exposicao:   document.querySelector('input[name="exposicao"]:checked')?.value || 'favoravel',
             clima:       document.querySelector('input[name="clima"]:checked')?.value  || 'quente'
         };
     }
@@ -311,20 +334,21 @@ class VentilacaoApp extends App {
     calcular(v) {
         const areaPiso  = v.comprimento * v.largura;           // m²
         const volume    = areaPiso * v.peDireito;              // m³
-        const areaMinima = areaPiso * FRACAO_AREA_MINIMA;      // NBR 15575
+        const areaMinima = areaPiso * FRACAO_AREA_MINIMA;      // regra típica 1/8
 
-        const velVento  = VEL_VENTO[v.clima]          || 2.0;
-        const fatorOri  = FATOR_ORIENTACAO[v.orientacao] || 0.85;
+        const velVento  = VEL_VENTO[v.clima]              || 2.0;
+        const fatorExp  = FATOR_EXPOSICAO[v.exposicao]    || 0.85;
+        const coef      = COEF_VENTILACAO[v.tipoVentilacao] || COEF_VENTILACAO.unilateral;
 
-        // Vazão pelo método da abertura (Bernoulli simplificado)
-        const vazao = v.janelas * velVento * fatorOri * CD * 3600; // m³/h
+        // Vazão por efeito vento: Q = Cv × A × V (× fator de exposição)
+        const vazao = v.janelas * velVento * fatorExp * coef * 3600; // m³/h
 
         // ACH real
         const ach = vazao / volume;
 
-        // ACH mínimo: maior entre o padrão residencial e o necessário por pessoa
+        // Alvo: maior entre o alvo educativo de qualidade do ar e o necessário por pessoa
         const achPorPessoas = (v.pessoas * VAZAO_POR_PESSOA) / volume;
-        const achNecessario = Math.max(ACH_MIN_RESIDENCIAL, achPorPessoas);
+        const achNecessario = Math.max(ACH_ALVO, achPorPessoas);
 
         // Qualidade
         let qualidadeKey;
@@ -341,7 +365,7 @@ class VentilacaoApp extends App {
         // Déficit/excedente de janelas
         const deficitJanelas = areaMinima - v.janelas; // positivo = falta, negativo = sobra
 
-        return { areaPiso, volume, areaMinima, velVento, fatorOri, vazao, ach, achNecessario, qualidadeKey, deficitJanelas };
+        return { areaPiso, volume, areaMinima, velVento, fatorExp, coef, vazao, ach, achNecessario, qualidadeKey, deficitJanelas };
     }
 
     // ============================================
@@ -378,7 +402,7 @@ class VentilacaoApp extends App {
         document.getElementById('resultadoVazao').textContent =
             formatarNumero(res.vazao, 0) + ' m³/h';
 
-        // Área mínima NBR 15575
+        // Área mínima (regra típica de 1/8 do piso)
         document.getElementById('resultadoAreaMinima').textContent =
             formatarNumero(res.areaMinima, 2) + ' m²  (1/8 × ' + formatarNumero(res.areaPiso, 1) + ' m²)';
 
@@ -388,7 +412,7 @@ class VentilacaoApp extends App {
             const falta = isIt ? 'Mancano' : 'Faltam';
             statusEl.innerHTML = `<span class="status-badge status-falta">⚠️ ${falta} ${formatarNumero(res.deficitJanelas, 2)} m²</span>`;
         } else {
-            const ok = isIt ? 'OK — excedente' : 'OK — excedente';
+            const ok = isIt ? 'OK — in eccesso' : 'OK — excedente';
             statusEl.innerHTML = `<span class="status-badge status-ok">✅ ${ok} ${formatarNumero(-res.deficitJanelas, 2)} m²</span>`;
         }
     }
@@ -397,9 +421,11 @@ class VentilacaoApp extends App {
         const t    = this.traducoes;
         const isIt = i18n.obterIdiomaAtual() === 'it-IT';
 
-        const nomeClima      = t.opcoes?.[v.clima]      || v.clima;
-        const nomeOrientacao = t.opcoes?.[v.orientacao] || v.orientacao;
-        const qualLabel      = t.qualidade?.[res.qualidadeKey] || res.qualidadeKey;
+        const nomeClima     = t.opcoes?.[v.clima]          || v.clima;
+        const nomeExposicao = t.opcoes?.[v.exposicao]      || v.exposicao;
+        const nomeTipo      = t.opcoes?.[v.tipoVentilacao] || v.tipoVentilacao;
+        const qualLabel     = t.qualidade?.[res.qualidadeKey] || res.qualidadeKey;
+        const achPessoas    = formatarNumero((v.pessoas * VAZAO_POR_PESSOA) / res.volume, 1);
 
         return {
             linhas: [
@@ -407,42 +433,42 @@ class VentilacaoApp extends App {
                     icone: '📐',
                     titulo: isIt ? 'Volume dell\'ambiente' : 'Volume do ambiente',
                     valor: `${formatarNumero(res.volume, 1)} m³`,
-                    descricao: isIt
-                        ? `${v.comprimento} m × ${v.largura} m × ${v.peDireito} m = ${formatarNumero(res.volume, 1)} m³`
-                        : `${v.comprimento} m × ${v.largura} m × ${v.peDireito} m = ${formatarNumero(res.volume, 1)} m³`
+                    descricao: `${v.comprimento} m × ${v.largura} m × ${v.peDireito} m = ${formatarNumero(res.volume, 1)} m³`
                 },
                 {
                     icone: '💨',
                     titulo: isIt ? 'Portata d\'aria' : 'Vazão de ar',
                     valor: `${formatarNumero(res.vazao, 0)} m³/h`,
                     descricao: isIt
-                        ? `Vento ${nomeClima} (${res.velVento} m/s), orientação ${nomeOrientacao} (fator ${res.fatorOri}), Cd=${CD}. Fórmula: A × v × fator × Cd × 3600.`
-                        : `Vento ${nomeClima} (${res.velVento} m/s), orientação ${nomeOrientacao} (fator ${res.fatorOri}), Cd=${CD}. Fórmula: A × v × fator × Cd × 3600.`
+                        ? `Vento ${nomeClima} (${formatarNumero(res.velVento, 1)} m/s), ${nomeTipo} (Cv=${formatarNumero(res.coef, 3)}), esposizione ${nomeExposicao} (fattore ${formatarNumero(res.fatorExp, 2)}). Formula: A × V × fattore × Cv × 3600.`
+                        : `Vento ${nomeClima} (${formatarNumero(res.velVento, 1)} m/s), ${nomeTipo} (Cv=${formatarNumero(res.coef, 3)}), exposição ${nomeExposicao} (fator ${formatarNumero(res.fatorExp, 2)}). Fórmula: A × V × fator × Cv × 3600.`
                 },
                 {
                     icone: '🔄',
                     titulo: isIt ? 'Ricambi d\'aria (ACH)' : 'Renovações de ar (ACH)',
                     valor: `${formatarNumero(res.ach, 1)} ACH`,
                     descricao: isIt
-                        ? `Minimo necessario: ${formatarNumero(res.achNecessario, 1)} ACH (maggiore tra residenziale ${ACH_MIN_RESIDENCIAL} e per persone ${formatarNumero((v.pessoas * VAZAO_POR_PESSOA) / res.volume, 1)}).`
-                        : `Mínimo necessário: ${formatarNumero(res.achNecessario, 1)} ACH (maior entre residencial ${ACH_MIN_RESIDENCIAL} e por pessoas ${formatarNumero((v.pessoas * VAZAO_POR_PESSOA) / res.volume, 1)}).`
+                        ? `Obiettivo: ${formatarNumero(res.achNecessario, 1)} ACH (maggiore tra l'obiettivo educativo ${ACH_ALVO} e il fabbisogno per persone ${achPessoas}).`
+                        : `Alvo: ${formatarNumero(res.achNecessario, 1)} ACH (maior entre o alvo educativo ${ACH_ALVO} e o necessário por pessoas ${achPessoas}).`
                 },
                 {
                     icone: '🪟',
-                    titulo: isIt ? 'Superficie minima finestre (NBR 15575)' : 'Área mínima de janelas (NBR 15575)',
+                    titulo: isIt ? 'Superficie minima finestre (riferimento 1/8)' : 'Área mínima de janelas (referência 1/8)',
                     valor: `${formatarNumero(res.areaMinima, 2)} m²`,
                     descricao: isIt
-                        ? `1/8 dell'area del pavimento (${formatarNumero(res.areaPiso, 1)} m²). Attuale: ${v.janelas} m² — ${res.deficitJanelas > 0 ? 'insufficiente' : 'conforme'}.`
-                        : `1/8 da área do piso (${formatarNumero(res.areaPiso, 1)} m²). Atual: ${v.janelas} m² — ${res.deficitJanelas > 0 ? 'insuficiente' : 'conforme'}.`
+                        ? `1/8 dell'area del pavimento (${formatarNumero(res.areaPiso, 1)} m²) — regola tipica dei regolamenti edilizi. Attuale: ${v.janelas} m² — ${res.deficitJanelas > 0 ? 'insufficiente' : 'conforme'}. Criterio costruttivo indipendente dall'ACH.`
+                        : `1/8 da área do piso (${formatarNumero(res.areaPiso, 1)} m²) — regra típica de código de obras. Atual: ${v.janelas} m² — ${res.deficitJanelas > 0 ? 'insuficiente' : 'conforme'}. Critério construtivo independente do ACH.`
                 }
             ],
             destaque: isIt
                 ? `Qualità ventilazione: ${qualLabel} — ${formatarNumero(res.ach, 1)} ACH`
                 : `Qualidade da ventilação: ${qualLabel} — ${formatarNumero(res.ach, 1)} ACH`,
             dica: isIt
-                ? 'La ventilazione incrociata (finestre su pareti opposte) può raddoppiare l\'efficacia della ventilazione naturale.'
-                : 'A ventilação cruzada (janelas em paredes opostas) pode dobrar a eficácia da ventilação natural.',
-            norma: 'NBR 15575'
+                ? 'Con finestre su facciate opposte, seleziona il tipo "incrociata": la portata stimata può essere di un ordine di grandezza superiore a quella unilaterale.'
+                : 'Com janelas em fachadas opostas, selecione o tipo "cruzada": a vazão estimada pode ser uma ordem de grandeza maior que a unilateral.',
+            norma: isIt
+                ? 'Modello educativo — ASHRAE Fundamentals (Q=Cv·A·V) · BS 5925 (unilaterale) · verifica le norme locali'
+                : 'Modelo educativo — ASHRAE Fundamentals (Q=Cv·A·V) · BS 5925 (unilateral) · verifique as normas locais'
         };
     }
 }

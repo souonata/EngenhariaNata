@@ -18,7 +18,7 @@
     "label-altura-casa": "Altura do Pé Direito",
     "dica-altura-casa": "💡 Altura padrão residencial: 2,7m",
     "label-dias-autonomia": "Dias de Autonomia",
-    "dica-dias-autonomia": "💡 Número de dias sem sol que o sistema deve manter a casa aquecida",
+    "dica-dias-autonomia": "💡 Número de dias de água quente armazenada. Para aquecimento ambiente, use como margem educativa e confirme o projeto com especialista.",
     "unit-dias": "dias",
     "label-classe-energetica": "Classe Energética",
     "dica-classe-energetica": "<span style=\"font-size: 0.85em; color: #666;\">* Valores em kWh/m²·ano</span>",
@@ -104,7 +104,7 @@
     "tooltip-altitude-texto": "A altitude é a elevação do local de instalação em relação ao nível do mar, medida em metros.",
     "tooltip-area-casa-texto": "A área da casa é a área total construída em metros quadrados (m²) que será aquecida pelo sistema solar térmico.",
     "tooltip-altura-casa-texto": "A altura do pé direito é a distância do piso ao teto, medida em metros.",
-    "tooltip-autonomia-texto": "Os dias de autonomia representam quantos dias consecutivos sem sol o sistema deve ser capaz de manter a casa aquecida."
+    "tooltip-autonomia-texto": "Os dias de autonomia representam quantos dias de água quente o boiler deve armazenar. Valores maiores aumentam volume e custo. Para aquecimento ambiente, trate como estimativa educativa e confirme perdas térmicas, controles e segurança com especialista."
   },
   "it-IT": {
     "app-title": "☀️ Dimensionatore Riscaldatore Solare Termico",
@@ -124,7 +124,7 @@
     "label-altura-casa": "Altezza Soffitto",
     "dica-altura-casa": "💡 Altezza standard residenziale: 2,7m",
     "label-dias-autonomia": "Giorni di Autonomia",
-    "dica-dias-autonomia": "💡 Numero di giorni senza sole che il sistema deve mantenere la casa riscaldata",
+    "dica-dias-autonomia": "💡 Numero di giorni di acqua calda accumulata. Per il riscaldamento ambiente, usalo come margine educativo e conferma il progetto con uno specialista.",
     "unit-dias": "giorni",
     "label-classe-energetica": "Classe Energetica",
     "dica-classe-energetica": "<span style=\"font-size: 0.85em; color: #666;\">* Valori in kWh/m²·anno</span>",
@@ -210,7 +210,7 @@
     "tooltip-altitude-texto": "L'altitudine è l'elevazione del luogo di installazione rispetto al livello del mare.",
     "tooltip-area-casa-texto": "L'area della casa è l'area totale costruita in metri quadrati (m²) che sarà riscaldata.",
     "tooltip-altura-casa-texto": "L'altezza del soffitto è la distanza dal pavimento al soffitto, misurata in metri.",
-    "tooltip-autonomia-texto": "I giorni di autonomia rappresentano quanti giorni consecutivi senza sole il sistema deve mantenere la casa riscaldata."
+    "tooltip-autonomia-texto": "I giorni di autonomia rappresentano quanti giorni di acqua calda il boiler deve accumulare. Valori maggiori aumentano volume e costo. Per il riscaldamento ambiente, trattalo come stima educativa e conferma dispersioni, controlli e sicurezza con uno specialista."
   }
 }
 

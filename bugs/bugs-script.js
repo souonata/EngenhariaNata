@@ -3,6 +3,7 @@
 
 import { App, i18n, loading } from '../src/core/app.js';
 import { domCache } from '../src/utils/dom.js';
+import { validarEmail } from '../src/utils/validators.js';
 
 const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSc3Qo7Otct-L7mN2qS9r967oBol6n6gnsEJz2nfkz89sSpBcQ/formResponse';
 const GOOGLE_FORM_FIELDS = {
@@ -46,7 +47,9 @@ class BugsApp extends App {
         if (input) input.value = cat;
 
         document.querySelectorAll('#categoriaChips .v2-chip').forEach((chip) => {
-            chip.classList.toggle('ativo', chip.dataset.cat === cat);
+            const ativo = chip.dataset.cat === cat;
+            chip.classList.toggle('ativo', ativo);
+            chip.setAttribute('aria-pressed', ativo ? 'true' : 'false');
         });
     }
 
@@ -67,6 +70,12 @@ class BugsApp extends App {
         if (!descricao) {
             this.mostrarStatus(i18n.t('mensagens.camposObrigatorios'), 'erro');
             domCache.get('#bugDescription')?.focus();
+            return;
+        }
+
+        if (contato && contato.includes('@') && !validarEmail(contato)) {
+            this.mostrarStatus(i18n.t('mensagens.emailInvalido'), 'erro');
+            domCache.get('#bugContact')?.focus();
             return;
         }
 
@@ -129,7 +138,7 @@ class BugsApp extends App {
         if (!el) return;
         el.textContent = msg;
         el.style.display = 'block';
-        el.className = `status-message status-${tipo}`;
+        el.className = `status-message ${tipo}`;
         setTimeout(() => {
             el.style.display = 'none';
         }, 4000);

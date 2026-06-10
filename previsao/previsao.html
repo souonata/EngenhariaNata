@@ -6,6 +6,8 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://souonata.goatcounter.com https://*.open-meteo.com https://docs.google.com https://script.google.com; frame-src https://docs.google.com; object-src 'none'; base-uri 'self'; form-action 'self' https://docs.google.com; upgrade-insecure-requests;">
 <meta name="theme-color" content="#0b1220">
 <title>Previsão 7 dias</title>
+<script data-goatcounter="https://souonata.goatcounter.com/count"
+        async src="https://gc.zgo.at/count.js"></script>
 <style>
   *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
   :root{
@@ -601,7 +603,9 @@ function loadSlotCity(i){
   catch(e){ return null; }
 }
 function saveSlotCity(i,city){ try{ localStorage.setItem(LS_SLOT(i),JSON.stringify({id:city.id,name:city.name,nameIt:city.nameIt||undefined,lat:city.lat,lon:city.lon})); }catch(e){} }
-function clearSlotCity(i){ try{ localStorage.removeItem(LS_SLOT(i)); }catch(e){} }
+// Grava o sentinela 'null' (e não removeItem): assim o seedDefaults não
+// re-semeia o default no próximo load e a exclusão do slot persiste.
+function clearSlotCity(i){ try{ localStorage.setItem(LS_SLOT(i),'null'); }catch(e){} }
 
 // Na primeira visita, grava os defaults nos slots que ainda não têm nada salvo.
 (function seedDefaults(){
@@ -633,7 +637,11 @@ const I18N = {
     rainAction:'Vai chover — feche a janela e recolha a roupa do varal',
     search:'Buscar', searchPh:'Digite uma cidade…', searching:'Buscando…', noResults:'Nenhuma cidade encontrada',
     tempLabel:'Temperatura', windLabel:'Vento', rainLabel:'Chuva', windPeak:'Vento máx.',
-    feelsLabel:'Sensação térmica', probLabel:'prob.'
+    feelsLabel:'Sensação térmica', probLabel:'prob.',
+    wmoDesc:{ clear:'Céu limpo', quasiClear:'Quase limpo', partCloudy:'Parc. nublado', cloudy:'Nublado',
+      fog:'Nevoeiro', drizzle:'Chuvisco', rainLight:'Chuva fraca', rain:'Chuva', rainHeavy:'Chuva forte',
+      freezing:'Chuva congel.', snow:'Neve', showers:'Aguaceiros', snowShowers:'Aguac. neve',
+      thunder:'Trovoada', thunderHail:'Trov./granizo' }
   },
   'it-IT': {
     loading:'Caricamento previsioni…', error:'Errore nel caricamento dei dati.', retry:'Riprova',
@@ -645,16 +653,27 @@ const I18N = {
     rainAction:'Pioggia in arrivo — chiudi la finestra e ritira il bucato',
     search:'Cerca', searchPh:'Scrivi una città…', searching:'Ricerca…', noResults:'Nessuna città trovata',
     tempLabel:'Temperatura', windLabel:'Vento', rainLabel:'Pioggia', windPeak:'Vento max',
-    feelsLabel:'Temperatura percepita', probLabel:'prob.'
+    feelsLabel:'Temperatura percepita', probLabel:'prob.',
+    wmoDesc:{ clear:'Sereno', quasiClear:'Quasi sereno', partCloudy:'Parz. nuvoloso', cloudy:'Nuvoloso',
+      fog:'Nebbia', drizzle:'Pioggerella', rainLight:'Pioggia debole', rain:'Pioggia', rainHeavy:'Pioggia forte',
+      freezing:'Pioggia gelata', snow:'Neve', showers:'Rovesci', snowShowers:'Rovesci di neve',
+      thunder:'Temporale', thunderHail:'Temp./grandine' }
   }
 };
-let LANG = (() => { try { const s = sessionStorage.getItem('engnata_idioma'); return (s === 'it-IT' || s === 'pt-BR') ? s : 'pt-BR'; } catch (e) { return 'pt-BR'; } })();
+// Default it-IT: o mesmo fallback de src/core/i18n.js, para o visitante novo
+// não trocar de idioma ao navegar do index para cá.
+let LANG = (() => { try { const s = sessionStorage.getItem('engnata_idioma'); return (s === 'it-IT' || s === 'pt-BR') ? s : 'it-IT'; } catch (e) { return 'it-IT'; } })();
 const T = () => I18N[LANG];
 const cityName = c => (LANG.startsWith('it') && c.nameIt) ? c.nameIt : c.name;
+// Escapa dados externos (geocoding/localStorage) antes de injetar em innerHTML.
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// Decimais no locale ativo (vírgula em pt/it) só na EXIBIÇÃO.
+const fmt1 = v => Number(v).toLocaleString(LANG, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const fmt2 = v => Number(v).toLocaleString(LANG, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-/* Tema: usa a mesma chave do site (engnata_theme_mode, em JSON). O previsao é
-   dark por padrão; só vira light com data-theme="light". */
-let THEME = (() => { try { return JSON.parse(localStorage.getItem('engnata_theme_mode')) || 'dark'; } catch (e) { return 'dark'; } })();
+/* Tema: usa a mesma chave do site (engnata_theme_mode, em JSON). Default light,
+   como em src/core/theme.js — o visual dark continua disponível pelo botão. */
+let THEME = (() => { try { return JSON.parse(localStorage.getItem('engnata_theme_mode')) || 'light'; } catch (e) { return 'light'; } })();
 
 let cityData = [];              // dados de cada cidade (índices alinhados com CITIES)
 let currentIdx = (() => { const i=CITIES.findIndex(c=>c.id===localStorage.getItem(LS_CITY)); return Math.max(0,i); })();
@@ -690,7 +709,10 @@ function applyTheme(persist){
   if (THEME === 'light') html.setAttribute('data-theme', 'light');
   else html.removeAttribute('data-theme');         // dark = base do app
   const btn = document.getElementById('themeBtn');
-  if (btn) btn.textContent = THEME === 'light' ? 'Dark' : 'Light';
+  if (btn) {
+    btn.textContent = THEME === 'light' ? 'Dark' : 'Light';
+    btn.setAttribute('aria-pressed', String(THEME === 'dark'));
+  }
   if (persist) { try { localStorage.setItem('engnata_theme_mode', JSON.stringify(THEME)); } catch (e) {} }
 }
 
@@ -706,7 +728,10 @@ function applyLangStatic(){
   const home = document.querySelector('.home-button-fixed');
   if (home) { home.title = t.home; home.setAttribute('aria-label', t.home); }
   const si = document.getElementById('searchInput'); if (si) si.placeholder = t.searchPh;
-  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === LANG));
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === LANG);
+    b.setAttribute('aria-pressed', String(b.dataset.lang === LANG));
+  });
 }
 
 function wireControls(){
@@ -782,9 +807,9 @@ function makeSlotBtn(si, withData){
   btn.className = 'city-btn' + (!withData ? ' loading' : '') + (ci === currentIdx ? ' active' : '');
   if(withData && cityData[ci]){
     const cur = cityData[ci].current, [emo,desc] = wmo(cur.weather_code);
-    btn.innerHTML = `<span class="cb-name">${cityName(city)}</span><span class="cb-row1"><span class="cb-emoji" title="${desc}">${emo}</span><span class="cb-temp" title="${T().tempLabel}">${Math.round(cur.temperature_2m)}°</span></span><span class="cb-meta" title="🌡 ${T().feelsLabel} · 💨 ${T().windLabel} (km/h)">🌡${Math.round(cur.apparent_temperature)}° · 💨${Math.round(cur.wind_speed_10m)} km/h</span><button type="button" class="slot-clear" title="${T().search}">🗑️</button>`;
+    btn.innerHTML = `<span class="cb-name">${esc(cityName(city))}</span><span class="cb-row1"><span class="cb-emoji" title="${desc}">${emo}</span><span class="cb-temp" title="${T().tempLabel}">${Math.round(cur.temperature_2m)}°</span></span><span class="cb-meta" title="🌡 ${T().feelsLabel} · 💨 ${T().windLabel} (km/h)">🌡${Math.round(cur.apparent_temperature)}° · 💨${Math.round(cur.wind_speed_10m)} km/h</span><button type="button" class="slot-clear" title="${T().search}">🗑️</button>`;
   } else {
-    btn.innerHTML = `<span class="cb-name">${cityName(city)}</span><span class="cb-row1"><span class="cb-emoji">—</span><span class="cb-temp">—°</span></span><span class="cb-meta">— · —</span><button type="button" class="slot-clear" title="${T().search}">🗑️</button>`;
+    btn.innerHTML = `<span class="cb-name">${esc(cityName(city))}</span><span class="cb-row1"><span class="cb-emoji">—</span><span class="cb-temp">—°</span></span><span class="cb-meta">— · —</span><button type="button" class="slot-clear" title="${T().search}">🗑️</button>`;
   }
   btn.addEventListener('click', (e) => { if(!e.target.closest('.slot-clear')) selectCity(ci); });
   btn.querySelector('.slot-clear').addEventListener('click', (e) => { e.stopPropagation(); clearSlot(si); });
@@ -874,7 +899,7 @@ function renderSearchResults(results){
   if (!results.length) { box.innerHTML = `<div class="search-empty">${T().noResults}</div>`; return; }
   box.innerHTML = results.map((r, i) => {
     const sub = [r.admin1, r.country].filter(Boolean).join(' · ');
-    return `<button type="button" class="search-item" data-i="${i}"><span class="si-name">${r.name}</span><span class="si-sub">${sub}</span></button>`;
+    return `<button type="button" class="search-item" data-i="${i}"><span class="si-name">${esc(r.name)}</span><span class="si-sub">${esc(sub)}</span></button>`;
   }).join('');
   box.querySelectorAll('.search-item').forEach(el =>
     el.addEventListener('click', () => addCityFromResult(results[+el.dataset.i])));
@@ -928,7 +953,8 @@ function wireSearch(){
     if (q.length < 2) { box.innerHTML = ''; return; }
     box.innerHTML = `<div class="search-empty">${T().searching}</div>`;
     try { renderSearchResults(await geocode(q)); }
-    catch (e) { box.innerHTML = `<div class="search-empty">${T().noResults}</div>`; }
+    // Falha de rede não é "nenhuma cidade encontrada" — mostra o erro traduzido.
+    catch (e) { box.innerHTML = `<div class="search-empty">${T().error}</div>`; }
   };
   inp.addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(run, 350); });
   inp.addEventListener('keydown', (e) => {
@@ -961,7 +987,7 @@ function showTip(cx, cy, el){
     `<b>${String(hr).padStart(2,'0')}h</b>` +
     `<div class="tip-row">🌡️ <span>${t}°C</span></div>` +
     `<div class="tip-row">💨 <span>${w} km/h ${dir}</span></div>` +
-    `<div class="tip-row">🌧️ <span>${pop}% · ${mm} mm</span></div>`;
+    `<div class="tip-row">🌧️ <span>${pop}% · ${fmt1(mm)} mm</span></div>`;
   tip.style.display = 'block';
   tipOpen = true;
   const vw = window.innerWidth, vh = window.innerHeight;
@@ -1027,7 +1053,10 @@ function histCacheFresh(){
     const raw = JSON.parse(localStorage.getItem(LS_HISTMAX) || 'null');
     if (!raw || !raw.date || !raw.values) return false;
     if (!CITIES.every(c => typeof raw.values[c.id] === 'number')) return false;
-    const ageDays = (Date.now() - new Date(raw.date + 'T00:00:00').getTime()) / 86400000;
+    // Compara por timestamp quando disponível (raw.ts); o fallback por data
+    // misturava dia UTC com meia-noite local e podia invalidar o cache à toa.
+    const base = typeof raw.ts === 'number' ? raw.ts : new Date(raw.date + 'T00:00:00').getTime();
+    const ageDays = (Date.now() - base) / 86400000;
     return ageDays >= 0 && ageDays < HISTMAX_TTL_DAYS;
   } catch (e) { return false; }
 }
@@ -1068,7 +1097,7 @@ async function ensureHistMax(){
   try {
     const vals = await fetchHistMax();
     histMaxByCity = vals;
-    localStorage.setItem(LS_HISTMAX, JSON.stringify({ date: new Date().toISOString().slice(0,10), values: vals }));
+    localStorage.setItem(LS_HISTMAX, JSON.stringify({ date: new Date().toISOString().slice(0,10), ts: Date.now(), values: vals }));
     if (cityData.length) renderDays();      // re-renderiza com o teto histórico
   } catch (e) { /* mantém o fallback (semana) */ }
 }
@@ -1077,21 +1106,23 @@ async function ensureHistMax(){
 function wmo(code){
   // Seletor de variação ️ (U+FE0F) força a apresentação COLORIDA do emoji; sem
   // ele, vários destes glifos viram texto monocromático (preto no tema claro).
-  if (code === 0)              return ['☀️','Céu limpo'];
-  if (code === 1)              return ['🌤️','Quase limpo'];
-  if (code === 2)              return ['⛅','Parc. nublado'];
-  if (code === 3)              return ['☁️','Nublado'];
-  if (code === 45 || code===48)return ['🌫️','Nevoeiro'];
-  if (code >= 51 && code <= 57)return ['🌦️','Chuvisco'];
-  if (code === 61)             return ['🌧️','Chuva fraca'];
-  if (code === 63)             return ['🌧️','Chuva'];
-  if (code === 65)             return ['🌧️','Chuva forte'];
-  if (code >= 66 && code <= 67)return ['🌧️','Chuva congel.'];
-  if (code >= 71 && code <= 77)return ['❄️','Neve'];
-  if (code >= 80 && code <= 82)return ['🌦️','Aguaceiros'];
-  if (code === 85 || code===86)return ['🌨️','Aguac. neve'];
-  if (code === 95)             return ['⛈️','Trovoada'];
-  if (code >= 96 && code <= 99)return ['⛈️','Trov./granizo'];
+  // Descrições vêm do I18N (wmoDesc) para acompanhar o idioma ativo.
+  const d = T().wmoDesc;
+  if (code === 0)              return ['☀️', d.clear];
+  if (code === 1)              return ['🌤️', d.quasiClear];
+  if (code === 2)              return ['⛅', d.partCloudy];
+  if (code === 3)              return ['☁️', d.cloudy];
+  if (code === 45 || code===48)return ['🌫️', d.fog];
+  if (code >= 51 && code <= 57)return ['🌦️', d.drizzle];
+  if (code === 61)             return ['🌧️', d.rainLight];
+  if (code === 63)             return ['🌧️', d.rain];
+  if (code === 65)             return ['🌧️', d.rainHeavy];
+  if (code >= 66 && code <= 67)return ['🌧️', d.freezing];
+  if (code >= 71 && code <= 77)return ['❄️', d.snow];
+  if (code >= 80 && code <= 82)return ['🌦️', d.showers];
+  if (code === 85 || code===86)return ['🌨️', d.snowShowers];
+  if (code === 95)             return ['⛈️', d.thunder];
+  if (code >= 96 && code <= 99)return ['⛈️', d.thunderHail];
   return ['🌡️','—'];
 }
 
@@ -1146,7 +1177,7 @@ function renderDays(){
 
   const c = cd.city;
   document.getElementById('footLoc').textContent =
-    `📍 ${cityName(c)} · ${c.lat.toFixed(2)}°, ${c.lon.toFixed(2)}°`;
+    `📍 ${cityName(c)} · ${fmt2(c.lat)}° · ${fmt2(c.lon)}°`;
   document.title = `Previsão · ${cityName(c)}`;
 }
 
@@ -1252,7 +1283,7 @@ function buildRow(day, hours, isToday, nowH, scaleMax, lat, yLowG, yHighG){
     const x = (xAt(i) - rBarW/2).toFixed(1);
     const pid = `rn${day.date.replace(/-/g,'')}_${currentIdx}_${i}`;
     rainDefs.push(`<pattern id="${pid}" patternUnits="userSpaceOnUse" width="${spacing.toFixed(2)}" height="${spacing.toFixed(2)}" patternTransform="rotate(${angle})"><line x1="0" y1="-0.5" x2="0" y2="${(spacing+0.5).toFixed(2)}" class="rain-hatch" stroke-width="${thick}" stroke-dasharray="${(spacing*0.5).toFixed(2)} ${(spacing*0.55).toFixed(2)}"/></pattern>`);
-    const rainTip = `${T().rainLabel} ${String(hours[i].hour).padStart(2,'0')}h: ${m.toFixed(1)} mm · ${Math.round(pop)}% ${T().probLabel}`;
+    const rainTip = `${T().rainLabel} ${String(hours[i].hour).padStart(2,'0')}h: ${fmt1(m)} mm · ${Math.round(pop)}% ${T().probLabel}`;
     rainRects.push(`<rect x="${x}" y="${padT}" width="${rBarW.toFixed(1)}" height="${ch}" fill="url(#${pid})" opacity="${op}"><title>${rainTip}</title></rect>`);
   });
   const rainDefsSvg = rainDefs.join('');
@@ -1357,8 +1388,12 @@ function buildRow(day, hours, isToday, nowH, scaleMax, lat, yLowG, yHighG){
     ? `<span class="ser-ico" title="${T().windLabel} (km/h)" style="left:${icoX}%;top:${windIcoTop}%;font-size:${serIcoFs}">💨</span>`
     : '';
 
+  // Resumo textual do dia para leitores de tela (os SVGs são decorativos).
+  const ariaResumo = `${dow} ${dnum}: ${emoDesc} · ↑${Math.round(tMax)}° ↓${Math.round(tMin)}°`
+    + (windMax > 0 ? ` · ${T().windPeak} ${Math.round(windMax)} km/h` : '')
+    + (needRainAction ? ` · ${T().rainLabel}` : '');
   return `
-    <div class="row${isToday ? ' today' : ''}">
+    <div class="row${isToday ? ' today' : ''}" role="img" aria-label="${esc(ariaResumo)}">
       <div class="c-date">
         <span class="dow">${dow}</span>
         <span class="dnum">${dnum}</span>
@@ -1367,7 +1402,7 @@ function buildRow(day, hours, isToday, nowH, scaleMax, lat, yLowG, yHighG){
       </div>
       <div class="c-chart">
         <div class="wind-wrap">
-          <svg class="spark" viewBox="0 0 ${VBW} ${WIND_H}" preserveAspectRatio="none">
+          <svg class="spark" viewBox="0 0 ${VBW} ${WIND_H}" preserveAspectRatio="none" aria-hidden="true">
             ${windBars}
           </svg>
           ${windBall}
@@ -1375,7 +1410,7 @@ function buildRow(day, hours, isToday, nowH, scaleMax, lat, yLowG, yHighG){
         </div>
         ${hourAxisHTML}
         <div class="spark-wrap">
-          <svg class="spark" viewBox="0 0 ${VBW} ${H}" preserveAspectRatio="none">
+          <svg class="spark" viewBox="0 0 ${VBW} ${H}" preserveAspectRatio="none" aria-hidden="true">
             <defs>
               <linearGradient id="${tgid}" gradientUnits="userSpaceOnUse" x1="0" y1="${padT}" x2="0" y2="${(padT+ch).toFixed(1)}">
                 ${tempStops}
@@ -1485,7 +1520,9 @@ function groupHours(hs){
 function showError(msg){
   document.getElementById('loading').style.display = 'none';
   document.getElementById('app').style.display = 'none';
-  document.getElementById('errMsg').textContent = msg;
+  // Mensagem traduzida primeiro; o detalhe técnico cru (ex.: "HTTP 429",
+  // "Failed to fetch") fica entre parênteses para diagnóstico.
+  document.getElementById('errMsg').textContent = msg ? `${T().error} (${msg})` : T().error;
   document.getElementById('error').style.display = 'flex';
 }
 </script>

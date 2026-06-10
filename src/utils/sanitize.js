@@ -78,9 +78,17 @@ export function formatarNumeroSeguro(numero, casasDecimais = 2) {
  */
 export function validarURL(url) {
     if (typeof url !== 'string') return '#';
-    const protocolo = url.toLowerCase().split(':')[0];
-    const protecolosSegulos = ['http', 'https', 'mailto', 'ftp', 'tel'];
-    if (protecolosSegulos.includes(protocolo)) return url;
-    if (!url.includes(':') && url.startsWith('/')) return url; // Caminho relativo
+
+    const valor = url.trim();
+    if (!valor) return '#';
+
+    if (!valor.includes(':')) {
+        return valor.startsWith('//') ? '#' : valor;
+    }
+
+    const protocolo = valor.toLowerCase().split(':')[0];
+    const protocolosSeguros = ['http', 'https', 'mailto', 'ftp', 'tel'];
+    if (protocolosSeguros.includes(protocolo)) return valor;
+
     return '#';
 }

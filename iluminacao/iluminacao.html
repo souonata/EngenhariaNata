@@ -16,7 +16,7 @@
     </title>
     <meta
       name="description"
-      content="Calculadora de iluminação residencial. Dimensiona quantidade de lâmpadas, potência necessária, lux recomendado e custo mensal de energia conforme NBR 5413."
+      content="Calculadora de iluminação residencial. Dimensiona quantidade de lâmpadas, potência necessária, lux recomendado e custo mensal de energia com iluminâncias de referência (antiga NBR 5413)."
     />
     <meta
       name="keywords"
@@ -41,7 +41,7 @@
     />
     <meta
       property="og:description"
-      content="Dimensiona lâmpadas, lux recomendado e custo mensal de energia para iluminação residencial conforme NBR 5413."
+      content="Dimensiona lâmpadas, lux recomendado e custo mensal de energia para iluminação residencial com iluminâncias de referência (antiga NBR 5413)."
     />
     <meta property="og:locale" content="pt_BR" />
     <meta property="og:locale:alternate" content="it_IT" />
@@ -58,7 +58,7 @@
     />
     <meta
       property="twitter:description"
-      content="Dimensiona lâmpadas, lux recomendado e custo mensal de energia para iluminação residencial conforme NBR 5413."
+      content="Dimensiona lâmpadas, lux recomendado e custo mensal de energia para iluminação residencial com iluminâncias de referência (antiga NBR 5413)."
     />
 
     <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.0.1" />
@@ -488,7 +488,7 @@
               >
               <div class="grupo-radio">
                 <label class="opcao-radio">
-                  <input type="radio" name="luzNatural" value="muita" checked />
+                  <input type="radio" name="luzNatural" value="muita" />
                   <div class="cartao-radio">
                     <span class="rotulo-radio">☀️</span>
                     <span class="rotulo-radio" data-i18n="opcoes.muita"
@@ -515,7 +515,7 @@
                   </div>
                 </label>
                 <label class="opcao-radio">
-                  <input type="radio" name="luzNatural" value="nenhuma" />
+                  <input type="radio" name="luzNatural" value="nenhuma" checked />
                   <div class="cartao-radio">
                     <span class="rotulo-radio">🌙</span>
                     <span class="rotulo-radio" data-i18n="opcoes.nenhuma"
@@ -651,7 +651,9 @@
         <div class="memorial-item">
           <h3 data-i18n="memorial.passo1Titulo">1️⃣ Passo 1: Lux Recomendado</h3>
           <p data-i18n="memorial.passo1Explicacao">
-            A norma NBR 5413 define valores de lux ideais por tipo de atividade.
+            Valores de lux de referência por tipo de atividade (antiga NBR
+            5413:1992, cancelada em 2013). Aplica-se um fator de redução
+            opcional quando há luz natural disponível.
           </p>
           <div class="formula-box">
             <p>
@@ -662,7 +664,7 @@
           </div>
           <p>
             <strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
-            <span id="memorial-exemplo-lux">150 × 0,5 = 75 lux</span>
+            <span id="memorial-exemplo-lux">150 × 1,00 = 150 lux</span>
           </p>
         </div>
 
@@ -684,7 +686,7 @@
           <p>
             <strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
             <span id="memorial-exemplo-lumens"
-              >(20 × 75) ÷ (0,80 × 1,00) = 1.875 lm</span
+              >(20 × 150) ÷ (0,80 × 1,000) = 3.750 lm</span
             >
           </p>
         </div>
@@ -695,7 +697,7 @@
           </h3>
           <p data-i18n="memorial.passo3Explicacao">
             Seleciona a combinação com menor potência total entre LED de 6, 9,
-            12 e 15 W.
+            12 e 15 W; em quase empate (até 1%), a com menos lâmpadas.
           </p>
           <div class="formula-box">
             <p>
@@ -707,7 +709,7 @@
           <p>
             <strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
             <span id="memorial-exemplo-luminarias"
-              >⌈1.875 ÷ (9 × 100)⌉ = 3 × 9W = 27W</span
+              >⌈3.750 ÷ (6 × 100)⌉ = 7 × 6W = 42W</span
             >
           </p>
         </div>
@@ -726,7 +728,7 @@
           <p>
             <strong data-i18n="memorial.passo1Exemplo">Exemplo:</strong>
             <span id="memorial-exemplo-custo"
-              >27W × 5h × 30 ÷ 1000 = 4,05 kWh → R$ 4,86</span
+              >42W × 5h × 30 ÷ 1000 = 6,30 kWh → R$ 7,56</span
             >
           </p>
         </div>
@@ -740,7 +742,7 @@
             </p>
             <ul>
               <li data-i18n="memorial.constLux">
-                Valores de lux NBR 5413 por ambiente
+                Valores de lux de referência (antiga NBR 5413) por ambiente
               </li>
               <li data-i18n="memorial.constLuzNatural">
                 Fatores luz natural: muita 0,50 | média 0,65 | pouca 0,85 |
@@ -757,7 +759,10 @@
               </li>
             </ul>
             <p style="margin-top: 10px">
-              <strong data-i18n="memorial.norma">Norma: NBR 5413:1992</strong>
+              <strong data-i18n="memorial.norma"
+                >Referência educativa: antiga NBR 5413:1992 (cancelada em 2013;
+                ver NBR ISO/CIE 8995-1)</strong
+              >
             </p>
           </div>
         </div>
@@ -870,7 +875,7 @@
                 >Potência instalada total:</span
               >
               <div class="resultado-valor">
-                <span id="resultadoPotenciaTotalResidencia">27</span>
+                <span id="resultadoPotenciaTotalResidencia">42</span>
                 <span class="unidade" data-i18n="unidades.watt">W</span>
               </div>
             </div>
@@ -881,7 +886,7 @@
                 >Total de luminárias:</span
               >
               <div class="resultado-valor">
-                <span id="resultadoLuminariasTotalResidencia">3</span>
+                <span id="resultadoLuminariasTotalResidencia">7</span>
                 <span class="unidade" data-i18n="unidades.unidade">un.</span>
               </div>
             </div>
@@ -892,7 +897,7 @@
                 >Consumo mensal total:</span
               >
               <div class="resultado-valor">
-                <span id="resultadoConsumoTotalResidencia">4.1</span>
+                <span id="resultadoConsumoTotalResidencia">6,3</span>
                 <span class="unidade" data-i18n="unidades.kwh">kWh</span>
               </div>
             </div>
@@ -903,7 +908,7 @@
                 >Custo mensal total:</span
               >
               <div class="resultado-valor">
-                <span id="resultadoCustoTotalResidencia">R$ 4,86</span>
+                <span id="resultadoCustoTotalResidencia">R$ 7,56</span>
               </div>
             </div>
             <div class="resultado-item destaque">
@@ -913,7 +918,7 @@
                 >Custo anual total:</span
               >
               <div class="resultado-valor">
-                <span id="resultadoCustoAnualTotalResidencia">R$ 58,32</span>
+                <span id="resultadoCustoAnualTotalResidencia">R$ 90,72</span>
               </div>
             </div>
           </div>

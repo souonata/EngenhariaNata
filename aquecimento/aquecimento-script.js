@@ -826,8 +826,15 @@ class AquecimentoApp extends App {
             return elemento.closest('.grupo-entrada');
         };
         
-        // Ocultar/mostrar campos da casa
+        // Se nenhum checkbox estiver marcado, reativar ao menos água
+        if (checkboxAgua && checkboxCasa && !checkboxAgua.checked && !checkboxCasa.checked) {
+            checkboxAgua.checked = true;
+        }
+
+        // Ocultar/mostrar campos conforme o tipo de sistema
+        const mostrarAgua = checkboxAgua && checkboxAgua.checked;
         const mostrarCasa = checkboxCasa && checkboxCasa.checked;
+        const mostrarAutonomia = mostrarAgua || mostrarCasa;
         
         // Encontrar os grupos de entrada relacionados à casa
         const grupoAreaCasa = encontrarGrupoPai('sliderAreaCasa');
@@ -855,16 +862,12 @@ class AquecimentoApp extends App {
             grupoAlturaCasa.style.display = mostrarCasa ? 'block' : 'none';
         }
         if (grupoAutonomia) {
-            grupoAutonomia.style.display = mostrarCasa ? 'block' : 'none';
+            grupoAutonomia.style.display = mostrarAutonomia ? 'block' : 'none';
         }
         if (grupoClasseEnergetica) {
             grupoClasseEnergetica.style.display = mostrarCasa ? 'block' : 'none';
         }
         
-        // Se nenhum checkbox estiver marcado, reativar ao menos água
-        if (checkboxAgua && checkboxCasa && !checkboxAgua.checked && !checkboxCasa.checked) {
-            checkboxAgua.checked = true;
-        }
     }
     
     // ============================================
@@ -877,6 +880,7 @@ class AquecimentoApp extends App {
         const numPessoas = parseFloat(document.getElementById('sliderPessoas')?.value || 1);
         const areaCasa = parseFloat(document.getElementById('sliderAreaCasa')?.value || 0);
         const alturaCasa = parseFloat(document.getElementById('sliderAlturaCasa')?.value || 2.7);
+        const diasAutonomia = parseFloat(document.getElementById('sliderDiasAutonomia')?.value || 1);
         
         // Obter checkboxes
         const calcularAgua = document.getElementById('checkboxAgua')?.checked || false;
@@ -938,7 +942,7 @@ class AquecimentoApp extends App {
         const areaTotal = numeroPaineis * areaUnitaria;
         
         // Calcular volume do boiler (se calculando água)
-        const volumeBoiler = calcularAgua ? numPessoas * consumoPorPessoa * 1.5 : 0;
+        const volumeBoiler = calcularAgua ? numPessoas * consumoPorPessoa * diasAutonomia : 0;
         
         // Calcular custos
         const idioma = i18n.obterIdiomaAtual();
@@ -1006,6 +1010,7 @@ class AquecimentoApp extends App {
             demandaAgua_kWh_dia,
             demandaCasa_kWh_dia,
             volumeBoiler,
+            diasAutonomia,
             potenciaCasa_W,
             custoTotal,
             calcularAgua,
@@ -1030,7 +1035,7 @@ class AquecimentoApp extends App {
         this.atualizarGraficoEficiencia(energiaSolar_kWh_dia, demandaAgua_kWh_dia, demandaCasa_kWh_dia, calcularAgua, calcularCasa, idioma);
     }
 
-    renderizarExplicacao({ numeroPaineis, areaTotal, demandaAgua_kWh_dia, demandaCasa_kWh_dia, volumeBoiler, potenciaCasa_W, custoTotal, calcularAgua, calcularCasa, moedaSimbolo }) {
+    renderizarExplicacao({ numeroPaineis, areaTotal, demandaAgua_kWh_dia, demandaCasa_kWh_dia, volumeBoiler, diasAutonomia, potenciaCasa_W, custoTotal, calcularAgua, calcularCasa, moedaSimbolo }) {
         const pt = i18n.obterIdiomaAtual() === 'pt-BR';
         const demandaTotal = demandaAgua_kWh_dia + demandaCasa_kWh_dia;
 
@@ -1052,8 +1057,8 @@ class AquecimentoApp extends App {
                     titulo: pt ? 'Boiler e Potência' : 'Boiler e Potenza',
                     valor: calcularAgua ? `${this.formatarDecimal(volumeBoiler, 0)} L` : (pt ? 'Boiler desativado' : 'Boiler disattivato'),
                     descricao: calcularCasa
-                        ? (pt ? `Potência para ambiente: ${this.formatarPotenciaWkW(potenciaCasa_W)}.` : `Potenza ambiente: ${this.formatarPotenciaWkW(potenciaCasa_W)}.`)
-                        : (pt ? 'Aquecimento da casa desativado.' : 'Riscaldamento casa disattivato.')
+                        ? (pt ? `Autonomia: ${this.formatarDecimal(diasAutonomia, 0)} dia(s). Potência para ambiente: ${this.formatarPotenciaWkW(potenciaCasa_W)}.` : `Autonomia: ${this.formatarDecimal(diasAutonomia, 0)} giorno/i. Potenza ambiente: ${this.formatarPotenciaWkW(potenciaCasa_W)}.`)
+                        : (pt ? `Volume para ${this.formatarDecimal(diasAutonomia, 0)} dia(s) de água quente.` : `Volume per ${this.formatarDecimal(diasAutonomia, 0)} giorno/i di acqua calda.`)
                 },
                 {
                     icone: '💰',

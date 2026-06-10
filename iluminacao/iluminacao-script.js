@@ -5,7 +5,7 @@
 
 import { App } from "../src/core/app.js";
 import { i18n } from "../src/core/i18n.js";
-import { formatarNumero, formatarMoeda } from "../src/utils/formatters.js";
+import { formatarNumero, formatarMoeda, parsearNumero } from "../src/utils/formatters.js";
 import { ExplicacaoResultado } from "../src/components/resultado-explicado.js";
 
 const LUX_RECOMENDADO = {
@@ -72,7 +72,9 @@ const AMBIENTE_PADRAO = {
   area: 20,
   corParedes: "clara",
   peDireito: 2.7,
-  luzNatural: "muita",
+  // "nenhuma" dimensiona para o lux pleno (uso noturno garantido); os fatores
+  // de luz natural são redução opcional para uso predominantemente diurno.
+  luzNatural: "nenhuma",
 };
 
 function escapeHtml(value) {
@@ -248,7 +250,7 @@ class IluminacaoApp extends App {
       return;
     }
 
-    const valorAtual = parseFloat(input.value.replace(",", "."));
+    const valorAtual = this.normalizarValorNumerico(input.value);
     slider.min = String(config.min);
     slider.max = String(config.max);
     slider.step = String(config.step);
@@ -456,6 +458,9 @@ class IluminacaoApp extends App {
 
         const valorNormalizado = this.normalizarValorSlider(slider, valor);
         slider.value = String(valorNormalizado);
+        // O clamp programático não dispara 'input'; limpa o estado visual de
+        // fora-de-faixa aplicado pela camada compartilhada (src/core/app.js).
+        slider.classList.remove("slider-fora-faixa");
         input.value = valorNormalizado.toFixed(this.decimaisPorSlider(slider));
         this.aplicarValorPorSlider(sliderId, valorNormalizado);
       });
@@ -475,7 +480,14 @@ class IluminacaoApp extends App {
   }
 
   normalizarValorNumerico(valor) {
-    return parseFloat(String(valor).replace(",", "."));
+    if (valor === null || valor === undefined) {
+      return NaN;
+    }
+    const texto = String(valor);
+    if (!/[0-9]/.test(texto)) {
+      return NaN;
+    }
+    return parsearNumero(texto);
   }
 
   sincronizarCampoTextoComSlider(sliderId) {
@@ -684,37 +696,45 @@ class IluminacaoApp extends App {
   }
 
   definirConfiguracaoLuminarias(lumensNecessarios) {
-    let melhorConfig = null;
-    let menorPotencia = Infinity;
+    const candidatas = [];
 
     for (const watt of TIPOS_LAMPADAS) {
       const lumensPorLampada = watt * LUMENS_POR_WATT;
       const quantidade = Math.ceil(lumensNecessarios / lumensPorLampada);
 
-      if (quantidade > 0 && quantidade <= 10) {
-        const potenciaTotal = watt * quantidade;
-        if (potenciaTotal < menorPotencia) {
-          menorPotencia = potenciaTotal;
-          melhorConfig = {
-            quantidade,
-            wattagem: watt,
-            potenciaTotal,
-            lumensUnitario: lumensPorLampada,
-            lumensReais: lumensPorLampada * quantidade,
-          };
-        }
+      if (quantidade > 0) {
+        candidatas.push({
+          quantidade,
+          wattagem: watt,
+          potenciaTotal: watt * quantidade,
+          lumensUnitario: lumensPorLampada,
+          lumensReais: lumensPorLampada * quantidade,
+        });
       }
     }
 
-    return (
-      melhorConfig || {
-        quantidade: 2,
-        wattagem: 9,
-        potenciaTotal: 18,
-        lumensUnitario: 900,
-        lumensReais: 1800,
-      }
+    if (candidatas.length === 0) {
+      // Entrada degenerada (lumens ≤ 0 ou NaN): config mínima de 1 lâmpada da
+      // menor potência, para a UI nunca quebrar por TypeError.
+      const watt = TIPOS_LAMPADAS[0];
+      return {
+        quantidade: 1,
+        wattagem: watt,
+        potenciaTotal: watt,
+        lumensUnitario: watt * LUMENS_POR_WATT,
+        lumensReais: watt * LUMENS_POR_WATT,
+      };
+    }
+
+    // Menor potência total vence; entre combinações até 1% acima do mínimo,
+    // prefere menos lâmpadas (consumo praticamente igual, bem menos pontos de
+    // instalação — ex.: 67×15 W em vez de 167×6 W para 100.000 lm).
+    const menorPotencia = Math.min(
+      ...candidatas.map((c) => c.potenciaTotal),
     );
+    return candidatas
+      .filter((c) => c.potenciaTotal <= menorPotencia * 1.01)
+      .reduce((melhor, c) => (c.quantidade < melhor.quantidade ? c : melhor));
   }
 
   calcularConsumoECusto(potenciaTotal, tarifa) {
@@ -1059,8 +1079,8 @@ class IluminacaoApp extends App {
             ? `${totais.totalAmbientes} ambienti — ${formatarNumero(totais.areaTotal, 1)} m²`
             : `${totais.totalAmbientes} ambientes — ${formatarNumero(totais.areaTotal, 1)} m²`,
           descricao: isIt
-            ? `Dimensionamento conforme NBR 5413 per ${totais.totalAmbientes} ambienti residenziali.`
-            : `Dimensionamento conforme NBR 5413 para ${totais.totalAmbientes} ambientes residenciais.`,
+            ? `Dimensionamento educativo per ${totais.totalAmbientes} ambienti residenziali (illuminamenti di riferimento della ex NBR 5413).`
+            : `Dimensionamento educativo para ${totais.totalAmbientes} ambientes residenciais (iluminâncias de referência da antiga NBR 5413).`,
         },
         {
           icone: "💡",
@@ -1093,7 +1113,9 @@ class IluminacaoApp extends App {
       dica: isIt
         ? "Confronta i parziali per capire quali ambienti concentrano la maggior parte del consumo di illuminazione della casa."
         : "Compare os parciais para identificar quais ambientes concentram a maior parte do consumo de iluminação da casa.",
-      norma: "NBR 5413",
+      norma: isIt
+        ? "ex NBR 5413:1992, uso educativo (annullata nel 2013; cfr. NBR ISO/CIE 8995-1)"
+        : "antiga NBR 5413:1992, uso educativo (cancelada em 2013; ver NBR ISO/CIE 8995-1)",
     };
   }
 }

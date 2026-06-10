@@ -1,8 +1,29 @@
 // Validadores de entrada
 
 export function validarNumero(valor, min = -Infinity, max = Infinity) {
-    const num = typeof valor === 'string' ? parseFloat(valor.replace(',', '.')) : valor;
-    return !isNaN(num) && num >= min && num <= max;
+    const num = normalizarNumeroValidacao(valor);
+    return Number.isFinite(num) && num >= min && num <= max;
+}
+
+function normalizarNumeroValidacao(valor) {
+    if (typeof valor === 'number') {
+        return valor;
+    }
+
+    if (typeof valor !== 'string') {
+        return NaN;
+    }
+
+    const texto = valor.trim().replace(/\s/g, '');
+    if (!texto) {
+        return NaN;
+    }
+
+    const normalizado = texto.includes(',')
+        ? texto.replace(/\./g, '').replace(',', '.')
+        : texto;
+
+    return Number(normalizado);
 }
 
 export function validarEmail(email) {

@@ -65,7 +65,7 @@
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
-import { formatarNumero, formatarNumeroDecimal, formatarNumeroComSufixo } from '../src/utils/formatters.js';
+import { formatarNumero, formatarNumeroDecimal, formatarNumeroComSufixo, parsearNumero } from '../src/utils/formatters.js';
 import { ajustarTamanhoInput } from '../src/utils/ui-controls.js';
 
 // Idioma atual - mantido para compatibilidade com funções de cálculo e display
@@ -263,9 +263,10 @@ function formatarMoedaComVirgula(valor, moeda, casasDecimais = 2) {
 }
 // Converte string formatada com vírgula para número
 function converterVirgulaParaNumero(valorFormatado) {
-    if (!valorFormatado || typeof valorFormatado !== 'string') return 0;
-    // Substitui vírgula por ponto para parseFloat
-    return parseFloat(valorFormatado.replace(',', '.')) || 0;
+    if (valorFormatado === null || valorFormatado === undefined) return 0;
+    const texto = valorFormatado.toString();
+    if (!/[0-9]/.test(texto)) return 0;
+    return parsearNumero(texto);
 }
 // CONSTANTES DO SISTEMA (Valores Fixos)
 // ============================================
@@ -824,11 +825,11 @@ function atualizarInterface() {
 // VARIÁVEIS GLOBAIS PARA OS GRÁFICOS
 let graficoAmortizacao = null;
 let graficoSazonalidade = null;
-// PREÇOS MÉDIOS DE ENERGIA ELÉTRICA (2024-2025)
-// Valores baseados em pesquisas de mercado atualizadas
+// PREÇOS MÉDIOS DE ENERGIA ELÉTRICA
+// Valores padrão configuráveis para simulação financeira.
 const PRECO_KWH = {
-    'pt-BR': 0.75,  // R$/kWh - Média Brasil (ANEEL 2024-2025)
-    'it-IT': 0.30   // €/kWh - Média Itália (ARERA 2024-2025)
+    'pt-BR': 0.75,  // R$/kWh
+    'it-IT': 0.30   // €/kWh
 };
 // AUMENTO ANUAL DO CUSTO DA ENERGIA (%)
 // Valores baseados no histórico dos últimos 50 anos:
@@ -845,26 +846,21 @@ const PERIODO_ANALISE_MAX_MANUAL = 200;
 const PRECO_PAINEL_PADRAO_EUR = {
     'it-IT': 220
 };
-// Valores padrão de preço da bateria por kWh
-// Preços de baterias LiFePO4 (Lítio)
-// Baseado em pesquisa de mercado: Brasil R$ 2.500-3.500.
-// Itália/Europa 2026 refinada com base em benchmark residenziale LFP:
-// MrKilowatt (prezzi chiavi in mano 2,4-15 kWh) e riferimenti di mercato su
-// BYD, Huawei Luna, sonnen e Tesla Powerwall. Media pratica: circa € 640/kWh.
+// Valores padrão de preço da bateria por kWh. São referências configuráveis
+// para simulação e podem ser ajustadas na interface conforme fornecedor/região.
 const PRECO_BATERIA_KWH_LITIO = {
-    'pt-BR': 3000,  // R$/kWh - Média mercado LiFePO4 (R$ 2.500-3.500, média R$ 3.000)
-    'it-IT': 640    // €/kWh - Base 2026 Europa/Italia (benchmark residenziale LFP)
+    'pt-BR': 3000,  // R$/kWh - LiFePO4
+    'it-IT': 640    // €/kWh - LiFePO4
 };
 // Preços de baterias de Chumbo-Ácido AGM
-// Baseado em pesquisa de mercado: Brasil R$ 1.200-2.000, Itália € 400-700
 const PRECO_BATERIA_KWH_CHUMBO = {
-    'pt-BR': 1600,  // R$/kWh - Média mercado AGM (R$ 1.200-2.000, média R$ 1.600)
-    'it-IT': 450    // €/kWh - Stima tecnica conservativa per AGM in Italia
+    'pt-BR': 1600,  // R$/kWh - AGM
+    'it-IT': 450    // €/kWh - AGM
 };
 // Mantido para compatibilidade - será atualizado dinamicamente baseado no tipo de bateria
 const PRECO_BATERIA_KWH = {
-    'pt-BR': 3000,  // R$/kWh - Média mercado LiFePO4 (dez/2024) - padrão inicial
-    'it-IT': 640    // €/kWh - Base 2026 Europa/Italia - padrão inicial
+    'pt-BR': 3000,  // R$/kWh - padrão inicial LiFePO4
+    'it-IT': 640    // €/kWh - padrão inicial LiFePO4
 };
 
 function temConfigSolarCustomizada() {
@@ -887,8 +883,6 @@ function atualizarNotaPrecoBateriaPadrao(tipoBateria, valorPadrao) {
     const moeda = idiomaAtual === 'it-IT' ? '€' : 'R$';
 
     let faixaPreco = '';
-    let mesAno = idiomaAtual === 'pt-BR' ? 'dez/2024' : 'gen/2026';
-
     if (tipoBateria === 'chumbo') {
         faixaPreco = idiomaAtual === 'pt-BR'
             ? 'R$ 1.200-2.000'
@@ -900,8 +894,8 @@ function atualizarNotaPrecoBateriaPadrao(tipoBateria, valorPadrao) {
     }
 
     notaPrecoBateriaKWh.textContent = idiomaAtual === 'pt-BR'
-        ? `Valor padrão: ${moeda} ${valorPadrao.toLocaleString('pt-BR')}/kWh (faixa mercado ${tipoTexto}: ${faixaPreco}, ${mesAno})`
-        : `Valore predefinito: ${moeda} ${valorPadrao.toLocaleString('it-IT')}/kWh (mercato europeo ${tipoTexto}: ${faixaPreco}, ${mesAno})`;
+        ? `Valor padrão configurável: ${moeda} ${valorPadrao.toLocaleString('pt-BR')}/kWh (${tipoTexto}; faixa de referência: ${faixaPreco})`
+        : `Valore predefinito configurabile: ${moeda} ${valorPadrao.toLocaleString('it-IT')}/kWh (${tipoTexto}; intervallo di riferimento: ${faixaPreco})`;
 }
 // FUNÇÕES DE ATUALIZAÇÃO DOS GRÁFICOS
 // Atualiza todos os gráficos do sistema solar
@@ -1790,10 +1784,10 @@ function calcularSistema(dodAlvo) {
     let motivoInversorDetalhes = '';
     if (idiomaAtual === 'pt-BR') {
         motivoInversorGargalo = '(gargalo: consumo de pico + corrente MPPT)';
-        motivoInversorDetalhes = `consumo médio ${formatarNumeroDecimal(consumoMedioHorario, 2)} kW/h × fator pico ${FATOR_PICO_CONSUMO}<br>→ ${formatarNumeroDecimal(consumoPico, 2)} kW<br>→ inversor ${potenciaInversor} kW<br>→ MPPT integrado ${formatarNumeroComSufixo(correnteMPPT, 0)}A (${qtdPaineis} painéis × ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W ÷ ${tensaoBanco}V = ${formatarNumeroComSufixo(correnteMaximaNecessaria, 1)}A)`;
+        motivoInversorDetalhes = `potência média ${formatarNumeroDecimal(consumoMedioHorario, 2)} kW × fator pico ${FATOR_PICO_CONSUMO}<br>→ ${formatarNumeroDecimal(consumoPico, 2)} kW<br>→ inversor ${potenciaInversor} kW<br>→ MPPT integrado ${formatarNumeroComSufixo(correnteMPPT, 0)}A (${qtdPaineis} painéis × ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W ÷ ${tensaoBanco}V = ${formatarNumeroComSufixo(correnteMaximaNecessaria, 1)}A)`;
     } else {
         motivoInversorGargalo = '(limite: consumo di picco + corrente MPPT)';
-        motivoInversorDetalhes = `consumo medio ${formatarNumeroDecimal(consumoMedioHorario, 2)} kW/h × fattore picco ${FATOR_PICO_CONSUMO}<br>→ ${formatarNumeroDecimal(consumoPico, 2)} kW<br>→ inverter ${potenciaInversor} kW<br>→ MPPT integrato ${formatarNumeroComSufixo(correnteMPPT, 0)}A (${qtdPaineis} pannelli × ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W ÷ ${tensaoBanco}V = ${formatarNumeroComSufixo(correnteMaximaNecessaria, 1)}A)`;
+        motivoInversorDetalhes = `potenza media ${formatarNumeroDecimal(consumoMedioHorario, 2)} kW × fattore picco ${FATOR_PICO_CONSUMO}<br>→ ${formatarNumeroDecimal(consumoPico, 2)} kW<br>→ inverter ${potenciaInversor} kW<br>→ MPPT integrato ${formatarNumeroComSufixo(correnteMPPT, 0)}A (${qtdPaineis} pannelli × ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W ÷ ${tensaoBanco}V = ${formatarNumeroComSufixo(correnteMaximaNecessaria, 1)}A)`;
     }
     document.getElementById('resMotivoInversor').innerHTML = `${motivoInversorGargalo}<br>${motivoInversorDetalhes}`;
     
@@ -2449,7 +2443,9 @@ function atualizarMemorialComValores() {
         // Calcula corrente máxima necessária para o exemplo
         const potenciaTotalPaineisExemplo = qtdPaineis * config.potenciaPainel;
         const correnteMaximaNecessariaExemplo = potenciaTotalPaineisExemplo / tensaoBanco;
-        exemploInversor.textContent = `Consumo diário ${formatarNumero(energiaDiaria)} kWh → ${formatarNumero(energiaDiaria)}÷24 = ${formatarNumero(consumoMedioHorario)} kW/h × ${FATOR_PICO_CONSUMO} = ${formatarNumero(consumoPico)} kW pico → Inversor de ${potenciaInversor} kW com MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)}A integrado`;
+        exemploInversor.textContent = idiomaAtual === 'pt-BR'
+            ? `Consumo diário ${formatarNumero(energiaDiaria)} kWh → ${formatarNumero(energiaDiaria)}÷24 = ${formatarNumero(consumoMedioHorario)} kW médios × ${FATOR_PICO_CONSUMO} = ${formatarNumero(consumoPico)} kW pico → Inversor de ${potenciaInversor} kW com MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)}A integrado`
+            : `Consumo giornaliero ${formatarNumero(energiaDiaria)} kWh → ${formatarNumero(energiaDiaria)}÷24 = ${formatarNumero(consumoMedioHorario)} kW medi × ${FATOR_PICO_CONSUMO} = ${formatarNumero(consumoPico)} kW picco → Inverter da ${potenciaInversor} kW con MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)}A integrato`;
     }
     
     const exemploMPPT = document.getElementById('memorial-exemplo-mppt');

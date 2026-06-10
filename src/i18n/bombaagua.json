@@ -28,7 +28,7 @@
       "faixa": "Faixa Recomendada",
       "perdas": "Perdas de Carga",
       "alturaTotal": "Altura Manometrica Total",
-      "energia": "Consumo por Hora",
+      "energia": "Consumo em 1 hora",
       "pressao": "Pressao Equivalente"
     },
     "memorial": {
@@ -125,7 +125,7 @@
       "faixa": "Fascia Raccomandata",
       "perdas": "Perdite di Carico",
       "alturaTotal": "Prevalenza Totale",
-      "energia": "Consumo per Ora",
+      "energia": "Consumo in 1 ora",
       "pressao": "Pressione Equivalente"
     },
     "memorial": {
