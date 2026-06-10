@@ -92,6 +92,13 @@ header h1 {
     font-style: italic;
 }
 
+.privacy-note {
+    color: var(--text-secondary, #666);
+    font-size: 0.86rem;
+    line-height: 1.4;
+    margin: -8px 0 4px;
+}
+
 /* Mensagem de status */
 .status-message {
     padding: 15px;

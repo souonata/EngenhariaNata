@@ -50,15 +50,15 @@
         <section class="card bugs-form-card">
             <h2 data-i18n="googleForms.titulo">📨 Envie seu relatório</h2>
 
-            <div id="statusMessage" class="status-message" style="display: none;"></div>
+            <div id="statusMessage" class="status-message" role="status" aria-live="polite" style="display: none;"></div>
 
             <form id="bugForm" class="bugs-form" novalidate>
                 <div class="grupo-entrada">
                     <label for="categoriaInput" data-i18n="formulario.categoria">Categoria</label>
-                    <div id="categoriaChips" class="v2-categoria-chips" role="group" aria-label="Categoria do relatório">
-                        <button type="button" class="v2-chip ativo" data-cat="bug" data-i18n="formulario.catBug">🐛 Bug</button>
-                        <button type="button" class="v2-chip" data-cat="sugestao" data-i18n="formulario.catSugestao">💡 Sugestão</button>
-                        <button type="button" class="v2-chip" data-cat="elogio" data-i18n="formulario.catElogio">⭐ Elogio</button>
+                    <div id="categoriaChips" class="v2-categoria-chips" role="group" data-i18n-aria="aria.categoriaGrupo">
+                        <button type="button" class="v2-chip ativo" data-cat="bug" aria-pressed="true" data-i18n="formulario.catBug">🐛 Bug</button>
+                        <button type="button" class="v2-chip" data-cat="sugestao" aria-pressed="false" data-i18n="formulario.catSugestao">💡 Sugestão</button>
+                        <button type="button" class="v2-chip" data-cat="elogio" aria-pressed="false" data-i18n="formulario.catElogio">⭐ Elogio</button>
                     </div>
                     <input id="categoriaInput" name="categoria" type="hidden" value="bug">
                 </div>
@@ -90,6 +90,8 @@
                     >
                     <p class="dica" data-i18n="formulario.emailDica">Informe seu email apenas se quiser receber resposta.</p>
                 </div>
+
+                <p class="privacy-note" data-i18n="formulario.privacidadeNota">As respostas são enviadas para Google Forms. Não inclua senhas ou dados sensíveis.</p>
 
                 <div class="form-buttons">
                     <button id="submitBtn" type="submit" class="btn-submit" data-i18n="formulario.enviar">📤 Enviar Relatório</button>
