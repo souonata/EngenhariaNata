@@ -49,6 +49,12 @@ export class App {
                 window.__engnataReportError('Falha ao inicializar "' + this.config.appName + '": ' + ((erro && erro.message) || erro));
             }
             loading.ocultar();
+        } finally {
+            // Derruba a cortina de boot (anti-piscada do index.html) só depois de
+            // tema + i18n + aoInicializar prontos — o site aparece já traduzido e
+            // ordenado, num único paint. Remoção direta (sem requestAnimationFrame:
+            // rAF não dispara em aba em segundo plano). No-op sem a cortina.
+            document.documentElement.classList.remove('boot');
         }
     }
 

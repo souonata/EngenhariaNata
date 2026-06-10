@@ -71,6 +71,44 @@
     <link rel="stylesheet" href="assets/css/shared-styles.css?v=2.0.1">
     <link rel="stylesheet" href="index-styles.css?v=1.0.4">
 
+    <!-- Cortina de boot (anti-piscada): tema + i18n (it->pt) + reordenação dos
+         cards rodam DEPOIS do 1º paint, então o site "piscava" 2-3 vezes ao abrir.
+         A cortina cobre a tela com um véu + spinner desde antes do paint e o
+         src/core/app.js a remove quando tudo está pronto (um único paint final).
+         À prova de JS morto: o próprio CSS a dissolve sozinho após 1.4s — a
+         cortina NUNCA prende o site (ver GUIA_FALHA_CONGELAMENTO.md). -->
+    <style>
+        html.boot::before,
+        html.boot::after {
+            content: "";
+            position: fixed;
+            z-index: 99990;
+        }
+        html.boot::before {
+            inset: 0;
+            background: #f2f4f7;
+            animation: boot-some 0s 1.4s forwards;
+        }
+        html.boot::after {
+            top: 50%;
+            left: 50%;
+            width: 36px;
+            height: 36px;
+            margin: -18px 0 0 -18px;
+            border: 3px solid rgba(128, 138, 150, 0.30);
+            border-top-color: #5a6b7d;
+            border-radius: 50%;
+            animation: boot-gira 0.7s linear infinite, boot-some 0s 1.4s forwards;
+        }
+        @media (prefers-color-scheme: dark) {
+            html.boot::before { background: #10151c; }
+            html.boot::after { border-color: rgba(160, 172, 186, 0.25); border-top-color: #c6d2de; }
+        }
+        @keyframes boot-gira { to { transform: rotate(360deg); } }
+        @keyframes boot-some { to { visibility: hidden; opacity: 0; } }
+    </style>
+    <script>document.documentElement.classList.add('boot');</script>
+
     <!-- Analytics: GoatCounter (privacy-friendly, LGPD/GDPR-compliant) -->
     <script>
         window.goatcounter = window.goatcounter || {};
