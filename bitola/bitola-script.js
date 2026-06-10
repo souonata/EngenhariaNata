@@ -7,7 +7,7 @@
 
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
-import { formatarNumero } from '../src/utils/formatters.js';
+import { formatarNumero, parsearNumero } from '../src/utils/formatters.js';
 import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
 
 // ============================================
@@ -411,18 +411,9 @@ class BitolaApp extends App {
     }
 
     parsearValor(texto) {
-        if (!texto) return NaN;
+        if (!texto || !/[0-9]/.test(texto.toString())) return NaN;
         const valor = texto.toString().trim();
-
-        if (valor.includes(',')) {
-            // Formato pt-BR: ponto milhar, virgula decimal
-            const limpo = valor.replace(/\./g, '').replace(/,/g, '.');
-            return parseFloat(limpo);
-        }
-
-        // Se vier com ponto e sem virgula, tratar ponto como decimal
-        const limpo = valor.replace(/,/g, '');
-        return parseFloat(limpo);
+        return parsearNumero(valor);
     }
 
     obterTensaoAtual() {
@@ -651,8 +642,8 @@ class BitolaApp extends App {
                     titulo: pt ? 'Queda de Tensão Real' : 'Caduta di Tensione Reale',
                     valor: `${formatarNumero(quedaRealPercentual, 2)}% ${quedaOk ? '✅' : '⚠️'}`,
                     descricao: pt
-                        ? `Até 3% é aceitável pela NBR 5410 para circuitos terminais. Limite definido: ${quedaPercentual}%.`
-                        : `Fino al 3% è accettabile per circuiti terminali. Limite impostato: ${quedaPercentual}%.`
+                        ? `O cálculo usa o limite definido de ${formatarNumero(quedaPercentual, 1)}% para conferir a queda real.`
+                        : `Il calcolo usa il limite impostato di ${formatarNumero(quedaPercentual, 1)}% per verificare la caduta reale.`
                 },
                 {
                     icone: '🔬',
