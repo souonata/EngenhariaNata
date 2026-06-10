@@ -355,10 +355,22 @@ class IndexApp extends App {
     }
 
     async carregarTotalVisitas() {
+        if (window.goatcounter && window.goatcounter.scriptBlocked) {
+            this.totalVisitas = null;
+            this.renderizarContagemVisitantes();
+            return;
+        }
+
         // Primeiro tenta via API oficial do count.js (visit_count), conforme docs.
         const totalViaVisitCount = await this.carregarTotalVisitasViaVisitCount();
         if (Number.isFinite(totalViaVisitCount)) {
             this.totalVisitas = totalViaVisitCount;
+            this.renderizarContagemVisitantes();
+            return;
+        }
+
+        if (window.goatcounter && window.goatcounter.scriptBlocked) {
+            this.totalVisitas = null;
             this.renderizarContagemVisitantes();
             return;
         }
@@ -418,6 +430,9 @@ class IndexApp extends App {
     async aguardarVisitCountDisponivel(timeoutMs = 5000) {
         const inicio = Date.now();
         while (Date.now() - inicio < timeoutMs) {
+            if (window.goatcounter && window.goatcounter.scriptBlocked) {
+                return false;
+            }
             if (
                 window.goatcounter &&
                 typeof window.goatcounter.visit_count === 'function'
