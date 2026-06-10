@@ -5,7 +5,7 @@
 
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
-import { formatarNumero } from '../src/utils/formatters.js';
+import { formatarNumero, parsearNumero } from '../src/utils/formatters.js';
 import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
 
 const SLIDER_TO_INPUT = {
@@ -226,10 +226,8 @@ class BombaAguaApp extends App {
     }
 
     parsearValor(texto) {
-        const normalizado = texto.toString().trim()
-            .replace(/[^\d,.-]/g, '')
-            .replace(',', '.');
-        return parseFloat(normalizado);
+        if (!texto || !/[0-9]/.test(texto.toString())) return NaN;
+        return parsearNumero(texto.toString().trim());
     }
 
     formatarValorCampo(sliderId, valor) {
@@ -237,6 +235,13 @@ class BombaAguaApp extends App {
             return formatarNumero(valor, 1);
         }
         return formatarNumero(valor, 0);
+    }
+
+    formatarConsumoHora(valor) {
+        const pt = i18n.obterIdiomaAtual() !== 'it-IT';
+        return pt
+            ? `${formatarNumero(valor, 2)} kWh por hora`
+            : `${formatarNumero(valor, 2)} kWh/ora`;
     }
 
     lerValor(inputId, sliderId, defaultVal) {
@@ -363,7 +368,7 @@ class BombaAguaApp extends App {
         this.definirTexto('resultadoFaixa', `${r.faixaBomba.faixa}`);
         this.definirTexto('resultadoPerdas', `${formatarNumero(r.perdasTotais, 2)} mca (${formatarNumero(r.pressaoPerdasKpa, 1)} kPa)`);
         this.definirTexto('resultadoAlturaTotal', `${formatarNumero(r.alturaTotal, 2)} mca`);
-        this.definirTexto('resultadoEnergia', `${formatarNumero(r.consumoHora, 2)} kWh/h`);
+        this.definirTexto('resultadoEnergia', this.formatarConsumoHora(r.consumoHora));
         this.definirTexto('resultadoPressao', `${formatarNumero(r.pressaoTotalKpa, 1)} kPa`);
 
         this.atualizarMemorial(r);
@@ -460,7 +465,7 @@ class BombaAguaApp extends App {
                 {
                     icone: '⚡',
                     titulo: pt ? 'Consumo especifico por hora' : 'Consumo specifico per ora',
-                    valor: `${formatarNumero(r.consumoHora, 2)} kWh/h`,
+                    valor: this.formatarConsumoHora(r.consumoHora),
                     descricao: pt
                         ? 'Multiplique pelo numero de horas de uso para estimar o consumo diario ou mensal'
                         : 'Moltiplica per le ore di utilizzo per stimare il consumo giornaliero o mensile'
