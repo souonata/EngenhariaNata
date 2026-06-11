@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
     <title data-i18n="page.title">BR 12C Niobium — Calculadora Financeira</title>
+    <!-- Aplica o tema salvo do portfólio ANTES do primeiro paint (evita flash da
+         skin clara quando a preferência é escura). Mesma chave do resto do site. -->
+    <script>
+      try {
+        var _t = JSON.parse(localStorage.getItem("engnata_theme_mode"));
+        document.documentElement.setAttribute("data-theme", _t === "dark" ? "dark" : "light");
+      } catch (e) { /* ignora */ }
+    </script>
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
@@ -150,6 +158,6 @@
     <script src="./app.js"></script>
     <script src="./guide.js"></script>
     <script src="./panels.js"></script>
-    <script type="module" src="./chrome-boot.js"></script>
+    <script src="./chrome-boot.js"></script>
   </body>
 </html>
