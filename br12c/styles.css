@@ -1373,6 +1373,165 @@ body.guide-resizing .guide-frame {
 }
 
 /* ====================================================================== */
+/* MOLDURA DO PORTFÓLIO — idioma (PT/IT), tema (claro/escuro), rodapé/home  */
+/* Aparece só no desktop/tablet; os blocos MOBILE abaixo ocultam tudo isto  */
+/* para a calculadora ocupar a tela inteira no celular.                    */
+/* ====================================================================== */
+
+/* Coluna: barra de idioma no topo, calculadora no meio, rodapé embaixo —
+   cabe em 100svh sem rolagem no desktop. */
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.workspace {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* Seletor de idioma + botão de tema (mesmo visual dos demais apps) */
+.language-selector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 12px auto 4px;
+  width: fit-content;
+  max-width: calc(100vw - 16px);
+  z-index: 1400;
+}
+
+.lang-btn,
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  min-width: 60px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.16);
+  color: #f5f3ec;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  touch-action: manipulation;
+}
+
+.lang-btn:hover,
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.lang-btn:focus-visible,
+.theme-toggle-btn:focus-visible {
+  outline: 3px solid rgba(104, 199, 229, 0.8);
+  outline-offset: 2px;
+}
+
+.lang-btn.active {
+  background: #f5f3ec;
+  color: #1e2a23;
+  border-color: #f5f3ec;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+
+.lang-btn .flag {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.lang-btn .flag svg {
+  display: block;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+}
+
+.lang-btn .lang-text {
+  font-weight: 600;
+}
+
+/* Rodapé com botão home (substitui o botão flutuante padrão do portfólio) */
+.br12c-footer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 10px 16px max(10px, env(safe-area-inset-bottom, 10px));
+  color: rgba(245, 243, 236, 0.78);
+  font-size: 0.82rem;
+}
+
+.br12c-footer .home-button-fixed {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e6f6f7 0%, #c2e7e9 100%);
+  border: 1px solid rgba(45, 159, 163, 0.35);
+  box-shadow: 0 6px 16px rgba(45, 159, 163, 0.28);
+  color: #1e7e82;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.br12c-footer .home-button-fixed:hover {
+  transform: scale(1.08);
+}
+
+.br12c-footer .home-button-fixed svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.br12c-footer-text {
+  margin: 0;
+}
+
+/* ---- Tema ESCURO (data-theme="dark" no <html>) ---- */
+html[data-theme="dark"] body {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(45, 90, 90, 0.18), transparent 40%),
+    radial-gradient(circle at 82% 92%, rgba(30, 70, 70, 0.18), transparent 40%),
+    linear-gradient(135deg, #0c0f0e 0%, #11201a 55%, #0a0d0c 100%);
+}
+
+html[data-theme="dark"] .lang-btn,
+html[data-theme="dark"] .theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #e6e6e6;
+}
+
+html[data-theme="dark"] .lang-btn.active {
+  background: #5cc9d0;
+  color: #06212a;
+  border-color: #5cc9d0;
+}
+
+html[data-theme="dark"] .br12c-footer .home-button-fixed {
+  background: linear-gradient(135deg, #1b3b3d 0%, #14282a 100%);
+  border-color: rgba(92, 201, 208, 0.4);
+  color: #9fe7ec;
+}
+
+/* ====================================================================== */
 /* SKIN RETRATO — CELULAR NA VERTICAL                                      */
 /* Em telas de celular em pé, troca a foto landscape pela vertical         */
 /* (imagem calculadora vertical.png), remapeia as áreas de toque para as   */
@@ -1402,8 +1561,11 @@ body.guide-resizing .guide-frame {
     overflow: hidden;
   }
 
-  /* esconde as tabelas (Pilha / TVM / Estado) */
-  .register-panel {
+  /* esconde as tabelas (Pilha / TVM / Estado) e a moldura do portfólio
+     (idioma, tema e rodapé/home) — calculadora ocupa a tela inteira */
+  .register-panel,
+  .language-selector,
+  .br12c-footer {
     display: none;
   }
 
@@ -1485,8 +1647,11 @@ body.guide-resizing .guide-frame {
     overflow: hidden;
   }
 
-  /* esconde as tabelas (Pilha / TVM / Estado) */
-  .register-panel {
+  /* esconde as tabelas (Pilha / TVM / Estado) e a moldura do portfólio
+     (idioma, tema e rodapé/home) — calculadora ocupa a tela inteira */
+  .register-panel,
+  .language-selector,
+  .br12c-footer {
     display: none;
   }
 

@@ -80,6 +80,7 @@
                     <li><strong data-i18n="apps.arcondicionado.name">Ar Condicionado</strong> ❄️ - <span data-i18n="apps.arcondicionado.desc">Calcula o ar condicionado ideal para seus ambientes</span></li>
                     <li><strong data-i18n="apps.bitola.name">Bitola</strong> 🔌 - <span data-i18n="apps.bitola.desc">Calcula o fio elétrico ideal para sua instalação de forma segura</span></li>
                     <li><strong data-i18n="apps.bombaagua.name">Bomba d'Agua</strong> 💧 - <span data-i18n="apps.bombaagua.desc">Estima perdas, potência da bomba e faixa comercial recomendada</span></li>
+                    <li><strong data-i18n="apps.br12c.name">BR 12C Niobium</strong> 🧮 - <span data-i18n="apps.br12c.desc">Emulador da calculadora financeira HP 12C Platinum (RPN), para finanças e engenharia econômica</span></li>
                     <li><strong data-i18n="apps.chuva.name">Chuva</strong> 🌧️ - <span data-i18n="apps.chuva.desc">Calcula captação de água pluvial, cisterna e economia mensal</span></li>
                     <li><strong data-i18n="apps.solar.name">Energia Solar</strong> 🔋 - <span data-i18n="apps.solar.desc">Dimensione painéis solares para gerar sua própria energia</span></li>
                     <li><strong data-i18n="apps.fazenda.name">Fazenda</strong> 🌾 - <span data-i18n="apps.fazenda.desc">Planeje sua fazenda auto-sustentável para produção própria</span></li>
@@ -149,6 +150,71 @@
         <!-- APPS — ordenados alfabeticamente por idioma via JS -->
         <!-- ========================================== -->
         <div id="apps-cards-container">
+
+            <!-- BR 12C NIOBIUM (calculadora financeira) -->
+            <div class="card highlight card-expansivel" data-app-key="br12c">
+                <div class="card-header card-header-clicavel" role="button" aria-expanded="false">
+                    <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="icon">
+                        <defs>
+                            <linearGradient id="gradient-br12c-sobre" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#2A2D32;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#C79A2B;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="60" height="60" rx="12" fill="url(#gradient-br12c-sobre)"/>
+                        <text x="30" y="25" font-size="12" text-anchor="middle" fill="#F5D47B" font-family="Arial, sans-serif" font-weight="700">BR</text>
+                        <text x="30" y="42" font-size="18" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="800">12C</text>
+                    </svg>
+                    <h2 data-i18n="app.br12c">BR 12C Niobium — Calculadora Financeira</h2>
+                    <span class="seta-expansao">▼</span>
+                </div>
+                <div class="card-content conteudo-expansivel">
+                    <p class="app-description">
+                        <strong data-i18n="what.it.does">O que faz:</strong> <span data-i18n="br12c.description">Emulador da calculadora financeira HP 12C Platinum, fiel ao original, direto no navegador e funcionando offline — ideal para finanças, engenharia econômica e estudos.</span>
+                    </p>
+                    <div class="features-grid">
+                        <div class="feature">
+                            <span class="feature-icon">🔢</span>
+                            <h4 data-i18n="br12c.features.rpn.title">RPN e Algébrico</h4>
+                            <p data-i18n="br12c.features.rpn.desc">Opera em RPN (notação polonesa reversa) e em modo algébrico, como a HP 12C original, com a pilha de 4 registradores (T, Z, Y, X).</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📈</span>
+                            <h4 data-i18n="br12c.features.financeiras.title">Funções Financeiras</h4>
+                            <p data-i18n="br12c.features.financeiras.desc">Valor do dinheiro no tempo (n, i, PV, PMT, FV), juros compostos, amortização e fluxos de caixa com NPV e IRR.</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">📅</span>
+                            <h4 data-i18n="br12c.features.estatistica.title">Estatística, Datas e Mais</h4>
+                            <p data-i18n="br12c.features.estatistica.desc">Regressão e médias, cálculos com datas (calendário e dias entre datas), depreciação e funções de bônus.</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🎛️</span>
+                            <h4 data-i18n="br12c.features.skin.title">Réplica Fiel e Offline</h4>
+                            <p data-i18n="br12c.features.skin.desc">Réplica visual da HP 12C Platinum que funciona offline, com memória contínua que mantém o estado entre sessões.</p>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🧪</span>
+                            <h4 data-i18n="br12c.features.guia.title">Guia e Testes</h4>
+                            <p data-i18n="br12c.features.guia.desc">Inclui o guia do usuário (manual em PDF) e um sistema de testes ao vivo que valida os cálculos contra o manual.</p>
+                        </div>
+                    </div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-number">155</span>
+                            <span class="stat-label" data-i18n="stat.html">linhas HTML</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">2848</span>
+                            <span class="stat-label" data-i18n="stat.js">linhas JavaScript</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">1684</span>
+                            <span class="stat-label" data-i18n="stat.css">linhas CSS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- AQUECEDOR SOLAR -->
             <div class="card highlight card-expansivel" data-app-key="aquecimento">

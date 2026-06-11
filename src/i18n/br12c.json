@@ -1,0 +1,85 @@
+{
+  "$schema": "./schema.json",
+  "pt-BR": {
+    "page": {
+      "title": "BR 12C Niobium — Calculadora Financeira"
+    },
+    "aria": {
+      "langPt": "Alterar idioma para Português",
+      "langIt": "Alterar idioma para Italiano",
+      "home": "Voltar para a tela inicial"
+    },
+    "titles": {
+      "langPt": "Português",
+      "langIt": "Italiano"
+    },
+    "tool": {
+      "hold": "Modo Segurar",
+      "holdAria": "Modo Segurar: trava teclas para usar em sequência",
+      "guide": "Guia do usuário",
+      "guideAria": "Abrir o guia do usuário (manual)",
+      "tests": "Sistema de testes",
+      "testsAria": "Abrir o sistema de testes ao vivo",
+      "fullscreen": "Tela cheia",
+      "fullscreenAria": "Entrar em tela cheia"
+    },
+    "panel": {
+      "registers": "Registradores",
+      "stack": "Pilha",
+      "financial": "Financeiro",
+      "state": "Estado",
+      "mode": "Modo",
+      "flow": "Fluxo"
+    },
+    "guide": {
+      "title": "📘 Guia do usuário — HP 12C Platinum (EN)",
+      "open": "Abrir em nova aba ↗",
+      "close": "Fechar guia",
+      "frameTitle": "Guia do usuário HP 12C Platinum (PDF)"
+    },
+    "footer": {
+      "text": "BR 12C Niobium — Engenharia NATA © 2026"
+    }
+  },
+  "it-IT": {
+    "page": {
+      "title": "BR 12C Niobium — Calcolatrice Finanziaria"
+    },
+    "aria": {
+      "langPt": "Cambia lingua in portoghese",
+      "langIt": "Cambia lingua in italiano",
+      "home": "Torna alla schermata iniziale"
+    },
+    "titles": {
+      "langPt": "Portoghese",
+      "langIt": "Italiano"
+    },
+    "tool": {
+      "hold": "Blocco tasti",
+      "holdAria": "Blocco tasti: blocca i tasti per usarli in sequenza",
+      "guide": "Guida utente",
+      "guideAria": "Apri la guida utente (manuale)",
+      "tests": "Sistema di test",
+      "testsAria": "Apri il sistema di test dal vivo",
+      "fullscreen": "Schermo intero",
+      "fullscreenAria": "Attiva schermo intero"
+    },
+    "panel": {
+      "registers": "Registri",
+      "stack": "Pila",
+      "financial": "Finanziario",
+      "state": "Stato",
+      "mode": "Modalità",
+      "flow": "Flusso"
+    },
+    "guide": {
+      "title": "📘 Guida utente — HP 12C Platinum (EN)",
+      "open": "Apri in una nuova scheda ↗",
+      "close": "Chiudi la guida",
+      "frameTitle": "Guida utente HP 12C Platinum (PDF)"
+    },
+    "footer": {
+      "text": "BR 12C Niobium — Engenharia NATA © 2026"
+    }
+  }
+}

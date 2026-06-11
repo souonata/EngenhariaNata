@@ -11,6 +11,10 @@
       "description": "Portfólio de ferramentas práticas para engenharia, energia e finanças, com foco educacional e uso direto no navegador, sem instalação."
     },
     "apps": {
+      "br12c": {
+        "name": "BR 12C Niobium",
+        "desc": "Emulador da calculadora financeira HP 12C Platinum (RPN), para finanças e engenharia econômica"
+      },
       "mutuo": {
         "name": "Empréstimo",
         "desc": "Compara sistemas de amortização e facilita decisões financeiras com mais clareza"
@@ -72,6 +76,31 @@
         "desc": "Previsão meteorológica de 7 dias (Open-Meteo) com gráfico de temperatura e chuva"
       }
     },
+    "br12c": {
+      "description": "Emulador da calculadora financeira HP 12C Platinum, fiel ao original, direto no navegador e funcionando offline — ideal para finanças, engenharia econômica e estudos.",
+      "features": {
+        "rpn": {
+          "title": "RPN e Algébrico",
+          "desc": "Opera em RPN (notação polonesa reversa) e em modo algébrico, como a HP 12C original, com a pilha de 4 registradores (T, Z, Y, X)."
+        },
+        "financeiras": {
+          "title": "Funções Financeiras",
+          "desc": "Valor do dinheiro no tempo (n, i, PV, PMT, FV), juros compostos, amortização e fluxos de caixa com NPV e IRR."
+        },
+        "estatistica": {
+          "title": "Estatística, Datas e Mais",
+          "desc": "Regressão e médias, cálculos com datas (calendário e dias entre datas), depreciação e funções de bônus."
+        },
+        "skin": {
+          "title": "Réplica Fiel e Offline",
+          "desc": "Réplica visual da HP 12C Platinum que funciona offline, com memória contínua que mantém o estado entre sessões."
+        },
+        "guia": {
+          "title": "Guia e Testes",
+          "desc": "Inclui o guia do usuário (manual em PDF) e um sistema de testes ao vivo que valida os cálculos contra o manual."
+        }
+      }
+    },
     "what": {
       "it": {
         "does": "O que faz:"
@@ -96,6 +125,7 @@
       "description": "Calcula a bomba d'agua necessária para pequenos sistemas, estimando perdas, potência e consumo horário."
     },
     "app": {
+      "br12c": "BR 12C Niobium — Calculadora Financeira",
       "bitola": "Calculadora de Bitola de Fios",
       "helice": "Calculadora de Hélice Náutica",
       "mutuo": "Calculadora de Empréstimos",
@@ -466,6 +496,10 @@
       "description": "Portfolio di strumenti pratici per ingegneria, energia e finanza, con approccio educativo e utilizzo diretto dal browser, senza installazione."
     },
     "apps": {
+      "br12c": {
+        "name": "BR 12C Niobium",
+        "desc": "Emulatore della calcolatrice finanziaria HP 12C Platinum (RPN), per finanza e ingegneria economica"
+      },
       "mutuo": {
         "name": "Mutuo",
         "desc": "Confronta sistemi di ammortamento e supporta decisioni finanziarie più chiare"
@@ -527,6 +561,31 @@
         "desc": "Previsioni meteo a 7 giorni (Open-Meteo) con grafico di temperatura e pioggia"
       }
     },
+    "br12c": {
+      "description": "Emulatore della calcolatrice finanziaria HP 12C Platinum, fedele all’originale, direttamente nel browser e funzionante offline — ideale per finanza, ingegneria economica e studio.",
+      "features": {
+        "rpn": {
+          "title": "RPN e Algebrico",
+          "desc": "Funziona in RPN (notazione polacca inversa) e in modalità algebrica, come la HP 12C originale, con lo stack a 4 registri (T, Z, Y, X)."
+        },
+        "financeiras": {
+          "title": "Funzioni Finanziarie",
+          "desc": "Valore temporale del denaro (n, i, PV, PMT, FV), interesse composto, ammortamento e flussi di cassa con NPV e IRR."
+        },
+        "estatistica": {
+          "title": "Statistica, Date e Altro",
+          "desc": "Regressione e medie, calcoli con le date (calendario e giorni tra date), ammortamento e funzioni obbligazionarie."
+        },
+        "skin": {
+          "title": "Replica Fedele e Offline",
+          "desc": "Replica visiva della HP 12C Platinum che funziona offline, con memoria continua che mantiene lo stato tra le sessioni."
+        },
+        "guia": {
+          "title": "Guida e Test",
+          "desc": "Include la guida utente (manuale PDF) e un sistema di test dal vivo che convalida i calcoli rispetto al manuale."
+        }
+      }
+    },
     "what": {
       "it": {
         "does": "Cosa fa:"
@@ -551,6 +610,7 @@
       "description": "Calcola la pompa d'acqua necessaria per piccoli impianti, stimando perdite, potenza e consumo orario."
     },
     "app": {
+      "br12c": "BR 12C Niobium — Calcolatrice Finanziaria",
       "bitola": "Calcolatrice Sezione Cavi",
       "helice": "Calcolatrice Elica Nautica",
       "mutuo": "Calcolatrice Prestiti",

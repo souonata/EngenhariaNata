@@ -3,38 +3,52 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BR 12C Niobium Emulator</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <title data-i18n="page.title">BR 12C Niobium — Calculadora Financeira</title>
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
+    <!-- Moldura do portfólio (idioma + tema). Só no desktop/tablet — no celular
+         o CSS oculta tudo isto para a calculadora ocupar a tela inteira. -->
+    <div class="language-selector">
+      <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" data-i18n-aria="aria.langPt" data-i18n-title="titles.langPt">
+        <span class="flag" aria-hidden="true"><svg viewBox="0 0 14 10" width="20" height="14"><rect width="14" height="10" fill="#009c3b"/><polygon points="7,1.4 12.6,5 7,8.6 1.4,5" fill="#ffdf00"/><circle cx="7" cy="5" r="1.9" fill="#002776"/></svg></span>
+        <span class="lang-text">PT</span>
+      </button>
+      <button id="btnItaliano" class="lang-btn" data-lang="it-IT" data-i18n-aria="aria.langIt" data-i18n-title="titles.langIt">
+        <span class="flag" aria-hidden="true"><svg viewBox="0 0 15 10" width="21" height="14"><rect width="5" height="10" x="0" fill="#009246"/><rect width="5" height="10" x="5" fill="#ffffff"/><rect width="5" height="10" x="10" fill="#ce2b37"/></svg></span>
+        <span class="lang-text">IT</span>
+      </button>
+    </div>
+
     <main class="workspace" aria-label="Emulador BR 12C Niobium">
       <section class="calculator-stage" aria-label="Calculadora BR 12C Niobium">
         <div class="stage-controls" role="toolbar" aria-label="Ferramentas da calculadora">
-          <button class="stage-tool hold-tool" type="button" id="holdModeBtn" aria-pressed="false" aria-label="Modo Segurar: trava teclas para usar em sequência">
+          <button class="stage-tool hold-tool" type="button" id="holdModeBtn" aria-pressed="false" data-i18n-aria="tool.holdAria" aria-label="Modo Segurar: trava teclas para usar em sequência">
             <span class="stage-tool-icon" aria-hidden="true">🔒</span>
             <span class="stage-tool-text">
-              <span class="stage-tool-title">Modo Segurar</span>
+              <span class="stage-tool-title" data-i18n="tool.hold">Modo Segurar</span>
             </span>
           </button>
 
-          <button class="stage-tool guide-tool" type="button" data-action="guide" aria-haspopup="dialog" aria-controls="guideOverlay" aria-label="Abrir o guia do usuário (manual)">
+          <button class="stage-tool guide-tool" type="button" data-action="guide" aria-haspopup="dialog" aria-controls="guideOverlay" data-i18n-aria="tool.guideAria" aria-label="Abrir o guia do usuário (manual)">
             <span class="stage-tool-icon" aria-hidden="true">📖</span>
             <span class="stage-tool-text">
-              <span class="stage-tool-title">Guia do usuário</span>
+              <span class="stage-tool-title" data-i18n="tool.guide">Guia do usuário</span>
             </span>
           </button>
 
-          <a class="stage-tool test-tool" href="./tests/visual.html" aria-label="Abrir o sistema de testes ao vivo">
+          <a class="stage-tool test-tool" href="./tests/visual.html" data-i18n-aria="tool.testsAria" aria-label="Abrir o sistema de testes ao vivo">
             <span class="stage-tool-icon" aria-hidden="true">🧪</span>
             <span class="stage-tool-text">
-              <span class="stage-tool-title">Sistema de testes</span>
+              <span class="stage-tool-title" data-i18n="tool.tests">Sistema de testes</span>
             </span>
           </a>
 
-          <button class="stage-tool fullscreen-tool" type="button" id="fullscreenBtn" aria-pressed="false" aria-label="Entrar em tela cheia">
+          <button class="stage-tool fullscreen-tool" type="button" id="fullscreenBtn" aria-pressed="false" data-i18n-aria="tool.fullscreenAria" aria-label="Entrar em tela cheia">
             <span class="stage-tool-icon" aria-hidden="true">⛶</span>
             <span class="stage-tool-text">
-              <span class="stage-tool-title" data-title-on="Sair da tela cheia" data-title-off="Tela cheia">Tela cheia</span>
+              <span class="stage-tool-title" data-i18n="tool.fullscreen" data-title-on="Sair da tela cheia" data-title-off="Tela cheia">Tela cheia</span>
             </span>
           </button>
         </div>
@@ -67,9 +81,9 @@
         </section>
       </section>
 
-      <aside class="register-panel" aria-label="Registradores">
-        <section class="panel-block" aria-label="Pilha">
-          <div class="panel-title">Pilha</div>
+      <aside class="register-panel" data-i18n-aria="panel.registers" aria-label="Registradores">
+        <section class="panel-block" data-i18n-aria="panel.stack" aria-label="Pilha">
+          <div class="panel-title" data-i18n="panel.stack">Pilha</div>
           <dl class="register-grid">
             <div><dt>T</dt><dd data-stack="t">0.00</dd></div>
             <div><dt>Z</dt><dd data-stack="z">0.00</dd></div>
@@ -78,7 +92,7 @@
           </dl>
         </section>
 
-        <section class="panel-block" aria-label="Financeiro" data-panel="tvm">
+        <section class="panel-block" data-i18n-aria="panel.financial" aria-label="Financeiro" data-panel="tvm">
           <button class="panel-toggle" type="button" aria-expanded="true">
             <span>TVM</span>
             <span class="panel-chevron" aria-hidden="true">▾</span>
@@ -93,16 +107,16 @@
           </dl>
         </section>
 
-        <section class="panel-block" aria-label="Estado" data-panel="estado">
+        <section class="panel-block" data-i18n-aria="panel.state" aria-label="Estado" data-panel="estado">
           <button class="panel-toggle" type="button" aria-expanded="true">
-            <span>Estado</span>
+            <span data-i18n="panel.state">Estado</span>
             <span class="panel-chevron" aria-hidden="true">▾</span>
           </button>
           <dl class="register-grid">
-            <div><dt>Modo</dt><dd data-status="mode">RPN</dd></div>
+            <div><dt data-i18n="panel.mode">Modo</dt><dd data-status="mode">RPN</dd></div>
             <div><dt>Shift</dt><dd data-status="shift">--</dd></div>
             <div><dt>FIX</dt><dd data-status="fixed">2</dd></div>
-            <div><dt>Fluxo</dt><dd data-status="begin">END</dd></div>
+            <div><dt data-i18n="panel.flow">Fluxo</dt><dd data-status="begin">END</dd></div>
             <div><dt>Op</dt><dd data-status="pending">--</dd></div>
           </dl>
         </section>
@@ -113,18 +127,29 @@
       <div class="guide-resizer" id="guideResizer" role="separator" aria-label="Ajustar a divisória do guia (use as setas)" tabindex="0"></div>
       <div class="guide-modal">
         <header class="guide-modal-bar">
-          <span class="guide-modal-title" id="guideTitle">📘 Guia do usuário — HP 12C Platinum (EN)</span>
-          <a class="guide-modal-open" href="./assets/hp12cplatinum-ug-en.pdf" target="_blank" rel="noopener noreferrer">Abrir em nova aba ↗</a>
-          <button class="guide-modal-close" type="button" data-action="guide-close" aria-label="Fechar guia">✕</button>
+          <span class="guide-modal-title" id="guideTitle" data-i18n="guide.title">📘 Guia do usuário — HP 12C Platinum (EN)</span>
+          <a class="guide-modal-open" href="./assets/hp12cplatinum-ug-en.pdf" target="_blank" rel="noopener noreferrer" data-i18n="guide.open">Abrir em nova aba ↗</a>
+          <button class="guide-modal-close" type="button" data-action="guide-close" data-i18n-aria="guide.close" aria-label="Fechar guia">✕</button>
         </header>
         <div class="guide-modal-body">
-          <iframe class="guide-frame" id="guideFrame" title="Guia do usuário HP 12C Platinum (PDF)" data-src="./assets/hp12cplatinum-ug-en.pdf#view=FitH"></iframe>
+          <iframe class="guide-frame" id="guideFrame" data-i18n-title="guide.frameTitle" title="Guia do usuário HP 12C Platinum (PDF)" data-src="./assets/hp12cplatinum-ug-en.pdf#view=FitH"></iframe>
         </div>
       </div>
     </div>
 
+    <!-- Rodapé do portfólio com botão home (oculto no celular via CSS). -->
+    <footer class="br12c-footer">
+      <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria.home" aria-label="Voltar para a tela inicial">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+      </a>
+      <p class="br12c-footer-text" data-i18n="footer.text">BR 12C Niobium — Engenharia NATA © 2026</p>
+    </footer>
+
     <script src="./app.js"></script>
     <script src="./guide.js"></script>
     <script src="./panels.js"></script>
+    <script type="module" src="./chrome-boot.js"></script>
   </body>
 </html>
