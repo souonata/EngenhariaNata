@@ -316,6 +316,15 @@
         background: rgba(210, 70, 70, 0.22);
         border-color: rgba(210, 70, 70, 0.5);
       }
+      /* Linha PENDENTE: mostra a nota e as teclas ANTES de rodar. */
+      .linha.pendente {
+        background: rgba(104, 199, 229, 0.08);
+        border-color: rgba(104, 199, 229, 0.5);
+        border-style: dashed;
+      }
+      .linha.pendente .got {
+        color: #68c7e5;
+      }
       .linha .nota {
         color: #b6c3b4;
         font-size: 0.8rem;
@@ -414,7 +423,10 @@
       let pararGeral = false;
       const flat = achatar(); // índice = data-idx das folhas
       let idxAtual = -1;
-      const resultados = []; // {linha, r} renderizados (p/ re-pintar ao trocar idioma)
+      // Linhas mostradas no log. Cada item: { linhaIdx, linha, r, el }. r=null
+      // enquanto a linha ainda NÃO rodou (linha "pendente": mostra a nota e as
+      // teclas ANTES da operação acontecer). Ao rodar, r recebe o resultado.
+      let linhasRender = [];
       let resumoFinal = null; // {ok, total} quando o exemplo termina
 
       const $ = (id) => document.getElementById(id);
@@ -447,15 +459,14 @@
         vel,
         callbacks: {
           onCarregado(ex) {
-            resultados.length = 0;
+            linhasRender = [];
             resumoFinal = null;
             elLog.innerHTML = "";
             renderObjetivo(ex);
             setStatus(t(idioma, "pronto"));
           },
           onLinha(linhaIdx, linha, r) {
-            resultados.push({ linha, r });
-            renderLinha(linha, r);
+            completarLinha(linhaIdx, linha, r); // preenche o resultado da linha
           },
           onFim(ok, total) {
             resumoFinal = { ok, total };
@@ -463,6 +474,12 @@
             setStatus(`${ok}/${total}`);
           },
           onProgresso(p) {
+            // Ao chegar numa linha nova (a próxima tecla pertence a ela), mostra
+            // a linha PENDENTE (nota + teclas) antes de ela rodar.
+            const ex = engine.exAtual();
+            if (ex && p.info && p.info.linhaIdx >= 0) {
+              mostrarPendente(p.info.linhaIdx, ex.linhas[p.info.linhaIdx]);
+            }
             atualizarPasso(p);
             atualizarBotoes(p);
           },
@@ -530,19 +547,46 @@
         elObjetivo.appendChild(el("div", { class: "passo", id: "passoInfo" }));
       }
 
-      // ---- render: linha do log ----
-      function renderLinha(linha, r) {
-        const div = el("div", { class: "linha " + (r.ok ? "ok" : "fail") });
-        const nota = bi(linha.nota, idioma, "");
+      // ---- render: linha do log (pendente -> concluída) ----
+      // Desenha/atualiza o elemento de uma linha conforme seu estado (entry.r).
+      function pintarLinha(entry) {
+        const div = entry.el;
+        div.innerHTML = "";
+        const r = entry.r;
+        div.className = "linha " + (r ? (r.ok ? "ok" : "fail") : "pendente");
+        const nota = bi(entry.linha.nota, idioma, "");
         if (nota) div.appendChild(el("div", { class: "nota" }, nota));
         const baixo = el("div", { class: "baixo" });
-        baixo.appendChild(el("span", { class: "keys" }, linha.keys.join(" ")));
+        baixo.appendChild(el("span", { class: "keys" }, entry.linha.keys.join(" ")));
         const got = el("span", { class: "got" });
-        got.textContent = r.atual + " " + (r.ok ? "✓" : "✗ (" + t(idioma, "esperado") + " " + r.esperado + ")");
+        got.textContent = r
+          ? r.atual + " " + (r.ok ? "✓" : "✗ (" + t(idioma, "esperado") + " " + r.esperado + ")")
+          : "▸ " + t(idioma, "pressionar");
         baixo.appendChild(got);
         div.appendChild(baixo);
-        elLog.appendChild(div);
-        div.scrollIntoView({ block: "nearest" });
+      }
+
+      // Cria a linha PENDENTE (antes de rodar), se ainda não existir.
+      function mostrarPendente(linhaIdx, linha) {
+        if (linhasRender.some((e) => e.linhaIdx === linhaIdx)) return;
+        const entry = { linhaIdx, linha, r: null, el: el("div") };
+        linhasRender.push(entry);
+        elLog.appendChild(entry.el);
+        pintarLinha(entry);
+        entry.el.scrollIntoView({ block: "nearest" });
+      }
+
+      // Preenche o resultado quando a linha roda (garante a linha se faltar).
+      function completarLinha(linhaIdx, linha, r) {
+        let entry = linhasRender.find((e) => e.linhaIdx === linhaIdx);
+        if (!entry) {
+          entry = { linhaIdx, linha, r: null, el: el("div") };
+          linhasRender.push(entry);
+          elLog.appendChild(entry.el);
+        }
+        entry.r = r;
+        pintarLinha(entry);
+        entry.el.scrollIntoView({ block: "nearest" });
       }
 
       function renderResumo(ok, total) {
@@ -556,7 +600,11 @@
       function repintar() {
         renderObjetivo(engine.exAtual());
         elLog.innerHTML = "";
-        for (const { linha, r } of resultados) renderLinha(linha, r);
+        for (const entry of linhasRender) {
+          entry.el = el("div");
+          elLog.appendChild(entry.el);
+          pintarLinha(entry);
+        }
         if (resumoFinal) renderResumo(resumoFinal.ok, resumoFinal.total);
         if (engine.exAtual()) atualizarPasso(engine.estadoPasso());
       }
