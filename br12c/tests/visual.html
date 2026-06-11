@@ -21,18 +21,19 @@
         height: 100vh;
       }
       header {
-        padding: 10px 14px;
+        padding: 8px 12px;
         background: #11160f;
         display: flex;
-        gap: 12px;
+        gap: 10px;
         align-items: center;
         flex-wrap: wrap;
         border-bottom: 1px solid #2a3a2e;
       }
       header h1 {
         font-size: 1rem;
-        margin: 0 8px 0 0;
+        margin: 0 6px 0 0;
         color: #f2c64d;
+        white-space: nowrap;
       }
       select,
       button,
@@ -40,7 +41,6 @@
       input {
         font: inherit;
       }
-      select,
       button {
         background: #2a3a2e;
         color: #e8eae6;
@@ -49,9 +49,19 @@
         padding: 6px 10px;
         cursor: pointer;
       }
+      button:hover:not(:disabled) {
+        border-color: #5a7a64;
+      }
       button.primary {
         background: #2e7d4f;
         border-color: #3fa06a;
+      }
+      button.primary:hover:not(:disabled) {
+        background: #36905c;
+      }
+      button:disabled {
+        opacity: 0.4;
+        cursor: default;
       }
       a.voltar {
         background: #3a2e11;
@@ -66,20 +76,166 @@
       a.voltar:hover {
         background: #4a3a16;
       }
-      button:disabled {
-        opacity: 0.5;
-        cursor: default;
+      .sep {
+        width: 1px;
+        align-self: stretch;
+        background: #2a3a2e;
+        margin: 0 2px;
+      }
+      /* Toggle de idioma (bandeiras) */
+      .lang-sel {
+        display: inline-flex;
+        gap: 4px;
+      }
+      .lang-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 9px;
+        border-radius: 14px;
+        border: 1px solid #3c5142;
+        background: #1c2620;
+        color: #e8eae6;
+        cursor: pointer;
+        font-size: 0.82rem;
+        font-weight: 600;
+      }
+      .lang-btn .flag {
+        display: inline-flex;
+      }
+      .lang-btn .flag svg {
+        display: block;
+        border-radius: 2px;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+      }
+      .lang-btn.active {
+        background: #e8eae6;
+        color: #11160f;
+        border-color: #e8eae6;
+      }
+      /* Segmentado Auto/Manual */
+      .modo-seg {
+        display: inline-flex;
+        border: 1px solid #3c5142;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .modo-seg button {
+        border: 0;
+        border-radius: 0;
+        padding: 6px 12px;
+        background: #1c2620;
+      }
+      .modo-seg button.active {
+        background: #2e7d4f;
+        color: #fff;
+      }
+      label.vel {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.82rem;
+        color: #b9c4ba;
+        white-space: nowrap;
       }
       #status {
         margin-left: auto;
         font-weight: 700;
         color: #b9e5f1;
+        white-space: nowrap;
+      }
+      #tecla {
+        color: #f2c64d;
+        font-size: 0.82rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 280px;
       }
       #wrap {
         flex: 1;
         display: flex;
         min-height: 0;
       }
+      /* Painel 1 — árvore + busca */
+      #tree {
+        width: 290px;
+        flex: none;
+        display: flex;
+        flex-direction: column;
+        background: #141a12;
+        border-right: 1px solid #2a3a2e;
+        min-height: 0;
+      }
+      .busca-box {
+        padding: 8px;
+        border-bottom: 1px solid #2a3a2e;
+      }
+      #busca {
+        width: 100%;
+        padding: 7px 9px;
+        border-radius: 6px;
+        border: 1px solid #3c5142;
+        background: #1c2620;
+        color: #e8eae6;
+      }
+      #arvore {
+        flex: 1;
+        overflow: auto;
+        padding: 6px 6px 16px;
+      }
+      #arvore details {
+        margin: 0 0 2px;
+      }
+      #arvore summary {
+        cursor: pointer;
+        padding: 4px 6px;
+        border-radius: 5px;
+        font-size: 0.83rem;
+        font-weight: 700;
+        color: #cfe0cf;
+      }
+      #arvore summary:hover {
+        background: #1f2a1c;
+      }
+      #arvore .secao {
+        margin-left: 8px;
+      }
+      #arvore .secao > summary {
+        font-weight: 600;
+        color: #a9c0a9;
+        font-size: 0.8rem;
+      }
+      .leaf {
+        display: block;
+        width: calc(100% - 16px);
+        margin: 2px 0 2px 16px;
+        padding: 5px 8px;
+        text-align: left;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 5px;
+        color: #d7e3d7;
+        font-size: 0.8rem;
+        line-height: 1.25;
+        white-space: normal;
+      }
+      .leaf:hover {
+        background: #1f2a1c;
+        border-color: #2a3a2e;
+      }
+      .leaf.active {
+        background: #2e7d4f;
+        border-color: #3fa06a;
+        color: #fff;
+        font-weight: 600;
+      }
+      .vazio {
+        color: #7d8a7d;
+        font-size: 0.82rem;
+        padding: 10px;
+      }
+      /* Painel 2 — calculadora */
       #calcBox {
         flex: 1;
         min-width: 0;
@@ -94,260 +250,456 @@
         height: 100%;
         border: 0;
       }
+      /* Painel 3 — objetivo + log */
       #side {
         width: 400px;
-        max-width: 44vw;
-        overflow: auto;
+        max-width: 42vw;
+        flex: none;
+        display: flex;
+        flex-direction: column;
         background: #161d14;
         border-left: 1px solid #2a3a2e;
-        padding: 10px;
+        min-height: 0;
+      }
+      #objetivo {
+        padding: 12px;
+        border-bottom: 1px solid #2a3a2e;
+        background: #182115;
+      }
+      #objetivo .rotulo {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #8fb89a;
+        font-weight: 800;
+        margin-bottom: 4px;
+      }
+      #objetivo .titulo {
+        font-weight: 800;
+        font-size: 0.98rem;
+        color: #f3f6f1;
+        margin-bottom: 4px;
+      }
+      #objetivo .texto {
+        font-size: 0.86rem;
+        line-height: 1.4;
+        color: #cdd8cc;
+      }
+      #objetivo .meta {
+        margin-top: 6px;
+        font-size: 0.72rem;
+        color: #7d8a7d;
+      }
+      #objetivo .passo {
+        margin-top: 6px;
+        font-size: 0.74rem;
+        color: #9aa79a;
+      }
+      #log {
+        flex: 1;
+        overflow: auto;
+        padding: 8px 10px 16px;
       }
       .linha {
         padding: 6px 8px;
         border-radius: 6px;
+        margin-bottom: 5px;
+        font-size: 0.82rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid #243021;
+      }
+      .linha.ok {
+        background: rgba(46, 125, 79, 0.18);
+        border-color: rgba(63, 160, 106, 0.4);
+      }
+      .linha.fail {
+        background: rgba(210, 70, 70, 0.22);
+        border-color: rgba(210, 70, 70, 0.5);
+      }
+      .linha .nota {
+        color: #b6c3b4;
+        font-size: 0.8rem;
+        line-height: 1.35;
         margin-bottom: 4px;
-        font-size: 0.84rem;
+      }
+      .linha .baixo {
         display: flex;
         justify-content: space-between;
         gap: 10px;
-      }
-      .ok {
-        background: rgba(46, 125, 79, 0.25);
-      }
-      .fail {
-        background: rgba(210, 70, 70, 0.32);
+        align-items: baseline;
       }
       .keys {
         color: #b9e5f1;
         font-family: ui-monospace, monospace;
+        font-size: 0.78rem;
       }
       .got {
         font-family: ui-monospace, monospace;
         white-space: nowrap;
+        font-size: 0.78rem;
       }
       .resumo {
         font-weight: 800;
-        margin: 10px 0;
+        margin: 8px 0;
         font-size: 0.95rem;
-      }
-      .dica {
-        color: #9aa79a;
-        font-size: 0.8rem;
-        margin-bottom: 8px;
       }
     </style>
   </head>
   <body>
     <header>
-      <a class="voltar" href="../index.html" title="Voltar para a calculadora">← Calculadora</a>
-      <h1>🤖 Robô do guia</h1>
-      <select id="ex" title="Escolha um exemplo do guia"></select>
-      <label>Velocidade (ms/tecla) <input id="vel" type="range" min="300" max="2500" value="1000" step="100" /></label>
-      <button id="play" class="primary">▶ Tocar</button>
-      <button id="playAll">▶▶ Tocar tudo</button>
-      <button id="parar" disabled>⏹ Parar</button>
+      <a class="voltar" href="../index.html" id="lnkVoltar">← Calculadora</a>
+      <h1 id="hTitulo">🤖 Robô do guia</h1>
+
+      <div class="lang-sel" id="langSel">
+        <button class="lang-btn" data-lang="pt-BR" type="button">
+          <span class="flag" aria-hidden="true"><svg viewBox="0 0 14 10" width="18" height="13"><rect width="14" height="10" fill="#009c3b"/><polygon points="7,1.4 12.6,5 7,8.6 1.4,5" fill="#ffdf00"/><circle cx="7" cy="5" r="1.9" fill="#002776"/></svg></span>
+          <span>PT</span>
+        </button>
+        <button class="lang-btn" data-lang="it-IT" type="button">
+          <span class="flag" aria-hidden="true"><svg viewBox="0 0 15 10" width="19" height="13"><rect width="5" height="10" x="0" fill="#009246"/><rect width="5" height="10" x="5" fill="#fff"/><rect width="5" height="10" x="10" fill="#ce2b37"/></svg></span>
+          <span>IT</span>
+        </button>
+      </div>
+
+      <span class="sep"></span>
+
+      <div class="modo-seg" id="modoSeg">
+        <button data-modo="auto" class="active" type="button" id="btnModoAuto">Automático</button>
+        <button data-modo="manual" type="button" id="btnModoManual">Manual</button>
+      </div>
+
+      <label class="vel"><span id="lblVel">Velocidade</span>
+        <input id="vel" type="range" min="200" max="2200" value="900" step="100" />
+      </label>
+
+      <span class="grp-auto">
+        <button id="play" class="primary" type="button">▶ Tocar</button>
+        <button id="playAll" type="button">▶▶ Tocar tudo</button>
+      </span>
+      <span class="grp-manual" style="display: none">
+        <button id="proxTecla" type="button">Próxima tecla →</button>
+        <button id="proxLinha" type="button">Próxima linha ⤵</button>
+      </span>
+      <button id="reiniciar" type="button">↻ Reiniciar</button>
+      <button id="parar" type="button" disabled>⏹ Parar</button>
+
       <span id="tecla"></span>
       <span id="status"></span>
     </header>
+
     <div id="wrap">
-      <div id="calcBox"><iframe id="calc" title="Calculadora" src="../index.html"></iframe></div>
-      <div id="side">
-        <div class="dica">
-          O robô clica as teclas reais (destacadas) e compara o display com o guia. Cada linha:
-          <span class="keys">teclas</span> → resultado obtido ✓/✗.
+      <div id="tree">
+        <div class="busca-box">
+          <input id="busca" type="search" placeholder="Buscar exemplo…" autocomplete="off" />
         </div>
+        <div id="arvore"></div>
+      </div>
+
+      <div id="calcBox"><iframe id="calc" title="Calculadora" src="../index.html"></iframe></div>
+
+      <div id="side">
+        <div id="objetivo"></div>
         <div id="log"></div>
       </div>
     </div>
 
     <script type="module">
-      import { traduzir } from "./keystrokes.js";
-      import { conferir } from "./comparar.js";
-      import { secao1 } from "./fixtures/secao-1.js";
-      import { secao2Percentual, secao2Calendario } from "./fixtures/secao-2.js";
-      import { secao3 } from "./fixtures/secao-3.js";
-      import { secao4 } from "./fixtures/secao-4.js";
-      import { secao5 } from "./fixtures/secao-5.js";
-      import { secao6 } from "./fixtures/secao-6.js";
-      import { erros } from "./fixtures/erros.js";
-      import { solucoes } from "./fixtures/solucoes.js";
-      import { programa } from "./fixtures/programa.js";
-      import { secao7, apendiceA, apendiceB, apendiceC, apendiceF } from "./fixtures/extras.js";
+      import { arvore, achatar, casa } from "./guia-arvore.js";
+      import { criarEngine } from "./robo-engine.js";
+      import { lerIdioma, salvarIdioma, t, bi } from "./robo-i18n.js";
 
-      // Índice em inglês, seguindo o índice do User Guide (HP 12C Platinum):
-      // Part I (Sections 1–7) · Part II (Sections 8–11) · Part III (Sections 12–16)
-      // · Appendices A–E. (F: Battery/Service e G: regulatório não têm keystrokes
-      // testáveis no guia.)
-      const grupos = [
-        ["Part I · Section 1: Getting Started", secao1],
-        ["Part I · Section 2: Percentage Functions", secao2Percentual],
-        ["Part I · Section 2: Calendar Functions", secao2Calendario],
-        ["Part I · Section 3: Basic Financial Functions", secao3],
-        ["Part I · Section 4: Additional Financial Functions", secao4],
-        ["Part I · Section 5: Additional Operating Features", secao5],
-        ["Part I · Section 6: Statistics Functions", secao6],
-        ["Part I · Section 7: Mathematics Functions", secao7],
-        ["Part II · Sections 8–11: Programming", programa],
-        ["Part III · Sections 12–16: Solutions", solucoes],
-        ["Appendix A: RPN and the Stack", apendiceA],
-        ["Appendix B: Algebraic Mode (ALG)", apendiceB],
-        ["Appendix C: More About IRR", apendiceC],
-        ["Appendix D: Error Conditions", erros],
-        ["Appendix F: Battery & Service — Self-Test", apendiceF],
-      ];
-      const exemplos = [];
-      for (const [grupo, arr] of grupos) for (const ex of arr) exemplos.push({ ...ex, grupo });
+      // ---- estado da UI ----
+      let idioma = lerIdioma();
+      let modo = "auto"; // "auto" | "manual"
+      let pararGeral = false;
+      const flat = achatar(); // índice = data-idx das folhas
+      let idxAtual = -1;
+      const resultados = []; // {linha, r} renderizados (p/ re-pintar ao trocar idioma)
+      let resumoFinal = null; // {ok, total} quando o exemplo termina
 
-      const elEx = document.getElementById("ex");
-      exemplos.forEach((ex, i) => {
-        const o = document.createElement("option");
-        o.value = i;
-        o.textContent = `${ex.grupo} · ${ex.nome}`;
-        elEx.appendChild(o);
-      });
+      const $ = (id) => document.getElementById(id);
+      const elArvore = $("arvore");
+      const elBusca = $("busca");
+      const elLog = $("log");
+      const elObjetivo = $("objetivo");
+      const elStatus = $("status");
+      const elTecla = $("tecla");
+      const vel = $("vel");
+      const frame = $("calc");
 
-      const frame = document.getElementById("calc");
-      const log = document.getElementById("log");
-      const statusEl = document.getElementById("status");
-      const vel = document.getElementById("vel");
-      const btnPlay = document.getElementById("play");
-      const btnAll = document.getElementById("playAll");
-      const btnStop = document.getElementById("parar");
-      let parar = false;
-      // Geração do run: cada "Tocar" invalida runs anteriores (um run suspenso num
-      // sleep acorda, vê que não é mais o atual e morre — nunca dois robôs juntos).
-      let runId = 0;
-
-      const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-      const doc = () => frame.contentDocument;
-      const win = () => frame.contentWindow;
-      const display = () => doc().querySelector("#display").textContent;
-      const teclaEl = document.getElementById("tecla");
-
-      async function resetCalc() {
-        // Independência: limpa a Continuous Memory persistida (mesma origem) para
-        // o iframe nascer no estado de fábrica (RPN, FIX 2, registradores zerados).
-        try {
-          localStorage.removeItem("br12c.continuousMemory");
-        } catch (e) {
-          /* indisponível: segue */
-        }
-        await new Promise((res) => {
-          frame.onload = () => res();
-          frame.src = "../index.html?t=" + Date.now();
-        });
-        for (let i = 0; i < 120; i += 1) {
-          if (win().__BR12C_KEYS__ && doc().querySelector('#keyboard [data-action]')) break;
-          await sleep(30);
-        }
-        // Realce forte da tecla pressionada, injetado dentro do iframe.
-        try {
-          const st = doc().createElement("style");
-          st.textContent =
-            "#keyboard [data-action].robo-press{outline:4px solid #f2c64d!important;outline-offset:1px;background:rgba(242,198,77,.30)!important;border-radius:8px;}";
-          doc().head.appendChild(st);
-        } catch (e) {
-          /* ignora */
-        }
-      }
-
-      async function pressActions(acoes, vivo) {
-        const passo = Number(vel.value); // ms por tecla
-        for (const acao of acoes) {
-          if (!vivo()) return;
-          // "hold-mode" é o botão Segurar (🔒), fora do #keyboard.
-          const btn =
-            acao === "hold-mode"
-              ? doc().querySelector("#holdModeBtn")
-              : doc().querySelector(`#keyboard [data-action="${acao}"]`);
-          if (btn) {
-            teclaEl.textContent = "⌨ " + (btn.getAttribute("aria-label") || acao);
-            btn.classList.add("robo-press");
-            await sleep(passo * 0.18);
-            if (!vivo()) {
-              btn.classList.remove("robo-press");
-              return;
-            }
-            btn.dispatchEvent(new (win().MouseEvent)("click", { bubbles: true }));
-            await sleep(passo * 0.62);
-            btn.classList.remove("robo-press");
-            await sleep(passo * 0.2);
-          } else {
-            await sleep(passo);
+      function el(tag, attrs = {}, txt) {
+        const n = document.createElement(tag);
+        for (const k in attrs) {
+          if (k === "open") {
+            if (attrs[k]) n.open = true;
+          } else if (attrs[k] != null) {
+            n.setAttribute(k, attrs[k]);
           }
         }
-        teclaEl.textContent = "";
+        if (txt != null) n.textContent = txt;
+        return n;
+      }
+      const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+      // ---- engine ----
+      const engine = criarEngine({
+        frame,
+        vel,
+        callbacks: {
+          onCarregado(ex) {
+            resultados.length = 0;
+            resumoFinal = null;
+            elLog.innerHTML = "";
+            renderObjetivo(ex);
+            setStatus(t(idioma, "pronto"));
+          },
+          onLinha(linhaIdx, linha, r) {
+            resultados.push({ linha, r });
+            renderLinha(linha, r);
+          },
+          onFim(ok, total) {
+            resumoFinal = { ok, total };
+            renderResumo(ok, total);
+            setStatus(`${ok}/${total}`);
+          },
+          onProgresso(p) {
+            atualizarPasso(p);
+            atualizarBotoes(p);
+          },
+          onTecla(rotulo) {
+            elTecla.textContent = "⌨ " + rotulo;
+          },
+          onStatus(chave) {
+            setStatus(t(idioma, chave));
+          },
+        },
+      });
+
+      // ---- render: árvore ----
+      function renderArvore() {
+        const filtro = elBusca.value;
+        elArvore.innerHTML = "";
+        let idx = -1;
+        let algumVisivel = false;
+        for (const parte of arvore) {
+          const dParte = el("details", { open: true });
+          dParte.appendChild(el("summary", {}, bi(parte.titulo, idioma)));
+          let parteTem = false;
+          for (const sec of parte.secoes) {
+            const dSec = el("details", { class: "secao", open: !!filtro });
+            dSec.appendChild(el("summary", {}, bi(sec.titulo, idioma)));
+            let secTem = false;
+            for (const ex of sec.exemplos) {
+              idx += 1;
+              if (filtro && !casa(ex, filtro)) continue;
+              const rot = bi(ex.titulo, idioma, ex.nome);
+              const b = el("button", { class: "leaf", "data-idx": String(idx), type: "button" }, rot);
+              if (idx === idxAtual) b.classList.add("active");
+              dSec.appendChild(b);
+              secTem = true;
+            }
+            if (secTem) {
+              dParte.appendChild(dSec);
+              parteTem = true;
+              algumVisivel = true;
+            }
+          }
+          if (parteTem) elArvore.appendChild(dParte);
+        }
+        if (!algumVisivel) {
+          elArvore.appendChild(el("div", { class: "vazio" }, t(idioma, "semResultados")));
+        }
       }
 
-      async function tocar(ex) {
-        const meu = ++runId;
-        const vivo = () => !parar && meu === runId;
-        log.innerHTML = "";
-        statusEl.textContent = "▶ tocando…";
-        await resetCalc();
-        if (!vivo()) return false;
-        const KEYS = win().__BR12C_KEYS__;
-        // Modo explícito SEMPRE (f RPN / f ALG) — nenhum teste herda o modo anterior.
-        await pressActions(traduzir(["f", ex.modo === "alg" ? "ALG" : "RPN"], KEYS), vivo);
-        let ok = 0;
-        for (const linha of ex.linhas) {
-          if (!vivo()) break;
-          await pressActions(traduzir(linha.keys, KEYS), vivo);
-          if (!vivo()) break;
-          const r = conferir(display(), linha.display);
-          if (r.ok) ok += 1;
-          const div = document.createElement("div");
-          div.className = "linha " + (r.ok ? "ok" : "fail");
-          div.innerHTML =
-            `<span class="keys">${linha.keys.join(" ")}</span>` +
-            `<span class="got">${r.atual} ${r.ok ? "✓" : "✗ (esp. " + r.esperado + ")"}</span>`;
-          log.appendChild(div);
-          div.scrollIntoView({ block: "nearest" });
-          await sleep(220);
+      // ---- render: objetivo ----
+      function renderObjetivo(ex) {
+        elObjetivo.innerHTML = "";
+        if (!ex) {
+          elObjetivo.appendChild(el("div", { class: "titulo" }, t(idioma, "selecioneTitulo")));
+          elObjetivo.appendChild(el("div", { class: "texto" }, t(idioma, "selecioneTexto")));
+          elObjetivo.appendChild(el("div", { class: "passo" }, t(idioma, "dica")));
+          return;
         }
-        if (!vivo()) {
-          teclaEl.textContent = "";
-          if (meu === runId) statusEl.textContent = "⏹ parado"; // órfão não mexe na UI
-          return false;
-        }
-        const total = ex.linhas.length;
-        const resumo = document.createElement("div");
-        resumo.className = "resumo";
-        resumo.textContent = `${ok}/${total} ${ok === total ? "✓ tudo certo" : "✗ com falhas"}`;
-        log.appendChild(resumo);
-        statusEl.textContent = `${ok}/${total}`;
-        return ok === total;
+        elObjetivo.appendChild(el("div", { class: "rotulo" }, t(idioma, "objetivoLabel")));
+        const tit = bi(ex.titulo, idioma, ex.nome);
+        elObjetivo.appendChild(el("div", { class: "titulo" }, tit));
+        const obj = bi(ex.objetivo, idioma, "");
+        if (obj) elObjetivo.appendChild(el("div", { class: "texto" }, obj));
+        const sec = ex._sec ? bi(ex._sec.titulo, idioma) : "";
+        elObjetivo.appendChild(el("div", { class: "meta" }, sec ? sec + " · " + ex.nome : ex.nome));
+        elObjetivo.appendChild(el("div", { class: "passo", id: "passoInfo" }));
       }
 
-      function setBusy(b) {
-        btnPlay.disabled = b;
-        btnAll.disabled = b;
-        elEx.disabled = b;
-        btnStop.disabled = !b;
+      // ---- render: linha do log ----
+      function renderLinha(linha, r) {
+        const div = el("div", { class: "linha " + (r.ok ? "ok" : "fail") });
+        const nota = bi(linha.nota, idioma, "");
+        if (nota) div.appendChild(el("div", { class: "nota" }, nota));
+        const baixo = el("div", { class: "baixo" });
+        baixo.appendChild(el("span", { class: "keys" }, linha.keys.join(" ")));
+        const got = el("span", { class: "got" });
+        got.textContent = r.atual + " " + (r.ok ? "✓" : "✗ (" + t(idioma, "esperado") + " " + r.esperado + ")");
+        baixo.appendChild(got);
+        div.appendChild(baixo);
+        elLog.appendChild(div);
+        div.scrollIntoView({ block: "nearest" });
       }
 
-      btnStop.onclick = () => {
-        parar = true;
-      };
+      function renderResumo(ok, total) {
+        const r = el("div", { class: "resumo" });
+        r.textContent = `${ok}/${total} ${ok === total ? t(idioma, "tudoCerto") : t(idioma, "comFalhas")}`;
+        elLog.appendChild(r);
+        r.scrollIntoView({ block: "nearest" });
+      }
 
-      btnPlay.onclick = async () => {
-        parar = false;
-        setBusy(true);
-        await tocar(exemplos[Number(elEx.value)]);
-        setBusy(false);
-      };
-      btnAll.onclick = async () => {
-        parar = false;
-        setBusy(true);
-        for (let i = 0; i < exemplos.length; i += 1) {
-          if (parar) break;
-          elEx.value = String(i);
-          await tocar(exemplos[i]);
-          if (parar) break;
-          await sleep(700);
+      // re-pinta o painel inteiro (ao trocar idioma) sem mexer no run.
+      function repintar() {
+        renderObjetivo(engine.exAtual());
+        elLog.innerHTML = "";
+        for (const { linha, r } of resultados) renderLinha(linha, r);
+        if (resumoFinal) renderResumo(resumoFinal.ok, resumoFinal.total);
+        if (engine.exAtual()) atualizarPasso(engine.estadoPasso());
+      }
+
+      // ---- indicadores de passo/status ----
+      function setStatus(txt) {
+        elStatus.textContent = txt;
+      }
+      function atualizarPasso(p) {
+        const box = $("passoInfo");
+        if (!box) return;
+        if (!p || p.fim || !p.info) {
+          box.textContent = engine.exAtual() ? t(idioma, "fim") : "";
+          elTecla.textContent = "";
+          return;
         }
-        setBusy(false);
-      };
+        box.textContent = `${t(idioma, "passo")} ${p.ptr + 1} ${t(idioma, "de")} ${p.total} — ${t(idioma, "proxima")}: ${p.info.rotulo}`;
+      }
+      function atualizarBotoes(p) {
+        const fim = p ? p.fim : true;
+        const temEx = !!engine.exAtual();
+        $("proxTecla").disabled = !temEx || fim;
+        $("proxLinha").disabled = !temEx || fim;
+        $("reiniciar").disabled = !temEx;
+        $("play").disabled = !temEx || fim;
+      }
+
+      // ---- ações ----
+      async function selecionar(idx) {
+        pararGeral = false;
+        idxAtual = idx;
+        marcarFolhaAtiva();
+        $("parar").disabled = false;
+        await engine.carregar(flat[idx]);
+        $("parar").disabled = true;
+      }
+      function marcarFolhaAtiva() {
+        elArvore.querySelectorAll(".leaf").forEach((b) => {
+          b.classList.toggle("active", Number(b.dataset.idx) === idxAtual);
+        });
+      }
+
+      async function tocar() {
+        if (idxAtual < 0) return;
+        pararGeral = false;
+        $("parar").disabled = false;
+        if (engine.noFim()) await engine.carregar(flat[idxAtual]);
+        await engine.tocarAuto();
+        $("parar").disabled = true;
+      }
+
+      async function tocarTudo() {
+        pararGeral = false;
+        $("parar").disabled = false;
+        for (let i = 0; i < flat.length; i += 1) {
+          if (pararGeral) break;
+          idxAtual = i;
+          marcarFolhaAtiva();
+          await engine.carregar(flat[i]);
+          if (pararGeral) break;
+          await engine.tocarAuto();
+          if (pararGeral || !engine.noFim()) break;
+          await sleep(650);
+        }
+        $("parar").disabled = true;
+      }
+
+      function parar() {
+        pararGeral = true;
+        engine.pararTudo();
+        setStatus(t(idioma, "parado"));
+      }
+
+      // ---- wiring ----
+      elArvore.addEventListener("click", (e) => {
+        const b = e.target.closest(".leaf");
+        if (!b) return;
+        selecionar(Number(b.dataset.idx));
+      });
+      elBusca.addEventListener("input", renderArvore);
+      // Guarda: um passo manual por vez (evita cliques rápidos se sobreporem).
+      let ocupado = false;
+      async function passoManual(fn) {
+        if (ocupado) return;
+        ocupado = true;
+        try {
+          await fn();
+        } finally {
+          ocupado = false;
+        }
+      }
+
+      $("play").onclick = tocar;
+      $("playAll").onclick = tocarTudo;
+      $("parar").onclick = parar;
+      $("reiniciar").onclick = () => idxAtual >= 0 && selecionar(idxAtual);
+      $("proxTecla").onclick = () => passoManual(() => engine.proximaTecla());
+      $("proxLinha").onclick = () => passoManual(() => engine.proximaLinha());
+
+      $("modoSeg").addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-modo]");
+        if (!b) return;
+        modo = b.dataset.modo;
+        document.querySelectorAll("#modoSeg button").forEach((x) => x.classList.toggle("active", x === b));
+        document.querySelector(".grp-auto").style.display = modo === "auto" ? "" : "none";
+        document.querySelector(".grp-manual").style.display = modo === "manual" ? "" : "none";
+      });
+
+      $("langSel").addEventListener("click", (e) => {
+        const b = e.target.closest(".lang-btn");
+        if (!b) return;
+        idioma = b.dataset.lang;
+        salvarIdioma(idioma);
+        aplicarTextosUI();
+        renderArvore();
+        repintar();
+      });
+
+      // ---- textos da UI (bilíngue) ----
+      function aplicarTextosUI() {
+        document.documentElement.lang = idioma;
+        $("lnkVoltar").textContent = t(idioma, "voltar");
+        $("hTitulo").textContent = t(idioma, "titulo");
+        $("lblVel").textContent = t(idioma, "velocidade");
+        $("btnModoAuto").textContent = t(idioma, "auto");
+        $("btnModoManual").textContent = t(idioma, "manual");
+        $("play").textContent = t(idioma, "tocar");
+        $("playAll").textContent = t(idioma, "tocarTudo");
+        $("proxTecla").textContent = t(idioma, "proximaTecla");
+        $("proxLinha").textContent = t(idioma, "proximaLinha");
+        $("reiniciar").textContent = t(idioma, "reiniciar");
+        $("parar").textContent = t(idioma, "parar");
+        elBusca.placeholder = t(idioma, "busca");
+        document.querySelectorAll("#langSel .lang-btn").forEach((b) => {
+          b.classList.toggle("active", b.dataset.lang === idioma);
+        });
+      }
+
+      // ---- boot ----
+      aplicarTextosUI();
+      renderArvore();
+      renderObjetivo(null);
+      atualizarBotoes(null);
     </script>
   </body>
 </html>
