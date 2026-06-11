@@ -1531,6 +1531,23 @@ html[data-theme="dark"] .br12c-footer .home-button-fixed {
   color: #9fe7ec;
 }
 
+/* Skin ESCURO da calculadora (paisagem/desktop): troca a foto pela versão dark
+   e escurece o vidro do LCD para casar com ela. Os dígitos seguem escuros, como
+   na própria foto. O data-theme é definido por theme.js a partir da preferência
+   salva do portfólio (engnata_theme_mode) — vale também no celular, onde não há
+   botão: a calculadora respeita o tema escolhido na home ou em outros apps. */
+html[data-theme="dark"] .calculator {
+  background:
+    linear-gradient(140deg, rgba(255, 255, 255, 0.05), transparent 22%),
+    url("./imagem calculadora dark mode.png") center / contain no-repeat;
+}
+
+html[data-theme="dark"] .lcd {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05), transparent 18%, rgba(0, 0, 0, 0.2)),
+    #3a3f34;
+}
+
 /* ====================================================================== */
 /* SKIN RETRATO — CELULAR NA VERTICAL                                      */
 /* Em telas de celular em pé, troca a foto landscape pela vertical         */
@@ -1605,6 +1622,30 @@ html[data-theme="dark"] .br12c-footer .home-button-fixed {
     border-radius: 5px;
     grid-template-rows: 30% 1fr;
     padding: 0.7% 2.4% 0.6%;
+  }
+
+  /* Skin ESCURO no retrato: foto vertical dark + LCD "negativo" (fundo quase
+     preto, dígitos ciano), como na imagem. Vence as regras dark de paisagem por
+     ordem de origem (este bloco vem depois). */
+  html[data-theme="dark"] .calculator {
+    background:
+      linear-gradient(140deg, rgba(255, 255, 255, 0.04), transparent 22%),
+      url("./imagem calculadora vertical dark mode.png") center / contain no-repeat;
+  }
+
+  html[data-theme="dark"] .lcd {
+    background:
+      linear-gradient(90deg, rgba(22, 188, 194, 0.06), transparent 20%, rgba(0, 0, 0, 0.32)),
+      #06120f;
+  }
+
+  html[data-theme="dark"] #display {
+    color: #16bcc2;
+    text-shadow: 0 0 6px rgba(22, 188, 194, 0.4);
+  }
+
+  html[data-theme="dark"] .lcd-indicators {
+    color: #16bcc2;
   }
 
   /* teclas: coordenadas RETRATO. Replica o grupo de seletores da skin foto
