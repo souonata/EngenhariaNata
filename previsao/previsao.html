@@ -1276,10 +1276,14 @@ function buildRow(day, hours, isToday, nowH, scaleMax, lat, yLowG, yHighG){
     const pop  = hours[i].pop  || 0;
     const wind = hours[i].wind || 0;
     const frac = clamp(m / rainScaleMax, 0, 1);
-    const spacing = 6 - 4 * frac;                   // mais chuva → linhas mais juntas
-    const thick   = (0.5 + 1.7 * frac).toFixed(2);  // mais chuva → linhas mais grossas
+    const spacing = 5.2 - 3.2 * frac;               // mais chuva → linhas mais juntas (5,2→2,0)
+    const thick   = (0.9 + 1.4 * frac).toFixed(2);  // mais chuva → linhas mais grossas (0,9→2,3)
     const angle   = clamp(wind * 1.1, 8, 60).toFixed(0); // mais vento → mais inclinada
-    const op      = Math.max(0.14, (pop / 100) * 0.85).toFixed(2); // probabilidade
+    // Opacidade ∝ probabilidade, mas com piso visível para prob/intensidade
+    // baixas (antes quase sumiam). A intensidade (frac) também eleva o piso, então
+    // chuva FORTE continua nítida mesmo com probabilidade baixa. Mantém o degradê
+    // fraca→média→forte (espessura/densidade ∝ intensidade).
+    const op      = Math.max(0.3, frac * 0.45, (pop / 100) * 0.85).toFixed(2);
     const x = (xAt(i) - rBarW/2).toFixed(1);
     const pid = `rn${day.date.replace(/-/g,'')}_${currentIdx}_${i}`;
     rainDefs.push(`<pattern id="${pid}" patternUnits="userSpaceOnUse" width="${spacing.toFixed(2)}" height="${spacing.toFixed(2)}" patternTransform="rotate(${angle})"><line x1="0" y1="-0.5" x2="0" y2="${(spacing+0.5).toFixed(2)}" class="rain-hatch" stroke-width="${thick}" stroke-dasharray="${(spacing*0.5).toFixed(2)} ${(spacing*0.55).toFixed(2)}"/></pattern>`);
