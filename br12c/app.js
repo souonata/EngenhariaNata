@@ -200,10 +200,16 @@ function buildSkinKeys() {
   // numérico (4 linhas) embaixo, e ENTER alto na coluna 5 (linhas 7-8). Os
   // centros abaixo foram medidos sobre a foto (% da imagem). Apenas geometria:
   // o data-action de cada tecla é o mesmo, então a lógica não muda.
-  const pColCenters = [18.3, 34.6, 50.8, 67.0, 83.1]; // colunas 1-5
-  const pRowCenters = [24.0, 34.7, 45.0, 54.9, 63.8, 73.7, 83.6, 93.6]; // linhas 1-8
-  const pW = 12.8; // largura da área de toque (% da largura da foto)
-  const pH = 8.2; // altura da área de toque (% da altura da foto)
+  // Centros das teclas medidos sobre a foto (% da imagem). As teclas de FUNÇÃO
+  // (linhas 1-4) são mais BAIXAS que as NUMÉRICAS (linhas 5-8) — por isso a
+  // altura da área de toque é por bloco (pHfunc / pHnum), senão a máscara fica
+  // maior que a tecla. Largura igual para todas.
+  const pColCenters = [18.35, 34.56, 50.77, 67.03, 83.08]; // colunas 1-5
+  const pRowCenters = [23.65, 34.15, 44.45, 54.6, 63.5, 73.8, 84.0, 93.3]; // linhas 1-8
+  const pW = 12.2; // largura da área de toque (% da largura da foto)
+  const pHfunc = 6.6; // altura das teclas de função (linhas 1-4, índice r 0-3)
+  const pHnum = 8.0; // altura das teclas numéricas (linhas 5-8, índice r 4-7)
+  const pHde = (r) => (r <= 3 ? pHfunc : pHnum);
   // Mapeia a posição landscape (col 0-9, row 0-3) -> posição retrato (col 0-4,
   // row 0-7). cols 0-4 = funções; col 5 = CHS/EEX/ENTER; cols 6-9 = números/ops.
   const pPos = (col, row) => {
@@ -222,7 +228,8 @@ function buildSkinKeys() {
     const pp = pPos(col, row);
     const cx = pColCenters[pp.c];
     const cy = pRowCenters[pp.r];
-    const ph = pp.tall ? pRowCenters[pp.r + 1] + pH / 2 - (cy - pH / 2) : pH;
+    const ph0 = pHde(pp.r);
+    const ph = pp.tall ? pRowCenters[pp.r + 1] + pHde(pp.r + 1) / 2 - (cy - ph0 / 2) : ph0;
     return {
       label,
       action,
@@ -232,7 +239,7 @@ function buildSkinKeys() {
       w: pct(options.width || keyWidth, width),
       h: pct(options.height || keyHeight, height),
       px: r3(cx - pW / 2),
-      py: r3(cy - pH / 2),
+      py: r3(cy - ph0 / 2),
       pw: pW,
       ph: r3(ph),
     };
