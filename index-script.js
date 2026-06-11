@@ -12,22 +12,26 @@ import { i18n } from './src/core/i18n.js';
 // VERSÕES DOS APLICATIVOS
 // ============================================
 
+// Versões padrão (fallback se config/versions.json estiver indisponível).
+// Mantidas alinhadas ao versions.json — varredura geral 2026-06: todos os apps
+// promovidos a 2.0.0.
 const versoesAppsPadrao = {
-    'sobre': '1.0.0',
-    'iluminacao': '1.0.0',
-    'bitola': '1.0.0',
-    'helice': '1.0.0',
+    'sobre': '2.0.0',
+    'iluminacao': '2.0.0',
+    'bitola': '2.0.0',
+    'helice': '2.0.0',
     'mutuo': '2.0.0',
-    'bugs': '1.0.0',
-    'arcondicionado': '0.9.0',
-    'aquecimento': '0.9.0',
-    'solar': '0.9.0',
-    'fazenda': '0.1.0',
-    'chuva': '1.0.0',
-    'ventilacao': '1.0.0',
-    'bombaagua': '1.0.0',
-    'salario': '1.0.0',
-    'previsao': '1.0.0'
+    'bugs': '2.0.0',
+    'arcondicionado': '2.0.0',
+    'aquecimento': '2.0.0',
+    'solar': '2.0.0',
+    'fazenda': '2.0.0',
+    'chuva': '2.0.0',
+    'ventilacao': '2.0.0',
+    'bombaagua': '2.0.0',
+    'salario': '2.0.0',
+    'previsao': '2.0.0',
+    'br12c': '2.0.0'
 };
 
 // ============================================
@@ -234,7 +238,8 @@ class IndexApp extends App {
             'ventilacao/ventilacao.html': 'ventilacao',
             'bombaagua/bombaagua.html': 'bombaagua',
             'salario/salario.html': 'salario',
-            'previsao/previsao.html': 'previsao'
+            'previsao/previsao.html': 'previsao',
+            'br12c/index.html': 'br12c'
         };
 
         const appIcons = document.querySelectorAll('.app-icon');

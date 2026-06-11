@@ -601,7 +601,19 @@ html:not([data-theme="dark"]) .home-button-fixed svg { fill: var(--accent-hover,
     top: 10px;
 }
 /* Small helpers scoped for language buttons */
-.btn-idioma .flag, .lang-btn .flag { font-size: 1.1rem; }
+.btn-idioma .flag, .lang-btn .flag {
+    /* As bandeiras são SVG inline no HTML (universal — não dependem de fonte de
+       emoji do SO; alguns PCs Windows mostravam só "BR"/"IT" como texto). */
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    font-size: 1.1rem;
+}
+.btn-idioma .flag svg, .lang-btn .flag svg {
+    display: block;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.18);
+}
 .btn-idioma .lang-text, .lang-btn .lang-text, .btn-idioma .texto-idioma, .lang-btn .texto-idioma { 
     font-size: 0.85rem; 
     font-weight: 600; 

@@ -301,6 +301,60 @@ function attachEvents() {
     });
   }
 
+  // Botão "Tela cheia": Fullscreen API com fallback CSS (.fake-fullscreen no body)
+  // se o navegador bloquear (ex.: iframe sem allowfullscreen, iOS Safari restrito).
+  const fsBtn = document.getElementById("fullscreenBtn");
+  if (fsBtn) {
+    const emFs = () => !!document.fullscreenElement || document.body.classList.contains("fake-fullscreen");
+    const aplicarEstado = () => {
+      const ativo = emFs();
+      document.body.classList.toggle("is-fullscreen", ativo);
+      fsBtn.setAttribute("aria-pressed", ativo ? "true" : "false");
+      fsBtn.setAttribute("aria-label", ativo ? "Sair da tela cheia" : "Entrar em tela cheia");
+      const titulo = fsBtn.querySelector(".stage-tool-title");
+      if (titulo) titulo.textContent = ativo ? titulo.dataset.titleOn || "Sair" : titulo.dataset.titleOff || "Tela cheia";
+    };
+    fsBtn.addEventListener("click", (event) => {
+      if (shouldSuppressSyntheticClick()) {
+        event.preventDefault();
+        return;
+      }
+      if (emFs()) {
+        if (document.fullscreenElement && document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {
+            /* ignora: fallback abaixo */
+          });
+        }
+        document.body.classList.remove("fake-fullscreen");
+        aplicarEstado();
+        return;
+      }
+      const alvo = document.documentElement;
+      if (alvo.requestFullscreen) {
+        alvo
+          .requestFullscreen()
+          .then(aplicarEstado)
+          .catch(() => {
+            // Fallback: simula tela cheia via CSS (esconde painéis laterais e
+            // sobe a calculadora para 100vh). Funciona em qualquer navegador.
+            document.body.classList.add("fake-fullscreen");
+            aplicarEstado();
+          });
+      } else {
+        document.body.classList.add("fake-fullscreen");
+        aplicarEstado();
+      }
+    });
+    document.addEventListener("fullscreenchange", aplicarEstado);
+    // Esc no fallback CSS também sai (a Fullscreen API real cuida sozinha).
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && document.body.classList.contains("fake-fullscreen")) {
+        document.body.classList.remove("fake-fullscreen");
+        aplicarEstado();
+      }
+    });
+  }
+
   document.querySelectorAll("[data-mode]").forEach((button) => {
     button.addEventListener("click", (event) => {
       if (shouldSuppressSyntheticClick()) {

@@ -140,12 +140,28 @@
     <div class="language-selector">
         <!-- Botão para português (ativo definido pelo JavaScript) -->
         <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" data-i18n-aria="aria-lang-pt" data-i18n-title="title-lang-pt">
-            <span class="flag" aria-hidden="true">🇧🇷</span>
+            <!-- Bandeira BR em SVG inline: renderiza igual em qualquer sistema
+                 operacional (não depende de fontes de emoji do SO — alguns PCs
+                 Windows sem Twemoji renderizavam só "BR"/"IT" como texto). -->
+            <span class="flag" aria-hidden="true">
+                <svg viewBox="0 0 14 10" width="20" height="14" role="img" focusable="false">
+                    <rect width="14" height="10" fill="#009c3b"/>
+                    <polygon points="7,1.4 12.6,5 7,8.6 1.4,5" fill="#ffdf00"/>
+                    <circle cx="7" cy="5" r="1.9" fill="#002776"/>
+                </svg>
+            </span>
             <span class="lang-text">PT</span>
         </button>
         <!-- Botão para italiano -->
         <button id="btnItaliano" class="lang-btn" data-lang="it-IT" data-i18n-aria="aria-lang-it" data-i18n-title="title-lang-it">
-            <span class="flag" aria-hidden="true">🇮🇹</span>
+            <!-- Bandeira IT em SVG inline (3 bandas verticais: verde/branco/vermelho). -->
+            <span class="flag" aria-hidden="true">
+                <svg viewBox="0 0 15 10" width="21" height="14" role="img" focusable="false">
+                    <rect width="5" height="10" x="0"  fill="#009246"/>
+                    <rect width="5" height="10" x="5"  fill="#ffffff"/>
+                    <rect width="5" height="10" x="10" fill="#ce2b37"/>
+                </svg>
+            </span>
             <span class="lang-text">IT</span>
         </button>
     </div>
