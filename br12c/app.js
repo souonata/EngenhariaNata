@@ -175,7 +175,7 @@ function renderKeyboard() {
           data-tone="${tone}"
           aria-label="${key.label}"
           title="${key.label}"
-          style="--x:${key.x}; --y:${key.y}; --w:${key.w}; --h:${key.h};"
+          style="--x:${key.x}; --y:${key.y}; --w:${key.w}; --h:${key.h}; --px:${key.px}; --py:${key.py}; --pw:${key.pw}; --ph:${key.ph};"
         >
           <span class="shift-top"></span>
           <span class="main-label">${key.label}</span>
@@ -194,16 +194,49 @@ function buildSkinKeys() {
   const columns = [104, 247, 390, 532, 674, 817, 960, 1102, 1244, 1385];
   const rows = [337, 495, 652, 813];
 
+  // --- Skin RETRATO (celular na vertical) -----------------------------------
+  // A foto "imagem calculadora vertical.png" (910x1728) reorganiza as MESMAS
+  // teclas em 5 colunas x 8 linhas: bloco de funções (4 linhas) em cima, bloco
+  // numérico (4 linhas) embaixo, e ENTER alto na coluna 5 (linhas 7-8). Os
+  // centros abaixo foram medidos sobre a foto (% da imagem). Apenas geometria:
+  // o data-action de cada tecla é o mesmo, então a lógica não muda.
+  const pColCenters = [18.3, 34.6, 50.8, 67.0, 83.1]; // colunas 1-5
+  const pRowCenters = [24.0, 34.7, 45.0, 54.9, 63.8, 73.7, 83.6, 93.6]; // linhas 1-8
+  const pW = 12.8; // largura da área de toque (% da largura da foto)
+  const pH = 8.2; // altura da área de toque (% da altura da foto)
+  // Mapeia a posição landscape (col 0-9, row 0-3) -> posição retrato (col 0-4,
+  // row 0-7). cols 0-4 = funções; col 5 = CHS/EEX/ENTER; cols 6-9 = números/ops.
+  const pPos = (col, row) => {
+    if (col <= 4) return { c: col, r: row };
+    if (col === 5) {
+      if (row === 0) return { c: 4, r: 4 }; // CHS  -> linha 5, col 5
+      if (row === 1) return { c: 4, r: 5 }; // EEX  -> linha 6, col 5
+      return { c: 4, r: 6, tall: true }; // ENTER -> linhas 7-8, col 5
+    }
+    return { c: col - 6, r: row + 4 }; // números/ops -> col 1-4, linhas 5-8
+  };
+  const r3 = (v) => Number(v.toFixed(3));
+
   const pct = (value, total) => Number(((value / total) * 100).toFixed(3));
-  const box = (label, action, col, row, tone = "function", options = {}) => ({
-    label,
-    action,
-    tone,
-    x: pct(columns[col], width),
-    y: pct(rows[row], height),
-    w: pct(options.width || keyWidth, width),
-    h: pct(options.height || keyHeight, height),
-  });
+  const box = (label, action, col, row, tone = "function", options = {}) => {
+    const pp = pPos(col, row);
+    const cx = pColCenters[pp.c];
+    const cy = pRowCenters[pp.r];
+    const ph = pp.tall ? pRowCenters[pp.r + 1] + pH / 2 - (cy - pH / 2) : pH;
+    return {
+      label,
+      action,
+      tone,
+      x: pct(columns[col], width),
+      y: pct(rows[row], height),
+      w: pct(options.width || keyWidth, width),
+      h: pct(options.height || keyHeight, height),
+      px: r3(cx - pW / 2),
+      py: r3(cy - pH / 2),
+      pw: pW,
+      ph: r3(ph),
+    };
+  };
 
   return [
     box("n", "tvm:n", 0, 0),
