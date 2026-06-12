@@ -11,5 +11,8 @@ describe("Memória de programa — limite e Error 4 (#9)", () => {
     expect(calc.display().replace(/\s/g, "")).toContain("400,"); // linha 400 gravada
     calc.pressGuia(["ENTER"]); // 401ª instrução -> memória cheia
     expect(calc.display().trim()).toBe("Error 4");
-  });
+    // Teste pesado: 400 toques no jsdom. Normalmente leva ~2-5s, perto do timeout
+    // padrão (5s) do Vitest, então estourava às vezes em CI lento (flaky). Folga
+    // generosa para nunca mais falhar por tempo.
+  }, 30000);
 });
