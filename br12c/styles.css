@@ -1542,10 +1542,22 @@ html[data-theme="dark"] .calculator {
     url("./imagem calculadora dark mode.png") center / contain no-repeat;
 }
 
+/* LCD escuro "negativo" (mesmas cores da skin vertical dark): fundo quase preto
+   e dígitos/anunciadores ciano. Vale para a paisagem (desktop e celular deitado);
+   o bloco retrato abaixo repete as mesmas cores. */
 html[data-theme="dark"] .lcd {
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.05), transparent 18%, rgba(0, 0, 0, 0.2)),
-    #3a3f34;
+    linear-gradient(90deg, rgba(22, 188, 194, 0.06), transparent 20%, rgba(0, 0, 0, 0.32)),
+    #06120f;
+}
+
+html[data-theme="dark"] #display {
+  color: #16bcc2;
+  text-shadow: 0 0 6px rgba(22, 188, 194, 0.4);
+}
+
+html[data-theme="dark"] .lcd-indicators {
+  color: #16bcc2;
 }
 
 /* ====================================================================== */

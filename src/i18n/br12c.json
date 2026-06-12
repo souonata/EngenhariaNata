@@ -18,8 +18,8 @@
       "holdAria": "Modo Segurar: trava teclas para usar em sequência",
       "guide": "Guia do usuário",
       "guideAria": "Abrir o guia do usuário (manual)",
-      "tests": "Sistema de testes",
-      "testsAria": "Abrir o sistema de testes ao vivo",
+      "tests": "Guia interativo",
+      "testsAria": "Abrir o guia interativo",
       "fullscreen": "Tela cheia",
       "fullscreenAria": "Entrar em tela cheia"
     },
@@ -59,8 +59,8 @@
       "holdAria": "Blocco tasti: blocca i tasti per usarli in sequenza",
       "guide": "Guida utente",
       "guideAria": "Apri la guida utente (manuale)",
-      "tests": "Sistema di test",
-      "testsAria": "Apri il sistema di test dal vivo",
+      "tests": "Guida interattiva",
+      "testsAria": "Apri la guida interattiva",
       "fullscreen": "Schermo intero",
       "fullscreenAria": "Attiva schermo intero"
     },
