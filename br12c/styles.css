@@ -86,8 +86,9 @@ a {
 /* Barra de ferramentas dedicada ACIMA da calculadora (fora do skin dela). Cada
    ferramenta é um botão com ícone + título + descrição do que faz. */
 .stage-controls {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 12px;
   width: min(100%, 1320px);
   margin: 0 auto 16px;
@@ -95,7 +96,7 @@ a {
 
 .stage-tool {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
   text-align: left;
   text-decoration: none;
