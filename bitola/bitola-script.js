@@ -492,6 +492,28 @@ class BitolaApp extends App {
         return formatarNumero(valor, 0);
     }
 
+    /**
+     * Monta a nota que explica a margem de segurança da NBR (+25%),
+     * mostrando por que a bitola comercial pode "pular" o tamanho logo acima
+     * da área mínima (ex.: 1,22 × 1,25 = 1,53 → 2,50 mm²).
+     */
+    montarNotaMargem(areaMin, bitolaSelecionada) {
+        if (!isFinite(areaMin) || areaMin <= 0 || !bitolaSelecionada || !isFinite(bitolaSelecionada.bitola)) {
+            return '';
+        }
+
+        const pt = i18n.obterIdiomaAtual() === 'pt-BR';
+        const areaSeg = areaMin * FATOR_SEGURANCA;
+        const areaMinStr = formatarNumero(areaMin, 2);
+        const areaSegStr = formatarNumero(areaSeg, 2);
+        const bitolaStr = this.formatarBitolaComercial(bitolaSelecionada.bitola, bitolaSelecionada.multiplicador);
+
+        if (pt) {
+            return `<strong>Margem de segurança NBR 5410 (+25%):</strong> ${areaMinStr} × 1,25 = ${areaSegStr} mm² → menor bitola comercial que atende: <strong>${bitolaStr}</strong>.`;
+        }
+        return `<strong>Margine di sicurezza NBR 5410 (+25%):</strong> ${areaMinStr} × 1,25 = ${areaSegStr} mm² → sezione commerciale minima adeguata: <strong>${bitolaStr}</strong>.`;
+    }
+
     atualizarResultado() {
         // Obter valores dos inputs
         const inputPotencia = document.getElementById('inputPotencia');
@@ -565,6 +587,11 @@ class BitolaApp extends App {
             disjuntorComercial.textContent = isFinite(disjuntor) ? formatarNumero(disjuntor, 0) + ' A' : '-';
         }
 
+        const bitolaMargemNota = document.getElementById('bitolaMargemNota');
+        if (bitolaMargemNota) {
+            bitolaMargemNota.innerHTML = this.montarNotaMargem(areaMin, bitolaSelecionada);
+        }
+
         // Atualizar memorial se visível
         const memorial = document.getElementById('memorialSection');
         if (memorial && memorial.style.display !== 'none') {
@@ -591,6 +618,8 @@ class BitolaApp extends App {
             const el = document.getElementById(id);
             if (el) el.textContent = '-';
         });
+        const bitolaMargemNota = document.getElementById('bitolaMargemNota');
+        if (bitolaMargemNota) bitolaMargemNota.innerHTML = '';
         this.explicacao.limpar();
     }
 

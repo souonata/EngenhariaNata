@@ -116,6 +116,28 @@
 /* Resultado styles moved to shared-styles.css */
 /* Usando o padrão global para .resultado-item.destaque */
 
+/* Nota da margem de segurança (explica por que pode "pular" uma bitola) */
+.bitola-margem-nota {
+    margin: -8px 0 16px;
+    padding: 8px 12px;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--resultado-label, #666);
+    background: var(--bitola-margem-bg, rgba(45, 159, 163, 0.08));
+    border-left: 3px solid var(--accent-color, #2d9fa3);
+    border-radius: 6px;
+    text-align: left;
+}
+
+.bitola-margem-nota:empty {
+    display: none;
+}
+
+.bitola-margem-nota strong {
+    color: var(--resultado-value, #333);
+    font-weight: 600;
+}
+
 /* Footer styles moved to shared-styles.css */
 
 /* ============================================
