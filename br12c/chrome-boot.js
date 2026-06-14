@@ -59,6 +59,16 @@
     });
   }
 
+  // Avisa o pai (ex.: robô do guia em tests/visual.html, que embute esta página
+  // num iframe e SEGUE o idioma escolhido aqui). Inócuo quando não há iframe.
+  function avisarPai() {
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ tipo: "engnata:idioma", idioma: idiomaAtual }, "*");
+      }
+    } catch (e) { /* sem acesso ao pai */ }
+  }
+
   function trocarIdioma(novo) {
     if (!traducoes[novo]) return;
     idiomaAtual = novo;
@@ -66,6 +76,7 @@
     aplicarTraducoes();
     atualizarBotoesIdioma();
     atualizarTextoTema(); // o rótulo Dark/Light depende do idioma
+    avisarPai();
   }
 
   function configurarBotoesIdioma() {
@@ -177,6 +188,7 @@
       aplicarTraducoes();
       atualizarBotoesIdioma();
       atualizarTextoTema();
+      avisarPai(); // anuncia o idioma inicial ao pai (robô do guia)
     } catch (erro) {
       // A calculadora funciona mesmo sem as traduções (rótulos no texto padrão).
       console.error("br12c: falha ao carregar traduções", erro);

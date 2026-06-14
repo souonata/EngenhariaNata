@@ -82,37 +82,6 @@
         background: #2a3a2e;
         margin: 0 2px;
       }
-      /* Toggle de idioma (bandeiras) */
-      .lang-sel {
-        display: inline-flex;
-        gap: 4px;
-      }
-      .lang-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 5px 9px;
-        border-radius: 14px;
-        border: 1px solid #3c5142;
-        background: #1c2620;
-        color: #e8eae6;
-        cursor: pointer;
-        font-size: 0.82rem;
-        font-weight: 600;
-      }
-      .lang-btn .flag {
-        display: inline-flex;
-      }
-      .lang-btn .flag svg {
-        display: block;
-        border-radius: 2px;
-        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
-      }
-      .lang-btn.active {
-        background: #e8eae6;
-        color: #11160f;
-        border-color: #e8eae6;
-      }
       /* Segmentado Auto/Manual */
       .modo-seg {
         display: inline-flex;
@@ -359,17 +328,6 @@
       <a class="voltar" href="../index.html" id="lnkVoltar">← Calculadora</a>
       <h1 id="hTitulo">🤖 Robô do guia</h1>
 
-      <div class="lang-sel" id="langSel">
-        <button class="lang-btn" data-lang="pt-BR" type="button">
-          <span class="flag" aria-hidden="true"><svg viewBox="0 0 14 10" width="18" height="13"><rect width="14" height="10" fill="#009c3b"/><polygon points="7,1.4 12.6,5 7,8.6 1.4,5" fill="#ffdf00"/><circle cx="7" cy="5" r="1.9" fill="#002776"/></svg></span>
-          <span>PT</span>
-        </button>
-        <button class="lang-btn" data-lang="it-IT" type="button">
-          <span class="flag" aria-hidden="true"><svg viewBox="0 0 15 10" width="19" height="13"><rect width="5" height="10" x="0" fill="#009246"/><rect width="5" height="10" x="5" fill="#fff"/><rect width="5" height="10" x="10" fill="#ce2b37"/></svg></span>
-          <span>IT</span>
-        </button>
-      </div>
-
       <span class="sep"></span>
 
       <div class="modo-seg" id="modoSeg">
@@ -415,7 +373,7 @@
     <script type="module">
       import { arvore, achatar, casa } from "./guia-arvore.js";
       import { criarEngine } from "./robo-engine.js";
-      import { lerIdioma, salvarIdioma, t, bi } from "./robo-i18n.js";
+      import { lerIdioma, t, bi } from "./robo-i18n.js";
 
       // ---- estado da UI ----
       let idioma = lerIdioma();
@@ -713,11 +671,13 @@
         document.querySelector(".grp-manual").style.display = modo === "manual" ? "" : "none";
       });
 
-      $("langSel").addEventListener("click", (e) => {
-        const b = e.target.closest(".lang-btn");
-        if (!b) return;
-        idioma = b.dataset.lang;
-        salvarIdioma(idioma);
+      // O idioma é escolhido na própria calculadora (moldura PT/IT no iframe), que
+      // salva em sessionStorage e avisa o pai por postMessage. O robô só SEGUE.
+      window.addEventListener("message", (e) => {
+        if (e.source !== frame.contentWindow) return;
+        const d = e.data;
+        if (!d || d.tipo !== "engnata:idioma" || !d.idioma || d.idioma === idioma) return;
+        idioma = d.idioma;
         aplicarTextosUI();
         renderArvore();
         repintar();
@@ -738,9 +698,6 @@
         $("reiniciar").textContent = t(idioma, "reiniciar");
         $("parar").textContent = t(idioma, "parar");
         elBusca.placeholder = t(idioma, "busca");
-        document.querySelectorAll("#langSel .lang-btn").forEach((b) => {
-          b.classList.toggle("active", b.dataset.lang === idioma);
-        });
       }
 
       // ---- boot ----
