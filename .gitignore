@@ -1,0 +1,5 @@
+# Dependências (raiz e subpastas: br12c/, local/, ...)
+node_modules/
+
+# Cache de build/dev/test do Vite e Vitest (raiz e subpastas)
+.vite/
