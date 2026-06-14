@@ -121,6 +121,7 @@ class IndexApp extends App {
         const locale = lang.startsWith('it') ? 'it' : 'pt';
         const ABOUT  = 'app-about';
         const BUGS   = 'app-bugs';
+        const VOLVO  = 'app-volvo';
 
         const getName = (key) => {
             const span = document.querySelector(`.apps-grid .app-icon[data-i18n-aria="${key}"] .app-name`);
@@ -132,7 +133,11 @@ class IndexApp extends App {
             const icons  = [...grid.querySelectorAll(':scope > .app-icon')];
             const about  = icons.find(el => el.dataset.i18nAria === ABOUT);
             const bugs   = icons.find(el => el.dataset.i18nAria === BUGS);
-            const others = icons.filter(el => el.dataset.i18nAria !== ABOUT && el.dataset.i18nAria !== BUGS);
+            const volvo  = icons.find(el => el.dataset.i18nAria === VOLVO);
+            const others = icons.filter(el =>
+                el.dataset.i18nAria !== ABOUT &&
+                el.dataset.i18nAria !== BUGS &&
+                el.dataset.i18nAria !== VOLVO);
             others.sort((a, b) =>
                 (a.querySelector('.app-name')?.textContent || '').localeCompare(
                  b.querySelector('.app-name')?.textContent || '', locale));
@@ -140,6 +145,7 @@ class IndexApp extends App {
             if (about) frag.appendChild(about);
             others.forEach(el => frag.appendChild(el));
             if (bugs)  frag.appendChild(bugs);
+            if (volvo) frag.appendChild(volvo); // app secreto: sempre o último
             grid.appendChild(frag);
         }
 
@@ -318,6 +324,8 @@ class IndexApp extends App {
         botaoEasterEgg.addEventListener('keydown', registrarToque);
         window.addEventListener('resize', this._atualizarAnimacaoDockAoRedimensionar);
 
+        this.observarRevelacaoAppSecreto();
+
         if (document && document.fonts && document.fonts.ready) {
             document.fonts.ready.then(() => {
                 this.prepararDockEasterEgg();
@@ -353,6 +361,45 @@ class IndexApp extends App {
         requestAnimationFrame(() => {
             this.executarAnimacaoDockVisitantes();
         });
+    }
+
+    /**
+     * Observa o dock e revela o app secreto (Assistente Volvo) assim que o
+     * easter egg de 9 toques coloca #easterEggDock em data-easter-state="running".
+     * Desacoplado do desbloqueio: basta o estado virar "running".
+     */
+    observarRevelacaoAppSecreto() {
+        const dock = this.elementoDockVisitantes;
+        if (!dock) return;
+
+        if (dock.dataset.easterState === 'running') {
+            this.revelarAppSecreto();
+            return;
+        }
+
+        const observador = new MutationObserver(() => {
+            if (dock.dataset.easterState === 'running') {
+                this.revelarAppSecreto();
+                observador.disconnect();
+            }
+        });
+        observador.observe(dock, { attributes: true, attributeFilter: ['data-easter-state'] });
+    }
+
+    /**
+     * Revela o app secreto (Assistente Volvo) na grade de apps: limpa o
+     * display:none inline (volta ao display:flex de .app-icon), restaura a
+     * acessibilidade e dispara a animação de entrada. Permanece visível até
+     * o reload da página (não persiste entre sessões).
+     */
+    revelarAppSecreto() {
+        const appSecreto = document.getElementById('appAssistenteVolvo');
+        if (!appSecreto || appSecreto.classList.contains('is-unlocked')) return;
+
+        appSecreto.style.display = '';
+        appSecreto.classList.add('is-unlocked');
+        appSecreto.removeAttribute('aria-hidden');
+        appSecreto.removeAttribute('tabindex');
     }
 
     inicializarWidgetVisitantes() {

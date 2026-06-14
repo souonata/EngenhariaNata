@@ -235,6 +235,23 @@ html:not([data-theme="dark"]) .device-screen {
 }
 
 /* ============================================
+   APP SECRETO - Assistente Volvo
+   Oculto via style="display:none" inline no HTML (necessário porque
+   .app-icon usa display:flex, que venceria o atributo [hidden]).
+   Revelado após o easter egg: index-script.js observa
+   #easterEggDock[data-easter-state="running"], limpa o display inline
+   e adiciona .is-unlocked (animação de entrada).
+   ============================================ */
+.app-icon.is-unlocked {
+    animation: secretAppReveal 0.5s ease;
+}
+
+@keyframes secretAppReveal {
+    from { opacity: 0; transform: scale(0.6); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+/* ============================================
    ÍCONE - Recipiente do ícone SVG
    ============================================ */
 .icon {
