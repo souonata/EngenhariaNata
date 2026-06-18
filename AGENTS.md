@@ -102,13 +102,17 @@ npm run build          # build de produção (gera local/dist)
 
 _Última atualização: 2026-06-18_
 
-- **Branch ativa:** `feat/auditoria-padronizacao-apps` (4 commits à frente do `main`).
-- **Pendência conhecida — ícone Volvo não aparece no site no ar:** a feature do app secreto
-  (ícone + reveal, em `index.html` / `index-script.js` / `index-styles.css` / `src/i18n/index.json`)
-  vive **só nesta branch**. O `main` (e portanto o site publicado) é um build **anterior** à feature —
-  o HTML no ar nem contém `appAssistenteVolvo`. Localmente, nesta branch, o easter egg funciona
-  (verificado no navegador). **Para publicar:** mergear esta branch no `main` → o push dispara
-  `deploy.yml` → novo build com a feature. Sem o merge, nenhum PC verá o ícone no site no ar.
+- **`main` em dia e deployado.** A feature do app secreto Assistente Volvo (ícone + reveal, em
+  `index.html` / `index-script.js` / `index-styles.css` / `src/i18n/index.json`) foi **mergeada
+  no `main` (fast-forward) e publicada** — verificado no ar: o HTML em produção contém
+  `appAssistenteVolvo`, o link `https://volvo.engnata.eu`, e o bundle novo (`main-BgEh7Kgu.js`)
+  traz a lógica de reveal (`is-unlocked`, `easterState`). O site no ar agora mostra o ícone após
+  o easter egg (9 toques rápidos em < 6 s no logo do dock).
+- **Histórico do sintoma (resolvido):** o ícone "não aparecia no ar" porque o site é o build do
+  `main`, e a feature vivia só na branch `feat/auditoria-padronizacao-apps` — o `main` era um build
+  anterior, sem o `appAssistenteVolvo`. Resolvido pelo merge+deploy acima. Lição: feature em branch
+  não existe no site até ser mergeada no `main`.
+- **Branch `feat/auditoria-padronizacao-apps` == `main`** (após o FF merge); ambas sincronizadas no remoto.
 - **Link do ícone:** confirmado `https://volvo.engnata.eu` (DNS resolve; `www.volvo...` é NXDOMAIN).
 - **Sincronização entre PCs:** o sintoma "funciona num PC, noutro não" costuma ser **branch
   diferente** entre máquinas. Antes de começar: `git fetch && git status` e confirme em qual
