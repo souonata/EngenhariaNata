@@ -14,7 +14,8 @@ Portfólio **estático** de apps web educativos (engenharia, energia, utilidades
 - **Stack:** HTML + CSS + JavaScript modular (ESM). Sem framework. `Chart.js` local em `assets/js/vendor/`.
 - **Bilíngue:** `pt-BR` (padrão) e `it-IT`. Textos em `src/i18n/<app>.json`.
 - **Build/dev:** Vite (config e toolchain ficam em `local/`).
-- **Site no ar:** `https://www.engnata.eu/` (= `https://souonata.github.io/EngenhariaNata/`, mesmo conteúdo).
+- **Site no ar:** `https://engnata.eu/` (custom domain nativo do GitHub Pages; `www` e
+  `https://souonata.github.io/EngenhariaNata/` redirecionam pra cá). Ver seção 4 (Deploy).
 - **Domínios de app são subdomínios diretos**, ex.: o Assistente Volvo é `https://volvo.engnata.eu` (sem `www.`; `www.volvo...` **não resolve** no DNS).
 
 ## 2. Estrutura
@@ -61,11 +62,16 @@ npm run build          # build de produção (gera local/dist)
   clássicos (não-module) **não entram no bundle automaticamente** — o `deploy.yml` os copia
   manualmente. **Se um app novo buscar um arquivo em runtime, adicione a cópia no `deploy.yml`**,
   senão a página dá 404 e **congela** (tela viva, JS morto). Ver `GUIA_FALHA_CONGELAMENTO.md`.
-- **Domínio:** `engnata.eu` / `www.engnata.eu` → **Redirect Rule (301) na Cloudflare** →
-  `https://souonata.github.io/EngenhariaNata/` (porque o build tem `base: /EngenhariaNata/`,
-  então o site só funciona servido sob esse caminho — não é custom domain nativo do Pages).
-  Se o domínio der 404 mas `souonata.github.io/EngenhariaNata/` estiver 200, o problema é
-  roteamento (DNS/redirect na Cloudflare), **não** o código.
+- **Domínio (custom domain nativo do GitHub Pages):** `engnata.eu` serve o site **direto**
+  (URL limpa, sem redirect pro github.io). Na Cloudflare (que gere o DNS), o apex tem **4 A +
+  4 AAAA** para os IPs do GitHub Pages (`185.199.108–111.153` / `2606:50c0:8000–8003::153`) e
+  `www` é **CNAME → `souonata.github.io`**, **todos DNS only (cinza)** — proxied (laranja) trava
+  a emissão do certificado do GitHub. `www` → 301 → apex (feito pelo próprio GitHub).
+- **Base relativa + CNAME:** o build usa `base: './'` (`local/vite.config.js`) p/ os assets
+  resolverem na raiz do domínio. O custom domain é fixado por **`public/CNAME`** (o Vite copia
+  para `dist/`); **sem ele o deploy via Actions reseta o domínio** (e o token não tem escopo
+  `workflow` p/ gravar o CNAME no `deploy.yml`). Se o domínio cair, cheque nesta ordem:
+  (1) custom domain em Settings→Pages, (2) `public/CNAME`, (3) registros A/AAAA + `www` no DNS.
 
 ## 5. Convenções ao mexer num app
 
