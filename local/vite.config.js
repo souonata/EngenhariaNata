@@ -45,9 +45,13 @@ export default defineConfig(({ command }) => ({
     // Diretório público (assets não processados, copiados como estão)
     publicDir: resolve(projectRoot, 'public'),
 
-    // Produção: GitHub Pages de projeto em https://souonata.github.io/EngenhariaNata/.
+    // Base RELATIVA no build: os assets resolvem a partir da localização do HTML,
+    // então o site funciona tanto em https://souonata.github.io/EngenhariaNata/
+    // quanto servido na raiz de um domínio próprio (https://engnata.eu/). Isso
+    // permite migrar para custom domain sem janela de site quebrado. Os fetch()
+    // de runtime (i18n, config/versions.json) já usam caminhos relativos.
     // Em dev/preview mantém a raiz ('/') para não quebrar o fluxo local.
-    base: command === 'build' ? '/EngenhariaNata/' : '/',
+    base: command === 'build' ? './' : '/',
 
     // Configurações do servidor de desenvolvimento
     server: {
