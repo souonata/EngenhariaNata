@@ -95,17 +95,33 @@ npm run build          # build de produção (gera local/dist)
   antigos e força o re-precache. Sem isso, dá o clássico "mudei mas não atualizou" pros usuários
   que já visitaram (especialmente em estáticos cache-first).
 
-## 7. Easter egg "Assistente Volvo" (app secreto)
+## 7. Apps secretos (easter egg) e o app "Bonsai Lichia"
 
-- O ícone é **apenas um link externo** para `https://volvo.engnata.eu` (`target="_blank"`).
-  O assistente Volvo é **standalone** — **não** existe página dele dentro deste projeto, e **não** se deve criar uma.
 - **Gesto:** 9 toques (`pointerdown`/Enter/Espaço) em até **6 s** no logo do dock
   (`#dockEasterEggTrigger`, "ENGENHARIA NATA"). Lógica em `index-script.js`
   (`registrarToqueEasterEgg` → `desbloquearEasterEggVisitantes` → `revelarAppSecreto`).
-- Ao desbloquear: roda a animação do marquee de visitantes e revela o ícone (limpa o
-  `display:none` inline, adiciona `.is-unlocked`). **Não persiste** entre reloads (proposital).
-- Oculto via `style="display:none"` inline (necessário porque `.app-icon` é `display:flex`,
-  que venceria `[hidden]`).
+- **Mecanismo (genérico):** todo `.app-icon` com **`data-app-secreto`** começa `display:none`
+  inline + `aria-hidden`; ao desbloquear, `revelarAppSecreto()` revela **todos** (limpa o display,
+  adiciona `.is-unlocked`) e `sortAppsForLocale()` os mantém sempre por ÚLTIMO no grid. **Não
+  persiste** entre reloads (proposital). O `display:none` inline é necessário porque `.app-icon`
+  é `display:flex` (venceria `[hidden]`). **Para adicionar um app secreto:** marque o
+  `<a class="app-icon" data-app-secreto ...>` no `index.html` + nome i18n (`app-<x>`) em
+  `src/i18n/index.json`. Mexeu no `index-script.js`? **bumpe o `?v=`** do `<script>` (cache-bust
+  do dev; em produção o Vite re-hasheia o bundle).
+- Secretos atuais: **Assistente Volvo** (link externo `https://volvo.engnata.eu`, standalone —
+  NÃO criar página interna) e **Bonsai Lichia** (app interno, abaixo).
+
+### 7.1 App "Bonsai Lichia" (`lichiabonsai/`)
+- Diário/guia pessoal de cultivo (germinação de uma lichia → bonsai, Turate/Lombardia). App
+  **discreto**: fora do catálogo e do sitemap, `noindex`; só pelo easter egg ou link direto
+  **`engnata.eu/lichiabonsai/`** (o HTML é `index.html`, p/ URL limpa, como o `br12c`).
+- **Bilíngue** pt-BR/it-IT (abre em pt, respeita a sessão). Estende o `App` base; design editorial
+  próprio (`lichiabonsai-styles.css`, paleta verde/vermelho-lichia, light/dark).
+- **Data-driven — para atualizar o diário, edite SÓ `lichiabonsai/lichiabonsai-data.js`** (entradas
+  da linha do tempo, medições, checklist, metas — tudo bilíngue `{pt,it}`); commit → deploy.
+  **Fotos:** ponha o `.webp` em `lichiabonsai/fotos/` e referencie o nome do arquivo no data; o
+  Vite as inclui no build via `import.meta.glob` (não precisa tocar no `deploy.yml`). Rótulos de UI
+  em `src/i18n/lichiabonsai.json` (copiado pelo deploy.yml junto com os outros i18n).
 
 ## 8. Modelo de branches
 

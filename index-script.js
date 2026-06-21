@@ -121,7 +121,6 @@ class IndexApp extends App {
         const locale = lang.startsWith('it') ? 'it' : 'pt';
         const ABOUT  = 'app-about';
         const BUGS   = 'app-bugs';
-        const VOLVO  = 'app-volvo';
 
         const getName = (key) => {
             const span = document.querySelector(`.apps-grid .app-icon[data-i18n-aria="${key}"] .app-name`);
@@ -133,11 +132,11 @@ class IndexApp extends App {
             const icons  = [...grid.querySelectorAll(':scope > .app-icon')];
             const about  = icons.find(el => el.dataset.i18nAria === ABOUT);
             const bugs   = icons.find(el => el.dataset.i18nAria === BUGS);
-            const volvo  = icons.find(el => el.dataset.i18nAria === VOLVO);
+            const secretos = icons.filter(el => el.hasAttribute('data-app-secreto'));
             const others = icons.filter(el =>
                 el.dataset.i18nAria !== ABOUT &&
                 el.dataset.i18nAria !== BUGS &&
-                el.dataset.i18nAria !== VOLVO);
+                !el.hasAttribute('data-app-secreto'));
             others.sort((a, b) =>
                 (a.querySelector('.app-name')?.textContent || '').localeCompare(
                  b.querySelector('.app-name')?.textContent || '', locale));
@@ -145,7 +144,7 @@ class IndexApp extends App {
             if (about) frag.appendChild(about);
             others.forEach(el => frag.appendChild(el));
             if (bugs)  frag.appendChild(bugs);
-            if (volvo) frag.appendChild(volvo); // app secreto: sempre o último
+            secretos.forEach(el => frag.appendChild(el)); // apps secretos: sempre por último
             grid.appendChild(frag);
         }
 
@@ -387,19 +386,20 @@ class IndexApp extends App {
     }
 
     /**
-     * Revela o app secreto (Assistente Volvo) na grade de apps: limpa o
-     * display:none inline (volta ao display:flex de .app-icon), restaura a
-     * acessibilidade e dispara a animação de entrada. Permanece visível até
-     * o reload da página (não persiste entre sessões).
+     * Revela TODOS os apps secretos (marcados com data-app-secreto) na grade:
+     * limpa o display:none inline (volta ao display:flex de .app-icon), restaura
+     * a acessibilidade e dispara a animação de entrada. Permanece visível até o
+     * reload da página (não persiste entre sessões).
      */
     revelarAppSecreto() {
-        const appSecreto = document.getElementById('appAssistenteVolvo');
-        if (!appSecreto || appSecreto.classList.contains('is-unlocked')) return;
-
-        appSecreto.style.display = '';
-        appSecreto.classList.add('is-unlocked');
-        appSecreto.removeAttribute('aria-hidden');
-        appSecreto.removeAttribute('tabindex');
+        const secretos = document.querySelectorAll('.app-icon[data-app-secreto]');
+        secretos.forEach((appSecreto) => {
+            if (appSecreto.classList.contains('is-unlocked')) return;
+            appSecreto.style.display = '';
+            appSecreto.classList.add('is-unlocked');
+            appSecreto.removeAttribute('aria-hidden');
+            appSecreto.removeAttribute('tabindex');
+        });
     }
 
     inicializarWidgetVisitantes() {
