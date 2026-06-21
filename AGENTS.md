@@ -61,6 +61,11 @@ npm run build          # build de produção (gera local/dist)
   clássicos (não-module) **não entram no bundle automaticamente** — o `deploy.yml` os copia
   manualmente. **Se um app novo buscar um arquivo em runtime, adicione a cópia no `deploy.yml`**,
   senão a página dá 404 e **congela** (tela viva, JS morto). Ver `GUIA_FALHA_CONGELAMENTO.md`.
+- **Domínio:** `engnata.eu` / `www.engnata.eu` → **Redirect Rule (301) na Cloudflare** →
+  `https://souonata.github.io/EngenhariaNata/` (porque o build tem `base: /EngenhariaNata/`,
+  então o site só funciona servido sob esse caminho — não é custom domain nativo do Pages).
+  Se o domínio der 404 mas `souonata.github.io/EngenhariaNata/` estiver 200, o problema é
+  roteamento (DNS/redirect na Cloudflare), **não** o código.
 
 ## 5. Convenções ao mexer num app
 
