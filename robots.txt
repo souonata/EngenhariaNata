@@ -5,5 +5,5 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://souonata.github.io/EngenhariaNata/sitemap.xml
+Sitemap: https://engnata.eu/sitemap.xml
 

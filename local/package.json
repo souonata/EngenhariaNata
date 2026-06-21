@@ -43,7 +43,7 @@
     "type": "git",
     "url": "https://github.com/souonata/EngenhariaNata.git"
   },
-  "homepage": "https://souonata.github.io/EngenhariaNata",
+  "homepage": "https://engnata.eu",
   "devDependencies": {
     "@vitest/coverage-v8": "4.1.5",
     "chart.js": "4.4.1",

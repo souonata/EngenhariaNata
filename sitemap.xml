@@ -4,172 +4,172 @@
     
     <!-- Página Principal -->
     <url>
-        <loc>https://souonata.github.io/EngenhariaNata/</loc>
+        <loc>https://engnata.eu/</loc>
         <lastmod>2025-12-09</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://souonata.github.io/EngenhariaNata/"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://souonata.github.io/EngenhariaNata/"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/"/>
     </url>
     
     <!-- Página Sobre -->
     <url>
-        <loc>https://souonata.github.io/EngenhariaNata/sobre/sobre.html</loc>
+        <loc>https://engnata.eu/sobre/sobre.html</loc>
         <lastmod>2025-12-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://souonata.github.io/EngenhariaNata/sobre/sobre.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://souonata.github.io/EngenhariaNata/sobre/sobre.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/sobre/sobre.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/sobre/sobre.html"/>
     </url>
     
     <!-- Calculadora de Empréstimos -->
     <url>
-        <loc>https://souonata.github.io/EngenhariaNata/mutuo/mutuo.html</loc>
+        <loc>https://engnata.eu/mutuo/mutuo.html</loc>
         <lastmod>2025-12-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://souonata.github.io/EngenhariaNata/mutuo/mutuo.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://souonata.github.io/EngenhariaNata/mutuo/mutuo.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/mutuo/mutuo.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/mutuo/mutuo.html"/>
     </url>
 
     <!-- Calculadora de Bomba d'Agua -->
     <url>
-        <loc>https://souonata.github.io/EngenhariaNata/bombaagua/bombaagua.html</loc>
+        <loc>https://engnata.eu/bombaagua/bombaagua.html</loc>
         <lastmod>2026-04-18</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://souonata.github.io/EngenhariaNata/bombaagua/bombaagua.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://souonata.github.io/EngenhariaNata/bombaagua/bombaagua.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/bombaagua/bombaagua.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/bombaagua/bombaagua.html"/>
     </url>
 
     <!-- Calculadora de Iluminacao -->
     <url>
-        <loc>https://souonata.github.io/EngenhariaNata/iluminacao/iluminacao.html</loc>
+        <loc>https://engnata.eu/iluminacao/iluminacao.html</loc>
         <lastmod>2026-04-19</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://souonata.github.io/EngenhariaNata/iluminacao/iluminacao.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://souonata.github.io/EngenhariaNata/iluminacao/iluminacao.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/iluminacao/iluminacao.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/iluminacao/iluminacao.html"/>
     </url>
 
     <!-- Calculadora de Ventilacao -->
     <url>
-        <loc>https://souonata.github.io/EngenhariaNata/ventilacao/ventilacao.html</loc>
+        <loc>https://engnata.eu/ventilacao/ventilacao.html</loc>
         <lastmod>2026-04-19</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://souonata.github.io/EngenhariaNata/ventilacao/ventilacao.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://souonata.github.io/EngenhariaNata/ventilacao/ventilacao.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/ventilacao/ventilacao.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/ventilacao/ventilacao.html"/>
     </url>
 
     <!-- Calculadora de Salario -->
     <url>
-        <loc>https://souonata.github.io/EngenhariaNata/salario/salario.html</loc>
+        <loc>https://engnata.eu/salario/salario.html</loc>
         <lastmod>2026-04-19</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://souonata.github.io/EngenhariaNata/salario/salario.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://souonata.github.io/EngenhariaNata/salario/salario.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/salario/salario.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/salario/salario.html"/>
     </url>
     
     <!-- Calculadora de Hélice -->
     <url>
-        <loc>https://souonata.github.io/EngenhariaNata/helice/helice.html</loc>
+        <loc>https://engnata.eu/helice/helice.html</loc>
         <lastmod>2025-12-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://souonata.github.io/EngenhariaNata/helice/helice.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://souonata.github.io/EngenhariaNata/helice/helice.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/helice/helice.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/helice/helice.html"/>
     </url>
     
     <!-- Dimensionamento Solar -->
     <url>
-        <loc>https://souonata.github.io/EngenhariaNata/solar/solar.html</loc>
+        <loc>https://engnata.eu/solar/solar.html</loc>
         <lastmod>2025-12-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://souonata.github.io/EngenhariaNata/solar/solar.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://souonata.github.io/EngenhariaNata/solar/solar.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/solar/solar.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/solar/solar.html"/>
     </url>
     
     <!-- Configuração Solar -->
     <url>
-        <loc>https://souonata.github.io/EngenhariaNata/solar/config.html</loc>
+        <loc>https://engnata.eu/solar/config.html</loc>
         <lastmod>2025-12-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://souonata.github.io/EngenhariaNata/solar/config.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://souonata.github.io/EngenhariaNata/solar/config.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/solar/config.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/solar/config.html"/>
     </url>
     
     <!-- Calculadora de Bitola -->
     <url>
-        <loc>https://souonata.github.io/EngenhariaNata/bitola/bitola.html</loc>
+        <loc>https://engnata.eu/bitola/bitola.html</loc>
         <lastmod>2025-12-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://souonata.github.io/EngenhariaNata/bitola/bitola.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://souonata.github.io/EngenhariaNata/bitola/bitola.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/bitola/bitola.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/bitola/bitola.html"/>
     </url>
     
     <!-- Dimensionador de Ar Condicionado -->
     <url>
-        <loc>https://souonata.github.io/EngenhariaNata/arcondicionado/arcondicionado.html</loc>
+        <loc>https://engnata.eu/arcondicionado/arcondicionado.html</loc>
         <lastmod>2025-12-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://souonata.github.io/EngenhariaNata/arcondicionado/arcondicionado.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://souonata.github.io/EngenhariaNata/arcondicionado/arcondicionado.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/arcondicionado/arcondicionado.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/arcondicionado/arcondicionado.html"/>
     </url>
     
     <!-- Dimensionador de Aquecedor Solar -->
     <url>
-        <loc>https://souonata.github.io/EngenhariaNata/aquecimento/aquecimento.html</loc>
+        <loc>https://engnata.eu/aquecimento/aquecimento.html</loc>
         <lastmod>2025-12-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://souonata.github.io/EngenhariaNata/aquecimento/aquecimento.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://souonata.github.io/EngenhariaNata/aquecimento/aquecimento.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/aquecimento/aquecimento.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/aquecimento/aquecimento.html"/>
     </url>
     
     <!-- Dimensionador de Fazenda Auto-Sustentável -->
     <url>
-        <loc>https://souonata.github.io/EngenhariaNata/fazenda/fazenda.html</loc>
+        <loc>https://engnata.eu/fazenda/fazenda.html</loc>
         <lastmod>2025-12-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://souonata.github.io/EngenhariaNata/fazenda/fazenda.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://souonata.github.io/EngenhariaNata/fazenda/fazenda.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/fazenda/fazenda.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/fazenda/fazenda.html"/>
     </url>
 
     <!-- Captação de Água da Chuva -->
     <url>
-        <loc>https://souonata.github.io/EngenhariaNata/chuva/chuva.html</loc>
+        <loc>https://engnata.eu/chuva/chuva.html</loc>
         <lastmod>2026-04-18</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.9</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://souonata.github.io/EngenhariaNata/chuva/chuva.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://souonata.github.io/EngenhariaNata/chuva/chuva.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/chuva/chuva.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/chuva/chuva.html"/>
     </url>
     
     <!-- Formulário de Reporte de Bugs -->
     <url>
-        <loc>https://souonata.github.io/EngenhariaNata/bugs/bugs.html</loc>
+        <loc>https://engnata.eu/bugs/bugs.html</loc>
         <lastmod>2025-12-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://souonata.github.io/EngenhariaNata/bugs/bugs.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://souonata.github.io/EngenhariaNata/bugs/bugs.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/bugs/bugs.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/bugs/bugs.html"/>
     </url>
 
     <!-- Previsão 7 dias -->
     <url>
-        <loc>https://souonata.github.io/EngenhariaNata/previsao/previsao.html</loc>
+        <loc>https://engnata.eu/previsao/previsao.html</loc>
         <lastmod>2026-05-31</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.8</priority>
-        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://souonata.github.io/EngenhariaNata/previsao/previsao.html"/>
-        <xhtml:link rel="alternate" hreflang="it-IT" href="https://souonata.github.io/EngenhariaNata/previsao/previsao.html"/>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/previsao/previsao.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/previsao/previsao.html"/>
     </url>
 
 </urlset>
