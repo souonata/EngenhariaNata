@@ -1,0 +1,661 @@
+/* ==========================================================================
+   Bonsai Lichia — "Hortus Editorial"
+   Diário de cultivo. Coluna editorial estreita, papel quente, serif para a
+   prosa, mono para etiquetas/datas. Light por padrão, dark via data-theme.
+   Carregado DEPOIS dos CSS compartilhados — sobrescreve o que precisa.
+   ========================================================================== */
+
+:root {
+  --paper: #fbfaf6;
+  --surface: #ffffff;
+  --surface-muted: #f4f2ea;
+  --ink: #22251f;
+  --ink-2: #555b4e;
+  --ink-mut: #8a8f80;
+  --leaf: #3e7d4f;
+  --litchi: #c0392b;
+  --leaf-soft: #e7efe3;
+  --frost: #6b8fa3;
+  --hair: #e3e0d4;
+
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --sans: "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  --mono: ui-monospace, "Cascadia Code", "Courier New", monospace;
+
+  --col: 42rem;       /* ~672px de texto */
+  --pad: clamp(1.15rem, 5vw, 2rem);
+}
+
+html[data-theme="dark"] {
+  --paper: #181a16;
+  --surface: #20231d;
+  --surface-muted: #1d1f1a;
+  --ink: #e8e7dd;
+  --ink-2: #b3b6a6;
+  --ink-mut: #7c8073;
+  --leaf: #7bbf86;
+  --litchi: #e0685a;
+  --leaf-soft: rgba(123, 191, 134, 0.1);
+  --frost: #8fb0c4;
+  --hair: #34382f;
+}
+
+/* Base da página (vence o body dos shared por ordem de origem) */
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1.0625rem;
+  line-height: 1.72;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--leaf-soft);
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   Controles do portfólio (idioma, tema, home) — afinados ao papel
+   -------------------------------------------------------------------------- */
+.language-selector {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 40;
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.7rem 0.85rem;
+}
+
+.language-selector .lang-btn,
+.language-selector .theme-toggle-btn {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-mut);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  padding: 0.32rem 0.6rem;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.language-selector .lang-btn .flag {
+  font-size: 0.82rem;
+}
+.language-selector .lang-btn .lang-text {
+  margin-left: 0.25rem;
+}
+.language-selector .lang-btn.active {
+  color: var(--ink);
+  border-color: var(--leaf);
+  background: var(--surface);
+}
+.language-selector .lang-btn:hover,
+.language-selector .theme-toggle-btn:hover {
+  color: var(--ink);
+  border-color: var(--leaf);
+}
+
+.home-button-fixed {
+  position: fixed;
+  left: 0.85rem;
+  bottom: 0.85rem;
+  z-index: 40;
+  width: 2.6rem;
+  height: 2.6rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--ink-mut);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  border: 1px solid var(--hair);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition: color 0.2s, border-color 0.2s;
+}
+.home-button-fixed svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: currentColor;
+}
+.home-button-fixed:hover {
+  color: var(--leaf);
+  border-color: var(--leaf);
+}
+
+/* --------------------------------------------------------------------------
+   Container editorial
+   -------------------------------------------------------------------------- */
+.lichia {
+  max-width: var(--col);
+  margin: 0 auto;
+  padding: 0 var(--pad) 5rem;
+}
+
+/* --------------------------------------------------------------------------
+   HERO
+   -------------------------------------------------------------------------- */
+.lichia-hero {
+  min-height: min(60vh, 34rem);
+  padding: clamp(3.5rem, 12vh, 6rem) 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.lichia-hero__mark {
+  color: var(--leaf);
+  margin-bottom: 1.4rem;
+}
+.lichia-hero__mark svg {
+  width: 2.6rem;
+  height: 2.6rem;
+  display: block;
+}
+
+.lichia-hero__tag {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink-mut);
+  margin: 0 0 1.1rem;
+}
+.lichia-hero__tag i {
+  font-style: italic;
+  font-family: var(--serif);
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink-2);
+  font-size: 0.95rem;
+}
+
+.lichia-hero__title {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(2.4rem, 8.5vw, 4.1rem);
+  line-height: 1.04;
+  letter-spacing: -0.012em;
+  margin: 0 0 1rem;
+  color: var(--ink);
+}
+/* "Lichia" sublinhada-folha */
+.lichia-hero__title .leafword {
+  position: relative;
+  white-space: nowrap;
+  color: var(--leaf);
+}
+.lichia-hero__title .leafword::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.04em;
+  height: 0.16em;
+  background: linear-gradient(90deg, var(--leaf), color-mix(in srgb, var(--leaf) 35%, transparent));
+  border-radius: 999px;
+  transform: scaleX(0.97);
+  transform-origin: left;
+}
+
+.lichia-hero__sub {
+  font-size: 1.18rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+  max-width: 32rem;
+  margin: 0 0 2rem;
+  text-wrap: balance;
+}
+
+.lichia-hero__fig {
+  margin: auto 0 0;
+  width: 100%;
+}
+.lichia-hero__fig img {
+  width: 100%;
+  height: clamp(15rem, 42vh, 24rem);
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+  border: 1px solid var(--hair);
+  box-shadow: 0 1px 0 var(--hair), 0 18px 40px -28px rgba(0, 0, 0, 0.5);
+}
+
+/* --------------------------------------------------------------------------
+   Seções
+   -------------------------------------------------------------------------- */
+.lichia-sec {
+  padding-top: 3.2rem;
+  margin-top: 3.2rem;
+  border-top: 1px solid var(--hair);
+}
+
+.lichia-h2 {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--leaf);
+  margin: 0 0 1.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.lichia-h2::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--leaf);
+  flex: none;
+}
+
+/* STATUS — lista de definição em 2 colunas */
+.lichia-status {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  margin: 0;
+  background: var(--hair);
+  border: 1px solid var(--hair);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.lichia-status > div {
+  background: var(--surface);
+  padding: 1rem 1.15rem;
+}
+.lichia-status dt {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-mut);
+  margin-bottom: 0.35rem;
+}
+.lichia-status dd {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--ink);
+  line-height: 1.4;
+}
+.lichia-status > div.is-next {
+  background: var(--leaf-soft);
+}
+.lichia-status > div.is-next dd {
+  color: var(--leaf);
+  font-weight: 600;
+}
+
+/* PLANO PET */
+.lichia-plano {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lichia-plano li {
+  position: relative;
+  padding: 0 0 0.9rem 1.5rem;
+  color: var(--ink-2);
+}
+.lichia-plano li::before {
+  content: "";
+  position: absolute;
+  left: 0.1rem;
+  top: 0.62em;
+  width: 0.42rem;
+  height: 0.42rem;
+  border: 1.5px solid var(--leaf);
+  border-radius: 999px;
+}
+.lichia-alert {
+  margin: 1.2rem 0 0;
+  padding: 1rem 1.15rem;
+  background: color-mix(in srgb, var(--litchi) 8%, var(--surface));
+  border-left: 3px solid var(--litchi);
+  border-radius: 0 6px 6px 0;
+  color: var(--ink);
+  line-height: 1.55;
+}
+.lichia-alert__tag {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--litchi);
+  margin-bottom: 0.3rem;
+}
+
+/* TIMELINE — espinha */
+.lichia-timeline {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lichia-entry {
+  position: relative;
+  padding: 0 0 2.4rem 1.9rem;
+  border-left: 2px solid var(--hair);
+}
+.lichia-entry:last-child {
+  padding-bottom: 0.3rem;
+}
+.lichia-entry::before {
+  content: "";
+  position: absolute;
+  left: -0.46rem;
+  top: 0.25rem;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 999px;
+  background: var(--leaf);
+  border: 2px solid var(--paper);
+  box-shadow: 0 0 0 1px var(--leaf);
+}
+/* nó atual = vermelho-lichia com halo estático */
+.lichia-entry.is-current::before {
+  background: var(--litchi);
+  box-shadow: 0 0 0 1px var(--litchi), 0 0 0 6px color-mix(in srgb, var(--litchi) 18%, transparent);
+}
+.lichia-entry__date {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-mut);
+  margin-bottom: 0.25rem;
+}
+.lichia-entry__title {
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0 0 0.4rem;
+  color: var(--ink);
+}
+.lichia-entry__text {
+  margin: 0;
+  color: var(--ink-2);
+}
+
+/* galeria de uma entrada */
+.lichia-gallery {
+  margin: 1.2rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+.lichia-gallery figure {
+  margin: 0;
+}
+.lichia-gallery img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 3px;
+  border: 1px solid var(--hair);
+  display: block;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.lichia-gallery a {
+  display: block;
+}
+.lichia-gallery a:hover img {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -16px rgba(0, 0, 0, 0.55);
+}
+.lichia-gallery figcaption {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.02em;
+  color: var(--ink-mut);
+  margin-top: 0.35rem;
+  line-height: 1.3;
+}
+
+/* METAS */
+.lichia-metas {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lichia-metas li {
+  display: grid;
+  grid-template-columns: 4.2rem 1fr;
+  gap: 0.4rem 1rem;
+  align-items: baseline;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--hair);
+}
+.lichia-metas li:last-child {
+  border-bottom: 0;
+}
+.lichia-metas .ano {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--leaf);
+  font-variant-numeric: tabular-nums;
+}
+.lichia-metas li.is-far .ano {
+  color: var(--litchi);
+}
+.lichia-metas .obj {
+  color: var(--ink-2);
+}
+
+/* CHECKLIST — rosário */
+.lichia-rosario {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lichia-rosario li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.55rem 0;
+}
+.lichia-rosario li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 0.59rem;
+  top: 1.7rem;
+  bottom: -0.3rem;
+  width: 2px;
+  background: var(--hair);
+}
+.lichia-bead {
+  flex: none;
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--hair);
+  display: grid;
+  place-items: center;
+  position: relative;
+  z-index: 1;
+  background: var(--paper);
+}
+.lichia-rosario li.is-done .lichia-bead {
+  background: var(--leaf);
+  border-color: var(--leaf);
+}
+.lichia-rosario li.is-done .lichia-bead svg {
+  width: 0.7rem;
+  height: 0.7rem;
+  stroke: var(--paper);
+}
+.lichia-rosario .rotulo {
+  color: var(--ink-2);
+}
+.lichia-rosario li.is-done .rotulo {
+  color: var(--ink);
+}
+
+/* MEDIÇÕES — tabela + sparkline */
+.lichia-medicoes {
+  display: grid;
+  gap: 1.5rem;
+}
+.lichia-spark {
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  border-radius: 6px;
+  padding: 1rem 1.15rem 0.8rem;
+}
+.lichia-spark__cap {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-mut);
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+.lichia-spark__cap b {
+  color: var(--leaf);
+  font-variant-numeric: tabular-nums;
+}
+.lichia-spark svg {
+  width: 100%;
+  height: 3.4rem;
+  display: block;
+  overflow: visible;
+}
+.lichia-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.lichia-table th,
+.lichia-table td {
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--hair);
+}
+.lichia-table th {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-mut);
+}
+.lichia-table td {
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  color: var(--ink-2);
+}
+.lichia-table td:first-child {
+  color: var(--ink);
+}
+.lichia-table tr:last-child td {
+  border-bottom: 0;
+}
+
+/* INVERNO — frio */
+.lichia-inverno {
+  background: color-mix(in srgb, var(--frost) 7%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--frost) 35%, var(--hair));
+  border-left: 3px solid var(--frost);
+  border-radius: 0 6px 6px 0;
+  padding: 1.3rem 1.4rem;
+}
+.lichia-inverno__head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--frost);
+  margin-bottom: 0.8rem;
+}
+.lichia-inverno__head svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+.lichia-inverno__head span {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.lichia-inverno ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lichia-inverno li {
+  position: relative;
+  padding: 0 0 0.6rem 1.3rem;
+  color: var(--ink-2);
+}
+.lichia-inverno li:last-child {
+  padding-bottom: 0;
+}
+.lichia-inverno li::before {
+  content: "❋";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--frost);
+  font-size: 0.8rem;
+}
+
+/* RODAPÉ */
+.lichia-footer {
+  margin-top: 4rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--hair);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+  color: var(--ink-mut);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  justify-content: space-between;
+}
+.lichia-footer a {
+  color: var(--ink-2);
+  text-decoration: none;
+  border-bottom: 1px solid var(--hair);
+}
+.lichia-footer a:hover {
+  color: var(--leaf);
+  border-color: var(--leaf);
+}
+
+/* --------------------------------------------------------------------------
+   Responsivo — 1 breakpoint
+   -------------------------------------------------------------------------- */
+@media (max-width: 720px) {
+  .lichia-status {
+    grid-template-columns: 1fr;
+  }
+  .lichia-gallery {
+    grid-template-columns: 1fr 1fr;
+  }
+  .lichia-metas li {
+    grid-template-columns: 3.4rem 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}

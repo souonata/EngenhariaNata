@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://souonata.goatcounter.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;">
+
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="apple-touch-icon" href="../favicon.svg">
+
+    <title>Projeto Bonsai Lichia 2031 — Engenharia NATA</title>
+    <meta name="description" content="Diário de cultivo: da semente de lichia ao bonsai, em Turate, Lombardia.">
+    <meta name="keywords" content="bonsai, lichia, litchi, diário de cultivo, germinação, Turate, Lombardia">
+    <meta name="author" content="Engenharia NATA">
+    <!-- discreto: fora do catálogo, não indexado -->
+    <meta name="robots" content="noindex, follow">
+    <link rel="canonical" href="https://engnata.eu/lichiabonsai/">
+
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://engnata.eu/lichiabonsai/">
+    <meta property="og:title" content="Projeto Bonsai Lichia 2031">
+    <meta property="og:description" content="Diário da transformação de uma semente de lichia em bonsai.">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:locale:alternate" content="it_IT">
+
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.0.1">
+    <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
+    <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
+    <link rel="stylesheet" href="lichiabonsai-styles.css?v=1.0.0">
+
+    <script data-goatcounter="https://souonata.goatcounter.com/count"
+            async src="https://gc.zgo.at/count.js"></script>
+</head>
+<body>
+    <!-- SELETOR DE IDIOMA (o botão de tema é injetado aqui pelo core) -->
+    <div class="language-selector">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR"
+                data-i18n-aria="aria.langPt" data-i18n-title="titles.langPt">
+            <span class="flag" aria-hidden="true">🇧🇷</span><span class="lang-text">PT</span>
+        </button>
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT"
+                data-i18n-aria="aria.langIt" data-i18n-title="titles.langIt">
+            <span class="flag" aria-hidden="true">🇮🇹</span><span class="lang-text">IT</span>
+        </button>
+    </div>
+
+    <div class="lichia">
+        <!-- HERO -->
+        <header class="lichia-hero">
+            <div class="lichia-hero__mark" aria-hidden="true">
+                <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 31 V13"/>
+                    <path d="M16 19c-6 .3-9-3-9.5-9C12.5 9.7 16 13 16 19Z" fill="currentColor" stroke="none"/>
+                    <path d="M16 16c5.5 .3 8.3-3 8.8-8.5C19.2 7.7 16 10.7 16 16Z" fill="currentColor" stroke="none" opacity="0.85"/>
+                </svg>
+            </div>
+            <p class="lichia-hero__tag">
+                <span data-i18n="hero.etiqueta">Espécime</span> · <i id="heroEspecie">Litchi chinensis</i> · <span id="heroLocal"></span>
+            </p>
+            <h1 class="lichia-hero__title" id="heroTitulo"></h1>
+            <p class="lichia-hero__sub" id="heroSub"></p>
+            <figure class="lichia-hero__fig">
+                <img id="heroImg" alt="" decoding="async">
+            </figure>
+        </header>
+
+        <main>
+            <!-- STATUS -->
+            <section class="lichia-sec">
+                <h2 class="lichia-h2" data-i18n="sec.status">Status atual</h2>
+                <dl class="lichia-status" id="status"></dl>
+            </section>
+
+            <!-- PLANO PET -->
+            <section class="lichia-sec">
+                <h2 class="lichia-h2" data-i18n="sec.planoPet">Plano · garrafa PET 2 L</h2>
+                <ul class="lichia-plano" id="planoLista"></ul>
+                <p class="lichia-alert">
+                    <span class="lichia-alert__tag" data-i18n="planoPet.regra">Regra de ouro</span>
+                    <span id="planoRegra"></span>
+                </p>
+            </section>
+
+            <!-- LINHA DO TEMPO -->
+            <section class="lichia-sec">
+                <h2 class="lichia-h2" data-i18n="sec.timeline">Linha do tempo</h2>
+                <ol class="lichia-timeline" id="timeline"></ol>
+            </section>
+
+            <!-- METAS -->
+            <section class="lichia-sec">
+                <h2 class="lichia-h2" data-i18n="sec.metas">Metas</h2>
+                <ul class="lichia-metas" id="metas"></ul>
+            </section>
+
+            <!-- CHECKLIST -->
+            <section class="lichia-sec">
+                <h2 class="lichia-h2" data-i18n="sec.checklist">Progresso</h2>
+                <ul class="lichia-rosario" id="checklist"></ul>
+            </section>
+
+            <!-- MEDIÇÕES -->
+            <section class="lichia-sec">
+                <h2 class="lichia-h2" data-i18n="sec.medicoes">Medições</h2>
+                <div class="lichia-medicoes">
+                    <div class="lichia-spark">
+                        <div class="lichia-spark__cap">
+                            <span data-i18n="medicoes.crescimento">Crescimento</span>
+                            <b id="sparkNow"></b>
+                        </div>
+                        <svg id="spark" viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true"></svg>
+                    </div>
+                    <table class="lichia-table">
+                        <thead>
+                            <tr>
+                                <th data-i18n="medicoes.data">Data</th>
+                                <th data-i18n="medicoes.altura">Altura</th>
+                                <th data-i18n="medicoes.folhas">Folhas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="medicoes"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- INVERNO -->
+            <section class="lichia-sec">
+                <h2 class="lichia-h2" data-i18n="sec.inverno">Inverno na Lombardia</h2>
+                <div class="lichia-inverno">
+                    <div class="lichia-inverno__head">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                             stroke-linecap="round" aria-hidden="true">
+                            <path d="M12 2v20M3.5 7l17 10M20.5 7l-17 10"/>
+                            <path d="M12 5l-2.2 2.2M12 5l2.2 2.2M12 19l-2.2-2.2M12 19l2.2 2.2M4.6 8.6l3 .2M4.6 15.4l3-.2M19.4 8.6l-3 .2M19.4 15.4l-3-.2"/>
+                        </svg>
+                        <span data-i18n="inverno.rotulo">Proteção contra o frio</span>
+                    </div>
+                    <ul id="inverno"></ul>
+                </div>
+            </section>
+        </main>
+
+        <!-- RODAPÉ -->
+        <footer class="lichia-footer">
+            <span data-i18n="rodape.texto">Diário pessoal de cultivo · Engenharia NATA</span>
+            <span><span data-i18n="rodape.atualizado">Atualizado em</span> <span id="rodapeData"></span></span>
+        </footer>
+    </div>
+
+    <!-- BOTÃO HOME -->
+    <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria.home">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <script type="module" src="lichiabonsai-script.js?v=1.0.0"></script>
+</body>
+</html>

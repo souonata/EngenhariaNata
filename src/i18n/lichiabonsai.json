@@ -1,0 +1,102 @@
+{
+  "pt-BR": {
+    "meta": {
+      "tabTitle": "Projeto Bonsai Lichia 2031 — Engenharia NATA",
+      "description": "Diário de cultivo: da semente de lichia ao bonsai, em Turate, Lombardia."
+    },
+    "aria": {
+      "langPt": "Mudar para português",
+      "langIt": "Mudar para italiano",
+      "home": "Voltar ao início",
+      "feito": "concluído",
+      "pendente": "pendente"
+    },
+    "titles": {
+      "langPt": "Português",
+      "langIt": "Italiano"
+    },
+    "hero": {
+      "etiqueta": "Espécime"
+    },
+    "sec": {
+      "status": "Status atual",
+      "planoPet": "Plano · garrafa PET 2 L",
+      "timeline": "Linha do tempo",
+      "metas": "Metas",
+      "checklist": "Progresso",
+      "medicoes": "Medições",
+      "inverno": "Inverno na Lombardia"
+    },
+    "planoPet": {
+      "regra": "Regra de ouro"
+    },
+    "inverno": {
+      "rotulo": "Proteção contra o frio"
+    },
+    "medicoes": {
+      "data": "Data",
+      "altura": "Altura",
+      "folhas": "Folhas",
+      "crescimento": "Crescimento",
+      "vazio": "Sem medições ainda."
+    },
+    "unidades": {
+      "cm": "cm",
+      "folhas": "folhas"
+    },
+    "rodape": {
+      "atualizado": "Atualizado em",
+      "texto": "Diário pessoal de cultivo · Engenharia NATA"
+    }
+  },
+  "it-IT": {
+    "meta": {
+      "tabTitle": "Progetto Bonsai Litchi 2031 — Engenharia NATA",
+      "description": "Diario di coltivazione: dal seme di litchi al bonsai, a Turate, Lombardia."
+    },
+    "aria": {
+      "langPt": "Passa al portoghese",
+      "langIt": "Passa all’italiano",
+      "home": "Torna all’inizio",
+      "feito": "completato",
+      "pendente": "in sospeso"
+    },
+    "titles": {
+      "langPt": "Portoghese",
+      "langIt": "Italiano"
+    },
+    "hero": {
+      "etiqueta": "Esemplare"
+    },
+    "sec": {
+      "status": "Stato attuale",
+      "planoPet": "Piano · bottiglia PET 2 L",
+      "timeline": "Cronologia",
+      "metas": "Obiettivi",
+      "checklist": "Avanzamento",
+      "medicoes": "Misurazioni",
+      "inverno": "Inverno in Lombardia"
+    },
+    "planoPet": {
+      "regra": "Regola d’oro"
+    },
+    "inverno": {
+      "rotulo": "Protezione dal freddo"
+    },
+    "medicoes": {
+      "data": "Data",
+      "altura": "Altezza",
+      "folhas": "Foglie",
+      "crescimento": "Crescita",
+      "vazio": "Nessuna misurazione ancora."
+    },
+    "unidades": {
+      "cm": "cm",
+      "folhas": "foglie"
+    },
+    "rodape": {
+      "atualizado": "Aggiornato il",
+      "texto": "Diario personale di coltivazione · Engenharia NATA"
+    }
+  }
+}
