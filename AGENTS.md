@@ -88,6 +88,12 @@ npm run build          # build de produção (gera local/dist)
 - **Site no ar ≠ repo cru:** é build Vite. Para validar o que o usuário realmente vê, cheque o bundle publicado, não só os arquivos locais.
 - **DNS:** subdomínios de app (`volvo.engnata.eu`) não têm `www.`. `www.` é só para o apex (`www.engnata.eu`).
 - **br12c** é standalone — copiado inteiro no deploy, fora do bundle.
+- **br12c tem service worker PRÓPRIO e versionado** (`br12c/sw.js`, cache `br12c-guide-vN`) —
+  **NÃO** é o kill-switch do site principal. Ele cacheia de verdade: HTML/JS/CSS = network-first
+  (atualizam online), mas estáticos (pdf/fontes/imagens) = cache-first. Ao mexer em **qualquer
+  asset do br12c**, **bumpe a versão** do `CACHE` (`-vN` → `-vN+1`): o `activate` apaga os caches
+  antigos e força o re-precache. Sem isso, dá o clássico "mudei mas não atualizou" pros usuários
+  que já visitaram (especialmente em estáticos cache-first).
 
 ## 7. Easter egg "Assistente Volvo" (app secreto)
 
