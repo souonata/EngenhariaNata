@@ -1674,6 +1674,21 @@ html[data-theme="dark"] .lcd-indicators {
     width: calc(var(--pw) * 1%);
     height: calc(var(--ph) * 1%);
   }
+
+  /* Alinhamento fino das áreas de toque às fotos retrato. O grid de overlays
+     (coordenadas --px/--py em buildSkinKeys, que é fonte de verdade dos testes —
+     NÃO mexer lá) é ligeiramente mais ALTO que o teclado desenhado na foto, então
+     o realce de toque/foco (a "máscara") fica acima dos botões. Correção apenas
+     VISUAL: comprime o teclado no eixo Y ancorando na linha de baixo (que já bate),
+     por tema — a foto dark desenha o teclado um pouco menor que a light. */
+  .keyboard {
+    transform-origin: 50% 93%;
+    transform: scaleY(0.978);
+  }
+
+  html[data-theme="dark"] .keyboard {
+    transform: scaleY(0.957);
+  }
 }
 
 /* ====================================================================== */
