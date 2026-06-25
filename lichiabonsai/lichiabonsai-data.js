@@ -37,7 +37,7 @@ export const STATUS = {
   // Cada item vira um "card" de status atual
   fase: {
     rotulo: { pt: 'Fase', it: 'Fase' },
-    valor: { pt: 'Germinação', it: 'Germinazione' },
+    valor: { pt: 'Enraizamento', it: 'Radicazione' },
   },
   inicio: {
     rotulo: { pt: 'Início', it: 'Inizio' },
@@ -50,7 +50,7 @@ export const STATUS = {
   },
   proximoPasso: {
     rotulo: { pt: 'Próximo passo', it: 'Prossimo passo' },
-    valor: { pt: 'Transplante para garrafa PET 2 L', it: 'Trapianto in bottiglia PET 2 L' },
+    valor: { pt: 'Passar o primeiro inverno protegido do frio', it: 'Superare il primo inverno al riparo dal freddo' },
   },
 };
 
@@ -74,6 +74,31 @@ export const PLANO_PET = {
 
 // LINHA DO TEMPO — adicione novas entradas no topo (mais recente primeiro).
 export const TIMELINE = [
+  {
+    data: '2026-06-25',
+    titulo: {
+      pt: 'Transplante para a garrafa PET de 2 L',
+      it: 'Trapianto nella bottiglia PET da 2 L',
+    },
+    texto: {
+      pt: 'Mudança para uma garrafa PET de 2 litros cortada, cheia de substrato de fibra de coco — espaço em altura para a raiz pivotante crescer reta. As folhas já estão maiores e mais verdes; a raiz principal foi preservada.',
+      it: 'Spostata in una bottiglia PET da 2 litri tagliata, riempita di substrato in fibra di cocco — spazio in altezza per far crescere dritto il fittone. Le foglie sono più grandi e verdi; la radice principale è stata preservata.',
+    },
+    fotos: [
+      {
+        arquivo: '2026-06-25-transplante-detalhe.webp',
+        legenda: { pt: 'Folhas maiores e a boca cortada da garrafa', it: 'Foglie più grandi e l’imboccatura tagliata della bottiglia' },
+      },
+      {
+        arquivo: '2026-06-25-transplante-topo.webp',
+        legenda: { pt: 'Vista de cima: as folhas no substrato de fibra de coco', it: 'Vista dall’alto: le foglie nel substrato di fibra di cocco' },
+      },
+      {
+        arquivo: '2026-06-25-transplante-janela.webp',
+        legenda: { pt: 'A garrafa de 2 L no peitoril, em Turate', it: 'La bottiglia da 2 L sul davanzale, a Turate' },
+      },
+    ],
+  },
   {
     data: '2026-06-21',
     titulo: { pt: 'Primeira muda germinada', it: 'Prima piantina germinata' },
@@ -111,7 +136,7 @@ export const METAS = [
 // CHECKLIST de progresso (ordem cronológica). done = true quando concluído.
 export const CHECKLIST = [
   { label: { pt: 'Germinação', it: 'Germinazione' }, done: true },
-  { label: { pt: 'Transplante PET 2 L', it: 'Trapianto PET 2 L' }, done: false },
+  { label: { pt: 'Transplante PET 2 L', it: 'Trapianto PET 2 L' }, done: true },
   { label: { pt: 'Primeiro inverno', it: 'Primo inverno' }, done: false },
   { label: { pt: 'Primeira poda', it: 'Prima potatura' }, done: false },
   { label: { pt: 'Bonsai inicial', it: 'Bonsai iniziale' }, done: false },
