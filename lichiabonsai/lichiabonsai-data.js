@@ -144,7 +144,8 @@ export const CHECKLIST = [
 
 // MEDIÇÕES — alturaCm e folhas são números (gráfico de crescimento).
 export const MEDICOES = [
-  { data: '2026-06-21', alturaCm: 10, folhas: 2 },
+  { data: '2026-06-21', alturaCm: 5, folhas: 2 },
+  { data: '2026-06-25', alturaCm: 7, folhas: 2 },
 ];
 
 export const INVERNO = {
