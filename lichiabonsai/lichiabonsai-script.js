@@ -7,7 +7,7 @@
 
 import { App, i18n } from '../src/core/app.js';
 import {
-  META, STATUS, PLANO_PET, TIMELINE, METAS, CHECKLIST, MEDICOES, INVERNO,
+  META, STATUS, PLANO_PET, TIMELINE, METAS, CHECKLIST, MEDICOES, ESTACOES,
 } from './lichiabonsai-data.js';
 
 // filename "x.webp" -> URL final (hasheada no build)
@@ -63,7 +63,7 @@ class LichiaApp extends App {
     this.renderMetas();
     this.renderChecklist();
     this.renderMedicoes();
-    this.renderInverno();
+    this.renderEstacoes();
     this.renderRodape();
   }
 
@@ -293,14 +293,49 @@ class LichiaApp extends App {
     svg.appendChild(mk('circle', { cx: x(n - 1), cy: y(pts[n - 1]), r: 2.2, fill: 'var(--litchi)' }));
   }
 
-  renderInverno() {
-    const ul = document.getElementById('inverno');
-    if (!ul) return;
-    ul.textContent = '';
-    (INVERNO[this.lang()] || INVERNO.pt || []).forEach((t) => {
-      const li = document.createElement('li');
-      li.textContent = t;
-      ul.appendChild(li);
+  renderEstacoes() {
+    const wrap = document.getElementById('estacoes');
+    if (!wrap) return;
+    const ICONES = {
+      primavera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V11"/><path d="M12 14c-4 0-6.4-2.6-6.8-7C9.6 7.4 12 9.8 12 14Z" fill="currentColor" stroke="none"/><path d="M12 11c3.6 0 5.7-2.1 6.1-6C14.1 5.4 12 7.5 12 11Z" fill="currentColor" stroke="none" opacity="0.85"/></svg>',
+      verao: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 1.5v2.6M12 19.9v2.6M1.5 12h2.6M19.9 12h2.6M4.6 4.6l1.85 1.85M17.55 17.55l1.85 1.85M19.4 4.6l-1.85 1.85M6.45 17.55 4.6 19.4"/></svg>',
+      outono: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c8-1.2 13.5-6.7 14.5-15C11.5 5 6 10.5 5 19Z" fill="currentColor" stroke="none" opacity="0.85"/><path d="M5 19C9.5 13.5 14 9 19.5 4"/></svg>',
+      inverno: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 2v20M3.5 7l17 10M20.5 7l-17 10"/><path d="M12 5l-2.2 2.2M12 5l2.2 2.2M12 19l-2.2-2.2M12 19l2.2 2.2"/></svg>',
+    };
+    wrap.textContent = '';
+    const mes = new Date().getMonth();
+    ESTACOES.forEach((est) => {
+      const card = document.createElement('div');
+      card.className = `lichia-estacao is-${est.chave}`;
+      const agora = Array.isArray(est.meses) && est.meses.includes(mes);
+      if (agora) card.classList.add('is-now');
+
+      const head = document.createElement('div');
+      head.className = 'lichia-estacao__head';
+      const icon = document.createElement('span');
+      icon.className = 'lichia-estacao__icon';
+      icon.setAttribute('aria-hidden', 'true');
+      icon.innerHTML = ICONES[est.chave] || '';
+      const nome = document.createElement('span');
+      nome.className = 'lichia-estacao__nome';
+      nome.textContent = this.tx(est.rotulo);
+      head.append(icon, nome);
+      if (agora) {
+        const badge = document.createElement('span');
+        badge.className = 'lichia-estacao__agora';
+        badge.textContent = i18n.t('estacoes.agora');
+        head.appendChild(badge);
+      }
+
+      const ul = document.createElement('ul');
+      (est.dicas[this.lang()] || est.dicas.pt || []).forEach((t) => {
+        const li = document.createElement('li');
+        li.textContent = t;
+        ul.appendChild(li);
+      });
+
+      card.append(head, ul);
+      wrap.appendChild(card);
     });
   }
 

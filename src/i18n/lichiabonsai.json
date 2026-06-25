@@ -25,13 +25,13 @@
       "metas": "Metas",
       "checklist": "Progresso",
       "medicoes": "Medições",
-      "inverno": "Inverno na Lombardia"
+      "estacoes": "Cuidados por estação"
     },
     "planoPet": {
       "regra": "Regra de ouro"
     },
-    "inverno": {
-      "rotulo": "Proteção contra o frio"
+    "estacoes": {
+      "agora": "agora"
     },
     "medicoes": {
       "data": "Data",
@@ -75,13 +75,13 @@
       "metas": "Obiettivi",
       "checklist": "Avanzamento",
       "medicoes": "Misurazioni",
-      "inverno": "Inverno in Lombardia"
+      "estacoes": "Cura stagionale"
     },
     "planoPet": {
       "regra": "Regola d’oro"
     },
-    "inverno": {
-      "rotulo": "Protezione dal freddo"
+    "estacoes": {
+      "agora": "ora"
     },
     "medicoes": {
       "data": "Data",

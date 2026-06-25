@@ -148,15 +148,77 @@ export const MEDICOES = [
   { data: '2026-06-25', alturaCm: 7, folhas: 2 },
 ];
 
-export const INVERNO = {
-  pt: [
-    'Manter dentro de casa, perto de uma janela bem iluminada.',
-    'Evitar geadas e correntes de ar frio — a lichia é subtropical e não tolera frio intenso.',
-    'Reduzir a rega no período frio, sem deixar o substrato secar por completo.',
-  ],
-  it: [
-    'Tenere in casa, vicino a una finestra ben illuminata.',
-    'Evitare gelate e correnti d’aria fredda — il litchi è subtropicale e non tollera il freddo intenso.',
-    'Ridurre l’irrigazione nel periodo freddo, senza lasciare seccare del tutto il substrato.',
-  ],
-};
+// CUIDADOS POR ESTAÇÃO (Lombardia). `meses` = índices 0–11 (Date.getMonth);
+// a UI destaca a estação atual. Edite as dicas conforme aprende com a planta.
+export const ESTACOES = [
+  {
+    chave: 'primavera',
+    meses: [2, 3, 4], // mar–mai
+    rotulo: { pt: 'Primavera', it: 'Primavera' },
+    dicas: {
+      pt: [
+        'Retomada do crescimento: aumente luz e rega aos poucos conforme esquenta.',
+        'Volte a adubar leve (dose fraca) quando surgir o primeiro broto novo.',
+        'Cuidado com geadas tardias — só deixe fora em definitivo com o frio já passado.',
+      ],
+      it: [
+        'Ripresa della crescita: aumenta luce e acqua gradualmente con il caldo.',
+        'Riprendi una concimazione leggera (dose debole) al primo nuovo germoglio.',
+        'Attento alle gelate tardive — lasciala fuori stabilmente solo a freddo finito.',
+      ],
+    },
+  },
+  {
+    chave: 'verao',
+    meses: [5, 6, 7], // jun–ago
+    rotulo: { pt: 'Verão', it: 'Estate' },
+    dicas: {
+      pt: [
+        'Sombreie a garrafa transparente (não as folhas): a raiz não gosta de luz nem calor.',
+        'Regue de manhã e cheque todo dia; em onda de calor, 1–2× ao dia — úmido, sem encharcar.',
+        'Sol da manhã sim; proteja do sol forte do meio-dia. Borrife as folhas para dar umidade.',
+        'Vigie ácaros (calor seco) na face de baixo das folhas.',
+      ],
+      it: [
+        'Ombreggia la bottiglia trasparente (non le foglie): la radice non ama luce né calore.',
+        'Annaffia al mattino e controlla ogni giorno; con l’afa 1–2 volte al dì — umido, mai zuppo.',
+        'Sole del mattino sì; ripara dal sole forte di mezzogiorno. Nebulizza le foglie per l’umidità.',
+        'Sorveglia i ragnetti rossi (caldo secco) sotto le foglie.',
+      ],
+    },
+  },
+  {
+    chave: 'outono',
+    meses: [8, 9, 10], // set–nov
+    rotulo: { pt: 'Outono', it: 'Autunno' },
+    dicas: {
+      pt: [
+        'O crescimento desacelera: reduza adubo e rega aos poucos.',
+        'Aproveite os últimos dias quentes com boa luz.',
+        'Antes da 1ª geada (pode vir em out/nov), traga a muda para dentro.',
+      ],
+      it: [
+        'La crescita rallenta: riduci gradualmente concime e acqua.',
+        'Sfrutta le ultime giornate calde con buona luce.',
+        'Prima della prima gelata (ott/nov), porta la piantina in casa.',
+      ],
+    },
+  },
+  {
+    chave: 'inverno',
+    meses: [11, 0, 1], // dez–fev
+    rotulo: { pt: 'Inverno', it: 'Inverno' },
+    dicas: {
+      pt: [
+        'Mantenha dentro de casa, perto de uma janela bem iluminada.',
+        'Evite geadas e correntes de ar frio — a lichia é subtropical.',
+        'Reduza a rega sem deixar o substrato secar de todo. Sem adubo.',
+      ],
+      it: [
+        'Tieni in casa, vicino a una finestra ben illuminata.',
+        'Evita gelate e correnti d’aria fredda — il litchi è subtropicale.',
+        'Riduci l’irrigazione senza far seccare del tutto il substrato. Niente concime.',
+      ],
+    },
+  },
+];

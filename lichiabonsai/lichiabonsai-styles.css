@@ -567,52 +567,83 @@ body {
   border-bottom: 0;
 }
 
-/* INVERNO — frio */
-.lichia-inverno {
-  background: color-mix(in srgb, var(--frost) 7%, var(--surface));
-  border: 1px solid color-mix(in srgb, var(--frost) 35%, var(--hair));
-  border-left: 3px solid var(--frost);
-  border-radius: 0 6px 6px 0;
-  padding: 1.3rem 1.4rem;
+/* CUIDADOS POR ESTAÇÃO — 4 cards, cada um com sua cor (--est) */
+.lichia-estacoes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
 }
-.lichia-inverno__head {
+.lichia-estacao {
+  --est: var(--frost);
+  background: color-mix(in srgb, var(--est) 7%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--est) 28%, var(--hair));
+  border-left: 3px solid var(--est);
+  border-radius: 0 6px 6px 0;
+  padding: 1.05rem 1.2rem;
+}
+.lichia-estacao.is-primavera { --est: var(--leaf); }
+.lichia-estacao.is-verao { --est: #cc9528; }
+.lichia-estacao.is-outono { --est: #c1692c; }
+.lichia-estacao.is-inverno { --est: var(--frost); }
+html[data-theme="dark"] .lichia-estacao.is-verao { --est: #e0b75e; }
+html[data-theme="dark"] .lichia-estacao.is-outono { --est: #db9059; }
+.lichia-estacao.is-now {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--est) 32%, transparent);
+}
+.lichia-estacao__head {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  color: var(--frost);
-  margin-bottom: 0.8rem;
+  gap: 0.5rem;
+  color: var(--est);
+  margin-bottom: 0.7rem;
 }
-.lichia-inverno__head svg {
+.lichia-estacao__icon svg {
   width: 1.1rem;
   height: 1.1rem;
+  display: block;
 }
-.lichia-inverno__head span {
+.lichia-estacao__nome {
   font-family: var(--mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.12em;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   font-weight: 600;
 }
-.lichia-inverno ul {
+.lichia-estacao__agora {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--est);
+  border: 1px solid var(--est);
+  border-radius: 999px;
+  padding: 0.12rem 0.42rem;
+}
+.lichia-estacao ul {
   margin: 0;
   padding: 0;
   list-style: none;
 }
-.lichia-inverno li {
+.lichia-estacao li {
   position: relative;
-  padding: 0 0 0.6rem 1.3rem;
+  padding: 0 0 0.5rem 1rem;
   color: var(--ink-2);
+  font-size: 0.96rem;
+  line-height: 1.5;
 }
-.lichia-inverno li:last-child {
+.lichia-estacao li:last-child {
   padding-bottom: 0;
 }
-.lichia-inverno li::before {
-  content: "❋";
+.lichia-estacao li::before {
+  content: "";
   position: absolute;
   left: 0;
-  top: 0;
-  color: var(--frost);
-  font-size: 0.8rem;
+  top: 0.62em;
+  width: 0.34rem;
+  height: 0.34rem;
+  border-radius: 999px;
+  background: var(--est);
 }
 
 /* RODAPÉ */
@@ -651,6 +682,9 @@ body {
   }
   .lichia-metas li {
     grid-template-columns: 3.4rem 1fr;
+  }
+  .lichia-estacoes {
+    grid-template-columns: 1fr;
   }
 }
 
