@@ -58,12 +58,12 @@ export const PLANO_PET = {
   itens: {
     pt: [
       'Até o outono: deixar a muda estabelecer e crescer — incentivar a raiz pivotante e novos lançamentos (ver os cuidados de Verão). Sem podar nem mexer nas raízes.',
-      'Antes da 1ª geada (na Lombardia, out/nov): trazer para dentro, junto a uma janela bem iluminada (de preferência ao sul).',
+      'Antes da 1ª geada (na Lombardia, out/nov): trazer para dentro, sob uma janela bem iluminada ou luz de cultivo LED full-spectrum (~12 h/dia).',
       'No inverno, dentro de casa: longe de correntes frias, rega reduzida e sem adubo; manter alguma umidade (o aquecimento resseca o ar).',
     ],
     it: [
       'Fino all’autunno: lasciar attecchire e crescere la piantina — favorire il fittone e nuovi germogli (vedi cure d’Estate). Senza potare né toccare le radici.',
-      'Prima della prima gelata (in Lombardia, ott/nov): portarla in casa, vicino a una finestra ben illuminata (preferibilmente a sud).',
+      'Prima della prima gelata (in Lombardia, ott/nov): portarla in casa, sotto una finestra ben illuminata o una luce LED full-spectrum da coltivazione (~12 h/giorno).',
       'In inverno, in casa: lontano da correnti fredde, irrigazione ridotta e niente concime; mantenere un po’ di umidità (il riscaldamento secca l’aria).',
     ],
   },
