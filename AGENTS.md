@@ -144,16 +144,24 @@ _Última atualização: 2026-06-25_
 - **App "Bonsai Lichia"** (`lichiabonsai/`, HTML = `index.html`) construído e no ar em
   `engnata.eu/lichiabonsai/`: diário editorial bilíngue, **data-driven**, discreto (noindex, fora do
   catálogo) e **2º app secreto** do easter egg (com o Volvo, via `data-app-secreto`). Ver seção 7/7.1.
-  - **Diário atualizado em 25/06:** nova entrada do transplante p/ garrafa PET 2 L (3 fotos tratadas),
-    fase → Enraizamento, próximo passo → 1º inverno, checklist do PET 2 L concluído. Atualizar = editar
-    `lichiabonsai/lichiabonsai-data.js` (ver memória local da receita de fotos).
+  - **Seções do diário:** hero, status, plano (próx. etapa), linha do tempo, metas, checklist, medições
+    (com sparkline), **cuidados por estação** (4 cards; destaca a estação atual) e **"Estação de cultivo"**
+    (infra: vaso/irrigação/luz, separada da progressão do bonsai). Tudo data-driven em `TIMELINE`,
+    `MEDICOES`, `ESTACOES`, `ESTACAO_CULTIVO`, etc. no `lichiabonsai-data.js` (bilíngue `{pt,it}`).
+  - **Estado do diário (25/06):** transplante p/ PET 2 L registrado; fase → Enraizamento; próximo passo
+    → 1º inverno (aceita **luz de cultivo**, pois a casa nova em Turate não tem face sul); medições 5→7 cm.
+    Plano de infra ("Estação de cultivo") **definido mas a executar** — ver memória `bonsai-estacao-cultivo`.
+    Atualizar = editar `lichiabonsai/lichiabonsai-data.js` (ver memória `bonsai-lichia-fotos`).
 - **br12c:** máscaras das teclas no retrato realinhadas (`transform: scaleY` por tema no `@media`
   retrato); cache do SW bumpado p/ `br12c-guide-v3`.
 - **Referência untracked (de propósito):** `lichia-bonsai-site-v2/` (+ `.zip`) e os originais das fotos
   do bonsai — são a FONTE das fotos tratadas em `lichiabonsai/fotos/`. Não commitar.
-- **Gotcha do dev:** ao mexer em `index-script.js`/`index-styles.css`, bumpe o `?v=` no `index.html`
-  (o navegador segura módulos `?v=` antigos; em produção o Vite re-hasheia). Apps com fotos
-  (`import.meta.glob`) exigem preview via **Vite** (porta 5173), não o http.server cru.
+- **Gotcha do dev (cache de `?v=`):** ao mexer em script/CSS de um app (`index-script.js`,
+  `lichiabonsai-script.js`, `*-styles.css`…), **bumpe o `?v=`** no HTML correspondente — o navegador
+  segura módulos `?v=` antigos (em produção o Vite re-hasheia, então é só p/ o dev). No lichiabonsai,
+  mudança **só de dados** (`lichiabonsai-data.js`) também pede bump do `?v` do **script** (cascateia o
+  data module fresco no Vite dev). Apps com fotos (`import.meta.glob`) exigem preview via **Vite**
+  (porta 5173); e `/lichiabonsai/` com query cai na raiz no Vite dev — navegue p/ `/lichiabonsai/index.html`.
 - **Sincronização entre PCs:** o sintoma "funciona num PC, noutro não" costuma ser **branch
   diferente** entre máquinas. Antes de começar: `git fetch && git status` e confirme em qual
   branch está. Ao trocar de máquina, faça `git pull` da branch correta e `cd local && npm ci`.
