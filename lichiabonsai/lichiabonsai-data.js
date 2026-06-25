@@ -57,12 +57,14 @@ export const STATUS = {
 export const PLANO_PET = {
   itens: {
     pt: [
-      'Garrafa PET de 2 litros (~30 cm de altura) com furos no fundo para drenagem.',
-      'Substrato leve e bem drenado; manter úmido, nunca encharcado.',
+      'Até o outono: deixar a muda estabelecer e crescer — incentivar a raiz pivotante e novos lançamentos (ver os cuidados de Verão). Sem podar nem mexer nas raízes.',
+      'Antes da 1ª geada (na Lombardia, out/nov): trazer para dentro, junto a uma janela bem iluminada (de preferência ao sul).',
+      'No inverno, dentro de casa: longe de correntes frias, rega reduzida e sem adubo; manter alguma umidade (o aquecimento resseca o ar).',
     ],
     it: [
-      'Bottiglia PET da 2 litri (~30 cm di altezza) con fori sul fondo per il drenaggio.',
-      'Substrato leggero e ben drenato; mantenere umido, mai zuppo.',
+      'Fino all’autunno: lasciar attecchire e crescere la piantina — favorire il fittone e nuovi germogli (vedi cure d’Estate). Senza potare né toccare le radici.',
+      'Prima della prima gelata (in Lombardia, ott/nov): portarla in casa, vicino a una finestra ben illuminata (preferibilmente a sud).',
+      'In inverno, in casa: lontano da correnti fredde, irrigazione ridotta e niente concime; mantenere un po’ di umidità (il riscaldamento secca l’aria).',
     ],
   },
   // "Regra de ouro" — destacada como faixa de alerta.
