@@ -25,13 +25,18 @@
       "metas": "Metas",
       "checklist": "Progresso",
       "medicoes": "Medições",
-      "estacoes": "Cuidados por estação"
+      "estacoes": "Cuidados por estação",
+      "infra": "Estação de cultivo"
     },
     "planoPet": {
       "regra": "Regra de ouro"
     },
     "estacoes": {
       "agora": "agora"
+    },
+    "infra": {
+      "intro": "Próximos passos de infraestrutura — separados da progressão do bonsai.",
+      "planejado": "planejado"
     },
     "medicoes": {
       "data": "Data",
@@ -75,13 +80,18 @@
       "metas": "Obiettivi",
       "checklist": "Avanzamento",
       "medicoes": "Misurazioni",
-      "estacoes": "Cura stagionale"
+      "estacoes": "Cura stagionale",
+      "infra": "Stazione di coltivazione"
     },
     "planoPet": {
       "regra": "Regola d’oro"
     },
     "estacoes": {
       "agora": "ora"
+    },
+    "infra": {
+      "intro": "Prossimi passi di infrastruttura — separati dalla crescita del bonsai.",
+      "planejado": "in programma"
     },
     "medicoes": {
       "data": "Data",

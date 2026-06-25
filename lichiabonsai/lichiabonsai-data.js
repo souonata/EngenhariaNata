@@ -224,3 +224,61 @@ export const ESTACOES = [
     },
   },
 ];
+
+// ESTAÇÃO DE CULTIVO — próximos passos de INFRAESTRUTURA (vaso, irrigação, luz),
+// separados da progressão do bonsai. São planos a executar; edite conforme montar.
+export const ESTACAO_CULTIVO = [
+  {
+    chave: 'vaso',
+    rotulo: { pt: 'Vaso', it: 'Vaso' },
+    resumo: { pt: 'Fundo e isolado, para a raiz pivotante', it: 'Profondo e isolato, per il fittone' },
+    itens: {
+      pt: [
+        'Profundo: 30–40 cm de altura, ~15–18 cm de largura (profundo > largo).',
+        'Isopor 2–3 cm laminado com fibra de vidro (dentro e fora); resina bem curada.',
+        'Forro interno inerte (manta de lago), cor clara e ótima drenagem no fundo.',
+        'Transplantar só na primavera de 2027 — não mexer na raiz no 1º ano.',
+      ],
+      it: [
+        'Profondo: 30–40 cm di altezza, ~15–18 cm di larghezza (profondo > largo).',
+        'Polistirolo 2–3 cm laminato con fibra di vetro (dentro e fuori); resina ben indurita.',
+        'Rivestimento interno inerte (telo da laghetto), colore chiaro e ottimo drenaggio sul fondo.',
+        'Trapiantare solo in primavera 2027 — non toccare la radice nel 1° anno.',
+      ],
+    },
+  },
+  {
+    chave: 'irrigacao',
+    rotulo: { pt: 'Irrigação', it: 'Irrigazione' },
+    resumo: { pt: 'Automática, por umidade', it: 'Automatica, a umidità' },
+    itens: {
+      pt: [
+        'Reservatório + bomba pequena (12 V/USB) com gotejamento no topo.',
+        'Controle por sensor de umidade (ESP32): rega só quando seca — evita apodrecer a raiz.',
+        'Pulsos curtos, deixando secar um pouco entre regas. Água da chuva ou levemente ácida.',
+      ],
+      it: [
+        'Serbatoio + pompetta (12 V/USB) con gocciolatoio in alto.',
+        'Controllo a sensore di umidità (ESP32): irriga solo quando asciuga — evita il marciume radicale.',
+        'Impulsi brevi, lasciando asciugare un po’ tra le irrigazioni. Acqua piovana o leggermente acida.',
+      ],
+    },
+  },
+  {
+    chave: 'luz',
+    rotulo: { pt: 'Iluminação', it: 'Illuminazione' },
+    resumo: { pt: 'LED de cultivo no timer', it: 'LED da coltivazione a timer' },
+    itens: {
+      pt: [
+        'LED full-spectrum branco (~20–40 W), braço ajustável, ~20–30 cm acima.',
+        'Timer ou smart plug: 12–14 h/dia no inverno, sempre no mesmo horário.',
+        'Pode ser controlada pelo mesmo ESP32 (luz + bomba juntas).',
+      ],
+      it: [
+        'LED full-spectrum bianco (~20–40 W), braccio regolabile, ~20–30 cm sopra.',
+        'Timer o smart plug: 12–14 h/giorno in inverno, sempre alla stessa ora.',
+        'Gestibile dallo stesso ESP32 (luce + pompa insieme).',
+      ],
+    },
+  },
+];

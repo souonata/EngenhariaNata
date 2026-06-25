@@ -646,6 +646,92 @@ html[data-theme="dark"] .lichia-estacao.is-outono { --est: #db9059; }
   background: var(--est);
 }
 
+/* ESTAÇÃO DE CULTIVO — cards de infraestrutura (vaso / irrigação / luz) */
+.lichia-intro {
+  margin: -0.9rem 0 1.5rem;
+  color: var(--ink-mut);
+  font-size: 0.95rem;
+  max-width: 34rem;
+}
+.lichia-infra {
+  display: grid;
+  gap: 0.9rem;
+}
+.lichia-infra__card {
+  --acc: var(--leaf);
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  border-left: 3px solid var(--acc);
+  border-radius: 0 6px 6px 0;
+  padding: 1.05rem 1.2rem;
+}
+.lichia-infra__card.is-vaso { --acc: var(--leaf); }
+.lichia-infra__card.is-irrigacao { --acc: var(--frost); }
+.lichia-infra__card.is-luz { --acc: #cc9528; }
+html[data-theme="dark"] .lichia-infra__card.is-luz { --acc: #e0b75e; }
+.lichia-infra__head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--acc);
+  margin-bottom: 0.25rem;
+}
+.lichia-infra__icon svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  display: block;
+}
+.lichia-infra__nome {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.lichia-infra__tag {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-mut);
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  padding: 0.12rem 0.42rem;
+}
+.lichia-infra__resumo {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--ink-2);
+  margin: 0 0 0.65rem;
+}
+.lichia-infra ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lichia-infra li {
+  position: relative;
+  padding: 0 0 0.45rem 1rem;
+  color: var(--ink-2);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.lichia-infra li:last-child {
+  padding-bottom: 0;
+}
+.lichia-infra li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 0.32rem;
+  height: 0.32rem;
+  border-radius: 999px;
+  background: var(--acc);
+}
+
 /* RODAPÉ */
 .lichia-footer {
   margin-top: 4rem;

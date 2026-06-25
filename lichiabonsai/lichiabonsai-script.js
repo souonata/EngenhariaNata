@@ -7,7 +7,7 @@
 
 import { App, i18n } from '../src/core/app.js';
 import {
-  META, STATUS, PLANO_PET, TIMELINE, METAS, CHECKLIST, MEDICOES, ESTACOES,
+  META, STATUS, PLANO_PET, TIMELINE, METAS, CHECKLIST, MEDICOES, ESTACOES, ESTACAO_CULTIVO,
 } from './lichiabonsai-data.js';
 
 // filename "x.webp" -> URL final (hasheada no build)
@@ -64,6 +64,7 @@ class LichiaApp extends App {
     this.renderChecklist();
     this.renderMedicoes();
     this.renderEstacoes();
+    this.renderInfra();
     this.renderRodape();
   }
 
@@ -335,6 +336,49 @@ class LichiaApp extends App {
       });
 
       card.append(head, ul);
+      wrap.appendChild(card);
+    });
+  }
+
+  renderInfra() {
+    const wrap = document.getElementById('infra');
+    if (!wrap) return;
+    const ICONES = {
+      vaso: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M6.2 7l1.3 12.1a1.6 1.6 0 0 0 1.6 1.4h5.8a1.6 1.6 0 0 0 1.6-1.4L17.8 7"/></svg>',
+      irrigacao: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c4 5.2 6.3 8.2 6.3 11.2A6.3 6.3 0 0 1 5.7 14.2C5.7 11.2 8 8.2 12 3Z"/></svg>',
+      luz: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 18.5h5M10.2 21h3.6"/><path d="M12 2.5a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1.1 2h4.8c.1-.8.5-1.5 1.1-2A6 6 0 0 0 12 2.5Z"/></svg>',
+    };
+    wrap.textContent = '';
+    ESTACAO_CULTIVO.forEach((it) => {
+      const card = document.createElement('div');
+      card.className = `lichia-infra__card is-${it.chave}`;
+
+      const head = document.createElement('div');
+      head.className = 'lichia-infra__head';
+      const icon = document.createElement('span');
+      icon.className = 'lichia-infra__icon';
+      icon.setAttribute('aria-hidden', 'true');
+      icon.innerHTML = ICONES[it.chave] || '';
+      const nome = document.createElement('span');
+      nome.className = 'lichia-infra__nome';
+      nome.textContent = this.tx(it.rotulo);
+      const tag = document.createElement('span');
+      tag.className = 'lichia-infra__tag';
+      tag.textContent = i18n.t('infra.planejado');
+      head.append(icon, nome, tag);
+
+      const resumo = document.createElement('p');
+      resumo.className = 'lichia-infra__resumo';
+      resumo.textContent = this.tx(it.resumo);
+
+      const ul = document.createElement('ul');
+      (it.itens[this.lang()] || it.itens.pt || []).forEach((t) => {
+        const li = document.createElement('li');
+        li.textContent = t;
+        ul.appendChild(li);
+      });
+
+      card.append(head, resumo, ul);
       wrap.appendChild(card);
     });
   }
