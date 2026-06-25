@@ -133,20 +133,27 @@ npm run build          # build de produção (gera local/dist)
 
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
-_Última atualização: 2026-06-18_
+_Última atualização: 2026-06-25_
 
-- **`main` em dia e deployado.** A feature do app secreto Assistente Volvo (ícone + reveal, em
-  `index.html` / `index-script.js` / `index-styles.css` / `src/i18n/index.json`) foi **mergeada
-  no `main` (fast-forward) e publicada** — verificado no ar: o HTML em produção contém
-  `appAssistenteVolvo`, o link `https://volvo.engnata.eu`, e o bundle novo (`main-BgEh7Kgu.js`)
-  traz a lógica de reveal (`is-unlocked`, `easterState`). O site no ar agora mostra o ícone após
-  o easter egg (9 toques rápidos em < 6 s no logo do dock).
-- **Histórico do sintoma (resolvido):** o ícone "não aparecia no ar" porque o site é o build do
-  `main`, e a feature vivia só na branch `feat/auditoria-padronizacao-apps` — o `main` era um build
-  anterior, sem o `appAssistenteVolvo`. Resolvido pelo merge+deploy acima. Lição: feature em branch
-  não existe no site até ser mergeada no `main`.
-- **Branch `feat/auditoria-padronizacao-apps` == `main`** (após o FF merge); ambas sincronizadas no remoto.
-- **Link do ícone:** confirmado `https://volvo.engnata.eu` (DNS resolve; `www.volvo...` é NXDOMAIN).
+- **`main` em dia, deployado e verificado no ar.** Branch `feat/auditoria-padronizacao-apps` == `main`, sincronizadas no remoto.
+- **Domínio migrado para custom domain NATIVO** do GitHub Pages: `engnata.eu` serve **direto** (URL
+  limpa, HTTPS forçado), fixado por `public/CNAME`; `www` → 301 → apex; DNS na Cloudflare (apex com
+  A/AAAA → IPs do Pages, **DNS only**). Build com `base: './'` (relativo). Detalhes na seção 4.
+  (Antes era forwarding GoDaddy/Redirect Rule; histórico na memória de roteamento.)
+- **SEO unificado:** `canonical`/`og`/`twitter`/JSON-LD/`sitemap.xml`/`robots.txt` → `https://engnata.eu/...`.
+- **App "Bonsai Lichia"** (`lichiabonsai/`, HTML = `index.html`) construído e no ar em
+  `engnata.eu/lichiabonsai/`: diário editorial bilíngue, **data-driven**, discreto (noindex, fora do
+  catálogo) e **2º app secreto** do easter egg (com o Volvo, via `data-app-secreto`). Ver seção 7/7.1.
+  - **Diário atualizado em 25/06:** nova entrada do transplante p/ garrafa PET 2 L (3 fotos tratadas),
+    fase → Enraizamento, próximo passo → 1º inverno, checklist do PET 2 L concluído. Atualizar = editar
+    `lichiabonsai/lichiabonsai-data.js` (ver memória local da receita de fotos).
+- **br12c:** máscaras das teclas no retrato realinhadas (`transform: scaleY` por tema no `@media`
+  retrato); cache do SW bumpado p/ `br12c-guide-v3`.
+- **Referência untracked (de propósito):** `lichia-bonsai-site-v2/` (+ `.zip`) e os originais das fotos
+  do bonsai — são a FONTE das fotos tratadas em `lichiabonsai/fotos/`. Não commitar.
+- **Gotcha do dev:** ao mexer em `index-script.js`/`index-styles.css`, bumpe o `?v=` no `index.html`
+  (o navegador segura módulos `?v=` antigos; em produção o Vite re-hasheia). Apps com fotos
+  (`import.meta.glob`) exigem preview via **Vite** (porta 5173), não o http.server cru.
 - **Sincronização entre PCs:** o sintoma "funciona num PC, noutro não" costuma ser **branch
   diferente** entre máquinas. Antes de começar: `git fetch && git status` e confirme em qual
   branch está. Ao trocar de máquina, faça `git pull` da branch correta e `cd local && npm ci`.
