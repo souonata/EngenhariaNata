@@ -146,9 +146,9 @@ npm run build          # build de produção (gera local/dist)
 
 _Última atualização: 2026-06-26_
 
-- **PENDENTE DE PUBLICAÇÃO:** rebuild do Bonsai Lichia está na branch `feat/lichiabonsai-guia-interativo`
-  (commitada, build + 223 testes OK, verificada no preview Vite light/dark/mobile/pt/it). **NÃO mergeada
-  no `main` ainda** → ainda não está no ar. Mergear no `main` para publicar.
+- **PUBLICADO:** rebuild do Bonsai Lichia mergeado no `main` e pushado em 2026-06-26 (branch
+  `feat/lichiabonsai-guia-interativo`; build + 223 testes OK, verificado no preview Vite
+  light/dark/mobile/pt/it). Deploy automático via Actions → confirmar no ar em `engnata.eu/lichiabonsai/`.
 - **Bonsai Lichia virou GUIA INTERATIVO** (era só diário). Pedido: "guia interativo, temporal, com
   exemplos/imagens/esquemas, e atualizável com fotos reais da evolução". Novas seções data-driven:
   **Guia em fases** (roteiro 0–25 anos, fase atual auto-detectada e aberta, cada fase com objetivo /
