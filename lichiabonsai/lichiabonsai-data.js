@@ -77,6 +77,31 @@ export const PLANO_PET = {
 // LINHA DO TEMPO — adicione novas entradas no topo (mais recente primeiro).
 export const TIMELINE = [
   {
+    data: '2026-06-26',
+    titulo: {
+      pt: 'Vaso isolante e rega com água do ar-condicionado',
+      it: 'Vaso isolante e irrigazione con acqua del condizionatore',
+    },
+    texto: {
+      pt: 'A garrafa PET, furada no fundo, foi encaixada dentro de um vaso maior cheio de terra — isolando as raízes do calor e mantendo-as no escuro. A base do troncozinho ganhou uma cobertura de casca de coco; o resto, uma mistura fofa de fibra de coco e terra preta. A rega passou a ser com a água de condensação do ar-condicionado: naturalmente macia e levemente ácida, ótima para a lichia (evita o calcário que amarela as folhas novas).',
+      it: 'La bottiglia PET, forata sul fondo, è stata inserita in un vaso più grande pieno di terra — isolando le radici dal calore e tenendole al buio. La base del piccolo tronco ha ricevuto una copertura di fibra di cocco; il resto, una miscela soffice di fibra di cocco e terra nera. L’irrigazione ora usa l’acqua di condensa del condizionatore: naturalmente dolce e leggermente acida, ottima per il litchi (evita il calcare che ingiallisce le foglie nuove).',
+    },
+    fotos: [
+      {
+        arquivo: '2026-06-26-vaso-isolante-detalhe.webp',
+        legenda: { pt: 'A garrafa encaixada no vaso maior, com cobertura de casca de coco', it: 'La bottiglia inserita nel vaso più grande, con copertura di fibra di cocco' },
+      },
+      {
+        arquivo: '2026-06-26-muda.webp',
+        legenda: { pt: 'A muda, com novas folhas firmes e verdes', it: 'La piantina, con nuove foglie sode e verdi' },
+      },
+      {
+        arquivo: '2026-06-26-vaso-isolante.webp',
+        legenda: { pt: 'O conjunto: vaso dentro do vaso, no terraço em Turate', it: 'L’insieme: vaso dentro il vaso, sul terrazzo a Turate' },
+      },
+    ],
+  },
+  {
     data: '2026-06-25',
     titulo: {
       pt: 'Transplante para a garrafa PET de 2 L',
@@ -158,11 +183,11 @@ export const MEDICOES = [
 export const FASE_REGISTROS = {
   f0: {
     nota: {
-      pt: 'Germinação em 21/06 e transplante para a garrafa PET de 2 L em 25/06. A raiz pivotante foi preservada; folhas maiores e mais verdes a cada semana.',
-      it: 'Germinazione il 21/06 e trapianto nella bottiglia PET da 2 L il 25/06. Il fittone è stato preservato; foglie più grandi e verdi ogni settimana.',
+      pt: 'Germinação em 21/06, transplante para a garrafa PET de 2 L em 25/06 e, em 26/06, a garrafa (furada no fundo) foi para dentro de um vaso maior com terra — isolando as raízes do calor e da luz. Rega com água de condensação do ar-condicionado (macia, levemente ácida). A raiz pivotante foi preservada; folhas maiores e mais verdes a cada semana.',
+      it: 'Germinazione il 21/06, trapianto nella bottiglia PET da 2 L il 25/06 e, il 26/06, la bottiglia (forata sul fondo) è finita dentro un vaso più grande con terra — isolando le radici dal calore e dalla luce. Irrigazione con acqua di condensa del condizionatore (dolce, leggermente acida). Il fittone è stato preservato; foglie più grandi e verdi ogni settimana.',
     },
     fotos: [
-      { arquivo: '2026-06-25-transplante-topo.webp', legenda: { pt: 'Na garrafa PET de 2 L', it: 'Nella bottiglia PET da 2 L' } },
+      { arquivo: '2026-06-26-vaso-isolante-detalhe.webp', legenda: { pt: 'O vaso isolante: garrafa furada dentro de um vaso com terra', it: 'Il vaso isolante: bottiglia forata dentro un vaso con terra' } },
       { arquivo: '2026-06-21-broto-macro.webp', legenda: { pt: 'A muda recém-germinada', it: 'La piantina appena germinata' } },
     ],
   },
