@@ -112,14 +112,25 @@ npm run build          # build de produção (gera local/dist)
   NÃO criar página interna) e **Bonsai Lichia** (app interno, abaixo).
 
 ### 7.1 App "Bonsai Lichia" (`lichiabonsai/`)
-- Diário/guia pessoal de cultivo (germinação de uma lichia → bonsai, Turate/Lombardia). App
+- **Guia interativo + diário** de cultivo (germinação de uma lichia → bonsai, Turate/Lombardia). App
   **discreto**: fora do catálogo e do sitemap, `noindex`; só pelo easter egg ou link direto
   **`engnata.eu/lichiabonsai/`** (o HTML é `index.html`, p/ URL limpa, como o `br12c`).
 - **Bilíngue** pt-BR/it-IT (abre em pt, respeita a sessão). Estende o `App` base; design editorial
-  próprio (`lichiabonsai-styles.css`, paleta verde/vermelho-lichia, light/dark).
-- **Data-driven — para atualizar o diário, edite SÓ `lichiabonsai/lichiabonsai-data.js`** (entradas
-  da linha do tempo, medições, checklist, metas — tudo bilíngue `{pt,it}`); commit → deploy.
-  **Fotos:** ponha o `.webp` em `lichiabonsai/fotos/` e referencie o nome do arquivo no data; o
+  próprio (`lichiabonsai-styles.css`, paleta verde/vermelho-lichia, light/dark). Re-renderiza tudo
+  ao trocar idioma; estado de UI (fases/técnicas abertas, mês do calendário) preservado na instância.
+- **Dois tipos de dado** (ambos ESM bundlados pelo Vite, sem fetch em runtime):
+  1. **DIÁRIO — você edita `lichiabonsai/lichiabonsai-data.js`**: linha do tempo, medições, checklist,
+     metas, status, plano, `ESTACAO_CULTIVO` (infra) e **`FASE_REGISTROS`** (suas fotos/notas reais por
+     fase do guia — o *loop de feedback*; chaves `f0`…`f5` batem com as fases). Tudo bilíngue `{pt,it}`.
+  2. **GUIA (referência, raramente muda)** em módulos separados: `guia-fases.js` (`GUIA_INTRO` +
+     `GUIA_FASES`, roteiro 0–25 anos), `guia-tecnicas.js` (`TECNICAS`, passo a passo ilustrado),
+     `guia-calendario.js` (`CALENDARIO` 12 meses + `PRAGAS` + `MATERIAIS`), `guia-diagramas.js`
+     (`DIAGRAMAS` = SVGs inline, theme-aware via `var(--…)`/`currentColor`; chave em `diagrama` liga
+     fase/técnica ao desenho).
+- **Fase atual** é detectada por `META.dataInicial` + data de hoje (anos decorridos → índice em
+  `GUIA_FASES`); o **mês atual** destaca-se no calendário. (Substituiu o antigo bloco `ESTACOES` de
+  4 cards — o calendário de 12 meses é mais rico.)
+- **Fotos:** ponha o `.webp` em `lichiabonsai/fotos/` e referencie o nome do arquivo no data; o
   Vite as inclui no build via `import.meta.glob` (não precisa tocar no `deploy.yml`). Rótulos de UI
   em `src/i18n/lichiabonsai.json` (copiado pelo deploy.yml junto com os outros i18n).
 
@@ -133,9 +144,21 @@ npm run build          # build de produção (gera local/dist)
 
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
-_Última atualização: 2026-06-25_
+_Última atualização: 2026-06-26_
 
-- **`main` em dia, deployado e verificado no ar.** Branch `feat/auditoria-padronizacao-apps` == `main`, sincronizadas no remoto.
+- **PENDENTE DE PUBLICAÇÃO:** rebuild do Bonsai Lichia está na branch `feat/lichiabonsai-guia-interativo`
+  (commitada, build + 223 testes OK, verificada no preview Vite light/dark/mobile/pt/it). **NÃO mergeada
+  no `main` ainda** → ainda não está no ar. Mergear no `main` para publicar.
+- **Bonsai Lichia virou GUIA INTERATIVO** (era só diário). Pedido: "guia interativo, temporal, com
+  exemplos/imagens/esquemas, e atualizável com fotos reais da evolução". Novas seções data-driven:
+  **Guia em fases** (roteiro 0–25 anos, fase atual auto-detectada e aberta, cada fase com objetivo /
+  o-que-fazer / resultado / erro comum / **diagrama SVG** / bloco "Seu registro" p/ fotos reais —
+  `FASE_REGISTROS`), **Calendário anual** (12 meses, mês atual destacado, clicável), **Técnicas
+  ilustradas** (12 cards expansíveis com esquema), **Pragas e cuidados**, **Materiais por etapa**.
+  Conteúdo destila/supera a conversa do ChatGPT (roteiro de 25 anos da lichia). Ver seção 7.1 p/ a
+  arquitetura (módulos `guia-*.js`). `?v=` de CSS/JS bumpado p/ `1.1.0`. Removido o bloco `ESTACOES`
+  (4 cards) — substituído pelo calendário.
+- **`main` (antes desta branch):** em dia, deployado e verificado no ar. Branch `feat/auditoria-padronizacao-apps` == `main`, sincronizadas no remoto.
 - **Domínio migrado para custom domain NATIVO** do GitHub Pages: `engnata.eu` serve **direto** (URL
   limpa, HTTPS forçado), fixado por `public/CNAME`; `www` → 301 → apex; DNS na Cloudflare (apex com
   A/AAAA → IPs do Pages, **DNS only**). Build com `base: './'` (relativo). Detalhes na seção 4.
@@ -144,10 +167,10 @@ _Última atualização: 2026-06-25_
 - **App "Bonsai Lichia"** (`lichiabonsai/`, HTML = `index.html`) construído e no ar em
   `engnata.eu/lichiabonsai/`: diário editorial bilíngue, **data-driven**, discreto (noindex, fora do
   catálogo) e **2º app secreto** do easter egg (com o Volvo, via `data-app-secreto`). Ver seção 7/7.1.
-  - **Seções do diário:** hero, status, plano (próx. etapa), linha do tempo, metas, checklist, medições
-    (com sparkline), **cuidados por estação** (4 cards; destaca a estação atual) e **"Estação de cultivo"**
-    (infra: vaso/irrigação/luz, separada da progressão do bonsai). Tudo data-driven em `TIMELINE`,
-    `MEDICOES`, `ESTACOES`, `ESTACAO_CULTIVO`, etc. no `lichiabonsai-data.js` (bilíngue `{pt,it}`).
+  - **Seções (ordem na página):** hero, status, plano (próx. etapa), **guia em fases**, **calendário
+    anual**, **técnicas ilustradas**, linha do tempo, medições (sparkline), metas, checklist, estação
+    de cultivo (infra), **pragas e cuidados**, **materiais por etapa**. Diário em `lichiabonsai-data.js`
+    (`TIMELINE`/`MEDICOES`/`FASE_REGISTROS`/`ESTACAO_CULTIVO`…); guia nos módulos `guia-*.js` (ver 7.1).
   - **Estado do diário (25/06):** transplante p/ PET 2 L registrado; fase → Enraizamento; próximo passo
     → 1º inverno (aceita **luz de cultivo**, pois a casa nova em Turate não tem face sul); medições 5→7 cm.
     Plano de infra ("Estação de cultivo") **definido mas a executar** — ver memória `bonsai-estacao-cultivo`.

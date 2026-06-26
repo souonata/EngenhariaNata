@@ -774,6 +774,534 @@ html[data-theme="dark"] .lichia-infra__card.is-luz { --acc: #e0b75e; }
   }
 }
 
+/* ==========================================================================
+   GUIA INTERATIVO — fases, diagramas, técnicas, calendário, pragas, materiais
+   (adicionado na conversão "diário → guia interativo de cultivo")
+   ========================================================================== */
+
+/* --- Bloco de introdução do guia (diagnóstico / regra / marco) ------------ */
+.lichia-guia-intro {
+  display: grid;
+  gap: 0.9rem;
+  margin-bottom: 2.2rem;
+}
+.lichia-note {
+  --acc: var(--leaf);
+  padding: 1rem 1.15rem;
+  background: color-mix(in srgb, var(--acc) 7%, var(--surface));
+  border-left: 3px solid var(--acc);
+  border-radius: 0 6px 6px 0;
+  color: var(--ink);
+  line-height: 1.58;
+}
+.lichia-note.is-regra { --acc: var(--litchi); }
+.lichia-note.is-marco { --acc: var(--frost); }
+.lichia-note__tag {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--acc);
+  margin-bottom: 0.3rem;
+}
+
+/* --- Diagrama SVG (esquema ilustrado) ------------------------------------- */
+.lichia-diagrama {
+  margin: 1.1rem 0;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  border-radius: 6px;
+  color: var(--ink-2);
+  display: flex;
+  justify-content: center;
+}
+.lichia-diagrama svg {
+  width: 100%;
+  max-width: 22rem;
+  height: auto;
+  display: block;
+}
+
+/* --- Guia em fases (stepper colapsável) ----------------------------------- */
+.lichia-fases {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lichia-fase {
+  position: relative;
+  padding: 0 0 1.4rem 1.9rem;
+  border-left: 2px solid var(--hair);
+}
+.lichia-fase:last-child { padding-bottom: 0.2rem; }
+.lichia-fase::before {
+  content: "";
+  position: absolute;
+  left: -0.5rem;
+  top: 0.45rem;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 999px;
+  background: var(--paper);
+  border: 2px solid var(--hair);
+  z-index: 1;
+}
+.lichia-fase.is-feita::before {
+  background: var(--leaf);
+  border-color: var(--leaf);
+}
+.lichia-fase.is-atual::before {
+  background: var(--litchi);
+  border-color: var(--litchi);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--litchi) 18%, transparent);
+}
+.lichia-fase__btn {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.2rem 0.8rem;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+}
+.lichia-fase__periodo {
+  grid-column: 1;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-mut);
+}
+.lichia-fase__title {
+  grid-column: 1;
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink);
+  margin: 0;
+}
+.lichia-fase__badge {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-mut);
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  padding: 0.16rem 0.5rem;
+  white-space: nowrap;
+}
+.lichia-fase.is-feita .lichia-fase__badge { color: var(--leaf); border-color: color-mix(in srgb, var(--leaf) 45%, var(--hair)); }
+.lichia-fase.is-atual .lichia-fase__badge { color: var(--litchi); border-color: var(--litchi); }
+.lichia-fase__chevron {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: 1rem;
+  height: 1rem;
+  color: var(--ink-mut);
+  transition: transform 0.2s ease;
+}
+.lichia-fase.is-open .lichia-fase__chevron { transform: rotate(180deg); }
+.lichia-fase__body {
+  display: none;
+  padding-top: 1rem;
+}
+.lichia-fase.is-open .lichia-fase__body { display: block; }
+.lichia-fase__obj {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--ink-2);
+  margin: 0 0 0.9rem;
+}
+.lichia-sub {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-mut);
+  margin: 1rem 0 0.5rem;
+}
+.lichia-fase__fazer {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lichia-fase__fazer li {
+  position: relative;
+  padding: 0 0 0.5rem 1.4rem;
+  color: var(--ink-2);
+}
+.lichia-fase__fazer li::before {
+  content: "";
+  position: absolute;
+  left: 0.15rem;
+  top: 0.62em;
+  width: 0.4rem;
+  height: 0.4rem;
+  border: 1.5px solid var(--leaf);
+  border-radius: 999px;
+}
+.lichia-callout {
+  --acc: var(--leaf);
+  margin: 0.9rem 0 0;
+  padding: 0.7rem 0.95rem;
+  background: color-mix(in srgb, var(--acc) 7%, var(--surface));
+  border-left: 3px solid var(--acc);
+  border-radius: 0 5px 5px 0;
+  color: var(--ink);
+  font-size: 0.96rem;
+  line-height: 1.5;
+}
+.lichia-callout.is-erro { --acc: var(--litchi); }
+.lichia-callout b {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--acc);
+  display: block;
+  margin-bottom: 0.2rem;
+  font-weight: 600;
+}
+
+/* registro do usuário por fase (loop de feedback com fotos reais) */
+.lichia-registro {
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
+  border-top: 1px dashed var(--hair);
+}
+.lichia-registro__empty {
+  color: var(--ink-mut);
+  font-size: 0.92rem;
+  font-style: italic;
+}
+
+/* --- Técnicas ilustradas (cards colapsáveis) ------------------------------ */
+.lichia-tecnicas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+  align-items: start;
+}
+.lichia-tecnica {
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.lichia-tecnica.is-open {
+  border-color: color-mix(in srgb, var(--leaf) 40%, var(--hair));
+}
+.lichia-tecnica__btn {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.15rem 0.7rem;
+  background: none;
+  border: 0;
+  padding: 0.95rem 1.1rem;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+}
+.lichia-tecnica__nome {
+  grid-column: 1;
+  font-family: var(--serif);
+  font-size: 1.12rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.25;
+}
+.lichia-tecnica__resumo {
+  grid-column: 1;
+  font-size: 0.9rem;
+  color: var(--ink-mut);
+  line-height: 1.4;
+}
+.lichia-tecnica__chevron {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: 1rem;
+  height: 1rem;
+  color: var(--ink-mut);
+  transition: transform 0.2s ease;
+}
+.lichia-tecnica.is-open .lichia-tecnica__chevron { transform: rotate(180deg); }
+.lichia-tecnica__body {
+  display: none;
+  padding: 0 1.1rem 1.1rem;
+}
+.lichia-tecnica.is-open .lichia-tecnica__body { display: block; }
+.lichia-tecnica__body .lichia-diagrama { margin-top: 0; }
+.lichia-passos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: passo;
+}
+.lichia-passos li {
+  position: relative;
+  padding: 0 0 0.55rem 1.7rem;
+  color: var(--ink-2);
+  font-size: 0.96rem;
+  line-height: 1.5;
+}
+.lichia-passos li::before {
+  counter-increment: passo;
+  content: counter(passo);
+  position: absolute;
+  left: 0;
+  top: 0.05em;
+  width: 1.1rem;
+  height: 1.1rem;
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--leaf);
+  border: 1px solid color-mix(in srgb, var(--leaf) 45%, var(--hair));
+  border-radius: 999px;
+}
+.lichia-meta-tec {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+.lichia-meta-tec > div {
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+.lichia-meta-tec b {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-mut);
+  margin-right: 0.4rem;
+}
+.lichia-meta-tec .is-erro b { color: var(--litchi); }
+
+/* --- Calendário anual (faixa de 12 meses + painel) ------------------------ */
+.lichia-cal__strip {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 0.3rem;
+  margin-bottom: 1.3rem;
+}
+.lichia-cal__mes {
+  --est: var(--frost);
+  background: color-mix(in srgb, var(--est) 9%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--est) 22%, var(--hair));
+  border-bottom: 2.5px solid var(--est);
+  border-radius: 5px;
+  padding: 0.5rem 0.1rem;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  transition: background 0.15s, color 0.15s;
+}
+.lichia-cal__mes.is-primavera { --est: var(--leaf); }
+.lichia-cal__mes.is-verao { --est: #cc9528; }
+.lichia-cal__mes.is-outono { --est: #c1692c; }
+.lichia-cal__mes.is-inverno { --est: var(--frost); }
+html[data-theme="dark"] .lichia-cal__mes.is-verao { --est: #e0b75e; }
+html[data-theme="dark"] .lichia-cal__mes.is-outono { --est: #db9059; }
+.lichia-cal__mes:hover { color: var(--ink); }
+.lichia-cal__mes.is-sel {
+  background: var(--est);
+  color: var(--paper);
+  font-weight: 700;
+}
+html[data-theme="dark"] .lichia-cal__mes.is-sel { color: var(--surface); }
+.lichia-cal__mes.is-now::after {
+  content: "";
+  display: block;
+  width: 0.28rem;
+  height: 0.28rem;
+  border-radius: 999px;
+  background: currentColor;
+  margin: 0.2rem auto 0;
+}
+.lichia-cal__panel {
+  --est: var(--leaf);
+  background: color-mix(in srgb, var(--est) 6%, var(--surface));
+  border: 1px solid var(--hair);
+  border-left: 3px solid var(--est);
+  border-radius: 0 6px 6px 0;
+  padding: 1.1rem 1.25rem;
+}
+.lichia-cal__panel.is-primavera { --est: var(--leaf); }
+.lichia-cal__panel.is-verao { --est: #cc9528; }
+.lichia-cal__panel.is-outono { --est: #c1692c; }
+.lichia-cal__panel.is-inverno { --est: var(--frost); }
+html[data-theme="dark"] .lichia-cal__panel.is-verao { --est: #e0b75e; }
+html[data-theme="dark"] .lichia-cal__panel.is-outono { --est: #db9059; }
+.lichia-cal__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+.lichia-cal__mesnome {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.lichia-cal__foco {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--est);
+}
+.lichia-cal__nowtag {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--est);
+  border: 1px solid var(--est);
+  border-radius: 999px;
+  padding: 0.12rem 0.45rem;
+}
+.lichia-cal__panel ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lichia-cal__panel li {
+  position: relative;
+  padding: 0 0 0.5rem 1.1rem;
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+.lichia-cal__panel li:last-child { padding-bottom: 0; }
+.lichia-cal__panel li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 0.36rem;
+  height: 0.36rem;
+  border-radius: 999px;
+  background: var(--est);
+}
+
+/* --- Pragas e cuidados ---------------------------------------------------- */
+.lichia-pragas {
+  display: grid;
+  gap: 0.7rem;
+}
+.lichia-praga {
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  border-radius: 6px;
+  padding: 0.9rem 1.1rem;
+}
+.lichia-praga__nome {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--litchi);
+  margin-bottom: 0.5rem;
+}
+.lichia-praga__grid {
+  display: grid;
+  gap: 0.35rem 1rem;
+}
+.lichia-praga__grid > div {
+  font-size: 0.93rem;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+.lichia-praga__grid b {
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-mut);
+  margin-right: 0.4rem;
+}
+
+/* --- Materiais por etapa -------------------------------------------------- */
+.lichia-materiais {
+  display: grid;
+  gap: 0.9rem;
+}
+.lichia-mat {
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  border-left: 3px solid var(--leaf);
+  border-radius: 0 6px 6px 0;
+  padding: 1rem 1.2rem;
+}
+.lichia-mat__head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  margin-bottom: 0.6rem;
+}
+.lichia-mat__etapa {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--leaf);
+}
+.lichia-mat__quando {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--ink-mut);
+}
+.lichia-mat__itens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lichia-mat__itens li {
+  font-size: 0.88rem;
+  color: var(--ink-2);
+  background: color-mix(in srgb, var(--leaf) 7%, var(--surface-muted));
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  padding: 0.22rem 0.7rem;
+}
+
+@media (max-width: 720px) {
+  .lichia-tecnicas { grid-template-columns: 1fr; }
+  .lichia-cal__strip { grid-template-columns: repeat(6, 1fr); gap: 0.35rem; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;

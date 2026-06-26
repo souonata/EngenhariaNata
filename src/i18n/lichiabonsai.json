@@ -2,14 +2,17 @@
   "pt-BR": {
     "meta": {
       "tabTitle": "Projeto Bonsai Lichia 2031 — Engenharia NATA",
-      "description": "Diário de cultivo: da semente de lichia ao bonsai, em Turate, Lombardia."
+      "description": "Guia interativo e diário de cultivo: da semente de lichia ao bonsai, em Turate, Lombardia."
     },
     "aria": {
       "langPt": "Mudar para português",
       "langIt": "Mudar para italiano",
       "home": "Voltar ao início",
       "feito": "concluído",
-      "pendente": "pendente"
+      "pendente": "pendente",
+      "abrirFase": "Abrir/fechar esta fase",
+      "abrirTecnica": "Abrir/fechar esta técnica",
+      "verMes": "Ver este mês"
     },
     "titles": {
       "langPt": "Português",
@@ -20,16 +23,53 @@
     },
     "sec": {
       "status": "Status atual",
-      "planoPet": "Plano · primeiro inverno",
+      "planoPet": "Plano · próximo passo",
+      "guia": "O guia em fases",
+      "calendario": "Calendário anual",
+      "tecnicas": "Técnicas ilustradas",
       "timeline": "Linha do tempo",
       "metas": "Metas",
       "checklist": "Progresso",
       "medicoes": "Medições",
-      "estacoes": "Cuidados por estação",
-      "infra": "Estação de cultivo"
+      "infra": "Estação de cultivo",
+      "pragas": "Pragas e cuidados",
+      "materiais": "Materiais por etapa"
     },
     "planoPet": {
       "regra": "Regra de ouro"
+    },
+    "guia": {
+      "intro": "Um roteiro de 25 anos, da semente ao bonsai maduro. A fase atual fica aberta.",
+      "diagnostico": "Diagnóstico",
+      "regraOuro": "Regra de ouro",
+      "marco": "Marco 2031",
+      "objetivo": "Objetivo",
+      "fazer": "O que fazer",
+      "resultado": "Resultado esperado",
+      "erro": "Erro comum",
+      "registro": "Seu registro",
+      "semRegistro": "Sem fotos desta fase ainda — adicione as suas conforme avançar.",
+      "feita": "Concluída",
+      "atual": "Você está aqui",
+      "futura": "Futura"
+    },
+    "calendario": {
+      "intro": "O ciclo do ano em Turate. Toque num mês para ver o que fazer.",
+      "agora": "este mês",
+      "foco": "Foco"
+    },
+    "tecnicas": {
+      "intro": "O passo a passo das manobras do bonsai, com esquemas. Toque para abrir.",
+      "passos": "Passo a passo",
+      "porque": "Por quê",
+      "quando": "Quando",
+      "erro": "Erro comum"
+    },
+    "pragas": {
+      "intro": "O que vigiar e como agir. A melhor defesa é cultivo correto: luz, ventilação e drenagem.",
+      "sinal": "Sinal",
+      "causa": "Causa",
+      "acao": "O que fazer"
     },
     "estacoes": {
       "agora": "agora"
@@ -51,20 +91,23 @@
     },
     "rodape": {
       "atualizado": "Atualizado em",
-      "texto": "Diário pessoal de cultivo · Engenharia NATA"
+      "texto": "Guia e diário de cultivo · Engenharia NATA"
     }
   },
   "it-IT": {
     "meta": {
       "tabTitle": "Progetto Bonsai Litchi 2031 — Engenharia NATA",
-      "description": "Diario di coltivazione: dal seme di litchi al bonsai, a Turate, Lombardia."
+      "description": "Guida interattiva e diario di coltivazione: dal seme di litchi al bonsai, a Turate, Lombardia."
     },
     "aria": {
       "langPt": "Passa al portoghese",
       "langIt": "Passa all’italiano",
       "home": "Torna all’inizio",
       "feito": "completato",
-      "pendente": "in sospeso"
+      "pendente": "in sospeso",
+      "abrirFase": "Apri/chiudi questa fase",
+      "abrirTecnica": "Apri/chiudi questa tecnica",
+      "verMes": "Vedi questo mese"
     },
     "titles": {
       "langPt": "Portoghese",
@@ -75,16 +118,53 @@
     },
     "sec": {
       "status": "Stato attuale",
-      "planoPet": "Piano · primo inverno",
+      "planoPet": "Piano · prossimo passo",
+      "guia": "La guida per fasi",
+      "calendario": "Calendario annuale",
+      "tecnicas": "Tecniche illustrate",
       "timeline": "Cronologia",
       "metas": "Obiettivi",
       "checklist": "Avanzamento",
       "medicoes": "Misurazioni",
-      "estacoes": "Cura stagionale",
-      "infra": "Stazione di coltivazione"
+      "infra": "Stazione di coltivazione",
+      "pragas": "Parassiti e cure",
+      "materiais": "Materiali per fase"
     },
     "planoPet": {
       "regra": "Regola d’oro"
+    },
+    "guia": {
+      "intro": "Un percorso di 25 anni, dal seme al bonsai maturo. La fase attuale resta aperta.",
+      "diagnostico": "Diagnosi",
+      "regraOuro": "Regola d’oro",
+      "marco": "Traguardo 2031",
+      "objetivo": "Obiettivo",
+      "fazer": "Cosa fare",
+      "resultado": "Risultato atteso",
+      "erro": "Errore comune",
+      "registro": "Il tuo diario",
+      "semRegistro": "Ancora nessuna foto di questa fase — aggiungi le tue man mano che avanzi.",
+      "feita": "Completata",
+      "atual": "Sei qui",
+      "futura": "Futura"
+    },
+    "calendario": {
+      "intro": "Il ciclo dell’anno a Turate. Tocca un mese per vedere cosa fare.",
+      "agora": "questo mese",
+      "foco": "Focus"
+    },
+    "tecnicas": {
+      "intro": "Il passo per passo delle manovre del bonsai, con schemi. Tocca per aprire.",
+      "passos": "Passo per passo",
+      "porque": "Perché",
+      "quando": "Quando",
+      "erro": "Errore comune"
+    },
+    "pragas": {
+      "intro": "Cosa sorvegliare e come agire. La miglior difesa è una buona coltivazione: luce, ventilazione e drenaggio.",
+      "sinal": "Segnale",
+      "causa": "Causa",
+      "acao": "Cosa fare"
     },
     "estacoes": {
       "agora": "ora"
@@ -106,7 +186,7 @@
     },
     "rodape": {
       "atualizado": "Aggiornato il",
-      "texto": "Diario personale di coltivazione · Engenharia NATA"
+      "texto": "Guida e diario di coltivazione · Engenharia NATA"
     }
   }
 }

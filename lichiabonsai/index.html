@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.0.1">
     <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
     <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
-    <link rel="stylesheet" href="lichiabonsai-styles.css?v=1.0.2">
+    <link rel="stylesheet" href="lichiabonsai-styles.css?v=1.1.0">
 
     <script data-goatcounter="https://souonata.goatcounter.com/count"
             async src="https://gc.zgo.at/count.js"></script>
@@ -72,9 +72,9 @@
                 <dl class="lichia-status" id="status"></dl>
             </section>
 
-            <!-- PLANO PET -->
+            <!-- PLANO · PRÓXIMO PASSO -->
             <section class="lichia-sec">
-                <h2 class="lichia-h2" data-i18n="sec.planoPet">Plano · garrafa PET 2 L</h2>
+                <h2 class="lichia-h2" data-i18n="sec.planoPet">Plano · próximo passo</h2>
                 <ul class="lichia-plano" id="planoLista"></ul>
                 <p class="lichia-alert">
                     <span class="lichia-alert__tag" data-i18n="planoPet.regra">Regra de ouro</span>
@@ -82,22 +82,35 @@
                 </p>
             </section>
 
+            <!-- O GUIA EM FASES -->
+            <section class="lichia-sec">
+                <h2 class="lichia-h2" data-i18n="sec.guia">O guia em fases</h2>
+                <p class="lichia-intro" data-i18n="guia.intro">Um roteiro de 25 anos, da semente ao bonsai maduro. A fase atual fica aberta.</p>
+                <div class="lichia-guia-intro" id="guiaIntro"></div>
+                <ol class="lichia-fases" id="fases"></ol>
+            </section>
+
+            <!-- CALENDÁRIO ANUAL -->
+            <section class="lichia-sec">
+                <h2 class="lichia-h2" data-i18n="sec.calendario">Calendário anual</h2>
+                <p class="lichia-intro" data-i18n="calendario.intro">O ciclo do ano em Turate. Toque num mês para ver o que fazer.</p>
+                <div class="lichia-cal">
+                    <div class="lichia-cal__strip" id="calStrip" role="tablist" aria-label="meses"></div>
+                    <div class="lichia-cal__panel" id="calPanel"></div>
+                </div>
+            </section>
+
+            <!-- TÉCNICAS ILUSTRADAS -->
+            <section class="lichia-sec">
+                <h2 class="lichia-h2" data-i18n="sec.tecnicas">Técnicas ilustradas</h2>
+                <p class="lichia-intro" data-i18n="tecnicas.intro">O passo a passo das manobras do bonsai, com esquemas. Toque para abrir.</p>
+                <div class="lichia-tecnicas" id="tecnicas"></div>
+            </section>
+
             <!-- LINHA DO TEMPO -->
             <section class="lichia-sec">
                 <h2 class="lichia-h2" data-i18n="sec.timeline">Linha do tempo</h2>
                 <ol class="lichia-timeline" id="timeline"></ol>
-            </section>
-
-            <!-- METAS -->
-            <section class="lichia-sec">
-                <h2 class="lichia-h2" data-i18n="sec.metas">Metas</h2>
-                <ul class="lichia-metas" id="metas"></ul>
-            </section>
-
-            <!-- CHECKLIST -->
-            <section class="lichia-sec">
-                <h2 class="lichia-h2" data-i18n="sec.checklist">Progresso</h2>
-                <ul class="lichia-rosario" id="checklist"></ul>
             </section>
 
             <!-- MEDIÇÕES -->
@@ -124,10 +137,16 @@
                 </div>
             </section>
 
-            <!-- CUIDADOS POR ESTAÇÃO -->
+            <!-- METAS -->
             <section class="lichia-sec">
-                <h2 class="lichia-h2" data-i18n="sec.estacoes">Cuidados por estação</h2>
-                <div class="lichia-estacoes" id="estacoes"></div>
+                <h2 class="lichia-h2" data-i18n="sec.metas">Metas</h2>
+                <ul class="lichia-metas" id="metas"></ul>
+            </section>
+
+            <!-- CHECKLIST -->
+            <section class="lichia-sec">
+                <h2 class="lichia-h2" data-i18n="sec.checklist">Progresso</h2>
+                <ul class="lichia-rosario" id="checklist"></ul>
             </section>
 
             <!-- ESTAÇÃO DE CULTIVO (infraestrutura) -->
@@ -135,6 +154,19 @@
                 <h2 class="lichia-h2" data-i18n="sec.infra">Estação de cultivo</h2>
                 <p class="lichia-intro" data-i18n="infra.intro">Próximos passos de infraestrutura — separados da progressão do bonsai.</p>
                 <div class="lichia-infra" id="infra"></div>
+            </section>
+
+            <!-- PRAGAS E CUIDADOS -->
+            <section class="lichia-sec">
+                <h2 class="lichia-h2" data-i18n="sec.pragas">Pragas e cuidados</h2>
+                <p class="lichia-intro" data-i18n="pragas.intro">O que vigiar e como agir. A melhor defesa é cultivo correto: luz, ventilação e drenagem.</p>
+                <div class="lichia-pragas" id="pragas"></div>
+            </section>
+
+            <!-- MATERIAIS POR ETAPA -->
+            <section class="lichia-sec">
+                <h2 class="lichia-h2" data-i18n="sec.materiais">Materiais por etapa</h2>
+                <div class="lichia-materiais" id="materiais"></div>
             </section>
         </main>
 
@@ -152,6 +184,6 @@
         </svg>
     </a>
 
-    <script type="module" src="lichiabonsai-script.js?v=1.0.4"></script>
+    <script type="module" src="lichiabonsai-script.js?v=1.1.0"></script>
 </body>
 </html>
