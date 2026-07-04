@@ -77,6 +77,31 @@ export const PLANO_PET = {
 // LINHA DO TEMPO — adicione novas entradas no topo (mais recente primeiro).
 export const TIMELINE = [
   {
+    data: '2026-07-04',
+    titulo: {
+      pt: 'Primeiro ramo novo',
+      it: 'Primo nuovo ramo',
+    },
+    texto: {
+      pt: 'Treze dias depois da germinação, a muda deu seu primeiro sinal claro de que decidiu crescer, não só sobreviver: no nó entre as duas folhas originais, surgiu um broto verde-amarelado se desenrolando aos poucos — o começo de um ramo novo. As duas folhas de sempre continuam firmes e verdes, mas agora dividem a cena com esse fio de crescimento que ainda não existia. É pouco pra notar no dia a dia, mas é exatamente o que a fase de berçário está tentando garantir.',
+      it: 'Tredici giorni dopo la germinazione, la piantina ha dato il primo segnale chiaro di aver deciso di crescere, non solo di sopravvivere: nel nodo tra le due foglie originali è spuntato un germoglio verde-giallastro che si sta lentamente aprendo — l\'inizio di un nuovo ramo. Le due foglie di sempre restano salde e verdi, ma ora condividono la scena con questo filo di crescita che prima non c\'era. È un dettaglio minimo da notare giorno per giorno, ma è esattamente ciò che la fase di vivaio cerca di ottenere.',
+    },
+    fotos: [
+      {
+        arquivo: '2026-07-04-broto-novo.webp',
+        legenda: { pt: 'O broto verde-amarelado se desenrolando no nó entre as duas folhas — o primeiro ramo novo da muda', it: 'Il germoglio verde-giallastro che si apre nel nodo tra le due foglie — il primo nuovo ramo della piantina' },
+      },
+      {
+        arquivo: '2026-07-04-duas-folhas.webp',
+        legenda: { pt: 'As duas folhas de sempre, firmes e verdes — o "antes" desta leva de fotos', it: 'Le due foglie di sempre, salde e verdi — il "prima" di questa serie di foto' },
+      },
+      {
+        arquivo: '2026-07-04-vaso-ar-condicionado.webp',
+        legenda: { pt: 'O vaso na estação de cultivo, com a unidade externa do ar-condicionado ao fundo — a fonte da água de rega', it: 'Il vaso nella postazione di coltivazione, con l\'unità esterna del condizionatore sullo sfondo — la fonte dell\'acqua per l\'irrigazione' },
+      },
+    ],
+  },
+  {
     data: '2026-06-26',
     titulo: {
       pt: 'Vaso isolante e rega com água do ar-condicionado',
@@ -183,12 +208,13 @@ export const MEDICOES = [
 export const FASE_REGISTROS = {
   f0: {
     nota: {
-      pt: 'Germinação em 21/06, transplante para a garrafa PET de 2 L em 25/06 e, em 26/06, a garrafa (furada no fundo) foi para dentro de um vaso maior com terra — isolando as raízes do calor e da luz. Rega com água de condensação do ar-condicionado (macia, levemente ácida). A raiz pivotante foi preservada; folhas maiores e mais verdes a cada semana.',
-      it: 'Germinazione il 21/06, trapianto nella bottiglia PET da 2 L il 25/06 e, il 26/06, la bottiglia (forata sul fondo) è finita dentro un vaso più grande con terra — isolando le radici dal calore e dalla luce. Irrigazione con acqua di condensa del condizionatore (dolce, leggermente acida). Il fittone è stato preservato; foglie più grandi e verdi ogni settimana.',
+      pt: 'Germinação em 21/06, transplante para a garrafa PET de 2 L em 25/06 e, em 26/06, a garrafa (furada no fundo) foi para dentro de um vaso maior com terra — isolando as raízes do calor e da luz. Rega com água de condensação do ar-condicionado (macia, levemente ácida). A raiz pivotante foi preservada; folhas maiores e mais verdes a cada semana. Em 04/07, primeiro sinal de um ramo novo brotando no nó entre as duas folhas — a fase começou a virar de "sobreviver" para "crescer".',
+      it: 'Germinazione il 21/06, trapianto nella bottiglia PET da 2 L il 25/06 e, il 26/06, la bottiglia (forata sul fondo) è finita dentro un vaso più grande con terra — isolando le radici dal calore e dalla luce. Irrigazione con acqua di condensa del condizionatore (dolce, leggermente acida). Il fittone è stato preservato; foglie più grandi e verdi ogni settimana. Il 04/07, primo segnale di un nuovo ramo che germoglia nel nodo tra le due foglie — la fase inizia a passare da "sopravvivere" a "crescere".',
     },
     fotos: [
       { arquivo: '2026-06-26-vaso-isolante-detalhe.webp', legenda: { pt: 'O vaso isolante: garrafa furada dentro de um vaso com terra', it: 'Il vaso isolante: bottiglia forata dentro un vaso con terra' } },
       { arquivo: '2026-06-21-broto-macro.webp', legenda: { pt: 'A muda recém-germinada', it: 'La piantina appena germinata' } },
+      { arquivo: '2026-07-04-broto-novo.webp', legenda: { pt: 'O primeiro broto de um ramo novo, no nó entre as duas folhas', it: 'Il primo germoglio di un nuovo ramo, nel nodo tra le due foglie' } },
     ],
   },
   // f1: { nota: { pt: '', it: '' }, fotos: [{ arquivo: 'AAAA-MM-DD-....webp', legenda: { pt: '', it: '' } }] },
