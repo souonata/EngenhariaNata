@@ -198,6 +198,7 @@ export const CHECKLIST = [
 export const MEDICOES = [
   { data: '2026-06-21', alturaCm: 5, folhas: 2 },
   { data: '2026-06-25', alturaCm: 7, folhas: 2 },
+  { data: '2026-07-04', alturaCm: 7, folhas: 2 },
 ];
 
 // REGISTROS POR FASE — SUAS fotos/notas reais de cada fase do guia (o loop de
