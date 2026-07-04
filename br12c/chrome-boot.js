@@ -85,6 +85,11 @@
     });
   }
 
+  // guide.js troca data-i18n/data-i18n-title em elementos do modal do guia (ex.:
+  // ao alternar entre Guia do usuário e Manual do proprietário) e pede aqui a
+  // reaplicação da tradução, já que somos os donos de `traducoes`/`idiomaAtual`.
+  document.addEventListener("br12c:retranslate", aplicarTraducoes);
+
   // ===== Tema (mesmo contrato: localStorage "engnata_theme_mode", JSON, data-theme) =====
   // storage.js do portfólio salva com prefixo "engnata_" e JSON.stringify; aqui
   // replicamos o formato EXATO para a preferência valer entre as páginas.

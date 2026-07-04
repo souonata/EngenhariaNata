@@ -39,10 +39,17 @@
             </span>
           </button>
 
-          <button class="stage-tool guide-tool" type="button" data-action="guide" aria-haspopup="dialog" aria-controls="guideOverlay" data-i18n-aria="tool.guideAria" aria-label="Abrir o guia do usuário (manual)">
+          <button class="stage-tool guide-tool" type="button" data-action="guide" data-guide-doc="ug" aria-haspopup="dialog" aria-controls="guideOverlay" data-i18n-aria="tool.guideAria" aria-label="Abrir o guia do usuário (manual)">
             <span class="stage-tool-icon" aria-hidden="true">📖</span>
             <span class="stage-tool-text">
               <span class="stage-tool-title" data-i18n="tool.guide">Guia do usuário</span>
+            </span>
+          </button>
+
+          <button class="stage-tool guide-tool" type="button" data-action="guide" data-guide-doc="handbook" aria-haspopup="dialog" aria-controls="guideOverlay" data-i18n-aria="tool.handbookAria" aria-label="Abrir o manual do proprietário">
+            <span class="stage-tool-icon" aria-hidden="true">📕</span>
+            <span class="stage-tool-text">
+              <span class="stage-tool-title" data-i18n="tool.handbook">Manual do proprietário</span>
             </span>
           </button>
 
@@ -135,12 +142,16 @@
       <div class="guide-resizer" id="guideResizer" role="separator" aria-label="Ajustar a divisória do guia (use as setas)" tabindex="0"></div>
       <div class="guide-modal">
         <header class="guide-modal-bar">
-          <span class="guide-modal-title" id="guideTitle" data-i18n="guide.title">📘 Guia do usuário — HP 12C Platinum (EN)</span>
-          <a class="guide-modal-open" href="./assets/hp12cplatinum-ug-en.pdf" target="_blank" rel="noopener noreferrer" data-i18n="guide.open">Abrir em nova aba ↗</a>
+          <span class="guide-modal-title" id="guideTitle" data-i18n="guide.titleUg">📘 Guia do usuário — HP 12C Platinum (EN)</span>
+          <a class="guide-modal-open" id="guideOpenLink" href="./assets/hp12cplatinum-ug-en.pdf" target="_blank" rel="noopener noreferrer" data-i18n="guide.open">Abrir em nova aba ↗</a>
           <button class="guide-modal-close" type="button" data-action="guide-close" data-i18n-aria="guide.close" aria-label="Fechar guia">✕</button>
         </header>
+        <div class="guide-modal-tabs" role="tablist" aria-label="Selecionar documento">
+          <button type="button" class="guide-tab is-active" role="tab" aria-selected="true" data-doc="ug" data-i18n="guide.tabUg">Guia do usuário</button>
+          <button type="button" class="guide-tab" role="tab" aria-selected="false" data-doc="handbook" data-i18n="guide.tabHandbook">Manual do proprietário</button>
+        </div>
         <div class="guide-modal-body">
-          <iframe class="guide-frame" id="guideFrame" data-i18n-title="guide.frameTitle" title="Guia do usuário HP 12C Platinum (PDF)" data-src="./assets/hp12cplatinum-ug-en.pdf#view=FitH"></iframe>
+          <iframe class="guide-frame" id="guideFrame" data-i18n-title="guide.frameTitleUg" title="Guia do usuário HP 12C Platinum (PDF)" data-src="./assets/hp12cplatinum-ug-en.pdf#view=FitH"></iframe>
         </div>
       </div>
     </div>

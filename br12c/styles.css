@@ -1191,6 +1191,50 @@ body.latch-mode .keyboard {
   background: rgba(200, 66, 66, 0.32);
 }
 
+.guide-modal-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.18);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.guide-tab {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(17, 18, 16, 0.5);
+  color: #d8dad4;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.guide-tab:hover {
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+.guide-tab.is-active {
+  background:
+    linear-gradient(160deg, rgba(242, 198, 77, 0.22), transparent 70%),
+    rgba(17, 18, 16, 0.85);
+  border-color: rgba(242, 198, 77, 0.7);
+  color: var(--gold);
+}
+
+.guide-tab:focus-visible {
+  outline: 3px solid rgba(104, 199, 229, 0.75);
+  outline-offset: 2px;
+}
+
 .guide-modal-body {
   flex: 1;
   min-height: 0;

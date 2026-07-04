@@ -18,6 +18,8 @@
       "holdAria": "Modo Segurar: trava teclas para usar em sequência",
       "guide": "Guia do usuário",
       "guideAria": "Abrir o guia do usuário (manual)",
+      "handbook": "Manual do proprietário",
+      "handbookAria": "Abrir o manual do proprietário",
       "tests": "Guia interativo",
       "testsAria": "Abrir o guia interativo",
       "fullscreen": "Tela cheia",
@@ -32,10 +34,14 @@
       "flow": "Fluxo"
     },
     "guide": {
-      "title": "📘 Guia do usuário — HP 12C Platinum (EN)",
+      "titleUg": "📘 Guia do usuário — HP 12C Platinum (EN)",
+      "titleHandbook": "📕 Manual do proprietário — HP 12C Platinum (EN)",
+      "tabUg": "Guia do usuário",
+      "tabHandbook": "Manual do proprietário",
       "open": "Abrir em nova aba ↗",
       "close": "Fechar guia",
-      "frameTitle": "Guia do usuário HP 12C Platinum (PDF)"
+      "frameTitleUg": "Guia do usuário HP 12C Platinum (PDF)",
+      "frameTitleHandbook": "Manual do proprietário HP 12C Platinum (PDF)"
     },
     "footer": {
       "text": "BR 12C Niobium — Engenharia NATA © 2026"
@@ -59,6 +65,8 @@
       "holdAria": "Blocco tasti: blocca i tasti per usarli in sequenza",
       "guide": "Guida utente",
       "guideAria": "Apri la guida utente (manuale)",
+      "handbook": "Manuale del proprietario",
+      "handbookAria": "Apri il manuale del proprietario",
       "tests": "Guida interattiva",
       "testsAria": "Apri la guida interattiva",
       "fullscreen": "Schermo intero",
@@ -73,10 +81,14 @@
       "flow": "Flusso"
     },
     "guide": {
-      "title": "📘 Guida utente — HP 12C Platinum (EN)",
+      "titleUg": "📘 Guida utente — HP 12C Platinum (EN)",
+      "titleHandbook": "📕 Manuale del proprietario — HP 12C Platinum (EN)",
+      "tabUg": "Guida utente",
+      "tabHandbook": "Manuale del proprietario",
       "open": "Apri in una nuova scheda ↗",
       "close": "Chiudi la guida",
-      "frameTitle": "Guida utente HP 12C Platinum (PDF)"
+      "frameTitleUg": "Guida utente HP 12C Platinum (PDF)",
+      "frameTitleHandbook": "Manuale del proprietario HP 12C Platinum (PDF)"
     },
     "footer": {
       "text": "BR 12C Niobium — Engenharia NATA © 2026"

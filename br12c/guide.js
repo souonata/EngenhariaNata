@@ -1,36 +1,97 @@
-// Visualizador do guia do usuário (PDF) — BR 12C Niobium
-// Abre um modal responsivo com o manual oficial (HP 12C Platinum, EN).
-// O PDF (~2,3 MB) só é carregado na primeira abertura.
+// Visualizador de manuais (PDF) — BR 12C Niobium
+// Abre um modal responsivo com dois documentos oficiais complementares da HP 12C
+// Platinum (EN): o Guia do usuário e o Manual do proprietário (Owner's Handbook).
+// Cada PDF (~1,4–2,3 MB) só é carregado na primeira vez que é exibido.
 (function () {
   'use strict';
 
   const overlay = document.getElementById('guideOverlay');
   const frame = document.getElementById('guideFrame');
-  const openBtn = document.querySelector('[data-action="guide"]');
-  if (!overlay || !frame || !openBtn) return;
+  const tituloEl = document.getElementById('guideTitle');
+  const openLink = document.getElementById('guideOpenLink');
+  const openBtns = document.querySelectorAll('[data-action="guide"]');
+  const tabs = overlay ? overlay.querySelectorAll('.guide-tab') : [];
+  if (!overlay || !frame || !tituloEl || !openLink || !openBtns.length) return;
+
+  const DOCS = {
+    ug: {
+      src: './assets/hp12cplatinum-ug-en.pdf#view=FitH',
+      titleKey: 'guide.titleUg',
+      title: '📘 Guia do usuário — HP 12C Platinum (EN)',
+      frameTitleKey: 'guide.frameTitleUg',
+      frameTitle: 'Guia do usuário HP 12C Platinum (PDF)'
+    },
+    handbook: {
+      src: './assets/hp12c-platinum-owners-handbook.pdf#view=FitH',
+      titleKey: 'guide.titleHandbook',
+      title: '📕 Manual do proprietário — HP 12C Platinum (EN)',
+      frameTitleKey: 'guide.frameTitleHandbook',
+      frameTitle: 'Manual do proprietário HP 12C Platinum (PDF)'
+    }
+  };
+  const LS_DOC = 'engnata_br12c_guide_doc';
+  let docoAtual = 'ug';
 
   let ultimoFoco = null;
 
   // Navegadores móveis não renderizam PDF utilizável dentro de <iframe> (iOS mostra
   // só a 1ª página congelada, sem scroll/zoom; Android idem ou pior). Nesses casos
-  // o 📖 abre o PDF direto no visualizador nativo (nova aba), que rola e dá zoom.
+  // o botão abre o PDF direto no visualizador nativo (nova aba), que rola e dá zoom.
   // iPadOS 13+ se identifica como Mac, mas tem multi-touch (maxTouchPoints > 1).
   const PDF_EM_IFRAME_OK = !(
     /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
     (navigator.maxTouchPoints > 1 && /Mac/i.test(navigator.userAgent))
   );
 
-  function abrir() {
+  // Atualiza título, aba ativa, link "abrir em nova aba" e atributos de tradução
+  // do documento selecionado. `carregar` decide se o PDF é buscado agora (só
+  // deve acontecer quando o modal está visível) ou apenas referenciado.
+  function aplicarDoc(id, carregar) {
+    const doc = DOCS[id];
+    if (!doc) return;
+    docoAtual = id;
+    tabs.forEach((tab) => {
+      const ativo = tab.dataset.doc === id;
+      tab.classList.toggle('is-active', ativo);
+      tab.setAttribute('aria-selected', ativo ? 'true' : 'false');
+    });
+    tituloEl.setAttribute('data-i18n', doc.titleKey);
+    tituloEl.textContent = doc.title;
+    frame.setAttribute('data-i18n-title', doc.frameTitleKey);
+    frame.title = doc.frameTitle;
+    frame.dataset.src = doc.src;
+    openLink.href = doc.src.split('#')[0];
+    if (carregar && frame.getAttribute('src') !== doc.src) {
+      frame.setAttribute('src', doc.src);
+    }
+    try { localStorage.setItem(LS_DOC, id); } catch (e) { /* ignora */ }
+    // O chrome-boot.js é dono das traduções; pede pra ele reaplicar nos
+    // atributos data-i18n/data-i18n-title que acabamos de trocar.
+    document.dispatchEvent(new CustomEvent('br12c:retranslate'));
+  }
+
+  // Restaura o último documento visto (sem carregar o PDF ainda).
+  let docoInicial = 'ug';
+  try {
+    const salvo = localStorage.getItem(LS_DOC);
+    if (salvo && DOCS[salvo]) docoInicial = salvo;
+  } catch (e) { /* ignora */ }
+  aplicarDoc(docoInicial, false);
+
+  function abrir(docId) {
+    if (docId && DOCS[docId]) aplicarDoc(docId, false);
+    const doc = DOCS[docoAtual];
     if (!PDF_EM_IFRAME_OK) {
-      const url = (frame.dataset.src || frame.getAttribute('src') || '').split('#')[0];
+      const url = (doc.src || '').split('#')[0];
       if (url) window.open(url, '_blank', 'noopener');
       return;
     }
-    if (document.body.classList.contains('guide-open')) return;
+    const jaAberto = document.body.classList.contains('guide-open');
     // Carrega o PDF só agora, evitando baixar o arquivo grande sem necessidade.
-    if (!frame.getAttribute('src') && frame.dataset.src) {
-      frame.setAttribute('src', frame.dataset.src);
+    if (frame.getAttribute('src') !== doc.src) {
+      frame.setAttribute('src', doc.src);
     }
+    if (jaAberto) return; // já visível: só trocou o PDF exibido no iframe
     ultimoFoco = document.activeElement;
     overlay.hidden = false;
     // Docado (não cobre a calc): NÃO trava o scroll do corpo.
@@ -47,7 +108,13 @@
     }
   }
 
-  openBtn.addEventListener('click', abrir);
+  openBtns.forEach((btn) => {
+    btn.addEventListener('click', () => abrir(btn.dataset.guideDoc));
+  });
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => abrir(tab.dataset.doc));
+  });
 
   // Abertura disparada pelo app.js (ex.: toque no botão Guia em telas touch).
   document.addEventListener('br12c:guide', abrir);
