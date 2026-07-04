@@ -955,11 +955,15 @@ function handleShiftedAction(shift, action) {
       return true;
     }
     // Fluxo de caixa: CFo = g+PV, CFj = g+PMT, Nj = g+FV.
+    // Espelha em state.registers (R0, R1, ...) como na 12C real, onde CFj
+    // ocupa os mesmos registradores de dados usados por STO/RCL — por isso
+    // "RCL <n>" também revisa um fluxo de caixa (Owner's Handbook p.65).
     if (action === "tvm:PV") {
       commitEntry();
       state.cf = [state.stack.x];
       state.cfN = [1];
       state.tvm.n = 0;
+      state.registers["0"] = state.stack.x;
       state.liftStack = true;
       flash("CFo");
       return true;
@@ -969,6 +973,7 @@ function handleShiftedAction(shift, action) {
       state.cf.push(state.stack.x);
       state.cfN.push(1);
       state.tvm.n = (state.tvm.n || 0) + 1;
+      state.registers[String(state.cf.length - 1)] = state.stack.x;
       state.liftStack = true;
       flash("CFj");
       return true;
@@ -1074,11 +1079,18 @@ function handleShiftedAction(shift, action) {
       return true;
     }
     // Regressão linear: x̂,r = g+1, ŷ,r = g+2 (estimativa em X, correlação r em Y).
+    // Como na 12C real, o Y/Z antigos sobem para Z/T antes de X/Y receberem a
+    // estimativa e r — sem isso, dois ŷ/x̂ em sequência (ex.: Owner's Handbook
+    // p.79-80, cálculo da inclinação da reta via ŷ(1) − ŷ(0)) perdem o valor
+    // anterior e dão resultado errado.
     if (action === "digit:1") {
       commitEntry();
       const reg = regressao();
+      const estimativa = reg.B === 0 ? NaN : (state.stack.x - reg.A) / reg.B;
+      state.stack.t = state.stack.z;
+      state.stack.z = state.stack.y;
       state.stack.y = reg.r;
-      setX(reg.B === 0 ? NaN : (state.stack.x - reg.A) / reg.B);
+      setX(estimativa);
       state.liftStack = true;
       flash("x̂,r");
       return true;
@@ -1086,8 +1098,11 @@ function handleShiftedAction(shift, action) {
     if (action === "digit:2") {
       commitEntry();
       const reg = regressao();
+      const estimativa = reg.A + reg.B * state.stack.x;
+      state.stack.t = state.stack.z;
+      state.stack.z = state.stack.y;
       state.stack.y = reg.r;
-      setX(reg.A + reg.B * state.stack.x);
+      setX(estimativa);
       state.liftStack = true;
       flash("ŷ,r");
       return true;
@@ -1530,6 +1545,13 @@ function handleRegisterTarget(action) {
         }
       } else {
         state.registers[reg] = state.stack.x;
+        // R0–Rn são a MESMA memória dos fluxos de caixa CF0–CFn na 12C real
+        // (Owner's Handbook p.66, "Changing Cash Flow Entries"): STO num
+        // registrador dentro da faixa já usada por CFj atualiza esse fluxo.
+        const idx = Number(reg);
+        if (Number.isInteger(idx) && idx >= 0 && idx < state.cf.length) {
+          state.cf[idx] = state.stack.x;
+        }
         flash(`STO ${reg}`);
       }
     } else {
@@ -2012,6 +2034,10 @@ function amortize() {
   state.tvm.n = (state.tvm.n || 0) + count;
 
   const sinal = pmt < 0 ? -1 : 1;
+  // Real HP-12C: AMORT deixa o total de pagamentos amortizados em Z (revelado
+  // com R↓ R↓ — ver Owner's Handbook p.55, passo 9), além de juros em X e
+  // principal em Y.
+  state.stack.z = count;
   state.stack.y = sinal * totalPrincipal;
   setX(sinal * totalJuros);
   state.liftStack = true;
@@ -2124,9 +2150,23 @@ function formatEntryDisplay(entry) {
   return `${isNegative ? "-" : ""}${groupedInteger}${hasDecimal ? `${DECIMAL_SEPARATOR}${fraction}` : ""}`;
 }
 
+// Arredonda evitando o erro clássico de ponto flutuante do toFixed nativo:
+// (2.675).toFixed(2) === "2.67" porque 2.675 não é representável exatamente
+// em binário (fica ~2.67499999999999982...). A HP-12C real usa aritmética
+// decimal (BCD) e arredonda 2.675 → 2.68, como os próprios manuais mostram
+// (ex.: 5.35 ÷ 2 no Owner's Handbook, p.11). Deslocar a vírgula via notação
+// exponencial em STRING antes do Math.round usa o parser decimal do motor
+// (que interpreta "2.675e2" como o valor exato pretendido) em vez de uma
+// multiplicação em ponto flutuante, que reintroduziria o mesmo erro.
+function arredondarComPrecisao(value, decimals) {
+  const deslocado = Number(`${value}e${decimals}`);
+  const arredondado = Math.round(deslocado);
+  return Number(`${arredondado}e-${decimals}`);
+}
+
 function formatGroupedDecimal(value, decimals) {
   const isNegative = value < 0;
-  const fixed = Math.abs(value).toFixed(decimals);
+  const fixed = arredondarComPrecisao(Math.abs(value), decimals).toFixed(decimals);
   const [integer, fraction = ""] = fixed.split(".");
   const groupedInteger = groupInteger(integer);
   return `${isNegative ? "-" : ""}${groupedInteger}${decimals > 0 ? `${DECIMAL_SEPARATOR}${fraction}` : ""}`;

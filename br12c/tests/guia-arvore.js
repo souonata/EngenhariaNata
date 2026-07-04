@@ -14,6 +14,26 @@ import { programa } from "./fixtures/programa.js";
 import { solucoes } from "./fixtures/solucoes.js";
 import { erros } from "./fixtures/erros.js";
 
+// Manual do proprietário (Owner's Handbook, © 2003) — edição/paginação
+// diferentes do User Guide acima; ver AGENTS do br12c/tests para o porquê de
+// serem árvores separadas (alguns exemplos coincidem em número, outros
+// divergem de fato entre as duas edições).
+import { handbookIntro, handbookSecao1 } from "./fixtures/handbook-secao-1.js";
+import { handbookSecao2Percentual, handbookSecao2Calendario } from "./fixtures/handbook-secao-2.js";
+import { handbookSecao3 } from "./fixtures/handbook-secao-3.js";
+import { handbookSecao4 } from "./fixtures/handbook-secao-4.js";
+import { handbookSecao5 } from "./fixtures/handbook-secao-5.js";
+import { handbookSecao6 } from "./fixtures/handbook-secao-6.js";
+import { handbookSecao7 } from "./fixtures/handbook-secao-7.js";
+import { handbookPrograma } from "./fixtures/handbook-programa.js";
+import { handbookSolucoes } from "./fixtures/handbook-solucoes.js";
+import {
+  handbookApendiceA,
+  handbookApendiceB,
+  handbookApendiceC,
+  handbookApendiceF,
+} from "./fixtures/handbook-apendices.js";
+
 // Estrutura espelhando o índice do User Guide (HP 12C Platinum).
 // titulo: bilíngue {pt,it}. As folhas vêm de cada array de fixture.
 export const arvore = [
@@ -50,6 +70,41 @@ export const arvore = [
       { titulo: { pt: "C · Mais sobre IRR", it: "C · Altro sull'IRR" }, exemplos: apendiceC },
       { titulo: { pt: "D · Condições de erro", it: "D · Condizioni di errore" }, exemplos: erros },
       { titulo: { pt: "F · Autoteste do teclado", it: "F · Autotest della tastiera" }, exemplos: apendiceF },
+    ],
+  },
+  {
+    titulo: { pt: "📕 Manual do proprietário — Parte I", it: "📕 Manuale del proprietario — Parte I" },
+    secoes: [
+      { titulo: { pt: "Introdução · Cálculos financeiros fáceis", it: "Introduzione · Calcoli finanziari facili" }, exemplos: handbookIntro },
+      { titulo: { pt: "Seção 1 · Primeiros passos", it: "Sezione 1 · Per iniziare" }, exemplos: handbookSecao1 },
+      { titulo: { pt: "Seção 2 · Porcentagem", it: "Sezione 2 · Percentuale" }, exemplos: handbookSecao2Percentual },
+      { titulo: { pt: "Seção 2 · Calendário", it: "Sezione 2 · Calendario" }, exemplos: handbookSecao2Calendario },
+      { titulo: { pt: "Seção 3 · Funções financeiras básicas", it: "Sezione 3 · Funzioni finanziarie di base" }, exemplos: handbookSecao3 },
+      { titulo: { pt: "Seção 4 · Funções financeiras avançadas", it: "Sezione 4 · Funzioni finanziarie avanzate" }, exemplos: handbookSecao4 },
+      { titulo: { pt: "Seção 5 · Recursos operacionais", it: "Sezione 5 · Funzioni operative" }, exemplos: handbookSecao5 },
+      { titulo: { pt: "Seção 6 · Estatística", it: "Sezione 6 · Statistica" }, exemplos: handbookSecao6 },
+      { titulo: { pt: "Seção 7 · Matemática", it: "Sezione 7 · Matematica" }, exemplos: handbookSecao7 },
+    ],
+  },
+  {
+    titulo: { pt: "📕 Manual do proprietário — Parte II", it: "📕 Manuale del proprietario — Parte II" },
+    secoes: [
+      { titulo: { pt: "Seções 8–11 · Programas", it: "Sezioni 8–11 · Programmi" }, exemplos: handbookPrograma },
+    ],
+  },
+  {
+    titulo: { pt: "📕 Manual do proprietário — Parte III", it: "📕 Manuale del proprietario — Parte III" },
+    secoes: [
+      { titulo: { pt: "Seções 12–16 · Aplicações reais", it: "Sezioni 12–16 · Applicazioni reali" }, exemplos: handbookSolucoes },
+    ],
+  },
+  {
+    titulo: { pt: "📕 Manual do proprietário — Apêndices", it: "📕 Manuale del proprietario — Appendici" },
+    secoes: [
+      { titulo: { pt: "A · RPN e a pilha", it: "A · RPN e lo stack" }, exemplos: handbookApendiceA },
+      { titulo: { pt: "B · Modo algébrico (ALG)", it: "B · Modalità algebrica (ALG)" }, exemplos: handbookApendiceB },
+      { titulo: { pt: "C · Mais sobre a TIR", it: "C · Altro sulla TIR" }, exemplos: handbookApendiceC },
+      { titulo: { pt: "F · Autoteste do teclado", it: "F · Autotest della tastiera" }, exemplos: handbookApendiceF },
     ],
   },
 ];
