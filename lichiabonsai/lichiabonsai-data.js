@@ -77,6 +77,28 @@ export const PLANO_PET = {
 // LINHA DO TEMPO — adicione novas entradas no topo (mais recente primeiro).
 export const TIMELINE = [
   {
+    data: '2026-07-12',
+    titulo: { pt: 'Novo fluxo abre duas folhas', it: 'Il nuovo getto apre due foglie' },
+    texto: {
+      pt: 'O broto que apareceu em 04/07 alongou em apenas oito dias e abriu seu primeiro fluxo: duas folhas novas, ainda finas e acobreadas, acima das duas folhas verdes originais. A muda chegou a 8 cm e agora soma quatro folhas. A cor bronze e a textura caída são normais nesta fase jovem; elas devem firmar e ficar verdes conforme amadurecem.',
+      it: 'Il germoglio comparso il 04/07 si è allungato in appena otto giorni e ha aperto il suo primo getto: due foglie nuove, ancora sottili e color rame, sopra le due foglie verdi originali. La piantina ha raggiunto 8 cm e ora conta quattro foglie. Il colore bronzo e l’aspetto ricadente sono normali in questa fase giovane; le foglie dovrebbero rassodarsi e diventare verdi con la maturazione.',
+    },
+    fotos: [
+      {
+        arquivo: '2026-07-12-altura-8-cm.webp',
+        legenda: { pt: 'A régua confirma 8 cm da base ao topo do novo fluxo', it: 'Il righello conferma 8 cm dalla base alla cima del nuovo getto' },
+      },
+      {
+        arquivo: '2026-07-12-quatro-folhas.webp',
+        legenda: { pt: 'Vista geral: duas folhas verdes maduras e duas folhas novas no ápice', it: 'Vista generale: due foglie verdi mature e due foglie nuove all’apice' },
+      },
+      {
+        arquivo: '2026-07-12-folhas-acobreadas.webp',
+        legenda: { pt: 'Detalhe das duas folhas jovens, ainda acobreadas e delicadas', it: 'Dettaglio delle due foglie giovani, ancora ramate e delicate' },
+      },
+    ],
+  },
+  {
     data: '2026-07-04',
     titulo: {
       pt: 'Primeiro ramo novo',
@@ -199,6 +221,7 @@ export const MEDICOES = [
   { data: '2026-06-21', alturaCm: 5, folhas: 2 },
   { data: '2026-06-25', alturaCm: 7, folhas: 2 },
   { data: '2026-07-04', alturaCm: 7, folhas: 2 },
+  { data: '2026-07-12', alturaCm: 8, folhas: 4 },
 ];
 
 // REGISTROS POR FASE — SUAS fotos/notas reais de cada fase do guia (o loop de
@@ -209,13 +232,14 @@ export const MEDICOES = [
 export const FASE_REGISTROS = {
   f0: {
     nota: {
-      pt: 'Germinação em 21/06, transplante para a garrafa PET de 2 L em 25/06 e, em 26/06, a garrafa (furada no fundo) foi para dentro de um vaso maior com terra — isolando as raízes do calor e da luz. Rega com água de condensação do ar-condicionado (macia, levemente ácida). A raiz pivotante foi preservada; folhas maiores e mais verdes a cada semana. Em 04/07, primeiro sinal de um ramo novo brotando no nó entre as duas folhas — a fase começou a virar de "sobreviver" para "crescer".',
-      it: 'Germinazione il 21/06, trapianto nella bottiglia PET da 2 L il 25/06 e, il 26/06, la bottiglia (forata sul fondo) è finita dentro un vaso più grande con terra — isolando le radici dal calore e dalla luce. Irrigazione con acqua di condensa del condizionatore (dolce, leggermente acida). Il fittone è stato preservato; foglie più grandi e verdi ogni settimana. Il 04/07, primo segnale di un nuovo ramo che germoglia nel nodo tra le due foglie — la fase inizia a passare da "sopravvivere" a "crescere".',
+      pt: 'Germinação em 21/06, transplante para a garrafa PET de 2 L em 25/06 e, em 26/06, a garrafa (furada no fundo) foi para dentro de um vaso maior com terra — isolando as raízes do calor e da luz. Rega com água de condensação do ar-condicionado (macia, levemente ácida). A raiz pivotante foi preservada. Em 04/07 surgiu o primeiro broto no nó entre as duas folhas; em 12/07, ele já havia alongado, aberto duas folhas novas e levado a muda a 8 cm e quatro folhas.',
+      it: 'Germinazione il 21/06, trapianto nella bottiglia PET da 2 L il 25/06 e, il 26/06, la bottiglia (forata sul fondo) è finita dentro un vaso più grande con terra — isolando le radici dal calore e dalla luce. Irrigazione con acqua di condensa del condizionatore (dolce, leggermente acida). Il fittone è stato preservato. Il 04/07 è comparso il primo germoglio nel nodo tra le due foglie; il 12/07 si era già allungato, aveva aperto due foglie nuove e portato la piantina a 8 cm e quattro foglie.',
     },
     fotos: [
       { arquivo: '2026-06-26-vaso-isolante-detalhe.webp', legenda: { pt: 'O vaso isolante: garrafa furada dentro de um vaso com terra', it: 'Il vaso isolante: bottiglia forata dentro un vaso con terra' } },
       { arquivo: '2026-06-21-broto-macro.webp', legenda: { pt: 'A muda recém-germinada', it: 'La piantina appena germinata' } },
       { arquivo: '2026-07-04-broto-novo.webp', legenda: { pt: 'O primeiro broto de um ramo novo, no nó entre as duas folhas', it: 'Il primo germoglio di un nuovo ramo, nel nodo tra le due foglie' } },
+      { arquivo: '2026-07-12-folhas-acobreadas.webp', legenda: { pt: 'O primeiro fluxo com duas folhas novas', it: 'Il primo getto con due foglie nuove' } },
     ],
   },
   // f1: { nota: { pt: '', it: '' }, fotos: [{ arquivo: 'AAAA-MM-DD-....webp', legenda: { pt: '', it: '' } }] },

@@ -144,8 +144,13 @@ npm run build          # build de produção (gera local/dist)
 
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
-_Última atualização: 2026-06-26_
+_Última atualização: 2026-07-12_
 
+- **ATUALIZAÇÃO DO DIÁRIO (12/07):** novo post bilíngue registrando o primeiro fluxo com duas
+  folhas novas; muda medida em 8 cm e quatro folhas totais. Três fotos da nova leva foram
+  selecionadas, tratadas e convertidas para WebP (régua, vista geral e detalhe das folhas
+  acobreadas). Cache-bust do script atualizado para 1.1.4. Suíte: 284 testes OK. Publicação:
+  commit/push no main; pendente apenas confirmar o deploy automático no ar.
 - **PUBLICADO:** rebuild do Bonsai Lichia mergeado no `main` e pushado em 2026-06-26 (branch
   `feat/lichiabonsai-guia-interativo`; build + 223 testes OK, verificado no preview Vite
   light/dark/mobile/pt/it). Deploy automático via Actions → confirmar no ar em `engnata.eu/lichiabonsai/`.
