@@ -77,6 +77,50 @@ export const PLANO_PET = {
 // LINHA DO TEMPO — adicione novas entradas no topo (mais recente primeiro).
 export const TIMELINE = [
   {
+    data: '2026-07-18',
+    titulo: { pt: 'O bronze virou verde', it: 'Il bronzo è diventato verde' },
+    texto: {
+      pt: 'Seis dias depois, o lançamento de julho completou a virada de cor: o par de folhas que nasceu acobreado agora está verde — ainda num verde-limão claro, mais tenro que o verde-escuro das duas folhas originais, mas já sem nenhum resquício de vermelho. É a confirmação de que aquele broto pegou: virou tecido maduro e permanente, não um susto passageiro. A muda segue firme, sem manchas nem sinais de estresse, e o ramo novo sustenta quatro folhas bem abertas.',
+      it: 'Sei giorni dopo, il getto di luglio ha completato il cambio di colore: la coppia di foglie nata color rame è ora verde — ancora un verde lime chiaro, più tenero del verde scuro delle due foglie originali, ma senza più alcuna traccia di rosso. È la conferma che quel germoglio ha attecchito: è diventato tessuto maturo e permanente, non uno spavento passeggero. La piantina resta salda, senza macchie né segni di stress, e il nuovo ramo sorregge quattro foglie ben aperte.',
+    },
+    fotos: [
+      {
+        arquivo: '2026-07-18-ramo-verde.webp',
+        legenda: { pt: 'O ramo novo já sem vermelho: o par jovem verde-limão ao lado das folhas maduras verde-escuras', it: 'Il nuovo ramo senza più rosso: la coppia giovane verde lime accanto alle foglie mature verde scuro' },
+      },
+      {
+        arquivo: '2026-07-18-vista-geral.webp',
+        legenda: { pt: 'Vista de cima: as quatro folhas do lançamento, todas verdes, ainda dentro da garrafa PET', it: 'Vista dall’alto: le quattro foglie del getto, tutte verdi, ancora nella bottiglia PET' },
+      },
+      {
+        arquivo: '2026-07-18-estacao-cultivo.webp',
+        legenda: { pt: 'A estação de cultivo no terraço de Turate: grade, ar-condicionado e o vaso-berçário', it: 'La postazione di coltivazione sul terrazzo di Turate: ringhiera, condizionatore e il vaso-vivaio' },
+      },
+    ],
+  },
+  {
+    data: '2026-07-14',
+    titulo: { pt: 'As folhas jovens começam a firmar', it: 'Le foglie giovani iniziano a rassodarsi' },
+    texto: {
+      pt: 'Dois dias depois de abrir, o par de folhas novas já perde o vermelho intenso e clareia para um bronze-bege — o primeiro passo da maturação. Aparece também uma gema apical verde apontando para cima: sinal de que o ramo não parou, continua se estendendo. Bonito contraste na mesma muda: as duas folhas originais verde-escuras firmes, e o lançamento novo ainda tenro, a caminho do verde.',
+      it: 'Due giorni dopo l’apertura, la coppia di foglie nuove perde già il rosso intenso e schiarisce verso un bronzo-beige — il primo passo della maturazione. Compare anche una gemma apicale verde rivolta verso l’alto: segno che il ramo non si è fermato, continua ad allungarsi. Bel contrasto sulla stessa piantina: le due foglie originali verde scuro salde, e il getto nuovo ancora tenero, in cammino verso il verde.',
+    },
+    fotos: [
+      {
+        arquivo: '2026-07-14-bronze-endurece.webp',
+        legenda: { pt: 'As folhas novas clareando de vermelho para bronze-bege, ainda caídas e tenras', it: 'Le foglie nuove che schiariscono dal rosso al bronzo-beige, ancora ricadenti e tenere' },
+      },
+      {
+        arquivo: '2026-07-14-vista-geral.webp',
+        legenda: { pt: 'Vista de cima: folhas originais verde-escuras e o lançamento novo em bronze claro', it: 'Vista dall’alto: foglie originali verde scuro e il getto nuovo in bronzo chiaro' },
+      },
+      {
+        arquivo: '2026-07-14-estacao-cultivo.webp',
+        legenda: { pt: 'O berçário no terraço: a garrafa PET com fibra de coco encaixada no vaso de terra', it: 'Il vivaio sul terrazzo: la bottiglia PET con fibra di cocco incassata nel vaso di terra' },
+      },
+    ],
+  },
+  {
     data: '2026-07-12',
     titulo: { pt: 'Novo fluxo abre duas folhas', it: 'Il nuovo getto apre due foglie' },
     texto: {
@@ -89,8 +133,8 @@ export const TIMELINE = [
         legenda: { pt: 'A régua confirma 8 cm da base ao topo do novo fluxo', it: 'Il righello conferma 8 cm dalla base alla cima del nuovo getto' },
       },
       {
-        arquivo: '2026-07-12-quatro-folhas.webp',
-        legenda: { pt: 'Vista geral: duas folhas verdes maduras e duas folhas novas no ápice', it: 'Vista generale: due foglie verdi mature e due foglie nuove all’apice' },
+        arquivo: '2026-07-12-ramo-folhas-bronze.webp',
+        legenda: { pt: 'Vista geral simétrica: as duas folhas verdes maduras seguram as duas novas, ainda acobreadas, no ápice', it: 'Vista generale simmetrica: le due foglie verdi mature sorreggono le due nuove, ancora ramate, all’apice' },
       },
       {
         arquivo: '2026-07-12-folhas-acobreadas.webp',
@@ -232,14 +276,15 @@ export const MEDICOES = [
 export const FASE_REGISTROS = {
   f0: {
     nota: {
-      pt: 'Germinação em 21/06, transplante para a garrafa PET de 2 L em 25/06 e, em 26/06, a garrafa (furada no fundo) foi para dentro de um vaso maior com terra — isolando as raízes do calor e da luz. Rega com água de condensação do ar-condicionado (macia, levemente ácida). A raiz pivotante foi preservada. Em 04/07 surgiu o primeiro broto no nó entre as duas folhas; em 12/07, ele já havia alongado, aberto duas folhas novas e levado a muda a 8 cm e quatro folhas.',
-      it: 'Germinazione il 21/06, trapianto nella bottiglia PET da 2 L il 25/06 e, il 26/06, la bottiglia (forata sul fondo) è finita dentro un vaso più grande con terra — isolando le radici dal calore e dalla luce. Irrigazione con acqua di condensa del condizionatore (dolce, leggermente acida). Il fittone è stato preservato. Il 04/07 è comparso il primo germoglio nel nodo tra le due foglie; il 12/07 si era già allungato, aveva aperto due foglie nuove e portato la piantina a 8 cm e quattro foglie.',
+      pt: 'Germinação em 21/06, transplante para a garrafa PET de 2 L em 25/06 e, em 26/06, a garrafa (furada no fundo) foi para dentro de um vaso maior com terra — isolando as raízes do calor e da luz. Rega com água de condensação do ar-condicionado (macia, levemente ácida). A raiz pivotante foi preservada. Em 04/07 surgiu o primeiro broto no nó entre as duas folhas; em 12/07 ele já havia alongado, aberto duas folhas novas e levado a muda a 8 cm e quatro folhas. Entre 14/07 e 18/07 essas folhas novas perderam o vermelho de brotação e amadureceram para verde — o lançamento firmou.',
+      it: 'Germinazione il 21/06, trapianto nella bottiglia PET da 2 L il 25/06 e, il 26/06, la bottiglia (forata sul fondo) è finita dentro un vaso più grande con terra — isolando le radici dal calore e dalla luce. Irrigazione con acqua di condensa del condizionatore (dolce, leggermente acida). Il fittone è stato preservato. Il 04/07 è comparso il primo germoglio nel nodo tra le due foglie; il 12/07 si era già allungato, aveva aperto due foglie nuove e portato la piantina a 8 cm e quattro foglie. Tra il 14/07 e il 18/07 quelle foglie nuove hanno perso il rosso di germogliazione e sono maturate al verde — il getto si è consolidato.',
     },
     fotos: [
       { arquivo: '2026-06-26-vaso-isolante-detalhe.webp', legenda: { pt: 'O vaso isolante: garrafa furada dentro de um vaso com terra', it: 'Il vaso isolante: bottiglia forata dentro un vaso con terra' } },
       { arquivo: '2026-06-21-broto-macro.webp', legenda: { pt: 'A muda recém-germinada', it: 'La piantina appena germinata' } },
       { arquivo: '2026-07-04-broto-novo.webp', legenda: { pt: 'O primeiro broto de um ramo novo, no nó entre as duas folhas', it: 'Il primo germoglio di un nuovo ramo, nel nodo tra le due foglie' } },
       { arquivo: '2026-07-12-folhas-acobreadas.webp', legenda: { pt: 'O primeiro fluxo com duas folhas novas', it: 'Il primo getto con due foglie nuove' } },
+      { arquivo: '2026-07-18-ramo-verde.webp', legenda: { pt: 'Seis dias depois: as folhas novas já verdes, o lançamento firmado', it: 'Sei giorni dopo: le foglie nuove ormai verdi, il getto consolidato' } },
     ],
   },
   // f1: { nota: { pt: '', it: '' }, fotos: [{ arquivo: 'AAAA-MM-DD-....webp', legenda: { pt: '', it: '' } }] },
