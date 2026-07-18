@@ -85,6 +85,11 @@
       "crescimento": "Crescimento",
       "vazio": "Sem medições ainda."
     },
+    "lightbox": {
+      "fechar": "Fechar",
+      "ampliar": "Ampliar foto",
+      "dica": "Toque ou role para ampliar · arraste para mover"
+    },
     "unidades": {
       "cm": "cm",
       "folhas": "folhas"
@@ -179,6 +184,11 @@
       "folhas": "Foglie",
       "crescimento": "Crescita",
       "vazio": "Nessuna misurazione ancora."
+    },
+    "lightbox": {
+      "fechar": "Chiudi",
+      "ampliar": "Ingrandisci foto",
+      "dica": "Tocca o scorri per ingrandire · trascina per spostare"
     },
     "unidades": {
       "cm": "cm",

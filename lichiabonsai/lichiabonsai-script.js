@@ -44,6 +44,10 @@ class LichiaApp extends App {
     this.fasesAbertas = null;          // Set de chaves de fase abertas
     this.tecnicasAbertas = new Set();  // chaves de técnicas abertas
     this.calMes = null;                // mês selecionado no calendário (0–11)
+
+    // Lightbox de fotos: construído uma vez, fora do ciclo de re-render.
+    this.lb = { scale: 1, x: 0, y: 0, startX: 0, startY: 0, dragging: false, pinching: false, pinchStartDist: 0, pinchStartScale: 1, pinchCenter: { x: 0, y: 0 }, suppressClick: false };
+    this.criarLightbox();
   }
 
   lang() {
@@ -142,27 +146,220 @@ class LichiaApp extends App {
     fotos.forEach((f) => {
       const url = fotoUrl(f.arquivo);
       if (!url) return;
+      const legenda = this.tx(f.legenda);
       const fig = document.createElement('figure');
-      const a = document.createElement('a');
-      a.href = url;
-      a.target = '_blank';
-      a.rel = 'noopener';
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'lichia-gallery__btn';
+      btn.setAttribute('aria-label', legenda ? `${i18n.t('lightbox.ampliar')}: ${legenda}` : i18n.t('lightbox.ampliar'));
       const img = document.createElement('img');
       img.src = url;
       img.loading = 'lazy';
       img.decoding = 'async';
-      img.alt = this.tx(f.legenda);
-      a.appendChild(img);
-      const cap = this.el('figcaption', null, this.tx(f.legenda));
-      fig.append(a, cap);
+      img.alt = legenda;
+      btn.appendChild(img);
+      btn.addEventListener('click', () => this.abrirLightbox(url, legenda));
+      const cap = this.el('figcaption', null, legenda);
+      fig.append(btn, cap);
       gal.appendChild(fig);
     });
     return gal.childElementCount ? gal : null;
   }
 
+  // ---- lightbox (zoom em tela cheia) -------------------------------------
+  // Construído uma única vez fora do ciclo de re-render (troca de idioma
+  // não recria o overlay, só atualiza os textos via atualizarI18nLightbox()).
+  criarLightbox() {
+    const root = this.el('div', 'lichia-lightbox');
+    root.id = 'lichiaLightbox';
+    root.setAttribute('role', 'dialog');
+    root.setAttribute('aria-modal', 'true');
+    root.hidden = true;
+
+    const close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'lichia-lightbox__close';
+    close.textContent = '×';
+    close.setAttribute('aria-hidden', 'false');
+
+    const stage = document.createElement('figure');
+    stage.className = 'lichia-lightbox__stage';
+    const img = document.createElement('img');
+    img.className = 'lichia-lightbox__img';
+    img.alt = '';
+    img.draggable = false;
+    const caption = this.el('figcaption', 'lichia-lightbox__caption');
+    const dica = this.el('p', 'lichia-lightbox__hint');
+    stage.append(img, caption, dica);
+
+    root.append(close, stage);
+    document.body.appendChild(root);
+    this.lightboxEls = { root, close, stage, img, caption, dica };
+
+    // fechar: botão, clique fora da imagem (no fundo), Esc
+    close.addEventListener('click', () => this.fecharLightbox());
+    root.addEventListener('click', (e) => { if (e.target === root) this.fecharLightbox(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !root.hidden) this.fecharLightbox();
+    });
+
+    // zoom: clique alterna, roda do mouse ajusta, pinça (touch) ajusta
+    img.addEventListener('click', (e) => {
+      if (this.lb.suppressClick) { this.lb.suppressClick = false; return; }
+      if (this.lb.scale > 1) {
+        this.lb.scale = 1; this.lb.x = 0; this.lb.y = 0;
+        this.lbAplicar();
+      } else {
+        this.lbZoomEm(e.clientX, e.clientY, 2.5);
+      }
+    });
+    img.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const fator = 1 - e.deltaY * 0.0018;
+      this.lbZoomEm(e.clientX, e.clientY, this.lb.scale * fator);
+    }, { passive: false });
+
+    // pan por arraste (mouse)
+    img.addEventListener('mousedown', (e) => {
+      if (this.lb.scale <= 1) return;
+      e.preventDefault();
+      this.lb.dragging = true;
+      this.lb.startX = e.clientX - this.lb.x;
+      this.lb.startY = e.clientY - this.lb.y;
+      img.style.transition = 'none';
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (!this.lb.dragging) return;
+      this.lb.x = e.clientX - this.lb.startX;
+      this.lb.y = e.clientY - this.lb.startY;
+      this.lbClamp();
+      this.lbAplicar();
+    });
+    window.addEventListener('mouseup', () => {
+      if (!this.lb.dragging) return;
+      this.lb.dragging = false;
+      img.style.transition = '';
+      this.lb.suppressClick = true;
+      setTimeout(() => { this.lb.suppressClick = false; }, 0);
+    });
+
+    // pinça (zoom) e arraste com um dedo (touch)
+    img.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 2) {
+        this.lb.pinching = true;
+        this.lb.pinchStartDist = this.lbDistToque(e.touches);
+        this.lb.pinchStartScale = this.lb.scale;
+        const [t1, t2] = e.touches;
+        this.lb.pinchCenter = { x: (t1.clientX + t2.clientX) / 2, y: (t1.clientY + t2.clientY) / 2 };
+      } else if (e.touches.length === 1 && this.lb.scale > 1) {
+        this.lb.dragging = true;
+        this.lb.startX = e.touches[0].clientX - this.lb.x;
+        this.lb.startY = e.touches[0].clientY - this.lb.y;
+      }
+      img.style.transition = 'none';
+    }, { passive: true });
+    img.addEventListener('touchmove', (e) => {
+      if (this.lb.pinching && e.touches.length === 2) {
+        e.preventDefault();
+        const dist = this.lbDistToque(e.touches);
+        const novaEscala = this.lb.pinchStartScale * (dist / this.lb.pinchStartDist);
+        this.lbZoomEm(this.lb.pinchCenter.x, this.lb.pinchCenter.y, novaEscala);
+      } else if (this.lb.dragging && e.touches.length === 1) {
+        e.preventDefault();
+        this.lb.x = e.touches[0].clientX - this.lb.startX;
+        this.lb.y = e.touches[0].clientY - this.lb.startY;
+        this.lbClamp();
+        this.lbAplicar();
+      }
+    }, { passive: false });
+    img.addEventListener('touchend', (e) => {
+      if (e.touches.length < 2) this.lb.pinching = false;
+      if (e.touches.length === 0) { this.lb.dragging = false; img.style.transition = ''; }
+    });
+  }
+
+  atualizarI18nLightbox() {
+    if (!this.lightboxEls) return;
+    const { close, dica } = this.lightboxEls;
+    close.setAttribute('aria-label', i18n.t('lightbox.fechar'));
+    dica.textContent = i18n.t('lightbox.dica');
+  }
+
+  lbDistToque(touches) {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.hypot(dx, dy);
+  }
+
+  // aplica o zoom mantendo o ponto (clientX, clientY) parado na tela
+  lbZoomEm(clientX, clientY, novaEscalaAlvo) {
+    const img = this.lightboxEls.img;
+    const rect = img.getBoundingClientRect();
+    const relX = (clientX - rect.left) / rect.width;
+    const relY = (clientY - rect.top) / rect.height;
+    const baseW = img.offsetWidth;
+    const baseH = img.offsetHeight;
+    const localX = (relX - 0.5) * baseW;
+    const localY = (relY - 0.5) * baseH;
+    const novaEscala = Math.min(4, Math.max(1, novaEscalaAlvo));
+    this.lb.x -= localX * (novaEscala - this.lb.scale);
+    this.lb.y -= localY * (novaEscala - this.lb.scale);
+    this.lb.scale = novaEscala;
+    if (this.lb.scale === 1) { this.lb.x = 0; this.lb.y = 0; }
+    this.lbClamp();
+    this.lbAplicar();
+  }
+
+  lbClamp() {
+    const img = this.lightboxEls.img;
+    const maxX = Math.max(0, (this.lb.scale - 1) * img.offsetWidth / 2);
+    const maxY = Math.max(0, (this.lb.scale - 1) * img.offsetHeight / 2);
+    this.lb.x = Math.min(maxX, Math.max(-maxX, this.lb.x));
+    this.lb.y = Math.min(maxY, Math.max(-maxY, this.lb.y));
+  }
+
+  lbAplicar() {
+    const img = this.lightboxEls.img;
+    img.style.transform = `translate(${this.lb.x}px, ${this.lb.y}px) scale(${this.lb.scale})`;
+    img.classList.toggle('is-zoomed', this.lb.scale > 1);
+  }
+
+  abrirLightbox(url, legenda) {
+    const { root, img, caption } = this.lightboxEls;
+    this.lb.scale = 1; this.lb.x = 0; this.lb.y = 0; this.lb.dragging = false; this.lb.pinching = false;
+    img.style.transition = '';
+    img.src = url;
+    img.alt = legenda || '';
+    caption.textContent = legenda || '';
+    this.lbAplicar();
+    this.atualizarI18nLightbox();
+    root.hidden = false;
+    document.body.classList.add('lichia-no-scroll');
+    this._lbFocoAnterior = document.activeElement;
+    // força um reflow entre tirar o "hidden" e ligar a classe, senão a
+    // transição de opacidade é pulada (não depende do agendador de animação,
+    // que fica pausado em abas em segundo plano/pouco ativas).
+    void root.offsetHeight;
+    root.classList.add('is-open');
+    this.lightboxEls.close.focus();
+  }
+
+  fecharLightbox() {
+    const { root } = this.lightboxEls;
+    root.classList.remove('is-open');
+    document.body.classList.remove('lichia-no-scroll');
+    const finalizar = () => { root.hidden = true; };
+    root.addEventListener('transitionend', finalizar, { once: true });
+    setTimeout(finalizar, 260);
+    if (this._lbFocoAnterior && typeof this._lbFocoAnterior.focus === 'function') {
+      this._lbFocoAnterior.focus();
+    }
+  }
+
   // ---- orquestração ------------------------------------------------------
   renderTudo() {
     document.title = i18n.t('meta.tabTitle');
+    this.atualizarI18nLightbox();
     this.renderHero();
     this.renderStatus();
     this.renderPlano();
@@ -199,7 +396,15 @@ class LichiaApp extends App {
       const url = fotoUrl(META.heroFoto.arquivo);
       if (url) {
         img.src = url;
-        img.alt = this.tx(META.heroFoto.alt);
+        const alt = this.tx(META.heroFoto.alt);
+        img.alt = alt;
+        img.classList.add('is-clicavel');
+        img.setAttribute('role', 'button');
+        img.tabIndex = 0;
+        img.onclick = () => this.abrirLightbox(url, alt);
+        img.onkeydown = (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.abrirLightbox(url, alt); }
+        };
       } else {
         img.closest('figure')?.remove();
       }

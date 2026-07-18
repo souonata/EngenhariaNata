@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.0.1">
     <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
     <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
-    <link rel="stylesheet" href="lichiabonsai-styles.css?v=1.1.0">
+    <link rel="stylesheet" href="lichiabonsai-styles.css?v=1.2.0">
 
     <script data-goatcounter="https://souonata.goatcounter.com/count"
             async src="https://gc.zgo.at/count.js"></script>
@@ -66,6 +66,12 @@
         </header>
 
         <main>
+            <!-- LINHA DO TEMPO -->
+            <section class="lichia-sec">
+                <h2 class="lichia-h2" data-i18n="sec.timeline">Linha do tempo</h2>
+                <ol class="lichia-timeline" id="timeline"></ol>
+            </section>
+
             <!-- STATUS -->
             <section class="lichia-sec">
                 <h2 class="lichia-h2" data-i18n="sec.status">Status atual</h2>
@@ -105,12 +111,6 @@
                 <h2 class="lichia-h2" data-i18n="sec.tecnicas">Técnicas ilustradas</h2>
                 <p class="lichia-intro" data-i18n="tecnicas.intro">O passo a passo das manobras do bonsai, com esquemas. Toque para abrir.</p>
                 <div class="lichia-tecnicas" id="tecnicas"></div>
-            </section>
-
-            <!-- LINHA DO TEMPO -->
-            <section class="lichia-sec">
-                <h2 class="lichia-h2" data-i18n="sec.timeline">Linha do tempo</h2>
-                <ol class="lichia-timeline" id="timeline"></ol>
             </section>
 
             <!-- MEDIÇÕES -->
@@ -184,6 +184,6 @@
         </svg>
     </a>
 
-    <script type="module" src="lichiabonsai-script.js?v=1.1.4"></script>
+    <script type="module" src="lichiabonsai-script.js?v=1.2.1"></script>
 </body>
 </html>
