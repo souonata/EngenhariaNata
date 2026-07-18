@@ -482,7 +482,8 @@
       "langIt": "Alterar idioma para Italiano",
       "home": "Voltar para a tela inicial",
       "expandCard": "Expandir seção",
-      "collapseCard": "Recolher seção"
+      "collapseCard": "Recolher seção",
+      "contato": "Enviar e-mail para nata@engnata.eu"
     }
   },
   "it-IT": {
@@ -967,7 +968,8 @@
       "langIt": "Cambia lingua in italiano",
       "home": "Torna alla schermata iniziale",
       "expandCard": "Espandi sezione",
-      "collapseCard": "Comprimi sezione"
+      "collapseCard": "Comprimi sezione",
+      "contato": "Invia un'e-mail a nata@engnata.eu"
     }
   }
 }
