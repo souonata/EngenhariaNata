@@ -31,7 +31,8 @@ function descobrirPaginasHtml(dir, acc = {}) {
             descobrirPaginasHtml(full, acc);
         } else if (nome.endsWith('.html')) {
             const rel = relative(projectRoot, full).replace(/\\/g, '/');
-            const chave = rel === 'index.html' ? 'main' : rel.replace(/\.html$/, '').replace(/\//g, '-');
+            const chave =
+                rel === 'index.html' ? 'main' : rel.replace(/\.html$/, '').replace(/\//g, '-');
             acc[chave] = full;
         }
     }

@@ -19,6 +19,9 @@
     "app-previsao": "Previsão",
     "app-volvo": "Assistente Volvo",
     "app-lichiabonsai": "Bonsai Lichia",
+    "app-patentenautica": "Patente Náutica",
+    "app-patentenautica-title": "Patente Náutica — Rotta 12",
+    "app-patentenautica-description": "App para a habilitação náutica italiana até 12 milhas a motor, com 1.472 questões ministeriais e Carta 5/D interativa nos 50 exercícios de carta, em IT, PT ou IT+PT.",
     "app-salario-title": "Salário Líquido — BR/IT",
     "app-salario-description": "Calculadora bilíngue de salário: Brasil (CLT — INSS, IRRF, FGTS, 13º, férias e rescisão) e Itália (RAL, IRPEF, INPS, addizionali, TFR, tredicesima e quattordicesima). Inclui gráficos e memorial explicativo.",
     "app-previsao-title": "Previsão 7 dias",
@@ -58,6 +61,7 @@
     "app-link-view": "Ver página →",
     "app-link-forecast": "Ver previsão →",
     "app-link-open-simulator": "Abrir simulador →",
+    "app-link-study": "Abrir guia de estudo →",
     "dia-dom": "domingo",
     "dia-seg": "segunda",
     "dia-ter": "terça",
@@ -107,6 +111,9 @@
     "app-previsao": "Meteo",
     "app-volvo": "Assistente Volvo",
     "app-lichiabonsai": "Bonsai Litchi",
+    "app-patentenautica": "Patente Nautica",
+    "app-patentenautica-title": "Patente Nautica — Rotta 12",
+    "app-patentenautica-description": "App per la patente nautica italiana entro 12 miglia a motore, con 1.472 quesiti ministeriali e Carta 5/D interattiva nei 50 esercizi di carteggio, in IT, PT o IT+PT.",
     "app-salario-title": "Stipendio Netto — BR/IT",
     "app-salario-description": "Calcolatrice bilingue dello stipendio: Brasile (CLT — INSS, IRRF, FGTS, 13º, ferie e liquidazione) e Italia (RAL, IRPEF, INPS, addizionali, TFR, tredicesima e quattordicesima). Include grafici e memoriale esplicativo.",
     "app-previsao-title": "Meteo 7 giorni",
@@ -146,6 +153,7 @@
     "app-link-view": "Vedi pagina →",
     "app-link-forecast": "Vedi previsioni →",
     "app-link-open-simulator": "Apri simulatore →",
+    "app-link-study": "Apri quiz e carta →",
     "dia-dom": "domenica",
     "dia-seg": "lunedì",
     "dia-ter": "martedì",
@@ -177,4 +185,3 @@
     "app-visitantes-tooltip": "Totale visite al portafoglio"
   }
 }
-

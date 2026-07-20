@@ -32,22 +32,13 @@ export default defineConfig({
         environment: 'node',
         globals: false,
         include: ['**/*-calc.test.js', 'src/**/*.test.js', 'br12c/tests/**/*.test.js'],
-        exclude: [
-            '**/node_modules/**',
-            '**/dist/**',
-            '**/local/**'
-        ],
+        exclude: ['**/node_modules/**', '**/dist/**', '**/local/**'],
         reporters: ['default'],
         coverage: {
             provider: 'v8',
             reporter: ['text', 'html'],
             include: ['**/*-calc.js'],
-            exclude: [
-                '**/node_modules/**',
-                '**/dist/**',
-                '**/local/**',
-                '**/*-calc.test.js'
-            ]
+            exclude: ['**/node_modules/**', '**/dist/**', '**/local/**', '**/*-calc.test.js']
         }
     }
 });

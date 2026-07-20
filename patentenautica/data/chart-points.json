@@ -1,0 +1,326 @@
+{
+  "chart": {
+    "id": "carta-5d",
+    "title": "Carta nautica didattica 5/D",
+    "width": 4454,
+    "height": 3045,
+    "scale": "1:100.000",
+    "area": "Dal Canale di Piombino al Promontorio Argentario e Scoglio Africa",
+    "calibration": {
+      "longitudeOrigin": 10,
+      "meridianX": 437,
+      "meridianSlope": 0.055,
+      "pixelsPerLongitudeMinute": 54.05,
+      "parallelY": 520,
+      "parallelSlope": 0.0524,
+      "pixelsPerLatitudeMinute": 73.7,
+      "referenceLatitudeMinutes": 50
+    }
+  },
+  "points": [
+    {
+      "id": "capo-s-andrea",
+      "name": "Capo di S. Andrea",
+      "context": "Nord Isola d’Elba",
+      "contextPt": "Norte da Ilha de Elba",
+      "lat": 42.808333,
+      "lon": 10.14,
+      "basis": "dd10"
+    },
+    {
+      "id": "capo-enfola",
+      "name": "Capo d’Enfola",
+      "context": "Nord Isola d’Elba",
+      "contextPt": "Norte da Ilha de Elba",
+      "lat": 42.83,
+      "lon": 10.263333,
+      "basis": "dd10"
+    },
+    {
+      "id": "capo-poro",
+      "name": "Capo di Poro",
+      "context": "Sud Isola d’Elba",
+      "contextPt": "Sul da Ilha de Elba",
+      "lat": 42.726667,
+      "lon": 10.235,
+      "basis": "dd10"
+    },
+    {
+      "id": "punta-morcone",
+      "name": "Punta Morcone",
+      "context": "Sud Isola d’Elba",
+      "contextPt": "Sul da Ilha de Elba",
+      "lat": 42.733333,
+      "lon": 10.366667,
+      "basis": "chart"
+    },
+    {
+      "id": "isola-corbelli",
+      "name": "Isola Corbelli",
+      "context": "Sud Isola d’Elba",
+      "contextPt": "Sul da Ilha de Elba",
+      "lat": 42.713333,
+      "lon": 10.361667,
+      "basis": "dd10"
+    },
+    {
+      "id": "punta-fetovaia",
+      "name": "Punta di Fetovaia",
+      "context": "Sud Isola d’Elba",
+      "contextPt": "Sul da Ilha de Elba",
+      "lat": 42.725,
+      "lon": 10.158333,
+      "basis": "dd10"
+    },
+    {
+      "id": "marina-campo",
+      "name": "Marina di Campo",
+      "context": "Faro del porto",
+      "contextPt": "Farol do porto",
+      "lat": 42.74175,
+      "lon": 10.23834,
+      "basis": "chart"
+    },
+    {
+      "id": "marciana-marina",
+      "name": "Marciana Marina",
+      "context": "Fanale d’ingresso",
+      "contextPt": "Luz de entrada",
+      "lat": 42.808333,
+      "lon": 10.2,
+      "basis": "chart"
+    },
+    {
+      "id": "capo-fonza",
+      "name": "Capo di Fonza",
+      "context": "Sud Isola d’Elba",
+      "contextPt": "Sul da Ilha de Elba",
+      "lat": 42.735,
+      "lon": 10.286667,
+      "basis": "dd10"
+    },
+    {
+      "id": "scoglietto",
+      "name": "Scoglietto",
+      "context": "Nord Isola d’Elba",
+      "contextPt": "Norte da Ilha de Elba",
+      "lat": 42.828333,
+      "lon": 10.33,
+      "basis": "dd10"
+    },
+    {
+      "id": "punta-marchese",
+      "name": "Punta del Marchese",
+      "context": "Isola Pianosa",
+      "contextPt": "Ilha de Pianosa",
+      "lat": 42.618333,
+      "lon": 10.08,
+      "basis": "dd10"
+    },
+    {
+      "id": "punta-le-tombe",
+      "name": "Punta le Tombe",
+      "context": "Ovest Isola d’Elba",
+      "contextPt": "Oeste da Ilha de Elba",
+      "lat": 42.731667,
+      "lon": 10.136667,
+      "basis": "dd10"
+    },
+    {
+      "id": "punta-nera-elba",
+      "name": "Punta Nera",
+      "context": "Ovest Isola d’Elba",
+      "contextPt": "Oeste da Ilha de Elba",
+      "lat": 42.765,
+      "lon": 10.075,
+      "basis": "chart"
+    },
+    {
+      "id": "punta-della-testa",
+      "name": "Punta della Testa",
+      "context": "Ovest Isola d’Elba",
+      "contextPt": "Oeste da Ilha de Elba",
+      "lat": 42.751667,
+      "lon": 10.115,
+      "basis": "dd10"
+    },
+    {
+      "id": "punta-grottone",
+      "name": "Punta del Grottone",
+      "context": "Isola Pianosa",
+      "contextPt": "Ilha de Pianosa",
+      "lat": 42.615,
+      "lon": 10.091667,
+      "basis": "dd10"
+    },
+    {
+      "id": "punta-nasuto",
+      "name": "Punta del Nasuto",
+      "context": "Nord Isola d’Elba",
+      "contextPt": "Norte da Ilha de Elba",
+      "lat": 42.811667,
+      "lon": 10.186667,
+      "basis": "dd10"
+    },
+    {
+      "id": "scoglio-forano",
+      "name": "Scoglio Forano",
+      "context": "Isola Pianosa",
+      "contextPt": "Ilha de Pianosa",
+      "lat": 42.616667,
+      "lon": 10.086667,
+      "basis": "dd10"
+    },
+    {
+      "id": "giglio-porto",
+      "name": "Giglio Porto",
+      "context": "Isola del Giglio",
+      "contextPt": "Ilha do Giglio",
+      "lat": 42.36,
+      "lon": 10.921667,
+      "basis": "dd10"
+    },
+    {
+      "id": "punta-lividonia",
+      "name": "Punta Lividonia",
+      "context": "Promontorio Argentario",
+      "contextPt": "Promontório Argentario",
+      "lat": 42.446667,
+      "lon": 11.105,
+      "basis": "dd10"
+    },
+    {
+      "id": "talamone",
+      "name": "Talamone",
+      "context": "Faro",
+      "contextPt": "Farol",
+      "lat": 42.551667,
+      "lon": 11.133333,
+      "basis": "dd10"
+    },
+    {
+      "id": "formica-piccola",
+      "name": "Formica Piccola",
+      "context": "Formiche di Grosseto",
+      "contextPt": "Formiche di Grosseto",
+      "lat": 42.561667,
+      "lon": 10.895,
+      "basis": "dd10"
+    },
+    {
+      "id": "capo-uomo",
+      "name": "Capo d’Uomo",
+      "context": "Promontorio Argentario",
+      "contextPt": "Promontório Argentario",
+      "lat": 42.391667,
+      "lon": 11.096667,
+      "basis": "dd10"
+    },
+    {
+      "id": "punta-nera-argentario",
+      "name": "Punta Nera",
+      "context": "Nord Promontorio Argentario",
+      "contextPt": "Norte do Promontório Argentario",
+      "lat": 42.438333,
+      "lon": 11.133333,
+      "basis": "dd10"
+    },
+    {
+      "id": "punta-torre-ciana",
+      "name": "Punta di Torre Ciana",
+      "context": "Promontorio Argentario",
+      "contextPt": "Promontório Argentario",
+      "lat": 42.36,
+      "lon": 11.153333,
+      "basis": "dd10"
+    },
+    {
+      "id": "punta-torricella",
+      "name": "Punta Torricella",
+      "context": "Isola del Giglio",
+      "contextPt": "Ilha do Giglio",
+      "lat": 42.338333,
+      "lon": 10.931667,
+      "basis": "dd10"
+    },
+    {
+      "id": "punta-cala-grande",
+      "name": "Punta Cala Grande",
+      "context": "Promontorio Argentario",
+      "contextPt": "Promontório Argentario",
+      "lat": 42.43,
+      "lon": 11.08728,
+      "basis": "chart"
+    },
+    {
+      "id": "punta-fenaio",
+      "name": "Punta del Fenaio",
+      "context": "Nord Isola del Giglio",
+      "contextPt": "Norte da Ilha do Giglio",
+      "lat": 42.38835,
+      "lon": 10.881147,
+      "basis": "chart"
+    },
+    {
+      "id": "punta-morto",
+      "name": "Punta del Morto",
+      "context": "Isola del Giglio",
+      "contextPt": "Ilha do Giglio",
+      "lat": 42.388333,
+      "lon": 10.888333,
+      "basis": "dd10"
+    }
+  ],
+  "exercises": [
+    { "id": 1, "from": "capo-s-andrea", "to": "capo-enfola" },
+    { "id": 2, "from": "capo-poro", "to": "punta-morcone" },
+    { "id": 3, "from": "isola-corbelli", "to": "capo-poro" },
+    { "id": 4, "from": "punta-fetovaia", "to": "isola-corbelli" },
+    { "id": 5, "from": "marina-campo", "to": "isola-corbelli" },
+    { "id": 6, "from": "marciana-marina", "to": "capo-enfola" },
+    { "id": 7, "from": "capo-fonza", "to": "isola-corbelli" },
+    { "id": 8, "from": "marina-campo", "to": "isola-corbelli" },
+    { "id": 9, "from": "capo-poro", "to": "punta-fetovaia" },
+    { "id": 10, "from": "scoglietto", "to": "capo-enfola" },
+    { "id": 11, "from": "isola-corbelli", "to": "capo-poro" },
+    { "id": 12, "from": "punta-morcone", "to": "capo-poro" },
+    { "id": 13, "from": "punta-fetovaia", "to": "isola-corbelli" },
+    { "id": 14, "from": "capo-fonza", "to": "isola-corbelli" },
+    { "id": 15, "from": "capo-poro", "to": "punta-fetovaia" },
+    { "id": 16, "from": "punta-fetovaia", "to": "isola-corbelli" },
+    { "id": 17, "from": "punta-marchese", "to": "punta-le-tombe" },
+    { "id": 18, "from": "punta-nera-elba", "to": "punta-marchese" },
+    { "id": 19, "from": "punta-marchese", "to": "punta-della-testa" },
+    { "id": 20, "from": "punta-fetovaia", "to": "punta-grottone" },
+    { "id": 21, "from": "punta-grottone", "to": "punta-fetovaia" },
+    { "id": 22, "from": "capo-s-andrea", "to": "punta-nasuto" },
+    { "id": 23, "from": "punta-nera-elba", "to": "punta-marchese" },
+    { "id": 24, "from": "scoglio-forano", "to": "punta-fetovaia" },
+    { "id": 25, "from": "punta-della-testa", "to": "punta-grottone" },
+    { "id": 26, "from": "punta-marchese", "to": "punta-le-tombe" },
+    { "id": 27, "from": "punta-le-tombe", "to": "scoglio-forano" },
+    { "id": 28, "from": "punta-nasuto", "to": "capo-s-andrea" },
+    { "id": 29, "from": "punta-marchese", "to": "punta-nera-elba" },
+    { "id": 30, "from": "punta-grottone", "to": "punta-fetovaia" },
+    { "id": 31, "from": "scoglio-forano", "to": "punta-fetovaia" },
+    { "id": 32, "from": "punta-le-tombe", "to": "punta-marchese" },
+    { "id": 33, "from": "giglio-porto", "to": "punta-lividonia" },
+    { "id": 34, "from": "punta-lividonia", "to": "talamone" },
+    { "id": 35, "from": "talamone", "to": "formica-piccola" },
+    { "id": 36, "from": "giglio-porto", "to": "capo-uomo" },
+    { "id": 37, "from": "talamone", "to": "punta-nera-argentario" },
+    { "id": 38, "from": "punta-torre-ciana", "to": "punta-torricella" },
+    { "id": 39, "from": "talamone", "to": "punta-nera-argentario" },
+    { "id": 40, "from": "giglio-porto", "to": "punta-lividonia" },
+    { "id": 41, "from": "talamone", "to": "punta-nera-argentario" },
+    { "id": 42, "from": "punta-torre-ciana", "to": "punta-torricella" },
+    { "id": 43, "from": "giglio-porto", "to": "punta-cala-grande" },
+    { "id": 44, "from": "punta-lividonia", "to": "talamone" },
+    { "id": 45, "from": "punta-fenaio", "to": "formica-piccola" },
+    { "id": 46, "from": "talamone", "to": "formica-piccola" },
+    { "id": 47, "from": "giglio-porto", "to": "capo-uomo" },
+    { "id": 48, "from": "punta-torre-ciana", "to": "punta-torricella" },
+    { "id": 49, "from": "punta-lividonia", "to": "punta-morto" },
+    { "id": 50, "from": "punta-lividonia", "to": "punta-morto" }
+  ]
+}

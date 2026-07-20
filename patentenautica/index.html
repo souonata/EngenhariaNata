@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="it" data-study-mode="it" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#071c26" />
+    <meta
+      name="description"
+      content="Quiz ministeriali bilingui e Carta 5/D interattiva per la patente nautica entro 12 miglia, a motore."
+    />
+    <title>Rotta 12 — Patente nautica a motore</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css?v=3.2.0" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main" data-ui="skipContent">Vai al contenuto</a>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Navigazione principale">
+        <a
+          class="brand"
+          href="#dashboard"
+          data-view-link="dashboard"
+          aria-label="Rotta 12"
+        >
+          <span class="brand-mark" aria-hidden="true"
+            ><i></i><i></i><i></i
+          ></span>
+          <span
+            ><strong>ROTTA 12</strong
+            ><small data-ui="brandSubtitle"
+              >patente nautica · motore</small
+            ></span
+          >
+        </a>
+        <nav class="nav-list">
+          <button class="nav-item is-active" data-view="dashboard">
+            <span>⌂</span><b data-ui="navDashboard">Panoramica</b>
+          </button>
+          <button class="nav-item" data-view="quiz">
+            <span>✓</span><b data-ui="navQuiz">Quiz ministeriali</b>
+          </button>
+          <button class="nav-item" data-view="carteggio">
+            <span>⌖</span><b data-ui="navCarteggio">50 esercizi</b>
+          </button>
+          <button class="nav-item" data-view="sources">
+            <span>↗</span><b data-ui="navSources">Fonti</b>
+          </button>
+        </nav>
+        <p class="sidebar-note" data-ui="officialPrevailsShort">
+          La traduzione aiuta lo studio. All'esame prevale sempre il testo
+          ufficiale italiano.
+        </p>
+      </aside>
+
+      <div class="workspace">
+        <header class="topbar">
+          <button
+            class="menu-toggle"
+            id="menuToggle"
+            type="button"
+            aria-label="Apri menu"
+            aria-expanded="false"
+          >
+            ☰
+          </button>
+          <label class="global-search">
+            <span aria-hidden="true">⌕</span>
+            <input
+              id="globalSearch"
+              type="search"
+              placeholder="Cerca in italiano o portoghese…"
+              autocomplete="off"
+              data-ui-placeholder="globalSearchPlaceholder"
+            />
+            <kbd>Ctrl K</kbd>
+          </label>
+          <div
+            class="language-selector mode-selector"
+            role="group"
+            aria-label="Modalità lingua"
+            data-ui-aria="languageModeLabel"
+          >
+            <button
+              class="mode-btn is-active"
+              type="button"
+              data-mode="it"
+              aria-pressed="true"
+            >
+              IT
+            </button>
+            <button
+              class="mode-btn"
+              type="button"
+              data-mode="pt"
+              aria-pressed="false"
+            >
+              PT
+            </button>
+            <button
+              class="mode-btn"
+              type="button"
+              data-mode="both"
+              aria-pressed="false"
+            >
+              IT + PT
+            </button>
+          </div>
+          <a
+            class="home-link"
+            href="../index.html"
+            data-ui-title="backPortfolio"
+            aria-label="Engenharia NATA"
+            >⌂</a
+          >
+        </header>
+
+        <div class="translation-notice" role="note">
+          <strong data-ui="translationAidTitle">Traduzione di supporto</strong>
+          <span data-ui="translationAidText"
+            >Il testo italiano è la fonte ufficiale e prevale sempre durante
+            l'esame.</span
+          >
+        </div>
+
+        <main id="main">
+          <section
+            class="view is-visible"
+            id="view-dashboard"
+            aria-labelledby="dashboardTitle"
+          >
+            <div class="hero">
+              <div class="hero-copy">
+                <span class="eyebrow" data-ui="studyDeck"
+                  >PLANCIA DI STUDIO</span
+                >
+                <h1 id="dashboardTitle" data-ui-html="heroTitle">
+                  La rotta più chiara verso la tua<br /><em
+                    >patente nautica.</em
+                  >
+                </h1>
+                <p data-ui-html="heroLead">
+                  Programma ordinato, <strong>1.472 quesiti ufficiali</strong> e
+                  50 esercizi di carteggio, ricercabili anche in portoghese.
+                </p>
+                <div class="hero-actions">
+                  <button class="button primary" data-go="carteggio">
+                    <span data-ui="openChartTraining"
+                      >Apri carta ed esercizi</span
+                    >
+                    <span>→</span>
+                  </button>
+                  <button
+                    class="button ghost"
+                    data-go="quiz"
+                    data-ui="startSimulation"
+                  >
+                    Avvia simulazione
+                  </button>
+                </div>
+              </div>
+              <div class="compass-card" aria-label="Rosa dei venti">
+                <div class="compass-ring">
+                  <span class="north">N</span><span class="east">E</span
+                  ><span class="south">S</span><span class="west">W</span
+                  ><i></i>
+                </div>
+                <strong>12 NM</strong
+                ><small data-ui="fromCoast">dalla costa</small>
+              </div>
+            </div>
+
+            <div class="stat-grid">
+              <article class="stat-card">
+                <span data-ui="officialBank">Banca dati BASE</span
+                ><strong>1.472</strong
+                ><small data-ui="officialQuestions">quesiti ufficiali</small>
+              </article>
+              <article class="stat-card">
+                <span data-ui="baseQuiz">Quiz base</span
+                ><strong>20 <small>/ 30 min</small></strong
+                ><small data-ui="basePass">almeno 16 risposte esatte</small>
+              </article>
+              <article class="stat-card">
+                <span data-ui="chartwork">Carteggio</span
+                ><strong>5 <small>/ 20 min</small></strong
+                ><small data-ui="chartPass">almeno 4 risposte esatte</small>
+              </article>
+              <article class="stat-card">
+                <span data-ui="exercises">Esercizi</span><strong>50</strong
+                ><small data-ui="solutionsTolerance"
+                  >con soluzione e tolleranza</small
+                >
+              </article>
+            </div>
+
+            <section class="panel exam-map">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow" data-ui="officialComposition"
+                    >COMPOSIZIONE UFFICIALE</span
+                  >
+                  <h2 data-ui="eightSubjects">Le 8 materie della prova base</h2>
+                </div>
+                <button class="text-button" data-go="quiz">
+                  <span data-ui="trainSubjects">Allenati per materia</span> →
+                </button>
+              </div>
+              <div class="category-grid" id="dashboardCategories"></div>
+            </section>
+
+            <div class="two-column">
+              <section class="panel study-plan">
+                <div class="section-heading">
+                  <div>
+                    <span class="eyebrow" data-ui="recommendedRoute"
+                      >ROTTA CONSIGLIATA</span
+                    >
+                    <h2 data-ui="fourStages">Piano in quattro tappe</h2>
+                  </div>
+                </div>
+                <ol class="route-list" id="studyRoute"></ol>
+              </section>
+              <section class="panel official-note">
+                <span class="seal">MIT</span
+                ><span class="eyebrow" data-ui="documentBase"
+                  >BASE DOCUMENTALE</span
+                >
+                <h2 data-ui="whatOfficial">Che cosa è ufficiale?</h2>
+                <p data-ui-html="officialDocs">
+                  Formato e programma: <strong>DM 323/2021</strong>. Quesiti
+                  BASE: <strong>DD 131/2022</strong>. Carteggio:
+                  <strong>DD 10/2022</strong>.
+                </p>
+                <button
+                  class="button ghost"
+                  data-go="sources"
+                  data-ui="verifySources"
+                >
+                  Verifica le fonti
+                </button>
+              </section>
+            </div>
+          </section>
+
+          <section class="view" id="view-quiz" aria-labelledby="quizTitle">
+            <div class="page-header">
+              <div>
+                <span class="eyebrow" data-ui="officialDatabase"
+                  >BANCA DATI UFFICIALE</span
+                >
+                <h1 id="quizTitle" data-ui="ministerialQuiz">
+                  Quiz ministeriali
+                </h1>
+                <p data-ui="quizDescription">
+                  Tutti i 1.472 quesiti BASE del DD 131/2022 con 103 figure
+                  ufficiali.
+                </p>
+              </div>
+              <div class="source-badge"><i></i> MIT · DD 131/2022</div>
+            </div>
+            <div id="quizSetup" class="quiz-setup">
+              <section class="panel mode-card featured">
+                <span class="mode-number">20</span
+                ><span class="eyebrow" data-ui="officialSimulation"
+                  >SIMULAZIONE UFFICIALE</span
+                >
+                <h2 data-ui="completeBaseTest">Prova base completa</h2>
+                <p data-ui="simulationDescription">
+                  20 quesiti nelle 8 materie, 30 minuti e almeno 16 risposte
+                  esatte.
+                </p>
+                <button class="button primary" id="startOfficial">
+                  <span data-ui="startSimulation">Avvia simulazione</span>
+                  <span>→</span>
+                </button>
+              </section>
+              <section class="panel mode-card">
+                <span class="mode-number">10</span
+                ><span class="eyebrow" data-ui="targetTraining"
+                  >ALLENAMENTO MIRATO</span
+                >
+                <h2 data-ui="trainingByTopic">Allenamento per argomento</h2>
+                <label
+                  ><span data-ui="subject">Materia</span
+                  ><select id="trainingTheme"></select
+                ></label>
+                <label
+                  ><span data-ui="topic">Argomento</span
+                  ><select id="trainingTopic"></select
+                ></label>
+                <button
+                  class="button ghost dark"
+                  id="startTraining"
+                  data-ui="trainTen"
+                >
+                  Allenati con 10 quesiti
+                </button>
+              </section>
+            </div>
+            <section id="quizRunner" class="quiz-runner panel" hidden></section>
+            <section id="quizResult" class="quiz-result panel" hidden></section>
+            <section class="panel bank-browser">
+              <div class="section-heading">
+                <div>
+                  <span class="eyebrow" data-ui="browseDatabase"
+                    >ESPLORA LA BANCA DATI</span
+                  >
+                  <h2 data-ui="searchQuestions">Cerca nei 1.472 quesiti</h2>
+                </div>
+                <strong id="bankResultCount">1.472</strong>
+              </div>
+              <div class="bank-tools">
+                <input
+                  id="bankSearch"
+                  type="search"
+                  placeholder="Es.: fanali, luzes, ancora, âncora…"
+                  data-ui-placeholder="bankSearchPlaceholder"
+                /><select id="bankTheme"></select>
+              </div>
+              <div id="bankResults" class="bank-results"></div>
+              <button
+                class="text-button centered"
+                id="bankMore"
+                data-ui="showMoreQuestions"
+              >
+                Mostra altri quesiti
+              </button>
+            </section>
+          </section>
+
+          <section
+            class="view"
+            id="view-carteggio"
+            aria-labelledby="carteggioTitle"
+          >
+            <div class="page-header">
+              <div>
+                <span class="eyebrow" data-ui="withinTwelve"
+                  >ESERCIZI ENTRO 12 MIGLIA</span
+                >
+                <h1 id="carteggioTitle" data-ui="fiftyChartExercises">
+                  50 esercizi di carteggio
+                </h1>
+                <p data-ui="chartDescription">
+                  Spazio, tempo, velocità, consumo e coordinate sulla carta 5/D.
+                </p>
+              </div>
+              <div class="source-badge amber">
+                <i></i> DD 10/2022 · pp. 161–178
+              </div>
+            </div>
+            <section class="formula-strip" aria-label="Formule essenziali">
+              <div>
+                <span data-ui="distance">Spazio</span><strong>S = V × T</strong>
+              </div>
+              <div>
+                <span data-ui="speed">Velocità</span><strong>V = S ÷ T</strong>
+              </div>
+              <div>
+                <span data-ui="time">Tempo</span><strong>T = S ÷ V</strong>
+              </div>
+              <div>
+                <span data-ui="fuel">Carburante</span
+                ><strong>consumo × ore × 1,30</strong>
+              </div>
+            </section>
+            <section class="panel exercise-controls">
+              <div>
+                <span class="eyebrow" data-ui="training">ALLENAMENTO</span>
+                <h2 data-ui="chooseSector">
+                  Scegli un settore o estrai a sorte
+                </h2>
+              </div>
+              <div class="control-row">
+                <select id="exerciseSector"></select
+                ><button
+                  class="button primary"
+                  id="randomExercise"
+                  data-ui="randomExercise"
+                >
+                  Estrai un esercizio</button
+                ><a
+                  class="button ghost dark"
+                  id="chartPdfLink"
+                  target="_blank"
+                  rel="noopener"
+                  data-ui="openPdf"
+                  >Apri il fascicolo PDF</a
+                >
+              </div>
+            </section>
+            <section class="panel chart-panel" aria-labelledby="chart5dTitle">
+              <div class="chart-panel-head">
+                <div>
+                  <span class="eyebrow" data-ui="chart5dEyebrow"
+                    >CARTA INTERATTIVA</span
+                  >
+                  <h2 id="chart5dTitle" data-ui="chart5dTitle">
+                    Carta nautica didattica 5/D
+                  </h2>
+                  <p data-ui="chart5dLead">
+                    Seleziona un esercizio per localizzare partenza, arrivo e
+                    rotta sulla griglia geografica.
+                  </p>
+                </div>
+                <div
+                  class="chart-toolbar"
+                  role="group"
+                  data-ui-aria="chartControls"
+                >
+                  <button
+                    id="chartZoomOut"
+                    type="button"
+                    data-ui-title="zoomOut"
+                    aria-label="Riduci"
+                  >
+                    −
+                  </button>
+                  <strong id="chartZoomLabel">100%</strong>
+                  <button
+                    id="chartZoomIn"
+                    type="button"
+                    data-ui-title="zoomIn"
+                    aria-label="Ingrandisci"
+                  >
+                    +
+                  </button>
+                  <button id="chartFit" type="button" data-ui="fitChart">
+                    Adatta
+                  </button>
+                </div>
+              </div>
+              <div
+                class="chart-coordinate-cards"
+                id="chartCoordinateCards"
+              ></div>
+              <div
+                class="chart-viewport"
+                id="chartViewport"
+                tabindex="0"
+                data-ui-aria="chartViewportLabel"
+              >
+                <div class="chart-stage" id="chartStage">
+                  <img
+                    id="chartImage"
+                    alt="Carta nautica didattica 5/D"
+                    data-ui-alt="chartImageAlt"
+                  />
+                  <canvas
+                    id="chartOverlay"
+                    width="4454"
+                    height="3045"
+                    aria-hidden="true"
+                  ></canvas>
+                </div>
+              </div>
+              <footer class="chart-panel-foot">
+                <p data-ui="chartAccuracyNote">
+                  I punti usano il centro degli intervalli di tolleranza del
+                  fascicolo; verifica sempre il rilevamento sulla carta
+                  ufficiale.
+                </p>
+                <a
+                  id="chartFullLink"
+                  target="_blank"
+                  rel="noopener"
+                  data-ui="openFullChart"
+                  >Apri alla massima risoluzione</a
+                >
+              </footer>
+            </section>
+            <div id="exerciseFeatured"></div>
+            <div class="section-heading exercise-list-title">
+              <div>
+                <span class="eyebrow" data-ui="completeList"
+                  >ELENCO COMPLETO</span
+                >
+                <h2 data-ui="allExercises">Tutti i 50 esercizi</h2>
+              </div>
+              <strong id="exerciseCount">50</strong>
+            </div>
+            <div id="exerciseList" class="exercise-list"></div>
+          </section>
+
+          <section
+            class="view"
+            id="view-sources"
+            aria-labelledby="sourcesTitle"
+          >
+            <div class="page-header">
+              <div>
+                <span class="eyebrow" data-ui="traceability"
+                  >TRACCIABILITÀ</span
+                >
+                <h1 id="sourcesTitle" data-ui="sourcesCriteria">
+                  Fonti e criteri
+                </h1>
+                <p data-ui="sourcesDescription">
+                  Provenienza dei contenuti, documenti ufficiali e materiali
+                  didattici.
+                </p>
+              </div>
+            </div>
+            <section class="freshness panel">
+              <div class="freshness-icon">!</div>
+              <div>
+                <h2 data-ui="officialRule">
+                  Regola semplice: la fonte ufficiale prevale.
+                </h2>
+                <p data-ui="officialRuleText">
+                  Dispense e traduzioni aiutano a comprendere; norme, limiti e
+                  risposte d'esame devono essere verificati in italiano sulle
+                  fonti MIT.
+                </p>
+              </div>
+            </section>
+            <div id="sourceGroups" class="source-groups"></div>
+            <section class="panel methodology">
+              <span class="eyebrow" data-ui="methodology">METODOLOGIA</span>
+              <h2 data-ui="howBuilt">Come è stata costruita la raccolta</h2>
+              <div class="method-grid" id="methodGrid"></div>
+            </section>
+          </section>
+
+          <section
+            id="searchOverlay"
+            class="search-overlay"
+            hidden
+            aria-live="polite"
+          ></section>
+        </main>
+      </div>
+    </div>
+
+    <button
+      class="glossary-fab"
+      id="glossaryOpen"
+      type="button"
+      aria-haspopup="dialog"
+    >
+      <span>IT ⇄ PT</span><b data-ui="glossary">Glossario</b>
+    </button>
+    <div class="drawer-backdrop" id="glossaryBackdrop" hidden></div>
+    <aside
+      class="glossary-drawer"
+      id="glossaryDrawer"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="glossaryTitle"
+      hidden
+    >
+      <header>
+        <div>
+          <span class="eyebrow">IT → PT</span>
+          <h2 id="glossaryTitle" data-ui="nauticalGlossary">
+            Glossario nautico
+          </h2>
+        </div>
+        <button id="glossaryClose" type="button" data-ui-aria="closeGlossary">
+          ×
+        </button>
+      </header>
+      <p data-ui="glossaryLead">
+        Cerca termini italiani, equivalenti portoghesi e sinonimi d'uso.
+      </p>
+      <input
+        id="glossarySearch"
+        type="search"
+        placeholder="Es.: dritta, boreste, scarroccio…"
+        data-ui-placeholder="glossarySearchPlaceholder"
+      />
+      <div class="glossary-results" id="glossaryResults"></div>
+    </aside>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="./app.js?v=3.0.0"></script>
+  </body>
+</html>

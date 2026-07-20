@@ -11,6 +11,10 @@
       "description": "Portfólio de ferramentas práticas para engenharia, energia e finanças, com foco educacional e uso direto no navegador, sem instalação."
     },
     "apps": {
+      "patentenautica": {
+        "name": "Patente Náutica",
+        "desc": "App bilíngue com questões ministeriais e Carta 5/D interativa"
+      },
       "br12c": {
         "name": "BR 12C Niobium",
         "desc": "Emulador da calculadora financeira HP 12C Platinum (RPN), para finanças e engenharia econômica"
@@ -101,6 +105,28 @@
         }
       }
     },
+    "patentenautica": {
+      "description": "App de estudo offline para a patente náutica italiana até 12 milhas a motor, com banco ministerial e Carta 5/D interativa, preservando o texto oficial italiano.",
+      "open": "Abrir Rotta 12 →",
+      "features": {
+        "quiz": {
+          "title": "Banco ministerial",
+          "desc": "1.472 questões BASE, 103 figuras, treino, simulado e revisão das respostas oficiais."
+        },
+        "language": {
+          "title": "Estudo IT ⇄ PT",
+          "desc": "Modos IT, PT e lado a lado, sem recarregar a página e com busca nos dois idiomas."
+        },
+        "chart": {
+          "title": "Carta náutica",
+          "desc": "Carta 5/D com zoom, 28 pontos georreferenciados e partida, chegada e rota nos 50 exercícios."
+        },
+        "glossary": {
+          "title": "Glossário náutico",
+          "desc": "Terminologia italiana e equivalentes náuticos em português brasileiro, sempre acessíveis."
+        }
+      }
+    },
     "what": {
       "it": {
         "does": "O que faz:"
@@ -125,6 +151,7 @@
       "description": "Calcula a bomba d'agua necessária para pequenos sistemas, estimando perdas, potência e consumo horário."
     },
     "app": {
+      "patentenautica": "Patente Náutica — Rotta 12",
       "br12c": "BR 12C Niobium — Calculadora Financeira",
       "bitola": "Calculadora de Bitola de Fios",
       "helice": "Calculadora de Hélice Náutica",
@@ -497,6 +524,10 @@
       "description": "Portfolio di strumenti pratici per ingegneria, energia e finanza, con approccio educativo e utilizzo diretto dal browser, senza installazione."
     },
     "apps": {
+      "patentenautica": {
+        "name": "Patente Nautica",
+        "desc": "App bilingue con quesiti ministeriali e Carta 5/D interattiva"
+      },
       "br12c": {
         "name": "BR 12C Niobium",
         "desc": "Emulatore della calcolatrice finanziaria HP 12C Platinum (RPN), per finanza e ingegneria economica"
@@ -587,6 +618,28 @@
         }
       }
     },
+    "patentenautica": {
+      "description": "App di studio offline per la patente nautica italiana entro 12 miglia a motore, con banca ministeriale e Carta 5/D interattiva, preservando il testo ufficiale italiano.",
+      "open": "Apri Rotta 12 →",
+      "features": {
+        "quiz": {
+          "title": "Banca ministeriale",
+          "desc": "1.472 quesiti BASE, 103 figure, allenamento, simulazione e revisione delle risposte ufficiali."
+        },
+        "language": {
+          "title": "Studio IT ⇄ PT",
+          "desc": "Modalità IT, PT e affiancata, senza ricaricare la pagina e con ricerca in entrambe le lingue."
+        },
+        "chart": {
+          "title": "Carteggio",
+          "desc": "Carta 5/D con zoom, 28 punti georeferenziati e partenza, arrivo e rotta nei 50 esercizi."
+        },
+        "glossary": {
+          "title": "Glossario nautico",
+          "desc": "Terminologia italiana ed equivalenti nautici in portoghese brasiliano, sempre accessibili."
+        }
+      }
+    },
     "what": {
       "it": {
         "does": "Cosa fa:"
@@ -611,6 +664,7 @@
       "description": "Calcola la pompa d'acqua necessaria per piccoli impianti, stimando perdite, potenza e consumo orario."
     },
     "app": {
+      "patentenautica": "Patente Nautica — Rotta 12",
       "br12c": "BR 12C Niobium — Calcolatrice Finanziaria",
       "bitola": "Calcolatrice Sezione Cavi",
       "helice": "Calcolatrice Elica Nautica",

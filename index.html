@@ -1,45 +1,68 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it-IT">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <!-- Meta viewport otimizada para mobile: permite zoom mas limita escala máxima -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
+    />
+
     <!-- Content Security Policy (fallback caso .htaccess não seja aplicado) -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://souonata.goatcounter.com https://*.open-meteo.com https://docs.google.com https://script.google.com; frame-src https://docs.google.com; object-src 'none'; base-uri 'self'; form-action 'self' https://docs.google.com; upgrade-insecure-requests;">
-    
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://souonata.goatcounter.com https://*.open-meteo.com https://docs.google.com https://script.google.com; frame-src https://docs.google.com; object-src 'none'; base-uri 'self'; form-action 'self' https://docs.google.com; upgrade-insecure-requests;"
+    />
+
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="apple-touch-icon" href="favicon.svg">
-    
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="apple-touch-icon" href="favicon.svg" />
+
     <!-- SEO Meta Tags -->
-    <title>Engenharia NATA - Apps Web Educativos de Engenharia e Finanças</title>
-    <meta name="description" content="Portfólio de apps web educativos: calculadora de empréstimos, dimensionamento de energia solar, cálculo de hélice, bitola de fios, ar condicionado e aquecedor solar. 100% JavaScript puro, bilíngue (PT/IT), mobile-first.">
-    <meta name="keywords" content="engenharia, calculadora, empréstimos, energia solar, fotovoltaico, hélice, bitola, fios elétricos, ar condicionado, aquecedor solar, JavaScript, apps web, educação">
-    <meta name="author" content="Engenharia NATA">
-    <meta name="robots" content="index, follow">
-    <meta name="language" content="Portuguese, Italian">
-    <meta name="revisit-after" content="7 days">
-    <link rel="canonical" href="https://engnata.eu/">
-    
+    <title>
+      Engenharia NATA - Apps Web Educativos de Engenharia e Finanças
+    </title>
+    <meta
+      name="description"
+      content="Portfólio de apps web educativos: calculadora de empréstimos, dimensionamento de energia solar, cálculo de hélice, bitola de fios, ar condicionado e aquecedor solar. 100% JavaScript puro, bilíngue (PT/IT), mobile-first."
+    />
+    <meta
+      name="keywords"
+      content="engenharia, calculadora, empréstimos, energia solar, fotovoltaico, hélice, bitola, fios elétricos, ar condicionado, aquecedor solar, JavaScript, apps web, educação"
+    />
+    <meta name="author" content="Engenharia NATA" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="Portuguese, Italian" />
+    <meta name="revisit-after" content="7 days" />
+    <link rel="canonical" href="https://engnata.eu/" />
+
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://engnata.eu/">
-    <meta property="og:title" content="Engenharia NATA - Apps Web Educativos">
-    <meta property="og:description" content="Portfólio de apps web educativos para engenharia e finanças. Calculadoras práticas e interativas.">
-    <meta property="og:locale" content="pt_BR">
-    <meta property="og:locale:alternate" content="it_IT">
-    <meta property="og:site_name" content="Engenharia NATA">
-    
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://engnata.eu/" />
+    <meta property="og:title" content="Engenharia NATA - Apps Web Educativos" />
+    <meta
+      property="og:description"
+      content="Portfólio de apps web educativos para engenharia e finanças. Calculadoras práticas e interativas."
+    />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:locale:alternate" content="it_IT" />
+    <meta property="og:site_name" content="Engenharia NATA" />
+
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://engnata.eu/">
-    <meta property="twitter:title" content="Engenharia NATA - Apps Web Educativos">
-    <meta property="twitter:description" content="Portfólio de apps web educativos para engenharia e finanças. Calculadoras práticas e interativas.">
-    
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://engnata.eu/" />
+    <meta
+      property="twitter:title"
+      content="Engenharia NATA - Apps Web Educativos"
+    />
+    <meta
+      property="twitter:description"
+      content="Portfólio de apps web educativos para engenharia e finanças. Calculadoras práticas e interativas."
+    />
+
     <!-- Structured Data (JSON-LD) para SEO -->
     <script type="application/ld+json">
-    {
+      {
         "@context": "https://schema.org",
         "@type": "WebSite",
         "name": "Engenharia NATA",
@@ -48,14 +71,14 @@
         "description": "Portfólio de apps web educativos para engenharia e finanças",
         "inLanguage": ["pt-BR", "it-IT"],
         "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://engnata.eu/?q={search_term_string}",
-            "query-input": "required name=search_term_string"
+          "@type": "SearchAction",
+          "target": "https://engnata.eu/?q={search_term_string}",
+          "query-input": "required name=search_term_string"
         }
-    }
+      }
     </script>
     <script type="application/ld+json">
-    {
+      {
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": "Engenharia NATA",
@@ -64,19 +87,19 @@
         "description": "Apps web educativos de engenharia e finanças",
         "email": "nata@engnata.eu",
         "contactPoint": {
-            "@type": "ContactPoint",
-            "email": "nata@engnata.eu",
-            "contactType": "customer support",
-            "availableLanguage": ["pt-BR", "it-IT"]
+          "@type": "ContactPoint",
+          "email": "nata@engnata.eu",
+          "contactType": "customer support",
+          "availableLanguage": ["pt-BR", "it-IT"]
         },
         "sameAs": []
-    }
+      }
     </script>
-    
+
     <!-- Carrega o arquivo CSS com controle de versão -->
     <!-- Mude ?v=1.0.0 para ?v=1.0.1 quando atualizar o CSS -->
-    <link rel="stylesheet" href="assets/css/shared-styles.css?v=2.0.1">
-    <link rel="stylesheet" href="index-styles.css?v=1.0.5">
+    <link rel="stylesheet" href="assets/css/shared-styles.css?v=2.0.1" />
+    <link rel="stylesheet" href="index-styles.css?v=1.0.5" />
 
     <!-- Cortina de boot (anti-piscada): tema + i18n (it->pt) + reordenação dos
          cards rodam DEPOIS do 1º paint, então o site "piscava" 2-3 vezes ao abrir.
@@ -85,872 +108,2370 @@
          À prova de JS morto: o próprio CSS a dissolve sozinho após 1.4s — a
          cortina NUNCA prende o site (ver GUIA_FALHA_CONGELAMENTO.md). -->
     <style>
-        html.boot::before,
-        html.boot::after {
-            content: "";
-            position: fixed;
-            z-index: 99990;
-        }
+      html.boot::before,
+      html.boot::after {
+        content: "";
+        position: fixed;
+        z-index: 99990;
+      }
+      html.boot::before {
+        inset: 0;
+        background: #f2f4f7;
+        animation: boot-some 0s 1.4s forwards;
+      }
+      html.boot::after {
+        top: 50%;
+        left: 50%;
+        width: 36px;
+        height: 36px;
+        margin: -18px 0 0 -18px;
+        border: 3px solid rgba(128, 138, 150, 0.3);
+        border-top-color: #5a6b7d;
+        border-radius: 50%;
+        animation:
+          boot-gira 0.7s linear infinite,
+          boot-some 0s 1.4s forwards;
+      }
+      @media (prefers-color-scheme: dark) {
         html.boot::before {
-            inset: 0;
-            background: #f2f4f7;
-            animation: boot-some 0s 1.4s forwards;
+          background: #10151c;
         }
         html.boot::after {
-            top: 50%;
-            left: 50%;
-            width: 36px;
-            height: 36px;
-            margin: -18px 0 0 -18px;
-            border: 3px solid rgba(128, 138, 150, 0.30);
-            border-top-color: #5a6b7d;
-            border-radius: 50%;
-            animation: boot-gira 0.7s linear infinite, boot-some 0s 1.4s forwards;
+          border-color: rgba(160, 172, 186, 0.25);
+          border-top-color: #c6d2de;
         }
-        @media (prefers-color-scheme: dark) {
-            html.boot::before { background: #10151c; }
-            html.boot::after { border-color: rgba(160, 172, 186, 0.25); border-top-color: #c6d2de; }
+      }
+      @keyframes boot-gira {
+        to {
+          transform: rotate(360deg);
         }
-        @keyframes boot-gira { to { transform: rotate(360deg); } }
-        @keyframes boot-some { to { visibility: hidden; opacity: 0; } }
+      }
+      @keyframes boot-some {
+        to {
+          visibility: hidden;
+          opacity: 0;
+        }
+      }
     </style>
-    <script>document.documentElement.classList.add('boot');</script>
+    <script>
+      document.documentElement.classList.add("boot");
+    </script>
 
     <!-- Analytics: GoatCounter (privacy-friendly, LGPD/GDPR-compliant) -->
     <script>
-        window.goatcounter = window.goatcounter || {};
-        // Permite contar acessos durante desenvolvimento local (localhost).
-        window.goatcounter.allow_local = true;
-        window.goatcounter.scriptLoaded = false;
-        window.goatcounter.scriptBlocked = false;
-        (function() {
-            var gcScript = document.createElement('script');
-            gcScript.async = true;
-            gcScript.src = 'https://gc.zgo.at/count.js';
-            gcScript.dataset.goatcounter = 'https://souonata.goatcounter.com/count';
-            gcScript.onload = function() {
-                window.goatcounter.scriptLoaded = true;
-            };
-            gcScript.onerror = function() {
-                window.goatcounter.scriptBlocked = true;
-            };
-            document.head.appendChild(gcScript);
-        })();
+      window.goatcounter = window.goatcounter || {};
+      // Permite contar acessos durante desenvolvimento local (localhost).
+      window.goatcounter.allow_local = true;
+      window.goatcounter.scriptLoaded = false;
+      window.goatcounter.scriptBlocked = false;
+      (function () {
+        var gcScript = document.createElement("script");
+        gcScript.async = true;
+        gcScript.src = "https://gc.zgo.at/count.js";
+        gcScript.dataset.goatcounter = "https://souonata.goatcounter.com/count";
+        gcScript.onload = function () {
+          window.goatcounter.scriptLoaded = true;
+        };
+        gcScript.onerror = function () {
+          window.goatcounter.scriptBlocked = true;
+        };
+        document.head.appendChild(gcScript);
+      })();
     </script>
     <!-- Rede de seguranca global de erros (ver GUIA_FALHA_CONGELAMENTO.md) -->
     <script src="assets/js/error-overlay.js"></script>
-</head>
-<body>
+  </head>
+  <body>
     <!-- ========================================== -->
     <!-- SELETOR DE IDIOMA (PADRÃO GLOBAL - FORA DO CELULAR) -->
     <!-- ========================================== -->
     <div class="language-selector">
-        <!-- Botão para português (ativo definido pelo JavaScript) -->
-        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR" data-i18n-aria="aria-lang-pt" data-i18n-title="title-lang-pt">
-            <!-- Bandeira BR em SVG inline: renderiza igual em qualquer sistema
+      <!-- Botão para português (ativo definido pelo JavaScript) -->
+      <button
+        id="btnPortugues"
+        class="lang-btn"
+        data-lang="pt-BR"
+        data-i18n-aria="aria-lang-pt"
+        data-i18n-title="title-lang-pt"
+      >
+        <!-- Bandeira BR em SVG inline: renderiza igual em qualquer sistema
                  operacional (não depende de fontes de emoji do SO — alguns PCs
                  Windows sem Twemoji renderizavam só "BR"/"IT" como texto). -->
-            <span class="flag" aria-hidden="true">
-                <svg viewBox="0 0 14 10" width="20" height="14" role="img" focusable="false">
-                    <rect width="14" height="10" fill="#009c3b"/>
-                    <polygon points="7,1.4 12.6,5 7,8.6 1.4,5" fill="#ffdf00"/>
-                    <circle cx="7" cy="5" r="1.9" fill="#002776"/>
-                </svg>
-            </span>
-            <span class="lang-text">PT</span>
-        </button>
-        <!-- Botão para italiano -->
-        <button id="btnItaliano" class="lang-btn" data-lang="it-IT" data-i18n-aria="aria-lang-it" data-i18n-title="title-lang-it">
-            <!-- Bandeira IT em SVG inline (3 bandas verticais: verde/branco/vermelho). -->
-            <span class="flag" aria-hidden="true">
-                <svg viewBox="0 0 15 10" width="21" height="14" role="img" focusable="false">
-                    <rect width="5" height="10" x="0"  fill="#009246"/>
-                    <rect width="5" height="10" x="5"  fill="#ffffff"/>
-                    <rect width="5" height="10" x="10" fill="#ce2b37"/>
-                </svg>
-            </span>
-            <span class="lang-text">IT</span>
-        </button>
+        <span class="flag" aria-hidden="true">
+          <svg
+            viewBox="0 0 14 10"
+            width="20"
+            height="14"
+            role="img"
+            focusable="false"
+          >
+            <rect width="14" height="10" fill="#009c3b" />
+            <polygon points="7,1.4 12.6,5 7,8.6 1.4,5" fill="#ffdf00" />
+            <circle cx="7" cy="5" r="1.9" fill="#002776" />
+          </svg>
+        </span>
+        <span class="lang-text">PT</span>
+      </button>
+      <!-- Botão para italiano -->
+      <button
+        id="btnItaliano"
+        class="lang-btn"
+        data-lang="it-IT"
+        data-i18n-aria="aria-lang-it"
+        data-i18n-title="title-lang-it"
+      >
+        <!-- Bandeira IT em SVG inline (3 bandas verticais: verde/branco/vermelho). -->
+        <span class="flag" aria-hidden="true">
+          <svg
+            viewBox="0 0 15 10"
+            width="21"
+            height="14"
+            role="img"
+            focusable="false"
+          >
+            <rect width="5" height="10" x="0" fill="#009246" />
+            <rect width="5" height="10" x="5" fill="#ffffff" />
+            <rect width="5" height="10" x="10" fill="#ce2b37" />
+          </svg>
+        </span>
+        <span class="lang-text">IT</span>
+      </button>
     </div>
 
     <!-- Recipiente que simula a tela de um celular -->
     <div class="device-screen">
-        
-        <!-- Barra de status (topo do celular) -->
-        <!-- Mostra: horário completo com segundos e data -->
-        <div class="barra-status">
-            <!-- Horário à esquerda e data à direita -->
-            <span class="horario" id="horario">...</span>
-            <span class="sync-indicator" id="syncIndicator" style="display: none;" data-i18n-aria="aria-sync-time">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z" fill="currentColor"/>
-                </svg>
-            </span>
-            <span class="data" id="data">...</span>
-        </div>
-        
-        <!-- Tela principal onde ficam os aplicativos -->
-        <div class="home-screen">
-            <!-- Grade de aplicativos (pode ter vários ícones aqui) -->
-            <div class="apps-grid">
-                
-                <!-- Ícone do aplicativo Sobre o Projeto -->
-                <!-- Ao clicar, abre a página sobre/sobre.html -->
-                <a href="sobre/sobre.html" class="app-icon" data-i18n-aria="app-about">
-                    <!-- Ícone SVG personalizado com gradiente azul -->
-                    <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img">
-                            <!-- Definição do gradiente (roxo claro → roxo escuro) -->
-                            <defs>
-                                <linearGradient id="gradient-about" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#bca147;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#a0a21f;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <!-- Retângulo com cantos arredondados preenchido com o gradiente -->
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-about)"/>
-                            <!-- Símbolo 📖 (livro) no centro do ícone -->
-                            <text x="30" y="40" font-size="28" text-anchor="middle">📖</text>
-                        </svg>
-                    </div>
-                    <!-- Nome do aplicativo que aparece abaixo do ícone -->
-                    <span class="app-name" data-i18n="app-about">Sobre o Projeto</span>
-                </a>
+      <!-- Barra de status (topo do celular) -->
+      <!-- Mostra: horário completo com segundos e data -->
+      <div class="barra-status">
+        <!-- Horário à esquerda e data à direita -->
+        <span class="horario" id="horario">...</span>
+        <span
+          class="sync-indicator"
+          id="syncIndicator"
+          style="display: none"
+          data-i18n-aria="aria-sync-time"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"
+              fill="currentColor"
+            />
+          </svg>
+        </span>
+        <span class="data" id="data">...</span>
+      </div>
 
-                <!-- Ícone do aplicativo Aquecedor Solar -->
-                <a href="aquecimento/aquecimento.html" class="app-icon" data-i18n-aria="app-aquecimento">
-                    <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="gradient-aquecimento" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#FF9800;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#F57C00;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-aquecimento)"/>
-                            <text x="30" y="40" font-size="32" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">☀</text>
-                        </svg>
-                    </div>
-                    <span class="app-name" data-i18n="app-aquecimento">Aquecedor Solar</span>
-                </a>
+      <!-- Tela principal onde ficam os aplicativos -->
+      <div class="home-screen">
+        <!-- Grade de aplicativos (pode ter vários ícones aqui) -->
+        <div class="apps-grid">
+          <!-- Ícone do aplicativo Sobre o Projeto -->
+          <!-- Ao clicar, abre a página sobre/sobre.html -->
+          <a
+            href="sobre/sobre.html"
+            class="app-icon"
+            data-i18n-aria="app-about"
+          >
+            <!-- Ícone SVG personalizado com gradiente azul -->
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                role="img"
+              >
+                <!-- Definição do gradiente (roxo claro → roxo escuro) -->
+                <defs>
+                  <linearGradient
+                    id="gradient-about"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #bca147; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #a0a21f; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <!-- Retângulo com cantos arredondados preenchido com o gradiente -->
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-about)"
+                />
+                <!-- Símbolo 📖 (livro) no centro do ícone -->
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  📖
+                </text>
+              </svg>
+            </div>
+            <!-- Nome do aplicativo que aparece abaixo do ícone -->
+            <span class="app-name" data-i18n="app-about">Sobre o Projeto</span>
+          </a>
 
-                <!-- Ícone do aplicativo Ar Condicionado -->
-                <a href="arcondicionado/arcondicionado.html" class="app-icon" data-i18n-aria="app-arcondicionado">
-                    <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="gradient-arcondicionado" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#64B5F6;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#1976D2;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-arcondicionado)"/>
-                            <text x="30" y="40" font-size="32" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">❄</text>
-                        </svg>
-                    </div>
-                    <span class="app-name" data-i18n="app-arcondicionado">Ar Condicionado</span>
-                </a>
+          <!-- Ícone do aplicativo Aquecedor Solar -->
+          <a
+            href="aquecimento/aquecimento.html"
+            class="app-icon"
+            data-i18n-aria="app-aquecimento"
+          >
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-aquecimento"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #ff9800; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #f57c00; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-aquecimento)"
+                />
+                <text
+                  x="30"
+                  y="40"
+                  font-size="32"
+                  text-anchor="middle"
+                  fill="#FFFFFF"
+                  style="
+                    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+                    font-weight: bold;
+                  "
+                >
+                  ☀
+                </text>
+              </svg>
+            </div>
+            <span class="app-name" data-i18n="app-aquecimento"
+              >Aquecedor Solar</span
+            >
+          </a>
 
-                <!-- Ícone do aplicativo Bitola -->
-                <a href="bitola/bitola.html" class="app-icon" data-i18n-aria="app-bitola">
-                    <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="gradient-bitola" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#8B7355;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#6B5B4F;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-bitola)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">🔌</text>
-                        </svg>
-                    </div>
-                    <span class="app-name" data-i18n="app-bitola">Bitola</span>
-                </a>
+          <!-- Ícone do aplicativo Ar Condicionado -->
+          <a
+            href="arcondicionado/arcondicionado.html"
+            class="app-icon"
+            data-i18n-aria="app-arcondicionado"
+          >
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-arcondicionado"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #64b5f6; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #1976d2; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-arcondicionado)"
+                />
+                <text
+                  x="30"
+                  y="40"
+                  font-size="32"
+                  text-anchor="middle"
+                  fill="#FFFFFF"
+                  style="
+                    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+                    font-weight: bold;
+                  "
+                >
+                  ❄
+                </text>
+              </svg>
+            </div>
+            <span class="app-name" data-i18n="app-arcondicionado"
+              >Ar Condicionado</span
+            >
+          </a>
 
-                <!-- Ícone do aplicativo Bomba d'Agua -->
-                <a href="bombaagua/bombaagua.html" class="app-icon" data-i18n-aria="app-bombaagua">
-                    <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="gradient-bombaagua" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#0F9B8E;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#1B6CA8;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-bombaagua)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">💧</text>
-                        </svg>
-                    </div>
-                    <span class="app-name" data-i18n="app-bombaagua">Bomba d'Agua</span>
-                </a>
+          <!-- Ícone do aplicativo Bitola -->
+          <a
+            href="bitola/bitola.html"
+            class="app-icon"
+            data-i18n-aria="app-bitola"
+          >
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-bitola"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #8b7355; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #6b5b4f; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-bitola)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  🔌
+                </text>
+              </svg>
+            </div>
+            <span class="app-name" data-i18n="app-bitola">Bitola</span>
+          </a>
 
-                <!-- Ícone do aplicativo Captação de Água da Chuva -->
-                <a href="chuva/chuva.html" class="app-icon" data-i18n-aria="app-chuva">
-                    <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="gradient-chuva" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#0288D1;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#26C6DA;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-chuva)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">🌧️</text>
-                        </svg>
-                    </div>
-                    <span class="app-name" data-i18n="app-chuva">Água de Chuva</span>
-                </a>
+          <!-- Ícone do aplicativo Bomba d'Agua -->
+          <a
+            href="bombaagua/bombaagua.html"
+            class="app-icon"
+            data-i18n-aria="app-bombaagua"
+          >
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-bombaagua"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #0f9b8e; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #1b6ca8; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-bombaagua)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  💧
+                </text>
+              </svg>
+            </div>
+            <span class="app-name" data-i18n="app-bombaagua">Bomba d'Agua</span>
+          </a>
 
-                <!-- Ícone do aplicativo Energia Solar -->
-                <a href="solar/solar.html" class="app-icon" data-i18n-aria="app-solar">
-                    <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="gradient-solar" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#00c6ff;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#0072ff;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-solar)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">🔋</text>
-                        </svg>
-                    </div>
-                    <span class="app-name" data-i18n="app-solar">Energia Solar</span>
-                </a>
+          <!-- Ícone do aplicativo Captação de Água da Chuva -->
+          <a
+            href="chuva/chuva.html"
+            class="app-icon"
+            data-i18n-aria="app-chuva"
+          >
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-chuva"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #0288d1; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #26c6da; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-chuva)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  🌧️
+                </text>
+              </svg>
+            </div>
+            <span class="app-name" data-i18n="app-chuva">Água de Chuva</span>
+          </a>
 
-                <!-- Ícone do aplicativo Fazenda -->
-                <a href="fazenda/fazenda.html" class="app-icon" data-i18n-aria="app-fazenda">
-                    <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="gradient-fazenda" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#8B6F47;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#6B8E5A;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-fazenda)"/>
-                            <text x="30" y="40" font-size="32" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">🌾</text>
-                        </svg>
-                    </div>
-                    <span class="app-name" data-i18n="app-fazenda">Fazenda</span>
-                </a>
+          <!-- Ícone do aplicativo Energia Solar -->
+          <a
+            href="solar/solar.html"
+            class="app-icon"
+            data-i18n-aria="app-solar"
+          >
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-solar"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #00c6ff; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #0072ff; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-solar)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  🔋
+                </text>
+              </svg>
+            </div>
+            <span class="app-name" data-i18n="app-solar">Energia Solar</span>
+          </a>
 
-                <!-- Ícone do aplicativo Hélice -->
-                <a href="helice/helice.html" class="app-icon" data-i18n-aria="app-helice">
-                    <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="gradient-helice" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#00ACC1;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#006064;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-helice)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">⚓</text>
-                        </svg>
-                    </div>
-                    <span class="app-name" data-i18n="app-helice">Hélice</span>
-                </a>
+          <!-- Ícone do aplicativo Fazenda -->
+          <a
+            href="fazenda/fazenda.html"
+            class="app-icon"
+            data-i18n-aria="app-fazenda"
+          >
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-fazenda"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #8b6f47; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #6b8e5a; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-fazenda)"
+                />
+                <text
+                  x="30"
+                  y="40"
+                  font-size="32"
+                  text-anchor="middle"
+                  fill="#FFFFFF"
+                  style="
+                    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+                    font-weight: bold;
+                  "
+                >
+                  🌾
+                </text>
+              </svg>
+            </div>
+            <span class="app-name" data-i18n="app-fazenda">Fazenda</span>
+          </a>
 
-                <!-- Ícone do aplicativo Iluminação Residencial -->
-                <a href="iluminacao/iluminacao.html" class="app-icon" data-i18n-aria="app-iluminacao">
-                    <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="gradient-iluminacao" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-iluminacao)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">💡</text>
-                        </svg>
-                    </div>
-                    <span class="app-name" data-i18n="app-iluminacao">Iluminação</span>
-                </a>
+          <!-- Ícone do aplicativo Hélice -->
+          <a
+            href="helice/helice.html"
+            class="app-icon"
+            data-i18n-aria="app-helice"
+          >
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-helice"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #00acc1; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #006064; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-helice)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  ⚓
+                </text>
+              </svg>
+            </div>
+            <span class="app-name" data-i18n="app-helice">Hélice</span>
+          </a>
 
-                <!-- Ícone do aplicativo Mútuo -->
-                <a href="mutuo/mutuo.html" class="app-icon" data-i18n-aria="app-mutuo">
-                    <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#2E7D32;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient)"/>
-                            <text x="30" y="38" font-size="28" text-anchor="middle" fill="white" font-weight="bold">$</text>
-                        </svg>
-                    </div>
-                    <span class="app-name" data-i18n="app-mutuo">Mutuo</span>
-                </a>
+          <!-- Ícone do guia Patente Náutica -->
+          <a
+            href="patentenautica/"
+            class="app-icon"
+            data-i18n-aria="app-patentenautica"
+          >
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-patentenautica"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #0b3440; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #44b9c6; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-patentenautica)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  🧭
+                </text>
+              </svg>
+            </div>
+            <span class="app-name" data-i18n="app-patentenautica"
+              >Patente Náutica</span
+            >
+          </a>
 
-                <!-- Ícone do aplicativo BR 12C Niobium -->
-                <a href="br12c/index.html" class="app-icon" data-i18n-aria="app-hp12c">
-                    <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="gradient-hp12c" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#2A2D32;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#C79A2B;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-hp12c)"/>
-                            <text x="30" y="25" font-size="12" text-anchor="middle" fill="#F5D47B" font-family="Arial, sans-serif" font-weight="700">BR</text>
-                            <text x="30" y="42" font-size="18" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="800">12C</text>
-                        </svg>
-                    </div>
-                    <span class="app-name" data-i18n="app-hp12c">BR 12C Niobium</span>
-                </a>
+          <!-- Ícone do aplicativo Iluminação Residencial -->
+          <a
+            href="iluminacao/iluminacao.html"
+            class="app-icon"
+            data-i18n-aria="app-iluminacao"
+          >
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-iluminacao"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #ffd700; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #ffa500; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-iluminacao)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  💡
+                </text>
+              </svg>
+            </div>
+            <span class="app-name" data-i18n="app-iluminacao">Iluminação</span>
+          </a>
 
-                <!-- Ícone do aplicativo Previsão 7 dias -->
-                <a href="previsao/previsao.html" class="app-icon" data-i18n-aria="app-previsao">
-                    <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="gradient-previsao" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#1565C0;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#42A5F5;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-previsao)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">⛅</text>
-                        </svg>
-                    </div>
-                    <span class="app-name" data-i18n="app-previsao">Previsão</span>
-                </a>
+          <!-- Ícone do aplicativo Mútuo -->
+          <a
+            href="mutuo/mutuo.html"
+            class="app-icon"
+            data-i18n-aria="app-mutuo"
+          >
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #4caf50; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #2e7d32; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect width="60" height="60" rx="12" fill="url(#gradient)" />
+                <text
+                  x="30"
+                  y="38"
+                  font-size="28"
+                  text-anchor="middle"
+                  fill="white"
+                  font-weight="bold"
+                >
+                  $
+                </text>
+              </svg>
+            </div>
+            <span class="app-name" data-i18n="app-mutuo">Mutuo</span>
+          </a>
 
-                <!-- Ícone do aplicativo Salário -->
-                <a href="salario/salario.html" class="app-icon" data-i18n-aria="app-salario">
-                    <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="gradient-salario" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#1E88E5;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#00ACC1;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-salario)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">💼</text>
-                        </svg>
-                    </div>
-                    <span class="app-name" data-i18n="app-salario">Salário</span>
-                </a>
+          <!-- Ícone do aplicativo BR 12C Niobium -->
+          <a
+            href="br12c/index.html"
+            class="app-icon"
+            data-i18n-aria="app-hp12c"
+          >
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-hp12c"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #2a2d32; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #c79a2b; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-hp12c)"
+                />
+                <text
+                  x="30"
+                  y="25"
+                  font-size="12"
+                  text-anchor="middle"
+                  fill="#F5D47B"
+                  font-family="Arial, sans-serif"
+                  font-weight="700"
+                >
+                  BR
+                </text>
+                <text
+                  x="30"
+                  y="42"
+                  font-size="18"
+                  text-anchor="middle"
+                  fill="#FFFFFF"
+                  font-family="Arial, sans-serif"
+                  font-weight="800"
+                >
+                  12C
+                </text>
+              </svg>
+            </div>
+            <span class="app-name" data-i18n="app-hp12c">BR 12C Niobium</span>
+          </a>
 
-                <!-- Ícone do aplicativo Ventilação Natural -->
-                <a href="ventilacao/ventilacao.html" class="app-icon" data-i18n-aria="app-ventilacao">
-                    <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="gradient-ventilacao" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#00897B;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#4DB6AC;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-ventilacao)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">🌬️</text>
-                        </svg>
-                    </div>
-                    <span class="app-name" data-i18n="app-ventilacao">Ventilação</span>
-                </a>
+          <!-- Ícone do aplicativo Previsão 7 dias -->
+          <a
+            href="previsao/previsao.html"
+            class="app-icon"
+            data-i18n-aria="app-previsao"
+          >
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-previsao"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #1565c0; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #42a5f5; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-previsao)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  ⛅
+                </text>
+              </svg>
+            </div>
+            <span class="app-name" data-i18n="app-previsao">Previsão</span>
+          </a>
 
-                <!-- Ícone do aplicativo Reportar Bug -->
-                <a href="bugs/bugs.html" class="app-icon" data-i18n-aria="app-bugs">
-                    <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="gradient-bugs" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#C92A2A;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-bugs)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">🐛</text>
-                        </svg>
-                    </div>
-                    <span class="app-name" data-i18n="app-bugs">Reportar Bug</span>
-                </a>
+          <!-- Ícone do aplicativo Salário -->
+          <a
+            href="salario/salario.html"
+            class="app-icon"
+            data-i18n-aria="app-salario"
+          >
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-salario"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #1e88e5; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #00acc1; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-salario)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  💼
+                </text>
+              </svg>
+            </div>
+            <span class="app-name" data-i18n="app-salario">Salário</span>
+          </a>
 
-                <!-- Apps SECRETOS (OCULTOS): só aparecem após o easter egg de 9
+          <!-- Ícone do aplicativo Ventilação Natural -->
+          <a
+            href="ventilacao/ventilacao.html"
+            class="app-icon"
+            data-i18n-aria="app-ventilacao"
+          >
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-ventilacao"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #00897b; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #4db6ac; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-ventilacao)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  🌬️
+                </text>
+              </svg>
+            </div>
+            <span class="app-name" data-i18n="app-ventilacao">Ventilação</span>
+          </a>
+
+          <!-- Ícone do aplicativo Reportar Bug -->
+          <a href="bugs/bugs.html" class="app-icon" data-i18n-aria="app-bugs">
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-bugs"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #ff6b6b; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #c92a2a; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-bugs)"
+                />
+                <text
+                  x="30"
+                  y="40"
+                  font-size="28"
+                  text-anchor="middle"
+                  fill="#FFFFFF"
+                  style="
+                    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+                    font-weight: bold;
+                  "
+                >
+                  🐛
+                </text>
+              </svg>
+            </div>
+            <span class="app-name" data-i18n="app-bugs">Reportar Bug</span>
+          </a>
+
+          <!-- Apps SECRETOS (OCULTOS): só aparecem após o easter egg de 9
                      toques no dock "ENGENHARIA NATA". Marcados com data-app-secreto;
                      o index-script.js os revela todos e os mantém sempre por ÚLTIMO
                      na ordenação. Ocultados via style="display:none" inline porque
                      .app-icon usa display:flex (venceria [hidden]); o JS limpa o
                      display ao revelar. Não persiste entre reloads (proposital). -->
-                <!-- 1) Assistente Volvo — app externo (abre em nova aba) -->
-                <a href="https://volvo.engnata.eu"
-                   id="appAssistenteVolvo"
-                   class="app-icon"
-                   style="display:none"
-                   target="_blank" rel="noopener noreferrer"
-                   data-app-secreto
-                   data-i18n-aria="app-volvo" aria-hidden="true" tabindex="-1">
-                    <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="gradient-volvo" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#16335c;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#2f6db0;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-volvo)"/>
-                            <!-- Iron mark da Volvo: círculo + flecha em ângulo reto (45°) -->
-                            <circle cx="25" cy="34" r="12" fill="none" stroke="#FFFFFF" stroke-width="3.5"/>
-                            <path d="M33 26 L44 15" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
-                            <path d="M37 13 L46 13 L46 22" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <span class="app-name" data-i18n="app-volvo">Assistente Volvo</span>
-                </a>
-
-                <!-- 2) Bonsai Lichia — app interno (diário de cultivo) -->
-                <a href="lichiabonsai/"
-                   id="appBonsaiLichia"
-                   class="app-icon"
-                   style="display:none"
-                   data-app-secreto
-                   data-i18n-aria="app-lichiabonsai" aria-hidden="true" tabindex="-1">
-                    <div class="icon">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="gradient-lichia" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#5cb874;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#2e7d46;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-lichia)"/>
-                            <!-- Broto de lichia: caule + duas folhas (cotilédones) -->
-                            <path d="M30 50 V31" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round"/>
-                            <path d="M30 36c-9 .4-13.7-4.6-14.2-13.8C24.9 22.7 30 27.8 30 36Z" fill="#ffffff"/>
-                            <path d="M30 31c8.4-.4 12.8-4.6 13.3-13C34.6 18.5 30 23.2 30 31Z" fill="#ffffff" opacity="0.9"/>
-                        </svg>
-                    </div>
-                    <span class="app-name" data-i18n="app-lichiabonsai">Bonsai Lichia</span>
-                </a>
-
+          <!-- 1) Assistente Volvo — app externo (abre em nova aba) -->
+          <a
+            href="https://volvo.engnata.eu"
+            id="appAssistenteVolvo"
+            class="app-icon"
+            style="display: none"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-app-secreto
+            data-i18n-aria="app-volvo"
+            aria-hidden="true"
+            tabindex="-1"
+          >
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-volvo"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #16335c; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #2f6db0; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-volvo)"
+                />
+                <!-- Iron mark da Volvo: círculo + flecha em ângulo reto (45°) -->
+                <circle
+                  cx="25"
+                  cy="34"
+                  r="12"
+                  fill="none"
+                  stroke="#FFFFFF"
+                  stroke-width="3.5"
+                />
+                <path
+                  d="M33 26 L44 15"
+                  stroke="#FFFFFF"
+                  stroke-width="3.5"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M37 13 L46 13 L46 22"
+                  fill="none"
+                  stroke="#FFFFFF"
+                  stroke-width="3.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
             </div>
+            <span class="app-name" data-i18n="app-volvo">Assistente Volvo</span>
+          </a>
+
+          <!-- 2) Bonsai Lichia — app interno (diário de cultivo) -->
+          <a
+            href="lichiabonsai/"
+            id="appBonsaiLichia"
+            class="app-icon"
+            style="display: none"
+            data-app-secreto
+            data-i18n-aria="app-lichiabonsai"
+            aria-hidden="true"
+            tabindex="-1"
+          >
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-lichia"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #5cb874; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #2e7d46; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-lichia)"
+                />
+                <!-- Broto de lichia: caule + duas folhas (cotilédones) -->
+                <path
+                  d="M30 50 V31"
+                  fill="none"
+                  stroke="#ffffff"
+                  stroke-width="3.2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M30 36c-9 .4-13.7-4.6-14.2-13.8C24.9 22.7 30 27.8 30 36Z"
+                  fill="#ffffff"
+                />
+                <path
+                  d="M30 31c8.4-.4 12.8-4.6 13.3-13C34.6 18.5 30 23.2 30 31Z"
+                  fill="#ffffff"
+                  opacity="0.9"
+                />
+              </svg>
+            </div>
+            <span class="app-name" data-i18n="app-lichiabonsai"
+              >Bonsai Lichia</span
+            >
+          </a>
         </div>
-        
-        <!-- Dock (barra inferior do celular) -->
-        <!-- Logo Engenharia NATA com easter egg no dock -->
-        <div class="dock" id="easterEggDock" data-easter-state="locked">
-            <button class="dock-trigger" id="dockEasterEggTrigger" type="button" aria-label="Engenharia Nata">
-                <span class="dock-marquee-viewport" id="dockMarqueeViewport">
-                    <span class="dock-marquee-track" id="dockMarqueeTrack">
-                        <span class="logo-container dock-brand" id="dockBrandPrimary">
-                            <svg class="logo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" fill="currentColor"/>
-                                <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none"/>
-                            </svg>
-                            <span class="logo-text">ENGENHARIA <span class="logo-highlight">NATA</span></span>
-                        </span>
+      </div>
 
-                        <span class="dock-spacer" id="dockGapAfterBrand" aria-hidden="true"></span>
+      <!-- Dock (barra inferior do celular) -->
+      <!-- Logo Engenharia NATA com easter egg no dock -->
+      <div class="dock" id="easterEggDock" data-easter-state="locked">
+        <button
+          class="dock-trigger"
+          id="dockEasterEggTrigger"
+          type="button"
+          aria-label="Engenharia Nata"
+        >
+          <span class="dock-marquee-viewport" id="dockMarqueeViewport">
+            <span class="dock-marquee-track" id="dockMarqueeTrack">
+              <span class="logo-container dock-brand" id="dockBrandPrimary">
+                <svg
+                  class="logo-icon"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M9 12l2 2 4-4"
+                    stroke="white"
+                    stroke-width="2"
+                    fill="none"
+                  />
+                </svg>
+                <span class="logo-text"
+                  >ENGENHARIA <span class="logo-highlight">NATA</span></span
+                >
+              </span>
 
-                        <span class="dock-visitors-chip" id="dockVisitorsChip" aria-live="polite">
-                            <span class="dock-visitors-label" data-i18n="app-visitantes">Visitantes</span>
-                            <span class="visitors-count-led dock-visitors-value js-visitors-count" title="" data-i18n-title="app-visitantes-tooltip">—</span>
-                        </span>
+              <span
+                class="dock-spacer"
+                id="dockGapAfterBrand"
+                aria-hidden="true"
+              ></span>
 
-                        <span class="dock-spacer" id="dockGapAfterVisitors" aria-hidden="true"></span>
+              <span
+                class="dock-visitors-chip"
+                id="dockVisitorsChip"
+                aria-live="polite"
+              >
+                <span class="dock-visitors-label" data-i18n="app-visitantes"
+                  >Visitantes</span
+                >
+                <span
+                  class="visitors-count-led dock-visitors-value js-visitors-count"
+                  title=""
+                  data-i18n-title="app-visitantes-tooltip"
+                  >—</span
+                >
+              </span>
 
-                        <span class="logo-container dock-brand dock-brand-secondary" id="dockBrandSecondary" aria-hidden="true">
-                            <svg class="logo-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" fill="currentColor"/>
-                                <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none"/>
-                            </svg>
-                            <span class="logo-text">ENGENHARIA <span class="logo-highlight">NATA</span></span>
-                        </span>
-                    </span>
-                </span>
-            </button>
-        </div>
+              <span
+                class="dock-spacer"
+                id="dockGapAfterVisitors"
+                aria-hidden="true"
+              ></span>
+
+              <span
+                class="logo-container dock-brand dock-brand-secondary"
+                id="dockBrandSecondary"
+                aria-hidden="true"
+              >
+                <svg
+                  class="logo-icon"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M9 12l2 2 4-4"
+                    stroke="white"
+                    stroke-width="2"
+                    fill="none"
+                  />
+                </svg>
+                <span class="logo-text"
+                  >ENGENHARIA <span class="logo-highlight">NATA</span></span
+                >
+              </span>
+            </span>
+          </span>
+        </button>
+      </div>
     </div>
-    
+
     <!-- ========================================== -->
     <!-- SEÇÃO DE DESCRIÇÕES DOS APPS -->
     <!-- ========================================== -->
     <div class="apps-description-section">
-        <h2 class="section-title" data-i18n="apps-description-title">Aplicativos Disponíveis</h2>
-        <p class="section-subtitle" data-i18n="apps-description-subtitle">Ferramentas práticas para cálculos de engenharia e finanças</p>
-        
-        <div class="apps-list">
-            <!-- App: Sobre -->
-            <div class="app-card">
-                <div class="app-card-header">
-                    <a href="sobre/sobre.html" data-i18n-aria="app-about">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
-                            <defs>
-                                <linearGradient id="gradient-about-desc" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#bca147;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#a0a21f;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-about-desc)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">📖</text>
-                        </svg>
-                    </a>
-                    <h3><a href="sobre/sobre.html" data-i18n="app-about-title">Sobre o Projeto</a></h3>
-                </div>
-                <p class="app-description" data-i18n="app-about-description">Informações sobre o projeto Engenharia NATA, tecnologias utilizadas, estatísticas do código e objetivos educacionais. Conheça mais sobre os apps e o desenvolvimento deste portfólio.</p>
-                <a href="sobre/sobre.html" class="app-link" data-i18n="app-link-view">Ver página →</a>
-            </div>
-            
-            <!-- App: Aquecedor Solar -->
-            <div class="app-card">
-                <div class="app-card-header">
-                    <a href="aquecimento/aquecimento.html" data-i18n-aria="app-aquecimento">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
-                            <defs>
-                                <linearGradient id="gradient-aquecimento-desc" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#FF9800;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#F57C00;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-aquecimento-desc)"/>
-                            <text x="30" y="40" font-size="32" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">☀</text>
-                        </svg>
-                    </a>
-                    <h3><a href="aquecimento/aquecimento.html" data-i18n="app-aquecimento-title">Aquecedor Solar - Dimensionamento Térmico</a></h3>
-                </div>
-                <p class="app-description" data-i18n="app-aquecimento-description">Dimensionador completo de sistemas de aquecimento solar térmico. Calcula área de coletores, volume do boiler, número de painéis e potência necessária baseado em área (m²) e classe energética. Suporta aquecimento de água de consumo e aquecimento ambiente separadamente ou combinados, considerando temperatura mínima para termossifões (48°C) e estratificação térmica.</p>
-                <a href="aquecimento/aquecimento.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
-            </div>
+      <h2 class="section-title" data-i18n="apps-description-title">
+        Aplicativos Disponíveis
+      </h2>
+      <p class="section-subtitle" data-i18n="apps-description-subtitle">
+        Ferramentas práticas para cálculos de engenharia e finanças
+      </p>
 
-            <!-- App: Ar Condicionado -->
-            <div class="app-card">
-                <div class="app-card-header">
-                    <a href="arcondicionado/arcondicionado.html" data-i18n-aria="app-arcondicionado">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
-                            <defs>
-                                <linearGradient id="gradient-arcondicionado-desc" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#64B5F6;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#1976D2;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-arcondicionado-desc)"/>
-                            <text x="30" y="40" font-size="32" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">❄</text>
-                        </svg>
-                    </a>
-                    <h3><a href="arcondicionado/arcondicionado.html" data-i18n="app-arcondicionado-title">Ar Condicionado - Dimensionamento</a></h3>
-                </div>
-                <p class="app-description" data-i18n="app-arcondicionado-description">Dimensionador de sistema multi-split para ar condicionado. Calcula BTU baseado em área total (10-300 m²), número de ambientes (1-8), altura, pessoas, equipamentos e condições ambientais. Dimensiona unidades internas (até 60k BTU cada) e externas (até 180k BTU cada) com cálculo de custo estimado.</p>
-                <a href="arcondicionado/arcondicionado.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
-            </div>
-
-            <!-- App: Bitola -->
-            <div class="app-card">
-                <div class="app-card-header">
-                    <a href="bitola/bitola.html" data-i18n-aria="app-bitola">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
-                            <defs>
-                                <linearGradient id="gradient-bitola-desc" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#8B7355;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#6B5B4F;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-bitola-desc)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">🔌</text>
-                        </svg>
-                    </a>
-                    <h3><a href="bitola/bitola.html" data-i18n="app-bitola-title">Bitola - Calculadora de Fios Elétricos</a></h3>
-                </div>
-                <p class="app-description" data-i18n="app-bitola-description">Calculadora de bitola de fios elétricos para circuitos CC e CA. Considera queda de tensão, corrente e distância. Seleciona automaticamente a bitola comercial padrão brasileiro (NBR 5410) que atende aos requisitos de segurança e eficiência.</p>
-                <a href="bitola/bitola.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
-            </div>
-
-            <!-- App: Bomba d'Agua -->
-            <div class="app-card">
-                <div class="app-card-header">
-                    <a href="bombaagua/bombaagua.html" data-i18n-aria="app-bombaagua">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
-                            <defs>
-                                <linearGradient id="gradient-bombaagua-desc" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#0F9B8E;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#1B6CA8;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-bombaagua-desc)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">💧</text>
-                        </svg>
-                    </a>
-                    <h3><a href="bombaagua/bombaagua.html" data-i18n="app-bombaagua-title">Bomba d'Agua</a></h3>
-                </div>
-                <p class="app-description" data-i18n="app-bombaagua-description">Calculadora educativa de bomba d'agua para sistemas residenciais e pequenos usos rurais. Estima perdas de carga, altura manométrica total, potência requerida, consumo por hora e faixa comercial recomendada.</p>
-                <a href="bombaagua/bombaagua.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
-            </div>
-
-            <!-- App: Captação de Água da Chuva -->
-            <div class="app-card">
-                <div class="app-card-header">
-                    <a href="chuva/chuva.html" data-i18n-aria="app-chuva">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
-                            <defs>
-                                <linearGradient id="gradient-chuva-desc" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#0288D1;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#26C6DA;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-chuva-desc)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">🌧️</text>
-                        </svg>
-                    </a>
-                    <h3><a href="chuva/chuva.html" data-i18n="app-chuva-title">Captação de Água da Chuva</a></h3>
-                </div>
-                <p class="app-description" data-i18n="app-chuva-description">Dimensionador de cisternas para aproveitamento de água da chuva. Calcula volume captado, cisterna ideal e economia mensal estimada com base em área do telhado, precipitação e uso pretendido (jardim, sanitário, limpeza). Conforme NBR 15527.</p>
-                <a href="chuva/chuva.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
-            </div>
-
-            <!-- App: Energia Solar -->
-            <div class="app-card">
-                <div class="app-card-header">
-                    <a href="solar/solar.html" data-i18n-aria="app-solar">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
-                            <defs>
-                                <linearGradient id="gradient-solar-desc" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#00c6ff;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#0072ff;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-solar-desc)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">🔋</text>
-                        </svg>
-                    </a>
-                    <h3><a href="solar/solar.html" data-i18n="app-solar-title">Energia Solar - Dimensionamento Fotovoltaico</a></h3>
-                </div>
-                <p class="app-description" data-i18n="app-solar-description">Dimensionamento completo de sistemas fotovoltaicos off-grid. Calcula número de painéis solares, capacidade de baterias (AGM e LiFePO4), inversor necessário e autonomia do sistema. Inclui página de configuração personalizável para ajustar preços e especificações técnicas.</p>
-                <a href="solar/solar.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
-            </div>
-
-            <!-- App: Fazenda -->
-            <div class="app-card">
-                <div class="app-card-header">
-                    <a href="fazenda/fazenda.html" data-i18n-aria="app-fazenda">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
-                            <defs>
-                                <linearGradient id="gradient-fazenda-desc" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#8B6F47;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#6B8E5A;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-fazenda-desc)"/>
-                            <text x="30" y="40" font-size="32" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">🌾</text>
-                        </svg>
-                    </a>
-                    <h3><a href="fazenda/fazenda.html" data-i18n="app-fazenda-title">Fazenda - Dimensionamento Auto-Sustentável</a></h3>
-                </div>
-                <p class="app-description" data-i18n="app-fazenda-description">Planejador completo de fazenda auto-sustentável. Calcula espaço necessário, quantidade de plantas (frutas, verduras, legumes) e animais necessários para alimentar uma família. Inclui calendário de plantio/colheita e frequência de reprodução dos animais para manter produção contínua.</p>
-                <a href="fazenda/fazenda.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
-            </div>
-
-            <!-- App: Helice -->
-            <div class="app-card">
-                <div class="app-card-header">
-                    <a href="helice/helice.html" data-i18n-aria="app-helice">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
-                            <defs>
-                                <linearGradient id="gradient-helice-desc" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#00ACC1;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#006064;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-helice-desc)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">⚓</text>
-                        </svg>
-                    </a>
-                    <h3><a href="helice/helice.html" data-i18n="app-helice-title">Hélice - Calculadora de Passo</a></h3>
-                </div>
-                <p class="app-description" data-i18n="app-helice-description">Calculadora de passo de hélice para barcos de lazer. Determina o passo ideal baseado em RPM máximo, velocidade desejada e análise de slip. Inclui gráficos de relação velocidade × passo para otimização de performance náutica.</p>
-                <a href="helice/helice.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
-            </div>
-
-            <!-- App: Iluminação Residencial -->
-            <div class="app-card">
-                <div class="app-card-header">
-                    <a href="iluminacao/iluminacao.html" data-i18n-aria="app-iluminacao">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
-                            <defs>
-                                <linearGradient id="gradient-iluminacao-desc" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-iluminacao-desc)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">💡</text>
-                        </svg>
-                    </a>
-                    <h3><a href="iluminacao/iluminacao.html" data-i18n="app-iluminacao-title">Iluminação Residencial</a></h3>
-                </div>
-                <p class="app-description" data-i18n="app-iluminacao-description">Calculadora de iluminação residencial. Dimensiona lâmpadas, calcula lux recomendado conforme NBR 5413 e estima custo mensal de energia considerando tamanho do ambiente, tipo de atividade, cor das paredes, pé-direito e disponibilidade de luz natural.</p>
-                <a href="iluminacao/iluminacao.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
-            </div>
-
-            <!-- App: Mutuo -->
-            <div class="app-card">
-                <div class="app-card-header">
-                    <a href="mutuo/mutuo.html" data-i18n-aria="app-mutuo">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
-                            <defs>
-                                <linearGradient id="gradient-mutuo-desc" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#2E7D32;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-mutuo-desc)"/>
-                            <text x="30" y="38" font-size="28" text-anchor="middle" fill="white" font-weight="bold">$</text>
-                        </svg>
-                    </a>
-                    <h3><a href="mutuo/mutuo.html" data-i18n="app-mutuo-title">Mutuo - Calculadora de Empréstimos</a></h3>
-                </div>
-                <p class="app-description" data-i18n="app-mutuo-description">Calculadora bilíngue (PT/IT) de sistemas de amortização: SAC, Price e Americano. Inclui gráficos interativos, tabela de amortização completa e comparação de juros totais. Ideal para planejamento financeiro e análise de empréstimos.</p>
-                <a href="mutuo/mutuo.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
-            </div>
-
-            <!-- App: BR 12C Niobium -->
-            <div class="app-card">
-                <div class="app-card-header">
-                    <a href="br12c/index.html" data-i18n-aria="app-hp12c">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
-                            <defs>
-                                <linearGradient id="gradient-hp12c-desc" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#2A2D32;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#C79A2B;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-hp12c-desc)"/>
-                            <text x="30" y="25" font-size="12" text-anchor="middle" fill="#F5D47B" font-family="Arial, sans-serif" font-weight="700">BR</text>
-                            <text x="30" y="42" font-size="18" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-weight="800">12C</text>
-                        </svg>
-                    </a>
-                    <h3><a href="br12c/index.html" data-i18n="app-hp12c-title">BR 12C Niobium - Simulador Financeiro</a></h3>
-                </div>
-                <p class="app-description" data-i18n="app-hp12c-description">Simulador standalone da calculadora financeira BR 12C Niobium, hospedado no Engenharia NATA para acesso direto pelo app no celular. Mantém sua própria interface em tela cheia, sem cabeçalho e rodapé padrão dos demais apps.</p>
-                <a href="br12c/index.html" class="app-link" data-i18n="app-link-open-simulator">Abrir simulador →</a>
-            </div>
-
-            <!-- App: Previsão 7 dias -->
-            <div class="app-card">
-                <div class="app-card-header">
-                    <a href="previsao/previsao.html" data-i18n-aria="app-previsao">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
-                            <defs>
-                                <linearGradient id="gradient-previsao-desc" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#1565C0;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#42A5F5;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-previsao-desc)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">⛅</text>
-                        </svg>
-                    </a>
-                    <h3><a href="previsao/previsao.html" data-i18n="app-previsao-title">Previsão 7 dias</a></h3>
-                </div>
-                <p class="app-description" data-i18n="app-previsao-description">Previsão meteorológica de 7 dias com dados da Open-Meteo, em até 4 cidades configuráveis por busca (padrão: Milão e Curitiba). Gráfico horário por dia com temperatura-alvo sazonal de conforto, vento e chuva em escala histórica de 365 dias.</p>
-                <a href="previsao/previsao.html" class="app-link" data-i18n="app-link-forecast">Ver previsão →</a>
-            </div>
-
-            <!-- App: Salário -->
-            <div class="app-card">
-                <div class="app-card-header">
-                    <a href="salario/salario.html" data-i18n-aria="app-salario">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
-                            <defs>
-                                <linearGradient id="gradient-salario-desc" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#1E88E5;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#00ACC1;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-salario-desc)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">💼</text>
-                        </svg>
-                    </a>
-                    <h3><a href="salario/salario.html" data-i18n="app-salario-title">Salário Líquido — BR/IT</a></h3>
-                </div>
-                <p class="app-description" data-i18n="app-salario-description">Calculadora bilíngue de salário: Brasil (CLT — INSS, IRRF, FGTS, 13º, férias e rescisão) e Itália (IRPEF a 3 scaglioni, INPS, addizionali regionais, TFR, tredicesima). Valores oficiais 2025-2026. Inclui gráficos da decomposição do líquido, renda anual total e memorial com referências oficiais.</p>
-                <a href="salario/salario.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
-            </div>
-
-            <!-- App: Ventilação Natural -->
-            <div class="app-card">
-                <div class="app-card-header">
-                    <a href="ventilacao/ventilacao.html" data-i18n-aria="app-ventilacao">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
-                            <defs>
-                                <linearGradient id="gradient-ventilacao-desc" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#00897B;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#4DB6AC;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-ventilacao-desc)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle">🌬️</text>
-                        </svg>
-                    </a>
-                    <h3><a href="ventilacao/ventilacao.html" data-i18n="app-ventilacao-title">Ventilação Natural</a></h3>
-                </div>
-                <p class="app-description" data-i18n="app-ventilacao-description">Calculadora de ventilação natural residencial. Calcula renovações de ar por hora (ACH), qualidade da ventilação e área mínima de janelas com base nas dimensões do ambiente, área de janelas, orientação, clima e ocupação. Conforme NBR 15575.</p>
-                <a href="ventilacao/ventilacao.html" class="app-link" data-i18n="app-link-use">Usar calculadora →</a>
-            </div>
-
-            <!-- App: Reportar Bug -->
-            <div class="app-card">
-                <div class="app-card-header">
-                    <a href="bugs/bugs.html" data-i18n-aria="app-bugs">
-                        <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="app-icon-large">
-                            <defs>
-                                <linearGradient id="gradient-bugs-desc" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#C92A2A;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="60" height="60" rx="12" fill="url(#gradient-bugs-desc)"/>
-                            <text x="30" y="40" font-size="28" text-anchor="middle" fill="#FFFFFF" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); font-weight: bold;">🐛</text>
-                        </svg>
-                    </a>
-                    <h3><a href="bugs/bugs.html" data-i18n="app-bugs-title">Reportar Bug</a></h3>
-                </div>
-                <p class="app-description" data-i18n="app-bugs-description">Formulário para reportar bugs e problemas encontrados nos aplicativos. Ajude-nos a melhorar reportando erros, sugestões ou problemas de usabilidade. Informações de contato opcional para resposta.</p>
-                <a href="bugs/bugs.html" class="app-link" data-i18n="app-link-use-form">Usar formulário →</a>
-            </div>
+      <div class="apps-list">
+        <!-- App: Sobre -->
+        <div class="app-card">
+          <div class="app-card-header">
+            <a href="sobre/sobre.html" data-i18n-aria="app-about">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="app-icon-large"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-about-desc"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #bca147; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #a0a21f; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-about-desc)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  📖
+                </text>
+              </svg>
+            </a>
+            <h3>
+              <a href="sobre/sobre.html" data-i18n="app-about-title"
+                >Sobre o Projeto</a
+              >
+            </h3>
+          </div>
+          <p class="app-description" data-i18n="app-about-description">
+            Informações sobre o projeto Engenharia NATA, tecnologias utilizadas,
+            estatísticas do código e objetivos educacionais. Conheça mais sobre
+            os apps e o desenvolvimento deste portfólio.
+          </p>
+          <a href="sobre/sobre.html" class="app-link" data-i18n="app-link-view"
+            >Ver página →</a
+          >
         </div>
+
+        <!-- App: Aquecedor Solar -->
+        <div class="app-card">
+          <div class="app-card-header">
+            <a
+              href="aquecimento/aquecimento.html"
+              data-i18n-aria="app-aquecimento"
+            >
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="app-icon-large"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-aquecimento-desc"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #ff9800; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #f57c00; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-aquecimento-desc)"
+                />
+                <text
+                  x="30"
+                  y="40"
+                  font-size="32"
+                  text-anchor="middle"
+                  fill="#FFFFFF"
+                  style="
+                    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+                    font-weight: bold;
+                  "
+                >
+                  ☀
+                </text>
+              </svg>
+            </a>
+            <h3>
+              <a
+                href="aquecimento/aquecimento.html"
+                data-i18n="app-aquecimento-title"
+                >Aquecedor Solar - Dimensionamento Térmico</a
+              >
+            </h3>
+          </div>
+          <p class="app-description" data-i18n="app-aquecimento-description">
+            Dimensionador completo de sistemas de aquecimento solar térmico.
+            Calcula área de coletores, volume do boiler, número de painéis e
+            potência necessária baseado em área (m²) e classe energética.
+            Suporta aquecimento de água de consumo e aquecimento ambiente
+            separadamente ou combinados, considerando temperatura mínima para
+            termossifões (48°C) e estratificação térmica.
+          </p>
+          <a
+            href="aquecimento/aquecimento.html"
+            class="app-link"
+            data-i18n="app-link-use"
+            >Usar calculadora →</a
+          >
+        </div>
+
+        <!-- App: Ar Condicionado -->
+        <div class="app-card">
+          <div class="app-card-header">
+            <a
+              href="arcondicionado/arcondicionado.html"
+              data-i18n-aria="app-arcondicionado"
+            >
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="app-icon-large"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-arcondicionado-desc"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #64b5f6; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #1976d2; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-arcondicionado-desc)"
+                />
+                <text
+                  x="30"
+                  y="40"
+                  font-size="32"
+                  text-anchor="middle"
+                  fill="#FFFFFF"
+                  style="
+                    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+                    font-weight: bold;
+                  "
+                >
+                  ❄
+                </text>
+              </svg>
+            </a>
+            <h3>
+              <a
+                href="arcondicionado/arcondicionado.html"
+                data-i18n="app-arcondicionado-title"
+                >Ar Condicionado - Dimensionamento</a
+              >
+            </h3>
+          </div>
+          <p class="app-description" data-i18n="app-arcondicionado-description">
+            Dimensionador de sistema multi-split para ar condicionado. Calcula
+            BTU baseado em área total (10-300 m²), número de ambientes (1-8),
+            altura, pessoas, equipamentos e condições ambientais. Dimensiona
+            unidades internas (até 60k BTU cada) e externas (até 180k BTU cada)
+            com cálculo de custo estimado.
+          </p>
+          <a
+            href="arcondicionado/arcondicionado.html"
+            class="app-link"
+            data-i18n="app-link-use"
+            >Usar calculadora →</a
+          >
+        </div>
+
+        <!-- App: Bitola -->
+        <div class="app-card">
+          <div class="app-card-header">
+            <a href="bitola/bitola.html" data-i18n-aria="app-bitola">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="app-icon-large"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-bitola-desc"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #8b7355; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #6b5b4f; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-bitola-desc)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  🔌
+                </text>
+              </svg>
+            </a>
+            <h3>
+              <a href="bitola/bitola.html" data-i18n="app-bitola-title"
+                >Bitola - Calculadora de Fios Elétricos</a
+              >
+            </h3>
+          </div>
+          <p class="app-description" data-i18n="app-bitola-description">
+            Calculadora de bitola de fios elétricos para circuitos CC e CA.
+            Considera queda de tensão, corrente e distância. Seleciona
+            automaticamente a bitola comercial padrão brasileiro (NBR 5410) que
+            atende aos requisitos de segurança e eficiência.
+          </p>
+          <a href="bitola/bitola.html" class="app-link" data-i18n="app-link-use"
+            >Usar calculadora →</a
+          >
+        </div>
+
+        <!-- App: Bomba d'Agua -->
+        <div class="app-card">
+          <div class="app-card-header">
+            <a href="bombaagua/bombaagua.html" data-i18n-aria="app-bombaagua">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="app-icon-large"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-bombaagua-desc"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #0f9b8e; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #1b6ca8; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-bombaagua-desc)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  💧
+                </text>
+              </svg>
+            </a>
+            <h3>
+              <a href="bombaagua/bombaagua.html" data-i18n="app-bombaagua-title"
+                >Bomba d'Agua</a
+              >
+            </h3>
+          </div>
+          <p class="app-description" data-i18n="app-bombaagua-description">
+            Calculadora educativa de bomba d'agua para sistemas residenciais e
+            pequenos usos rurais. Estima perdas de carga, altura manométrica
+            total, potência requerida, consumo por hora e faixa comercial
+            recomendada.
+          </p>
+          <a
+            href="bombaagua/bombaagua.html"
+            class="app-link"
+            data-i18n="app-link-use"
+            >Usar calculadora →</a
+          >
+        </div>
+
+        <!-- App: Captação de Água da Chuva -->
+        <div class="app-card">
+          <div class="app-card-header">
+            <a href="chuva/chuva.html" data-i18n-aria="app-chuva">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="app-icon-large"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-chuva-desc"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #0288d1; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #26c6da; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-chuva-desc)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  🌧️
+                </text>
+              </svg>
+            </a>
+            <h3>
+              <a href="chuva/chuva.html" data-i18n="app-chuva-title"
+                >Captação de Água da Chuva</a
+              >
+            </h3>
+          </div>
+          <p class="app-description" data-i18n="app-chuva-description">
+            Dimensionador de cisternas para aproveitamento de água da chuva.
+            Calcula volume captado, cisterna ideal e economia mensal estimada
+            com base em área do telhado, precipitação e uso pretendido (jardim,
+            sanitário, limpeza). Conforme NBR 15527.
+          </p>
+          <a href="chuva/chuva.html" class="app-link" data-i18n="app-link-use"
+            >Usar calculadora →</a
+          >
+        </div>
+
+        <!-- App: Energia Solar -->
+        <div class="app-card">
+          <div class="app-card-header">
+            <a href="solar/solar.html" data-i18n-aria="app-solar">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="app-icon-large"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-solar-desc"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #00c6ff; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #0072ff; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-solar-desc)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  🔋
+                </text>
+              </svg>
+            </a>
+            <h3>
+              <a href="solar/solar.html" data-i18n="app-solar-title"
+                >Energia Solar - Dimensionamento Fotovoltaico</a
+              >
+            </h3>
+          </div>
+          <p class="app-description" data-i18n="app-solar-description">
+            Dimensionamento completo de sistemas fotovoltaicos off-grid. Calcula
+            número de painéis solares, capacidade de baterias (AGM e LiFePO4),
+            inversor necessário e autonomia do sistema. Inclui página de
+            configuração personalizável para ajustar preços e especificações
+            técnicas.
+          </p>
+          <a href="solar/solar.html" class="app-link" data-i18n="app-link-use"
+            >Usar calculadora →</a
+          >
+        </div>
+
+        <!-- App: Fazenda -->
+        <div class="app-card">
+          <div class="app-card-header">
+            <a href="fazenda/fazenda.html" data-i18n-aria="app-fazenda">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="app-icon-large"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-fazenda-desc"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #8b6f47; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #6b8e5a; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-fazenda-desc)"
+                />
+                <text
+                  x="30"
+                  y="40"
+                  font-size="32"
+                  text-anchor="middle"
+                  fill="#FFFFFF"
+                  style="
+                    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+                    font-weight: bold;
+                  "
+                >
+                  🌾
+                </text>
+              </svg>
+            </a>
+            <h3>
+              <a href="fazenda/fazenda.html" data-i18n="app-fazenda-title"
+                >Fazenda - Dimensionamento Auto-Sustentável</a
+              >
+            </h3>
+          </div>
+          <p class="app-description" data-i18n="app-fazenda-description">
+            Planejador completo de fazenda auto-sustentável. Calcula espaço
+            necessário, quantidade de plantas (frutas, verduras, legumes) e
+            animais necessários para alimentar uma família. Inclui calendário de
+            plantio/colheita e frequência de reprodução dos animais para manter
+            produção contínua.
+          </p>
+          <a
+            href="fazenda/fazenda.html"
+            class="app-link"
+            data-i18n="app-link-use"
+            >Usar calculadora →</a
+          >
+        </div>
+
+        <!-- App: Helice -->
+        <div class="app-card">
+          <div class="app-card-header">
+            <a href="helice/helice.html" data-i18n-aria="app-helice">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="app-icon-large"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-helice-desc"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #00acc1; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #006064; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-helice-desc)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  ⚓
+                </text>
+              </svg>
+            </a>
+            <h3>
+              <a href="helice/helice.html" data-i18n="app-helice-title"
+                >Hélice - Calculadora de Passo</a
+              >
+            </h3>
+          </div>
+          <p class="app-description" data-i18n="app-helice-description">
+            Calculadora de passo de hélice para barcos de lazer. Determina o
+            passo ideal baseado em RPM máximo, velocidade desejada e análise de
+            slip. Inclui gráficos de relação velocidade × passo para otimização
+            de performance náutica.
+          </p>
+          <a href="helice/helice.html" class="app-link" data-i18n="app-link-use"
+            >Usar calculadora →</a
+          >
+        </div>
+
+        <!-- App: Patente Náutica -->
+        <div class="app-card">
+          <div class="app-card-header">
+            <a href="patentenautica/" data-i18n-aria="app-patentenautica">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="app-icon-large"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-patentenautica-desc"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #0b3440; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #44b9c6; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-patentenautica-desc)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  🧭
+                </text>
+              </svg>
+            </a>
+            <h3>
+              <a href="patentenautica/" data-i18n="app-patentenautica-title"
+                >Patente Náutica — Rotta 12</a
+              >
+            </h3>
+          </div>
+          <p class="app-description" data-i18n="app-patentenautica-description">
+            App para a habilitação náutica italiana até 12 milhas a motor, com
+            1.472 questões ministeriais e Carta 5/D interativa nos 50 exercícios
+            de carta, em IT, PT ou IT+PT.
+          </p>
+          <a href="patentenautica/" class="app-link" data-i18n="app-link-study"
+            >Abrir quiz e carta →</a
+          >
+        </div>
+
+        <!-- App: Iluminação Residencial -->
+        <div class="app-card">
+          <div class="app-card-header">
+            <a
+              href="iluminacao/iluminacao.html"
+              data-i18n-aria="app-iluminacao"
+            >
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="app-icon-large"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-iluminacao-desc"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #ffd700; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #ffa500; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-iluminacao-desc)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  💡
+                </text>
+              </svg>
+            </a>
+            <h3>
+              <a
+                href="iluminacao/iluminacao.html"
+                data-i18n="app-iluminacao-title"
+                >Iluminação Residencial</a
+              >
+            </h3>
+          </div>
+          <p class="app-description" data-i18n="app-iluminacao-description">
+            Calculadora de iluminação residencial. Dimensiona lâmpadas, calcula
+            lux recomendado conforme NBR 5413 e estima custo mensal de energia
+            considerando tamanho do ambiente, tipo de atividade, cor das
+            paredes, pé-direito e disponibilidade de luz natural.
+          </p>
+          <a
+            href="iluminacao/iluminacao.html"
+            class="app-link"
+            data-i18n="app-link-use"
+            >Usar calculadora →</a
+          >
+        </div>
+
+        <!-- App: Mutuo -->
+        <div class="app-card">
+          <div class="app-card-header">
+            <a href="mutuo/mutuo.html" data-i18n-aria="app-mutuo">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="app-icon-large"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-mutuo-desc"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #4caf50; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #2e7d32; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-mutuo-desc)"
+                />
+                <text
+                  x="30"
+                  y="38"
+                  font-size="28"
+                  text-anchor="middle"
+                  fill="white"
+                  font-weight="bold"
+                >
+                  $
+                </text>
+              </svg>
+            </a>
+            <h3>
+              <a href="mutuo/mutuo.html" data-i18n="app-mutuo-title"
+                >Mutuo - Calculadora de Empréstimos</a
+              >
+            </h3>
+          </div>
+          <p class="app-description" data-i18n="app-mutuo-description">
+            Calculadora bilíngue (PT/IT) de sistemas de amortização: SAC, Price
+            e Americano. Inclui gráficos interativos, tabela de amortização
+            completa e comparação de juros totais. Ideal para planejamento
+            financeiro e análise de empréstimos.
+          </p>
+          <a href="mutuo/mutuo.html" class="app-link" data-i18n="app-link-use"
+            >Usar calculadora →</a
+          >
+        </div>
+
+        <!-- App: BR 12C Niobium -->
+        <div class="app-card">
+          <div class="app-card-header">
+            <a href="br12c/index.html" data-i18n-aria="app-hp12c">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="app-icon-large"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-hp12c-desc"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #2a2d32; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #c79a2b; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-hp12c-desc)"
+                />
+                <text
+                  x="30"
+                  y="25"
+                  font-size="12"
+                  text-anchor="middle"
+                  fill="#F5D47B"
+                  font-family="Arial, sans-serif"
+                  font-weight="700"
+                >
+                  BR
+                </text>
+                <text
+                  x="30"
+                  y="42"
+                  font-size="18"
+                  text-anchor="middle"
+                  fill="#FFFFFF"
+                  font-family="Arial, sans-serif"
+                  font-weight="800"
+                >
+                  12C
+                </text>
+              </svg>
+            </a>
+            <h3>
+              <a href="br12c/index.html" data-i18n="app-hp12c-title"
+                >BR 12C Niobium - Simulador Financeiro</a
+              >
+            </h3>
+          </div>
+          <p class="app-description" data-i18n="app-hp12c-description">
+            Simulador standalone da calculadora financeira BR 12C Niobium,
+            hospedado no Engenharia NATA para acesso direto pelo app no celular.
+            Mantém sua própria interface em tela cheia, sem cabeçalho e rodapé
+            padrão dos demais apps.
+          </p>
+          <a
+            href="br12c/index.html"
+            class="app-link"
+            data-i18n="app-link-open-simulator"
+            >Abrir simulador →</a
+          >
+        </div>
+
+        <!-- App: Previsão 7 dias -->
+        <div class="app-card">
+          <div class="app-card-header">
+            <a href="previsao/previsao.html" data-i18n-aria="app-previsao">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="app-icon-large"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-previsao-desc"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #1565c0; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #42a5f5; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-previsao-desc)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  ⛅
+                </text>
+              </svg>
+            </a>
+            <h3>
+              <a href="previsao/previsao.html" data-i18n="app-previsao-title"
+                >Previsão 7 dias</a
+              >
+            </h3>
+          </div>
+          <p class="app-description" data-i18n="app-previsao-description">
+            Previsão meteorológica de 7 dias com dados da Open-Meteo, em até 4
+            cidades configuráveis por busca (padrão: Milão e Curitiba). Gráfico
+            horário por dia com temperatura-alvo sazonal de conforto, vento e
+            chuva em escala histórica de 365 dias.
+          </p>
+          <a
+            href="previsao/previsao.html"
+            class="app-link"
+            data-i18n="app-link-forecast"
+            >Ver previsão →</a
+          >
+        </div>
+
+        <!-- App: Salário -->
+        <div class="app-card">
+          <div class="app-card-header">
+            <a href="salario/salario.html" data-i18n-aria="app-salario">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="app-icon-large"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-salario-desc"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #1e88e5; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #00acc1; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-salario-desc)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  💼
+                </text>
+              </svg>
+            </a>
+            <h3>
+              <a href="salario/salario.html" data-i18n="app-salario-title"
+                >Salário Líquido — BR/IT</a
+              >
+            </h3>
+          </div>
+          <p class="app-description" data-i18n="app-salario-description">
+            Calculadora bilíngue de salário: Brasil (CLT — INSS, IRRF, FGTS,
+            13º, férias e rescisão) e Itália (IRPEF a 3 scaglioni, INPS,
+            addizionali regionais, TFR, tredicesima). Valores oficiais
+            2025-2026. Inclui gráficos da decomposição do líquido, renda anual
+            total e memorial com referências oficiais.
+          </p>
+          <a
+            href="salario/salario.html"
+            class="app-link"
+            data-i18n="app-link-use"
+            >Usar calculadora →</a
+          >
+        </div>
+
+        <!-- App: Ventilação Natural -->
+        <div class="app-card">
+          <div class="app-card-header">
+            <a
+              href="ventilacao/ventilacao.html"
+              data-i18n-aria="app-ventilacao"
+            >
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="app-icon-large"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-ventilacao-desc"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #00897b; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #4db6ac; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-ventilacao-desc)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  🌬️
+                </text>
+              </svg>
+            </a>
+            <h3>
+              <a
+                href="ventilacao/ventilacao.html"
+                data-i18n="app-ventilacao-title"
+                >Ventilação Natural</a
+              >
+            </h3>
+          </div>
+          <p class="app-description" data-i18n="app-ventilacao-description">
+            Calculadora de ventilação natural residencial. Calcula renovações de
+            ar por hora (ACH), qualidade da ventilação e área mínima de janelas
+            com base nas dimensões do ambiente, área de janelas, orientação,
+            clima e ocupação. Conforme NBR 15575.
+          </p>
+          <a
+            href="ventilacao/ventilacao.html"
+            class="app-link"
+            data-i18n="app-link-use"
+            >Usar calculadora →</a
+          >
+        </div>
+
+        <!-- App: Reportar Bug -->
+        <div class="app-card">
+          <div class="app-card-header">
+            <a href="bugs/bugs.html" data-i18n-aria="app-bugs">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="app-icon-large"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-bugs-desc"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #ff6b6b; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #c92a2a; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-bugs-desc)"
+                />
+                <text
+                  x="30"
+                  y="40"
+                  font-size="28"
+                  text-anchor="middle"
+                  fill="#FFFFFF"
+                  style="
+                    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+                    font-weight: bold;
+                  "
+                >
+                  🐛
+                </text>
+              </svg>
+            </a>
+            <h3>
+              <a href="bugs/bugs.html" data-i18n="app-bugs-title"
+                >Reportar Bug</a
+              >
+            </h3>
+          </div>
+          <p class="app-description" data-i18n="app-bugs-description">
+            Formulário para reportar bugs e problemas encontrados nos
+            aplicativos. Ajude-nos a melhorar reportando erros, sugestões ou
+            problemas de usabilidade. Informações de contato opcional para
+            resposta.
+          </p>
+          <a
+            href="bugs/bugs.html"
+            class="app-link"
+            data-i18n="app-link-use-form"
+            >Usar formulário →</a
+          >
+        </div>
+      </div>
     </div>
-    
+
     <footer>
-        <p data-i18n="footer">💻 Portfólio Engenharia NATA @ 2026</p>
-        <div class="footer-meta">
-            <p class="footer-oss">Open source: Chart.js © Chart.js Contributors - MIT License.</p>
-            <a class="footer-github-link" href="mailto:nata@engnata.eu" data-i18n-aria="aria-contato" aria-label="Enviar e-mail para nata@engnata.eu">
-                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M1.5 3h13a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5Zm.5 1.24V12h12V4.24l-5.72 4.29a.5.5 0 0 1-.56 0L2 4.24Zm.83-.24L8 7.38 12.67 4H3.33Z"/>
-                </svg>
-                <span>nata@engnata.eu</span>
-            </a>
-            <a class="footer-github-link" href="https://github.com/souonata/EngenhariaNata" target="_blank" rel="noopener noreferrer" aria-label="GitHub EngenhariaNata">
-                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.58 7.58 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
-                </svg>
-                <span>github.com/souonata/EngenhariaNata</span>
-            </a>
-        </div>
+      <p data-i18n="footer">💻 Portfólio Engenharia NATA @ 2026</p>
+      <div class="footer-meta">
+        <p class="footer-oss">
+          Open source: Chart.js © Chart.js Contributors - MIT License.
+        </p>
+        <a
+          class="footer-github-link"
+          href="mailto:nata@engnata.eu"
+          data-i18n-aria="aria-contato"
+          aria-label="Enviar e-mail para nata@engnata.eu"
+        >
+          <svg
+            viewBox="0 0 16 16"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M1.5 3h13a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5Zm.5 1.24V12h12V4.24l-5.72 4.29a.5.5 0 0 1-.56 0L2 4.24Zm.83-.24L8 7.38 12.67 4H3.33Z"
+            />
+          </svg>
+          <span>nata@engnata.eu</span>
+        </a>
+        <a
+          class="footer-github-link"
+          href="https://github.com/souonata/EngenhariaNata"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="GitHub EngenhariaNata"
+        >
+          <svg
+            viewBox="0 0 16 16"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.58 7.58 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+            />
+          </svg>
+          <span>github.com/souonata/EngenhariaNata</span>
+        </a>
+      </div>
     </footer>
-    
+
     <!-- Script Modular -->
     <script type="module" src="index-script.js?v=1.0.4"></script>
-    
+
     <!-- Limpeza de legado: remove Service Workers antigos do site, mas PRESERVA o
          do guia offline do BR 12C Niobium (escopo /br12c/). -->
     <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then((registrations) => {
-                registrations.forEach((registration) => {
-                    if (!registration.scope.includes('/br12c/')) {
-                        registration.unregister();
-                    }
-                });
-            });
-        }
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          registrations.forEach((registration) => {
+            if (!registration.scope.includes("/br12c/")) {
+              registration.unregister();
+            }
+          });
+        });
+      }
     </script>
-</body>
+  </body>
 </html>
-
