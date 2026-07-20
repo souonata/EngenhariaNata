@@ -1,0 +1,5 @@
+{
+  "version": 2,
+  "model": "Helsinki-NLP/opus-mt-tc-big-itc-itc",
+  "revision": "a185ba7b3cac07bbd692dd517577b8c2dc7abb2c"
+}

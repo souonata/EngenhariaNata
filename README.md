@@ -2,9 +2,9 @@
 
 Portfólio de apps web educativos para engenharia, energia, utilidades residenciais e finanças. O projeto é estático, bilíngue (`pt-BR` / `it-IT`) e prioriza cálculo prático com explicação passo a passo no navegador.
 
-- Site: `https://souonata.github.io/EngenhariaNata/`
+- Site: `https://engnata.eu/`
 - Stack principal: HTML, CSS e JavaScript modular (ESM)
-- Status atual: 12 calculadoras ativas + 1 painel de previsão do tempo (`previsao/`) + 2 páginas de suporte (`sobre/` e `bugs/`)
+- Status atual: 12 calculadoras ativas + previsão do tempo + app de patente náutica + 2 páginas de suporte (`sobre/` e `bugs/`)
 - Cobertura de testes: **109 testes automatizados** (Vitest) cobrindo `salario` e `mutuo`
 - Backlog e prioridades: [ROADMAP.md](./ROADMAP.md)
 - Checklist de release/commit: [PRE_COMMIT.md](./PRE_COMMIT.md)
@@ -17,17 +17,18 @@ Portfólio de apps web educativos para engenharia, energia, utilidades residenci
 | `iluminacao/`     | Engenharia elétrica     | Dimensiona lux, lâmpadas e custo de energia residencial        |                |
 | `ventilacao/`     | Conforto ambiental      | Calcula ACH, qualidade do ar e área mínima de ventilação       |                |
 | `chuva/`          | Água / sustentabilidade | Dimensiona captação de chuva, cisterna e economia mensal       |                |
-| `mutuo/`          | Finanças                | Compara SAC, Price e Americano com memorial e gráficos         |        ✅       |
+| `mutuo/`          | Finanças                | Compara SAC, Price e Americano com memorial e gráficos         |       ✅       |
 | `helice/`         | Náutica                 | Apoia escolha de passo de hélice para embarcações de lazer     |                |
+| `patentenautica/` | Educação náutica        | Quiz IT/PT e Carta 5/D interativa em 50 exercícios             |      n/a       |
 | `solar/`          | Energia                 | Dimensiona sistema fotovoltaico off-grid e configurações       |                |
 | `bitola/`         | Instalações elétricas   | Define bitola de cabos considerando corrente e queda de tensão |                |
 | `arcondicionado/` | Climatização            | Dimensiona BTU e cenários multi-split                          |                |
 | `aquecimento/`    | Energia térmica         | Dimensiona aquecimento solar de água e ambiente                |                |
-| `salario/`        | Finanças                | Calcula salário líquido Brasil/Itália com memorial e gráficos  |        ✅       |
+| `salario/`        | Finanças                | Calcula salário líquido Brasil/Itália com memorial e gráficos  |       ✅       |
 | `fazenda/`        | Planejamento rural      | Planeja produção auto-sustentável com base regional            |                |
-| `previsao/`       | Meteorologia            | Previsão de 7 dias (Open-Meteo): temperatura horária e chuva   |       n/a      |
-| `bugs/`           | Suporte                 | Canal de reporte de problemas e sugestões                      |       n/a      |
-| `sobre/`          | Institucional           | Página de visão geral do projeto e apps ativos                 |       n/a      |
+| `previsao/`       | Meteorologia            | Previsão de 7 dias (Open-Meteo): temperatura horária e chuva   |      n/a       |
+| `bugs/`           | Suporte                 | Canal de reporte de problemas e sugestões                      |      n/a       |
+| `sobre/`          | Institucional           | Página de visão geral do projeto e apps ativos                 |      n/a       |
 
 A coluna **Calc. extraído** sinaliza apps cuja lógica numérica foi separada em `<app>/<app>-calc.js` (ESM puro, sem DOM) e está coberta por testes automatizados. Os demais seguem o padrão original (cálculo dentro da classe da app); a migração será feita em ondas — ver [ROADMAP.md](./ROADMAP.md).
 
@@ -47,6 +48,7 @@ EngenhariaNata/
 │   ├── <app>-script.js         # eventos, render, DOM (camada de UI)
 │   ├── <app>-calc.js           # núcleo numérico puro (apps já migrados)
 │   └── <app>-calc.test.js      # suíte Vitest (apps já migrados)
+├── patentenautica/             # quiz náutico IT/PT, Carta 5/D, PDFs e geradores
 ├── sobre/                      # página institucional
 ├── bugs/                       # formulário de reporte
 ├── sw.js                       # service worker
@@ -67,13 +69,13 @@ npm run test:coverage   # gera relatório de cobertura
 
 Cobertura atual nos apps já migrados (`salario`, `mutuo`):
 
-| Métrica       | Valor      |
-| ------------- | :--------: |
-| Statements    | **97,67%** |
-| Branches      | **91,52%** |
-| Functions     | **100%**   |
-| Lines         | **97,92%** |
-| Total casos   | **109**    |
+| Métrica     |   Valor    |
+| ----------- | :--------: |
+| Statements  | **97,67%** |
+| Branches    | **91,52%** |
+| Functions   |  **100%**  |
+| Lines       | **97,92%** |
+| Total casos |  **109**   |
 
 A camada UI (`<app>-script.js`) ainda não é coberta automaticamente — testes de DOM ficam para fase futura.
 
@@ -116,6 +118,7 @@ npm run lint:check     # ESLint sem autofix
 npm run format:check   # Prettier sem escrita
 npm run style:check    # Stylelint sem autofix
 npm run validate       # lint + format + style + tests
+npm run validate:patentenautica # valida 1.472 IDs, gabarito, traduções, 50 rotas na Carta 5/D e 103 figuras
 npm run checkup        # varredura rápida de console.log/debugger
 npm run version:patch  # atualiza versão do local/package.json
 ```
@@ -123,6 +126,7 @@ npm run version:patch  # atualiza versão do local/package.json
 Observações:
 
 - `npm run validate` é a verificação completa antes de commit.
+- A validação completa inclui a auditoria de integridade da camada oficial italiana e das traduções estáticas do `patentenautica/`.
 - O projeto usa `Chart.js` local em `assets/js/vendor/`, `localStorage` para preferências/configurações e GoatCounter para analytics.
 - ESLint precisa ser executado a partir de `local/` (config em `local/.eslintrc.json`).
 

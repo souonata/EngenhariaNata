@@ -1,0 +1,345 @@
+[
+  {
+    "it": "dritta",
+    "pt": "boreste",
+    "aliases": ["estibordo", "lado direito"],
+    "definitionIt": "Lato destro dell'unità guardando verso prora.",
+    "definitionPt": "Lado direito da embarcação olhando para a proa; estibordo é sinônimo usado em Portugal."
+  },
+  {
+    "it": "sinistra",
+    "pt": "bombordo",
+    "aliases": ["lado esquerdo"],
+    "definitionIt": "Lato sinistro dell'unità guardando verso prora.",
+    "definitionPt": "Lado esquerdo da embarcação olhando para a proa."
+  },
+  {
+    "it": "scarroccio",
+    "pt": "abatimento",
+    "aliases": ["deriva pelo vento"],
+    "definitionIt": "Spostamento laterale dell'unità causato dal vento.",
+    "definitionPt": "Deslocamento lateral da embarcação causado pelo vento."
+  },
+  {
+    "it": "deriva",
+    "pt": "deriva pela corrente",
+    "aliases": ["deslocamento pela corrente"],
+    "definitionIt": "Spostamento laterale causato dalla corrente.",
+    "definitionPt": "Deslocamento lateral causado pela corrente marítima."
+  },
+  {
+    "it": "rilevamento",
+    "pt": "marcação náutica",
+    "aliases": ["azimute", "bearing"],
+    "definitionIt": "Direzione di un oggetto osservata dall'unità, espressa come angolo.",
+    "definitionPt": "Direção angular de um objeto observada a partir da embarcação."
+  },
+  {
+    "it": "accostare",
+    "pt": "guinar",
+    "aliases": ["alterar o rumo"],
+    "definitionIt": "Cambiare direzione portando la prora da un lato.",
+    "definitionPt": "Mudar a direção levando a proa para boreste ou bombordo."
+  },
+  {
+    "it": "prora",
+    "pt": "proa",
+    "aliases": ["parte dianteira"],
+    "definitionIt": "Parte anteriore dell'unità.",
+    "definitionPt": "Parte dianteira da embarcação."
+  },
+  {
+    "it": "poppa",
+    "pt": "popa",
+    "aliases": ["parte traseira"],
+    "definitionIt": "Parte posteriore dell'unità.",
+    "definitionPt": "Parte traseira da embarcação."
+  },
+  {
+    "it": "baglio massimo",
+    "pt": "boca máxima",
+    "aliases": ["largura máxima"],
+    "definitionIt": "Massima larghezza trasversale dello scafo.",
+    "definitionPt": "Maior largura transversal do casco."
+  },
+  {
+    "it": "pescaggio",
+    "pt": "calado",
+    "aliases": ["imersão"],
+    "definitionIt": "Distanza verticale tra la linea di galleggiamento e il punto più basso immerso.",
+    "definitionPt": "Distância vertical entre a linha-d'água e o ponto imerso mais baixo da embarcação."
+  },
+  {
+    "it": "ordinate",
+    "pt": "cavernas",
+    "aliases": ["elementos transversais"],
+    "definitionIt": "Elementi trasversali che formano l'ossatura dello scafo.",
+    "definitionPt": "Elementos transversais que formam a ossatura do casco."
+  },
+  {
+    "it": "paratia",
+    "pt": "antepara",
+    "aliases": ["divisória estanque"],
+    "definitionIt": "Parete interna, spesso stagna, che suddivide lo scafo.",
+    "definitionPt": "Divisória interna, frequentemente estanque, que subdivide o casco."
+  },
+  {
+    "it": "mascone",
+    "pt": "bochecha",
+    "aliases": ["amura de proa"],
+    "definitionIt": "Zona laterale prodiera tra prora e traverso.",
+    "definitionPt": "Região lateral dianteira entre a proa e o través."
+  },
+  {
+    "it": "giardinetto",
+    "pt": "alheta",
+    "aliases": ["amura de popa"],
+    "definitionIt": "Zona laterale poppiera tra traverso e poppa.",
+    "definitionPt": "Região lateral traseira entre o través e a popa."
+  },
+  {
+    "it": "abbrivio",
+    "pt": "seguimento",
+    "aliases": ["movimento residual"],
+    "definitionIt": "Moto che l'unità conserva dopo la riduzione o l'arresto della propulsione.",
+    "definitionPt": "Movimento que a embarcação conserva após reduzir ou cortar a propulsão."
+  },
+  {
+    "it": "vedetta",
+    "pt": "vigia",
+    "aliases": ["vigilância visual e auditiva"],
+    "definitionIt": "Servizio continuo di osservazione visiva e uditiva prescritto dal COLREG.",
+    "definitionPt": "Vigilância visual e auditiva contínua exigida pelo COLREG."
+  },
+  {
+    "it": "falla",
+    "pt": "via d'água",
+    "aliases": ["abertura no casco"],
+    "definitionIt": "Apertura o danno allo scafo che provoca ingresso d'acqua.",
+    "definitionPt": "Abertura ou dano no casco que permite a entrada de água."
+  },
+  {
+    "it": "incaglio",
+    "pt": "encalhe",
+    "aliases": ["encalhamento"],
+    "definitionIt": "Arresto dell'unità sul fondo o su un ostacolo sommerso.",
+    "definitionPt": "Imobilização da embarcação no fundo ou sobre obstáculo submerso."
+  },
+  {
+    "it": "presa a mare",
+    "pt": "tomada d'água do mar",
+    "aliases": ["entrada de água do mar"],
+    "definitionIt": "Apertura valvolata che alimenta con acqua di mare un impianto di bordo.",
+    "definitionPt": "Abertura com válvula que alimenta um sistema de bordo com água do mar."
+  },
+  {
+    "it": "girante",
+    "pt": "rotor da bomba",
+    "aliases": ["impulsor"],
+    "definitionIt": "Elemento elastico rotante della pompa dell'acqua di raffreddamento.",
+    "definitionPt": "Elemento rotativo da bomba de água de refrigeração."
+  },
+  {
+    "it": "ecoscandaglio",
+    "pt": "ecobatímetro",
+    "aliases": ["sonda de profundidade"],
+    "definitionIt": "Strumento che misura la profondità mediante impulsi acustici.",
+    "definitionPt": "Instrumento que mede a profundidade por pulsos acústicos."
+  },
+  {
+    "it": "fanale",
+    "pt": "luz de navegação",
+    "aliases": ["luz"],
+    "definitionIt": "Luce regolamentare mostrata da un'unità.",
+    "definitionPt": "Luz regulamentar exibida por uma embarcação; não confundir com faro."
+  },
+  {
+    "it": "faro",
+    "pt": "farol",
+    "aliases": ["sinal luminoso costeiro"],
+    "definitionIt": "Segnalamento luminoso fisso, normalmente costiero.",
+    "definitionPt": "Sinal luminoso fixo, normalmente instalado na costa."
+  },
+  {
+    "it": "ormeggio",
+    "pt": "amarração",
+    "aliases": ["atracação", "amarra"],
+    "definitionIt": "Sistemazione dell'unità assicurata a banchina, boa o corpo morto.",
+    "definitionPt": "Ato de manter a embarcação presa ao cais, boia ou poita."
+  },
+  {
+    "it": "ancoraggio",
+    "pt": "fundeio",
+    "aliases": ["ancoragem"],
+    "definitionIt": "Manovra e condizione dell'unità trattenuta dall'ancora sul fondo.",
+    "definitionPt": "Manobra e condição da embarcação mantida pela âncora no fundo."
+  },
+  {
+    "it": "ancora galleggiante",
+    "pt": "âncora flutuante",
+    "aliases": ["drogue", "âncora de capa"],
+    "definitionIt": "Dispositivo immerso che aumenta la resistenza e limita la deriva.",
+    "definitionPt": "Dispositivo submerso que aumenta o arrasto e reduz o deslocamento."
+  },
+  {
+    "it": "cima",
+    "pt": "cabo",
+    "aliases": ["corda náutica"],
+    "definitionIt": "Elemento tessile usato a bordo per manovra e ormeggio.",
+    "definitionPt": "Elemento têxtil usado a bordo para manobra e amarração."
+  },
+  {
+    "it": "catena dell'ancora",
+    "pt": "corrente da âncora",
+    "aliases": ["amarra de corrente"],
+    "definitionIt": "Parte metallica della linea di ancoraggio.",
+    "definitionPt": "Parte metálica da linha de fundeio."
+  },
+  {
+    "it": "motore fuoribordo",
+    "pt": "motor de popa",
+    "aliases": ["motor fora de borda"],
+    "definitionIt": "Motore installato esternamente sullo specchio di poppa.",
+    "definitionPt": "Motor instalado externamente no espelho de popa."
+  },
+  {
+    "it": "bow thruster",
+    "pt": "propulsor de proa",
+    "aliases": ["bow truster"],
+    "definitionIt": "Elica trasversale che sposta lateralmente la prora.",
+    "definitionPt": "Hélice transversal usada para deslocar lateralmente a proa."
+  },
+  {
+    "it": "rotta",
+    "pt": "rota / rumo planejado",
+    "aliases": ["course"],
+    "definitionIt": "Direzione pianificata o percorso seguito dall'unità.",
+    "definitionPt": "Direção planejada ou trajetória seguida pela embarcação."
+  },
+  {
+    "it": "punto nave",
+    "pt": "posição da embarcação",
+    "aliases": ["fix", "posição"],
+    "definitionIt": "Posizione determinata dell'unità sulla carta.",
+    "definitionPt": "Posição determinada da embarcação na carta náutica."
+  },
+  {
+    "it": "carteggio",
+    "pt": "plotagem na carta náutica",
+    "aliases": ["navegação cartográfica"],
+    "definitionIt": "Operazioni grafiche e di calcolo eseguite sulla carta nautica.",
+    "definitionPt": "Operações gráficas e cálculos feitos na carta náutica."
+  },
+  {
+    "it": "miglio nautico",
+    "pt": "milha náutica",
+    "aliases": ["M", "NM"],
+    "definitionIt": "Unità di distanza pari a 1.852 metri.",
+    "definitionPt": "Unidade de distância equivalente a 1.852 metros."
+  },
+  {
+    "it": "nodo",
+    "pt": "nó",
+    "aliases": ["kn", "n"],
+    "definitionIt": "Velocità di un miglio nautico all'ora.",
+    "definitionPt": "Velocidade de uma milha náutica por hora."
+  },
+  {
+    "it": "entro 12 miglia",
+    "pt": "até 12 milhas náuticas",
+    "aliases": ["entro 12M"],
+    "definitionIt": "Abilitazione limitata alla navigazione entro dodici miglia dalla costa.",
+    "definitionPt": "Habilitação limitada à navegação até doze milhas náuticas da costa."
+  },
+  {
+    "it": "patente nautica",
+    "pt": "habilitação náutica italiana",
+    "aliases": ["carta náutica"],
+    "definitionIt": "Titolo italiano che abilita al comando o alla condotta nei casi previsti.",
+    "definitionPt": "Documento italiano que habilita o comando ou a condução nos casos previstos."
+  },
+  {
+    "it": "natante da diporto",
+    "pt": "natante de recreio",
+    "aliases": ["categoria italiana"],
+    "definitionIt": "Unità da diporto fino a 10 metri, normalmente non iscritta.",
+    "definitionPt": "Categoria jurídica italiana de embarcação de recreio até 10 m, normalmente não registrada."
+  },
+  {
+    "it": "imbarcazione da diporto",
+    "pt": "imbarcazione de recreio",
+    "aliases": ["categoria italiana registrada"],
+    "definitionIt": "Unità da diporto con scafo oltre 10 e fino a 24 metri, iscritta nei registri.",
+    "definitionPt": "Categoria jurídica italiana com casco acima de 10 m e até 24 m, registrada."
+  },
+  {
+    "it": "unità da diporto",
+    "pt": "embarcação de recreio",
+    "aliases": ["unidade de recreio"],
+    "definitionIt": "Termine generale per natanti, imbarcazioni e navi da diporto.",
+    "definitionPt": "Termo geral que abrange as categorias italianas de embarcações de recreio."
+  },
+  {
+    "it": "mede laterali",
+    "pt": "balizas laterais",
+    "aliases": ["sinais laterais"],
+    "definitionIt": "Segnali che indicano i lati di un canale secondo il sistema IALA.",
+    "definitionPt": "Sinais que indicam os lados de um canal segundo o sistema IALA."
+  },
+  {
+    "it": "campi boe",
+    "pt": "campos de boias",
+    "aliases": ["área de amarração"],
+    "definitionIt": "Aree organizzate con boe destinate all'ormeggio.",
+    "definitionPt": "Áreas organizadas com boias destinadas à amarração."
+  },
+  {
+    "it": "bagnanti",
+    "pt": "banhistas",
+    "aliases": ["pessoas na água"],
+    "definitionIt": "Persone che nuotano o sostano in acqua.",
+    "definitionPt": "Pessoas nadando ou permanecendo na água."
+  },
+  {
+    "it": "precedenza",
+    "pt": "preferência / obrigação de dar passagem",
+    "aliases": ["right of way"],
+    "definitionIt": "Rapporto tra unità nelle regole di manovra; non esonera dall'evitare l'abbordo.",
+    "definitionPt": "Relação entre embarcações nas regras de manobra; não elimina o dever de evitar colisão."
+  },
+  {
+    "it": "abbordo",
+    "pt": "colisão",
+    "aliases": ["abalroamento"],
+    "definitionIt": "Collisione tra unità in navigazione.",
+    "definitionPt": "Colisão entre embarcações em navegação."
+  },
+  {
+    "it": "salvagente anulare",
+    "pt": "boia salva-vidas circular",
+    "aliases": ["boia circular"],
+    "definitionIt": "Dispositivo galleggiante anulare da lanciare a una persona in acqua.",
+    "definitionPt": "Dispositivo flutuante circular lançado a uma pessoa na água."
+  },
+  {
+    "it": "banchina",
+    "pt": "cais",
+    "aliases": ["doca"],
+    "definitionIt": "Opera portuale destinata all'accosto e all'ormeggio.",
+    "definitionPt": "Estrutura portuária destinada à atracação e amarração."
+  },
+  {
+    "it": "rollio",
+    "pt": "balanço transversal",
+    "aliases": ["rolamento"],
+    "definitionIt": "Oscillazione dell'unità attorno all'asse longitudinale.",
+    "definitionPt": "Oscilação da embarcação em torno do eixo longitudinal."
+  },
+  {
+    "it": "beccheggio",
+    "pt": "arfagem",
+    "aliases": ["balanço longitudinal"],
+    "definitionIt": "Oscillazione dell'unità attorno all'asse trasversale.",
+    "definitionPt": "Oscilação da embarcação em torno do eixo transversal."
+  }
+]

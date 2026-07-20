@@ -35,6 +35,9 @@ jobs:
         working-directory: local
         run: npm ci
 
+      - name: Validar integridade da Patente Náutica
+        run: node patentenautica/scripts/validate_integrity.mjs
+
       - name: Build de produção
         working-directory: local
         run: npm run build

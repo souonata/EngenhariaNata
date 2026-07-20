@@ -26,6 +26,7 @@ EngenhariaNata/
 ├── assets/                 # CSS/JS compartilhado e vendor (Chart.js)
 ├── config/versions.json    # versão por app (buscado em runtime via fetch)
 ├── src/{core,components,utils,i18n}/   # base de app, i18n, tema
+├── patentenautica/          # app ESM bilíngue IT/PT para patente náutica italiana
 ├── <app>/                  # cada app: <app>.html + <app>-script.js + <app>-styles.css
 │   ├── <app>-calc.js       # núcleo numérico puro (apps migrados: salario, mutuo)
 │   └── <app>-calc.test.js  # Vitest (apps migrados)
@@ -134,6 +135,24 @@ npm run build          # build de produção (gera local/dist)
   Vite as inclui no build via `import.meta.glob` (não precisa tocar no `deploy.yml`). Rótulos de UI
   em `src/i18n/lichiabonsai.json` (copiado pelo deploy.yml junto com os outros i18n).
 
+### 7.2 App "Rotta 12 — Patente Náutica" (`patentenautica/`)
+
+- App de estudo para a patente náutica italiana entro 12 miglia, a motore, publicado na rota limpa
+  `/patentenautica/`. O italiano ministerial é a camada canônica; português é tradução auxiliar.
+- Modos persistentes e instantâneos: **IT**, **PT** e **IT + PT**. Busca, banco de 1.472 questões,
+  50 exercícios de carteggio, soluções, fontes e glossário funcionam nos dois idiomas.
+- A Carta 5/D (`carta nautica 5D.gif`) é exibida com zoom e rolagem; `data/chart-points.json`
+  calibra a quadrícula, contém 28 pontos e relaciona partida/chegada dos 50 exercícios. O validador
+  bloqueia rotas incompletas, pontos fora da imagem e alteração das dimensões 4454 × 3045.
+- Dados oficiais ficam em `data/quiz-base.js`, `data/content.js` e `data/carteggio.js`. Traduções
+  paralelas ficam nos JSON `*-pt.json` e nunca contêm o campo `correct`.
+- `scripts/build_translations.py` regenera saídas a partir do cache estático e aplica overrides
+  náuticos; `scripts/validate_integrity.mjs` bloqueia mudança de id/code/figura/gabarito, números,
+  negações e traduções terminológicas proibidas.
+- O app importa JSON, PDFs e figuras como módulos/URLs Vite; não depende de API ou `fetch()` em
+  runtime. As 103 figuras são incluídas via `import.meta.glob` e os quatro PDFs saem hasheados em
+  `local/dist/assets/pdf/`.
+
 ## 8. Modelo de branches
 
 - `main` = o que está/vai pro ar (deploy automático).
@@ -144,7 +163,21 @@ npm run build          # build de produção (gera local/dist)
 
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
-_Última atualização: 2026-07-12_
+_Última atualização: 2026-07-21_
+
+- **ROTTA 12 / PATENTE NÁUTICA (branch `feat/patente-nautica`):** app integrado em
+  `patentenautica/`, registrado no catálogo, home/sobre bilíngues, README, ROADMAP, versões,
+  sitemap e workflow. Tradução estática IT→PT-BR com modos IT/PT/IT+PT, busca bilíngue e glossário
+  sempre acessível. Versão 3.2 removeu a antiga guia por capítulos e os vínculos quiz→teoria. O
+  carteggio agora integra a Carta 5/D em alta resolução, com zoom/rolagem, partida, chegada,
+  coordenadas e rota para os 50 exercícios, cobrindo 28 pontos georreferenciados. QA de integridade:
+  1.472 questões, 50/50 exercícios localizados, Carta 4454 × 3045, 103 figuras e gabarito só na camada
+  italiana. `npm run validate` passou com 284 testes e a validação náutica; `npm run build` e o
+  smoke HTTP passaram com página, JS, CSS e Carta 5/D retornando 200. Repetir esses checks após
+  alterações futuras na carta ou na navegação.
+  Origem `C:\projetos\patenteNautica` removida após verificação de 116/116 arquivos e SHA-256 dos
+  103 PNGs, quatro PDFs e dados canônicos. A publicação é feita pelo workflow do GitHub Pages
+  após integração em `main`; arquivos locais de `.claude` e `lichiabonsai` permanecem fora do escopo.
 
 - **ATUALIZAÇÃO DO DIÁRIO (12/07):** novo post bilíngue registrando o primeiro fluxo com duas
   folhas novas; muda medida em 8 cm e quatro folhas totais. Três fotos da nova leva foram
