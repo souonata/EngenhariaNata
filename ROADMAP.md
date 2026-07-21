@@ -24,7 +24,7 @@ Panorama do estado atual do portfólio Engenharia NATA, com foco no que já est�
 - [x] `chuva/` - captação de água da chuva e cisterna
 - [x] `bombaagua/` - bomba d'água, perdas e consumo
 - [x] `helice/` - calculadora de passo de hélice
-- [x] `patentenautica/` - app offline IT/PT para patente italiana entro 12M, com 1.472 questões, 103 figuras, Carta 5/D interativa nos 50 exercícios e glossário
+- [x] `patentenautica/` - app IT/PT para patente italiana entro 12M, com 1.472 questões filtráveis, conta cloud opcional e fallback local, treinos de inéditas, vínculos à Dispensa, 103 figuras, Carta 5/D interativa e glossário
 - [x] `fazenda/` - planejador de fazenda auto-sustentável
 
 ## Próximo app sugerido
@@ -58,6 +58,7 @@ Calculadora de isolamento térmico para paredes e cobertura.
 4. Tornar o fluxo de release mais previsível, sempre sincronizando `README.md`, `ROADMAP.md`, `PRE_COMMIT.md`, `src/i18n/sobre.json`, `sobre/sobre.html`, `config/versions.json` e `sitemap.xml`.
 5. Eliminar warnings do build do Vite causados por scripts legados não-module, em especial `Chart.js` UMD e `fazenda-database.js`.
 6. Evoluir a revisão terminológica do `patentenautica/` com novos overrides auditáveis sempre que surgirem amostras críticas do banco ministerial.
+7. Configurar um provedor SMTP transacional para habilitar recuperação de senha e verificação de e-mail no backend do `patentenautica/`.
 
 ## Critérios para próximos apps
 

@@ -1,0 +1,20 @@
+services:
+  rotta12-accounts:
+    build:
+      context: .
+      args:
+        PB_VERSION: 0.39.8
+    container_name: rotta12-accounts
+    restart: unless-stopped
+    ports:
+      # The Cloudflare connector lives at 192.168.1.10; bind only the VM LAN IP.
+      - "192.168.1.13:8090:8090"
+    volumes:
+      - ./pb_data:/pb/pb_data
+    healthcheck:
+      test:
+        ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8090/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

@@ -141,17 +141,24 @@ npm run build          # build de produção (gera local/dist)
   `/patentenautica/`. O italiano ministerial é a camada canônica; português é tradução auxiliar.
 - Modos persistentes e instantâneos: **IT**, **PT** e **IT + PT**. Busca, banco de 1.472 questões,
   50 exercícios de carteggio, soluções, fontes e glossário funcionam nos dois idiomas.
+- O banco mostra todos os resultados filtrados por texto, matéria, assunto e progresso. O perfil
+  local em `localStorage` continua disponível offline e pode ser exportado/importado. Uma conta
+  opcional sincroniza o mesmo progresso entre dispositivos pelo backend autohospedado.
 - A Carta 5/D (`carta nautica 5D.gif`) é exibida com zoom e rolagem; `data/chart-points.json`
   calibra a quadrícula, contém 28 pontos e relaciona partida/chegada dos 50 exercícios. O validador
   bloqueia rotas incompletas, pontos fora da imagem e alteração das dimensões 4454 × 3045.
+- `data/question-references.json` liga as 1.472 questões às 67 páginas da Dispensa de 2011. O
+  painel PDF diferencia correspondência textual, capítulo temático e material apenas relacionado;
+  nunca apresenta uma referência histórica como atualização normativa.
 - Dados oficiais ficam em `data/quiz-base.js`, `data/content.js` e `data/carteggio.js`. Traduções
   paralelas ficam nos JSON `*-pt.json` e nunca contêm o campo `correct`.
 - `scripts/build_translations.py` regenera saídas a partir do cache estático e aplica overrides
   náuticos; `scripts/validate_integrity.mjs` bloqueia mudança de id/code/figura/gabarito, números,
   negações e traduções terminológicas proibidas.
-- O app importa JSON, PDFs e figuras como módulos/URLs Vite; não depende de API ou `fetch()` em
-  runtime. As 103 figuras são incluídas via `import.meta.glob` e os quatro PDFs saem hasheados em
-  `local/dist/assets/pdf/`.
+- O app importa JSON, PDFs e figuras como módulos/URLs Vite. A única dependência remota opcional é
+  a API de conta `accounts.engnata.eu`; falhas nela não impedem o estudo local. O cliente usa o SDK
+  PocketBase e o backend versionado fica em `patentenautica/backend/`. As 103 figuras são incluídas
+  via `import.meta.glob` e os quatro PDFs saem hasheados em `local/dist/assets/pdf/`.
 
 ## 8. Modelo de branches
 
@@ -178,6 +185,19 @@ _Última atualização: 2026-07-21_
   Origem `C:\projetos\patenteNautica` removida após verificação de 116/116 arquivos e SHA-256 dos
   103 PNGs, quatro PDFs e dados canônicos. A publicação é feita pelo workflow do GitHub Pages
   após integração em `main`; arquivos locais de `.claude` e `lichiabonsai` permanecem fora do escopo.
+
+- **REFERÊNCIAS PDF E CONTAS (branch `feat/patente-pdf-references`):** em desenvolvimento, adiciona
+  vínculo questão → página da Dispensa para as 1.472 questões, painel PDF no treino, banco e revisão
+  do simulado, além de gerador reproduzível e validação de cobertura. A mesma branch agora inclui
+  banco completo com filtros combináveis, quiz aleatório/selecionado, perfil local exportável e
+  conta opcional para sincronizar progresso, inclusive simulado só de inéditas. O backend PocketBase
+  0.39.8 está ativo na VM Proxmox 205 `engnata-backend` (192.168.1.13), publicado somente por
+  Cloudflare Tunnel em `accounts.engnata.eu`; porta LAN restrita, painel público bloqueado, rate
+  limiting e backups diário interno + VM configurados. O teste público confirmou criação/login por
+  usuário ou e-mail, isolamento, sincronização, troca de e-mail/senha e exclusão em cascata. Versão
+  local 3.5.0: `npm run validate` passou com 284 testes, 1.472/1.472 referências e contrato de conta;
+  `npm run build` passou. A API está ativa, mas o frontend desta branch ainda não foi publicado.
+  SMTP permanece pendente apenas para verificação de e-mail e recuperação de senha.
 
 - **ATUALIZAÇÃO DO DIÁRIO (12/07):** novo post bilíngue registrando o primeiro fluxo com duas
   folhas novas; muda medida em 8 cm e quatro folhas totais. Três fotos da nova leva foram

@@ -111,7 +111,7 @@
       "features": {
         "quiz": {
           "title": "Banco ministerial",
-          "desc": "1.472 questões BASE, 103 figuras, treino, simulado e revisão das respostas oficiais."
+          "desc": "1.472 questões BASE sempre visíveis, filtros combináveis, quizzes aleatórios e progresso local exportável."
         },
         "language": {
           "title": "Estudo IT ⇄ PT",
@@ -624,7 +624,7 @@
       "features": {
         "quiz": {
           "title": "Banca ministeriale",
-          "desc": "1.472 quesiti BASE, 103 figure, allenamento, simulazione e revisione delle risposte ufficiali."
+          "desc": "1.472 quesiti BASE sempre visibili, filtri combinabili, quiz casuali e progressi locali esportabili."
         },
         "language": {
           "title": "Studio IT ⇄ PT",

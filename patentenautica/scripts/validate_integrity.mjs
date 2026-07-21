@@ -29,6 +29,9 @@ const exercisesPt = JSON.parse(
 const chartData = JSON.parse(
   fs.readFileSync(path.join(root, "data/chart-points.json"), "utf8"),
 );
+const questionReferences = JSON.parse(
+  fs.readFileSync(path.join(root, "data/question-references.json"), "utf8"),
+);
 
 const fail = (message) => {
   throw new Error(message);
@@ -61,6 +64,43 @@ quiz.forEach((official, index) => {
     fail(`Índice correct inválido na questão ${official.id}.`);
   }
 });
+
+if (
+  questionReferences.source.pages !== 67 ||
+  questionReferences.references.length !== quiz.length
+) {
+  fail("O índice da Dispensa deve cobrir as 1.472 questões e 67 páginas.");
+}
+const referenceIds = new Set();
+const referenceMatches = { direct: 0, topic: 0, related: 0 };
+questionReferences.references.forEach((reference) => {
+  if (referenceIds.has(reference.id))
+    fail(`Referência PDF duplicada para a questão ${reference.id}.`);
+  referenceIds.add(reference.id);
+  if (
+    !Number.isInteger(reference.page) ||
+    reference.page < 1 ||
+    reference.page > 67
+  )
+    fail(`Página inválida na referência da questão ${reference.id}.`);
+  if (!questionReferences.sections[reference.section])
+    fail(`Seção desconhecida na referência da questão ${reference.id}.`);
+  if (!(reference.match in referenceMatches))
+    fail(`Tipo de correspondência inválido na questão ${reference.id}.`);
+  if ("correct" in reference || "answer" in reference)
+    fail(
+      `A referência da questão ${reference.id} não pode duplicar o gabarito.`,
+    );
+  referenceMatches[reference.match] += 1;
+});
+quiz.forEach((question) => {
+  if (!referenceIds.has(question.id))
+    fail(`Questão ${question.id} sem referência na Dispensa.`);
+});
+for (const [match, count] of Object.entries(referenceMatches)) {
+  if (questionReferences.summary[match] !== count)
+    fail(`Resumo divergente para referências PDF do tipo ${match}.`);
+}
 
 if (content.chapters.length !== 8 || contentPt.chapters.length !== 8)
   fail("São esperados oito capítulos.");
@@ -149,12 +189,81 @@ if (
 
 const indexHtml = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const appSource = fs.readFileSync(path.join(root, "app.js"), "utf8");
+const accountSource = fs.readFileSync(
+  path.join(root, "account-service.js"),
+  "utf8",
+);
+const accountMigration = fs.readFileSync(
+  path.join(root, "backend", "pb_migrations", "1721600000_init_rotta12.js"),
+  "utf8",
+);
+const accountApiHook = fs.readFileSync(
+  path.join(root, "backend", "pb_hooks", "account_api.pb.js"),
+  "utf8",
+);
 if (
   /view-guide|Guida per capitoli|data-open-theory/.test(indexHtml + appSource)
 )
   fail(
     "O guia por capítulos ou seus antigos vínculos ainda está presente na interface.",
   );
+if (!/data-open-handbook/.test(appSource) || !/handbookModal/.test(indexHtml))
+  fail("A interface não expõe as referências da Dispensa para o quiz.");
+const studyFeatureIds = [
+  "bankSearch",
+  "bankTheme",
+  "bankTopic",
+  "bankStatus",
+  "startRandomFiltered",
+  "startSelectedQuiz",
+  "studyProfilePanel",
+  "profileModal",
+  "accountModalBody",
+];
+studyFeatureIds.forEach((id) => {
+  if (!indexHtml.includes(`id="${id}"`))
+    fail(`A interface de estudo não contém #${id}.`);
+});
+if (/bankLimit|id="bankMore"/.test(indexHtml + appSource))
+  fail("A banca ainda limita artificialmente a lista de questões.");
+if (
+  !appSource.includes('const PROFILE_KEY = "rotta12-study-profile-v1"') ||
+  !appSource.includes("recordQuizAnswer") ||
+  !appSource.includes("startUnseenSimulation")
+)
+  fail("O perfil local ou o simulado de questões inéditas está incompleto.");
+if (
+  !appSource.includes(
+    'import { accountService } from "./account-service.js"',
+  ) ||
+  !appSource.includes("initializeStudyAccount") ||
+  !appSource.includes("scheduleProgressSync")
+) {
+  fail("A interface não inicializa a conta ou a sincronização de progresso.");
+}
+if (
+  !accountSource.includes("https://accounts.engnata.eu") ||
+  !accountSource.includes("LocalAuthStore") ||
+  !accountSource.includes("/api/rotta12/account/email") ||
+  !accountSource.includes('collection("study_progress")')
+) {
+  fail("O cliente de conta não contém o endpoint e o progresso esperados.");
+}
+if (
+  !accountMigration.includes("cascadeDelete: true") ||
+  !accountMigration.includes("user = @request.auth.id") ||
+  !accountMigration.includes("idx_progress_user_question")
+) {
+  fail(
+    "O schema do backend não garante posse, unicidade e exclusão em cascata.",
+  );
+}
+if (
+  !accountApiHook.includes('$apis.requireAuth("users")') ||
+  !accountApiHook.includes("validatePassword(password)")
+) {
+  fail("A troca direta de e-mail não exige autenticação e senha atual.");
+}
 
 const imageCount = fs
   .readdirSync(path.join(root, "assets", "quiz-images"))
@@ -177,6 +286,13 @@ const summary = {
   chartPoints: chartData.points.length,
   chartDimensions: `${gifWidth}x${gifHeight}`,
   figures: imageCount,
+  pdfQuestionReferences: questionReferences.references.length,
+  pdfReferenceMatches: referenceMatches,
+  bankRendersAllFilteredQuestions: true,
+  localStudyProfile: true,
+  cloudAccountSync: true,
+  accountBackendSchema: true,
+  unseenQuestionSimulation: true,
   answerKeyOnlyInItalianCanonicalLayer: true,
 };
 

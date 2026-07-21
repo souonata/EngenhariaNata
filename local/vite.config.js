@@ -106,7 +106,8 @@ export default defineConfig(({ command }) => ({
         alias: {
             '@': projectRoot,
             '@assets': resolve(projectRoot, 'assets'),
-            '@config': resolve(projectRoot, 'config')
+            '@config': resolve(projectRoot, 'config'),
+            pocketbase: resolve(__dirname, 'node_modules/pocketbase/dist/pocketbase.es.mjs')
         }
     },
 
