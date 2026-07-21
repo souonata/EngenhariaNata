@@ -1,4 +1,5 @@
 import { inicializarTema } from "../src/core/theme.js";
+import { accountService } from "./account-service.js";
 import "./data/content.js";
 import "./data/quiz-base.js";
 import "./data/carteggio.js";
@@ -7,6 +8,7 @@ import quizPt from "./data/quiz-pt.json";
 import exercisesPt from "./data/carteggio-pt.json";
 import glossary from "./data/glossary.json";
 import chartData from "./data/chart-points.json";
+import questionReferences from "./data/question-references.json";
 import dm323PdfUrl from "./sources/dm-323-2021-programma-esame.pdf?url";
 import quizPdfUrl from "./sources/quiz-ministeriali-dd-131-2022.pdf?url";
 import chartPdfUrl from "./sources/quiz-e-carteggio-dd-10-2022.pdf?url";
@@ -47,6 +49,7 @@ const shuffle = (array) => {
 };
 
 const MODE_KEY = "rotta12-language-mode";
+const PROFILE_KEY = "rotta12-study-profile-v1";
 const VALID_MODES = new Set(["it", "pt", "both"]);
 const sourceMap = Object.fromEntries(
   content.sources.map((source) => [source.id, source]),
@@ -64,6 +67,9 @@ const chartPointMap = new Map(
 );
 const exerciseRouteMap = new Map(
   chartData.exercises.map((route) => [route.id, route]),
+);
+const questionReferenceMap = new Map(
+  questionReferences.references.map((reference) => [reference.id, reference]),
 );
 const localPdfUrls = {
   dm323: dm323PdfUrl,
@@ -156,6 +162,159 @@ const UI = {
     "Ex.: luzes, âncora, bússola…",
   ],
   showMoreQuestions: ["Mostra altri quesiti", "Mostrar mais questões"],
+  allQuestionsVisible: [
+    "Tutti i quesiti filtrati sono visibili",
+    "Todas as questões filtradas estão visíveis",
+  ],
+  filterProgress: ["Stato di studio", "Progresso"],
+  progressAll: ["Tutti gli stati", "Todos os status"],
+  progressUnseen: ["Non ancora visti", "Ainda não vistas"],
+  progressAnswered: ["Già risposti", "Já respondidas"],
+  progressCorrect: ["Ultima risposta esatta", "Último acerto"],
+  progressReview: ["Da ripassare", "Para revisar"],
+  clearFilters: ["Azzera filtri", "Limpar filtros"],
+  selectedQuestions: ["selezionati", "selecionadas"],
+  randomCount: ["Numero di quesiti", "Número de questões"],
+  randomFiltered: [
+    "Quiz casuale dai risultati",
+    "Quiz aleatório dos resultados",
+  ],
+  startSelected: ["Allenati sui selezionati", "Treinar as selecionadas"],
+  selectQuestion: ["Seleziona il quesito", "Selecionar a questão"],
+  noSelectedQuestions: [
+    "Seleziona almeno un quesito dalla banca dati.",
+    "Selecione pelo menos uma questão no banco.",
+  ],
+  studyProfile: ["Profilo di studio", "Perfil de estudo"],
+  accountProfile: ["ACCOUNT ROTTA 12", "CONTA ROTTA 12"],
+  cloudProfile: ["PROGRESSI SINCRONIZZATI", "PROGRESSO SINCRONIZADO"],
+  accountLead: [
+    "Accedi da qualsiasi dispositivo e ritrova i quesiti già svolti.",
+    "Entre de qualquer dispositivo e encontre as questões já respondidas.",
+  ],
+  accountOfflineLead: [
+    "Il server non è raggiungibile: puoi continuare offline su questo dispositivo.",
+    "O servidor está indisponível: você pode continuar offline neste dispositivo.",
+  ],
+  signIn: ["Accedi", "Entrar"],
+  createAccount: ["Crea account", "Criar conta"],
+  manageAccount: ["Il mio account", "Minha conta"],
+  useLocalProfile: [
+    "Usa solo questo dispositivo",
+    "Usar somente este aparelho",
+  ],
+  usernameOrEmail: ["Nome utente o email", "Usuário ou e-mail"],
+  usernameOrEmailHint: [
+    "Scegli un nome utente oppure usa direttamente la tua email.",
+    "Escolha um usuário ou use diretamente seu e-mail.",
+  ],
+  displayName: ["Nome visualizzato (facoltativo)", "Nome exibido (opcional)"],
+  password: ["Password", "Senha"],
+  currentPassword: ["Password attuale", "Senha atual"],
+  newPassword: ["Nuova password", "Nova senha"],
+  confirmPassword: ["Conferma password", "Confirmar senha"],
+  passwordRule: ["Almeno 8 caratteri.", "No mínimo 8 caracteres."],
+  forgotPassword: ["Password dimenticata?", "Esqueceu a senha?"],
+  sendReset: ["Invia link di recupero", "Enviar link de recuperação"],
+  resetSent: [
+    "Se l'account ha un'email valida, riceverai un link di recupero.",
+    "Se a conta tiver um e-mail válido, você receberá um link de recuperação.",
+  ],
+  accountCreated: ["Account creato e collegato.", "Conta criada e conectada."],
+  accountConnected: ["Account collegato.", "Conta conectada."],
+  accountError: [
+    "Operazione non riuscita. Controlla i dati e riprova.",
+    "Não foi possível concluir. Verifique os dados e tente novamente.",
+  ],
+  passwordsMismatch: [
+    "Le password non coincidono.",
+    "As senhas não coincidem.",
+  ],
+  invalidPassword: [
+    "La password deve contenere almeno 8 caratteri.",
+    "A senha deve ter pelo menos 8 caracteres.",
+  ],
+  syncedNow: ["Sincronizzato ora", "Sincronizado agora"],
+  syncPending: ["Sincronizzazione in attesa", "Sincronização pendente"],
+  offlineSaved: ["Salvato offline", "Salvo offline"],
+  logout: ["Esci dall'account", "Sair da conta"],
+  emailAddress: ["Indirizzo email", "Endereço de e-mail"],
+  noEmail: ["Nessuna email associata", "Nenhum e-mail associado"],
+  addOrChangeEmail: ["Aggiungi o cambia email", "Adicionar ou alterar e-mail"],
+  sendEmailConfirmation: ["Invia conferma", "Enviar confirmação"],
+  emailConfirmationSent: [
+    "Controlla la nuova casella email per confermare.",
+    "Verifique a nova caixa de e-mail para confirmar.",
+  ],
+  emailSaved: [
+    "Email salvata. Potrai usarla subito per accedere.",
+    "E-mail salvo. Você já pode usá-lo para entrar.",
+  ],
+  changePassword: ["Cambia password", "Alterar senha"],
+  passwordChanged: ["Password aggiornata.", "Senha atualizada."],
+  deleteAccount: ["Elimina account", "Excluir conta"],
+  deleteAccountWarning: [
+    "L'eliminazione è definitiva e cancella tutti i progressi sincronizzati. Inserisci la password per confermare.",
+    "A exclusão é definitiva e apaga todo o progresso sincronizado. Informe a senha para confirmar.",
+  ],
+  accountDeleted: ["Account eliminato.", "Conta excluída."],
+  localMode: ["PROFILO OFFLINE", "PERFIL OFFLINE"],
+  backToLogin: ["Torna all'accesso", "Voltar ao login"],
+  saveLocally: ["Salva localmente", "Salvar localmente"],
+  chooseNewPassword: ["Scegli una nuova password", "Escolha uma nova senha"],
+  confirmNewEmail: ["Conferma il nuovo indirizzo", "Confirme o novo endereço"],
+  emailVerified: ["Email verificata.", "E-mail confirmado."],
+  invalidOrExpiredLink: [
+    "Il link non è valido o è scaduto.",
+    "O link é inválido ou expirou.",
+  ],
+  localProfile: ["PROGRESSI LOCALI", "PROGRESSO LOCAL"],
+  localProfileLead: [
+    "Salva le risposte su questo dispositivo. Esporta il profilo per trasferirlo altrove.",
+    "Salve as respostas neste dispositivo. Exporte o perfil para transferi-lo a outro aparelho.",
+  ],
+  createProfile: ["Crea profilo", "Criar perfil"],
+  manageProfile: ["Gestisci profilo", "Gerenciar perfil"],
+  profileName: ["Nome del profilo", "Nome do perfil"],
+  profileNamePlaceholder: ["Es.: Andrea", "Ex.: André"],
+  saveProfile: ["Salva profilo", "Salvar perfil"],
+  exportProfile: ["Esporta JSON", "Exportar JSON"],
+  importProfile: ["Importa JSON", "Importar JSON"],
+  closeProfile: ["Chiudi il profilo", "Fechar perfil"],
+  profilePrivacy: [
+    "Nessuna password e nessun cloud: nome e progressi restano solo nel browser.",
+    "Sem senha e sem nuvem: nome e progresso ficam somente no navegador.",
+  ],
+  profileSaved: ["Profilo salvato.", "Perfil salvo."],
+  profileNameRequired: [
+    "Inserisci un nome per il profilo.",
+    "Informe um nome para o perfil.",
+  ],
+  profileImported: ["Profilo importato.", "Perfil importado."],
+  invalidProfile: [
+    "Il file non contiene un profilo Rotta 12 valido.",
+    "O arquivo não contém um perfil Rotta 12 válido.",
+  ],
+  answeredQuestions: ["Risposti", "Respondidas"],
+  unseenQuestions: ["Non visti", "Não vistas"],
+  reviewQuestions: ["Da ripassare", "Para revisar"],
+  accuracy: ["Precisione", "Aproveitamento"],
+  startUnseenSimulation: [
+    "Simulazione solo con non visti",
+    "Simulado somente com não vistas",
+  ],
+  notEnoughUnseen: [
+    "Servono almeno 20 quesiti non visti; ne restano {count}.",
+    "São necessárias ao menos 20 questões não vistas; restam {count}.",
+  ],
+  progressSavedFor: [
+    "I progressi saranno salvati per {name}.",
+    "O progresso será salvo para {name}.",
+  ],
+  createProfileToTrack: [
+    "Crea un profilo locale per distinguere quesiti visti, corretti e da ripassare.",
+    "Crie um perfil local para distinguir questões vistas, corretas e para revisar.",
+  ],
   withinTwelve: ["ESERCIZI ENTRO 12 MIGLIA", "EXERCÍCIOS ATÉ 12 MILHAS"],
   fiftyChartExercises: [
     "50 esercizi di carteggio",
@@ -293,6 +452,36 @@ const UI = {
   officialAnswer: ["Risposta ufficiale", "Resposta oficial"],
   noQuestions: ["Nessun quesito trovato.", "Nenhuma questão encontrada."],
   practiceAction: ["Esercitati", "Praticar"],
+  studyInHandbook: ["Studia nella Dispensa", "Estudar na apostila"],
+  handbookReference: ["RIFERIMENTO DIDATTICO", "REFERÊNCIA DIDÁTICA"],
+  handbookTitle: ["Spiegazione nella Dispensa", "Explicação na apostila"],
+  handbookDirect: [
+    "Passaggio corrispondente individuato",
+    "Trecho correspondente localizado",
+  ],
+  handbookTopic: [
+    "Capitolo che tratta l’argomento",
+    "Capítulo que aborda o assunto",
+  ],
+  handbookRelated: [
+    "Approfondimento correlato · edizione 2011",
+    "Conteúdo relacionado · edição de 2011",
+  ],
+  handbookTerms: ["Termini individuati", "Termos localizados"],
+  handbookPage: ["Pagina {page} di 67", "Página {page} de 67"],
+  handbookNotice: [
+    "Il collegamento è un indice didattico automatico. La Dispensa è del 2011: per norme, dotazioni e quesiti aggiornati prevalgono sempre le fonti MIT e il testo italiano ufficiale.",
+    "O vínculo é um índice didático automático. A apostila é de 2011: para normas, equipamentos e questões atualizadas, prevalecem sempre as fontes do MIT e o texto oficial italiano.",
+  ],
+  openHandbookPage: [
+    "Apri questa pagina in una nuova scheda",
+    "Abrir esta página em uma nova aba",
+  ],
+  closeHandbook: ["Chiudi la Dispensa", "Fechar a apostila"],
+  handbookFrameTitle: [
+    "Pagina della Dispensa collegata al quesito",
+    "Página da apostila vinculada à questão",
+  ],
   figure: ["figura", "figura"],
   solveChart: ["Risolvi sulla carta 5/D", "Resolva na carta 5/D"],
   showOfficialSolution: [
@@ -357,12 +546,21 @@ const METHODS = [
 let mode = VALID_MODES.has(localStorage.getItem(MODE_KEY))
   ? localStorage.getItem(MODE_KEY)
   : "it";
-let bankLimit = 12;
 let quizState = null;
+let studyProfile = loadStudyProfile();
+const bankSelection = new Set();
 let timerHandle = null;
 let featuredExercise = exercises[0];
 let toastHandle = null;
 let chartZoom = 1;
+let manualQuestionId = null;
+let manualReturnFocus = null;
+let accountOnline = false;
+let accountModalView = "login";
+let syncState = "offline";
+let syncHandle = null;
+const pendingProgressSync = new Set();
+let accountActionToken = "";
 
 function pairValue(italian, portuguese) {
   if (mode === "pt") return portuguese || italian;
@@ -399,6 +597,504 @@ function translatedChapter(chapter) {
   return chapterPtMap.get(chapter.id);
 }
 
+function validStudyProfile(value) {
+  return Boolean(
+    value &&
+    value.version === 1 &&
+    typeof value.name === "string" &&
+    value.name.trim() &&
+    value.progress &&
+    typeof value.progress === "object" &&
+    !Array.isArray(value.progress),
+  );
+}
+
+function cleanStudyProfile(value) {
+  if (!validStudyProfile(value)) return null;
+  const validIds = new Set(quiz.map((item) => String(item.id)));
+  const progress = {};
+  for (const [questionId, record] of Object.entries(value.progress)) {
+    if (!validIds.has(questionId) || !record || typeof record !== "object")
+      continue;
+    const attempts = Math.max(0, Number(record.attempts) || 0);
+    const correct = Math.min(
+      attempts,
+      Math.max(0, Number(record.correct) || 0),
+    );
+    progress[questionId] = {
+      attempts,
+      correct,
+      wrong: Math.max(0, attempts - correct),
+      lastCorrect: Boolean(record.lastCorrect),
+      lastAnswered:
+        typeof record.lastAnswered === "string"
+          ? record.lastAnswered
+          : new Date(0).toISOString(),
+      _remoteId:
+        typeof record._remoteId === "string" ? record._remoteId : undefined,
+    };
+  }
+  return {
+    version: 1,
+    id:
+      typeof value.id === "string"
+        ? value.id
+        : `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+    name: value.name.trim().slice(0, 80),
+    accountId:
+      typeof value.accountId === "string" ? value.accountId : undefined,
+    createdAt:
+      typeof value.createdAt === "string"
+        ? value.createdAt
+        : new Date().toISOString(),
+    updatedAt:
+      typeof value.updatedAt === "string"
+        ? value.updatedAt
+        : new Date().toISOString(),
+    progress,
+  };
+}
+
+function loadStudyProfile() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(PROFILE_KEY) || "null");
+    return cleanStudyProfile(stored);
+  } catch {
+    return null;
+  }
+}
+
+function saveStudyProfile() {
+  if (!studyProfile) return;
+  studyProfile.updatedAt = new Date().toISOString();
+  localStorage.setItem(PROFILE_KEY, JSON.stringify(studyProfile));
+}
+
+function createStudyProfile(name) {
+  const now = new Date().toISOString();
+  studyProfile = {
+    version: 1,
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+    name: name.trim().slice(0, 80),
+    createdAt: now,
+    updatedAt: now,
+    progress: {},
+  };
+  saveStudyProfile();
+}
+
+function progressFor(questionId) {
+  return studyProfile?.progress?.[String(questionId)] || null;
+}
+
+function progressStatus(questionId) {
+  const progress = progressFor(questionId);
+  if (!progress) return "unseen";
+  return progress.lastCorrect ? "correct" : "review";
+}
+
+function profileStats() {
+  const records = Object.values(studyProfile?.progress || {});
+  const attempts = records.reduce(
+    (total, record) => total + Number(record.attempts || 0),
+    0,
+  );
+  const correct = records.reduce(
+    (total, record) => total + Number(record.correct || 0),
+    0,
+  );
+  return {
+    answered: records.length,
+    unseen: quiz.length - records.length,
+    review: records.filter((record) => !record.lastCorrect).length,
+    accuracy: attempts ? Math.round((correct / attempts) * 100) : 0,
+  };
+}
+
+function renderStudyProfile() {
+  const panel = $("#studyProfilePanel");
+  const authenticated = accountService.isAuthenticated;
+  if (!studyProfile) {
+    panel.innerHTML = `<div class="study-profile-copy"><span class="eyebrow">${ui("accountProfile")}</span><h2>${ui("studyProfile")}</h2><p>${accountOnline ? ui("accountLead") : ui("accountOfflineLead")}</p></div><div class="study-profile-actions"><button type="button" class="button primary" data-open-profile="login">${ui("signIn")}</button><button type="button" class="button ghost dark" data-open-profile="register">${ui("createAccount")}</button><button type="button" class="text-button" data-open-profile="local">${ui("useLocalProfile")}</button></div>`;
+    return;
+  }
+  const stats = profileStats();
+  const stateLabel =
+    syncState === "synced"
+      ? ui("syncedNow")
+      : syncState === "pending"
+        ? ui("syncPending")
+        : ui("offlineSaved");
+  panel.innerHTML = `<div class="study-profile-copy"><span class="eyebrow">${authenticated ? ui("cloudProfile") : ui("localProfile")}</span><h2>${esc(studyProfile.name)}</h2><p>${authenticated ? stateLabel : ui("localProfileLead")}</p></div><div class="profile-stats"><div><strong>${stats.answered}</strong><small>${ui("answeredQuestions")}</small></div><div><strong>${stats.unseen}</strong><small>${ui("unseenQuestions")}</small></div><div><strong>${stats.review}</strong><small>${ui("reviewQuestions")}</small></div><div><strong>${stats.accuracy}%</strong><small>${ui("accuracy")}</small></div></div><div class="study-profile-actions"><button type="button" class="button primary" id="startUnseenSimulation">${ui("startUnseenSimulation")}</button><button type="button" class="button ghost dark" data-open-profile="${authenticated ? "account" : "login"}">${authenticated ? ui("manageAccount") : ui("signIn")}</button>${authenticated ? "" : `<button type="button" class="text-button" data-open-profile="local">${ui("manageProfile")}</button>`}</div>`;
+}
+
+function accountDisplayName(record = accountService.current) {
+  return (
+    record?.displayName ||
+    (record?.username?.startsWith("mail_") ? record.email : record?.username) ||
+    record?.email ||
+    ui("studyProfile")
+  );
+}
+
+function accountTabs(active) {
+  return `<div class="account-tabs"><button type="button" data-account-view="login" class="${active === "login" ? "is-active" : ""}">${ui("signIn")}</button><button type="button" data-account-view="register" class="${active === "register" ? "is-active" : ""}">${ui("createAccount")}</button></div>`;
+}
+
+function renderAccountModal() {
+  const body = $("#accountModalBody");
+  const current = accountService.current;
+  $("#profileModalEyebrow").textContent =
+    accountModalView === "local" ? ui("localMode") : ui("accountProfile");
+  $("#profileModalTitle").textContent =
+    accountModalView === "account" && current
+      ? accountDisplayName(current)
+      : ui("studyProfile");
+
+  if (accountModalView === "account" && current) {
+    body.innerHTML = `<p>${ui("accountLead")}</p><div class="account-identity"><strong>${esc(accountDisplayName(current))}</strong><small>${current.email ? esc(current.email) : ui("noEmail")}</small></div><section class="account-section"><h3>${ui("addOrChangeEmail")}</h3><form data-account-form="email"><label class="profile-name-label"><span>${ui("emailAddress")}</span><input name="email" type="email" required autocomplete="email"></label><label class="profile-name-label"><span>${ui("currentPassword")}</span><input name="password" type="password" required autocomplete="current-password"></label><button class="button ghost dark" type="submit">${ui("addOrChangeEmail")}</button></form></section><section class="account-section"><h3>${ui("changePassword")}</h3><form data-account-form="password"><label class="profile-name-label"><span>${ui("currentPassword")}</span><input name="oldPassword" type="password" required autocomplete="current-password"></label><label class="profile-name-label"><span>${ui("newPassword")}</span><input name="password" type="password" minlength="8" required autocomplete="new-password"></label><label class="profile-name-label"><span>${ui("confirmPassword")}</span><input name="passwordConfirm" type="password" minlength="8" required autocomplete="new-password"></label><button class="button ghost dark" type="submit">${ui("changePassword")}</button></form></section><div class="profile-modal-actions"><button type="button" class="button ghost dark" data-profile-export>${ui("exportProfile")}</button><label class="button ghost dark profile-import" for="profileImport">${ui("importProfile")}</label><button type="button" class="button ghost dark" data-account-logout>${ui("logout")}</button></div><details class="account-danger"><summary>${ui("deleteAccount")}</summary><p>${ui("deleteAccountWarning")}</p><form data-account-form="delete"><label class="profile-name-label"><span>${ui("password")}</span><input name="password" type="password" required autocomplete="current-password"></label><button class="button danger" type="submit">${ui("deleteAccount")}</button></form></details><p class="account-form-message" id="accountFormMessage" aria-live="polite"></p>`;
+    return;
+  }
+
+  if (accountModalView === "local") {
+    body.innerHTML = `<p>${ui("profilePrivacy")}</p><form data-account-form="local"><label class="profile-name-label"><span>${ui("profileName")}</span><input name="name" type="text" maxlength="80" required autocomplete="name" value="${esc(studyProfile?.name || "")}" placeholder="${esc(ui("profileNamePlaceholder"))}"></label><div class="profile-modal-actions"><button type="submit" class="button primary">${ui("saveLocally")}</button><button type="button" class="button ghost dark" data-profile-export ${studyProfile ? "" : "disabled"}>${ui("exportProfile")}</button><label class="button ghost dark profile-import" for="profileImport">${ui("importProfile")}</label>${accountOnline ? `<button type="button" class="text-button" data-account-view="login">${ui("signIn")}</button>` : ""}</div></form><p class="account-form-message" id="accountFormMessage" aria-live="polite"></p>`;
+    return;
+  }
+
+  if (accountModalView === "forgot") {
+    body.innerHTML = `<p>${ui("resetSent")}</p><form data-account-form="forgot"><label class="profile-name-label"><span>${ui("emailAddress")}</span><input name="identity" type="email" required autocomplete="email"></label><div class="profile-modal-actions"><button type="submit" class="button primary">${ui("sendReset")}</button><button type="button" class="text-button" data-account-view="login">${ui("backToLogin")}</button></div></form><p class="account-form-message" id="accountFormMessage" aria-live="polite"></p>`;
+    return;
+  }
+
+  if (["reset", "email-change"].includes(accountModalView)) {
+    const isReset = accountModalView === "reset";
+    body.innerHTML = `<p>${isReset ? ui("chooseNewPassword") : ui("confirmNewEmail")}</p><form data-account-form="${accountModalView}"><label class="profile-name-label"><span>${isReset ? ui("newPassword") : ui("password")}</span><input name="password" type="password" minlength="8" required autocomplete="new-password"></label>${isReset ? `<label class="profile-name-label"><span>${ui("confirmPassword")}</span><input name="passwordConfirm" type="password" minlength="8" required autocomplete="new-password"></label>` : ""}<button type="submit" class="button primary">${isReset ? ui("changePassword") : ui("sendEmailConfirmation")}</button></form><p class="account-form-message" id="accountFormMessage" aria-live="polite"></p>`;
+    return;
+  }
+
+  const isRegister = accountModalView === "register";
+  body.innerHTML = `${accountTabs(accountModalView)}<p>${isRegister ? ui("usernameOrEmailHint") : ui("accountLead")}</p><form data-account-form="${isRegister ? "register" : "login"}">${isRegister ? `<label class="profile-name-label"><span>${ui("displayName")}</span><input name="displayName" type="text" maxlength="80" autocomplete="name"></label>` : ""}<label class="profile-name-label"><span>${ui("usernameOrEmail")}</span><input name="identity" type="text" minlength="3" maxlength="254" required autocomplete="username"></label><label class="profile-name-label"><span>${ui("password")}</span><input name="password" type="password" minlength="8" required autocomplete="${isRegister ? "new-password" : "current-password"}"></label>${isRegister ? `<label class="profile-name-label"><span>${ui("confirmPassword")}</span><input name="passwordConfirm" type="password" minlength="8" required autocomplete="new-password"></label><small class="form-hint">${ui("passwordRule")}</small>` : ""}<div class="profile-modal-actions"><button type="submit" class="button primary">${isRegister ? ui("createAccount") : ui("signIn")}</button>${isRegister ? "" : `<button type="button" class="text-button" data-account-view="forgot">${ui("forgotPassword")}</button>`}<button type="button" class="text-button" data-account-view="local">${ui("useLocalProfile")}</button></div></form><p class="account-form-message" id="accountFormMessage" aria-live="polite"></p>`;
+}
+
+function openProfileModal(view) {
+  accountModalView =
+    view || (accountService.isAuthenticated ? "account" : "login");
+  renderAccountModal();
+  $("#profileBackdrop").hidden = false;
+  $("#profileModal").hidden = false;
+  document.body.classList.add("profile-open");
+  $("#accountModalBody input")?.focus();
+}
+
+function closeProfileModal() {
+  $("#profileBackdrop").hidden = true;
+  $("#profileModal").hidden = true;
+  document.body.classList.remove("profile-open");
+}
+
+function exportStudyProfile() {
+  if (!studyProfile) return;
+  const blob = new Blob([JSON.stringify(studyProfile, null, 2)], {
+    type: "application/json",
+  });
+  const link = document.createElement("a");
+  const objectUrl = URL.createObjectURL(blob);
+  link.href = objectUrl;
+  link.download = `rotta12-${studyProfile.name.replace(/[^a-z0-9]+/gi, "-").toLowerCase() || "profilo"}.json`;
+  link.click();
+  URL.revokeObjectURL(objectUrl);
+}
+
+async function importStudyProfile(file) {
+  try {
+    const imported = JSON.parse(await file.text());
+    const cleaned = cleanStudyProfile(imported);
+    if (!cleaned) throw new Error("invalid profile");
+    if (accountService.isAuthenticated) {
+      cleaned.accountId = accountService.current.id;
+      for (const [questionId, record] of Object.entries(cleaned.progress)) {
+        delete record._remoteId;
+        pendingProgressSync.add(questionId);
+      }
+    }
+    studyProfile = cleaned;
+    saveStudyProfile();
+    renderStudyProfile();
+    renderBank();
+    closeProfileModal();
+    showToast(ui("profileImported"));
+    if (accountService.isAuthenticated) scheduleProgressSync();
+  } catch {
+    showToast(ui("invalidProfile"));
+  }
+}
+
+function remoteProgressRecord(record) {
+  return {
+    attempts: Number(record.attempts || 0),
+    correct: Number(record.correct || 0),
+    wrong: Number(record.wrong || 0),
+    lastCorrect: Boolean(record.lastCorrect),
+    lastAnswered: record.lastAnswered,
+    _remoteId: record.id,
+  };
+}
+
+async function connectStudyAccount(record) {
+  const remoteRecords = await accountService.loadProgress();
+  const displayName = accountDisplayName(record);
+  if (
+    !studyProfile ||
+    (studyProfile.accountId && studyProfile.accountId !== record.id)
+  ) {
+    createStudyProfile(displayName);
+  }
+  studyProfile.accountId = record.id;
+  if (!studyProfile.name || studyProfile.name === ui("studyProfile")) {
+    studyProfile.name = displayName;
+  }
+
+  const remoteByQuestion = new Map(
+    remoteRecords.map((item) => [String(item.question), item]),
+  );
+  for (const [questionId, remote] of remoteByQuestion) {
+    const local = studyProfile.progress[questionId];
+    if (
+      !local ||
+      new Date(remote.lastAnswered).getTime() >
+        new Date(local.lastAnswered).getTime()
+    ) {
+      studyProfile.progress[questionId] = remoteProgressRecord(remote);
+    } else {
+      local._remoteId = remote.id;
+      if (
+        new Date(local.lastAnswered).getTime() >
+        new Date(remote.lastAnswered).getTime()
+      ) {
+        pendingProgressSync.add(questionId);
+      }
+    }
+  }
+  for (const questionId of Object.keys(studyProfile.progress)) {
+    if (!remoteByQuestion.has(questionId)) pendingProgressSync.add(questionId);
+  }
+  saveStudyProfile();
+  syncState = pendingProgressSync.size ? "pending" : "synced";
+  renderStudyProfile();
+  renderBank();
+  if (pendingProgressSync.size) scheduleProgressSync();
+}
+
+function scheduleProgressSync(questionId) {
+  if (questionId) pendingProgressSync.add(String(questionId));
+  if (!accountService.isAuthenticated) return;
+  syncState = "pending";
+  renderStudyProfile();
+  clearTimeout(syncHandle);
+  syncHandle = setTimeout(flushProgressSync, 250);
+}
+
+async function flushProgressSync() {
+  if (!accountService.isAuthenticated || !studyProfile) return;
+  const questions = [...pendingProgressSync];
+  for (const questionId of questions) {
+    try {
+      const local = studyProfile.progress[questionId];
+      if (!local) continue;
+      const remote = await accountService.upsertProgress(questionId, local);
+      local._remoteId = remote.id;
+      pendingProgressSync.delete(questionId);
+      accountOnline = true;
+    } catch {
+      accountOnline = false;
+      syncState = "offline";
+      saveStudyProfile();
+      renderStudyProfile();
+      return;
+    }
+  }
+  syncState = pendingProgressSync.size ? "pending" : "synced";
+  saveStudyProfile();
+  renderStudyProfile();
+}
+
+function accountMessage(message, isError = false) {
+  const element = $("#accountFormMessage");
+  if (!element) return;
+  element.textContent = message;
+  element.classList.toggle("is-error", isError);
+}
+
+function validatePasswords(password, confirmation = password) {
+  if (password.length < 8) {
+    accountMessage(ui("invalidPassword"), true);
+    return false;
+  }
+  if (password !== confirmation) {
+    accountMessage(ui("passwordsMismatch"), true);
+    return false;
+  }
+  return true;
+}
+
+function clearAccountActionToken() {
+  accountActionToken = "";
+  const url = new URL(location.href);
+  url.searchParams.delete("passwordResetToken");
+  url.searchParams.delete("emailChangeToken");
+  url.searchParams.delete("verificationToken");
+  history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+}
+
+async function handleAccountSubmit(event) {
+  const form = event.target.closest("[data-account-form]");
+  if (!form) return;
+  event.preventDefault();
+  const submit = $("button[type='submit']", form);
+  const data = Object.fromEntries(new FormData(form));
+  if (submit) submit.disabled = true;
+  accountMessage("");
+  try {
+    switch (form.dataset.accountForm) {
+      case "login": {
+        const record = await accountService.login(data.identity, data.password);
+        accountOnline = true;
+        await connectStudyAccount(record);
+        closeProfileModal();
+        showToast(ui("accountConnected"));
+        break;
+      }
+      case "register": {
+        if (!validatePasswords(data.password, data.passwordConfirm)) return;
+        const record = await accountService.register(
+          data.identity,
+          data.password,
+          data.displayName,
+        );
+        accountOnline = true;
+        await connectStudyAccount(record);
+        closeProfileModal();
+        showToast(ui("accountCreated"));
+        break;
+      }
+      case "local": {
+        const name = data.name.trim();
+        if (!name) {
+          accountMessage(ui("profileNameRequired"), true);
+          return;
+        }
+        if (studyProfile) {
+          studyProfile.name = name.slice(0, 80);
+          saveStudyProfile();
+        } else createStudyProfile(name);
+        renderStudyProfile();
+        renderBank();
+        closeProfileModal();
+        showToast(ui("profileSaved"));
+        break;
+      }
+      case "forgot":
+        await accountService.requestPasswordReset(data.identity);
+        accountMessage(ui("resetSent"));
+        break;
+      case "email":
+        await accountService.changeEmail(data.email, data.password);
+        accountMessage(ui("emailSaved"));
+        form.reset();
+        renderStudyProfile();
+        break;
+      case "password":
+        if (!validatePasswords(data.password, data.passwordConfirm)) return;
+        await accountService.changePassword(data.oldPassword, data.password);
+        accountMessage(ui("passwordChanged"));
+        form.reset();
+        break;
+      case "delete": {
+        const accountId = accountService.current.id;
+        await accountService.deleteAccount(data.password);
+        if (studyProfile?.accountId === accountId) {
+          studyProfile = null;
+          localStorage.removeItem(PROFILE_KEY);
+        }
+        pendingProgressSync.clear();
+        syncState = "offline";
+        renderStudyProfile();
+        renderBank();
+        closeProfileModal();
+        showToast(ui("accountDeleted"));
+        break;
+      }
+      case "reset":
+        if (!validatePasswords(data.password, data.passwordConfirm)) return;
+        await accountService.confirmPasswordReset(
+          accountActionToken,
+          data.password,
+        );
+        clearAccountActionToken();
+        accountModalView = "login";
+        renderAccountModal();
+        accountMessage(ui("passwordChanged"));
+        break;
+      case "email-change":
+        await accountService.confirmEmailChange(
+          accountActionToken,
+          data.password,
+        );
+        clearAccountActionToken();
+        accountModalView = accountService.isAuthenticated ? "account" : "login";
+        renderAccountModal();
+        accountMessage(ui("emailConfirmationSent"));
+        break;
+      default:
+        break;
+    }
+  } catch {
+    accountMessage(ui("accountError"), true);
+  } finally {
+    if (submit?.isConnected) submit.disabled = false;
+  }
+}
+
+function logoutStudyAccount() {
+  const accountId = accountService.current?.id;
+  accountService.logout();
+  if (studyProfile?.accountId === accountId) {
+    studyProfile = null;
+    localStorage.removeItem(PROFILE_KEY);
+  }
+  pendingProgressSync.clear();
+  syncState = "offline";
+  closeProfileModal();
+  renderStudyProfile();
+  renderBank();
+}
+
+async function initializeStudyAccount() {
+  const url = new URL(location.href);
+  try {
+    const record = await accountService.initialize();
+    accountOnline = true;
+    if (record) await connectStudyAccount(record);
+    const verificationToken = url.searchParams.get("verificationToken");
+    if (verificationToken) {
+      await accountService.confirmVerification(verificationToken);
+      clearAccountActionToken();
+      showToast(ui("emailVerified"));
+    }
+  } catch {
+    accountOnline = false;
+    syncState = "offline";
+  }
+
+  const resetToken = url.searchParams.get("passwordResetToken");
+  const emailToken = url.searchParams.get("emailChangeToken");
+  if (resetToken || emailToken) {
+    accountActionToken = resetToken || emailToken;
+    openProfileModal(resetToken ? "reset" : "email-change");
+  }
+  renderStudyProfile();
+}
+
 function showToast(message) {
   const toast = $("#toast");
   toast.textContent = message;
@@ -414,6 +1110,69 @@ function figurePath(number) {
 
 function formatTime(seconds) {
   return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
+}
+
+function handbookMatchLabel(reference) {
+  if (reference.match === "direct") return ui("handbookDirect");
+  if (reference.match === "topic") return ui("handbookTopic");
+  return ui("handbookRelated");
+}
+
+function handbookUrl(reference) {
+  return `${handbookPdfUrl}#page=${reference.page}&zoom=125,0,${reference.top}`;
+}
+
+function handbookButton(question, compact = false) {
+  const reference = questionReferenceMap.get(question.id);
+  if (!reference) return "";
+  return `<button type="button" class="handbook-button${compact ? " compact" : ""}" data-open-handbook="${question.id}"><span>PDF · ${ui("page")} ${reference.page}</span><strong>${ui("studyInHandbook")}</strong></button>`;
+}
+
+function openHandbook(questionId, returnFocus = true) {
+  const question = quiz.find((item) => item.id === Number(questionId));
+  const reference = questionReferenceMap.get(Number(questionId));
+  if (!question || !reference) return;
+  if (returnFocus) manualReturnFocus = document.activeElement;
+  manualQuestionId = question.id;
+  const translated = quizPtMap.get(question.id);
+  const section = questionReferences.sections[reference.section];
+  const url = handbookUrl(reference);
+  $("#handbookReferenceCode").textContent =
+    `${question.code} · ${ui("handbookPage", { page: reference.page })}`;
+  $("#handbookReferenceQuestion").innerHTML = pairHtml(
+    question.question,
+    translated.question,
+  );
+  $("#handbookReferenceSection").innerHTML = pairHtml(
+    section.title,
+    section.titlePt,
+    { compact: true },
+  );
+  $("#handbookReferenceMatch").textContent = handbookMatchLabel(reference);
+  $("#handbookReferenceMatch").className = `handbook-match ${reference.match}`;
+  const terms = $("#handbookReferenceTerms");
+  terms.hidden = !reference.terms.length;
+  terms.innerHTML = reference.terms.length
+    ? `<strong>${ui("handbookTerms")}:</strong> ${esc(reference.terms.join(" · "))}`
+    : "";
+  $("#handbookFrame").title = ui("handbookFrameTitle");
+  $("#handbookFrame").src = url;
+  $("#handbookNewTab").href = url;
+  $("#handbookBackdrop").hidden = false;
+  $("#handbookModal").hidden = false;
+  document.body.classList.add("handbook-open");
+  $("#handbookClose").focus();
+}
+
+function closeHandbook() {
+  if ($("#handbookModal").hidden) return;
+  $("#handbookBackdrop").hidden = true;
+  $("#handbookModal").hidden = true;
+  $("#handbookFrame").src = "about:blank";
+  document.body.classList.remove("handbook-open");
+  manualQuestionId = null;
+  manualReturnFocus?.focus?.();
+  manualReturnFocus = null;
 }
 
 function updateStaticUi() {
@@ -467,12 +1226,15 @@ function setMode(nextMode) {
   updateStaticUi();
   renderDashboard();
   populateQuizFilters();
+  renderStudyProfile();
   renderBank();
   renderExercises();
   renderSources();
   renderGlossary();
+  if (!$("#profileModal").hidden) renderAccountModal();
   if (quizState?.finished) renderQuizResult();
   else if (quizState) renderQuestion();
+  if (manualQuestionId) openHandbook(manualQuestionId, false);
 }
 
 function switchView(viewName, push = true) {
@@ -541,6 +1303,7 @@ function populateQuizFilters() {
   )
     $("#bankTheme").value = previousBankTheme;
   updateTrainingTopics();
+  updateBankTopics();
 }
 
 function updateTrainingTopics() {
@@ -564,18 +1327,44 @@ function updateTrainingTopics() {
   if (topics.includes(previous)) $("#trainingTopic").value = previous;
 }
 
-function officialSelection() {
+function updateBankTopics() {
+  const theme = $("#bankTheme").value;
+  const previous = $("#bankTopic").value;
+  const pool = quiz.filter((item) => !theme || item.theme === theme);
+  const topics = [...new Set(pool.map((item) => item.topic))].sort(
+    (left, right) => left.localeCompare(right, "it"),
+  );
+  $("#bankTopic").innerHTML =
+    `<option value="">${ui("allTopics")}</option>${topics
+      .map((topic) => {
+        const match = pool.find((item) => item.topic === topic);
+        const portuguese = match ? quizPtMap.get(match.id)?.topic : topic;
+        return `<option value="${esc(topic)}">${esc(pairValue(topic, portuguese))}</option>`;
+      })
+      .join("")}`;
+  if (topics.includes(previous)) $("#bankTopic").value = previous;
+}
+
+function officialSelection(pool = quiz) {
   const distribution = Object.fromEntries(
     content.chapters.map((chapter) => [
       chapter.italian.toUpperCase(),
       chapter.examQuestions,
     ]),
   );
-  return shuffle(
-    Object.entries(distribution).flatMap(([theme, count]) =>
-      shuffle(quiz.filter((item) => item.theme === theme)).slice(0, count),
-    ),
+  const targetCount = Object.values(distribution).reduce(
+    (total, count) => total + count,
+    0,
   );
+  const selected = Object.entries(distribution).flatMap(([theme, count]) =>
+    shuffle(pool.filter((item) => item.theme === theme)).slice(0, count),
+  );
+  const selectedIds = new Set(selected.map((item) => item.id));
+  const fill = shuffle(pool.filter((item) => !selectedIds.has(item.id))).slice(
+    0,
+    Math.max(0, targetCount - selected.length),
+  );
+  return shuffle([...selected, ...fill]);
 }
 
 function startQuiz(quizMode, forcedQuestions = null) {
@@ -601,6 +1390,7 @@ function startQuiz(quizMode, forcedQuestions = null) {
     questions: selected,
     index: 0,
     answers: Array(selected.length).fill(null),
+    recorded: Array(selected.length).fill(false),
     seconds: quizMode === "official" ? content.exam.baseMinutes * 60 : null,
     finished: false,
   };
@@ -620,6 +1410,39 @@ function startQuiz(quizMode, forcedQuestions = null) {
   }
   renderQuestion();
   $("#quizRunner").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function recordQuizAnswer(index) {
+  if (
+    !studyProfile ||
+    !quizState ||
+    quizState.recorded[index] ||
+    quizState.answers[index] === null
+  )
+    return false;
+  const question = quizState.questions[index];
+  const correct = quizState.answers[index] === question.correct;
+  const key = String(question.id);
+  const current = studyProfile.progress[key] || {
+    attempts: 0,
+    correct: 0,
+    wrong: 0,
+  };
+  current.attempts += 1;
+  current.correct += correct ? 1 : 0;
+  current.wrong += correct ? 0 : 1;
+  current.lastCorrect = correct;
+  current.lastAnswered = new Date().toISOString();
+  studyProfile.progress[key] = current;
+  quizState.recorded[index] = true;
+  scheduleProgressSync(question.id);
+  return true;
+}
+
+function saveQuizProgress() {
+  if (!studyProfile) return;
+  saveStudyProfile();
+  renderStudyProfile();
 }
 
 function renderQuestion() {
@@ -661,17 +1484,21 @@ function renderQuestion() {
           }${question.note ? ` ${pairHtml(question.note, translated.note || "")}` : ""}</div>`
         : ""
     }
+    ${reveal ? `<div class="question-study-reference">${handbookButton(question)}</div>` : ""}
     <div class="quiz-actions"><button class="button ghost dark" id="quitQuiz">${ui("quit")}</button><button class="button primary" id="nextQuestion" ${answered === null ? "disabled" : ""}>${quizState.index === quizState.questions.length - 1 ? ui("viewResult") : `${ui("nextQuestion")} →`}</button></div>`;
 }
 
 function selectAnswer(index) {
   if (!quizState || quizState.finished) return;
   quizState.answers[quizState.index] = index;
+  if (quizState.mode === "training" && recordQuizAnswer(quizState.index))
+    saveQuizProgress();
   renderQuestion();
 }
 
 function nextQuestion() {
   if (!quizState || quizState.answers[quizState.index] === null) return;
+  if (recordQuizAnswer(quizState.index)) saveQuizProgress();
   if (quizState.index === quizState.questions.length - 1) {
     finishQuiz();
     return;
@@ -706,6 +1533,7 @@ function answerReviewHtml() {
           <header><span>${esc(question.code)}</span><strong>${isCorrect ? "✓" : "→"} ${isCorrect ? ui("correctAnswer") : ui("correctAnswerLetter", { letter })}</strong></header>
           <p>${pairHtml(question.question, translated.question)}</p>
           <div class="result-official-answer"><b>${letter}</b><div><small>${ui("officialAnswer")}</small><span>${pairHtml(question.answers[question.correct], translated.answers[question.correct])}</span></div></div>
+          <footer><small>${handbookMatchLabel(questionReferenceMap.get(question.id))}</small>${handbookButton(question, true)}</footer>
         </article>`;
       })
       .join("")}</div>
@@ -752,6 +1580,11 @@ function renderQuizResult() {
 function finishQuiz() {
   if (!quizState) return;
   clearInterval(timerHandle);
+  let progressChanged = false;
+  quizState.questions.forEach((_question, index) => {
+    progressChanged = recordQuizAnswer(index) || progressChanged;
+  });
+  if (progressChanged) saveQuizProgress();
   quizState.finished = true;
   const { correct } = quizScore();
   localStorage.setItem(
@@ -764,15 +1597,18 @@ function finishQuiz() {
     }),
   );
   renderQuizResult();
+  renderBank();
   $("#quizResult").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function stopQuiz() {
   clearInterval(timerHandle);
+  if (quizState && recordQuizAnswer(quizState.index)) saveQuizProgress();
   quizState = null;
   $("#quizRunner").hidden = true;
   $("#quizResult").hidden = true;
   $("#quizSetup").hidden = false;
+  renderBank();
 }
 
 function searchableQuestion(item) {
@@ -785,11 +1621,28 @@ function searchableQuestion(item) {
 function filteredBank() {
   const query = norm($("#bankSearch").value);
   const theme = $("#bankTheme").value;
-  return quiz.filter(
-    (item) =>
+  const topic = $("#bankTopic").value;
+  const status = $("#bankStatus").value;
+  return quiz.filter((item) => {
+    const itemStatus = progressStatus(item.id);
+    const statusMatch =
+      !status ||
+      status === "all" ||
+      itemStatus === status ||
+      (status === "answered" && itemStatus !== "unseen");
+    return (
       (!theme || item.theme === theme) &&
-      (!query || searchableQuestion(item).includes(query)),
-  );
+      (!topic || item.topic === topic) &&
+      statusMatch &&
+      (!query || searchableQuestion(item).includes(query))
+    );
+  });
+}
+
+function bankStatusLabel(status) {
+  if (status === "correct") return ui("progressCorrect");
+  if (status === "review") return ui("progressReview");
+  return ui("progressUnseen");
 }
 
 function renderBank() {
@@ -799,13 +1652,50 @@ function renderBank() {
   );
   $("#bankResults").innerHTML =
     results
-      .slice(0, bankLimit)
       .map((item) => {
         const translated = quizPtMap.get(item.id);
-        return `<article class="bank-row"><strong>#${item.id}</strong><div><p>${pairHtml(item.question, translated.question)}</p><small>${pairHtml(item.topic, translated.topic, { compact: true })}${item.figure ? ` · ${ui("figure")} ${item.figure}` : ""}</small></div><button data-practice-question="${item.id}">${ui("practiceAction")} →</button></article>`;
+        const status = progressStatus(item.id);
+        return `<article class="bank-row ${bankSelection.has(item.id) ? "is-selected" : ""}"><label class="bank-select"><input type="checkbox" data-select-question="${item.id}" ${bankSelection.has(item.id) ? "checked" : ""} aria-label="${esc(ui("selectQuestion"))} ${item.id}"><span></span></label><strong>#${item.id}</strong><div class="bank-question-copy"><p>${pairHtml(item.question, translated.question)}</p><small>${pairHtml(item.topic, translated.topic, { compact: true })}${item.figure ? ` · ${ui("figure")} ${item.figure}` : ""}</small><span class="progress-chip ${status}">${bankStatusLabel(status)}</span></div><div class="bank-row-actions">${handbookButton(item, true)}<button data-practice-question="${item.id}">${ui("practiceAction")} →</button></div></article>`;
       })
       .join("") || `<p class="search-empty">${ui("noQuestions")}</p>`;
-  $("#bankMore").hidden = results.length <= bankLimit;
+  $("#bankSelectedCount").textContent = bankSelection.size.toLocaleString(
+    mode === "it" ? "it-IT" : "pt-BR",
+  );
+  $("#startSelectedQuiz").disabled = bankSelection.size === 0;
+  $("#startRandomFiltered").disabled = results.length === 0;
+}
+
+function startRandomFilteredQuiz() {
+  const pool = filteredBank();
+  const count = Number($("#randomQuizCount").value);
+  startQuiz("training", shuffle(pool).slice(0, Math.min(count, pool.length)));
+}
+
+function startSelectedQuiz() {
+  const selected = quiz.filter((item) => bankSelection.has(item.id));
+  if (!selected.length) {
+    showToast(ui("noSelectedQuestions"));
+    return;
+  }
+  startQuiz("training", shuffle(selected));
+}
+
+function startUnseenSimulation() {
+  const unseen = quiz.filter((item) => progressStatus(item.id) === "unseen");
+  if (unseen.length < 20) {
+    showToast(ui("notEnoughUnseen", { count: unseen.length }));
+    return;
+  }
+  startQuiz("official", officialSelection(unseen));
+}
+
+function clearBankFilters() {
+  $("#bankSearch").value = "";
+  $("#bankTheme").value = "";
+  updateBankTopics();
+  $("#bankTopic").value = "";
+  $("#bankStatus").value = "all";
+  renderBank();
 }
 
 function routeForExercise(item = featuredExercise) {
@@ -1125,6 +2015,30 @@ function renderGlossary() {
 }
 
 document.addEventListener("click", (event) => {
+  const profileTrigger = event.target.closest("[data-open-profile]");
+  if (profileTrigger) {
+    openProfileModal(profileTrigger.dataset.openProfile);
+    return;
+  }
+  const accountView = event.target.closest("[data-account-view]");
+  if (accountView) {
+    accountModalView = accountView.dataset.accountView;
+    renderAccountModal();
+    $("#accountModalBody input")?.focus();
+    return;
+  }
+  if (event.target.closest("[data-account-logout]")) {
+    logoutStudyAccount();
+    return;
+  }
+  if (event.target.closest("[data-profile-export]")) {
+    exportStudyProfile();
+    return;
+  }
+  if (event.target.closest("#startUnseenSimulation")) {
+    startUnseenSimulation();
+    return;
+  }
   const modeButton = event.target.closest("[data-mode]");
   if (modeButton) {
     setMode(modeButton.dataset.mode);
@@ -1157,6 +2071,11 @@ document.addEventListener("click", (event) => {
   const answer = event.target.closest("[data-answer]");
   if (answer) {
     selectAnswer(Number(answer.dataset.answer));
+    return;
+  }
+  const handbookTrigger = event.target.closest("[data-open-handbook]");
+  if (handbookTrigger) {
+    openHandbook(Number(handbookTrigger.dataset.openHandbook));
     return;
   }
   if (event.target.closest("#nextQuestion")) {
@@ -1234,6 +2153,21 @@ document.addEventListener("click", (event) => {
     $("#searchOverlay").hidden = true;
 });
 
+document.addEventListener("change", (event) => {
+  const selection = event.target.closest?.("[data-select-question]");
+  if (!selection) return;
+  const questionId = Number(selection.dataset.selectQuestion);
+  if (selection.checked) bankSelection.add(questionId);
+  else bankSelection.delete(questionId);
+  selection
+    .closest(".bank-row")
+    ?.classList.toggle("is-selected", selection.checked);
+  $("#bankSelectedCount").textContent = bankSelection.size.toLocaleString(
+    mode === "it" ? "it-IT" : "pt-BR",
+  );
+  $("#startSelectedQuiz").disabled = bankSelection.size === 0;
+});
+
 $("#menuToggle").addEventListener("click", () => {
   const open = document.body.classList.toggle("menu-open");
   $("#menuToggle").setAttribute("aria-expanded", String(open));
@@ -1247,18 +2181,16 @@ $("#globalSearch").addEventListener("focus", runGlobalSearch);
 $("#trainingTheme").addEventListener("change", updateTrainingTopics);
 $("#startOfficial").addEventListener("click", () => startQuiz("official"));
 $("#startTraining").addEventListener("click", () => startQuiz("training"));
-$("#bankSearch").addEventListener("input", () => {
-  bankLimit = 12;
-  renderBank();
-});
+$("#bankSearch").addEventListener("input", renderBank);
 $("#bankTheme").addEventListener("change", () => {
-  bankLimit = 12;
+  updateBankTopics();
   renderBank();
 });
-$("#bankMore").addEventListener("click", () => {
-  bankLimit += 20;
-  renderBank();
-});
+$("#bankTopic").addEventListener("change", renderBank);
+$("#bankStatus").addEventListener("change", renderBank);
+$("#startRandomFiltered").addEventListener("click", startRandomFilteredQuiz);
+$("#startSelectedQuiz").addEventListener("click", startSelectedQuiz);
+$("#clearBankFilters").addEventListener("click", clearBankFilters);
 $("#exerciseSector").addEventListener("change", renderExerciseList);
 $("#randomExercise").addEventListener("click", () => {
   const sector = $("#exerciseSector").value;
@@ -1271,6 +2203,16 @@ $("#chartFit").addEventListener("click", fitChart);
 $("#glossaryOpen").addEventListener("click", () => openGlossary());
 $("#glossaryClose").addEventListener("click", closeGlossary);
 $("#glossaryBackdrop").addEventListener("click", closeGlossary);
+$("#handbookClose").addEventListener("click", closeHandbook);
+$("#handbookBackdrop").addEventListener("click", closeHandbook);
+$("#profileClose").addEventListener("click", closeProfileModal);
+$("#profileBackdrop").addEventListener("click", closeProfileModal);
+$("#profileModal").addEventListener("submit", handleAccountSubmit);
+$("#profileImport").addEventListener("change", (event) => {
+  const [file] = event.target.files;
+  if (file) importStudyProfile(file);
+  event.target.value = "";
+});
 $("#glossarySearch").addEventListener("input", renderGlossary);
 document.addEventListener("keydown", (event) => {
   const category = event.target.closest?.("[data-filter-theme]");
@@ -1284,7 +2226,9 @@ document.addEventListener("keydown", (event) => {
     $("#globalSearch").focus();
   }
   if (event.key === "Escape") {
-    if (!$("#glossaryDrawer").hidden) closeGlossary();
+    if (!$("#profileModal").hidden) closeProfileModal();
+    else if (!$("#handbookModal").hidden) closeHandbook();
+    else if (!$("#glossaryDrawer").hidden) closeGlossary();
     else {
       $("#searchOverlay").hidden = true;
       document.body.classList.remove("menu-open");
@@ -1302,10 +2246,17 @@ applyChartZoom();
 updateStaticUi();
 renderDashboard();
 populateQuizFilters();
+renderStudyProfile();
 renderBank();
 renderExercises();
 renderSources();
 renderGlossary();
+initializeStudyAccount();
+window.addEventListener("online", () => {
+  if (accountService.isAuthenticated && pendingProgressSync.size) {
+    scheduleProgressSync();
+  }
+});
 const initialView = location.hash.replace("#", "");
 if (["dashboard", "quiz", "carteggio", "sources"].includes(initialView))
   switchView(initialView, false);

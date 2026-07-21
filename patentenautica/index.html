@@ -10,7 +10,7 @@
     />
     <title>Rotta 12 — Patente nautica a motore</title>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="./styles.css?v=3.2.0" />
+    <link rel="stylesheet" href="./styles.css?v=3.4.0" />
   </head>
   <body>
     <a class="skip-link" href="#main" data-ui="skipContent">Vai al contenuto</a>
@@ -258,6 +258,11 @@
               </div>
               <div class="source-badge"><i></i> MIT · DD 131/2022</div>
             </div>
+            <section
+              class="panel study-profile-panel"
+              id="studyProfilePanel"
+              aria-live="polite"
+            ></section>
             <div id="quizSetup" class="quiz-setup">
               <section class="panel mode-card featured">
                 <span class="mode-number">20</span
@@ -315,16 +320,69 @@
                   type="search"
                   placeholder="Es.: fanali, luzes, ancora, âncora…"
                   data-ui-placeholder="bankSearchPlaceholder"
-                /><select id="bankTheme"></select>
+                /><select
+                  id="bankTheme"
+                  aria-label="Materia"
+                  data-ui-aria="subject"
+                ></select
+                ><select
+                  id="bankTopic"
+                  aria-label="Argomento"
+                  data-ui-aria="topic"
+                ></select
+                ><select
+                  id="bankStatus"
+                  aria-label="Stato di studio"
+                  data-ui-aria="filterProgress"
+                >
+                  <option value="all" data-ui="progressAll">
+                    Tutti gli stati
+                  </option>
+                  <option value="unseen" data-ui="progressUnseen">
+                    Non ancora visti
+                  </option>
+                  <option value="answered" data-ui="progressAnswered">
+                    Già risposti
+                  </option>
+                  <option value="correct" data-ui="progressCorrect">
+                    Ultima risposta esatta
+                  </option>
+                  <option value="review" data-ui="progressReview">
+                    Da ripassare
+                  </option>
+                </select>
+              </div>
+              <div class="bank-action-bar">
+                <div class="bank-visible-note">
+                  <strong id="bankSelectedCount">0</strong>
+                  <span data-ui="selectedQuestions">selezionati</span>
+                  <small data-ui="allQuestionsVisible"
+                    >Tutti i quesiti filtrati sono visibili</small
+                  >
+                </div>
+                <label class="random-count-label"
+                  ><span data-ui="randomCount">Numero di quesiti</span
+                  ><select id="randomQuizCount">
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                    <option value="50">50</option>
+                  </select></label
+                >
+                <button class="button ghost dark" id="startRandomFiltered">
+                  <span data-ui="randomFiltered"
+                    >Quiz casuale dai risultati</span
+                  >
+                </button>
+                <button class="button primary" id="startSelectedQuiz" disabled>
+                  <span data-ui="startSelected">Allenati sui selezionati</span>
+                </button>
+                <button class="text-button" id="clearBankFilters">
+                  <span data-ui="clearFilters">Azzera filtri</span>
+                </button>
               </div>
               <div id="bankResults" class="bank-results"></div>
-              <button
-                class="text-button centered"
-                id="bankMore"
-                data-ui="showMoreQuestions"
-              >
-                Mostra altri quesiti
-              </button>
             </section>
           </section>
 
@@ -571,7 +629,81 @@
       />
       <div class="glossary-results" id="glossaryResults"></div>
     </aside>
+    <div class="handbook-backdrop" id="handbookBackdrop" hidden></div>
+    <section
+      class="handbook-modal"
+      id="handbookModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="handbookModalTitle"
+      hidden
+    >
+      <header class="handbook-modal-header">
+        <div>
+          <span class="eyebrow" data-ui="handbookReference"
+            >RIFERIMENTO DIDATTICO</span
+          >
+          <h2 id="handbookModalTitle" data-ui="handbookTitle">
+            Spiegazione nella Dispensa
+          </h2>
+        </div>
+        <button type="button" id="handbookClose" data-ui-aria="closeHandbook">
+          ×
+        </button>
+      </header>
+      <div class="handbook-reference-summary">
+        <div class="handbook-reference-meta">
+          <span id="handbookReferenceCode"></span>
+          <strong id="handbookReferenceSection"></strong>
+          <span class="handbook-match" id="handbookReferenceMatch"></span>
+        </div>
+        <p id="handbookReferenceQuestion"></p>
+        <small id="handbookReferenceTerms"></small>
+      </div>
+      <p class="handbook-notice" data-ui="handbookNotice">
+        Il collegamento è un indice didattico automatico. La Dispensa è del
+        2011: per norme, dotazioni e quesiti aggiornati prevalgono sempre le
+        fonti MIT e il testo italiano ufficiale.
+      </p>
+      <div class="handbook-frame-wrap">
+        <iframe id="handbookFrame" loading="lazy"></iframe>
+      </div>
+      <footer class="handbook-modal-footer">
+        <span>Dispensa patente nautica 12M · 67 p.</span>
+        <a
+          class="button primary"
+          id="handbookNewTab"
+          target="_blank"
+          rel="noopener"
+          data-ui="openHandbookPage"
+          >Apri questa pagina in una nuova scheda</a
+        >
+      </footer>
+    </section>
+    <div class="profile-backdrop" id="profileBackdrop" hidden></div>
+    <section
+      class="profile-modal"
+      id="profileModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="profileModalTitle"
+      hidden
+    >
+      <header>
+        <div>
+          <span class="eyebrow" id="profileModalEyebrow">ACCOUNT ROTTA 12</span>
+          <h2 id="profileModalTitle" data-ui="studyProfile">
+            Profilo di studio
+          </h2>
+        </div>
+        <button type="button" id="profileClose" data-ui-aria="closeProfile">
+          ×
+        </button>
+      </header>
+      <div id="accountModalBody"></div>
+      <input id="profileImport" type="file" accept="application/json,.json" />
+    </section>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script type="module" src="./app.js?v=3.0.0"></script>
+    <script type="module" src="./app.js?v=3.5.0"></script>
   </body>
 </html>
