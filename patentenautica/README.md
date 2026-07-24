@@ -45,8 +45,9 @@ Il backend account è documentato in `backend/README.md`. In produzione l'API è
 - `data/question-authority.json`: indice statico dei 1.472 quesiti → pagina MIT, regola esplicativa e fonti pertinenti; non contiene il gabarito.
 - `data/authoritative-sources.json`: catalogo verificabile di atti e fonti istituzionali, con URL ufficiali, hash e dimensioni delle copie locali.
 - `data/glossary.json`: terminologia nautica italiana e portoghese brasiliana.
-- `carta nautica 5D.gif`: scansione sorgente 4454 × 3045 conservata senza modifiche.
-- `carta nautica 5D allineata.webp`: copia lossless 4612 × 3281 ruotata di 3,0738° per rendere paralleli e meridiani orizzontali/verticali; è l'asset mostrato dal visualizzatore.
+- `Carta 5D_5_Immagine unica Adobe alleggerita.pdf`: sorgente monocromatica completa, con bordo graduato e immagine incorporata 7501 × 4844.
+- `carta nautica 5D con bordo.jpg`: copia web migliorata 7501 × 4844, mostrata dal visualizzatore alla risoluzione nativa e con l'intera cornice geografica.
+- `Carta 5D 340dpi migliorata.pdf`: derivato non generativo 15002 × 9688 a 340 DPI; conserva pagina, geometria e contenuto dell'originale ed è disponibile dal pulsante sotto la carta.
 - `sources/`: DM 323/2021, DD 131/2022, DD 10/2022 e atti della Gazzetta Ufficiale usati come riferimenti locali.
 
 La pagina **Fonti** usa soltanto la banca ministeriale, atti pubblici e siti istituzionali. Le spiegazioni sono testi originali di Rotta 12; manuali e piattaforme didattiche private non vengono riprodotti.
@@ -59,7 +60,7 @@ La pagina **Fonti** usa soltanto la banca ministeriale, atti pubblici e siti ist
 
 `scripts/build_authoritative_references.py` localizza ciascun quesito nelle 338 pagine del PDF MIT, verifica hash e dimensioni degli atti locali e rigenera catalogo e indice ufficiale. Usa `pypdf`, fissato in `scripts/requirements-pdf.txt`.
 
-`scripts/align_chart_image.ps1` rigenera con ImageMagick la carta WebP allineata a partire dal GIF sorgente. La calibrazione applica la stessa trasformazione geometrica ai 28 punti; il layout dei nomi scarta automaticamente qualsiasi posizione che intersechi la rotta.
+`scripts/align_chart_image.ps1` estrae con Poppler l'immagine incorporata nel PDF, applica un filtro di nitidezza controllato e prepara sia il JPEG web nativo sia il raster 2×. `scripts/build_enhanced_chart_pdf.py` incorpora quest'ultimo in una pagina delle stesse dimensioni dell'originale, ottenendo 340 DPI reali. Il confronto automatico mantiene similarità 0,9995 e geometria identica. Una trasformazione omografica verificata su 3.382 corrispondenze trasferisce la calibrazione ai 28 punti con errore mediano inferiore a 1 px; il layout dei nomi scarta automaticamente qualsiasi posizione che intersechi la rotta.
 
 ```bash
 python scripts/build_translations.py

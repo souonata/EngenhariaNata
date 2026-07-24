@@ -3,13 +3,44 @@
     "id": "carta-5d",
     "title": "Carta nautica didattica 5/D",
     "width": 4612,
-    "height": 3281,
+    "height": 2978,
     "scale": "1:100.000",
     "area": "Dal Canale di Piombino al Promontorio Argentario e Scoglio Africa",
+    "source": {
+      "pdf": "Carta 5D_5_Immagine unica Adobe alleggerita.pdf",
+      "embeddedImageWidth": 7501,
+      "embeddedImageHeight": 4844,
+      "displayImage": "carta nautica 5D con bordo.jpg",
+      "displayImageWidth": 7501,
+      "displayImageHeight": 4844,
+      "enhancedPdf": "Carta 5D 340dpi migliorata.pdf",
+      "enhancedPdfDpi": 340,
+      "enhancedImageWidth": 15002,
+      "enhancedImageHeight": 9688,
+      "contentSimilarity": 0.999497
+    },
     "alignment": {
       "sourceWidth": 4454,
       "sourceHeight": 3045,
+      "width": 4612,
+      "height": 3281,
       "rotationDegrees": -3.0738258000733896
+    },
+    "projectionTransform": {
+      "method": "feature-homography",
+      "matrix": [
+        1.045876063072976,
+        0.009446867720996,
+        -118.86253316837517,
+        0.000214378262887,
+        1.04352353963219,
+        -207.87410610253178,
+        -3.61174e-7,
+        0.000003693656,
+        1
+      ],
+      "inliers": 3382,
+      "medianErrorPixels": 0.88
     },
     "calibration": {
       "longitudeOrigin": 10,

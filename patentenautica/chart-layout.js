@@ -13,14 +13,26 @@ export function chartAlignment(chart) {
   const rotationDegrees = Number(alignment.rotationDegrees || 0);
   const rotationRadians = degreesToRadians(rotationDegrees);
   return {
-    width: chart.width,
-    height: chart.height,
+    width: alignment.width || chart.width,
+    height: alignment.height || chart.height,
     sourceWidth: alignment.sourceWidth || chart.width,
     sourceHeight: alignment.sourceHeight || chart.height,
     rotationDegrees,
     rotationRadians,
     cosine: Math.cos(rotationRadians),
     sine: Math.sin(rotationRadians),
+  };
+}
+
+export function transformChartPoint(chart, point) {
+  const matrix = chart.projectionTransform?.matrix;
+  if (!Array.isArray(matrix) || matrix.length !== 9) return point;
+  const divisor = matrix[6] * point.x + matrix[7] * point.y + matrix[8];
+  if (!Number.isFinite(divisor) || Math.abs(divisor) < Number.EPSILON)
+    return point;
+  return {
+    x: (matrix[0] * point.x + matrix[1] * point.y + matrix[2]) / divisor,
+    y: (matrix[3] * point.x + matrix[4] * point.y + matrix[5]) / divisor,
   };
 }
 
@@ -43,7 +55,7 @@ export function projectChartPoint(chart, point) {
   const relativeX = sourceX - geometry.sourceWidth / 2;
   const relativeY = sourceY - geometry.sourceHeight / 2;
 
-  return {
+  return transformChartPoint(chart, {
     x:
       geometry.cosine * relativeX -
       geometry.sine * relativeY +
@@ -52,7 +64,7 @@ export function projectChartPoint(chart, point) {
       geometry.sine * relativeX +
       geometry.cosine * relativeY +
       geometry.height / 2,
-  };
+  });
 }
 
 export function segmentIntersectsRect(start, end, rect, padding = 0) {

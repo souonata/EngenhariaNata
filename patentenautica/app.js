@@ -18,7 +18,8 @@ import {
 import dm323PdfUrl from "./sources/dm-323-2021-programma-esame.pdf?url";
 import quizPdfUrl from "./sources/quiz-ministeriali-dd-131-2022.pdf?url";
 import chartPdfUrl from "./sources/quiz-e-carteggio-dd-10-2022.pdf?url";
-import chart5dUrl from "./carta nautica 5D allineata.webp?url";
+import chart5dUrl from "./carta nautica 5D con bordo.jpg?url";
+import chart5dEnhancedPdfUrl from "./Carta 5D 340dpi migliorata.pdf?url";
 
 const content = window.PATENTE_CONTENT;
 const quiz = window.PATENTE_QUIZ;
@@ -365,7 +366,7 @@ const UI = {
   zoomOut: ["Riduci", "Reduzir"],
   zoomIn: ["Ingrandisci", "Ampliar"],
   fitChart: ["Adatta", "Ajustar"],
-  openFullChart: ["Apri alla massima risoluzione", "Abrir na resolução máxima"],
+  openFullChart: ["Apri PDF 340 DPI", "Abrir PDF em 340 DPI"],
   chartAccuracyNote: [
     "I punti usano il centro degli intervalli di tolleranza del fascicolo; dove l'intervallo non è stampato, la posizione è letta sulla carta 5/D. Verifica sempre il rilevamento sulla carta ufficiale.",
     "Os pontos usam o centro dos intervalos de tolerância do caderno; quando o intervalo não está impresso, a posição é lida na carta 5/D. Confira sempre a marcação na carta oficial.",
@@ -1904,6 +1905,22 @@ function drawChartRoute() {
   const { from, to } = routeForExercise();
   const start = projectChartPoint(chartData.chart, from);
   const end = projectChartPoint(chartData.chart, to);
+  const routeLineWidth = 13;
+  const markerRadius = 15;
+  const markerLineWidth = 5;
+  const routeLength = Math.hypot(end.x - start.x, end.y - start.y);
+  const markerEndpointInset =
+    markerRadius + markerLineWidth / 2 + routeLineWidth / 2 + 3;
+  const routeUnitX = routeLength ? (end.x - start.x) / routeLength : 0;
+  const routeUnitY = routeLength ? (end.y - start.y) / routeLength : 0;
+  const visibleRouteStart = {
+    x: start.x + routeUnitX * markerEndpointInset,
+    y: start.y + routeUnitY * markerEndpointInset,
+  };
+  const visibleRouteEnd = {
+    x: end.x - routeUnitX * markerEndpointInset,
+    y: end.y - routeUnitY * markerEndpointInset,
+  };
   if (
     canvas.width !== chartData.chart.width ||
     canvas.height !== chartData.chart.height
@@ -1918,12 +1935,14 @@ function drawChartRoute() {
   context.shadowColor = "rgba(2, 19, 27, 0.35)";
   context.shadowBlur = 18;
   context.strokeStyle = "#ef6a4a";
-  context.lineWidth = 13;
+  context.lineWidth = routeLineWidth;
   context.setLineDash([34, 22]);
-  context.beginPath();
-  context.moveTo(start.x, start.y);
-  context.lineTo(end.x, end.y);
-  context.stroke();
+  if (routeLength > markerEndpointInset * 2) {
+    context.beginPath();
+    context.moveTo(visibleRouteStart.x, visibleRouteStart.y);
+    context.lineTo(visibleRouteEnd.x, visibleRouteEnd.y);
+    context.stroke();
+  }
   context.setLineDash([]);
 
   const markers = [
@@ -1962,9 +1981,9 @@ function drawChartRoute() {
     context.shadowColor = "rgba(0, 0, 0, 0.52)";
     context.shadowBlur = 7;
     context.strokeStyle = "#ffd600";
-    context.lineWidth = 5;
+    context.lineWidth = markerLineWidth;
     context.beginPath();
-    context.arc(point.x, point.y, 15, 0, Math.PI * 2);
+    context.arc(point.x, point.y, markerRadius, 0, Math.PI * 2);
     context.stroke();
     context.shadowBlur = 0;
     context.strokeStyle = "#ec008c";
@@ -2681,7 +2700,7 @@ document.addEventListener("keydown", (event) => {
 inicializarTema();
 $("#chartPdfLink").href = `${chartPdfUrl}#page=161`;
 $("#chartImage").src = chart5dUrl;
-$("#chartFullLink").href = chart5dUrl;
+$("#chartFullLink").href = chart5dEnhancedPdfUrl;
 applyChartZoom();
 updateStaticUi();
 renderDashboard();
