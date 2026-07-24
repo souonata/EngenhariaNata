@@ -1,1 +1,677 @@
-{"exam":{"chartQuestions":5,"chartMinutes":20,"chartPass":4,"baseQuestions":20,"baseMinutes":30,"basePass":16},"chapters":[{"id":"scafo","title":"Teoria do casco","topics":[{"id":"scafo-nomenclatura","title":"Peças principais e tamanho","summary":"Proa e popa definem as extremidades; boreste e bombordo são identificados olhando para a proa. Boca máxima, comprimento e calado condicionam a manobra e o acesso a águas rasas.","points":["Opera viva: parte imersa; opera morta: parte emergida.","A linha de flutuação separa as duas partes; a borda livre é a distância vertical até o plano de cobertura.","A calado, ou calado, é a profundidade máxima abaixo da linha de flutuação; não deve ser confundida com a altura total.","O deslocamento é o peso da água deslocada e, em equilíbrio, corresponde ao peso da embarcação."],"tags":["proa","popa","boreste","bombordo","calado","deslocamento"]},{"id":"scafo-struttura","title":"Estrutura e tipos de casco","summary":"Quilhas, madeireiros, cavernas, anteparas e chapeamento formam a estrutura resistente. Os cascos deslocadores e planadores reagem de forma diferente à velocidade e ao mar.","points":["A quilha é o elemento longitudinal principal; cavernas e madeireiras formam a ossatura transversal.","As anteparas estanques limitam a inundação e não devem ser perfuradas ou deixadas abertas sem controle.","O casco deslocador move água durante toda a navegação; o planador se eleva sobre a água adquirindo velocidade.","O catamarã tem dois cascos e o trimarã três. A maior largura aumenta a estabilidade de forma, mas altera a manobra."],"tags":["quilha","cavernas","anteparas","deslocamento","Planante"]},{"id":"scafo-stabilita","title":"Estabilidade, trim e cargas","summary":"A estabilidade depende da posição do centro de gravidade e do metacentro. Cargas altas, livres ou mal distribuídas reduzem a margem de segurança.","points":["O momento de desbandamento aumenta quando um peso é movido transversalmente para longe do centro.","As superfícies livres em tanques parcialmente cheios pioram a estabilidade.","Os passageiros e as cargas devem ser distribuídos mantendo o centro de gravidade baixo e próximo ao eixo longitudinal.","A inclinação é longitudinal, a inclinação é transversal."],"tags":["Estabilidade","baricentro","metacentro","trim (assento)","carga"]},{"id":"scafo-timone-elica","title":"Leme e hélice","summary":"O leme desvia o fluxo de água; a hélice transforma o torque em impulso. O efeito evolutivo da hélice é particularmente evidente na marcha atrás.","points":["O leme é mais eficaz quando recebe um fluxo de água; de parar, girá-lo sozinho não governa a embarcação.","O passo é o avanço teórico da hélice em uma volta; a cavitação reduz o impulso e pode danificar as pás.","Uma hélice direita, vista da popa, gira no sentido horário em marcha adiante; uma esquerda no sentido oposto.","Em manobras lentas combina pulsos curtos do motor, posição do leme, vento e efeito evolutivo."],"tags":["leme","hélice","passo","cavitação","Efeito Evolutivo"]}]},{"id":"motori","title":"Motores","topics":[{"id":"motori-cicli","title":"Gasolina, diesel e ciclos","summary":"O motor de quatro tempos realiza sucção, compressão, combustão/expansão e descarga. No diesel, o ignição é feita por compressão; no ciclo Otto, através de velas.","points":["Um ciclo de quatro tempos requer duas voltas do eixo motor.","Os vapores de gasolina são mais pesados que o ar e podem acumular-se na sentina: ventilar antes do arranque.","O diesel usa injetores e bomba de injeção; o ar no circuito impede a alimentação e deve ser purgado.","Fumo preto muitas vezes indica mistura rica ou carga; azul, óleo; branco persistente pode indicar água ou combustão incompleta."],"tags":["diesel","gasolina","quatro tempos","injetor","Fumaça"]},{"id":"motori-impianti","title":"Lubrificação e refrigeração","summary":"O óleo reduz o atrito e remove calor; o resfriamento marinho troca calor com a água externa. Alarmes de pressão ou temperatura exigem redução imediata e controles seguros.","points":["Baixa pressão do óleo: desligue o motor assim que for seguro e controle o nível, vazamento e circuito.","Sobreaquecimento: controle a tomada d'água do mar, filtro, rotor da bomba da bomba, correia e drenagem de água.","Nunca abra a tampa de um circuito pressurizado quando estiver quente.","A tomada d'água do mar deve ser conhecida e acessível para poder fechá-la em caso de emergência."],"tags":["óleo","refrigeração","rotor da bomba","tomada d'água do mar","temperatura"]},{"id":"motori-elettrico","title":"Instalação elétrica e arranque","summary":"Bateria, motor de arranque e alternador formam o núcleo do sistema elétrico. Conexões limpas e fusíveis dimensionados corretamente evitam avarias e incêndios.","points":["Tensão presente mas corrente insuficiente pode indicar uma braçadeira oxidada: controla o aperto e a queda de tensão.","As baterias liberam gás explosivo durante a carga: ventilar e evitar faíscas.","Desligue o seletor de baterias enquanto o alternador carregado pode danificar o controlador.","Os circuitos essenciais devem ser protegidos e a bomba de sentina deve permanecer disponível."],"tags":["bateria","alternador","inicialização","fusível","sistema elétrico"]},{"id":"motori-propulsione","title":"Transmissões e controlos","summary":"Linha de eixo, stern drive, Sail Drive e pod transmitem a potência de diferentes maneiras. Antes de partir, verifique o combustível, os fluidos, o resfriamento e a resposta dos comandos.","points":["O inversor seleciona marcha para a frente, neutro e marcha para trás; muda de direção com o motor ao mínimo.","O stern drive orienta o motor externo; a linha de eixo usa um leme separado.","Uma nova vibração pode indicar hélice danificada, cabo envolto, desalinhamento ou cavitação.","Controles: combustível e reserva, óleo, água, correias, bateria, ventilação, descarga e ferramentas."],"tags":["inversor","linha de eixo","stern drive","s-drive","pod"]}]},{"id":"sicurezza","title":"Segurança de navegação","topics":[{"id":"sicurezza-dotazioni","title":"Equipamentos e preparação","summary":"As instalações dependem da distância da costa e da embarcação. Validade, acessibilidade e conhecimento de uso são tão importantes quanto a sua presença a bordo.","points":["Antes da partida: tempo, combustível com margem, documentos, pessoas a bordo e plano de navegação.","Os coletes devem ser da medida correta, identificados e rapidamente acessíveis.","Sinais pirotécnicos, extintores e meios coletivos têm prazos e requisitos específicos: verifique a norma vigente.","Briefing para a tripulação: coletes, extintores de incêndio, rádio, válvulas, bomba de sentina e procedimento MOB."],"tags":["equipamentos obrigatórios","colete","balsa","extintor","checklist"]},{"id":"sicurezza-incendio-falla","title":"Incêndio, via d'água e encalhe","summary":"Prioridade: proteger as pessoas, parar a causa, conter o problema e pedir ajuda a tempo. Para apagar um incêndio, é necessário eliminar combustível, oxigênio ou calor sem abrir os compartimentos.","points":["Incêndio no compartimento do motor: interromper o combustível e a eletricidade; usar a abertura prevista sem abrir o capô.","Entrada de água: localizar, tamponar, bombear e reduzir as tensões no casco; preparar abandono e assistência.","encalhe: pare, avalie fundo, maré e danos, evite acelerar sem diagnóstico e considere um alívio controlado.","Nunca use água em combustíveis líquidos ou equipamentos elétricos sob tensão."],"tags":["Incêndio","via d'água","encalhe","bomba de sentina","extintor"]},{"id":"sicurezza-mob","title":"Homem a bordo e abandono","summary":"Ao grito de homem no mar, mantenha contato visual, lance um flutuador, marque a posição e manobre sem expor a pessoa à hélice.","points":["Uma pessoa indica continuamente o naufrágio; outra ativa o MOB no GPS e prepara a recuperação.","Aproximação final a velocidade mínima e, com base no vento e no mar, naufrágio subaquático para protegê-lo.","Motor em neutro ou desligado durante a recuperação perto da popa e da hélice.","Abandone a embarcação apenas quando ficar a bordo é mais perigoso; se possível, traga rádio ou beacons, água e kits de emergência."],"tags":["homem no mar","MOB","Abandono","Recuperação","boia salva-vidas"]},{"id":"sicurezza-radio","title":"VHF, chamadas e assistência","summary":"O canal 16 destina-se a chamada e socorro. MAYDAY indica perigo grave e iminente; PAN PAN, urgência; SEGURANA, um aviso importante para a navegação ou meteorológico.","points":["MAYDAY: nome ou nome, localização, natureza do perigo, assistência necessária, pessoas a bordo e informações úteis.","Após uma chamada normal no 16, mude para o canal de trabalho indicado.","O DSC Digital Rescue usa o canal 70: não lhe transmita comunicações de voz.","Não atrase o pedido de socorro: a localização e o tempo disponível muitas vezes determinam o resultado."],"tags":["VHF","canal 16","MAYDAY","PAN PAN","SECURITÉ","DSC"]}]},{"id":"manovra","title":"Manobra e conduta","topics":[{"id":"manovra-forze","title":"Vento, corrente e seguimento","summary":"Em baixa velocidade, dominam o vento e a corrente. Avalie primeiro qual força prevalece, de onde vem e onde moverá a proa e a popa.","points":["O seguimento é o movimento residual: a embarcação continua a avançar mesmo depois de neutro.","A obra morta sofre mais do que o vento; casco e quilha da corrente.","Use impulsos curtos e decididos, evitando manter as voltas quando o alinhamento está perdido.","Prepare parabordes e topos com antecedência; nunca tente prender uma embarcação com as mãos ou os pés."],"tags":["seguimento","vento","corrente","Baixa velocidade","manobra"]},{"id":"manovra-ormeggio","title":"Amarração e desatracação","summary":"A aproximação deve ser lenta, controlada e com uma saída. A mola, os cabos de proa e de popa controlam os movimentos longitudinais e transversais.","points":["Aproximar-se contra a força predominante geralmente oferece maior controle.","O spring de proa limita o avanço; o de popa limita o recuo, de acordo com a disposição no banco.","Um cabo cruzado em dobro permite que você saia sem desembarcar, mas deve permanecer livre da hélice.","Comunicação clara: uma pessoa comanda e a tripulação confirma cada operação."],"tags":["amarração","desatracação","spring","cabo","Parabordo"]},{"id":"manovra-ancora","title":"Fundeio","summary":"Escolha o tipo de fundo, a profundidade, o abrigo e o espaço para o círculo de giro. A relação entre o comprimento do cabo ou da corrente e a profundidade determina o ângulo de tração sobre a âncora.","points":["Confira a carta náutica, os cabos submarinos, as áreas proibidas, o vento previsto, a maré e as outras embarcações.","Baixe, não arremesse, a âncora; recue lentamente enquanto larga o cabo ou a corrente de fundeio.","Verifique se a âncora unhou usando referências ou o alarme do GPS e antecipe mudanças de vento ou corrente.","Para suspender a âncora, posicione-se na vertical sem usar o molinete para rebocar a embarcação."],"tags":["âncora","fundeio","filame (calumo)","fundo","círculo de giro"]},{"id":"manovra-nodi","title":"Nó de teste prático","summary":"O programa prático inclui gás amante, nó falado, nó de bita e nó de rascunho. Treinado na execução, no uso e na dissolução sob carga.","points":["Gaze de amante: forma uma asa fixa que não flui.","Nó falado: fixação rápida a um poste; pode exigir segurança se a carga varia.","Nó de bico: vezes de oito e meio pescoço final, sem sobrepor os topos para bloqueá-los.","Nó de rascunho: conecte um cabo fino a outro em movimento para transferir ou aliviar a carga."],"tags":["lais de guia","volta do fiel","nó de bita","nó de boça"]}]},{"id":"colreg","title":"COLREG e sinalização","topics":[{"id":"colreg-rischio","title":"Vigia e risco de colisão","summary":"Cada embarcação mantém uma vigia visual e auditiva, velocidade de segurança e avaliação contínua. Uma marcação náutica constante com distância em diminuição indica risco de colisão.","points":["Não confie em uma única observação ou exclusivamente no AIS: use todos os meios disponíveis.","A manobra deve ser decidida, ampla, oportuna e controlada até que as embarcações sejam passadas e livres.","Com visibilidade reduzida: máquinas prontas, velocidade adequada e sinais regulatórios.","A embarcação com direito de preferência mantém o curso e a velocidade, mas deve agir se a outra não evitar a colisão."],"tags":["vigia","Risco de colisão","Marcação náutica","Velocidade de segurança","AIS"]},{"id":"colreg-incrocio","title":"Rotas opostas, cruzamento e ultrapassagem","summary":"Em rotas opostas, ambas as embarcações se aproximam em boreste. No cruzamento entre embarcações motoras, quem vê a outra em boreste deve manobrar. Quem ultrapassa deve ficar afastado.","points":["Rotas opostas: alinhamento para boreste e passa com o lado esquerdo contra o lado esquerdo da outra embarcação.","Cruzamento: Evite passar à frente da embarcação com direito de preferência.","É ultrapassado quando você se aproximar de mais de 22,5° para a popa do travesseiro; quem atinge permanece responsável até que esteja livre.","Canal estreito: mantenha-se perto do limite de boreste quando for seguro e praticável."],"tags":["rotas opostas","Cruzamento","ultrapassagem","canal estreito","preferência"]},{"id":"colreg-luci","title":"Luzes e sinais diurnos","summary":"Localize primeiro setor, cor e combinação: luzes laterais, de popa, de mastro e visíveis por todo o horizonte. Os sinais diurnos comunicam o mesmo estado operacional.","points":["embarcações motorizadas em navegação: luzes laterais, luzes de popa e uma ou mais luzes de mastro de acordo com o comprimento.","âncora: luz branca por todo o horizonte e um balão preto durante o dia; encalhado adiciona duas luzes vermelhas e três balões.","Sem governo: dois vermelhos verticais ou dois balões; capacidade de manobra limitada: vermelho-branco-vermelho ou balão-rombo-bolão.","Arrastar a pesca: verde sobre branco; outra pesca: vermelho sobre branco."],"tags":["luzes","luzes","Sinais diurnos","fundeado","Sem governo"]},{"id":"colreg-segnali","title":"Sinais sonoros e IALA","summary":"Os apitos indicam manobra, dúvida e condição na névoa. No sistema IALA A, entrando pelo mar as balizas laterais vermelhas ficam à bombordo e as verdes a boreste.","points":["1 curto: guincho para boreste; 2 curto: encostado à bombordo; 3 curto: máquinas para trás.","5 ou mais silbidos curtos e rápidos: dúvida ou perigo.","Os cardeais indicam onde se encontra a água segura em relação à meda; cores e ritmo luminoso codificam o mostrador.","Águas seguras: tiras verticais vermelhas e brancas com luz branca; perigo isolado: preto e vermelho com duas esferas."],"tags":["Sinais sonoros","IALA A","Lateral","Cardeais","Águas seguras"]}]},{"id":"meteo","title":"Meteorologia","topics":[{"id":"meteo-pressione","title":"Pressão e vento","summary":"O vento nasce do gradiente de pressão e é desviado da rotação terrestre. Isobares aproximados indicam um gradiente forte e, em geral, vento mais intenso.","points":["No hemisfério norte, a circulação é anti-horária em baixas pressões e hora em altas pressões.","Lei de Buys-Ballot: no hemisfério norte, com o ombro no vento, a baixa pressão está aproximadamente à bombordo.","O vento é chamado de direção de origem; a corrente é a direção para a qual ele se move.","As rajadas e acelerações costeiras podem exceder o valor médio do boletim."],"tags":["pressão","isobares","Gradiente","vento","Buys-Ballot"]},{"id":"meteo-brezze","title":"Brisas e ventos mediterrâneos","summary":"Durante o dia, a terra aquece mais rapidamente e a brisa sopra do mar para a terra; à noite, o ciclo tende a inverter. Alinhamentos e orientação da costa podem canalizar o fluxo.","points":["A brisa do mar geralmente começa no final da manhã e se reforça à tarde com tempo estável.","A brisa da terra é geralmente mais fraca e ocorre entre a noite e a manhã.","Tramontana N, Gregale NE, Levante E, Scirocco SE, Ostro S, Libeccio SW, Ponente W, Mestre NW.","O nome local não substitui a direção observada, tendência barométrica e previsão."],"tags":["brisa","Tramontana","siroco","Libeccio","mistral","Rosa dos Ventos"]},{"id":"meteo-fronti","title":"Nuvens, frentes e tempestades","summary":"Uma frente quente tende a trazer uma sequência extensa de nuvens e precipitação gradual; uma frente fria muda rapidamente, acumula e desvia. O cumulonembo requer uma grande distância.","points":["Cirri e queda de pressão podem antecipar a chegada de um sistema frontal.","O cumulonembo pode produzir rajadas violentas, granizo, raios e mar curto.","A névoa se forma quando o ar úmido esfria até o ponto de orvalho: ajusta a velocidade e os sinais.","Um rápido aumento de pressão após uma frente fria pode ser acompanhado por vento forte, não por calma imediata."],"tags":["Frontes","Nuvens","cumulonembo","temporal","nevoeiro"]},{"id":"meteo-bollettini","title":"Boletim e estado do mar","summary":"Compare fontes oficiais, observações locais e tendência. Beaufort descreve a força do vento; Douglas o estado do mar: escadas interligadas, mas não equivalentes.","points":["Meteomar fornece alertas, situação, previsão e tendência para as diferentes áreas marítimas.","A altura significativa é a média de um terço das ondas mais altas; ondas individuais podem ser muito maiores.","Fetch, a duração e intensidade do vento determinam o crescimento do mar.","Defina seus limites antes da partida e mantenha uma rota alternativa para um abrigo."],"tags":["Meteomar","Beaufort","Douglas","Altura significativa","Boletim informativo"]}]},{"id":"navigazione","title":"Navegação cartográfica e eletrônica","topics":[{"id":"navigazione-coordinate","title":"Coordenadas e carta náutica","summary":"A latitude mede o arco norte ou sul do equador; a longitude o arco leste ou oeste de Greenwich. No mapa de Mercator as rotas lossódromas são retas e as distâncias são medidas na escala das latitudes.","points":["1 minuto de latitude 1 milha náutica; 1 nó 1 milha náutica por hora.","Leia a latitude nas bordas laterais e a longitude nas bordas superior e inferior.","Use a escala de latitudes perto do curso; nunca use a escala de longitudes para medir uma distância.","Escala 1:100.000 significa que 1 cm no cartão corresponde a 1 km real."],"tags":["latitude","Longitude","Mercator","milha náutica","escala"]},{"id":"navigazione-bussola","title":"Rota, proa e bússola","summary":"A rota é a trajetória no fundo; a prora é a direção em que o eixo da embarcação aponta. A declinação conecta o norte verdadeiro e magnético; o desvio conecta o norte magnético e a bússola.","points":["Conversão: do verdadeiro à bússola aplica declinação e desvio com os sinais convencionais; a correção percorre o caminho inverso.","A declinação é obtida a partir da rosa do papel, atualizada por ano; o desvio da tabela da bússola de bordo.","Variação total  soma algébrica de declinação e desvio.","Não memorize apenas uma fórmula: desenhe os três norte e controle o sinal."],"tags":["Rota","Prora","declinação","desvio","Bússola"]},{"id":"navigazione-rilevamenti","title":"Marcação náutica e posição da embarcação","summary":"Um local de posição limita a área em que estamos; duas linhas independentes dão um ponto, três permitem um controle. O marcação náutica deve ser corrigido e devolvido corretamente no papel.","points":["A marcação náutica polar é medida pela proa; a verdadeira pelo norte verdadeiro.","Escolha objetos bem identificados e um ângulo de intersecção favorável, perto de 90°.","O alinhamento de dois objetos é um local de posição muito preciso.","Entre observações não simultâneas, transporta a primeira linha usando rota e distância percorrida."],"tags":["Marcação náutica","Marcação náutica polar","posição da embarcação","alinhamento","Local de posição"]},{"id":"navigazione-stima","title":"Espaço, tempo, velocidade e estimativa","summary":"As três relações fundamentais são S  V  T, V  S  T e T  S  V. O tempo deve ser expresso em horas decimais; o consumo inclui a reserva prevista para o exercício.","points":["30 min 0,5 h; 15 min 0,25 h; em geral, minutos 60.","ETA  hora de partida + duração da navegação.","Na navegação estimada, avance a posição de acordo com a proa ou a rota e a distância correspondente ao intervalo.","Os exercícios 50 incluídos usam tolerâncias oficiais e o papel de ensino 5 /D."],"tags":["espaço","tempo","velocidade","ETA","estimativa","Combustível"]},{"id":"navigazione-corrente","title":"Corrente e abatimento causado pelo vento","summary":"A corrente soma uma direção e velocidade ao movimento propulsor; o vento produz abatimento causado pelo vento lateral. O resultado determina rota e velocidades reais no fundo.","points":["A direção da corrente indica onde a água se move; o vento toma o nome de onde vem.","Triângulo vetorial: vetor da embarcação na água + vetor da corrente  movimento no fundo.","Para manter a rota desejada, calcule a proa de compensação e a velocidade efetiva.","Verifique o resultado com um próximo posição da embarcação: a previsão não substitui a observação."],"tags":["corrente","abatimento causado pelo vento","deriva","Vectores","Rota Verdadeira"]},{"id":"navigazione-elettronica","title":"GPS, Chartplotter e ecobatímetro","summary":"A eletrônica facilita a navegação, mas depende da alimentação, datum, mapas e interpretação correta. Mantenha o controle visual, profundidade e uma solução de reserva.","points":["COG é a rota para o fundo; SOG é a velocidade para o fundo: não necessariamente coincidem com proa e velocidade sobre a água.","Um ponto de passagem incorreto ou um zoom inadequado podem esconder perigos entre a embarcação e o destino.","Verificar datatum e atualização de cartão: uma posição precisa em um cartão impreciso permanece perigosa.","O ecobatímetro mede a profundidade do transdutor; ajusta o offset em relação à quilha ou superfície e conhece a referência usada."],"tags":["GPS","chartplotter","COG","SOG","ecobatímetro","Datum"]}]},{"id":"normativa","title":"Legislação do recreio e ambiental","topics":[{"id":"normativa-patente","title":"Âmbito da habilitação náutica","summary":"Esta rota é dedicada à habilitação para embarcações a motor dentro de 12 milhas da costa. Os limites também dependem da embarcação, potência e condições previstas pela lei vigente.","points":["A carta de condução habilita a pessoa; não substitui os documentos, equipamentos ou adequação da embarcação.","A distância é medida pela costa ou linha de base aplicável, de acordo com as regras do programa.","Requisitos e termos podem mudar: antes do exame ou da partida, verifique sempre no MIT e na Capitania.","Os materiais do 2011 e 2019 presentes na coleção são educacionais; prevalecem DM 323 / 2021, DD 131 / 2022 e padrões subsequentes."],"tags":["patente","dentro de 12 milhas","motor","Limites","habilitação"]},{"id":"normativa-comandante","title":"Responsabilidade do Comandante","summary":"O comandante avalia a aeronavegabilidade, tripulação, tempo, rota e segurança, presta a assistência possível e toma medidas para evitar danos a pessoas, ambiente e navegação.","points":["Planejamento não transfere a responsabilidade para o GPS, proprietário ou tripulação.","A velocidade deve permitir o controle, cumprimento das regras locais e proteção de banhistas e custa.","Acidentes, danos, socorro e poluição podem resultar em obrigações de comunicação.","O álcool, a fadiga e os medicamentos reduzem a capacidade e podem ter consequências administrativas ou penais."],"tags":["comandante","responsabilidade","assistência","velocidade","Acidente"]},{"id":"normativa-documenti","title":"Documentos e categorias de embarcações","summary":"embarcação, barco e barco de recreio têm regimes documentais diferentes. A bordo devem estar os documentos da embarcação, das pessoas, do rádio e do seguro quando previsto.","points":["Verifique a licença de navegação ou declaração, certificado de segurança e seguro de acordo com a categoria.","A carta e o documento pessoal devem ser válidos; para usar o rádio, um certificado específico pode ser solicitado.","Manuais e certificados de equipamentos ajudam a demonstrar conformidade e validade.","Não use listas datadas como verificação legal definitiva: verifique na Capitania e fontes oficiais."],"tags":["documentos","Natante","embarcação","seguro","certificado"]},{"id":"normativa-ambiente","title":"Proteção ambiental e áreas protegidas","summary":"Despejos, resíduos, combustíveis, pesca e acesso a áreas protegidas seguem regras específicas. Mapas, roteiros náuticos e autoridades locais definem zonas e restrições.","points":["Nunca jogue óleo, combustível, plástico ou lixo no mar; conter e sinalizar qualquer derramamento.","As áreas marinhas protegidas têm áreas A, B e C e regras específicas para navegação, fundeio, pesca e fundeio.","Evite ancorar na Posidonia e nos fundos sensíveis; use os campos de boias quando disponíveis.","Respeite distâncias, corredores de lançamento e limites locais perto de praias e banhistas."],"tags":["Meio Ambiente","poluição","Área Marinha Protegida","Posidonia","resíduos"]}]}],"sources":[{"id":"mit-normativa","group":"Oficial","title":"MIT regulamentação patentes náuticas","status":"atual","note":"Índice oficial de leis, decretos e bancos de dados de questões."},{"id":"dm323","group":"Oficial","title":"DM 323 / 2021 programa e modos de exame","status":"atual","note":"Define prova, tempo, limites de erro, distribuição e parte prática."},{"id":"dd131","group":"Oficial","title":"DD 131 / 2022 1.472 quiz BASE","status":"atual","note":"Base de dados completa usada no treinador do site; corrige e substitui o anexo do DD 106."},{"id":"dd10","group":"Oficial","title":"DD 10 / 2022 50 exercícios dentro de 12 milhas","status":"Dossier Técnico","note":"Páginas 161 – 178: 50 exercícios de espaço-tempo-velocidade, consumo e coordenadas com soluções."},{"id":"dispensa","group":"Material didático","title":"Apostila para habilitação náutica 12 M","status":"histórico · 2011","note":"67 páginas. Estrutura de ensino útil; políticas e equipamentos devem ser verificados em uma fonte atualizada."},{"id":"scribd1","group":"Scribd","title":"Dispensa Patente Náutica","status":"educacional","note":"10 páginas; comunicações VHF e noções de manobra e vela."},{"id":"scribd2","group":"Scribd","title":"Patente Náutica","status":"histórico","note":"15 páginas; material datado, útil apenas como um complemento conceitual."},{"id":"scribd3","group":"Scribd","title":"Guia para a aprovação da carta","status":"educacional · 2019","note":"90 páginas; índice amplo e organização para estudo e questionário."},{"id":"navico-main","group":"Navico Online","title":"Notas para a obtenção da habilitação náutica","status":"educacional","note":"Índice geral dos capítulos e dos exercícios."},{"id":"navico1","group":"Navico Online","title":"Cap. 1 mapas, coordenadas, rota, milha e escala","status":"educacional"},{"id":"navico2","group":"Navico Online","title":"Cap. 2 bússola, marcação náutica e posição da embarcação","status":"educacional"},{"id":"navico3","group":"Navico Online","title":"Cap. 3 abatimento causado pelo vento, deriva e nomenclatura","status":"educacional"},{"id":"navico4","group":"Navico Online","title":"Cap. 4 avaria, emergências e propulsão","status":"educacional"},{"id":"navico5","group":"Navico Online","title":"Cap. 5 e meteorologia I","status":"educacional"},{"id":"navico6","group":"Navico Online","title":"Cap. 6 meteorologia II e Meteomar","status":"educacional"},{"id":"navico-cart1","group":"Navico Online","title":"Cartagem 1 coordenadas, rota e distância","status":"exercícios"},{"id":"navico-cart2","group":"Navico Online","title":"Cartagem 2 conversão e correção","status":"exercícios"},{"id":"navico-cart3","group":"Navico Online","title":"Carteggio 3 marcação náutica polari","status":"exercícios"},{"id":"navico-cart4","group":"Navico Online","title":"Cartagem 4 espaço, tempo, velocidade","status":"exercícios"},{"id":"navico-cart5","group":"Navico Online","title":"Cartagem 5 atual","status":"exercícios"},{"id":"navico-cart6","group":"Navico Online","title":"Mapagem 6 locais de localização","status":"exercícios"},{"id":"navico-nodi","group":"Navico Online","title":"Nodos","status":"educacional"},{"id":"navico-rosa","group":"Navico Online","title":"Rosa dos Ventos","status":"educacional"}]}
+{
+  "exam": {
+    "chartQuestions": 5,
+    "chartMinutes": 20,
+    "chartPass": 4,
+    "baseQuestions": 20,
+    "baseMinutes": 30,
+    "basePass": 16
+  },
+  "chapters": [
+    {
+      "id": "scafo",
+      "title": "Teoria do casco",
+      "topics": [
+        {
+          "id": "scafo-nomenclatura",
+          "title": "Peças principais e tamanho",
+          "summary": "Proa e popa definem as extremidades; boreste e bombordo são identificados olhando para a proa. Boca máxima, comprimento e calado condicionam a manobra e o acesso a águas rasas.",
+          "points": [
+            "Opera viva: parte imersa; opera morta: parte emergida.",
+            "A linha de flutuação separa as duas partes; a borda livre é a distância vertical até o plano de cobertura.",
+            "A calado, ou calado, é a profundidade máxima abaixo da linha de flutuação; não deve ser confundida com a altura total.",
+            "O deslocamento é o peso da água deslocada e, em equilíbrio, corresponde ao peso da embarcação."
+          ],
+          "tags": [
+            "proa",
+            "popa",
+            "boreste",
+            "bombordo",
+            "calado",
+            "deslocamento"
+          ]
+        },
+        {
+          "id": "scafo-struttura",
+          "title": "Estrutura e tipos de casco",
+          "summary": "Quilhas, madeireiros, cavernas, anteparas e chapeamento formam a estrutura resistente. Os cascos deslocadores e planadores reagem de forma diferente à velocidade e ao mar.",
+          "points": [
+            "A quilha é o elemento longitudinal principal; cavernas e madeireiras formam a ossatura transversal.",
+            "As anteparas estanques limitam a inundação e não devem ser perfuradas ou deixadas abertas sem controle.",
+            "O casco deslocador move água durante toda a navegação; o planador se eleva sobre a água adquirindo velocidade.",
+            "O catamarã tem dois cascos e o trimarã três. A maior largura aumenta a estabilidade de forma, mas altera a manobra."
+          ],
+          "tags": [
+            "quilha",
+            "cavernas",
+            "anteparas",
+            "deslocamento",
+            "Planante"
+          ]
+        },
+        {
+          "id": "scafo-stabilita",
+          "title": "Estabilidade, trim e cargas",
+          "summary": "A estabilidade depende da posição do centro de gravidade e do metacentro. Cargas altas, livres ou mal distribuídas reduzem a margem de segurança.",
+          "points": [
+            "O momento de desbandamento aumenta quando um peso é movido transversalmente para longe do centro.",
+            "As superfícies livres em tanques parcialmente cheios pioram a estabilidade.",
+            "Os passageiros e as cargas devem ser distribuídos mantendo o centro de gravidade baixo e próximo ao eixo longitudinal.",
+            "A inclinação é longitudinal, a inclinação é transversal."
+          ],
+          "tags": [
+            "Estabilidade",
+            "baricentro",
+            "metacentro",
+            "trim (assento)",
+            "carga"
+          ]
+        },
+        {
+          "id": "scafo-timone-elica",
+          "title": "Leme e hélice",
+          "summary": "O leme desvia o fluxo de água; a hélice transforma o torque em impulso. O efeito evolutivo da hélice é particularmente evidente na marcha atrás.",
+          "points": [
+            "O leme é mais eficaz quando recebe um fluxo de água; de parar, girá-lo sozinho não governa a embarcação.",
+            "O passo é o avanço teórico da hélice em uma volta; a cavitação reduz o impulso e pode danificar as pás.",
+            "Uma hélice direita, vista da popa, gira no sentido horário em marcha adiante; uma esquerda no sentido oposto.",
+            "Em manobras lentas combina pulsos curtos do motor, posição do leme, vento e efeito evolutivo."
+          ],
+          "tags": [
+            "leme",
+            "hélice",
+            "passo",
+            "cavitação",
+            "Efeito Evolutivo"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "motori",
+      "title": "Motores",
+      "topics": [
+        {
+          "id": "motori-cicli",
+          "title": "Gasolina, diesel e ciclos",
+          "summary": "O motor de quatro tempos realiza sucção, compressão, combustão/expansão e descarga. No diesel, o ignição é feita por compressão; no ciclo Otto, através de velas.",
+          "points": [
+            "Um ciclo de quatro tempos requer duas voltas do eixo motor.",
+            "Os vapores de gasolina são mais pesados que o ar e podem acumular-se na sentina: ventilar antes do arranque.",
+            "O diesel usa injetores e bomba de injeção; o ar no circuito impede a alimentação e deve ser purgado.",
+            "Fumo preto muitas vezes indica mistura rica ou carga; azul, óleo; branco persistente pode indicar água ou combustão incompleta."
+          ],
+          "tags": [
+            "diesel",
+            "gasolina",
+            "quatro tempos",
+            "injetor",
+            "Fumaça"
+          ]
+        },
+        {
+          "id": "motori-impianti",
+          "title": "Lubrificação e refrigeração",
+          "summary": "O óleo reduz o atrito e remove calor; o resfriamento marinho troca calor com a água externa. Alarmes de pressão ou temperatura exigem redução imediata e controles seguros.",
+          "points": [
+            "Baixa pressão do óleo: desligue o motor assim que for seguro e controle o nível, vazamento e circuito.",
+            "Sobreaquecimento: controle a tomada d'água do mar, filtro, rotor da bomba da bomba, correia e drenagem de água.",
+            "Nunca abra a tampa de um circuito pressurizado quando estiver quente.",
+            "A tomada d'água do mar deve ser conhecida e acessível para poder fechá-la em caso de emergência."
+          ],
+          "tags": [
+            "óleo",
+            "refrigeração",
+            "rotor da bomba",
+            "tomada d'água do mar",
+            "temperatura"
+          ]
+        },
+        {
+          "id": "motori-elettrico",
+          "title": "Instalação elétrica e arranque",
+          "summary": "Bateria, motor de arranque e alternador formam o núcleo do sistema elétrico. Conexões limpas e fusíveis dimensionados corretamente evitam avarias e incêndios.",
+          "points": [
+            "Tensão presente mas corrente insuficiente pode indicar uma braçadeira oxidada: controla o aperto e a queda de tensão.",
+            "As baterias liberam gás explosivo durante a carga: ventilar e evitar faíscas.",
+            "Desligue o seletor de baterias enquanto o alternador carregado pode danificar o controlador.",
+            "Os circuitos essenciais devem ser protegidos e a bomba de sentina deve permanecer disponível."
+          ],
+          "tags": [
+            "bateria",
+            "alternador",
+            "inicialização",
+            "fusível",
+            "sistema elétrico"
+          ]
+        },
+        {
+          "id": "motori-propulsione",
+          "title": "Transmissões e controlos",
+          "summary": "Linha de eixo, stern drive, Sail Drive e pod transmitem a potência de diferentes maneiras. Antes de partir, verifique o combustível, os fluidos, o resfriamento e a resposta dos comandos.",
+          "points": [
+            "O inversor seleciona marcha para a frente, neutro e marcha para trás; muda de direção com o motor ao mínimo.",
+            "O stern drive orienta o motor externo; a linha de eixo usa um leme separado.",
+            "Uma nova vibração pode indicar hélice danificada, cabo envolto, desalinhamento ou cavitação.",
+            "Controles: combustível e reserva, óleo, água, correias, bateria, ventilação, descarga e ferramentas."
+          ],
+          "tags": [
+            "inversor",
+            "linha de eixo",
+            "stern drive",
+            "s-drive",
+            "pod"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sicurezza",
+      "title": "Segurança de navegação",
+      "topics": [
+        {
+          "id": "sicurezza-dotazioni",
+          "title": "Equipamentos e preparação",
+          "summary": "As instalações dependem da distância da costa e da embarcação. Validade, acessibilidade e conhecimento de uso são tão importantes quanto a sua presença a bordo.",
+          "points": [
+            "Antes da partida: tempo, combustível com margem, documentos, pessoas a bordo e plano de navegação.",
+            "Os coletes devem ser da medida correta, identificados e rapidamente acessíveis.",
+            "Sinais pirotécnicos, extintores e meios coletivos têm prazos e requisitos específicos: verifique a norma vigente.",
+            "Briefing para a tripulação: coletes, extintores de incêndio, rádio, válvulas, bomba de sentina e procedimento MOB."
+          ],
+          "tags": [
+            "equipamentos obrigatórios",
+            "colete",
+            "balsa",
+            "extintor",
+            "checklist"
+          ]
+        },
+        {
+          "id": "sicurezza-incendio-falla",
+          "title": "Incêndio, via d'água e encalhe",
+          "summary": "Prioridade: proteger as pessoas, parar a causa, conter o problema e pedir ajuda a tempo. Para apagar um incêndio, é necessário eliminar combustível, oxigênio ou calor sem abrir os compartimentos.",
+          "points": [
+            "Incêndio no compartimento do motor: interromper o combustível e a eletricidade; usar a abertura prevista sem abrir o capô.",
+            "Entrada de água: localizar, tamponar, bombear e reduzir as tensões no casco; preparar abandono e assistência.",
+            "encalhe: pare, avalie fundo, maré e danos, evite acelerar sem diagnóstico e considere um alívio controlado.",
+            "Nunca use água em combustíveis líquidos ou equipamentos elétricos sob tensão."
+          ],
+          "tags": [
+            "Incêndio",
+            "via d'água",
+            "encalhe",
+            "bomba de sentina",
+            "extintor"
+          ]
+        },
+        {
+          "id": "sicurezza-mob",
+          "title": "Homem a bordo e abandono",
+          "summary": "Ao grito de homem no mar, mantenha contato visual, lance um flutuador, marque a posição e manobre sem expor a pessoa à hélice.",
+          "points": [
+            "Uma pessoa indica continuamente o naufrágio; outra ativa o MOB no GPS e prepara a recuperação.",
+            "Aproximação final a velocidade mínima e, com base no vento e no mar, naufrágio subaquático para protegê-lo.",
+            "Motor em neutro ou desligado durante a recuperação perto da popa e da hélice.",
+            "Abandone a embarcação apenas quando ficar a bordo é mais perigoso; se possível, traga rádio ou beacons, água e kits de emergência."
+          ],
+          "tags": [
+            "homem no mar",
+            "MOB",
+            "Abandono",
+            "Recuperação",
+            "boia salva-vidas"
+          ]
+        },
+        {
+          "id": "sicurezza-radio",
+          "title": "VHF, chamadas e assistência",
+          "summary": "O canal 16 destina-se a chamada e socorro. MAYDAY indica perigo grave e iminente; PAN PAN, urgência; SEGURANA, um aviso importante para a navegação ou meteorológico.",
+          "points": [
+            "MAYDAY: nome ou nome, localização, natureza do perigo, assistência necessária, pessoas a bordo e informações úteis.",
+            "Após uma chamada normal no 16, mude para o canal de trabalho indicado.",
+            "O DSC Digital Rescue usa o canal 70: não lhe transmita comunicações de voz.",
+            "Não atrase o pedido de socorro: a localização e o tempo disponível muitas vezes determinam o resultado."
+          ],
+          "tags": [
+            "VHF",
+            "canal 16",
+            "MAYDAY",
+            "PAN PAN",
+            "SECURITÉ",
+            "DSC"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "manovra",
+      "title": "Manobra e conduta",
+      "topics": [
+        {
+          "id": "manovra-forze",
+          "title": "Vento, corrente e seguimento",
+          "summary": "Em baixa velocidade, dominam o vento e a corrente. Avalie primeiro qual força prevalece, de onde vem e onde moverá a proa e a popa.",
+          "points": [
+            "O seguimento é o movimento residual: a embarcação continua a avançar mesmo depois de neutro.",
+            "A obra morta sofre mais do que o vento; casco e quilha da corrente.",
+            "Use impulsos curtos e decididos, evitando manter as voltas quando o alinhamento está perdido.",
+            "Prepare parabordes e topos com antecedência; nunca tente prender uma embarcação com as mãos ou os pés."
+          ],
+          "tags": [
+            "seguimento",
+            "vento",
+            "corrente",
+            "Baixa velocidade",
+            "manobra"
+          ]
+        },
+        {
+          "id": "manovra-ormeggio",
+          "title": "Amarração e desatracação",
+          "summary": "A aproximação deve ser lenta, controlada e com uma saída. A mola, os cabos de proa e de popa controlam os movimentos longitudinais e transversais.",
+          "points": [
+            "Aproximar-se contra a força predominante geralmente oferece maior controle.",
+            "O spring de proa limita o avanço; o de popa limita o recuo, de acordo com a disposição no banco.",
+            "Um cabo cruzado em dobro permite que você saia sem desembarcar, mas deve permanecer livre da hélice.",
+            "Comunicação clara: uma pessoa comanda e a tripulação confirma cada operação."
+          ],
+          "tags": [
+            "amarração",
+            "desatracação",
+            "spring",
+            "cabo",
+            "Parabordo"
+          ]
+        },
+        {
+          "id": "manovra-ancora",
+          "title": "Fundeio",
+          "summary": "Escolha o tipo de fundo, a profundidade, o abrigo e o espaço para o círculo de giro. A relação entre o comprimento do cabo ou da corrente e a profundidade determina o ângulo de tração sobre a âncora.",
+          "points": [
+            "Confira a carta náutica, os cabos submarinos, as áreas proibidas, o vento previsto, a maré e as outras embarcações.",
+            "Baixe, não arremesse, a âncora; recue lentamente enquanto larga o cabo ou a corrente de fundeio.",
+            "Verifique se a âncora unhou usando referências ou o alarme do GPS e antecipe mudanças de vento ou corrente.",
+            "Para suspender a âncora, posicione-se na vertical sem usar o molinete para rebocar a embarcação."
+          ],
+          "tags": [
+            "âncora",
+            "fundeio",
+            "filame (calumo)",
+            "fundo",
+            "círculo de giro"
+          ]
+        },
+        {
+          "id": "manovra-nodi",
+          "title": "Nó de teste prático",
+          "summary": "O programa prático inclui gás amante, nó falado, nó de bita e nó de rascunho. Treinado na execução, no uso e na dissolução sob carga.",
+          "points": [
+            "Gaze de amante: forma uma asa fixa que não flui.",
+            "Nó falado: fixação rápida a um poste; pode exigir segurança se a carga varia.",
+            "Nó de bico: vezes de oito e meio pescoço final, sem sobrepor os topos para bloqueá-los.",
+            "Nó de rascunho: conecte um cabo fino a outro em movimento para transferir ou aliviar a carga."
+          ],
+          "tags": [
+            "lais de guia",
+            "volta do fiel",
+            "nó de bita",
+            "nó de boça"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "colreg",
+      "title": "COLREG e sinalização",
+      "topics": [
+        {
+          "id": "colreg-rischio",
+          "title": "Vigia e risco de colisão",
+          "summary": "Cada embarcação mantém uma vigia visual e auditiva, velocidade de segurança e avaliação contínua. Uma marcação náutica constante com distância em diminuição indica risco de colisão.",
+          "points": [
+            "Não confie em uma única observação ou exclusivamente no AIS: use todos os meios disponíveis.",
+            "A manobra deve ser decidida, ampla, oportuna e controlada até que as embarcações sejam passadas e livres.",
+            "Com visibilidade reduzida: máquinas prontas, velocidade adequada e sinais regulatórios.",
+            "A embarcação com direito de preferência mantém o curso e a velocidade, mas deve agir se a outra não evitar a colisão."
+          ],
+          "tags": [
+            "vigia",
+            "Risco de colisão",
+            "Marcação náutica",
+            "Velocidade de segurança",
+            "AIS"
+          ]
+        },
+        {
+          "id": "colreg-incrocio",
+          "title": "Rotas opostas, cruzamento e ultrapassagem",
+          "summary": "Em rotas opostas, ambas as embarcações se aproximam em boreste. No cruzamento entre embarcações motoras, quem vê a outra em boreste deve manobrar. Quem ultrapassa deve ficar afastado.",
+          "points": [
+            "Rotas opostas: alinhamento para boreste e passa com o lado esquerdo contra o lado esquerdo da outra embarcação.",
+            "Cruzamento: Evite passar à frente da embarcação com direito de preferência.",
+            "É ultrapassado quando você se aproximar de mais de 22,5° para a popa do travesseiro; quem atinge permanece responsável até que esteja livre.",
+            "Canal estreito: mantenha-se perto do limite de boreste quando for seguro e praticável."
+          ],
+          "tags": [
+            "rotas opostas",
+            "Cruzamento",
+            "ultrapassagem",
+            "canal estreito",
+            "preferência"
+          ]
+        },
+        {
+          "id": "colreg-luci",
+          "title": "Luzes e sinais diurnos",
+          "summary": "Localize primeiro setor, cor e combinação: luzes laterais, de popa, de mastro e visíveis por todo o horizonte. Os sinais diurnos comunicam o mesmo estado operacional.",
+          "points": [
+            "embarcações motorizadas em navegação: luzes laterais, luzes de popa e uma ou mais luzes de mastro de acordo com o comprimento.",
+            "âncora: luz branca por todo o horizonte e um balão preto durante o dia; encalhado adiciona duas luzes vermelhas e três balões.",
+            "Sem governo: dois vermelhos verticais ou dois balões; capacidade de manobra limitada: vermelho-branco-vermelho ou balão-rombo-bolão.",
+            "Arrastar a pesca: verde sobre branco; outra pesca: vermelho sobre branco."
+          ],
+          "tags": [
+            "luzes",
+            "luzes",
+            "Sinais diurnos",
+            "fundeado",
+            "Sem governo"
+          ]
+        },
+        {
+          "id": "colreg-segnali",
+          "title": "Sinais sonoros e IALA",
+          "summary": "Os apitos indicam manobra, dúvida e condição na névoa. No sistema IALA A, entrando pelo mar as balizas laterais vermelhas ficam à bombordo e as verdes a boreste.",
+          "points": [
+            "1 curto: guincho para boreste; 2 curto: encostado à bombordo; 3 curto: máquinas para trás.",
+            "5 ou mais silbidos curtos e rápidos: dúvida ou perigo.",
+            "Os cardeais indicam onde se encontra a água segura em relação à meda; cores e ritmo luminoso codificam o mostrador.",
+            "Águas seguras: tiras verticais vermelhas e brancas com luz branca; perigo isolado: preto e vermelho com duas esferas."
+          ],
+          "tags": [
+            "Sinais sonoros",
+            "IALA A",
+            "Lateral",
+            "Cardeais",
+            "Águas seguras"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "meteo",
+      "title": "Meteorologia",
+      "topics": [
+        {
+          "id": "meteo-pressione",
+          "title": "Pressão e vento",
+          "summary": "O vento nasce do gradiente de pressão e é desviado da rotação terrestre. Isobares aproximados indicam um gradiente forte e, em geral, vento mais intenso.",
+          "points": [
+            "No hemisfério norte, a circulação é anti-horária em baixas pressões e hora em altas pressões.",
+            "Lei de Buys-Ballot: no hemisfério norte, com o ombro no vento, a baixa pressão está aproximadamente à bombordo.",
+            "O vento é chamado de direção de origem; a corrente é a direção para a qual ele se move.",
+            "As rajadas e acelerações costeiras podem exceder o valor médio do boletim."
+          ],
+          "tags": [
+            "pressão",
+            "isobares",
+            "Gradiente",
+            "vento",
+            "Buys-Ballot"
+          ]
+        },
+        {
+          "id": "meteo-brezze",
+          "title": "Brisas e ventos mediterrâneos",
+          "summary": "Durante o dia, a terra aquece mais rapidamente e a brisa sopra do mar para a terra; à noite, o ciclo tende a inverter. Alinhamentos e orientação da costa podem canalizar o fluxo.",
+          "points": [
+            "A brisa do mar geralmente começa no final da manhã e se reforça à tarde com tempo estável.",
+            "A brisa da terra é geralmente mais fraca e ocorre entre a noite e a manhã.",
+            "Tramontana N, Gregale NE, Levante E, Scirocco SE, Ostro S, Libeccio SW, Ponente W, Mestre NW.",
+            "O nome local não substitui a direção observada, tendência barométrica e previsão."
+          ],
+          "tags": [
+            "brisa",
+            "Tramontana",
+            "siroco",
+            "Libeccio",
+            "mistral",
+            "Rosa dos Ventos"
+          ]
+        },
+        {
+          "id": "meteo-fronti",
+          "title": "Nuvens, frentes e tempestades",
+          "summary": "Uma frente quente tende a trazer uma sequência extensa de nuvens e precipitação gradual; uma frente fria muda rapidamente, acumula e desvia. O cumulonembo requer uma grande distância.",
+          "points": [
+            "Cirri e queda de pressão podem antecipar a chegada de um sistema frontal.",
+            "O cumulonembo pode produzir rajadas violentas, granizo, raios e mar curto.",
+            "A névoa se forma quando o ar úmido esfria até o ponto de orvalho: ajusta a velocidade e os sinais.",
+            "Um rápido aumento de pressão após uma frente fria pode ser acompanhado por vento forte, não por calma imediata."
+          ],
+          "tags": [
+            "Frontes",
+            "Nuvens",
+            "cumulonembo",
+            "temporal",
+            "nevoeiro"
+          ]
+        },
+        {
+          "id": "meteo-bollettini",
+          "title": "Boletim e estado do mar",
+          "summary": "Compare fontes oficiais, observações locais e tendência. Beaufort descreve a força do vento; Douglas o estado do mar: escadas interligadas, mas não equivalentes.",
+          "points": [
+            "Meteomar fornece alertas, situação, previsão e tendência para as diferentes áreas marítimas.",
+            "A altura significativa é a média de um terço das ondas mais altas; ondas individuais podem ser muito maiores.",
+            "Fetch, a duração e intensidade do vento determinam o crescimento do mar.",
+            "Defina seus limites antes da partida e mantenha uma rota alternativa para um abrigo."
+          ],
+          "tags": [
+            "Meteomar",
+            "Beaufort",
+            "Douglas",
+            "Altura significativa",
+            "Boletim informativo"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "navigazione",
+      "title": "Navegação cartográfica e eletrônica",
+      "topics": [
+        {
+          "id": "navigazione-coordinate",
+          "title": "Coordenadas e carta náutica",
+          "summary": "A latitude mede o arco norte ou sul do equador; a longitude o arco leste ou oeste de Greenwich. No mapa de Mercator as rotas lossódromas são retas e as distâncias são medidas na escala das latitudes.",
+          "points": [
+            "1 minuto de latitude 1 milha náutica; 1 nó 1 milha náutica por hora.",
+            "Leia a latitude nas bordas laterais e a longitude nas bordas superior e inferior.",
+            "Use a escala de latitudes perto do curso; nunca use a escala de longitudes para medir uma distância.",
+            "Escala 1:100.000 significa que 1 cm no cartão corresponde a 1 km real."
+          ],
+          "tags": [
+            "latitude",
+            "Longitude",
+            "Mercator",
+            "milha náutica",
+            "escala"
+          ]
+        },
+        {
+          "id": "navigazione-bussola",
+          "title": "Rota, proa e bússola",
+          "summary": "A rota é a trajetória no fundo; a prora é a direção em que o eixo da embarcação aponta. A declinação conecta o norte verdadeiro e magnético; o desvio conecta o norte magnético e a bússola.",
+          "points": [
+            "Conversão: do verdadeiro à bússola aplica declinação e desvio com os sinais convencionais; a correção percorre o caminho inverso.",
+            "A declinação é obtida a partir da rosa do papel, atualizada por ano; o desvio da tabela da bússola de bordo.",
+            "Variação total  soma algébrica de declinação e desvio.",
+            "Não memorize apenas uma fórmula: desenhe os três norte e controle o sinal."
+          ],
+          "tags": [
+            "Rota",
+            "Prora",
+            "declinação",
+            "desvio",
+            "Bússola"
+          ]
+        },
+        {
+          "id": "navigazione-rilevamenti",
+          "title": "Marcação náutica e posição da embarcação",
+          "summary": "Um local de posição limita a área em que estamos; duas linhas independentes dão um ponto, três permitem um controle. O marcação náutica deve ser corrigido e devolvido corretamente no papel.",
+          "points": [
+            "A marcação náutica polar é medida pela proa; a verdadeira pelo norte verdadeiro.",
+            "Escolha objetos bem identificados e um ângulo de intersecção favorável, perto de 90°.",
+            "O alinhamento de dois objetos é um local de posição muito preciso.",
+            "Entre observações não simultâneas, transporta a primeira linha usando rota e distância percorrida."
+          ],
+          "tags": [
+            "Marcação náutica",
+            "Marcação náutica polar",
+            "posição da embarcação",
+            "alinhamento",
+            "Local de posição"
+          ]
+        },
+        {
+          "id": "navigazione-stima",
+          "title": "Espaço, tempo, velocidade e estimativa",
+          "summary": "As três relações fundamentais são S  V  T, V  S  T e T  S  V. O tempo deve ser expresso em horas decimais; o consumo inclui a reserva prevista para o exercício.",
+          "points": [
+            "30 min 0,5 h; 15 min 0,25 h; em geral, minutos 60.",
+            "ETA  hora de partida + duração da navegação.",
+            "Na navegação estimada, avance a posição de acordo com a proa ou a rota e a distância correspondente ao intervalo.",
+            "Os exercícios 50 incluídos usam tolerâncias oficiais e o papel de ensino 5 /D."
+          ],
+          "tags": [
+            "espaço",
+            "tempo",
+            "velocidade",
+            "ETA",
+            "estimativa",
+            "Combustível"
+          ]
+        },
+        {
+          "id": "navigazione-corrente",
+          "title": "Corrente e abatimento causado pelo vento",
+          "summary": "A corrente soma uma direção e velocidade ao movimento propulsor; o vento produz abatimento causado pelo vento lateral. O resultado determina rota e velocidades reais no fundo.",
+          "points": [
+            "A direção da corrente indica onde a água se move; o vento toma o nome de onde vem.",
+            "Triângulo vetorial: vetor da embarcação na água + vetor da corrente  movimento no fundo.",
+            "Para manter a rota desejada, calcule a proa de compensação e a velocidade efetiva.",
+            "Verifique o resultado com um próximo posição da embarcação: a previsão não substitui a observação."
+          ],
+          "tags": [
+            "corrente",
+            "abatimento causado pelo vento",
+            "deriva",
+            "Vectores",
+            "Rota Verdadeira"
+          ]
+        },
+        {
+          "id": "navigazione-elettronica",
+          "title": "GPS, Chartplotter e ecobatímetro",
+          "summary": "A eletrônica facilita a navegação, mas depende da alimentação, datum, mapas e interpretação correta. Mantenha o controle visual, profundidade e uma solução de reserva.",
+          "points": [
+            "COG é a rota para o fundo; SOG é a velocidade para o fundo: não necessariamente coincidem com proa e velocidade sobre a água.",
+            "Um ponto de passagem incorreto ou um zoom inadequado podem esconder perigos entre a embarcação e o destino.",
+            "Verificar datatum e atualização de cartão: uma posição precisa em um cartão impreciso permanece perigosa.",
+            "O ecobatímetro mede a profundidade do transdutor; ajusta o offset em relação à quilha ou superfície e conhece a referência usada."
+          ],
+          "tags": [
+            "GPS",
+            "chartplotter",
+            "COG",
+            "SOG",
+            "ecobatímetro",
+            "Datum"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "normativa",
+      "title": "Legislação do recreio e ambiental",
+      "topics": [
+        {
+          "id": "normativa-patente",
+          "title": "Âmbito da habilitação náutica",
+          "summary": "Esta rota é dedicada à habilitação para embarcações a motor dentro de 12 milhas da costa. Os limites também dependem da embarcação, potência e condições previstas pela lei vigente.",
+          "points": [
+            "A carta de condução habilita a pessoa; não substitui os documentos, equipamentos ou adequação da embarcação.",
+            "A distância é medida pela costa ou linha de base aplicável, de acordo com as regras do programa.",
+            "Requisitos e termos podem mudar: antes do exame ou da partida, verifique sempre no MIT e na Capitania.",
+            "Os materiais do 2011 e 2019 presentes na coleção são educacionais; prevalecem DM 323 / 2021, DD 131 / 2022 e padrões subsequentes."
+          ],
+          "tags": [
+            "patente",
+            "dentro de 12 milhas",
+            "motor",
+            "Limites",
+            "habilitação"
+          ]
+        },
+        {
+          "id": "normativa-comandante",
+          "title": "Responsabilidade do Comandante",
+          "summary": "O comandante avalia a aeronavegabilidade, tripulação, tempo, rota e segurança, presta a assistência possível e toma medidas para evitar danos a pessoas, ambiente e navegação.",
+          "points": [
+            "Planejamento não transfere a responsabilidade para o GPS, proprietário ou tripulação.",
+            "A velocidade deve permitir o controle, cumprimento das regras locais e proteção de banhistas e custa.",
+            "Acidentes, danos, socorro e poluição podem resultar em obrigações de comunicação.",
+            "O álcool, a fadiga e os medicamentos reduzem a capacidade e podem ter consequências administrativas ou penais."
+          ],
+          "tags": [
+            "comandante",
+            "responsabilidade",
+            "assistência",
+            "velocidade",
+            "Acidente"
+          ]
+        },
+        {
+          "id": "normativa-documenti",
+          "title": "Documentos e categorias de embarcações",
+          "summary": "embarcação, barco e barco de recreio têm regimes documentais diferentes. A bordo devem estar os documentos da embarcação, das pessoas, do rádio e do seguro quando previsto.",
+          "points": [
+            "Verifique a licença de navegação ou declaração, certificado de segurança e seguro de acordo com a categoria.",
+            "A carta e o documento pessoal devem ser válidos; para usar o rádio, um certificado específico pode ser solicitado.",
+            "Manuais e certificados de equipamentos ajudam a demonstrar conformidade e validade.",
+            "Não use listas datadas como verificação legal definitiva: verifique na Capitania e fontes oficiais."
+          ],
+          "tags": [
+            "documentos",
+            "Natante",
+            "embarcação",
+            "seguro",
+            "certificado"
+          ]
+        },
+        {
+          "id": "normativa-ambiente",
+          "title": "Proteção ambiental e áreas protegidas",
+          "summary": "Despejos, resíduos, combustíveis, pesca e acesso a áreas protegidas seguem regras específicas. Mapas, roteiros náuticos e autoridades locais definem zonas e restrições.",
+          "points": [
+            "Nunca jogue óleo, combustível, plástico ou lixo no mar; conter e sinalizar qualquer derramamento.",
+            "As áreas marinhas protegidas têm áreas A, B e C e regras específicas para navegação, fundeio, pesca e fundeio.",
+            "Evite ancorar na Posidonia e nos fundos sensíveis; use os campos de boias quando disponíveis.",
+            "Respeite distâncias, corredores de lançamento e limites locais perto de praias e banhistas."
+          ],
+          "tags": [
+            "Meio Ambiente",
+            "poluição",
+            "Área Marinha Protegida",
+            "Posidonia",
+            "resíduos"
+          ]
+        }
+      ]
+    }
+  ],
+  "sources": []
+}

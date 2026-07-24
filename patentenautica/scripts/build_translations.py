@@ -79,7 +79,6 @@ TRANSLATION_OVERRIDES = {
         "Índice oficial de leis, decretos e bancos de dados de questões.",
     "Indice generale dei capitoli e degli esercizi.":
         "Índice geral dos capítulos e dos exercícios.",
-    "Dispensa patente nautica 12M": "Apostila para habilitação náutica 12 M",
     "Ambito della patente": "Âmbito da habilitação náutica",
     "Brezze e venti mediterranei": "Brisas e ventos mediterrâneos",
     "Coordinate e carta nautica": "Coordenadas e carta náutica",

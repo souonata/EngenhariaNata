@@ -8,12 +8,17 @@ import quizPt from "./data/quiz-pt.json";
 import exercisesPt from "./data/carteggio-pt.json";
 import glossary from "./data/glossary.json";
 import chartData from "./data/chart-points.json";
-import questionReferences from "./data/question-references.json";
+import authoritativeSources from "./data/authoritative-sources.json";
+import questionAuthority from "./data/question-authority.json";
+import { placeRouteLabels, projectChartPoint } from "./chart-layout.js";
+import {
+  buildExerciseAnswers,
+  splitExercisePrompt,
+} from "./exercise-answers-calc.js";
 import dm323PdfUrl from "./sources/dm-323-2021-programma-esame.pdf?url";
 import quizPdfUrl from "./sources/quiz-ministeriali-dd-131-2022.pdf?url";
 import chartPdfUrl from "./sources/quiz-e-carteggio-dd-10-2022.pdf?url";
-import handbookPdfUrl from "./Dispensa patente nautica 12M.pdf?url";
-import chart5dUrl from "./carta nautica 5D.gif?url";
+import chart5dUrl from "./carta nautica 5D allineata.webp?url";
 
 const content = window.PATENTE_CONTENT;
 const quiz = window.PATENTE_QUIZ;
@@ -23,6 +28,14 @@ const figureModules = import.meta.glob("./assets/quiz-images/*.png", {
   query: "?url",
   import: "default",
 });
+const authoritySourceModules = import.meta.glob(
+  "./sources/authoritative/*.{pdf,html}",
+  {
+    eager: true,
+    query: "?url",
+    import: "default",
+  },
+);
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -51,12 +64,6 @@ const shuffle = (array) => {
 const MODE_KEY = "rotta12-language-mode";
 const PROFILE_KEY = "rotta12-study-profile-v1";
 const VALID_MODES = new Set(["it", "pt", "both"]);
-const sourceMap = Object.fromEntries(
-  content.sources.map((source) => [source.id, source]),
-);
-const sourcePtMap = Object.fromEntries(
-  contentPt.sources.map((source) => [source.id, source]),
-);
 const quizPtMap = new Map(quizPt.map((item) => [item.id, item]));
 const exercisePtMap = new Map(exercisesPt.map((item) => [item.id, item]));
 const chapterPtMap = new Map(
@@ -68,14 +75,26 @@ const chartPointMap = new Map(
 const exerciseRouteMap = new Map(
   chartData.exercises.map((route) => [route.id, route]),
 );
-const questionReferenceMap = new Map(
-  questionReferences.references.map((reference) => [reference.id, reference]),
+const questionAuthorityMap = new Map(
+  questionAuthority.references.map((reference) => [reference.id, reference]),
 );
+const authoritySourceMap = new Map(
+  authoritativeSources.sources.map((source) => [source.id, source]),
+);
+const authorityLocalUrls = {
+  "dm-323-2021-programma-esame.pdf": dm323PdfUrl,
+  "quiz-ministeriali-dd-131-2022.pdf": quizPdfUrl,
+  ...Object.fromEntries(
+    Object.entries(authoritySourceModules).map(([path, url]) => [
+      path.replace("./sources/", ""),
+      url,
+    ]),
+  ),
+};
 const localPdfUrls = {
   dm323: dm323PdfUrl,
   dd131: quizPdfUrl,
   dd10: `${chartPdfUrl}#page=161`,
-  dispensa: handbookPdfUrl,
 };
 
 const UI = {
@@ -332,8 +351,12 @@ const UI = {
   ],
   chartControls: ["Comandi della carta", "Controles da carta"],
   chartViewportLabel: [
-    "Carta 5/D scorrevole con rotta evidenziata",
-    "Carta 5/D rolável com rota destacada",
+    "Carta 5/D interattiva con rotta evidenziata: trascina per spostarti e usa la rotellina o il gesto di pizzico per ingrandire",
+    "Carta 5/D interativa com rota destacada: arraste para mover e use a roda do mouse ou o gesto de pinça para ampliar",
+  ],
+  chartGestureHint: [
+    "Trascina per spostarti · rotellina o pizzico per lo zoom",
+    "Arraste para mover · roda do mouse ou pinça para zoom",
   ],
   chartImageAlt: [
     "Carta nautica didattica 5/D dal Canale di Piombino al Promontorio Argentario",
@@ -376,16 +399,16 @@ const UI = {
   traceability: ["TRACCIABILITÀ", "RASTREABILIDADE"],
   sourcesCriteria: ["Fonti e criteri", "Fontes e critérios"],
   sourcesDescription: [
-    "Provenienza dei contenuti, documenti ufficiali e materiali didattici.",
-    "Origem dos conteúdos, documentos oficiais e materiais didáticos.",
+    "Banca ministeriale, norme vigenti e riscontri tecnici istituzionali.",
+    "Banco ministerial, normas vigentes e verificações técnicas institucionais.",
   ],
   officialRule: [
     "Regola semplice: la fonte ufficiale prevale.",
     "Regra simples: a fonte oficial prevalece.",
   ],
   officialRuleText: [
-    "Dispense e traduzioni aiutano a comprendere; norme, limiti e risposte d'esame devono essere verificati in italiano sulle fonti MIT.",
-    "Apostilas e traduções ajudam a compreender; normas, limites e respostas do exame devem ser conferidos em italiano nas fontes do MIT.",
+    "Il testo italiano della banca MIT determina la risposta d’esame. Per uso reale, norme, limiti, sanzioni e dotazioni vanno sempre controllati nella versione vigente collegata.",
+    "O texto italiano do banco MIT determina a resposta do exame. Na prática, normas, limites, sanções e equipamentos devem ser conferidos na versão vigente indicada.",
   ],
   methodology: ["METODOLOGIA", "METODOLOGIA"],
   howBuilt: [
@@ -452,45 +475,67 @@ const UI = {
   officialAnswer: ["Risposta ufficiale", "Resposta oficial"],
   noQuestions: ["Nessun quesito trovato.", "Nenhuma questão encontrada."],
   practiceAction: ["Esercitati", "Praticar"],
-  studyInHandbook: ["Studia nella Dispensa", "Estudar na apostila"],
-  handbookReference: ["RIFERIMENTO DIDATTICO", "REFERÊNCIA DIDÁTICA"],
-  handbookTitle: ["Spiegazione nella Dispensa", "Explicação na apostila"],
-  handbookDirect: [
-    "Passaggio corrispondente individuato",
-    "Trecho correspondente localizado",
+  studyInHandbook: ["Perché + fonti ufficiali", "Por quê + fontes oficiais"],
+  handbookReference: ["RISPOSTA VERIFICATA", "RESPOSTA VERIFICADA"],
+  handbookTitle: [
+    "Risposta spiegata e fonti ufficiali",
+    "Resposta explicada e fontes oficiais",
   ],
-  handbookTopic: [
-    "Capitolo che tratta l’argomento",
-    "Capítulo que aborda o assunto",
+  handbookVerified: [
+    "Quesito ministeriale verificato",
+    "Questão ministerial verificada",
   ],
-  handbookRelated: [
-    "Approfondimento correlato · edizione 2011",
-    "Conteúdo relacionado · edição de 2011",
+  handbookOfficialAnswer: [
+    "Risposta ministeriale corretta",
+    "Resposta ministerial correta",
   ],
-  handbookTerms: ["Termini individuati", "Termos localizados"],
-  handbookPage: ["Pagina {page} di 67", "Página {page} de 67"],
+  handbookWhy: ["Perché", "Por quê"],
+  handbookSources: ["Fonti e riscontri", "Fontes e verificações"],
+  handbookOfficialPage: [
+    "Quesito {code} · pagina {page} di 338",
+    "Questão {code} · página {page} de 338",
+  ],
   handbookNotice: [
-    "Il collegamento è un indice didattico automatico. La Dispensa è del 2011: per norme, dotazioni e quesiti aggiornati prevalgono sempre le fonti MIT e il testo italiano ufficiale.",
-    "O vínculo é um índice didático automático. A apostila é de 2011: para normas, equipamentos e questões atualizadas, prevalecem sempre as fontes do MIT e o texto oficial italiano.",
+    "Il gabarito proviene dalla banca MIT 2022. Le spiegazioni sono originali di Rotta 12 e citano solo atti o fonti istituzionali. Per norme, sanzioni e dotazioni prevale sempre il testo vigente collegato.",
+    "O gabarito vem do banco MIT 2022. As explicações são originais do Rotta 12 e citam apenas atos ou fontes institucionais. Para normas, sanções e equipamentos, prevalece sempre o texto vigente indicado.",
   ],
   openHandbookPage: [
-    "Apri questa pagina in una nuova scheda",
-    "Abrir esta página em uma nova aba",
+    "Apri la fonte selezionata",
+    "Abrir a fonte selecionada",
   ],
-  closeHandbook: ["Chiudi la Dispensa", "Fechar a apostila"],
+  closeHandbook: ["Chiudi la spiegazione", "Fechar a explicação"],
   handbookFrameTitle: [
-    "Pagina della Dispensa collegata al quesito",
-    "Página da apostila vinculada à questão",
+    "Fonte ufficiale collegata al quesito",
+    "Fonte oficial vinculada à questão",
+  ],
+  localCopy: ["Copia locale", "Cópia local"],
+  officialOnline: ["Fonte ufficiale", "Fonte oficial"],
+  previewSource: ["Consulta", "Consultar"],
+  regulatoryCheck: [
+    "Verifica normativa vigente",
+    "Verifique a norma vigente",
+  ],
+  stableConcept: ["Concetto stabile", "Conceito estável"],
+  noLocalCopy: [
+    "Questa fonte resta sul sito istituzionale per evitare duplicazioni non necessarie.",
+    "Esta fonte permanece no site institucional para evitar duplicações desnecessárias.",
   ],
   figure: ["figura", "figura"],
   solveChart: ["Risolvi sulla carta 5/D", "Resolva na carta 5/D"],
-  showOfficialSolution: [
-    "Mostra la soluzione ufficiale",
-    "Mostrar solução oficial",
+  showOfficialSolution: ["Mostra le risposte", "Mostrar respostas"],
+  hideOfficialSolution: ["Nascondi le risposte", "Ocultar respostas"],
+  showSolution: ["Mostra le risposte", "Mostrar respostas"],
+  hideSolution: ["Nascondi le risposte", "Ocultar respostas"],
+  acceptedRange: ["Intervallo accettato", "Intervalo aceito"],
+  exactAnswer: ["Valore esatto", "Valor exato"],
+  chartAnswerGuide: [
+    "Quando sono indicati due estremi, è corretta qualsiasi risposta compresa nell’intervallo. Per le coordinate è mostrata la tolleranza di lettura sulla carta 5/D.",
+    "Quando são indicados dois limites, qualquer resposta dentro do intervalo está correta. Para as coordenadas, é mostrada a tolerância de leitura na carta 5/D.",
   ],
-  hideOfficialSolution: ["Nascondi la soluzione", "Ocultar solução"],
-  showSolution: ["Mostra la soluzione", "Mostrar solução"],
-  hideSolution: ["Nascondi la soluzione", "Ocultar solução"],
+  sourceSolutionTranscript: [
+    "Trascrizione della soluzione di fonte",
+    "Transcrição da solução da fonte",
+  ],
   page: ["p.", "p."],
   openSource: ["Apri la fonte", "Abrir fonte"],
   officialQuiz: ["Quiz ufficiale", "Questão oficial"],
@@ -526,20 +571,20 @@ const ROUTE_STAGES = [
 
 const METHODS = [
   [
-    "PDF estratti e pagine critiche controllate visivamente.",
-    "PDFs extraídos e páginas críticas verificadas visualmente.",
+    "Ogni risposta è letta dal PDF ministeriale e collegata alla sua pagina esatta.",
+    "Cada resposta é lida do PDF ministerial e ligada à sua página exata.",
   ],
   [
-    "Scribd sintetizzato senza riprodurre integralmente i capitoli.",
-    "Scribd sintetizado sem reproduzir integralmente os capítulos.",
+    "Le spiegazioni sono originali e non riproducono manuali o piattaforme didattiche private.",
+    "As explicações são originais e não reproduzem manuais ou plataformas didáticas privadas.",
   ],
   [
-    "Capitoli Navico indicizzati nelle 8 materie ufficiali.",
-    "Capítulos Navico indexados nas 8 matérias oficiais.",
+    "Norme e riscontri provengono solo da Gazzetta, Normattiva e siti istituzionali.",
+    "Normas e verificações vêm apenas da Gazzetta, Normattiva e sites institucionais.",
   ],
   [
-    "Banca BASE strutturata e validata su 1.472 record.",
-    "Banco BASE estruturado e validado em 1.472 registros.",
+    "Un controllo automatico impedisce quesiti senza fonte, pagine mancanti o gabariti duplicati.",
+    "Uma verificação automática impede questões sem fonte, páginas ausentes ou gabaritos duplicados.",
   ],
 ];
 
@@ -553,8 +598,12 @@ let timerHandle = null;
 let featuredExercise = exercises[0];
 let toastHandle = null;
 let chartZoom = 1;
+const chartPointers = new Map();
+let chartDrag = null;
+let chartPinch = null;
 let manualQuestionId = null;
 let manualReturnFocus = null;
+let manualSources = [];
 let accountOnline = false;
 let accountModalView = "login";
 let syncState = "offline";
@@ -1113,54 +1162,165 @@ function formatTime(seconds) {
 }
 
 function handbookMatchLabel(reference) {
-  if (reference.match === "direct") return ui("handbookDirect");
-  if (reference.match === "topic") return ui("handbookTopic");
-  return ui("handbookRelated");
+  const rule = reference ? questionAuthority.rules[reference.rule] : null;
+  return rule?.currency === "current-check"
+    ? ui("regulatoryCheck")
+    : ui("stableConcept");
 }
 
-function handbookUrl(reference) {
-  return `${handbookPdfUrl}#page=${reference.page}&zoom=125,0,${reference.top}`;
+function withPdfPage(url, page) {
+  if (!url || !page) return url;
+  return `${url.split("#")[0]}#page=${page}&zoom=120`;
+}
+
+function authorityLocalUrl(source, sourceReference) {
+  const url = source.localFile
+    ? authorityLocalUrls[source.localFile]
+    : undefined;
+  return withPdfPage(url, sourceReference.page);
+}
+
+function authorityOfficialUrl(source, sourceReference) {
+  return withPdfPage(source.officialUrl, sourceReference.page);
+}
+
+function authorityBundle(question) {
+  const reference = questionAuthorityMap.get(question.id);
+  const rule = reference ? questionAuthority.rules[reference.rule] : null;
+  if (!reference || !rule) return null;
+  const officialReference = {
+    source: "mit-quiz-2022",
+    page: reference.officialPage,
+    locatorIt: UI.handbookOfficialPage[0]
+      .replace("{code}", question.code)
+      .replace("{page}", reference.officialPage),
+    locatorPt: UI.handbookOfficialPage[1]
+      .replace("{code}", question.code)
+      .replace("{page}", reference.officialPage),
+  };
+  const combined = [
+    officialReference,
+    ...rule.sources,
+    ...(reference.sourceRefs || []),
+  ];
+  const seen = new Set();
+  const sources = combined
+    .filter((sourceReference) => {
+      const key = `${sourceReference.source}|${sourceReference.page || ""}|${sourceReference.locatorIt}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return authoritySourceMap.has(sourceReference.source);
+    })
+    .map((sourceReference) => ({
+      ...sourceReference,
+      sourceData: authoritySourceMap.get(sourceReference.source),
+    }));
+  const primarySource = reference.primarySource || rule.primarySource;
+  sources.sort((left, right) => {
+    if (left.source === primarySource) return -1;
+    if (right.source === primarySource) return 1;
+    if (left.source === "mit-quiz-2022") return -1;
+    if (right.source === "mit-quiz-2022") return 1;
+    return 0;
+  });
+  return { reference, rule, sources };
+}
+
+function authoritySourceCards(sources) {
+  return sources
+    .map(({ sourceData: source, ...sourceReference }, index) => {
+      const localUrl = authorityLocalUrl(source, sourceReference);
+      const locator = pairHtml(
+        sourceReference.locatorIt,
+        sourceReference.locatorPt,
+        { compact: true },
+      );
+      return `<article class="authority-source-card">
+        <span>${pairHtml(source.status, source.statusPt, { compact: true })}</span>
+        <h3>${pairHtml(source.title, source.titlePt)}</h3>
+        <p>${locator}</p>
+        <div>
+          <button type="button" data-authority-preview="${index}">${ui("previewSource")}</button>
+          ${
+            localUrl
+              ? `<a href="${esc(localUrl)}" target="_blank" rel="noopener">${ui("localCopy")} ↗</a>`
+              : ""
+          }
+          <a href="${esc(authorityOfficialUrl(source, sourceReference))}" target="_blank" rel="noopener">${ui("officialOnline")} ↗</a>
+        </div>
+      </article>`;
+    })
+    .join("");
+}
+
+function selectAuthoritySource(index) {
+  const selected = manualSources[index];
+  if (!selected) return;
+  const { sourceData: source, ...sourceReference } = selected;
+  const localUrl = authorityLocalUrl(source, sourceReference);
+  const officialUrl = authorityOfficialUrl(source, sourceReference);
+  const frame = $("#handbookFrame");
+  frame.title = ui("handbookFrameTitle");
+  $$(".authority-source-card").forEach((card, cardIndex) => {
+    card.classList.toggle("is-selected", cardIndex === index);
+  });
+  if (localUrl) {
+    frame.removeAttribute("srcdoc");
+    frame.src = localUrl;
+    $("#handbookNewTab").href = localUrl;
+  } else {
+    frame.src = "about:blank";
+    frame.srcdoc = `<!doctype html><html lang="${mode === "pt" ? "pt-BR" : "it"}"><meta charset="utf-8"><style>body{margin:0;padding:36px;font:16px/1.6 system-ui;color:#16323a;background:#f7f6f1}main{max-width:760px;margin:auto}h1{font:700 28px Georgia,serif}p{color:#52676d}a{display:inline-block;margin-top:16px;padding:12px 16px;border-radius:8px;color:white;background:#0c7180;text-decoration:none;font-weight:700}</style><main><small>${esc(pairValue(source.authority, source.authority))}</small><h1>${esc(pairValue(source.title, source.titlePt))}</h1><p>${esc(pairValue(source.noteIt, source.notePt))}</p><p>${esc(ui("noLocalCopy"))}</p><a href="${esc(officialUrl)}" target="_blank" rel="noopener">${esc(ui("officialOnline"))} ↗</a></main></html>`;
+    $("#handbookNewTab").href = officialUrl;
+  }
+  $("#handbookSelectedSource").innerHTML = pairHtml(
+    source.title,
+    source.titlePt,
+    { compact: true },
+  );
 }
 
 function handbookButton(question, compact = false) {
-  const reference = questionReferenceMap.get(question.id);
+  const reference = questionAuthorityMap.get(question.id);
   if (!reference) return "";
-  return `<button type="button" class="handbook-button${compact ? " compact" : ""}" data-open-handbook="${question.id}"><span>PDF · ${ui("page")} ${reference.page}</span><strong>${ui("studyInHandbook")}</strong></button>`;
+  return `<button type="button" class="handbook-button${compact ? " compact" : ""}" data-open-handbook="${question.id}"><span>${esc(question.code)}</span><strong>${ui("studyInHandbook")}</strong></button>`;
 }
 
 function openHandbook(questionId, returnFocus = true) {
   const question = quiz.find((item) => item.id === Number(questionId));
-  const reference = questionReferenceMap.get(Number(questionId));
-  if (!question || !reference) return;
+  const bundle = question ? authorityBundle(question) : null;
+  if (!question || !bundle) return;
+  const { reference, rule, sources } = bundle;
   if (returnFocus) manualReturnFocus = document.activeElement;
   manualQuestionId = question.id;
+  manualSources = sources;
   const translated = quizPtMap.get(question.id);
-  const section = questionReferences.sections[reference.section];
-  const url = handbookUrl(reference);
-  $("#handbookReferenceCode").textContent =
-    `${question.code} · ${ui("handbookPage", { page: reference.page })}`;
+  $("#handbookReferenceCode").textContent = question.code;
   $("#handbookReferenceQuestion").innerHTML = pairHtml(
     question.question,
     translated.question,
   );
   $("#handbookReferenceSection").innerHTML = pairHtml(
-    section.title,
-    section.titlePt,
+    rule.titleIt,
+    rule.titlePt,
     { compact: true },
   );
   $("#handbookReferenceMatch").textContent = handbookMatchLabel(reference);
-  $("#handbookReferenceMatch").className = `handbook-match ${reference.match}`;
-  const terms = $("#handbookReferenceTerms");
-  terms.hidden = !reference.terms.length;
-  terms.innerHTML = reference.terms.length
-    ? `<strong>${ui("handbookTerms")}:</strong> ${esc(reference.terms.join(" · "))}`
-    : "";
-  $("#handbookFrame").title = ui("handbookFrameTitle");
-  $("#handbookFrame").src = url;
-  $("#handbookNewTab").href = url;
+  $("#handbookReferenceMatch").className =
+    `handbook-match ${rule.currency === "current-check" ? "related" : "direct"}`;
+  $("#handbookOfficialAnswerText").innerHTML = pairHtml(
+    question.answers[question.correct],
+    translated.answers[question.correct],
+  );
+  $("#handbookWhyText").innerHTML = pairHtml(
+    reference.specificIt || rule.principleIt,
+    reference.specificPt || rule.principlePt,
+  );
+  $("#handbookSourceCards").innerHTML = authoritySourceCards(sources);
   $("#handbookBackdrop").hidden = false;
   $("#handbookModal").hidden = false;
   document.body.classList.add("handbook-open");
+  selectAuthoritySource(0);
   $("#handbookClose").focus();
 }
 
@@ -1169,8 +1329,10 @@ function closeHandbook() {
   $("#handbookBackdrop").hidden = true;
   $("#handbookModal").hidden = true;
   $("#handbookFrame").src = "about:blank";
+  $("#handbookFrame").removeAttribute("srcdoc");
   document.body.classList.remove("handbook-open");
   manualQuestionId = null;
+  manualSources = [];
   manualReturnFocus?.focus?.();
   manualReturnFocus = null;
 }
@@ -1275,6 +1437,12 @@ function renderDashboard() {
 }
 
 function sourceUrl(source) {
+  if (authoritySourceMap.has(source.id)) {
+    return (
+      (source.localFile && authorityLocalUrls[source.localFile]) ||
+      source.officialUrl
+    );
+  }
   return localPdfUrls[source.id] || source.url;
 }
 
@@ -1533,7 +1701,7 @@ function answerReviewHtml() {
           <header><span>${esc(question.code)}</span><strong>${isCorrect ? "✓" : "→"} ${isCorrect ? ui("correctAnswer") : ui("correctAnswerLetter", { letter })}</strong></header>
           <p>${pairHtml(question.question, translated.question)}</p>
           <div class="result-official-answer"><b>${letter}</b><div><small>${ui("officialAnswer")}</small><span>${pairHtml(question.answers[question.correct], translated.answers[question.correct])}</span></div></div>
-          <footer><small>${handbookMatchLabel(questionReferenceMap.get(question.id))}</small>${handbookButton(question, true)}</footer>
+          <footer><small>${handbookMatchLabel(questionAuthorityMap.get(question.id))}</small>${handbookButton(question, true)}</footer>
         </article>`;
       })
       .join("")}</div>
@@ -1707,24 +1875,6 @@ function routeForExercise(item = featuredExercise) {
   };
 }
 
-function projectChartPoint(point) {
-  const calibration = chartData.chart.calibration;
-  const longitudeMinutes = (point.lon - calibration.longitudeOrigin) * 60;
-  const latitudeMinutes = (point.lat - 42) * 60;
-  const longitudeAxis =
-    calibration.meridianX +
-    calibration.pixelsPerLongitudeMinute * longitudeMinutes;
-  const latitudeAxis =
-    calibration.parallelY +
-    calibration.pixelsPerLatitudeMinute *
-      (calibration.referenceLatitudeMinutes - latitudeMinutes);
-  const divisor = 1 + calibration.meridianSlope * calibration.parallelSlope;
-  const y =
-    (latitudeAxis + calibration.parallelSlope * longitudeAxis) / divisor;
-  const x = longitudeAxis - calibration.meridianSlope * y;
-  return { x, y };
-}
-
 function coordinateLabel(point) {
   const format = (value, hemisphere) => {
     const degrees = Math.floor(Math.abs(value));
@@ -1752,8 +1902,15 @@ function drawChartRoute() {
   const canvas = $("#chartOverlay");
   const context = canvas.getContext("2d");
   const { from, to } = routeForExercise();
-  const start = projectChartPoint(from);
-  const end = projectChartPoint(to);
+  const start = projectChartPoint(chartData.chart, from);
+  const end = projectChartPoint(chartData.chart, to);
+  if (
+    canvas.width !== chartData.chart.width ||
+    canvas.height !== chartData.chart.height
+  ) {
+    canvas.width = chartData.chart.width;
+    canvas.height = chartData.chart.height;
+  }
   context.clearRect(0, 0, canvas.width, canvas.height);
   context.save();
   context.lineCap = "round";
@@ -1769,40 +1926,55 @@ function drawChartRoute() {
   context.stroke();
   context.setLineDash([]);
 
-  [
-    { point: start, token: "A", label: from.name, color: "#0c7180" },
-    { point: end, token: "B", label: to.name, color: "#ef6a4a" },
-  ].forEach(({ point, token, label, color }) => {
-    context.shadowBlur = 12;
-    context.fillStyle = "rgba(255, 255, 255, 0.96)";
-    context.beginPath();
-    context.arc(point.x, point.y, 31, 0, Math.PI * 2);
-    context.fill();
-    context.fillStyle = color;
-    context.beginPath();
-    context.arc(point.x, point.y, 23, 0, Math.PI * 2);
-    context.fill();
-    context.shadowBlur = 0;
-    context.fillStyle = "#fff";
-    context.font = "700 30px Arial";
-    context.textAlign = "center";
-    context.textBaseline = "middle";
-    context.fillText(token, point.x, point.y + 1);
+  const markers = [
+    { point: start, label: from.name },
+    { point: end, label: to.name },
+  ];
+  context.font = "700 35px Arial";
+  const labelLayouts = placeRouteLabels({
+    start,
+    end,
+    labels: markers.map(({ label }) => ({
+      width: Math.min(650, context.measureText(label).width + 48),
+    })),
+    bounds: chartData.chart,
+  });
 
-    context.font = "700 35px Arial";
-    const width = Math.min(650, context.measureText(label).width + 48);
-    const left = Math.min(
-      chartData.chart.width - width - 20,
-      Math.max(20, point.x + 42),
-    );
-    const top = Math.max(20, point.y - 61);
+  markers.forEach(({ label }, index) => {
+    const layout = labelLayouts[index];
+    if (!layout) return;
+    context.shadowBlur = 0;
     context.fillStyle = "rgba(7, 28, 38, 0.91)";
     context.beginPath();
-    context.roundRect(left, top, width, 54, 13);
+    context.roundRect(layout.left, layout.top, layout.width, layout.height, 13);
     context.fill();
     context.fillStyle = "#fff";
     context.textAlign = "left";
-    context.fillText(label, left + 22, top + 28);
+    context.textBaseline = "middle";
+    context.fillText(
+      label,
+      layout.left + 22,
+      layout.top + layout.height / 2 + 1,
+    );
+  });
+
+  markers.forEach(({ point }) => {
+    context.shadowColor = "rgba(0, 0, 0, 0.52)";
+    context.shadowBlur = 7;
+    context.strokeStyle = "#ffd600";
+    context.lineWidth = 5;
+    context.beginPath();
+    context.arc(point.x, point.y, 15, 0, Math.PI * 2);
+    context.stroke();
+    context.shadowBlur = 0;
+    context.strokeStyle = "#ec008c";
+    context.lineWidth = 1;
+    context.beginPath();
+    context.moveTo(point.x - 11, point.y);
+    context.lineTo(point.x + 11, point.y);
+    context.moveTo(point.x, point.y - 11);
+    context.lineTo(point.x, point.y + 11);
+    context.stroke();
   });
   context.restore();
 }
@@ -1814,18 +1986,44 @@ function applyChartZoom() {
   $("#chartZoomLabel").textContent = `${Math.round(chartZoom * 100)}%`;
 }
 
-function changeChartZoom(multiplier) {
+function minimumChartZoom(viewport) {
+  if (!viewport.clientWidth) return 0.05;
+  return Math.max(
+    0.05,
+    Math.min(1, (viewport.clientWidth - 4) / chartData.chart.width),
+  );
+}
+
+function clampChartZoom(viewport, zoom) {
+  return Math.max(minimumChartZoom(viewport), Math.min(2.5, zoom));
+}
+
+function setChartZoom(
+  nextZoom,
+  clientX = null,
+  clientY = null,
+  behavior = "auto",
+) {
   const viewport = $("#chartViewport");
-  const centerX = (viewport.scrollLeft + viewport.clientWidth / 2) / chartZoom;
-  const centerY = (viewport.scrollTop + viewport.clientHeight / 2) / chartZoom;
-  const minimum = Math.max(0.12, viewport.clientWidth / chartData.chart.width);
-  chartZoom = Math.max(minimum, Math.min(1.5, chartZoom * multiplier));
+  if (!viewport.clientWidth) return;
+  const bounds = viewport.getBoundingClientRect();
+  const localX =
+    clientX === null ? viewport.clientWidth / 2 : clientX - bounds.left;
+  const localY =
+    clientY === null ? viewport.clientHeight / 2 : clientY - bounds.top;
+  const chartX = (viewport.scrollLeft + localX) / chartZoom;
+  const chartY = (viewport.scrollTop + localY) / chartZoom;
+  chartZoom = clampChartZoom(viewport, nextZoom);
   applyChartZoom();
   viewport.scrollTo({
-    left: centerX * chartZoom - viewport.clientWidth / 2,
-    top: centerY * chartZoom - viewport.clientHeight / 2,
-    behavior: "smooth",
+    left: chartX * chartZoom - localX,
+    top: chartY * chartZoom - localY,
+    behavior,
   });
+}
+
+function changeChartZoom(multiplier) {
+  setChartZoom(chartZoom * multiplier, null, null, "smooth");
 }
 
 function fitChart() {
@@ -1836,12 +2034,158 @@ function fitChart() {
   viewport.scrollTo({ left: 0, top: 0, behavior: "smooth" });
 }
 
+function handleChartWheel(event) {
+  event.preventDefault();
+  const deltaScale =
+    event.deltaMode === WheelEvent.DOM_DELTA_LINE
+      ? 0.045
+      : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+        ? 0.25
+        : 0.0018;
+  const multiplier = Math.max(
+    0.72,
+    Math.min(1.38, Math.exp(-event.deltaY * deltaScale)),
+  );
+  setChartZoom(chartZoom * multiplier, event.clientX, event.clientY, "auto");
+}
+
+function chartPointer(event) {
+  return {
+    id: event.pointerId,
+    x: event.clientX,
+    y: event.clientY,
+  };
+}
+
+function beginChartDrag(pointer) {
+  const viewport = $("#chartViewport");
+  chartDrag = {
+    id: pointer.id,
+    x: pointer.x,
+    y: pointer.y,
+    scrollLeft: viewport.scrollLeft,
+    scrollTop: viewport.scrollTop,
+  };
+  chartPinch = null;
+}
+
+function beginChartPinch() {
+  const viewport = $("#chartViewport");
+  const [first, second] = [...chartPointers.values()];
+  if (!first || !second) return;
+  const bounds = viewport.getBoundingClientRect();
+  const midpointX = (first.x + second.x) / 2;
+  const midpointY = (first.y + second.y) / 2;
+  chartPinch = {
+    distance: Math.max(1, Math.hypot(second.x - first.x, second.y - first.y)),
+    zoom: chartZoom,
+    chartX: (viewport.scrollLeft + midpointX - bounds.left) / chartZoom,
+    chartY: (viewport.scrollTop + midpointY - bounds.top) / chartZoom,
+  };
+  chartDrag = null;
+}
+
+function handleChartPointerDown(event) {
+  if (event.pointerType === "mouse" && event.button !== 0) return;
+  const viewport = $("#chartViewport");
+  event.preventDefault();
+  viewport.focus({ preventScroll: true });
+  viewport.setPointerCapture(event.pointerId);
+  const pointer = chartPointer(event);
+  chartPointers.set(event.pointerId, pointer);
+  viewport.classList.add("is-panning");
+  if (chartPointers.size === 1) beginChartDrag(pointer);
+  else beginChartPinch();
+}
+
+function handleChartPointerMove(event) {
+  if (!chartPointers.has(event.pointerId)) return;
+  event.preventDefault();
+  const viewport = $("#chartViewport");
+  const pointer = chartPointer(event);
+  chartPointers.set(event.pointerId, pointer);
+
+  if (chartPointers.size >= 2) {
+    if (!chartPinch) beginChartPinch();
+    const [first, second] = [...chartPointers.values()];
+    const bounds = viewport.getBoundingClientRect();
+    const midpointX = (first.x + second.x) / 2;
+    const midpointY = (first.y + second.y) / 2;
+    const distance = Math.max(
+      1,
+      Math.hypot(second.x - first.x, second.y - first.y),
+    );
+    chartZoom = clampChartZoom(
+      viewport,
+      chartPinch.zoom * (distance / chartPinch.distance),
+    );
+    applyChartZoom();
+    viewport.scrollLeft =
+      chartPinch.chartX * chartZoom - (midpointX - bounds.left);
+    viewport.scrollTop =
+      chartPinch.chartY * chartZoom - (midpointY - bounds.top);
+    return;
+  }
+
+  if (chartDrag?.id === event.pointerId) {
+    viewport.scrollLeft = chartDrag.scrollLeft - (pointer.x - chartDrag.x);
+    viewport.scrollTop = chartDrag.scrollTop - (pointer.y - chartDrag.y);
+  }
+}
+
+function finishChartPointer(event) {
+  if (!chartPointers.has(event.pointerId)) return;
+  const viewport = $("#chartViewport");
+  chartPointers.delete(event.pointerId);
+  if (viewport.hasPointerCapture(event.pointerId)) {
+    viewport.releasePointerCapture(event.pointerId);
+  }
+
+  if (chartPointers.size >= 2) {
+    beginChartPinch();
+  } else if (chartPointers.size === 1) {
+    beginChartDrag([...chartPointers.values()][0]);
+  } else {
+    chartDrag = null;
+    chartPinch = null;
+    viewport.classList.remove("is-panning");
+  }
+}
+
+function handleChartKeydown(event) {
+  const viewport = $("#chartViewport");
+  const panStep = Math.max(48, Math.min(120, viewport.clientWidth * 0.12));
+  const movements = {
+    ArrowLeft: [-panStep, 0],
+    ArrowRight: [panStep, 0],
+    ArrowUp: [0, -panStep],
+    ArrowDown: [0, panStep],
+  };
+  if (movements[event.key]) {
+    event.preventDefault();
+    viewport.scrollBy({
+      left: movements[event.key][0],
+      top: movements[event.key][1],
+      behavior: "smooth",
+    });
+  } else if (event.key === "+" || event.key === "=") {
+    event.preventDefault();
+    changeChartZoom(1.2);
+  } else if (event.key === "-") {
+    event.preventDefault();
+    changeChartZoom(1 / 1.2);
+  } else if (event.key === "0") {
+    event.preventDefault();
+    fitChart();
+  }
+}
+
 function focusChartRoute(adjustZoom = true) {
   const viewport = $("#chartViewport");
   if (!viewport.clientWidth) return;
   const { from, to } = routeForExercise();
-  const start = projectChartPoint(from);
-  const end = projectChartPoint(to);
+  const start = projectChartPoint(chartData.chart, from);
+  const end = projectChartPoint(chartData.chart, to);
   const routeWidth = Math.abs(end.x - start.x) + 520;
   const routeHeight = Math.abs(end.y - start.y) + 420;
   const fitZoom = (viewport.clientWidth - 4) / chartData.chart.width;
@@ -1872,6 +2216,72 @@ function renderChartRoute() {
   drawChartRoute();
 }
 
+function sentenceCase(value) {
+  if (!value) return "";
+  return value.charAt(0).toLocaleUpperCase() + value.slice(1);
+}
+
+function exerciseAnswerSet(item) {
+  const { from, to } = routeForExercise(item);
+  return buildExerciseAnswers({
+    prompt: item.prompt,
+    solution: item.solution,
+    from,
+    to,
+  });
+}
+
+function renderExercisePrompt(item, translated) {
+  const answers = exerciseAnswerSet(item);
+  const translatedPrompt = splitExercisePrompt(translated.prompt);
+  const translatedQuestions = new Map(
+    translatedPrompt.questions.map((question) => [
+      question.number,
+      question.label,
+    ]),
+  );
+  const rows = answers.questions
+    .map((question) => {
+      const translatedLabel =
+        translatedQuestions.get(question.number) || question.label;
+      const answerType = question.isInterval ? "acceptedRange" : "exactAnswer";
+      return `<li class="exercise-question-row">
+        <span class="exercise-question-number">${question.number}</span>
+        <span class="exercise-question-label">${pairHtml(
+          sentenceCase(question.label),
+          sentenceCase(translatedLabel),
+          { compact: true },
+        )}</span>
+        <span class="exercise-answer" hidden>
+          <strong>${esc(question.answer)}</strong>
+          <small class="${question.isInterval ? "is-range" : "is-exact"}">${uiHtml(answerType)}</small>
+        </span>
+      </li>`;
+    })
+    .join("");
+  return `<div class="exercise-introduction">${pairHtml(
+    answers.introduction,
+    translatedPrompt.introduction,
+  )}</div>
+    <ol class="exercise-question-list">${rows}</ol>`;
+}
+
+function renderExerciseSolution(item, translated) {
+  return `<div class="exercise-solution" hidden>
+    <p>${uiHtml("chartAnswerGuide")}</p>
+    <details class="source-solution-transcript">
+      <summary>${uiHtml("sourceSolutionTranscript")}</summary>
+      <div>${pairHtml(item.solution, translated.solution)}</div>
+    </details>
+  </div>`;
+}
+
+function revealExerciseAnswers(container, reveal) {
+  container
+    .querySelectorAll(".exercise-answer")
+    .forEach((answer) => (answer.hidden = !reveal));
+}
+
 function selectFeaturedExercise(item, focus = true) {
   featuredExercise = item;
   renderExerciseFeatured();
@@ -1887,7 +2297,7 @@ function renderExerciseFeatured() {
   const item = featuredExercise;
   const translated = exercisePtMap.get(item.id);
   $("#exerciseFeatured").innerHTML =
-    `<article class="featured-exercise panel"><div class="exercise-kicker"><span>${ui("selectedExercise")} · ${ui("exercise")} ${item.id} · ${pairHtml(item.sector, translated.sector, { compact: true })}</span><span>${ui("page")} ${item.sourcePage}</span></div><h2>${ui("solveChart")}</h2><div class="exercise-prompt">${pairHtml(item.prompt, translated.prompt)}</div><button class="button ghost dark" data-show-featured-solution>${ui("showOfficialSolution")}</button><div class="exercise-solution" hidden>${pairHtml(item.solution, translated.solution)}</div></article>`;
+    `<article class="featured-exercise panel"><div class="exercise-kicker"><span>${ui("selectedExercise")} · ${ui("exercise")} ${item.id} · ${pairHtml(item.sector, translated.sector, { compact: true })}</span><span>${ui("page")} ${item.sourcePage}</span></div><h2>${ui("solveChart")}</h2><div class="exercise-prompt">${renderExercisePrompt(item, translated)}</div><button class="button ghost dark" data-show-featured-solution>${ui("showOfficialSolution")}</button>${renderExerciseSolution(item, translated)}</article>`;
 }
 
 function renderExercises() {
@@ -1917,22 +2327,37 @@ function renderExerciseList() {
     .map((item) => {
       const translated = exercisePtMap.get(item.id);
       const active = item.id === featuredExercise.id ? " is-selected" : "";
-      return `<details class="exercise-item${active}"><summary><strong>${String(item.id).padStart(2, "0")}</strong><span>${pairHtml(item.prompt.split("\n")[0], translated.prompt.split("\n")[0], { compact: true })}</span></summary><div class="exercise-item-body"><div class="exercise-prompt">${pairHtml(item.prompt, translated.prompt)}</div><div class="exercise-item-actions"><button class="button primary" data-show-on-chart="${item.id}">${ui("showOnChart")}</button><button class="button ghost dark" data-toggle-inline-solution>${ui("showSolution")}</button></div><div class="exercise-solution" hidden>${pairHtml(item.solution, translated.solution)}</div></div></details>`;
+      return `<details class="exercise-item${active}"><summary><strong>${String(item.id).padStart(2, "0")}</strong><span>${pairHtml(item.prompt.split("\n")[0], translated.prompt.split("\n")[0], { compact: true })}</span></summary><div class="exercise-item-body"><div class="exercise-prompt">${renderExercisePrompt(item, translated)}</div><div class="exercise-item-actions"><button class="button primary" data-show-on-chart="${item.id}">${ui("showOnChart")}</button><button class="button ghost dark" data-toggle-inline-solution>${ui("showSolution")}</button></div>${renderExerciseSolution(item, translated)}</div></details>`;
     })
     .join("");
 }
 
 function renderSources() {
-  const groups = [...new Set(content.sources.map((source) => source.group))];
-  $("#sourceGroups").innerHTML = groups
+  const sourceGroups = [
+    {
+      title: ["Banca e programma d’esame", "Banco e programa de exame"],
+      filter: (source) =>
+        source.id === "mit-quiz-2022" || source.id === "mit-programma-2021",
+    },
+    {
+      title: ["Normativa ufficiale", "Normas oficiais"],
+      filter: (source) =>
+        ["norma", "convenzione ratificata"].includes(source.kind),
+    },
+    {
+      title: ["Fonti tecniche istituzionali", "Fontes técnicas institucionais"],
+      filter: (source) =>
+        source.id !== "mit-quiz-2022" &&
+        source.id !== "mit-programma-2021" &&
+        !["norma", "convenzione ratificata"].includes(source.kind),
+    },
+  ];
+  $("#sourceGroups").innerHTML = sourceGroups
     .map((group) => {
-      const first = content.sources.find((source) => source.group === group);
-      const translatedGroup = sourcePtMap[first.id]?.group;
-      return `<section class="source-group"><h2>${pairHtml(group, translatedGroup)}</h2><div class="source-grid">${content.sources
-        .filter((source) => source.group === group)
+      return `<section class="source-group"><h2>${pairHtml(group.title[0], group.title[1])}</h2><div class="source-grid">${authoritativeSources.sources
+        .filter(group.filter)
         .map((source) => {
-          const translated = sourcePtMap[source.id] || {};
-          return `<a class="source-card" href="${esc(sourceUrl(source))}" target="_blank" rel="noopener"><span class="status">${pairHtml(source.status, translated.status, { compact: true })}</span><h3>${pairHtml(source.title, translated.title)}</h3>${source.note ? `<p>${pairHtml(source.note, translated.note)}</p>` : ""}<span class="source-link">${ui("openSource")} ↗</span></a>`;
+          return `<a class="source-card" href="${esc(sourceUrl(source))}" target="_blank" rel="noopener"><span class="status">${pairHtml(source.status, source.statusPt, { compact: true })}</span><h3>${pairHtml(source.title, source.titlePt)}</h3><small>${esc(source.authority)}</small>${source.noteIt ? `<p>${pairHtml(source.noteIt, source.notePt)}</p>` : ""}<span class="source-link">${ui("openSource")} ↗</span></a>`;
         })
         .join("")}</div></section>`;
     })
@@ -2073,6 +2498,11 @@ document.addEventListener("click", (event) => {
     selectAnswer(Number(answer.dataset.answer));
     return;
   }
+  const authorityPreview = event.target.closest("[data-authority-preview]");
+  if (authorityPreview) {
+    selectAuthoritySource(Number(authorityPreview.dataset.authorityPreview));
+    return;
+  }
   const handbookTrigger = event.target.closest("[data-open-handbook]");
   if (handbookTrigger) {
     openHandbook(Number(handbookTrigger.dataset.openHandbook));
@@ -2104,21 +2534,24 @@ document.addEventListener("click", (event) => {
   );
   if (featuredSolution) {
     const solution = featuredSolution.nextElementSibling;
-    solution.hidden = !solution.hidden;
-    featuredSolution.textContent = solution.hidden
-      ? ui("showOfficialSolution")
-      : ui("hideOfficialSolution");
+    const reveal = solution.hidden;
+    solution.hidden = !reveal;
+    revealExerciseAnswers(featuredSolution.closest("article"), reveal);
+    featuredSolution.textContent = reveal
+      ? ui("hideOfficialSolution")
+      : ui("showOfficialSolution");
     return;
   }
   const inlineSolution = event.target.closest("[data-toggle-inline-solution]");
   if (inlineSolution) {
-    const solution = inlineSolution
-      .closest(".exercise-item-body")
-      .querySelector(".exercise-solution");
-    solution.hidden = !solution.hidden;
-    inlineSolution.textContent = solution.hidden
-      ? ui("showSolution")
-      : ui("hideSolution");
+    const exerciseBody = inlineSolution.closest(".exercise-item-body");
+    const solution = exerciseBody.querySelector(".exercise-solution");
+    const reveal = solution.hidden;
+    solution.hidden = !reveal;
+    revealExerciseAnswers(exerciseBody, reveal);
+    inlineSolution.textContent = reveal
+      ? ui("hideSolution")
+      : ui("showSolution");
     return;
   }
   const showOnChart = event.target.closest("[data-show-on-chart]");
@@ -2200,6 +2633,13 @@ $("#randomExercise").addEventListener("click", () => {
 $("#chartZoomOut").addEventListener("click", () => changeChartZoom(0.75));
 $("#chartZoomIn").addEventListener("click", () => changeChartZoom(1.333));
 $("#chartFit").addEventListener("click", fitChart);
+const chartViewport = $("#chartViewport");
+chartViewport.addEventListener("wheel", handleChartWheel, { passive: false });
+chartViewport.addEventListener("pointerdown", handleChartPointerDown);
+chartViewport.addEventListener("pointermove", handleChartPointerMove);
+chartViewport.addEventListener("pointerup", finishChartPointer);
+chartViewport.addEventListener("pointercancel", finishChartPointer);
+chartViewport.addEventListener("keydown", handleChartKeydown);
 $("#glossaryOpen").addEventListener("click", () => openGlossary());
 $("#glossaryClose").addEventListener("click", closeGlossary);
 $("#glossaryBackdrop").addEventListener("click", closeGlossary);

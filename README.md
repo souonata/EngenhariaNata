@@ -19,7 +19,7 @@ Portfólio de apps web educativos para engenharia, energia, utilidades residenci
 | `chuva/`          | Água / sustentabilidade | Dimensiona captação de chuva, cisterna e economia mensal          |                |
 | `mutuo/`          | Finanças                | Compara SAC, Price e Americano com memorial e gráficos            |       ✅       |
 | `helice/`         | Náutica                 | Apoia escolha de passo de hélice para embarcações de lazer        |                |
-| `patentenautica/` | Educação náutica        | Banco filtrável, conta opcional, quiz IT/PT, Dispensa e Carta 5/D |      n/a       |
+| `patentenautica/` | Educação náutica        | Banco filtrável, conta opcional, fontes oficiais e Carta 5/D     |      n/a       |
 | `solar/`          | Energia                 | Dimensiona sistema fotovoltaico off-grid e configurações          |                |
 | `bitola/`         | Instalações elétricas   | Define bitola de cabos considerando corrente e queda de tensão    |                |
 | `arcondicionado/` | Climatização            | Dimensiona BTU e cenários multi-split                             |                |
