@@ -144,11 +144,13 @@ npm run build          # build de produção (gera local/dist)
 - O banco mostra todos os resultados filtrados por texto, matéria, assunto e progresso. O perfil
   local em `localStorage` continua disponível offline e pode ser exportado/importado. Uma conta
   opcional sincroniza o mesmo progresso entre dispositivos pelo backend autohospedado.
-- A Carta 5/D usa o GIF 4454 × 3045 como fonte e exibe a cópia lossless alinhada
-  `carta nautica 5D allineata.webp` (4612 × 3281), com meridianos/paralelos ortogonais.
-  `data/chart-points.json` aplica a mesma rotação aos 28 pontos e relaciona partida/chegada dos
-  50 exercícios. O validador bloqueia rotas incompletas, pontos fora da imagem, dimensões
-  divergentes e qualquer rótulo que intercepte a rota.
+- A Carta 5/D usa o PDF monocromático completo com borda graduada e exibe o raster melhorado
+  `carta nautica 5D con bordo.jpg` (7501 × 4844) sobre um plano lógico 4612 × 2978.
+  `Carta 5D 340dpi migliorata.pdf` oferece o mesmo conteúdo em 15002 × 9688/340 DPI, sem
+  transformação generativa. `data/chart-points.json` aplica aos 28 pontos uma homografia
+  verificada em 3.382 correspondências, com erro mediano inferior a 1 px, e relaciona
+  partida/chegada dos 50 exercícios. O validador bloqueia rotas incompletas, pontos fora da
+  imagem, dimensões divergentes e qualquer rótulo que intercepte a rota.
 - `data/question-authority.json` liga as 1.472 questões à página exata da banca MIT, a uma
   explicação original e a atos/fontes institucionais pertinentes. `data/authoritative-sources.json`
   cataloga URL oficial e, para os atos públicos arquivados, tamanho e SHA-256. O painel distingue
@@ -202,18 +204,15 @@ _Última atualização: 2026-07-24_
   testes, 1.472/1.472 referências e contrato de conta. SMTP permanece pendente apenas para
   verificação de e-mail e recuperação de senha.
 
-- **ALINHAMENTO DA CARTA (branch `fix/patente-chart-alignment`):** versão local 3.5.1 troca o
-  raster exibido pela cópia WebP lossless pré-rotacionada, recalibra overlay/pontos e posiciona os
-  nomes fora da linha da rota. O validador confirmou os dois rótulos livres nos 50 exercícios,
-  dimensões 4612 × 3281 e resíduo máximo de grade de 0,074°. A versão local 3.5.2 acrescenta zoom
-  centrado no cursor pela rotellina, pan por arraste com mouse ou um dedo, gesto de pizzico com dois
-  dedos e navegação por teclado, mantendo os botões existentes. A versão local 3.5.3 estrutura as
-  250 respostas dos 50 exercícios diretamente ao lado de cada quesito, normaliza unidades e sinaliza
-  intervalos aceitos. `npm run validate` passou com 35 arquivos/288 testes e a integridade confirmou
-  250/250 respostas estruturadas; `npm run build` também passou. Ainda não publicado.
-  A continuação local 3.6.0 substitui os marcadores grandes por um alvo preciso (cruz magenta de
-  1 px e anel amarelo), remove a Dispensa e as referências privadas, e cria o painel de resposta
-  explicada com 20 fontes oficiais/institucionais e cobertura de 1.472/1.472 páginas MIT.
+- **CARTA 5/D E REFERÊNCIAS (versão 3.6.2):** as versões 3.5.1–3.6.0 publicadas pelo PR #8
+  entregaram zoom/pan/pinch, respostas estruturadas, fontes oficiais, alvos precisos e cobertura
+  de 1.472/1.472 páginas MIT. A 3.6.1 impede que o tracejado cubra os centros e troca o raster
+  colorido pela Carta 5/D monocromática completa com bordo graduado, mantendo os 28 pontos
+  recalibrados. A 3.6.2 eleva o raster web à resolução nativa 7501 × 4844 e acrescenta um PDF
+  340 DPI/15002 × 9688, criado por ampliação Lanczos e nitidez controlada. Original e derivado
+  mantêm a mesma página e geometria; similaridade medida em 0,9995 e erro mediano de projeção
+  de 0,88 px. `npm run validate` passou com 35 arquivos/288 testes, a integridade confirmou os
+  50 exercícios e `npm run build` incluiu corretamente o JPEG e o PDF hasheados.
 
 - **ATUALIZAÇÃO DO DIÁRIO (12/07):** novo post bilíngue registrando o primeiro fluxo com duas
   folhas novas; muda medida em 8 cm e quatro folhas totais. Três fotos da nova leva foram

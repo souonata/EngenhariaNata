@@ -296,41 +296,92 @@ chartData.exercises.forEach((route) => {
     fail(`Os rótulos se sobrepõem no exercício ${route.id}.`);
 });
 
-const chartPath = path.join(root, "carta nautica 5D.gif");
-const gifHeader = fs.readFileSync(chartPath).subarray(0, 10);
-if (gifHeader.subarray(0, 3).toString("ascii") !== "GIF")
-  fail("O arquivo da carta 5/D não é um GIF válido.");
-const gifWidth = gifHeader.readUInt16LE(6);
-const gifHeight = gifHeader.readUInt16LE(8);
+const chartSource = chartData.chart.source;
+const chartPdfPath = path.join(root, chartSource.pdf);
+const chartPdfBytes = fs.readFileSync(chartPdfPath);
+if (chartPdfBytes.subarray(0, 5).toString("ascii") !== "%PDF-")
+  fail("A nova carta 5/D com bordo não é um PDF válido.");
+const chartPdfText = chartPdfBytes.toString("latin1");
 if (
-  gifWidth !== alignment.sourceWidth ||
-  gifHeight !== alignment.sourceHeight
+  !chartPdfText.includes(`/Width ${chartSource.embeddedImageWidth}`) ||
+  !chartPdfText.includes(`/Height ${chartSource.embeddedImageHeight}`)
 ) {
-  fail(
-    `Dimensões da carta-fonte divergentes: ${gifWidth}x${gifHeight}, esperado ${alignment.sourceWidth}x${alignment.sourceHeight}.`,
-  );
+  fail("As dimensões da imagem incorporada no PDF da carta são divergentes.");
 }
 
-const alignedChartPath = path.join(root, "carta nautica 5D allineata.webp");
-const webpHeader = fs.readFileSync(alignedChartPath).subarray(0, 25);
-if (
-  webpHeader.subarray(0, 4).toString("ascii") !== "RIFF" ||
-  webpHeader.subarray(8, 12).toString("ascii") !== "WEBP" ||
-  webpHeader.subarray(12, 16).toString("ascii") !== "VP8L" ||
-  webpHeader[20] !== 0x2f
-) {
-  fail("A carta 5/D alinhada não é um WebP lossless válido.");
+function readJpegDimensions(buffer) {
+  if (buffer[0] !== 0xff || buffer[1] !== 0xd8)
+    fail("A carta 5/D exibida não é um JPEG válido.");
+  let offset = 2;
+  while (offset + 9 < buffer.length) {
+    if (buffer[offset] !== 0xff) {
+      offset += 1;
+      continue;
+    }
+    const marker = buffer[offset + 1];
+    offset += 2;
+    if (marker === 0xd8 || marker === 0xd9) continue;
+    const length = buffer.readUInt16BE(offset);
+    if (
+      [0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7, 0xc9, 0xca, 0xcb].includes(
+        marker,
+      )
+    ) {
+      return {
+        height: buffer.readUInt16BE(offset + 3),
+        width: buffer.readUInt16BE(offset + 5),
+      };
+    }
+    offset += length;
+  }
+  fail("Não foi possível ler as dimensões do JPEG da carta 5/D.");
 }
-const webpDimensions = webpHeader.readUInt32LE(21);
-const alignedWidth = (webpDimensions & 0x3fff) + 1;
-const alignedHeight = ((webpDimensions >>> 14) & 0x3fff) + 1;
+
+const displayChartPath = path.join(root, chartSource.displayImage);
+const displayChartDimensions = readJpegDimensions(
+  fs.readFileSync(displayChartPath),
+);
 if (
-  alignedWidth !== chartData.chart.width ||
-  alignedHeight !== chartData.chart.height
+  displayChartDimensions.width !== chartSource.displayImageWidth ||
+  displayChartDimensions.height !== chartSource.displayImageHeight
 ) {
   fail(
-    `Dimensões da carta alinhada divergentes: ${alignedWidth}x${alignedHeight}, esperado ${chartData.chart.width}x${chartData.chart.height}.`,
+    `Dimensões da carta web divergentes: ${displayChartDimensions.width}x${displayChartDimensions.height}, esperado ${chartSource.displayImageWidth}x${chartSource.displayImageHeight}.`,
   );
+}
+const displayAspectRatio =
+  displayChartDimensions.width / displayChartDimensions.height;
+const logicalAspectRatio = chartData.chart.width / chartData.chart.height;
+if (
+  displayChartDimensions.width < chartData.chart.width ||
+  displayChartDimensions.height < chartData.chart.height ||
+  Math.abs(displayAspectRatio - logicalAspectRatio) > 0.001
+) {
+  fail("A carta web não preserva a geometria do plano lógico calibrado.");
+}
+
+const enhancedPdfPath = path.join(root, chartSource.enhancedPdf);
+const enhancedPdfBytes = fs.readFileSync(enhancedPdfPath);
+if (enhancedPdfBytes.subarray(0, 5).toString("ascii") !== "%PDF-")
+  fail("A carta 5/D melhorada não é um PDF válido.");
+const enhancedPdfText = enhancedPdfBytes.toString("latin1");
+if (
+  !enhancedPdfText.includes(`/Width ${chartSource.enhancedImageWidth}`) ||
+  !enhancedPdfText.includes(`/Height ${chartSource.enhancedImageHeight}`) ||
+  !enhancedPdfText.includes("/MediaBox [ 0 0 3176 2051 ]") ||
+  chartSource.enhancedPdfDpi !== 340 ||
+  chartSource.contentSimilarity < 0.999
+) {
+  fail("O PDF melhorado não preserva página, resolução ou conteúdo esperado.");
+}
+if (
+  !Array.isArray(chartData.chart.projectionTransform?.matrix) ||
+  chartData.chart.projectionTransform.matrix.length !== 9 ||
+  !chartData.chart.projectionTransform.matrix.every(Number.isFinite) ||
+  chartData.chart.projectionTransform.inliers < 3000 ||
+  chartData.chart.projectionTransform.medianErrorPixels > 1
+) {
+  fail("A transformação da carta com bordo não tem precisão suficiente.");
 }
 
 const indexHtml = fs.readFileSync(path.join(root, "index.html"), "utf8");
@@ -374,6 +425,21 @@ if (
   !appSource.includes("context.lineWidth = 1")
 )
   fail("Os pontos da carta não usam aro amarelo e cruz magenta de 1 px.");
+if (
+  !appSource.includes('./carta nautica 5D con bordo.jpg?url') ||
+  !appSource.includes('./Carta 5D 340dpi migliorata.pdf?url') ||
+  !appSource.includes("chartFullLink\").href = chart5dEnhancedPdfUrl") ||
+  appSource.includes('./carta nautica 5D allineata.webp?url')
+)
+  fail("O visualizador não usa a carta aprimorada e o PDF em 340 DPI.");
+if (
+  !appSource.includes("const markerEndpointInset =") ||
+  !appSource.includes(
+    "context.moveTo(visibleRouteStart.x, visibleRouteStart.y)",
+  ) ||
+  !appSource.includes("context.lineTo(visibleRouteEnd.x, visibleRouteEnd.y)")
+)
+  fail("A rota laranja não preserva o centro exato dos pontos da carta.");
 const chartInteractionContracts = [
   ['addEventListener("wheel", handleChartWheel, { passive: false })', "zoom"],
   ['addEventListener("pointerdown", handleChartPointerDown)', "arraste"],
@@ -468,8 +534,15 @@ const summary = {
   exercises: exercises.length,
   chartedExercises: chartData.exercises.length,
   chartPoints: chartData.points.length,
-  chartSourceDimensions: `${gifWidth}x${gifHeight}`,
-  chartDimensions: `${alignedWidth}x${alignedHeight}`,
+  chartSourceDimensions: `${chartSource.embeddedImageWidth}x${chartSource.embeddedImageHeight}`,
+  chartDimensions: `${chartData.chart.width}x${chartData.chart.height}`,
+  chartWebPixelDimensions: `${displayChartDimensions.width}x${displayChartDimensions.height}`,
+  chartHasGraduatedBorder: true,
+  chartEnhancedPdfDpi: chartSource.enhancedPdfDpi,
+  chartEnhancedPdfDimensions: `${chartSource.enhancedImageWidth}x${chartSource.enhancedImageHeight}`,
+  chartContentSimilarity: chartSource.contentSimilarity,
+  chartProjectionMedianErrorPixels:
+    chartData.chart.projectionTransform.medianErrorPixels,
   chartRotationDegrees: alignment.rotationDegrees,
   chartGridResidualDegrees: Math.max(
     Math.abs(meridianResidualDegrees),
@@ -489,6 +562,7 @@ const summary = {
   ).length,
   privateStudySourcesRemoved: true,
   chartPointTarget: "yellow-ring-magenta-cross-1px",
+  chartRouteClearsPointTargets: true,
   bankRendersAllFilteredQuestions: true,
   localStudyProfile: true,
   cloudAccountSync: true,
