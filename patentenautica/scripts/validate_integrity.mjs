@@ -1,7 +1,19 @@
 import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
+import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
+import {
+  chartAlignment,
+  placeRouteLabels,
+  projectChartPoint,
+  rectsOverlap,
+  segmentIntersectsRect,
+} from "../chart-layout.js";
+import {
+  buildExerciseAnswers,
+  splitExercisePrompt,
+} from "../exercise-answers-calc.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -29,8 +41,11 @@ const exercisesPt = JSON.parse(
 const chartData = JSON.parse(
   fs.readFileSync(path.join(root, "data/chart-points.json"), "utf8"),
 );
-const questionReferences = JSON.parse(
-  fs.readFileSync(path.join(root, "data/question-references.json"), "utf8"),
+const authoritativeSources = JSON.parse(
+  fs.readFileSync(path.join(root, "data/authoritative-sources.json"), "utf8"),
+);
+const questionAuthority = JSON.parse(
+  fs.readFileSync(path.join(root, "data/question-authority.json"), "utf8"),
 );
 
 const fail = (message) => {
@@ -65,42 +80,86 @@ quiz.forEach((official, index) => {
   }
 });
 
-if (
-  questionReferences.source.pages !== 67 ||
-  questionReferences.references.length !== quiz.length
-) {
-  fail("O índice da Dispensa deve cobrir as 1.472 questões e 67 páginas.");
-}
+if (questionAuthority.references.length !== quiz.length)
+  fail("As referências oficiais devem cobrir as 1.472 questões.");
+if (authoritativeSources.sources.length < 15)
+  fail("O catálogo deve manter uma base ampla de fontes oficiais.");
+
+const sourceIds = new Set();
+const sourceMap = new Map();
+authoritativeSources.sources.forEach((source) => {
+  if (sourceIds.has(source.id)) fail(`Fonte oficial duplicada: ${source.id}.`);
+  sourceIds.add(source.id);
+  sourceMap.set(source.id, source);
+  if (!/^https:\/\//.test(source.officialUrl))
+    fail(`Fonte ${source.id} sem URL oficial HTTPS.`);
+  if (source.localFile) {
+    const localPath = path.resolve(root, "sources", source.localFile);
+    const sourceRoot = path.resolve(root, "sources");
+    if (!localPath.startsWith(`${sourceRoot}${path.sep}`) || !fs.existsSync(localPath))
+      fail(`Cópia local ausente ou fora de sources/: ${source.id}.`);
+    const bytes = fs.statSync(localPath).size;
+    const digest = crypto
+      .createHash("sha256")
+      .update(fs.readFileSync(localPath))
+      .digest("hex");
+    if (source.bytes !== bytes || source.sha256 !== digest)
+      fail(`Hash/tamanho divergente na fonte local ${source.id}.`);
+  }
+});
+
 const referenceIds = new Set();
-const referenceMatches = { direct: 0, topic: 0, related: 0 };
-questionReferences.references.forEach((reference) => {
+const ruleCounts = Object.fromEntries(
+  Object.keys(questionAuthority.rules).map((rule) => [rule, 0]),
+);
+questionAuthority.references.forEach((reference) => {
   if (referenceIds.has(reference.id))
-    fail(`Referência PDF duplicada para a questão ${reference.id}.`);
+    fail(`Referência oficial duplicada para a questão ${reference.id}.`);
   referenceIds.add(reference.id);
   if (
-    !Number.isInteger(reference.page) ||
-    reference.page < 1 ||
-    reference.page > 67
+    !Number.isInteger(reference.officialPage) ||
+    reference.officialPage < 1 ||
+    reference.officialPage > 338
   )
-    fail(`Página inválida na referência da questão ${reference.id}.`);
-  if (!questionReferences.sections[reference.section])
-    fail(`Seção desconhecida na referência da questão ${reference.id}.`);
-  if (!(reference.match in referenceMatches))
-    fail(`Tipo de correspondência inválido na questão ${reference.id}.`);
+    fail(`Página MIT inválida na referência da questão ${reference.id}.`);
+  if (!questionAuthority.rules[reference.rule])
+    fail(`Regra didática desconhecida na questão ${reference.id}.`);
   if ("correct" in reference || "answer" in reference)
     fail(
       `A referência da questão ${reference.id} não pode duplicar o gabarito.`,
     );
-  referenceMatches[reference.match] += 1;
+  ruleCounts[reference.rule] += 1;
+  for (const sourceReference of reference.sourceRefs || []) {
+    if (!sourceIds.has(sourceReference.source))
+      fail(`Fonte desconhecida na questão ${reference.id}.`);
+  }
 });
 quiz.forEach((question) => {
   if (!referenceIds.has(question.id))
-    fail(`Questão ${question.id} sem referência na Dispensa.`);
+    fail(`Questão ${question.id} sem referência oficial.`);
 });
-for (const [match, count] of Object.entries(referenceMatches)) {
-  if (questionReferences.summary[match] !== count)
-    fail(`Resumo divergente para referências PDF do tipo ${match}.`);
+for (const [ruleId, rule] of Object.entries(questionAuthority.rules)) {
+  if (!ruleCounts[ruleId]) fail(`Regra sem questões: ${ruleId}.`);
+  if (!rule.principleIt || !rule.principlePt)
+    fail(`Regra sem explicação bilíngue: ${ruleId}.`);
+  for (const sourceReference of rule.sources || []) {
+    if (!sourceIds.has(sourceReference.source))
+      fail(`Fonte desconhecida na regra ${ruleId}.`);
+  }
 }
+if (
+  questionAuthority.summary.questions !== quiz.length ||
+  questionAuthority.summary.officialPageCoverage !== quiz.length
+)
+  fail("Resumo de cobertura oficial divergente.");
+const oilReference = questionAuthority.references.find(
+  (reference) => reference.id === 1464,
+);
+if (
+  oilReference?.primarySource !== "ispra-oli-usati" ||
+  !oilReference?.specificIt?.includes("5.000 m²")
+)
+  fail("A questão 1464 deve explicar os 5.000 m² com fonte ISPRA.");
 
 if (content.chapters.length !== 8 || contentPt.chapters.length !== 8)
   fail("São esperados oito capítulos.");
@@ -123,7 +182,10 @@ if (chartData.points.length < 2)
 if (chartData.exercises.length !== exercises.length)
   fail("Todos os 50 exercícios devem possuir partida e chegada na carta 5/D.");
 
-const chartPointIds = new Set(chartData.points.map((point) => point.id));
+const chartPointMap = new Map(
+  chartData.points.map((point) => [point.id, point]),
+);
+const chartPointIds = new Set(chartPointMap.keys());
 if (chartPointIds.size !== chartData.points.length)
   fail("Há identificadores de pontos duplicados na carta 5/D.");
 
@@ -138,30 +200,69 @@ exercises.forEach((exercise) => {
   if (!routeIds.has(exercise.id))
     fail(`Exercício ${exercise.id} não está localizado na carta 5/D.`);
 });
+const routeMap = new Map(chartData.exercises.map((route) => [route.id, route]));
+const translatedExerciseMap = new Map(
+  exercisesPt.map((exercise) => [exercise.id, exercise]),
+);
+let structuredExerciseAnswerCount = 0;
+exercises.forEach((exercise) => {
+  const route = routeMap.get(exercise.id);
+  const answerSet = buildExerciseAnswers({
+    prompt: exercise.prompt,
+    solution: exercise.solution,
+    from: chartPointMap.get(route.from),
+    to: chartPointMap.get(route.to),
+  });
+  if (
+    answerSet.questions.length !== 5 ||
+    answerSet.questions.some(
+      (question) => question.kind === "unknown" || !question.answer,
+    )
+  ) {
+    fail(
+      `O exercício ${exercise.id} não apresenta cinco respostas estruturadas.`,
+    );
+  }
+  const translatedQuestions = splitExercisePrompt(
+    translatedExerciseMap.get(exercise.id)?.prompt,
+  ).questions;
+  if (translatedQuestions.length !== 5)
+    fail(`O exercício ${exercise.id} não apresenta cinco perguntas em PT.`);
+  structuredExerciseAnswerCount += answerSet.questions.length;
+});
 
 const calibration = chartData.chart.calibration;
-const projectPoint = (point) => {
-  const longitudeMinutes = (point.lon - calibration.longitudeOrigin) * 60;
-  const latitudeMinutes = (point.lat - 42) * 60;
-  const longitudeAxis =
-    calibration.meridianX +
-    calibration.pixelsPerLongitudeMinute * longitudeMinutes;
-  const latitudeAxis =
-    calibration.parallelY +
-    calibration.pixelsPerLatitudeMinute *
-      (calibration.referenceLatitudeMinutes - latitudeMinutes);
-  const divisor = 1 + calibration.meridianSlope * calibration.parallelSlope;
-  const y =
-    (latitudeAxis + calibration.parallelSlope * longitudeAxis) / divisor;
-  const x = longitudeAxis - calibration.meridianSlope * y;
-  return { x, y };
-};
+const alignment = chartAlignment(chartData.chart);
+const idealRotationRadians =
+  -(
+    Math.atan(calibration.meridianSlope) + Math.atan(calibration.parallelSlope)
+  ) / 2;
+if (
+  Math.abs(alignment.rotationRadians - idealRotationRadians) >
+  Number.EPSILON * 10
+) {
+  fail("A rotação da carta não corresponde à inclinação calibrada da grade.");
+}
+const meridianResidualDegrees =
+  ((Math.atan(calibration.meridianSlope) + alignment.rotationRadians) * 180) /
+  Math.PI;
+const parallelResidualDegrees =
+  ((Math.atan(calibration.parallelSlope) + alignment.rotationRadians) * 180) /
+  Math.PI;
+if (
+  Math.max(
+    Math.abs(meridianResidualDegrees),
+    Math.abs(parallelResidualDegrees),
+  ) > 0.1
+) {
+  fail("Meridianos e paralelos não ficaram ortogonais após o alinhamento.");
+}
 chartData.points.forEach((point) => {
   if (!Number.isFinite(point.lat) || !Number.isFinite(point.lon))
     fail(`Coordenada inválida no ponto ${point.id}.`);
   if (!point.name || !point.context || !point.contextPt)
     fail(`Ponto ${point.id} sem rótulo bilíngue completo.`);
-  const pixel = projectPoint(point);
+  const pixel = projectChartPoint(chartData.chart, point);
   if (
     pixel.x < 0 ||
     pixel.x > chartData.chart.width ||
@@ -172,6 +273,29 @@ chartData.points.forEach((point) => {
   }
 });
 
+chartData.exercises.forEach((route) => {
+  const from = chartPointMap.get(route.from);
+  const to = chartPointMap.get(route.to);
+  const start = projectChartPoint(chartData.chart, from);
+  const end = projectChartPoint(chartData.chart, to);
+  const layouts = placeRouteLabels({
+    start,
+    end,
+    labels: [from, to].map((point) => ({
+      width: Math.min(650, point.name.length * 22 + 48),
+    })),
+    bounds: chartData.chart,
+  });
+  if (layouts.some((layout) => !layout))
+    fail(`Não há espaço seguro para os dois rótulos da rota ${route.id}.`);
+  layouts.forEach((layout) => {
+    if (segmentIntersectsRect(start, end, layout, 20))
+      fail(`Um rótulo cobre a rota do exercício ${route.id}.`);
+  });
+  if (rectsOverlap(layouts[0], layouts[1], 18))
+    fail(`Os rótulos se sobrepõem no exercício ${route.id}.`);
+});
+
 const chartPath = path.join(root, "carta nautica 5D.gif");
 const gifHeader = fs.readFileSync(chartPath).subarray(0, 10);
 if (gifHeader.subarray(0, 3).toString("ascii") !== "GIF")
@@ -179,16 +303,39 @@ if (gifHeader.subarray(0, 3).toString("ascii") !== "GIF")
 const gifWidth = gifHeader.readUInt16LE(6);
 const gifHeight = gifHeader.readUInt16LE(8);
 if (
-  gifWidth !== chartData.chart.width ||
-  gifHeight !== chartData.chart.height
+  gifWidth !== alignment.sourceWidth ||
+  gifHeight !== alignment.sourceHeight
 ) {
   fail(
-    `Dimensões da carta divergentes: ${gifWidth}x${gifHeight}, esperado ${chartData.chart.width}x${chartData.chart.height}.`,
+    `Dimensões da carta-fonte divergentes: ${gifWidth}x${gifHeight}, esperado ${alignment.sourceWidth}x${alignment.sourceHeight}.`,
+  );
+}
+
+const alignedChartPath = path.join(root, "carta nautica 5D allineata.webp");
+const webpHeader = fs.readFileSync(alignedChartPath).subarray(0, 25);
+if (
+  webpHeader.subarray(0, 4).toString("ascii") !== "RIFF" ||
+  webpHeader.subarray(8, 12).toString("ascii") !== "WEBP" ||
+  webpHeader.subarray(12, 16).toString("ascii") !== "VP8L" ||
+  webpHeader[20] !== 0x2f
+) {
+  fail("A carta 5/D alinhada não é um WebP lossless válido.");
+}
+const webpDimensions = webpHeader.readUInt32LE(21);
+const alignedWidth = (webpDimensions & 0x3fff) + 1;
+const alignedHeight = ((webpDimensions >>> 14) & 0x3fff) + 1;
+if (
+  alignedWidth !== chartData.chart.width ||
+  alignedHeight !== chartData.chart.height
+) {
+  fail(
+    `Dimensões da carta alinhada divergentes: ${alignedWidth}x${alignedHeight}, esperado ${chartData.chart.width}x${chartData.chart.height}.`,
   );
 }
 
 const indexHtml = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const appSource = fs.readFileSync(path.join(root, "app.js"), "utf8");
+const stylesSource = fs.readFileSync(path.join(root, "styles.css"), "utf8");
 const accountSource = fs.readFileSync(
   path.join(root, "account-service.js"),
   "utf8",
@@ -207,8 +354,45 @@ if (
   fail(
     "O guia por capítulos ou seus antigos vínculos ainda está presente na interface.",
   );
-if (!/data-open-handbook/.test(appSource) || !/handbookModal/.test(indexHtml))
-  fail("A interface não expõe as referências da Dispensa para o quiz.");
+if (
+  !/data-open-handbook/.test(appSource) ||
+  !/handbookModal/.test(indexHtml) ||
+  !/handbookOfficialAnswerText/.test(indexHtml) ||
+  !/handbookSourceCards/.test(indexHtml)
+)
+  fail("A interface não expõe resposta, explicação e fontes oficiais.");
+const publicReferencePayload =
+  indexHtml +
+  appSource +
+  fs.readFileSync(path.join(root, "data", "content.js"), "utf8") +
+  fs.readFileSync(path.join(root, "data", "content-pt.json"), "utf8");
+if (/scribd|navico-online|spiegazione nella dispensa/i.test(publicReferencePayload))
+  fail("A interface pública ainda contém referências privadas/Scribd/Navico.");
+if (
+  !appSource.includes('context.strokeStyle = "#ffd600"') ||
+  !appSource.includes('context.strokeStyle = "#ec008c"') ||
+  !appSource.includes("context.lineWidth = 1")
+)
+  fail("Os pontos da carta não usam aro amarelo e cruz magenta de 1 px.");
+const chartInteractionContracts = [
+  ['addEventListener("wheel", handleChartWheel, { passive: false })', "zoom"],
+  ['addEventListener("pointerdown", handleChartPointerDown)', "arraste"],
+  ['addEventListener("pointermove", handleChartPointerMove)', "movimento"],
+  ['addEventListener("pointercancel", finishChartPointer)', "cancelamento"],
+  ['addEventListener("keydown", handleChartKeydown)', "teclado"],
+];
+chartInteractionContracts.forEach(([contract, interaction]) => {
+  if (!appSource.includes(contract))
+    fail(`A carta não contém o contrato de interação por ${interaction}.`);
+});
+if (
+  !stylesSource.includes("touch-action: none") ||
+  !stylesSource.includes(".chart-viewport.is-panning") ||
+  !indexHtml.includes('draggable="false"') ||
+  !indexHtml.includes('data-ui="chartGestureHint"')
+) {
+  fail("A carta não contém toda a configuração visual e touch para zoom/pan.");
+}
 const studyFeatureIds = [
   "bankSearch",
   "bankTheme",
@@ -284,10 +468,27 @@ const summary = {
   exercises: exercises.length,
   chartedExercises: chartData.exercises.length,
   chartPoints: chartData.points.length,
-  chartDimensions: `${gifWidth}x${gifHeight}`,
+  chartSourceDimensions: `${gifWidth}x${gifHeight}`,
+  chartDimensions: `${alignedWidth}x${alignedHeight}`,
+  chartRotationDegrees: alignment.rotationDegrees,
+  chartGridResidualDegrees: Math.max(
+    Math.abs(meridianResidualDegrees),
+    Math.abs(parallelResidualDegrees),
+  ),
+  chartLabelsClearEveryRoute: true,
+  chartWheelPinchAndPan: true,
+  chartKeyboardNavigation: true,
+  structuredExerciseAnswers: structuredExerciseAnswerCount,
+  exerciseAnswerRangesLabeled: true,
   figures: imageCount,
-  pdfQuestionReferences: questionReferences.references.length,
-  pdfReferenceMatches: referenceMatches,
+  officialQuestionReferences: questionAuthority.references.length,
+  officialReferenceRules: Object.keys(questionAuthority.rules).length,
+  officialSources: authoritativeSources.sources.length,
+  officialLocalCopies: authoritativeSources.sources.filter(
+    (source) => source.localFile,
+  ).length,
+  privateStudySourcesRemoved: true,
+  chartPointTarget: "yellow-ring-magenta-cross-1px",
   bankRendersAllFilteredQuestions: true,
   localStudyProfile: true,
   cloudAccountSync: true,

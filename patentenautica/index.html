@@ -10,7 +10,7 @@
     />
     <title>Rotta 12 — Patente nautica a motore</title>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="./styles.css?v=3.4.0" />
+    <link rel="stylesheet" href="./styles.css?v=3.6.0" />
   </head>
   <body>
     <a class="skip-link" href="#main" data-ui="skipContent">Vai al contenuto</a>
@@ -503,15 +503,19 @@
                     id="chartImage"
                     alt="Carta nautica didattica 5/D"
                     data-ui-alt="chartImageAlt"
+                    draggable="false"
                   />
                   <canvas
                     id="chartOverlay"
-                    width="4454"
-                    height="3045"
+                    width="4612"
+                    height="3281"
                     aria-hidden="true"
                   ></canvas>
                 </div>
               </div>
+              <p class="chart-gesture-hint" data-ui="chartGestureHint">
+                Trascina per spostarti · rotellina o pizzico per lo zoom
+              </p>
               <footer class="chart-panel-foot">
                 <p data-ui="chartAccuracyNote">
                   I punti usano il centro degli intervalli di tolleranza del
@@ -554,8 +558,8 @@
                   Fonti e criteri
                 </h1>
                 <p data-ui="sourcesDescription">
-                  Provenienza dei contenuti, documenti ufficiali e materiali
-                  didattici.
+                  Banca ministeriale, norme vigenti e riscontri tecnici
+                  istituzionali.
                 </p>
               </div>
             </div>
@@ -566,9 +570,9 @@
                   Regola semplice: la fonte ufficiale prevale.
                 </h2>
                 <p data-ui="officialRuleText">
-                  Dispense e traduzioni aiutano a comprendere; norme, limiti e
-                  risposte d'esame devono essere verificati in italiano sulle
-                  fonti MIT.
+                  Il testo italiano della banca MIT determina la risposta
+                  d’esame. Per uso reale, norme, limiti, sanzioni e dotazioni
+                  vanno sempre controllati nella versione vigente collegata.
                 </p>
               </div>
             </section>
@@ -641,10 +645,10 @@
       <header class="handbook-modal-header">
         <div>
           <span class="eyebrow" data-ui="handbookReference"
-            >RIFERIMENTO DIDATTICO</span
+            >RISPOSTA VERIFICATA</span
           >
           <h2 id="handbookModalTitle" data-ui="handbookTitle">
-            Spiegazione nella Dispensa
+            Risposta spiegata e fonti ufficiali
           </h2>
         </div>
         <button type="button" id="handbookClose" data-ui-aria="closeHandbook">
@@ -658,25 +662,40 @@
           <span class="handbook-match" id="handbookReferenceMatch"></span>
         </div>
         <p id="handbookReferenceQuestion"></p>
-        <small id="handbookReferenceTerms"></small>
+      </div>
+      <div class="authority-explanation">
+        <section class="authority-answer">
+          <small data-ui="handbookOfficialAnswer"
+            >Risposta ministeriale corretta</small
+          >
+          <p id="handbookOfficialAnswerText"></p>
+        </section>
+        <section class="authority-why">
+          <small data-ui="handbookWhy">Perché</small>
+          <p id="handbookWhyText"></p>
+        </section>
       </div>
       <p class="handbook-notice" data-ui="handbookNotice">
-        Il collegamento è un indice didattico automatico. La Dispensa è del
-        2011: per norme, dotazioni e quesiti aggiornati prevalgono sempre le
-        fonti MIT e il testo italiano ufficiale.
+        Il gabarito proviene dalla banca MIT 2022. Le spiegazioni sono originali
+        di Rotta 12 e citano solo atti o fonti istituzionali. Per norme, sanzioni
+        e dotazioni prevale sempre il testo vigente collegato.
       </p>
+      <section class="authority-sources">
+        <h3 data-ui="handbookSources">Fonti e riscontri</h3>
+        <div id="handbookSourceCards"></div>
+      </section>
       <div class="handbook-frame-wrap">
         <iframe id="handbookFrame" loading="lazy"></iframe>
       </div>
       <footer class="handbook-modal-footer">
-        <span>Dispensa patente nautica 12M · 67 p.</span>
+        <span id="handbookSelectedSource"></span>
         <a
           class="button primary"
           id="handbookNewTab"
           target="_blank"
           rel="noopener"
           data-ui="openHandbookPage"
-          >Apri questa pagina in una nuova scheda</a
+          >Apri la fonte selezionata</a
         >
       </footer>
     </section>
@@ -704,6 +723,6 @@
       <input id="profileImport" type="file" accept="application/json,.json" />
     </section>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script type="module" src="./app.js?v=3.5.0"></script>
+    <script type="module" src="./app.js?v=3.6.0"></script>
   </body>
 </html>

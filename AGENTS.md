@@ -144,12 +144,15 @@ npm run build          # build de produção (gera local/dist)
 - O banco mostra todos os resultados filtrados por texto, matéria, assunto e progresso. O perfil
   local em `localStorage` continua disponível offline e pode ser exportado/importado. Uma conta
   opcional sincroniza o mesmo progresso entre dispositivos pelo backend autohospedado.
-- A Carta 5/D (`carta nautica 5D.gif`) é exibida com zoom e rolagem; `data/chart-points.json`
-  calibra a quadrícula, contém 28 pontos e relaciona partida/chegada dos 50 exercícios. O validador
-  bloqueia rotas incompletas, pontos fora da imagem e alteração das dimensões 4454 × 3045.
-- `data/question-references.json` liga as 1.472 questões às 67 páginas da Dispensa de 2011. O
-  painel PDF diferencia correspondência textual, capítulo temático e material apenas relacionado;
-  nunca apresenta uma referência histórica como atualização normativa.
+- A Carta 5/D usa o GIF 4454 × 3045 como fonte e exibe a cópia lossless alinhada
+  `carta nautica 5D allineata.webp` (4612 × 3281), com meridianos/paralelos ortogonais.
+  `data/chart-points.json` aplica a mesma rotação aos 28 pontos e relaciona partida/chegada dos
+  50 exercícios. O validador bloqueia rotas incompletas, pontos fora da imagem, dimensões
+  divergentes e qualquer rótulo que intercepte a rota.
+- `data/question-authority.json` liga as 1.472 questões à página exata da banca MIT, a uma
+  explicação original e a atos/fontes institucionais pertinentes. `data/authoritative-sources.json`
+  cataloga URL oficial e, para os atos públicos arquivados, tamanho e SHA-256. O painel distingue
+  resposta de exame e norma vigente; materiais didáticos privados não fazem parte do app.
 - Dados oficiais ficam em `data/quiz-base.js`, `data/content.js` e `data/carteggio.js`. Traduções
   paralelas ficam nos JSON `*-pt.json` e nunca contêm o campo `correct`.
 - `scripts/build_translations.py` regenera saídas a partir do cache estático e aplica overrides
@@ -170,7 +173,7 @@ npm run build          # build de produção (gera local/dist)
 
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
-_Última atualização: 2026-07-21_
+_Última atualização: 2026-07-24_
 
 - **ROTTA 12 / PATENTE NÁUTICA (branch `feat/patente-nautica`):** app integrado em
   `patentenautica/`, registrado no catálogo, home/sobre bilíngues, README, ROADMAP, versões,
@@ -186,18 +189,31 @@ _Última atualização: 2026-07-21_
   103 PNGs, quatro PDFs e dados canônicos. A publicação é feita pelo workflow do GitHub Pages
   após integração em `main`; arquivos locais de `.claude` e `lichiabonsai` permanecem fora do escopo.
 
-- **REFERÊNCIAS PDF E CONTAS (branch `feat/patente-pdf-references`):** em desenvolvimento, adiciona
-  vínculo questão → página da Dispensa para as 1.472 questões, painel PDF no treino, banco e revisão
-  do simulado, além de gerador reproduzível e validação de cobertura. A mesma branch agora inclui
+- **REFERÊNCIAS OFICIAIS E CONTAS (base integrada):** o vínculo histórico à Dispensa foi substituído
+  por resposta ministerial, explicação original, página exata da banca MIT e fontes públicas ou
+  institucionais para as 1.472 questões, com gerador reproduzível e validação de cobertura. Inclui
   banco completo com filtros combináveis, quiz aleatório/selecionado, perfil local exportável e
   conta opcional para sincronizar progresso, inclusive simulado só de inéditas. O backend PocketBase
   0.39.8 está ativo na VM Proxmox 205 `engnata-backend` (192.168.1.13), publicado somente por
   Cloudflare Tunnel em `accounts.engnata.eu`; porta LAN restrita, painel público bloqueado, rate
   limiting e backups diário interno + VM configurados. O teste público confirmou criação/login por
   usuário ou e-mail, isolamento, sincronização, troca de e-mail/senha e exclusão em cascata. Versão
-  local 3.5.0: `npm run validate` passou com 284 testes, 1.472/1.472 referências e contrato de conta;
-  `npm run build` passou. A API está ativa, mas o frontend desta branch ainda não foi publicado.
-  SMTP permanece pendente apenas para verificação de e-mail e recuperação de senha.
+  3.5.0 foi integrado pelo PR #7 e publicado em 2026-07-21; `npm run validate` passou com 284
+  testes, 1.472/1.472 referências e contrato de conta. SMTP permanece pendente apenas para
+  verificação de e-mail e recuperação de senha.
+
+- **ALINHAMENTO DA CARTA (branch `fix/patente-chart-alignment`):** versão local 3.5.1 troca o
+  raster exibido pela cópia WebP lossless pré-rotacionada, recalibra overlay/pontos e posiciona os
+  nomes fora da linha da rota. O validador confirmou os dois rótulos livres nos 50 exercícios,
+  dimensões 4612 × 3281 e resíduo máximo de grade de 0,074°. A versão local 3.5.2 acrescenta zoom
+  centrado no cursor pela rotellina, pan por arraste com mouse ou um dedo, gesto de pizzico com dois
+  dedos e navegação por teclado, mantendo os botões existentes. A versão local 3.5.3 estrutura as
+  250 respostas dos 50 exercícios diretamente ao lado de cada quesito, normaliza unidades e sinaliza
+  intervalos aceitos. `npm run validate` passou com 35 arquivos/288 testes e a integridade confirmou
+  250/250 respostas estruturadas; `npm run build` também passou. Ainda não publicado.
+  A continuação local 3.6.0 substitui os marcadores grandes por um alvo preciso (cruz magenta de
+  1 px e anel amarelo), remove a Dispensa e as referências privadas, e cria o painel de resposta
+  explicada com 20 fontes oficiais/institucionais e cobertura de 1.472/1.472 páginas MIT.
 
 - **ATUALIZAÇÃO DO DIÁRIO (12/07):** novo post bilíngue registrando o primeiro fluxo com duas
   folhas novas; muda medida em 8 cm e quatro folhas totais. Três fotos da nova leva foram

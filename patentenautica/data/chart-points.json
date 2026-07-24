@@ -2,10 +2,15 @@
   "chart": {
     "id": "carta-5d",
     "title": "Carta nautica didattica 5/D",
-    "width": 4454,
-    "height": 3045,
+    "width": 4612,
+    "height": 3281,
     "scale": "1:100.000",
     "area": "Dal Canale di Piombino al Promontorio Argentario e Scoglio Africa",
+    "alignment": {
+      "sourceWidth": 4454,
+      "sourceHeight": 3045,
+      "rotationDegrees": -3.0738258000733896
+    },
     "calibration": {
       "longitudeOrigin": 10,
       "meridianX": 437,
