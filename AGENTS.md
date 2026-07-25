@@ -149,10 +149,11 @@ npm run build          # build de produção (gera local/dist)
   `carta nautica 5D originale.jpg` (7501 × 4844, 4,66 MB) sobre um plano lógico 4612 × 2978.
   O raster só é baixado quando o usuário abre **Carteggio**.
   `Carta 5D 340dpi migliorata.pdf` oferece o mesmo conteúdo em 15002 × 9688/340 DPI, sem
-  transformação generativa. `data/chart-points.json` aplica aos 28 pontos uma homografia
-  verificada em 3.382 correspondências, com erro mediano inferior a 1 px, e relaciona
-  partida/chegada dos 50 exercícios. Cada alvo mostra a área semitransparente definida pelos
-  limites de latitude/longitude (±0,3′) e guias tracejadas da régua mais próxima até o valor médio.
+  transformação generativa. `data/chart-points.json` relaciona partida/chegada dos 50 exercícios
+  e interpola os 28 pontos diretamente entre 24 referências medidas nas quatro bordas graduadas.
+  A homografia verificada em 3.382 correspondências permanece como controle do alinhamento dos
+  rasters. Cada alvo mostra a área semitransparente definida pelos limites de latitude/longitude
+  (±0,3′) e guias tracejadas da régua mais próxima até o valor médio.
   O validador bloqueia rotas incompletas, pontos ou limites fora da imagem, guias que não alcancem
   a borda, dimensões divergentes e qualquer rótulo que intercepte a rota.
 - `data/question-authority.json` mantém internamente a conferência das 1.472 questões contra a
@@ -270,6 +271,15 @@ _Última atualização: 2026-07-25_
   as linhas tracejadas vindas das bordas graduadas. `npm run validate` passou com 36 arquivos/292
   testes, a integridade confirmou os 28 pontos e 50/50 rotas, e o build concluiu. Verificação visual
   em 390 × 844 e 820 × 1180 confirmou a carta legível, a legenda sem contorno e ausência de overflow.
+
+- **ESCALA REAL DAS BORDAS (versão 3.9.2, branch
+  `codex/rotta12-border-scale-calibration`):** substitui a projeção ativa baseada na transformação
+  histórica pela interpolação por trechos entre 24 referências medidas nas escalas superior,
+  inferior, esquerda e direita. Assim, por exemplo, 11° 9,2′ E fica exatamente 20% depois da marca
+  de 9′. A homografia permanece apenas como registro e controle de alinhamento dos rasters.
+  `npm run validate` passou com 36 arquivos/295 testes, 28 pontos, 50/50 rotas e erro máximo
+  desprezível nas 24 marcas; build e checkup passaram. A inspeção visual a 97% confirmou 11° 9,2′
+  entre 9′ e 10′, e os layouts 390 × 844 e 820 × 1180 permaneceram sem overflow horizontal.
 
 - **ATUALIZAÇÃO DO DIÁRIO (12/07):** novo post bilíngue registrando o primeiro fluxo com duas
   folhas novas; muda medida em 8 cm e quatro folhas totais. Três fotos da nova leva foram

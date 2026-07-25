@@ -61,7 +61,7 @@ La pagina **Fonti e criteri** usa soltanto la banca ministeriale, atti pubblici 
 
 `scripts/build_authoritative_references.py` localizza ciascun quesito nelle 338 pagine del PDF MIT, verifica hash e dimensioni degli atti locali e rigenera catalogo e indice ufficiale. Usa `pypdf`, fissato in `scripts/requirements-pdf.txt`.
 
-`scripts/align_chart_image.ps1` estrae con Poppler il JPEG originale incorporato nel PDF senza ricomprimerlo e prepara separatamente il raster 2×. `scripts/build_enhanced_chart_pdf.py` incorpora quest'ultimo in una pagina delle stesse dimensioni dell'originale, ottenendo 340 DPI reali. Il confronto automatico mantiene similarità 0,9995 e geometria identica. Una trasformazione omografica verificata su 3.382 corrispondenze trasferisce la calibrazione ai 28 punti con errore mediano inferiore a 1 px; il validatore verifica inoltre i quattro vertici di tolleranza e i segmenti dalla cornice al centro per tutti i punti.
+`scripts/align_chart_image.ps1` estrae con Poppler il JPEG originale incorporato nel PDF senza ricomprimerlo e prepara separatamente il raster 2×. `scripts/build_enhanced_chart_pdf.py` incorpora quest'ultimo in una pagina delle stesse dimensioni dell'originale, ottenendo 340 DPI reali. Il confronto automatico mantiene similarità 0,9995 e geometria identica. L'omografia verificata su 3.382 corrispondenze resta come controllo dell'allineamento dei raster; le coordinate attive sono invece interpolate direttamente fra 24 riferimenti misurati sulle quattro scale graduate. Il validatore controlla ogni tacca, i quattro vertici di tolleranza e i segmenti dalla cornice al centro per tutti i punti.
 
 ```bash
 python scripts/build_translations.py

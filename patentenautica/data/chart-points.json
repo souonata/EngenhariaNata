@@ -40,6 +40,33 @@
       "inliers": 3382,
       "medianErrorPixels": 0.88
     },
+    "borderCalibration": {
+      "method": "measured-graduated-border",
+      "sourceWidth": 7501,
+      "sourceHeight": 4844,
+      "longitude": {
+        "originDegrees": 10,
+        "ticks": [
+          { "minutes": 0, "topX": 557, "bottomX": 567 },
+          { "minutes": 10, "topX": 1471, "bottomX": 1481 },
+          { "minutes": 20, "topX": 2387, "bottomX": 2396 },
+          { "minutes": 30, "topX": 3304, "bottomX": 3312 },
+          { "minutes": 40, "topX": 4220, "bottomX": 4226 },
+          { "minutes": 50, "topX": 5138, "bottomX": 5140 },
+          { "minutes": 60, "topX": 6055, "bottomX": 6057 },
+          { "minutes": 70, "topX": 6972, "bottomX": 6973 }
+        ]
+      },
+      "latitude": {
+        "originDegrees": 42,
+        "ticks": [
+          { "minutes": 20, "leftY": 4651, "rightY": 4651 },
+          { "minutes": 30, "leftY": 3420, "rightY": 3420 },
+          { "minutes": 40, "leftY": 2185, "rightY": 2184 },
+          { "minutes": 50, "leftY": 948, "rightY": 947 }
+        ]
+      }
+    },
     "calibration": {
       "longitudeOrigin": 10,
       "meridianX": 437,
