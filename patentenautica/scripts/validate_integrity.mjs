@@ -96,7 +96,10 @@ authoritativeSources.sources.forEach((source) => {
   if (source.localFile) {
     const localPath = path.resolve(root, "sources", source.localFile);
     const sourceRoot = path.resolve(root, "sources");
-    if (!localPath.startsWith(`${sourceRoot}${path.sep}`) || !fs.existsSync(localPath))
+    if (
+      !localPath.startsWith(`${sourceRoot}${path.sep}`) ||
+      !fs.existsSync(localPath)
+    )
       fail(`Cópia local ausente ou fora de sources/: ${source.id}.`);
     const bytes = fs.statSync(localPath).size;
     const digest = crypto
@@ -395,6 +398,15 @@ const accountMigration = fs.readFileSync(
   path.join(root, "backend", "pb_migrations", "1721600000_init_rotta12.js"),
   "utf8",
 );
+const activityMigration = fs.readFileSync(
+  path.join(
+    root,
+    "backend",
+    "pb_migrations",
+    "1721600300_email_and_activity_progress.js",
+  ),
+  "utf8",
+);
 const accountApiHook = fs.readFileSync(
   path.join(root, "backend", "pb_hooks", "account_api.pb.js"),
   "utf8",
@@ -417,7 +429,11 @@ const publicReferencePayload =
   appSource +
   fs.readFileSync(path.join(root, "data", "content.js"), "utf8") +
   fs.readFileSync(path.join(root, "data", "content-pt.json"), "utf8");
-if (/scribd|navico-online|spiegazione nella dispensa/i.test(publicReferencePayload))
+if (
+  /scribd|navico-online|spiegazione nella dispensa/i.test(
+    publicReferencePayload,
+  )
+)
   fail("A interface pública ainda contém referências privadas/Scribd/Navico.");
 if (
   !appSource.includes('context.strokeStyle = "#ffd600"') ||
@@ -426,10 +442,17 @@ if (
 )
   fail("Os pontos da carta não usam aro amarelo e cruz magenta de 1 px.");
 if (
-  !appSource.includes('./carta nautica 5D con bordo.jpg?url') ||
-  !appSource.includes('./Carta 5D 340dpi migliorata.pdf?url') ||
-  !appSource.includes("chartFullLink\").href = chart5dEnhancedPdfUrl") ||
-  appSource.includes('./carta nautica 5D allineata.webp?url')
+  !appSource.includes("const overlayOpacity = 0.5") ||
+  !appSource.includes("context.globalAlpha = overlayOpacity") ||
+  !appSource.includes("const routeLineWidth = 5") ||
+  !appSource.includes("const markerLineWidth = 2.5")
+)
+  fail("Rota, rótulos e marcadores da carta não estão finos e a 50%.");
+if (
+  !appSource.includes("./carta nautica 5D con bordo.jpg?url") ||
+  !appSource.includes("./Carta 5D 340dpi migliorata.pdf?url") ||
+  !appSource.includes('chartFullLink").href = chart5dEnhancedPdfUrl') ||
+  appSource.includes("./carta nautica 5D allineata.webp?url")
 )
   fail("O visualizador não usa a carta aprimorada e o PDF em 340 DPI.");
 if (
@@ -469,6 +492,8 @@ const studyFeatureIds = [
   "studyProfilePanel",
   "profileModal",
   "accountModalBody",
+  "view-account",
+  "accountPageContent",
 ];
 studyFeatureIds.forEach((id) => {
   if (!indexHtml.includes(`id="${id}"`))
@@ -487,17 +512,24 @@ if (
     'import { accountService } from "./account-service.js"',
   ) ||
   !appSource.includes("initializeStudyAccount") ||
-  !appSource.includes("scheduleProgressSync")
+  !appSource.includes("scheduleProgressSync") ||
+  !appSource.includes("scheduleExerciseSync") ||
+  !appSource.includes("scheduleAttemptSync") ||
+  !appSource.includes("renderAccountPage") ||
+  !appSource.includes("resetStudyData")
 ) {
-  fail("A interface não inicializa a conta ou a sincronização de progresso.");
+  fail("A interface não sincroniza todos os progressos ou a página da conta.");
 }
 if (
   !accountSource.includes("https://accounts.engnata.eu") ||
   !accountSource.includes("LocalAuthStore") ||
   !accountSource.includes("/api/rotta12/account/email") ||
-  !accountSource.includes('collection("study_progress")')
+  !accountSource.includes("/api/rotta12/progress/reset") ||
+  !accountSource.includes('collection("study_progress")') ||
+  !accountSource.includes('collection("study_exercises")') ||
+  !accountSource.includes('collection("quiz_attempts")')
 ) {
-  fail("O cliente de conta não contém o endpoint e o progresso esperados.");
+  fail("O cliente de conta não contém todos os dados e endpoints esperados.");
 }
 if (
   !accountMigration.includes("cascadeDelete: true") ||
@@ -509,10 +541,33 @@ if (
   );
 }
 if (
-  !accountApiHook.includes('$apis.requireAuth("users")') ||
-  !accountApiHook.includes("validatePassword(password)")
+  !activityMigration.includes('identityFields: ["email"]') ||
+  !activityMigration.includes('getByName("password").min = 1') ||
+  !activityMigration.includes("remove it from auth identities") ||
+  !activityMigration.includes("Email-only login migration blocked") ||
+  !activityMigration.includes('name: "study_exercises"') ||
+  !activityMigration.includes('name: "quiz_attempts"') ||
+  !activityMigration.includes("idx_exercises_user_exercise") ||
+  !activityMigration.includes("idx_attempts_user_client")
 ) {
-  fail("A troca direta de e-mail não exige autenticação e senha atual.");
+  fail(
+    "A migração não garante email-only, senha não vazia e histórico privado.",
+  );
+}
+if (
+  !accountApiHook.includes('$apis.requireAuth("users")') ||
+  !accountApiHook.includes("validatePassword(password)") ||
+  !accountApiHook.includes("/api/rotta12/progress/reset") ||
+  !accountApiHook.includes('scope === "all"')
+) {
+  fail("Os endpoints de conta e reset não estão protegidos como esperado.");
+}
+if (
+  /minlength=["']8["']/.test(indexHtml + appSource) ||
+  /password\.length\s*<\s*8/.test(appSource) ||
+  !appSource.includes('type="email" maxlength="254" required')
+) {
+  fail("A interface ainda restringe a senha ou aceita login sem email.");
 }
 
 const imageCount = fs
@@ -563,10 +618,14 @@ const summary = {
   privateStudySourcesRemoved: true,
   chartPointTarget: "yellow-ring-magenta-cross-1px",
   chartRouteClearsPointTargets: true,
+  chartOverlayOpacity: 0.5,
+  chartRouteLineWidth: 5,
+  chartMarkerLineWidth: 2.5,
   bankRendersAllFilteredQuestions: true,
   localStudyProfile: true,
   cloudAccountSync: true,
   accountBackendSchema: true,
+  activityHistorySchema: true,
   unseenQuestionSimulation: true,
   answerKeyOnlyInItalianCanonicalLayer: true,
 };

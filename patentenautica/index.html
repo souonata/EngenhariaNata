@@ -10,7 +10,7 @@
     />
     <title>Rotta 12 — Patente nautica a motore</title>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="./styles.css?v=3.6.2" />
+    <link rel="stylesheet" href="./styles.css?v=3.7.0" />
   </head>
   <body>
     <a class="skip-link" href="#main" data-ui="skipContent">Vai al contenuto</a>
@@ -41,6 +41,9 @@
           </button>
           <button class="nav-item" data-view="carteggio">
             <span>⌖</span><b data-ui="navCarteggio">50 esercizi</b>
+          </button>
+          <button class="nav-item" data-view="account">
+            <span>●</span><b data-ui="navAccount">Il mio account</b>
           </button>
           <button class="nav-item" data-view="sources">
             <span>↗</span><b data-ui="navSources">Fonti</b>
@@ -388,6 +391,28 @@
 
           <section
             class="view"
+            id="view-account"
+            aria-labelledby="accountPageTitle"
+          >
+            <div class="page-header">
+              <div>
+                <span class="eyebrow" data-ui="accountPageEyebrow"
+                  >PROGRESSI PERSONALI</span
+                >
+                <h1 id="accountPageTitle" data-ui="accountPageTitle">
+                  Il mio account
+                </h1>
+                <p data-ui="accountPageLead">
+                  Controlla ciò che hai già svolto, riprendi lo studio e azzera
+                  singole attività o intere sezioni.
+                </p>
+              </div>
+            </div>
+            <div id="accountPageContent" class="account-page-content"></div>
+          </section>
+
+          <section
+            class="view"
             id="view-carteggio"
             aria-labelledby="carteggioTitle"
           >
@@ -677,8 +702,8 @@
       </div>
       <p class="handbook-notice" data-ui="handbookNotice">
         Il gabarito proviene dalla banca MIT 2022. Le spiegazioni sono originali
-        di Rotta 12 e citano solo atti o fonti istituzionali. Per norme, sanzioni
-        e dotazioni prevale sempre il testo vigente collegato.
+        di Rotta 12 e citano solo atti o fonti istituzionali. Per norme,
+        sanzioni e dotazioni prevale sempre il testo vigente collegato.
       </p>
       <section class="authority-sources">
         <h3 data-ui="handbookSources">Fonti e riscontri</h3>
@@ -723,6 +748,6 @@
       <input id="profileImport" type="file" accept="application/json,.json" />
     </section>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script type="module" src="./app.js?v=3.6.2"></script>
+    <script type="module" src="./app.js?v=3.7.0"></script>
   </body>
 </html>

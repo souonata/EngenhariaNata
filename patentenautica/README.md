@@ -8,7 +8,7 @@ Banco di studio offline e bilingue per la patente nautica italiana **entro 12 mi
 - 1.472 quesiti BASE del DD 131/2022 e 103 figure ufficiali.
 - Banca completa senza paginazione artificiale, filtrabile per testo IT/PT, materia, argomento e stato di studio.
 - Quiz casuali dai risultati filtrati, allenamenti sui quesiti selezionati e simulazioni composte soltanto da quesiti non ancora visti.
-- Account facoltativo con nome utente o e-mail e sincronizzazione dei tentativi, dell'ultimo esito e della precisione tra dispositivi; il profilo locale resta disponibile offline con esportazione/importazione JSON.
+- Account facoltativo con accesso esclusivamente tramite e-mail e sincronizzazione di quesiti, prove completate ed esercizi di carteggio tra dispositivi; il profilo locale resta disponibile offline con esportazione/importazione JSON.
 - Per ogni quesito: risposta ministeriale, spiegazione originale, pagina esatta nel PDF MIT e riscontri in norme o fonti tecniche istituzionali.
 - Simulazione di 20 quesiti, 30 minuti e superamento con almeno 16 risposte esatte.
 - Carta nautica didattica 5/D ad alta risoluzione, con zoom centrato sul cursore tramite rotellina, pizzico a due dita, trascinamento con mouse o un dito, comandi da tastiera e rotta evidenziata. Partenza e arrivo hanno un bersaglio preciso con croce magenta da 1 px e anello giallo.
@@ -18,7 +18,7 @@ Banco di studio offline e bilingue per la patente nautica italiana **entro 12 mi
 - Glossario nautico IT → PT-BR sempre accessibile.
 - Tema chiaro/scuro e modalità linguistica salvati nel browser.
 
-Senza accesso, i dati restano nel `localStorage` del browser. Con un account, il progresso viene sincronizzato sul backend Engenharia NATA autogestito; ogni utente può leggere e modificare esclusivamente il proprio storico. Dalla pagina account è possibile aggiungere o cambiare l'e-mail confermando la password corrente, cambiare password ed eliminare definitivamente account e progresso. L'italiano ufficiale e il funzionamento offline non dipendono dal backend.
+Senza accesso, i dati restano nel `localStorage` del browser. Con un account, il progresso viene sincronizzato sul backend Engenharia NATA autogestito; ogni utente può leggere e modificare esclusivamente il proprio storico. La pagina **Il mio account** riepiloga quesiti svolti, precisione, prove concluse, esercizi di carteggio visti e soluzioni consultate. Ogni elemento o sezione può essere azzerato separatamente. Da **Dati e sicurezza** è inoltre possibile cambiare e-mail o password ed eliminare definitivamente l'account. L'accesso richiede un'e-mail valida; è accettata qualsiasi password non vuota, pur raccomandandone una lunga e unica. L'italiano ufficiale e il funzionamento offline non dipendono dal backend.
 
 La traduzione è un supporto didattico. Il testo ministeriale italiano rimane canonico e prevale sempre durante l'esame. La struttura portoghese non contiene `correct`, `code` o `figure`, quindi non può modificare silenziosamente il gabarito ufficiale.
 

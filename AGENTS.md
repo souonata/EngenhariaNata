@@ -175,7 +175,7 @@ npm run build          # build de produção (gera local/dist)
 
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
-_Última atualização: 2026-07-24_
+_Última atualização: 2026-07-25_
 
 - **ROTTA 12 / PATENTE NÁUTICA (branch `feat/patente-nautica`):** app integrado em
   `patentenautica/`, registrado no catálogo, home/sobre bilíngues, README, ROADMAP, versões,
@@ -213,6 +213,16 @@ _Última atualização: 2026-07-24_
   mantêm a mesma página e geometria; similaridade medida em 0,9995 e erro mediano de projeção
   de 0,88 px. `npm run validate` passou com 35 arquivos/288 testes, a integridade confirmou os
   50 exercícios e `npm run build` incluiu corretamente o JPEG e o PDF hasheados.
+  A versão 3.6.3 reduz a rota e os aros sobrepostos e aplica 50% de opacidade à rota, aos
+  marcadores e aos rótulos, preservando a leitura dos topônimos e símbolos impressos na carta.
+  A versão 3.7.0 torna o login exclusivamente por e-mail, aceita qualquer senha não vazia e
+  acrescenta a página `Il mio account`: progresso dos 1.472 quesitos, histórico das provas,
+  acompanhamento dos 50 exercícios/soluções de carteggio e reset individual, por seção ou total.
+  A migração `1721600300_email_and_activity_progress.js` cria `study_exercises` e
+  `quiz_attempts`; ela foi aplicada numa cópia isolada do banco e o smoke da API confirmou senha
+  de um caractere, rejeição de login por username, gravação dos três tipos e exclusão total.
+  `npm run validate` passou com 288 testes e `npm run build` concluiu. Backend público, commit,
+  push e deploy ainda não foram alterados nesta sessão.
 
 - **ATUALIZAÇÃO DO DIÁRIO (12/07):** novo post bilíngue registrando o primeiro fluxo com duas
   folhas novas; muda medida em 8 cm e quatro folhas totais. Três fotos da nova leva foram

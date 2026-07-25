@@ -11,24 +11,24 @@ Portfólio de apps web educativos para engenharia, energia, utilidades residenci
 
 ## Apps do portfólio
 
-| Pasta             | Tipo                    | Resumo                                                            | Calc. extraído |
-| ----------------- | ----------------------- | ----------------------------------------------------------------- | :------------: |
-| `bombaagua/`      | Engenharia hidráulica   | Calcula potência, perdas e consumo horário de bomba d'água        |                |
-| `iluminacao/`     | Engenharia elétrica     | Dimensiona lux, lâmpadas e custo de energia residencial           |                |
-| `ventilacao/`     | Conforto ambiental      | Calcula ACH, qualidade do ar e área mínima de ventilação          |                |
-| `chuva/`          | Água / sustentabilidade | Dimensiona captação de chuva, cisterna e economia mensal          |                |
-| `mutuo/`          | Finanças                | Compara SAC, Price e Americano com memorial e gráficos            |       ✅       |
-| `helice/`         | Náutica                 | Apoia escolha de passo de hélice para embarcações de lazer        |                |
-| `patentenautica/` | Educação náutica        | Banco filtrável, conta opcional, fontes oficiais e Carta 5/D     |      n/a       |
-| `solar/`          | Energia                 | Dimensiona sistema fotovoltaico off-grid e configurações          |                |
-| `bitola/`         | Instalações elétricas   | Define bitola de cabos considerando corrente e queda de tensão    |                |
-| `arcondicionado/` | Climatização            | Dimensiona BTU e cenários multi-split                             |                |
-| `aquecimento/`    | Energia térmica         | Dimensiona aquecimento solar de água e ambiente                   |                |
-| `salario/`        | Finanças                | Calcula salário líquido Brasil/Itália com memorial e gráficos     |       ✅       |
-| `fazenda/`        | Planejamento rural      | Planeja produção auto-sustentável com base regional               |                |
-| `previsao/`       | Meteorologia            | Previsão de 7 dias (Open-Meteo): temperatura horária e chuva      |      n/a       |
-| `bugs/`           | Suporte                 | Canal de reporte de problemas e sugestões                         |      n/a       |
-| `sobre/`          | Institucional           | Página de visão geral do projeto e apps ativos                    |      n/a       |
+| Pasta             | Tipo                    | Resumo                                                         | Calc. extraído |
+| ----------------- | ----------------------- | -------------------------------------------------------------- | :------------: |
+| `bombaagua/`      | Engenharia hidráulica   | Calcula potência, perdas e consumo horário de bomba d'água     |                |
+| `iluminacao/`     | Engenharia elétrica     | Dimensiona lux, lâmpadas e custo de energia residencial        |                |
+| `ventilacao/`     | Conforto ambiental      | Calcula ACH, qualidade do ar e área mínima de ventilação       |                |
+| `chuva/`          | Água / sustentabilidade | Dimensiona captação de chuva, cisterna e economia mensal       |                |
+| `mutuo/`          | Finanças                | Compara SAC, Price e Americano com memorial e gráficos         |       ✅       |
+| `helice/`         | Náutica                 | Apoia escolha de passo de hélice para embarcações de lazer     |                |
+| `patentenautica/` | Educação náutica        | Banco filtrável, conta opcional, fontes oficiais e Carta 5/D   |      n/a       |
+| `solar/`          | Energia                 | Dimensiona sistema fotovoltaico off-grid e configurações       |                |
+| `bitola/`         | Instalações elétricas   | Define bitola de cabos considerando corrente e queda de tensão |                |
+| `arcondicionado/` | Climatização            | Dimensiona BTU e cenários multi-split                          |                |
+| `aquecimento/`    | Energia térmica         | Dimensiona aquecimento solar de água e ambiente                |                |
+| `salario/`        | Finanças                | Calcula salário líquido Brasil/Itália com memorial e gráficos  |       ✅       |
+| `fazenda/`        | Planejamento rural      | Planeja produção auto-sustentável com base regional            |                |
+| `previsao/`       | Meteorologia            | Previsão de 7 dias (Open-Meteo): temperatura horária e chuva   |      n/a       |
+| `bugs/`           | Suporte                 | Canal de reporte de problemas e sugestões                      |      n/a       |
+| `sobre/`          | Institucional           | Página de visão geral do projeto e apps ativos                 |      n/a       |
 
 A coluna **Calc. extraído** sinaliza apps cuja lógica numérica foi separada em `<app>/<app>-calc.js` (ESM puro, sem DOM) e está coberta por testes automatizados. Os demais seguem o padrão original (cálculo dentro da classe da app); a migração será feita em ondas — ver [ROADMAP.md](./ROADMAP.md).
 
@@ -127,7 +127,7 @@ Observações:
 
 - `npm run validate` é a verificação completa antes de commit.
 - A validação completa inclui a auditoria de integridade da camada oficial italiana e das traduções estáticas do `patentenautica/`.
-- O `patentenautica/` continua utilizável sem conta; quando o usuário entra, o progresso é sincronizado pelo backend PocketBase autohospedado descrito em `patentenautica/backend/`.
+- O `patentenautica/` continua utilizável sem conta; o login cloud aceita somente e-mail e sincroniza questões, histórico de quizzes e exercícios de carteggio. A página de conta permite acompanhar e redefinir esse progresso pelo backend PocketBase autohospedado descrito em `patentenautica/backend/`.
 - O projeto usa `Chart.js` local em `assets/js/vendor/`, `localStorage` para preferências/configurações e GoatCounter para analytics.
 - ESLint precisa ser executado a partir de `local/` (config em `local/.eslintrc.json`).
 
