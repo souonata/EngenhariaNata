@@ -180,6 +180,9 @@ a {
 .nav-item.is-active span {
   color: var(--aqua);
 }
+.mobile-tabbar {
+  display: none;
+}
 .sidebar-note {
   color: #76908f;
   font-size: 10px;
@@ -960,6 +963,15 @@ p {
   gap: 10px;
   margin-top: 25px;
 }
+.quiz-runner:not([hidden]) ~ .bank-browser {
+  display: none;
+}
+#quizRunner,
+#quizResult,
+#chart5dTitle,
+.bank-browser {
+  scroll-margin-top: 88px;
+}
 .quiz-result {
   padding: 40px;
   text-align: center;
@@ -1164,6 +1176,24 @@ p {
   margin-top: 15px;
   display: grid;
   gap: 8px;
+}
+.bank-more {
+  padding: 18px;
+  border: 1px dashed rgba(68, 185, 198, 0.45);
+  border-radius: 10px;
+  background: rgba(68, 185, 198, 0.05);
+  text-align: center;
+}
+.bank-more p {
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.bank-more > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 .bank-action-bar {
   margin-top: 10px;
@@ -1472,6 +1502,27 @@ p {
 .chart-viewport:focus-visible {
   outline: 3px solid rgba(68, 185, 198, 0.35);
   outline-offset: 2px;
+}
+.chart-loading {
+  position: sticky;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  width: fit-content;
+  max-width: calc(100% - 32px);
+  margin: 0;
+  padding: 10px 14px;
+  color: var(--navy-900);
+  border: 1px solid rgba(7, 28, 38, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 254, 250, 0.94);
+  box-shadow: 0 8px 24px rgba(7, 28, 38, 0.14);
+  font-size: 0.78rem;
+  font-weight: 800;
+  transform: translate(-50%, -50%);
+}
+.chart-viewport.is-loading {
+  cursor: progress;
 }
 .chart-stage {
   position: relative;
@@ -2001,6 +2052,9 @@ p {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+.quiz-running .glossary-fab {
+  display: none;
 }
 .glossary-fab span {
   color: #80d4da;
@@ -2582,6 +2636,17 @@ body.profile-open {
 [data-theme="dark"] .chart-toolbar {
   background: #102d37;
 }
+[data-theme="dark"] .mobile-tabbar {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(6, 24, 32, 0.96);
+}
+[data-theme="dark"] .mobile-nav-item {
+  color: #9ab1b3;
+}
+[data-theme="dark"] .mobile-nav-item.is-active {
+  color: #eaffff;
+  background: rgba(68, 185, 198, 0.14);
+}
 [data-theme="dark"] .chart-toolbar button {
   background: #173b46;
 }
@@ -2635,13 +2700,105 @@ body.profile-open {
     margin-left: 0;
   }
   .menu-toggle {
-    display: block;
+    display: none;
+  }
+  .mobile-tabbar {
+    position: fixed;
+    display: grid;
+    z-index: 44;
+    right: 10px;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    left: 10px;
+    min-height: 64px;
+    padding: 5px;
+    border: 1px solid var(--line);
+    border-radius: 17px;
+    background: rgba(255, 254, 250, 0.96);
+    box-shadow: 0 16px 42px rgba(6, 24, 32, 0.2);
+    backdrop-filter: blur(18px);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 3px;
+  }
+  .quiz-running .mobile-tabbar {
+    display: none;
+  }
+  .mobile-nav-item {
+    min-width: 0;
+    min-height: 54px;
+    padding: 5px 2px;
+    color: #657c80;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 2px;
+  }
+  .mobile-nav-item span {
+    color: #668f94;
+    font-size: 17px;
+    line-height: 1;
+  }
+  .mobile-nav-item b {
+    overflow: hidden;
+    max-width: 100%;
+    font-size: 9px;
+    font-weight: 750;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .mobile-nav-item.is-active {
+    color: var(--navy-900);
+    background: rgba(68, 185, 198, 0.12);
+  }
+  .mobile-nav-item.is-active span {
+    color: #16818d;
+  }
+  .mobile-glossary-icon {
+    font-size: 8px !important;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+  }
+  [data-study-mode="both"] .mobile-nav-item b {
+    font-size: 8px;
+    line-height: 1.05;
+    white-space: normal;
+  }
+  .button,
+  .text-button,
+  .bank-select {
+    min-height: 44px;
+  }
+  .global-search input,
+  .mode-card select,
+  .bank-tools input,
+  .bank-tools select,
+  .exercise-controls select {
+    height: 44px;
+  }
+  .mode-btn,
+  .theme-toggle-btn,
+  .home-link {
+    min-width: 44px;
+    height: 44px;
+  }
+  .chart-toolbar button {
+    min-width: 44px;
+    height: 44px;
+  }
+  .bank-action-bar .button,
+  .bank-row button,
+  #randomQuizCount {
+    min-height: 44px;
   }
   .scope-pill {
     display: none;
   }
   .view {
     padding-top: 30px;
+    padding-bottom: calc(120px + env(safe-area-inset-bottom));
   }
   .stat-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -2689,6 +2846,12 @@ body.profile-open {
   .bank-visible-note {
     width: 100%;
   }
+  .glossary-fab {
+    display: none;
+  }
+  .toast {
+    bottom: calc(84px + env(safe-area-inset-bottom));
+  }
 }
 @media (max-width: 560px) {
   .topbar {
@@ -2703,7 +2866,7 @@ body.profile-open {
     padding-right: 12px;
   }
   .view {
-    padding: 24px 14px 60px;
+    padding: 24px 14px calc(138px + env(safe-area-inset-bottom));
   }
   .hero {
     min-height: 440px;
@@ -2761,6 +2924,9 @@ body.profile-open {
     align-items: stretch;
     flex-direction: column;
   }
+  .bank-action-bar .button {
+    min-height: 44px;
+  }
   .bank-visible-note {
     flex-wrap: wrap;
   }
@@ -2778,6 +2944,8 @@ body.profile-open {
   .bank-row button {
     grid-column: auto;
     justify-self: start;
+    min-height: 44px;
+    padding: 0 8px;
   }
   .bank-row-actions {
     grid-column: 3;
@@ -2803,6 +2971,10 @@ body.profile-open {
     width: 100%;
     justify-content: center;
   }
+  .chart-toolbar button {
+    min-width: 44px;
+    height: 44px;
+  }
   .chart-coordinate-card {
     grid-template-columns: 34px minmax(0, 1fr);
   }
@@ -2827,34 +2999,49 @@ body.profile-open {
     flex-direction: column;
   }
   .topbar {
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44px;
     height: auto;
     min-height: 62px;
     padding-top: 8px;
     padding-bottom: 8px;
   }
   .global-search {
-    min-width: calc(100% - 48px);
-    order: 1;
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+    max-width: none;
+    width: 100%;
+  }
+  .global-search input {
+    height: 44px;
   }
   .mode-selector {
-    order: 3;
+    grid-column: 1 / -1;
+    grid-row: 2;
     width: 100%;
     justify-content: center;
+  }
+  .mode-btn,
+  .theme-toggle-btn {
+    height: 44px;
   }
   .mode-btn {
     flex: 1;
   }
   .home-link {
-    order: 2;
+    grid-column: 2;
+    grid-row: 1;
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
   }
   .translation-notice {
     flex-direction: column;
     gap: 1px;
   }
   .glossary-fab {
-    right: 12px;
-    bottom: 12px;
+    display: none;
   }
   .glossary-drawer {
     padding: 20px 16px;
@@ -2882,6 +3069,25 @@ body.profile-open {
   }
   .lang-pair > .lang-pt {
     font-size: 0.9em;
+  }
+  .button,
+  .text-button,
+  .bank-select {
+    min-height: 44px;
+  }
+  .bank-select input {
+    width: 20px;
+    height: 20px;
+  }
+  .bank-more > div {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  #quizRunner,
+  #quizResult,
+  #chart5dTitle,
+  .bank-browser {
+    scroll-margin-top: 132px;
   }
 }
 

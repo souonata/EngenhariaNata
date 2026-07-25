@@ -398,9 +398,8 @@ function readJpegDimensions(buffer) {
 }
 
 const displayChartPath = path.join(root, chartSource.displayImage);
-const displayChartDimensions = readJpegDimensions(
-  fs.readFileSync(displayChartPath),
-);
+const displayChartBytes = fs.readFileSync(displayChartPath);
+const displayChartDimensions = readJpegDimensions(displayChartBytes);
 if (
   displayChartDimensions.width !== chartSource.displayImageWidth ||
   displayChartDimensions.height !== chartSource.displayImageHeight
@@ -418,6 +417,17 @@ if (
   Math.abs(displayAspectRatio - logicalAspectRatio) > 0.001
 ) {
   fail("A carta web não preserva a geometria do plano lógico calibrado.");
+}
+const displayChartSha256 = crypto
+  .createHash("sha256")
+  .update(displayChartBytes)
+  .digest("hex");
+if (
+  chartSource.displayImageSource !== "original-pdf-embedded-image" ||
+  displayChartBytes.length !== chartSource.displayImageBytes ||
+  displayChartSha256 !== chartSource.displayImageSha256
+) {
+  fail("A carta web não corresponde ao JPEG original extraído do PDF.");
 }
 
 const enhancedPdfPath = path.join(root, chartSource.enhancedPdf);
@@ -510,12 +520,18 @@ if (
 )
   fail("Rota, rótulos e marcadores da carta não estão finos e a 50%.");
 if (
-  !appSource.includes("./carta nautica 5D con bordo.jpg?url") ||
+  !appSource.includes("./carta nautica 5D originale.jpg?url") ||
   !appSource.includes("./Carta 5D 340dpi migliorata.pdf?url") ||
+  !appSource.includes("function ensureChartImageLoaded()") ||
+  !appSource.includes("image.src = chart5dUrl") ||
+  !appSource.includes("ensureChartImageLoaded();") ||
   !appSource.includes('chartFullLink").href = chart5dEnhancedPdfUrl') ||
-  appSource.includes("./carta nautica 5D allineata.webp?url")
+  appSource.includes("./carta nautica 5D allineata.webp?url") ||
+  appSource.includes("./carta nautica 5D con bordo.jpg?url")
 )
-  fail("O visualizador não usa a carta aprimorada e o PDF em 340 DPI.");
+  fail(
+    "O visualizador não usa sob demanda a carta original e o PDF opcional em 340 DPI.",
+  );
 if (
   !appSource.includes("const markerEndpointInset =") ||
   !appSource.includes(
@@ -560,8 +576,16 @@ studyFeatureIds.forEach((id) => {
   if (!indexHtml.includes(`id="${id}"`))
     fail(`A interface de estudo não contém #${id}.`);
 });
-if (/bankLimit|id="bankMore"/.test(indexHtml + appSource))
-  fail("A banca ainda limita artificialmente a lista de questões.");
+if (
+  !appSource.includes("const BANK_BATCH_SIZE = 40") ||
+  !appSource.includes("data-bank-more") ||
+  !appSource.includes("data-bank-all") ||
+  !appSource.includes("results.slice(0, bankVisibleCount)")
+) {
+  fail(
+    "A banca não preserva o carregamento progressivo com acesso a todos os resultados.",
+  );
+}
 if (
   !appSource.includes('const PROFILE_KEY = "rotta12-study-profile-v1"') ||
   !appSource.includes("recordQuizAnswer") ||
@@ -653,6 +677,9 @@ const summary = {
   chartSourceDimensions: `${chartSource.embeddedImageWidth}x${chartSource.embeddedImageHeight}`,
   chartDimensions: `${chartData.chart.width}x${chartData.chart.height}`,
   chartWebPixelDimensions: `${displayChartDimensions.width}x${displayChartDimensions.height}`,
+  chartWebBytes: displayChartBytes.length,
+  chartWebSource: chartSource.displayImageSource,
+  chartDeferredLoading: true,
   chartHasGraduatedBorder: true,
   chartEnhancedPdfDpi: chartSource.enhancedPdfDpi,
   chartEnhancedPdfDimensions: `${chartSource.enhancedImageWidth}x${chartSource.enhancedImageHeight}`,
@@ -685,7 +712,8 @@ const summary = {
   chartOverlayOpacity: 0.5,
   chartRouteLineWidth: 5,
   chartMarkerLineWidth: 2.5,
-  bankRendersAllFilteredQuestions: true,
+  bankProgressiveBatchSize: 40,
+  bankCanShowAllFilteredQuestions: true,
   localStudyProfile: true,
   cloudAccountSync: true,
   accountBackendSchema: true,

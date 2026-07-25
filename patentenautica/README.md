@@ -6,7 +6,8 @@ Banco di studio offline e bilingue per la patente nautica italiana **entro 12 mi
 
 - Modalità persistenti **IT originale**, **PT traduzione** e **IT + PT** senza ricaricare la pagina.
 - 1.472 quesiti BASE del DD 131/2022 e 103 figure ufficiali.
-- Banca completa senza paginazione artificiale, filtrabile per testo IT/PT, materia, argomento e stato di studio.
+- Banca completa senza pagine numerate, filtrabile per testo IT/PT, materia, argomento e stato di studio; i risultati compaiono in blocchi progressivi da 40, con comandi per mostrarne altri o visualizzarli tutti.
+- Navigazione inferiore a portata di pollice su telefono e tablet, controlli tattili da almeno 44 px e modalità quiz concentrata, senza banca dati o pulsanti flottanti sotto la domanda.
 - Quiz casuali dai risultati filtrati, allenamenti sui quesiti selezionati e simulazioni composte soltanto da quesiti non ancora visti.
 - Account facoltativo con accesso esclusivamente tramite e-mail e sincronizzazione di quesiti, prove completate ed esercizi di carteggio tra dispositivi; il profilo locale resta disponibile offline con esportazione/importazione JSON.
 - Le fonti ministeriali, normative e istituzionali sono raccolte una sola volta nella sezione **Fonti e criteri**, senza un pannello ripetuto in ciascun quesito.
@@ -46,7 +47,7 @@ Il backend account è documentato in `backend/README.md`. In produzione l'API è
 - `data/authoritative-sources.json`: catalogo verificabile di atti e fonti istituzionali, con URL ufficiali, hash e dimensioni delle copie locali.
 - `data/glossary.json`: terminologia nautica italiana e portoghese brasiliana.
 - `Carta 5D_5_Immagine unica Adobe alleggerita.pdf`: sorgente monocromatica completa, con bordo graduato e immagine incorporata 7501 × 4844.
-- `carta nautica 5D con bordo.jpg`: copia web migliorata 7501 × 4844, mostrata dal visualizzatore alla risoluzione nativa e con l'intera cornice geografica.
+- `carta nautica 5D originale.jpg`: immagine JPEG originale estratta senza ricompressione dal PDF, 7501 × 4844 e 4,66 MB. Viene caricata soltanto quando si apre **Carteggio**, mantenendo l'intera cornice geografica e la calibrazione delle rotte.
 - `Carta 5D 340dpi migliorata.pdf`: derivato non generativo 15002 × 9688 a 340 DPI; conserva pagina, geometria e contenuto dell'originale ed è disponibile dal pulsante sotto la carta.
 - `sources/`: DM 323/2021, DD 131/2022, DD 10/2022 e atti della Gazzetta Ufficiale usati come riferimenti locali.
 
@@ -60,7 +61,7 @@ La pagina **Fonti e criteri** usa soltanto la banca ministeriale, atti pubblici 
 
 `scripts/build_authoritative_references.py` localizza ciascun quesito nelle 338 pagine del PDF MIT, verifica hash e dimensioni degli atti locali e rigenera catalogo e indice ufficiale. Usa `pypdf`, fissato in `scripts/requirements-pdf.txt`.
 
-`scripts/align_chart_image.ps1` estrae con Poppler l'immagine incorporata nel PDF, applica un filtro di nitidezza controllato e prepara sia il JPEG web nativo sia il raster 2×. `scripts/build_enhanced_chart_pdf.py` incorpora quest'ultimo in una pagina delle stesse dimensioni dell'originale, ottenendo 340 DPI reali. Il confronto automatico mantiene similarità 0,9995 e geometria identica. Una trasformazione omografica verificata su 3.382 corrispondenze trasferisce la calibrazione ai 28 punti con errore mediano inferiore a 1 px; il layout di **Partenza/Arrivo** evita automaticamente la rotta e i toponimi evidenziati.
+`scripts/align_chart_image.ps1` estrae con Poppler il JPEG originale incorporato nel PDF senza ricomprimerlo e prepara separatamente il raster 2×. `scripts/build_enhanced_chart_pdf.py` incorpora quest'ultimo in una pagina delle stesse dimensioni dell'originale, ottenendo 340 DPI reali. Il confronto automatico mantiene similarità 0,9995 e geometria identica. Una trasformazione omografica verificata su 3.382 corrispondenze trasferisce la calibrazione ai 28 punti con errore mediano inferiore a 1 px; il layout di **Partenza/Arrivo** evita automaticamente la rotta e i toponimi evidenziati.
 
 ```bash
 python scripts/build_translations.py
