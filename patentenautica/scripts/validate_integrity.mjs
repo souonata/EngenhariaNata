@@ -542,27 +542,33 @@ if (
 )
   fail("A interface pública ainda contém referências privadas/Scribd/Navico.");
 if (
-  !appSource.includes('context.strokeStyle = "#ffd600"') ||
   !appSource.includes('context.strokeStyle = "#ec008c"') ||
-  !appSource.includes("context.lineWidth = 1")
+  !appSource.includes("context.lineWidth = 1") ||
+  !appSource.includes("const crossHalfSize = 8") ||
+  appSource.includes('context.strokeStyle = "#ffd600"') ||
+  appSource.includes("const markerRadius")
 )
-  fail("Os pontos da carta não usam aro amarelo e cruz magenta de 1 px.");
+  fail("Os pontos da carta não usam exclusivamente a cruz magenta de 1 px.");
 if (
   !appSource.includes("const overlayOpacity = 0.5") ||
   !appSource.includes("context.globalAlpha = overlayOpacity") ||
-  !appSource.includes("const routeLineWidth = 5") ||
-  !appSource.includes("const markerLineWidth = 2.5")
+  !appSource.includes("const routeLineWidth = 5")
 )
-  fail("Rota, rótulos e marcadores da carta não estão finos e a 50%.");
+  fail("Rota e rótulos da carta não estão finos e a 50%.");
 if (
   !appSource.includes("const toleranceFillOpacity = 0.18") ||
   !appSource.includes("const guideOpacity = 0.62") ||
   !appSource.includes("projection.tolerance.polygon") ||
   !appSource.includes("guide.segment[0].x") ||
+  appSource.includes("const toleranceStrokeOpacity") ||
+  appSource.includes("guide.borderAnchor.x") ||
+  (appSource.match(
+    /traceChartPolygon\(context, projection\.tolerance\.polygon\);/g,
+  ) || []).length !== 1 ||
   !indexHtml.includes('class="chart-reading-legend"')
 )
   fail(
-    "A carta não mostra áreas semitransparentes e guias desde as escalas graduadas.",
+    "A carta não mostra somente o sombreado sem contorno e as guias desde as escalas graduadas.",
   );
 if (
   !appSource.includes("./carta nautica 5D originale.jpg?url") ||
@@ -754,11 +760,13 @@ const summary = {
   ).length,
   questionSourceModalRemoved: true,
   privateStudySourcesRemoved: true,
-  chartPointTarget: "yellow-ring-magenta-cross-1px",
+  chartPointTarget: "magenta-cross-1px",
+  chartToleranceOutline: false,
+  chartGuideBorderDots: false,
   chartRouteClearsPointTargets: true,
   chartOverlayOpacity: 0.5,
   chartRouteLineWidth: 5,
-  chartMarkerLineWidth: 2.5,
+  chartCrossHalfSize: 8,
   bankProgressiveBatchSize: 40,
   bankCanShowAllFilteredQuestions: true,
   localStudyProfile: true,

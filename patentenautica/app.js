@@ -2259,13 +2259,11 @@ function drawChartRoute() {
   const overlayOpacity = 0.5;
   const guideOpacity = 0.62;
   const toleranceFillOpacity = 0.18;
-  const toleranceStrokeOpacity = 0.84;
   const routeLineWidth = 5;
-  const markerRadius = 11;
-  const markerLineWidth = 2.5;
+  const crossHalfSize = 8;
   const routeLength = Math.hypot(end.x - start.x, end.y - start.y);
   const markerEndpointInset =
-    markerRadius + markerLineWidth / 2 + routeLineWidth / 2 + 3;
+    crossHalfSize + routeLineWidth / 2 + 3;
   const routeUnitX = routeLength ? (end.x - start.x) / routeLength : 0;
   const routeUnitY = routeLength ? (end.y - start.y) / routeLength : 0;
   const visibleRouteStart = {
@@ -2314,33 +2312,11 @@ function drawChartRoute() {
       context.moveTo(guide.segment[0].x, guide.segment[0].y);
       context.lineTo(guide.segment[1].x, guide.segment[1].y);
       context.stroke();
-      context.setLineDash([]);
-      context.fillStyle = color;
-      context.beginPath();
-      context.arc(
-        guide.borderAnchor.x,
-        guide.borderAnchor.y,
-        5,
-        0,
-        Math.PI * 2,
-      );
-      context.fill();
-      context.setLineDash([16, 12]);
     });
     context.setLineDash([]);
     context.globalAlpha = toleranceFillOpacity;
     context.fillStyle = color;
     traceChartPolygon(context, projection.tolerance.polygon);
-    context.fill();
-    context.globalAlpha = toleranceStrokeOpacity;
-    context.strokeStyle = color;
-    context.lineWidth = 4;
-    traceChartPolygon(context, projection.tolerance.polygon);
-    context.stroke();
-    context.globalAlpha = guideOpacity;
-    context.fillStyle = color;
-    context.beginPath();
-    context.arc(point.x, point.y, 4, 0, Math.PI * 2);
     context.fill();
   });
 
@@ -2414,21 +2390,14 @@ function drawChartRoute() {
   });
 
   markers.forEach(({ point }) => {
-    context.shadowColor = "rgba(0, 0, 0, 0.52)";
-    context.shadowBlur = 4;
-    context.strokeStyle = "#ffd600";
-    context.lineWidth = markerLineWidth;
-    context.beginPath();
-    context.arc(point.x, point.y, markerRadius, 0, Math.PI * 2);
-    context.stroke();
     context.shadowBlur = 0;
     context.strokeStyle = "#ec008c";
     context.lineWidth = 1;
     context.beginPath();
-    context.moveTo(point.x - 8, point.y);
-    context.lineTo(point.x + 8, point.y);
-    context.moveTo(point.x, point.y - 8);
-    context.lineTo(point.x, point.y + 8);
+    context.moveTo(point.x - crossHalfSize, point.y);
+    context.lineTo(point.x + crossHalfSize, point.y);
+    context.moveTo(point.x, point.y - crossHalfSize);
+    context.lineTo(point.x, point.y + crossHalfSize);
     context.stroke();
   });
   context.restore();
