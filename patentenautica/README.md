@@ -12,7 +12,7 @@ Banco di studio offline e bilingue per la patente nautica italiana **entro 12 mi
 - Account facoltativo con accesso esclusivamente tramite e-mail e sincronizzazione di quesiti, prove completate ed esercizi di carteggio tra dispositivi; il profilo locale resta disponibile offline con esportazione/importazione JSON.
 - Le fonti ministeriali, normative e istituzionali sono raccolte una sola volta nella sezione **Fonti e criteri**, senza un pannello ripetuto in ciascun quesito.
 - Simulazione di 20 quesiti, 30 minuti e superamento con almeno 16 risposte esatte.
-- Carta nautica didattica 5/D ad alta risoluzione, con zoom centrato sul cursore tramite rotellina, pizzico a due dita, trascinamento con mouse o un dito, comandi da tastiera e rotta evidenziata. Partenza e arrivo hanno un bersaglio preciso con croce magenta da 1 px e anello giallo; le guide geografiche dalla cornice più vicina sono calcolate ma invisibili, le sole etichette aggiunte sono **Partenza** e **Arrivo** e il toponimo originale sulla carta viene evidenziato in giallo.
+- Carta nautica didattica 5/D ad alta risoluzione, con zoom centrato sul cursore tramite rotellina, pizzico a due dita, trascinamento con mouse o un dito, comandi da tastiera e rotta evidenziata. Partenza e arrivo mostrano un riquadro semitrasparente fra i quattro limiti ammessi (±0,3′) e due guide tratteggiate dalla scala graduata più vicina al valore medio; carta, nomi e simboli restano visibili sotto la sovrapposizione.
 - Nei 50 esercizi, ogni risposta compare accanto al quesito corrispondente; distanza, orario, velocità, carburante e coordinate hanno unità uniformi e gli intervalli ammessi sono segnalati esplicitamente.
 - Tutti i 50 esercizi di carteggio collegano partenza e arrivo a 28 punti georeferenziati, mostrando le coordinate prima della soluzione.
 - Ricerca unica in italiano e portoghese, anche quando è visibile una sola lingua.
@@ -42,7 +42,7 @@ Il backend account è documentato in `backend/README.md`. In produzione l'API è
 - `data/quiz-pt.json`: testo portoghese parallelo, indicizzato per lo stesso `id`.
 - `data/content.js` / `data/content-pt.json`: metadati delle materie e programma IT/PT.
 - `data/carteggio.js` / `data/carteggio-pt.json`: esercizi e soluzioni IT/PT.
-- `data/chart-points.json`: calibrazione della carta 5/D, 28 punti e itinerari dei 50 esercizi.
+- `data/chart-points.json`: calibrazione della carta 5/D, tolleranza geografica di ±0,3′, 28 punti e itinerari dei 50 esercizi.
 - `data/question-authority.json`: indice interno di controllo dei 1.472 quesiti → pagina MIT e regola di verifica; non contiene il gabarito e non genera più pannelli per singolo quesito.
 - `data/authoritative-sources.json`: catalogo verificabile di atti e fonti istituzionali, con URL ufficiali, hash e dimensioni delle copie locali.
 - `data/glossary.json`: terminologia nautica italiana e portoghese brasiliana.
@@ -61,7 +61,7 @@ La pagina **Fonti e criteri** usa soltanto la banca ministeriale, atti pubblici 
 
 `scripts/build_authoritative_references.py` localizza ciascun quesito nelle 338 pagine del PDF MIT, verifica hash e dimensioni degli atti locali e rigenera catalogo e indice ufficiale. Usa `pypdf`, fissato in `scripts/requirements-pdf.txt`.
 
-`scripts/align_chart_image.ps1` estrae con Poppler il JPEG originale incorporato nel PDF senza ricomprimerlo e prepara separatamente il raster 2×. `scripts/build_enhanced_chart_pdf.py` incorpora quest'ultimo in una pagina delle stesse dimensioni dell'originale, ottenendo 340 DPI reali. Il confronto automatico mantiene similarità 0,9995 e geometria identica. Una trasformazione omografica verificata su 3.382 corrispondenze trasferisce la calibrazione ai 28 punti con errore mediano inferiore a 1 px; il layout di **Partenza/Arrivo** evita automaticamente la rotta e i toponimi evidenziati.
+`scripts/align_chart_image.ps1` estrae con Poppler il JPEG originale incorporato nel PDF senza ricomprimerlo e prepara separatamente il raster 2×. `scripts/build_enhanced_chart_pdf.py` incorpora quest'ultimo in una pagina delle stesse dimensioni dell'originale, ottenendo 340 DPI reali. Il confronto automatico mantiene similarità 0,9995 e geometria identica. Una trasformazione omografica verificata su 3.382 corrispondenze trasferisce la calibrazione ai 28 punti con errore mediano inferiore a 1 px; il validatore verifica inoltre i quattro vertici di tolleranza e i segmenti dalla cornice al centro per tutti i punti.
 
 ```bash
 python scripts/build_translations.py

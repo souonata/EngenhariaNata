@@ -11,11 +11,12 @@ import chartData from "./data/chart-points.json";
 import authoritativeSources from "./data/authoritative-sources.json";
 import {
   placeRouteLabels,
-  projectChartGuides,
+  projectChartTolerance,
   toponymHighlightBounds,
 } from "./chart-layout.js";
 import {
   buildExerciseAnswers,
+  formatCoordinateRange,
   splitExercisePrompt,
 } from "./exercise-answers-calc.js";
 import dm323PdfUrl from "./sources/dm-323-2021-programma-esame.pdf?url";
@@ -372,6 +373,15 @@ const UI = {
     "Trascina per spostarti · rotellina o pizzico per lo zoom",
     "Arraste para mover · roda do mouse ou pinça para zoom",
   ],
+  chartReadingLegend: [
+    "Lettura delle coordinate sulla carta",
+    "Leitura das coordenadas na carta",
+  ],
+  chartToleranceLegend: ["Area ammessa (±0,3′)", "Área aceita (±0,3′)"],
+  chartGuideLegend: [
+    "Guide dal bordo al valore medio",
+    "Guias da borda até o valor médio",
+  ],
   chartLoading: [
     "Caricamento della carta originale…",
     "Carregando a carta original…",
@@ -389,12 +399,13 @@ const UI = {
   fitChart: ["Adatta", "Ajustar"],
   openFullChart: ["Apri PDF 340 DPI", "Abrir PDF em 340 DPI"],
   chartAccuracyNote: [
-    "Ogni bersaglio è l’intersezione delle guide di latitudine e longitudine tracciate dal valore sulla cornice più vicina; le guide restano invisibili. Si usa il centro della tolleranza e il toponimo stampato è evidenziato in giallo.",
-    "Cada alvo é a interseção das guias de latitude e longitude traçadas a partir do valor na borda mais próxima; as guias ficam invisíveis. Usa-se o centro da tolerância e o topônimo impresso é realçado em amarelo.",
+    "Il riquadro semitrasparente mostra i limiti ammessi di latitudine e longitudine (±0,3′). Le guide tratteggiate partono dalle scale graduate più vicine e si incrociano sul valore medio.",
+    "O quadrado semitransparente mostra os limites aceitos de latitude e longitude (±0,3′). As guias tracejadas partem das escalas graduadas mais próximas e se cruzam no valor médio.",
   ],
   departure: ["PARTENZA", "PARTIDA"],
   arrival: ["ARRIVO", "CHEGADA"],
   coordinates: ["Coordinate", "Coordenadas"],
+  acceptedLimits: ["Limiti ammessi", "Limites aceitos"],
   coordinateBasisDd10: [
     "Centro della tolleranza DD 10/2022",
     "Centro da tolerância DD 10/2022",
@@ -2224,19 +2235,31 @@ function coordinateCard(point, role, marker) {
   return `<article class="chart-coordinate-card ${role}">
     <span class="chart-marker-token">${marker}</span>
     <div><small>${ui(role === "departure" ? "departure" : "arrival")}</small><strong>${esc(point.name)}</strong><span>${pairHtml(point.context, point.contextPt, { compact: true })}</span></div>
-    <div class="coordinate-value"><small>${ui("coordinates")}</small><strong>${esc(coordinateLabel(point))}</strong><span>${esc(basis)}</span></div>
+    <div class="coordinate-value"><small>${ui("coordinates")}</small><strong>${esc(coordinateLabel(point))}</strong><span class="coordinate-range"><b>${ui("acceptedLimits")}:</b> ${esc(formatCoordinateRange(point))}</span><span>${esc(basis)}</span></div>
   </article>`;
+}
+
+function traceChartPolygon(context, polygon) {
+  context.beginPath();
+  polygon.forEach((point, index) => {
+    if (index === 0) context.moveTo(point.x, point.y);
+    else context.lineTo(point.x, point.y);
+  });
+  context.closePath();
 }
 
 function drawChartRoute() {
   const canvas = $("#chartOverlay");
   const context = canvas.getContext("2d");
   const { from, to } = routeForExercise();
-  const startProjection = projectChartGuides(chartData.chart, from);
-  const endProjection = projectChartGuides(chartData.chart, to);
+  const startProjection = projectChartTolerance(chartData.chart, from);
+  const endProjection = projectChartTolerance(chartData.chart, to);
   const start = startProjection.point;
   const end = endProjection.point;
   const overlayOpacity = 0.5;
+  const guideOpacity = 0.62;
+  const toleranceFillOpacity = 0.18;
+  const toleranceStrokeOpacity = 0.84;
   const routeLineWidth = 5;
   const markerRadius = 11;
   const markerLineWidth = 2.5;
@@ -2262,14 +2285,66 @@ function drawChartRoute() {
   }
   context.clearRect(0, 0, canvas.width, canvas.height);
   context.save();
-  context.globalAlpha = overlayOpacity;
   context.lineCap = "round";
   context.lineJoin = "round";
 
   const markers = [
-    { point: start, source: from, label: "Partenza" },
-    { point: end, source: to, label: "Arrivo" },
+    {
+      point: start,
+      projection: startProjection,
+      source: from,
+      label: "Partenza",
+      color: "#0c7180",
+    },
+    {
+      point: end,
+      projection: endProjection,
+      source: to,
+      label: "Arrivo",
+      color: "#ef6a4a",
+    },
   ];
+  markers.forEach(({ point, projection, color }) => {
+    context.globalAlpha = guideOpacity;
+    context.strokeStyle = color;
+    context.lineWidth = 3;
+    context.setLineDash([16, 12]);
+    [projection.longitude, projection.latitude].forEach((guide) => {
+      context.beginPath();
+      context.moveTo(guide.segment[0].x, guide.segment[0].y);
+      context.lineTo(guide.segment[1].x, guide.segment[1].y);
+      context.stroke();
+      context.setLineDash([]);
+      context.fillStyle = color;
+      context.beginPath();
+      context.arc(
+        guide.borderAnchor.x,
+        guide.borderAnchor.y,
+        5,
+        0,
+        Math.PI * 2,
+      );
+      context.fill();
+      context.setLineDash([16, 12]);
+    });
+    context.setLineDash([]);
+    context.globalAlpha = toleranceFillOpacity;
+    context.fillStyle = color;
+    traceChartPolygon(context, projection.tolerance.polygon);
+    context.fill();
+    context.globalAlpha = toleranceStrokeOpacity;
+    context.strokeStyle = color;
+    context.lineWidth = 4;
+    traceChartPolygon(context, projection.tolerance.polygon);
+    context.stroke();
+    context.globalAlpha = guideOpacity;
+    context.fillStyle = color;
+    context.beginPath();
+    context.arc(point.x, point.y, 4, 0, Math.PI * 2);
+    context.fill();
+  });
+
+  context.globalAlpha = overlayOpacity;
   context.globalCompositeOperation = "multiply";
   context.shadowBlur = 0;
   context.strokeStyle = "#ffe033";
@@ -2300,7 +2375,8 @@ function drawChartRoute() {
   context.font = "700 24px Arial";
   const highlightObstacles = markers
     .map(({ source }) => toponymHighlightBounds(source, 8))
-    .filter(Boolean);
+    .filter(Boolean)
+    .concat(markers.map(({ projection }) => projection.tolerance.bounds));
   const labelLayouts = placeRouteLabels({
     start,
     end,
@@ -2563,8 +2639,8 @@ function focusChartRoute(adjustZoom = true) {
   const viewport = $("#chartViewport");
   if (!viewport.clientWidth) return;
   const { from, to } = routeForExercise();
-  const start = projectChartGuides(chartData.chart, from).point;
-  const end = projectChartGuides(chartData.chart, to).point;
+  const start = projectChartTolerance(chartData.chart, from).point;
+  const end = projectChartTolerance(chartData.chart, to).point;
   const routeWidth = Math.abs(end.x - start.x) + 520;
   const routeHeight = Math.abs(end.y - start.y) + 420;
   const fitZoom = (viewport.clientWidth - 4) / chartData.chart.width;

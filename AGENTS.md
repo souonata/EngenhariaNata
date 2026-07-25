@@ -151,8 +151,10 @@ npm run build          # build de produção (gera local/dist)
   `Carta 5D 340dpi migliorata.pdf` oferece o mesmo conteúdo em 15002 × 9688/340 DPI, sem
   transformação generativa. `data/chart-points.json` aplica aos 28 pontos uma homografia
   verificada em 3.382 correspondências, com erro mediano inferior a 1 px, e relaciona
-  partida/chegada dos 50 exercícios. O validador bloqueia rotas incompletas, pontos fora da
-  imagem, dimensões divergentes e qualquer rótulo que intercepte a rota.
+  partida/chegada dos 50 exercícios. Cada alvo mostra a área semitransparente definida pelos
+  limites de latitude/longitude (±0,3′) e guias tracejadas da régua mais próxima até o valor médio.
+  O validador bloqueia rotas incompletas, pontos ou limites fora da imagem, guias que não alcancem
+  a borda, dimensões divergentes e qualquer rótulo que intercepte a rota.
 - `data/question-authority.json` mantém internamente a conferência das 1.472 questões contra a
   página da banca MIT e regras institucionais. `data/authoritative-sources.json` cataloga URL oficial
   e, para os atos públicos arquivados, tamanho e SHA-256. A interface apresenta essas referências
@@ -252,6 +254,15 @@ _Última atualização: 2026-07-25_
   com 288 testes, a integridade confirmou os 28 pontos/50 rotas e `npm run build` incluiu o JPEG
   original hasheado. O build foi verificado em 390 × 844: sem download na home, carga ao abrir a
   carta, zoom 24% → 32% e sobreposições alinhadas.
+
+- **LEITURA REAL PELA BORDA (versão 3.9.0, branch `feat/rotta12-chart-reading-guides`):** cada
+  Partenza/Arrivo passa a mostrar um quadrilátero semitransparente calculado pelos quatro limites
+  aceitos de latitude e longitude (centro ±0,3′). Duas guias tracejadas saem das escalas graduadas
+  mais próximas e terminam exatamente no valor médio; pequenos pontos marcam a origem na régua.
+  A legenda e os cartões exibem a área aceita e os intervalos completos. `npm run validate` passou
+  com 36 arquivos/292 testes e a integridade confirmou 28 áreas, 50/50 rotas e todas as guias; o
+  build de produção concluiu. A interface foi verificada em 390 × 844 e 820 × 1180, inclusive com
+  uma segunda rota em outra região da carta, sem overflow horizontal.
 
 - **ATUALIZAÇÃO DO DIÁRIO (12/07):** novo post bilíngue registrando o primeiro fluxo com duas
   folhas novas; muda medida em 8 cm e quatro folhas totais. Três fotos da nova leva foram

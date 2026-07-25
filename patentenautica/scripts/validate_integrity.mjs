@@ -6,8 +6,7 @@ import { fileURLToPath } from "node:url";
 import {
   chartAlignment,
   placeRouteLabels,
-  projectChartGuides,
-  projectChartPoint,
+  projectChartTolerance,
   rectsOverlap,
   segmentIntersectsRect,
   toponymHighlightBounds,
@@ -289,7 +288,7 @@ chartData.points.forEach((point) => {
     fail(`Coordenada inválida no ponto ${point.id}.`);
   if (!point.name || !point.context || !point.contextPt)
     fail(`Ponto ${point.id} sem rótulo bilíngue completo.`);
-  const projection = projectChartGuides(chartData.chart, point);
+  const projection = projectChartTolerance(chartData.chart, point);
   const pixel = projection.point;
   if (
     pixel.x < 0 ||
@@ -304,7 +303,39 @@ chartData.points.forEach((point) => {
       fail(`A guia geográfica de ${point.id} não alcança a borda da carta.`);
     if (pointToLineDistance(pixel, guide.line) > 0.01)
       fail(`A guia geográfica de ${point.id} não cruza o centro do ponto.`);
+    if (
+      guide.segment.length !== 2 ||
+      !isOnChartBorder(guide.segment[0]) ||
+      Math.hypot(guide.segment[1].x - pixel.x, guide.segment[1].y - pixel.y) >
+        0.01
+    )
+      fail(`O segmento visível de ${point.id} não liga a borda ao centro.`);
   });
+  const tolerance = projection.tolerance;
+  if (
+    chartData.chart.answerToleranceMinutes !== 0.3 ||
+    tolerance.minutes !== 0.3 ||
+    tolerance.polygon.length !== 4
+  )
+    fail(`A área de tolerância de ${point.id} não usa ±0,3 minuto.`);
+  tolerance.polygon.forEach((corner) => {
+    if (
+      corner.x < 0 ||
+      corner.x > chartData.chart.width ||
+      corner.y < 0 ||
+      corner.y > chartData.chart.height
+    )
+      fail(`A área de tolerância de ${point.id} saiu da carta.`);
+  });
+  if (
+    tolerance.bounds.width <= 0 ||
+    tolerance.bounds.height <= 0 ||
+    pixel.x < tolerance.bounds.left ||
+    pixel.x > tolerance.bounds.left + tolerance.bounds.width ||
+    pixel.y < tolerance.bounds.top ||
+    pixel.y > tolerance.bounds.top + tolerance.bounds.height
+  )
+    fail(`O centro de ${point.id} não está dentro dos limites aceitos.`);
   if (!Array.isArray(point.toponymHighlight) || !point.toponymHighlight.length)
     fail(`Ponto ${point.id} sem realce do topônimo impresso.`);
   point.toponymHighlight.forEach((stroke) => {
@@ -329,9 +360,13 @@ chartData.points.forEach((point) => {
 chartData.exercises.forEach((route) => {
   const from = chartPointMap.get(route.from);
   const to = chartPointMap.get(route.to);
-  const start = projectChartPoint(chartData.chart, from);
-  const end = projectChartPoint(chartData.chart, to);
-  const obstacles = [from, to].map((point) => toponymHighlightBounds(point, 8));
+  const startProjection = projectChartTolerance(chartData.chart, from);
+  const endProjection = projectChartTolerance(chartData.chart, to);
+  const start = startProjection.point;
+  const end = endProjection.point;
+  const obstacles = [from, to]
+    .map((point) => toponymHighlightBounds(point, 8))
+    .concat([startProjection.tolerance.bounds, endProjection.tolerance.bounds]);
   const layouts = placeRouteLabels({
     start,
     end,
@@ -520,6 +555,16 @@ if (
 )
   fail("Rota, rótulos e marcadores da carta não estão finos e a 50%.");
 if (
+  !appSource.includes("const toleranceFillOpacity = 0.18") ||
+  !appSource.includes("const guideOpacity = 0.62") ||
+  !appSource.includes("projection.tolerance.polygon") ||
+  !appSource.includes("guide.segment[0].x") ||
+  !indexHtml.includes('class="chart-reading-legend"')
+)
+  fail(
+    "A carta não mostra áreas semitransparentes e guias desde as escalas graduadas.",
+  );
+if (
   !appSource.includes("./carta nautica 5D originale.jpg?url") ||
   !appSource.includes("./Carta 5D 340dpi migliorata.pdf?url") ||
   !appSource.includes("function ensureChartImageLoaded()") ||
@@ -691,7 +736,9 @@ const summary = {
     Math.abs(meridianResidualDegrees),
     Math.abs(parallelResidualDegrees),
   ),
-  chartCoordinateGuides: "calculated-hidden-nearest-border",
+  chartCoordinateGuides: "visible-mean-from-nearest-border",
+  chartToleranceAreas: chartData.points.length,
+  chartToleranceMinutes: chartData.chart.answerToleranceMinutes,
   chartToponymHighlights: chartData.points.length,
   chartLabelsClearEveryRoute: true,
   chartWheelPinchAndPan: true,

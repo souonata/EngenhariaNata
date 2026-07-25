@@ -10,7 +10,7 @@
     />
     <title>Rotta 12 — Patente nautica a motore</title>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="./styles.css?v=3.8.1" />
+    <link rel="stylesheet" href="./styles.css?v=3.9.0" />
   </head>
   <body>
     <a class="skip-link" href="#main" data-ui="skipContent">Vai al contenuto</a>
@@ -518,6 +518,24 @@
                 id="chartCoordinateCards"
               ></div>
               <div
+                class="chart-reading-legend"
+                aria-label="Lettura delle coordinate sulla carta"
+                data-ui-aria="chartReadingLegend"
+              >
+                <span
+                  ><i class="chart-legend-tolerance" aria-hidden="true"></i
+                  ><span data-ui="chartToleranceLegend"
+                    >Area ammessa (±0,3′)</span
+                  ></span
+                >
+                <span
+                  ><i class="chart-legend-guide" aria-hidden="true"></i
+                  ><span data-ui="chartGuideLegend"
+                    >Guide dal bordo al valore medio</span
+                  ></span
+                >
+              </div>
+              <div
                 class="chart-viewport"
                 id="chartViewport"
                 tabindex="0"
@@ -730,6 +748,6 @@
       <input id="profileImport" type="file" accept="application/json,.json" />
     </section>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script type="module" src="./app.js?v=3.8.1"></script>
+    <script type="module" src="./app.js?v=3.9.0"></script>
   </body>
 </html>
