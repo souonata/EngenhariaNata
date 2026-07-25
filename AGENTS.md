@@ -264,6 +264,13 @@ _Última atualização: 2026-07-25_
   build de produção concluiu. A interface foi verificada em 390 × 844 e 820 × 1180, inclusive com
   uma segunda rota em outra região da carta, sem overflow horizontal.
 
+- **ALVOS LIMPOS (versão 3.9.1, branch `codex/rotta12-clean-tolerance`):** remove o aro amarelo,
+  o contorno escuro da área de tolerância, o ponto colorido central e os pontos nas origens das
+  guias. Permanecem apenas o preenchimento semitransparente, a cruz magenta de 1 px no centro e
+  as linhas tracejadas vindas das bordas graduadas. `npm run validate` passou com 36 arquivos/292
+  testes, a integridade confirmou os 28 pontos e 50/50 rotas, e o build concluiu. Verificação visual
+  em 390 × 844 e 820 × 1180 confirmou a carta legível, a legenda sem contorno e ausência de overflow.
+
 - **ATUALIZAÇÃO DO DIÁRIO (12/07):** novo post bilíngue registrando o primeiro fluxo com duas
   folhas novas; muda medida em 8 cm e quatro folhas totais. Três fotos da nova leva foram
   selecionadas, tratadas e convertidas para WebP (régua, vista geral e detalhe das folhas

@@ -1515,7 +1515,7 @@ p {
   display: inline-block;
 }
 .chart-legend-tolerance {
-  border: 2px solid #0c7180;
+  border: 0;
   border-radius: 2px;
   background: rgba(12, 113, 128, 0.18);
 }
