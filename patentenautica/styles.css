@@ -1476,11 +1476,59 @@ p {
   white-space: nowrap;
   font-size: 8px;
 }
+.chart-coordinate-card span.coordinate-range {
+  overflow: visible;
+  margin: 2px 0;
+  color: var(--ink);
+  line-height: 1.35;
+  text-overflow: clip;
+  white-space: normal;
+}
+.coordinate-range b {
+  color: var(--muted);
+  font-weight: 800;
+}
 .coordinate-value strong {
   color: #2f747e;
   font:
     600 13px/1.25 Georgia,
     serif;
+}
+.chart-reading-legend {
+  margin: 0 0 10px;
+  color: var(--muted);
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 0.72rem;
+}
+.chart-reading-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.chart-reading-legend i {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 12px;
+  display: inline-block;
+}
+.chart-legend-tolerance {
+  border: 2px solid #0c7180;
+  border-radius: 2px;
+  background: rgba(12, 113, 128, 0.18);
+}
+.chart-legend-guide {
+  position: relative;
+}
+.chart-legend-guide::before {
+  position: absolute;
+  top: 5px;
+  right: 0;
+  left: 0;
+  border-top: 2px dashed #0c7180;
+  content: "";
 }
 .chart-viewport {
   position: relative;

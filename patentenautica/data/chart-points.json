@@ -6,6 +6,7 @@
     "height": 2978,
     "scale": "1:100.000",
     "area": "Dal Canale di Piombino al Promontorio Argentario e Scoglio Africa",
+    "answerToleranceMinutes": 0.3,
     "source": {
       "pdf": "Carta 5D_5_Immagine unica Adobe alleggerita.pdf",
       "embeddedImageWidth": 7501,

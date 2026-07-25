@@ -109,6 +109,19 @@ function nearestLineEnd(point, line) {
   )[0];
 }
 
+function polygonBounds(points) {
+  const left = Math.min(...points.map((point) => point.x));
+  const right = Math.max(...points.map((point) => point.x));
+  const top = Math.min(...points.map((point) => point.y));
+  const bottom = Math.max(...points.map((point) => point.y));
+  return {
+    left,
+    top,
+    width: right - left,
+    height: bottom - top,
+  };
+}
+
 export function projectChartGuides(chart, point) {
   const calibration = chart.calibration;
   const longitudeMinutes = (point.lon - calibration.longitudeOrigin) * 60;
@@ -142,22 +155,80 @@ export function projectChartGuides(chart, point) {
     }),
     chart,
   );
+  const longitudeBorderAnchor = nearestLineEnd(projectedPoint, longitudeGuide);
+  const latitudeBorderAnchor = nearestLineEnd(projectedPoint, latitudeGuide);
 
   return {
     point: projectedPoint,
     longitude: {
       line: longitudeGuide,
-      borderAnchor: nearestLineEnd(projectedPoint, longitudeGuide),
+      borderAnchor: longitudeBorderAnchor,
+      segment: [longitudeBorderAnchor, projectedPoint],
     },
     latitude: {
       line: latitudeGuide,
-      borderAnchor: nearestLineEnd(projectedPoint, latitudeGuide),
+      borderAnchor: latitudeBorderAnchor,
+      segment: [latitudeBorderAnchor, projectedPoint],
     },
   };
 }
 
 export function projectChartPoint(chart, point) {
   return projectChartGuides(chart, point).point;
+}
+
+export function projectChartTolerance(
+  chart,
+  point,
+  toleranceMinutes = chart.answerToleranceMinutes || 0.3,
+) {
+  if (!Number.isFinite(toleranceMinutes) || toleranceMinutes <= 0)
+    throw new TypeError("A tolerância deve ser um número positivo em minutos.");
+  const delta = toleranceMinutes / 60;
+  const center = projectChartGuides(chart, point);
+  const coordinateCorners = [
+    {
+      corner: "northwest",
+      lat: point.lat + delta,
+      lon: point.lon - delta,
+    },
+    {
+      corner: "northeast",
+      lat: point.lat + delta,
+      lon: point.lon + delta,
+    },
+    {
+      corner: "southeast",
+      lat: point.lat - delta,
+      lon: point.lon + delta,
+    },
+    {
+      corner: "southwest",
+      lat: point.lat - delta,
+      lon: point.lon - delta,
+    },
+  ];
+  const polygon = coordinateCorners.map((corner) => ({
+    ...corner,
+    ...projectChartPoint(chart, corner),
+  }));
+
+  return {
+    ...center,
+    tolerance: {
+      minutes: toleranceMinutes,
+      latitude: {
+        minimum: point.lat - delta,
+        maximum: point.lat + delta,
+      },
+      longitude: {
+        minimum: point.lon - delta,
+        maximum: point.lon + delta,
+      },
+      polygon,
+      bounds: polygonBounds(polygon),
+    },
+  };
 }
 
 export function toponymHighlightBounds(point, padding = 0) {
