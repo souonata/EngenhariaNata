@@ -36,7 +36,80 @@ export function transformChartPoint(chart, point) {
   };
 }
 
-export function projectChartPoint(chart, point) {
+function alignChartPoint(chart, point) {
+  const geometry = chartAlignment(chart);
+  const relativeX = point.x - geometry.sourceWidth / 2;
+  const relativeY = point.y - geometry.sourceHeight / 2;
+
+  return transformChartPoint(chart, {
+    x:
+      geometry.cosine * relativeX -
+      geometry.sine * relativeY +
+      geometry.width / 2,
+    y:
+      geometry.sine * relativeX +
+      geometry.cosine * relativeY +
+      geometry.height / 2,
+  });
+}
+
+function clipLineToBounds(first, second, bounds) {
+  const deltaX = second.x - first.x;
+  const deltaY = second.y - first.y;
+  const intersections = [];
+  const add = (x, y) => {
+    if (
+      !Number.isFinite(x) ||
+      !Number.isFinite(y) ||
+      x < -0.001 ||
+      x > bounds.width + 0.001 ||
+      y < -0.001 ||
+      y > bounds.height + 0.001
+    )
+      return;
+    if (
+      intersections.some((point) => Math.hypot(point.x - x, point.y - y) < 0.01)
+    )
+      return;
+    intersections.push({
+      x: clamp(x, 0, bounds.width),
+      y: clamp(y, 0, bounds.height),
+    });
+  };
+
+  if (Math.abs(deltaX) > Number.EPSILON) {
+    add(0, first.y + ((0 - first.x) * deltaY) / deltaX);
+    add(bounds.width, first.y + ((bounds.width - first.x) * deltaY) / deltaX);
+  }
+  if (Math.abs(deltaY) > Number.EPSILON) {
+    add(first.x + ((0 - first.y) * deltaX) / deltaY, 0);
+    add(first.x + ((bounds.height - first.y) * deltaX) / deltaY, bounds.height);
+  }
+
+  if (intersections.length < 2) return [first, second];
+  let longest = [intersections[0], intersections[1]];
+  let longestDistance = 0;
+  intersections.forEach((left, leftIndex) => {
+    intersections.slice(leftIndex + 1).forEach((right) => {
+      const distance = Math.hypot(right.x - left.x, right.y - left.y);
+      if (distance > longestDistance) {
+        longestDistance = distance;
+        longest = [left, right];
+      }
+    });
+  });
+  return longest;
+}
+
+function nearestLineEnd(point, line) {
+  return [...line].sort(
+    (left, right) =>
+      Math.hypot(point.x - left.x, point.y - left.y) -
+      Math.hypot(point.x - right.x, point.y - right.y),
+  )[0];
+}
+
+export function projectChartGuides(chart, point) {
   const calibration = chart.calibration;
   const longitudeMinutes = (point.lon - calibration.longitudeOrigin) * 60;
   const latitudeMinutes = (point.lat - 42) * 60;
@@ -52,19 +125,66 @@ export function projectChartPoint(chart, point) {
     (latitudeAxis + calibration.parallelSlope * longitudeAxis) / divisor;
   const sourceX = longitudeAxis - calibration.meridianSlope * sourceY;
   const geometry = chartAlignment(chart);
-  const relativeX = sourceX - geometry.sourceWidth / 2;
-  const relativeY = sourceY - geometry.sourceHeight / 2;
+  const projectedPoint = alignChartPoint(chart, { x: sourceX, y: sourceY });
+  const longitudeGuide = clipLineToBounds(
+    alignChartPoint(chart, { x: longitudeAxis, y: 0 }),
+    alignChartPoint(chart, {
+      x: longitudeAxis - calibration.meridianSlope * geometry.sourceHeight,
+      y: geometry.sourceHeight,
+    }),
+    chart,
+  );
+  const latitudeGuide = clipLineToBounds(
+    alignChartPoint(chart, { x: 0, y: latitudeAxis }),
+    alignChartPoint(chart, {
+      x: geometry.sourceWidth,
+      y: latitudeAxis + calibration.parallelSlope * geometry.sourceWidth,
+    }),
+    chart,
+  );
 
-  return transformChartPoint(chart, {
-    x:
-      geometry.cosine * relativeX -
-      geometry.sine * relativeY +
-      geometry.width / 2,
-    y:
-      geometry.sine * relativeX +
-      geometry.cosine * relativeY +
-      geometry.height / 2,
-  });
+  return {
+    point: projectedPoint,
+    longitude: {
+      line: longitudeGuide,
+      borderAnchor: nearestLineEnd(projectedPoint, longitudeGuide),
+    },
+    latitude: {
+      line: latitudeGuide,
+      borderAnchor: nearestLineEnd(projectedPoint, latitudeGuide),
+    },
+  };
+}
+
+export function projectChartPoint(chart, point) {
+  return projectChartGuides(chart, point).point;
+}
+
+export function toponymHighlightBounds(point, padding = 0) {
+  const strokes = point.toponymHighlight || [];
+  if (!strokes.length) return null;
+  const left = Math.min(...strokes.flatMap((stroke) => [stroke.x1, stroke.x2]));
+  const right = Math.max(
+    ...strokes.flatMap((stroke) => [stroke.x1, stroke.x2]),
+  );
+  const top = Math.min(
+    ...strokes.flatMap((stroke) => [
+      stroke.y1 - stroke.width / 2,
+      stroke.y2 - stroke.width / 2,
+    ]),
+  );
+  const bottom = Math.max(
+    ...strokes.flatMap((stroke) => [
+      stroke.y1 + stroke.width / 2,
+      stroke.y2 + stroke.width / 2,
+    ]),
+  );
+  return {
+    left: left - padding,
+    top: top - padding,
+    width: right - left + padding * 2,
+    height: bottom - top + padding * 2,
+  };
 }
 
 export function segmentIntersectsRect(start, end, rect, padding = 0) {
@@ -114,9 +234,12 @@ function candidatesForLabel({
   height,
   bounds,
   route,
+  obstacles,
+  edge,
+  gap,
+  markerClearance,
+  routePadding,
 }) {
-  const edge = 20;
-  const gap = 58;
   const positions = [
     { left: marker.x + gap, top: marker.y - height / 2 },
     { left: marker.x - gap - width, top: marker.y - height / 2 },
@@ -141,9 +264,12 @@ function candidatesForLabel({
       if (seen.has(key)) return null;
       seen.add(key);
       const rect = { left, top, width, height };
-      if (segmentIntersectsRect(route.start, route.end, rect, 20)) return null;
-      if (circleIntersectsRect(marker, 43, rect)) return null;
-      if (circleIntersectsRect(otherMarker, 43, rect)) return null;
+      if (segmentIntersectsRect(route.start, route.end, rect, routePadding))
+        return null;
+      if (circleIntersectsRect(marker, markerClearance, rect)) return null;
+      if (circleIntersectsRect(otherMarker, markerClearance, rect)) return null;
+      if (obstacles.some((obstacle) => rectsOverlap(rect, obstacle, 6)))
+        return null;
       const direction = normalizeVector({
         x: left + width / 2 - marker.x,
         y: top + height / 2 - marker.y,
@@ -163,7 +289,18 @@ function candidatesForLabel({
     .sort((first, second) => second.score - first.score);
 }
 
-export function placeRouteLabels({ start, end, labels, bounds, height = 54 }) {
+export function placeRouteLabels({
+  start,
+  end,
+  labels,
+  bounds,
+  height = 54,
+  obstacles = [],
+  edge = 20,
+  gap = 58,
+  markerClearance = 43,
+  routePadding = 20,
+}) {
   const route = { start, end };
   const firstCandidates = candidatesForLabel({
     marker: start,
@@ -172,6 +309,11 @@ export function placeRouteLabels({ start, end, labels, bounds, height = 54 }) {
     height,
     bounds,
     route,
+    obstacles,
+    edge,
+    gap,
+    markerClearance,
+    routePadding,
   });
   const secondCandidates = candidatesForLabel({
     marker: end,
@@ -180,6 +322,11 @@ export function placeRouteLabels({ start, end, labels, bounds, height = 54 }) {
     height,
     bounds,
     route,
+    obstacles,
+    edge,
+    gap,
+    markerClearance,
+    routePadding,
   });
   let bestPair = null;
 

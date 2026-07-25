@@ -6,9 +6,11 @@ import { fileURLToPath } from "node:url";
 import {
   chartAlignment,
   placeRouteLabels,
+  projectChartGuides,
   projectChartPoint,
   rectsOverlap,
   segmentIntersectsRect,
+  toponymHighlightBounds,
 } from "../chart-layout.js";
 import {
   buildExerciseAnswers,
@@ -260,12 +262,35 @@ if (
 ) {
   fail("Meridianos e paralelos não ficaram ortogonais após o alinhamento.");
 }
+
+function pointToLineDistance(point, line) {
+  const [start, end] = line;
+  const deltaX = end.x - start.x;
+  const deltaY = end.y - start.y;
+  return (
+    Math.abs(
+      deltaY * point.x - deltaX * point.y + end.x * start.y - end.y * start.x,
+    ) / Math.hypot(deltaX, deltaY)
+  );
+}
+
+function isOnChartBorder(point) {
+  const epsilon = 0.01;
+  return (
+    Math.abs(point.x) < epsilon ||
+    Math.abs(point.x - chartData.chart.width) < epsilon ||
+    Math.abs(point.y) < epsilon ||
+    Math.abs(point.y - chartData.chart.height) < epsilon
+  );
+}
+
 chartData.points.forEach((point) => {
   if (!Number.isFinite(point.lat) || !Number.isFinite(point.lon))
     fail(`Coordenada inválida no ponto ${point.id}.`);
   if (!point.name || !point.context || !point.contextPt)
     fail(`Ponto ${point.id} sem rótulo bilíngue completo.`);
-  const pixel = projectChartPoint(chartData.chart, point);
+  const projection = projectChartGuides(chartData.chart, point);
+  const pixel = projection.point;
   if (
     pixel.x < 0 ||
     pixel.x > chartData.chart.width ||
@@ -274,6 +299,31 @@ chartData.points.forEach((point) => {
   ) {
     fail(`O ponto ${point.id} ficou fora da imagem da carta 5/D.`);
   }
+  [projection.longitude, projection.latitude].forEach((guide) => {
+    if (guide.line.length !== 2 || !isOnChartBorder(guide.borderAnchor))
+      fail(`A guia geográfica de ${point.id} não alcança a borda da carta.`);
+    if (pointToLineDistance(pixel, guide.line) > 0.01)
+      fail(`A guia geográfica de ${point.id} não cruza o centro do ponto.`);
+  });
+  if (!Array.isArray(point.toponymHighlight) || !point.toponymHighlight.length)
+    fail(`Ponto ${point.id} sem realce do topônimo impresso.`);
+  point.toponymHighlight.forEach((stroke) => {
+    if (
+      !["x1", "y1", "x2", "y2", "width"].every((key) =>
+        Number.isFinite(stroke[key]),
+      ) ||
+      stroke.width <= 0
+    )
+      fail(`Realce inválido no topônimo ${point.id}.`);
+  });
+  const highlight = toponymHighlightBounds(point);
+  if (
+    highlight.left < 0 ||
+    highlight.top < 0 ||
+    highlight.left + highlight.width > chartData.chart.width ||
+    highlight.top + highlight.height > chartData.chart.height
+  )
+    fail(`O realce do topônimo ${point.id} ficou fora da carta.`);
 });
 
 chartData.exercises.forEach((route) => {
@@ -281,19 +331,26 @@ chartData.exercises.forEach((route) => {
   const to = chartPointMap.get(route.to);
   const start = projectChartPoint(chartData.chart, from);
   const end = projectChartPoint(chartData.chart, to);
+  const obstacles = [from, to].map((point) => toponymHighlightBounds(point, 8));
   const layouts = placeRouteLabels({
     start,
     end,
-    labels: [from, to].map((point) => ({
-      width: Math.min(650, point.name.length * 22 + 48),
-    })),
+    labels: [{ width: 110 }, { width: 84 }],
     bounds: chartData.chart,
+    height: 32,
+    obstacles,
+    edge: 12,
+    gap: 30,
+    markerClearance: 18,
+    routePadding: 8,
   });
   if (layouts.some((layout) => !layout))
-    fail(`Não há espaço seguro para os dois rótulos da rota ${route.id}.`);
+    fail(`Não há espaço seguro para Partenza e Arrivo na rota ${route.id}.`);
   layouts.forEach((layout) => {
-    if (segmentIntersectsRect(start, end, layout, 20))
+    if (segmentIntersectsRect(start, end, layout, 8))
       fail(`Um rótulo cobre a rota do exercício ${route.id}.`);
+    if (obstacles.some((obstacle) => rectsOverlap(layout, obstacle, 6)))
+      fail(`Um rótulo cobre o topônimo impresso da rota ${route.id}.`);
   });
   if (rectsOverlap(layouts[0], layouts[1], 18))
     fail(`Os rótulos se sobrepõem no exercício ${route.id}.`);
@@ -418,12 +475,16 @@ if (
     "O guia por capítulos ou seus antigos vínculos ainda está presente na interface.",
   );
 if (
-  !/data-open-handbook/.test(appSource) ||
-  !/handbookModal/.test(indexHtml) ||
-  !/handbookOfficialAnswerText/.test(indexHtml) ||
-  !/handbookSourceCards/.test(indexHtml)
+  /data-open-handbook|handbookModal|handbookOfficialAnswerText|handbookSourceCards|questionAuthority/.test(
+    indexHtml + appSource,
+  )
 )
-  fail("A interface não expõe resposta, explicação e fontes oficiais.");
+  fail("A interface ainda expõe o antigo painel de fontes por questão.");
+if (
+  !/id="view-sources"/.test(indexHtml) ||
+  !/authoritativeSources/.test(appSource)
+)
+  fail("A interface não mantém a seção geral de fontes oficiais.");
 const publicReferencePayload =
   indexHtml +
   appSource +
@@ -603,6 +664,8 @@ const summary = {
     Math.abs(meridianResidualDegrees),
     Math.abs(parallelResidualDegrees),
   ),
+  chartCoordinateGuides: "calculated-hidden-nearest-border",
+  chartToponymHighlights: chartData.points.length,
   chartLabelsClearEveryRoute: true,
   chartWheelPinchAndPan: true,
   chartKeyboardNavigation: true,
@@ -615,6 +678,7 @@ const summary = {
   officialLocalCopies: authoritativeSources.sources.filter(
     (source) => source.localFile,
   ).length,
+  questionSourceModalRemoved: true,
   privateStudySourcesRemoved: true,
   chartPointTarget: "yellow-ring-magenta-cross-1px",
   chartRouteClearsPointTargets: true,

@@ -10,7 +10,7 @@
     />
     <title>Rotta 12 — Patente nautica a motore</title>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="./styles.css?v=3.7.0" />
+    <link rel="stylesheet" href="./styles.css?v=3.7.1" />
   </head>
   <body>
     <a class="skip-link" href="#main" data-ui="skipContent">Vai al contenuto</a>
@@ -658,72 +658,6 @@
       />
       <div class="glossary-results" id="glossaryResults"></div>
     </aside>
-    <div class="handbook-backdrop" id="handbookBackdrop" hidden></div>
-    <section
-      class="handbook-modal"
-      id="handbookModal"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="handbookModalTitle"
-      hidden
-    >
-      <header class="handbook-modal-header">
-        <div>
-          <span class="eyebrow" data-ui="handbookReference"
-            >RISPOSTA VERIFICATA</span
-          >
-          <h2 id="handbookModalTitle" data-ui="handbookTitle">
-            Risposta spiegata e fonti ufficiali
-          </h2>
-        </div>
-        <button type="button" id="handbookClose" data-ui-aria="closeHandbook">
-          ×
-        </button>
-      </header>
-      <div class="handbook-reference-summary">
-        <div class="handbook-reference-meta">
-          <span id="handbookReferenceCode"></span>
-          <strong id="handbookReferenceSection"></strong>
-          <span class="handbook-match" id="handbookReferenceMatch"></span>
-        </div>
-        <p id="handbookReferenceQuestion"></p>
-      </div>
-      <div class="authority-explanation">
-        <section class="authority-answer">
-          <small data-ui="handbookOfficialAnswer"
-            >Risposta ministeriale corretta</small
-          >
-          <p id="handbookOfficialAnswerText"></p>
-        </section>
-        <section class="authority-why">
-          <small data-ui="handbookWhy">Perché</small>
-          <p id="handbookWhyText"></p>
-        </section>
-      </div>
-      <p class="handbook-notice" data-ui="handbookNotice">
-        Il gabarito proviene dalla banca MIT 2022. Le spiegazioni sono originali
-        di Rotta 12 e citano solo atti o fonti istituzionali. Per norme,
-        sanzioni e dotazioni prevale sempre il testo vigente collegato.
-      </p>
-      <section class="authority-sources">
-        <h3 data-ui="handbookSources">Fonti e riscontri</h3>
-        <div id="handbookSourceCards"></div>
-      </section>
-      <div class="handbook-frame-wrap">
-        <iframe id="handbookFrame" loading="lazy"></iframe>
-      </div>
-      <footer class="handbook-modal-footer">
-        <span id="handbookSelectedSource"></span>
-        <a
-          class="button primary"
-          id="handbookNewTab"
-          target="_blank"
-          rel="noopener"
-          data-ui="openHandbookPage"
-          >Apri la fonte selezionata</a
-        >
-      </footer>
-    </section>
     <div class="profile-backdrop" id="profileBackdrop" hidden></div>
     <section
       class="profile-modal"
@@ -748,6 +682,6 @@
       <input id="profileImport" type="file" accept="application/json,.json" />
     </section>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script type="module" src="./app.js?v=3.7.0"></script>
+    <script type="module" src="./app.js?v=3.7.1"></script>
   </body>
 </html>

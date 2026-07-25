@@ -24,7 +24,7 @@ Panorama do estado atual do portfólio Engenharia NATA, com foco no que já est�
 - [x] `chuva/` - captação de água da chuva e cisterna
 - [x] `bombaagua/` - bomba d'água, perdas e consumo
 - [x] `helice/` - calculadora de passo de hélice
-- [x] `patentenautica/` - app IT/PT para patente italiana entro 12M, com 1.472 questões filtráveis, conta cloud por e-mail, página de progresso, histórico de provas e carteggio, resets granulares, treinos de inéditas, respostas explicadas com fontes oficiais, 103 figuras, Carta 5/D interativa e glossário
+- [x] `patentenautica/` - app IT/PT para patente italiana entro 12M, com 1.472 questões filtráveis, conta cloud por e-mail, página de progresso, histórico de provas e carteggio, resets granulares, treinos de inéditas, seção geral de fontes oficiais, 103 figuras, Carta 5/D interativa e glossário
 - [x] `fazenda/` - planejador de fazenda auto-sustentável
 
 ## Próximo app sugerido

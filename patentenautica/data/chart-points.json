@@ -29,15 +29,9 @@
     "projectionTransform": {
       "method": "feature-homography",
       "matrix": [
-        1.045876063072976,
-        0.009446867720996,
-        -118.86253316837517,
-        0.000214378262887,
-        1.04352353963219,
-        -207.87410610253178,
-        -3.61174e-7,
-        0.000003693656,
-        1
+        1.045876063072976, 0.009446867720996, -118.86253316837517,
+        0.000214378262887, 1.04352353963219, -207.87410610253178, -3.61174e-7,
+        0.000003693656, 1
       ],
       "inliers": 3382,
       "medianErrorPixels": 0.88
@@ -61,6 +55,9 @@
       "contextPt": "Norte da Ilha de Elba",
       "lat": 42.808333,
       "lon": 10.14,
+      "toponymHighlight": [
+        { "x1": 732, "y1": 686, "x2": 817, "y2": 686, "width": 14 }
+      ],
       "basis": "dd10"
     },
     {
@@ -70,6 +67,9 @@
       "contextPt": "Norte da Ilha de Elba",
       "lat": 42.83,
       "lon": 10.263333,
+      "toponymHighlight": [
+        { "x1": 1150, "y1": 599, "x2": 1220, "y2": 599, "width": 14 }
+      ],
       "basis": "dd10"
     },
     {
@@ -79,6 +79,9 @@
       "contextPt": "Sul da Ilha de Elba",
       "lat": 42.726667,
       "lon": 10.235,
+      "toponymHighlight": [
+        { "x1": 1142, "y1": 1097, "x2": 1220, "y2": 1097, "width": 14 }
+      ],
       "basis": "dd10"
     },
     {
@@ -88,6 +91,9 @@
       "contextPt": "Sul da Ilha de Elba",
       "lat": 42.733333,
       "lon": 10.366667,
+      "toponymHighlight": [
+        { "x1": 1506, "y1": 1056, "x2": 1584, "y2": 1056, "width": 14 }
+      ],
       "basis": "chart"
     },
     {
@@ -97,6 +103,9 @@
       "contextPt": "Sul da Ilha de Elba",
       "lat": 42.713333,
       "lon": 10.361667,
+      "toponymHighlight": [
+        { "x1": 1466, "y1": 1134, "x2": 1560, "y2": 1134, "width": 14 }
+      ],
       "basis": "dd10"
     },
     {
@@ -106,6 +115,9 @@
       "contextPt": "Sul da Ilha de Elba",
       "lat": 42.725,
       "lon": 10.158333,
+      "toponymHighlight": [
+        { "x1": 827, "y1": 1085, "x2": 944, "y2": 1085, "width": 14 }
+      ],
       "basis": "dd10"
     },
     {
@@ -115,6 +127,9 @@
       "contextPt": "Farol do porto",
       "lat": 42.74175,
       "lon": 10.23834,
+      "toponymHighlight": [
+        { "x1": 1036, "y1": 988, "x2": 1125, "y2": 988, "width": 14 }
+      ],
       "basis": "chart"
     },
     {
@@ -124,6 +139,10 @@
       "contextPt": "Luz de entrada",
       "lat": 42.808333,
       "lon": 10.2,
+      "toponymHighlight": [
+        { "x1": 953, "y1": 722, "x2": 1015, "y2": 722, "width": 14 },
+        { "x1": 956, "y1": 737, "x2": 1006, "y2": 737, "width": 14 }
+      ],
       "basis": "chart"
     },
     {
@@ -133,6 +152,9 @@
       "contextPt": "Sul da Ilha de Elba",
       "lat": 42.735,
       "lon": 10.286667,
+      "toponymHighlight": [
+        { "x1": 1316, "y1": 1047, "x2": 1383, "y2": 1047, "width": 14 }
+      ],
       "basis": "dd10"
     },
     {
@@ -142,6 +164,9 @@
       "contextPt": "Norte da Ilha de Elba",
       "lat": 42.828333,
       "lon": 10.33,
+      "toponymHighlight": [
+        { "x1": 1469, "y1": 603, "x2": 1526, "y2": 603, "width": 14 }
+      ],
       "basis": "dd10"
     },
     {
@@ -151,6 +176,9 @@
       "contextPt": "Ilha de Pianosa",
       "lat": 42.618333,
       "lon": 10.08,
+      "toponymHighlight": [
+        { "x1": 507, "y1": 1558, "x2": 615, "y2": 1558, "width": 14 }
+      ],
       "basis": "dd10"
     },
     {
@@ -160,6 +188,9 @@
       "contextPt": "Oeste da Ilha de Elba",
       "lat": 42.731667,
       "lon": 10.136667,
+      "toponymHighlight": [
+        { "x1": 725, "y1": 1051, "x2": 812, "y2": 1051, "width": 14 }
+      ],
       "basis": "dd10"
     },
     {
@@ -169,6 +200,9 @@
       "contextPt": "Oeste da Ilha de Elba",
       "lat": 42.765,
       "lon": 10.075,
+      "toponymHighlight": [
+        { "x1": 636, "y1": 895, "x2": 682, "y2": 895, "width": 14 }
+      ],
       "basis": "chart"
     },
     {
@@ -178,6 +212,9 @@
       "contextPt": "Oeste da Ilha de Elba",
       "lat": 42.751667,
       "lon": 10.115,
+      "toponymHighlight": [
+        { "x1": 639, "y1": 960, "x2": 729, "y2": 960, "width": 14 }
+      ],
       "basis": "dd10"
     },
     {
@@ -187,6 +224,9 @@
       "contextPt": "Ilha de Pianosa",
       "lat": 42.615,
       "lon": 10.091667,
+      "toponymHighlight": [
+        { "x1": 661, "y1": 1598, "x2": 755, "y2": 1598, "width": 14 }
+      ],
       "basis": "dd10"
     },
     {
@@ -196,6 +236,9 @@
       "contextPt": "Norte da Ilha de Elba",
       "lat": 42.811667,
       "lon": 10.186667,
+      "toponymHighlight": [
+        { "x1": 953, "y1": 677, "x2": 1059, "y2": 677, "width": 14 }
+      ],
       "basis": "dd10"
     },
     {
@@ -205,6 +248,9 @@
       "contextPt": "Ilha de Pianosa",
       "lat": 42.616667,
       "lon": 10.086667,
+      "toponymHighlight": [
+        { "x1": 652, "y1": 1572, "x2": 704, "y2": 1572, "width": 14 }
+      ],
       "basis": "dd10"
     },
     {
@@ -214,6 +260,9 @@
       "contextPt": "Ilha do Giglio",
       "lat": 42.36,
       "lon": 10.921667,
+      "toponymHighlight": [
+        { "x1": 3370, "y1": 2748, "x2": 3445, "y2": 2748, "width": 12 }
+      ],
       "basis": "dd10"
     },
     {
@@ -223,6 +272,9 @@
       "contextPt": "Promontório Argentario",
       "lat": 42.446667,
       "lon": 11.105,
+      "toponymHighlight": [
+        { "x1": 3984, "y1": 2342, "x2": 4061, "y2": 2342, "width": 14 }
+      ],
       "basis": "dd10"
     },
     {
@@ -232,6 +284,9 @@
       "contextPt": "Farol",
       "lat": 42.551667,
       "lon": 11.133333,
+      "toponymHighlight": [
+        { "x1": 4208, "y1": 1878, "x2": 4268, "y2": 1878, "width": 12 }
+      ],
       "basis": "dd10"
     },
     {
@@ -241,6 +296,9 @@
       "contextPt": "Formiche di Grosseto",
       "lat": 42.561667,
       "lon": 10.895,
+      "toponymHighlight": [
+        { "x1": 3372, "y1": 1823, "x2": 3446, "y2": 1823, "width": 14 }
+      ],
       "basis": "dd10"
     },
     {
@@ -250,6 +308,9 @@
       "contextPt": "Promontório Argentario",
       "lat": 42.391667,
       "lon": 11.096667,
+      "toponymHighlight": [
+        { "x1": 3978, "y1": 2597, "x2": 4046, "y2": 2597, "width": 14 }
+      ],
       "basis": "dd10"
     },
     {
@@ -259,6 +320,9 @@
       "contextPt": "Norte do Promontório Argentario",
       "lat": 42.438333,
       "lon": 11.133333,
+      "toponymHighlight": [
+        { "x1": 4175, "y1": 2385, "x2": 4233, "y2": 2385, "width": 14 }
+      ],
       "basis": "dd10"
     },
     {
@@ -268,6 +332,9 @@
       "contextPt": "Promontório Argentario",
       "lat": 42.36,
       "lon": 11.153333,
+      "toponymHighlight": [
+        { "x1": 4107, "y1": 2742, "x2": 4230, "y2": 2742, "width": 14 }
+      ],
       "basis": "dd10"
     },
     {
@@ -277,6 +344,9 @@
       "contextPt": "Ilha do Giglio",
       "lat": 42.338333,
       "lon": 10.931667,
+      "toponymHighlight": [
+        { "x1": 3492, "y1": 2839, "x2": 3569, "y2": 2839, "width": 14 }
+      ],
       "basis": "dd10"
     },
     {
@@ -286,6 +356,9 @@
       "contextPt": "Promontório Argentario",
       "lat": 42.43,
       "lon": 11.08728,
+      "toponymHighlight": [
+        { "x1": 3919, "y1": 2416, "x2": 4018, "y2": 2416, "width": 14 }
+      ],
       "basis": "chart"
     },
     {
@@ -295,6 +368,9 @@
       "contextPt": "Norte da Ilha do Giglio",
       "lat": 42.38835,
       "lon": 10.881147,
+      "toponymHighlight": [
+        { "x1": 3191, "y1": 2616, "x2": 3314, "y2": 2616, "width": 14 }
+      ],
       "basis": "chart"
     },
     {
@@ -304,6 +380,9 @@
       "contextPt": "Ilha do Giglio",
       "lat": 42.388333,
       "lon": 10.888333,
+      "toponymHighlight": [
+        { "x1": 3339, "y1": 2613, "x2": 3425, "y2": 2613, "width": 14 }
+      ],
       "basis": "dd10"
     }
   ],

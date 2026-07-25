@@ -151,10 +151,11 @@ npm run build          # build de produção (gera local/dist)
   verificada em 3.382 correspondências, com erro mediano inferior a 1 px, e relaciona
   partida/chegada dos 50 exercícios. O validador bloqueia rotas incompletas, pontos fora da
   imagem, dimensões divergentes e qualquer rótulo que intercepte a rota.
-- `data/question-authority.json` liga as 1.472 questões à página exata da banca MIT, a uma
-  explicação original e a atos/fontes institucionais pertinentes. `data/authoritative-sources.json`
-  cataloga URL oficial e, para os atos públicos arquivados, tamanho e SHA-256. O painel distingue
-  resposta de exame e norma vigente; materiais didáticos privados não fazem parte do app.
+- `data/question-authority.json` mantém internamente a conferência das 1.472 questões contra a
+  página da banca MIT e regras institucionais. `data/authoritative-sources.json` cataloga URL oficial
+  e, para os atos públicos arquivados, tamanho e SHA-256. A interface apresenta essas referências
+  uma única vez em **Fonti e criteri**, sem painel repetido em cada questão; materiais didáticos
+  privados não fazem parte do app.
 - Dados oficiais ficam em `data/quiz-base.js`, `data/content.js` e `data/carteggio.js`. Traduções
   paralelas ficam nos JSON `*-pt.json` e nunca contêm o campo `correct`.
 - `scripts/build_translations.py` regenera saídas a partir do cache estático e aplica overrides
@@ -224,6 +225,12 @@ _Última atualização: 2026-07-25_
   `npm run validate` passou com 288 testes e `npm run build` concluiu. O backend público foi
   migrado após backup frio e validado externamente; frontend e backend 3.7.0 foram integrados
   pelo PR #10 (`6834135`) e publicados com sucesso em 2026-07-25.
+  A versão 3.7.1 remove da banca e dos resultados o antigo botão/modal de referência por questão,
+  mantendo as fontes oficiais concentradas na seção geral. Na Carta 5/D, cada alvo passa a ser
+  verificado como interseção das guias de latitude/longitude vindas da borda mais próxima; essas
+  guias são apenas geométricas e não aparecem. Os rótulos grandes com nomes foram substituídos por
+  **Partenza/Arrivo**, e o topônimo já impresso na carta recebe realce amarelo translúcido. O
+  validador cobre os 28 realces, os 50 pares de rótulos e a passagem das guias pelo centro.
 
 - **ATUALIZAÇÃO DO DIÁRIO (12/07):** novo post bilíngue registrando o primeiro fluxo com duas
   folhas novas; muda medida em 8 cm e quatro folhas totais. Três fotos da nova leva foram
