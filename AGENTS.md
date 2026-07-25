@@ -141,11 +141,13 @@ npm run build          # build de produção (gera local/dist)
   `/patentenautica/`. O italiano ministerial é a camada canônica; português é tradução auxiliar.
 - Modos persistentes e instantâneos: **IT**, **PT** e **IT + PT**. Busca, banco de 1.472 questões,
   50 exercícios de carteggio, soluções, fontes e glossário funcionam nos dois idiomas.
-- O banco mostra todos os resultados filtrados por texto, matéria, assunto e progresso. O perfil
-  local em `localStorage` continua disponível offline e pode ser exportado/importado. Uma conta
-  opcional sincroniza o mesmo progresso entre dispositivos pelo backend autohospedado.
-- A Carta 5/D usa o PDF monocromático completo com borda graduada e exibe o raster melhorado
-  `carta nautica 5D con bordo.jpg` (7501 × 4844) sobre um plano lógico 4612 × 2978.
+- O banco disponibiliza todos os resultados filtrados por texto, matéria, assunto e progresso,
+  renderizando 40 por vez com ações para mostrar mais ou todos. O perfil local em `localStorage`
+  continua disponível offline e pode ser exportado/importado. Uma conta opcional sincroniza o
+  mesmo progresso entre dispositivos pelo backend autohospedado.
+- A Carta 5/D usa o PDF monocromático completo com borda graduada e exibe o JPEG original
+  `carta nautica 5D originale.jpg` (7501 × 4844, 4,66 MB) sobre um plano lógico 4612 × 2978.
+  O raster só é baixado quando o usuário abre **Carteggio**.
   `Carta 5D 340dpi migliorata.pdf` oferece o mesmo conteúdo em 15002 × 9688/340 DPI, sem
   transformação generativa. `data/chart-points.json` aplica aos 28 pontos uma homografia
   verificada em 3.382 correspondências, com erro mediano inferior a 1 px, e relaciona
@@ -231,6 +233,25 @@ _Última atualização: 2026-07-25_
   guias são apenas geométricas e não aparecem. Os rótulos grandes com nomes foram substituídos por
   **Partenza/Arrivo**, e o topônimo já impresso na carta recebe realce amarelo translúcido. O
   validador cobre os 28 realces, os 50 pares de rótulos e a passagem das guias pelo centro.
+
+- **UX MOBILE/TABLET (versão 3.8.0, branch `feat/rotta12-mobile-ux`):** navegação inferior
+  persistente nas cinco áreas principais e no glossário para larguras até 820 px, cabeçalho móvel
+  reorganizado, alvos de toque de pelo menos 44 px e respeito à safe area. A banca passa a
+  renderizar 40 questões por vez, com “mostrar mais” e “mostrar todas”, preservando filtros,
+  seleção e os 1.472 resultados acessíveis; isso reduz a rolagem inicial do quiz móvel de cerca de
+  235 mil para 9 mil px. Durante prova/treino, banca, glossário e navegação inferior ficam ocultos
+  para evitar sobreposição e distração. Interface validada em 390 × 844 e 820 × 1180, nos modos
+  IT/PT, tema claro/escuro e sem overflow horizontal. `npm run validate` passou com 288 testes,
+  a integridade náutica confirmou as 1.472 questões e `npm run build` concluiu.
+
+- **CARTA ORIGINAL MAIS LEVE (versão 3.8.1, branch `feat/rotta12-mobile-ux`):** o visualizador
+  passa a usar o JPEG original extraído sem recompressão de
+  `Carta 5D_5_Immagine unica Adobe alleggerita.pdf`. Mantém 7501 × 4844 e geometria idêntica,
+  mas reduz o download da carta de 6,86 para 4,66 MB (-32,1%). A carta agora só é solicitada ao
+  abrir **Carteggio**; o PDF opcional de 340 DPI permanece disponível. `npm run validate` passou
+  com 288 testes, a integridade confirmou os 28 pontos/50 rotas e `npm run build` incluiu o JPEG
+  original hasheado. O build foi verificado em 390 × 844: sem download na home, carga ao abrir a
+  carta, zoom 24% → 32% e sobreposições alinhadas.
 
 - **ATUALIZAÇÃO DO DIÁRIO (12/07):** novo post bilíngue registrando o primeiro fluxo com duas
   folhas novas; muda medida em 8 cm e quatro folhas totais. Três fotos da nova leva foram

@@ -10,7 +10,7 @@
     />
     <title>Rotta 12 — Patente nautica a motore</title>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="./styles.css?v=3.7.1" />
+    <link rel="stylesheet" href="./styles.css?v=3.8.1" />
   </head>
   <body>
     <a class="skip-link" href="#main" data-ui="skipContent">Vai al contenuto</a>
@@ -359,7 +359,7 @@
                 <div class="bank-visible-note">
                   <strong id="bankSelectedCount">0</strong>
                   <span data-ui="selectedQuestions">selezionati</span>
-                  <small data-ui="allQuestionsVisible"
+                  <small id="bankVisibleStatus" data-ui="allQuestionsVisible"
                     >Tutti i quesiti filtrati sono visibili</small
                   >
                 </div>
@@ -523,11 +523,21 @@
                 tabindex="0"
                 data-ui-aria="chartViewportLabel"
               >
+                <p
+                  class="chart-loading"
+                  id="chartLoading"
+                  role="status"
+                  data-ui="chartLoading"
+                  hidden
+                >
+                  Caricamento della carta originale…
+                </p>
                 <div class="chart-stage" id="chartStage">
                   <img
                     id="chartImage"
                     alt="Carta nautica didattica 5/D"
                     data-ui-alt="chartImageAlt"
+                    decoding="async"
                     draggable="false"
                   />
                   <canvas
@@ -619,6 +629,44 @@
       </div>
     </div>
 
+    <nav
+      class="mobile-tabbar"
+      aria-label="Navigazione rapida"
+      data-ui-aria="quickNavigation"
+    >
+      <button
+        class="mobile-nav-item is-active"
+        type="button"
+        data-view="dashboard"
+        aria-current="page"
+      >
+        <span aria-hidden="true">⌂</span><b data-ui="mobileHome">Home</b>
+      </button>
+      <button class="mobile-nav-item" type="button" data-view="quiz">
+        <span aria-hidden="true">✓</span><b data-ui="mobileQuiz">Quiz</b>
+      </button>
+      <button class="mobile-nav-item" type="button" data-view="carteggio">
+        <span aria-hidden="true">⌖</span><b data-ui="mobileChart">Carta 5/D</b>
+      </button>
+      <button class="mobile-nav-item" type="button" data-view="account">
+        <span aria-hidden="true">●</span><b data-ui="mobileAccount">Account</b>
+      </button>
+      <button class="mobile-nav-item" type="button" data-view="sources">
+        <span aria-hidden="true">↗</span><b data-ui="mobileSources">Fonti</b>
+      </button>
+      <button
+        class="mobile-nav-item"
+        id="glossaryOpenMobile"
+        type="button"
+        aria-haspopup="dialog"
+        aria-label="Glossario nautico"
+        data-ui-aria="nauticalGlossary"
+      >
+        <span class="mobile-glossary-icon" aria-hidden="true">IT/PT</span
+        ><b>Gloss.</b>
+      </button>
+    </nav>
+
     <button
       class="glossary-fab"
       id="glossaryOpen"
@@ -682,6 +730,6 @@
       <input id="profileImport" type="file" accept="application/json,.json" />
     </section>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script type="module" src="./app.js?v=3.7.1"></script>
+    <script type="module" src="./app.js?v=3.8.1"></script>
   </body>
 </html>

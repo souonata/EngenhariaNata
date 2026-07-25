@@ -21,7 +21,7 @@ import {
 import dm323PdfUrl from "./sources/dm-323-2021-programma-esame.pdf?url";
 import quizPdfUrl from "./sources/quiz-ministeriali-dd-131-2022.pdf?url";
 import chartPdfUrl from "./sources/quiz-e-carteggio-dd-10-2022.pdf?url";
-import chart5dUrl from "./carta nautica 5D con bordo.jpg?url";
+import chart5dUrl from "./carta nautica 5D originale.jpg?url";
 import chart5dEnhancedPdfUrl from "./Carta 5D 340dpi migliorata.pdf?url";
 
 const content = window.PATENTE_CONTENT;
@@ -106,6 +106,12 @@ const UI = {
   navCarteggio: ["50 esercizi", "50 exercícios"],
   navAccount: ["Il mio account", "Minha conta"],
   navSources: ["Fonti", "Fontes"],
+  quickNavigation: ["Navigazione rapida", "Navegação rápida"],
+  mobileHome: ["Home", "Início"],
+  mobileQuiz: ["Quiz", "Questões"],
+  mobileChart: ["Carta 5/D", "Carta 5/D"],
+  mobileAccount: ["Account", "Conta"],
+  mobileSources: ["Fonti", "Fontes"],
   officialPrevailsShort: [
     "La traduzione aiuta lo studio. All'esame prevale l'italiano ufficiale.",
     "A tradução auxilia o estudo. No exame prevalece o italiano oficial.",
@@ -183,6 +189,12 @@ const UI = {
     "Ex.: luzes, âncora, bússola…",
   ],
   showMoreQuestions: ["Mostra altri quesiti", "Mostrar mais questões"],
+  showAllQuestions: ["Mostra tutti", "Mostrar todas"],
+  visibleQuestions: [
+    "{shown} di {total} quesiti visibili",
+    "{shown} de {total} questões visíveis",
+  ],
+  showNextQuestions: ["Mostra altri {count}", "Mostrar mais {count}"],
   allQuestionsVisible: [
     "Tutti i quesiti filtrati sono visibili",
     "Todas as questões filtradas estão visíveis",
@@ -359,6 +371,14 @@ const UI = {
   chartGestureHint: [
     "Trascina per spostarti · rotellina o pizzico per lo zoom",
     "Arraste para mover · roda do mouse ou pinça para zoom",
+  ],
+  chartLoading: [
+    "Caricamento della carta originale…",
+    "Carregando a carta original…",
+  ],
+  chartLoadError: [
+    "Non è stato possibile caricare la carta. Controlla la connessione e riapri Carteggio.",
+    "Não foi possível carregar a carta. Verifique a conexão e reabra Carta 5/D.",
   ],
   chartImageAlt: [
     "Carta nautica didattica 5/D dal Canale di Piombino al Promontorio Argentario",
@@ -617,6 +637,9 @@ let mode = VALID_MODES.has(localStorage.getItem(MODE_KEY))
 let quizState = null;
 let studyProfile = loadStudyProfile();
 const bankSelection = new Set();
+const BANK_BATCH_SIZE = 40;
+let bankVisibleCount = BANK_BATCH_SIZE;
+let bankFilterKey = "";
 let timerHandle = null;
 let featuredExercise = exercises[0];
 let toastHandle = null;
@@ -1602,19 +1625,58 @@ function setMode(nextMode) {
   else if (quizState) renderQuestion();
 }
 
+function ensureChartImageLoaded() {
+  const image = $("#chartImage");
+  if (image.dataset.requested === "true") return;
+  const loading = $("#chartLoading");
+  const viewport = $("#chartViewport");
+  image.dataset.requested = "true";
+  loading.hidden = false;
+  viewport.classList.add("is-loading");
+  image.addEventListener(
+    "load",
+    () => {
+      loading.hidden = true;
+      viewport.classList.remove("is-loading");
+    },
+    { once: true },
+  );
+  image.addEventListener(
+    "error",
+    () => {
+      loading.dataset.ui = "chartLoadError";
+      loading.textContent = ui("chartLoadError");
+      loading.setAttribute("role", "alert");
+      viewport.classList.remove("is-loading");
+      image.removeAttribute("src");
+      delete image.dataset.requested;
+    },
+    { once: true },
+  );
+  image.src = chart5dUrl;
+}
+
 function switchView(viewName, push = true) {
   $$(".view").forEach((view) =>
     view.classList.toggle("is-visible", view.id === `view-${viewName}`),
   );
-  $$(".nav-item").forEach((item) =>
-    item.classList.toggle("is-active", item.dataset.view === viewName),
+  $$("[data-view]").forEach((item) => {
+    const active = item.dataset.view === viewName;
+    item.classList.toggle("is-active", active);
+    if (active) item.setAttribute("aria-current", "page");
+    else item.removeAttribute("aria-current");
+  });
+  document.body.classList.toggle(
+    "quiz-running",
+    viewName === "quiz" && Boolean(quizState && !quizState.finished),
   );
   if (push) history.replaceState(null, "", `#${viewName}`);
   document.body.classList.remove("menu-open");
   $("#menuToggle").setAttribute("aria-expanded", "false");
   $("#menuToggle").setAttribute("aria-label", ui("openMenu"));
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({ top: 0, behavior: push ? "smooth" : "auto" });
   if (viewName === "carteggio") {
+    ensureChartImageLoaded();
     setTimeout(() => focusChartRoute(true), 80);
   } else if (viewName === "account") {
     renderAccountPage();
@@ -1768,6 +1830,7 @@ function startQuiz(quizMode, forcedQuestions = null) {
     finished: false,
     historyRecorded: false,
   };
+  document.body.classList.add("quiz-running");
   $("#quizSetup").hidden = true;
   $("#quizResult").hidden = true;
   $("#quizRunner").hidden = false;
@@ -1958,6 +2021,7 @@ function finishQuiz() {
   });
   if (progressChanged) saveQuizProgress();
   quizState.finished = true;
+  document.body.classList.remove("quiz-running");
   const { correct, passed } = quizScore();
   if (studyProfile && !quizState.historyRecorded) {
     const attempt = {
@@ -1993,6 +2057,7 @@ function stopQuiz() {
   clearInterval(timerHandle);
   if (quizState && recordQuizAnswer(quizState.index)) saveQuizProgress();
   quizState = null;
+  document.body.classList.remove("quiz-running");
   $("#quizRunner").hidden = true;
   $("#quizResult").hidden = true;
   $("#quizSetup").hidden = false;
@@ -2027,6 +2092,15 @@ function filteredBank() {
   });
 }
 
+function currentBankFilterKey() {
+  return [
+    norm($("#bankSearch").value),
+    $("#bankTheme").value,
+    $("#bankTopic").value,
+    $("#bankStatus").value,
+  ].join("|");
+}
+
 function bankStatusLabel(status) {
   if (status === "correct") return ui("progressCorrect");
   if (status === "review") return ui("progressReview");
@@ -2035,20 +2109,56 @@ function bankStatusLabel(status) {
 
 function renderBank() {
   const results = filteredBank();
-  $("#bankResultCount").textContent = results.length.toLocaleString(
-    mode === "it" ? "it-IT" : "pt-BR",
-  );
+  const nextFilterKey = currentBankFilterKey();
+  if (nextFilterKey !== bankFilterKey) {
+    bankFilterKey = nextFilterKey;
+    bankVisibleCount = BANK_BATCH_SIZE;
+  }
+  const visibleResults = results.slice(0, bankVisibleCount);
+  const remaining = Math.max(0, results.length - visibleResults.length);
+  const locale = mode === "it" ? "it-IT" : "pt-BR";
+  $("#bankResultCount").textContent = results.length.toLocaleString(locale);
   $("#bankResults").innerHTML =
-    results
+    visibleResults
       .map((item) => {
         const translated = quizPtMap.get(item.id);
         const status = progressStatus(item.id);
         return `<article class="bank-row ${bankSelection.has(item.id) ? "is-selected" : ""}"><label class="bank-select"><input type="checkbox" data-select-question="${item.id}" ${bankSelection.has(item.id) ? "checked" : ""} aria-label="${esc(ui("selectQuestion"))} ${item.id}"><span></span></label><strong>#${item.id}</strong><div class="bank-question-copy"><p>${pairHtml(item.question, translated.question)}</p><small>${pairHtml(item.topic, translated.topic, { compact: true })}${item.figure ? ` · ${ui("figure")} ${item.figure}` : ""}</small><span class="progress-chip ${status}">${bankStatusLabel(status)}</span></div><div class="bank-row-actions"><button data-practice-question="${item.id}">${ui("practiceAction")} →</button></div></article>`;
       })
       .join("") || `<p class="search-empty">${ui("noQuestions")}</p>`;
-  $("#bankSelectedCount").textContent = bankSelection.size.toLocaleString(
-    mode === "it" ? "it-IT" : "pt-BR",
-  );
+  if (remaining > 0) {
+    $("#bankResults").insertAdjacentHTML(
+      "beforeend",
+      `<div class="bank-more">
+        <p>${ui("visibleQuestions", {
+          shown: visibleResults.length.toLocaleString(locale),
+          total: results.length.toLocaleString(locale),
+        })}</p>
+        <div>
+          <button class="button ghost dark" type="button" data-bank-more>${ui(
+            "showNextQuestions",
+            {
+              count: Math.min(BANK_BATCH_SIZE, remaining).toLocaleString(
+                locale,
+              ),
+            },
+          )}</button>
+          <button class="text-button" type="button" data-bank-all>${ui(
+            "showAllQuestions",
+          )}</button>
+        </div>
+      </div>`,
+    );
+  }
+  $("#bankVisibleStatus").textContent =
+    remaining > 0
+      ? ui("visibleQuestions", {
+          shown: visibleResults.length.toLocaleString(locale),
+          total: results.length.toLocaleString(locale),
+        })
+      : ui("allQuestionsVisible");
+  $("#bankSelectedCount").textContent =
+    bankSelection.size.toLocaleString(locale);
   $("#startSelectedQuiz").disabled = bankSelection.size === 0;
   $("#startRandomFiltered").disabled = results.length === 0;
 }
@@ -2733,6 +2843,16 @@ function renderGlossary() {
 }
 
 document.addEventListener("click", (event) => {
+  if (event.target.closest("[data-bank-more]")) {
+    bankVisibleCount += BANK_BATCH_SIZE;
+    renderBank();
+    return;
+  }
+  if (event.target.closest("[data-bank-all]")) {
+    bankVisibleCount = filteredBank().length;
+    renderBank();
+    return;
+  }
   const resetTrigger = event.target.closest("[data-account-reset]");
   if (resetTrigger) {
     resetStudyData(
@@ -2974,6 +3094,7 @@ chartViewport.addEventListener("pointerup", finishChartPointer);
 chartViewport.addEventListener("pointercancel", finishChartPointer);
 chartViewport.addEventListener("keydown", handleChartKeydown);
 $("#glossaryOpen").addEventListener("click", () => openGlossary());
+$("#glossaryOpenMobile").addEventListener("click", () => openGlossary());
 $("#glossaryClose").addEventListener("click", closeGlossary);
 $("#glossaryBackdrop").addEventListener("click", closeGlossary);
 $("#profileClose").addEventListener("click", closeProfileModal);
@@ -3008,9 +3129,9 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 inicializarTema();
 $("#chartPdfLink").href = `${chartPdfUrl}#page=161`;
-$("#chartImage").src = chart5dUrl;
 $("#chartFullLink").href = chart5dEnhancedPdfUrl;
 applyChartZoom();
 updateStaticUi();
