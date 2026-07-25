@@ -4,17 +4,22 @@ Backend PocketBase dedicato agli account e alla sincronizzazione dei progressi. 
 
 ## Funzioni
 
-- registrazione pubblica con nome utente oppure email;
-- accesso con nome utente o email;
-- email opzionale e non pubblica;
-- aggiunta o cambio dell'email con sessione valida e password attuale;
+- registrazione pubblica esclusivamente con un indirizzo email valido;
+- accesso esclusivamente tramite email;
+- email obbligatoria, univoca e non pubblica;
+- cambio dell'email con sessione valida e password attuale;
 - cambio password con conferma della password attuale;
-- recupero password solo quando è presente un'email verificata;
+- recupero password tramite l'email dell'account;
 - cancellazione autonoma dell'account e cancellazione a cascata dei progressi;
 - un record privato per ogni quesito già affrontato;
+- un record privato per ogni esercizio di carteggio visto, con conteggio delle
+  aperture e delle soluzioni consultate;
+- uno storico immutabile delle prove completate, con modalità, punteggio,
+  esito, quesiti e data;
+- azzeramento di un singolo elemento, di una sezione o di tutti i progressi;
 - regole API che consentono a ogni utente di leggere e modificare soltanto i propri dati.
 
-Le password non entrano mai nel repository né nel database in chiaro: vengono gestite dal modulo auth di PocketBase. Il client richiede almeno 8 caratteri; non imponiamo composizioni arbitrarie con maiuscole o simboli.
+Le password non entrano mai nel repository né nel database in chiaro: vengono gestite dal modulo auth di PocketBase. Per scelta di prodotto viene accettata qualsiasi password non vuota, senza regole di lunghezza o composizione; l'interfaccia raccomanda comunque una password lunga e unica.
 
 ## Avvio locale
 
@@ -25,7 +30,11 @@ Scaricare il binario PocketBase 0.39.8 nella cartella ignorata `.runtime/`, quin
 .\.runtime\pocketbase.exe serve --http=127.0.0.1:8090 --origins=http://127.0.0.1:5173,http://localhost:5173
 ```
 
-Le migrazioni in `pb_migrations/` creano `users` e `study_progress`. `pb_data/` contiene database, chiavi e impostazioni e non deve essere versionato.
+Le migrazioni in `pb_migrations/` creano `users`, `study_progress`,
+`study_exercises` e `quiz_attempts`. La migrazione email-only si interrompe se
+trova account preesistenti senza email: l'amministratore deve assegnare loro un
+indirizzo prima di riprovare. `pb_data/` contiene database, chiavi e
+impostazioni e non deve essere versionato.
 
 ## Produzione Engenharia NATA
 
@@ -47,6 +56,6 @@ docker compose ps
 
 Le credenziali iniziali del superuser sono salvate soltanto in `/root/engnata-accounts-admin.txt` con permessi `0600`; recuperarle via SSH con `sudo` e spostarle subito in un password manager. Non copiarle in Git o nei log.
 
-SMTP non è necessario per creare l'account, aggiungere/cambiare email, cambiare password o eliminare l'account. È invece necessario per verifica email e recupero password. Le relative credenziali devono restare soltanto sul server.
+SMTP non è necessario per creare l'account, cambiare email, cambiare password o eliminare l'account. È invece necessario per verifica email e recupero password. Le relative credenziali devono restare soltanto sul server.
 
 PocketBase è adatto a questo servizio educativo a basso rischio operativo, ma è ancora pre-1.0. Prima di ogni upgrade bisogna leggere il changelog, provare la migrazione su una copia di `pb_data/` e conservare un backup ripristinabile.

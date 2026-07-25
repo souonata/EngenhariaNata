@@ -104,6 +104,7 @@ const UI = {
   navDashboard: ["Panoramica", "Visão geral"],
   navQuiz: ["Quiz ministeriali", "Questões ministeriais"],
   navCarteggio: ["50 esercizi", "50 exercícios"],
+  navAccount: ["Il mio account", "Minha conta"],
   navSources: ["Fonti", "Fontes"],
   officialPrevailsShort: [
     "La traduzione aiuta lo studio. All'esame prevale l'italiano ufficiale.",
@@ -223,17 +224,20 @@ const UI = {
     "Usa solo questo dispositivo",
     "Usar somente este aparelho",
   ],
-  usernameOrEmail: ["Nome utente o email", "Usuário ou e-mail"],
+  usernameOrEmail: ["Indirizzo email", "Endereço de e-mail"],
   usernameOrEmailHint: [
-    "Scegli un nome utente oppure usa direttamente la tua email.",
-    "Escolha um usuário ou use diretamente seu e-mail.",
+    "L'accesso è consentito esclusivamente con un indirizzo email valido.",
+    "O acesso é permitido exclusivamente com um endereço de e-mail válido.",
   ],
   displayName: ["Nome visualizzato (facoltativo)", "Nome exibido (opcional)"],
   password: ["Password", "Senha"],
   currentPassword: ["Password attuale", "Senha atual"],
   newPassword: ["Nuova password", "Nova senha"],
   confirmPassword: ["Conferma password", "Confirmar senha"],
-  passwordRule: ["Almeno 8 caratteri.", "No mínimo 8 caracteres."],
+  passwordRule: [
+    "È accettata qualsiasi password non vuota. Per sicurezza, scegline una lunga e unica.",
+    "Qualquer senha não vazia é aceita. Por segurança, escolha uma senha longa e exclusiva.",
+  ],
   forgotPassword: ["Password dimenticata?", "Esqueceu a senha?"],
   sendReset: ["Invia link di recupero", "Enviar link de recuperação"],
   resetSent: [
@@ -250,17 +254,14 @@ const UI = {
     "Le password non coincidono.",
     "As senhas não coincidem.",
   ],
-  invalidPassword: [
-    "La password deve contenere almeno 8 caratteri.",
-    "A senha deve ter pelo menos 8 caracteres.",
-  ],
+  invalidPassword: ["Inserisci una password.", "Informe uma senha."],
   syncedNow: ["Sincronizzato ora", "Sincronizado agora"],
   syncPending: ["Sincronizzazione in attesa", "Sincronização pendente"],
   offlineSaved: ["Salvato offline", "Salvo offline"],
   logout: ["Esci dall'account", "Sair da conta"],
   emailAddress: ["Indirizzo email", "Endereço de e-mail"],
   noEmail: ["Nessuna email associata", "Nenhum e-mail associado"],
-  addOrChangeEmail: ["Aggiungi o cambia email", "Adicionar ou alterar e-mail"],
+  addOrChangeEmail: ["Cambia email", "Alterar e-mail"],
   sendEmailConfirmation: ["Invia conferma", "Enviar confirmação"],
   emailConfirmationSent: [
     "Controlla la nuova casella email per confermare.",
@@ -500,10 +501,7 @@ const UI = {
     "Il gabarito proviene dalla banca MIT 2022. Le spiegazioni sono originali di Rotta 12 e citano solo atti o fonti istituzionali. Per norme, sanzioni e dotazioni prevale sempre il testo vigente collegato.",
     "O gabarito vem do banco MIT 2022. As explicações são originais do Rotta 12 e citam apenas atos ou fontes institucionais. Para normas, sanções e equipamentos, prevalece sempre o texto vigente indicado.",
   ],
-  openHandbookPage: [
-    "Apri la fonte selezionata",
-    "Abrir a fonte selecionada",
-  ],
+  openHandbookPage: ["Apri la fonte selezionata", "Abrir a fonte selecionada"],
   closeHandbook: ["Chiudi la spiegazione", "Fechar a explicação"],
   handbookFrameTitle: [
     "Fonte ufficiale collegata al quesito",
@@ -512,10 +510,7 @@ const UI = {
   localCopy: ["Copia locale", "Cópia local"],
   officialOnline: ["Fonte ufficiale", "Fonte oficial"],
   previewSource: ["Consulta", "Consultar"],
-  regulatoryCheck: [
-    "Verifica normativa vigente",
-    "Verifique a norma vigente",
-  ],
+  regulatoryCheck: ["Verifica normativa vigente", "Verifique a norma vigente"],
   stableConcept: ["Concetto stabile", "Conceito estável"],
   noLocalCopy: [
     "Questa fonte resta sul sito istituzionale per evitare duplicazioni non necessarie.",
@@ -547,6 +542,72 @@ const UI = {
   glossaryNoResults: ["Nessun termine trovato.", "Nenhum termo encontrado."],
   definition: ["Definizione", "Definição"],
   aliases: ["Sinonimi utili", "Sinônimos úteis"],
+  accountPageEyebrow: ["PROGRESSI PERSONALI", "PROGRESSO PESSOAL"],
+  accountPageTitle: ["Il mio account", "Minha conta"],
+  accountPageLead: [
+    "Controlla ciò che hai già svolto, riprendi lo studio e azzera singole attività o intere sezioni.",
+    "Confira o que já realizou, retome os estudos e redefina atividades individuais ou seções inteiras.",
+  ],
+  accountLocalNotice: [
+    "Questi progressi sono salvati soltanto su questo dispositivo. Accedi per sincronizzarli.",
+    "Este progresso está salvo apenas neste dispositivo. Entre para sincronizá-lo.",
+  ],
+  accountEmptyTitle: [
+    "Inizia a registrare i tuoi progressi",
+    "Comece a registrar seu progresso",
+  ],
+  accountEmptyText: [
+    "Crea un account con la tua email oppure usa un profilo locale. Quiz e carteggio saranno registrati automaticamente.",
+    "Crie uma conta com seu e-mail ou use um perfil local. Quizzes e exercícios de carta serão registrados automaticamente.",
+  ],
+  quizProgressTitle: ["Progressi nei quiz", "Progresso nos quizzes"],
+  chartProgressTitle: ["Progressi nel carteggio", "Progresso na carta"],
+  quizHistoryTitle: ["Storico delle prove", "Histórico das provas"],
+  seenExercises: ["Esercizi visti", "Exercícios vistos"],
+  completedExercises: ["Soluzioni consultate", "Soluções consultadas"],
+  unseenExercises: ["Esercizi non visti", "Exercícios não vistos"],
+  completedQuizzes: ["Prove completate", "Provas concluídas"],
+  questionProgressList: ["Quesiti già svolti", "Questões já respondidas"],
+  exerciseProgressList: ["Tutti i 50 esercizi", "Todos os 50 exercícios"],
+  searchProgress: [
+    "Cerca per numero, codice o testo…",
+    "Busque por número, código ou texto…",
+  ],
+  noQuizHistory: [
+    "Nessuna prova completata per ora.",
+    "Nenhuma prova concluída até agora.",
+  ],
+  noQuestionProgress: [
+    "Nessun quesito corrisponde alla ricerca.",
+    "Nenhuma questão corresponde à busca.",
+  ],
+  attempts: ["Tentativi", "Tentativas"],
+  rightAnswers: ["Esatte", "Corretas"],
+  wrongAnswers: ["Errate", "Erradas"],
+  lastActivity: ["Ultima attività", "Última atividade"],
+  seenStatus: ["Visto", "Visto"],
+  completedStatus: ["Soluzione vista", "Solução vista"],
+  unseenStatus: ["Non visto", "Não visto"],
+  exerciseViews: ["Aperture", "Aberturas"],
+  solutionViews: ["Soluzioni", "Soluções"],
+  officialMode: ["Simulazione", "Simulado"],
+  trainingMode: ["Allenamento", "Treino"],
+  passedStatus: ["Superata", "Aprovada"],
+  failedStatus: ["Da ripetere", "Refazer"],
+  openActivity: ["Apri", "Abrir"],
+  resetItem: ["Azzera", "Redefinir"],
+  resetQuestions: ["Azzera quesiti", "Redefinir questões"],
+  resetExercises: ["Azzera carteggio", "Redefinir carta"],
+  resetHistory: ["Azzera storico", "Redefinir histórico"],
+  resetAllProgress: ["Azzera tutti i progressi", "Redefinir todo o progresso"],
+  resetConfirm: [
+    "Vuoi davvero cancellare i progressi selezionati? Questa operazione non può essere annullata.",
+    "Deseja realmente apagar o progresso selecionado? Esta ação não pode ser desfeita.",
+  ],
+  progressReset: ["Progressi azzerati.", "Progresso redefinido."],
+  accountSettings: ["Dati e sicurezza", "Dados e segurança"],
+  deleteFromAccountPage: ["Elimina il mio account", "Excluir minha conta"],
+  syncAccountProgress: ["Accedi e sincronizza", "Entrar e sincronizar"],
   closeMenu: ["Chiudi menu", "Fechar menu"],
   openMenu: ["Apri menu", "Abrir menu"],
 };
@@ -610,7 +671,10 @@ let accountModalView = "login";
 let syncState = "offline";
 let syncHandle = null;
 const pendingProgressSync = new Set();
+const pendingExerciseSync = new Set();
+const pendingAttemptSync = new Set();
 let accountActionToken = "";
+let accountQuestionQuery = "";
 
 function pairValue(italian, portuguese) {
   if (mode === "pt") return portuguese || italian;
@@ -650,7 +714,7 @@ function translatedChapter(chapter) {
 function validStudyProfile(value) {
   return Boolean(
     value &&
-    value.version === 1 &&
+    [1, 2].includes(value.version) &&
     typeof value.name === "string" &&
     value.name.trim() &&
     value.progress &&
@@ -662,6 +726,7 @@ function validStudyProfile(value) {
 function cleanStudyProfile(value) {
   if (!validStudyProfile(value)) return null;
   const validIds = new Set(quiz.map((item) => String(item.id)));
+  const validExerciseIds = new Set(exercises.map((item) => String(item.id)));
   const progress = {};
   for (const [questionId, record] of Object.entries(value.progress)) {
     if (!validIds.has(questionId) || !record || typeof record !== "object")
@@ -684,8 +749,79 @@ function cleanStudyProfile(value) {
         typeof record._remoteId === "string" ? record._remoteId : undefined,
     };
   }
+  const exerciseProgress = {};
+  for (const [exerciseId, record] of Object.entries(
+    value.exerciseProgress || {},
+  )) {
+    if (
+      !validExerciseIds.has(exerciseId) ||
+      !record ||
+      typeof record !== "object"
+    )
+      continue;
+    const views = Math.max(1, Number(record.views) || 1);
+    exerciseProgress[exerciseId] = {
+      views,
+      solutionViews: Math.max(0, Number(record.solutionViews) || 0),
+      completed: Boolean(record.completed),
+      lastViewed:
+        typeof record.lastViewed === "string"
+          ? record.lastViewed
+          : new Date(0).toISOString(),
+      _remoteId:
+        typeof record._remoteId === "string" ? record._remoteId : undefined,
+    };
+  }
+  const quizHistory = (
+    Array.isArray(value.quizHistory) ? value.quizHistory : []
+  )
+    .filter(
+      (attempt) =>
+        attempt &&
+        typeof attempt === "object" &&
+        typeof attempt.id === "string" &&
+        /^[a-zA-Z0-9._-]{8,80}$/.test(attempt.id) &&
+        ["official", "training"].includes(attempt.mode) &&
+        Number(attempt.total) >= 1,
+    )
+    .map((attempt) => {
+      const total = Math.min(quiz.length, Math.max(1, Number(attempt.total)));
+      const correct = Math.min(
+        total,
+        Math.max(0, Number(attempt.correct) || 0),
+      );
+      return {
+        id: attempt.id,
+        mode: attempt.mode,
+        total,
+        correct,
+        passed: Boolean(attempt.passed),
+        questionIds: (Array.isArray(attempt.questionIds)
+          ? attempt.questionIds
+          : []
+        )
+          .map(Number)
+          .filter(
+            (questionId) =>
+              Number.isInteger(questionId) &&
+              questionId >= 1 &&
+              questionId <= quiz.length,
+          ),
+        completedAt:
+          typeof attempt.completedAt === "string"
+            ? attempt.completedAt
+            : new Date(0).toISOString(),
+        _remoteId:
+          typeof attempt._remoteId === "string" ? attempt._remoteId : undefined,
+      };
+    })
+    .sort(
+      (left, right) =>
+        new Date(right.completedAt).getTime() -
+        new Date(left.completedAt).getTime(),
+    );
   return {
-    version: 1,
+    version: 2,
     id:
       typeof value.id === "string"
         ? value.id
@@ -702,6 +838,8 @@ function cleanStudyProfile(value) {
         ? value.updatedAt
         : new Date().toISOString(),
     progress,
+    exerciseProgress,
+    quizHistory,
   };
 }
 
@@ -723,12 +861,14 @@ function saveStudyProfile() {
 function createStudyProfile(name) {
   const now = new Date().toISOString();
   studyProfile = {
-    version: 1,
+    version: 2,
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
     name: name.trim().slice(0, 80),
     createdAt: now,
     updatedAt: now,
     progress: {},
+    exerciseProgress: {},
+    quizHistory: [],
   };
   saveStudyProfile();
 }
@@ -761,6 +901,15 @@ function profileStats() {
   };
 }
 
+function exerciseStats() {
+  const records = Object.values(studyProfile?.exerciseProgress || {});
+  return {
+    seen: records.length,
+    completed: records.filter((record) => record.completed).length,
+    unseen: exercises.length - records.length,
+  };
+}
+
 function renderStudyProfile() {
   const panel = $("#studyProfilePanel");
   const authenticated = accountService.isAuthenticated;
@@ -778,13 +927,129 @@ function renderStudyProfile() {
   panel.innerHTML = `<div class="study-profile-copy"><span class="eyebrow">${authenticated ? ui("cloudProfile") : ui("localProfile")}</span><h2>${esc(studyProfile.name)}</h2><p>${authenticated ? stateLabel : ui("localProfileLead")}</p></div><div class="profile-stats"><div><strong>${stats.answered}</strong><small>${ui("answeredQuestions")}</small></div><div><strong>${stats.unseen}</strong><small>${ui("unseenQuestions")}</small></div><div><strong>${stats.review}</strong><small>${ui("reviewQuestions")}</small></div><div><strong>${stats.accuracy}%</strong><small>${ui("accuracy")}</small></div></div><div class="study-profile-actions"><button type="button" class="button primary" id="startUnseenSimulation">${ui("startUnseenSimulation")}</button><button type="button" class="button ghost dark" data-open-profile="${authenticated ? "account" : "login"}">${authenticated ? ui("manageAccount") : ui("signIn")}</button>${authenticated ? "" : `<button type="button" class="text-button" data-open-profile="local">${ui("manageProfile")}</button>`}</div>`;
 }
 
+function formatStudyDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+  return new Intl.DateTimeFormat(mode === "pt" ? "pt-BR" : "it-IT", {
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(date);
+}
+
+function renderAccountPage() {
+  const container = $("#accountPageContent");
+  if (!container) return;
+  const authenticated = accountService.isAuthenticated;
+  if (!studyProfile) {
+    container.innerHTML = `<section class="account-empty panel"><span class="eyebrow">${ui("accountPageEyebrow")}</span><h2>${ui("accountEmptyTitle")}</h2><p>${ui("accountEmptyText")}</p><div class="profile-modal-actions"><button type="button" class="button primary" data-open-profile="register">${ui("createAccount")}</button><button type="button" class="button ghost dark" data-open-profile="login">${ui("signIn")}</button><button type="button" class="text-button" data-open-profile="local">${ui("useLocalProfile")}</button></div></section>`;
+    return;
+  }
+
+  const questionStats = profileStats();
+  const chartStats = exerciseStats();
+  const questions = Object.entries(studyProfile.progress)
+    .map(([questionId, progress]) => ({
+      item: quiz.find((question) => question.id === Number(questionId)),
+      progress,
+    }))
+    .filter(
+      ({ item }) =>
+        item &&
+        (!accountQuestionQuery ||
+          searchableQuestion(item).includes(norm(accountQuestionQuery))),
+    )
+    .sort(
+      (left, right) =>
+        new Date(right.progress.lastAnswered).getTime() -
+        new Date(left.progress.lastAnswered).getTime(),
+    );
+  const questionRows =
+    questions
+      .map(({ item, progress }) => {
+        const translated = quizPtMap.get(item.id);
+        return `<article class="account-activity-row"><div class="account-activity-main"><div class="account-activity-meta"><strong>#${item.id}</strong><span>${esc(item.code)}</span><span class="account-status ${progress.lastCorrect ? "is-complete" : "is-review"}">${progress.lastCorrect ? ui("correctAnswer") : ui("reviewQuestions")}</span></div><p>${pairHtml(item.question, translated.question, { compact: true })}</p><small>${ui("attempts")}: ${progress.attempts} · ${ui("rightAnswers")}: ${progress.correct} · ${ui("wrongAnswers")}: ${progress.wrong} · ${ui("lastActivity")}: ${formatStudyDate(progress.lastAnswered)}</small></div><div class="account-row-actions"><button type="button" class="text-button" data-account-question="${item.id}">${ui("openActivity")}</button><button type="button" class="text-button danger-text" data-account-reset="question" data-reset-id="${item.id}">${ui("resetItem")}</button></div></article>`;
+      })
+      .join("") ||
+    `<p class="account-list-empty">${ui("noQuestionProgress")}</p>`;
+
+  const exerciseRows = exercises
+    .map((item) => {
+      const translated = exercisePtMap.get(item.id);
+      const progress = studyProfile.exerciseProgress[String(item.id)];
+      const status = progress
+        ? progress.completed
+          ? ui("completedStatus")
+          : ui("seenStatus")
+        : ui("unseenStatus");
+      return `<article class="account-exercise-row"><strong>${String(item.id).padStart(2, "0")}</strong><div><p>${pairHtml(item.prompt.split("\n")[0], translated.prompt.split("\n")[0], { compact: true })}</p><small><span class="account-status ${progress?.completed ? "is-complete" : progress ? "is-seen" : ""}">${status}</span>${progress ? ` · ${ui("exerciseViews")}: ${progress.views} · ${ui("solutionViews")}: ${progress.solutionViews} · ${formatStudyDate(progress.lastViewed)}` : ""}</small></div><div class="account-row-actions"><button type="button" class="text-button" data-account-exercise="${item.id}">${ui("openActivity")}</button>${progress ? `<button type="button" class="text-button danger-text" data-account-reset="exercise" data-reset-id="${item.id}">${ui("resetItem")}</button>` : ""}</div></article>`;
+    })
+    .join("");
+
+  const historyRows =
+    studyProfile.quizHistory
+      .map(
+        (attempt) =>
+          `<article class="account-history-row"><div><span class="account-status ${attempt.passed ? "is-complete" : "is-review"}">${attempt.mode === "official" ? ui("officialMode") : ui("trainingMode")} · ${attempt.passed ? ui("passedStatus") : ui("failedStatus")}</span><strong>${attempt.correct}/${attempt.total}</strong><small>${formatStudyDate(attempt.completedAt)}</small></div><button type="button" class="text-button danger-text" data-account-reset="attempt" data-reset-id="${esc(attempt.id)}">${ui("resetItem")}</button></article>`,
+      )
+      .join("") || `<p class="account-list-empty">${ui("noQuizHistory")}</p>`;
+
+  container.innerHTML = `<section class="account-overview panel"><div class="account-overview-head"><div><span class="eyebrow">${authenticated ? ui("cloudProfile") : ui("localProfile")}</span><h2>${esc(studyProfile.name)}</h2><p>${authenticated ? esc(accountService.current.email) : ui("accountLocalNotice")}</p></div><div class="account-overview-actions">${authenticated ? `<button type="button" class="button ghost dark" data-open-profile="account">${ui("accountSettings")}</button><button type="button" class="button danger-outline" data-delete-account-open>${ui("deleteFromAccountPage")}</button>` : `<button type="button" class="button primary" data-open-profile="login">${ui("syncAccountProgress")}</button>`}</div></div></section>
+  <div class="account-stat-groups">
+    <section class="panel"><h3>${ui("quizProgressTitle")}</h3><div class="account-stat-grid"><div><strong>${questionStats.answered}</strong><small>${ui("answeredQuestions")}</small></div><div><strong>${questionStats.unseen}</strong><small>${ui("unseenQuestions")}</small></div><div><strong>${questionStats.accuracy}%</strong><small>${ui("accuracy")}</small></div><div><strong>${studyProfile.quizHistory.length}</strong><small>${ui("completedQuizzes")}</small></div></div></section>
+    <section class="panel"><h3>${ui("chartProgressTitle")}</h3><div class="account-stat-grid"><div><strong>${chartStats.seen}</strong><small>${ui("seenExercises")}</small></div><div><strong>${chartStats.completed}</strong><small>${ui("completedExercises")}</small></div><div><strong>${chartStats.unseen}</strong><small>${ui("unseenExercises")}</small></div></div></section>
+  </div>
+  <section class="account-progress-section panel"><header><div><span class="eyebrow">${ui("quizProgressTitle")}</span><h2>${ui("questionProgressList")}</h2></div><button type="button" class="button ghost dark" data-account-reset="questions">${ui("resetQuestions")}</button></header><label class="account-progress-search"><span>⌕</span><input id="accountProgressSearch" type="search" value="${esc(accountQuestionQuery)}" placeholder="${esc(ui("searchProgress"))}"></label><div class="account-activity-list">${questionRows}</div></section>
+  <section class="account-progress-section panel"><header><div><span class="eyebrow">${ui("chartProgressTitle")}</span><h2>${ui("exerciseProgressList")}</h2></div><button type="button" class="button ghost dark" data-account-reset="exercises">${ui("resetExercises")}</button></header><div class="account-exercise-list">${exerciseRows}</div></section>
+  <section class="account-progress-section panel"><header><div><span class="eyebrow">${ui("quizHistoryTitle")}</span><h2>${ui("quizHistoryTitle")}</h2></div><button type="button" class="button ghost dark" data-account-reset="history">${ui("resetHistory")}</button></header><div class="account-history-list">${historyRows}</div></section>
+  <section class="account-reset-all panel"><div><h2>${ui("resetAllProgress")}</h2><p>${ui("resetConfirm")}</p></div><button type="button" class="button danger" data-account-reset="all">${ui("resetAllProgress")}</button></section>`;
+}
+
+async function resetStudyData(scope, id = "") {
+  if (!studyProfile || !confirm(ui("resetConfirm"))) return;
+  try {
+    if (accountService.isAuthenticated) {
+      await accountService.resetProgress(scope, id);
+    }
+    if (scope === "question") {
+      delete studyProfile.progress[String(id)];
+      pendingProgressSync.delete(String(id));
+    } else if (scope === "questions") {
+      studyProfile.progress = {};
+      pendingProgressSync.clear();
+    } else if (scope === "exercise") {
+      delete studyProfile.exerciseProgress[String(id)];
+      pendingExerciseSync.delete(String(id));
+    } else if (scope === "exercises") {
+      studyProfile.exerciseProgress = {};
+      pendingExerciseSync.clear();
+    } else if (scope === "attempt") {
+      studyProfile.quizHistory = studyProfile.quizHistory.filter(
+        (attempt) => attempt.id !== id,
+      );
+      pendingAttemptSync.delete(id);
+    } else if (scope === "history") {
+      studyProfile.quizHistory = [];
+      pendingAttemptSync.clear();
+    } else if (scope === "all") {
+      studyProfile.progress = {};
+      studyProfile.exerciseProgress = {};
+      studyProfile.quizHistory = [];
+      pendingProgressSync.clear();
+      pendingExerciseSync.clear();
+      pendingAttemptSync.clear();
+    }
+    saveStudyProfile();
+    renderStudyProfile();
+    renderBank();
+    renderAccountPage();
+    showToast(ui("progressReset"));
+  } catch {
+    showToast(ui("accountError"));
+  }
+}
+
 function accountDisplayName(record = accountService.current) {
-  return (
-    record?.displayName ||
-    (record?.username?.startsWith("mail_") ? record.email : record?.username) ||
-    record?.email ||
-    ui("studyProfile")
-  );
+  return record?.displayName || record?.email || ui("studyProfile");
 }
 
 function accountTabs(active) {
@@ -802,7 +1067,7 @@ function renderAccountModal() {
       : ui("studyProfile");
 
   if (accountModalView === "account" && current) {
-    body.innerHTML = `<p>${ui("accountLead")}</p><div class="account-identity"><strong>${esc(accountDisplayName(current))}</strong><small>${current.email ? esc(current.email) : ui("noEmail")}</small></div><section class="account-section"><h3>${ui("addOrChangeEmail")}</h3><form data-account-form="email"><label class="profile-name-label"><span>${ui("emailAddress")}</span><input name="email" type="email" required autocomplete="email"></label><label class="profile-name-label"><span>${ui("currentPassword")}</span><input name="password" type="password" required autocomplete="current-password"></label><button class="button ghost dark" type="submit">${ui("addOrChangeEmail")}</button></form></section><section class="account-section"><h3>${ui("changePassword")}</h3><form data-account-form="password"><label class="profile-name-label"><span>${ui("currentPassword")}</span><input name="oldPassword" type="password" required autocomplete="current-password"></label><label class="profile-name-label"><span>${ui("newPassword")}</span><input name="password" type="password" minlength="8" required autocomplete="new-password"></label><label class="profile-name-label"><span>${ui("confirmPassword")}</span><input name="passwordConfirm" type="password" minlength="8" required autocomplete="new-password"></label><button class="button ghost dark" type="submit">${ui("changePassword")}</button></form></section><div class="profile-modal-actions"><button type="button" class="button ghost dark" data-profile-export>${ui("exportProfile")}</button><label class="button ghost dark profile-import" for="profileImport">${ui("importProfile")}</label><button type="button" class="button ghost dark" data-account-logout>${ui("logout")}</button></div><details class="account-danger"><summary>${ui("deleteAccount")}</summary><p>${ui("deleteAccountWarning")}</p><form data-account-form="delete"><label class="profile-name-label"><span>${ui("password")}</span><input name="password" type="password" required autocomplete="current-password"></label><button class="button danger" type="submit">${ui("deleteAccount")}</button></form></details><p class="account-form-message" id="accountFormMessage" aria-live="polite"></p>`;
+    body.innerHTML = `<p>${ui("accountLead")}</p><div class="account-identity"><strong>${esc(accountDisplayName(current))}</strong><small>${current.email ? esc(current.email) : ui("noEmail")}</small></div><section class="account-section"><h3>${ui("addOrChangeEmail")}</h3><form data-account-form="email"><label class="profile-name-label"><span>${ui("emailAddress")}</span><input name="email" type="email" required autocomplete="email"></label><label class="profile-name-label"><span>${ui("currentPassword")}</span><input name="password" type="password" required autocomplete="current-password"></label><button class="button ghost dark" type="submit">${ui("addOrChangeEmail")}</button></form></section><section class="account-section"><h3>${ui("changePassword")}</h3><form data-account-form="password"><label class="profile-name-label"><span>${ui("currentPassword")}</span><input name="oldPassword" type="password" required autocomplete="current-password"></label><label class="profile-name-label"><span>${ui("newPassword")}</span><input name="password" type="password" required autocomplete="new-password"></label><label class="profile-name-label"><span>${ui("confirmPassword")}</span><input name="passwordConfirm" type="password" required autocomplete="new-password"></label><small class="form-hint">${ui("passwordRule")}</small><button class="button ghost dark" type="submit">${ui("changePassword")}</button></form></section><div class="profile-modal-actions"><button type="button" class="button ghost dark" data-profile-export>${ui("exportProfile")}</button><label class="button ghost dark profile-import" for="profileImport">${ui("importProfile")}</label><button type="button" class="button ghost dark" data-account-logout>${ui("logout")}</button></div><details class="account-danger"><summary>${ui("deleteAccount")}</summary><p>${ui("deleteAccountWarning")}</p><form data-account-form="delete"><label class="profile-name-label"><span>${ui("password")}</span><input name="password" type="password" required autocomplete="current-password"></label><button class="button danger" type="submit">${ui("deleteAccount")}</button></form></details><p class="account-form-message" id="accountFormMessage" aria-live="polite"></p>`;
     return;
   }
 
@@ -818,12 +1083,12 @@ function renderAccountModal() {
 
   if (["reset", "email-change"].includes(accountModalView)) {
     const isReset = accountModalView === "reset";
-    body.innerHTML = `<p>${isReset ? ui("chooseNewPassword") : ui("confirmNewEmail")}</p><form data-account-form="${accountModalView}"><label class="profile-name-label"><span>${isReset ? ui("newPassword") : ui("password")}</span><input name="password" type="password" minlength="8" required autocomplete="new-password"></label>${isReset ? `<label class="profile-name-label"><span>${ui("confirmPassword")}</span><input name="passwordConfirm" type="password" minlength="8" required autocomplete="new-password"></label>` : ""}<button type="submit" class="button primary">${isReset ? ui("changePassword") : ui("sendEmailConfirmation")}</button></form><p class="account-form-message" id="accountFormMessage" aria-live="polite"></p>`;
+    body.innerHTML = `<p>${isReset ? ui("chooseNewPassword") : ui("confirmNewEmail")}</p><form data-account-form="${accountModalView}"><label class="profile-name-label"><span>${isReset ? ui("newPassword") : ui("password")}</span><input name="password" type="password" required autocomplete="new-password"></label>${isReset ? `<label class="profile-name-label"><span>${ui("confirmPassword")}</span><input name="passwordConfirm" type="password" required autocomplete="new-password"></label><small class="form-hint">${ui("passwordRule")}</small>` : ""}<button type="submit" class="button primary">${isReset ? ui("changePassword") : ui("sendEmailConfirmation")}</button></form><p class="account-form-message" id="accountFormMessage" aria-live="polite"></p>`;
     return;
   }
 
   const isRegister = accountModalView === "register";
-  body.innerHTML = `${accountTabs(accountModalView)}<p>${isRegister ? ui("usernameOrEmailHint") : ui("accountLead")}</p><form data-account-form="${isRegister ? "register" : "login"}">${isRegister ? `<label class="profile-name-label"><span>${ui("displayName")}</span><input name="displayName" type="text" maxlength="80" autocomplete="name"></label>` : ""}<label class="profile-name-label"><span>${ui("usernameOrEmail")}</span><input name="identity" type="text" minlength="3" maxlength="254" required autocomplete="username"></label><label class="profile-name-label"><span>${ui("password")}</span><input name="password" type="password" minlength="8" required autocomplete="${isRegister ? "new-password" : "current-password"}"></label>${isRegister ? `<label class="profile-name-label"><span>${ui("confirmPassword")}</span><input name="passwordConfirm" type="password" minlength="8" required autocomplete="new-password"></label><small class="form-hint">${ui("passwordRule")}</small>` : ""}<div class="profile-modal-actions"><button type="submit" class="button primary">${isRegister ? ui("createAccount") : ui("signIn")}</button>${isRegister ? "" : `<button type="button" class="text-button" data-account-view="forgot">${ui("forgotPassword")}</button>`}<button type="button" class="text-button" data-account-view="local">${ui("useLocalProfile")}</button></div></form><p class="account-form-message" id="accountFormMessage" aria-live="polite"></p>`;
+  body.innerHTML = `${accountTabs(accountModalView)}<p>${isRegister ? ui("usernameOrEmailHint") : ui("accountLead")}</p><form data-account-form="${isRegister ? "register" : "login"}">${isRegister ? `<label class="profile-name-label"><span>${ui("displayName")}</span><input name="displayName" type="text" maxlength="80" autocomplete="name"></label>` : ""}<label class="profile-name-label"><span>${ui("usernameOrEmail")}</span><input name="identity" type="email" maxlength="254" required autocomplete="email"></label><label class="profile-name-label"><span>${ui("password")}</span><input name="password" type="password" required autocomplete="${isRegister ? "new-password" : "current-password"}"></label>${isRegister ? `<label class="profile-name-label"><span>${ui("confirmPassword")}</span><input name="passwordConfirm" type="password" required autocomplete="new-password"></label><small class="form-hint">${ui("passwordRule")}</small>` : ""}<div class="profile-modal-actions"><button type="submit" class="button primary">${isRegister ? ui("createAccount") : ui("signIn")}</button>${isRegister ? "" : `<button type="button" class="text-button" data-account-view="forgot">${ui("forgotPassword")}</button>`}<button type="button" class="text-button" data-account-view="local">${ui("useLocalProfile")}</button></div></form><p class="account-form-message" id="accountFormMessage" aria-live="polite"></p>`;
 }
 
 function openProfileModal(view) {
@@ -866,11 +1131,22 @@ async function importStudyProfile(file) {
         delete record._remoteId;
         pendingProgressSync.add(questionId);
       }
+      for (const [exerciseId, record] of Object.entries(
+        cleaned.exerciseProgress,
+      )) {
+        delete record._remoteId;
+        pendingExerciseSync.add(exerciseId);
+      }
+      for (const attempt of cleaned.quizHistory) {
+        delete attempt._remoteId;
+        pendingAttemptSync.add(attempt.id);
+      }
     }
     studyProfile = cleaned;
     saveStudyProfile();
     renderStudyProfile();
     renderBank();
+    renderAccountPage();
     closeProfileModal();
     showToast(ui("profileImported"));
     if (accountService.isAuthenticated) scheduleProgressSync();
@@ -890,8 +1166,43 @@ function remoteProgressRecord(record) {
   };
 }
 
+function remoteExerciseRecord(record) {
+  return {
+    views: Number(record.views || 1),
+    solutionViews: Number(record.solutionViews || 0),
+    completed: Boolean(record.completed),
+    lastViewed: record.lastViewed,
+    _remoteId: record.id,
+  };
+}
+
+function remoteAttemptRecord(record) {
+  return {
+    id: record.clientId,
+    mode: record.mode,
+    total: Number(record.total),
+    correct: Number(record.correct),
+    passed: Boolean(record.passed),
+    questionIds: Array.isArray(record.questionIds) ? record.questionIds : [],
+    completedAt: record.completedAt,
+    _remoteId: record.id,
+  };
+}
+
+function hasPendingSync() {
+  return (
+    pendingProgressSync.size ||
+    pendingExerciseSync.size ||
+    pendingAttemptSync.size
+  );
+}
+
 async function connectStudyAccount(record) {
-  const remoteRecords = await accountService.loadProgress();
+  const [remoteRecords, remoteExercises, remoteAttempts] = await Promise.all([
+    accountService.loadProgress(),
+    accountService.loadExerciseProgress(),
+    accountService.loadQuizAttempts(),
+  ]);
   const displayName = accountDisplayName(record);
   if (
     !studyProfile ||
@@ -928,11 +1239,60 @@ async function connectStudyAccount(record) {
   for (const questionId of Object.keys(studyProfile.progress)) {
     if (!remoteByQuestion.has(questionId)) pendingProgressSync.add(questionId);
   }
+
+  const remoteByExercise = new Map(
+    remoteExercises.map((item) => [String(item.exercise), item]),
+  );
+  for (const [exerciseId, remote] of remoteByExercise) {
+    const local = studyProfile.exerciseProgress[exerciseId];
+    if (
+      !local ||
+      new Date(remote.lastViewed).getTime() >
+        new Date(local.lastViewed).getTime()
+    ) {
+      studyProfile.exerciseProgress[exerciseId] = remoteExerciseRecord(remote);
+    } else {
+      local._remoteId = remote.id;
+      if (
+        new Date(local.lastViewed).getTime() >
+        new Date(remote.lastViewed).getTime()
+      ) {
+        pendingExerciseSync.add(exerciseId);
+      }
+    }
+  }
+  for (const exerciseId of Object.keys(studyProfile.exerciseProgress)) {
+    if (!remoteByExercise.has(exerciseId)) pendingExerciseSync.add(exerciseId);
+  }
+
+  const remoteByAttempt = new Map(
+    remoteAttempts.map((item) => [item.clientId, item]),
+  );
+  const localByAttempt = new Map(
+    studyProfile.quizHistory.map((attempt) => [attempt.id, attempt]),
+  );
+  for (const [attemptId, remote] of remoteByAttempt) {
+    if (!localByAttempt.has(attemptId)) {
+      localByAttempt.set(attemptId, remoteAttemptRecord(remote));
+    } else {
+      localByAttempt.get(attemptId)._remoteId = remote.id;
+    }
+  }
+  for (const attemptId of localByAttempt.keys()) {
+    if (!remoteByAttempt.has(attemptId)) pendingAttemptSync.add(attemptId);
+  }
+  studyProfile.quizHistory = [...localByAttempt.values()].sort(
+    (left, right) =>
+      new Date(right.completedAt).getTime() -
+      new Date(left.completedAt).getTime(),
+  );
+
   saveStudyProfile();
-  syncState = pendingProgressSync.size ? "pending" : "synced";
+  syncState = hasPendingSync() ? "pending" : "synced";
   renderStudyProfile();
   renderBank();
-  if (pendingProgressSync.size) scheduleProgressSync();
+  renderAccountPage();
+  if (hasPendingSync()) scheduleProgressSync();
 }
 
 function scheduleProgressSync(questionId) {
@@ -942,6 +1302,16 @@ function scheduleProgressSync(questionId) {
   renderStudyProfile();
   clearTimeout(syncHandle);
   syncHandle = setTimeout(flushProgressSync, 250);
+}
+
+function scheduleExerciseSync(exerciseId) {
+  pendingExerciseSync.add(String(exerciseId));
+  scheduleProgressSync();
+}
+
+function scheduleAttemptSync(attemptId) {
+  pendingAttemptSync.add(String(attemptId));
+  scheduleProgressSync();
 }
 
 async function flushProgressSync() {
@@ -963,9 +1333,51 @@ async function flushProgressSync() {
       return;
     }
   }
-  syncState = pendingProgressSync.size ? "pending" : "synced";
+
+  const exerciseIds = [...pendingExerciseSync];
+  for (const exerciseId of exerciseIds) {
+    try {
+      const local = studyProfile.exerciseProgress[exerciseId];
+      if (!local) continue;
+      const remote = await accountService.upsertExercise(exerciseId, local);
+      local._remoteId = remote.id;
+      pendingExerciseSync.delete(exerciseId);
+      accountOnline = true;
+    } catch {
+      accountOnline = false;
+      syncState = "offline";
+      saveStudyProfile();
+      renderStudyProfile();
+      renderAccountPage();
+      return;
+    }
+  }
+
+  const attemptIds = [...pendingAttemptSync];
+  for (const attemptId of attemptIds) {
+    try {
+      const local = studyProfile.quizHistory.find(
+        (attempt) => attempt.id === attemptId,
+      );
+      if (!local) continue;
+      const remote = await accountService.createQuizAttempt(local);
+      local._remoteId = remote.id;
+      pendingAttemptSync.delete(attemptId);
+      accountOnline = true;
+    } catch {
+      accountOnline = false;
+      syncState = "offline";
+      saveStudyProfile();
+      renderStudyProfile();
+      renderAccountPage();
+      return;
+    }
+  }
+
+  syncState = hasPendingSync() ? "pending" : "synced";
   saveStudyProfile();
   renderStudyProfile();
+  renderAccountPage();
 }
 
 function accountMessage(message, isError = false) {
@@ -976,7 +1388,7 @@ function accountMessage(message, isError = false) {
 }
 
 function validatePasswords(password, confirmation = password) {
-  if (password.length < 8) {
+  if (!password) {
     accountMessage(ui("invalidPassword"), true);
     return false;
   }
@@ -1039,6 +1451,7 @@ async function handleAccountSubmit(event) {
         } else createStudyProfile(name);
         renderStudyProfile();
         renderBank();
+        renderAccountPage();
         closeProfileModal();
         showToast(ui("profileSaved"));
         break;
@@ -1067,9 +1480,12 @@ async function handleAccountSubmit(event) {
           localStorage.removeItem(PROFILE_KEY);
         }
         pendingProgressSync.clear();
+        pendingExerciseSync.clear();
+        pendingAttemptSync.clear();
         syncState = "offline";
         renderStudyProfile();
         renderBank();
+        renderAccountPage();
         closeProfileModal();
         showToast(ui("accountDeleted"));
         break;
@@ -1113,10 +1529,13 @@ function logoutStudyAccount() {
     localStorage.removeItem(PROFILE_KEY);
   }
   pendingProgressSync.clear();
+  pendingExerciseSync.clear();
+  pendingAttemptSync.clear();
   syncState = "offline";
   closeProfileModal();
   renderStudyProfile();
   renderBank();
+  renderAccountPage();
 }
 
 async function initializeStudyAccount() {
@@ -1143,6 +1562,7 @@ async function initializeStudyAccount() {
     openProfileModal(resetToken ? "reset" : "email-change");
   }
   renderStudyProfile();
+  renderAccountPage();
 }
 
 function showToast(message) {
@@ -1394,6 +1814,7 @@ function setMode(nextMode) {
   renderExercises();
   renderSources();
   renderGlossary();
+  renderAccountPage();
   if (!$("#profileModal").hidden) renderAccountModal();
   if (quizState?.finished) renderQuizResult();
   else if (quizState) renderQuestion();
@@ -1414,6 +1835,8 @@ function switchView(viewName, push = true) {
   window.scrollTo({ top: 0, behavior: "smooth" });
   if (viewName === "carteggio") {
     setTimeout(() => focusChartRoute(true), 80);
+  } else if (viewName === "account") {
+    renderAccountPage();
   }
 }
 
@@ -1562,6 +1985,7 @@ function startQuiz(quizMode, forcedQuestions = null) {
     recorded: Array(selected.length).fill(false),
     seconds: quizMode === "official" ? content.exam.baseMinutes * 60 : null,
     finished: false,
+    historyRecorded: false,
   };
   $("#quizSetup").hidden = true;
   $("#quizResult").hidden = true;
@@ -1755,7 +2179,23 @@ function finishQuiz() {
   });
   if (progressChanged) saveQuizProgress();
   quizState.finished = true;
-  const { correct } = quizScore();
+  const { correct, passed } = quizScore();
+  if (studyProfile && !quizState.historyRecorded) {
+    const attempt = {
+      id: `quiz_${crypto.randomUUID().replaceAll("-", "")}`,
+      mode: quizState.mode,
+      total: quizState.questions.length,
+      correct,
+      passed,
+      questionIds: quizState.questions.map((question) => question.id),
+      completedAt: new Date().toISOString(),
+    };
+    studyProfile.quizHistory.unshift(attempt);
+    quizState.historyRecorded = true;
+    saveStudyProfile();
+    scheduleAttemptSync(attempt.id);
+    renderAccountPage();
+  }
   localStorage.setItem(
     "rotta12-last-score",
     JSON.stringify({
@@ -1905,9 +2345,10 @@ function drawChartRoute() {
   const { from, to } = routeForExercise();
   const start = projectChartPoint(chartData.chart, from);
   const end = projectChartPoint(chartData.chart, to);
-  const routeLineWidth = 13;
-  const markerRadius = 15;
-  const markerLineWidth = 5;
+  const overlayOpacity = 0.5;
+  const routeLineWidth = 5;
+  const markerRadius = 11;
+  const markerLineWidth = 2.5;
   const routeLength = Math.hypot(end.x - start.x, end.y - start.y);
   const markerEndpointInset =
     markerRadius + markerLineWidth / 2 + routeLineWidth / 2 + 3;
@@ -1930,13 +2371,14 @@ function drawChartRoute() {
   }
   context.clearRect(0, 0, canvas.width, canvas.height);
   context.save();
+  context.globalAlpha = overlayOpacity;
   context.lineCap = "round";
   context.lineJoin = "round";
   context.shadowColor = "rgba(2, 19, 27, 0.35)";
-  context.shadowBlur = 18;
+  context.shadowBlur = 8;
   context.strokeStyle = "#ef6a4a";
   context.lineWidth = routeLineWidth;
-  context.setLineDash([34, 22]);
+  context.setLineDash([22, 16]);
   if (routeLength > markerEndpointInset * 2) {
     context.beginPath();
     context.moveTo(visibleRouteStart.x, visibleRouteStart.y);
@@ -1963,7 +2405,7 @@ function drawChartRoute() {
     const layout = labelLayouts[index];
     if (!layout) return;
     context.shadowBlur = 0;
-    context.fillStyle = "rgba(7, 28, 38, 0.91)";
+    context.fillStyle = "#071c26";
     context.beginPath();
     context.roundRect(layout.left, layout.top, layout.width, layout.height, 13);
     context.fill();
@@ -1979,7 +2421,7 @@ function drawChartRoute() {
 
   markers.forEach(({ point }) => {
     context.shadowColor = "rgba(0, 0, 0, 0.52)";
-    context.shadowBlur = 7;
+    context.shadowBlur = 4;
     context.strokeStyle = "#ffd600";
     context.lineWidth = markerLineWidth;
     context.beginPath();
@@ -1989,10 +2431,10 @@ function drawChartRoute() {
     context.strokeStyle = "#ec008c";
     context.lineWidth = 1;
     context.beginPath();
-    context.moveTo(point.x - 11, point.y);
-    context.lineTo(point.x + 11, point.y);
-    context.moveTo(point.x, point.y - 11);
-    context.lineTo(point.x, point.y + 11);
+    context.moveTo(point.x - 8, point.y);
+    context.lineTo(point.x + 8, point.y);
+    context.moveTo(point.x, point.y - 8);
+    context.lineTo(point.x, point.y + 8);
     context.stroke();
   });
   context.restore();
@@ -2301,8 +2743,32 @@ function revealExerciseAnswers(container, reveal) {
     .forEach((answer) => (answer.hidden = !reveal));
 }
 
-function selectFeaturedExercise(item, focus = true) {
+function recordExerciseActivity(item, solution = false) {
+  if (!studyProfile || !item) return;
+  const key = String(item.id);
+  const current = studyProfile.exerciseProgress[key] || {
+    views: 0,
+    solutionViews: 0,
+    completed: false,
+  };
+  if (solution) {
+    current.solutionViews += 1;
+    current.completed = true;
+    current.views = Math.max(1, current.views);
+  } else {
+    current.views += 1;
+  }
+  current.lastViewed = new Date().toISOString();
+  studyProfile.exerciseProgress[key] = current;
+  saveStudyProfile();
+  scheduleExerciseSync(item.id);
+  renderStudyProfile();
+  renderAccountPage();
+}
+
+function selectFeaturedExercise(item, focus = true, track = true) {
   featuredExercise = item;
+  if (track) recordExerciseActivity(item);
   renderExerciseFeatured();
   renderExerciseList();
   renderChartRoute();
@@ -2346,7 +2812,7 @@ function renderExerciseList() {
     .map((item) => {
       const translated = exercisePtMap.get(item.id);
       const active = item.id === featuredExercise.id ? " is-selected" : "";
-      return `<details class="exercise-item${active}"><summary><strong>${String(item.id).padStart(2, "0")}</strong><span>${pairHtml(item.prompt.split("\n")[0], translated.prompt.split("\n")[0], { compact: true })}</span></summary><div class="exercise-item-body"><div class="exercise-prompt">${renderExercisePrompt(item, translated)}</div><div class="exercise-item-actions"><button class="button primary" data-show-on-chart="${item.id}">${ui("showOnChart")}</button><button class="button ghost dark" data-toggle-inline-solution>${ui("showSolution")}</button></div>${renderExerciseSolution(item, translated)}</div></details>`;
+      return `<details class="exercise-item${active}" data-exercise-id="${item.id}"><summary><strong>${String(item.id).padStart(2, "0")}</strong><span>${pairHtml(item.prompt.split("\n")[0], translated.prompt.split("\n")[0], { compact: true })}</span></summary><div class="exercise-item-body"><div class="exercise-prompt">${renderExercisePrompt(item, translated)}</div><div class="exercise-item-actions"><button class="button primary" data-show-on-chart="${item.id}">${ui("showOnChart")}</button><button class="button ghost dark" data-toggle-inline-solution>${ui("showSolution")}</button></div>${renderExerciseSolution(item, translated)}</div></details>`;
     })
     .join("");
 }
@@ -2459,6 +2925,39 @@ function renderGlossary() {
 }
 
 document.addEventListener("click", (event) => {
+  const resetTrigger = event.target.closest("[data-account-reset]");
+  if (resetTrigger) {
+    resetStudyData(
+      resetTrigger.dataset.accountReset,
+      resetTrigger.dataset.resetId || "",
+    );
+    return;
+  }
+  const accountQuestion = event.target.closest("[data-account-question]");
+  if (accountQuestion) {
+    const question = quiz.find(
+      (item) => item.id === Number(accountQuestion.dataset.accountQuestion),
+    );
+    switchView("quiz");
+    startQuiz("training", [question]);
+    return;
+  }
+  const accountExercise = event.target.closest("[data-account-exercise]");
+  if (accountExercise) {
+    const item = exercises.find(
+      (exercise) =>
+        exercise.id === Number(accountExercise.dataset.accountExercise),
+    );
+    switchView("carteggio");
+    selectFeaturedExercise(item);
+    return;
+  }
+  if (event.target.closest("[data-delete-account-open]")) {
+    openProfileModal("account");
+    const danger = $(".account-danger", $("#accountModalBody"));
+    if (danger) danger.open = true;
+    return;
+  }
   const profileTrigger = event.target.closest("[data-open-profile]");
   if (profileTrigger) {
     openProfileModal(profileTrigger.dataset.openProfile);
@@ -2556,6 +3055,7 @@ document.addEventListener("click", (event) => {
     const reveal = solution.hidden;
     solution.hidden = !reveal;
     revealExerciseAnswers(featuredSolution.closest("article"), reveal);
+    if (reveal) recordExerciseActivity(featuredExercise, true);
     featuredSolution.textContent = reveal
       ? ui("hideOfficialSolution")
       : ui("showOfficialSolution");
@@ -2568,6 +3068,15 @@ document.addEventListener("click", (event) => {
     const reveal = solution.hidden;
     solution.hidden = !reveal;
     revealExerciseAnswers(exerciseBody, reveal);
+    if (reveal) {
+      const exerciseId = Number(
+        inlineSolution.closest("[data-exercise-id]")?.dataset.exerciseId,
+      );
+      recordExerciseActivity(
+        exercises.find((item) => item.id === exerciseId),
+        true,
+      );
+    }
     inlineSolution.textContent = reveal
       ? ui("hideSolution")
       : ui("showSolution");
@@ -2618,6 +3127,13 @@ document.addEventListener("change", (event) => {
     mode === "it" ? "it-IT" : "pt-BR",
   );
   $("#startSelectedQuiz").disabled = bankSelection.size === 0;
+});
+
+document.addEventListener("input", (event) => {
+  if (event.target.id !== "accountProgressSearch") return;
+  accountQuestionQuery = event.target.value;
+  renderAccountPage();
+  $("#accountProgressSearch")?.focus();
 });
 
 $("#menuToggle").addEventListener("click", () => {
@@ -2710,12 +3226,15 @@ renderBank();
 renderExercises();
 renderSources();
 renderGlossary();
+renderAccountPage();
 initializeStudyAccount();
 window.addEventListener("online", () => {
-  if (accountService.isAuthenticated && pendingProgressSync.size) {
+  if (accountService.isAuthenticated && hasPendingSync()) {
     scheduleProgressSync();
   }
 });
 const initialView = location.hash.replace("#", "");
-if (["dashboard", "quiz", "carteggio", "sources"].includes(initialView))
+if (
+  ["dashboard", "quiz", "carteggio", "account", "sources"].includes(initialView)
+)
   switchView(initialView, false);
