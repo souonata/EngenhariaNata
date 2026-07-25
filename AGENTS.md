@@ -221,8 +221,9 @@ _Última atualização: 2026-07-25_
   A migração `1721600300_email_and_activity_progress.js` cria `study_exercises` e
   `quiz_attempts`; ela foi aplicada numa cópia isolada do banco e o smoke da API confirmou senha
   de um caractere, rejeição de login por username, gravação dos três tipos e exclusão total.
-  `npm run validate` passou com 288 testes e `npm run build` concluiu. Backend público, commit,
-  push e deploy ainda não foram alterados nesta sessão.
+  `npm run validate` passou com 288 testes e `npm run build` concluiu. O backend público foi
+  migrado após backup frio e validado externamente; frontend e backend 3.7.0 foram integrados
+  pelo PR #10 (`6834135`) e publicados com sucesso em 2026-07-25.
 
 - **ATUALIZAÇÃO DO DIÁRIO (12/07):** novo post bilíngue registrando o primeiro fluxo com duas
   folhas novas; muda medida em 8 cm e quatro folhas totais. Três fotos da nova leva foram
