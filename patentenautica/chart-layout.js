@@ -122,6 +122,105 @@ function polygonBounds(points) {
   };
 }
 
+function interpolateBorderTick(ticks, value, field) {
+  if (!Array.isArray(ticks) || ticks.length < 2) return null;
+  const sorted = [...ticks].sort((left, right) => left.minutes - right.minutes);
+  let lower = sorted[0];
+  let upper = sorted[1];
+  if (value >= sorted.at(-1).minutes) {
+    lower = sorted.at(-2);
+    upper = sorted.at(-1);
+  } else if (value > sorted[0].minutes) {
+    const upperIndex = sorted.findIndex((tick) => tick.minutes >= value);
+    lower = sorted[upperIndex - 1];
+    upper = sorted[upperIndex];
+  }
+  const interval = upper.minutes - lower.minutes;
+  if (
+    !interval ||
+    !Number.isFinite(lower[field]) ||
+    !Number.isFinite(upper[field])
+  )
+    return null;
+  const ratio = (value - lower.minutes) / interval;
+  return lower[field] + (upper[field] - lower[field]) * ratio;
+}
+
+function lineIntersection(first, second) {
+  const [firstStart, firstEnd] = first;
+  const [secondStart, secondEnd] = second;
+  const firstDelta = {
+    x: firstEnd.x - firstStart.x,
+    y: firstEnd.y - firstStart.y,
+  };
+  const secondDelta = {
+    x: secondEnd.x - secondStart.x,
+    y: secondEnd.y - secondStart.y,
+  };
+  const divisor =
+    firstDelta.x * secondDelta.y - firstDelta.y * secondDelta.x;
+  if (Math.abs(divisor) < Number.EPSILON) return null;
+  const offset = {
+    x: secondStart.x - firstStart.x,
+    y: secondStart.y - firstStart.y,
+  };
+  const position =
+    (offset.x * secondDelta.y - offset.y * secondDelta.x) / divisor;
+  return {
+    x: firstStart.x + position * firstDelta.x,
+    y: firstStart.y + position * firstDelta.y,
+  };
+}
+
+function projectMeasuredBorderGuides(chart, point) {
+  const calibration = chart.borderCalibration;
+  const longitude = calibration?.longitude;
+  const latitude = calibration?.latitude;
+  if (
+    !calibration?.sourceWidth ||
+    !calibration?.sourceHeight ||
+    !longitude ||
+    !latitude
+  )
+    return null;
+  const longitudeMinutes = (point.lon - longitude.originDegrees) * 60;
+  const latitudeMinutes = (point.lat - latitude.originDegrees) * 60;
+  const horizontalScale = chart.width / calibration.sourceWidth;
+  const verticalScale = chart.height / calibration.sourceHeight;
+  const topX = interpolateBorderTick(
+    longitude.ticks,
+    longitudeMinutes,
+    "topX",
+  );
+  const bottomX = interpolateBorderTick(
+    longitude.ticks,
+    longitudeMinutes,
+    "bottomX",
+  );
+  const leftY = interpolateBorderTick(
+    latitude.ticks,
+    latitudeMinutes,
+    "leftY",
+  );
+  const rightY = interpolateBorderTick(
+    latitude.ticks,
+    latitudeMinutes,
+    "rightY",
+  );
+  if (![topX, bottomX, leftY, rightY].every(Number.isFinite)) return null;
+  const longitudeGuide = [
+    { x: topX * horizontalScale, y: 0 },
+    { x: bottomX * horizontalScale, y: chart.height },
+  ];
+  const latitudeGuide = [
+    { x: 0, y: leftY * verticalScale },
+    { x: chart.width, y: rightY * verticalScale },
+  ];
+  const projectedPoint = lineIntersection(longitudeGuide, latitudeGuide);
+  if (!projectedPoint) return null;
+  return { point: projectedPoint, longitudeGuide, latitudeGuide };
+}
+
 export function projectChartGuides(chart, point) {
   const calibration = chart.calibration;
   const longitudeMinutes = (point.lon - calibration.longitudeOrigin) * 60;
@@ -138,8 +237,8 @@ export function projectChartGuides(chart, point) {
     (latitudeAxis + calibration.parallelSlope * longitudeAxis) / divisor;
   const sourceX = longitudeAxis - calibration.meridianSlope * sourceY;
   const geometry = chartAlignment(chart);
-  const projectedPoint = alignChartPoint(chart, { x: sourceX, y: sourceY });
-  const longitudeGuide = clipLineToBounds(
+  let projectedPoint = alignChartPoint(chart, { x: sourceX, y: sourceY });
+  let longitudeGuide = clipLineToBounds(
     alignChartPoint(chart, { x: longitudeAxis, y: 0 }),
     alignChartPoint(chart, {
       x: longitudeAxis - calibration.meridianSlope * geometry.sourceHeight,
@@ -147,7 +246,7 @@ export function projectChartGuides(chart, point) {
     }),
     chart,
   );
-  const latitudeGuide = clipLineToBounds(
+  let latitudeGuide = clipLineToBounds(
     alignChartPoint(chart, { x: 0, y: latitudeAxis }),
     alignChartPoint(chart, {
       x: geometry.sourceWidth,
@@ -155,6 +254,12 @@ export function projectChartGuides(chart, point) {
     }),
     chart,
   );
+  const measuredGuides = projectMeasuredBorderGuides(chart, point);
+  if (measuredGuides) {
+    projectedPoint = measuredGuides.point;
+    longitudeGuide = measuredGuides.longitudeGuide;
+    latitudeGuide = measuredGuides.latitudeGuide;
+  }
   const longitudeBorderAnchor = nearestLineEnd(projectedPoint, longitudeGuide);
   const latitudeBorderAnchor = nearestLineEnd(projectedPoint, latitudeGuide);
 

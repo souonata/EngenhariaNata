@@ -399,8 +399,8 @@ const UI = {
   fitChart: ["Adatta", "Ajustar"],
   openFullChart: ["Apri PDF 340 DPI", "Abrir PDF em 340 DPI"],
   chartAccuracyNote: [
-    "Il riquadro semitrasparente mostra i limiti ammessi di latitudine e longitudine (±0,3′). Le guide tratteggiate partono dalle scale graduate più vicine e si incrociano sul valore medio.",
-    "O quadrado semitransparente mostra os limites aceitos de latitude e longitude (±0,3′). As guias tracejadas partem das escalas graduadas mais próximas e se cruzam no valor médio.",
+    "Il riquadro semitrasparente mostra i limiti ammessi di latitudine e longitudine (±0,3′). Il centro è interpolato direttamente fra le tacche misurate sui quattro bordi; le guide tratteggiate partono dalle scale graduate più vicine.",
+    "O quadrado semitransparente mostra os limites aceitos de latitude e longitude (±0,3′). O centro é interpolado diretamente entre as marcas medidas nas quatro bordas; as guias tracejadas partem das escalas graduadas mais próximas.",
   ],
   departure: ["PARTENZA", "PARTIDA"],
   arrival: ["ARRIVO", "CHEGADA"],

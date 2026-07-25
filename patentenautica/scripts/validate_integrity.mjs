@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import {
   chartAlignment,
   placeRouteLabels,
+  projectChartGuides,
   projectChartTolerance,
   rectsOverlap,
   segmentIntersectsRect,
@@ -261,6 +262,72 @@ if (
 ) {
   fail("Meridianos e paralelos não ficaram ortogonais após o alinhamento.");
 }
+
+const borderCalibration = chartData.chart.borderCalibration;
+if (
+  borderCalibration?.method !== "measured-graduated-border" ||
+  borderCalibration.sourceWidth !== chartData.chart.source.displayImageWidth ||
+  borderCalibration.sourceHeight !== chartData.chart.source.displayImageHeight
+) {
+  fail("A calibração não corresponde às bordas graduadas da carta original.");
+}
+const horizontalBorderScale =
+  chartData.chart.width / borderCalibration.sourceWidth;
+const verticalBorderScale =
+  chartData.chart.height / borderCalibration.sourceHeight;
+let borderTickMaximumErrorPixels = 0;
+borderCalibration.longitude.ticks.forEach((tick) => {
+  const projection = projectChartGuides(chartData.chart, {
+    lat: 42.5,
+    lon: borderCalibration.longitude.originDegrees + tick.minutes / 60,
+  });
+  const [top, bottom] = [...projection.longitude.line].sort(
+    (left, right) => left.y - right.y,
+  );
+  const errors = [
+    Math.abs(top.x / horizontalBorderScale - tick.topX),
+    Math.abs(bottom.x / horizontalBorderScale - tick.bottomX),
+  ];
+  borderTickMaximumErrorPixels = Math.max(
+    borderTickMaximumErrorPixels,
+    ...errors,
+  );
+});
+borderCalibration.latitude.ticks.forEach((tick) => {
+  const projection = projectChartGuides(chartData.chart, {
+    lat: borderCalibration.latitude.originDegrees + tick.minutes / 60,
+    lon: 10.5,
+  });
+  const [left, right] = [...projection.latitude.line].sort(
+    (first, second) => first.x - second.x,
+  );
+  const errors = [
+    Math.abs(left.y / verticalBorderScale - tick.leftY),
+    Math.abs(right.y / verticalBorderScale - tick.rightY),
+  ];
+  borderTickMaximumErrorPixels = Math.max(
+    borderTickMaximumErrorPixels,
+    ...errors,
+  );
+});
+if (borderTickMaximumErrorPixels > 0.001)
+  fail("As guias não passam pelas graduações medidas nas quatro bordas.");
+
+const bottomLongitudeX = (minutes) => {
+  const projection = projectChartGuides(chartData.chart, {
+    lat: 42.36,
+    lon: 11 + minutes / 60,
+  });
+  return [...projection.longitude.line].sort(
+    (left, right) => left.y - right.y,
+  )[1].x;
+};
+const minuteNineX = bottomLongitudeX(9);
+const minuteTenX = bottomLongitudeX(10);
+const minuteNinePointTwoFraction =
+  (bottomLongitudeX(9.2) - minuteNineX) / (minuteTenX - minuteNineX);
+if (Math.abs(minuteNinePointTwoFraction - 0.2) > 0.000001)
+  fail("11° 9,2′ E não ficou 20% após a graduação de 9′.");
 
 function pointToLineDistance(point, line) {
   const [start, end] = line;
@@ -742,6 +809,12 @@ const summary = {
     Math.abs(meridianResidualDegrees),
     Math.abs(parallelResidualDegrees),
   ),
+  chartBorderCalibration: borderCalibration.method,
+  chartBorderMeasuredTicks:
+    borderCalibration.longitude.ticks.length * 2 +
+    borderCalibration.latitude.ticks.length * 2,
+  chartBorderTickMaximumErrorPixels: borderTickMaximumErrorPixels,
+  chartLongitude11Degrees9Point2Fraction: minuteNinePointTwoFraction,
   chartCoordinateGuides: "visible-mean-from-nearest-border",
   chartToleranceAreas: chartData.points.length,
   chartToleranceMinutes: chartData.chart.answerToleranceMinutes,
