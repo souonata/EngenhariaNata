@@ -9,9 +9,9 @@ Banco di studio offline e bilingue per la patente nautica italiana **entro 12 mi
 - Banca completa senza paginazione artificiale, filtrabile per testo IT/PT, materia, argomento e stato di studio.
 - Quiz casuali dai risultati filtrati, allenamenti sui quesiti selezionati e simulazioni composte soltanto da quesiti non ancora visti.
 - Account facoltativo con accesso esclusivamente tramite e-mail e sincronizzazione di quesiti, prove completate ed esercizi di carteggio tra dispositivi; il profilo locale resta disponibile offline con esportazione/importazione JSON.
-- Per ogni quesito: risposta ministeriale, spiegazione originale, pagina esatta nel PDF MIT e riscontri in norme o fonti tecniche istituzionali.
+- Le fonti ministeriali, normative e istituzionali sono raccolte una sola volta nella sezione **Fonti e criteri**, senza un pannello ripetuto in ciascun quesito.
 - Simulazione di 20 quesiti, 30 minuti e superamento con almeno 16 risposte esatte.
-- Carta nautica didattica 5/D ad alta risoluzione, con zoom centrato sul cursore tramite rotellina, pizzico a due dita, trascinamento con mouse o un dito, comandi da tastiera e rotta evidenziata. Partenza e arrivo hanno un bersaglio preciso con croce magenta da 1 px e anello giallo.
+- Carta nautica didattica 5/D ad alta risoluzione, con zoom centrato sul cursore tramite rotellina, pizzico a due dita, trascinamento con mouse o un dito, comandi da tastiera e rotta evidenziata. Partenza e arrivo hanno un bersaglio preciso con croce magenta da 1 px e anello giallo; le guide geografiche dalla cornice più vicina sono calcolate ma invisibili, le sole etichette aggiunte sono **Partenza** e **Arrivo** e il toponimo originale sulla carta viene evidenziato in giallo.
 - Nei 50 esercizi, ogni risposta compare accanto al quesito corrispondente; distanza, orario, velocità, carburante e coordinate hanno unità uniformi e gli intervalli ammessi sono segnalati esplicitamente.
 - Tutti i 50 esercizi di carteggio collegano partenza e arrivo a 28 punti georeferenziati, mostrando le coordinate prima della soluzione.
 - Ricerca unica in italiano e portoghese, anche quando è visibile una sola lingua.
@@ -42,7 +42,7 @@ Il backend account è documentato in `backend/README.md`. In produzione l'API è
 - `data/content.js` / `data/content-pt.json`: metadati delle materie e programma IT/PT.
 - `data/carteggio.js` / `data/carteggio-pt.json`: esercizi e soluzioni IT/PT.
 - `data/chart-points.json`: calibrazione della carta 5/D, 28 punti e itinerari dei 50 esercizi.
-- `data/question-authority.json`: indice statico dei 1.472 quesiti → pagina MIT, regola esplicativa e fonti pertinenti; non contiene il gabarito.
+- `data/question-authority.json`: indice interno di controllo dei 1.472 quesiti → pagina MIT e regola di verifica; non contiene il gabarito e non genera più pannelli per singolo quesito.
 - `data/authoritative-sources.json`: catalogo verificabile di atti e fonti istituzionali, con URL ufficiali, hash e dimensioni delle copie locali.
 - `data/glossary.json`: terminologia nautica italiana e portoghese brasiliana.
 - `Carta 5D_5_Immagine unica Adobe alleggerita.pdf`: sorgente monocromatica completa, con bordo graduato e immagine incorporata 7501 × 4844.
@@ -50,7 +50,7 @@ Il backend account è documentato in `backend/README.md`. In produzione l'API è
 - `Carta 5D 340dpi migliorata.pdf`: derivato non generativo 15002 × 9688 a 340 DPI; conserva pagina, geometria e contenuto dell'originale ed è disponibile dal pulsante sotto la carta.
 - `sources/`: DM 323/2021, DD 131/2022, DD 10/2022 e atti della Gazzetta Ufficiale usati come riferimenti locali.
 
-La pagina **Fonti** usa soltanto la banca ministeriale, atti pubblici e siti istituzionali. Le spiegazioni sono testi originali di Rotta 12; manuali e piattaforme didattiche private non vengono riprodotti.
+La pagina **Fonti e criteri** usa soltanto la banca ministeriale, atti pubblici e siti istituzionali. Manuali e piattaforme didattiche private non vengono riprodotti.
 
 ## Rigenerazione e qualità
 
@@ -60,7 +60,7 @@ La pagina **Fonti** usa soltanto la banca ministeriale, atti pubblici e siti ist
 
 `scripts/build_authoritative_references.py` localizza ciascun quesito nelle 338 pagine del PDF MIT, verifica hash e dimensioni degli atti locali e rigenera catalogo e indice ufficiale. Usa `pypdf`, fissato in `scripts/requirements-pdf.txt`.
 
-`scripts/align_chart_image.ps1` estrae con Poppler l'immagine incorporata nel PDF, applica un filtro di nitidezza controllato e prepara sia il JPEG web nativo sia il raster 2×. `scripts/build_enhanced_chart_pdf.py` incorpora quest'ultimo in una pagina delle stesse dimensioni dell'originale, ottenendo 340 DPI reali. Il confronto automatico mantiene similarità 0,9995 e geometria identica. Una trasformazione omografica verificata su 3.382 corrispondenze trasferisce la calibrazione ai 28 punti con errore mediano inferiore a 1 px; il layout dei nomi scarta automaticamente qualsiasi posizione che intersechi la rotta.
+`scripts/align_chart_image.ps1` estrae con Poppler l'immagine incorporata nel PDF, applica un filtro di nitidezza controllato e prepara sia il JPEG web nativo sia il raster 2×. `scripts/build_enhanced_chart_pdf.py` incorpora quest'ultimo in una pagina delle stesse dimensioni dell'originale, ottenendo 340 DPI reali. Il confronto automatico mantiene similarità 0,9995 e geometria identica. Una trasformazione omografica verificata su 3.382 corrispondenze trasferisce la calibrazione ai 28 punti con errore mediano inferiore a 1 px; il layout di **Partenza/Arrivo** evita automaticamente la rotta e i toponimi evidenziati.
 
 ```bash
 python scripts/build_translations.py

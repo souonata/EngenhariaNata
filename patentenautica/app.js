@@ -9,8 +9,11 @@ import exercisesPt from "./data/carteggio-pt.json";
 import glossary from "./data/glossary.json";
 import chartData from "./data/chart-points.json";
 import authoritativeSources from "./data/authoritative-sources.json";
-import questionAuthority from "./data/question-authority.json";
-import { placeRouteLabels, projectChartPoint } from "./chart-layout.js";
+import {
+  placeRouteLabels,
+  projectChartGuides,
+  toponymHighlightBounds,
+} from "./chart-layout.js";
 import {
   buildExerciseAnswers,
   splitExercisePrompt,
@@ -75,9 +78,6 @@ const chartPointMap = new Map(
 );
 const exerciseRouteMap = new Map(
   chartData.exercises.map((route) => [route.id, route]),
-);
-const questionAuthorityMap = new Map(
-  questionAuthority.references.map((reference) => [reference.id, reference]),
 );
 const authoritySourceMap = new Map(
   authoritativeSources.sources.map((source) => [source.id, source]),
@@ -369,8 +369,8 @@ const UI = {
   fitChart: ["Adatta", "Ajustar"],
   openFullChart: ["Apri PDF 340 DPI", "Abrir PDF em 340 DPI"],
   chartAccuracyNote: [
-    "I punti usano il centro degli intervalli di tolleranza del fascicolo; dove l'intervallo non è stampato, la posizione è letta sulla carta 5/D. Verifica sempre il rilevamento sulla carta ufficiale.",
-    "Os pontos usam o centro dos intervalos de tolerância do caderno; quando o intervalo não está impresso, a posição é lida na carta 5/D. Confira sempre a marcação na carta oficial.",
+    "Ogni bersaglio è l’intersezione delle guide di latitudine e longitudine tracciate dal valore sulla cornice più vicina; le guide restano invisibili. Si usa il centro della tolleranza e il toponimo stampato è evidenziato in giallo.",
+    "Cada alvo é a interseção das guias de latitude e longitude traçadas a partir do valor na borda mais próxima; as guias ficam invisíveis. Usa-se o centro da tolerância e o topônimo impresso é realçado em amarelo.",
   ],
   departure: ["PARTENZA", "PARTIDA"],
   arrival: ["ARRIVO", "CHEGADA"],
@@ -477,45 +477,6 @@ const UI = {
   officialAnswer: ["Risposta ufficiale", "Resposta oficial"],
   noQuestions: ["Nessun quesito trovato.", "Nenhuma questão encontrada."],
   practiceAction: ["Esercitati", "Praticar"],
-  studyInHandbook: ["Perché + fonti ufficiali", "Por quê + fontes oficiais"],
-  handbookReference: ["RISPOSTA VERIFICATA", "RESPOSTA VERIFICADA"],
-  handbookTitle: [
-    "Risposta spiegata e fonti ufficiali",
-    "Resposta explicada e fontes oficiais",
-  ],
-  handbookVerified: [
-    "Quesito ministeriale verificato",
-    "Questão ministerial verificada",
-  ],
-  handbookOfficialAnswer: [
-    "Risposta ministeriale corretta",
-    "Resposta ministerial correta",
-  ],
-  handbookWhy: ["Perché", "Por quê"],
-  handbookSources: ["Fonti e riscontri", "Fontes e verificações"],
-  handbookOfficialPage: [
-    "Quesito {code} · pagina {page} di 338",
-    "Questão {code} · página {page} de 338",
-  ],
-  handbookNotice: [
-    "Il gabarito proviene dalla banca MIT 2022. Le spiegazioni sono originali di Rotta 12 e citano solo atti o fonti istituzionali. Per norme, sanzioni e dotazioni prevale sempre il testo vigente collegato.",
-    "O gabarito vem do banco MIT 2022. As explicações são originais do Rotta 12 e citam apenas atos ou fontes institucionais. Para normas, sanções e equipamentos, prevalece sempre o texto vigente indicado.",
-  ],
-  openHandbookPage: ["Apri la fonte selezionata", "Abrir a fonte selecionada"],
-  closeHandbook: ["Chiudi la spiegazione", "Fechar a explicação"],
-  handbookFrameTitle: [
-    "Fonte ufficiale collegata al quesito",
-    "Fonte oficial vinculada à questão",
-  ],
-  localCopy: ["Copia locale", "Cópia local"],
-  officialOnline: ["Fonte ufficiale", "Fonte oficial"],
-  previewSource: ["Consulta", "Consultar"],
-  regulatoryCheck: ["Verifica normativa vigente", "Verifique a norma vigente"],
-  stableConcept: ["Concetto stabile", "Conceito estável"],
-  noLocalCopy: [
-    "Questa fonte resta sul sito istituzionale per evitare duplicazioni non necessarie.",
-    "Esta fonte permanece no site institucional para evitar duplicações desnecessárias.",
-  ],
   figure: ["figura", "figura"],
   solveChart: ["Risolvi sulla carta 5/D", "Resolva na carta 5/D"],
   showOfficialSolution: ["Mostra le risposte", "Mostrar respostas"],
@@ -633,20 +594,20 @@ const ROUTE_STAGES = [
 
 const METHODS = [
   [
-    "Ogni risposta è letta dal PDF ministeriale e collegata alla sua pagina esatta.",
-    "Cada resposta é lida do PDF ministerial e ligada à sua página exata.",
+    "La banca completa è trascritta dal PDF ministeriale, disponibile nella sezione Fonti e criteri.",
+    "O banco completo é transcrito do PDF ministerial, disponível na seção Fontes e critérios.",
   ],
   [
-    "Le spiegazioni sono originali e non riproducono manuali o piattaforme didattiche private.",
-    "As explicações são originais e não reproduzem manuais ou plataformas didáticas privadas.",
+    "Il testo ministeriale italiano resta canonico; il portoghese è soltanto un supporto allo studio.",
+    "O texto ministerial italiano continua canônico; o português é apenas apoio ao estudo.",
   ],
   [
     "Norme e riscontri provengono solo da Gazzetta, Normattiva e siti istituzionali.",
     "Normas e verificações vêm apenas da Gazzetta, Normattiva e sites institucionais.",
   ],
   [
-    "Un controllo automatico impedisce quesiti senza fonte, pagine mancanti o gabariti duplicati.",
-    "Uma verificação automática impede questões sem fonte, páginas ausentes ou gabaritos duplicados.",
+    "Un controllo automatico protegge identificativi, figure, numeri e risposte ufficiali.",
+    "Uma verificação automática protege identificadores, figuras, números e respostas oficiais.",
   ],
 ];
 
@@ -663,9 +624,6 @@ let chartZoom = 1;
 const chartPointers = new Map();
 let chartDrag = null;
 let chartPinch = null;
-let manualQuestionId = null;
-let manualReturnFocus = null;
-let manualSources = [];
 let accountOnline = false;
 let accountModalView = "login";
 let syncState = "offline";
@@ -1582,182 +1540,6 @@ function formatTime(seconds) {
   return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
 }
 
-function handbookMatchLabel(reference) {
-  const rule = reference ? questionAuthority.rules[reference.rule] : null;
-  return rule?.currency === "current-check"
-    ? ui("regulatoryCheck")
-    : ui("stableConcept");
-}
-
-function withPdfPage(url, page) {
-  if (!url || !page) return url;
-  return `${url.split("#")[0]}#page=${page}&zoom=120`;
-}
-
-function authorityLocalUrl(source, sourceReference) {
-  const url = source.localFile
-    ? authorityLocalUrls[source.localFile]
-    : undefined;
-  return withPdfPage(url, sourceReference.page);
-}
-
-function authorityOfficialUrl(source, sourceReference) {
-  return withPdfPage(source.officialUrl, sourceReference.page);
-}
-
-function authorityBundle(question) {
-  const reference = questionAuthorityMap.get(question.id);
-  const rule = reference ? questionAuthority.rules[reference.rule] : null;
-  if (!reference || !rule) return null;
-  const officialReference = {
-    source: "mit-quiz-2022",
-    page: reference.officialPage,
-    locatorIt: UI.handbookOfficialPage[0]
-      .replace("{code}", question.code)
-      .replace("{page}", reference.officialPage),
-    locatorPt: UI.handbookOfficialPage[1]
-      .replace("{code}", question.code)
-      .replace("{page}", reference.officialPage),
-  };
-  const combined = [
-    officialReference,
-    ...rule.sources,
-    ...(reference.sourceRefs || []),
-  ];
-  const seen = new Set();
-  const sources = combined
-    .filter((sourceReference) => {
-      const key = `${sourceReference.source}|${sourceReference.page || ""}|${sourceReference.locatorIt}`;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return authoritySourceMap.has(sourceReference.source);
-    })
-    .map((sourceReference) => ({
-      ...sourceReference,
-      sourceData: authoritySourceMap.get(sourceReference.source),
-    }));
-  const primarySource = reference.primarySource || rule.primarySource;
-  sources.sort((left, right) => {
-    if (left.source === primarySource) return -1;
-    if (right.source === primarySource) return 1;
-    if (left.source === "mit-quiz-2022") return -1;
-    if (right.source === "mit-quiz-2022") return 1;
-    return 0;
-  });
-  return { reference, rule, sources };
-}
-
-function authoritySourceCards(sources) {
-  return sources
-    .map(({ sourceData: source, ...sourceReference }, index) => {
-      const localUrl = authorityLocalUrl(source, sourceReference);
-      const locator = pairHtml(
-        sourceReference.locatorIt,
-        sourceReference.locatorPt,
-        { compact: true },
-      );
-      return `<article class="authority-source-card">
-        <span>${pairHtml(source.status, source.statusPt, { compact: true })}</span>
-        <h3>${pairHtml(source.title, source.titlePt)}</h3>
-        <p>${locator}</p>
-        <div>
-          <button type="button" data-authority-preview="${index}">${ui("previewSource")}</button>
-          ${
-            localUrl
-              ? `<a href="${esc(localUrl)}" target="_blank" rel="noopener">${ui("localCopy")} ↗</a>`
-              : ""
-          }
-          <a href="${esc(authorityOfficialUrl(source, sourceReference))}" target="_blank" rel="noopener">${ui("officialOnline")} ↗</a>
-        </div>
-      </article>`;
-    })
-    .join("");
-}
-
-function selectAuthoritySource(index) {
-  const selected = manualSources[index];
-  if (!selected) return;
-  const { sourceData: source, ...sourceReference } = selected;
-  const localUrl = authorityLocalUrl(source, sourceReference);
-  const officialUrl = authorityOfficialUrl(source, sourceReference);
-  const frame = $("#handbookFrame");
-  frame.title = ui("handbookFrameTitle");
-  $$(".authority-source-card").forEach((card, cardIndex) => {
-    card.classList.toggle("is-selected", cardIndex === index);
-  });
-  if (localUrl) {
-    frame.removeAttribute("srcdoc");
-    frame.src = localUrl;
-    $("#handbookNewTab").href = localUrl;
-  } else {
-    frame.src = "about:blank";
-    frame.srcdoc = `<!doctype html><html lang="${mode === "pt" ? "pt-BR" : "it"}"><meta charset="utf-8"><style>body{margin:0;padding:36px;font:16px/1.6 system-ui;color:#16323a;background:#f7f6f1}main{max-width:760px;margin:auto}h1{font:700 28px Georgia,serif}p{color:#52676d}a{display:inline-block;margin-top:16px;padding:12px 16px;border-radius:8px;color:white;background:#0c7180;text-decoration:none;font-weight:700}</style><main><small>${esc(pairValue(source.authority, source.authority))}</small><h1>${esc(pairValue(source.title, source.titlePt))}</h1><p>${esc(pairValue(source.noteIt, source.notePt))}</p><p>${esc(ui("noLocalCopy"))}</p><a href="${esc(officialUrl)}" target="_blank" rel="noopener">${esc(ui("officialOnline"))} ↗</a></main></html>`;
-    $("#handbookNewTab").href = officialUrl;
-  }
-  $("#handbookSelectedSource").innerHTML = pairHtml(
-    source.title,
-    source.titlePt,
-    { compact: true },
-  );
-}
-
-function handbookButton(question, compact = false) {
-  const reference = questionAuthorityMap.get(question.id);
-  if (!reference) return "";
-  return `<button type="button" class="handbook-button${compact ? " compact" : ""}" data-open-handbook="${question.id}"><span>${esc(question.code)}</span><strong>${ui("studyInHandbook")}</strong></button>`;
-}
-
-function openHandbook(questionId, returnFocus = true) {
-  const question = quiz.find((item) => item.id === Number(questionId));
-  const bundle = question ? authorityBundle(question) : null;
-  if (!question || !bundle) return;
-  const { reference, rule, sources } = bundle;
-  if (returnFocus) manualReturnFocus = document.activeElement;
-  manualQuestionId = question.id;
-  manualSources = sources;
-  const translated = quizPtMap.get(question.id);
-  $("#handbookReferenceCode").textContent = question.code;
-  $("#handbookReferenceQuestion").innerHTML = pairHtml(
-    question.question,
-    translated.question,
-  );
-  $("#handbookReferenceSection").innerHTML = pairHtml(
-    rule.titleIt,
-    rule.titlePt,
-    { compact: true },
-  );
-  $("#handbookReferenceMatch").textContent = handbookMatchLabel(reference);
-  $("#handbookReferenceMatch").className =
-    `handbook-match ${rule.currency === "current-check" ? "related" : "direct"}`;
-  $("#handbookOfficialAnswerText").innerHTML = pairHtml(
-    question.answers[question.correct],
-    translated.answers[question.correct],
-  );
-  $("#handbookWhyText").innerHTML = pairHtml(
-    reference.specificIt || rule.principleIt,
-    reference.specificPt || rule.principlePt,
-  );
-  $("#handbookSourceCards").innerHTML = authoritySourceCards(sources);
-  $("#handbookBackdrop").hidden = false;
-  $("#handbookModal").hidden = false;
-  document.body.classList.add("handbook-open");
-  selectAuthoritySource(0);
-  $("#handbookClose").focus();
-}
-
-function closeHandbook() {
-  if ($("#handbookModal").hidden) return;
-  $("#handbookBackdrop").hidden = true;
-  $("#handbookModal").hidden = true;
-  $("#handbookFrame").src = "about:blank";
-  $("#handbookFrame").removeAttribute("srcdoc");
-  document.body.classList.remove("handbook-open");
-  manualQuestionId = null;
-  manualSources = [];
-  manualReturnFocus?.focus?.();
-  manualReturnFocus = null;
-}
-
 function updateStaticUi() {
   document.documentElement.lang = mode === "pt" ? "pt-BR" : "it";
   document.documentElement.dataset.studyMode = mode;
@@ -1818,7 +1600,6 @@ function setMode(nextMode) {
   if (!$("#profileModal").hidden) renderAccountModal();
   if (quizState?.finished) renderQuizResult();
   else if (quizState) renderQuestion();
-  if (manualQuestionId) openHandbook(manualQuestionId, false);
 }
 
 function switchView(viewName, push = true) {
@@ -2077,7 +1858,6 @@ function renderQuestion() {
           }${question.note ? ` ${pairHtml(question.note, translated.note || "")}` : ""}</div>`
         : ""
     }
-    ${reveal ? `<div class="question-study-reference">${handbookButton(question)}</div>` : ""}
     <div class="quiz-actions"><button class="button ghost dark" id="quitQuiz">${ui("quit")}</button><button class="button primary" id="nextQuestion" ${answered === null ? "disabled" : ""}>${quizState.index === quizState.questions.length - 1 ? ui("viewResult") : `${ui("nextQuestion")} →`}</button></div>`;
 }
 
@@ -2126,7 +1906,6 @@ function answerReviewHtml() {
           <header><span>${esc(question.code)}</span><strong>${isCorrect ? "✓" : "→"} ${isCorrect ? ui("correctAnswer") : ui("correctAnswerLetter", { letter })}</strong></header>
           <p>${pairHtml(question.question, translated.question)}</p>
           <div class="result-official-answer"><b>${letter}</b><div><small>${ui("officialAnswer")}</small><span>${pairHtml(question.answers[question.correct], translated.answers[question.correct])}</span></div></div>
-          <footer><small>${handbookMatchLabel(questionAuthorityMap.get(question.id))}</small>${handbookButton(question, true)}</footer>
         </article>`;
       })
       .join("")}</div>
@@ -2264,7 +2043,7 @@ function renderBank() {
       .map((item) => {
         const translated = quizPtMap.get(item.id);
         const status = progressStatus(item.id);
-        return `<article class="bank-row ${bankSelection.has(item.id) ? "is-selected" : ""}"><label class="bank-select"><input type="checkbox" data-select-question="${item.id}" ${bankSelection.has(item.id) ? "checked" : ""} aria-label="${esc(ui("selectQuestion"))} ${item.id}"><span></span></label><strong>#${item.id}</strong><div class="bank-question-copy"><p>${pairHtml(item.question, translated.question)}</p><small>${pairHtml(item.topic, translated.topic, { compact: true })}${item.figure ? ` · ${ui("figure")} ${item.figure}` : ""}</small><span class="progress-chip ${status}">${bankStatusLabel(status)}</span></div><div class="bank-row-actions">${handbookButton(item, true)}<button data-practice-question="${item.id}">${ui("practiceAction")} →</button></div></article>`;
+        return `<article class="bank-row ${bankSelection.has(item.id) ? "is-selected" : ""}"><label class="bank-select"><input type="checkbox" data-select-question="${item.id}" ${bankSelection.has(item.id) ? "checked" : ""} aria-label="${esc(ui("selectQuestion"))} ${item.id}"><span></span></label><strong>#${item.id}</strong><div class="bank-question-copy"><p>${pairHtml(item.question, translated.question)}</p><small>${pairHtml(item.topic, translated.topic, { compact: true })}${item.figure ? ` · ${ui("figure")} ${item.figure}` : ""}</small><span class="progress-chip ${status}">${bankStatusLabel(status)}</span></div><div class="bank-row-actions"><button data-practice-question="${item.id}">${ui("practiceAction")} →</button></div></article>`;
       })
       .join("") || `<p class="search-empty">${ui("noQuestions")}</p>`;
   $("#bankSelectedCount").textContent = bankSelection.size.toLocaleString(
@@ -2343,8 +2122,10 @@ function drawChartRoute() {
   const canvas = $("#chartOverlay");
   const context = canvas.getContext("2d");
   const { from, to } = routeForExercise();
-  const start = projectChartPoint(chartData.chart, from);
-  const end = projectChartPoint(chartData.chart, to);
+  const startProjection = projectChartGuides(chartData.chart, from);
+  const endProjection = projectChartGuides(chartData.chart, to);
+  const start = startProjection.point;
+  const end = endProjection.point;
   const overlayOpacity = 0.5;
   const routeLineWidth = 5;
   const markerRadius = 11;
@@ -2374,6 +2155,25 @@ function drawChartRoute() {
   context.globalAlpha = overlayOpacity;
   context.lineCap = "round";
   context.lineJoin = "round";
+
+  const markers = [
+    { point: start, source: from, label: "Partenza" },
+    { point: end, source: to, label: "Arrivo" },
+  ];
+  context.globalCompositeOperation = "multiply";
+  context.shadowBlur = 0;
+  context.strokeStyle = "#ffe033";
+  markers.forEach(({ source }) => {
+    source.toponymHighlight.forEach((stroke) => {
+      context.lineWidth = stroke.width;
+      context.beginPath();
+      context.moveTo(stroke.x1, stroke.y1);
+      context.lineTo(stroke.x2, stroke.y2);
+      context.stroke();
+    });
+  });
+  context.globalCompositeOperation = "source-over";
+
   context.shadowColor = "rgba(2, 19, 27, 0.35)";
   context.shadowBlur = 8;
   context.strokeStyle = "#ef6a4a";
@@ -2387,34 +2187,42 @@ function drawChartRoute() {
   }
   context.setLineDash([]);
 
-  const markers = [
-    { point: start, label: from.name },
-    { point: end, label: to.name },
-  ];
-  context.font = "700 35px Arial";
+  context.font = "700 24px Arial";
+  const highlightObstacles = markers
+    .map(({ source }) => toponymHighlightBounds(source, 8))
+    .filter(Boolean);
   const labelLayouts = placeRouteLabels({
     start,
     end,
     labels: markers.map(({ label }) => ({
-      width: Math.min(650, context.measureText(label).width + 48),
+      width: context.measureText(label).width + 16,
     })),
     bounds: chartData.chart,
+    height: 32,
+    obstacles: highlightObstacles,
+    edge: 12,
+    gap: 30,
+    markerClearance: 18,
+    routePadding: 8,
   });
 
   markers.forEach(({ label }, index) => {
     const layout = labelLayouts[index];
     if (!layout) return;
     context.shadowBlur = 0;
-    context.fillStyle = "#071c26";
-    context.beginPath();
-    context.roundRect(layout.left, layout.top, layout.width, layout.height, 13);
-    context.fill();
-    context.fillStyle = "#fff";
+    context.strokeStyle = "#fff";
+    context.lineWidth = 5;
     context.textAlign = "left";
     context.textBaseline = "middle";
+    context.strokeText(
+      label,
+      layout.left + 8,
+      layout.top + layout.height / 2 + 1,
+    );
+    context.fillStyle = "#071c26";
     context.fillText(
       label,
-      layout.left + 22,
+      layout.left + 8,
       layout.top + layout.height / 2 + 1,
     );
   });
@@ -2645,8 +2453,8 @@ function focusChartRoute(adjustZoom = true) {
   const viewport = $("#chartViewport");
   if (!viewport.clientWidth) return;
   const { from, to } = routeForExercise();
-  const start = projectChartPoint(chartData.chart, from);
-  const end = projectChartPoint(chartData.chart, to);
+  const start = projectChartGuides(chartData.chart, from).point;
+  const end = projectChartGuides(chartData.chart, to).point;
   const routeWidth = Math.abs(end.x - start.x) + 520;
   const routeHeight = Math.abs(end.y - start.y) + 420;
   const fitZoom = (viewport.clientWidth - 4) / chartData.chart.width;
@@ -3016,16 +2824,6 @@ document.addEventListener("click", (event) => {
     selectAnswer(Number(answer.dataset.answer));
     return;
   }
-  const authorityPreview = event.target.closest("[data-authority-preview]");
-  if (authorityPreview) {
-    selectAuthoritySource(Number(authorityPreview.dataset.authorityPreview));
-    return;
-  }
-  const handbookTrigger = event.target.closest("[data-open-handbook]");
-  if (handbookTrigger) {
-    openHandbook(Number(handbookTrigger.dataset.openHandbook));
-    return;
-  }
   if (event.target.closest("#nextQuestion")) {
     nextQuestion();
     return;
@@ -3178,8 +2976,6 @@ chartViewport.addEventListener("keydown", handleChartKeydown);
 $("#glossaryOpen").addEventListener("click", () => openGlossary());
 $("#glossaryClose").addEventListener("click", closeGlossary);
 $("#glossaryBackdrop").addEventListener("click", closeGlossary);
-$("#handbookClose").addEventListener("click", closeHandbook);
-$("#handbookBackdrop").addEventListener("click", closeHandbook);
 $("#profileClose").addEventListener("click", closeProfileModal);
 $("#profileBackdrop").addEventListener("click", closeProfileModal);
 $("#profileModal").addEventListener("submit", handleAccountSubmit);
@@ -3202,7 +2998,6 @@ document.addEventListener("keydown", (event) => {
   }
   if (event.key === "Escape") {
     if (!$("#profileModal").hidden) closeProfileModal();
-    else if (!$("#handbookModal").hidden) closeHandbook();
     else if (!$("#glossaryDrawer").hidden) closeGlossary();
     else {
       $("#searchOverlay").hidden = true;
