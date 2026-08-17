@@ -2,7 +2,8 @@
 
 import { i18n, configurarBotoesIdioma } from './i18n.js';
 import { loading } from '../components/loading.js';
-import { inicializarTema } from './theme.js';
+import { inicializarTema, atualizarIdiomaTema } from './theme.js';
+import { inicializarDockGlobal, atualizarRotuloDock } from '../components/dock-global.js';
 
 export class App {
     constructor(config = {}) {
@@ -16,10 +17,19 @@ export class App {
 
     async inicializar() {
         try {
+            // O dock precisa existir antes do tema: ele é o host do botão
+            // sol/lua que o theme.js injeta.
+            inicializarDockGlobal();
             inicializarTema();
             loading.mostrar();
 
             await this.carregarTraducoes();
+
+            // Rótulos do dock e do botão de tema seguem o idioma ativo.
+            i18n.registrarCallback(() => {
+                atualizarRotuloDock();
+                atualizarIdiomaTema();
+            });
 
             // Registra callback de idioma ANTES de inicializar app
             if (this.config.callbacks.aoTrocarIdioma) {
