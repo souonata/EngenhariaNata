@@ -1,0 +1,502 @@
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#0b1220;
+    --surface:#141c2e;
+    --surface2:#1c2740;
+    --border:#2a3550;
+    --text:#e6edf6;
+    --muted:#8b96b0;
+    --temp:#ff8c42;
+    --prob:#4aa8ff;
+    --mm:#7ee3c1;
+    --today:#3fb950;
+    /* cores das linhas de grade (tema-aware) */
+    --grid-min:rgba(255,255,255,.04);
+    --grid-h3 :rgba(255,255,255,.10);
+    --grid-h6 :rgba(255,255,255,.22);
+    --grid-h12:rgba(255,255,255,.40);
+    --grid-maj:rgba(255,255,255,.40);
+    --grid-ref:rgba(255,255,255,.05);
+    --grid-cross:rgba(255,255,255,.18);
+    --rain:#8fe9cf;                /* hachura de chuva (tema-aware) */
+  }
+
+  /* ─── Tema claro ─── */
+  html[data-theme="light"]{
+    --bg:#e7edf5;
+    --surface:#ffffff;
+    --surface2:#eef3fa;
+    --border:#ccd6e4;
+    --text:#16202f;
+    --muted:#5d6b82;
+    --grid-min:rgba(0,0,0,.05);
+    --grid-h3 :rgba(0,0,0,.12);
+    --grid-h6 :rgba(0,0,0,.26);
+    --grid-h12:rgba(0,0,0,.45);
+    --grid-maj:rgba(0,0,0,.45);
+    --grid-ref:rgba(0,0,0,.08);
+    --grid-cross:rgba(0,0,0,.22);
+    --rain:#2c8fb0;                /* tom de água, mais escuro p/ aparecer no claro */
+  }
+  html[data-theme="light"] body{ background:#e7edf5; }
+  html[data-theme="light"] .app{ background:#ffffff; }
+  html[data-theme="light"] .city-btn.active{
+    background:linear-gradient(160deg,#dcefff,#eef3fa);
+    box-shadow:0 0 0 1px rgba(74,168,255,.25), 0 4px 14px rgba(74,168,255,.18);
+  }
+  html[data-theme="light"] .home-button-fixed{
+    background:linear-gradient(135deg,#e9f4ff,#d6e9fb);
+    color:#1e6fa8;
+  }
+
+  /* linhas de grade do SVG (cor pelo tema) */
+  .g-min{ stroke:var(--grid-min); }
+  .g-h3 { stroke:var(--grid-h3);  }
+  .g-h6 { stroke:var(--grid-h6);  }
+  .g-h12{ stroke:var(--grid-h12); }
+  .g-maj{ stroke:var(--grid-maj); }
+  .g-ref{ stroke:var(--grid-ref); }
+  .g-cross{ stroke:var(--grid-cross); }
+  .g-now{ stroke:#ff5fa0; stroke-opacity:.85; }   /* hora atual: rosa */
+  .rain-hatch{ stroke:var(--rain); }   /* cor da hachura de chuva pelo tema */
+
+  /* ─── Barra superior: idioma + tema (oculta no topo ao abrir) ─── */
+  .topbar{
+    flex:0 0 auto;
+    display:flex; align-items:center; justify-content:center; gap:12px;
+    padding:10px;
+  }
+  .lang-switch{
+    display:flex; gap:3px;
+    background:var(--surface2); border:1px solid var(--border);
+    border-radius:999px; padding:3px;
+  }
+  .lang-btn{
+    border:none; background:transparent; color:var(--muted);
+    font-family:inherit; font-size:.72rem; font-weight:700; cursor:pointer;
+    padding:5px 13px; border-radius:999px;
+    transition:background .15s, color .15s;
+  }
+  .lang-btn.active{ background:var(--prob); color:#fff; }
+  .theme-btn{
+    border:1px solid var(--border); background:var(--surface2); color:var(--text);
+    font-family:inherit; font-size:.72rem; font-weight:700; cursor:pointer;
+    padding:6px 15px; border-radius:999px;
+  }
+
+  html{overscroll-behavior:none}
+  body{
+    background:radial-gradient(1200px 800px at 0% 0%,#172241 0%,var(--bg) 60%);
+    background-attachment:fixed;
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    min-height:100dvh;
+    display:flex;flex-direction:column;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  /* Primeira "tela" — mantém o gráfico ocupando o viewport; o rodapé do site e
+     o botão home ficam abaixo e aparecem ao rolar. */
+  .screen{ min-height:100dvh; display:flex; flex-direction:column; }
+
+  /* Rodapé padrão do site (revelado ao rolar) */
+  .site-footer{
+    flex:0 0 auto; text-align:center;
+    color:var(--muted); font-size:.72rem;
+    padding:18px 14px 88px;   /* espaço extra embaixo para o botão home aparecer abaixo do rodapé */
+  }
+  .site-footer p{ margin:0; }
+  .site-footer .footer-meta{ margin-top:6px; display:flex; justify-content:center; }
+  .site-footer .footer-github-link{
+    display:inline-flex; align-items:center; gap:5px;
+    color:var(--muted); text-decoration:none; font-size:.68rem;
+  }
+  .site-footer .footer-github-link:hover{ color:var(--text); }
+  .site-footer .footer-github-link svg{ width:13px; height:13px; fill:currentColor; }
+
+  /* Botão home — só aparece (em degradê) ao rolar até perto do rodapé */
+  .home-button-fixed{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    width:50px; height:50px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,#1d3759,#1c2740);
+    border:1px solid var(--prob);
+    box-shadow:0 8px 22px rgba(74,168,255,.28);
+    color:var(--prob); text-decoration:none;
+    opacity:0; pointer-events:none;
+    transition:opacity .28s ease, transform .2s ease;
+    z-index:60;
+  }
+  .home-button-fixed:hover{ transform:translateX(-50%) scale(1.08); }
+  .home-button-fixed svg{ width:24px; height:24px; fill:currentColor; }
+
+  /* ─── City buttons (header) ─── */
+  .cities{
+    flex:0 0 auto;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:5px;
+    padding:6px 6px;
+    border-bottom:1px solid var(--border);
+  }
+  .city-btn{
+    background:var(--surface2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:5px 3px 5px;
+    display:flex;flex-direction:column;align-items:center;gap:1px;
+    color:var(--text);
+    font-family:inherit;
+    cursor:pointer;
+    transition:background .12s,border-color .12s,transform .08s;
+    min-width:0;text-align:center;
+    position:relative;                /* para posicionar a lixeira no canto */
+    -webkit-tap-highlight-color:transparent;
+  }
+  /* Lixeira no canto superior direito do slot: limpa e abre a busca */
+  .slot-clear{
+    position:absolute; top:3px; right:4px;
+    background:transparent; border:none; cursor:pointer;
+    font-size:.68rem; line-height:1; padding:2px;
+    color:var(--muted); opacity:.55;
+    transition:opacity .12s;
+  }
+  .slot-clear:hover{ opacity:1; }
+
+  /* Tooltip flutuante por hora (aparece ao tocar/clicar num número de temperatura) */
+  #hourTip{
+    position:fixed; z-index:200;
+    background:var(--surface); border:1px solid var(--border); border-radius:11px;
+    padding:9px 13px; font-size:.78rem; line-height:1.7;
+    box-shadow:0 8px 28px rgba(0,0,0,.45);
+    pointer-events:none; white-space:nowrap;
+  }
+  #hourTip b{ font-size:.85rem; display:block; margin-bottom:2px; color:var(--text); }
+  #hourTip .tip-row{ display:flex; align-items:center; gap:5px; color:var(--muted); }
+  .city-btn:hover{background:var(--surface)}
+  .city-btn:active{transform:scale(.96)}
+  .city-btn.active{
+    background:linear-gradient(160deg,#1d3759,#1c2740);
+    border-color:var(--prob);
+    box-shadow:0 0 0 1px rgba(74,168,255,.25), 0 4px 14px rgba(74,168,255,.18);
+  }
+  .cb-name{
+    font-size:.52rem;font-weight:700;
+    text-transform:uppercase;letter-spacing:.04em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:72px;
+    line-height:1;
+  }
+  .cb-row1{display:flex;align-items:center;justify-content:center;gap:3px;line-height:1;margin-top:2px}
+  .cb-emoji{font-size:.88rem;line-height:1}
+  .cb-temp{
+    font-size:1.05rem;font-weight:300;color:var(--temp);
+    letter-spacing:-1px;line-height:1;
+  }
+  .cb-meta{
+    font-size:.54rem;color:var(--muted);
+    line-height:1.1;margin-top:1px;
+    white-space:nowrap;
+  }
+  .city-btn.active .cb-meta{color:#b9c5dd}
+  .city-btn.loading .cb-temp,.city-btn.loading .cb-meta{opacity:.4}
+
+  /* ─── Column headers ─── */
+  .col-head{
+    flex:0 0 auto;
+    display:grid;
+    grid-template-columns: 60px 1fr;
+    gap:6px;
+    padding:5px 10px;
+    font-size:.6rem;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    border-bottom:1px solid var(--border);
+    background:var(--surface);
+  }
+  .col-head .c-chart{display:flex;justify-content:space-between;align-items:center}
+  .legend{display:flex;gap:8px;text-transform:none;letter-spacing:0;font-size:.6rem}
+  .lg{display:flex;align-items:center;gap:3px}
+  .lg .dot{width:6px;height:6px;border-radius:50%}
+  .lg .bar{width:8px;height:5px;border-radius:1px}
+
+  /* ─── Days table ─── */
+  .days{
+    flex:1 1 auto;
+    min-height:0;
+    display:flex;flex-direction:column;
+  }
+  .row{
+    flex:1 1 0;
+    display:grid;
+    grid-template-columns: 60px 1fr;
+    gap:2px;
+    align-items:center;
+    padding:4px 10px;
+    border-bottom:1px solid var(--border);
+    min-height:0;
+  }
+  .row:last-child{border-bottom:none}
+  .row.today{background:linear-gradient(90deg,rgba(63,185,80,.08),transparent 60%)}
+
+  .c-date{display:flex;flex-direction:column;line-height:1.1;min-width:0}
+  .dow{font-size:.78rem;font-weight:700}
+  .row.today .dow{color:#3fb950}
+  .dnum{font-size:.62rem;color:var(--muted);margin-top:1px}
+  .emo{font-size:.95rem;margin-top:1px}
+  /* Aviso de chuva do dia (fechar janela / recolher roupa do varal) */
+  .day-rain{font-size:.95rem;margin-top:2px;line-height:1;filter:drop-shadow(0 0 2px rgba(74,168,255,.5))}
+
+  /* Chart cell */
+  .c-chart{
+    display:flex;flex-direction:column;
+    height:100%;min-height:48px;gap:1px;min-width:0;
+  }
+  .wind-wrap{position:relative;flex:1 1 0;min-height:0;container-type:size}
+  .spark-wrap{position:relative;flex:3 1 0;min-height:0;container-type:size}
+  .spark{width:100%;height:100%;display:block}
+  /* Rótulos de valor: SEM fundo/borda; legibilidade por sombra de texto. */
+  .lbl{
+    position:absolute;
+    font-size:.62rem;font-weight:700;line-height:1;
+    pointer-events:none;white-space:nowrap;
+    text-shadow:0 0 3px var(--bg),0 0 3px var(--bg),0 0 2px var(--bg);
+  }
+  .lbl-max{ color:#ff7a5c; }
+  .lbl-min{ color:#7cc4ff; }
+  .lbl-set{
+    position:absolute; right:3px; transform:translateY(-50%);
+    font-size:.6rem; font-weight:700; line-height:1;
+    color:#9fe6b5; pointer-events:none; white-space:nowrap;
+    text-shadow:0 0 2px var(--bg),0 0 2px var(--bg);
+  }
+
+  /* Rótulos de grau (faixa livre à direita do gráfico), na cor da temperatura */
+  .deg{
+    position:absolute; right:2px; transform:translateY(-50%);
+    font-size:.46rem; font-weight:700; line-height:1; white-space:nowrap;
+    pointer-events:none;
+    text-shadow:0 0 2px var(--bg), 0 0 2px var(--bg);
+  }
+  .deg-set{ font-size:.54rem; }
+
+  /* Rótulo do pico de vento (sem fundo) */
+  .lbl-wind{
+    position:absolute;
+    font-size:.5rem; font-weight:700; line-height:1; white-space:nowrap;
+    color:#9aa7d6; pointer-events:none;
+    text-shadow:0 0 3px var(--bg),0 0 3px var(--bg),0 0 2px var(--bg);
+  }
+  /* Hora discreta do cruzamento (puxada por um traço) */
+  .ev-hr{
+    position:absolute; transform:translate(-50%,-50%);
+    font-size:.5rem; font-weight:700; line-height:1; white-space:nowrap;
+    color:var(--muted); pointer-events:none;
+    text-shadow:0 0 2px var(--bg),0 0 2px var(--bg);
+  }
+  /* Bolinha por hora na curva (cor do gradiente da temperatura daquela hora) */
+  .h-dot{
+    position:absolute; transform:translate(-50%,-50%);
+    width:5px; height:5px; border-radius:50%;
+    pointer-events:none; box-shadow:0 0 0 1px var(--bg);
+  }
+  /* Ícones de série (🌡️ no início da linha de temperatura, 💨 na faixa do vento),
+     no slot reservado à esquerda do gráfico; tamanho em cqw como as bolas. */
+  .ser-ico{
+    position:absolute; transform:translate(-50%,-50%);
+    line-height:1; pointer-events:auto;
+  }
+  /* Bola por hora: temperatura dentro, cor do gradiente; diâmetro em cqw (% da
+     largura do gráfico) para ficarem tangentes e escalarem com a tela. */
+  .t-ball{
+    position:absolute; transform:translate(-50%,-50%);
+    aspect-ratio:1; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; line-height:1; letter-spacing:-.02em;
+    box-shadow:0 0 0 .5px var(--bg);
+  }
+  /* Número por hora (não-extremos): só texto na cor do gradiente, com halo da
+     cor do fundo para "interromper" a linha atrás e manter a leitura fácil. */
+  .t-num{
+    position:absolute; transform:translate(-50%,-50%);
+    font-weight:800; line-height:1; white-space:nowrap; pointer-events:auto;
+    text-shadow:
+      0 0 2px var(--bg), 0 0 2px var(--bg), 0 0 2px var(--bg),
+      0 0 3px var(--bg), 1px 1px 1px var(--bg), -1px -1px 1px var(--bg);
+  }
+  /* Bolota que une ponto + valor (número em grafite dentro, sem unidade) */
+  .val-dot{
+    position:absolute; transform:translate(-50%,-50%);
+    min-width:15px; height:15px; padding:0 2px; box-sizing:border-box;
+    border-radius:9px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:.46rem; font-weight:800; line-height:1;
+    pointer-events:none;
+    box-shadow:0 0 0 1.5px var(--bg);
+  }
+
+  /* Marcadores na posição da hora: cruzamento do alvo (▲/▼) e chuva (💧) */
+  .cross-mark{
+    position:absolute; transform:translate(-50%,-50%);
+    font-size:.62rem; font-weight:700; line-height:1; pointer-events:none;
+    text-shadow:0 0 2px var(--bg), 0 0 2px var(--bg);
+  }
+  .rain-mark{
+    position:absolute; top:1px; transform:translateX(-50%);
+    font-size:.6rem; line-height:1; pointer-events:none;
+  }
+
+  /* Trigger strip */
+  .triggers{
+    flex:0 0 auto;
+    display:flex;gap:7px;
+    font-size:.56rem;line-height:1;
+    white-space:nowrap;overflow:hidden;
+    padding:1px 0 0;font-weight:700;
+    min-height:9px;
+  }
+  .trig-up   { color:#ff6b4a; }
+  .trig-dn   { color:#5edaff; }
+  .trig-rain { color:var(--mm); }
+
+  /* Eixo de horas (só sob o dia de hoje) */
+  .hour-axis{
+    position:relative;
+    flex:0 0 auto;
+    height:10px;
+    margin-top:1px;
+    container-type:size;            /* fonte das horas em cqw; relógio capado pela altura (cqh) */
+  }
+  .hour-axis span{
+    position:absolute;
+    top:0;
+    font-size:.5rem;
+    line-height:1;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  /* Eixo denso (Hoje, todas as horas) — fonte menor p/ caber 0–24 */
+  .hour-axis.dense span{ font-size:.4rem; }
+  /* Relógio identificando a série das horas (à esquerda da legenda) */
+  .hour-axis .axis-ico{
+    left:0; top:50%; transform:translateY(-50%);
+    color:var(--muted); pointer-events:none;
+  }
+
+  /* Stats cell */
+  .c-stats{
+    display:flex;flex-direction:column;align-items:flex-end;
+    line-height:1.15;font-size:.66rem;
+  }
+  .stat-pop{color:var(--prob)}
+  .stat-pop.dry{color:var(--muted)}
+  .stat-mm{color:var(--mm);margin-top:1px}
+  .stat-mm.zero{color:var(--muted)}
+
+  /* ─── Footer ─── */
+  .footer{
+    flex:0 0 auto;
+    padding:4px 10px;
+    font-size:.58rem;color:var(--muted);
+    display:flex;justify-content:space-between;align-items:center;
+    border-top:1px solid var(--border);
+  }
+  .footer a{color:var(--muted)}
+
+  /* ─── Loading / Error ─── */
+  .overlay{
+    position:fixed;inset:0;background:var(--bg);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:14px;z-index:50;padding:24px;text-align:center;
+  }
+  .spinner{
+    width:34px;height:34px;border:3px solid var(--border);
+    border-top-color:var(--prob);border-radius:50%;
+    animation:spin .7s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .err-ico{font-size:2.4rem}
+  .err-msg{color:var(--muted);font-size:.85rem;max-width:300px}
+  .btn{background:var(--prob);color:#fff;border:none;border-radius:8px;
+       padding:9px 18px;font-size:.85rem;cursor:pointer;font-family:inherit}
+
+  /* ─── Busca de cidade (lupa) ─── */
+  .search-btn{ align-items:center; justify-content:center; }
+  .search-btn .lupa{ font-size:1.7rem; line-height:1; }
+  .search-overlay{
+    background:rgba(7,11,20,.78);
+    align-items:flex-start; justify-content:center;
+    padding:14vh 16px 16px;
+  }
+  html[data-theme="light"] .search-overlay{ background:rgba(20,30,45,.4); }
+  .search-box{
+    width:min(94%,420px);
+    background:var(--surface); border:1px solid var(--border); border-radius:14px;
+    padding:10px; box-shadow:0 24px 60px rgba(0,0,0,.5); text-align:left;
+  }
+  .search-row{ display:flex; align-items:center; gap:8px; }
+  .search-ico{ font-size:1rem; flex:0 0 auto; }
+  #searchInput{
+    flex:1; min-width:0;
+    background:var(--surface2); border:1px solid var(--border); border-radius:9px;
+    padding:9px 11px; color:var(--text); font-family:inherit; font-size:.95rem;
+  }
+  #searchInput:focus{ outline:none; border-color:var(--prob); }
+  .search-x{ background:transparent; border:none; color:var(--muted); font-size:1rem; cursor:pointer; padding:4px 6px; }
+  .search-results{ margin-top:8px; display:flex; flex-direction:column; gap:2px; max-height:46vh; overflow:auto; }
+  .search-item{
+    display:flex; flex-direction:column; align-items:flex-start; gap:1px;
+    text-align:left; background:transparent; border:none; border-radius:8px;
+    padding:8px 10px; cursor:pointer; color:var(--text); font-family:inherit;
+  }
+  .search-item:hover{ background:var(--surface2); }
+  .si-name{ font-size:.9rem; font-weight:700; }
+  .si-sub{ font-size:.72rem; color:var(--muted); }
+  .search-empty{ padding:10px; color:var(--muted); font-size:.85rem; text-align:center; }
+
+  /* ─── Desktop ─── */
+  @media (min-width:768px){
+    body{background:#070b14}
+    .screen{align-items:center;justify-content:center}
+    .app{
+      width:min(100%,860px);
+      height:min(100dvh,740px);
+      border:1px solid var(--border);border-radius:18px;
+      overflow:hidden;display:flex;flex-direction:column;
+      background:radial-gradient(900px 600px at 0% 0%,#172241 0%,var(--bg) 60%);
+      box-shadow:0 24px 60px rgba(0,0,0,.5);
+    }
+    .cities{padding:10px 14px;gap:10px}
+    .city-btn{padding:9px 6px;border-radius:12px}
+    .cb-name{font-size:.78rem;max-width:none}
+    .cb-emoji{font-size:1rem}
+    .cb-temp{font-size:1.6rem;margin-top:4px}
+    .cb-meta{font-size:.7rem;margin-top:3px}
+    .col-head, .row{grid-template-columns: 80px 1fr;padding-left:18px;padding-right:18px}
+    .dow{font-size:.95rem}.dnum{font-size:.72rem}.emo{font-size:1.15rem}.day-rain{font-size:1.15rem}
+    .lbl{font-size:.72rem}
+    .lbl-set{font-size:.72rem}
+    .deg{font-size:.58rem}
+    .deg-set{font-size:.66rem}
+    .lbl-wind{font-size:.62rem}
+    .ev-hr{font-size:.58rem}
+    .cross-mark{font-size:.74rem}
+    .rain-mark{font-size:.72rem}
+    .c-stats{font-size:.78rem}
+    .triggers{font-size:.68rem;min-height:11px;gap:10px}
+    .hour-axis{height:12px}
+    .hour-axis span{font-size:.62rem}
+    .hour-axis.dense span{font-size:.5rem}
+    .val-dot{min-width:18px;height:18px;font-size:.56rem}
+    .h-dot{width:6px;height:6px}
+    .footer{padding:8px 18px;font-size:.7rem}
+  }
+  @media (max-width:767px){.app{flex:1;display:flex;flex-direction:column;min-height:0}}
+  @media (max-height:480px){
+    .cities{padding:3px 4px;gap:3px}
+    .city-btn{padding:3px 2px}
+    .cb-temp{font-size:.95rem}
+    .cb-meta{display:none}
+    .triggers{display:none}
+    .hour-axis{display:none}
+  }

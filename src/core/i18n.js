@@ -2,9 +2,35 @@
 
 const IDIOMA_SESSION_KEY = 'engnata_idioma';
 
+// Idiomas do portfólio. Cada idioma carrega junto a sua jurisdição
+// (pt-BR ⇒ Brasil, it-IT ⇒ Itália, sv-SE ⇒ Suécia), por isso constantes,
+// normas e moeda seguem o idioma selecionado.
+export const IDIOMAS_SUPORTADOS = ['pt-BR', 'it-IT', 'sv-SE'];
+export const IDIOMA_PADRAO = 'it-IT';
+
+// Cadeia de fallback por idioma: uma chave ausente cai no próximo idioma da
+// lista em vez de sumir da tela. Necessário porque a tradução sueca entra de
+// forma incremental, app por app.
+const CADEIA_FALLBACK = {
+    'pt-BR': ['pt-BR', 'it-IT'],
+    'it-IT': ['it-IT', 'pt-BR'],
+    'sv-SE': ['sv-SE', 'it-IT', 'pt-BR']
+};
+
+// Ordem de fallback de um idioma, do preferido ao último recurso.
+export function obterCadeiaFallback(idioma) {
+    return CADEIA_FALLBACK[idioma] || [idioma];
+}
+
+const MOEDAS = {
+    'pt-BR': 'BRL',
+    'it-IT': 'EUR',
+    'sv-SE': 'SEK'
+};
+
 class I18nManager {
     constructor() {
-        this.idiomaAtual = 'it-IT';
+        this.idiomaAtual = IDIOMA_PADRAO;
         this.traducoes = {};
         this.callbacks = [];
     }
@@ -13,14 +39,19 @@ class I18nManager {
         this.traducoes = traducoes;
 
         const idiomaSessao = sessionStorage.getItem(IDIOMA_SESSION_KEY);
-        const idiomaPreferido = idiomaInicial || idiomaSessao || 'it-IT';
-        const idiomaValido = this.traducoes[idiomaPreferido] ? idiomaPreferido : 'it-IT';
+        const idiomaPreferido = idiomaInicial || idiomaSessao || IDIOMA_PADRAO;
+        const idiomaValido = IDIOMAS_SUPORTADOS.includes(idiomaPreferido)
+            ? idiomaPreferido
+            : IDIOMA_PADRAO;
         this.trocarIdioma(idiomaValido);
     }
 
     trocarIdioma(novoIdioma) {
-        if (!this.traducoes[novoIdioma]) {
-            console.error(`Idioma ${novoIdioma} não encontrado`);
+        // Valida contra a lista de idiomas suportados — e não contra a presença
+        // de traduções — para que o seletor continue funcionando em apps ainda
+        // não traduzidos: a cadeia de fallback cobre as chaves que faltam.
+        if (!IDIOMAS_SUPORTADOS.includes(novoIdioma)) {
+            console.error(`Idioma ${novoIdioma} não suportado`);
             return;
         }
 
@@ -90,10 +121,11 @@ class I18nManager {
         });
     }
 
-    obterTraducao(chave) {
+    // Resolve uma chave pontilhada ("labels.bruto") dentro de um único idioma.
+    resolverEm(idioma, chave) {
         const partes = chave.split('.');
-        let valor = this.traducoes[this.idiomaAtual];
-        
+        let valor = this.traducoes[idioma];
+
         for (const parte of partes) {
             if (valor && typeof valor === 'object') {
                 valor = valor[parte];
@@ -101,8 +133,21 @@ class I18nManager {
                 return null;
             }
         }
-        
-        return valor;
+
+        return valor ?? null;
+    }
+
+    obterTraducao(chave) {
+        const cadeia = CADEIA_FALLBACK[this.idiomaAtual] || [this.idiomaAtual];
+
+        for (const idioma of cadeia) {
+            const valor = this.resolverEm(idioma, chave);
+            if (valor !== null) {
+                return valor;
+            }
+        }
+
+        return null;
     }
 
     t(chave, valores = {}) {
@@ -128,7 +173,36 @@ class I18nManager {
     }
 
     obterMoeda() {
-        return this.idiomaAtual === 'it-IT' ? 'EUR' : 'BRL';
+        return MOEDAS[this.idiomaAtual] || MOEDAS[IDIOMA_PADRAO];
+    }
+
+    // Locale BCP-47 para toLocaleString. O sueco separa milhar por espaço e usa
+    // vírgula decimal ("1 234,56"), diferente de pt-BR e it-IT.
+    obterLocaleNumerico() {
+        return this.idiomaAtual;
+    }
+
+    formatarMoeda(valor, opcoes = {}) {
+        return new Intl.NumberFormat(this.obterLocaleNumerico(), {
+            style: 'currency',
+            currency: this.obterMoeda(),
+            ...opcoes
+        }).format(valor);
+    }
+
+    // Seleciona o valor correspondente ao idioma ativo a partir de um mapa por
+    // locale. Substitui os ternários `idioma === 'it-IT' ? valorIT : valorBR`,
+    // que não comportam um terceiro idioma.
+    porIdioma(mapa) {
+        const cadeia = CADEIA_FALLBACK[this.idiomaAtual] || [this.idiomaAtual];
+
+        for (const idioma of cadeia) {
+            if (mapa && Object.prototype.hasOwnProperty.call(mapa, idioma)) {
+                return mapa[idioma];
+            }
+        }
+
+        return undefined;
     }
 }
 

@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "EngenhariaNata i18n Translation File",
-  "description": "Arquivo de traduções bilíngue PT-BR / IT-IT",
+  "description": "Arquivo de traduções trilíngue PT-BR / IT-IT / SV-SE",
   "type": "object",
   "required": ["pt-BR", "it-IT"],
   "additionalProperties": false,
@@ -15,6 +15,11 @@
     "it-IT": {
       "type": "object",
       "description": "Traduzioni in Italiano",
+      "additionalProperties": true
+    },
+    "sv-SE": {
+      "type": "object",
+      "description": "Översättningar på svenska",
       "additionalProperties": true
     }
   }
