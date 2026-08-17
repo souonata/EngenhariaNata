@@ -118,7 +118,10 @@ class IndexApp extends App {
 
     sortAppsForLocale() {
         const lang   = typeof i18n.obterIdiomaAtual === 'function' ? i18n.obterIdiomaAtual() : 'pt-BR';
-        const locale = lang.startsWith('it') ? 'it' : 'pt';
+        // localeCompare aceita a tag BCP-47 direto. Importa para o sueco, que
+        // ordena Å, Ä e Ö no FIM do alfabeto — a colação portuguesa as trataria
+        // como variantes de A e O.
+        const locale = lang;
         const ABOUT  = 'app-about';
         const BUGS   = 'app-bugs';
 
