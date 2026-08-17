@@ -3,7 +3,11 @@
 import { i18n, configurarBotoesIdioma } from './i18n.js';
 import { loading } from '../components/loading.js';
 import { inicializarTema, atualizarIdiomaTema } from './theme.js';
-import { inicializarDockGlobal, atualizarRotuloDock } from '../components/dock-global.js';
+import {
+    inicializarDockGlobal,
+    atualizarRotuloDock,
+    sincronizarIdiomasDisponiveis
+} from '../components/dock-global.js';
 
 export class App {
     constructor(config = {}) {
@@ -37,6 +41,8 @@ export class App {
             }
 
             i18n.inicializar(this.config.traducoes, this.config.idiomaInicial);
+            // Só agora sabemos quais idiomas este app tem de fato.
+            sincronizarIdiomasDisponiveis(this.config.traducoes);
             configurarBotoesIdioma();
 
             this.configurarBotaoHome();

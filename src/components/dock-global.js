@@ -10,7 +10,7 @@
 // wiring existente (`configurarBotoesIdioma` e `atualizarBotoesIdioma` do
 // core/i18n.js) continua valendo sem alteração.
 
-import { IDIOMAS_SUPORTADOS } from '../core/i18n.js';
+import { IDIOMAS_SUPORTADOS, obterCadeiaFallback } from '../core/i18n.js';
 
 const DOCK_ID = 'engnataDockGlobal';
 
@@ -125,6 +125,46 @@ export function inicializarDockGlobal() {
     atualizarRotuloDock();
 
     return dock;
+}
+
+// Esconde bandeiras de idiomas que este app ainda não tem traduzidos, para que
+// ninguém clique numa bandeira e receba o texto do idioma de fallback. Conforme
+// cada app ganha a coluna sueca, a bandeira aparece sozinha.
+// Chamada depois de i18n.inicializar(), quando as traduções já foram carregadas.
+export function sincronizarIdiomasDisponiveis(traducoes) {
+    const dock = document.getElementById(DOCK_ID);
+    if (!dock || !traducoes) {
+        return;
+    }
+
+    const disponiveis = IDIOMAS_SUPORTADOS.filter(idioma => traducoes[idioma]);
+    // Sem nenhuma tradução carregada não há o que decidir: mantém tudo visível.
+    if (disponiveis.length === 0) {
+        return;
+    }
+
+    dock.querySelectorAll('.lang-btn[data-lang]').forEach(btn => {
+        const tem = disponiveis.includes(btn.dataset.lang);
+        btn.hidden = !tem;
+        btn.style.display = tem ? '' : 'none';
+    });
+
+    // Se a sessão está num idioma que este app ainda não tem, o conteúdo sai
+    // pelo fallback. Marcamos como ativa a bandeira do idioma efetivamente
+    // renderizado, para não sobrar um dock sem nenhuma seleção.
+    const ativo = document.documentElement.lang;
+    if (!disponiveis.includes(ativo)) {
+        // Segue a mesma cadeia do core (sv-SE → it-IT → pt-BR), senão marcaríamos
+        // uma bandeira diferente do texto que está na tela.
+        const renderizado =
+            obterCadeiaFallback(ativo).find(idioma => disponiveis.includes(idioma)) ||
+            disponiveis[0];
+        dock.querySelectorAll('.lang-btn[data-lang]').forEach(btn => {
+            const ehRenderizado = btn.dataset.lang === renderizado;
+            btn.classList.toggle('active', ehRenderizado);
+            btn.setAttribute('aria-pressed', String(ehRenderizado));
+        });
+    }
 }
 
 // Rótulo acessível da toolbar acompanha o idioma ativo.

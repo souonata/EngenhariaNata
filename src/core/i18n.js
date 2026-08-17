@@ -17,6 +17,11 @@ const CADEIA_FALLBACK = {
     'sv-SE': ['sv-SE', 'it-IT', 'pt-BR']
 };
 
+// Ordem de fallback de um idioma, do preferido ao último recurso.
+export function obterCadeiaFallback(idioma) {
+    return CADEIA_FALLBACK[idioma] || [idioma];
+}
+
 const MOEDAS = {
     'pt-BR': 'BRL',
     'it-IT': 'EUR',
