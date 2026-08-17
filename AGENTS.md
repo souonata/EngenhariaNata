@@ -181,7 +181,33 @@ npm run build          # build de produção (gera local/dist)
 
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
-_Última atualização: 2026-07-25_
+_Última atualização: 2026-08-17_
+
+- **SITE TRILÍNGUE — SUECO (`sv-SE`) + DOCK GLOBAL (branch `feat/i18n-sueco`):** iniciativa em
+  andamento; plano completo e fases na seção própria do `ROADMAP.md`. **Decisões travadas:** idioma
+  acoplado ao país (`sv-SE` ⇒ Suécia); Salário/Mutuo terão o **modelo sueco completo**; `br12c` e
+  `lichiabonsai` entram; **`patentenautica` fica FORA e não exibe a bandeira sueca** (o exame é
+  italiano e o app usa `data-study-mode`, não seletor de idioma). **Vento do app meteo em m/s em
+  TODOS os idiomas.**
+  - **FEITO (Fases 0, 1 e 3):** núcleo i18n com 3 idiomas, moeda por mapa (BRL/EUR/SEK), cadeia de
+    fallback `sv-SE → it-IT → pt-BR` e helpers `porIdioma()`/`formatarMoeda()` (substitutos dos ~90
+    ternários de jurisdição, ainda a converter). **Dock global flutuante** (`src/components/dock-global.js`
+    + `assets/css/dock-global.css`): bandeiras BR/IT/SV + sol/lua, **só ícones**, fixo no topo-direito,
+    criado por `App.inicializar()` — vale para todos os apps que estendem o core. Exibe **apenas as
+    bandeiras dos idiomas que o app tem**, então a sueca aparece sozinha conforme cada app é traduzido;
+    `data-dock="off"` e `data-dock-idiomas` dão opt-out por página. **App meteo migrado** para a
+    estrutura padrão (era 1518 linhas inline; agora HTML 73 linhas + `previsao-styles.css` +
+    `previsao-script.js` ESM + `src/i18n/previsao.json`), com vento em m/s via `wind_speed_unit=ms`
+    e sueco completo. **Catálogo (`index.json`) em sueco** e **validador de paridade**
+    (`scripts/validate_i18n_parity.mjs`, no `npm run validate`).
+  - **FALTA:** `sobre.json`/`sobre.html`; apps de engenharia em sueco + normas SE + conversão dos
+    ternários (Fase 2); `salario`/`mutuo` com modelo sueco real (Fase 4 — exige checar taxas atuais
+    do Skatteverket e o amorteringskrav da Finansinspektionen); `br12c` (tem boot próprio binário e
+    **service worker a bumpar**) e `lichiabonsai` (Fase 5); integrar o dock ao `patentenautica`
+    (só BR/IT) e ao `br12c`, que não passam pelo `src/core/app.js`.
+  - **Gotcha novo:** `querySelector('.a, .b')` devolve o primeiro nó em ordem de **documento**, não
+    na ordem dos seletores — o dock é anexado ao fim do `body`, então consultas de host precisam ser
+    separadas e em ordem de prioridade explícita (mordido em `theme.js`).
 
 - **ROTTA 12 / PATENTE NÁUTICA (branch `feat/patente-nautica`):** app integrado em
   `patentenautica/`, registrado no catálogo, home/sobre bilíngues, README, ROADMAP, versões,
