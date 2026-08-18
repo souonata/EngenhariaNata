@@ -116,7 +116,33 @@
       "langIt": "Italiano",
       "clickInfo": "Mais informações"
     },
-    "footer": "Ventilação Natural — Engenharia NATA @ 2026"
+    "footer": "Ventilação Natural — Engenharia NATA @ 2026",
+    "vense": {
+      "titulo": "Ventilação na Suécia — vazão e perda de calor",
+      "intro": "A exigência sueca é de vazão de ar exterior, não de área de janela: no mínimo 0,35 l/s por m² de piso e 4,0 l/s por pessoa. Como se ventila o ano inteiro em clima frio, a questão real de projeto é a perda de calor — e quanto dela se recupera.",
+      "sistema": "Sistema de ventilação",
+      "sistemaSjalvdrag": "Tiragem natural (S)",
+      "sistemaFranluft": "Exaustão mecânica (F)",
+      "sistemaFvp": "Bomba de calor sobre o ar de exaustão (FVP)",
+      "sistemaFtx": "FTX com recuperação de calor",
+      "landsdel": "Região",
+      "landsdelSyd": "Sul da Suécia",
+      "landsdelMellan": "Centro da Suécia",
+      "landsdelNorr": "Norte da Suécia",
+      "energipris": "Preço da energia (kr/kWh)",
+      "fluxoExigido": "Vazão de ar exterior exigida",
+      "criterio": "Critério dominante",
+      "criterioArea": "0,35 l/s·m² (área de piso)",
+      "criterioPessoas": "4,0 l/s por pessoa",
+      "fluxoM3h": "Equivale a",
+      "omsattning": "Renovações de ar",
+      "forlustBrutto": "Perda por ventilação sem recuperação",
+      "atervunnet": "Calor recuperado",
+      "netto": "Resta aquecer",
+      "kostnad": "Custo por ano",
+      "jamforelse": "Se trocar para FTX",
+      "aviso": "Cálculo educativo. A exigência de vazão vem do BFS 2024:8 (3 kap. Luft, 5 §), que desde 1 de julho de 2026 vale no lugar do BBR. A perda de calor usa graus-dia de ano normal e não substitui um projeto de ventilação."
+    }
   },
   "it-IT": {
     "app": {
@@ -234,7 +260,33 @@
       "langIt": "Italiano",
       "clickInfo": "Più informazioni"
     },
-    "footer": "Ventilazione Naturale — Engenharia NATA @ 2026"
+    "footer": "Ventilazione Naturale — Engenharia NATA @ 2026",
+    "vense": {
+      "titulo": "Ventilazione in Svezia — portata e perdita di calore",
+      "intro": "Il requisito svedese è una portata d'aria esterna, non una superficie finestrata: almeno 0,35 l/s per m² di pavimento e 4,0 l/s per persona. Poiché si ventila tutto l'anno in clima freddo, il vero problema progettuale è la perdita di calore — e quanta se ne recupera.",
+      "sistema": "Sistema di ventilazione",
+      "sistemaSjalvdrag": "Tiraggio naturale (S)",
+      "sistemaFranluft": "Estrazione meccanica (F)",
+      "sistemaFvp": "Pompa di calore sull'aria estratta (FVP)",
+      "sistemaFtx": "FTX con recupero di calore",
+      "landsdel": "Regione",
+      "landsdelSyd": "Svezia meridionale",
+      "landsdelMellan": "Svezia centrale",
+      "landsdelNorr": "Svezia settentrionale",
+      "energipris": "Prezzo dell'energia (kr/kWh)",
+      "fluxoExigido": "Portata d'aria esterna richiesta",
+      "criterio": "Criterio dimensionante",
+      "criterioArea": "0,35 l/s·m² (superficie pavimento)",
+      "criterioPessoas": "4,0 l/s per persona",
+      "fluxoM3h": "Equivale a",
+      "omsattning": "Ricambi d'aria",
+      "forlustBrutto": "Perdita per ventilazione senza recupero",
+      "atervunnet": "Calore recuperato",
+      "netto": "Resta da riscaldare",
+      "kostnad": "Costo annuo",
+      "jamforelse": "Passando a FTX",
+      "aviso": "Calcolo didattico. Il requisito di portata deriva dal BFS 2024:8 (3 kap. Luft, 5 §), che dal 1° luglio 2026 sostituisce il BBR. La perdita di calore usa i gradi giorno di un anno normale e non sostituisce un progetto di ventilazione."
+    }
   },
   "sv-SE": {
     "app": {
@@ -352,6 +404,32 @@
       "langIt": "Italienska",
       "clickInfo": "Mer information"
     },
-    "footer": "Naturlig ventilation — Engenharia NATA @ 2026"
+    "footer": "Naturlig ventilation — Engenharia NATA @ 2026",
+    "vense": {
+      "titulo": "Ventilation i Sverige — luftflöde och värmeförlust",
+      "intro": "Kravet i Sverige är ett uteluftsflöde, inte en fönsterarea: minst 0,35 l/s per m² golvarea och 4,0 l/s per person. Eftersom huset ventileras året om i kallt klimat är den verkliga designfrågan värmeförlusten — och hur mycket av den du återvinner.",
+      "sistema": "Ventilationssystem",
+      "sistemaSjalvdrag": "Självdrag (S)",
+      "sistemaFranluft": "Frånluft (F)",
+      "sistemaFvp": "Frånluftsvärmepump (FVP)",
+      "sistemaFtx": "FTX med värmeåtervinning",
+      "landsdel": "Landsdel",
+      "landsdelSyd": "Södra Sverige",
+      "landsdelMellan": "Mellersta Sverige",
+      "landsdelNorr": "Norra Sverige",
+      "energipris": "Energipris (kr/kWh)",
+      "fluxoExigido": "Krav på uteluftsflöde",
+      "criterio": "Dimensionerande krav",
+      "criterioArea": "0,35 l/s·m² (golvarea)",
+      "criterioPessoas": "4,0 l/s per person",
+      "fluxoM3h": "Motsvarar",
+      "omsattning": "Luftomsättning",
+      "forlustBrutto": "Ventilationsförlust utan återvinning",
+      "atervunnet": "Återvunnen värme",
+      "netto": "Kvar att värma",
+      "kostnad": "Kostnad per år",
+      "jamforelse": "Om du byter till FTX",
+      "aviso": "Utbildningsberäkning. Flödeskravet kommer från BFS 2024:8 (3 kap. Luft, 5 §), som sedan 1 juli 2026 gäller i stället för BBR. Värmeförlusten beräknas med graddagar för normalår och ersätter inte en projekterad ventilationsberäkning."
+    }
   }
 }

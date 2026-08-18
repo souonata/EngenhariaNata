@@ -11,6 +11,12 @@ import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { formatarNumero } from '../src/utils/formatters.js';
 import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
+import {
+    VENTILACAO_SE,
+    RECUPERACAO_CALOR_SE,
+    GRADDAGAR_SE,
+    AR_RHO_CP
+} from '../src/data/parametros-suecia.js';
 
 // ============================================
 // CONSTANTES
@@ -65,6 +71,61 @@ const VAZAO_POR_PESSOA = 27; // 7,5 L/s × 3,6
 const FRACAO_AREA_MINIMA = 1 / 8; // 12,5%
 
 // ============================================
+// SUÉCIA — vazão exigida e perda de calor
+// ============================================
+
+/**
+ * A pergunta sueca é outra. No Brasil e na Itália pergunta-se se a janela é
+ * grande o bastante; na Suécia a exigência é de VAZÃO de ar exterior o ano
+ * inteiro (BFS 2024:8, 3 kap. 5 §), e o problema de projeto passa a ser a
+ * perda de calor que essa vazão obrigatória carrega para fora.
+ *
+ * Função pura: recebe valores, devolve números. Sem DOM.
+ */
+function calcularVentilacaoSuecia(v) {
+    const areaPiso = v.comprimento * v.largura;
+    const volume   = areaPiso * v.peDireito;
+
+    // Os dois critérios do regulamento; vale o MAIOR.
+    const fluxoPorArea    = VENTILACAO_SE.fluxoPorM2 * areaPiso;      // l/s
+    const fluxoPorPessoas = VENTILACAO_SE.fluxoPorPessoa * v.pessoas; // l/s
+    const fluxoExigido    = Math.max(fluxoPorArea, fluxoPorPessoas);
+    const criterio        = fluxoPorArea >= fluxoPorPessoas ? 'area' : 'pessoas';
+
+    const fluxoM3h = fluxoExigido * 3.6;
+    const omsattning = volume > 0 ? fluxoM3h / volume : 0;
+
+    // Perda de calor anual: E = V̇ · ρcp · graus-dia.
+    // V̇ em m³/s, graus-dia em K·dia → segundos por dia e J→kWh.
+    const graddagar   = GRADDAGAR_SE[v.landsdel] ?? GRADDAGAR_SE.mellan;
+    const fluxoM3s    = fluxoExigido / 1000;
+    const perdaBruta  = (fluxoM3s * AR_RHO_CP * graddagar * 86400) / 3.6e6; // kWh/ano
+
+    const recuperacao = RECUPERACAO_CALOR_SE[v.sistema] ?? 0;
+    const recuperado  = perdaBruta * recuperacao;
+    const perdaLiquida = perdaBruta - recuperado;
+    const custoAnual   = perdaLiquida * v.energipris;
+
+    // Quanto se ganharia trocando o sistema atual por FTX.
+    const perdaComFtx   = perdaBruta * (1 - RECUPERACAO_CALOR_SE.ftx);
+    const economiaFtx   = (perdaLiquida - perdaComFtx) * v.energipris;
+
+    return {
+        areaPiso, volume, fluxoPorArea, fluxoPorPessoas, fluxoExigido, criterio,
+        fluxoM3h, omsattning, graddagar, perdaBruta, recuperacao, recuperado,
+        perdaLiquida, custoAnual, economiaFtx
+    };
+}
+
+/** Número no formato sueco (espaço como separador de milhar). */
+function numSE(valor, casas = 0) {
+    return valor.toLocaleString('sv-SE', {
+        minimumFractionDigits: casas,
+        maximumFractionDigits: casas
+    });
+}
+
+// ============================================
 // CLASSE PRINCIPAL
 // ============================================
 
@@ -99,6 +160,7 @@ class VentilacaoApp extends App {
         this.configurarIconesInfo();
         this.configurarBotoesIncremento();
         this.configurarSlidersEInputs();
+        this.configurarEventosSE();
 
         document.querySelectorAll('input[name="tipoVentilacao"]').forEach(r =>
             r.addEventListener('change', () => this.atualizarResultado()));
@@ -376,9 +438,19 @@ class VentilacaoApp extends App {
         const v   = this.obterValores();
         const res = this.calcular(v);
 
+        // `body.lang-se` comanda as regras .se-only / .se-hide do CSS.
+        const ehSueco = i18n.obterIdiomaAtual() === 'sv-SE';
+        document.body.classList.toggle('lang-se', ehSueco);
+        document.body.classList.toggle('lang-br', i18n.obterIdiomaAtual() === 'pt-BR');
+        document.body.classList.toggle('lang-it', i18n.obterIdiomaAtual() === 'it-IT');
+
+        const resSE = this.atualizarSuecia(v);
+
         this.atualizarDOM(v, res);
         this.atualizarMemorial(v, res);
-        this.explicacao.renderizar(this.gerarExplicacao(v, res));
+        this.explicacao.renderizar(
+            ehSueco && resSE ? this.gerarExplicacaoSE(v, resSE) : this.gerarExplicacao(v, res)
+        );
     }
 
     atualizarDOM(v, res) {
@@ -413,6 +485,147 @@ class VentilacaoApp extends App {
             const ok = i18n.porIdioma({ 'pt-BR': 'OK — excedente', 'it-IT': 'OK — in eccesso', 'sv-SE': 'OK — överskott' });
             statusEl.innerHTML = `<span class="status-badge status-ok">✅ ${ok} ${formatarNumero(-res.deficitJanelas, 2)} m²</span>`;
         }
+    }
+
+    // ============================================
+    // SUÉCIA
+    // ============================================
+
+    obterValoresSE() {
+        const bruto = document.getElementById('inputSeEnergipris')?.value || '1,20';
+        const energipris = parseFloat(String(bruto).replace(/\s/g, '').replace(',', '.')) || 1.2;
+
+        return {
+            sistema:  document.getElementById('selectSeSistema')?.value   || 'ftx',
+            landsdel: document.getElementById('selectSeLandsdel')?.value  || 'mellan',
+            energipris
+        };
+    }
+
+    atualizarSuecia(v) {
+        if (!document.getElementById('seFluxoExigido')) return;
+
+        const se  = this.obterValoresSE();
+        const r   = calcularVentilacaoSuecia({ ...v, ...se });
+        const t   = this.traducoes;
+        const def = (id, texto) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = texto;
+        };
+
+        def('seFluxoExigido', `${numSE(r.fluxoExigido, 1)} l/s`);
+
+        // Qual dos dois critérios manda é informação útil: numa casa grande com
+        // poucos moradores manda a área; num quarto pequeno e cheio, as pessoas.
+        const criterioTexto = r.criterio === 'area'
+            ? (t.vense?.criterioArea || '0,35 l/s·m² (golvarea)')
+            : (t.vense?.criterioPessoas || '4,0 l/s per person');
+        def('seCriterio', criterioTexto);
+
+        def('seFluxoM3h', `${numSE(r.fluxoM3h, 0)} m³/h`);
+        def('seOmsattning', `${numSE(r.omsattning, 2)} oms/h`);
+        def('seForlustBrutto', `${numSE(r.perdaBruta, 0)} kWh/år`);
+        def('seAtervunnet', `${numSE(r.recuperado, 0)} kWh/år (${numSE(r.recuperacao * 100, 0)} %)`);
+        def('seNetto', `${numSE(r.perdaLiquida, 0)} kWh/år`);
+        def('seKostnad', `${numSE(r.custoAnual, 0)} kr/år`);
+
+        // A comparação com FTX só faz sentido para quem ainda não tem FTX.
+        const itemJamforelse = document.getElementById('seJamforelseItem');
+        if (itemJamforelse) {
+            const ehFtx = se.sistema === 'ftx';
+            itemJamforelse.hidden = ehFtx;
+            if (!ehFtx) {
+                def('seJamforelse', `−${numSE(r.economiaFtx, 0)} kr/år`);
+            }
+        }
+
+        return r;
+    }
+
+    configurarEventosSE() {
+        const recalcular = () => this.atualizarResultado();
+
+        document.getElementById('selectSeSistema')?.addEventListener('change', recalcular);
+        document.getElementById('selectSeLandsdel')?.addEventListener('change', recalcular);
+
+        const input  = document.getElementById('inputSeEnergipris');
+        const slider = document.getElementById('sliderSeEnergipris');
+
+        slider?.addEventListener('input', () => {
+            if (input) input.value = numSE(parseFloat(slider.value), 2);
+            recalcular();
+        });
+
+        input?.addEventListener('input', () => {
+            const n = parseFloat(String(input.value).replace(/\s/g, '').replace(',', '.'));
+            if (slider && Number.isFinite(n)) slider.value = String(n);
+            recalcular();
+        });
+    }
+
+    /**
+     * Explicação da visão sueca. Não é a tradução da explicação brasileira: as
+     * linhas são outras porque o cálculo é outro.
+     */
+    gerarExplicacaoSE(v, r) {
+        const t = this.traducoes;
+        const nomeSistema = t.vense?.[{
+            sjalvdrag: 'sistemaSjalvdrag',
+            franluft:  'sistemaFranluft',
+            fvp:       'sistemaFvp',
+            ftx:       'sistemaFtx'
+        }[this.obterValoresSE().sistema]] || '';
+
+        const mandaArea = r.criterio === 'area';
+
+        const linhas = [
+            {
+                icone: '📏',
+                titulo: 'Krav på uteluftsflöde',
+                valor: `${numSE(r.fluxoExigido, 1)} l/s`,
+                descricao: `Golvarea ${numSE(r.areaPiso, 1)} m² × 0,35 = ${numSE(r.fluxoPorArea, 1)} l/s. ` +
+                    `${v.pessoas} personer × 4,0 = ${numSE(r.fluxoPorPessoas, 1)} l/s. ` +
+                    `Det högre värdet gäller — här ${mandaArea ? 'golvarean' : 'antalet personer'}.`
+            },
+            {
+                icone: '🔄',
+                titulo: 'Luftomsättning',
+                valor: `${numSE(r.omsattning, 2)} oms/h`,
+                descricao: `${numSE(r.fluxoM3h, 0)} m³/h ÷ ${numSE(r.volume, 1)} m³. ` +
+                    'Minimikravet motsvarar ungefär en halv omsättning i timmen — tumregeln 0,5 oms/h.'
+            },
+            {
+                icone: '🌡️',
+                titulo: 'Ventilationsförlust',
+                valor: `${numSE(r.perdaBruta, 0)} kWh/år`,
+                descricao: `Flödet ${numSE(r.fluxoExigido, 1)} l/s × luftens värmekapacitet × ` +
+                    `${numSE(r.graddagar, 0)} graddagar (normalår). Detta är värmen som ` +
+                    'ventilationen för ut ur huset, innan återvinning.'
+            },
+            {
+                icone: '♻️',
+                titulo: 'Återvinning',
+                valor: `${numSE(r.recuperado, 0)} kWh/år`,
+                descricao: `${nomeSistema}: ${numSE(r.recuperacao * 100, 0)} % återvinns, ` +
+                    `${numSE(r.perdaLiquida, 0)} kWh/år måste värmas. ` +
+                    `Till ${numSE(this.obterValoresSE().energipris, 2)} kr/kWh blir det ` +
+                    `${numSE(r.custoAnual, 0)} kr per år.`
+            }
+        ];
+
+        const destaque = r.economiaFtx > 1
+            ? `Ett FTX-aggregat skulle spara ${numSE(r.economiaFtx, 0)} kr per år`
+            : `${numSE(r.fluxoExigido, 1)} l/s krävs — ${numSE(r.custoAnual, 0)} kr/år att värma`;
+
+        return {
+            linhas,
+            destaque,
+            dica: 'Flödet får sänkas till 0,10 l/s per m² när ingen är hemma, men aldrig ' +
+                'under 0,35 l/s per m² när någon vistas i bostaden. Villor och radhus ' +
+                'behöver OVK endast vid nybyggnation; flerbostadshus vart 3:e år med FTX.',
+            norma: 'BFS 2024:8, 3 kap. Luft, 5 § (ersatte BBR den 1 juli 2026) · ' +
+                'graddagar enligt SMHI normalår 1991–2020 · pedagogisk beräkning'
+        };
     }
 
     gerarExplicacao(v, res) {
@@ -460,7 +673,7 @@ class VentilacaoApp extends App {
                     descricao: t2({
                         'pt-BR': `1/8 da área do piso (${formatarNumero(res.areaPiso, 1)} m²) — regra típica de código de obras. Atual: ${v.janelas} m² — ${res.deficitJanelas > 0 ? 'insuficiente' : 'conforme'}. Critério construtivo independente do ACH.`,
                         'it-IT': `1/8 dell'area del pavimento (${formatarNumero(res.areaPiso, 1)} m²) — regola tipica dei regolamenti edilizi. Attuale: ${v.janelas} m² — ${res.deficitJanelas > 0 ? 'insufficiente' : 'conforme'}. Criterio costruttivo indipendente dall'ACH.`,
-                        'sv-SE': `1/8 av golvytan (${formatarNumero(res.areaPiso, 1)} m²) — vanlig byggregel. Nuvarande: ${v.janelas} m² — ${res.deficitJanelas > 0 ? 'otillräckligt' : 'uppfyllt'}. Byggnadskrav oberoende av ACH; BBR ställer krav på 0,35 l/s per m².`
+                        'sv-SE': `1/8 av golvytan (${formatarNumero(res.areaPiso, 1)} m²) — vanlig byggregel. Nuvarande: ${v.janelas} m² — ${res.deficitJanelas > 0 ? 'otillräckligt' : 'uppfyllt'}. Byggnadskrav oberoende av ACH; i Sverige gäller i stället 0,35 l/s per m² enligt BFS 2024:8.`
                     })
                 }
             ],
@@ -477,7 +690,7 @@ class VentilacaoApp extends App {
             norma: t2({
                 'pt-BR': 'Modelo educativo — ASHRAE Fundamentals (Q=Cv·A·V) · BS 5925 (unilateral) · verifique as normas locais',
                 'it-IT': 'Modello educativo — ASHRAE Fundamentals (Q=Cv·A·V) · BS 5925 (unilaterale) · verifica le norme locali',
-                'sv-SE': 'Pedagogisk modell — ASHRAE Fundamentals (Q=Cv·A·V) · BS 5925 (ensidig) · Boverkets byggregler (BBR) för lokala krav'
+                'sv-SE': 'Pedagogisk modell — ASHRAE Fundamentals (Q=Cv·A·V) · BS 5925 (ensidig) · BFS 2024:8 för svenska krav'
             })
         };
     }

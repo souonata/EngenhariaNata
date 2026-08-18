@@ -271,3 +271,84 @@ export const SESSENTA_ORINGEN_EXTINTA_2026 = true;
 
 /** Custo típico de instalação chave na mão, em SEK por kW instalado. */
 export const CUSTO_INSTALACAO_SEK_POR_KWP = 15000;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// VENTILAÇÃO — exigência de VAZÃO (para o app `ventilacao`)
+// Fonte: Boverket, BFS 2024:8, 3 kap. "Luft", 5 § (consultado em 2026-08-18).
+// https://www.boverket.se/sv/PBL-kunskapsbanken/regler-om-byggande/hygien-halsa-och-miljo/luft/utformning/
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * ⚠️ Mudança de regime: o BBR foi substituído pelas novas regras da Boverket
+ * em 1/7/2025, e o período de transição terminou em 1/7/2026 — desde então
+ * as regras novas valem sozinhas (BBR não é mais aplicável).
+ *
+ * O que NÃO mudou: o piso de 0,35 l/s·m² sobreviveu como *föreskrift*
+ * vinculante (BFS 2024:8, 3 kap. 5 §), não como recomendação. O que mudou é o
+ * entorno: as regras novas são de desempenho (funktionskrav) e as
+ * recomendações setoriais de detalhe ("branschrekommendationerna Luft") ainda
+ * estavam sendo escritas em setembro de 2026.
+ */
+export const BBR_SUBSTITUIDO_POR_BFS_2024_8 = true;
+
+/**
+ * A exigência sueca é de VAZÃO DE AR EXTERIOR, não de proporção de área de
+ * janela. É esta a diferença de método que justifica uma tela própria: no
+ * Brasil e na Itália a pergunta é "a janela é grande o bastante?"; na Suécia é
+ * "o sistema entrega litros por segundo o ano inteiro?".
+ */
+export const VENTILACAO_SE = {
+  /** l/s por m² de área de piso — piso absoluto para habitações. */
+  fluxoPorM2: 0.35,
+  /** l/s por pessoa em bostadsrum (quarto/sala). */
+  fluxoPorPessoa: 4.0,
+  /** l/s por m² admitido quando ninguém está em casa (ventilação sob demanda). */
+  fluxoReduzidoDesocupado: 0.1,
+};
+
+/**
+ * Recuperação de calor por tipo de sistema — fração da perda de ventilação
+ * que volta para dentro da casa.
+ *
+ * Fonte: Svensk Ventilation e fabricantes (trocador rotativo recupera 75–86%;
+ * medição de campo num Systemair VM2 deu ~80%). O FVP não é trocador: é bomba
+ * de calor sobre o ar de exaustão e recupera 50–60%, mas CONSOME eletricidade
+ * (COP ~3) — por isso vem com ressalva na tela.
+ * https://www.svenskventilation.se/ventilation/olika-satt-att-ventilera/ftx-varmeatervinning/
+ */
+export const RECUPERACAO_CALOR_SE = {
+  sjalvdrag: 0, // tiragem térmica; sem recuperação
+  franluft: 0, // exaustão mecânica; sem recuperação
+  fvp: 0.55, // frånluftsvärmepump — via bomba de calor
+  ftx: 0.8, // trocador de calor ar-ar
+};
+
+/**
+ * Graus-dia de aquecimento (graddagar) de um ano normal, por região.
+ * Fonte: SMHI Graddagar, normalperiod 1991–2020 — a Suécia inteira fica
+ * tipicamente entre 3.100 e 4.000, com o Norrland bem acima.
+ * https://www.smhi.se/professionella-tjanster/hallbara-stader/smhi-energi-index-och-graddagar---normalarskorrigering-varme
+ */
+export const GRADDAGAR_SE = {
+  syd: 3100, // Skåne, Blekinge, Halland
+  mellan: 3600, // Svealand e Götaland interior
+  norr: 5000, // Norrland
+};
+
+/**
+ * Capacidade volumétrica do ar, ρ·cp ≈ 1,2 kg/m³ × 1005 J/(kg·K).
+ * Usada para converter vazão + graus-dia em kWh por ano.
+ */
+export const AR_RHO_CP = 1206; // J/(m³·K)
+
+/**
+ * OVK (obligatorisk ventilationskontroll): inspeção periódica por lei.
+ * Villa/radhus só na construção nova, qualquer sistema. Prédio de apartamentos:
+ * 3 anos com FT/FTX, 6 anos com F. Självdrag em casa unifamiliar é isento.
+ * https://www.boverket.se/sv/PBL-kunskapsbanken/regler-om-byggande/ovk/
+ */
+export const OVK_INTERVALO_ANOS = {
+  flerbostadshusFTX: 3,
+  flerbostadshusF: 6,
+  smahus: null, // só na construção nova
+};
