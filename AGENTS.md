@@ -203,15 +203,23 @@ _Última atualização: 2026-08-17_
   - **FEITO (Fase 2, parcial):** sueco + normas suecas + ternários convertidos em `bugs`, `helice`,
     `bombaagua`, `bitola` (SS 436 40 00), `ventilacao` (BBR), `chuva` (SMHI) e `iluminacao`
     (SS-EN 12464-1). Publicado e conferido no ar.
+  - **FEITO (Fase 5, parcial + institucional):** `sobre` (243 chaves, normas suecas) e `br12c`
+    (33 chaves, bandeira sueca no seletor próprio, `chrome-boot.js` de 3 vias, **SW bumpado para
+    `br12c-guide-v6`**). Publicado e conferido no ar.
+  - **FEITO (base da Fase 4):** `src/data/parametros-suecia.js` com os parâmetros fiscais e de
+    bolån de 2026 **pesquisados na fonte, com URL e data em cada constante**. ⚠️ **Duas regras
+    mudaram em 1/4/2026:** o `skärpt amorteringskrav` foi revogado e o `bolånetak` subiu de 85%
+    para 90%. Não atualize esses números de memória.
   - **FALTA:** `solar` (30 ternários), `arcondicionado` (20) e `aquecimento` (18) — os mais pesados;
-    `sobre.json`/`sobre.html`; `salario`/`mutuo` com modelo sueco real (Fase 4 — exige checar taxas
-    atuais do Skatteverket e o amorteringskrav da Finansinspektionen); `br12c` (boot próprio binário
-    e **service worker a bumpar**) e `lichiabonsai` (Fase 5); integrar o dock ao `patentenautica`
-    (só BR/IT) e ao `br12c`, que não passam pelo `src/core/app.js`.
-  - **`fazenda` fora do sueco por decisão** (base agronômica regional, não texto) — ver ROADMAP.
-  - **Gotcha de line endings:** `autocrlf=true` + Prettier `endOfLine: "lf"` fazem o `format:check`
-    falhar em arquivos não editados logo após um merge. Converta-os para LF antes de validar; a
-    correção durável (`* text=auto eol=lf` no `.gitattributes`) está pendente de decisão.
+    implementar de fato o `salario`/`mutuo` suecos a partir do módulo de parâmetros (faltam ainda a
+    curva do `grundavdrag` por faixa e a fórmula do `jobbskatteavdrag`, ambas marcadas como
+    pendentes no módulo); integrar o dock ao `patentenautica` (só BR/IT), que não passa pelo
+    `src/core/app.js`.
+  - **Fora do sueco por decisão:** `fazenda` (base agronômica regional) e `lichiabonsai`
+    (333 campos `{pt, it}` de conteúdo nos módulos de dados) — ver ROADMAP.
+  - **Line endings resolvido:** `.gitattributes` agora tem `* text=auto eol=lf`. Os 275 arquivos já
+    estavam em LF no index, então não houve mudança de conteúdo — só parou de quebrar o
+    `format:check` depois de cada merge no Windows.
   - **Gotcha novo:** `querySelector('.a, .b')` devolve o primeiro nó em ordem de **documento**, não
     na ordem dos seletores — o dock é anexado ao fim do `body`, então consultas de host precisam ser
     separadas e em ordem de prioridade explícita (mordido em `theme.js`).
