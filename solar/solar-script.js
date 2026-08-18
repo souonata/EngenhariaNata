@@ -86,54 +86,70 @@ function renderizarExplicacaoSolar({
     dodAlvo,
     consumoMensal
 }) {
-    const pt = idiomaAtual === 'pt-BR';
-    const moeda = i18n.t('moeda') || 'R$';
+    const te = mapa => i18n.porIdioma(mapa);
+    const moeda = i18n.t('moeda') || obterSimboloMoeda();
     const custoTotalFmt = `${moeda} ${custoTotal.toLocaleString(idiomaAtual, { minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: true })}`;
     const custoBateriasFmt = `${moeda} ${custoBaterias.toLocaleString(idiomaAtual, { minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: true })}`;
     const custoPaineisFmt = `${moeda} ${custoPaineis.toLocaleString(idiomaAtual, { minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: true })}`;
 
     explicacaoSolar.renderizar({
-        destaque: pt
-            ? `Seu sistema recomendado: ${qtdPaineis} paineis + ${qtdBaterias} baterias, com investimento estimado de ${custoTotalFmt}.`
-            : `Sistema consigliato: ${qtdPaineis} pannelli + ${qtdBaterias} batterie, con investimento stimato di ${custoTotalFmt}.`,
+        destaque: te({
+            'pt-BR': `Seu sistema recomendado: ${qtdPaineis} paineis + ${qtdBaterias} baterias, com investimento estimado de ${custoTotalFmt}.`,
+            'it-IT': `Sistema consigliato: ${qtdPaineis} pannelli + ${qtdBaterias} batterie, con investimento stimato di ${custoTotalFmt}.`,
+            'sv-SE': `Rekommenderat system: ${qtdPaineis} paneler + ${qtdBaterias} batterier, med en uppskattad investering på ${custoTotalFmt}.`
+        }),
         linhas: [
             {
                 icone: '☀️',
-                titulo: pt ? 'Geracao Solar' : 'Generazione Solare',
+                titulo: te({ 'pt-BR': 'Geracao Solar', 'it-IT': 'Generazione Solare', 'sv-SE': 'Solproduktion' }),
                 valor: `${qtdPaineis} x ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W`,
-                descricao: pt
-                    ? 'Quantidade de paineis para recarregar o banco e sustentar o consumo medio diario.'
-                    : 'Numero di pannelli per ricaricare il banco batterie e sostenere il consumo medio giornaliero.'
+                descricao: te({
+                    'pt-BR': 'Quantidade de paineis para recarregar o banco e sustentar o consumo medio diario.',
+                    'it-IT': 'Numero di pannelli per ricaricare il banco batterie e sostenere il consumo medio giornaliero.',
+                    'sv-SE': 'Antal paneler för att ladda batteribanken och täcka den genomsnittliga dygnsförbrukningen. Räknat med svenska soltimmar, vilket ger fler paneler än i Italien eller Brasilien.'
+                })
             },
             {
                 icone: '🔋',
-                titulo: pt ? 'Banco de Baterias' : 'Banco Batterie',
+                titulo: te({ 'pt-BR': 'Banco de Baterias', 'it-IT': 'Banco Batterie', 'sv-SE': 'Batteribank' }),
                 valor: `${qtdBaterias} x ${formatarNumeroDecimal(energiaPorBateria, 1)} kWh`,
-                descricao: pt
-                    ? `Autonomia configurada: ${autonomia} dia(s), com DoD alvo de ${Math.round(dodAlvo * 100)}%.`
-                    : `Autonomia configurata: ${autonomia} giorno/i, con DoD target ${Math.round(dodAlvo * 100)}%.`
+                descricao: te({
+                    'pt-BR': `Autonomia configurada: ${autonomia} dia(s), com DoD alvo de ${Math.round(dodAlvo * 100)}%.`,
+                    'it-IT': `Autonomia configurata: ${autonomia} giorno/i, con DoD target ${Math.round(dodAlvo * 100)}%.`,
+                    'sv-SE': `Inställd autonomi: ${autonomia} dygn, med mål-DoD på ${Math.round(dodAlvo * 100)} %.`
+                })
             },
             {
                 icone: '⚡',
-                titulo: pt ? 'Inversor Off-grid' : 'Inverter Off-grid',
+                titulo: te({ 'pt-BR': 'Inversor Off-grid', 'it-IT': 'Inverter Off-grid', 'sv-SE': 'Växelriktare (off-grid)' }),
                 valor: `${potenciaInversor} kW (MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)}A)`,
-                descricao: pt
-                    ? 'Dimensionado para picos de consumo e corrente fotovoltaica sem sobrecarga.'
-                    : 'Dimensionato per picchi di consumo e corrente fotovoltaica senza sovraccarichi.'
+                descricao: te({
+                    'pt-BR': 'Dimensionado para picos de consumo e corrente fotovoltaica sem sobrecarga.',
+                    'it-IT': 'Dimensionato per picchi di consumo e corrente fotovoltaica senza sovraccarichi.',
+                    'sv-SE': 'Dimensionerad för toppar i förbrukningen och för solcellsströmmen, utan överbelastning.'
+                })
             },
             {
                 icone: '💰',
-                titulo: pt ? 'Custos Principais' : 'Costi Principali',
+                titulo: te({ 'pt-BR': 'Custos Principais', 'it-IT': 'Costi Principali', 'sv-SE': 'Huvudsakliga kostnader' }),
                 valor: custoTotalFmt,
-                descricao: pt
-                    ? `Baterias: ${custoBateriasFmt} | Paineis: ${custoPaineisFmt}.`
-                    : `Batterie: ${custoBateriasFmt} | Pannelli: ${custoPaineisFmt}.`
+                descricao: te({
+                    'pt-BR': `Baterias: ${custoBateriasFmt} | Paineis: ${custoPaineisFmt}.`,
+                    'it-IT': `Batterie: ${custoBateriasFmt} | Pannelli: ${custoPaineisFmt}.`,
+                    'sv-SE': `Batterier: ${custoBateriasFmt} | Paneler: ${custoPaineisFmt}.`
+                })
             }
         ],
-        dica: pt
-            ? `Com consumo de ${formatarNumeroDecimal(consumoMensal, 0)} kWh/mes, aumentar autonomia ou vida util eleva principalmente o custo de baterias.`
-            : `Con consumo di ${formatarNumeroDecimal(consumoMensal, 0)} kWh/mese, aumentare autonomia o vita utile aumenta soprattutto il costo delle batterie.`,
-        norma: pt ? 'Boas praticas ABSOLAR e ABNT NBR 16690 (Sistemas Fotovoltaicos)' : 'Buone pratiche ABSOLAR e ABNT NBR 16690 (Sistemi Fotovoltaici)'
+        dica: te({
+            'pt-BR': `Com consumo de ${formatarNumeroDecimal(consumoMensal, 0)} kWh/mes, aumentar autonomia ou vida util eleva principalmente o custo de baterias.`,
+            'it-IT': `Con consumo di ${formatarNumeroDecimal(consumoMensal, 0)} kWh/mese, aumentare autonomia o vita utile aumenta soprattutto il costo delle batterie.`,
+            'sv-SE': `Vid ${formatarNumeroDecimal(consumoMensal, 0)} kWh/månad är det främst batterikostnaden som stiger när du ökar autonomin eller livslängden. I Sverige är vintern den dimensionerande årstiden: i december ger anläggningen nästan ingenting.`
+        }),
+        norma: te({
+            'pt-BR': 'Boas praticas ABSOLAR e ABNT NBR 16690 (Sistemas Fotovoltaicos)',
+            'it-IT': 'Buone pratiche ABSOLAR e ABNT NBR 16690 (Sistemi Fotovoltaici)',
+            'sv-SE': 'God praxis enligt SS-EN IEC 62548 och Elsäkerhetsverkets föreskrifter för solcellsanläggningar'
+        })
     });
 }
 
@@ -271,13 +287,37 @@ function converterVirgulaParaNumero(valorFormatado) {
 // CONSTANTES DO SISTEMA (Valores Fixos)
 // ============================================
 // HSP
-const HSP = 5.0; // Horas de Sol Pleno (média conservadora)
+// Horas de Sol Pleno (HSP) por país. Não é detalhe: a média anual sueca é
+// pouco mais da metade da brasileira, o que muda todo o dimensionamento.
+const HSP_POR_PAIS = {
+    'pt-BR': 5.0,
+    'it-IT': 4.0,
+    'sv-SE': 2.8
+};
+function obterHSP() {
+    return HSP_POR_PAIS[idiomaAtual] || HSP_POR_PAIS['it-IT'];
+}
 // EFICIENCIA_SISTEMA
 const EFICIENCIA_SISTEMA = 0.80; // Eficiência global (80% = perdas de 20%)
 // FATOR_PICO_CONSUMO
 const FATOR_PICO_CONSUMO = 5.0; // Fator de pico (5x o consumo médio horário)
 // Taxa de conversão BRL → EUR
 const TAXA_BRL_EUR = (typeof SiteConfig !== 'undefined' && SiteConfig.DEFAULTS && SiteConfig.DEFAULTS.TAXA_BRL_EUR) ? SiteConfig.DEFAULTS.TAXA_BRL_EUR : 6.19;
+// Coroas suecas por real. Derivado de ~11 SEK/EUR sobre a taxa acima.
+const TAXA_BRL_SEK = 1.78;
+
+// A configuração guarda os preços em BRL; cada idioma converte para a sua moeda.
+function obterFatorConversaoMoeda() {
+    if (idiomaAtual === 'pt-BR') return 1;
+    if (idiomaAtual === 'sv-SE') return TAXA_BRL_SEK;
+    return 1 / TAXA_BRL_EUR;
+}
+
+function obterSimboloMoeda() {
+    if (idiomaAtual === 'pt-BR') return 'R$';
+    if (idiomaAtual === 'sv-SE') return 'kr';
+    return '€';
+}
 // VALORES PADRÃO DOS COMPONENTES (em BRL)
 // Valores padrão baseados em módulos comuns para sistemas off-grid.
 // Módulos LiFePO4 típicos: 48V x 100Ah ≈ 4.8 kWh.
@@ -462,7 +502,7 @@ function atualizarNotasValoresPadrao() {
     const notaPrecoKWh = document.getElementById('notaPrecoKWh');
     
     if (notaPrecoKWh) {
-        const chaveNota = idiomaAtual === 'pt-BR' ? 'nota-preco-kwh-pt' : 'nota-preco-kwh-it';
+        const chaveNota = { 'pt-BR': 'nota-preco-kwh-pt', 'it-IT': 'nota-preco-kwh-it', 'sv-SE': 'nota-preco-kwh-sv' }[idiomaAtual] || 'nota-preco-kwh-it';
         notaPrecoKWh.textContent = i18n.t(chaveNota) || '';
     }
     
@@ -495,7 +535,7 @@ function atualizarNotasValoresPadrao() {
     }
     
     if (notaAumentoAnualEnergia) {
-        const chaveNota = idiomaAtual === 'pt-BR' ? 'nota-aumento-anual-energia-pt' : 'nota-aumento-anual-energia-it';
+        const chaveNota = { 'pt-BR': 'nota-aumento-anual-energia-pt', 'it-IT': 'nota-aumento-anual-energia-it', 'sv-SE': 'nota-aumento-anual-energia-sv' }[idiomaAtual] || 'nota-aumento-anual-energia-it';
         notaAumentoAnualEnergia.textContent = i18n.t(chaveNota) || '';
     }
     
@@ -809,7 +849,7 @@ function atualizarInterface() {
 
     // Mostra a porcentagem de descarga diária calculada
     const dodExibicao = Math.round(dodAlvo);
-    const textoNota = idiomaAtual === 'pt-BR' ? 'DoD Diário' : 'DoD Giornaliero';
+    const textoNota = i18n.porIdioma({ 'pt-BR': 'DoD Diário', 'it-IT': 'DoD Giornaliero', 'sv-SE': 'Dagligt DoD' });
     const descVidaUtilEl = document.getElementById('descVidaUtil');
     if (descVidaUtilEl) {
         descVidaUtilEl.textContent = `${textoNota}: ${dodExibicao}%`;
@@ -872,7 +912,7 @@ function obterPrecoPainelPadraoPorIdioma(precoPainelBase) {
         return PRECO_PAINEL_PADRAO_EUR['it-IT'];
     }
 
-    return precoPainelBase * (idiomaAtual === 'pt-BR' ? 1 : 1 / TAXA_BRL_EUR);
+    return precoPainelBase * obterFatorConversaoMoeda();
 }
 
 function atualizarNotaPrecoBateriaPadrao(tipoBateria, valorPadrao) {
@@ -880,22 +920,21 @@ function atualizarNotaPrecoBateriaPadrao(tipoBateria, valorPadrao) {
     if (!notaPrecoBateriaKWh) return;
 
     const tipoTexto = tipoBateria === 'chumbo' ? 'AGM' : 'LiFePO4';
-    const moeda = idiomaAtual === 'it-IT' ? '€' : 'R$';
+    const moeda = obterSimboloMoeda();
 
-    let faixaPreco = '';
-    if (tipoBateria === 'chumbo') {
-        faixaPreco = idiomaAtual === 'pt-BR'
-            ? 'R$ 1.200-2.000'
-            : '€ 350-550';
-    } else {
-        faixaPreco = idiomaAtual === 'pt-BR'
-            ? 'R$ 2.500-3.500'
-            : '€ 500-820/kWh';
-    }
+    const FAIXAS_BATERIA = {
+        chumbo: { 'pt-BR': 'R$ 1.200-2.000', 'it-IT': '€ 350-550', 'sv-SE': '3 900-6 100 kr' },
+        litio: { 'pt-BR': 'R$ 2.500-3.500', 'it-IT': '€ 500-820/kWh', 'sv-SE': '5 500-9 100 kr/kWh' }
+    };
+    const grupo = FAIXAS_BATERIA[tipoBateria === 'chumbo' ? 'chumbo' : 'litio'];
+    const faixaPreco = grupo[idiomaAtual] || grupo['it-IT'];
 
-    notaPrecoBateriaKWh.textContent = idiomaAtual === 'pt-BR'
-        ? `Valor padrão configurável: ${moeda} ${valorPadrao.toLocaleString('pt-BR')}/kWh (${tipoTexto}; faixa de referência: ${faixaPreco})`
-        : `Valore predefinito configurabile: ${moeda} ${valorPadrao.toLocaleString('it-IT')}/kWh (${tipoTexto}; intervallo di riferimento: ${faixaPreco})`;
+    const valorFmt = valorPadrao.toLocaleString(idiomaAtual);
+    notaPrecoBateriaKWh.textContent = i18n.porIdioma({
+        'pt-BR': `Valor padrão configurável: ${moeda} ${valorFmt}/kWh (${tipoTexto}; faixa de referência: ${faixaPreco})`,
+        'it-IT': `Valore predefinito configurabile: ${moeda} ${valorFmt}/kWh (${tipoTexto}; intervallo di riferimento: ${faixaPreco})`,
+        'sv-SE': `Inställbart standardvärde: ${moeda} ${valorFmt}/kWh (${tipoTexto}; riktintervall: ${faixaPreco})`
+    });
 }
 // FUNÇÕES DE ATUALIZAÇÃO DOS GRÁFICOS
 // Atualiza todos os gráficos do sistema solar
@@ -941,8 +980,8 @@ function atualizarGraficoAmortizacao(dados) {
     // Destruir gráfico anterior
     if (graficoAmortizacao) graficoAmortizacao.destroy();
 
-    const pt = idiomaAtual === 'pt-BR';
-    const moeda = pt ? 'R$' : '€';
+    const moeda = obterSimboloMoeda();
+    const ts = mapa => i18n.porIdioma(mapa);
 
     // Parâmetros financeiros
     const inputPrecoKWh = document.getElementById('inputPrecoKWh');
@@ -1036,7 +1075,7 @@ function atualizarGraficoAmortizacao(dados) {
 
     const cores = obterCoresGraficoSolar();
 
-    const LABEL_EQUILIBRIO = pt ? 'Equilíbrio' : 'Equilibrio';
+    const LABEL_EQUILIBRIO = ts({ 'pt-BR': 'Equilíbrio', 'it-IT': 'Equilibrio', 'sv-SE': 'Balans' });
 
     graficoAmortizacao = new Chart(ctx.getContext('2d'), {
         type: 'line',
@@ -1044,7 +1083,7 @@ function atualizarGraficoAmortizacao(dados) {
             labels,
             datasets: [
                 {
-                    label: pt ? 'Investimento a Recuperar' : 'Investimento da Recuperare',
+                    label: ts({ 'pt-BR': 'Investimento a Recuperar', 'it-IT': 'Investimento da Recuperare', 'sv-SE': 'Investering kvar att återvinna' }),
                     data: saldos.map(v => v < 0 ? v : null),
                     borderColor: 'rgba(244,67,54,0.9)',
                     backgroundColor: 'rgba(244,67,54,0.12)',
@@ -1052,7 +1091,7 @@ function atualizarGraficoAmortizacao(dados) {
                     fill: true, tension: 0.25, pointRadius: 0, spanGaps: false
                 },
                 {
-                    label: pt ? 'Lucro Acumulado' : 'Profitto Accumulato',
+                    label: ts({ 'pt-BR': 'Lucro Acumulado', 'it-IT': 'Profitto Accumulato', 'sv-SE': 'Ackumulerad vinst' }),
                     data: saldos.map(v => v >= 0 ? v : null),
                     borderColor: 'rgba(25,118,210,0.9)',
                     backgroundColor: 'rgba(25,118,210,0.12)',
@@ -1107,17 +1146,20 @@ function atualizarGraficoAmortizacao(dados) {
                             if (eventosPorMes[m]) {
                                 for (const ev of eventosPorMes[m]) {
                                     const nome = ev.tipo === 'bateria'
-                                        ? (pt ? '🔋 Subst. baterias' : '🔋 Sost. batterie')
-                                        : (pt ? '⚙️ Renov. painéis+inversor+cabos' : '⚙️ Rinnovo pannelli+inverter+cavi');
+                                        ? ts({ 'pt-BR': '🔋 Subst. baterias', 'it-IT': '🔋 Sost. batterie', 'sv-SE': '🔋 Byte av batterier' })
+                                        : ts({ 'pt-BR': '⚙️ Renov. painéis+inversor+cabos', 'it-IT': '⚙️ Rinnovo pannelli+inverter+cavi', 'sv-SE': '⚙️ Byte av paneler, växelriktare och kablar' });
                                     linhas.push(`${nome}: -${moeda} ${ev.valor.toLocaleString(idiomaAtual, {maximumFractionDigits: 0})}`);
                                 }
                             }
                             if (idx === paybackIdx && paybackMeses !== null) {
                                 const a = Math.floor(paybackMeses / 12), ms = paybackMeses % 12;
                                 let t = '';
-                                if (pt) t = a > 0 && ms > 0 ? `${a}a e ${ms}m` : a > 0 ? `${a} ano${a > 1 ? 's' : ''}` : `${ms} mês${ms !== 1 ? 'es' : ''}`;
-                                else t = a > 0 && ms > 0 ? `${a}a e ${ms}m` : a > 0 ? `${a} anno${a > 1 ? 'i' : ''}` : `${ms} mese${ms !== 1 ? 'i' : ''}`;
-                                linhas.push(`⚖️ ${pt ? 'Ponto de equilíbrio' : 'Punto di equilibrio'}: ${t}`);
+                                t = ts({
+                                    'pt-BR': a > 0 && ms > 0 ? `${a}a e ${ms}m` : a > 0 ? `${a} ano${a > 1 ? 's' : ''}` : `${ms} mês${ms !== 1 ? 'es' : ''}`,
+                                    'it-IT': a > 0 && ms > 0 ? `${a}a e ${ms}m` : a > 0 ? `${a} anno${a > 1 ? 'i' : ''}` : `${ms} mese${ms !== 1 ? 'i' : ''}`,
+                                    'sv-SE': a > 0 && ms > 0 ? `${a} år och ${ms} mån` : a > 0 ? `${a} år` : `${ms} mån`
+                                });
+                                linhas.push(`⚖️ ${ts({ 'pt-BR': 'Ponto de equilíbrio', 'it-IT': 'Punto di equilibrio', 'sv-SE': 'Break-even' })}: ${t}`);
                             }
                             return linhas;
                         }
@@ -1126,12 +1168,12 @@ function atualizarGraficoAmortizacao(dados) {
             },
             scales: {
                 x: {
-                    title: { display: true, text: pt ? 'Tempo (anos)' : 'Tempo (anni)', font: { size: 12, weight: 'bold' }, color: cores.text },
+                    title: { display: true, text: ts({ 'pt-BR': 'Tempo (anos)', 'it-IT': 'Tempo (anni)', 'sv-SE': 'Tid (år)' }), font: { size: 12, weight: 'bold' }, color: cores.text },
                     ticks: { color: cores.text, maxRotation: 0, autoSkip: false },
                     grid: { color: cores.grid }
                 },
                 y: {
-                    title: { display: true, text: pt ? `Saldo Financeiro (${moeda})` : `Saldo Finanziario (${moeda})`, font: { size: 12, weight: 'bold' }, color: cores.text },
+                    title: { display: true, text: ts({ 'pt-BR': `Saldo Financeiro (${moeda})`, 'it-IT': `Saldo Finanziario (${moeda})`, 'sv-SE': `Ekonomiskt saldo (${moeda})` }), font: { size: 12, weight: 'bold' }, color: cores.text },
                     ticks: {
                         color: cores.text,
                         callback: v => {
@@ -1172,11 +1214,14 @@ function atualizarGraficoAmortizacao(dados) {
 
     let textoEquilibrio;
     if (paybackMeses === null) {
-        textoEquilibrio = pt ? 'fora do período analisado' : 'fuori dal periodo analizzato';
+        textoEquilibrio = ts({ 'pt-BR': 'fora do período analisado', 'it-IT': 'fuori dal periodo analizzato', 'sv-SE': 'utanför den analyserade perioden' });
     } else {
         const a = Math.floor(paybackMeses / 12), ms = paybackMeses % 12;
-        if (pt) textoEquilibrio = a > 0 && ms > 0 ? `${a} ano${a > 1 ? 's' : ''} e ${ms} mês${ms !== 1 ? 'es' : ''}` : a > 0 ? `${a} ano${a > 1 ? 's' : ''}` : `${ms} mês${ms !== 1 ? 'es' : ''}`;
-        else textoEquilibrio = a > 0 && ms > 0 ? `${a} anno${a > 1 ? 'i' : ''} e ${ms} mese${ms !== 1 ? 'i' : ''}` : a > 0 ? `${a} anno${a > 1 ? 'i' : ''}` : `${ms} mese${ms !== 1 ? 'i' : ''}`;
+        textoEquilibrio = ts({
+            'pt-BR': a > 0 && ms > 0 ? `${a} ano${a > 1 ? 's' : ''} e ${ms} mês${ms !== 1 ? 'es' : ''}` : a > 0 ? `${a} ano${a > 1 ? 's' : ''}` : `${ms} mês${ms !== 1 ? 'es' : ''}`,
+            'it-IT': a > 0 && ms > 0 ? `${a} anno${a > 1 ? 'i' : ''} e ${ms} mese${ms !== 1 ? 'i' : ''}` : a > 0 ? `${a} anno${a > 1 ? 'i' : ''}` : `${ms} mese${ms !== 1 ? 'i' : ''}`,
+            'sv-SE': a > 0 && ms > 0 ? `${a} år och ${ms} månad${ms !== 1 ? 'er' : ''}` : a > 0 ? `${a} år` : `${ms} månad${ms !== 1 ? 'er' : ''}`
+        });
     }
 
     const tr = (a, b, bold = false) =>
@@ -1192,57 +1237,86 @@ function atualizarGraficoAmortizacao(dados) {
 
     let html = '';
 
-    if (pt) {
-        let rE = tr('Consumo protegido', `${consumoMensal.toLocaleString('pt-BR', {maximumFractionDigits:1})} kWh/mês`)
-            + tr('Tarifa atual (kWh)', `${moeda} ${precoKWh.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`)
-            + tr('Economia no 1º ano', fmt(economiaAnual1));
-        if (anosAnalise >= 10) rE += tr('Economia no 10º ano', fmt(economiaAnual10));
-        if (anosAnalise > 10) rE += tr(`Economia no ${anosAnalise}º ano`, fmt(economiaAnualN));
-        rE += tr('Aumento anual do custo da energia', `${pct(aumentoAnual)}/ano`)
-            + tr(`Economia total em ${anosAnalise} anos`, fmt(economiaTotalPeriodo), true);
-        html += secao('📈 O que gera sua economia com o solar', `<table style="width:100%;border-collapse:collapse;">${rE}</table>`);
+    // Rótulos do relatório por idioma. Antes o bloco inteiro era duplicado num
+    // if/else pt/it, o que deixava o sueco caindo em italiano; agora o HTML é
+    // montado uma vez só a partir deste mapa.
+    const L = i18n.porIdioma({
+        'pt-BR': {
+            consumo: 'Consumo protegido', unidadeConsumo: 'kWh/mês',
+            tarifa: 'Tarifa atual (kWh)',
+            ano1: 'Economia no 1º ano', ano10: 'Economia no 10º ano',
+            anoN: n => `Economia no ${n}º ano`,
+            aumento: 'Aumento anual do custo da energia', porAno: '/ano',
+            totalEconomia: n => `Economia total em ${n} anos`,
+            tituloEconomia: '📈 O que gera sua economia com o solar',
+            investimento: 'Investimento inicial (hoje)',
+            substBaterias: (v, q) => `Subst. baterias (a cada ${v}a) × ${q}`,
+            porVez: '/vez', anos: 'Anos',
+            renovSistema: q => `Renov. painéis+inversor+cabos (a cada 25a) × ${q}`,
+            totalCustos: n => `Total de custos em ${n} anos`,
+            tituloCustos: '💸 Estrutura de custos do sistema'
+        },
+        'it-IT': {
+            consumo: 'Consumo protetto', unidadeConsumo: 'kWh/mese',
+            tarifa: 'Tariffa attuale (kWh)',
+            ano1: 'Risparmio nel 1° anno', ano10: 'Risparmio nel 10° anno',
+            anoN: n => `Risparmio nel ${n}° anno`,
+            aumento: 'Aumento annuo del costo energetico', porAno: '/anno',
+            totalEconomia: n => `Risparmio totale in ${n} anni`,
+            tituloEconomia: '📈 Cosa genera il tuo risparmio con il solare',
+            investimento: 'Investimento iniziale (oggi)',
+            substBaterias: (v, q) => `Sost. batterie (ogni ${v}a) × ${q}`,
+            porVez: '/volta', anos: 'Anni',
+            renovSistema: q => `Rinnovo pannelli+inverter+cavi (ogni 25a) × ${q}`,
+            totalCustos: n => `Costo totale in ${n} anni`,
+            tituloCustos: '💸 Struttura dei costi del sistema'
+        },
+        'sv-SE': {
+            consumo: 'Täckt förbrukning', unidadeConsumo: 'kWh/månad',
+            tarifa: 'Nuvarande elpris (kWh)',
+            ano1: 'Besparing år 1', ano10: 'Besparing år 10',
+            anoN: n => `Besparing år ${n}`,
+            aumento: 'Årlig ökning av elkostnaden', porAno: '/år',
+            totalEconomia: n => `Total besparing på ${n} år`,
+            tituloEconomia: '📈 Det här ger din besparing med solel',
+            investimento: 'Investering i dag',
+            substBaterias: (v, q) => `Byte av batterier (vart ${v}:e år) × ${q}`,
+            porVez: '/gång', anos: 'År',
+            renovSistema: q => `Byte av paneler, växelriktare och kablar (vart 25:e år) × ${q}`,
+            totalCustos: n => `Total kostnad på ${n} år`,
+            tituloCustos: '💸 Systemets kostnadsstruktur'
+        }
+    });
 
-        let rC = tr('Investimento inicial (hoje)', fmt(custoTotal));
-        if (evBat.length > 0) {
-            rC += tr(`Subst. baterias (a cada ${vidaUtil}a) × ${evBat.length}`, `${fmt(custoBaterias)}/vez = ${fmt(custoTotalBat)}`);
-            rC += `<tr><td colspan="2" style="padding:0 6px 4px;font-size:0.9em;color:var(--text-secondary);">→ Anos: ${evBat.map(e=>`${e.ano}a`).join(', ')}</td></tr>`;
-        }
-        if (evSis.length > 0) {
-            rC += tr(`Renov. painéis+inversor+cabos (a cada 25a) × ${evSis.length}`, `${fmt(evSis[0].valor)}/vez = ${fmt(custoTotalSis)}`);
-            rC += `<tr><td colspan="2" style="padding:0 6px 4px;font-size:0.9em;color:var(--text-secondary);">→ Anos: ${evSis.map(e=>`${e.ano}a`).join(', ')}</td></tr>`;
-        }
-        rC += tr(`Total de custos em ${anosAnalise} anos`, fmt(custoTotalPeriodo), true);
-        html += secao('💸 Estrutura de custos do sistema', `<table style="width:100%;border-collapse:collapse;">${rC}</table>`);
+    const numLocal = (v, opcoes) => v.toLocaleString(idiomaAtual, opcoes);
 
-    } else {
-        let rE = tr('Consumo protetto', `${consumoMensal.toLocaleString('it-IT', {maximumFractionDigits:1})} kWh/mese`)
-            + tr('Tariffa attuale (kWh)', `${moeda} ${precoKWh.toLocaleString('it-IT', {minimumFractionDigits:2, maximumFractionDigits:2})}`)
-            + tr('Risparmio nel 1° anno', fmt(economiaAnual1));
-        if (anosAnalise >= 10) rE += tr('Risparmio nel 10° anno', fmt(economiaAnual10));
-        if (anosAnalise > 10) rE += tr(`Risparmio nel ${anosAnalise}° anno`, fmt(economiaAnualN));
-        rE += tr('Aumento annuo del costo energetico', `${pct(aumentoAnual)}/anno`)
-            + tr(`Risparmio totale in ${anosAnalise} anni`, fmt(economiaTotalPeriodo), true);
-        html += secao('📈 Cosa genera il tuo risparmio con il solare', `<table style="width:100%;border-collapse:collapse;">${rE}</table>`);
+    let rE = tr(L.consumo, `${numLocal(consumoMensal, { maximumFractionDigits: 1 })} ${L.unidadeConsumo}`)
+        + tr(L.tarifa, `${moeda} ${numLocal(precoKWh, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`)
+        + tr(L.ano1, fmt(economiaAnual1));
+    if (anosAnalise >= 10) rE += tr(L.ano10, fmt(economiaAnual10));
+    if (anosAnalise > 10) rE += tr(L.anoN(anosAnalise), fmt(economiaAnualN));
+    rE += tr(L.aumento, `${pct(aumentoAnual)}${L.porAno}`)
+        + tr(L.totalEconomia(anosAnalise), fmt(economiaTotalPeriodo), true);
+    html += secao(L.tituloEconomia, `<table style="width:100%;border-collapse:collapse;">${rE}</table>`);
 
-        let rC = tr('Investimento iniziale (oggi)', fmt(custoTotal));
-        if (evBat.length > 0) {
-            rC += tr(`Sost. batterie (ogni ${vidaUtil}a) × ${evBat.length}`, `${fmt(custoBaterias)}/volta = ${fmt(custoTotalBat)}`);
-            rC += `<tr><td colspan="2" style="padding:0 6px 4px;font-size:0.9em;color:var(--text-secondary);">→ Anni: ${evBat.map(e=>`${e.ano}a`).join(', ')}</td></tr>`;
-        }
-        if (evSis.length > 0) {
-            rC += tr(`Rinnovo pannelli+inverter+cavi (ogni 25a) × ${evSis.length}`, `${fmt(evSis[0].valor)}/volta = ${fmt(custoTotalSis)}`);
-            rC += `<tr><td colspan="2" style="padding:0 6px 4px;font-size:0.9em;color:var(--text-secondary);">→ Anni: ${evSis.map(e=>`${e.ano}a`).join(', ')}</td></tr>`;
-        }
-        rC += tr(`Costo totale in ${anosAnalise} anni`, fmt(custoTotalPeriodo), true);
-        html += secao('💸 Struttura dei costi del sistema', `<table style="width:100%;border-collapse:collapse;">${rC}</table>`);
+    let rC = tr(L.investimento, fmt(custoTotal));
+    if (evBat.length > 0) {
+        rC += tr(L.substBaterias(vidaUtil, evBat.length), `${fmt(custoBaterias)}${L.porVez} = ${fmt(custoTotalBat)}`);
+        rC += `<tr><td colspan="2" style="padding:0 6px 4px;font-size:0.9em;color:var(--text-secondary);">→ ${L.anos}: ${evBat.map(e => `${e.ano}a`).join(', ')}</td></tr>`;
     }
+    if (evSis.length > 0) {
+        rC += tr(L.renovSistema(evSis.length), `${fmt(evSis[0].valor)}${L.porVez} = ${fmt(custoTotalSis)}`);
+        rC += `<tr><td colspan="2" style="padding:0 6px 4px;font-size:0.9em;color:var(--text-secondary);">→ ${L.anos}: ${evSis.map(e => `${e.ano}a`).join(', ')}</td></tr>`;
+    }
+    rC += tr(L.totalCustos(anosAnalise), fmt(custoTotalPeriodo), true);
+    html += secao(L.tituloCustos, `<table style="width:100%;border-collapse:collapse;">${rC}</table>`);
 
     const cor = lucro ? '#1976D2' : '#F44336';
     const bgCor = lucro ? 'rgba(25,118,210,0.08)' : 'rgba(244,67,54,0.08)';
     html += `<div style="margin-top:8px;padding:10px 12px;background:${bgCor};border-radius:8px;border-left:4px solid ${cor};font-size:0.88em;">
-        <div style="margin-bottom:4px;">⚖️ <strong>${pt ? 'Ponto de equilíbrio' : 'Punto di equilibrio'}:</strong>
+        <div style="margin-bottom:4px;">⚖️ <strong>${ts({ 'pt-BR': 'Ponto de equilíbrio', 'it-IT': 'Punto di equilibrio', 'sv-SE': 'Break-even' })}:</strong>
             <span style="color:${cor};font-weight:700;"> ${textoEquilibrio}</span></div>
-        <div>💵 <strong>${pt ? (lucro ? 'Lucro' : 'Prejuízo') : (lucro ? 'Profitto' : 'Perdita')} líquido em ${anosAnalise} ${pt ? 'anos' : 'anni'}:</strong>
+        <div>💵 <strong>${ts({ 'pt-BR': `${lucro ? 'Lucro' : 'Prejuízo'} líquido em ${anosAnalise} anos`, 'it-IT': `${lucro ? 'Profitto' : 'Perdita'} netto in ${anosAnalise} anni`, 'sv-SE': `${lucro ? 'Nettovinst' : 'Nettoförlust'} på ${anosAnalise} år` })}:</strong>
             <span style="color:${cor};font-weight:700;"> ${fmt(Math.abs(saldoFinal))}</span></div>
     </div>`;
 
@@ -1277,16 +1351,37 @@ function atualizarGraficoSazonalidade(dados) {
     
     // Fatores de sazonalidade baseados em dados médios para Brasil/Itália
     // Valores representam eficiência relativa (0 a 1) por mês
-    const meses = idiomaAtual === 'pt-BR' 
-        ? ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
-        : ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
+    const MESES_POR_IDIOMA = {
+        'pt-BR': ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+        'it-IT': ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
+        'sv-SE': ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec']
+    };
+    const meses = MESES_POR_IDIOMA[idiomaAtual] || MESES_POR_IDIOMA['it-IT'];
     
     // Fatores de sazonalidade ajustados por hemisfério
     // Hemisfério Sul (Brasil): menor produção em Jun/Jul (inverno), maior em Dez/Jan (verão)
     // Hemisfério Norte (Itália): menor produção em Dez/Jan (inverno), maior em Jun/Jul (verão)
     let fatoresSazonalidade;
     
-    if (idiomaAtual === 'pt-BR') {
+    if (idiomaAtual === 'sv-SE') {
+        // Suécia — o caso extremo. Em dezembro o Sol mal sobe acima do horizonte
+        // em Estocolmo e a produção é quase nula; o pico vai de maio a julho,
+        // quando o dia passa de 18 horas.
+        fatoresSazonalidade = [
+            0.07, // Jan
+            0.20, // Feb
+            0.53, // Mar
+            0.80, // Apr
+            1.00, // Maj
+            1.00, // Jun
+            0.93, // Jul
+            0.80, // Aug
+            0.53, // Sep
+            0.27, // Okt
+            0.10, // Nov
+            0.03  // Dec
+        ];
+    } else if (idiomaAtual === 'pt-BR') {
         // Hemisfério Sul - Brasil
         // Baseado em dados de irradiação solar no Brasil: menor em jun/jul, maior em dez/jan
         fatoresSazonalidade = [
@@ -1325,8 +1420,8 @@ function atualizarGraficoSazonalidade(dados) {
     const potenciaTotal = qtdPaineis * POTENCIA_PAINEL; // W
     const producaoMensal = fatoresSazonalidade.map(fator => {
         // Produção mensal = potência × HSP × dias × fator sazonal
-        // Assumindo HSP médio de 5h e 30 dias por mês
-        return Math.round((potenciaTotal * HSP * 30 * fator) / 1000); // kWh/mês
+        // HSP varia por país (ver HSP_POR_PAIS); 30 dias por mês
+        return Math.round((potenciaTotal * obterHSP() * 30 * fator) / 1000); // kWh/mês
     });
     
     // Cores baseadas na produção (verde para alta, amarelo para média, vermelho para baixa)
@@ -1344,7 +1439,7 @@ function atualizarGraficoSazonalidade(dados) {
         data: {
             labels: meses,
             datasets: [{
-                label: idiomaAtual === 'pt-BR' ? 'Produção Mensal (kWh)' : 'Produzione Mensile (kWh)',
+                label: i18n.porIdioma({ 'pt-BR': 'Produção Mensal (kWh)', 'it-IT': 'Produzione Mensile (kWh)', 'sv-SE': 'Produktion per månad (kWh)' }),
                 data: producaoMensal,
                 backgroundColor: cores,
                 borderColor: cores,
@@ -1374,7 +1469,7 @@ function atualizarGraficoSazonalidade(dados) {
                     grid: { color: coresTema.grid },
                     title: {
                         display: true,
-                        text: idiomaAtual === 'pt-BR' ? 'Produção (kWh/mês)' : 'Produzione (kWh/mese)',
+                        text: i18n.porIdioma({ 'pt-BR': 'Produção (kWh/mês)', 'it-IT': 'Produzione (kWh/mese)', 'sv-SE': 'Produktion (kWh/månad)' }),
                         font: { size: 12, weight: 'bold' },
                         color: coresTema.text
                     }
@@ -1384,7 +1479,7 @@ function atualizarGraficoSazonalidade(dados) {
                     grid: { color: coresTema.grid },
                     title: {
                         display: true,
-                        text: idiomaAtual === 'pt-BR' ? 'Mês' : 'Mese',
+                        text: i18n.porIdioma({ 'pt-BR': 'Mês', 'it-IT': 'Mese', 'sv-SE': 'Månad' }),
                         font: { size: 12, weight: 'bold' },
                         color: coresTema.text
                     }
@@ -1563,7 +1658,7 @@ function calcularSistema(dodAlvo) {
     // Onde HSP (Horas de Sol Pleno) é o número médio de horas de sol por dia
     // Exemplo: se energiaTotalGerar = 42 kWh/dia e HSP = 5 horas:
     // potenciaSolar = (42 × 1000) / 5 = 8400 W = 8.4 kW
-    const potenciaSolarNecessaria = (energiaTotalGerar * 1000) / HSP; // Watts // quantidade de painéis necessários
+    const potenciaSolarNecessaria = (energiaTotalGerar * 1000) / obterHSP(); // Watts // quantidade de painéis necessários
     // Arredonda para cima para ter potência suficiente
     // Exemplo: se precisamos de 8400 W e cada painel tem 400 W:
     // qtdPaineis = ceil(8400 / 400) = ceil(21) = 21 painéis
@@ -1633,10 +1728,8 @@ function calcularSistema(dodAlvo) {
     const pesoTotal = qtdBaterias * batSpec.weight;
     
     // Conversão de moeda: a configuração salva os preços em BRL (Real) // Se idioma for italiano, converte para EUR (Euro) usando a taxa de câmbio
-    const moedaCalculo = idiomaAtual === 'pt-BR' ? 'BRL' : 'EUR';
-    // Fator de conversão: 1 para BRL (sem conversão) ou 1/taxa para EUR
-    // Exemplo: se TAXA_BRL_EUR = 6.19, então 1 BRL = 1/6.19 ≈ 0.1615 EUR
-    const fatorConversao = idiomaAtual === 'pt-BR' ? 1 : 1 / TAXA_BRL_EUR;
+    const moedaCalculo = { 'pt-BR': 'BRL', 'it-IT': 'EUR', 'sv-SE': 'SEK' }[idiomaAtual] || 'EUR';
+    const fatorConversao = obterFatorConversaoMoeda();
     
     // Em italiano, sem configuração customizada, usa base local de mercado por painel.
     const precoPainelConvertido = obterPrecoPainelPadraoPorIdioma(PRECO_PAINEL);
@@ -1744,22 +1837,20 @@ function calcularSistema(dodAlvo) {
     const energiaPorBatRounded = Math.round(energiaPorBateria * 100) / 100;
 
     if (autonomia > 1) {
-        if (idiomaAtual === 'pt-BR') {
-            motivoBateriasGargalo = '(gargalo: autonomia)';
-            motivoBateriasDetalhes = `${autonomia} dia(s) × ${formatarNumeroDecimal(consumoDiario, 3)} kWh/dia<br>→ utilizável necessário ${formatarNumeroDecimal(energiaAutonomia, 3)} kWh<br>→ DoD alvo ${Math.round(dodAlvo * 100)}%<br>→ capacidade nominal necessária ${formatarNumeroDecimal(capNecessariaRounded, 2)} kWh<br>→ ${qtdBaterias} × ${formatarNumeroDecimal(energiaPorBatRounded, 2)} kWh`;
-        } else {
-            motivoBateriasGargalo = '(limite: autonomia)';
-            motivoBateriasDetalhes = `${autonomia} giorno(i) × ${formatarNumeroDecimal(consumoDiario, 3)} kWh/giorno<br>→ utilizzabile necessario ${formatarNumeroDecimal(energiaAutonomia, 3)} kWh<br>→ DoD target ${Math.round(dodAlvo * 100)}%<br>→ capacità nominale necessaria ${formatarNumeroDecimal(capNecessariaRounded, 2)} kWh<br>→ ${qtdBaterias} × ${formatarNumeroDecimal(energiaPorBatRounded, 2)} kWh`;
-        }
+        motivoBateriasGargalo = i18n.porIdioma({ 'pt-BR': '(gargalo: autonomia)', 'it-IT': '(limite: autonomia)', 'sv-SE': '(begränsning: autonomi)' });
+        motivoBateriasDetalhes = i18n.porIdioma({
+            'pt-BR': `${autonomia} dia(s) × ${formatarNumeroDecimal(consumoDiario, 3)} kWh/dia<br>→ utilizável necessário ${formatarNumeroDecimal(energiaAutonomia, 3)} kWh<br>→ DoD alvo ${Math.round(dodAlvo * 100)}%<br>→ capacidade nominal necessária ${formatarNumeroDecimal(capNecessariaRounded, 2)} kWh<br>→ ${qtdBaterias} × ${formatarNumeroDecimal(energiaPorBatRounded, 2)} kWh`,
+            'it-IT': `${autonomia} giorno(i) × ${formatarNumeroDecimal(consumoDiario, 3)} kWh/giorno<br>→ utilizzabile necessario ${formatarNumeroDecimal(energiaAutonomia, 3)} kWh<br>→ DoD target ${Math.round(dodAlvo * 100)}%<br>→ capacità nominale necessaria ${formatarNumeroDecimal(capNecessariaRounded, 2)} kWh<br>→ ${qtdBaterias} × ${formatarNumeroDecimal(energiaPorBatRounded, 2)} kWh`,
+            'sv-SE': `${autonomia} dygn × ${formatarNumeroDecimal(consumoDiario, 3)} kWh/dygn<br>→ nödvändig användbar energi ${formatarNumeroDecimal(energiaAutonomia, 3)} kWh<br>→ mål-DoD ${Math.round(dodAlvo * 100)} %<br>→ nödvändig nominell kapacitet ${formatarNumeroDecimal(capNecessariaRounded, 2)} kWh<br>→ ${qtdBaterias} × ${formatarNumeroDecimal(energiaPorBatRounded, 2)} kWh`
+        });
     } else {
         // Quando autonomia === 1, o dimensionamento vem da vida útil / DoD desejado
-        if (idiomaAtual === 'pt-BR') {
-            motivoBateriasGargalo = '(gargalo: vida útil)';
-            motivoBateriasDetalhes = `DoD alvo ${Math.round(dodAlvo * 100)}%<br>→ energia diária ${formatarNumeroDecimal(consumoDiario, 3)} kWh<br>→ capacidade nominal necessária ${formatarNumeroDecimal(capNecessariaRounded, 2)} kWh<br>→ ${qtdBaterias} × ${formatarNumeroDecimal(energiaPorBatRounded, 2)} kWh`;
-        } else {
-            motivoBateriasGargalo = '(limite: vita utile)';
-            motivoBateriasDetalhes = `DoD target ${Math.round(dodAlvo * 100)}%<br>→ energia giornaliera ${formatarNumeroDecimal(consumoDiario, 3)} kWh<br>→ capacità nominale necessaria ${formatarNumeroDecimal(capNecessariaRounded, 2)} kWh<br>→ ${qtdBaterias} × ${formatarNumeroDecimal(energiaPorBatRounded, 2)} kWh`;
-        }
+        motivoBateriasGargalo = i18n.porIdioma({ 'pt-BR': '(gargalo: vida útil)', 'it-IT': '(limite: vita utile)', 'sv-SE': '(begränsning: livslängd)' });
+        motivoBateriasDetalhes = i18n.porIdioma({
+            'pt-BR': `DoD alvo ${Math.round(dodAlvo * 100)}%<br>→ energia diária ${formatarNumeroDecimal(consumoDiario, 3)} kWh<br>→ capacidade nominal necessária ${formatarNumeroDecimal(capNecessariaRounded, 2)} kWh<br>→ ${qtdBaterias} × ${formatarNumeroDecimal(energiaPorBatRounded, 2)} kWh`,
+            'it-IT': `DoD target ${Math.round(dodAlvo * 100)}%<br>→ energia giornaliera ${formatarNumeroDecimal(consumoDiario, 3)} kWh<br>→ capacità nominale necessaria ${formatarNumeroDecimal(capNecessariaRounded, 2)} kWh<br>→ ${qtdBaterias} × ${formatarNumeroDecimal(energiaPorBatRounded, 2)} kWh`,
+            'sv-SE': `Mål-DoD ${Math.round(dodAlvo * 100)} %<br>→ daglig energi ${formatarNumeroDecimal(consumoDiario, 3)} kWh<br>→ nödvändig nominell kapacitet ${formatarNumeroDecimal(capNecessariaRounded, 2)} kWh<br>→ ${qtdBaterias} × ${formatarNumeroDecimal(energiaPorBatRounded, 2)} kWh`
+        });
     }
     document.getElementById('resMotivoBaterias').innerHTML = `${motivoBateriasGargalo}<br>${motivoBateriasDetalhes}`;
     
@@ -1769,26 +1860,24 @@ function calcularSistema(dodAlvo) {
     const potenciaReqRounded = Math.round(potenciaSolarNecessaria);
     let motivoPaineisGargalo = '';
     let motivoPaineisDetalhes = '';
-    if (idiomaAtual === 'pt-BR') {
-        motivoPaineisGargalo = '(gargalo: recarga do banco)';
-        motivoPaineisDetalhes = `banco fornece ${energiaUtilBancoRounded} kWh utilizáveis<br>→ com perdas ${energiaTotalGerarRounded} kWh/dia<br>→ potência requerida ≈ ${potenciaReqRounded} W<br>→ ${qtdPaineis} × ${POTENCIA_PAINEL}W`;
-    } else {
-        motivoPaineisGargalo = '(limite: ricarica banco)';
-        motivoPaineisDetalhes = `banco fornisce ${energiaUtilBancoRounded} kWh utilizzabili<br>→ con perdite ${energiaTotalGerarRounded} kWh/giorno<br>→ potenza richiesta ≈ ${potenciaReqRounded} W<br>→ ${qtdPaineis} × ${POTENCIA_PAINEL}W`;
-    }
+    motivoPaineisGargalo = i18n.porIdioma({ 'pt-BR': '(gargalo: recarga do banco)', 'it-IT': '(limite: ricarica banco)', 'sv-SE': '(begränsning: laddning av banken)' });
+    motivoPaineisDetalhes = i18n.porIdioma({
+        'pt-BR': `banco fornece ${energiaUtilBancoRounded} kWh utilizáveis<br>→ com perdas ${energiaTotalGerarRounded} kWh/dia<br>→ potência requerida ≈ ${potenciaReqRounded} W<br>→ ${qtdPaineis} × ${POTENCIA_PAINEL}W`,
+        'it-IT': `banco fornisce ${energiaUtilBancoRounded} kWh utilizzabili<br>→ con perdite ${energiaTotalGerarRounded} kWh/giorno<br>→ potenza richiesta ≈ ${potenciaReqRounded} W<br>→ ${qtdPaineis} × ${POTENCIA_PAINEL}W`,
+        'sv-SE': `banken ger ${energiaUtilBancoRounded} kWh användbara<br>→ med förluster ${energiaTotalGerarRounded} kWh/dygn<br>→ nödvändig effekt ≈ ${potenciaReqRounded} W<br>→ ${qtdPaineis} × ${POTENCIA_PAINEL} W`
+    });
     document.getElementById('resMotivoPaineis').innerHTML = `${motivoPaineisGargalo}<br>${motivoPaineisDetalhes}`;
     
     // Motivo do dimensionamento do INVERSOR COM MPPT INTEGRADO
     // Em sistemas off-grid, todos os inversores modernos já vêm com MPPT integrado
     let motivoInversorGargalo = '';
     let motivoInversorDetalhes = '';
-    if (idiomaAtual === 'pt-BR') {
-        motivoInversorGargalo = '(gargalo: consumo de pico + corrente MPPT)';
-        motivoInversorDetalhes = `potência média ${formatarNumeroDecimal(consumoMedioHorario, 2)} kW × fator pico ${FATOR_PICO_CONSUMO}<br>→ ${formatarNumeroDecimal(consumoPico, 2)} kW<br>→ inversor ${potenciaInversor} kW<br>→ MPPT integrado ${formatarNumeroComSufixo(correnteMPPT, 0)}A (${qtdPaineis} painéis × ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W ÷ ${tensaoBanco}V = ${formatarNumeroComSufixo(correnteMaximaNecessaria, 1)}A)`;
-    } else {
-        motivoInversorGargalo = '(limite: consumo di picco + corrente MPPT)';
-        motivoInversorDetalhes = `potenza media ${formatarNumeroDecimal(consumoMedioHorario, 2)} kW × fattore picco ${FATOR_PICO_CONSUMO}<br>→ ${formatarNumeroDecimal(consumoPico, 2)} kW<br>→ inverter ${potenciaInversor} kW<br>→ MPPT integrato ${formatarNumeroComSufixo(correnteMPPT, 0)}A (${qtdPaineis} pannelli × ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W ÷ ${tensaoBanco}V = ${formatarNumeroComSufixo(correnteMaximaNecessaria, 1)}A)`;
-    }
+    motivoInversorGargalo = i18n.porIdioma({ 'pt-BR': '(gargalo: consumo de pico + corrente MPPT)', 'it-IT': '(limite: consumo di picco + corrente MPPT)', 'sv-SE': '(begränsning: toppförbrukning + MPPT-ström)' });
+    motivoInversorDetalhes = i18n.porIdioma({
+        'pt-BR': `potência média ${formatarNumeroDecimal(consumoMedioHorario, 2)} kW × fator pico ${FATOR_PICO_CONSUMO}<br>→ ${formatarNumeroDecimal(consumoPico, 2)} kW<br>→ inversor ${potenciaInversor} kW<br>→ MPPT integrado ${formatarNumeroComSufixo(correnteMPPT, 0)}A (${qtdPaineis} painéis × ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W ÷ ${tensaoBanco}V = ${formatarNumeroComSufixo(correnteMaximaNecessaria, 1)}A)`,
+        'it-IT': `potenza media ${formatarNumeroDecimal(consumoMedioHorario, 2)} kW × fattore picco ${FATOR_PICO_CONSUMO}<br>→ ${formatarNumeroDecimal(consumoPico, 2)} kW<br>→ inverter ${potenciaInversor} kW<br>→ MPPT integrato ${formatarNumeroComSufixo(correnteMPPT, 0)}A (${qtdPaineis} pannelli × ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)}W ÷ ${tensaoBanco}V = ${formatarNumeroComSufixo(correnteMaximaNecessaria, 1)}A)`,
+        'sv-SE': `medeleffekt ${formatarNumeroDecimal(consumoMedioHorario, 2)} kW × toppfaktor ${FATOR_PICO_CONSUMO}<br>→ ${formatarNumeroDecimal(consumoPico, 2)} kW<br>→ växelriktare ${potenciaInversor} kW<br>→ inbyggd MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)} A (${qtdPaineis} paneler × ${formatarNumeroComSufixo(POTENCIA_PAINEL, 0)} W ÷ ${tensaoBanco} V = ${formatarNumeroComSufixo(correnteMaximaNecessaria, 1)} A)`
+    });
     document.getElementById('resMotivoInversor').innerHTML = `${motivoInversorGargalo}<br>${motivoInversorDetalhes}`;
     
     // MPPT está integrado no inversor, então não mostra motivo separado
@@ -2183,7 +2272,7 @@ class SolarApp extends App {
             sliderPrecoKWhInit.value = valorPadrao.toFixed(2);
             inputPrecoKWhInit.value = formatarNumeroDecimal(valorPadrao, 2);
         }
-        if (unidadePrecoKWhInit) unidadePrecoKWhInit.textContent = idiomaAtual === 'it-IT' ? '€' : 'R$';
+        if (unidadePrecoKWhInit) unidadePrecoKWhInit.textContent = obterSimboloMoeda();
 
         // Sincronizar aumento anual do custo da energia
         const sliderAumentoAnualEnergiaInit = document.getElementById('sliderAumentoAnualEnergia');
@@ -2199,7 +2288,7 @@ class SolarApp extends App {
             inputAumentoAnualEnergiaInit.value = formatarNumeroDecimal(valorPadraoAumento, 1);
         }
         if (notaAumentoAnualEnergiaInit) {
-            const chaveNota = idiomaAtual === 'pt-BR' ? 'nota-aumento-anual-energia-pt' : 'nota-aumento-anual-energia-it';
+            const chaveNota = { 'pt-BR': 'nota-aumento-anual-energia-pt', 'it-IT': 'nota-aumento-anual-energia-it', 'sv-SE': 'nota-aumento-anual-energia-sv' }[idiomaAtual] || 'nota-aumento-anual-energia-it';
             notaAumentoAnualEnergiaInit.textContent = i18n.t(chaveNota) || '';
         }
 
@@ -2226,7 +2315,7 @@ class SolarApp extends App {
             sliderPrecoBateriaKWhInit.value = Math.round(valorPadraoBateria).toString();
             inputPrecoBateriaKWhInit.value = Math.round(valorPadraoBateria).toString();
         }
-        if (unidadePrecoBateriaKWhInit) unidadePrecoBateriaKWhInit.textContent = idiomaAtual === 'it-IT' ? '€' : 'R$';
+        if (unidadePrecoBateriaKWhInit) unidadePrecoBateriaKWhInit.textContent = obterSimboloMoeda();
 
         atualizarNotasValoresPadrao();
         atualizarEspecsBaterias();
@@ -2248,7 +2337,7 @@ class SolarApp extends App {
             sliderPrecoKWh.value = valorPadrao.toFixed(2);
             inputPrecoKWh.value = formatarNumeroDecimal(valorPadrao, 2);
         }
-        if (unidadePrecoKWh) unidadePrecoKWh.textContent = idiomaAtual === 'it-IT' ? '€' : 'R$';
+        if (unidadePrecoKWh) unidadePrecoKWh.textContent = obterSimboloMoeda();
 
         const sliderPrecoBateriaKWh = document.getElementById('sliderPrecoBateriaKWh');
         const inputPrecoBateriaKWh = document.getElementById('inputPrecoBateriaKWh');
@@ -2262,7 +2351,7 @@ class SolarApp extends App {
             sliderPrecoBateriaKWh.value = Math.round(valorPadraoBateria).toString();
             inputPrecoBateriaKWh.value = Math.round(valorPadraoBateria).toString();
         }
-        if (unidadePrecoBateriaKWh) unidadePrecoBateriaKWh.textContent = idiomaAtual === 'it-IT' ? '€' : 'R$';
+        if (unidadePrecoBateriaKWh) unidadePrecoBateriaKWh.textContent = obterSimboloMoeda();
 
         atualizarInterface();
         atualizarFormulasMemorial(idiomaAtual);
@@ -2371,7 +2460,7 @@ function atualizarMemorialComValores() {
     const capacidadeRealKWh = qtdBaterias * energiaPorBateria;
     const energiaUtilizavelBanco = capacidadeRealKWh * dodDecimal;
     const energiaGerar = energiaUtilizavelBanco / EFICIENCIA_SISTEMA;
-    const potenciaNecessariaW = (energiaGerar * 1000) / HSP;
+    const potenciaNecessariaW = (energiaGerar * 1000) / obterHSP();
     const qtdPaineis = Math.ceil(potenciaNecessariaW / config.potenciaPainel);
     
     // Calcular inversor com MPPT integrado
@@ -2414,13 +2503,13 @@ function atualizarMemorialComValores() {
     
     const exemploDod = document.getElementById('memorial-exemplo-dod');
     if (exemploDod) {
-        const pt = idiomaAtual === 'pt-BR';
         const ciclosPorAnoStr = autonomia === 1 ? '365' : `365÷${autonomia}=${formatarNumeroDecimal(ciclosPorAno, 1)}`;
-        if (pt) {
-            exemploDod.textContent = `Vida útil de ${vidaUtil} anos, ${autonomia} dia(s) autonomia → ${vidaUtil} × (${ciclosPorAnoStr}) = ${ciclos} ciclos → DoD ≈ ${Math.round(dodAlvo)}% (${tipoBateria === 'litio' ? 'LiFePO4' : 'AGM'})`;
-        } else {
-            exemploDod.textContent = `Vita utile di ${vidaUtil} anni, ${autonomia} giorno/i autonomia → ${vidaUtil} × (${ciclosPorAnoStr}) = ${ciclos} cicli → DoD ≈ ${Math.round(dodAlvo)}% (${tipoBateria === 'litio' ? 'LiFePO4' : 'AGM'})`;
-        }
+        const quimica = tipoBateria === 'litio' ? 'LiFePO4' : 'AGM';
+        exemploDod.textContent = i18n.porIdioma({
+            'pt-BR': `Vida útil de ${vidaUtil} anos, ${autonomia} dia(s) autonomia → ${vidaUtil} × (${ciclosPorAnoStr}) = ${ciclos} ciclos → DoD ≈ ${Math.round(dodAlvo)}% (${quimica})`,
+            'it-IT': `Vita utile di ${vidaUtil} anni, ${autonomia} giorno/i autonomia → ${vidaUtil} × (${ciclosPorAnoStr}) = ${ciclos} cicli → DoD ≈ ${Math.round(dodAlvo)}% (${quimica})`,
+            'sv-SE': `Livslängd ${vidaUtil} år, ${autonomia} dygns autonomi → ${vidaUtil} × (${ciclosPorAnoStr}) = ${ciclos} cykler → DoD ≈ ${Math.round(dodAlvo)} % (${quimica})`
+        });
     }
     
     const exemploCapacidade = document.getElementById('memorial-exemplo-capacidade');
@@ -2435,7 +2524,7 @@ function atualizarMemorialComValores() {
     
     const exemploPaineis = document.getElementById('memorial-exemplo-paineis');
     if (exemploPaineis) {
-        exemploPaineis.textContent = `${formatarNumero(energiaUtilizavelBanco)} kWh utilizáveis, eficiência 80%, HSP ${HSP}h → ${formatarNumero(energiaUtilizavelBanco)}÷0.8 = ${formatarNumero(energiaGerar)} kWh/dia → ${formatarNumero(energiaGerar)}×1000÷${HSP} = ${formatarNumeroComSufixo(potenciaNecessariaW, 0)}W → ${formatarNumeroComSufixo(potenciaNecessariaW, 0)}÷${formatarNumeroComSufixo(config.potenciaPainel, 0)}W = ${formatarNumeroComSufixo(potenciaNecessariaW / config.potenciaPainel, 1)} → ${qtdPaineis} painéis`;
+        exemploPaineis.textContent = `${formatarNumero(energiaUtilizavelBanco)} kWh utilizáveis, eficiência 80%, HSP ${obterHSP()}h → ${formatarNumero(energiaUtilizavelBanco)}÷0.8 = ${formatarNumero(energiaGerar)} kWh/dia → ${formatarNumero(energiaGerar)}×1000÷${obterHSP()} = ${formatarNumeroComSufixo(potenciaNecessariaW, 0)}W → ${formatarNumeroComSufixo(potenciaNecessariaW, 0)}÷${formatarNumeroComSufixo(config.potenciaPainel, 0)}W = ${formatarNumeroComSufixo(potenciaNecessariaW / config.potenciaPainel, 1)} → ${qtdPaineis} painéis`;
     }
     
     const exemploInversor = document.getElementById('memorial-exemplo-inversor');
@@ -2443,9 +2532,11 @@ function atualizarMemorialComValores() {
         // Calcula corrente máxima necessária para o exemplo
         const potenciaTotalPaineisExemplo = qtdPaineis * config.potenciaPainel;
         const correnteMaximaNecessariaExemplo = potenciaTotalPaineisExemplo / tensaoBanco;
-        exemploInversor.textContent = idiomaAtual === 'pt-BR'
-            ? `Consumo diário ${formatarNumero(energiaDiaria)} kWh → ${formatarNumero(energiaDiaria)}÷24 = ${formatarNumero(consumoMedioHorario)} kW médios × ${FATOR_PICO_CONSUMO} = ${formatarNumero(consumoPico)} kW pico → Inversor de ${potenciaInversor} kW com MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)}A integrado`
-            : `Consumo giornaliero ${formatarNumero(energiaDiaria)} kWh → ${formatarNumero(energiaDiaria)}÷24 = ${formatarNumero(consumoMedioHorario)} kW medi × ${FATOR_PICO_CONSUMO} = ${formatarNumero(consumoPico)} kW picco → Inverter da ${potenciaInversor} kW con MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)}A integrato`;
+        exemploInversor.textContent = i18n.porIdioma({
+            'pt-BR': `Consumo diário ${formatarNumero(energiaDiaria)} kWh → ${formatarNumero(energiaDiaria)}÷24 = ${formatarNumero(consumoMedioHorario)} kW médios × ${FATOR_PICO_CONSUMO} = ${formatarNumero(consumoPico)} kW pico → Inversor de ${potenciaInversor} kW com MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)}A integrado`,
+            'it-IT': `Consumo giornaliero ${formatarNumero(energiaDiaria)} kWh → ${formatarNumero(energiaDiaria)}÷24 = ${formatarNumero(consumoMedioHorario)} kW medi × ${FATOR_PICO_CONSUMO} = ${formatarNumero(consumoPico)} kW picco → Inverter da ${potenciaInversor} kW con MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)}A integrato`,
+            'sv-SE': `Daglig förbrukning ${formatarNumero(energiaDiaria)} kWh → ${formatarNumero(energiaDiaria)}÷24 = ${formatarNumero(consumoMedioHorario)} kW i medel × ${FATOR_PICO_CONSUMO} = ${formatarNumero(consumoPico)} kW topp → Växelriktare på ${potenciaInversor} kW med inbyggd MPPT ${formatarNumeroComSufixo(correnteMPPT, 0)} A`
+        });
     }
     
     const exemploMPPT = document.getElementById('memorial-exemplo-mppt');
@@ -2458,7 +2549,7 @@ function atualizarMemorialComValores() {
     const exemploCustos = document.getElementById('memorial-exemplo-custos');
     if (exemploCustos) {
         // Converter preços para a moeda do idioma
-        const fatorConversao = idiomaAtual === 'pt-BR' ? 1 : 1 / TAXA_BRL_EUR;
+        const fatorConversao = obterFatorConversaoMoeda();
         const precoPainelConvertido = obterPrecoPainelPadraoPorIdioma(config.precoPainel);
         
         // Obter preço ajustável da bateria por kWh do slider
