@@ -662,59 +662,76 @@ class HeliceApp extends App {
     }
 
     renderizarExplicacao({ velocidadeDesejada, resultado, unidadeVelocidade, unidadePasso, slipPercent, reducao, rpmMotor }) {
-        const pt = i18n.obterIdiomaAtual() === 'pt-BR';
+        // Textos por idioma via mapa: um ternário pt/it não comporta o sueco.
+        const t = mapa => i18n.porIdioma(mapa);
         const passoStr = formatarNumero(resultado.passo, 1) + '"';
         const rpmHeliceStr = formatarNumero(resultado.rpmHelice, 0) + ' RPM';
         const unidadeVelTexto = i18n.obterTraducao(`unidades.${unidadeVelocidade === 'knots' ? 'nos' : unidadeVelocidade}`)
-            || (unidadeVelocidade === 'knots' ? (pt ? 'nós' : 'nodi') : unidadeVelocidade);
+            || (unidadeVelocidade === 'knots'
+                ? t({ 'pt-BR': 'nós', 'it-IT': 'nodi', 'sv-SE': 'knop' })
+                : unidadeVelocidade);
         const velSlipZeroConvertida = this.converterDeKnots(resultado.velocidadeTeorica, unidadeVelocidade);
         const velSlipZeroStr = formatarNumero(velSlipZeroConvertida, 1) + ` ${unidadeVelTexto}`;
         const velDesejadaStr = formatarNumero(velocidadeDesejada, 1) + ` ${unidadeVelTexto}`;
 
         this.explicacao.renderizar({
-            destaque: pt
-                ? `Para os seus parâmetros, o passo de hélice ideal calculado é ${passoStr}.`
-                : `Con i tuoi parametri, il passo dell'elica ideale è ${passoStr}.`,
+            destaque: t({
+                'pt-BR': `Para os seus parâmetros, o passo de hélice ideal calculado é ${passoStr}.`,
+                'it-IT': `Con i tuoi parametri, il passo dell'elica ideale è ${passoStr}.`,
+                'sv-SE': `Med dina värden blir den lämpliga propellerstigningen ${passoStr}.`
+            }),
             linhas: [
                 {
                     icone: '🚀',
-                    titulo: pt ? 'Passo da Hélice' : 'Passo dell\'Elica',
+                    titulo: t({ 'pt-BR': 'Passo da Hélice', 'it-IT': 'Passo dell\'Elica', 'sv-SE': 'Propellerstigning' }),
                     valor: passoStr,
-                    descricao: pt
-                        ? 'Distância teórica que o barco avança a cada volta completa da hélice, sem considerar perdas.'
-                        : 'Distanza teorica che la barca percorre ad ogni giro completo dell\'elica, senza perdite.'
+                    descricao: t({
+                        'pt-BR': 'Distância teórica que o barco avança a cada volta completa da hélice, sem considerar perdas.',
+                        'it-IT': 'Distanza teorica che la barca percorre ad ogni giro completo dell\'elica, senza perdite.',
+                        'sv-SE': 'Teoretisk sträcka som båten förflyttar sig vid varje helt propellervarv, utan hänsyn till förluster.'
+                    })
                 },
                 {
                     icone: '⚙️',
-                    titulo: pt ? 'RPM na Hélice' : 'Giri all\'Elica',
+                    titulo: t({ 'pt-BR': 'RPM na Hélice', 'it-IT': 'Giri all\'Elica', 'sv-SE': 'Propellerns varvtal' }),
                     valor: rpmHeliceStr,
-                    descricao: pt
-                        ? `O motor gira a ${formatarNumero(rpmMotor, 0)} RPM e a rabeta reduz para ${formatarNumero(resultado.rpmHelice, 0)} RPM com relação ${formatarNumero(reducao, 2)}:1.`
-                        : `Il motore gira a ${formatarNumero(rpmMotor, 0)} RPM e il piede riduce a ${formatarNumero(resultado.rpmHelice, 0)} RPM con rapporto ${formatarNumero(reducao, 2)}:1.`
+                    descricao: t({
+                        'pt-BR': `O motor gira a ${formatarNumero(rpmMotor, 0)} RPM e a rabeta reduz para ${formatarNumero(resultado.rpmHelice, 0)} RPM com relação ${formatarNumero(reducao, 2)}:1.`,
+                        'it-IT': `Il motore gira a ${formatarNumero(rpmMotor, 0)} RPM e il piede riduce a ${formatarNumero(resultado.rpmHelice, 0)} RPM con rapporto ${formatarNumero(reducao, 2)}:1.`,
+                        'sv-SE': `Motorn går på ${formatarNumero(rpmMotor, 0)} varv/min och drevet växlar ner till ${formatarNumero(resultado.rpmHelice, 0)} varv/min med utväxlingen ${formatarNumero(reducao, 2)}:1.`
+                    })
                 },
                 {
                     icone: '💨',
-                    titulo: pt ? 'Velocidade com Slip Zero' : 'Velocità con Slip Zero',
+                    titulo: t({ 'pt-BR': 'Velocidade com Slip Zero', 'it-IT': 'Velocità con Slip Zero', 'sv-SE': 'Fart vid noll slip' }),
                     valor: velSlipZeroStr,
-                    descricao: pt
-                        ? 'Esta é a velocidade sem perdas por slip para o passo calculado no giro e redução atuais.'
-                        : 'Questa è la velocità senza perdite da slip per il passo calcolato con giri e riduzione attuali.'
+                    descricao: t({
+                        'pt-BR': 'Esta é a velocidade sem perdas por slip para o passo calculado no giro e redução atuais.',
+                        'it-IT': 'Questa è la velocità senza perdite da slip per il passo calcolato con giri e riduzione attuali.',
+                        'sv-SE': 'Detta är farten utan slipförluster för den beräknade stigningen vid nuvarande varvtal och utväxling.'
+                    })
                 },
                 {
                     icone: '🌊',
-                    titulo: pt ? 'Velocidade Desejada (com Slip)' : 'Velocità Desiderata (con Slip)',
+                    titulo: t({ 'pt-BR': 'Velocidade Desejada (com Slip)', 'it-IT': 'Velocità Desiderata (con Slip)', 'sv-SE': 'Önskad fart (med slip)' }),
                     valor: velDesejadaStr,
-                    descricao: pt
-                        ? `Este é o valor alvo do input. Com ${formatarNumero(slipPercent, 0)}% de slip, ele define o passo necessário.`
-                        : `Questo è il valore obiettivo dell'input. Con ${formatarNumero(slipPercent, 0)}% di slip, definisce il passo necessario.`
+                    descricao: t({
+                        'pt-BR': `Este é o valor alvo do input. Com ${formatarNumero(slipPercent, 0)}% de slip, ele define o passo necessário.`,
+                        'it-IT': `Questo è il valore obiettivo dell'input. Con ${formatarNumero(slipPercent, 0)}% di slip, definisce il passo necessario.`,
+                        'sv-SE': `Detta är målvärdet du matade in. Med ${formatarNumero(slipPercent, 0)} % slip avgör det vilken stigning som krävs.`
+                    })
                 }
             ],
-            dica: pt
-                ? 'Hélices de 3 pás são padrão para uso recreativo. 4 pás oferecem mais torque e menor vibração a altas velocidades.'
-                : 'Eliche a 3 pale sono standard per uso ricreativo. 4 pale offrono più coppia e meno vibrazioni ad alta velocità.',
-            norma: pt
-                ? 'Formula nautica com constante 1215,2 para velocidade em nós'
-                : 'Formula nautica con costante 1215,2 per velocità in nodi'
+            dica: t({
+                'pt-BR': 'Hélices de 3 pás são padrão para uso recreativo. 4 pás oferecem mais torque e menor vibração a altas velocidades.',
+                'it-IT': 'Eliche a 3 pale sono standard per uso ricreativo. 4 pale offrono più coppia e meno vibrazioni ad alta velocità.',
+                'sv-SE': 'Trebladiga propellrar är standard för fritidsbruk. Fyra blad ger mer vridmoment och mindre vibrationer vid hög fart.'
+            }),
+            norma: t({
+                'pt-BR': 'Formula nautica com constante 1215,2 para velocidade em nós',
+                'it-IT': 'Formula nautica con costante 1215,2 per velocità in nodi',
+                'sv-SE': 'Nautisk formel med konstanten 1215,2 för fart i knop'
+            })
         });
     }
 

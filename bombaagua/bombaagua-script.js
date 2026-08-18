@@ -238,10 +238,11 @@ class BombaAguaApp extends App {
     }
 
     formatarConsumoHora(valor) {
-        const pt = i18n.obterIdiomaAtual() !== 'it-IT';
-        return pt
-            ? `${formatarNumero(valor, 2)} kWh por hora`
-            : `${formatarNumero(valor, 2)} kWh/ora`;
+        return i18n.porIdioma({
+            'pt-BR': `${formatarNumero(valor, 2)} kWh por hora`,
+            'it-IT': `${formatarNumero(valor, 2)} kWh/ora`,
+            'sv-SE': `${formatarNumero(valor, 2)} kWh per timme`
+        });
     }
 
     lerValor(inputId, sliderId, defaultVal) {
@@ -283,17 +284,27 @@ class BombaAguaApp extends App {
     }
 
     determinarTipoBomba(alturaTotal, vazaoLmin) {
-        const pt = i18n.obterIdiomaAtual() !== 'it-IT';
-
         if (alturaTotal <= 20 && vazaoLmin <= 80) {
-            return pt ? 'centrifuga residencial' : 'centrifuga residenziale';
+            return i18n.porIdioma({
+                'pt-BR': 'centrifuga residencial',
+                'it-IT': 'centrifuga residenziale',
+                'sv-SE': 'centrifugalpump för bostad'
+            });
         }
 
         if (alturaTotal <= 45) {
-            return pt ? 'periferica ou centrifuga de maior pressao' : 'periferica o centrifuga ad alta prevalenza';
+            return i18n.porIdioma({
+                'pt-BR': 'periferica ou centrifuga de maior pressao',
+                'it-IT': 'periferica o centrifuga ad alta prevalenza',
+                'sv-SE': 'perifer- eller centrifugalpump för högre tryck'
+            });
         }
 
-        return pt ? 'multistagio / booster' : 'multistadio / booster';
+        return i18n.porIdioma({
+            'pt-BR': 'multistagio / booster',
+            'it-IT': 'multistadio / booster',
+            'sv-SE': 'flerstegs- / tryckstegringspump'
+        });
     }
 
     calcular(altura, comprimento, vazaoLmin, diametroMm) {
@@ -383,16 +394,16 @@ class BombaAguaApp extends App {
     }
 
     atualizarMemorial(r) {
-        const pt = i18n.obterIdiomaAtual() !== 'it-IT';
+        const t = mapa => i18n.porIdioma(mapa);
 
         this.definirTexto('memorial-exemplo-vazao',
             `${formatarNumero(r.vazaoLmin, 0)} L/min = ${formatarNumero(r.vazaoM3s, 6)} m³/s`);
         this.definirTexto('memorial-exemplo-velocidade',
-            `${pt ? 'Area' : 'Area'} = ${formatarNumero(r.areaTubo, 6)} m² -> ${pt ? 'velocidade' : 'velocita'} = ${formatarNumero(r.velocidade, 2)} m/s`);
+            `${t({ 'pt-BR': 'Area', 'it-IT': 'Area', 'sv-SE': 'Area' })} = ${formatarNumero(r.areaTubo, 6)} m² -> ${t({ 'pt-BR': 'velocidade', 'it-IT': 'velocita', 'sv-SE': 'hastighet' })} = ${formatarNumero(r.velocidade, 2)} m/s`);
         this.definirTexto('memorial-exemplo-reynolds',
             `Re = ${formatarNumero(r.reynolds, 0)} e f = ${formatarNumero(r.fatorAtrito, 4)}`);
         this.definirTexto('memorial-exemplo-perdas',
-            `${pt ? 'Perda linear' : 'Perdita lineare'} = ${formatarNumero(r.perdaLinear, 2)} m + ${pt ? 'acessorios' : 'accessori'} = ${formatarNumero(r.perdaAcessorios, 2)} m -> ${pt ? 'total' : 'totale'} = ${formatarNumero(r.perdasTotais, 2)} m`);
+            `${t({ 'pt-BR': 'Perda linear', 'it-IT': 'Perdita lineare', 'sv-SE': 'Linjär förlust' })} = ${formatarNumero(r.perdaLinear, 2)} m + ${t({ 'pt-BR': 'acessorios', 'it-IT': 'accessori', 'sv-SE': 'kopplingar' })} = ${formatarNumero(r.perdaAcessorios, 2)} m -> ${t({ 'pt-BR': 'total', 'it-IT': 'totale', 'sv-SE': 'totalt' })} = ${formatarNumero(r.perdasTotais, 2)} m`);
         this.definirTexto('memorial-exemplo-altura',
             `${formatarNumero(r.altura, 1)} m + ${formatarNumero(r.perdasTotais, 2)} m = ${formatarNumero(r.alturaTotal, 2)} mca`);
         this.definirTexto('memorial-exemplo-potencia',
@@ -410,71 +421,89 @@ class BombaAguaApp extends App {
     }
 
     atualizarExplicacao(r) {
-        const pt = i18n.obterIdiomaAtual() !== 'it-IT';
+        const t = mapa => i18n.porIdioma(mapa);
         const velocidadeAlta = r.velocidade > 2.5;
         const velocidadeBaixa = r.velocidade < 0.6;
         const perdasAltas = r.perdasTotais > Math.max(3, r.altura * 0.4);
 
-        let dica = pt
-            ? 'O conjunto parece equilibrado para uma bomba residencial.'
-            : 'L insieme sembra equilibrato per una pompa residenziale.';
+        let dica = t({
+            'pt-BR': 'O conjunto parece equilibrado para uma bomba residencial.',
+            'it-IT': 'L insieme sembra equilibrato per una pompa residenziale.',
+            'sv-SE': 'Anläggningen verkar väl avvägd för en pump i bostad.'
+        });
 
         if (velocidadeAlta) {
-            dica = pt
-                ? 'A velocidade ficou alta. Um diametro maior reduz perdas, ruído e consumo.'
-                : 'La velocita e alta. Un diametro maggiore riduce perdite, rumore e consumo.';
+            dica = t({
+                'pt-BR': 'A velocidade ficou alta. Um diametro maior reduz perdas, ruído e consumo.',
+                'it-IT': 'La velocita e alta. Un diametro maggiore riduce perdite, rumore e consumo.',
+                'sv-SE': 'Hastigheten blev hög. En större diameter minskar förluster, ljud och förbrukning.'
+            });
         } else if (velocidadeBaixa) {
-            dica = pt
-                ? 'A velocidade ficou baixa. O tubo esta folgado para esta vazao, o que reduz perdas, mas pode encarecer a instalacao.'
-                : 'La velocita e bassa. Il tubo e sovradimensionato per questa portata: meno perdite, ma piu costo di installazione.';
+            dica = t({
+                'pt-BR': 'A velocidade ficou baixa. O tubo esta folgado para esta vazao, o que reduz perdas, mas pode encarecer a instalacao.',
+                'it-IT': 'La velocita e bassa. Il tubo e sovradimensionato per questa portata: meno perdite, ma piu costo di installazione.',
+                'sv-SE': 'Hastigheten blev låg. Röret är rikligt tilltaget för det här flödet: mindre förluster, men dyrare installation.'
+            });
         } else if (perdasAltas) {
-            dica = pt
-                ? 'As perdas estao pesadas em relacao a altura estatica. Vale encurtar trechos ou aumentar o diametro.'
-                : 'Le perdite sono elevate rispetto alla prevalenza statica. Conviene accorciare il percorso o aumentare il diametro.';
+            dica = t({
+                'pt-BR': 'As perdas estao pesadas em relacao a altura estatica. Vale encurtar trechos ou aumentar o diametro.',
+                'it-IT': 'Le perdite sono elevate rispetto alla prevalenza statica. Conviene accorciare il percorso o aumentare il diametro.',
+                'sv-SE': 'Förlusterna är stora i förhållande till den statiska höjden. Korta ned ledningen eller öka diametern.'
+            });
         }
 
-        const destaque = pt
-            ? `Para ${formatarNumero(r.vazaoLmin, 0)} L/min e ${formatarNumero(r.alturaTotal, 2)} mca, a faixa comercial sugerida e ${r.faixaBomba.faixa} (${r.tipoBomba}).`
-            : `Per ${formatarNumero(r.vazaoLmin, 0)} L/min e ${formatarNumero(r.alturaTotal, 2)} mca, la fascia commerciale suggerita e ${r.faixaBomba.faixa} (${r.tipoBomba}).`;
+        const destaque = t({
+            'pt-BR': `Para ${formatarNumero(r.vazaoLmin, 0)} L/min e ${formatarNumero(r.alturaTotal, 2)} mca, a faixa comercial sugerida e ${r.faixaBomba.faixa} (${r.tipoBomba}).`,
+            'it-IT': `Per ${formatarNumero(r.vazaoLmin, 0)} L/min e ${formatarNumero(r.alturaTotal, 2)} mca, la fascia commerciale suggerita e ${r.faixaBomba.faixa} (${r.tipoBomba}).`,
+            'sv-SE': `För ${formatarNumero(r.vazaoLmin, 0)} l/min och ${formatarNumero(r.alturaTotal, 2)} mvp är föreslagen storleksklass ${r.faixaBomba.faixa} (${r.tipoBomba}).`
+        });
 
         this.explicacao.renderizar({
             destaque,
             linhas: [
                 {
                     icone: '📏',
-                    titulo: pt ? 'Altura total que a bomba precisa vencer' : 'Prevalenza totale da vincere',
+                    titulo: t({ 'pt-BR': 'Altura total que a bomba precisa vencer', 'it-IT': 'Prevalenza totale da vincere', 'sv-SE': 'Total höjd pumpen måste övervinna' }),
                     valor: `${formatarNumero(r.alturaTotal, 2)} mca`,
-                    descricao: pt
-                        ? `${formatarNumero(r.altura, 1)} m de altura estatica + ${formatarNumero(r.perdasTotais, 2)} m de perdas`
-                        : `${formatarNumero(r.altura, 1)} m di prevalenza statica + ${formatarNumero(r.perdasTotais, 2)} m di perdite`
+                    descricao: t({
+                        'pt-BR': `${formatarNumero(r.altura, 1)} m de altura estatica + ${formatarNumero(r.perdasTotais, 2)} m de perdas`,
+                        'it-IT': `${formatarNumero(r.altura, 1)} m di prevalenza statica + ${formatarNumero(r.perdasTotais, 2)} m di perdite`,
+                        'sv-SE': `${formatarNumero(r.altura, 1)} m statisk höjd + ${formatarNumero(r.perdasTotais, 2)} m förluster`
+                    })
                 },
                 {
                     icone: '💨',
-                    titulo: pt ? 'Velocidade da agua no tubo' : 'Velocita dell acqua nel tubo',
+                    titulo: t({ 'pt-BR': 'Velocidade da agua no tubo', 'it-IT': 'Velocita dell acqua nel tubo', 'sv-SE': 'Vattnets hastighet i röret' }),
                     valor: `${formatarNumero(r.velocidade, 2)} m/s`,
-                    descricao: pt
-                        ? 'Faixa usual de conforto hidraulico: aproximadamente 0,6 a 2,0 m/s'
-                        : 'Intervallo usuale di comfort idraulico: circa 0,6 a 2,0 m/s'
+                    descricao: t({
+                        'pt-BR': 'Faixa usual de conforto hidraulico: aproximadamente 0,6 a 2,0 m/s',
+                        'it-IT': 'Intervallo usuale di comfort idraulico: circa 0,6 a 2,0 m/s',
+                        'sv-SE': 'Vanligt intervall för hydraulisk komfort: ungefär 0,6 till 2,0 m/s'
+                    })
                 },
                 {
                     icone: '⚙️',
-                    titulo: pt ? 'Potencia estimada da bomba' : 'Potenza stimata della pompa',
+                    titulo: t({ 'pt-BR': 'Potencia estimada da bomba', 'it-IT': 'Potenza stimata della pompa', 'sv-SE': 'Uppskattad pumpeffekt' }),
                     valor: `${formatarNumero(r.potenciaBombaKw, 2)} kW`,
                     descricao: `${formatarNumero(r.potenciaCv, 2)} CV`
                 },
                 {
                     icone: '⚡',
-                    titulo: pt ? 'Consumo especifico por hora' : 'Consumo specifico per ora',
+                    titulo: t({ 'pt-BR': 'Consumo especifico por hora', 'it-IT': 'Consumo specifico per ora', 'sv-SE': 'Förbrukning per timme' }),
                     valor: this.formatarConsumoHora(r.consumoHora),
-                    descricao: pt
-                        ? 'Multiplique pelo numero de horas de uso para estimar o consumo diario ou mensal'
-                        : 'Moltiplica per le ore di utilizzo per stimare il consumo giornaliero o mensile'
+                    descricao: t({
+                        'pt-BR': 'Multiplique pelo numero de horas de uso para estimar o consumo diario ou mensal',
+                        'it-IT': 'Moltiplica per le ore di utilizzo per stimare il consumo giornaliero o mensile',
+                        'sv-SE': 'Multiplicera med antalet drifttimmar för att uppskatta förbrukningen per dag eller månad'
+                    })
                 }
             ],
             dica,
-            norma: pt
-                ? 'Modelo simplificado com Darcy-Weisbach, agua limpa e tubulacao lisa tipo PVC'
-                : 'Modello semplificato con Darcy-Weisbach, acqua pulita e tubazione liscia tipo PVC'
+            norma: t({
+                'pt-BR': 'Modelo simplificado com Darcy-Weisbach, agua limpa e tubulacao lisa tipo PVC',
+                'it-IT': 'Modello semplificato con Darcy-Weisbach, acqua pulita e tubazione liscia tipo PVC',
+                'sv-SE': 'Förenklad modell med Darcy–Weisbach, rent vatten och släta rör av PVC-typ'
+            })
         });
     }
 

@@ -215,5 +215,113 @@
       "decrease": "Diminuisci valore",
       "increase": "Aumenta valore"
     }
+  },
+  "sv-SE": {
+    "app": {
+      "title": "🔌 Kabelarea",
+      "subtitle": "Minsta ledararea för lik- och växelströmskretsar"
+    },
+    "labels": {
+      "tipoCorrente": "Strömtyp",
+      "potencia": "Högsta märkeffekt",
+      "comprimento": "Kretsens längd",
+      "tensao": "Spänning",
+      "quedaTensao": "Största spänningsfall"
+    },
+    "unidades": {
+      "watt": "W",
+      "meter": "m",
+      "volt": "V",
+      "mm2": "mm²",
+      "ampere": "A",
+      "percent": "%"
+    },
+    "dicas": {
+      "comprimento": "💡 Avstånd mellan källan och lasten<br>(beräkningen tar automatiskt hänsyn till fram- och återledare)",
+      "tensaoCC": "💡 Typiska värden: 3,3 V, 5 V, 9 V, 12 V, 15 V, 20 V, 24 V, 36 V, 48 V, 60 V, 72 V, 96 V",
+      "quedaTensao": "✅ Rekommenderad gräns för bostäder i Sverige: 4 % (SS 436 40 00)"
+    },
+    "resultado": {
+      "titulo": "📊 Resultat",
+      "areaMinima": "Minsta ledararea:",
+      "bitolaComercial": "Rekommenderad standardarea:",
+      "corrente": "Kretsens ström:",
+      "quedaReal": "Verkligt spänningsfall:",
+      "disjuntor": "Rekommenderad dvärgbrytare:"
+    },
+    "botoes": {
+      "voltar": "← Tillbaka",
+      "saibaMais": "LÄS MER!"
+    },
+    "tooltips": {
+      "potencia": "Högsta märkeffekt är den totala mängd elektrisk effekt som kretsen kommer att förbruka, angiven i watt (W).",
+      "comprimento": "Kretsens längd är avståndet mellan strömkällan och lasten. Beräkningen tar automatiskt hänsyn till fram- och återledare (två ledare).",
+      "tensaoCC": "Spänningen är potentialskillnaden mellan två punkter i kretsen, angiven i volt (V). För likström är typiska värden 3,3 V, 5 V, 9 V, 12 V, 15 V, 20 V, 24 V, 36 V, 48 V, 60 V, 72 V och 96 V.",
+      "quedaTensao": "Största spänningsfall är den procentuella spänningssänkning som tillåts längs kretsen. För bostäder i Sverige rekommenderas 3–4 % enligt SS 436 40 00."
+    },
+    "memorial": {
+      "btnVer": "Visa beräkningsredovisning",
+      "titulo": "📚 Beräkningsredovisning — kabelarea",
+      "introTitulo": "🎯 Syftet med beräkningen",
+      "introTexto": "Den här redovisningen förklarar steg för steg hur minsta ledararea räknas fram för lik- och växelströmskretsar.",
+      "passo1Titulo": "1️⃣ Steg 1: räkna ut kretsens ström",
+      "passo1Explicacao": "Strömmen räknas ut genom att dela effekten med spänningen. Det är den ström kretsen måste föra.",
+      "passo2Titulo": "2️⃣ Steg 2: räkna ut minsta ledararea",
+      "passo2Explicacao": "Minsta area räknas ut med formeln S = (2 × ρ × L × I) / ΔV, där ρ är kopparns resistivitet (0,0178 Ω·mm²/m).",
+      "passo3Titulo": "3️⃣ Steg 3: välj standardarea",
+      "passo3Explicacao": "Den beräknade minsta arean multipliceras med säkerhetsfaktorn 1,25 (25 % marginal).",
+      "passo4Titulo": "4️⃣ Steg 4: kontrollera verkligt spänningsfall",
+      "passo4Explicacao": "Vi räknar om spänningsfallet med den valda standardarean.",
+      "passo5Titulo": "5️⃣ Steg 5: välj dvärgbrytare",
+      "passo5Explicacao": "Brytaren väljs utifrån kretsens ström, med säkerhetsfaktorn 1,25.",
+      "formula": "Formel:",
+      "exemplo": "Exempel:",
+      "constantes": "Använda konstanter:",
+      "resistividade": "ρ (kopparns resistivitet) = 0,0178 Ω·mm²/m vid 20 °C (hård koppar)",
+      "fator2": "Faktorn 2 = tar hänsyn till fram- och återledare (två ledare)",
+      "bitolas": "Tillgängliga standardareor:",
+      "bitolasList": "0,25, 0,5, 0,75, 1,0, 1,5, 2,5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240 mm²",
+      "resumoTitulo": "📊 Sammanfattning",
+      "resumoCorrente": "Kretsens ström:",
+      "resumoArea": "Minsta area:",
+      "resumoBitola": "Standardarea:",
+      "resumoQueda": "Verkligt fall:",
+      "resumoDisjuntor": "Dvärgbrytare:",
+      "formulaCorrente": "Ström (A) = effekt (W) ÷ spänning (V)",
+      "formulaQueda": "Verkligt fall (%) = ((2 × ρ × L × I) ÷ S) ÷ spänning × 100",
+      "quedaRecomendada": "Rekommenderat spänningsfall:",
+      "quedaRecomendadaTexto": "4 % — riktvärde för slutkretsar i kontinuerlig drift enligt SS 436 40 00, den svenska tillämpningen av IEC 60364.",
+      "leiOhmTitulo": "⚛️ Tillämpad fysikalisk lag — Ohms lag:",
+      "leiOhmTexto": "Ohms lag knyter ihop spänning (V), ström (I) och resistans (R): V = I × R. I areaberäkningen använder vi den för att bestämma spänningsfallet.",
+      "referenciasTitulo": "📚 Källor och tekniska referenser",
+      "referenciasNormasTitulo": "Tekniska standarder:",
+      "referenciasNbr5410": "<strong>SS 436 40 00</strong> — Elinstallationsreglerna, den svenska tillämpningen av IEC 60364 för lågspänningsinstallationer. Ger riktvärdet 4 % för spänningsfall i slutkretsar.",
+      "referenciasNbrNm280": "<strong>SS-EN 60228</strong> — Ledare i kablar. Anger resistiviteten för mjukglödgad koppar till 0,017241 Ω·mm²/m vid 20 °C.",
+      "referenciasCei64": "<strong>IEC 60364</strong> — Internationell standard för lågspänningsinstallationer, som SS 436 40 00 bygger på. Anger gränser för spänningsfall och formler som tar hänsyn till effektfaktorn.",
+      "referenciasGuiasTitulo": "Internationella riktlinjer och standarder:",
+      "referenciasIeee525": "<strong>IEEE Std 525-2007</strong> — IEEE Guide for the Design and Installation of Cable Systems in Substations. Ger riktlinjer för beräkning av spänningsfall i ledare, med både exakta och förenklade formler för olika lastfall.",
+      "referenciasFormulasTitulo": "Formler och fysikalisk grund:",
+      "referenciasLeiOhm": "<strong>Ohms lag:</strong> V = I × R, där V är spänningen, I är strömmen och R är resistansen.",
+      "referenciasResistencia": "<strong>Ledarens resistans:</strong> R = ρ × L / S, där ρ är resistiviteten, L är längden och S är tvärsnittsarean.",
+      "referenciasQuedaMonofasico": "<strong>Spänningsfall i enfaskretsar:</strong> ΔV = K × ρ × (L × I) / S, där K = 2 för enfas (fas + nolla).",
+      "referenciasFontesTitulo": "Källor för fördjupning:",
+      "referenciasFontesLista": ""
+    },
+    "titles": {
+      "langPt": "Portugisiska",
+      "langIt": "Italienska",
+      "currentDc": "Likström",
+      "currentAc": "Växelström",
+      "clickInfo": "Klicka för mer information"
+    },
+    "footer": "Kabelarea — Engenharia Nata @ 2026",
+    "aria": {
+      "home": "Tillbaka till startsidan",
+      "langPt": "Byt språk till portugisiska",
+      "langIt": "Byt språk till italienska",
+      "clickInfo": "Ytterligare information",
+      "decrease": "Minska värdet",
+      "increase": "Öka värdet"
+    }
   }
 }
