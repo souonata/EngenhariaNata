@@ -108,12 +108,16 @@
     try { localStorage.setItem(TEMA_KEY, JSON.stringify(t)); } catch (e) { /* indisponível */ }
   }
 
+  // Mapa por idioma (era binário it/pt, que mandaria o sueco para o português).
+  const TEXTOS_TEMA = {
+    "pt-BR": { escuro: "Ativar tema escuro", claro: "Ativar tema claro" },
+    "it-IT": { escuro: "Attiva tema scuro", claro: "Attiva tema chiaro" },
+    "sv-SE": { escuro: "Aktivera mörkt tema", claro: "Aktivera ljust tema" }
+  };
+
   function textoTema(t) {
-    const paraEscuro = t !== "dark";
-    if ((idiomaAtual || "it-IT").startsWith("it")) {
-      return paraEscuro ? "Attiva tema scuro" : "Attiva tema chiaro";
-    }
-    return paraEscuro ? "Ativar tema escuro" : "Ativar tema claro";
+    const textos = TEXTOS_TEMA[idiomaAtual] || TEXTOS_TEMA["it-IT"];
+    return t !== "dark" ? textos.escuro : textos.claro;
   }
 
   function atualizarTextoTema() {

@@ -6,7 +6,7 @@
 //     cache quando offline).
 // Não intercepta nada fora de /br12c/ nem outras origens (ex.: GoatCounter).
 
-const CACHE = 'br12c-guide-v5';
+const CACHE = 'br12c-guide-v6';
 const ESTATICO = /\.(?:pdf|woff2?|png|jpe?g|gif|svg|webp)$/i;
 
 // Casca do app pré-cacheada já na instalação (o PDF não entra aqui: é grande e
