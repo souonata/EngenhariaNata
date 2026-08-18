@@ -220,11 +220,22 @@ _Última atualização: 2026-08-17_
     `src/data/parametros-suecia.js`). ⚠️ Não atualize esses números de memória: **duas regras
     mudaram em 1/4/2026** (skärpt amorteringskrav revogado, bolånetak 85%→90%) e a **avtrappning do
     jobbskatteavdrag foi eliminada** em 2026.
-  - **FALTA para a Fase 4 chegar à tela:** i18n de `salario` (115 chaves) e `mutuo` (262) — sem
-    elas o dock esconde a bandeira sueca e os modelos ficam inalcançáveis — mais o wiring de UI:
-    em `salario-script.js` o getter `modoPais` é binário (`it-IT ? 'it' : 'br'`), o dispatch da
-    linha ~320 idem, e a renderização usa `isIt` em vários pontos; é preciso ainda expor o campo
-    de kommunalskatt e OCULTAR 13ª/14ª no modo sueco (os campos vêm zerados de propósito).
+  - **FEITO (Fase 4 na tela + solar):** `salario`, `mutuo` e `solar` ganharam **tela própria** no
+    modo sueco, a pedido explícito do usuário — *"não quero simples tradução onde a forma de
+    calcular muda"*. Padrão usado: classes `.se-only` (mostra só em sueco) e `.se-hide` (esconde
+    em sueco), com `body.lang-se` aplicado pelo app.
+    - `salario`: campo de kommunalskatt ajustável; linhas próprias; 13ª/FGTS/rescisão OCULTAS.
+    - `mutuo`: visão **bolån** — sem SAC/Price/tabela de parcelas; amortização vem da
+      belåningsgrad; aviso quando a entrada não atinge o bolånetak de 90%.
+    - `solar`: visão **conectada à rede** — era o único app dando conselho ATIVAMENTE ERRADO
+      (off-grid dimensionado pelo inverno sueco pedia banco de baterias irreal).
+  - **AUDITORIA (2026-08-18) — quais apps mudam de MÉTODO:** grupo A (só parâmetros, tradução
+    basta): `helice`, `bombaagua`, `bitola`, `iluminacao`, `previsao`, `bugs`. Grupo B (tela
+    própria, FEITO): `salario`, `mutuo`, `solar`. **Grupo C, PENDENTE** — o app responde uma
+    pergunta que a Suécia não formula assim: `ventilacao` (a exigência é **vazão** de 0,35 l/s·m²
+    no BBR, não proporção de área de janela; självdrag segue permitido — verificado),
+    `aquecimento` (solar térmica lá é complemento, com anticongelante), `chuva` (congelamento é a
+    restrição dominante) e `arcondicionado` (é bomba de calor que também refrigera).
   - **FALTA (geral):** integrar o dock ao `patentenautica` (só BR/IT), que não passa pelo
     `src/core/app.js`.
   - **Gotcha de formatação:** o `format:check` roda de dentro de `local/`, então o glob NÃO alcança
