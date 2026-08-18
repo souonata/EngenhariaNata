@@ -1,3 +1,12 @@
+# Finais de linha: LF na árvore de trabalho em qualquer sistema.
+#
+# Sem isto, o core.autocrlf=true do Windows reescreve os arquivos em CRLF a
+# cada checkout/merge e o `npm run format:check` falha (o Prettier do projeto
+# está em endOfLine: "lf") em arquivos que ninguém editou. Todos os 275
+# arquivos de texto já estavam em LF no index, então esta regra alinha a
+# árvore ao que o git guarda — não muda conteúdo.
+* text=auto eol=lf
+
 *.gif binary
 *.jpeg binary
 *.jpg binary
