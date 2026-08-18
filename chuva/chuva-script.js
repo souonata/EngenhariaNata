@@ -10,6 +10,62 @@ import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { formatarNumero, formatarMoeda, parsearNumero } from '../src/utils/formatters.js';
 import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
+import {
+    CHUVA_SE_REGIOES,
+    TUNNOR_COMERCIAIS_SE,
+    TUNNA_DIAS_DE_RESERVA_SE
+} from '../src/data/parametros-suecia.js';
+
+// ============================================
+// SUÉCIA — a temporada é que limita
+// ============================================
+
+/**
+ * A pergunta muda de "quanto chove?" para "quanto disso dá para guardar sem
+ * o barril rachar?". O sistema é esvaziado antes da primeira geada, então a
+ * captação só existe durante a vegetationsperiod — e a diferença entre a
+ * captação anual teórica e a sazonal é o número que importa.
+ *
+ * Função pura: números entram, números saem. Sem DOM.
+ */
+function calcularChuvaSuecia(v) {
+    const regiao = CHUVA_SE_REGIOES[v.landsdel] || CHUVA_SE_REGIOES.mellan;
+
+    // 1 mm sobre 1 m² = 1 litro.
+    const captacaoAnual = v.area * regiao.precipitacaoAnualMm * COEF_APROVEITAMENTO;
+    const fracaoTemporada = regiao.temporadaDias / 365;
+    const captacaoTemporada = captacaoAnual * fracaoTemporada;
+    const perdidoInverno = captacaoAnual - captacaoTemporada;
+
+    // Demanda só corre durante a temporada — no inverno não se rega.
+    const litrosPorDia = DEMANDA_POR_USO[v.tipoUso] ?? DEMANDA_POR_USO.jardim;
+    const demandaTemporada = v.pessoas * litrosPorDia * regiao.temporadaDias;
+
+    const cobertura = demandaTemporada > 0
+        ? Math.min(1, captacaoTemporada / demandaTemporada)
+        : 0;
+
+    // O barril é pulmão entre chuvas, não reservatório de temporada.
+    const reservaAlvo = v.pessoas * litrosPorDia * TUNNA_DIAS_DE_RESERVA_SE;
+    const tunna = TUNNOR_COMERCIAIS_SE.find(x => x >= reservaAlvo) ?? TUNNOR_COMERCIAIS_SE[TUNNOR_COMERCIAIS_SE.length - 1];
+
+    const aproveitado = Math.min(captacaoTemporada, demandaTemporada);
+    const economia = aproveitado * 0.001 * TARIFA_AGUA_SEK; // L → m³
+
+    return {
+        regiao, captacaoAnual, captacaoTemporada, perdidoInverno,
+        fracaoPerdida: captacaoAnual > 0 ? perdidoInverno / captacaoAnual : 0,
+        demandaTemporada, cobertura, tunna, economia
+    };
+}
+
+/** Número no formato sueco (espaço como separador de milhar). */
+function numSE(valor, casas = 0) {
+    return valor.toLocaleString('sv-SE', {
+        minimumFractionDigits: casas,
+        maximumFractionDigits: casas
+    });
+}
 
 // ============================================
 // CONSTANTES
@@ -87,6 +143,9 @@ class ChuvaApp extends App {
         document.querySelectorAll('input[name="tipoUso"]').forEach(radio => {
             radio.addEventListener('change', () => this.atualizarResultado());
         });
+
+        document.getElementById('selectSeLandsdelChuva')
+            ?.addEventListener('change', () => this.atualizarResultado());
 
         // Memorial
         document.getElementById('btnMemorial')?.addEventListener('click', () => this.toggleMemorial());
@@ -294,7 +353,46 @@ class ChuvaApp extends App {
         return parseFloat(sliderEl?.value ?? defaultVal);
     }
 
+    // ============================================
+    // SUÉCIA
+    // ============================================
+
+    atualizarSuecia(area, pessoas, tipoUso) {
+        if (!document.getElementById('seUppsamling')) return;
+
+        const landsdel = document.getElementById('selectSeLandsdelChuva')?.value || 'mellan';
+        const r = calcularChuvaSuecia({ area, pessoas, tipoUso, landsdel });
+        const t = this.traducoes || {};
+        const def = (id, texto) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = texto;
+        };
+
+        def('seUppsamling', `${numSE(r.captacaoTemporada, 0)} L`);
+        def('seForlorat', `${numSE(r.perdidoInverno, 0)} L (${numSE(r.fracaoPerdida * 100, 0)} %)`);
+        def('seNederbord', `${numSE(r.regiao.precipitacaoAnualMm, 0)} mm`);
+
+        const meses = r.regiao.temporadaDias / 30.4;
+        const modeloSasong = t.chse?.sasongFormato || '{dias} dagar (~{meses} månader)';
+        def('seSasong', modeloSasong
+            .replace('{dias}', numSE(r.regiao.temporadaDias, 0))
+            .replace('{meses}', numSE(meses, 1)));
+
+        def('seBehov', `${numSE(r.demandaTemporada, 0)} L`);
+        def('seTackning', `${numSE(r.cobertura * 100, 0)} %`);
+        def('seTunna', `${numSE(r.tunna, 0)} L`);
+        def('seBesparing', `${numSE(r.economia, 0)} kr/år`);
+
+        return r;
+    }
+
     atualizarResultado() {
+        // `body.lang-se` comanda as regras .se-only / .se-hide do CSS.
+        const idiomaAgora = i18n.obterIdiomaAtual();
+        document.body.classList.toggle('lang-se', idiomaAgora === 'sv-SE');
+        document.body.classList.toggle('lang-br', idiomaAgora === 'pt-BR');
+        document.body.classList.toggle('lang-it', idiomaAgora === 'it-IT');
+
         const area         = this.lerValor('inputArea',    'sliderArea',    80);
         const precipitacao = this.lerValor('inputChuva',   'sliderChuva',   100);
         const pessoas      = this.lerValor('inputPessoas', 'sliderPessoas', 3);
@@ -308,6 +406,8 @@ class ChuvaApp extends App {
         if (inputArea    && ativo !== inputArea)    inputArea.value    = formatarNumero(area, 0);
         if (inputChuva   && ativo !== inputChuva)   inputChuva.value   = formatarNumero(precipitacao, 0);
         if (inputPessoas && ativo !== inputPessoas) inputPessoas.value = formatarNumero(pessoas, 0);
+
+        this.atualizarSuecia(area, pessoas, tipoUso);
 
         const r = this.calcular(area, precipitacao, pessoas, tipoUso);
         const moeda  = i18n.obterMoeda();

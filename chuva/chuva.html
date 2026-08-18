@@ -31,7 +31,7 @@
     <link rel="stylesheet" href="../assets/css/dock-global.css?v=1.0.0">
     <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
     <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
-    <link rel="stylesheet" href="chuva-styles.css?v=1.0.0">
+    <link rel="stylesheet" href="chuva-styles.css?v=1.1.0">
 
     <script data-goatcounter="https://souonata.goatcounter.com/count"
             async src="https://gc.zgo.at/count.js"></script>
@@ -95,7 +95,7 @@
             </div>
 
             <!-- Precipitação -->
-            <div class="grupo-entrada">
+            <div class="grupo-entrada se-hide">
                 <div class="cabecalho-controle">
                     <label for="sliderChuva" data-i18n="labels.chuva">Precipitação Média Mensal</label>
                     <span class="info-icon" id="infoIconChuva" role="button" tabindex="0"
@@ -188,6 +188,80 @@
             </div>
 
                 </div>
+            </div>
+
+            <!-- ============================================================
+                 SUÉCIA — o que limita não é quanto chove: é o congelamento.
+                 O barril e as tubulações têm de ser esvaziados antes da
+                 primeira geada, senão a água que congela os rompe. Logo,
+                 captação anual NÃO é captação utilizável.
+                 ============================================================ -->
+            <div class="chse-secao se-only">
+                <h2 class="chse-titulo" data-i18n="chse.titulo">Regnvatten i Sverige — säsongen sätter gränsen</h2>
+                <p class="chse-intro" data-i18n="chse.intro">
+                    Det som begränsar här är inte hur mycket det regnar, utan frosten.
+                    Tunna, slangar och stuprörsdivider måste tömmas före första frosten,
+                    annars spränger isen dem. Årsnederbörden är därför inte samma sak
+                    som det du kan samla in.
+                </p>
+
+                <div class="chse-entradas">
+                    <div class="grupo-entrada">
+                        <label for="selectSeLandsdelChuva" data-i18n="chse.landsdel">Landsdel</label>
+                        <select id="selectSeLandsdelChuva" class="valor-input">
+                            <option value="syd" data-i18n="chse.landsdelSyd">Södra Sverige</option>
+                            <option value="mellan" selected data-i18n="chse.landsdelMellan">Mellersta Sverige</option>
+                            <option value="norr" data-i18n="chse.landsdelNorr">Norra Sverige</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="chse-resultados">
+                    <div class="resultado-item destaque">
+                        <span class="label-resultado" data-i18n="chse.uppsamlingSasong">Insamling under säsongen</span>
+                        <span class="valor-resultado-grande" id="seUppsamling">—</span>
+                    </div>
+                    <div class="resultado-item destaque">
+                        <span class="label-resultado" data-i18n="chse.forlorat">Går förlorat på vintern</span>
+                        <span class="valor-resultado-grande" id="seForlorat">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="chse.nederbord">Årsnederbörd (normal)</span>
+                        <span class="valor-resultado" id="seNederbord">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="chse.sasong">Insamlingssäsong</span>
+                        <span class="valor-resultado" id="seSasong">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="chse.behov">Behov under säsongen</span>
+                        <span class="valor-resultado" id="seBehov">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="chse.tackning">Täckning av behovet</span>
+                        <span class="valor-resultado" id="seTackning">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="chse.tunna">Rekommenderad tunna</span>
+                        <span class="valor-resultado" id="seTunna">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="chse.besparing">Besparing per år</span>
+                        <span class="valor-resultado" id="seBesparing">—</span>
+                    </div>
+                </div>
+
+                <p class="chse-frost" data-i18n="chse.frostvarning">
+                    🧊 Töm hela systemet — tunna, slangar och pump — före första frosten,
+                    och ställ tunnan upp och ner så att den inte fylls igen under vintern.
+                </p>
+
+                <p class="chse-aviso" data-i18n="chse.aviso">
+                    Utbildningsberäkning. Nederbörd och vegetationsperiod är normalvärden
+                    från SMHI (1991–2020). Beräkningen antar att nederbörden är jämnt
+                    fördelad över året, vilket underskattar säsongens andel något —
+                    sommaren är den nederbördsrikaste tiden i Sverige.
+                </p>
             </div>
         </section>
 
@@ -376,6 +450,6 @@
         </svg>
     </a>
 
-    <script type="module" src="chuva-script.js?v=1.0.0"></script>
+    <script type="module" src="chuva-script.js?v=1.1.0"></script>
 </body>
 </html>

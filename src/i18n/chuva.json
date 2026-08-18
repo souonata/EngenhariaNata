@@ -114,7 +114,26 @@
       "destaqueSuffix": "de chuva/mês, você capta",
       "tituloSecao": "🔍 Resumo do Dimensionamento"
     },
-    "footer": "Captação de Água da Chuva — Engenharia NATA @ 2026"
+    "footer": "Captação de Água da Chuva — Engenharia NATA @ 2026",
+    "chse": {
+      "titulo": "Água de chuva na Suécia — a temporada é o limite",
+      "intro": "O que limita ali não é quanto chove, e sim a geada. Barril, mangueiras e desviador de calha têm de ser esvaziados antes da primeira geada, ou o gelo os rompe. Por isso a precipitação anual não é a mesma coisa que o que se consegue captar.",
+      "landsdel": "Região",
+      "landsdelSyd": "Sul da Suécia",
+      "landsdelMellan": "Centro da Suécia",
+      "landsdelNorr": "Norte da Suécia",
+      "uppsamlingSasong": "Captação durante a temporada",
+      "forlorat": "Perdido no inverno",
+      "nederbord": "Precipitação anual (normal)",
+      "sasong": "Temporada de captação",
+      "sasongFormato": "{dias} dias (~{meses} meses)",
+      "behov": "Demanda na temporada",
+      "tackning": "Cobertura da demanda",
+      "tunna": "Barril recomendado",
+      "besparing": "Economia por ano",
+      "frostvarning": "🧊 Esvazie o sistema inteiro — barril, mangueiras e bomba — antes da primeira geada, e vire o barril de cabeça para baixo para não encher de novo no inverno.",
+      "aviso": "Cálculo educativo. Precipitação e vegetationsperiod são valores normais do SMHI (1991–2020). O cálculo supõe chuva distribuída por igual ao longo do ano, o que subestima um pouco a parcela da temporada — o verão é a época mais chuvosa na Suécia."
+    }
   },
   "it-IT": {
     "app": {
@@ -230,7 +249,26 @@
       "destaqueSuffix": "di pioggia/mese, si raccolgono",
       "tituloSecao": "🔍 Riepilogo del Dimensionamento"
     },
-    "footer": "Raccolta Acqua Piovana — Engenharia NATA @ 2026"
+    "footer": "Raccolta Acqua Piovana — Engenharia NATA @ 2026",
+    "chse": {
+      "titulo": "Acqua piovana in Svezia — è la stagione a porre il limite",
+      "intro": "Ciò che limita lì non è quanta pioggia cade, ma il gelo. Bidone, tubi e deviatore di gronda vanno svuotati prima della prima gelata, altrimenti il ghiaccio li spacca. La precipitazione annua non coincide quindi con ciò che si riesce a raccogliere.",
+      "landsdel": "Regione",
+      "landsdelSyd": "Svezia meridionale",
+      "landsdelMellan": "Svezia centrale",
+      "landsdelNorr": "Svezia settentrionale",
+      "uppsamlingSasong": "Raccolta durante la stagione",
+      "forlorat": "Perso in inverno",
+      "nederbord": "Precipitazione annua (normale)",
+      "sasong": "Stagione di raccolta",
+      "sasongFormato": "{dias} giorni (~{meses} mesi)",
+      "behov": "Fabbisogno nella stagione",
+      "tackning": "Copertura del fabbisogno",
+      "tunna": "Bidone consigliato",
+      "besparing": "Risparmio annuo",
+      "frostvarning": "🧊 Svuota tutto l'impianto — bidone, tubi e pompa — prima della prima gelata, e capovolgi il bidone perché non si riempia di nuovo durante l'inverno.",
+      "aviso": "Calcolo didattico. Precipitazioni e vegetationsperiod sono valori normali SMHI (1991–2020). Il calcolo assume pioggia distribuita uniformemente nell'anno, il che sottostima un poco la quota della stagione: l'estate è il periodo più piovoso in Svezia."
+    }
   },
   "sv-SE": {
     "app": {
@@ -346,6 +384,25 @@
       "destaqueSuffix": "regn per månad samlas",
       "tituloSecao": "🔍 Sammanfattning av dimensioneringen"
     },
-    "footer": "Uppsamling av regnvatten — Engenharia NATA @ 2026"
+    "footer": "Uppsamling av regnvatten — Engenharia NATA @ 2026",
+    "chse": {
+      "titulo": "Regnvatten i Sverige — säsongen sätter gränsen",
+      "intro": "Det som begränsar här är inte hur mycket det regnar, utan frosten. Tunna, slangar och stuprörsdivider måste tömmas före första frosten, annars spränger isen dem. Årsnederbörden är därför inte samma sak som det du kan samla in.",
+      "landsdel": "Landsdel",
+      "landsdelSyd": "Södra Sverige",
+      "landsdelMellan": "Mellersta Sverige",
+      "landsdelNorr": "Norra Sverige",
+      "uppsamlingSasong": "Insamling under säsongen",
+      "forlorat": "Går förlorat på vintern",
+      "nederbord": "Årsnederbörd (normal)",
+      "sasong": "Insamlingssäsong",
+      "sasongFormato": "{dias} dagar (~{meses} månader)",
+      "behov": "Behov under säsongen",
+      "tackning": "Täckning av behovet",
+      "tunna": "Rekommenderad tunna",
+      "besparing": "Besparing per år",
+      "frostvarning": "🧊 Töm hela systemet — tunna, slangar och pump — före första frosten, och ställ tunnan upp och ner så att den inte fylls igen under vintern.",
+      "aviso": "Utbildningsberäkning. Nederbörd och vegetationsperiod är normalvärden från SMHI (1991–2020). Beräkningen antar att nederbörden är jämnt fördelad över året, vilket underskattar säsongens andel något — sommaren är den nederbördsrikaste tiden i Sverige."
+    }
   }
 }
