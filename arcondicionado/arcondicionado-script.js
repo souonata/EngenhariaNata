@@ -20,9 +20,12 @@ class ArcondicionadoApp extends App {
 
             // Insolação
             const radiosInsolacao = document.querySelectorAll('input[name="insolacao"]');
-            const valoresInsolacao = idioma === 'it-IT'
-                ? ['bassa', 'media', 'alta']
-                : ['baixa', 'media', 'alta'];
+            const VALORES_INSOLACAO = {
+                'pt-BR': ['baixa', 'media', 'alta'],
+                'it-IT': ['bassa', 'media', 'alta'],
+                'sv-SE': ['lag', 'medel', 'hog']
+            };
+            const valoresInsolacao = VALORES_INSOLACAO[idioma] || VALORES_INSOLACAO['it-IT'];
             radiosInsolacao.forEach((radio, idx) => {
                 radio.value = valoresInsolacao[idx];
             });
@@ -32,9 +35,12 @@ class ArcondicionadoApp extends App {
 
             // Isolamento
             const radiosIsolamento = document.querySelectorAll('input[name="isolamento"]');
-            const valoresIsolamento = idioma === 'it-IT'
-                ? ['scarso', 'medio', 'buono']
-                : ['ruim', 'medio', 'bom'];
+            const VALORES_ISOLAMENTO = {
+                'pt-BR': ['ruim', 'medio', 'bom'],
+                'it-IT': ['scarso', 'medio', 'buono'],
+                'sv-SE': ['daligt', 'medel', 'bra']
+            };
+            const valoresIsolamento = VALORES_ISOLAMENTO[idioma] || VALORES_ISOLAMENTO['it-IT'];
             radiosIsolamento.forEach((radio, idx) => {
                 radio.value = valoresIsolamento[idx];
             });
@@ -520,59 +526,52 @@ class ArcondicionadoApp extends App {
     
     getBTUPorM2(isolamento = 'medio') {
         const idioma = this.obterIdiomaAtual();
-        if (idioma === 'it-IT') {
-            switch (isolamento) {
-                case 'buono': return 300;
-                case 'medio': return 340;
-                case 'scarso': return 400;
-                default: return 340;
-            }
-        } else {
-            return 700;
+        // Itália e Suécia embutem o isolamento no próprio BTU/m²; o Brasil
+        // aplica um fator à parte. Os valores suecos são os mais baixos: verão
+        // curto e ameno, e envolvente bem isolada pelas exigências do BBR.
+        const BTU_POR_M2 = {
+            'it-IT': { buono: 300, medio: 340, scarso: 400, padrao: 340 },
+            'sv-SE': { bra: 250, medel: 290, daligt: 340, padrao: 290 }
+        };
+        const tabela = BTU_POR_M2[idioma];
+        if (tabela) {
+            return tabela[isolamento] ?? tabela.padrao;
         }
+        return 700;
     }
     
     getBTUPorPessoa() {
-        const idioma = this.obterIdiomaAtual();
-        return idioma === 'it-IT' ? 200 : 600;
+        return i18n.porIdioma({ 'pt-BR': 600, 'it-IT': 200, 'sv-SE': 200 });
     }
     
     calcularBTUPessoas(pessoas) {
-        const idioma = this.obterIdiomaAtual();
-        if (idioma === 'it-IT') {
-            return pessoas * this.getBTUPorPessoa();
-        } else {
-            // Brasil: apenas pessoas além das primeiras 2
-            const pessoasAdicionais = Math.max(0, pessoas - 2);
-            return pessoasAdicionais * this.getBTUPorPessoa();
-        }
+        // Só a prática brasileira isenta as duas primeiras pessoas.
+        const isentas = i18n.porIdioma({ 'pt-BR': 2, 'it-IT': 0, 'sv-SE': 0 });
+        return Math.max(0, pessoas - isentas) * this.getBTUPorPessoa();
     }
     
     getBTUPorEquipamento() {
-        const idioma = this.obterIdiomaAtual();
-        return idioma === 'it-IT' ? 300 : 600;
+        return i18n.porIdioma({ 'pt-BR': 600, 'it-IT': 300, 'sv-SE': 300 });
     }
     
     getFatorInsolacao(nivel) {
-        const idioma = this.obterIdiomaAtual();
-        if (idioma === 'it-IT') {
-            const fatores = { bassa: 0.9, media: 1.0, alta: 1.2 };
-            return fatores[nivel] || 1.0;
-        } else {
-            const fatores = { baixa: 1.0, media: 1.15, alta: 1.3 };
-            return fatores[nivel] || 1.0;
-        }
+        const FATORES_INSOLACAO = {
+            'pt-BR': { baixa: 1.0, media: 1.15, alta: 1.3 },
+            'it-IT': { bassa: 0.9, media: 1.0, alta: 1.2 },
+            'sv-SE': { lag: 0.9, medel: 1.0, hog: 1.15 }
+        };
+        const fatores = FATORES_INSOLACAO[this.obterIdiomaAtual()] || FATORES_INSOLACAO['it-IT'];
+        return fatores[nivel] || 1.0;
     }
     
     getFatorIsolamento(nivel) {
-        const idioma = this.obterIdiomaAtual();
-        if (idioma === 'it-IT') {
-            // O isolamento já está embutido no BTU/m² na Itália, retorna 1
+        // Na Itália e na Suécia o isolamento já entra no BTU/m², então aqui
+        // vale 1; só o Brasil aplica um fator separado.
+        if (this.obterIdiomaAtual() !== 'pt-BR') {
             return 1.0;
-        } else {
-            const fatores = { bom: 0.8, medio: 1.0, ruim: 1.2 };
-            return fatores[nivel] || 1.0;
         }
+        const fatores = { bom: 0.8, medio: 1.0, ruim: 1.2 };
+        return fatores[nivel] || 1.0;
     }
     
     calcularSistemaMultisplit(numAmbientes, areaTotal, altura, pessoas, equipamentos, insolacao, isolamento) {
@@ -669,9 +668,19 @@ class ArcondicionadoApp extends App {
     calcularCustoUnidadeInterna(btu) {
         // Faixas de preço para unidades internas (2025-2026)
         const idioma = this.obterIdiomaAtual();
-        let faixas;
-        if (idioma === 'it-IT') {
-            faixas = [
+        const FAIXAS_INTERNA = {
+            'pt-BR': [
+                { min: 0, max: 7000, preco: 700 },
+                { min: 7001, max: 9000, preco: 850 },
+                { min: 9001, max: 12000, preco: 1050 },
+                { min: 12001, max: 18000, preco: 1400 },
+                { min: 18001, max: 24000, preco: 1850 },
+                { min: 24001, max: 30000, preco: 2300 },
+                { min: 30001, max: 36000, preco: 2800 },
+                { min: 36001, max: 48000, preco: 3600 },
+                { min: 48001, max: 60000, preco: 4500 }
+            ],
+            'it-IT': [
                 { min: 0, max: 9000, preco: 220 },
                 { min: 9001, max: 12000, preco: 280 },
                 { min: 12001, max: 18000, preco: 360 },
@@ -682,40 +691,30 @@ class ArcondicionadoApp extends App {
                 { min: 48001, max: 60000, preco: 1050 },
                 { min: 60001, max: 120000, preco: 1900 },
                 { min: 120001, max: 180000, preco: 2600 }
-            ];
-        } else {
-            faixas = [
-                { min: 0, max: 7000, preco: 700 },
-                { min: 7001, max: 9000, preco: 850 },
-                { min: 9001, max: 12000, preco: 1050 },
-                { min: 12001, max: 18000, preco: 1400 },
-                { min: 18001, max: 24000, preco: 1850 },
-                { min: 24001, max: 30000, preco: 2300 },
-                { min: 30001, max: 36000, preco: 2800 },
-                { min: 36001, max: 48000, preco: 3600 },
-                { min: 48001, max: 60000, preco: 4500 }
-            ];
-        }
+            ],
+            'sv-SE': [
+                { min: 0, max: 9000, preco: 3000 },
+                { min: 9001, max: 12000, preco: 3800 },
+                { min: 12001, max: 18000, preco: 4800 },
+                { min: 18001, max: 24000, preco: 6200 },
+                { min: 24001, max: 30000, preco: 7500 },
+                { min: 30001, max: 36000, preco: 9000 },
+                { min: 36001, max: 48000, preco: 11500 },
+                { min: 48001, max: 60000, preco: 14000 },
+                { min: 60001, max: 120000, preco: 25000 },
+                { min: 120001, max: 180000, preco: 35000 }
+            ]
+        };
+        const faixas = FAIXAS_INTERNA[idioma] || FAIXAS_INTERNA['it-IT'];
         const faixa = faixas.find(f => btu >= f.min && btu <= f.max);
-        return faixa ? faixa.preco : (idioma === 'it-IT' ? 1050 : 4500);
+        return faixa ? faixa.preco : faixas[faixas.length - 1].preco;
     }
     
     calcularCustoUnidadeExterna(btu) {
         // Faixas de preço para unidades externas (2025-2026)
         const idioma = this.obterIdiomaAtual();
-        let faixas;
-        if (idioma === 'it-IT') {
-            faixas = [
-                { min: 0, max: 24000, preco: 260 },
-                { min: 24001, max: 36000, preco: 380 },
-                { min: 36001, max: 48000, preco: 520 },
-                { min: 48001, max: 60000, preco: 680 },
-                { min: 60001, max: 84000, preco: 980 },
-                { min: 84001, max: 120000, preco: 1400 },
-                { min: 120001, max: 180000, preco: 2100 }
-            ];
-        } else {
-            faixas = [
+        const FAIXAS_EXTERNA = {
+            'pt-BR': [
                 { min: 0, max: 24000, preco: 1500 },
                 { min: 24001, max: 36000, preco: 2600 },
                 { min: 36001, max: 48000, preco: 3600 },
@@ -723,10 +722,29 @@ class ArcondicionadoApp extends App {
                 { min: 60001, max: 84000, preco: 7000 },
                 { min: 84001, max: 120000, preco: 9800 },
                 { min: 120001, max: 180000, preco: 14000 }
-            ];
-        }
+            ],
+            'it-IT': [
+                { min: 0, max: 24000, preco: 260 },
+                { min: 24001, max: 36000, preco: 380 },
+                { min: 36001, max: 48000, preco: 520 },
+                { min: 48001, max: 60000, preco: 680 },
+                { min: 60001, max: 84000, preco: 980 },
+                { min: 84001, max: 120000, preco: 1400 },
+                { min: 120001, max: 180000, preco: 2100 }
+            ],
+            'sv-SE': [
+                { min: 0, max: 24000, preco: 3500 },
+                { min: 24001, max: 36000, preco: 5000 },
+                { min: 36001, max: 48000, preco: 7000 },
+                { min: 48001, max: 60000, preco: 9000 },
+                { min: 60001, max: 84000, preco: 13000 },
+                { min: 84001, max: 120000, preco: 18500 },
+                { min: 120001, max: 180000, preco: 28000 }
+            ]
+        };
+        const faixas = FAIXAS_EXTERNA[idioma] || FAIXAS_EXTERNA['it-IT'];
         const faixa = faixas.find(f => btu >= f.min && btu <= f.max);
-        return faixa ? faixa.preco : (idioma === 'it-IT' ? 680 : 14000);
+        return faixa ? faixa.preco : faixas[faixas.length - 1].preco;
     }
     
     // ============================================
@@ -802,52 +820,68 @@ class ArcondicionadoApp extends App {
     }
 
     renderizarExplicacao(resultado, numAmbientes) {
-        const pt = i18n.obterIdiomaAtual() === 'pt-BR';
+        const tc = mapa => i18n.porIdioma(mapa);
         const capacidadeExterna = resultado.combinacaoExterna.reduce((soma, btu) => soma + btu, 0);
         const folga = capacidadeExterna - resultado.btuTotal;
 
         this.explicacao.renderizar({
-            destaque: pt
-                ? `Sistema multi-split recomendado para ${numAmbientes} ambiente(s), com carga térmica de ${this.formatarBTU(resultado.btuTotal)}.`
-                : `Sistema multi-split consigliato per ${numAmbientes} ambiente/i, con carico termico di ${this.formatarBTU(resultado.btuTotal)}.`,
+            destaque: tc({
+                'pt-BR': `Sistema multi-split recomendado para ${numAmbientes} ambiente(s), com carga térmica de ${this.formatarBTU(resultado.btuTotal)}.`,
+                'it-IT': `Sistema multi-split consigliato per ${numAmbientes} ambiente/i, con carico termico di ${this.formatarBTU(resultado.btuTotal)}.`,
+                'sv-SE': `Rekommenderat multisplitsystem för ${numAmbientes} rum, med en värmelast på ${this.formatarBTU(resultado.btuTotal)}.`
+            }),
             linhas: [
                 {
                     icone: '❄️',
-                    titulo: pt ? 'BTU Necessário' : 'BTU Necessario',
+                    titulo: tc({ 'pt-BR': 'BTU Necessário', 'it-IT': 'BTU Necessario', 'sv-SE': 'Nödvändig BTU' }),
                     valor: this.formatarBTU(resultado.btuTotal),
-                    descricao: pt
-                        ? 'Carga térmica calculada com área, altura, pessoas, equipamentos, insolação, isolamento e classe energética.'
-                        : 'Carico termico calcolato con area, altezza, persone, apparecchi, insolazione, isolamento e classe energetica.'
+                    descricao: tc({
+                        'pt-BR': 'Carga térmica calculada com área, altura, pessoas, equipamentos, insolação, isolamento e classe energética.',
+                        'it-IT': 'Carico termico calcolato con area, altezza, persone, apparecchi, insolazione, isolamento e classe energetica.',
+                        'sv-SE': 'Värmelast beräknad utifrån yta, takhöjd, personer, apparater, solinstrålning, isolering och energiklass.'
+                    })
                 },
                 {
                     icone: '🏢',
-                    titulo: pt ? 'Unidade Externa' : 'Unita Esterna',
+                    titulo: tc({ 'pt-BR': 'Unidade Externa', 'it-IT': 'Unita Esterna', 'sv-SE': 'Utomhusdel' }),
                     valor: `${resultado.numUnidadesExternas} unidade(s)`,
-                    descricao: pt
-                        ? `Capacidade instalada: ${this.formatarBTU(capacidadeExterna)} (folga: ${this.formatarBTU(Math.max(folga, 0))}).`
-                        : `Capacita installata: ${this.formatarBTU(capacidadeExterna)} (margine: ${this.formatarBTU(Math.max(folga, 0))}).`
+                    descricao: tc({
+                        'pt-BR': `Capacidade instalada: ${this.formatarBTU(capacidadeExterna)} (folga: ${this.formatarBTU(Math.max(folga, 0))}).`,
+                        'it-IT': `Capacita installata: ${this.formatarBTU(capacidadeExterna)} (margine: ${this.formatarBTU(Math.max(folga, 0))}).`,
+                        'sv-SE': `Installerad kapacitet: ${this.formatarBTU(capacidadeExterna)} (marginal: ${this.formatarBTU(Math.max(folga, 0))}).`
+                    })
                 },
                 {
                     icone: '🧩',
-                    titulo: pt ? 'Unidades Internas' : 'Unita Interne',
+                    titulo: tc({ 'pt-BR': 'Unidades Internas', 'it-IT': 'Unita Interne', 'sv-SE': 'Inomhusdelar' }),
                     valor: Object.values(resultado.unidadesInternasPorModelo).reduce((s, n) => s + n, 0).toString(),
-                    descricao: pt
-                        ? 'Distribuição das evaporadoras por ambiente para equilibrar conforto e eficiência.'
-                        : 'Distribuzione delle evaporatrici per ambiente per bilanciare comfort ed efficienza.'
+                    descricao: tc({
+                        'pt-BR': 'Distribuição das evaporadoras por ambiente para equilibrar conforto e eficiência.',
+                        'it-IT': 'Distribuzione delle evaporatrici per ambiente per bilanciare comfort ed efficienza.',
+                        'sv-SE': 'Fördelning av inomhusdelarna per rum för att väga av komfort mot verkningsgrad.'
+                    })
                 },
                 {
                     icone: '💰',
-                    titulo: pt ? 'Custo do Sistema' : 'Costo del Sistema',
+                    titulo: tc({ 'pt-BR': 'Custo do Sistema', 'it-IT': 'Costo del Sistema', 'sv-SE': 'Systemets kostnad' }),
                     valor: this.formatarMoedaComConversao(resultado.custoTotal),
-                    descricao: pt
-                        ? `Externa: ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesExternas)} | Internas: ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesInternas)}.`
-                        : `Esterna: ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesExternas)} | Interne: ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesInternas)}.`
+                    descricao: tc({
+                        'pt-BR': `Externa: ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesExternas)} | Internas: ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesInternas)}.`,
+                        'it-IT': `Esterna: ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesExternas)} | Interne: ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesInternas)}.`,
+                        'sv-SE': `Utomhusdel: ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesExternas)} | Inomhusdelar: ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesInternas)}.`
+                    })
                 }
             ],
-            dica: pt
-                ? 'Pé-direito alto e insolação forte elevam BTU. Melhor isolamento reduz consumo elétrico ao longo do tempo.'
-                : 'Altezza elevata e alta insolazione aumentano i BTU. Migliore isolamento riduce i consumi elettrici nel tempo.',
-            norma: pt ? 'Método residencial simplificado (ASHRAE / boas práticas HVAC)' : 'Metodo residenziale semplificato (ASHRAE / buone pratiche HVAC)'
+            dica: tc({
+                'pt-BR': 'Pé-direito alto e insolação forte elevam BTU. Melhor isolamento reduz consumo elétrico ao longo do tempo.',
+                'it-IT': 'Altezza elevata e alta insolazione aumentano i BTU. Migliore isolamento riduce i consumi elettrici nel tempo.',
+                'sv-SE': 'Hög takhöjd och stark solinstrålning drar upp BTU. I Sverige är kylbehovet litet — en luftvärmepump som både värmer och kyler är oftast rimligare än ren komfortkyla.'
+            }),
+            norma: tc({
+                'pt-BR': 'Método residencial simplificado (ASHRAE / boas práticas HVAC)',
+                'it-IT': 'Metodo residenziale semplificato (ASHRAE / buone pratiche HVAC)',
+                'sv-SE': 'Förenklad metod för bostäder (ASHRAE / god praxis inom HVAC), med Boverkets byggregler som ram'
+            })
         });
     }
     
@@ -878,7 +912,7 @@ class ArcondicionadoApp extends App {
         
         const fatorInsolacao = this.getFatorInsolacao(insolacao);
         const idioma = this.obterIdiomaAtual();
-        const fatorIsolamento = idioma === 'it-IT' ? 1.0 : this.getFatorIsolamento(isolamento);
+        const fatorIsolamento = this.getFatorIsolamento(isolamento);
         const fatorClasseEnergetica = resultado.fatorClasseEnergetica;
         const btuFinalTotal = resultado.btuTotal;
         const classeEnergetica = this.estado.classeEnergetica || 'D';
@@ -891,8 +925,8 @@ class ArcondicionadoApp extends App {
         
         const exemploBtuBase = document.getElementById('memorial-exemplo-btu-base');
         if (exemploBtuBase) {
-            const textoPessoas = idioma === 'pt-BR' ? 'pessoas' : 'persone';
-            const textoEquipamentos = idioma === 'pt-BR' ? 'equipamentos' : 'apparecchi';
+            const textoPessoas = i18n.porIdioma({ 'pt-BR': 'pessoas', 'it-IT': 'persone', 'sv-SE': 'personer' });
+            const textoEquipamentos = i18n.porIdioma({ 'pt-BR': 'equipamentos', 'it-IT': 'apparecchi', 'sv-SE': 'apparater' });
             exemploBtuBase.textContent = `${formatarNumero(areaTotal, 1)} m² × ${this.getBTUPorM2(isolamento)} BTU/m² × ${this.formatarDecimal(fatorAltura, 2)} = ${this.formatarBTU(btuAreaTotal)} + ${pessoas} ${textoPessoas} = ${this.formatarBTU(btuPessoasTotal)} + ${equipamentos} ${textoEquipamentos} = ${this.formatarBTU(btuEquipamentosTotal)}`;
         }
         
@@ -903,7 +937,7 @@ class ArcondicionadoApp extends App {
         
         const exemploBtuPorAmbiente = document.getElementById('memorial-exemplo-btu-por-ambiente');
         if (exemploBtuPorAmbiente) {
-            const textoAmbientes = idioma === 'pt-BR' ? 'ambientes' : 'ambienti';
+            const textoAmbientes = i18n.porIdioma({ 'pt-BR': 'ambientes', 'it-IT': 'ambienti', 'sv-SE': 'rum' });
             exemploBtuPorAmbiente.textContent = `${this.formatarBTU(btuFinalTotal)} ÷ ${numAmbientes} ${textoAmbientes} = ${this.formatarBTU(resultado.btuPorAmbiente)}`;
         }
         
@@ -929,9 +963,11 @@ class ArcondicionadoApp extends App {
                 })
                 .join(' + ');
             const modelosExternos = resultado.combinacaoExterna.map(m => this.formatarBTU(m)).join(' + ');
-            exemploModelo.textContent = idioma === 'pt-BR'
-                ? `${this.formatarBTU(resultado.btuPorAmbiente)} por ambiente → internas: ${modelosInternos}. BTU total real: ${this.formatarBTU(resultado.btuTotalReal)}. Externa: ${modelosExternos}.`
-                : `${this.formatarBTU(resultado.btuPorAmbiente)} per ambiente → interne: ${modelosInternos}. BTU totale reale: ${this.formatarBTU(resultado.btuTotalReal)}. Esterna: ${modelosExternos}.`;
+            exemploModelo.textContent = i18n.porIdioma({
+                'pt-BR': `${this.formatarBTU(resultado.btuPorAmbiente)} por ambiente → internas: ${modelosInternos}. BTU total real: ${this.formatarBTU(resultado.btuTotalReal)}. Externa: ${modelosExternos}.`,
+                'it-IT': `${this.formatarBTU(resultado.btuPorAmbiente)} per ambiente → interne: ${modelosInternos}. BTU totale reale: ${this.formatarBTU(resultado.btuTotalReal)}. Esterna: ${modelosExternos}.`,
+                'sv-SE': `${this.formatarBTU(resultado.btuPorAmbiente)} per rum → inomhusdelar: ${modelosInternos}. Verklig total BTU: ${this.formatarBTU(resultado.btuTotalReal)}. Utomhusdel: ${modelosExternos}.`
+            });
         }
         
         const resumoUnidadeInterna = document.getElementById('resumo-unidade-interna');
@@ -958,9 +994,11 @@ class ArcondicionadoApp extends App {
 
         const exemploCusto = document.getElementById('memorial-exemplo-custo');
         if (exemploCusto) {
-            exemploCusto.textContent = idioma === 'pt-BR'
-                ? `${this.formatarMoedaComConversao(resultado.custoTotalUnidadesExternas)} (externa) + ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesInternas)} (internas) = ${this.formatarMoedaComConversao(resultado.custoTotal)}`
-                : `${this.formatarMoedaComConversao(resultado.custoTotalUnidadesExternas)} (esterna) + ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesInternas)} (interne) = ${this.formatarMoedaComConversao(resultado.custoTotal)}`;
+            exemploCusto.textContent = i18n.porIdioma({
+                'pt-BR': `${this.formatarMoedaComConversao(resultado.custoTotalUnidadesExternas)} (externa) + ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesInternas)} (internas) = ${this.formatarMoedaComConversao(resultado.custoTotal)}`,
+                'it-IT': `${this.formatarMoedaComConversao(resultado.custoTotalUnidadesExternas)} (esterna) + ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesInternas)} (interne) = ${this.formatarMoedaComConversao(resultado.custoTotal)}`,
+                'sv-SE': `${this.formatarMoedaComConversao(resultado.custoTotalUnidadesExternas)} (utomhusdel) + ${this.formatarMoedaComConversao(resultado.custoTotalUnidadesInternas)} (inomhusdelar) = ${this.formatarMoedaComConversao(resultado.custoTotal)}`
+            });
         }
     }
     
@@ -975,11 +1013,8 @@ class ArcondicionadoApp extends App {
     
     formatarMoedaComConversao(valor) {
         const idioma = this.obterIdiomaAtual();
-        if (idioma === 'it-IT') {
-            return `€ ${Math.round(valor).toLocaleString('it-IT')}`;
-        } else {
-            return `R$ ${Math.round(valor).toLocaleString('pt-BR')}`;
-        }
+        const simbolo = i18n.porIdioma({ 'pt-BR': 'R$', 'it-IT': '€', 'sv-SE': 'kr' });
+        return `${simbolo} ${Math.round(valor).toLocaleString(idioma)}`;
     }
     
     formatarDecimal(valor, decimais = 1) {
