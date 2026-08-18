@@ -120,7 +120,15 @@ sempre visível** em todos os apps.
 arbetsgivaravgift, semesterlön — **sem 13º/14º**) e `mutuo` (bolån: **amorteringskrav** da
 Finansinspektionen por LTV/renda, ränteavdrag). Testes em `<app>-calc.test.js` antes do commit.
 
-**Fase 5 — Apps especiais**: `br12c` (i18n sueco + **bump do service worker**) e `lichiabonsai`.
+**Fase 5 — Apps especiais**
+- **Feito:** `br12c` — 33 chaves, bandeira sueca no seu seletor próprio, textos de tema do
+  `chrome-boot.js` convertidos de binário it/pt para mapa por idioma e **cache do service worker
+  bumpado para `br12c-guide-v6`**. Os PDFs do manual seguem em inglês, como no original.
+- **`lichiabonsai` fica FORA do sueco por ora (decisão deliberada).** A interface são só 66 chaves,
+  mas o conteúdo — diário, guia de 25 anos, calendário de 12 meses, 12 técnicas e pragas — vive nos
+  módulos `lichiabonsai-data.js` e `guia-*.js` como **333 campos `{pt, it}`**, e o acessador cai em
+  `pt` para qualquer outro idioma. Traduzir só a casca entregaria interface sueca com diário em
+  português. Enquanto isso o dock esconde a bandeira sueca lá, automaticamente.
 
 ### Riscos
 

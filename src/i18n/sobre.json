@@ -203,8 +203,8 @@
     "features": {
       "title": "Recursos Principais",
       "bilingual": {
-        "title": "🌍 Bilíngue",
-        "desc": "Troca entre Português e Italiano e exibe a moeda correspondente."
+        "title": "🌍 Trilíngue",
+        "desc": "Alterne entre Português, Italiano e Sueco e veja a moeda correspondente."
       },
       "charts": {
         "title": "📊 Gráficos",
@@ -417,8 +417,8 @@
       }
     },
     "resource-bilingual": {
-      "title": "🌍 Bilíngue",
-      "desc": "Troca entre Português e Italiano"
+      "title": "🌍 Trilíngue",
+      "desc": "Alterne entre Português, Italiano e Sueco"
     },
     "resource-charts": {
       "title": "📊 Gráficos",
@@ -445,26 +445,6 @@
       "mobile": {
         "desc": "Funciona bem em celular e computador"
       }
-    },
-    "resource-bilingual": {
-      "title": "🌍 Bilíngue",
-      "desc": "Troca entre Português e Italiano"
-    },
-    "resource-charts": {
-      "title": "📊 Gráficos",
-      "desc": "Visualização clara dos dados"
-    },
-    "resource-mobile": {
-      "title": "📱 Mobile-First",
-      "desc": "Funciona bem em celular e computador"
-    },
-    "resource-code-commented": {
-      "title": "💡 Código Comentado",
-      "desc": "Código explicado para facilitar aprendizado"
-    },
-    "resource-tested": {
-      "title": "🧪 Testado e Auditado",
-      "desc": "Cálculos críticos cobertos por suíte automatizada (Vitest) com auditoria fiscal/engenharia e regras tributárias 2026"
     },
     "titles": {
       "langPt": "Português",
@@ -716,8 +696,8 @@
     "features": {
       "title": "Caratteristiche Principali",
       "bilingual": {
-        "title": "🌍 Bilingue",
-        "desc": "Passa tra Portoghese e Italiano e visualizza la valuta corrispondente."
+        "title": "🌍 Trilingue",
+        "desc": "Passa tra Portoghese, Italiano e Svedese e visualizza la valuta corrispondente."
       },
       "charts": {
         "title": "📊 Grafici",
@@ -930,38 +910,8 @@
       }
     },
     "resource-bilingual": {
-      "title": "🌍 Bilingue",
-      "desc": "Cambia tra Portoghese e Italiano"
-    },
-    "resource-charts": {
-      "title": "📊 Grafici",
-      "desc": "Visualizzazione chiara dei dati"
-    },
-    "resource-mobile": {
-      "title": "📱 Mobile-First",
-      "desc": "Funziona bene su cellulare e computer"
-    },
-    "resource-code-commented": {
-      "title": "💡 Codice Commentato",
-      "desc": "Codice spiegato per facilitare l'apprendimento"
-    },
-    "resource-tested": {
-      "title": "🧪 Testato e Verificato",
-      "desc": "Calcoli critici coperti da suite automatizzata (Vitest) con audit fiscale/ingegneristico e regole fiscali 2026"
-    },
-    "tech": {
-      "title": "Tecnologie Utilizzate",
-      "html": "Struttura delle pagine",
-      "css": "Stili e animazioni",
-      "js": "JavaScript modulare, moderno e performante",
-      "chart": "Grafici interattivi",
-      "mobile": {
-        "desc": "Funziona perfettamente su cellulare e computer"
-      }
-    },
-    "resource-bilingual": {
-      "title": "🌍 Bilingue",
-      "desc": "Passa tra Portoghese e Italiano"
+      "title": "🌍 Trilingue",
+      "desc": "Passa tra Portoghese, Italiano e Svedese"
     },
     "resource-charts": {
       "title": "📊 Grafici",
@@ -978,6 +928,16 @@
     "resource-tested": {
       "title": "🧪 Testato e Verificato",
       "desc": "Calcoli critici coperti da suite automatizzata (Vitest) con audit fiscale/ingegneristico e regole fiscali 2026"
+    },
+    "tech": {
+      "title": "Tecnologie Utilizzate",
+      "html": "Struttura delle pagine",
+      "css": "Stili e animazioni",
+      "js": "JavaScript modulare, moderno e performante",
+      "chart": "Grafici interattivi",
+      "mobile": {
+        "desc": "Funziona perfettamente su cellulare e computer"
+      }
     },
     "titles": {
       "langPt": "Portoghese",
@@ -1024,6 +984,499 @@
       "expandCard": "Espandi sezione",
       "collapseCard": "Comprimi sezione",
       "contato": "Invia un'e-mail a nata@engnata.eu"
+    }
+  },
+  "sv-SE": {
+    "page": {
+      "title": "Om projektet",
+      "subtitle": "Teknisk portfölj av webbappar",
+      "titleFull": "📱 Om projektet — Engenharia NATA"
+    },
+    "overview": {
+      "title": "Översikt",
+      "description": "Portfölj av praktiska verktyg för teknik, energi och ekonomi, med pedagogisk ansats och användning direkt i webbläsaren, utan installation."
+    },
+    "apps": {
+      "patentenautica": {
+        "name": "Båtförarbevis",
+        "desc": "Tvåspråkig app med ministeriets frågor och interaktivt sjökort 5/D"
+      },
+      "br12c": {
+        "name": "BR 12C Niobium",
+        "desc": "Emulator av finansräknaren HP 12C Platinum (RPN), för ekonomi och investeringskalkyl"
+      },
+      "mutuo": {
+        "name": "Lån",
+        "desc": "Jämför amorteringsformer och ger tydligare underlag för ekonomiska beslut"
+      },
+      "iluminacao": {
+        "name": "Belysning i bostäder",
+        "desc": "Dimensionerar lamporna och räknar ut energikostnaden för ditt rum"
+      },
+      "helice": {
+        "name": "Propeller",
+        "desc": "Hjälper till att välja propeller utifrån prestanda och verkliga körförhållanden"
+      },
+      "solar": {
+        "name": "Solenergi",
+        "desc": "Dimensionerar fristående solcellssystem med teknisk och ekonomisk omsorg"
+      },
+      "bitola": {
+        "name": "Kabelarea",
+        "desc": "Räknar ut rätt ledararea för din installation på ett säkert sätt"
+      },
+      "arcondicionado": {
+        "name": "Luftkonditionering",
+        "desc": "Dimensionerar värmelaster och föreslår lösningar för flera rum"
+      },
+      "aquecimento": {
+        "name": "Solvärme",
+        "desc": "Dimensionerar solvärme för tappvatten och rumsvärme med energikriterier"
+      },
+      "fazenda": {
+        "name": "Gård",
+        "desc": "Planerar självförsörjande livsmedelsproduktion med tekniska data och arbetskalender"
+      },
+      "chuva": {
+        "name": "Regn",
+        "desc": "Räknar ut uppsamling av regnvatten, tankstorlek och månadsbesparing"
+      },
+      "bombaagua": {
+        "name": "Vattenpump",
+        "desc": "Uppskattar förluster, pumpeffekt och rekommenderad storleksklass"
+      },
+      "sobre": {
+        "name": "Om projektet",
+        "desc": "Information om projektet"
+      },
+      "bugs": {
+        "name": "Rapportera fel",
+        "desc": "Direkt kanal för att rapportera problem och föreslå förbättringar"
+      },
+      "ventilacao": {
+        "name": "Naturlig ventilation",
+        "desc": "Räknar ut luftomsättning (ACH), luftkvalitet och minsta ventilationsarea (Boverkets byggregler)"
+      },
+      "salario": {
+        "name": "Nettolön",
+        "desc": "Tvåspråkig lönekalkylator Brasilien/Italien med beräkningsredovisning och diagram"
+      },
+      "previsao": {
+        "name": "Prognos 7 dagar",
+        "desc": "Sjudagarsprognos (Open-Meteo) med diagram för temperatur, vind i m/s och regn"
+      }
+    },
+    "br12c": {
+      "description": "Emulator av finansräknaren HP 12C Platinum, trogen originalet, direkt i webbläsaren och med stöd för offline — bra för ekonomi, investeringskalkyl och studier.",
+      "features": {
+        "rpn": {
+          "title": "RPN och algebraiskt läge",
+          "desc": "Fungerar i RPN (omvänd polsk notation) och i algebraiskt läge, som originalets HP 12C, med stack i fyra register (T, Z, Y, X)."
+        },
+        "financeiras": {
+          "title": "Finansiella funktioner",
+          "desc": "Pengars tidsvärde (n, i, PV, PMT, FV), ränta på ränta, amortering och kassaflöden med NPV och IRR."
+        },
+        "estatistica": {
+          "title": "Statistik, datum och mer",
+          "desc": "Regression och medelvärden, datumberäkningar (kalender och dagar mellan datum), amortering och obligationsfunktioner."
+        },
+        "skin": {
+          "title": "Trogen kopia och offline",
+          "desc": "Visuell kopia av HP 12C Platinum som fungerar offline, med bevarat minne mellan sessionerna."
+        },
+        "guia": {
+          "title": "Guide och tester",
+          "desc": "Innehåller användarguiden (PDF-manual) och ett testsystem som validerar beräkningarna mot manualen."
+        }
+      }
+    },
+    "patentenautica": {
+      "description": "Studieapp med offline-stöd för det italienska båtförarbeviset inom 12 sjömil med motor, med ministeriets frågebank och interaktivt sjökort 5/D, med den officiella italienska texten bevarad.",
+      "open": "Öppna Rotta 12 →",
+      "features": {
+        "quiz": {
+          "title": "Ministeriets frågebank",
+          "desc": "1 472 BASE-frågor alltid synliga, kombinerbara filter, slumpade quiz och exporterbara lokala framsteg."
+        },
+        "language": {
+          "title": "Studier IT ⇄ PT",
+          "desc": "Lägena IT, PT och sida vid sida, utan omladdning av sidan och med sökning på båda språken."
+        },
+        "chart": {
+          "title": "Sjökortsarbete",
+          "desc": "Sjökort 5/D med zoom, 28 georefererade punkter samt avgång, ankomst och kurs i de 50 övningarna."
+        },
+        "glossary": {
+          "title": "Nautisk ordlista",
+          "desc": "Italiensk terminologi och nautiska motsvarigheter på brasiliansk portugisiska, alltid tillgängliga."
+        }
+      }
+    },
+    "what": {
+      "it": {
+        "does": "Vad den gör:"
+      }
+    },
+    "calculator": {
+      "description": "Jämför lån och visar delbetalningar så att du kan spara."
+    },
+    "arcondicionado": {
+      "description": "Räknar ut rätt luftkonditionering för dina rum."
+    },
+    "aquecimento": {
+      "description": "Planerar ditt solvärmesystem och sparar energi."
+    },
+    "solar": {
+      "description": "Dimensionerar solpaneler så att du kan producera din egen el."
+    },
+    "fazenda": {
+      "description": "Planerar din självförsörjande gård för egen produktion."
+    },
+    "bombaagua": {
+      "description": "Räknar ut vilken vattenpump som behövs i mindre anläggningar och uppskattar förluster, effekt och timförbrukning."
+    },
+    "app": {
+      "patentenautica": "Båtförarbevis — Rotta 12",
+      "br12c": "BR 12C Niobium — finansräknare",
+      "bitola": "Kalkylator för kabelarea",
+      "helice": "Propellerkalkylator för båt",
+      "mutuo": "Lånekalkylator",
+      "bugs": "System för felrapportering",
+      "arcondicionado": "Kalkylator för luftkonditionering",
+      "aquecimento": "Kalkylator för solvärme",
+      "solar": "Kalkylator för solenergi",
+      "fazenda": "Gårdsplanerare",
+      "bombaagua": "Kalkylator för vattenpump",
+      "chuva": "Uppsamling av regnvatten",
+      "iluminacao": "Belysningskalkylator",
+      "previsao": "Väderprognos",
+      "salario": "Lönekalkylator",
+      "ventilacao": "Naturlig ventilation"
+    },
+    "bitola": {
+      "description": "Räknar ut rätt ledararea för din installation, undviker överhettning och ger säkerhet."
+    },
+    "helice": {
+      "description": "Hjälper dig välja rätt propeller till din båt."
+    },
+    "mutuo": {
+      "description": "Räknar ut och jämför amorteringsformer (rak amortering, annuitet och stående lån) för bästa ekonomiska beslut."
+    },
+    "bugs": {
+      "description": "Kanal för att rapportera problem, skicka förslag och bidra till att apparna blir bättre."
+    },
+    "chuva": {
+      "description": "Dimensionerar tankar för uppsamling av regnvatten och räknar ut uppsamlad volym och månadsbesparing, med nederbörd enligt SMHI."
+    },
+    "iluminacao": {
+      "description": "Dimensionerar lamporna för varje rum och räknar ut förbrukning och elkostnad enligt SS-EN 12464-1."
+    },
+    "previsao": {
+      "description": "Sjudagarsprognos med timvisa data för temperatur, vind i m/s och regn via Open-Meteo (utan API-nyckel)."
+    },
+    "salario": {
+      "description": "Räknar ut nettolön för Brasilien (CLT) och Italien (IRPEF/INPS) med utförlig redovisning och diagram."
+    },
+    "ventilacao": {
+      "description": "Räknar ut luftomsättning (ACH) och minsta area för naturlig ventilation enligt Boverkets byggregler."
+    },
+    "stat": {
+      "html": "rader HTML",
+      "js": "rader JavaScript",
+      "css": "rader CSS"
+    },
+    "features": {
+      "title": "Viktigaste egenskaperna",
+      "bilingual": {
+        "title": "🌍 Trespråkig",
+        "desc": "Växla mellan portugisiska, italienska och svenska och se motsvarande valuta."
+      },
+      "charts": {
+        "title": "📊 Diagram",
+        "desc": "Tydlig visning av data"
+      },
+      "mobile": {
+        "title": "📱 Mobile-first",
+        "desc": "Fungerar lika bra i mobilen som på datorn"
+      },
+      "code": {
+        "title": "💡 Kommenterad kod",
+        "desc": "Väldokumenterad kod som gör det lättare att lära sig"
+      },
+      "responsive": {
+        "title": "Responsiv",
+        "desc": "Anpassad för mobil och dator"
+      },
+      "fast": {
+        "title": "Snabb",
+        "desc": "Omedelbara beräkningar när värdena ändras"
+      },
+      "cc-ca": {
+        "title": "Lik- och växelström",
+        "desc": "Stödjer likström och växelström med typiska spänningar och egna värden."
+      },
+      "bitola-comercial": {
+        "title": "Standardarea",
+        "desc": "Väljer automatiskt närmaste standardarea som uppfyller kraven i SS 436 40 00."
+      },
+      "queda-tensao": {
+        "title": "Spänningsfall",
+        "desc": "Rekommenderar 4 % spänningsfall för bostäder, riktvärdet i SS 436 40 00."
+      },
+      "memorial": {
+        "title": "Beräkningsredovisning",
+        "desc": "Visar alla utförda beräkningar i detalj, för insyn och lärande."
+      },
+      "pitch": {
+        "title": "Beräkning av stigning",
+        "desc": "Bestämmer rätt stigning för att nå maximalt varvtal"
+      },
+      "slip": {
+        "title": "Slipanalys",
+        "desc": "Tar hänsyn till verkningsgrad och slip i vattnet"
+      },
+      "bug-report": {
+        "title": "Felrapportering",
+        "desc": "Grundläggande formulär för att registrera fel och användbarhetsproblem"
+      },
+      "contact-info": {
+        "title": "Kontaktuppgifter",
+        "desc": "Frivilliga fält för att få personligt svar på varje rapport"
+      },
+      "issue-type": {
+        "title": "Typ av problem",
+        "desc": "Indelning av problemet: fel, förslag eller förbättring"
+      },
+      "analytics": {
+        "title": "Analys",
+        "desc": "Användbara rapporter för att prioritera rättningar och höja kvaliteten"
+      },
+      "btu": {
+        "title": "BTU-beräkning",
+        "desc": "Räknar ut nödvändiga BTU utifrån rummets mått och omgivningens förhållanden"
+      },
+      "multisplit": {
+        "title": "Multisplitsystem",
+        "desc": "Dimensionerar multisplitsystem med flera inomhusdelar (1–8 rum) och utomhusdelar, med möjlighet till flera enheter vid behov"
+      },
+      "custo": {
+        "title": "Uppskattad kostnad",
+        "desc": "Räknar ut systemets uppskattade kostnad utifrån marknadens prisintervall för inomhus- och utomhusdelar"
+      },
+      "fatores": {
+        "title": "Flera faktorer",
+        "desc": "Tar hänsyn till total yta (10–300 m²), antal rum (1–8), takhöjd, personer, utrustning, solinstrålning och värmeisolering"
+      },
+      "agua-casa": {
+        "title": "Vatten och hus",
+        "desc": "Klarar tappvarmvatten och rumsvärme var för sig eller tillsammans"
+      },
+      "classe-energetica": {
+        "title": "Energiklass",
+        "desc": "Räknar utifrån yta (m²) och energiklasser (A4 till G) med verklig specifik förbrukning i kWh/m²·år"
+      },
+      "temperatura": {
+        "title": "Temperatur och skiktning",
+        "desc": "Tar hänsyn till lägsta temperatur för radiatorer (48 °C) och ackumulatortankens temperaturskiktning (65 % av nyttig volym)"
+      },
+      "autonomia": {
+        "title": "Dagars autonomi",
+        "desc": "Ställ in antal dagars autonomi för vatten och hus, så att tanken dimensioneras rätt"
+      },
+      "battery": {
+        "title": "Batterier AGM/litium",
+        "desc": "Jämför blysyra och LiFePO₄ med kapacitet i <strong>kWh</strong>, livslängdstabeller och inställbara parametrar.",
+        "note": "I inställningarna kan du justera kWh/Ah, spänning, pris och vikt (reglage upp till 180 kg)."
+      },
+      "config": {
+        "title": "Inställbar",
+        "desc": "Anpassa priser, effekter och batteridata — ändringarna sparas i `localStorage` (nyckeln `configSolar`)."
+      },
+      "inverter-mppt": {
+        "title": "Växelriktare och MPPT",
+        "desc": "Dimensionerar växelriktaren utifrån typisk toppförbrukning och MPPT-regulatorn med kapacitet att ladda hela batteribanken och klara toppen från alla paneler."
+      },
+      "plantas": {
+        "title": "Växter och djur",
+        "desc": "Val av frukt, grönsaker, baljväxter och djur med proportionell beräkning av minsta produktion"
+      },
+      "producao-minima": {
+        "title": "Minsta produktion",
+        "desc": "Reglage för att ange minsta dygnsproduktion av växter och protein per person"
+      },
+      "calendario": {
+        "title": "Kalender",
+        "desc": "Fullständig kalender för sådd, skörd och djurens reproduktion, för att hålla produktionen igång"
+      },
+      "espaco": {
+        "title": "Dimensionering",
+        "desc": "Räknar ut nödvändig yta, antal växter/djur och dygnsförbrukning per person"
+      },
+      "altura-vazao": {
+        "title": "Uppfordringshöjd och flöde",
+        "desc": "Kopplar ihop höjd, längd och flöde för att uppskatta anläggningens hydrauliska last."
+      },
+      "darcy": {
+        "title": "Tryckförluster",
+        "desc": "Tillämpar Darcy–Weisbach med antagandet släta rör av PVC-typ för linjära förluster och kopplingar."
+      },
+      "faixa-bomba": {
+        "title": "Storleksklass",
+        "desc": "Omsätter den beräknade effekten till en rekommenderad klass, för att göra pumpvalet enklare."
+      },
+      "energia-bomba": {
+        "title": "Timförbrukning",
+        "desc": "Visar förbrukningen per timme och hur diameter och förluster påverkar den effekt som krävs."
+      },
+      "regional": {
+        "title": "Regional databas",
+        "desc": "Detaljerad teknisk information för Brasilien och Italien (klimat, jord, metoder)"
+      },
+      "captacao": {
+        "title": "Uppsamling av regn",
+        "desc": "Räknar ut uppsamlad volym utifrån takets yta, avrinningskoefficient och lokal månadsnederbörd"
+      },
+      "cisterna": {
+        "title": "Tank",
+        "desc": "Dimensionerar tankens lämpliga volym för att täcka den valda användningen"
+      },
+      "economia-chuva": {
+        "title": "Månadsbesparing",
+        "desc": "Uppskattar besparingen på vattenräkningen utifrån tänkt användning (trädgård, toaletter, städning)"
+      },
+      "lux": {
+        "title": "Belysningsstyrka (lux)",
+        "desc": "Räknar ut lägsta och rekommenderad belysningsstyrka per typ av rum och aktivitet enligt SS-EN 12464-1"
+      },
+      "tipos-lampada": {
+        "title": "Lamptyper",
+        "desc": "Jämför LED, lysrör och glödlampa med verkningsgrad och inställbar effekt"
+      },
+      "custo-energia": {
+        "title": "Energikostnad",
+        "desc": "Uppskattar månadsförbrukningen i kWh och kostnaden utifrån inställbart elpris"
+      },
+      "matriz-lampadas": {
+        "title": "Matris per rum",
+        "desc": "Tabell över hur många lampor av varje effekt som behövs per rum i bostäder med flera rum"
+      },
+      "previsao-api": {
+        "title": "Open-Meteo API",
+        "desc": "Kostnadsfria data, utan API-nyckel, med automatisk uppdatering i 7 dagar"
+      },
+      "temp-horaria": {
+        "title": "Timvis temperatur",
+        "desc": "Sparkline-diagram per dag med tröskeln 24 °C och markerade regnperioder"
+      },
+      "chuva-previsao": {
+        "title": "Regn i mm",
+        "desc": "Sannolikhet och nederbördsmängd per timme, med de betydande händelserna markerade"
+      },
+      "cidades-previsao": {
+        "title": "4 städer",
+        "desc": "Upp till fyra städer som väljs via sökning — byte med ett klick och stadens lokala tid"
+      },
+      "br-clt": {
+        "title": "Brasilien — CLT",
+        "desc": "INSS, IRRF, FGTS, trettonde månadslön, semester och slutlön enligt tabellerna 2025–2026"
+      },
+      "it-irpef": {
+        "title": "Italien — IRPEF",
+        "desc": "IRPEF i tre skikt, INPS, regionala tillägg, TFR och trettonde månadslön"
+      },
+      "graficos-salario": {
+        "title": "Diagram över uppdelningen",
+        "desc": "Visar netto, avdrag och total årsinkomst i ett interaktivt stapeldiagram"
+      },
+      "ach": {
+        "title": "ACH — luftomsättning",
+        "desc": "Räknar ut luftomsättningen per timme utifrån rummets mått, fönsterarea och antal personer"
+      },
+      "nbr15575": {
+        "title": "Boverkets byggregler",
+        "desc": "Kontrollerar uteluftsflödet och minsta ventilationsarea mot de svenska byggreglerna"
+      },
+      "qualidade-ventilacao": {
+        "title": "Ventilationens kvalitet",
+        "desc": "Kvalitativt resultat (otillräcklig / godtagbar / utmärkt) med praktiska råd"
+      }
+    },
+    "resource-bilingual": {
+      "title": "🌍 Trespråkig",
+      "desc": "Växla mellan portugisiska, italienska och svenska"
+    },
+    "resource-charts": {
+      "title": "📊 Diagram",
+      "desc": "Tydlig visning av data"
+    },
+    "resource-mobile": {
+      "title": "📱 Mobile-first",
+      "desc": "Fungerar lika bra i mobilen som på datorn"
+    },
+    "resource-code-commented": {
+      "title": "💡 Kommenterad kod",
+      "desc": "Väldokumenterad kod som gör det lättare att lära sig"
+    },
+    "resource-tested": {
+      "title": "🧪 Testad och verifierad",
+      "desc": "Kritiska beräkningar täcks av en automatiserad testsvit (Vitest), med skatte- och ingenjörsgranskning och skatteregler för 2026"
+    },
+    "tech": {
+      "title": "Använd teknik",
+      "html": "Sidornas struktur",
+      "css": "Stilar och animationer",
+      "js": "Modulär, modern och snabb JavaScript",
+      "chart": "Interaktiva diagram",
+      "mobile": {
+        "desc": "Fungerar lika bra i mobilen som på datorn"
+      }
+    },
+    "titles": {
+      "langPt": "Portugisiska",
+      "langIt": "Italienska"
+    },
+    "footer": {
+      "text": "💻 Portfölj Engenharia NATA"
+    },
+    "canal": {
+      "title": "Kanalen Eng. NATA",
+      "disclosure": "Eng. NATA är en animerad figur skapad med AI. Beräkningar, källor och slutsatser är gjorda och kontrollerade av människor.",
+      "what": "Kanal med korta videor (YouTube Shorts, TikTok, Instagram Reels) på PT-BR och IT. Varje avsnitt på 60–90 sekunder utgår från en verklig situation och visar tekniken bakom, med de bilder ingenjörer faktiskt använder. Alla videor leder till en kalkylator på engnata.eu.",
+      "prod": {
+        "mascot": {
+          "title": "Figuren",
+          "desc": "Skapad med AI (Midjourney / Flux). Presenteras aldrig som en verklig person."
+        },
+        "voice": {
+          "title": "Rösten",
+          "desc": "AI-syntetiserad röst (ElevenLabs), på PT-BR och IT, med fast röst-ID per språk."
+        },
+        "script": {
+          "title": "Manus",
+          "desc": "Skrivet och granskat av en människa. Publiceras aldrig utan uttryckligt mänskligt godkännande."
+        },
+        "calcs": {
+          "title": "Beräkningar och källor",
+          "desc": "Kontrollerade av en människa före publicering. Varje video har ett källblock med standarden eller källan bakom varje siffra."
+        },
+        "diagrams": {
+          "title": "Diagram",
+          "desc": "Genererade ur kod (D3.js / Matplotlib) från manusets data. Konsekventa och reproducerbara."
+        },
+        "accuracy": {
+          "title": "Rättelser",
+          "desc": "Räknefel rättas inom 48 timmar med en fäst kommentar. Betydande fel får en egen rättelsevideo."
+        }
+      }
+    },
+    "aria": {
+      "langPt": "Byt språk till portugisiska",
+      "langIt": "Byt språk till italienska",
+      "home": "Tillbaka till startsidan",
+      "expandCard": "Expandera avsnittet",
+      "collapseCard": "Fäll ihop avsnittet",
+      "contato": "Skicka e-post till nata@engnata.eu"
     }
   }
 }
