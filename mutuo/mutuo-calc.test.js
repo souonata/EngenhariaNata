@@ -3,7 +3,10 @@ import {
     converterTaxaParaMensal,
     calcularPMT,
     calcularAmortizacao,
-    totalizarTabela
+    totalizarTabela,
+    calcularAmorteringskrav,
+    calcularRanteavdrag,
+    calcularBolan
 } from './mutuo-calc.js';
 
 const aprox = (n, casas = 2) => Number(n.toFixed(casas));
@@ -286,5 +289,76 @@ describe('Edge cases', () => {
     it('sistema desconhecido retorna tabela vazia (defesa)', () => {
         const tab = calcularAmortizacao({ valor: 1000, taxaMensal: 0.01, numParcelas: 12, sistema: 'inexistente' });
         expect(tab).toEqual([]);
+    });
+});
+
+// ============================================
+// SUÉCIA — bolån (Finansinspektionen, regras de 1/4/2026)
+// ============================================
+
+describe('Suécia — amorteringskrav', () => {
+    it('não exige amortização até 50% de belåningsgrad', () => {
+        expect(calcularAmorteringskrav(0.45)).toBe(0);
+    });
+
+    it('exige 1% ao ano entre 50% e 70%', () => {
+        expect(calcularAmorteringskrav(0.60)).toBeCloseTo(0.01, 6);
+    });
+
+    it('exige 2% ao ano acima de 70%', () => {
+        expect(calcularAmorteringskrav(0.85)).toBeCloseTo(0.02, 6);
+    });
+
+    it('nunca passa do teto de 3% ao ano', () => {
+        expect(calcularAmorteringskrav(0.95)).toBeLessThanOrEqual(0.03);
+    });
+});
+
+describe('Suécia — ränteavdrag', () => {
+    it('deduz 30% até 100.000 kr de juros', () => {
+        expect(calcularRanteavdrag(80000)).toBeCloseTo(24000, 2);
+    });
+
+    it('deduz 21% na parte acima de 100.000 kr', () => {
+        // 100.000 × 30% + 50.000 × 21% = 30.000 + 10.500
+        expect(calcularRanteavdrag(150000)).toBeCloseTo(40500, 2);
+    });
+
+    it('não deduz nada sem garantia real — regra nova de 2026', () => {
+        expect(calcularRanteavdrag(50000, false)).toBe(0);
+    });
+});
+
+describe('Suécia — bolån', () => {
+    it('aceita entrada de 10%: o bolånetak subiu para 90% em 2026', () => {
+        const r = calcularBolan({ valorImovel: 4000000, entrada: 400000, taxaJurosAnual: 4 });
+        expect(r.belaningsgrad).toBeCloseTo(0.9, 6);
+        expect(r.dentroDoBolanetak).toBe(true);
+        expect(r.entradaMinima).toBeCloseTo(400000, 2);
+    });
+
+    it('recusa acima de 90% do valor do imóvel', () => {
+        const r = calcularBolan({ valorImovel: 4000000, entrada: 200000, taxaJurosAnual: 4 });
+        expect(r.dentroDoBolanetak).toBe(false);
+    });
+
+    it('não aplica mais o skärpt amorteringskrav, revogado em 2026', () => {
+        // Dívida de 3,6 M passaria de 4,5× uma renda modesta e, pela regra
+        // ANTIGA, levaria 1% extra. Agora depende só da belåningsgrad: 90% → 2%.
+        const r = calcularBolan({ valorImovel: 4000000, entrada: 400000, taxaJurosAnual: 4 });
+        expect(r.taxaAmortizacao).toBeCloseTo(0.02, 6);
+        expect(r.skarptAmorteringskravRevogado).toBe(true);
+    });
+
+    it('o ränteavdrag reduz o custo mensal efetivo', () => {
+        const r = calcularBolan({ valorImovel: 3000000, entrada: 900000, taxaJurosAnual: 4 });
+        expect(r.custoMensalLiquido).toBeLessThan(r.custoMensalBruto);
+        expect(r.jurosLiquidos).toBeCloseTo(r.jurosAnuais - r.ranteavdrag, 6);
+    });
+
+    it('belåningsgrad menor reduz a amortização exigida', () => {
+        const alta = calcularBolan({ valorImovel: 3000000, entrada: 300000, taxaJurosAnual: 4 });
+        const baixa = calcularBolan({ valorImovel: 3000000, entrada: 1500000, taxaJurosAnual: 4 });
+        expect(baixa.taxaAmortizacao).toBeLessThan(alta.taxaAmortizacao);
     });
 });

@@ -18,8 +18,13 @@ import {
     calcularDetrazioneFamiliari,
     calcularIRPEFMarginal,
     calcularIT,
-    obterMensilitaIT
+    obterMensilitaIT,
+    calcularSE
 } from './salario-calc.js';
+import {
+    calcularGrundavdrag,
+    calcularJobbskatteavdrag
+} from '../src/data/parametros-suecia.js';
 
 const aprox = (n, casas = 2) => Number(n.toFixed(casas));
 
@@ -448,5 +453,98 @@ describe('Trattamento integrativo italiano — taper 15k–28k', () => {
         // RAL 8000 → INPS ≈ 735 → imponibile ≈ 7265 → IRPEF lorda ≈ 1671 < 1955 (detr)
         const r = rodar(8000);
         expect(r.trattamentoIntegrativo).toBe(0);
+    });
+});
+
+// ============================================
+// SUÉCIA — modelo fiscal 2026
+// ============================================
+
+describe('Suécia — grundavdrag', () => {
+    // Os três pontos publicados pelo Skatteverket para 2026. Se um falhar,
+    // os coeficientes em PBB saíram do lugar.
+    it('vale ~25.042 kr nas rendas baixas (0,423 PBB)', () => {
+        expect(calcularGrundavdrag(50000)).toBeCloseTo(25041.6, 0);
+    });
+
+    it('atinge o teto de ~45.584 kr na faixa intermediária (0,77 PBB)', () => {
+        expect(calcularGrundavdrag(170000)).toBeCloseTo(45584, 0);
+    });
+
+    it('cai ao piso de ~17.346 kr nas rendas altas (0,293 PBB)', () => {
+        expect(calcularGrundavdrag(800000)).toBeCloseTo(17345.6, 0);
+    });
+
+    it('sobe até o teto e depois desce', () => {
+        const baixa = calcularGrundavdrag(60000);
+        const teto = calcularGrundavdrag(170000);
+        const alta = calcularGrundavdrag(500000);
+        expect(teto).toBeGreaterThan(baixa);
+        expect(teto).toBeGreaterThan(alta);
+    });
+});
+
+describe('Suécia — jobbskatteavdrag', () => {
+    it('chega a ~4.388 kr/mês no platô, com a kommunalskatt média', () => {
+        // Máximo publicado para 2026: 4.366–4.388 kr/mês conforme o município.
+        const anual = calcularJobbskatteavdrag(600000, 0.3238);
+        expect(anual / 12).toBeCloseTo(4388, 0);
+    });
+
+    it('não cai mais nas rendas altas — a avtrappning acabou em 2026', () => {
+        const noPlato = calcularJobbskatteavdrag(478336, 0.3238);
+        const bemAcima = calcularJobbskatteavdrag(2000000, 0.3238);
+        expect(bemAcima).toBeCloseTo(noPlato, 6);
+    });
+
+    it('vale mais em município de imposto mais alto', () => {
+        expect(calcularJobbskatteavdrag(500000, 0.35))
+            .toBeGreaterThan(calcularJobbskatteavdrag(500000, 0.29));
+    });
+});
+
+describe('Suécia — cálculo salarial', () => {
+    const rodar = (bruto, extra = {}) =>
+        calcularSE({ bruto, meses: 12, plano: 0, outros: 0, dependentes: 0, ...extra });
+
+    it('não gera 13ª nem 14ª — não existem na Suécia', () => {
+        const r = rodar(40000);
+        expect(r.temDecimoTerceiro).toBe(false);
+        expect(r.decimoBruto).toBe(0);
+        expect(r.decimoLiquido).toBe(0);
+    });
+
+    it('usa semesterlön de 12% no lugar do mês extra', () => {
+        expect(rodar(40000).semesterlonAnual).toBeCloseTo(40000 * 12 * 0.12, 2);
+    });
+
+    it('só cobra statlig skatt acima da skiktgräns', () => {
+        expect(rodar(40000).statligSkattAnual).toBe(0);
+        expect(rodar(70000).statligSkattAnual).toBeGreaterThan(0);
+    });
+
+    it('o jobbskatteavdrag nunca ultrapassa a kommunalskatt devida', () => {
+        const r = rodar(5000);
+        expect(r.jobbskatteavdragAnual).toBeLessThanOrEqual(r.kommunalskattAnual);
+    });
+
+    it('a arbetsgivaravgift é encargo do empregador, fora do líquido', () => {
+        const r = rodar(40000);
+        expect(r.arbetsgivaravgiftMensal).toBeCloseTo(40000 * 0.3142, 2);
+        expect(r.custoEmpresa).toBeCloseTo(40000 * 1.3142, 2);
+        expect(r.liquido).toBeCloseTo(40000 - r.impostoMensal, 6);
+    });
+
+    it('aceita a alíquota do município do usuário', () => {
+        expect(rodar(40000, { kommunalskatt: 0.35 }).liquido)
+            .toBeLessThan(rodar(40000).liquido);
+    });
+
+    it('produz alíquota efetiva plausível num salário mediano', () => {
+        // ~37.000 kr/mês é perto da mediana sueca; a carga efetiva costuma
+        // ficar na casa dos 20 e poucos por cento depois do jobbskatteavdrag.
+        const r = rodar(37000);
+        expect(r.aliqEfetiva).toBeGreaterThan(15);
+        expect(r.aliqEfetiva).toBeLessThan(30);
     });
 });

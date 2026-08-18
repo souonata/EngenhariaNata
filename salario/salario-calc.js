@@ -15,6 +15,19 @@
  * - cada constante numérica deve ter comentário com ano vigente e fonte oficial.
  */
 
+// Parâmetros suecos: valores e fórmulas ficam num módulo próprio, com a URL e
+// a data de consulta em cada constante (mudam por ano fiscal).
+import {
+    KOMMUNALSKATT_MEDIA_2026,
+    SKIKTGRANS_2026,
+    STATLIG_SKATT_TAXA,
+    ARBETSGIVARAVGIFT_2026,
+    SEMESTERLON_TAXA,
+    TEM_DECIMO_TERCEIRO,
+    calcularGrundavdrag,
+    calcularJobbskatteavdrag
+} from '../src/data/parametros-suecia.js';
+
 // ============================================
 // CONSTANTES — BRASIL (Tabelas 2026)
 // ============================================
@@ -357,5 +370,84 @@ export function calcularIT(v) {
         rescisao: liquidazione, custoEmpresa, rendaAnual,
         regione: v.regione, meses: v.meses, dependentes: v.dependentes,
         tfrDestino: v.tfrDestino, mensilita
+    };
+}
+
+// ============================================
+// FUNÇÕES DE CÁLCULO — SUÉCIA (ano fiscal 2026)
+// ============================================
+// Parâmetros e fórmulas ficam em src/data/parametros-suecia.js, com URL e data
+// de consulta em cada número. O modelo sueco é estruturalmente diferente:
+//  - não existe 13ª nem 14ª; o equivalente é a semesterlön de 12%;
+//  - o grundavdrag varia com a renda numa curva que sobe, chega a um teto e cai;
+//  - o jobbskatteavdrag abate SÓ a kommunalskatt, nunca a statlig skatt;
+//  - a arbetsgivaravgift é encargo do EMPREGADOR: não sai do líquido, mas
+//    compõe o custo da contratação.
+
+export function calcularSE(v) {
+    const bruto = v.bruto;                 // månadslön bruta
+    const meses = v.meses;
+    const rendaBrutaAnual = bruto * 12;
+
+    // Alíquota do kommun do usuário; na falta, a média nacional. São 290
+    // municípios e a diferença entre eles passa de 5 pontos percentuais.
+    const kommunalskatt = v.kommunalskatt ?? KOMMUNALSKATT_MEDIA_2026;
+
+    const grundavdrag = calcularGrundavdrag(rendaBrutaAnual);
+    const baseTributavel = Math.max(0, rendaBrutaAnual - grundavdrag);
+
+    const kommunalskattAnual = baseTributavel * kommunalskatt;
+
+    // Statlig inkomstskatt: 20% só sobre o que passa da skiktgräns.
+    const statligSkattAnual =
+        Math.max(0, baseTributavel - SKIKTGRANS_2026) * STATLIG_SKATT_TAXA;
+
+    // O jobbskatteavdrag nunca ultrapassa a kommunalskatt devida.
+    const jobbskatteavdragAnual = Math.min(
+        calcularJobbskatteavdrag(rendaBrutaAnual, kommunalskatt),
+        kommunalskattAnual
+    );
+
+    const impostoAnual = kommunalskattAnual + statligSkattAnual - jobbskatteavdragAnual;
+    const impostoMensal = impostoAnual / 12;
+
+    const plano = v.plano;
+    const outros = v.outros;
+    const totalDescontos = impostoMensal + plano + outros;
+    const liquido = bruto - totalDescontos;
+
+    // Semesterlön pelo método percentual da semesterlagen: 12% sobre o salário
+    // do ano de referência. É o análogo funcional das férias e o mais próximo
+    // que a Suécia tem de um "mês extra".
+    const semesterlonAnual = rendaBrutaAnual * SEMESTERLON_TAXA;
+    const semesterlonLiquida = semesterlonAnual * (bruto > 0 ? liquido / bruto : 0);
+
+    // Encargo do empregador — não desconta do trabalhador.
+    const arbetsgivaravgiftMensal = bruto * ARBETSGIVARAVGIFT_2026;
+    const arbetsgivaravgiftAcumulada = arbetsgivaravgiftMensal * meses;
+    const custoEmpresa = bruto + arbetsgivaravgiftMensal;
+
+    const rendaAnual = liquido * 12 + semesterlonLiquida;
+    const aliqEfetiva = bruto > 0 ? (totalDescontos / bruto) * 100 : 0;
+
+    return {
+        pais: 'se',
+        bruto, plano, outros,
+        rendaBrutaAnual, kommunalskatt, grundavdrag, baseTributavel,
+        kommunalskattAnual, statligSkattAnual, jobbskatteavdragAnual,
+        impostoAnual, impostoMensal,
+        totalDescontos, liquido, aliqEfetiva,
+        semesterlonAnual, semesterlonLiquida,
+        arbetsgivaravgiftMensal, arbetsgivaravgiftAcumulada,
+        custoEmpresa, rendaAnual,
+        // A Suécia não tem 13ª nem 14ª: zerados de propósito, para a UI poder
+        // ocultá-los em vez de exibir valores inventados.
+        decimoBruto: 0,
+        decimoLiquido: 0,
+        temDecimoTerceiro: TEM_DECIMO_TERCEIRO,
+        feriasBruto: semesterlonAnual,
+        feriasLiquido: semesterlonLiquida,
+        meses,
+        dependentes: v.dependentes
     };
 }
