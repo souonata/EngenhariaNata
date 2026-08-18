@@ -181,7 +181,7 @@ npm run build          # build de produção (gera local/dist)
 
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
-_Última atualização: 2026-08-17_
+_Última atualização: 2026-08-18_
 
 - **SITE TRILÍNGUE — SUECO (`sv-SE`) + DOCK GLOBAL (branch `feat/i18n-sueco`):** iniciativa em
   andamento; plano completo e fases na seção própria do `ROADMAP.md`. **Decisões travadas:** idioma
@@ -231,11 +231,26 @@ _Última atualização: 2026-08-17_
       (off-grid dimensionado pelo inverno sueco pedia banco de baterias irreal).
   - **AUDITORIA (2026-08-18) — quais apps mudam de MÉTODO:** grupo A (só parâmetros, tradução
     basta): `helice`, `bombaagua`, `bitola`, `iluminacao`, `previsao`, `bugs`. Grupo B (tela
-    própria, FEITO): `salario`, `mutuo`, `solar`. **Grupo C, PENDENTE** — o app responde uma
-    pergunta que a Suécia não formula assim: `ventilacao` (a exigência é **vazão** de 0,35 l/s·m²
-    no BBR, não proporção de área de janela; självdrag segue permitido — verificado),
-    `aquecimento` (solar térmica lá é complemento, com anticongelante), `chuva` (congelamento é a
-    restrição dominante) e `arcondicionado` (é bomba de calor que também refrigera).
+    própria): `salario`, `mutuo`, `solar`. Grupo C (enquadramento errado): `ventilacao`,
+    `aquecimento`, `chuva`, `arcondicionado`. **Grupos B e C, AMBOS FEITOS e no ar.**
+  - **FEITO (Grupo C — 2026-08-18):** os quatro apps cuja PERGUNTA a Suécia não formula assim
+    ganharam tela própria. Padrão idêntico ao grupo B (`.se-only`/`.se-hide` + `body.lang-se`),
+    com prefixo de chave i18n por app (`vense`, `acse`, `aqse`, `chse`) presente nos TRÊS idiomas
+    (o validador de paridade exige, mesmo que a seção só apareça em sueco).
+    - `ventilacao`: a exigência é **vazão** — 0,35 l/s·m² e 4,0 l/s/pessoa. ⚠️ Não é mais o BBR:
+      é o **BFS 2024:8, 3 kap. Luft, 5 §**. O BBR foi substituído e o período de transição
+      terminou em **1/7/2026**; o piso de 0,35 sobreviveu como *föreskrift* vinculante. A tela
+      calcula perda de calor por graus-dia SMHI e recuperação por sistema (självdrag/F/FVP/FTX).
+      Cross-check que valida o modelo: 120 m² dá **0,50 oms/h**, a regra prática sueca.
+    - `arcondicionado`: lá é **luftvärmepump comprada para aquecer**. Poupança = aquecimento ×
+      cobertura × (1 − 1/SCOP). ROT-avdrag de 2026: 30% da mão de obra, e o schablon do
+      Skatteverket põe a mão de obra em 30% do preço → **9% do total**, teto 50.000 kr/pessoa/ano.
+    - `aquecimento`: solar térmica é **complemento**. O teto da fração solar (65%) é do
+      CALENDÁRIO, não do equipamento — de 5 para 14 m² a fração não sobe, só cresce a
+      estagnação. É esse o ponto que a tela ensina. Glicol em circuito fechado é obrigatório.
+    - `chuva`: o limite é o **congelamento**, não a chuva. Temporada = `vegetationsperiod` do
+      SMHI (média diária > +5 °C). Perde-se **48% no centro e 58% no norte**. A entrada de
+      precipitação MENSAL some em sueco: o que decide é o anual × duração da temporada.
   - **FALTA (geral):** integrar o dock ao `patentenautica` (só BR/IT), que não passa pelo
     `src/core/app.js`.
   - **Gotcha de formatação:** o `format:check` roda de dentro de `local/`, então o glob NÃO alcança
