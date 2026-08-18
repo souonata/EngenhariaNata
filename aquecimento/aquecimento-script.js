@@ -105,6 +105,22 @@ class AquecimentoApp extends App {
                     url: "https://www.pss-italy.com/categoria-prodotto/pannello-solare-termico-circolazione-naturale/",
                     texto: "specifiche"
                 }
+            },
+            // Na Suécia o padrão de mercado é o coletor plano com boa isolação,
+            // e não o tubo a vácuo: ele rende melhor no frio e sob neve.
+            'sv-SE': {
+                nome: "Plan solfångare med selektiv absorbator",
+                especificacoes: {
+                    numero_tubos: 0,
+                    area_m2: 2.0,
+                    eficiencia_optica: 0.78,
+                    coef_perda_linear: 3.5,
+                    potencia_termica_kW: 1.40
+                },
+                link: {
+                    url: "https://www.energimyndigheten.se/",
+                    texto: "specifikationer"
+                }
             }
         };
         
@@ -133,6 +149,11 @@ class AquecimentoApp extends App {
                 { tamanho: "P", potencia_W: 1200, descricao: "Termosifone 1200W (Piccolo)", preco: 420 },
                 { tamanho: "M", potencia_W: 1800, descricao: "Termosifone 1800W (Medio)", preco: 560 },
                 { tamanho: "G", potencia_W: 2400, descricao: "Termosifone 2400W (Grande)", preco: 750 }
+            ],
+            'sv-SE': [
+                { tamanho: "P", potencia_W: 1200, descricao: "Radiator 1200 W (liten)", preco: 4600 },
+                { tamanho: "M", potencia_W: 1800, descricao: "Radiator 1800 W (mellan)", preco: 6200 },
+                { tamanho: "G", potencia_W: 2400, descricao: "Radiator 2400 W (stor)", preco: 8300 }
             ]
         };
         
@@ -554,24 +575,23 @@ class AquecimentoApp extends App {
         const valorAtual = parseFloat(sliderLatitude.value);
         const idioma = i18n.obterIdiomaAtual();
         
-        if (idioma === 'it-IT') {
-            sliderLatitude.min = '36';
-            sliderLatitude.max = '47';
-            sliderLatitude.step = '0.5';
-            
-            if (valorAtual < 36 || valorAtual > 47 || valorAtual < 0) {
-                sliderLatitude.value = '41.9';
-                if (inputLatitude) inputLatitude.value = this.formatarDecimal(41.9, 1);
-            }
-        } else {
-            sliderLatitude.min = '-35';
-            sliderLatitude.max = '-5';
-            sliderLatitude.step = '0.5';
-            
-            if (valorAtual > -5 || valorAtual < -35 || valorAtual > 0) {
-                sliderLatitude.value = '-23.5';
-                if (inputLatitude) inputLatitude.value = this.formatarDecimal(-23.5, 1);
-            }
+        // Faixa de latitude do país do idioma. A Suécia é o caso extremo:
+        // de ~55,3°N (Smygehuk) a ~69,1°N (Treriksröset), bem acima da
+        // Itália — o que derruba o ganho solar no inverno.
+        const FAIXAS_LATITUDE = {
+            'pt-BR': { min: -35, max: -5, padrao: -23.5 },
+            'it-IT': { min: 36, max: 47, padrao: 41.9 },
+            'sv-SE': { min: 55, max: 69, padrao: 59.3 }
+        };
+        const faixa = FAIXAS_LATITUDE[idioma] || FAIXAS_LATITUDE['it-IT'];
+
+        sliderLatitude.min = String(faixa.min);
+        sliderLatitude.max = String(faixa.max);
+        sliderLatitude.step = '0.5';
+
+        if (valorAtual < faixa.min || valorAtual > faixa.max) {
+            sliderLatitude.value = String(faixa.padrao);
+            if (inputLatitude) inputLatitude.value = this.formatarDecimal(faixa.padrao, 1);
         }
     }
     
@@ -640,19 +660,12 @@ class AquecimentoApp extends App {
         const idioma = i18n.obterIdiomaAtual();
         
         // Definir tipos de ambiente por idioma
-        const tiposAmbiente = idioma === 'it-IT' ? {
-            sala: 'Soggiorno',
-            quarto: 'Camera',
-            cozinha: 'Cucina',
-            banheiro: 'Bagno',
-            corredor: 'Corridoio'
-        } : {
-            sala: 'Sala de Estar',
-            quarto: 'Quarto',
-            cozinha: 'Cozinha',
-            banheiro: 'Banheiro',
-            corredor: 'Corredor'
+        const TIPOS_AMBIENTE = {
+            'pt-BR': { sala: 'Sala de Estar', quarto: 'Quarto', cozinha: 'Cozinha', banheiro: 'Banheiro', corredor: 'Corredor' },
+            'it-IT': { sala: 'Soggiorno', quarto: 'Camera', cozinha: 'Cucina', banheiro: 'Bagno', corredor: 'Corridoio' },
+            'sv-SE': { sala: 'Vardagsrum', quarto: 'Sovrum', cozinha: 'Kök', banheiro: 'Badrum', corredor: 'Hall' }
         };
+        const tiposAmbiente = TIPOS_AMBIENTE[idioma] || TIPOS_AMBIENTE['it-IT'];
         
         // Estimativa baseada em área total
         if (areaCasa >= 25) {
@@ -946,12 +959,22 @@ class AquecimentoApp extends App {
         
         // Calcular custos
         const idioma = i18n.obterIdiomaAtual();
-        const moedaSimbolo = idioma === 'it-IT' ? '€' : 'R$';
-        
-        const precoPorPainel = idioma === 'it-IT' ? 450 : 1200;
-        const precoPorLitroBoiler = idioma === 'it-IT' ? 2.5 : 8;
-        const custoTubulacoesPorPainel = idioma === 'it-IT' ? 80 : 200;
-        const custoIsolantesPorPainel = idioma === 'it-IT' ? 30 : 80;
+        // Preços de mercado por país, na moeda local. Os valores suecos são
+        // estimativa de ordem de grandeza (conversão do italiano com ajuste
+        // para o custo de instalação mais alto na Suécia), no mesmo espírito
+        // aproximado dos já existentes.
+        const PRECOS = {
+            'pt-BR': { moeda: 'R$', painel: 1200, litroBoiler: 8, tubulacoes: 200, isolantes: 80 },
+            'it-IT': { moeda: '€', painel: 450, litroBoiler: 2.5, tubulacoes: 80, isolantes: 30 },
+            'sv-SE': { moeda: 'kr', painel: 6000, litroBoiler: 30, tubulacoes: 1000, isolantes: 400 }
+        };
+        const precos = PRECOS[idioma] || PRECOS['it-IT'];
+
+        const moedaSimbolo = precos.moeda;
+        const precoPorPainel = precos.painel;
+        const precoPorLitroBoiler = precos.litroBoiler;
+        const custoTubulacoesPorPainel = precos.tubulacoes;
+        const custoIsolantesPorPainel = precos.isolantes;
         
         const custoPaineis = numeroPaineis * precoPorPainel;
         const custoBoiler = volumeBoiler * precoPorLitroBoiler;
@@ -1036,43 +1059,65 @@ class AquecimentoApp extends App {
     }
 
     renderizarExplicacao({ numeroPaineis, areaTotal, demandaAgua_kWh_dia, demandaCasa_kWh_dia, volumeBoiler, diasAutonomia, potenciaCasa_W, custoTotal, calcularAgua, calcularCasa, moedaSimbolo }) {
-        const pt = i18n.obterIdiomaAtual() === 'pt-BR';
+        const ta = mapa => i18n.porIdioma(mapa);
         const demandaTotal = demandaAgua_kWh_dia + demandaCasa_kWh_dia;
 
         this.explicacao.renderizar({
-            destaque: pt
-                ? `Dimensionamento recomendado com ${numeroPaineis} painéis e área coletora de ${this.formatarDecimal(areaTotal, 2)} m².`
-                : `Dimensionamento consigliato con ${numeroPaineis} pannelli e area collettori di ${this.formatarDecimal(areaTotal, 2)} m².`,
+            destaque: ta({
+                'pt-BR': `Dimensionamento recomendado com ${numeroPaineis} painéis e área coletora de ${this.formatarDecimal(areaTotal, 2)} m².`,
+                'it-IT': `Dimensionamento consigliato con ${numeroPaineis} pannelli e area collettori di ${this.formatarDecimal(areaTotal, 2)} m².`,
+                'sv-SE': `Rekommenderad dimensionering med ${numeroPaineis} solfångare och en yta på ${this.formatarDecimal(areaTotal, 2)} m².`
+            }),
             linhas: [
                 {
                     icone: '🔥',
-                    titulo: pt ? 'Demanda Térmica Total' : 'Domanda Termica Totale',
+                    titulo: ta({ 'pt-BR': 'Demanda Térmica Total', 'it-IT': 'Domanda Termica Totale', 'sv-SE': 'Totalt värmebehov' }),
                     valor: `${this.formatarDecimal(demandaTotal, 2)} kWh/dia`,
-                    descricao: pt
-                        ? `Água: ${this.formatarDecimal(demandaAgua_kWh_dia, 2)} | Casa: ${this.formatarDecimal(demandaCasa_kWh_dia, 2)}.`
-                        : `Acqua: ${this.formatarDecimal(demandaAgua_kWh_dia, 2)} | Casa: ${this.formatarDecimal(demandaCasa_kWh_dia, 2)}.`
+                    descricao: ta({
+                        'pt-BR': `Água: ${this.formatarDecimal(demandaAgua_kWh_dia, 2)} | Casa: ${this.formatarDecimal(demandaCasa_kWh_dia, 2)}.`,
+                        'it-IT': `Acqua: ${this.formatarDecimal(demandaAgua_kWh_dia, 2)} | Casa: ${this.formatarDecimal(demandaCasa_kWh_dia, 2)}.`,
+                        'sv-SE': `Vatten: ${this.formatarDecimal(demandaAgua_kWh_dia, 2)} | Hus: ${this.formatarDecimal(demandaCasa_kWh_dia, 2)}.`
+                    })
                 },
                 {
                     icone: '🛢️',
-                    titulo: pt ? 'Boiler e Potência' : 'Boiler e Potenza',
-                    valor: calcularAgua ? `${this.formatarDecimal(volumeBoiler, 0)} L` : (pt ? 'Boiler desativado' : 'Boiler disattivato'),
+                    titulo: ta({ 'pt-BR': 'Boiler e Potência', 'it-IT': 'Boiler e Potenza', 'sv-SE': 'Ackumulatortank och effekt' }),
+                    valor: calcularAgua
+                        ? `${this.formatarDecimal(volumeBoiler, 0)} L`
+                        : ta({ 'pt-BR': 'Boiler desativado', 'it-IT': 'Boiler disattivato', 'sv-SE': 'Tanken avstängd' }),
                     descricao: calcularCasa
-                        ? (pt ? `Autonomia: ${this.formatarDecimal(diasAutonomia, 0)} dia(s). Potência para ambiente: ${this.formatarPotenciaWkW(potenciaCasa_W)}.` : `Autonomia: ${this.formatarDecimal(diasAutonomia, 0)} giorno/i. Potenza ambiente: ${this.formatarPotenciaWkW(potenciaCasa_W)}.`)
-                        : (pt ? `Volume para ${this.formatarDecimal(diasAutonomia, 0)} dia(s) de água quente.` : `Volume per ${this.formatarDecimal(diasAutonomia, 0)} giorno/i di acqua calda.`)
+                        ? ta({
+                            'pt-BR': `Autonomia: ${this.formatarDecimal(diasAutonomia, 0)} dia(s). Potência para ambiente: ${this.formatarPotenciaWkW(potenciaCasa_W)}.`,
+                            'it-IT': `Autonomia: ${this.formatarDecimal(diasAutonomia, 0)} giorno/i. Potenza ambiente: ${this.formatarPotenciaWkW(potenciaCasa_W)}.`,
+                            'sv-SE': `Autonomi: ${this.formatarDecimal(diasAutonomia, 0)} dygn. Effekt för rumsvärme: ${this.formatarPotenciaWkW(potenciaCasa_W)}.`
+                        })
+                        : ta({
+                            'pt-BR': `Volume para ${this.formatarDecimal(diasAutonomia, 0)} dia(s) de água quente.`,
+                            'it-IT': `Volume per ${this.formatarDecimal(diasAutonomia, 0)} giorno/i di acqua calda.`,
+                            'sv-SE': `Volym för ${this.formatarDecimal(diasAutonomia, 0)} dygn med varmvatten.`
+                        })
                 },
                 {
                     icone: '💰',
-                    titulo: pt ? 'Custo Estimado' : 'Costo Stimato',
+                    titulo: ta({ 'pt-BR': 'Custo Estimado', 'it-IT': 'Costo Stimato', 'sv-SE': 'Uppskattad kostnad' }),
                     valor: `${moedaSimbolo} ${this.formatarNumeroComSufixo(custoTotal, 2)}`,
-                    descricao: pt
-                        ? 'Inclui coletores, boiler, tubulação, isolantes e termossifões.'
-                        : 'Include collettori, boiler, tubazioni, isolanti e termosifoni.'
+                    descricao: ta({
+                        'pt-BR': 'Inclui coletores, boiler, tubulação, isolantes e termossifões.',
+                        'it-IT': 'Include collettori, boiler, tubazioni, isolanti e termosifoni.',
+                        'sv-SE': 'Omfattar solfångare, ackumulatortank, rör, isolering och radiatorer.'
+                    })
                 }
             ],
-            dica: pt
-                ? 'Se aumentar pessoas, área da casa ou altitude, a demanda de calor tende a subir.'
-                : 'Se aumenti persone, area casa o altitudine, la domanda di calore tende a salire.',
-            norma: pt ? 'Boas práticas ABNT NBR 15569 para aquecimento solar térmico' : 'Buone pratiche ABNT NBR 15569 per riscaldamento solare termico'
+            dica: ta({
+                'pt-BR': 'Se aumentar pessoas, área da casa ou altitude, a demanda de calor tende a subir.',
+                'it-IT': 'Se aumenti persone, area casa o altitudine, la domanda di calore tende a salire.',
+                'sv-SE': 'Fler personer, större bostadsyta eller högre höjd över havet drar upp värmebehovet. På svenska breddgrader räcker solvärmen sällan ensam på vintern — räkna med ett kompletterande värmesystem.'
+            }),
+            norma: ta({
+                'pt-BR': 'Boas práticas ABNT NBR 15569 para aquecimento solar térmico',
+                'it-IT': 'Buone pratiche ABNT NBR 15569 per riscaldamento solare termico',
+                'sv-SE': 'God praxis enligt SS-EN 12976 för solvärmesystem och Boverkets byggregler (BBR)'
+            })
         });
     }
     
@@ -1091,13 +1136,13 @@ class AquecimentoApp extends App {
         const cores = this.obterCoresGrafico();
         
         if (calcularAgua && demandaAgua > 0) {
-            labels.push(idioma === 'pt-BR' ? '💧 Água' : '💧 Acqua');
+            labels.push(i18n.porIdioma({ 'pt-BR': '💧 Água', 'it-IT': '💧 Acqua', 'sv-SE': '💧 Vatten' }));
             data.push(demandaAgua);
             colors.push(cores.blue);
         }
         
         if (calcularCasa && demandaCasa > 0) {
-            labels.push(idioma === 'pt-BR' ? '🏠 Casa' : '🏠 Casa');
+            labels.push(i18n.porIdioma({ 'pt-BR': '🏠 Casa', 'it-IT': '🏠 Casa', 'sv-SE': '🏠 Hus' }));
             data.push(demandaCasa);
             colors.push(cores.red);
         }
@@ -1123,7 +1168,7 @@ class AquecimentoApp extends App {
                     },
                     title: {
                         display: true,
-                        text: idioma === 'pt-BR' ? 'Distribuição de Demanda (kWh/dia)' : 'Distribuzione della Domanda (kWh/giorno)',
+                        text: i18n.porIdioma({ 'pt-BR': 'Distribuição de Demanda (kWh/dia)', 'it-IT': 'Distribuzione della Domanda (kWh/giorno)', 'sv-SE': 'Fördelning av behovet (kWh/dygn)' }),
                         color: cores.text
                     }
                 }
@@ -1140,8 +1185,8 @@ class AquecimentoApp extends App {
             this.graficoComparacao.destroy();
         }
         
-        const labelSolar = idioma === 'pt-BR' ? 'Energia Solar' : 'Energia Solare';
-        const labelDemanda = idioma === 'pt-BR' ? 'Demanda Total' : 'Domanda Totale';
+        const labelSolar = i18n.porIdioma({ 'pt-BR': 'Energia Solar', 'it-IT': 'Energia Solare', 'sv-SE': 'Solenergi' });
+        const labelDemanda = i18n.porIdioma({ 'pt-BR': 'Demanda Total', 'it-IT': 'Domanda Totale', 'sv-SE': 'Totalt behov' });
         const cores = this.obterCoresGrafico();
         
         this.graficoComparacao = new Chart(ctx, {
@@ -1175,7 +1220,7 @@ class AquecimentoApp extends App {
                     },
                     title: {
                         display: true,
-                        text: idioma === 'pt-BR' ? 'Solar vs Demanda' : 'Solare vs Domanda',
+                        text: i18n.porIdioma({ 'pt-BR': 'Solar vs Demanda', 'it-IT': 'Solare vs Domanda', 'sv-SE': 'Sol jämfört med behov' }),
                         color: cores.text
                     }
                 }
@@ -1196,14 +1241,14 @@ class AquecimentoApp extends App {
         const coberturaSolar = demandaTotal > 0 ? Math.min((energiaSolar / demandaTotal) * 100, 100) : 0;
         const deficitEletrico = Math.max(100 - coberturaSolar, 0);
         
-        const labelSolar = idioma === 'pt-BR' ? 'Cobertura Solar' : 'Copertura Solare';
-        const labelEletrico = idioma === 'pt-BR' ? 'Energia Elétrica Necessária' : 'Energia Elettrica Necessaria';
+        const labelSolar = i18n.porIdioma({ 'pt-BR': 'Cobertura Solar', 'it-IT': 'Copertura Solare', 'sv-SE': 'Soltäckning' });
+        const labelEletrico = i18n.porIdioma({ 'pt-BR': 'Energia Elétrica Necessária', 'it-IT': 'Energia Elettrica Necessaria', 'sv-SE': 'Nödvändig eltillskott' });
         const cores = this.obterCoresGrafico();
         
         this.graficoEficiencia = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: [idioma === 'pt-BR' ? 'Sistema' : 'Sistema'],
+                labels: [i18n.porIdioma({ 'pt-BR': 'Sistema', 'it-IT': 'Sistema', 'sv-SE': 'System' })],
                 datasets: [
                     {
                         label: labelSolar,
@@ -1248,7 +1293,7 @@ class AquecimentoApp extends App {
                     },
                     title: {
                         display: true,
-                        text: idioma === 'pt-BR' ? 'Eficiência do Sistema (%)' : 'Efficienza del Sistema (%)',
+                        text: i18n.porIdioma({ 'pt-BR': 'Eficiência do Sistema (%)', 'it-IT': 'Efficienza del Sistema (%)', 'sv-SE': 'Systemets verkningsgrad (%)' }),
                         color: cores.text
                     }
                 }
