@@ -467,3 +467,47 @@ export const SOLFRAKTION_TETO_SE = 0.65;
  * termossifão aberto usado em clima quente.
  */
 export const GLIKOL_OBRIGATORIO_SE = true;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ÁGUA DE CHUVA — captação sazonal (para o app `chuva`)
+// Fonte: SMHI (nederbörd normal 1991–2020 e vegetationsperiod).
+// https://www.smhi.se/kunskapsbanken/meteorologi/nederbord/nederbordens-fordelning
+// https://www.smhi.se/kunskapsbanken/klimat/fenologi/vegetationsperiod
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * A restrição dominante na Suécia não é quanto chove: é o congelamento. O
+ * barril e as tubulações precisam ser esvaziados antes da primeira geada, ou
+ * a água que congela os rompe. Captação anual, portanto, NÃO é captação
+ * utilizável — e é essa diferença que a versão sueca mostra.
+ */
+export const CHUVA_SE_LIMITADA_POR_CONGELAMENTO = true;
+
+/**
+ * Precipitação normal e temporada de captação por região.
+ *
+ * A temporada usa a `vegetationsperiod` do SMHI (parte do ano com média
+ * diária acima de +5 °C): é a janela em que o sistema pode ficar cheio sem
+ * risco de congelar, e coincide com a época em que se rega. Skåne fica em
+ * 220–230 dias, o litoral do norte da Norrlândia em 150–160, e a média do
+ * país em torno de 190.
+ */
+export const CHUVA_SE_REGIOES = {
+  syd: { precipitacaoAnualMm: 650, temporadaDias: 225 },
+  mellan: { precipitacaoAnualMm: 600, temporadaDias: 190 },
+  norr: { precipitacaoAnualMm: 550, temporadaDias: 155 },
+};
+
+/**
+ * Volumes comerciais suecos, em litros. Começam bem menores que os
+ * brasileiros: o objeto típico é uma `regnvattentunna` de jardim, não uma
+ * cisterna enterrada.
+ */
+export const TUNNOR_COMERCIAIS_SE = [200, 300, 500, 1000, 2000, 3000, 5000];
+
+/**
+ * Regra prática de dimensionamento do barril: ele é um pulmão entre chuvas,
+ * não um reservatório que atravessa a temporada. Duas semanas de demanda é o
+ * suficiente para não secar entre eventos.
+ */
+export const TUNNA_DIAS_DE_RESERVA_SE = 14;
