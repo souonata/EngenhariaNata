@@ -106,7 +106,25 @@
     "tooltip-altitude-texto": "A altitude é a elevação do local de instalação em relação ao nível do mar, medida em metros.",
     "tooltip-area-casa-texto": "A área da casa é a área total construída em metros quadrados (m²) que será aquecida pelo sistema solar térmico.",
     "tooltip-altura-casa-texto": "A altura do pé direito é a distância do piso ao teto, medida em metros.",
-    "tooltip-autonomia-texto": "Os dias de autonomia representam quantos dias de água quente o boiler deve armazenar. Valores maiores aumentam volume e custo. Para aquecimento ambiente, trate como estimativa educativa e confirme perdas térmicas, controles e segurança com especialista."
+    "tooltip-autonomia-texto": "Os dias de autonomia representam quantos dias de água quente o boiler deve armazenar. Valores maiores aumentam volume e custo. Para aquecimento ambiente, trate como estimativa educativa e confirme perdas térmicas, controles e segurança com especialista.",
+    "aqse": {
+      "titulo": "Solar térmica na Suécia — complemento, não fonte principal",
+      "intro": "Na Suécia a solar térmica não é dimensionada pelo inverno — entre novembro e fevereiro os coletores produzem quase nada, qualquer que seja a área. O que impõe o limite é o excedente de verão: passada certa área, mais superfície não vira mais água quente, e sim mais tempo em estagnação.",
+      "anvandning": "Uso",
+      "anvandningVarmvatten": "Somente água quente",
+      "anvandningKombi": "Água quente + apoio ao aquecimento",
+      "personer": "Número de pessoas",
+      "area": "Área de coletores (m²)",
+      "solfraktion": "Fração solar (parcela da água quente)",
+      "rekommenderad": "Área recomendada",
+      "behov": "Demanda de água quente",
+      "produktion": "Produção anual possível",
+      "nyttiggjord": "Do que se consegue usar",
+      "tank": "Acumulador",
+      "statusOk": "A área está compatível com o que a casa consegue usar ao longo do ano.",
+      "statusExcedente": "Excedente: {kwh} kWh/ano não podem ser usados. Mais área não aumenta a fração solar — só aumenta o tempo em estagnação.",
+      "aviso": "Cálculo educativo com cerca de 500 kWh por m² e ano para coletor plano. O sistema tem de ser de circuito fechado com glicol — o circuito do coletor congela. Na Suécia a solar térmica não substitui uma fonte de calor; ela a alivia."
+    }
   },
   "it-IT": {
     "app-title": "☀️ Dimensionatore Riscaldatore Solare Termico",
@@ -214,7 +232,25 @@
     "tooltip-altitude-texto": "L'altitudine è l'elevazione del luogo di installazione rispetto al livello del mare.",
     "tooltip-area-casa-texto": "L'area della casa è l'area totale costruita in metri quadrati (m²) che sarà riscaldata.",
     "tooltip-altura-casa-texto": "L'altezza del soffitto è la distanza dal pavimento al soffitto, misurata in metri.",
-    "tooltip-autonomia-texto": "I giorni di autonomia rappresentano quanti giorni di acqua calda il boiler deve accumulare. Valori maggiori aumentano volume e costo. Per il riscaldamento ambiente, trattalo come stima educativa e conferma dispersioni, controlli e sicurezza con uno specialista."
+    "tooltip-autonomia-texto": "I giorni di autonomia rappresentano quanti giorni di acqua calda il boiler deve accumulare. Valori maggiori aumentano volume e costo. Per il riscaldamento ambiente, trattalo come stima educativa e conferma dispersioni, controlli e sicurezza con uno specialista.",
+    "aqse": {
+      "titulo": "Solare termico in Svezia — complemento, non fonte principale",
+      "intro": "In Svezia il solare termico non si dimensiona sull'inverno: tra novembre e febbraio i collettori producono quasi nulla, qualunque sia la superficie. Il limite lo pone l'eccedenza estiva: oltre una certa area, più superficie non produce più acqua calda, ma solo più tempo in stagnazione.",
+      "anvandning": "Utilizzo",
+      "anvandningVarmvatten": "Solo acqua calda sanitaria",
+      "anvandningKombi": "Acqua calda + supporto al riscaldamento",
+      "personer": "Numero di persone",
+      "area": "Superficie collettori (m²)",
+      "solfraktion": "Frazione solare (quota di acqua calda)",
+      "rekommenderad": "Superficie consigliata",
+      "behov": "Fabbisogno di acqua calda",
+      "produktion": "Produzione annua possibile",
+      "nyttiggjord": "Di cui utilizzabile",
+      "tank": "Accumulo",
+      "statusOk": "La superficie è in linea con quanto la famiglia riesce a utilizzare nell'anno.",
+      "statusExcedente": "Eccedenza: {kwh} kWh/anno non utilizzabili. Più superficie non aumenta la frazione solare — aumenta solo il tempo in stagnazione.",
+      "aviso": "Calcolo didattico con circa 500 kWh per m² all'anno per collettore piano. L'impianto deve essere a circuito chiuso con glicole — altrimenti il circuito dei collettori gela. In Svezia il solare termico non sostituisce una fonte di calore: la alleggerisce."
+    }
   },
   "sv-SE": {
     "app-title": "☀️ Dimensionering av solvärme",
@@ -322,6 +358,24 @@
     "tooltip-altitude-texto": "Höjden över havet för installationsplatsen.",
     "tooltip-area-casa-texto": "Bostadens yta är den totala uppvärmda ytan i kvadratmeter (m²).",
     "tooltip-altura-casa-texto": "Takhöjden är avståndet från golv till tak, i meter.",
-    "tooltip-autonomia-texto": "Dagars autonomi anger hur många dygn med varmvatten tanken ska rymma. Högre värden ökar volym och kostnad. För rumsvärme är det en pedagogisk uppskattning — låt en fackman bekräfta värmeförluster, styrning och säkerhet."
+    "tooltip-autonomia-texto": "Dagars autonomi anger hur många dygn med varmvatten tanken ska rymma. Högre värden ökar volym och kostnad. För rumsvärme är det en pedagogisk uppskattning — låt en fackman bekräfta värmeförluster, styrning och säkerhet.",
+    "aqse": {
+      "titulo": "Solvärme i Sverige — komplement, inte huvudkälla",
+      "intro": "I Sverige dimensioneras solvärme inte efter vintern — mellan november och februari ger solfångarna nästan ingenting oavsett storlek. Det som sätter gränsen är sommaröverskottet: efter en viss area blir mer yta inte mer varmvatten, utan bara mer tid i stagnation.",
+      "anvandning": "Användning",
+      "anvandningVarmvatten": "Endast varmvatten",
+      "anvandningKombi": "Varmvatten + värmestöd",
+      "personer": "Antal personer",
+      "area": "Solfångararea (m²)",
+      "solfraktion": "Solfraktion (andel av varmvattnet)",
+      "rekommenderad": "Rekommenderad area",
+      "behov": "Varmvattenbehov",
+      "produktion": "Möjlig årsproduktion",
+      "nyttiggjord": "Varav du kan använda",
+      "tank": "Ackumulatortank",
+      "statusOk": "Arean är i nivå med vad hushållet kan använda under året.",
+      "statusExcedente": "Överskott: {kwh} kWh/år kan inte användas. Mer area höjer inte solfraktionen — den ökar bara tiden i stagnation.",
+      "aviso": "Utbildningsberäkning med cirka 500 kWh per m² och år för plan solfångare. Systemet måste vara en sluten krets med glykol — kollektorkretsen fryser annars. Solvärme ersätter inte en värmekälla i Sverige; den avlastar den."
+    }
   }
 }

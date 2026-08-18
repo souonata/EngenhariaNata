@@ -10,6 +10,58 @@ import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { formatarNumero, formatarMoeda } from '../src/utils/formatters.js';
 import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
+import {
+    PRODUCAO_SOLFANGARE_SE,
+    AREA_SOLFANGARE_SE,
+    ACUMULADOR_SE_LITROS,
+    AGUA_QUENTE_SE,
+    SOLFRAKTION_TETO_SE
+} from '../src/data/parametros-suecia.js';
+
+// ============================================
+// SUÉCIA — solar térmica como complemento
+// ============================================
+
+/**
+ * Dimensionar pelo inverno não funciona na Suécia: de novembro a fevereiro a
+ * produção é quase nula em qualquer área de coletor. O limite real é o
+ * excedente de verão — passado certo ponto, mais área não vira água quente,
+ * vira estagnação. Por isso a fração solar tem TETO, e o app avisa quando a
+ * área escolhida já passou dele.
+ *
+ * Função pura: números entram, números saem. Sem DOM.
+ */
+function calcularSolarTermicaSuecia(v) {
+    const demanda = v.pessoas * AGUA_QUENTE_SE.kwhPorPessoaAno + AGUA_QUENTE_SE.perdasFixasKwhAno;
+    const producaoBruta = v.area * PRODUCAO_SOLFANGARE_SE;
+
+    // O calendário, não o equipamento, é quem limita.
+    const tetoUtil = demanda * SOLFRAKTION_TETO_SE;
+    const producaoUtil = Math.min(producaoBruta, tetoUtil);
+    const solfraktion = demanda > 0 ? producaoUtil / demanda : 0;
+    const excedente = producaoBruta - producaoUtil;
+
+    const faixaArea = AREA_SOLFANGARE_SE[v.uso] || AREA_SOLFANGARE_SE.aguaQuente;
+    const faixaTanque = ACUMULADOR_SE_LITROS[v.uso] || ACUMULADOR_SE_LITROS.aguaQuente;
+
+    // O aviso só faz sentido quando o excedente é material. Na área
+    // recomendada sobra um punhado de kWh — alertar sobre isso seria ruído.
+    const fracaoDesperdicada = producaoBruta > 0 ? excedente / producaoBruta : 0;
+
+    return {
+        demanda, producaoBruta, producaoUtil, solfraktion, excedente,
+        faixaArea, faixaTanque, fracaoDesperdicada,
+        areaExcessiva: fracaoDesperdicada > 0.1
+    };
+}
+
+/** Número no formato sueco (espaço como separador de milhar). */
+function numSE(valor, casas = 0) {
+    return valor.toLocaleString('sv-SE', {
+        minimumFractionDigits: casas,
+        maximumFractionDigits: casas
+    });
+}
 
 // ============================================
 // CLASSE PRINCIPAL
@@ -199,6 +251,7 @@ class AquecimentoApp extends App {
         this.configurarRadios();
         this.configurarMemorial();
         this.configurarInfoIcons();
+        this.configurarEventosSE();
         
         // Atualizar limites de latitude baseado no idioma
         this.atualizarLimitesLatitude();
@@ -893,7 +946,90 @@ class AquecimentoApp extends App {
     // ============================================
     // ATUALIZAÇÃO DE RESULTADOS
     // ============================================
+    // ============================================
+    // SUÉCIA
+    // ============================================
+
+    obterValoresSE() {
+        const ler = (id, padrao) => {
+            const bruto = document.getElementById(id)?.value;
+            if (bruto === undefined || bruto === null) return padrao;
+            const n = parseFloat(String(bruto).replace(/\s/g, '').replace(',', '.'));
+            return Number.isFinite(n) ? n : padrao;
+        };
+
+        return {
+            uso:     document.getElementById('selectSeAnvandning')?.value || 'aguaQuente',
+            pessoas: ler('inputSePersoner', 4),
+            area:    ler('inputSeArea', 5)
+        };
+    }
+
+    atualizarSuecia() {
+        if (!document.getElementById('seSolfraktion')) return;
+
+        const v = this.obterValoresSE();
+        const r = calcularSolarTermicaSuecia(v);
+        const t = this.traducoes || {};
+        const def = (id, texto) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = texto;
+        };
+
+        def('seSolfraktion', `${numSE(r.solfraktion * 100, 0)} %`);
+        def('seAreaRekommenderad', `${numSE(r.faixaArea.minimo, 0)}–${numSE(r.faixaArea.maximo, 0)} m²`);
+        def('seBehov', `${numSE(r.demanda, 0)} kWh/år`);
+        def('seProduktion', `${numSE(r.producaoBruta, 0)} kWh/år`);
+        def('seNyttiggjord', `${numSE(r.producaoUtil, 0)} kWh/år`);
+        def('seTank', `${numSE(r.faixaTanque.minimo, 0)}–${numSE(r.faixaTanque.maximo, 0)} liter`);
+
+        // O aviso é o ponto pedagógico: área a mais não vira água quente.
+        const status = document.getElementById('seStatus');
+        if (status) {
+            if (r.areaExcessiva) {
+                status.className = 'aqse-status is-excedente';
+                status.textContent = (t.aqse?.statusExcedente || 'Överskott: {kwh} kWh/år kan inte användas. Mer area höjer inte solfraktionen — den ökar bara tiden i stagnation.')
+                    .replace('{kwh}', numSE(r.excedente, 0));
+            } else {
+                status.className = 'aqse-status is-ok';
+                status.textContent = t.aqse?.statusOk || 'Arean är i nivå med vad hushållet kan använda under året.';
+            }
+        }
+
+        return r;
+    }
+
+    configurarEventosSE() {
+        const recalc = () => this.atualizarSuecia();
+
+        document.getElementById('selectSeAnvandning')?.addEventListener('change', recalc);
+
+        [['inputSePersoner', 'sliderSePersoner', 0], ['inputSeArea', 'sliderSeArea', 1]]
+            .forEach(([idInput, idSlider, casas]) => {
+                const input  = document.getElementById(idInput);
+                const slider = document.getElementById(idSlider);
+
+                slider?.addEventListener('input', () => {
+                    if (input) input.value = numSE(parseFloat(slider.value), casas);
+                    recalc();
+                });
+
+                input?.addEventListener('input', () => {
+                    const n = parseFloat(String(input.value).replace(/\s/g, '').replace(',', '.'));
+                    if (slider && Number.isFinite(n)) slider.value = String(n);
+                    recalc();
+                });
+            });
+    }
+
     atualizarResultados() {
+        // `body.lang-se` comanda as regras .se-only / .se-hide do CSS.
+        const idiomaAgora = i18n.obterIdiomaAtual();
+        document.body.classList.toggle('lang-se', idiomaAgora === 'sv-SE');
+        document.body.classList.toggle('lang-br', idiomaAgora === 'pt-BR');
+        document.body.classList.toggle('lang-it', idiomaAgora === 'it-IT');
+        this.atualizarSuecia();
+
         // Obter valores dos inputs
         const latitude = parseFloat(document.getElementById('sliderLatitude')?.value || 0);
         const altitude = parseFloat(document.getElementById('sliderAltitude')?.value || 0);
