@@ -219,3 +219,55 @@ export const RANTEAVDRAG = {
   limite: 100000,
   exigeGarantiaReal: true, // regra nova de 2026
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SOLAR FOTOVOLTAICO — prática sueca (para o app `solar`)
+// Fonte: Skatteverket (grön teknik) e Energimyndigheten (produção específica).
+// https://www.skatteverket.se/privat/fastigheterochbostad/gronteknik.4.676f4884175c97df4192860.html
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Na Suécia o padrão é solar CONECTADA À REDE, não off-grid. Dimensionar um
+ * sistema isolado pelo inverno sueco levaria a um banco de baterias absurdo:
+ * em dezembro a produção fica em torno de 3% do pico de verão. Quem mora lá
+ * consome da rede no inverno e exporta o excedente no verão.
+ */
+export const SOLAR_SE_CONECTADA_A_REDE = true;
+
+/**
+ * Produção específica anual, em kWh por kW instalado (kWp). Varia com a
+ * latitude: a irradiação vai de ~800 kWh/m²·ano no norte a ~1300 no sul.
+ */
+export const PRODUCAO_ESPECIFICA_SE = {
+  sul: 1050, // Skåne, Blekinge, Halland
+  centro: 950, // Svealand e Götaland interior
+  norte: 850, // Norrland
+};
+
+/**
+ * Fração da produção tipicamente consumida na própria casa, sem bateria. O
+ * resto é exportado. Depende muito do perfil de consumo — valor educativo.
+ */
+export const AUTOCONSUMO_TIPICO_SE = 0.35;
+
+/**
+ * Grön teknik: redução de imposto sobre o custo de mão de obra e material.
+ * A alíquota de solceller caiu em 1/7/2025 (era 19,4%). Bateria e carregador
+ * de veículo elétrico seguem em 50%.
+ */
+export const GRON_TEKNIK_SE = {
+  solceller: 0.15,
+  bateria: 0.5,
+  carregador: 0.5,
+  tetoPorPessoaAno: 50000,
+};
+
+/**
+ * ⚠️ Extinta em 1 de janeiro de 2026: a redução de 60 öre por kWh vendido à
+ * rede (a "60-öringen"). Cálculos de retorno feitos com material anterior a
+ * 2026 superestimam o ganho da exportação.
+ */
+export const SESSENTA_ORINGEN_EXTINTA_2026 = true;
+
+/** Custo típico de instalação chave na mão, em SEK por kW instalado. */
+export const CUSTO_INSTALACAO_SEK_POR_KWP = 15000;

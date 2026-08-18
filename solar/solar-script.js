@@ -64,6 +64,12 @@
 //   linear quando necessário (veja obterDoDPorCiclos / obterCiclosPorDoD).
 import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
+import {
+    PRODUCAO_ESPECIFICA_SE,
+    AUTOCONSUMO_TIPICO_SE,
+    GRON_TEKNIK_SE,
+    CUSTO_INSTALACAO_SEK_POR_KWP
+} from '../src/data/parametros-suecia.js';
 import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
 import { formatarNumero, formatarNumeroDecimal, formatarNumeroComSufixo, parsearNumero } from '../src/utils/formatters.js';
 import { ajustarTamanhoInput } from '../src/utils/ui-controls.js';
@@ -786,6 +792,9 @@ function ajustarValor(targetId, step) {
 // Além disso, garante limites corretos para sliders e corrige valores
 // fora dos limites (por exemplo, vida útil máx/mín).
 function atualizarInterface() {
+    // A Suécia usa outra tela: conectada à rede, não off-grid.
+    calcularSolarSuecia();
+
     try {
     // 1. Ler valores dos inputs editáveis ou sliders (inputs têm prioridade)
     const sliderConsumo = document.getElementById('sliderConsumo');
@@ -1981,6 +1990,8 @@ class SolarApp extends App {
     }
 
     inicializarSolar() {
+        aplicarModoPaisSolar();
+        configurarEntradasSuecia();
         document.addEventListener('engnata:themechange', () => {
             atualizarInterface();
         });
@@ -2347,6 +2358,8 @@ class SolarApp extends App {
 
     atualizarAposTrocaIdioma() {
         idiomaAtual = i18n.obterIdiomaAtual();
+        aplicarModoPaisSolar();
+        calcularSolarSuecia();
 
         atualizarNotasValoresPadrao();
 
@@ -2635,3 +2648,154 @@ function atualizarMemorialComValores() {
 }
 
 
+
+
+// ============================================================================
+// VISÃO SUECA — solar conectada à rede
+// ============================================================================
+// O restante deste arquivo dimensiona sistema OFF-GRID: banco de baterias para
+// atravessar dias sem sol. Na Suécia isso não se faz. Em dezembro a produção
+// cai a cerca de 3% do pico de verão, e dimensionar um sistema isolado pelo
+// inverno levaria a um banco de baterias irreal — o app daria conselho errado,
+// não apenas incompleto. A prática local é conectada à rede: consome da rede no
+// inverno e exporta o excedente no verão.
+
+function lerNumeroSe(texto) {
+    const limpo = String(texto).replace(/\s|\u00a0/g, '').replace(',', '.');
+    const n = parseFloat(limpo);
+    return Number.isFinite(n) ? n : NaN;
+}
+
+function textoSolse(chave) {
+    return i18n.obterTraducao(`solse.${chave}`) || '';
+}
+
+let explicacaoSolse = null;
+
+function calcularSolarSuecia() {
+    if (idiomaAtual !== 'sv-SE') return;
+
+    const consumo = lerNumeroSe(document.getElementById('inputSeConsumo')?.value);
+    const potencia = lerNumeroSe(document.getElementById('inputSePotencia')?.value);
+    const elpris = lerNumeroSe(document.getElementById('inputSeElpris')?.value);
+    const regiao = document.getElementById('selectSeRegiao')?.value || 'centro';
+    if (![consumo, potencia, elpris].every(Number.isFinite)) return;
+
+    const producaoEspecifica = PRODUCAO_ESPECIFICA_SE[regiao] || PRODUCAO_ESPECIFICA_SE.centro;
+    const producaoAnual = potencia * producaoEspecifica;
+
+    // Sem bateria, só parte da produção é consumida na hora; o resto vai à rede.
+    const autoconsumo = Math.min(producaoAnual * AUTOCONSUMO_TIPICO_SE, consumo);
+    const excedente = Math.max(0, producaoAnual - autoconsumo);
+    const cobertura = consumo > 0 ? producaoAnual / consumo : 0;
+
+    const investimento = potencia * CUSTO_INSTALACAO_SEK_POR_KWP;
+    // Grön teknik: 15% sobre mão de obra e material, teto de 50.000 kr/ano.
+    const gronTeknik = Math.min(
+        investimento * GRON_TEKNIK_SE.solceller,
+        GRON_TEKNIK_SE.tetoPorPessoaAno
+    );
+    const investimentoLiquido = investimento - gronTeknik;
+
+    // ⚠️ A "60-öringen" (60 öre por kWh vendido) foi extinta em 1/1/2026.
+    // O excedente passa a valer só o preço de mercado, que é bem menor que a
+    // tarifa cheia evitada pelo autoconsumo. Usamos metade como aproximação
+    // conservadora do que a rede paga.
+    const valorAutoconsumo = autoconsumo * elpris;
+    const valorExcedente = excedente * elpris * 0.5;
+    const economiaAnual = valorAutoconsumo + valorExcedente;
+
+    const paybackAnos = economiaAnual > 0 ? investimentoLiquido / economiaAnual : Infinity;
+
+    const kr = v => formatarMoedaComVirgula(v, 'kr', 0);
+    // Sem sufixo K: em kWh o arredondamento grosseiro esconde a diferença
+    // entre 9 500 e 10 400, que muda o dimensionamento.
+    const kwh = v => `${Math.round(v).toLocaleString('sv-SE')} kWh`;
+    const pctTxt = v => `${formatarNumeroDecimal(v * 100, 0)} %`;
+    const def = (id, txt) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = txt;
+    };
+
+    def('seProducaoAnual', kwh(producaoAnual));
+    def('seCobertura', pctTxt(cobertura));
+    def('seAutoconsumo', kwh(autoconsumo));
+    def('seExcedente', kwh(excedente));
+    def('seInvestimento', kr(investimento));
+    def('seGronTeknik', '−' + kr(gronTeknik));
+    def('seEconomiaAnual', kr(economiaAnual));
+    def('sePayback', Number.isFinite(paybackAnos)
+        ? `${formatarNumeroDecimal(paybackAnos, 1)} ${textoSolse('anos')}`
+        : '—');
+
+    if (!explicacaoSolse) {
+        explicacaoSolse = new ExplicacaoResultado('v2-explicacao-solse', i18n);
+    }
+    explicacaoSolse.renderizar({
+        linhas: [
+            {
+                icone: '☀️',
+                titulo: textoSolse('expProducaoTitulo'),
+                valor: kwh(producaoAnual),
+                descricao: textoSolse('expProducaoTexto').replace('{especifica}', producaoEspecifica)
+            },
+            {
+                icone: '🏠',
+                titulo: textoSolse('expAutoconsumoTitulo'),
+                valor: kwh(autoconsumo),
+                descricao: textoSolse('expAutoconsumoTexto')
+            },
+            {
+                icone: '🧾',
+                titulo: textoSolse('expAvdragTitulo'),
+                valor: '−' + kr(gronTeknik),
+                descricao: textoSolse('expAvdragTexto')
+            }
+        ],
+        destaque: textoSolse('expDestaque')
+            .replace('{payback}', formatarNumeroDecimal(paybackAnos, 1))
+            .replace('{liquido}', kr(investimentoLiquido)),
+        dica: textoSolse('expDica'),
+        norma: textoSolse('expNorma')
+    });
+}
+
+function configurarEntradasSuecia() {
+    const pares = [
+        ['sliderSeConsumo', 'inputSeConsumo', 0],
+        ['sliderSePotencia', 'inputSePotencia', 1],
+        ['sliderSeElpris', 'inputSeElpris', 2]
+    ];
+
+    pares.forEach(([idSlider, idInput, casas]) => {
+        const slider = document.getElementById(idSlider);
+        const input = document.getElementById(idInput);
+        if (!slider || !input) return;
+
+        slider.addEventListener('input', () => {
+            input.value = parseFloat(slider.value).toLocaleString('sv-SE', {
+                minimumFractionDigits: casas,
+                maximumFractionDigits: casas
+            });
+            calcularSolarSuecia();
+        });
+
+        input.addEventListener('input', () => {
+            const v = lerNumeroSe(input.value);
+            if (Number.isFinite(v)) {
+                slider.value = String(v);
+                calcularSolarSuecia();
+            }
+        });
+    });
+
+    document.getElementById('selectSeRegiao')?.addEventListener('change', calcularSolarSuecia);
+}
+
+// Marca o modo do país para o CSS mostrar a seção certa.
+function aplicarModoPaisSolar() {
+    const body = document.body;
+    body.classList.toggle('lang-se', idiomaAtual === 'sv-SE');
+    body.classList.toggle('lang-it', idiomaAtual === 'it-IT');
+    body.classList.toggle('lang-br', idiomaAtual === 'pt-BR');
+}
