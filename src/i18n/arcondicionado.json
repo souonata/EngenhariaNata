@@ -136,7 +136,25 @@
     "tooltip-area-total-texto": "A soma das áreas é a área total de todos os ambientes que terão ar condicionado em um sistema multi-split. O cálculo divide o BTU total necessário pelo número de ambientes para dimensionar cada unidade interna proporcionalmente.",
     "tooltip-altura-texto": "A altura do pé direito é a distância do piso ao teto, medida em metros. Ambientes mais altos têm maior volume de ar para climatizar, aumentando a necessidade de BTU. O cálculo ajusta o BTU por m² proporcionalmente à altura, usando 2,7m como referência padrão residencial.",
     "tooltip-pessoas-texto": "O número de pessoas no ambiente gera calor corporal que precisa ser removido pelo ar condicionado. Cada pessoa adiciona aproximadamente 600 BTU à carga térmica. No Brasil, apenas pessoas além das primeiras 2 são consideradas; na Itália, todas as pessoas são contabilizadas.",
-    "tooltip-equipamentos-texto": "Equipamentos elétricos geram calor durante o funcionamento, aumentando a carga térmica do ambiente. Cada equipamento (TV, computador, geladeira, etc.) adiciona aproximadamente 600 BTU ao cálculo. Conte cada aparelho como 1 unidade."
+    "tooltip-equipamentos-texto": "Equipamentos elétricos geram calor durante o funcionamento, aumentando a carga térmica do ambiente. Cada equipamento (TV, computador, geladeira, etc.) adiciona aproximadamente 600 BTU ao cálculo. Conte cada aparelho como 1 unidade.",
+    "acse": {
+      "titulo": "Bomba de calor de ar — aquecer primeiro, refrigerar de bônus",
+      "intro": "Na Suécia o aparelho é comprado para aquecer a casa, não para refrigerá-la. O frio do verão é bônus. Por isso a conta é de aquecimento: quanto do calor anual a bomba cobre e quanta eletricidade ela poupa.",
+      "uppvarmning": "Aquecimento anual (kWh)",
+      "scop": "SCOP (clima frio)",
+      "tackning": "Cobertura (%)",
+      "elpris": "Preço da energia (kr/kWh)",
+      "investering": "Investimento (kr)",
+      "besparingKwh": "Eletricidade poupada por ano",
+      "besparingKr": "Economia por ano",
+      "tacktVarme": "Calor coberto pela bomba",
+      "pumpEl": "Consumo elétrico da bomba",
+      "rot": "ROT-avdrag (30% da mão de obra)",
+      "nettoInvestering": "Investimento líquido",
+      "aterbetalning": "Tempo de retorno",
+      "notaKyla": "❄️ A capacidade de refrigeração abaixo vale para a função de verão. Um aparelho bem dimensionado para a necessidade de calor quase sempre dá conta do frio no verão sueco.",
+      "aviso": "Cálculo educativo. Economia = aquecimento × cobertura × (1 − 1/SCOP). O ROT-avdrag é 30% do custo de mão de obra e, para bomba de calor de ar, o Skatteverket considera por schablon que a mão de obra é no máximo 30% do preço total — ou seja, cerca de 9% do preço."
+    }
   },
   "it-IT": {
     "app-title": "❄️ Dimensionatore Climatizzatore",
@@ -274,7 +292,25 @@
     "tooltip-area-total-texto": "La somma delle aree è l'area totale di tutti gli ambienti che avranno climatizzatore in un sistema multi-split. Il calcolo divide il BTU totale necessario per il numero di ambienti per dimensionare ogni unità interna proporzionalmente.",
     "tooltip-altura-texto": "L'altezza del soffitto è la distanza dal pavimento al soffitto, misurata in metri. Ambienti più alti hanno un maggior volume d'aria da climatizzare, aumentando la necessità di BTU. Il calcolo aggiusta il BTU per m² proporzionalmente all'altezza, usando 2,7m come riferimento standard residenziale.",
     "tooltip-pessoas-texto": "Il numero di persone nell'ambiente genera calore corporeo che deve essere rimosso dal climatizzatore. Ogni persona aggiunge approssimativamente 200 BTU al carico termico. In Italia, tutte le persone sono contabilizzate; in Brasile, solo quelle oltre le prime 2 sono considerate.",
-    "tooltip-equipamentos-texto": "Apparecchi elettrici generano calore durante il funzionamento, aumentando il carico termico dell'ambiente. Ogni apparecchio (TV, computer, frigorifero, ecc.) aggiunge approssimativamente 300 BTU al calcolo. Contare ogni apparecchio come 1 unità."
+    "tooltip-equipamentos-texto": "Apparecchi elettrici generano calore durante il funzionamento, aumentando il carico termico dell'ambiente. Ogni apparecchio (TV, computer, frigorifero, ecc.) aggiunge approssimativamente 300 BTU al calcolo. Contare ogni apparecchio come 1 unità.",
+    "acse": {
+      "titulo": "Pompa di calore ad aria — prima riscaldare, il fresco è un bonus",
+      "intro": "In Svezia l'apparecchio si compra per riscaldare la casa, non per raffrescarla. Il fresco estivo è un bonus. Perciò il calcolo riguarda il riscaldamento: quanta parte del calore annuo la pompa copre e quanta elettricità fa risparmiare.",
+      "uppvarmning": "Riscaldamento annuo (kWh)",
+      "scop": "SCOP (clima freddo)",
+      "tackning": "Grado di copertura (%)",
+      "elpris": "Prezzo dell'energia (kr/kWh)",
+      "investering": "Investimento (kr)",
+      "besparingKwh": "Elettricità risparmiata all'anno",
+      "besparingKr": "Risparmio annuo",
+      "tacktVarme": "Calore coperto dalla pompa",
+      "pumpEl": "Consumo elettrico della pompa",
+      "rot": "Detrazione ROT (30% della manodopera)",
+      "nettoInvestering": "Investimento netto",
+      "aterbetalning": "Tempo di rientro",
+      "notaKyla": "❄️ La potenza di raffrescamento qui sotto vale per la funzione estiva. Un apparecchio dimensionato correttamente per il fabbisogno di calore basta quasi sempre anche per il fresco nell'estate svedese.",
+      "aviso": "Calcolo didattico. Risparmio = riscaldamento × copertura × (1 − 1/SCOP). La detrazione ROT è il 30% del costo di manodopera e, per le pompe di calore ad aria, lo Skatteverket considera forfettariamente la manodopera al massimo il 30% del prezzo totale — cioè circa il 9% del prezzo."
+    }
   },
   "sv-SE": {
     "app-title": "❄️ Dimensionering av luftkonditionering",
@@ -412,6 +448,24 @@
     "tooltip-area-total-texto": "Summan av ytorna är den totala ytan för alla rum som ska ha luftkonditionering i ett multisplitsystem. Beräkningen delar den totala BTU:n med antalet rum för att dimensionera varje inomhusdel proportionellt.",
     "tooltip-altura-texto": "Takhöjden är avståndet från golv till tak, i meter. Högre rum har större luftvolym att kyla, vilket ökar BTU-behovet. Beräkningen justerar BTU per m² proportionellt mot höjden, med 2,7 m som referens.",
     "tooltip-pessoas-texto": "Personerna i rummet avger kroppsvärme som anläggningen måste föra bort. Varje person lägger till ungefär 200 BTU. I Sverige och Italien räknas alla personer; i Brasilien bara de utöver de två första.",
-    "tooltip-equipamentos-texto": "Elektriska apparater avger värme när de används och ökar rummets värmelast. Varje apparat (TV, dator, kyl med mera) lägger till ungefär 300 BTU. Räkna varje apparat som 1."
+    "tooltip-equipamentos-texto": "Elektriska apparater avger värme när de används och ökar rummets värmelast. Varje apparat (TV, dator, kyl med mera) lägger till ungefär 300 BTU. Räkna varje apparat som 1.",
+    "acse": {
+      "titulo": "Luftvärmepump — värme först, kyla som bonus",
+      "intro": "I Sverige köps aggregatet för att värma huset, inte för att kyla det. Kylan på sommaren är en bonus. Därför räknas nyttan på uppvärmningen: hur stor del av årsvärmen pumpen klarar, och hur mycket el den sparar.",
+      "uppvarmning": "Årlig uppvärmning (kWh)",
+      "scop": "SCOP (kallt klimat)",
+      "tackning": "Täckningsgrad (%)",
+      "elpris": "Elpris (kr/kWh)",
+      "investering": "Investering (kr)",
+      "besparingKwh": "Sparad el per år",
+      "besparingKr": "Sparat per år",
+      "tacktVarme": "Värme som pumpen täcker",
+      "pumpEl": "Pumpens elförbrukning",
+      "rot": "ROT-avdrag (30 % av arbetet)",
+      "nettoInvestering": "Nettoinvestering",
+      "aterbetalning": "Återbetalningstid",
+      "notaKyla": "❄️ Kyleffekten nedan gäller sommarfunktionen. Ett aggregat som är rätt dimensionerat för värmebehovet räcker nästan alltid till för kylan i ett svenskt sommarklimat.",
+      "aviso": "Utbildningsberäkning. Besparing = uppvärmning × täckningsgrad × (1 − 1/SCOP). ROT-avdraget är 30 % av arbetskostnaden, och för luftvärmepump räknar Skatteverket schablonmässigt arbetet som högst 30 % av totalpriset — alltså cirka 9 % av priset."
+    }
   }
 }

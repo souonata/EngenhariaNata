@@ -352,3 +352,55 @@ export const OVK_INTERVALO_ANOS = {
   flerbostadshusF: 6,
   smahus: null, // só na construção nova
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BOMBA DE CALOR DE AR — luftvärmepump (para o app `arcondicionado`)
+// Fonte: Skatteverket (rotavdrag) e mercado sueco de värmepumpar.
+// https://www.skatteverket.se/privat/fastigheterochbostad/rotochrutarbete.4.html
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * O aparelho que na Suécia se instala não é "ar condicionado": é
+ * luftvärmepump. Compra-se para AQUECER; refrigerar no verão é efeito
+ * colateral. Dimensionar pelo calor a remover no verão erra o propósito do
+ * equipamento — daí a tela própria.
+ */
+export const ARCONDICIONADO_SE_E_BOMBA_DE_CALOR = true;
+
+/**
+ * SCOP (Seasonal COP, EN 14825) de aparelhos modernos: 4,0–5,0. A Suécia
+ * está na zona climática fria, então o SCOP medido em clima nórdico é o que
+ * representa o desempenho real. Abaixo de cerca de −25 °C o resistor elétrico
+ * entra como apoio.
+ */
+export const SCOP_SE = {
+  minimo: 3.5,
+  tipico: 4.5,
+  maximo: 5.5,
+};
+
+/**
+ * Täckningsgrad: fração do aquecimento anual que uma luft-luftvärmepump
+ * cobre na prática. Um aparelho bem posicionado em planta aberta cobre ~50%;
+ * o resto fica com o sistema existente (radiadores, resistência, lenha).
+ */
+export const TACKNINGSGRAD_SE = {
+  minimo: 0.3,
+  tipico: 0.5,
+  maximo: 0.7,
+};
+
+/** Faixa típica de preço instalado de uma luft-luftvärmepump, em SEK. */
+export const CUSTO_LUFTVARMEPUMP_SEK = { minimo: 15000, maximo: 35000 };
+
+/**
+ * ROT-avdrag desde 1/1/2026: 30% do custo de MÃO DE OBRA, teto de 50.000 kr
+ * por pessoa e ano. Como é difícil separar mão de obra de material, o
+ * Skatteverket usa um schablon: para bomba de calor de ar, a mão de obra vale
+ * no máximo 30% do preço total. Efeito líquido: 0,30 × 0,30 = 9% do total.
+ */
+export const ROTAVDRAG_2026 = {
+  taxa: 0.3,
+  tetoPorPessoaAno: 50000,
+  schablonMaoDeObraBombaDeAr: 0.3,
+};

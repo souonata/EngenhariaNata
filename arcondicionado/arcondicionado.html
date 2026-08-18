@@ -34,7 +34,7 @@
     <link rel="stylesheet" href="../assets/css/dock-global.css?v=1.0.0">
     <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
     <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
-    <link rel="stylesheet" href="arcondicionado-styles.css?v=1.0.2">
+    <link rel="stylesheet" href="arcondicionado-styles.css?v=1.1.0">
 
     <!-- Analytics: GoatCounter (privacy-friendly, LGPD/GDPR-compliant) -->
     <script data-goatcounter="https://souonata.goatcounter.com/count"
@@ -305,6 +305,93 @@
                 <input type="hidden" id="inputClasseEnergetica" value="1.75">
                 <p class="dica" data-i18n="dica-classe-energetica">💡 Classe energética da casa/edifício. Usado para calcular a perda de energia térmica para ambiente</p>
             </div>
+
+            <!-- ============================================================
+                 SUÉCIA — o aparelho é luftvärmepump: compra-se para AQUECER.
+                 Refrigerar no verão é bônus. Dimensionar pelo calor a remover
+                 (BTU de verão) erra o propósito do equipamento, então aqui a
+                 conta é de aquecimento: SCOP, cobertura e economia anual.
+                 ============================================================ -->
+            <div class="acse-secao se-only">
+                <h2 class="acse-titulo" data-i18n="acse.titulo">Luftvärmepump — värme först, kyla som bonus</h2>
+                <p class="acse-intro" data-i18n="acse.intro">
+                    I Sverige köps aggregatet för att värma huset, inte för att kyla det.
+                    Kylan på sommaren är en bonus. Därför räknas nyttan på uppvärmningen:
+                    hur stor del av årsvärmen pumpen klarar, och hur mycket el den sparar.
+                </p>
+
+                <div class="acse-entradas">
+                    <div class="grupo-entrada">
+                        <label for="inputSeUppvarmning" data-i18n="acse.uppvarmning">Årlig uppvärmning (kWh)</label>
+                        <input type="text" id="inputSeUppvarmning" class="valor-input" value="15 000" inputmode="numeric" autocomplete="off">
+                        <input type="range" id="sliderSeUppvarmning" min="3000" max="40000" step="500" value="15000">
+                    </div>
+                    <div class="grupo-entrada">
+                        <label for="inputSeScop" data-i18n="acse.scop">SCOP (kallt klimat)</label>
+                        <input type="text" id="inputSeScop" class="valor-input" value="4,5" inputmode="decimal" autocomplete="off">
+                        <input type="range" id="sliderSeScop" min="3" max="5.5" step="0.1" value="4.5">
+                    </div>
+                    <div class="grupo-entrada">
+                        <label for="inputSeTackning" data-i18n="acse.tackning">Täckningsgrad (%)</label>
+                        <input type="text" id="inputSeTackning" class="valor-input" value="50" inputmode="numeric" autocomplete="off">
+                        <input type="range" id="sliderSeTackning" min="20" max="80" step="5" value="50">
+                    </div>
+                    <div class="grupo-entrada">
+                        <label for="inputSeElpris" data-i18n="acse.elpris">Elpris (kr/kWh)</label>
+                        <input type="text" id="inputSeElpris" class="valor-input" value="2,00" inputmode="decimal" autocomplete="off">
+                        <input type="range" id="sliderSeElpris" min="0.5" max="6" step="0.05" value="2">
+                    </div>
+                    <div class="grupo-entrada">
+                        <label for="inputSeInvestering" data-i18n="acse.investering">Investering (kr)</label>
+                        <input type="text" id="inputSeInvestering" class="valor-input" value="25 000" inputmode="numeric" autocomplete="off">
+                        <input type="range" id="sliderSeInvestering" min="10000" max="60000" step="1000" value="25000">
+                    </div>
+                </div>
+
+                <div class="acse-resultados">
+                    <div class="resultado-item destaque">
+                        <span class="label-resultado" data-i18n="acse.besparingKwh">Sparad el per år</span>
+                        <span class="valor-resultado-grande" id="seBesparingKwh">—</span>
+                    </div>
+                    <div class="resultado-item destaque">
+                        <span class="label-resultado" data-i18n="acse.besparingKr">Sparat per år</span>
+                        <span class="valor-resultado-grande" id="seBesparingKr">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="acse.tacktVarme">Värme som pumpen täcker</span>
+                        <span class="valor-resultado" id="seTacktVarme">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="acse.pumpEl">Pumpens elförbrukning</span>
+                        <span class="valor-resultado" id="sePumpEl">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="acse.rot">ROT-avdrag (30 % av arbetet)</span>
+                        <span class="valor-resultado" id="seRot">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="acse.nettoInvestering">Nettoinvestering</span>
+                        <span class="valor-resultado" id="seNettoInvestering">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="acse.aterbetalning">Återbetalningstid</span>
+                        <span class="valor-resultado" id="seAterbetalning">—</span>
+                    </div>
+                </div>
+
+                <p class="dica" data-i18n="acse.notaKyla">
+                    ❄️ Kyleffekten nedan gäller sommarfunktionen. Ett aggregat som är
+                    rätt dimensionerat för värmebehovet räcker nästan alltid till för
+                    kylan i ett svenskt sommarklimat.
+                </p>
+
+                <p class="acse-aviso" data-i18n="acse.aviso">
+                    Utbildningsberäkning. Besparing = uppvärmning × täckningsgrad ×
+                    (1 − 1/SCOP). ROT-avdraget är 30 % av arbetskostnaden, och för
+                    luftvärmepump räknar Skatteverket schablonmässigt arbetet som
+                    högst 30 % av totalpriset — alltså cirka 9 % av priset.
+                </p>
+            </div>
         </section>
 
         <!-- ========================================== -->
@@ -569,7 +656,7 @@
     <!-- Scripts -->
     <!-- Chart.js local para gráficos - DEVE ser carregado ANTES do módulo -->
     <script src="../assets/js/vendor/chart.umd.js"></script>
-    <script type="module" src="arcondicionado-script.js?v=2.0.0"></script>
+    <script type="module" src="arcondicionado-script.js?v=2.1.0"></script>
 </body>
 </html>
 
