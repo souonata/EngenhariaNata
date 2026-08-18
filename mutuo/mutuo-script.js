@@ -19,7 +19,8 @@ import { formatarNumero, formatarMoeda } from '../src/utils/formatters.js';
 import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
 import {
     converterTaxaParaMensal,
-    calcularAmortizacao as calcularAmortizacaoPuro
+    calcularAmortizacao as calcularAmortizacaoPuro,
+    calcularBolan
 } from './mutuo-calc.js';
 
 // ============================================
@@ -92,7 +93,149 @@ class MutuoApp extends App {
 
     inicializarMutuo() {
         this.configurarEventos();
+        this.configurarEventosBolan();
+        this.aplicarModoPais();
         this.calcular();
+    }
+
+    // Cada idioma carrega a sua jurisdição. A Suécia não usa sistema de
+    // amortização (SAC/Price/Americano): tem visão própria.
+    get modoPais() {
+        return { 'it-IT': 'it', 'sv-SE': 'se' }[i18n.obterIdiomaAtual()] || 'br';
+    }
+
+    aplicarModoPais() {
+        document.body.classList.toggle('lang-br', this.modoPais === 'br');
+        document.body.classList.toggle('lang-it', this.modoPais === 'it');
+        document.body.classList.toggle('lang-se', this.modoPais === 'se');
+    }
+
+    configurarEventosBolan() {
+        const pares = [
+            ['sliderPrecoImovel', 'inputPrecoImovel', 0],
+            ['sliderEntrada', 'inputEntrada', 0],
+            ['sliderJurosBolan', 'inputJurosBolan', 2]
+        ];
+
+        pares.forEach(([idSlider, idInput, casas]) => {
+            const slider = document.getElementById(idSlider);
+            const input = document.getElementById(idInput);
+            if (!slider || !input) return;
+
+            slider.addEventListener('input', () => {
+                input.value = this.formatarNumeroBolan(parseFloat(slider.value), casas);
+                this.calcularBolanUI();
+            });
+
+            input.addEventListener('input', () => {
+                const valor = this.lerNumeroBolan(input.value);
+                if (Number.isFinite(valor)) {
+                    slider.value = String(valor);
+                    this.calcularBolanUI();
+                }
+            });
+        });
+    }
+
+    // Entrada em formato sueco: espaço como separador de milhar, vírgula
+    // decimal. Aceita também ponto, para não punir quem digita do jeito antigo.
+    lerNumeroBolan(texto) {
+        const limpo = String(texto).replace(/\s|\u00a0/g, '').replace(',', '.');
+        const n = parseFloat(limpo);
+        return Number.isFinite(n) ? n : NaN;
+    }
+
+    formatarNumeroBolan(valor, casas = 0) {
+        return valor.toLocaleString('sv-SE', {
+            minimumFractionDigits: casas,
+            maximumFractionDigits: casas
+        });
+    }
+
+    calcularBolanUI() {
+        if (this.modoPais !== 'se') return;
+
+        const preco = this.lerNumeroBolan(document.getElementById('inputPrecoImovel')?.value);
+        const entrada = this.lerNumeroBolan(document.getElementById('inputEntrada')?.value);
+        const juros = this.lerNumeroBolan(document.getElementById('inputJurosBolan')?.value);
+        if (!Number.isFinite(preco) || !Number.isFinite(entrada) || !Number.isFinite(juros)) return;
+
+        const r = calcularBolan({
+            valorImovel: preco,
+            entrada: Math.min(entrada, preco),
+            taxaJurosAnual: juros
+        });
+
+        const kr = v => formatarMoeda(v, 'SEK', 0);
+        const pct = v => `${formatarNumero(v * 100, 1)} %`;
+        const def = (id, txt) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = txt;
+        };
+
+        def('bolanEmprestimo', kr(r.emprestimo));
+        def('bolanBelaningsgrad', pct(r.belaningsgrad));
+        def('bolanAmorteringskrav', `${pct(r.taxaAmortizacao)} ${this.textoBolan('porAno')}`);
+        def('bolanAmortizacaoMensal', kr(r.amortizacaoMensal));
+        def('bolanJurosMensais', kr(r.jurosAnuais / 12));
+        def('bolanRanteavdrag', '−' + kr(r.ranteavdrag / 12));
+        def('bolanCustoMensal', kr(r.custoMensalLiquido));
+
+        // Aviso do bolånetak: desde 1/4/2026 o teto é 90% do valor do imóvel.
+        const aviso = document.getElementById('bolanAviso');
+        if (aviso) {
+            const falta = r.entradaMinima - entrada;
+            if (!r.dentroDoBolanetak && falta > 0) {
+                aviso.textContent = this.textoBolan('avisoTeto')
+                    .replace('{minimo}', kr(r.entradaMinima))
+                    .replace('{falta}', kr(falta));
+                aviso.classList.add('visivel');
+            } else {
+                aviso.classList.remove('visivel');
+            }
+        }
+
+        this.renderizarExplicacaoBolan(r);
+    }
+
+    textoBolan(chave) {
+        return i18n.obterTraducao(`bolan.${chave}`) || '';
+    }
+
+    renderizarExplicacaoBolan(r) {
+        if (!this.explicacaoBolan) {
+            this.explicacaoBolan = new ExplicacaoResultado('v2-explicacao-bolan', i18n);
+        }
+        const kr = v => formatarMoeda(v, 'SEK', 0);
+        const pct = v => `${formatarNumero(v * 100, 1)} %`;
+
+        this.explicacaoBolan.renderizar({
+            linhas: [
+                {
+                    icone: '🏠',
+                    titulo: this.textoBolan('expBelaningsgradTitulo'),
+                    valor: pct(r.belaningsgrad),
+                    descricao: this.textoBolan('expBelaningsgradTexto')
+                },
+                {
+                    icone: '📉',
+                    titulo: this.textoBolan('expAmorteringskravTitulo'),
+                    valor: `${pct(r.taxaAmortizacao)} ${this.textoBolan('porAno')}`,
+                    descricao: this.textoBolan('expAmorteringskravTexto')
+                },
+                {
+                    icone: '🧾',
+                    titulo: this.textoBolan('expRanteavdragTitulo'),
+                    valor: '−' + kr(r.ranteavdrag / 12),
+                    descricao: this.textoBolan('expRanteavdragTexto')
+                }
+            ],
+            destaque: this.textoBolan('expDestaque')
+                .replace('{custo}', kr(r.custoMensalLiquido))
+                .replace('{amort}', kr(r.amortizacaoMensal)),
+            dica: this.textoBolan('expDica'),
+            norma: this.textoBolan('expNorma')
+        });
     }
 
     obterCoresGrafico() {
@@ -110,6 +253,7 @@ class MutuoApp extends App {
     }
 
     atualizarAposTrocaIdioma() {
+        this.aplicarModoPais();
         this.calcular();
     }
 
@@ -917,6 +1061,9 @@ class MutuoApp extends App {
     }
 
     calcular() {
+        // No modo sueco a tela é outra: bolån em vez de sistema de amortização.
+        this.calcularBolanUI();
+
         const dados = this.obterDadosEntrada();
 
         // Atualizar displays dos sliders

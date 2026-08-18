@@ -317,10 +317,76 @@
 
         <!-- Resultados -->
         <div id="resultados" class="card resultados" style="display: block;">
+
+            <!-- ============================================================
+                 BOLÅN — visão sueca. Substitui a tela de SAC/Price/Americano,
+                 que não tem equivalente na Suécia: lá a amortização mínima é
+                 um percentual anual da dívida, definido pela belåningsgrad.
+                 ============================================================ -->
+            <div class="bolan-secao se-only">
+                <h2 class="bolan-titulo" data-i18n="bolan.titulo">Bolån — svenskt bostadslån</h2>
+                <p class="bolan-intro" data-i18n="bolan.intro">
+                    I Sverige finns inget val av amorteringssystem. Amorteringskravet är en
+                    andel av skulden per år och bestäms av belåningsgraden.
+                </p>
+
+                <div class="bolan-entradas">
+                    <div class="grupo-entrada">
+                        <label for="inputPrecoImovel" data-i18n="bolan.precoImovel">Bostadens pris</label>
+                        <input type="text" id="inputPrecoImovel" class="valor-input" value="4 000 000" inputmode="numeric" autocomplete="off">
+                        <input type="range" id="sliderPrecoImovel" min="500000" max="15000000" step="50000" value="4000000">
+                    </div>
+                    <div class="grupo-entrada">
+                        <label for="inputEntrada" data-i18n="bolan.entrada">Kontantinsats</label>
+                        <input type="text" id="inputEntrada" class="valor-input" value="600 000" inputmode="numeric" autocomplete="off">
+                        <input type="range" id="sliderEntrada" min="0" max="7500000" step="25000" value="600000">
+                    </div>
+                    <div class="grupo-entrada">
+                        <label for="inputJurosBolan" data-i18n="bolan.juros">Ränta (% per år)</label>
+                        <input type="text" id="inputJurosBolan" class="valor-input" value="4,0" inputmode="decimal" autocomplete="off">
+                        <input type="range" id="sliderJurosBolan" min="0.5" max="10" step="0.05" value="4">
+                    </div>
+                </div>
+
+                <div id="bolanAviso" class="bolan-aviso" role="status"></div>
+
+                <div class="bolan-resultados">
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="bolan.emprestimo">Lånebelopp</span>
+                        <span class="valor-resultado" id="bolanEmprestimo">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="bolan.belaningsgrad">Belåningsgrad</span>
+                        <span class="valor-resultado" id="bolanBelaningsgrad">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="bolan.amorteringskrav">Amorteringskrav</span>
+                        <span class="valor-resultado" id="bolanAmorteringskrav">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="bolan.amortizacaoMensal">Amortering per månad</span>
+                        <span class="valor-resultado" id="bolanAmortizacaoMensal">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="bolan.jurosMensais">Ränta per månad</span>
+                        <span class="valor-resultado" id="bolanJurosMensais">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="bolan.ranteavdrag">Ränteavdrag per månad</span>
+                        <span class="valor-resultado" id="bolanRanteavdrag">—</span>
+                    </div>
+                    <div class="resultado-item bolan-destaque">
+                        <span class="label-resultado" data-i18n="bolan.custoMensal">Månadskostnad efter ränteavdrag</span>
+                        <span class="valor-resultado" id="bolanCustoMensal">—</span>
+                    </div>
+                </div>
+
+                <div id="v2-explicacao-bolan"></div>
+            </div>
             <!-- Controles Rápidos -->
             <div class="controles-rapidos">
                 <div class="controles-grid-vertical">
-                    <div class="sistema-amortizacao-box">
+                    <div class="sistema-amortizacao-box se-hide">
                         <div class="controle-sistema-wrapper">
                             <div class="label-sistema-com-ajuda">
                                 <label class="label-sistema" data-i18n="amortization-system">Sistema de Amortização</label>
@@ -515,7 +581,7 @@
             <div class="parcelas-info parcelas-info--selector">
                 <h3><span data-i18n="selected-installment">Parcela Selecionada</span>: <span id="numeroParcela">1</span> <span data-i18n="of">de</span> <span id="totalParcelas">-</span></h3>
 
-                <div class="slider-com-botoes">
+                <div class="se-hide slider-com-botoes">
                     <button type="button" class="arrow-btn arrow-down" data-target="sliderParcelas" data-step="-1" data-i18n-aria="aria.diminuirParcela">−</button>
                     <input type="range" id="sliderParcelas" min="1" max="120" value="1" step="1">
                     <button type="button" class="arrow-btn arrow-up" data-target="sliderParcelas" data-step="1" data-i18n-aria="aria.aumentarParcela">+</button>
@@ -543,7 +609,7 @@
                 </div>
             </div>
 
-            <div class="tabela-container">
+            <div class="tabela-container se-hide">
                 <h3 data-i18n="amortization-table">📋 Tabela de Amortização Completa</h3>
                 <div class="tabela-scroll">
                     <table id="tabelaAmortizacao">
