@@ -200,11 +200,18 @@ _Última atualização: 2026-08-17_
     `previsao-script.js` ESM + `src/i18n/previsao.json`), com vento em m/s via `wind_speed_unit=ms`
     e sueco completo. **Catálogo (`index.json`) em sueco** e **validador de paridade**
     (`scripts/validate_i18n_parity.mjs`, no `npm run validate`).
-  - **FALTA:** `sobre.json`/`sobre.html`; apps de engenharia em sueco + normas SE + conversão dos
-    ternários (Fase 2); `salario`/`mutuo` com modelo sueco real (Fase 4 — exige checar taxas atuais
-    do Skatteverket e o amorteringskrav da Finansinspektionen); `br12c` (tem boot próprio binário e
-    **service worker a bumpar**) e `lichiabonsai` (Fase 5); integrar o dock ao `patentenautica`
+  - **FEITO (Fase 2, parcial):** sueco + normas suecas + ternários convertidos em `bugs`, `helice`,
+    `bombaagua`, `bitola` (SS 436 40 00), `ventilacao` (BBR), `chuva` (SMHI) e `iluminacao`
+    (SS-EN 12464-1). Publicado e conferido no ar.
+  - **FALTA:** `solar` (30 ternários), `arcondicionado` (20) e `aquecimento` (18) — os mais pesados;
+    `sobre.json`/`sobre.html`; `salario`/`mutuo` com modelo sueco real (Fase 4 — exige checar taxas
+    atuais do Skatteverket e o amorteringskrav da Finansinspektionen); `br12c` (boot próprio binário
+    e **service worker a bumpar**) e `lichiabonsai` (Fase 5); integrar o dock ao `patentenautica`
     (só BR/IT) e ao `br12c`, que não passam pelo `src/core/app.js`.
+  - **`fazenda` fora do sueco por decisão** (base agronômica regional, não texto) — ver ROADMAP.
+  - **Gotcha de line endings:** `autocrlf=true` + Prettier `endOfLine: "lf"` fazem o `format:check`
+    falhar em arquivos não editados logo após um merge. Converta-os para LF antes de validar; a
+    correção durável (`* text=auto eol=lf` no `.gitattributes`) está pendente de decisão.
   - **Gotcha novo:** `querySelector('.a, .b')` devolve o primeiro nó em ordem de **documento**, não
     na ordem dos seletores — o dock é anexado ao fim do `body`, então consultas de host precisam ser
     separadas e em ordem de prioridade explícita (mordido em `theme.js`).
