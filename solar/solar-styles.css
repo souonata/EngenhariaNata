@@ -668,3 +668,90 @@ footer p {
     }
 }
 
+
+/* ============================================
+   VISÃO SUECA — solar conectada à rede
+   ============================================
+   O app é off-grid: dimensiona banco de baterias para dias sem sol. Na Suécia
+   isso não se faz (em dezembro a produção cai a ~3% do pico), então a seção
+   sueca substitui as entradas de autonomia/DoD/bateria, marcadas com
+   `.se-hide`. */
+body.lang-br .se-only,
+body.lang-it .se-only { display: none !important; }
+body.lang-se .se-hide { display: none !important; }
+
+.solse-secao {
+    margin-bottom: 22px;
+    padding: 18px;
+    border-radius: 12px;
+    background: var(--surface-muted, #f5f5f5);
+    border: 1px solid var(--border-color, #e0e0e0);
+}
+
+.solse-titulo {
+    margin: 0 0 6px;
+    font-size: 1.15rem;
+    color: var(--accent-color, #2d9fa3);
+}
+
+.solse-intro,
+.solse-nota {
+    margin: 0 0 14px;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--text-secondary, #666);
+}
+
+.solse-nota {
+    margin: 14px 0 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border-left: 4px solid var(--warning-border, #ffc107);
+    background: var(--warning-bg, #fff3cd);
+    color: var(--warning-text, #7a5b00);
+}
+
+.solse-entradas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.solse-entradas .grupo-entrada {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.solse-entradas label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-primary, #333);
+}
+
+.solse-entradas input[type='text'],
+.solse-entradas select {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color, #e0e0e0);
+    background: var(--surface-bg, #fff);
+    color: var(--text-primary, #333);
+    font-size: 1rem;
+}
+
+.solse-entradas input[type='text'] { text-align: right; }
+
+.solse-resultados {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 8px;
+}
+
+.solse-destaque {
+    grid-column: 1 / -1;
+    font-weight: 700;
+    border-top: 2px solid var(--accent-color, #2d9fa3);
+    padding-top: 8px;
+}

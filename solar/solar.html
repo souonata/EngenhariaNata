@@ -36,7 +36,7 @@
         <link rel="stylesheet" href="../assets/css/dock-global.css?v=1.0.0">
         <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
         <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
-        <link rel="stylesheet" href="solar-styles.css?v=1.0.2">
+        <link rel="stylesheet" href="solar-styles.css?v=2.1.0">
 
     <!-- Rede de seguranca global de erros (ver GUIA_FALHA_CONGELAMENTO.md) -->
     <script src="../assets/js/error-overlay.js"></script>
@@ -69,6 +69,92 @@
         <!-- Aparece quando o usuário clica em "SAIBA MAIS" -->
         <!-- ========================================== -->
         <div id="memorialSection" class="card memorial-section" style="display: none;">
+
+            <!-- ============================================================
+                 SOLAR NA SUÉCIA — conectada à rede.
+                 O restante do app é off-grid (banco de baterias para dias sem
+                 sol). Isso não se aplica aqui: em dezembro a produção cai a
+                 ~3% do pico de verão, e dimensionar um sistema isolado pelo
+                 inverno sueco levaria a um banco de baterias irreal. A prática
+                 local é consumir da rede no inverno e exportar no verão.
+                 ============================================================ -->
+            <div class="solse-secao se-only">
+                <h2 class="solse-titulo" data-i18n="solse.titulo">Solceller i Sverige — nätansluten anläggning</h2>
+                <p class="solse-intro" data-i18n="solse.intro">
+                    I Sverige byggs solceller nästan alltid nätanslutna. I december
+                    ger anläggningen nästan ingenting, och att dimensionera ett
+                    fristående system efter vintern skulle kräva ett orimligt batteri.
+                </p>
+
+                <div class="solse-entradas">
+                    <div class="grupo-entrada">
+                        <label for="inputSeConsumo" data-i18n="solse.consumo">Årsförbrukning (kWh)</label>
+                        <input type="text" id="inputSeConsumo" class="valor-input" value="20 000" inputmode="numeric" autocomplete="off">
+                        <input type="range" id="sliderSeConsumo" min="2000" max="60000" step="500" value="20000">
+                    </div>
+                    <div class="grupo-entrada">
+                        <label for="inputSePotencia" data-i18n="solse.potencia">Anläggningens storlek (kW)</label>
+                        <input type="text" id="inputSePotencia" class="valor-input" value="10" inputmode="decimal" autocomplete="off">
+                        <input type="range" id="sliderSePotencia" min="1" max="30" step="0.5" value="10">
+                    </div>
+                    <div class="grupo-entrada">
+                        <label for="inputSeElpris" data-i18n="solse.elpris">Elpris (kr/kWh)</label>
+                        <input type="text" id="inputSeElpris" class="valor-input" value="2,00" inputmode="decimal" autocomplete="off">
+                        <input type="range" id="sliderSeElpris" min="0.5" max="6" step="0.05" value="2">
+                    </div>
+                    <div class="grupo-entrada">
+                        <label for="selectSeRegiao" data-i18n="solse.regiao">Landsdel</label>
+                        <select id="selectSeRegiao" class="valor-input">
+                            <option value="sul" data-i18n="solse.regiaoSul">Södra Sverige</option>
+                            <option value="centro" selected data-i18n="solse.regiaoCentro">Mellersta Sverige</option>
+                            <option value="norte" data-i18n="solse.regiaoNorte">Norra Sverige</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="solse-resultados">
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="solse.producaoAnual">Årsproduktion</span>
+                        <span class="valor-resultado" id="seProducaoAnual">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="solse.coberturaConsumo">Andel av din förbrukning</span>
+                        <span class="valor-resultado" id="seCobertura">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="solse.autoconsumo">Egenanvändning</span>
+                        <span class="valor-resultado" id="seAutoconsumo">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="solse.excedente">Överskott till nätet</span>
+                        <span class="valor-resultado" id="seExcedente">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="solse.investimento">Investering</span>
+                        <span class="valor-resultado" id="seInvestimento">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="solse.gronTeknik">Grön teknik-avdrag (15 %)</span>
+                        <span class="valor-resultado" id="seGronTeknik">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="solse.economiaAnual">Besparing per år</span>
+                        <span class="valor-resultado" id="seEconomiaAnual">—</span>
+                    </div>
+                    <div class="resultado-item solse-destaque">
+                        <span class="label-resultado" data-i18n="solse.payback">Återbetalningstid</span>
+                        <span class="valor-resultado" id="sePayback">—</span>
+                    </div>
+                </div>
+
+                <p class="solse-nota" data-i18n="solse.nota60ore">
+                    ⚠️ Skattereduktionen på 60 öre per såld kWh slopades den 1 januari 2026.
+                    Kalkyler som bygger på äldre underlag överskattar värdet av överskottet.
+                </p>
+
+                <div id="v2-explicacao-solse"></div>
+            </div>
+
             <div class="memorial-header">
                 <h2 data-i18n="memorial-title">📚 Memorial de Cálculo - Energia Solar</h2>
                 <!-- Botão para fechar o memorial e voltar para a calculadora -->
@@ -257,7 +343,7 @@
         <!-- Inputs -->
         <section class="cartao">
             <!-- Consumo -->
-            <div class="grupo-entrada">
+            <div class="grupo-entrada se-hide">
                 <div class="cabecalho-controle">
                     <label for="sliderConsumo" data-i18n="label-consumo">Consumo Médio Mensal</label>
                     <span class="info-icon" id="infoIconConsumo" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
@@ -278,7 +364,7 @@
             </div>
 
             <!-- Autonomia -->
-            <div class="grupo-entrada">
+            <div class="grupo-entrada se-hide">
                 <div class="cabecalho-controle">
                     <label for="sliderAutonomia" data-i18n="label-autonomia">Dias de Autonomia</label>
                     <span class="info-icon info-icon-autonomia" id="infoIconAutonomia" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
@@ -299,7 +385,7 @@
             </div>
 
             <!-- Tipo de Bateria -->
-            <div class="grupo-entrada">
+            <div class="grupo-entrada se-hide">
                 <label data-i18n="label-tipo-bateria">Tipo de Bateria</label>
                 <div class="grupo-radio">
                     <label class="opcao-radio">
@@ -334,7 +420,7 @@
             </div>
 
             <!-- Vida Útil (Anos) -->
-            <div class="grupo-entrada">
+            <div class="grupo-entrada se-hide">
                 <div class="cabecalho-controle">
                     <label for="sliderVidaUtil" data-i18n="label-vida-util">Vida Útil Estimada</label>
                     <span class="info-icon" id="infoIconVidaUtil" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
@@ -358,7 +444,7 @@
             </div>
 
             <!-- Custo do kWh -->
-            <div class="grupo-entrada">
+            <div class="grupo-entrada se-hide">
                 <div class="cabecalho-controle">
                     <label for="sliderPrecoKWh" data-i18n="label-preco-kwh">Custo da Energia (kWh)</label>
                     <span class="info-icon" id="infoIconPrecoKWh" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
@@ -384,7 +470,7 @@
             </div>
 
             <!-- Aumento Anual do Custo da Energia -->
-            <div class="grupo-entrada">
+            <div class="grupo-entrada se-hide">
                 <div class="cabecalho-controle">
                     <label for="sliderAumentoAnualEnergia" data-i18n="label-aumento-anual-energia">Aumento Anual do Custo da Energia</label>
                     <span class="info-icon" id="infoIconAumentoAnualEnergia" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
@@ -410,7 +496,7 @@
             </div>
 
             <!-- Preço da Bateria por kWh -->
-            <div class="grupo-entrada">
+            <div class="grupo-entrada se-hide">
                 <div class="cabecalho-controle">
                     <label for="sliderPrecoBateriaKWh" data-i18n="label-preco-bateria-kwh">Preço da Bateria (por kWh)</label>
                     <span class="info-icon" id="infoIconPrecoBateriaKWh" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
@@ -564,7 +650,7 @@
 
     <!-- Chart.js -->
     <script src="../assets/js/vendor/chart.umd.js"></script>
-    <script type="module" src="solar-script.js?v=2.2.0"></script>
+    <script type="module" src="solar-script.js?v=2.3.1"></script>
 </body>
 </html>
 
