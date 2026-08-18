@@ -9,6 +9,61 @@ import { App } from '../src/core/app.js';
 import { i18n } from '../src/core/i18n.js';
 import { formatarNumero, formatarMoeda } from '../src/utils/formatters.js';
 import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
+import {
+    SCOP_SE,
+    TACKNINGSGRAD_SE,
+    ROTAVDRAG_2026
+} from '../src/data/parametros-suecia.js';
+
+// ============================================
+// SUÉCIA — a conta é de aquecimento
+// ============================================
+
+/**
+ * O aparelho sueco é luftvärmepump: comprado para aquecer. A economia vem de
+ * substituir aquecimento elétrico direto (1 kWh de eletricidade = 1 kWh de
+ * calor) por bomba de calor (1 kWh de eletricidade = SCOP kWh de calor).
+ *
+ *     poupança = aquecimento × cobertura × (1 − 1/SCOP)
+ *
+ * Função pura: números entram, números saem. Sem DOM.
+ */
+function calcularBombaDeCalorSuecia(v) {
+    const scop = Math.max(1.01, v.scop);
+    const calorCoberto = v.uppvarmning * v.tackningsgrad;
+    const eletricidadeBomba = calorCoberto / scop;
+    const besparingKwh = calorCoberto - eletricidadeBomba; // = calor × (1 − 1/SCOP)
+    const besparingKr = besparingKwh * v.elpris;
+
+    // ROT: 30% do trabalho, e o trabalho é no máximo 30% do preço (schablon).
+    const rot = Math.min(
+        v.investering * ROTAVDRAG_2026.schablonMaoDeObraBombaDeAr * ROTAVDRAG_2026.taxa,
+        ROTAVDRAG_2026.tetoPorPessoaAno
+    );
+    const nettoInvestering = v.investering - rot;
+    const aterbetalning = besparingKr > 0 ? nettoInvestering / besparingKr : Infinity;
+
+    return {
+        calorCoberto, eletricidadeBomba, besparingKwh, besparingKr,
+        rot, nettoInvestering, aterbetalning, scop
+    };
+}
+
+/** Número no formato sueco (espaço como separador de milhar). */
+function numSE(valor, casas = 0) {
+    return valor.toLocaleString('sv-SE', {
+        minimumFractionDigits: casas,
+        maximumFractionDigits: casas
+    });
+}
+
+/** Lê um campo numérico aceitando espaço de milhar e vírgula decimal. */
+function lerNumeroSE(id, padrao) {
+    const bruto = document.getElementById(id)?.value;
+    if (bruto === undefined || bruto === null) return padrao;
+    const n = parseFloat(String(bruto).replace(/\s/g, '').replace(',', '.'));
+    return Number.isFinite(n) ? n : padrao;
+}
 
 // ============================================
 // CLASSE PRINCIPAL
@@ -174,6 +229,8 @@ class ArcondicionadoApp extends App {
         radios.forEach(radio => {
             radio.addEventListener('change', () => this.atualizarResultados());
         });
+
+        this.configurarEventosSE();
     }
     
     configurarBotoesIncremento() {
@@ -764,6 +821,76 @@ class ArcondicionadoApp extends App {
         
         // Atualizar display dos resultados
         this.atualizarDisplayResultados(resultado, numAmbientes);
+
+        // `body.lang-se` comanda as regras .se-only / .se-hide do CSS.
+        const idioma = this.obterIdiomaAtual();
+        document.body.classList.toggle('lang-se', idioma === 'sv-SE');
+        document.body.classList.toggle('lang-br', idioma === 'pt-BR');
+        document.body.classList.toggle('lang-it', idioma === 'it-IT');
+        this.atualizarSuecia();
+    }
+
+    // ============================================
+    // SUÉCIA
+    // ============================================
+
+    obterValoresSE() {
+        return {
+            uppvarmning:   lerNumeroSE('inputSeUppvarmning', 15000),
+            scop:          lerNumeroSE('inputSeScop', SCOP_SE.tipico),
+            tackningsgrad: lerNumeroSE('inputSeTackning', TACKNINGSGRAD_SE.tipico * 100) / 100,
+            elpris:        lerNumeroSE('inputSeElpris', 2),
+            investering:   lerNumeroSE('inputSeInvestering', 25000)
+        };
+    }
+
+    atualizarSuecia() {
+        if (!document.getElementById('seBesparingKwh')) return;
+
+        const v = this.obterValoresSE();
+        const r = calcularBombaDeCalorSuecia(v);
+        const def = (id, texto) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = texto;
+        };
+
+        def('seBesparingKwh', `${numSE(r.besparingKwh, 0)} kWh/år`);
+        def('seBesparingKr', `${numSE(r.besparingKr, 0)} kr/år`);
+        def('seTacktVarme', `${numSE(r.calorCoberto, 0)} kWh/år`);
+        def('sePumpEl', `${numSE(r.eletricidadeBomba, 0)} kWh/år`);
+        def('seRot', `−${numSE(r.rot, 0)} kr`);
+        def('seNettoInvestering', `${numSE(r.nettoInvestering, 0)} kr`);
+        def('seAterbetalning', Number.isFinite(r.aterbetalning)
+            ? `${numSE(r.aterbetalning, 1)} år`
+            : '—');
+
+        return r;
+    }
+
+    configurarEventosSE() {
+        const pares = [
+            ['inputSeUppvarmning', 'sliderSeUppvarmning', 0],
+            ['inputSeScop',        'sliderSeScop',        1],
+            ['inputSeTackning',    'sliderSeTackning',    0],
+            ['inputSeElpris',      'sliderSeElpris',      2],
+            ['inputSeInvestering', 'sliderSeInvestering', 0]
+        ];
+
+        pares.forEach(([idInput, idSlider, casas]) => {
+            const input  = document.getElementById(idInput);
+            const slider = document.getElementById(idSlider);
+
+            slider?.addEventListener('input', () => {
+                if (input) input.value = numSE(parseFloat(slider.value), casas);
+                this.atualizarSuecia();
+            });
+
+            input?.addEventListener('input', () => {
+                const n = parseFloat(String(input.value).replace(/\s/g, '').replace(',', '.'));
+                if (slider && Number.isFinite(n)) slider.value = String(n);
+                this.atualizarSuecia();
+            });
+        });
     }
     
     atualizarDisplayResultados(resultado, numAmbientes) {
