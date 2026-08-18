@@ -145,3 +145,60 @@ html[data-theme="dark"] .resultado-item.destaque .valor-resultado-grande {
     border-top: 1px dashed var(--border-color, #d1d5db);
     padding-top: 10px;
 }
+
+/* ============================================================
+   VISÃO SUECA
+   Na Suécia a exigência é de VAZÃO (BFS 2024:8), não de área de
+   janela — então as entradas de vento/janela somem e entra o
+   bloco de fluxo e perda de calor. Mesma convenção dos apps
+   `salario`, `mutuo` e `solar`: `.se-only` e `.se-hide`.
+   ============================================================ */
+body.lang-br .se-only,
+body.lang-it .se-only { display: none !important; }
+body.lang-se .se-hide { display: none !important; }
+
+.vense-secao {
+    margin-top: 6px;
+    padding: 18px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color, #d1d5db);
+    background: var(--memorial-bg, rgba(127, 127, 127, 0.05));
+}
+
+.vense-titulo {
+    margin: 0 0 8px;
+    font-size: 1.12rem;
+    color: var(--vent-start);
+}
+
+.vense-intro {
+    margin: 0 0 16px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--text-secondary, #6b7280);
+}
+
+.vense-entradas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.vense-entradas .grupo-entrada { margin: 0; }
+
+.vense-entradas label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.vense-resultados {
+    display: grid;
+    gap: 2px;
+}
+
+/* O item de comparação com FTX só faz sentido quando o sistema atual
+   não é FTX; o script alterna o hidden. */
+#seJamforelseItem[hidden] { display: none; }
