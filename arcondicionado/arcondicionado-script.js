@@ -1014,7 +1014,9 @@ class ArcondicionadoApp extends App {
     formatarMoedaComConversao(valor) {
         const idioma = this.obterIdiomaAtual();
         const simbolo = i18n.porIdioma({ 'pt-BR': 'R$', 'it-IT': '€', 'sv-SE': 'kr' });
-        return `${simbolo} ${Math.round(valor).toLocaleString(idioma)}`;
+        const numero = Math.round(valor).toLocaleString(idioma);
+        // O sueco escreve a coroa DEPOIS do valor ("1 234 kr").
+        return idioma === 'sv-SE' ? `${numero} ${simbolo}` : `${simbolo} ${numero}`;
     }
     
     formatarDecimal(valor, decimais = 1) {

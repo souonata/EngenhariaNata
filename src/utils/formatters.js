@@ -31,16 +31,20 @@ export function formatarNumeroComSufixo(valor, casasDecimais = 0) {
 }
 
 export function formatarMoeda(valor, moeda = 'BRL', casasDecimais = 2) {
-    if (valor === null || valor === undefined || isNaN(valor)) {
-        return moeda === 'BRL' ? 'R$ 0,00' : '€ 0,00';
-    }
-    
     const configs = {
-        BRL: { locale: 'pt-BR', currency: 'BRL', symbol: 'R$' },
-        EUR: { locale: 'it-IT', currency: 'EUR', symbol: '€' }
+        BRL: { locale: 'pt-BR', currency: 'BRL', symbol: 'R$', zero: 'R$ 0,00' },
+        EUR: { locale: 'it-IT', currency: 'EUR', symbol: '€', zero: '€ 0,00' },
+        // Coroa sueca. O sv-SE põe o símbolo DEPOIS do valor ("1 234,00 kr") e
+        // separa o milhar por espaço — deixar cair no BRL fazia o app sueco
+        // exibir valores em R$.
+        SEK: { locale: 'sv-SE', currency: 'SEK', symbol: 'kr', zero: '0,00 kr' }
     };
-    
+
     const config = configs[moeda] || configs.BRL;
+
+    if (valor === null || valor === undefined || isNaN(valor)) {
+        return config.zero;
+    }
     
     return valor.toLocaleString(config.locale, {
         style: 'currency',

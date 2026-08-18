@@ -53,9 +53,12 @@ header h1 {
    CARDS
    ============================================ */
 /* Card base styles moved to shared-styles.css */
-.card {
-    animation: fadeInUp 0.55s ease; /* Sobre-specific animation */
-}
+/* Sem animação de entrada nos cards.
+   O fadeInUp (opacity 0 → 1 e translateY 30px → 0) reaparecia a cada troca de
+   idioma: reordenarCardsApps() re-anexa os cards com appendChild, e re-anexar
+   um nó REINICIA a animação CSS. Na tela isso lia como a página inteira
+   piscando e dando um pequeno salto para cima. A troca de idioma deve ser
+   instantânea. Os keyframes ficam definidos para uso pontual. */
 
 .card.highlight {
     background: var(--memorial-bg, white);

@@ -40,13 +40,23 @@ class SobreApp extends App {
         const bugsCard = cards.find(c => c.dataset.appKey === 'bugs');
         const appCards = cards.filter(c => c.dataset.appKey !== 'bugs');
 
+        // Locale explícito: sem ele o sueco ordenaria Å, Ä e Ö como variantes
+        // de A e O, quando na verdade vêm no FIM do alfabeto.
+        const locale = i18n.obterIdiomaAtual();
         appCards.sort((a, b) => {
             const tA = (a.querySelector('h2')?.textContent || '').trim();
             const tB = (b.querySelector('h2')?.textContent || '').trim();
-            return tA.localeCompare(tB, undefined, { sensitivity: 'base' });
+            return tA.localeCompare(tB, locale, { sensitivity: 'base' });
         });
 
-        [...appCards, bugsCard].filter(Boolean).forEach(card => container.appendChild(card));
+        const ordenados = [...appCards, bugsCard].filter(Boolean);
+        // Só re-anexa se a ordem realmente mudou: appendChild desnecessário
+        // move nós no DOM à toa e reinicia animações.
+        const atual = Array.from(container.children);
+        const mudou = ordenados.some((card, i) => atual[i] !== card);
+        if (mudou) {
+            ordenados.forEach(card => container.appendChild(card));
+        }
     }
 
     configurarAccordion() {

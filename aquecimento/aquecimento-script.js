@@ -541,6 +541,13 @@ class AquecimentoApp extends App {
         return numero.toFixed(casasDecimais).replace('.', ',');
     }
     
+    // Junta valor e símbolo na ordem do idioma: em sueco a coroa vem depois.
+    comMoeda(simbolo, textoNumero) {
+        return i18n.obterIdiomaAtual() === 'sv-SE'
+            ? `${textoNumero} ${simbolo}`
+            : `${simbolo} ${textoNumero}`;
+    }
+
     formatarNumeroComSufixo(numero, casasDecimais) {
         if (numero >= 1000000) {
             return this.formatarDecimal(numero / 1000000, casasDecimais) + 'M';
@@ -993,11 +1000,11 @@ class AquecimentoApp extends App {
         document.getElementById('potenciaCasa').textContent = calcularCasa ? this.formatarPotenciaWkW(potenciaCasa_W) : '-';
         
         // Atualizar custos
-        document.getElementById('custoTotal').textContent = `${moedaSimbolo} ${this.formatarNumeroComSufixo(custoTotal, 2)}`;
-        document.getElementById('custoPaineis').textContent = `${moedaSimbolo} ${this.formatarNumeroComSufixo(custoPaineis, 2)}`;
-        document.getElementById('custoAcumuladores').textContent = calcularAgua ? `${moedaSimbolo} ${this.formatarNumeroComSufixo(custoBoiler, 2)}` : '-';
-        document.getElementById('custoTubulacoes').textContent = `${moedaSimbolo} ${this.formatarNumeroComSufixo(custoTubulacoes, 2)}`;
-        document.getElementById('custoIsolantes').textContent = `${moedaSimbolo} ${this.formatarNumeroComSufixo(custoIsolantes, 2)}`;
+        document.getElementById('custoTotal').textContent = this.comMoeda(moedaSimbolo, this.formatarNumeroComSufixo(custoTotal, 2));
+        document.getElementById('custoPaineis').textContent = this.comMoeda(moedaSimbolo, this.formatarNumeroComSufixo(custoPaineis, 2));
+        document.getElementById('custoAcumuladores').textContent = calcularAgua ? this.comMoeda(moedaSimbolo, this.formatarNumeroComSufixo(custoBoiler, 2)) : '-';
+        document.getElementById('custoTubulacoes').textContent = this.comMoeda(moedaSimbolo, this.formatarNumeroComSufixo(custoTubulacoes, 2));
+        document.getElementById('custoIsolantes').textContent = this.comMoeda(moedaSimbolo, this.formatarNumeroComSufixo(custoIsolantes, 2));
         
         // Atualizar termossifões
         const resultadoTermossifoesDiv = document.getElementById('resultadoTermossifoes');
@@ -1007,7 +1014,7 @@ class AquecimentoApp extends App {
         if (calcularCasa && resultadoTermossifoes && resultadoTermossifoes.quantidade > 0) {
             resultadoTermossifoesDiv.style.display = 'flex';
             termossifoesDetalhes.textContent = resultadoTermossifoes.detalhes;
-            custoTermossifoesSpan.textContent = `${moedaSimbolo} ${this.formatarNumeroComSufixo(custoTermossifoes, 2)}`;
+            custoTermossifoesSpan.textContent = this.comMoeda(moedaSimbolo, this.formatarNumeroComSufixo(custoTermossifoes, 2));
             custoTermossifoesSpan.title = resultadoTermossifoes.detalhes;
         } else {
             resultadoTermossifoesDiv.style.display = 'none';
@@ -1100,7 +1107,7 @@ class AquecimentoApp extends App {
                 {
                     icone: '💰',
                     titulo: ta({ 'pt-BR': 'Custo Estimado', 'it-IT': 'Costo Stimato', 'sv-SE': 'Uppskattad kostnad' }),
-                    valor: `${moedaSimbolo} ${this.formatarNumeroComSufixo(custoTotal, 2)}`,
+                    valor: this.comMoeda(moedaSimbolo, this.formatarNumeroComSufixo(custoTotal, 2)),
                     descricao: ta({
                         'pt-BR': 'Inclui coletores, boiler, tubulação, isolantes e termossifões.',
                         'it-IT': 'Include collettori, boiler, tubazioni, isolanti e termosifoni.',

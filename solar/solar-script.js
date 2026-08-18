@@ -88,9 +88,10 @@ function renderizarExplicacaoSolar({
 }) {
     const te = mapa => i18n.porIdioma(mapa);
     const moeda = i18n.t('moeda') || obterSimboloMoeda();
-    const custoTotalFmt = `${moeda} ${custoTotal.toLocaleString(idiomaAtual, { minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: true })}`;
-    const custoBateriasFmt = `${moeda} ${custoBaterias.toLocaleString(idiomaAtual, { minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: true })}`;
-    const custoPaineisFmt = `${moeda} ${custoPaineis.toLocaleString(idiomaAtual, { minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: true })}`;
+    const semDecimais = { minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: true };
+    const custoTotalFmt = comMoeda(custoTotal.toLocaleString(idiomaAtual, semDecimais));
+    const custoBateriasFmt = comMoeda(custoBaterias.toLocaleString(idiomaAtual, semDecimais));
+    const custoPaineisFmt = comMoeda(custoPaineis.toLocaleString(idiomaAtual, semDecimais));
 
     explicacaoSolar.renderizar({
         destaque: te({
@@ -273,9 +274,10 @@ function sugerirArranjoPaineis(qtdPaineis, tensaoBanco, potenciaInversor, potenc
 // Função formatarMoedaComVirgula agora é importada de ../src/utils/formatters.js
 // Formata moeda sempre com vírgula como separador decimal
 function formatarMoedaComVirgula(valor, moeda, casasDecimais = 2) {
-    if (isNaN(valor) || valor === null || valor === undefined) return `${moeda} 0,00`;
-    // Sempre usa pt-BR para garantir vírgula como separador decimal
-    return `${moeda} ${valor.toLocaleString('pt-BR', {minimumFractionDigits: casasDecimais, maximumFractionDigits: casasDecimais})}`;
+    if (isNaN(valor) || valor === null || valor === undefined) return comMoeda('0,00');
+    // Locale do idioma ativo: os três usam vírgula decimal, mas o sueco
+    // separa o milhar por espaço em vez de ponto.
+    return comMoeda(valor.toLocaleString(idiomaAtual, { minimumFractionDigits: casasDecimais, maximumFractionDigits: casasDecimais }));
 }
 // Converte string formatada com vírgula para número
 function converterVirgulaParaNumero(valorFormatado) {
@@ -311,6 +313,17 @@ function obterFatorConversaoMoeda() {
     if (idiomaAtual === 'pt-BR') return 1;
     if (idiomaAtual === 'sv-SE') return TAXA_BRL_SEK;
     return 1 / TAXA_BRL_EUR;
+}
+
+function codigoMoedaAtual() {
+    return { 'pt-BR': 'BRL', 'it-IT': 'EUR', 'sv-SE': 'SEK' }[idiomaAtual] || 'EUR';
+}
+
+// Junta número e símbolo na ordem certa do idioma. O sueco escreve o
+// símbolo depois do valor; português e italiano, antes.
+function comMoeda(textoNumero) {
+    const simbolo = obterSimboloMoeda();
+    return idiomaAtual === 'sv-SE' ? `${textoNumero} ${simbolo}` : `${simbolo} ${textoNumero}`;
 }
 
 function obterSimboloMoeda() {
@@ -425,6 +438,13 @@ const PRECOS_INVERSOR_EUR = [
     { kw: 5, preco: 889, mpptA: 100 },
     { kw: 6, preco: 1050, mpptA: 120 }
 ];
+const PRECOS_INVERSOR_SEK = [
+    { kw: 1, preco: 3600, mpptA: 40 },
+    { kw: 2, preco: 5600, mpptA: 60 },
+    { kw: 3, preco: 7600, mpptA: 80 },
+    { kw: 5, preco: 11000, mpptA: 100 },
+    { kw: 6, preco: 13000, mpptA: 120 }
+];
 // PREÇOS DE MPPT (Controlador de Carga)
 // Preços baseados na corrente máxima (A) que o MPPT pode suportar
 
@@ -451,8 +471,9 @@ function obterCapacidadeMPPTIntegrado(potenciaKw) {
     return tabela[tabela.length - 1].mpptA;
 } // preço estimado de um inversor baseado na potência desejada
 function calcularPrecoInversor(potenciaKw, moeda) {
-    // PASSO 1: Seleciona a tabela de preços baseada na moeda // Se moeda for BRL (Real), usa a tabela em reais; caso contrário, usa a tabela em euros
-    const tabela = moeda === 'BRL' ? PRECOS_INVERSOR_BRL : PRECOS_INVERSOR_EUR;
+    // PASSO 1: Tabela de preços na moeda do país do idioma.
+    const TABELAS_INVERSOR = { BRL: PRECOS_INVERSOR_BRL, EUR: PRECOS_INVERSOR_EUR, SEK: PRECOS_INVERSOR_SEK };
+    const tabela = TABELAS_INVERSOR[moeda] || PRECOS_INVERSOR_EUR;
     
     // PASSO 2: Verifica se a potência é menor ou igual ao menor valor da tabela
     // Se for, retorna o preço do menor inversor da tabela (sem extrapolação para baixo)
@@ -933,7 +954,7 @@ function atualizarNotaPrecoBateriaPadrao(tipoBateria, valorPadrao) {
     notaPrecoBateriaKWh.textContent = i18n.porIdioma({
         'pt-BR': `Valor padrão configurável: ${moeda} ${valorFmt}/kWh (${tipoTexto}; faixa de referência: ${faixaPreco})`,
         'it-IT': `Valore predefinito configurabile: ${moeda} ${valorFmt}/kWh (${tipoTexto}; intervallo di riferimento: ${faixaPreco})`,
-        'sv-SE': `Inställbart standardvärde: ${moeda} ${valorFmt}/kWh (${tipoTexto}; riktintervall: ${faixaPreco})`
+        'sv-SE': `Inställbart standardvärde: ${valorFmt} ${moeda}/kWh (${tipoTexto}; riktintervall: ${faixaPreco})`
     });
 }
 // FUNÇÕES DE ATUALIZAÇÃO DOS GRÁFICOS
@@ -1135,7 +1156,7 @@ function atualizarGraficoAmortizacao(dados) {
                             const v = ctx.parsed.y;
                             if (v === null || v === undefined || ctx.dataset.label === LABEL_EQUILIBRIO) return null;
                             const prefix = v < 0 ? '-' : '';
-                            return `${ctx.dataset.label}: ${prefix}${moeda} ${Math.abs(v).toLocaleString(idiomaAtual, {maximumFractionDigits: 0})}`;
+                            return `${ctx.dataset.label}: ${prefix}${comMoeda(Math.abs(v).toLocaleString(idiomaAtual, { maximumFractionDigits: 0 }))}`;
                         },
                         filter: item => item.dataset.label !== LABEL_EQUILIBRIO && item.parsed.y !== null,
                         footer: items => {
@@ -1148,7 +1169,7 @@ function atualizarGraficoAmortizacao(dados) {
                                     const nome = ev.tipo === 'bateria'
                                         ? ts({ 'pt-BR': '🔋 Subst. baterias', 'it-IT': '🔋 Sost. batterie', 'sv-SE': '🔋 Byte av batterier' })
                                         : ts({ 'pt-BR': '⚙️ Renov. painéis+inversor+cabos', 'it-IT': '⚙️ Rinnovo pannelli+inverter+cavi', 'sv-SE': '⚙️ Byte av paneler, växelriktare och kablar' });
-                                    linhas.push(`${nome}: -${moeda} ${ev.valor.toLocaleString(idiomaAtual, {maximumFractionDigits: 0})}`);
+                                    linhas.push(`${nome}: -${comMoeda(ev.valor.toLocaleString(idiomaAtual, { maximumFractionDigits: 0 }))}`);
                                 }
                             }
                             if (idx === paybackIdx && paybackMeses !== null) {
@@ -1181,7 +1202,7 @@ function atualizarGraficoAmortizacao(dados) {
                             const k = abs >= 1000
                                 ? `${(abs / 1000).toLocaleString('pt-BR', {maximumFractionDigits: 0})}k`
                                 : abs.toLocaleString('pt-BR', {maximumFractionDigits: 0});
-                            return v < 0 ? `-${moeda} ${k}` : `${moeda} ${k}`;
+                            return v < 0 ? `-${comMoeda(k)}` : comMoeda(k);
                         }
                     },
                     grid: { color: cores.grid }
@@ -1291,7 +1312,7 @@ function atualizarGraficoAmortizacao(dados) {
     const numLocal = (v, opcoes) => v.toLocaleString(idiomaAtual, opcoes);
 
     let rE = tr(L.consumo, `${numLocal(consumoMensal, { maximumFractionDigits: 1 })} ${L.unidadeConsumo}`)
-        + tr(L.tarifa, `${moeda} ${numLocal(precoKWh, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`)
+        + tr(L.tarifa, comMoeda(numLocal(precoKWh, { minimumFractionDigits: 2, maximumFractionDigits: 2 })))
         + tr(L.ano1, fmt(economiaAnual1));
     if (anosAnalise >= 10) rE += tr(L.ano10, fmt(economiaAnual10));
     if (anosAnalise > 10) rE += tr(L.anoN(anosAnalise), fmt(economiaAnualN));
@@ -1793,7 +1814,7 @@ function calcularSistema(dodAlvo) {
     if (resPesoBaterias) resPesoBaterias.textContent = formatarNumeroComSufixo(pesoTotal, 1) + ' kg';
     
     const moeda = i18n.t('moeda') || 'R$';
-    const formatarPreco = (valor) => `${moeda} ${valor.toLocaleString(idiomaAtual, {minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: true})}`;
+    const formatarPreco = (valor) => comMoeda(valor.toLocaleString(idiomaAtual, { minimumFractionDigits: 0, maximumFractionDigits: 0, useGrouping: true }));
     
     // Exibir custos detalhados
     const resPrecoEstimado = document.getElementById('resPrecoEstimado');
@@ -2493,7 +2514,7 @@ function atualizarMemorialComValores() {
     // Formatação
     const moeda = i18n.t('moeda') || 'R$';
     const formatarNumero = (num) => num.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 2, useGrouping: true });
-    const formatarMoeda = (num) => num.toLocaleString(idiomaAtual, { style: 'currency', currency: moeda === 'R$' ? 'BRL' : 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    const formatarMoeda = (num) => num.toLocaleString(idiomaAtual, { style: 'currency', currency: codigoMoedaAtual(), minimumFractionDigits: 0, maximumFractionDigits: 0 });
     
     // Atualizar exemplos
     const exemploEnergiaDiaria = document.getElementById('memorial-exemplo-energia-diaria');
@@ -2575,7 +2596,7 @@ function atualizarMemorialComValores() {
         
         const precoBateriaAjustado = precoBateriaPorKWh * energiaPorBateria;
         const precoBateriaConvertido = precoBateriaAjustado * fatorConversao;
-        const moedaCalculo = moeda === 'R$' ? 'BRL' : 'EUR';
+        const moedaCalculo = codigoMoedaAtual();
         const custoPaineis = qtdPaineis * precoPainelConvertido;
         const custoBaterias = qtdBaterias * precoBateriaConvertido;
         const custoInversor = calcularPrecoInversor(potenciaInversor, moedaCalculo);

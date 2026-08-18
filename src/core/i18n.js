@@ -57,10 +57,34 @@ class I18nManager {
 
         this.idiomaAtual = novoIdioma;
         sessionStorage.setItem(IDIOMA_SESSION_KEY, novoIdioma);
-        
+
+        // Troca de idioma é instantânea: sem fade e sem deslize.
+        // Vários apps reordenam cards com appendChild ao traduzir, e re-anexar
+        // um elemento REINICIA a animação CSS dele — no `sobre` isso replicava
+        // o fadeInUp (opacity 0 → 1 e translateY 30px → 0), que aparecia como
+        // uma piscada da página inteira somada a um falso "scroll up".
+        this.suspenderAnimacoes();
+
         this.atualizarDocumento();
         this.executarCallbacks();
         this.atualizarBotoesIdioma();
+
+        this.retomarAnimacoes();
+    }
+
+    // Marca o documento enquanto a tradução é aplicada. O CSS correspondente
+    // (assets/css/shared-styles.css) zera animações e transições sob esta
+    // classe, então a troca acontece num único paint.
+    suspenderAnimacoes() {
+        document.documentElement.classList.add('engnata-sem-animacao');
+    }
+
+    retomarAnimacoes() {
+        // Força o reflow antes de liberar: sem isto o navegador agrupa a
+        // remoção da classe com as mudanças anteriores e a animação roda
+        // mesmo assim.
+        void document.documentElement.offsetHeight;
+        document.documentElement.classList.remove('engnata-sem-animacao');
     }
 
     atualizarDocumento() {

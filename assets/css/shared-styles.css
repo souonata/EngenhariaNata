@@ -1663,3 +1663,17 @@ input[type="range"].slider-fora-faixa::-moz-range-thumb:hover {
     }
 }
 
+
+/* Troca de idioma instantânea — sem piscada e sem deslize.
+   A classe é posta por src/core/i18n.js só durante a aplicação da tradução.
+   Necessária porque vários apps reordenam cards com appendChild ao traduzir,
+   e re-anexar um elemento reinicia a animação CSS dele (no `sobre`, o
+   fadeInUp: opacity 0→1 mais translateY 30px→0, que o usuário via como a
+   página inteira piscando e subindo). */
+.engnata-sem-animacao,
+.engnata-sem-animacao *,
+.engnata-sem-animacao *::before,
+.engnata-sem-animacao *::after {
+    animation: none !important;
+    transition: none !important;
+}
