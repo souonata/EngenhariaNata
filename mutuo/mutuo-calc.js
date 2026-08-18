@@ -21,6 +21,14 @@
  * @param {'ano'|'mes'|'dia'} periodicidade
  * @returns {number} taxa mensal em fração decimal (ex: 0.00949)
  */
+import {
+    AMORTERINGSKRAV_2026,
+    AMORTERINGSKRAV_MAXIMO,
+    BOLANETAK_2026,
+    ENTRADA_MINIMA_2026,
+    RANTEAVDRAG
+} from '../src/data/parametros-suecia.js';
+
 export function converterTaxaParaMensal(taxaPct, periodicidade) {
     if (periodicidade === 'mes') {
         return taxaPct / 100;
@@ -203,5 +211,85 @@ export function totalizarTabela(tabela) {
         totalAmortizado,
         totalExtras,
         prazoEfetivo: tabela.length
+    };
+}
+
+// ============================================
+// SUÉCIA — bolån (crédito imobiliário)
+// ============================================
+// Regras da Finansinspektionen vigentes desde 1 de abril de 2026. Valores e
+// fontes em src/data/parametros-suecia.js.
+//
+// ⚠️ Duas regras MUDARAM em 1/4/2026 — material anterior está desatualizado:
+//   1. o `skärpt amorteringskrav` (1% extra para dívida acima de 4,5× a renda
+//      bruta anual) foi REVOGADO;
+//   2. o `bolånetak` subiu de 85% para 90%, e a entrada mínima caiu de 15%
+//      para 10%.
+//
+// Diferença central em relação a Brasil e Itália: a amortização mínima não vem
+// de um sistema de prestação (SAC/Price), e sim de um PERCENTUAL ANUAL DA
+// DÍVIDA definido pela belåningsgrad. O mutuário pode amortizar mais, nunca
+// menos.
+
+/**
+ * Amortização anual mínima exigida, em fração do valor do empréstimo.
+ * @param {number} belaningsgrad  Empréstimo ÷ valor do imóvel (ex.: 0,72).
+ */
+export function calcularAmorteringskrav(belaningsgrad) {
+    const faixa = AMORTERINGSKRAV_2026.find(f => belaningsgrad > f.belaningsgradAcima);
+    const exigido = faixa ? faixa.amortizacaoAnual : 0;
+    return Math.min(exigido, AMORTERINGSKRAV_MAXIMO);
+}
+
+/**
+ * Ränteavdrag: dedução dos juros — 30% até o limite e 21% acima dele. Desde
+ * 2026 só vale para empréstimo COM garantia real; o bolån, garantido pelo
+ * imóvel, continua dedutível.
+ * @param {number} jurosAnuais       Despesa líquida de juros no ano, em SEK.
+ * @param {boolean} temGarantiaReal  Se o empréstimo tem garantia real.
+ */
+export function calcularRanteavdrag(jurosAnuais, temGarantiaReal = true) {
+    if (!temGarantiaReal && RANTEAVDRAG.exigeGarantiaReal) {
+        return 0;
+    }
+    const ate = Math.min(jurosAnuais, RANTEAVDRAG.limite);
+    const acima = Math.max(0, jurosAnuais - RANTEAVDRAG.limite);
+    return ate * RANTEAVDRAG.taxaAte100k + acima * RANTEAVDRAG.taxaAcima100k;
+}
+
+/**
+ * Dimensiona um bolån a partir do valor do imóvel e da entrada.
+ * @returns Checagem do bolånetak, amortização mínima exigida, custo do
+ *          primeiro ano e efeito do ränteavdrag.
+ */
+export function calcularBolan({ valorImovel, entrada, taxaJurosAnual }) {
+    const emprestimo = Math.max(0, valorImovel - entrada);
+    const belaningsgrad = valorImovel > 0 ? emprestimo / valorImovel : 0;
+
+    // Bolånetak: o banco não pode emprestar acima de 90% do valor do imóvel.
+    const entradaMinima = valorImovel * ENTRADA_MINIMA_2026;
+    const dentroDoBolanetak = belaningsgrad <= BOLANETAK_2026 + 1e-9;
+
+    const taxaAmortizacao = calcularAmorteringskrav(belaningsgrad);
+    const amortizacaoAnual = emprestimo * taxaAmortizacao;
+
+    const jurosAnuais = emprestimo * (taxaJurosAnual / 100);
+    const ranteavdrag = calcularRanteavdrag(jurosAnuais, true);
+    const jurosLiquidos = jurosAnuais - ranteavdrag;
+
+    const custoAnualBruto = amortizacaoAnual + jurosAnuais;
+    const custoAnualLiquido = amortizacaoAnual + jurosLiquidos;
+
+    return {
+        emprestimo, belaningsgrad, entradaMinima, dentroDoBolanetak,
+        bolanetak: BOLANETAK_2026,
+        taxaAmortizacao, amortizacaoAnual,
+        amortizacaoMensal: amortizacaoAnual / 12,
+        jurosAnuais, ranteavdrag, jurosLiquidos,
+        custoAnualBruto, custoAnualLiquido,
+        custoMensalBruto: custoAnualBruto / 12,
+        custoMensalLiquido: custoAnualLiquido / 12,
+        // Registrado para a UI poder informar que a regra caiu.
+        skarptAmorteringskravRevogado: true
     };
 }

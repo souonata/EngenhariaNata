@@ -210,11 +210,27 @@ _Última atualização: 2026-08-17_
     bolån de 2026 **pesquisados na fonte, com URL e data em cada constante**. ⚠️ **Duas regras
     mudaram em 1/4/2026:** o `skärpt amorteringskrav` foi revogado e o `bolånetak` subiu de 85%
     para 90%. Não atualize esses números de memória.
-  - **FALTA:** `solar` (30 ternários), `arcondicionado` (20) e `aquecimento` (18) — os mais pesados;
-    implementar de fato o `salario`/`mutuo` suecos a partir do módulo de parâmetros (faltam ainda a
-    curva do `grundavdrag` por faixa e a fórmula do `jobbskatteavdrag`, ambas marcadas como
-    pendentes no módulo); integrar o dock ao `patentenautica` (só BR/IT), que não passa pelo
+  - **FEITO (Fase 2 completa):** `solar`, `arcondicionado` e `aquecimento`, com adaptação de modelo
+    e não só de texto — latitude 55–69° e coletor plano no aquecimento; BTU/m² de 250–340 no
+    arcondicionado; e no solar o **HSP por país** (5,0 BR / 4,0 IT / **2,8 SV**), que muda o
+    resultado: o mesmo consumo sai de 5 painéis no Brasil para 8 na Suécia.
+  - **FEITO (Fase 4 — núcleo numérico):** `calcularSE()` em `salario-calc.js` e `calcularBolan()`
+    em `mutuo-calc.js`, com **26 testes**. As fórmulas do `grundavdrag` e do `jobbskatteavdrag`
+    foram pesquisadas na fonte e conferidas contra valores oficiais independentes (ver
+    `src/data/parametros-suecia.js`). ⚠️ Não atualize esses números de memória: **duas regras
+    mudaram em 1/4/2026** (skärpt amorteringskrav revogado, bolånetak 85%→90%) e a **avtrappning do
+    jobbskatteavdrag foi eliminada** em 2026.
+  - **FALTA para a Fase 4 chegar à tela:** i18n de `salario` (115 chaves) e `mutuo` (262) — sem
+    elas o dock esconde a bandeira sueca e os modelos ficam inalcançáveis — mais o wiring de UI:
+    em `salario-script.js` o getter `modoPais` é binário (`it-IT ? 'it' : 'br'`), o dispatch da
+    linha ~320 idem, e a renderização usa `isIt` em vários pontos; é preciso ainda expor o campo
+    de kommunalskatt e OCULTAR 13ª/14ª no modo sueco (os campos vêm zerados de propósito).
+  - **FALTA (geral):** integrar o dock ao `patentenautica` (só BR/IT), que não passa pelo
     `src/core/app.js`.
+  - **Gotcha de formatação:** o `format:check` roda de dentro de `local/`, então o glob NÃO alcança
+    os apps da raiz — eles nunca passaram pelo Prettier e usam 4 espaços. Não rode
+    `prettier --write` neles: reformata tudo para 2 espaços e infla o diff (aconteceu: 1.788
+    inserções onde o real eram 451).
   - **Fora do sueco por decisão:** `fazenda` (base agronômica regional) e `lichiabonsai`
     (333 campos `{pt, it}` de conteúdo nos módulos de dados) — ver ROADMAP.
   - **Line endings resolvido:** `.gitattributes` agora tem `* text=auto eol=lf`. Os 275 arquivos já

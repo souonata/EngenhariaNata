@@ -25,15 +25,61 @@ export const PRISBASBELOPP_2026 = 59200; // SEK
 export const FORHOJT_PRISBASBELOPP_2026 = 60500; // SEK
 
 /**
- * Grundavdrag: dedução automática, variável conforme a renda (não é linear —
- * sobe, atinge um teto e volta a cair até o piso). Os valores abaixo são os
- * pontos notáveis publicados pelo Skatteverket; a curva por faixa ainda precisa
- * ser implementada a partir da tabela oficial.
+ * Grundavdrag: dedução automática, variável conforme a renda. A curva não é
+ * linear — sobe, atinge um teto e volta a cair até um piso. Expressa em
+ * múltiplos do prisbasbelopp (PBB).
+ *
+ * Conferência dos três pontos notáveis contra os valores publicados pelo
+ * Skatteverket para 2026 (PBB = 59 200):
+ *   0,423 × 59 200 = 25 042  → publicado "25 100 vid låga inkomster"
+ *   0,770 × 59 200 = 45 584  → publicado "máximo 45 600"
+ *   0,293 × 59 200 = 17 346  → publicado "mínimo 17 400"
+ * Os três batem, o que valida os coeficientes.
  */
 export const GRUNDAVDRAG_2026 = {
   menor66: { base: 25100, maximo: 45600, minimo: 17400 },
   de66Anos: { base: 65800, maximo: 179100, minimo: 117500 },
 };
+
+/** Faixas do grundavdrag em múltiplos de PBB, para quem tem menos de 66 anos. */
+export const GRUNDAVDRAG_FAIXAS_PBB = {
+  pisoPbb: 0.423, // valor base nas rendas baixas
+  inicioSubidaPbb: 0.99, // a partir daqui soma 20% do excedente
+  taxaSubida: 0.2,
+  tetoPbb: 0.77, // teto do grundavdrag
+  inicioDescidaPbb: 3.11, // a partir daqui desconta 10% do excedente
+  taxaDescida: 0.1,
+  fimDescidaPbb: 7.88, // abaixo disto a curva já chegou ao piso
+  minimoPbb: 0.293,
+};
+
+/**
+ * Calcula o grundavdrag de quem tem menos de 66 anos, em coroas.
+ * @param {number} rendaAnual  Fastställd förvärvsinkomst (renda bruta anual).
+ * @param {number} pbb         Prisbasbelopp do ano.
+ */
+export function calcularGrundavdrag(rendaAnual, pbb = PRISBASBELOPP_2026) {
+  const f = GRUNDAVDRAG_FAIXAS_PBB;
+  const emPbb = rendaAnual / pbb;
+
+  if (emPbb <= f.inicioSubidaPbb) {
+    return f.pisoPbb * pbb;
+  }
+
+  if (emPbb <= f.inicioDescidaPbb) {
+    const subida =
+      f.pisoPbb * pbb + f.taxaSubida * (rendaAnual - f.inicioSubidaPbb * pbb);
+    return Math.min(subida, f.tetoPbb * pbb);
+  }
+
+  if (emPbb <= f.fimDescidaPbb) {
+    const descida =
+      f.tetoPbb * pbb - f.taxaDescida * (rendaAnual - f.inicioDescidaPbb * pbb);
+    return Math.max(descida, f.minimoPbb * pbb);
+  }
+
+  return f.minimoPbb * pbb;
+}
 
 /** Statlig inkomstskatt: 20% sobre o que passa da skiktgräns. */
 export const SKIKTGRANS_2026 = 643000; // renda tributável APÓS grundavdrag
@@ -85,12 +131,54 @@ export const SEMESTERLON_TAXA = 0.12;
 export const TEM_DECIMO_TERCEIRO = false;
 
 /**
- * Jobbskatteavdrag: crédito que reduz a kommunalskatt (não a statlig skatt).
- * A fórmula é escalonada em múltiplos do prisbasbelopp e ainda precisa ser
- * transcrita da tabela oficial antes de entrar no cálculo.
- * A partir de 2026 o crédito foi reforçado para quem tem mais de 66 anos.
+ * Jobbskatteavdrag (JSA): crédito que abate a KOMMUNALSKATT — nunca a statlig
+ * skatt. Escalonado por faixas de renda do trabalho, em múltiplos de PBB, e
+ * multiplicado pela alíquota municipal, então vale mais em município de
+ * imposto alto.
+ *
+ * ⚠️ Mudança de 2026: a avtrappning (redução progressiva do benefício nas
+ * rendas altas) foi ELIMINADA. O crédito agora chega a um platô e não cai
+ * mais. Material anterior a 2026 descreve a regra antiga.
+ *
+ * Conferência: no topo da 3ª faixa a base é 162 625 kr; multiplicada pela
+ * kommunalskatt média de 32,38% dá 4 388 kr/mês, que bate com o máximo
+ * publicado para 2026 (4 366–4 388 kr/mês, conforme o município). Base
+ * legal: 67 kap. 5–9 §§ inkomstskattelagen.
  */
-export const JOBBSKATTEAVDRAG_PENDENTE = true;
+export const JOBBSKATTEAVDRAG_2026 = {
+  faixa1Ate: 53872, // 0,91 PBB
+  faixa1Coef: 0.916,
+  faixa2Ate: 191808, // 3,24 PBB
+  faixa2Coef: 0.32,
+  faixa3Ate: 478336, // 8,08 PBB — a partir daqui é platô
+  faixa3Coef: 0.2413,
+  temAvtrappning: false, // removida em 2026
+};
+
+/**
+ * Calcula o jobbskatteavdrag anual, em coroas.
+ * @param {number} rendaTrabalhoAnual  Arbetsinkomst bruta do ano.
+ * @param {number} kommunalskatt       Alíquota municipal em decimal (ex.: 0,3238).
+ */
+export function calcularJobbskatteavdrag(rendaTrabalhoAnual, kommunalskatt) {
+  const j = JOBBSKATTEAVDRAG_2026;
+  const renda = Math.max(0, rendaTrabalhoAnual);
+
+  let base;
+  if (renda <= j.faixa1Ate) {
+    base = j.faixa1Coef * renda;
+  } else if (renda <= j.faixa2Ate) {
+    base = j.faixa1Coef * j.faixa1Ate + j.faixa2Coef * (renda - j.faixa1Ate);
+  } else {
+    const baseFaixa2 =
+      j.faixa1Coef * j.faixa1Ate + j.faixa2Coef * (j.faixa2Ate - j.faixa1Ate);
+    // Acima da 3ª faixa o benefício estabiliza: sem avtrappning desde 2026.
+    const rendaConsiderada = Math.min(renda, j.faixa3Ate);
+    base = baseFaixa2 + j.faixa3Coef * (rendaConsiderada - j.faixa2Ate);
+  }
+
+  return base * kommunalskatt;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CRÉDITO IMOBILIÁRIO — BOLÅN (para o app `mutuo`)
