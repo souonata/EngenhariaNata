@@ -383,8 +383,6 @@ class VentilacaoApp extends App {
 
     atualizarDOM(v, res) {
         const t    = this.traducoes;
-        const isIt = i18n.obterIdiomaAtual() === 'it-IT';
-
         // ACH
         document.getElementById('resultadoACH').textContent =
             formatarNumero(res.ach, 1) + ' ACH';
@@ -409,17 +407,17 @@ class VentilacaoApp extends App {
         // Status das janelas
         const statusEl = document.getElementById('resultadoStatusJanelas');
         if (res.deficitJanelas > 0) {
-            const falta = isIt ? 'Mancano' : 'Faltam';
+            const falta = i18n.porIdioma({ 'pt-BR': 'Faltam', 'it-IT': 'Mancano', 'sv-SE': 'Saknas' });
             statusEl.innerHTML = `<span class="status-badge status-falta">⚠️ ${falta} ${formatarNumero(res.deficitJanelas, 2)} m²</span>`;
         } else {
-            const ok = isIt ? 'OK — in eccesso' : 'OK — excedente';
+            const ok = i18n.porIdioma({ 'pt-BR': 'OK — excedente', 'it-IT': 'OK — in eccesso', 'sv-SE': 'OK — överskott' });
             statusEl.innerHTML = `<span class="status-badge status-ok">✅ ${ok} ${formatarNumero(-res.deficitJanelas, 2)} m²</span>`;
         }
     }
 
     gerarExplicacao(v, res) {
         const t    = this.traducoes;
-        const isIt = i18n.obterIdiomaAtual() === 'it-IT';
+        const t2 = mapa => i18n.porIdioma(mapa);
 
         const nomeClima     = t.opcoes?.[v.clima]          || v.clima;
         const nomeExposicao = t.opcoes?.[v.exposicao]      || v.exposicao;
@@ -431,44 +429,56 @@ class VentilacaoApp extends App {
             linhas: [
                 {
                     icone: '📐',
-                    titulo: isIt ? 'Volume dell\'ambiente' : 'Volume do ambiente',
+                    titulo: t2({ 'pt-BR': 'Volume do ambiente', 'it-IT': 'Volume dell\'ambiente', 'sv-SE': 'Rummets volym' }),
                     valor: `${formatarNumero(res.volume, 1)} m³`,
                     descricao: `${v.comprimento} m × ${v.largura} m × ${v.peDireito} m = ${formatarNumero(res.volume, 1)} m³`
                 },
                 {
                     icone: '💨',
-                    titulo: isIt ? 'Portata d\'aria' : 'Vazão de ar',
+                    titulo: t2({ 'pt-BR': 'Vazão de ar', 'it-IT': 'Portata d\'aria', 'sv-SE': 'Luftflöde' }),
                     valor: `${formatarNumero(res.vazao, 0)} m³/h`,
-                    descricao: isIt
-                        ? `Vento ${nomeClima} (${formatarNumero(res.velVento, 1)} m/s), ${nomeTipo} (Cv=${formatarNumero(res.coef, 3)}), esposizione ${nomeExposicao} (fattore ${formatarNumero(res.fatorExp, 2)}). Formula: A × V × fattore × Cv × 3600.`
-                        : `Vento ${nomeClima} (${formatarNumero(res.velVento, 1)} m/s), ${nomeTipo} (Cv=${formatarNumero(res.coef, 3)}), exposição ${nomeExposicao} (fator ${formatarNumero(res.fatorExp, 2)}). Fórmula: A × V × fator × Cv × 3600.`
+                    descricao: t2({
+                        'pt-BR': `Vento ${nomeClima} (${formatarNumero(res.velVento, 1)} m/s), ${nomeTipo} (Cv=${formatarNumero(res.coef, 3)}), exposição ${nomeExposicao} (fator ${formatarNumero(res.fatorExp, 2)}). Fórmula: A × V × fator × Cv × 3600.`,
+                        'it-IT': `Vento ${nomeClima} (${formatarNumero(res.velVento, 1)} m/s), ${nomeTipo} (Cv=${formatarNumero(res.coef, 3)}), esposizione ${nomeExposicao} (fattore ${formatarNumero(res.fatorExp, 2)}). Formula: A × V × fattore × Cv × 3600.`,
+                        'sv-SE': `Vind ${nomeClima} (${formatarNumero(res.velVento, 1)} m/s), ${nomeTipo} (Cv=${formatarNumero(res.coef, 3)}), läge ${nomeExposicao} (faktor ${formatarNumero(res.fatorExp, 2)}). Formel: A × V × faktor × Cv × 3600.`
+                    })
                 },
                 {
                     icone: '🔄',
-                    titulo: isIt ? 'Ricambi d\'aria (ACH)' : 'Renovações de ar (ACH)',
+                    titulo: t2({ 'pt-BR': 'Renovações de ar (ACH)', 'it-IT': 'Ricambi d\'aria (ACH)', 'sv-SE': 'Luftomsättning (ACH)' }),
                     valor: `${formatarNumero(res.ach, 1)} ACH`,
-                    descricao: isIt
-                        ? `Obiettivo: ${formatarNumero(res.achNecessario, 1)} ACH (maggiore tra l'obiettivo educativo ${ACH_ALVO} e il fabbisogno per persone ${achPessoas}).`
-                        : `Alvo: ${formatarNumero(res.achNecessario, 1)} ACH (maior entre o alvo educativo ${ACH_ALVO} e o necessário por pessoas ${achPessoas}).`
+                    descricao: t2({
+                        'pt-BR': `Alvo: ${formatarNumero(res.achNecessario, 1)} ACH (maior entre o alvo educativo ${ACH_ALVO} e o necessário por pessoas ${achPessoas}).`,
+                        'it-IT': `Obiettivo: ${formatarNumero(res.achNecessario, 1)} ACH (maggiore tra l'obiettivo educativo ${ACH_ALVO} e il fabbisogno per persone ${achPessoas}).`,
+                        'sv-SE': `Mål: ${formatarNumero(res.achNecessario, 1)} ACH (det högsta av det pedagogiska målet ${ACH_ALVO} och behovet för antalet personer ${achPessoas}).`
+                    })
                 },
                 {
                     icone: '🪟',
-                    titulo: isIt ? 'Superficie minima finestre (riferimento 1/8)' : 'Área mínima de janelas (referência 1/8)',
+                    titulo: t2({ 'pt-BR': 'Área mínima de janelas (referência 1/8)', 'it-IT': 'Superficie minima finestre (riferimento 1/8)', 'sv-SE': 'Minsta fönsterarea (riktvärde 1/8)' }),
                     valor: `${formatarNumero(res.areaMinima, 2)} m²`,
-                    descricao: isIt
-                        ? `1/8 dell'area del pavimento (${formatarNumero(res.areaPiso, 1)} m²) — regola tipica dei regolamenti edilizi. Attuale: ${v.janelas} m² — ${res.deficitJanelas > 0 ? 'insufficiente' : 'conforme'}. Criterio costruttivo indipendente dall'ACH.`
-                        : `1/8 da área do piso (${formatarNumero(res.areaPiso, 1)} m²) — regra típica de código de obras. Atual: ${v.janelas} m² — ${res.deficitJanelas > 0 ? 'insuficiente' : 'conforme'}. Critério construtivo independente do ACH.`
+                    descricao: t2({
+                        'pt-BR': `1/8 da área do piso (${formatarNumero(res.areaPiso, 1)} m²) — regra típica de código de obras. Atual: ${v.janelas} m² — ${res.deficitJanelas > 0 ? 'insuficiente' : 'conforme'}. Critério construtivo independente do ACH.`,
+                        'it-IT': `1/8 dell'area del pavimento (${formatarNumero(res.areaPiso, 1)} m²) — regola tipica dei regolamenti edilizi. Attuale: ${v.janelas} m² — ${res.deficitJanelas > 0 ? 'insufficiente' : 'conforme'}. Criterio costruttivo indipendente dall'ACH.`,
+                        'sv-SE': `1/8 av golvytan (${formatarNumero(res.areaPiso, 1)} m²) — vanlig byggregel. Nuvarande: ${v.janelas} m² — ${res.deficitJanelas > 0 ? 'otillräckligt' : 'uppfyllt'}. Byggnadskrav oberoende av ACH; BBR ställer krav på 0,35 l/s per m².`
+                    })
                 }
             ],
-            destaque: isIt
-                ? `Qualità ventilazione: ${qualLabel} — ${formatarNumero(res.ach, 1)} ACH`
-                : `Qualidade da ventilação: ${qualLabel} — ${formatarNumero(res.ach, 1)} ACH`,
-            dica: isIt
-                ? 'Con finestre su facciate opposte, seleziona il tipo "incrociata": la portata stimata può essere di un ordine di grandezza superiore a quella unilaterale.'
-                : 'Com janelas em fachadas opostas, selecione o tipo "cruzada": a vazão estimada pode ser uma ordem de grandeza maior que a unilateral.',
-            norma: isIt
-                ? 'Modello educativo — ASHRAE Fundamentals (Q=Cv·A·V) · BS 5925 (unilaterale) · verifica le norme locali'
-                : 'Modelo educativo — ASHRAE Fundamentals (Q=Cv·A·V) · BS 5925 (unilateral) · verifique as normas locais'
+            destaque: t2({
+                'pt-BR': `Qualidade da ventilação: ${qualLabel} — ${formatarNumero(res.ach, 1)} ACH`,
+                'it-IT': `Qualità ventilazione: ${qualLabel} — ${formatarNumero(res.ach, 1)} ACH`,
+                'sv-SE': `Ventilationens kvalitet: ${qualLabel} — ${formatarNumero(res.ach, 1)} ACH`
+            }),
+            dica: t2({
+                'pt-BR': 'Com janelas em fachadas opostas, selecione o tipo "cruzada": a vazão estimada pode ser uma ordem de grandeza maior que a unilateral.',
+                'it-IT': 'Con finestre su facciate opposte, seleziona il tipo "incrociata": la portata stimata può essere di un ordine di grandezza superiore a quella unilaterale.',
+                'sv-SE': 'Med fönster på motstående fasader, välj typen "korsdrag": det uppskattade flödet kan bli en tiopotens större än vid ensidig ventilation.'
+            }),
+            norma: t2({
+                'pt-BR': 'Modelo educativo — ASHRAE Fundamentals (Q=Cv·A·V) · BS 5925 (unilateral) · verifique as normas locais',
+                'it-IT': 'Modello educativo — ASHRAE Fundamentals (Q=Cv·A·V) · BS 5925 (unilaterale) · verifica le norme locali',
+                'sv-SE': 'Pedagogisk modell — ASHRAE Fundamentals (Q=Cv·A·V) · BS 5925 (ensidig) · Boverkets byggregler (BBR) för lokala krav'
+            })
         };
     }
 }

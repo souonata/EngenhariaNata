@@ -502,16 +502,18 @@ class BitolaApp extends App {
             return '';
         }
 
-        const pt = i18n.obterIdiomaAtual() === 'pt-BR';
         const areaSeg = areaMin * FATOR_SEGURANCA;
         const areaMinStr = formatarNumero(areaMin, 2);
         const areaSegStr = formatarNumero(areaSeg, 2);
         const bitolaStr = this.formatarBitolaComercial(bitolaSelecionada.bitola, bitolaSelecionada.multiplicador);
 
-        if (pt) {
-            return `<strong>Margem de segurança NBR 5410 (+25%):</strong> ${areaMinStr} × 1,25 = ${areaSegStr} mm² → menor bitola comercial que atende: <strong>${bitolaStr}</strong>.`;
-        }
-        return `<strong>Margine di sicurezza NBR 5410 (+25%):</strong> ${areaMinStr} × 1,25 = ${areaSegStr} mm² → sezione commerciale minima adeguata: <strong>${bitolaStr}</strong>.`;
+        // A norma citada acompanha a jurisdição do idioma: SS 436 40 00 é a
+        // aplicação sueca da IEC 60364.
+        return i18n.porIdioma({
+            'pt-BR': `<strong>Margem de segurança NBR 5410 (+25%):</strong> ${areaMinStr} × 1,25 = ${areaSegStr} mm² → menor bitola comercial que atende: <strong>${bitolaStr}</strong>.`,
+            'it-IT': `<strong>Margine di sicurezza NBR 5410 (+25%):</strong> ${areaMinStr} × 1,25 = ${areaSegStr} mm² → sezione commerciale minima adeguata: <strong>${bitolaStr}</strong>.`,
+            'sv-SE': `<strong>Säkerhetsmarginal enligt SS 436 40 00 (+25 %):</strong> ${areaMinStr} × 1,25 = ${areaSegStr} mm² → minsta standardarea som klarar kravet: <strong>${bitolaStr}</strong>.`
+        });
     }
 
     atualizarResultado() {
@@ -624,67 +626,88 @@ class BitolaApp extends App {
     }
 
     renderizarExplicacao({ potencia, comprimento, tensao, corrente, areaMin, bitolaSelecionada, quedaRealPercentual, quedaPercentual, disjuntor }) {
-        const pt = i18n.obterIdiomaAtual() === 'pt-BR';
+        const t = mapa => i18n.porIdioma(mapa);
         const bitolaStr = isFinite(bitolaSelecionada?.bitola)
             ? this.formatarBitolaComercial(bitolaSelecionada.bitola, bitolaSelecionada.multiplicador)
             : '-';
 
         const quedaOk = quedaRealPercentual <= quedaPercentual;
-        const dicaPt = quedaOk
-            ? 'A queda de tensão está dentro do limite. O fio dimensionado é adequado para o circuito.'
-            : 'A queda de tensão real excede o limite especificado. Considere aumentar a bitola ou reduzir o comprimento.';
-        const dicaIt = quedaOk
-            ? 'La caduta di tensione è nei limiti. Il cavo dimensionato è adeguato per il circuito.'
-            : 'La caduta di tensione reale supera il limite. Considera di aumentare la sezione o ridurre la lunghezza.';
+        const dica = quedaOk
+            ? t({
+                'pt-BR': 'A queda de tensão está dentro do limite. O fio dimensionado é adequado para o circuito.',
+                'it-IT': 'La caduta di tensione è nei limiti. Il cavo dimensionato è adeguato per il circuito.',
+                'sv-SE': 'Spänningsfallet ligger inom gränsen. Den valda arean räcker för kretsen.'
+            })
+            : t({
+                'pt-BR': 'A queda de tensão real excede o limite especificado. Considere aumentar a bitola ou reduzir o comprimento.',
+                'it-IT': 'La caduta di tensione reale supera il limite. Considera di aumentare la sezione o ridurre la lunghezza.',
+                'sv-SE': 'Det verkliga spänningsfallet överskrider gränsen. Öka arean eller korta ned ledningen.'
+            });
 
         this.explicacao.renderizar({
-            destaque: pt
-                ? `Use fio de ${bitolaStr} para proteger este circuito com segurança.`
-                : `Usa cavo da ${bitolaStr} per proteggere questo circuito in sicurezza.`,
+            destaque: t({
+                'pt-BR': `Use fio de ${bitolaStr} para proteger este circuito com segurança.`,
+                'it-IT': `Usa cavo da ${bitolaStr} per proteggere questo circuito in sicurezza.`,
+                'sv-SE': `Använd ${bitolaStr} för att skydda den här kretsen på ett säkert sätt.`
+            }),
             linhas: [
                 {
                     icone: '⚡',
-                    titulo: pt ? 'Corrente do Circuito' : 'Corrente del Circuito',
+                    titulo: t({ 'pt-BR': 'Corrente do Circuito', 'it-IT': 'Corrente del Circuito', 'sv-SE': 'Kretsens ström' }),
                     valor: `${formatarNumero(corrente, 2)} A`,
-                    descricao: pt
-                        ? `Com ${formatarNumero(potencia, 0)}W em ${formatarNumero(tensao, 1)}V. Quanto maior a corrente, mais grosso precisa ser o fio.`
-                        : `Con ${formatarNumero(potencia, 0)}W a ${formatarNumero(tensao, 1)}V. Maggiore la corrente, più grosso deve essere il cavo.`
+                    descricao: t({
+                        'pt-BR': `Com ${formatarNumero(potencia, 0)}W em ${formatarNumero(tensao, 1)}V. Quanto maior a corrente, mais grosso precisa ser o fio.`,
+                        'it-IT': `Con ${formatarNumero(potencia, 0)}W a ${formatarNumero(tensao, 1)}V. Maggiore la corrente, più grosso deve essere il cavo.`,
+                        'sv-SE': `Med ${formatarNumero(potencia, 0)} W vid ${formatarNumero(tensao, 1)} V. Ju högre ström, desto grövre ledare krävs.`
+                    })
                 },
                 {
                     icone: '📏',
-                    titulo: pt ? 'Área Mínima Calculada' : 'Sezione Minima Calcolata',
+                    titulo: t({ 'pt-BR': 'Área Mínima Calculada', 'it-IT': 'Sezione Minima Calcolata', 'sv-SE': 'Beräknad minsta area' }),
                     valor: `${formatarNumero(areaMin, 2)} mm²`,
-                    descricao: pt
-                        ? 'Calculada pela fórmula da resistividade do cobre (NBR 5410). O comercial aplica +25% de margem de segurança.'
-                        : 'Calcolata con la formula della resistività del rame. Il cavo commerciale applica un margine di sicurezza del +25%.'
+                    descricao: t({
+                        'pt-BR': 'Calculada pela fórmula da resistividade do cobre (NBR 5410). O comercial aplica +25% de margem de segurança.',
+                        'it-IT': 'Calcolata con la formula della resistività del rame. Il cavo commerciale applica un margine di sicurezza del +25%.',
+                        'sv-SE': 'Beräknad med formeln för kopparns resistivitet (SS 436 40 00). Standardarean får +25 % säkerhetsmarginal.'
+                    })
                 },
                 {
                     icone: '🔌',
-                    titulo: pt ? 'Bitola Comercial' : 'Sezione Commerciale',
+                    titulo: t({ 'pt-BR': 'Bitola Comercial', 'it-IT': 'Sezione Commerciale', 'sv-SE': 'Standardarea' }),
                     valor: bitolaStr,
-                    descricao: pt
-                        ? 'É a bitola padrão mais próxima disponível nas lojas. Esta é a que você vai comprar.'
-                        : 'È la sezione standard più vicina disponibile nei negozi. Questo è ciò che acquisterai.'
+                    descricao: t({
+                        'pt-BR': 'É a bitola padrão mais próxima disponível nas lojas. Esta é a que você vai comprar.',
+                        'it-IT': 'È la sezione standard più vicina disponibile nei negozi. Questo è ciò che acquisterai.',
+                        'sv-SE': 'Det är närmaste standardarea som finns i handeln. Det är den du köper.'
+                    })
                 },
                 {
                     icone: '📉',
-                    titulo: pt ? 'Queda de Tensão Real' : 'Caduta di Tensione Reale',
+                    titulo: t({ 'pt-BR': 'Queda de Tensão Real', 'it-IT': 'Caduta di Tensione Reale', 'sv-SE': 'Verkligt spänningsfall' }),
                     valor: `${formatarNumero(quedaRealPercentual, 2)}% ${quedaOk ? '✅' : '⚠️'}`,
-                    descricao: pt
-                        ? `O cálculo usa o limite definido de ${formatarNumero(quedaPercentual, 1)}% para conferir a queda real.`
-                        : `Il calcolo usa il limite impostato di ${formatarNumero(quedaPercentual, 1)}% per verificare la caduta reale.`
+                    descricao: t({
+                        'pt-BR': `O cálculo usa o limite definido de ${formatarNumero(quedaPercentual, 1)}% para conferir a queda real.`,
+                        'it-IT': `Il calcolo usa il limite impostato di ${formatarNumero(quedaPercentual, 1)}% per verificare la caduta reale.`,
+                        'sv-SE': `Beräkningen jämför det verkliga fallet mot den satta gränsen på ${formatarNumero(quedaPercentual, 1)} %.`
+                    })
                 },
                 {
                     icone: '🔬',
-                    titulo: pt ? 'Disjuntor Recomendado' : 'Interruttore Raccomandato',
+                    titulo: t({ 'pt-BR': 'Disjuntor Recomendado', 'it-IT': 'Interruttore Raccomandato', 'sv-SE': 'Rekommenderad dvärgbrytare' }),
                     valor: `${formatarNumero(disjuntor, 0)} A`,
-                    descricao: pt
-                        ? 'Desliga automaticamente se a corrente ultrapassar o limite, protegendo o fio e os equipamentos.'
-                        : 'Si disattiva automaticamente se la corrente supera il limite, proteggendo il cavo e le apparecchiature.'
+                    descricao: t({
+                        'pt-BR': 'Desliga automaticamente se a corrente ultrapassar o limite, protegendo o fio e os equipamentos.',
+                        'it-IT': 'Si disattiva automaticamente se la corrente supera il limite, proteggendo il cavo e le apparecchiature.',
+                        'sv-SE': 'Löser ut automatiskt om strömmen överskrider gränsen och skyddar både ledning och utrustning.'
+                    })
                 }
             ],
-            dica: pt ? dicaPt : dicaIt,
-            norma: pt ? 'ABNT NBR 5410:2004+Errata 1:2008 — Instalações Elétricas de Baixa Tensão' : 'ABNT NBR 5410:2004 — Impianti Elettrici a Bassa Tensione'
+            dica,
+            norma: t({
+                'pt-BR': 'ABNT NBR 5410:2004+Errata 1:2008 — Instalações Elétricas de Baixa Tensão',
+                'it-IT': 'ABNT NBR 5410:2004 — Impianti Elettrici a Bassa Tensione',
+                'sv-SE': 'SS 436 40 00 — Elinstallationsreglerna (svensk tillämpning av IEC 60364)'
+            })
         });
     }
 

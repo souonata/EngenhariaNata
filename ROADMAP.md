@@ -96,10 +96,21 @@ sempre visível** em todos os apps.
 `WIND_MAX` de 35 km/h para ~10 m/s) e coluna `sv-SE`.
 
 **Fase 2 — Apps de engenharia** (traduzir + adaptar normas + converter ternários):
-`bitola` (NBR 5410 → **SS 436 40 00** / IEC 60364) · `iluminacao` (NBR 5413 → **EN 12464-1**) ·
-`ventilacao` (**BBR / Boverket**) · `solar` (irradiância de alta latitude, incentivos suecos) ·
-`aquecimento` (graus-dia SE) · `arcondicionado` (AC é marginal na Suécia — rever recomendações) ·
-`chuva` (**SMHI**) · `bombaagua`, `helice` (física universal) · `fazenda`.
+- **Feito:** `bugs`, `helice`, `bombaagua`, `bitola` (NBR 5410 → **SS 436 40 00** / IEC 60364),
+  `ventilacao` (NBR 15575 → **Boverkets byggregler**, 0,35 l/s·m²), `chuva` (NBR 15527 → **SMHI**,
+  tarifa 45 kr/m³) e `iluminacao` (NBR 5413 → **SS-EN 12464-1**, tarifa 0,5–6,0 kr/kWh). Todos com
+  os ternários de jurisdição convertidos para `i18n.porIdioma()`.
+- **Falta:** `solar` (30 ternários; irradiância de alta latitude e incentivos suecos),
+  `arcondicionado` (20; AC é marginal na Suécia — rever recomendações) e `aquecimento`
+  (18; graus-dia SE).
+- **`fazenda` fica FORA do sueco por ora (decisão deliberada).** O app não é só texto: o
+  `fazenda-database.js` é uma base **agronômica regional** (culturas, produtividade por m²,
+  calendário de plantio, clima) com ~560 linhas por país. Traduzir apenas a interface faria o app
+  recomendar, em sueco, culturas e calendários mediterrâneos para clima boreal — conselho errado,
+  não tradução incompleta. Só faz sentido com uma base nórdica própria (zonas de cultivo suecas),
+  que é trabalho de dados, não de tradução. O `fazenda-script.js` ainda tem guardas que rejeitam
+  qualquer idioma fora de pt/it (`trocarIdioma`, `aplicarIdiomaFazenda`, boot) — precisarão ser
+  abertos junto com a base. Enquanto isso o dock esconde a bandeira sueca lá, automaticamente.
 
 **Fase 3 — Catálogo e institucional**: `index.json`, `sobre.json` + `sobre/sobre.html`, `sitemap`,
 `config/versions.json`, e um **validador de paridade de chaves** entre os três locales.
@@ -119,6 +130,13 @@ Finansinspektionen por LTV/renda, ränteavdrag). Testes em `<app>-calc.test.js` 
 - **Migração do app meteo**: preservar as 4 cidades, o histórico de 365 dias e os tooltips ao sair do inline.
 - **Formatação numérica sueca** e SEK em gráficos e memoriais.
 - Cache de `?v=` por app e cache do service worker do `br12c`.
+- **Line endings no Windows quebram o `npm run validate`.** `core.autocrlf=true` reescreve os
+  arquivos em CRLF a cada checkout/merge, e o Prettier está em `endOfLine: "lf"` — então
+  `format:check` falha em arquivos que ninguém editou (aconteceu com `local/vite.config.js`,
+  `vitest.config.js` e `package.json` logo após um merge). O `.gitattributes` atual só declara
+  binários. Correção durável: acrescentar `* text=auto eol=lf` ao `.gitattributes` (afeta o repo
+  inteiro e as duas máquinas, por isso não foi feito unilateralmente). Paliativo: converter os
+  arquivos acusados para LF antes de validar.
 
 ## Próximo app sugerido
 

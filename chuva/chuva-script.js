@@ -39,6 +39,7 @@ const CISTERNAS_COMERCIAIS = [500, 1000, 2000, 5000, 10000, 15000, 20000];
 // Tarifa de referência de água potável (R$/m³) — SABESP média residencial
 const TARIFA_AGUA_BRL = 7.50;
 const TARIFA_AGUA_EUR = 2.50;
+const TARIFA_AGUA_SEK = 45.0;   // média sueca de vatten och avlopp (kr/m³)
 
 // ============================================
 // CLASSE PRINCIPAL
@@ -267,8 +268,11 @@ class ChuvaApp extends App {
             : 0;
 
         // Economia
-        const idioma = i18n.obterIdiomaAtual();
-        const tarifa = idioma === 'it-IT' ? TARIFA_AGUA_EUR : TARIFA_AGUA_BRL;
+        const tarifa = i18n.porIdioma({
+            'pt-BR': TARIFA_AGUA_BRL,
+            'it-IT': TARIFA_AGUA_EUR,
+            'sv-SE': TARIFA_AGUA_SEK
+        });
         const utilizavel = Math.min(captacao, demanda);
         const economia = utilizavel * 0.001 * tarifa; // converte L → m³
 
@@ -306,8 +310,7 @@ class ChuvaApp extends App {
         if (inputPessoas && ativo !== inputPessoas) inputPessoas.value = formatarNumero(pessoas, 0);
 
         const r = this.calcular(area, precipitacao, pessoas, tipoUso);
-        const idioma = i18n.obterIdiomaAtual();
-        const moeda  = idioma === 'it-IT' ? 'EUR' : 'BRL';
+        const moeda  = i18n.obterMoeda();
 
         // Captação mensal
         const captacaoTexto = r.captacao >= 1000
@@ -388,8 +391,7 @@ class ChuvaApp extends App {
 
     renderizarExplicacao(area, precipitacao, r, moeda) {
         const t = this.traducoes;
-        const idioma = i18n.obterIdiomaAtual();
-        const isIT = idioma === 'it-IT';
+        const tt = mapa => i18n.porIdioma(mapa);
 
         const captacaoStr = r.captacao >= 1000
             ? `${formatarNumero(r.captacao / 1000, 2)} m³`
@@ -398,13 +400,17 @@ class ChuvaApp extends App {
         const overflowNivel = r.overflow < 20 ? 'baixo' : r.overflow < 50 ? 'medio' : 'alto';
         const overflowEmoji = overflowNivel === 'baixo' ? '🟢' : overflowNivel === 'medio' ? '🟡' : '🔴';
 
-        const destaque = isIT
-            ? `Con ${formatarNumero(area, 0)} m² di tetto e ${formatarNumero(precipitacao, 0)} mm/mese di pioggia, si raccolgono ${captacaoStr} al mese.`
-            : `Com ${formatarNumero(area, 0)} m² de telhado e ${formatarNumero(precipitacao, 0)} mm de chuva/mês, você capta ${captacaoStr}.`;
+        const destaque = tt({
+            'pt-BR': `Com ${formatarNumero(area, 0)} m² de telhado e ${formatarNumero(precipitacao, 0)} mm de chuva/mês, você capta ${captacaoStr}.`,
+            'it-IT': `Con ${formatarNumero(area, 0)} m² di tetto e ${formatarNumero(precipitacao, 0)} mm/mese di pioggia, si raccolgono ${captacaoStr} al mese.`,
+            'sv-SE': `Med ${formatarNumero(area, 0)} m² tak och ${formatarNumero(precipitacao, 0)} mm regn per månad samlas ${captacaoStr} per månad.`
+        });
 
-        const dica = isIT
-            ? 'Filtrare l\'acqua prima dello stoccaggio. Le prime piogge devono essere scartate (autosvuotamento).'
-            : 'Filtre a água antes de armazenar. As primeiras chuvas devem ser descartadas (dispositivo de autolimpeza).';
+        const dica = tt({
+            'pt-BR': 'Filtre a água antes de armazenar. As primeiras chuvas devem ser descartadas (dispositivo de autolimpeza).',
+            'it-IT': 'Filtrare l\'acqua prima dello stoccaggio. Le prime piogge devono essere scartate (autosvuotamento).',
+            'sv-SE': 'Filtrera vattnet före lagring. Det första regnet ska ledas bort (självrensande anordning).'
+        });
 
         this.explicacao.renderizar({
             destaque,
@@ -413,41 +419,55 @@ class ChuvaApp extends App {
                     icone: '💧',
                     titulo: t?.resultado?.captacao ?? 'Captação Mensal',
                     valor: captacaoStr,
-                    descricao: isIT
-                        ? `Area ${formatarNumero(area, 0)} m² × ${formatarNumero(precipitacao, 0)} mm × 0,80 (coeff. utilizzo)`
-                        : `Área ${formatarNumero(area, 0)} m² × ${formatarNumero(precipitacao, 0)} mm × 0,80 (coef. aproveitamento)`
+                    descricao: tt({
+                        'pt-BR': `Área ${formatarNumero(area, 0)} m² × ${formatarNumero(precipitacao, 0)} mm × 0,80 (coef. aproveitamento)`,
+                        'it-IT': `Area ${formatarNumero(area, 0)} m² × ${formatarNumero(precipitacao, 0)} mm × 0,80 (coeff. utilizzo)`,
+                        'sv-SE': `Yta ${formatarNumero(area, 0)} m² × ${formatarNumero(precipitacao, 0)} mm × 0,80 (nyttjandekoefficient)`
+                    })
                 },
                 {
                     icone: '🏺',
                     titulo: t?.resultado?.cisterna ?? 'Cisterna Recomendada',
                     valor: `${formatarNumero(r.cisterna, 0)} L`,
-                    descricao: isIT
-                        ? `Domanda mensile ${formatarNumero(r.demanda, 0)} L × 1,20 di margine di sicurezza`
-                        : `Demanda mensal ${formatarNumero(r.demanda, 0)} L × 1,20 de margem de segurança`
+                    descricao: tt({
+                        'pt-BR': `Demanda mensal ${formatarNumero(r.demanda, 0)} L × 1,20 de margem de segurança`,
+                        'it-IT': `Domanda mensile ${formatarNumero(r.demanda, 0)} L × 1,20 di margine di sicurezza`,
+                        'sv-SE': `Månadsbehov ${formatarNumero(r.demanda, 0)} l × 1,20 säkerhetsmarginal`
+                    })
                 },
                 {
                     icone: overflowEmoji,
                     titulo: t?.resultado?.overflow ?? 'Risco de Overflow',
                     valor: `${formatarNumero(r.overflow, 1)}%`,
-                    descricao: isIT
-                        ? r.overflow > 0
-                            ? `${formatarNumero(r.captacao - r.demanda, 0)} L/mese in eccesso — considerare cisterna più grande o uso aggiuntivo`
-                            : 'La domanda supera la raccolta — nessun overflow previsto'
-                        : r.overflow > 0
-                            ? `${formatarNumero(r.captacao - r.demanda, 0)} L/mês em excesso — considere cisterna maior ou uso adicional`
-                            : 'Demanda supera captação — sem risco de overflow'
+                    descricao: r.overflow > 0
+                        ? tt({
+                            'pt-BR': `${formatarNumero(r.captacao - r.demanda, 0)} L/mês em excesso — considere cisterna maior ou uso adicional`,
+                            'it-IT': `${formatarNumero(r.captacao - r.demanda, 0)} L/mese in eccesso — considerare cisterna più grande o uso aggiuntivo`,
+                            'sv-SE': `${formatarNumero(r.captacao - r.demanda, 0)} l/månad i överskott — överväg större tank eller ytterligare användning`
+                        })
+                        : tt({
+                            'pt-BR': 'Demanda supera captação — sem risco de overflow',
+                            'it-IT': 'La domanda supera la raccolta — nessun overflow previsto',
+                            'sv-SE': 'Behovet överstiger uppsamlingen — ingen bräddning väntas'
+                        })
                 },
                 {
                     icone: '💰',
                     titulo: t?.resultado?.economia ?? 'Economia/mês',
                     valor: formatarMoeda(r.economia, moeda),
-                    descricao: isIT
-                        ? `${formatarNumero(Math.min(r.captacao, r.demanda), 0)} L utilizzati × tariffa ${formatarNumero(r.tarifa, 2)}/m³`
-                        : `${formatarNumero(Math.min(r.captacao, r.demanda), 0)} L aproveitados × tarifa R$ ${formatarNumero(r.tarifa, 2)}/m³`
+                    descricao: tt({
+                        'pt-BR': `${formatarNumero(Math.min(r.captacao, r.demanda), 0)} L aproveitados × tarifa R$ ${formatarNumero(r.tarifa, 2)}/m³`,
+                        'it-IT': `${formatarNumero(Math.min(r.captacao, r.demanda), 0)} L utilizzati × tariffa € ${formatarNumero(r.tarifa, 2)}/m³`,
+                        'sv-SE': `${formatarNumero(Math.min(r.captacao, r.demanda), 0)} l använda × taxa ${formatarNumero(r.tarifa, 2)} kr/m³`
+                    })
                 }
             ],
             dica,
-            norma: 'NBR 15527:2019 — Aproveitamento de Água de Chuva em Coberturas para Fins Não Potáveis'
+            norma: tt({
+                'pt-BR': 'NBR 15527:2019 — Aproveitamento de Água de Chuva em Coberturas para Fins Não Potáveis',
+                'it-IT': 'NBR 15527:2019 — Recupero Acqua Piovana da Coperture per Usi Non Potabili',
+                'sv-SE': 'SMHI:s nederbördsnormaler och Boverkets byggregler (BBR) för icke-dricksvatten'
+            })
         });
     }
 

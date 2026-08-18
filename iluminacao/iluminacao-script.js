@@ -34,9 +34,13 @@ const TIPOS_LAMPADAS = [6, 9, 12, 15];
 const LUMENS_POR_WATT = 100;
 const HORAS_FUNCIONAMENTO_DIA = 5;
 
+// Faixas de tarifa na moeda de cada país: R$/kWh, €/kWh e kr/kWh. Na Suécia o
+// preço ao consumidor (energia + rede + impostos) gira em torno de 2 kr/kWh,
+// com variação sazonal grande entre as zonas elétricas.
 const TARIFA_CONFIG = {
   "pt-BR": { min: 0.5, max: 3.0, step: 0.01, defaultValue: 1.2, decimals: 2 },
   "it-IT": { min: 0.1, max: 0.8, step: 0.01, defaultValue: 0.3, decimals: 2 },
+  "sv-SE": { min: 0.5, max: 6.0, step: 0.05, defaultValue: 2.0, decimals: 2 },
 };
 
 const SLIDER_TO_INPUT = {
@@ -924,7 +928,7 @@ class IluminacaoApp extends App {
     }
     bloco.style.display = '';
 
-    const pt = i18n.obterIdiomaAtual() === 'pt-BR';
+    const tl = mapa => i18n.porIdioma(mapa);
 
     // Coletar quais potências são efetivamente usadas
     const potenciasUsadas = new Set(resultados.map(r => r.calculo.configLuminarias.wattagem));
@@ -950,10 +954,10 @@ class IluminacaoApp extends App {
 
     // Cabeçalho
     let headerCols = colunas.map(w => th(`${w}W`, 'mtz-th-watt')).join('');
-    const lblTotal = pt ? 'Total' : 'Totale';
-    const lblWatt  = pt ? 'Potência' : 'Potenza';
+    const lblTotal = tl({ 'pt-BR': 'Total', 'it-IT': 'Totale', 'sv-SE': 'Totalt' });
+    const lblWatt  = tl({ 'pt-BR': 'Potência', 'it-IT': 'Potenza', 'sv-SE': 'Effekt' });
     let thead = `<thead><tr>
-      <th class="mtz-th mtz-th-comodo" scope="col">${pt ? 'Cômodo' : 'Ambiente'}</th>
+      <th class="mtz-th mtz-th-comodo" scope="col">${tl({ 'pt-BR': 'Cômodo', 'it-IT': 'Ambiente', 'sv-SE': 'Rum' })}</th>
       ${headerCols}
       <th class="mtz-th mtz-th-total" scope="col">${lblTotal}</th>
       <th class="mtz-th mtz-th-total" scope="col">${lblWatt}</th>
@@ -980,7 +984,7 @@ class IluminacaoApp extends App {
       td(totalPorPotencia[w] > 0 ? `<strong>${totalPorPotencia[w]}</strong>` : '—', 'mtz-td-total mtz-td-usado')
     ).join('');
     let tfoot = `<tfoot><tr class="mtz-linha-total">
-      <td class="mtz-td mtz-td-nome mtz-td-total"><strong>${pt ? 'Total casa' : 'Totale casa'}</strong></td>
+      <td class="mtz-td mtz-td-nome mtz-td-total"><strong>${tl({ 'pt-BR': 'Total casa', 'it-IT': 'Totale casa', 'sv-SE': 'Hela huset' })}</strong></td>
       ${totalCols}
       ${td(`<strong>${totalLampadas}</strong>`, 'mtz-td-total mtz-td-usado')}
       ${td(`<strong>${totalWatts}W</strong>`, 'mtz-td-total mtz-td-usado')}

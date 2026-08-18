@@ -101,5 +101,56 @@
       "home": "Torna alla schermata iniziale"
     },
     "footer": "💻 Engenharia Nata @ 2026"
+  },
+  "sv-SE": {
+    "titles": {
+      "langPt": "Portugisiska",
+      "langIt": "Italienska"
+    },
+    "titulo": "Rapportera fel eller förslag",
+    "descricao": "Hittade du ett problem eller har du en idé till förbättring? Berätta för oss!",
+    "googleForms": {
+      "titulo": "📨 Skicka in din rapport",
+      "descricao": "Använd formuläret nedan. Gränssnittet hör till sidan, men svaren skickas fortfarande till Google Forms.",
+      "abrirNovaAba": "Öppna originalformuläret i en ny flik"
+    },
+    "formulario": {
+      "categoria": "Kategori",
+      "catBug": "🐛 Fel",
+      "catSugestao": "💡 Förslag",
+      "catElogio": "⭐ Beröm",
+      "emailLabel": "Kontakt (frivilligt)",
+      "emailPlaceholder": "din@epost.se",
+      "emailDica": "Fyll bara i din e-post om du vill ha svar.",
+      "privacidadeNota": "Svaren skickas till Google Forms. Skriv inte lösenord eller känsliga uppgifter.",
+      "descricao": "Beskrivning *",
+      "descricaoPlaceholder": "Beskriv problemet du hittade, vad du höll på med och vad du förväntade dig…",
+      "enviar": "📤 Skicka rapport",
+      "enviando": "Skickar…",
+      "voltar": "← Tillbaka"
+    },
+    "historico": {
+      "titulo": "Mina rapporter",
+      "vazio": "Inga rapporter har skickats än.",
+      "exportar": "⬇ Exportera som JSON"
+    },
+    "categorias": {
+      "bug": "Fel",
+      "sugestao": "Förslag",
+      "elogio": "Beröm"
+    },
+    "mensagens": {
+      "sucesso": "✅ Rapporten skickades. Tack för din återkoppling.",
+      "erro": "❌ Går inte att skicka just nu. Försök igen.",
+      "camposObrigatorios": "⚠️ Fyll i beskrivningen innan du skickar.",
+      "emailInvalido": "⚠️ Kontrollera e-postadressen eller lämna kontaktfältet tomt."
+    },
+    "aria": {
+      "langPt": "Byt språk till portugisiska",
+      "langIt": "Byt språk till italienska",
+      "categoriaGrupo": "Rapportens kategori",
+      "home": "Tillbaka till startsidan"
+    },
+    "footer": "💻 Engenharia Nata @ 2026"
   }
 }

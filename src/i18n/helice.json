@@ -241,6 +241,126 @@
       "decrease": "Diminuisci valore",
       "increase": "Aumenta valore"
     }
+  },
+  "sv-SE": {
+    "app": {
+      "title": "🚤 Propellerstigning",
+      "subtitle": "För fritidsbåtar"
+    },
+    "labels": {
+      "unidadeVelocidade": "Fartenhet",
+      "velocidade": "Önskad fart",
+      "reducao": "Utväxling i drevet",
+      "rpm": "Motorns maxvarvtal",
+      "slip": "Uppskattat slip"
+    },
+    "helice": {
+      "tipoPropulsao": "Typ av framdrivning",
+      "tipoSingleProp": "Enkelpropeller",
+      "tipoDualIps": "Dubbelpropeller",
+      "modeloIps": "Modeller från Volvo Penta: IPS och Aquamatic",
+      "modeloIpsGrupo": "IPS",
+      "modeloAquamaticGrupo": "Aquamatic",
+      "ipsInfo": "IPS-system med två motroterande propellrar och integrerat drev.",
+      "ipsSpecsPlaceholder": "Välj en modell för att se föreslagna intervall."
+    },
+    "unidades": {
+      "mph": "mph",
+      "kmh": "km/h",
+      "mm": "mm",
+      "polegadas": "tum",
+      "polegadasCompacto": "tum",
+      "nos": "knop"
+    },
+    "exemplo": {
+      "motor": "Motor",
+      "passo": "Stigning",
+      "reducao": "utväxling",
+      "slip": "slip"
+    },
+    "resultado": {
+      "titulo": "Resultat",
+      "passoLabel": "Stigning",
+      "rpmHelice": "Propellervarvtal:",
+      "velocidadeTeorica": "Fart vid noll slip:"
+    },
+    "grafico": {
+      "titulo": "📊 Samband stigning × fart",
+      "label": "Stigning",
+      "slipLabel": "Slipzon (10–20 %)",
+      "eixoX": "Fart (knop)",
+      "eixoY": "Rekommenderad stigning"
+    },
+    "info": {
+      "titulo": "ℹ️ Så fungerar det",
+      "slip": "Typiskt värde för fritidsbåtar: 10–20 %. Motsvarar propellerns verkningsgradsförlust.",
+      "passoTitulo": "Vad är stigning?",
+      "passoTexto": "Stigningen är den teoretiska sträcka (i tum) som propellern skulle förflytta sig under ett helt varv, utan hänsyn till slip.",
+      "reducaoTitulo": "Utväxling i drevet",
+      "reducaoTexto": "Förhållandet mellan motorns och propellerns varvtal. Exempel: 2:1 betyder att motorn snurrar två varv per propellervarv.",
+      "slipTitulo": "Vad är slip?",
+      "slipTexto": "Eftersläpning mellan propellern och vattnet. Typiska fritidsbåtar har 10–20 % slip. Ju lägre slip, desto effektivare propeller."
+    },
+    "formula": {
+      "titulo": "📐 Använd formel",
+      "explicacao": "Där 1215,2 är omräkningskonstanten från knop till tum/minut"
+    },
+    "memorial": {
+      "btnVer": "Visa beräkningsredovisning",
+      "titulo": "📚 Beräkningsredovisning — propellerstigning",
+      "introTitulo": "🎯 Syftet med beräkningen",
+      "introTexto": "Den här redovisningen förklarar steg för steg hur lämplig propellerstigning för fritidsbåtar räknas fram.",
+      "passo1Titulo": "1️⃣ Steg 1: räkna ut propellerns verkliga varvtal",
+      "passo1Explicacao": "Drevet växlar ner motorns varvtal. Vid utväxlingen 2:1 snurrar propellern hälften så fort som motorn.",
+      "passo2Titulo": "2️⃣ Steg 2: räkna ut propellerns stigning",
+      "passo2Explicacao": "Stigningen är den teoretiska sträckan propellern skulle förflytta sig under ett helt varv. Slip sänker verkningsgraden, därför kompenserar vi med (1 − slip).",
+      "passo3Titulo": "3️⃣ Steg 3: räkna ut teoretisk fart",
+      "passo3Explicacao": "Den teoretiska farten visar vilken fart som skulle nås utan slip.",
+      "formula": "Formel:",
+      "exemplo": "Exempel:",
+      "formulaPasso1": "Propellervarvtal = motorvarvtal ÷ utväxling",
+      "formulaPasso2": "Stigning (tum) = (fart i knop × 1215,2 × utväxling) ÷ (varvtal × (1 − slip))",
+      "formulaPasso3": "Teoretisk fart (knop) = (stigning × varvtal) ÷ (1215,2 × utväxling)",
+      "constantesTitulo": "Använda konstanter:",
+      "constante1056": "1215,2 = omräkningskonstant från knop till tum/minut. Konstanten 1056 används när farten anges i mph; den här appen räknar om farten till knop före beräkningen.",
+      "slipTipico": "<strong>Typiskt slip:</strong> 10–20 % för fritidsbåtar — motsvarar verkningsgradsförlusten när propellern glider i vattnet. Förvalt värde: 15 %.",
+      "principioFisicoTitulo": "⚛️ Fysikalisk princip — framdrivning till sjöss:",
+      "principioFisicoTexto": "Propellern arbetar som en skruv i vattnet: när den snurrar trycker den vatten bakåt, och enligt Newtons tredje lag (kraft och motkraft) trycker vattnet båten framåt.",
+      "conceitosTitulo": "📖 Viktiga begrepp",
+      "slipTitulo": "Slip (eftersläpning):",
+      "slipTexto": "Slip är verkningsgradsförlusten mellan propellern och vattnet. Typiska fritidsbåtar har 10–20 % slip.",
+      "reducaoTitulo": "Utväxling i drevet:",
+      "reducaoTexto": "Förhållandet mellan motorns och propellerns varvtal. Exempel: 2:1 betyder att motorn snurrar två varv per propellervarv.",
+      "resumoTitulo": "📊 Sammanfattning",
+      "resumoRpm": "Propellervarvtal:",
+      "resumoPasso": "Rekommenderad stigning:",
+      "resumoVelocidade": "Fart vid noll slip:"
+    },
+    "tooltips": {
+      "velocidade": "Önskad fart är den högsta fart du vill att båten ska nå, angiven i knop, mph eller km/h.",
+      "reducao": "Drevets utväxling är förhållandet mellan motorns och propellerns varvtal. Typiska värden ligger mellan 1:1 och 3:1.",
+      "rpm": "Motorns maxvarvtal är det högsta varvtal motorn klarar. Typiska värden ligger mellan 1500 och 7000 varv/min.",
+      "slip": "Slip är verkningsgradsförlusten mellan propellern och vattnet. Rekommenderat värde beror på propellertypen."
+    },
+    "botoes": {
+      "voltar": "← Tillbaka",
+      "saibaMais": "LÄS MER!"
+    },
+    "footer": "Propellerkalkylator — Engenharia Nata @ 2026",
+    "titles": {
+      "langPt": "Portugisiska",
+      "langIt": "Italienska",
+      "singleProp": "Enkelpropeller",
+      "dualProp": "Dubbelpropeller",
+      "clickInfo": "Klicka för mer information"
+    },
+    "aria": {
+      "home": "Tillbaka till startsidan",
+      "langPt": "Byt språk till portugisiska",
+      "langIt": "Byt språk till italienska",
+      "clickInfo": "Ytterligare information",
+      "decrease": "Minska värdet",
+      "increase": "Öka värdet"
+    }
   }
 }
-

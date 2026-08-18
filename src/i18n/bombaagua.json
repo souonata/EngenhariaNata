@@ -193,5 +193,102 @@
       "aumentarDiametro": "Aumenta diametro"
     },
     "footer": "Pompa d'Acqua — Ingegneria NATA @ 2026"
+  },
+  "sv-SE": {
+    "app": {
+      "title": "💧 Vattenpump",
+      "subtitle": "Nödvändig effekt, tryckförluster och timförbrukning"
+    },
+    "labels": {
+      "altura": "Statisk uppfordringshöjd",
+      "comprimento": "Rörledningens längd",
+      "vazao": "Önskat flöde",
+      "diametro": "Rörets innerdiameter"
+    },
+    "unidades": {
+      "m": "m",
+      "mm": "mm",
+      "lmin": "l/min"
+    },
+    "tooltips": {
+      "altura": "Höjdskillnaden mellan vattentaget och punkten där vattnet levereras.",
+      "comprimento": "Ungefärlig total längd på huvudledningen som vattnet passerar.",
+      "vazao": "Mängd vatten som anläggningen ska leverera per minut.",
+      "diametro": "Rörets användbara innerdiameter. Större diameter ger mindre tryckförluster."
+    },
+    "resultado": {
+      "titulo": "Resultat",
+      "potencia": "Nödvändig pumpeffekt",
+      "faixa": "Rekommenderad storleksklass",
+      "perdas": "Tryckförluster",
+      "alturaTotal": "Total uppfordringshöjd",
+      "energia": "Förbrukning på 1 timme",
+      "pressao": "Motsvarande tryck"
+    },
+    "memorial": {
+      "titulo": "📚 Beräkningsredovisning — vattenpump",
+      "introTitulo": "🎯 Syftet med beräkningen",
+      "introTexto": "Den här redovisningen uppskattar total uppfordringshöjd, tryckförluster och pumpeffekt med en förenklad modell för rent vatten i släta rör.",
+      "passo1Titulo": "1️⃣ Steg 1: räkna om flödet och beräkna hastigheten",
+      "passo1Explicacao": "Först räknar vi om flödet till m³/s och beräknar rörets innerarea för att få vattnets hastighet.",
+      "passo1Formula": "Q = flöde / 60000 och v = Q / A",
+      "passo2Titulo": "2️⃣ Steg 2: Reynolds och friktionsfaktor",
+      "passo2Explicacao": "Med hastighet och diameter räknar vi ut Reynolds tal och uppskattar friktionsfaktorn i Darcy–Weisbachs formel.",
+      "passo2Formula": "Re = v × D / ny och f = funktion(Re, ytråhet)",
+      "passo3Titulo": "3️⃣ Steg 3: tryckförluster",
+      "passo3Explicacao": "De linjära förlusterna beror på längd, diameter och hastighet. I den här versionen lägger vi dessutom till 15 % för ventiler, böjar och kopplingar.",
+      "passo3Formula": "hf = f × (L / D) × (v² / 2g)",
+      "passo4Titulo": "4️⃣ Steg 4: total uppfordringshöjd",
+      "passo4Explicacao": "Den totala höjd pumpen måste övervinna är summan av den statiska höjden och tryckförlusterna.",
+      "passo4Formula": "Htot = statisk höjd + förluster",
+      "passo5Titulo": "5️⃣ Steg 5: effekt och förbrukning",
+      "passo5Explicacao": "Med total höjd och flöde räknar vi ut den hydrauliska effekten. Sedan korrigerar vi med verkningsgraden för att uppskatta pumpens effekt.",
+      "passo5Formula": "P = rho × g × Q × H / verkningsgrad",
+      "exemploLabel": "Exempel:",
+      "constantesTitulo": "Använda konstanter och antaganden:",
+      "constanteAgua": "Rent vatten vid 20 °C: densitet 1000 kg/m³",
+      "constanteViscosidade": "Kinematisk viskositet: 1,004 × 10^-6 m²/s",
+      "constanteRugosidade": "Slätt rör av PVC-typ: ytråhet 0,0015 mm",
+      "constanteEficiencia": "Pumpens totala verkningsgrad: 55 %",
+      "constanteAcessorios": "Uppskattade lokala förluster: 15 % av de linjära förlusterna",
+      "referencia": "Referens: förenklad Darcy–Weisbach-metod för rent vatten",
+      "resumoTitulo": "📊 Sammanfattning",
+      "resumoAltura": "Statisk höjd:",
+      "resumoComprimento": "Längd:",
+      "resumoVazao": "Flöde:",
+      "resumoDiametro": "Diameter:",
+      "resumoVelocidade": "Hastighet:",
+      "resumoPerdas": "Tryckförluster:",
+      "resumoAlturaTotal": "Total höjd:",
+      "resumoPotencia": "Nödvändig effekt:",
+      "resumoFaixa": "Rekommenderad klass:"
+    },
+    "botoes": {
+      "voltar": "← Tillbaka",
+      "saibaMais": "LÄS MER!"
+    },
+    "titles": {
+      "langPt": "Portugisiska",
+      "langIt": "Italienska",
+      "clickInfo": "Klicka för mer information"
+    },
+    "aria": {
+      "langPt": "Byt språk till portugisiska",
+      "langIt": "Byt språk till italienska",
+      "home": "Tillbaka till startsidan",
+      "infoAltura": "Information om statisk uppfordringshöjd",
+      "infoComprimento": "Information om rörledningens längd",
+      "infoVazao": "Information om önskat flöde",
+      "infoDiametro": "Information om rörets diameter",
+      "diminuirAltura": "Minska höjden",
+      "aumentarAltura": "Öka höjden",
+      "diminuirComprimento": "Minska längden",
+      "aumentarComprimento": "Öka längden",
+      "diminuirVazao": "Minska flödet",
+      "aumentarVazao": "Öka flödet",
+      "diminuirDiametro": "Minska diametern",
+      "aumentarDiametro": "Öka diametern"
+    },
+    "footer": "Vattenpump — Engenharia NATA @ 2026"
   }
 }
