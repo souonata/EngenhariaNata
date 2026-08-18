@@ -38,7 +38,7 @@
     <link rel="stylesheet" href="../assets/css/dock-global.css?v=1.0.0">
     <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
     <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
-    <link rel="stylesheet" href="aquecimento-styles.css?v=1.0.2">
+    <link rel="stylesheet" href="aquecimento-styles.css?v=1.1.0">
 
     <!-- Analytics: GoatCounter (privacy-friendly, LGPD/GDPR-compliant) -->
     <script data-goatcounter="https://souonata.goatcounter.com/count"
@@ -350,6 +350,78 @@
                 </div>
                 <p class="dica dica-multilinha" data-i18n="dica-classe-energetica" style="text-align: center;">
                     <span style="font-size: 0.85em; color: var(--text-secondary, #666);">* Valores em kWh/m²·ano</span>
+                </p>
+            </div>
+
+            <!-- ============================================================
+                 SUÉCIA — solar térmica é COMPLEMENTO, não fonte principal.
+                 Dimensionar pelo inverno (como fazem as versões BR e IT) não
+                 funciona aqui: de novembro a fevereiro a produção é quase
+                 nula em qualquer área. O que limita o tamanho é o excedente
+                 de verão — área a mais vira estagnação, não água quente.
+                 ============================================================ -->
+            <div class="aqse-secao se-only">
+                <h2 class="aqse-titulo" data-i18n="aqse.titulo">Solvärme i Sverige — komplement, inte huvudkälla</h2>
+                <p class="aqse-intro" data-i18n="aqse.intro">
+                    I Sverige dimensioneras solvärme inte efter vintern — mellan november
+                    och februari ger solfångarna nästan ingenting oavsett storlek. Det som
+                    sätter gränsen är sommaröverskottet: efter en viss area blir mer yta
+                    inte mer varmvatten, utan bara mer tid i stagnation.
+                </p>
+
+                <div class="aqse-entradas">
+                    <div class="grupo-entrada">
+                        <label for="selectSeAnvandning" data-i18n="aqse.anvandning">Användning</label>
+                        <select id="selectSeAnvandning" class="valor-input">
+                            <option value="aguaQuente" selected data-i18n="aqse.anvandningVarmvatten">Endast varmvatten</option>
+                            <option value="combinado" data-i18n="aqse.anvandningKombi">Varmvatten + värmestöd</option>
+                        </select>
+                    </div>
+                    <div class="grupo-entrada">
+                        <label for="inputSePersoner" data-i18n="aqse.personer">Antal personer</label>
+                        <input type="text" id="inputSePersoner" class="valor-input" value="4" inputmode="numeric" autocomplete="off">
+                        <input type="range" id="sliderSePersoner" min="1" max="10" step="1" value="4">
+                    </div>
+                    <div class="grupo-entrada">
+                        <label for="inputSeArea" data-i18n="aqse.area">Solfångararea (m²)</label>
+                        <input type="text" id="inputSeArea" class="valor-input" value="5" inputmode="decimal" autocomplete="off">
+                        <input type="range" id="sliderSeArea" min="2" max="20" step="0.5" value="5">
+                    </div>
+                </div>
+
+                <div class="aqse-resultados">
+                    <div class="resultado-item destaque">
+                        <span class="label-resultado" data-i18n="aqse.solfraktion">Solfraktion (andel av varmvattnet)</span>
+                        <span class="valor-resultado-grande" id="seSolfraktion">—</span>
+                    </div>
+                    <div class="resultado-item destaque">
+                        <span class="label-resultado" data-i18n="aqse.rekommenderad">Rekommenderad area</span>
+                        <span class="valor-resultado-grande" id="seAreaRekommenderad">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="aqse.behov">Varmvattenbehov</span>
+                        <span class="valor-resultado" id="seBehov">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="aqse.produktion">Möjlig årsproduktion</span>
+                        <span class="valor-resultado" id="seProduktion">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="aqse.nyttiggjord">Varav du kan använda</span>
+                        <span class="valor-resultado" id="seNyttiggjord">—</span>
+                    </div>
+                    <div class="resultado-item">
+                        <span class="label-resultado" data-i18n="aqse.tank">Ackumulatortank</span>
+                        <span class="valor-resultado" id="seTank">—</span>
+                    </div>
+                </div>
+
+                <p class="aqse-status" id="seStatus"></p>
+
+                <p class="aqse-aviso" data-i18n="aqse.aviso">
+                    Utbildningsberäkning med cirka 500 kWh per m² och år för plan solfångare.
+                    Systemet måste vara en sluten krets med glykol — kollektorkretsen fryser
+                    annars. Solvärme ersätter inte en värmekälla i Sverige; den avlastar den.
                 </p>
             </div>
 
@@ -696,7 +768,7 @@
     </a>
 
     <!-- Script Modular ES6 -->
-    <script type="module" src="aquecimento-script.js?v=2.0.0"></script>
+    <script type="module" src="aquecimento-script.js?v=2.1.0"></script>
 </body>
 </html>
 

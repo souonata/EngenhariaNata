@@ -404,3 +404,66 @@ export const ROTAVDRAG_2026 = {
   tetoPorPessoaAno: 50000,
   schablonMaoDeObraBombaDeAr: 0.3,
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SOLAR TÉRMICA — solfångare (para o app `aquecimento`)
+// Fonte: Energi- och klimatrådgivningen, Viessmann SE e Vi i Villa
+// (consultado em 2026-08-18).
+// https://energiochklimatradgivningen.se/hushall/solenergi/solfangare.673.html
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Dimensionar solar térmica pelo INVERNO — como faz a versão brasileira e
+ * italiana — não funciona na Suécia: entre novembro e fevereiro a produção é
+ * quase nula em qualquer área de coletor. Lá o sistema é COMPLEMENTO, e o que
+ * limita o tamanho é o excedente de verão: passado certo ponto, área a mais
+ * não vira água quente, vira estagnação.
+ */
+export const SOLAR_TERMICA_SE_E_COMPLEMENTO = true;
+
+/**
+ * Produção anual útil por m² de coletor plano, em kWh/(m²·ano). O valor de
+ * catálogo sueco fica em torno de 500 (exemplo de especificação: 506 a 50 °C
+ * de temperatura do absorvedor).
+ */
+export const PRODUCAO_SOLFANGARE_SE = 500;
+
+/**
+ * Área recomendada de coletor, em m², pelo uso pretendido.
+ * Só água quente: 5–6 m². Combinado (água quente + apoio ao aquecimento):
+ * 8–12 m².
+ */
+export const AREA_SOLFANGARE_SE = {
+  aguaQuente: { minimo: 5, maximo: 6 },
+  combinado: { minimo: 8, maximo: 12 },
+};
+
+/** Volume do acumulador, em litros, pelo uso pretendido. */
+export const ACUMULADOR_SE_LITROS = {
+  aguaQuente: { minimo: 300, maximo: 500 },
+  combinado: { minimo: 500, maximo: 750 },
+};
+
+/**
+ * Demanda de água quente pelo schablon sueco: 800 kWh por pessoa e ano, mais
+ * 500 kWh de perdas do sistema (uma família de quatro dá ~3.700 kWh/ano).
+ */
+export const AGUA_QUENTE_SE = {
+  kwhPorPessoaAno: 800,
+  perdasFixasKwhAno: 500,
+};
+
+/**
+ * Teto realista da fração solar anual só para água quente. Não é limite de
+ * equipamento: é do calendário. Novembro a fevereiro produzem quase nada, e
+ * o excedente de junho não espera até dezembro. Área acima disso não aumenta
+ * a fração — só aumenta o tempo em estagnação.
+ */
+export const SOLFRAKTION_TETO_SE = 0.65;
+
+/**
+ * Circuito fechado com glicol é obrigatório: o circuito do coletor congela
+ * no inverno sueco. É a diferença construtiva que separa o sistema sueco do
+ * termossifão aberto usado em clima quente.
+ */
+export const GLIKOL_OBRIGATORIO_SE = true;
