@@ -34,9 +34,18 @@ export class ExplicacaoResultado {
         const { linhas = [], destaque = '', dica = '', norma = '' } = dados;
 
         const idioma = this.i18n?.obterIdiomaAtual?.() || this.i18n?.getIdioma?.() || 'it-IT';
-        const labelTitulo = idioma === 'it-IT' ? 'Cosa significa questo?' : 'O que isso significa?';
-        const labelDica    = idioma === 'it-IT' ? '💡 Consiglio pratico' : '💡 Dica prática';
-        const labelNorma   = idioma === 'it-IT' ? '📖 Riferimento' : '📖 Referência';
+        // Rótulos por idioma. Este componente é compartilhado por todos os
+        // apps, então o mapa aqui vale para o portfólio inteiro — era binário
+        // it/pt e deixava o cabeçalho em português no modo sueco.
+        const ROTULOS = {
+            'pt-BR': { titulo: 'O que isso significa?', dica: '💡 Dica prática', norma: '📖 Referência' },
+            'it-IT': { titulo: 'Cosa significa questo?', dica: '💡 Consiglio pratico', norma: '📖 Riferimento' },
+            'sv-SE': { titulo: 'Vad betyder det här?', dica: '💡 Praktiskt tips', norma: '📖 Källa' }
+        };
+        const rotulos = ROTULOS[idioma] || ROTULOS['it-IT'];
+        const labelTitulo = rotulos.titulo;
+        const labelDica   = rotulos.dica;
+        const labelNorma  = rotulos.norma;
 
         let linhasHTML = linhas.map(l => `
             <div class="v2-exp-linha">

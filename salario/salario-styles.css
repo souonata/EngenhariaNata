@@ -17,6 +17,15 @@
 body.lang-br .it-only { display: none !important; }
 body.lang-it .br-only { display: none !important; }
 
+/* Modo sueco: esconde o que é de Brasil e Itália, e mostra o que é da Suécia.
+   `.se-hide` marca linhas que simplesmente não existem lá — 13ª, FGTS e
+   rescisão no molde da CLT — para não exibir campo zerado sem explicação. */
+body.lang-se .br-only,
+body.lang-se .it-only,
+body.lang-se .se-hide { display: none !important; }
+body.lang-br .se-only,
+body.lang-it .se-only { display: none !important; }
+
 /* ============================================
    RESULTADOS
    ============================================ */

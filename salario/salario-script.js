@@ -20,7 +20,8 @@ import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
 import {
     INSS_BR_TETO,
     calcularBR,
-    calcularIT
+    calcularIT,
+    calcularSE
 } from './salario-calc.js';
 
 // ============================================
@@ -32,12 +33,16 @@ const SLIDER_TO_INPUT = {
     sliderPlano:       'inputPlano',
     sliderOutros:      'inputOutros',
     sliderMeses:       'inputMeses',
-    sliderComunale:    'inputComunale'
+    sliderComunale:    'inputComunale',
+    sliderKommunalskatt: 'inputKommunalskatt'
 };
 
 const CONFIG_BRUTO_POR_MODO = {
     br: { min: 1000, max: 50000, step: 100, valorPadrao: 5000 },
-    it: { min: 12000, max: 250000, step: 500, valorPadrao: 35000 }
+    it: { min: 12000, max: 250000, step: 500, valorPadrao: 35000 },
+    // Suécia: månadslön MENSAL (como no Brasil), não anual como a RAL italiana.
+    // Padrão perto da mediana nacional, ~37 000 kr/mês.
+    se: { min: 15000, max: 150000, step: 500, valorPadrao: 37000 }
 };
 
 // ============================================
@@ -65,7 +70,17 @@ class SalarioApp extends App {
     }
 
     get modoPais() {
-        return i18n.obterIdiomaAtual() === 'it-IT' ? 'it' : 'br';
+        // Cada idioma carrega a sua jurisdição.
+        return { 'it-IT': 'it', 'sv-SE': 'se' }[i18n.obterIdiomaAtual()] || 'br';
+    }
+
+    // Alíquota do kommun escolhida pelo usuário, em decimal.
+    get kommunalskattAtual() {
+        const input = document.getElementById('inputKommunalskatt');
+        // Mesmo padrão de leitura usado nos outros campos do app: vírgula
+        // decimal na tela, ponto no cálculo.
+        const pct = input ? parseFloat(String(input.value).replace(',', '.')) : NaN;
+        return isNaN(pct) ? undefined : pct / 100;
     }
 
     inicializarSalario() {
@@ -86,8 +101,10 @@ class SalarioApp extends App {
         const body = document.body;
         body.classList.toggle('lang-br', this.modoPais === 'br');
         body.classList.toggle('lang-it', this.modoPais === 'it');
-        // Atualiza unidades monetárias
-        const moeda = i18n.obterMoeda() === 'EUR' ? '€' : 'R$';
+        body.classList.toggle('lang-se', this.modoPais === 'se');
+        // Símbolo da moeda por jurisdição (era binário EUR/BRL e mostrava R$
+        // no modo sueco).
+        const moeda = { EUR: '€', SEK: 'kr', BRL: 'R$' }[i18n.obterMoeda()] || 'R$';
         document.querySelectorAll('.moeda-unit, #unidadeMoeda').forEach(el => {
             el.textContent = moeda;
         });
@@ -317,7 +334,11 @@ class SalarioApp extends App {
 
     atualizarResultado() {
         const v = this.obterValores();
-        const res = this.modoPais === 'it' ? calcularIT(v) : calcularBR(v);
+        const porPais = { it: calcularIT, se: calcularSE, br: calcularBR };
+        const res = (porPais[this.modoPais] || calcularBR)({
+            ...v,
+            kommunalskatt: this.kommunalskattAtual
+        });
         this.atualizarDOM(res);
         this.explicacao.renderizar(this.gerarExplicacao(res));
         this.atualizarGraficos(res);
@@ -329,10 +350,26 @@ class SalarioApp extends App {
 
     atualizarDOM(r) {
         document.getElementById('resultadoLiquido').textContent = this.fMoeda(r.liquido);
-        document.getElementById('resultadoInss').textContent    = this.fMoeda(r.inss);
-        document.getElementById('resultadoIrrf').textContent    = this.fMoeda(r.irrf);
+        // INSS e IRRF são de Brasil/Itália; no modo sueco as linhas ficam
+        // ocultas pelo CSS e não têm valor a mostrar.
+        document.getElementById('resultadoInss').textContent    = r.pais === 'se' ? '—' : this.fMoeda(r.inss);
+        document.getElementById('resultadoIrrf').textContent    = r.pais === 'se' ? '—' : this.fMoeda(r.irrf);
 
-        if (r.pais === 'br') {
+        if (r.pais === 'se') {
+            // A Suécia tem outra decomposição: kommunalskatt e statlig skatt no
+            // lugar de INSS/IRRF, e o jobbskatteavdrag entra como CRÉDITO.
+            const def = (id, valor) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = valor;
+            };
+            def('resultadoKommunalskatt', this.fMoeda(r.kommunalskattAnual / 12));
+            def('resultadoStatligSkatt', this.fMoeda(r.statligSkattAnual / 12));
+            def('resultadoJobbskatteavdrag', '−' + this.fMoeda(r.jobbskatteavdragAnual / 12));
+            def('resultadoGrundavdrag', this.fMoeda(r.grundavdrag));
+            def('resultadoSemesterlon', this.fMoeda(r.semesterlonLiquida));
+            def('resultadoArbetsgivaravgift', this.fMoeda(r.arbetsgivaravgiftMensal));
+            def('resultadoPlano', this.fMoeda(r.plano));
+        } else if (r.pais === 'br') {
             document.getElementById('resultadoVt').textContent       = this.fMoeda(r.vt);
             document.getElementById('resultadoPlano').textContent    = this.fMoeda(r.plano);
             document.getElementById('resultadoFeriasBr').textContent = this.fMoeda(r.feriasLiquido);
@@ -346,12 +383,68 @@ class SalarioApp extends App {
         document.getElementById('resultadoTotalDescontos').textContent = this.fMoeda(r.totalDescontos);
         document.getElementById('resultadoAliqEfetiva').textContent    = formatarNumero(r.aliqEfetiva, 1) + '%';
 
-        document.getElementById('resultadoDecimoTerceiro').textContent = this.fMoeda(r.decimoLiquido);
-        document.getElementById('resultadoFgtsMensal').textContent     = this.fMoeda(r.fgtsMensal);
-        document.getElementById('resultadoFgtsAcumulado').textContent  = this.fMoeda(r.fgtsAcumulado);
+        const semEquivalente = r.pais === 'se';
+        document.getElementById('resultadoDecimoTerceiro').textContent = semEquivalente ? '—' : this.fMoeda(r.decimoLiquido);
+        document.getElementById('resultadoFgtsMensal').textContent     = semEquivalente ? '—' : this.fMoeda(r.fgtsMensal);
+        document.getElementById('resultadoFgtsAcumulado').textContent  = semEquivalente ? '—' : this.fMoeda(r.fgtsAcumulado);
         document.getElementById('resultadoRendaAnual').textContent     = this.fMoeda(r.rendaAnual);
-        document.getElementById('resultadoRescisao').textContent       = this.fMoeda(r.rescisao);
+        document.getElementById('resultadoRescisao').textContent       = semEquivalente ? '—' : this.fMoeda(r.rescisao);
         document.getElementById('resultadoCustoEmpresa').textContent   = this.fMoeda(r.custoEmpresa);
+    }
+
+    // Explicação do modo sueco. Separada de propósito: a estrutura do cálculo
+    // não tem paralelo com Brasil e Itália, então forçá-la no mesmo ternário
+    // produziria texto enganoso.
+    gerarExplicacaoSE(r, pct) {
+        const mensalKommunal = r.kommunalskattAnual / 12;
+        const mensalStatlig = r.statligSkattAnual / 12;
+        const mensalJsa = r.jobbskatteavdragAnual / 12;
+
+        return {
+            linhas: [
+                {
+                    icone: '💰',
+                    titulo: 'Bruttolön → nettolön',
+                    valor: `${this.fMoeda(r.bruto)} → ${this.fMoeda(r.liquido)}`,
+                    descricao: `Av varje 100 kr före skatt får du behålla ${pct.toFixed(1)} kr. Effektiv skattesats: ${r.aliqEfetiva.toFixed(1)} %.`
+                },
+                {
+                    icone: '🏛️',
+                    titulo: `Kommunalskatt (${(r.kommunalskatt * 100).toFixed(2)} %)`,
+                    valor: this.fMoeda(mensalKommunal),
+                    descricao: `Tas ut på inkomsten efter grundavdrag, som här är ${this.fMoeda(r.grundavdrag)} per år. Satsen varierar mellan de 290 kommunerna.`
+                },
+                {
+                    icone: '🇸🇪',
+                    titulo: 'Statlig inkomstskatt (20 %)',
+                    valor: this.fMoeda(mensalStatlig),
+                    descricao: mensalStatlig > 0
+                        ? 'Tas ut på den del av den beskattningsbara inkomsten som överstiger skiktgränsen på 643 000 kr.'
+                        : 'Ingen statlig skatt: den beskattningsbara inkomsten ligger under skiktgränsen på 643 000 kr.'
+                },
+                {
+                    icone: '✅',
+                    titulo: 'Jobbskatteavdrag',
+                    valor: `−${this.fMoeda(mensalJsa)}`,
+                    descricao: 'Skattereduktion som räknas av mot kommunalskatten — aldrig mot den statliga. Från 2026 trappas den inte längre av vid höga inkomster.'
+                },
+                {
+                    icone: '🏖️',
+                    titulo: 'Semesterlön (12 %)',
+                    valor: this.fMoeda(r.semesterlonLiquida),
+                    descricao: 'Sverige har varken trettonde eller fjortonde månadslön: semesterlönen är motsvarigheten i funktion.'
+                },
+                {
+                    icone: '🏢',
+                    titulo: 'Arbetsgivaravgift (31,42 %)',
+                    valor: this.fMoeda(r.arbetsgivaravgiftMensal),
+                    descricao: `Betalas av arbetsgivaren utöver lönen och dras INTE från ditt netto. Total kostnad för anställningen: ${this.fMoeda(r.custoEmpresa)} i månaden.`
+                }
+            ],
+            destaque: `Nettolön per månad: ${this.fMoeda(r.liquido)} (${pct.toFixed(1)} % av bruttolönen)`,
+            dica: 'Kommunalskatten är det som skiljer mest mellan orter: över 5 procentenheter mellan högsta och lägsta kommun. Eftersom jobbskatteavdraget räknas mot just den skatten blir avdraget också större där satsen är hög.',
+            norma: 'Skatteverket, inkomstår 2026 • prisbasbelopp 59 200 kr • skiktgräns 643 000 kr • 67 kap. inkomstskattelagen'
+        };
     }
 
     gerarExplicacao(r) {
@@ -359,6 +452,12 @@ class SalarioApp extends App {
         const bruto = r.bruto;
         const liq = r.liquido;
         const pct = bruto > 0 ? (liq / bruto) * 100 : 0;
+
+        // O sueco tem decomposição própria: sem INSS/IRRF, com jobbskatteavdrag
+        // abatendo a kommunalskatt e a arbetsgivaravgift fora do líquido.
+        if (r.pais === 'se') {
+            return this.gerarExplicacaoSE(r, pct);
+        }
 
         const linhas = isIt ? [
             {
