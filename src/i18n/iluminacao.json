@@ -303,5 +303,157 @@
       "resumoCustoMensal": "Costo mensile:"
     },
     "footer": "Illuminazione Residenziale — Ingegneria NATA @ 2026"
+  },
+  "sv-SE": {
+    "app": {
+      "title": "💡 Belysning i bostäder",
+      "subtitle": "Dimensionering av lampor och energikostnad"
+    },
+    "labels": {
+      "area": "Rummets storlek",
+      "atividade": "Typ av aktivitet/rum",
+      "corParedes": "Väggarnas färg",
+      "peDireito": "Rumshöjd (golv–tak)",
+      "luzNatural": "Tillgång till dagsljus",
+      "tarifa": "Elpris",
+      "novoAmbienteTipo": "Lägg till rum",
+      "nomeAmbienteAtual": "Namn för att känna igen rummet"
+    },
+    "placeholders": {
+      "nomeAmbiente": "T.ex.: Stora vardagsrummet"
+    },
+    "ambientes": {
+      "titulo": "🏠 Husets rum",
+      "descricao": "Välj de rum du vill dimensionera, justera värdena för vart och ett och jämför delsumman per rum med husets totala.",
+      "contadorLabel": "Valda rum",
+      "toolbarTexto": "När du lagt till ett rum, tryck på det för att ändra värdena.",
+      "nomePadrao": "{tipo} {numero}"
+    },
+    "editor": {
+      "titulo": "⚙️ Värden för valt rum",
+      "editando": "Redigerar:",
+      "tarifaTitulo": "💸 Husets elpris",
+      "tarifaSubtitulo": "Samma pris används för att summera kostnaden för alla rum."
+    },
+    "opcoes": {
+      "sala": "Vardagsrum",
+      "quarto": "Sovrum",
+      "cozinha": "Kök",
+      "banheiro": "Badrum",
+      "escritorio": "Arbetsrum",
+      "corredor": "Hall/korridor",
+      "clara": "Ljus",
+      "media": "Mellan",
+      "escura": "Mörk",
+      "muita": "Mycket",
+      "pouca": "Lite",
+      "nenhuma": "Ingen"
+    },
+    "unidades": {
+      "m2": "m²",
+      "metro": "m",
+      "watt": "W",
+      "kwh": "kWh",
+      "lux": "lux",
+      "unidade": "st",
+      "reaisPorKwh": "kr/kWh"
+    },
+    "dicas": {
+      "corParedes": "💡 Ljusa väggar reflekterar mer ljus och minskar antalet lampor som behövs",
+      "luzNatural": "💡 Dagsljusfaktorn sänker dimensioneringen och utgår från användning mest dagtid. Välj \"Ingen\" för full belysningsstyrka även på kvällen"
+    },
+    "tooltips": {
+      "area": "Rummets totala yta i kvadratmeter. Multiplicera längden med bredden.",
+      "peDireito": "Höjden mellan golv och tak. Typiska värden i bostäder ligger mellan 2,4 m och 3,5 m.",
+      "tarifa": "Genomsnittligt elpris där du bor. Värdet står på elräkningen (i kr/kWh). Använd 2,00 som utgångsvärde om du är osäker."
+    },
+    "resultado": {
+      "titulo": "📊 Resultat",
+      "ambienteSelecionado": "Resultat för valt rum",
+      "parciaisAmbientes": "Delsummor per rum",
+      "matrizLampadas": "Fördelning av lampor per rum",
+      "totalResidencia": "Totalt för huset",
+      "luxRecomendado": "Rekommenderad belysningsstyrka:",
+      "potenciaTotal": "Lampornas totala effekt:",
+      "numLuminarias": "Antal lampor:",
+      "consumoMensal": "Förbrukning per månad:",
+      "custoMensal": "Elkostnad per månad:",
+      "custoAnual": "Elkostnad per år:",
+      "detalhamento": "Uppgifter om lamporna",
+      "totalAmbientes": "Beräknade rum:",
+      "areaTotal": "Total yta:",
+      "potenciaResidencia": "Total installerad effekt:",
+      "luminariasResidencia": "Lampor totalt:",
+      "consumoResidencia": "Total förbrukning per månad:",
+      "custoMensalResidencia": "Total kostnad per månad:",
+      "custoAnualResidencia": "Total kostnad per år:",
+      "numLuminariasCard": "Lampor",
+      "potenciaCard": "Effekt",
+      "consumoCard": "Förbrukning per månad",
+      "custoCard": "Kostnad per månad"
+    },
+    "tabela": {
+      "quantidade": "Antal",
+      "potenciaUnitaria": "Effekt / lumen",
+      "tipoLampada": "LED-typ"
+    },
+    "botoes": {
+      "voltar": "← Tillbaka",
+      "saibaMais": "LÄS MER!",
+      "adicionarAmbiente": "+ Lägg till rum",
+      "editarAmbiente": "Ändra"
+    },
+    "aria": {
+      "langPt": "Byt till portugisiska (Brasilien)",
+      "langIt": "Byt till italienska",
+      "clickInfo": "Klicka för mer information",
+      "decrease": "Minska värdet",
+      "increase": "Öka värdet",
+      "removerAmbiente": "Ta bort {ambiente}",
+      "home": "Tillbaka till startsidan"
+    },
+    "titles": {
+      "langPt": "Portugisiska (Brasilien)",
+      "langIt": "Italienska",
+      "clickInfo": "Mer information"
+    },
+    "memorial": {
+      "titulo": "📚 Beräkningsredovisning — belysning i bostäder",
+      "introTitulo": "🎯 Syftet med beräkningen",
+      "introTexto": "Den här redovisningen förklarar steg för steg hur kalkylatorn dimensionerar antalet LED-lampor, förbrukningen per månad och elkostnaden utifrån riktvärden för belysningsstyrka (SS-EN 12464-1) och lumenmetoden.",
+      "passo1Titulo": "1️⃣ Steg 1: rekommenderad belysningsstyrka",
+      "passo1Explicacao": "Riktvärden för belysningsstyrka per typ av aktivitet enligt SS-EN 12464-1. En valfri sänkningsfaktor tillämpas när dagsljus finns; välj \"Ingen\" för full belysningsstyrka även på kvällen.",
+      "passo1Formula": "Verklig belysningsstyrka = grundvärde × dagsljusfaktor",
+      "passo1Exemplo": "Exempel:",
+      "passo2Titulo": "2️⃣ Steg 2: nödvändigt ljusflöde",
+      "passo2Explicacao": "Det totala ljusflödet beror på ytan, väggarnas färg (reflektion) och takhöjden (proportionell korrigering på cirka 3,7 % per meter över 2,7 m).",
+      "passo2Formula": "Lumen = (yta × lux) ÷ [reflektionsfaktor × (1 − 0,1 × (höjd/2,7 − 1))]",
+      "passo3Titulo": "3️⃣ Steg 3: val av LED-lampor",
+      "passo3Explicacao": "Bland tillgängliga LED-effekter (6 W, 9 W, 12 W, 15 W) väljer kalkylatorn den kombination som ger det nödvändiga ljusflödet med lägst total installerad effekt (100 lm/W); vid nästan lika resultat (upp till 1 %) föredras den med färre lampor.",
+      "passo3Formula": "Antal = ⌈lumen ÷ (watt × 100)⌉",
+      "passo4Titulo": "4️⃣ Steg 4: förbrukning och elkostnad",
+      "passo4Explicacao": "Vi räknar med 5 h/dygn i drift, 30 dagar per månad och 12 månader per år.",
+      "passo4Formula": "Förbrukning (kWh) = effekt × 5 h × 30 ÷ 1000   |   Kostnad = förbrukning × elpris",
+      "constantesTitulo": "Konstanter och referenser:",
+      "constLux": "Riktvärden för belysningsstyrka (SS-EN 12464-1): vardagsrum 150, sovrum 100, kök 300, badrum 200, arbetsrum 500, hall 100",
+      "constLuzNatural": "Dagsljusfaktorer: mycket 0,50 | mellan 0,65 | lite 0,85 | ingen 1,00",
+      "constReflexao": "Väggreflektion: ljus 0,80 | mellan 0,50 | mörk 0,30",
+      "constLampadas": "Tillgängliga LED: 6 W, 9 W, 12 W, 15 W — verkningsgrad 100 lm/W",
+      "constHoras": "Genomsnittlig användning: 5 h/dygn × 30 dagar/månad × 12 månader/år",
+      "norma": "Referens: SS-EN 12464-1 — Ljus och belysning av arbetsplatser (europeisk standard som gäller i Sverige)",
+      "resumoTitulo": "📊 Sammanfattning",
+      "resumoAmbiente": "Valt rum:",
+      "resumoArea": "Rummets yta:",
+      "resumoAtividade": "Typ av rum:",
+      "resumoCorParedes": "Väggarnas färg:",
+      "resumoPeDireito": "Rumshöjd:",
+      "resumoLuzNatural": "Dagsljus:",
+      "resumoLux": "Rekommenderad belysningsstyrka:",
+      "resumoLumens": "Nödvändigt ljusflöde:",
+      "resumoLuminarias": "Valda lampor:",
+      "resumoConsumo": "Förbrukning per månad:",
+      "resumoCustoMensal": "Kostnad per månad:"
+    },
+    "footer": "Belysning i bostäder — Engenharia NATA @ 2026"
   }
 }
