@@ -7,49 +7,49 @@
     },
     "labels": {
       "comprimento": "Comprimento do Ambiente",
-      "largura":     "Largura do Ambiente",
-      "peDireito":   "Pé Direito (Altura Piso-Teto)",
-      "janelas":     "Área Total de Janelas",
-      "pessoas":     "Número de Pessoas",
+      "largura": "Largura do Ambiente",
+      "peDireito": "Pé Direito (Altura Piso-Teto)",
+      "janelas": "Área Total de Janelas",
+      "pessoas": "Número de Pessoas",
       "tipoVentilacao": "Tipo de Ventilação",
-      "orientacao":  "Exposição das Janelas ao Vento",
-      "clima":       "Clima da Região"
+      "orientacao": "Exposição das Janelas ao Vento",
+      "clima": "Clima da Região"
     },
     "opcoes": {
       "unilateral": "Unilateral (uma fachada)",
-      "cruzada":    "Cruzada (fachadas opostas)",
-      "favoravel":  "A favor do vento",
-      "obliqua":    "Vento oblíquo",
-      "abrigada":   "Abrigada do vento",
-      "quente":    "Quente/Úmido",
+      "cruzada": "Cruzada (fachadas opostas)",
+      "favoravel": "A favor do vento",
+      "obliqua": "Vento oblíquo",
+      "abrigada": "Abrigada do vento",
+      "quente": "Quente/Úmido",
       "temperado": "Temperado",
-      "frio":      "Frio/Seco"
+      "frio": "Frio/Seco"
     },
     "unidades": {
-      "metro":   "m",
-      "m2":      "m²",
+      "metro": "m",
+      "m2": "m²",
       "pessoas": "pessoas"
     },
     "tooltips": {
       "comprimento": "Comprimento do cômodo em metros. Para ambientes irregulares, use a maior dimensão.",
-      "largura":     "Largura do cômodo em metros. Para salas abertas, considere a planta total.",
-      "peDireito":   "Altura entre o piso e o teto. Padrão residencial: 2,4–3,0 m. Tetos mais altos aumentam o volume e exigem mais ventilação.",
-      "janelas":     "Soma das áreas abertas das janelas do ambiente (largura × altura de cada folha). Se houver janelas em fachadas opostas, selecione o tipo \"cruzada\" e informe a área de abertura da menor fachada (entrada de ar).",
-      "pessoas":     "Número de ocupantes habituais do ambiente. Cada pessoa produz CO₂ e umidade que exigem maior renovação de ar."
+      "largura": "Largura do cômodo em metros. Para salas abertas, considere a planta total.",
+      "peDireito": "Altura entre o piso e o teto. Padrão residencial: 2,4–3,0 m. Tetos mais altos aumentam o volume e exigem mais ventilação.",
+      "janelas": "Soma das áreas abertas das janelas do ambiente (largura × altura de cada folha). Se houver janelas em fachadas opostas, selecione o tipo \"cruzada\" e informe a área de abertura da menor fachada (entrada de ar).",
+      "pessoas": "Número de ocupantes habituais do ambiente. Cada pessoa produz CO₂ e umidade que exigem maior renovação de ar."
     },
     "qualidade": {
-      "excelente":    "Excelente ✅",
-      "boa":          "Boa ✅",
-      "aceitavel":    "Aceitável ⚠️",
+      "excelente": "Excelente ✅",
+      "boa": "Boa ✅",
+      "aceitavel": "Aceitável ⚠️",
       "insuficiente": "Insuficiente ❌"
     },
     "resultado": {
-      "titulo":        "Resultados",
-      "ach":           "Renovações de Ar (ACH)",
-      "qualidade":     "Qualidade da Ventilação",
-      "volume":        "Volume do Ambiente",
-      "vazao":         "Vazão de Ar",
-      "areaMinima":    "Área Mínima de Janelas (referência: 1/8 do piso)",
+      "titulo": "Resultados",
+      "ach": "Renovações de Ar (ACH)",
+      "qualidade": "Qualidade da Ventilação",
+      "volume": "Volume do Ambiente",
+      "vazao": "Vazão de Ar",
+      "areaMinima": "Área Mínima de Janelas (referência: 1/8 do piso)",
       "statusJanelas": "Janelas Atuais vs. Mínimo",
       "avisoEducacional": "Estimativa educacional — modelo simplificado de efeito vento (sem efeito chaminé), com janelas totalmente abertas e vento constante. O ACH avalia a vazão estimada; a área mínima é exigência construtiva independente. Não substitui projeto de ventilação."
     },
@@ -104,16 +104,16 @@
       "resumoQualidade": "Qualidade:"
     },
     "aria": {
-      "langPt":    "Mudar para Português (Brasil)",
-      "langIt":    "Mudar para Italiano",
+      "langPt": "Mudar para Português (Brasil)",
+      "langIt": "Mudar para Italiano",
       "clickInfo": "Clique para ver mais informações",
-      "diminuir":  "Diminuir valor",
-      "aumentar":  "Aumentar valor",
-      "home":      "Voltar para a tela inicial"
+      "diminuir": "Diminuir valor",
+      "aumentar": "Aumentar valor",
+      "home": "Voltar para a tela inicial"
     },
     "titles": {
-      "langPt":    "Português (Brasil)",
-      "langIt":    "Italiano",
+      "langPt": "Português (Brasil)",
+      "langIt": "Italiano",
       "clickInfo": "Mais informações"
     },
     "footer": "Ventilação Natural — Engenharia NATA @ 2026"
@@ -125,49 +125,49 @@
     },
     "labels": {
       "comprimento": "Lunghezza dell'Ambiente",
-      "largura":     "Larghezza dell'Ambiente",
-      "peDireito":   "Altezza Ambiente (Pavimento-Soffitto)",
-      "janelas":     "Area Totale Finestre",
-      "pessoas":     "Numero di Persone",
+      "largura": "Larghezza dell'Ambiente",
+      "peDireito": "Altezza Ambiente (Pavimento-Soffitto)",
+      "janelas": "Area Totale Finestre",
+      "pessoas": "Numero di Persone",
       "tipoVentilacao": "Tipo di Ventilazione",
-      "orientacao":  "Esposizione delle Finestre al Vento",
-      "clima":       "Clima della Regione"
+      "orientacao": "Esposizione delle Finestre al Vento",
+      "clima": "Clima della Regione"
     },
     "opcoes": {
       "unilateral": "Unilaterale (una facciata)",
-      "cruzada":    "Incrociata (facciate opposte)",
-      "favoravel":  "Sopravvento",
-      "obliqua":    "Vento obliquo",
-      "abrigada":   "Riparata dal vento",
-      "quente":    "Caldo/Umido",
+      "cruzada": "Incrociata (facciate opposte)",
+      "favoravel": "Sopravvento",
+      "obliqua": "Vento obliquo",
+      "abrigada": "Riparata dal vento",
+      "quente": "Caldo/Umido",
       "temperado": "Temperato",
-      "frio":      "Freddo/Secco"
+      "frio": "Freddo/Secco"
     },
     "unidades": {
-      "metro":   "m",
-      "m2":      "m²",
+      "metro": "m",
+      "m2": "m²",
       "pessoas": "persone"
     },
     "tooltips": {
       "comprimento": "Lunghezza della stanza in metri. Per ambienti irregolari, usare la dimensione maggiore.",
-      "largura":     "Larghezza della stanza in metri. Per sale aperte, considerare la planimetria totale.",
-      "peDireito":   "Altezza tra pavimento e soffitto. Standard residenziale: 2,4–3,0 m. Soffitti più alti aumentano il volume e richiedono più ventilazione.",
-      "janelas":     "Somma delle aree aperte delle finestre dell'ambiente (larghezza × altezza di ogni anta). Con finestre su facciate opposte, seleziona il tipo \"incrociata\" e indica l'area di apertura della facciata più piccola (ingresso d'aria).",
-      "pessoas":     "Numero di occupanti abituali dell'ambiente. Ogni persona produce CO₂ e umidità che richiedono un maggiore ricambio d'aria."
+      "largura": "Larghezza della stanza in metri. Per sale aperte, considerare la planimetria totale.",
+      "peDireito": "Altezza tra pavimento e soffitto. Standard residenziale: 2,4–3,0 m. Soffitti più alti aumentano il volume e richiedono più ventilazione.",
+      "janelas": "Somma delle aree aperte delle finestre dell'ambiente (larghezza × altezza di ogni anta). Con finestre su facciate opposte, seleziona il tipo \"incrociata\" e indica l'area di apertura della facciata più piccola (ingresso d'aria).",
+      "pessoas": "Numero di occupanti abituali dell'ambiente. Ogni persona produce CO₂ e umidità che richiedono un maggiore ricambio d'aria."
     },
     "qualidade": {
-      "excelente":    "Eccellente ✅",
-      "boa":          "Buona ✅",
-      "aceitavel":    "Accettabile ⚠️",
+      "excelente": "Eccellente ✅",
+      "boa": "Buona ✅",
+      "aceitavel": "Accettabile ⚠️",
       "insuficiente": "Insufficiente ❌"
     },
     "resultado": {
-      "titulo":        "Risultati",
-      "ach":           "Ricambi d'Aria (ACH)",
-      "qualidade":     "Qualità della Ventilazione",
-      "volume":        "Volume dell'Ambiente",
-      "vazao":         "Portata d'Aria",
-      "areaMinima":    "Area Minima Finestre (riferimento: 1/8 del pavimento)",
+      "titulo": "Risultati",
+      "ach": "Ricambi d'Aria (ACH)",
+      "qualidade": "Qualità della Ventilazione",
+      "volume": "Volume dell'Ambiente",
+      "vazao": "Portata d'Aria",
+      "areaMinima": "Area Minima Finestre (riferimento: 1/8 del pavimento)",
       "statusJanelas": "Finestre Attuali vs. Minimo",
       "avisoEducacional": "Stima educativa — modello semplificato del solo effetto vento (senza effetto camino), con finestre completamente aperte e vento costante. L'ACH valuta la portata stimata; l'area minima è un requisito costruttivo indipendente. Non sostituisce un progetto di ventilazione."
     },
@@ -222,18 +222,136 @@
       "resumoQualidade": "Qualità:"
     },
     "aria": {
-      "langPt":    "Passa al Portoghese (Brasile)",
-      "langIt":    "Passa all'Italiano",
+      "langPt": "Passa al Portoghese (Brasile)",
+      "langIt": "Passa all'Italiano",
       "clickInfo": "Fare clic per maggiori informazioni",
-      "diminuir":  "Diminuisci valore",
-      "aumentar":  "Aumenta valore",
-      "home":      "Torna alla schermata principale"
+      "diminuir": "Diminuisci valore",
+      "aumentar": "Aumenta valore",
+      "home": "Torna alla schermata principale"
     },
     "titles": {
-      "langPt":    "Portoghese (Brasile)",
-      "langIt":    "Italiano",
+      "langPt": "Portoghese (Brasile)",
+      "langIt": "Italiano",
       "clickInfo": "Più informazioni"
     },
     "footer": "Ventilazione Naturale — Engenharia NATA @ 2026"
+  },
+  "sv-SE": {
+    "app": {
+      "title": "🌬️ Naturlig ventilation",
+      "subtitle": "Luftkvalitet och luftomsättning per timme (pedagogisk modell)"
+    },
+    "labels": {
+      "comprimento": "Rummets längd",
+      "largura": "Rummets bredd",
+      "peDireito": "Rumshöjd (golv–tak)",
+      "janelas": "Total fönsterarea",
+      "pessoas": "Antal personer",
+      "tipoVentilacao": "Typ av ventilation",
+      "orientacao": "Fönstrens läge mot vinden",
+      "clima": "Regionens klimat"
+    },
+    "opcoes": {
+      "unilateral": "Ensidig (en fasad)",
+      "cruzada": "Korsdrag (motstående fasader)",
+      "favoravel": "Mot vinden",
+      "obliqua": "Snedställd vind",
+      "abrigada": "I lä",
+      "quente": "Varmt/fuktigt",
+      "temperado": "Tempererat",
+      "frio": "Kallt/torrt"
+    },
+    "unidades": {
+      "metro": "m",
+      "m2": "m²",
+      "pessoas": "personer"
+    },
+    "tooltips": {
+      "comprimento": "Rummets längd i meter. För oregelbundna rum, använd det största måttet.",
+      "largura": "Rummets bredd i meter. För öppna ytor, utgå från hela planlösningen.",
+      "peDireito": "Höjden mellan golv och tak. Vanligt i bostäder: 2,4–3,0 m. Högre tak ger större volym och kräver mer ventilation.",
+      "janelas": "Summan av fönstrens öppningsbara areor i rummet (bredd × höjd för varje båge). Vid fönster på motstående fasader, välj \"korsdrag\" och ange öppningsarean på den mindre fasaden (luftintaget).",
+      "pessoas": "Antal personer som normalt vistas i rummet. Varje person avger koldioxid och fukt som kräver mer luftomsättning."
+    },
+    "qualidade": {
+      "excelente": "Utmärkt ✅",
+      "boa": "Bra ✅",
+      "aceitavel": "Godtagbar ⚠️",
+      "insuficiente": "Otillräcklig ❌"
+    },
+    "resultado": {
+      "titulo": "Resultat",
+      "ach": "Luftomsättning (ACH)",
+      "qualidade": "Ventilationens kvalitet",
+      "volume": "Rummets volym",
+      "vazao": "Luftflöde",
+      "areaMinima": "Minsta fönsterarea (riktvärde: 1/8 av golvytan)",
+      "statusJanelas": "Nuvarande fönster jämfört med minimum",
+      "avisoEducacional": "Pedagogisk uppskattning — förenklad modell med enbart vindeffekt (utan skorstenseffekt), helt öppna fönster och jämn vind. ACH bedömer det uppskattade flödet; minsta fönsterarea är ett separat byggnadskrav. Ersätter inte en ventilationsprojektering."
+    },
+    "botoes": {
+      "voltar": "← Tillbaka",
+      "saibaMais": "LÄS MER!"
+    },
+    "memorial": {
+      "titulo": "📚 Beräkningsredovisning — naturlig ventilation",
+      "introTitulo": "🎯 Syftet med beräkningen",
+      "introTexto": "Den här redovisningen förklarar hur kalkylatorn uppskattar luftflödet med vindeffekten (Q = Cv·A·V), luftomsättningen per timme (ACH) och minsta fönsterarea med den vanliga tumregeln 1/8. Pedagogisk modell — referenser: ASHRAE Fundamentals, BS 5925, ASHRAE 62.1 och Boverkets byggregler (BBR).",
+      "passo1Titulo": "1️⃣ Steg 1: rummets volym",
+      "passo1Explicacao": "Vi räknar ut golvytan och den totala volym som ska ventileras.",
+      "passo1Formula": "Area = längd × bredd    |    Volym = area × höjd",
+      "passo1Exemplo": "Exempel:",
+      "passo2Titulo": "2️⃣ Steg 2: luftflöde genom fönstren",
+      "passo2Explicacao": "Vi tillämpar Q = Cv × A × V (vindeffekt). Den effektiva koefficienten Cv beror på ventilationstypen: korsdrag ≈ 0,60 (ASHRAE; A = öppningsarean på intagsfasaden) och ensidig ≈ 0,025 (BS 5925). Vindhastigheten varierar med klimatet, och fasadens läge ger en korrektionsfaktor.",
+      "passo2Formula": "Q (m³/h) = fönsterarea × vindhastighet × lägesfaktor × Cv × 3600",
+      "passo3Titulo": "3️⃣ Steg 3: luftomsättning (ACH)",
+      "passo3Explicacao": "ACH anger hur många gånger all luft i rummet byts ut på en timme.",
+      "passo3Formula": "ACH = flöde ÷ volym",
+      "passo4Titulo": "4️⃣ Steg 4: nödvändig lägsta ACH",
+      "passo4Explicacao": "Målet är det högsta av det pedagogiska luftkvalitetsmålet (6 ACH — en hälsorekommendation, inte ett krav i BBR eller ASHRAE 62.2) och det som personerna kräver (27 m³/h per person ÷ volymen).",
+      "passo4Formula": "ACH_mål = max(6 , personer × 27 ÷ volym)",
+      "passo5Titulo": "5️⃣ Steg 5: minsta fönsterarea",
+      "passo5Explicacao": "Pedagogiskt riktvärde: den vanliga byggregeln att fönstren ska motsvara minst 1/8 (12,5 %) av golvytan. Boverkets byggregler ställer i stället krav på uteluftsflöde — minst 0,35 l/s per m² golvarea i bostäder; kontrollera det lokala kravet.",
+      "passo5Formula": "Minsta fönsterarea = golvyta ÷ 8",
+      "passo6Titulo": "6️⃣ Steg 6: klassning av kvaliteten",
+      "passo6Explicacao": "Vi jämför verklig ACH med den nödvändiga.",
+      "passo6Lista": "Utmärkt ≥ 1,5 × nödvändig · Bra ≥ 1× · Godtagbar ≥ 0,5× · Otillräcklig därunder",
+      "constantesTitulo": "Konstanter och referenser:",
+      "constCd": "Effektiv koefficient Cv: korsdrag 0,60 (ASHRAE) · ensidig 0,025 (BS 5925)",
+      "constVento": "Vindhastighet: varmt 2,5 m/s · tempererat 2,0 · kallt 1,5",
+      "constOri": "Läge mot vinden: mot vinden 1,00 · snedställd 0,85 · i lä 0,70",
+      "constACH": "Pedagogiskt ACH-mål = 6 (rekommendation för luftkvalitet; inte minimikravet i BBR eller ASHRAE 62.2)",
+      "constPessoa": "Flöde per person = 27 m³/h (7,5 l/s — ASHRAE 62.1)",
+      "constArea": "Minsta fönsterarea = 1/8 av golvytan (vanlig byggregel; BBR ställer i stället krav på 0,35 l/s per m² i bostäder)",
+      "norma": "Referenser: ASHRAE Fundamentals (Q=Cv·A·V) · BS 5925 (ensidig) · ASHRAE 62.1 (flöde per person) · Boverkets byggregler (BBR) för uteluftsflöde och öppningar",
+      "resumoTitulo": "📊 Sammanfattning",
+      "resumoDimensoes": "Mått:",
+      "resumoPeDireito": "Rumshöjd:",
+      "resumoJanelas": "Fönsterarea:",
+      "resumoPessoas": "Personer:",
+      "resumoTipo": "Typ av ventilation:",
+      "resumoOrientacao": "Läge mot vinden:",
+      "resumoClima": "Klimat:",
+      "resumoVolume": "Volym:",
+      "resumoVazao": "Flöde:",
+      "resumoACH": "Verklig ACH:",
+      "resumoACHMin": "Lägsta ACH:",
+      "resumoAreaMin": "Minsta fönsterarea:",
+      "resumoQualidade": "Kvalitet:"
+    },
+    "aria": {
+      "langPt": "Byt till portugisiska (Brasilien)",
+      "langIt": "Byt till italienska",
+      "clickInfo": "Klicka för mer information",
+      "diminuir": "Minska värdet",
+      "aumentar": "Öka värdet",
+      "home": "Tillbaka till startsidan"
+    },
+    "titles": {
+      "langPt": "Portugisiska (Brasilien)",
+      "langIt": "Italienska",
+      "clickInfo": "Mer information"
+    },
+    "footer": "Naturlig ventilation — Engenharia NATA @ 2026"
   }
 }

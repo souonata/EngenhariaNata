@@ -231,5 +231,121 @@
       "tituloSecao": "🔍 Riepilogo del Dimensionamento"
     },
     "footer": "Raccolta Acqua Piovana — Engenharia NATA @ 2026"
+  },
+  "sv-SE": {
+    "app": {
+      "title": "🌧️ Uppsamling av regnvatten",
+      "subtitle": "Dimensionering av tank och uppskattad besparing"
+    },
+    "labels": {
+      "area": "Takets yta",
+      "chuva": "Genomsnittlig nederbörd per månad",
+      "pessoas": "Antal personer",
+      "uso": "Tänkt användning av vattnet"
+    },
+    "unidades": {
+      "m2": "m²",
+      "mm": "mm/månad",
+      "pessoas": "personer"
+    },
+    "uso": {
+      "jardim": "Trädgård",
+      "sanitario": "Toaletter",
+      "limpeza": "Städning",
+      "completo": "Allt"
+    },
+    "tooltips": {
+      "area": "Takets horisontellt projicerade yta (inte den lutande ytan). För ett sadeltak på 10 × 8 m är ytan 80 m². Större tak samlar mer vatten.",
+      "chuva": "Genomsnittlig månadsnederbörd på din ort i mm, enligt SMHI. 1 mm regn motsvarar 1 liter per m² tak.",
+      "pessoas": "Antal boende som ska använda det uppsamlade vattnet. Fler personer ökar den uppskattade månadsförbrukningen.",
+      "uso": "Anger vad vattnet ska användas till. Toaletter (spolning): ca 40 l/person/dygn. Trädgård: ca 6 l/person/dygn. Städning: ca 20 l/person/dygn."
+    },
+    "resultado": {
+      "titulo": "Resultat",
+      "captacao": "Uppsamling per månad",
+      "cisterna": "Rekommenderad tank",
+      "overflow": "Risk för bräddning",
+      "economia": "Uppskattad besparing/månad"
+    },
+    "overflow": {
+      "baixo": "Låg",
+      "medio": "Medel",
+      "alto": "Hög"
+    },
+    "grafico": {
+      "titulo": "💧 Vattenbalans per månad",
+      "captacao": "Uppsamling",
+      "demanda": "Behov",
+      "eixoY": "Volym (liter)"
+    },
+    "memorial": {
+      "titulo": "📚 Beräkningsredovisning — uppsamling av regnvatten",
+      "introTitulo": "🎯 Syftet med beräkningen",
+      "introTexto": "Den här redovisningen förklarar steg för steg hur den uppsamlade volymen, tankens storlek och den uppskattade besparingen räknas fram vid återvinning av regnvatten.",
+      "passo1Titulo": "1️⃣ Steg 1: uppsamlad volym per månad",
+      "passo1Explicacao": "Uppsamlingen beror på takets yta, nederbörden och nyttjandekoefficienten (förluster genom avdunstning, bortledning av första regnet och systemets verkningsgrad).",
+      "passo1Formula": "Uppsamling (l) = yta (m²) × nederbörd (mm) × 0,80",
+      "passo1Exemplo": "Exempel:",
+      "passo2Titulo": "2️⃣ Steg 2: månadsbehov per användning",
+      "passo2Explicacao": "Behovet varierar med användningen. Följande värden är typiska riktvärden:",
+      "passo2Sanitario": "Toaletter (spolning): 40 l × personer × 30 dagar",
+      "passo2Jardim": "Trädgård: 6 l × personer × 30 dagar",
+      "passo2Limpeza": "Städning: 20 l × personer × 30 dagar",
+      "passo2Completo": "Allt: summan av de tre användningarna ovan",
+      "passo3Titulo": "3️⃣ Steg 3: dimensionering av tanken",
+      "passo3Explicacao": "Tanken ska rymma månadsbehovet med 20 % säkerhetsmarginal, avrundat till närmaste standardvolym.",
+      "passo3Formula": "Tank (l) = månadsbehov × 1,20 → standardvolym ≥ resultatet",
+      "passo4Titulo": "4️⃣ Steg 4: risk för bräddning",
+      "passo4Explicacao": "När uppsamlingen överstiger behovet rinner överskottet över. Bräddningsrisken visar hur stor del av uppsamlingen som blir överskott.",
+      "passo4Formula": "Bräddning (%) = max(0, (uppsamling − behov) / uppsamling × 100)",
+      "passo5Titulo": "5️⃣ Steg 5: uppskattad besparing",
+      "passo5Explicacao": "Besparingen räknas på den volym som faktiskt används (det lägsta av uppsamling och behov), med en referenstaxa för dricksvatten.",
+      "passo5Formula": "Besparing = min(uppsamling, behov) × 0,001 m³/l × taxa (kr/m³)",
+      "constantesTitulo": "Använda konstanter och referenser:",
+      "coefAproveitamento": "Nyttjandekoefficient = 0,80 (tar hänsyn till bortledning av första regnet och förluster)",
+      "tarifaReferencia": "Referenstaxa: 45 kr/m³ (svenskt genomsnitt för vatten och avlopp — anpassa till din kommun)",
+      "cisternas": "Standardvolymer för tankar: 500, 1 000, 2 000, 5 000, 10 000, 15 000 och 20 000 l",
+      "norma": "Referenser: SMHI:s nederbördsnormaler och Boverkets byggregler (BBR) för installationer med icke-dricksvatten",
+      "resumoTitulo": "📊 Sammanfattning",
+      "resumoArea": "Takets yta:",
+      "resumoChuva": "Nederbörd per månad:",
+      "resumoPessoas": "Antal personer:",
+      "resumoUso": "Tänkt användning:",
+      "resumoCaptacao": "Uppsamling per månad:",
+      "resumoCisterna": "Rekommenderad tank:",
+      "resumoOverflow": "Risk för bräddning:",
+      "resumoEconomia": "Uppskattad besparing/månad:"
+    },
+    "botoes": {
+      "saibaMais": "LÄS MER!",
+      "voltar": "← Tillbaka"
+    },
+    "aria": {
+      "langPt": "Byt språk till portugisiska",
+      "langIt": "Byt språk till italienska",
+      "home": "Tillbaka till startsidan",
+      "infoArea": "Information om takets yta",
+      "infoChuva": "Information om nederbörden",
+      "infoPessoas": "Information om antalet personer",
+      "infoUso": "Information om tänkt användning",
+      "aumentarArea": "Öka ytan",
+      "diminuirArea": "Minska ytan",
+      "aumentarChuva": "Öka nederbörden",
+      "diminuirChuva": "Minska nederbörden",
+      "aumentarPessoas": "Öka antalet personer",
+      "diminuirPessoas": "Minska antalet personer"
+    },
+    "titles": {
+      "langPt": "Portugisiska",
+      "langIt": "Italienska",
+      "clickInfo": "Klicka för mer information"
+    },
+    "v2": {
+      "destaquePrefix": "Med",
+      "destaqueMid": "tak och",
+      "destaqueSuffix": "regn per månad samlas",
+      "tituloSecao": "🔍 Sammanfattning av dimensioneringen"
+    },
+    "footer": "Uppsamling av regnvatten — Engenharia NATA @ 2026"
   }
 }
