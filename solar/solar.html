@@ -357,9 +357,7 @@
                     <span data-i18n="tooltip-consumo-texto">O consumo médio mensal representa a quantidade de energia elétrica que você utiliza por mês, medida em quilowatt-hora (kWh). Este valor é usado para calcular a energia diária necessária e dimensionar todo o sistema fotovoltaico. Você pode encontrar este valor na sua conta de luz.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderConsumo" data-step="-10" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderConsumo" min="10" max="999" step="10" value="200">
-                    <button type="button" class="arrow-btn" data-target="sliderConsumo" data-step="10" data-i18n-aria="aria-increase">+</button>
                 </div>
             </div>
 
@@ -378,9 +376,7 @@
                     <span data-i18n="tooltip-autonomia-texto">Os dias de autonomia representam quantos dias consecutivos o sistema deve conseguir fornecer energia sem receber luz solar. Por exemplo, se você configurar 3 dias de autonomia, o sistema será dimensionado para armazenar energia suficiente para funcionar por 3 dias mesmo sem sol, garantindo funcionamento durante períodos nublados ou chuvosos.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderAutonomia" data-step="-1" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderAutonomia" min="1" max="10" step="1" value="1">
-                    <button type="button" class="arrow-btn" data-target="sliderAutonomia" data-step="1" data-i18n-aria="aria-increase">+</button>
                 </div>
             </div>
 
@@ -434,9 +430,7 @@
                     <span data-i18n="tooltip-vida-util-texto">A vida útil desejada é o número de anos que você espera que o sistema funcione antes de precisar substituir as baterias. Baterias LiFePO4 podem durar até 25 anos com uso adequado, enquanto baterias AGM (chumbo-ácido) geralmente duram de 1 a 5 anos. Quanto maior a vida útil desejada, menor será o DoD (profundidade de descarga) diário para preservar as baterias.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderVidaUtil" data-step="-1" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderVidaUtil" min="1" max="25" step="1" value="20">
-                    <button type="button" class="arrow-btn" data-target="sliderVidaUtil" data-step="1" data-i18n-aria="aria-increase">+</button>
                 </div>
                 <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">
                     <span id="descVidaUtil">DoD Diário: --%</span>
@@ -460,9 +454,7 @@
                     <span data-i18n="tooltip-preco-kwh-texto">O custo da energia elétrica por kWh é o preço que você paga pela energia da rede elétrica. Este valor é usado para calcular a economia financeira do sistema solar ao longo do tempo. Você pode ajustar este valor para simular diferentes cenários de tarifa ou projeções futuras.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderPrecoKWh" data-step="-0.05" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderPrecoKWh" min="0.19" max="3.00" step="0.05" value="0.75">
-                    <button type="button" class="arrow-btn" data-target="sliderPrecoKWh" data-step="0.05" data-i18n-aria="aria-increase">+</button>
                 </div>
                 <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">
                     <span id="notaPrecoKWh" style="font-size: 0.75rem; color: #888; font-style: italic;"></span>
@@ -486,9 +478,7 @@
                     <span data-i18n="tooltip-aumento-anual-energia-texto">O aumento anual do custo da energia representa a taxa percentual de crescimento do preço da energia elétrica ao longo dos anos. Este valor é usado para calcular a economia acumulada considerando que a energia fica mais cara com o tempo. O valor padrão é baseado no histórico dos últimos 50 anos no Brasil e na Itália.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderAumentoAnualEnergia" data-step="-0.1" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderAumentoAnualEnergia" min="1.2" max="40.0" step="0.1" value="8.0">
-                    <button type="button" class="arrow-btn" data-target="sliderAumentoAnualEnergia" data-step="0.1" data-i18n-aria="aria-increase">+</button>
                 </div>
                 <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">
                     <span id="notaAumentoAnualEnergia" style="font-size: 0.75rem; color: #888; font-style: italic;"></span>
@@ -512,12 +502,51 @@
                     <span data-i18n="tooltip-preco-bateria-kwh-texto">O preço da bateria por kWh representa o custo unitário de capacidade de armazenamento de energia. Este valor varia conforme o tipo de bateria (LiFePO4 é mais caro que AGM) e o mercado. Você pode ajustar este valor para simular diferentes custos de baterias e ver como isso afeta o custo total do sistema.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderPrecoBateriaKWh" data-step="-100" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderPrecoBateriaKWh" min="10" max="8000" step="10" value="3000">
-                    <button type="button" class="arrow-btn" data-target="sliderPrecoBateriaKWh" data-step="100" data-i18n-aria="aria-increase">+</button>
                 </div>
                 <div style="text-align: center; font-size: 0.8rem; color: #666; margin-top: 5px;">
                     <span id="notaPrecoBateriaKWh" style="font-size: 0.75rem; color: #888; font-style: italic;"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- GRÁFICOS — logo após os controles, para a curva reagir ao slider
+             dentro do campo de visão. Antes ficavam no fim dos resultados. -->
+        <section class="cartao" id="graficosSection">
+            <div class="graficos-container">
+                <h3 class="graficos-titulo" data-i18n="graficos-title">📊 Visualizações</h3>
+
+                <!-- Controle do Período de Análise do Gráfico -->
+                <div class="grupo-entrada periodo-analise-controle">
+                    <div class="cabecalho-controle">
+                        <label for="sliderPeriodoAnalise" data-i18n="label-periodo-analise">Período de Análise do Gráfico</label>
+                        <span class="info-icon" id="infoIconPeriodoAnalise" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
+                            <span class="info-icon-symbol">ℹ️</span>
+                        </span>
+                        <div class="valor-com-unidades">
+                            <input type="text" id="inputPeriodoAnalise" class="valor-display valor-input" value="25">
+                            <span class="unidade" data-i18n="unidade-anos">anos</span>
+                        </div>
+                    </div>
+                    <div class="descricao-info" id="descricaoPeriodoAnalise" style="display: none;">
+                        <span data-i18n="tooltip-periodo-analise-texto">O período de análise do gráfico define quantos anos serão considerados na análise financeira de amortização e lucro líquido. Use o slider para ajustar entre 5 e 60 anos, ou digite diretamente no campo para valores maiores (até 200 anos).</span>
+                    </div>
+                    <div class="slider-com-botoes">
+                        <input type="range" id="sliderPeriodoAnalise" min="5" max="60" step="1" value="25">
+                    </div>
+                </div>
+
+                <!-- Gráfico de Amortização: Retorno do Investimento -->
+                <div class="grafico-box">
+                    <h4 class="grafico-box-title" data-i18n="grafico-amortizacao-title">Análise de Amortização do Sistema</h4>
+                    <canvas id="graficoAmortizacao"></canvas>
+                    <div id="infoPayback"></div>
+                </div>
+
+                <!-- Gráfico de Sazonalidade -->
+                <div class="grafico-box">
+                    <h4 class="grafico-box-title" data-i18n="grafico-sazonalidade-title">Sazonalidade de Geração Solar</h4>
+                    <canvas id="graficoSazonalidade"></canvas>
                 </div>
             </div>
         </section>
@@ -595,46 +624,6 @@
 
             <!-- Painel de Explicação V2.0 -->
             <div id="v2-explicacao"></div>
-
-            <!-- Gráficos de Visualização -->
-            <div class="graficos-container">
-                <h3 class="graficos-titulo" data-i18n="graficos-title">📊 Visualizações</h3>
-
-                <!-- Controle do Período de Análise do Gráfico -->
-                <div class="grupo-entrada periodo-analise-controle">
-                    <div class="cabecalho-controle">
-                        <label for="sliderPeriodoAnalise" data-i18n="label-periodo-analise">Período de Análise do Gráfico</label>
-                        <span class="info-icon" id="infoIconPeriodoAnalise" role="button" tabindex="0" data-i18n-aria="aria-click-info" data-i18n-title="aria-click-info">
-                            <span class="info-icon-symbol">ℹ️</span>
-                        </span>
-                        <div class="valor-com-unidades">
-                            <input type="text" id="inputPeriodoAnalise" class="valor-display valor-input" value="25">
-                            <span class="unidade" data-i18n="unidade-anos">anos</span>
-                        </div>
-                    </div>
-                    <div class="descricao-info" id="descricaoPeriodoAnalise" style="display: none;">
-                        <span data-i18n="tooltip-periodo-analise-texto">O período de análise do gráfico define quantos anos serão considerados na análise financeira de amortização e lucro líquido. Use o slider para ajustar entre 5 e 60 anos, ou digite diretamente no campo para valores maiores (até 200 anos).</span>
-                    </div>
-                    <div class="slider-com-botoes">
-                        <button type="button" class="arrow-btn" data-target="sliderPeriodoAnalise" data-step="-1" data-i18n-aria="aria-decrease">−</button>
-                        <input type="range" id="sliderPeriodoAnalise" min="5" max="60" step="1" value="25">
-                        <button type="button" class="arrow-btn" data-target="sliderPeriodoAnalise" data-step="1" data-i18n-aria="aria-increase">+</button>
-                    </div>
-                </div>
-
-                <!-- Gráfico de Amortização: Retorno do Investimento -->
-                <div class="grafico-box">
-                    <h4 class="grafico-box-title" data-i18n="grafico-amortizacao-title">Análise de Amortização do Sistema</h4>
-                    <canvas id="graficoAmortizacao"></canvas>
-                    <div id="infoPayback"></div>
-                </div>
-
-                <!-- Gráfico de Sazonalidade -->
-                <div class="grafico-box">
-                    <h4 class="grafico-box-title" data-i18n="grafico-sazonalidade-title">Sazonalidade de Geração Solar</h4>
-                    <canvas id="graficoSazonalidade"></canvas>
-                </div>
-            </div>
         </section>
     </div>
 

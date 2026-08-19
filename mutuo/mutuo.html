@@ -38,7 +38,7 @@
     <link rel="stylesheet" href="../assets/css/dock-global.css?v=1.2.0">
     <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
     <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2">
-    <link rel="stylesheet" href="mutuo-styles.css?v=1.0.2">
+    <link rel="stylesheet" href="mutuo-styles.css?v=1.1.0">
 
     <!-- Analytics: GoatCounter (privacy-friendly, LGPD/GDPR-compliant) -->
     <script data-goatcounter="https://souonata.goatcounter.com/count"
@@ -323,7 +323,54 @@
                  que não tem equivalente na Suécia: lá a amortização mínima é
                  um percentual anual da dívida, definido pela belåningsgrad.
                  ============================================================ -->
-            <div class="bolan-secao se-only">
+            <!-- Seletor de sistema: fica FORA do bloco escondido pelo bolån,
+                 senão o usuário perderia o caminho de volta para SAC/Price. -->
+            <div class="controles-rapidos controles-rapidos--sistema">
+                <div class="controles-grid-vertical">
+                    <div class="sistema-amortizacao-box">
+                        <div class="controle-sistema-wrapper">
+                            <div class="label-sistema-com-ajuda">
+                                <label class="label-sistema" data-i18n="amortization-system">Sistema de Amortização</label>
+                                <button id="btnExemplos" class="btn-help" data-i18n-title="btn-examples" tabindex="10">
+                                    <span class="texto-saiba-mais" data-i18n="learn-more">SAIBA MAIS!</span>
+                                </button>
+                            </div>
+                            <div class="grupo-radio">
+                                <label class="opcao-radio">
+                                    <input type="radio" name="sistemaRapido" value="sac" tabindex="7">
+                                    <div class="cartao-radio">
+                                        <span class="rotulo-radio" data-i18n="system-sac-short">SAC</span>
+                                    </div>
+                                </label>
+                                <label class="opcao-radio">
+                                    <input type="radio" name="sistemaRapido" value="price" checked tabindex="8">
+                                    <div class="cartao-radio">
+                                        <span class="rotulo-radio" data-i18n="system-price-short">Price</span>
+                                    </div>
+                                </label>
+                                <label class="opcao-radio">
+                                    <input type="radio" name="sistemaRapido" value="americano" tabindex="9">
+                                    <div class="cartao-radio">
+                                        <span class="rotulo-radio" data-i18n="system-german-short">Alemão</span>
+                                    </div>
+                                </label>
+                                <!-- Bolån: o modelo sueco. Não é sistema de
+                                     amortização — é percentual anual da dívida —
+                                     por isso troca a tela inteira ao ser escolhido. -->
+                                <label class="opcao-radio">
+                                    <input type="radio" name="sistemaRapido" value="bolan" tabindex="9">
+                                    <div class="cartao-radio">
+                                        <span class="rotulo-radio" data-i18n="system-bolan-short">Bolån</span>
+                                        <span class="rotulo-radio-pais" data-i18n="system-bolan-country">🇸🇪 Suécia</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bolan-secao bolan-only">
                 <h2 class="bolan-titulo" data-i18n="bolan.titulo">Bolån — svenskt bostadslån</h2>
                 <p class="bolan-intro" data-i18n="bolan.intro">
                     I Sverige finns inget val av amorteringssystem. Amorteringskravet är en
@@ -345,6 +392,16 @@
                         <label for="inputJurosBolan" data-i18n="bolan.juros">Ränta (% per år)</label>
                         <input type="text" id="inputJurosBolan" class="valor-input" value="4,0" inputmode="decimal" autocomplete="off">
                         <input type="range" id="sliderJurosBolan" min="0.5" max="10" step="0.05" value="4">
+                    </div>
+                    <div class="grupo-entrada">
+                        <label for="inputAnosBolan" data-i18n="bolan.horizonte">Visa utveckling over (ar)</label>
+                        <input type="text" id="inputAnosBolan" class="valor-input" value="30" inputmode="numeric" autocomplete="off">
+                        <input type="range" id="sliderAnosBolan" min="5" max="50" step="1" value="30">
+                    </div>
+                    <div class="grupo-entrada">
+                        <label for="inputExtraBolan" data-i18n="bolan.extraAnual">Frivillig amortering (kr/ar)</label>
+                        <input type="text" id="inputExtraBolan" class="valor-input" value="0" inputmode="numeric" autocomplete="off">
+                        <input type="range" id="sliderExtraBolan" min="0" max="300000" step="5000" value="0">
                     </div>
                 </div>
 
@@ -382,41 +439,145 @@
                 </div>
 
                 <div id="v2-explicacao-bolan"></div>
-            </div>
-            <!-- Controles Rápidos -->
-            <div class="controles-rapidos">
-                <div class="controles-grid-vertical">
-                    <div class="sistema-amortizacao-box se-hide">
-                        <div class="controle-sistema-wrapper">
-                            <div class="label-sistema-com-ajuda">
-                                <label class="label-sistema" data-i18n="amortization-system">Sistema de Amortização</label>
-                                <button id="btnExemplos" class="btn-help" data-i18n-title="btn-examples" tabindex="10">
-                                    <span class="texto-saiba-mais" data-i18n="learn-more">SAIBA MAIS!</span>
-                                </button>
-                            </div>
-                            <div class="grupo-radio">
-                                <label class="opcao-radio">
-                                    <input type="radio" name="sistemaRapido" value="sac" tabindex="7">
-                                    <div class="cartao-radio">
-                                        <span class="rotulo-radio" data-i18n="system-sac-short">SAC</span>
-                                    </div>
-                                </label>
-                                <label class="opcao-radio">
-                                    <input type="radio" name="sistemaRapido" value="price" checked tabindex="8">
-                                    <div class="cartao-radio">
-                                        <span class="rotulo-radio" data-i18n="system-price-short">Price</span>
-                                    </div>
-                                </label>
-                                <label class="opcao-radio">
-                                    <input type="radio" name="sistemaRapido" value="americano" tabindex="9">
-                                    <div class="cartao-radio">
-                                        <span class="rotulo-radio" data-i18n="system-german-short">Alemão</span>
-                                    </div>
-                                </label>
-                            </div>
+
+                <!-- Gráfico da projeção: equivalente sueco do gráfico de evolução
+                     de PT/IT. Mostra os degraus do amorteringskrav (2 % → 1 % → 0 %)
+                     e o ponto em que a dívida para de cair sozinha. -->
+                <div class="bolan-grafico-bloco">
+                    <div class="graficos-header">
+                        <h3 data-i18n="bolan.graficoTitulo">Skulden år för år</h3>
+                    </div>
+                    <p class="bolan-grafico-intro" data-i18n="bolan.graficoIntro">
+                        Staplarna visar årets kostnad, uppdelad i amortering och ränta efter
+                        ränteavdrag. Linjen visar belåningsgraden och de två nivåer som styr
+                        amorteringskravet.
+                    </p>
+                    <div class="grafico-unico">
+                        <canvas id="graficoBolan"></canvas>
+                    </div>
+                    <div class="bolan-projecao-resumo" id="bolanProjecaoResumo"></div>
+                </div>
+
+                <!-- LÄS MER — memorial de cálculo sueco: fórmulas, premissas e fontes. -->
+                <div class="bolan-saibamais">
+                    <button type="button" id="btnBolanSaibaMais" class="btn-help btn-bolan-saibamais"
+                            aria-expanded="false" aria-controls="bolanMemorial">
+                        <span class="texto-saiba-mais" data-i18n="bolan.mem.botao">LÄS MER</span>
+                    </button>
+
+                    <div id="bolanMemorial" class="bolan-memorial" hidden>
+                        <h3 data-i18n="bolan.mem.titulo">Så räknar appen — formler, antaganden och källor</h3>
+
+                        <div class="bolan-memorial-item">
+                            <h4 data-i18n="bolan.mem.bgTitulo">1. Belåningsgrad</h4>
+                            <p class="bolan-formula">belåningsgrad = lånebelopp ÷ bostadens pris</p>
+                            <p data-i18n="bolan.mem.bgTexto">
+                                Belåningsgraden är navet i den svenska modellen: den avgör både om
+                                lånet är tillåtet och hur mycket som måste amorteras.
+                            </p>
+                        </div>
+
+                        <div class="bolan-memorial-item">
+                            <h4 data-i18n="bolan.mem.tetoTitulo">2. Bolånetak</h4>
+                            <p class="bolan-formula">lånebelopp ≤ 90 % × bostadens pris</p>
+                            <p data-i18n="bolan.mem.tetoTexto">
+                                Sedan 1 april 2026 är taket 90 % i stället för 85 %, alltså minst
+                                10 % kontantinsats. Appen varnar när insatsen är för låg och visar
+                                hur mycket som fattas.
+                            </p>
+                        </div>
+
+                        <div class="bolan-memorial-item">
+                            <h4 data-i18n="bolan.mem.kravTitulo">3. Amorteringskrav</h4>
+                            <table class="bolan-memorial-tabela">
+                                <thead>
+                                    <tr>
+                                        <th data-i18n="bolan.mem.kravColBg">Belåningsgrad</th>
+                                        <th data-i18n="bolan.mem.kravColTaxa">Amortering per år</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>&gt; 70 %</td><td>2 %</td></tr>
+                                    <tr><td>50–70 %</td><td>1 %</td></tr>
+                                    <tr><td>&le; 50 %</td><td>0 %</td></tr>
+                                </tbody>
+                            </table>
+                            <p class="bolan-formula">amortering per år = andel × ursprungligt lånebelopp</p>
+                            <p data-i18n="bolan.mem.kravTexto">
+                                Andelen räknas på det ursprungliga lånebeloppet, inte på skulden som
+                                är kvar. Taket är 3 % per år. Nivån sätts när lånet tas och ändras
+                                bara vid en ny värdering av bostaden, som får göras högst vart femte
+                                år. Du får alltid amortera mer än kravet.
+                            </p>
+                            <p class="bolan-memorial-aviso" data-i18n="bolan.mem.kravRevogado">
+                                ⚠️ Det skärpta amorteringskravet — en procentenhet extra för skulder
+                                över 4,5 gånger bruttoinkomsten — togs bort 1 april 2026. Äldre
+                                kalkyler och äldre texter räknar fortfarande med det.
+                            </p>
+                        </div>
+
+                        <div class="bolan-memorial-item">
+                            <h4 data-i18n="bolan.mem.rantaTitulo">4. Ränta och ränteavdrag</h4>
+                            <p class="bolan-formula">ränta per år = skuld × räntesats</p>
+                            <p class="bolan-formula">ränteavdrag = 30 % × ränta upp till 100 000 kr + 21 % × ränta däröver</p>
+                            <p data-i18n="bolan.mem.rantaTexto">
+                                Avdraget kommer tillbaka via deklarationen, inte varje månad, men
+                                appen fördelar det per månad för att visa den verkliga kostnaden.
+                                Sedan 2026 gäller avdraget bara lån med säkerhet — bostaden är
+                                säkerheten här, så bolånet är fortfarande avdragsgillt.
+                            </p>
+                        </div>
+
+                        <div class="bolan-memorial-item">
+                            <h4 data-i18n="bolan.mem.kostnadTitulo">5. Månadskostnad</h4>
+                            <p class="bolan-formula">månadskostnad = (amortering + ränta − ränteavdrag) ÷ 12</p>
+                            <p data-i18n="bolan.mem.kostnadTexto">
+                                Bara räntedelen är en verklig utgift. Amorteringen är sparande: den
+                                flyttar pengar från kontot till bostaden. Appen visar de två delarna
+                                var för sig just därför.
+                            </p>
+                        </div>
+
+                        <div class="bolan-memorial-item">
+                            <h4 data-i18n="bolan.mem.diagramTitulo">6. Vad diagrammet bygger på</h4>
+                            <ul class="bolan-memorial-lista">
+                                <li data-i18n="bolan.mem.diagramA">Bostadens värde hålls konstant. Med värdestegring kommer trappstegen tidigare.</li>
+                                <li data-i18n="bolan.mem.diagramB">Nivån prövas om vart femte år, så trappstegen faller vart femte år — inte den dag belåningsgraden passerar gränsen.</li>
+                                <li data-i18n="bolan.mem.diagramC">Räntan räknas på skulden vid årets början. Det är en årsmodell och överskattar räntan något jämfört med månadsvis debitering.</li>
+                                <li data-i18n="bolan.mem.diagramD">Räntesatsen antas vara densamma hela perioden. I verkligheten binds den om med några års mellanrum.</li>
+                            </ul>
+                        </div>
+
+                        <div class="bolan-memorial-item">
+                            <h4 data-i18n="bolan.mem.skillnadTitulo">7. Varför den här skärmen skiljer sig</h4>
+                            <p data-i18n="bolan.mem.skillnadTexto">
+                                På portugisiska och italienska väljer du amorteringsform — rak
+                                amortering, annuitet eller stående lån — och lånet är slutbetalat på
+                                bestämd tid. Det valet finns inte i Sverige: kravet är en andel per
+                                år och det försvinner helt under 50 % belåningsgrad. Därför visas
+                                varken systemval, betalningsplan eller amorteringstabell här.
+                            </p>
+                        </div>
+
+                        <div class="bolan-memorial-item">
+                            <h4 data-i18n="bolan.mem.fontesTitulo">Källor</h4>
+                            <ul class="bolan-memorial-lista">
+                                <li data-i18n="bolan.mem.fonteA">Finansinspektionen — amorteringskrav för bolån, reglerna som gäller sedan 1 april 2026.</li>
+                                <li data-i18n="bolan.mem.fonteB">Finansinspektionen — allmänna råd om bolånetak, höjt till 90 % den 1 april 2026.</li>
+                                <li data-i18n="bolan.mem.fonteC">Skatteverket — ränteavdrag inkomstår 2026: 30 % upp till 100 000 kr och 21 % däröver, bara för lån med säkerhet.</li>
+                            </ul>
+                            <p class="bolan-memorial-aviso" data-i18n="bolan.mem.disclaimer">
+                                Appen är pedagogisk och ersätter inte besked från banken eller
+                                Skatteverket. Stäm alltid av siffrorna med din långivare.
+                            </p>
                         </div>
                     </div>
-
+                </div>
+            </div>
+            <!-- Controles Rápidos — entrada de SAC/Price/Americano; a Suécia
+                 não usa nenhum deles, por isso o bloco inteiro sai em sueco. -->
+            <div class="controles-rapidos bolan-hide">
+                <div class="controles-grid-vertical">
                     <div class="controles-primeira-linha">
                         <div class="controles-coluna-esquerda">
                             <div class="grupo-entrada">
@@ -435,9 +596,7 @@
                                     <span data-i18n="tooltip-valor-texto">O valor emprestado é o montante total que você está solicitando ao banco ou instituição financeira. Este valor será usado para calcular as parcelas, juros e amortização. Valores maiores resultam em parcelas maiores e mais juros totais.</span>
                                 </div>
                                 <div class="slider-com-botoes">
-                                    <button type="button" class="arrow-btn arrow-down" data-target="sliderValor" data-step="-1000" data-i18n-aria="aria.diminuirValor">−</button>
                                     <input type="range" id="sliderValor" min="1000" max="1000000" step="1000" value="92000">
-                                    <button type="button" class="arrow-btn arrow-up" data-target="sliderValor" data-step="1000" data-i18n-aria="aria.aumentarValor">+</button>
                                 </div>
                             </div>
 
@@ -457,9 +616,7 @@
                                     <span data-i18n="tooltip-prazo-texto">O prazo é o tempo total em anos para quitar o empréstimo. Este valor é convertido automaticamente para meses (anos × 12) para os cálculos. Prazos maiores resultam em parcelas menores, mas mais juros totais ao longo do tempo.</span>
                                 </div>
                                 <div class="slider-com-botoes">
-                                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPrazo" data-step="-1" data-i18n-aria="aria.diminuirPrazo">−</button>
                                     <input type="range" id="sliderPrazo" min="1" max="50" step="1" value="20">
-                                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPrazo" data-step="1" data-i18n-aria="aria.aumentarPrazo">+</button>
                                 </div>
                             </div>
                         </div>
@@ -498,9 +655,7 @@
                                 <span data-i18n="tooltip-taxa-texto">A taxa de juros é o percentual cobrado sobre o valor emprestado. Você pode informar a taxa em diferentes períodos (ano, mês ou dia). O sistema converte automaticamente para taxa mensal usando juros compostos. Taxas maiores resultam em parcelas maiores e mais juros totais.</span>
                             </div>
                             <div class="slider-com-botoes">
-                                <button type="button" class="arrow-btn arrow-down" data-target="sliderTaxa" data-step="-0.01" data-i18n-aria="aria.diminuirTaxa">−</button>
                                 <input type="range" id="sliderTaxa" min="0" max="20" step="0.01" value="3.22" tabindex="3">
-                                <button type="button" class="arrow-btn arrow-up" data-target="sliderTaxa" data-step="0.01" data-i18n-aria="aria.aumentarTaxa">+</button>
                             </div>
                         </div>
                     </div>
@@ -537,9 +692,7 @@
                                 <span data-i18n="tooltip-extra-texto">O pagamento extra é um valor adicional aplicado na periodicidade escolhida (mensal, semestral ou anual). Esse valor aparece nas parcelas individuais, é abatido do saldo devedor e reduz o tempo total para quitação do financiamento.</span>
                             </div>
                             <div class="slider-com-botoes">
-                                <button type="button" class="arrow-btn arrow-down" data-target="sliderExtraPagamento" data-step="-10" data-i18n-aria="aria.diminuirExtra">−</button>
                                 <input type="range" id="sliderExtraPagamento" min="0" max="10000" step="10" value="0" tabindex="11">
-                                <button type="button" class="arrow-btn arrow-up" data-target="sliderExtraPagamento" data-step="10" data-i18n-aria="aria.aumentarExtra">+</button>
                             </div>
 
                             <div class="extras-especificos-box">
@@ -563,7 +716,7 @@
                 </div>
             </div>
 
-            <div class="graficos-container" id="graficosContainer">
+            <div class="graficos-container bolan-hide" id="graficosContainer">
                 <div class="graficos-header">
                     <h3 data-i18n="evolution-charts">📊 Evolução ao Longo do Tempo</h3>
                     <button type="button" id="btnToggleGrafico" class="btn-toggle-grafico" aria-expanded="true" data-i18n-title="titles.toggleGrafico" data-i18n-aria="aria.toggleGrafico" title="Minimizar gráfico">
@@ -576,15 +729,13 @@
             </div>
 
             <!-- Painel de Explicação V2.0 -->
-            <div id="v2-explicacao"></div>
+            <div id="v2-explicacao" class="bolan-hide"></div>
 
-            <div class="parcelas-info parcelas-info--selector">
+            <div class="parcelas-info parcelas-info--selector bolan-hide">
                 <h3><span data-i18n="selected-installment">Parcela Selecionada</span>: <span id="numeroParcela">1</span> <span data-i18n="of">de</span> <span id="totalParcelas">-</span></h3>
 
                 <div class="se-hide slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderParcelas" data-step="-1" data-i18n-aria="aria.diminuirParcela">−</button>
                     <input type="range" id="sliderParcelas" min="1" max="120" value="1" step="1">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderParcelas" data-step="1" data-i18n-aria="aria.aumentarParcela">+</button>
                 </div>
 
                 <div class="parcela-detalhes">
@@ -609,7 +760,7 @@
                 </div>
             </div>
 
-            <div class="tabela-container se-hide">
+            <div class="tabela-container bolan-hide">
                 <h3 data-i18n="amortization-table">📋 Tabela de Amortização Completa</h3>
                 <div class="tabela-scroll">
                     <table id="tabelaAmortizacao">
@@ -652,6 +803,6 @@
     <script src="../assets/js/vendor/chart.umd.js"></script>
 
     <!-- JavaScript da calculadora -->
-    <script type="module" src="mutuo-script.js?v=2.0.0"></script>
+    <script type="module" src="mutuo-script.js?v=2.1.0"></script>
 </body>
 </html>

@@ -88,10 +88,6 @@
     --choice-chip-active-shadow: 0 4px 10px rgba(45, 159, 163, 0.2);
     --choice-chip-compact-shadow: 0 2px 6px rgba(45, 159, 163, 0.2);
 
-    --arrow-border: #2d9fa3ff;
-    --arrow-bg: white;
-    --arrow-hover-bg: #2d9fa3ff;
-    --arrow-hover-color: white;
     
     /* Accent colors for sliders and UI elements */
     --accent-color: #2d9fa3ff;
@@ -161,8 +157,6 @@ html[data-theme="dark"] {
     --choice-chip-active-shadow: 0 6px 14px rgba(0, 0, 0, 0.24);
     --choice-chip-compact-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
 
-    --arrow-bg: #2d2d30;
-    --arrow-border: #5cc9d0;
 
     --accent-color: #5cc9d0;
     --accent-secondary: #7f9cf5;
@@ -626,22 +620,6 @@ html:not([data-theme="dark"]) .home-button-fixed svg { fill: var(--accent-hover,
    duplicata: `.app-icon .app-name` tem especificidade maior que `.app-name`,
    então vencia o index-styles por especificidade — e não por ordem — e travava
    o tamanho do nome em 0,95rem, independentemente do que a home pedisse. */
-
-/* Arrow increment/decrement buttons next to inputs/sliders */
-.arrow-btn{
-    width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content:center;
-    border: 2px solid var(--arrow-border); background: var(--arrow-bg); color: var(--arrow-border);
-    cursor: pointer; transition: all 0.15s ease; user-select:none; touch-action: manipulation;
-    min-width: 30px; min-height: 30px; /* Garantir tamanho mínimo */
-    outline: none; /* Remove outline padrão */
-}
-
-/* Melhorar acessibilidade: outline visível no foco do teclado */
-.arrow-btn:focus-visible {
-    outline: 3px solid var(--arrow-border);
-    outline-offset: 2px;
-}
-
 
 /* Standard action buttons used cross-site */
 .btn-acao { 

@@ -122,9 +122,7 @@
                     <span data-i18n="tooltips.potencia">A potência máxima nominal representa a quantidade total de energia elétrica que será consumida pelo circuito, medida em watts (W). Este valor é usado para calcular a corrente elétrica necessária. Você pode encontrar este valor nas especificações dos equipamentos que serão conectados ao circuito.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPotencia" data-step="-dynamic" data-i18n-aria="aria.decrease">−</button>
                     <input type="range" id="sliderPotencia" min="0" max="2000" step="1" value="1000">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPotencia" data-step="dynamic" data-i18n-aria="aria.increase">+</button>
                 </div>
             </div>
 
@@ -145,9 +143,7 @@
                     <span data-i18n="tooltips.comprimento">A distância do circuito é a distância entre a fonte de energia (disjuntor, transformador, etc.) e a carga (equipamento que consome energia). O cálculo considera automaticamente a ida e volta do circuito (dois condutores), então você deve informar apenas a distância simples entre os pontos.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderComprimento" data-step="-0.1" data-i18n-aria="aria.decrease">−</button>
                     <input type="range" id="sliderComprimento" min="0.1" max="50" step="0.1" value="20">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderComprimento" data-step="0.1" data-i18n-aria="aria.increase">+</button>
                 </div>
             </div>
 
@@ -172,9 +168,7 @@
                     <span data-i18n="tooltips.tensaoCC">A tensão é a diferença de potencial elétrico entre dois pontos do circuito, medida em volts (V). Para corrente contínua (CC), valores típicos incluem 3.3V, 5V, 9V, 12V, 15V, 20V, 24V, 36V, 48V, 60V, 72V e 96V. Este valor afeta diretamente o cálculo da corrente e da bitola necessária.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderTensaoCC" data-step="-1" data-i18n-aria="aria.decrease">−</button>
                     <input type="range" id="sliderTensaoCC" min="0" max="12" step="1" value="3">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderTensaoCC" data-step="1" data-i18n-aria="aria.increase">+</button>
                 </div>
             </div>
 
@@ -195,9 +189,7 @@
                     <span data-i18n="tooltips.quedaTensao">A queda de tensão máxima é o percentual de redução de tensão permitido ao longo do circuito. Valores menores garantem melhor desempenho dos equipamentos, mas exigem fios mais grossos. Para projetos residenciais no Brasil, recomenda-se 3% a 4% conforme a NBR 5410. Valores maiores podem causar problemas de funcionamento dos equipamentos.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderQuedaTensao" data-step="-0.5" data-i18n-aria="aria.decrease">−</button>
                     <input type="range" id="sliderQuedaTensao" min="1" max="5" step="0.5" value="4">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderQuedaTensao" data-step="0.5" data-i18n-aria="aria.increase">+</button>
                 </div>
             </div>
         </section>

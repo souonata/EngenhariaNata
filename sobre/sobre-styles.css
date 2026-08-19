@@ -362,3 +362,12 @@ footer p {
     }
 }
 
+/* Nota de rodapé do cartão "Adaptação por país". */
+.adaptacao-nota {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color, #e0e0e0);
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--text-secondary, #666);
+}

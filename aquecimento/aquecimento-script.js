@@ -245,7 +245,6 @@ class AquecimentoApp extends App {
         
         // Configurar todos os eventos e elementos
         this.configurarSliders();
-        this.configurarBotoesIncremento();
         this.configurarInputsTexto();
         this.configurarCheckboxes();
         this.configurarRadios();
@@ -293,33 +292,6 @@ class AquecimentoApp extends App {
         });
     }
     
-    // ============================================
-    // CONFIGURAÇÃO DE BOTÕES DE INCREMENTO
-    // ============================================
-    configurarBotoesIncremento() {
-        const botoes = document.querySelectorAll('.arrow-btn');
-        
-        botoes.forEach(botao => {
-            const targetId = botao.getAttribute('data-target');
-            const step = parseFloat(botao.getAttribute('data-step'));
-            
-            // Evento de mousedown/touchstart - inicia incremento
-            botao.addEventListener('mousedown', (e) => {
-                e.preventDefault();
-                this.iniciarIncremento(targetId, step);
-            });
-            
-            botao.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                this.iniciarIncremento(targetId, step);
-            });
-            
-            // Evento de mouseup/touchend - para incremento
-            botao.addEventListener('mouseup', () => this.pararIncremento());
-            botao.addEventListener('touchend', () => this.pararIncremento());
-            botao.addEventListener('mouseleave', () => this.pararIncremento());
-        });
-    }
     
     iniciarIncremento(targetId, step) {
         // Prevenir múltiplas ativações

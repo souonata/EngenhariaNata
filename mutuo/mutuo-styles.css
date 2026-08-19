@@ -721,11 +721,6 @@ html[data-theme="dark"] {
 
 /* .input-with-arrows movido para assets/css/controls-styles.css */
 
-/* Arrow button core style moved to assets/css/shared-styles.css
-   Per-page color/size overrides available via --arrow-* variables. */
-:root { --arrow-border: #2d9fa3ff; --arrow-bg: white; --arrow-hover-bg: #2d9fa3ff; --arrow-hover-color: white; }
-
-/* Slider with +/- buttons used in solar for compact controls */
 /* Slider styles moved to shared-styles.css */
 
 .controle-item-horizontal input {
@@ -864,11 +859,6 @@ html[data-theme="dark"] {
     width: 100px;
     text-align: center;
     font-size: 16px;
-}
-
-.arrow-btn {
-    width: 32px;
-    height: 32px;
 }
 
 .controle-sistema-wrapper {
@@ -1387,11 +1377,11 @@ html[data-theme="dark"] {
    ============================================
    O bolån não tem sistema de amortização a escolher nem tabela parcela a
    parcela: a amortização mínima é um percentual anual da dívida. Por isso a
-   seção sueca tem entradas e saídas próprias, e a maquinaria de SAC/Price
-   (`.se-hide`) sai de cena. */
-body.lang-br .se-only,
-body.lang-it .se-only { display: none !important; }
-body.lang-se .se-hide { display: none !important; }
+   seção do bolån tem entradas e saídas próprias, e a maquinaria de SAC/Price
+   (`.bolan-hide`) sai de cena. O gatilho é o SISTEMA escolhido, não o idioma:
+   o bolån é o quarto sistema do seletor e está disponível nos três idiomas. */
+body:not(.sistema-bolan) .bolan-only { display: none !important; }
+body.sistema-bolan .bolan-hide { display: none !important; }
 
 .bolan-secao {
     margin-bottom: 24px;
@@ -1469,4 +1459,169 @@ body.lang-se .se-hide { display: none !important; }
     font-weight: 700;
     border-top: 2px solid var(--accent-color, #2d9fa3);
     padding-top: 8px;
+}
+
+/* Marca de país no cartão do sistema (só o bolån tem). */
+.rotulo-radio-pais {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    opacity: 0.8;
+    white-space: nowrap;
+}
+
+/* ---- Gráfico da projeção ano a ano ---- */
+.bolan-grafico-bloco {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color, #e0e0e0);
+}
+
+.bolan-grafico-intro {
+    margin: 0 0 12px;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: var(--text-secondary, #666);
+}
+
+.bolan-grafico-bloco .grafico-unico {
+    position: relative;
+    height: 340px;
+}
+
+.bolan-projecao-resumo {
+    margin-top: 14px;
+}
+
+.bolan-projecao-titulo {
+    margin: 0 0 8px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-primary, #333);
+}
+
+.bolan-projecao-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px;
+}
+
+.bolan-projecao-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--surface-bg, #fff);
+    border: 1px solid var(--border-color, #e0e0e0);
+    font-size: 0.88rem;
+}
+
+.bolan-projecao-nota {
+    margin: 10px 0 0;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: var(--text-secondary, #666);
+}
+
+/* ---- LÄS MER / SAIBA MAIS do bolån ---- */
+.bolan-saibamais {
+    margin-top: 20px;
+}
+
+.btn-bolan-saibamais {
+    width: 100%;
+    justify-content: center;
+}
+
+.bolan-memorial {
+    margin-top: 14px;
+    padding: 16px;
+    border-radius: 10px;
+    background: var(--surface-bg, #fff);
+    border: 1px solid var(--border-color, #e0e0e0);
+}
+
+.bolan-memorial > h3 {
+    margin: 0 0 14px;
+    font-size: 1.02rem;
+    color: var(--accent-color, #2d9fa3);
+}
+
+.bolan-memorial-item {
+    margin-bottom: 18px;
+}
+
+.bolan-memorial-item:last-child {
+    margin-bottom: 0;
+}
+
+.bolan-memorial-item h4 {
+    margin: 0 0 8px;
+    font-size: 0.94rem;
+    color: var(--text-primary, #333);
+}
+
+.bolan-memorial-item p {
+    margin: 0 0 8px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--text-secondary, #666);
+}
+
+.bolan-formula {
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: var(--surface-muted, #f5f5f5);
+    border-left: 3px solid var(--accent-color, #2d9fa3);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85rem !important;
+    color: var(--text-primary, #333) !important;
+    overflow-x: auto;
+}
+
+.bolan-memorial-lista {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--text-secondary, #666);
+}
+
+.bolan-memorial-lista li {
+    margin-bottom: 6px;
+}
+
+.bolan-memorial-tabela {
+    width: 100%;
+    margin-bottom: 10px;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+}
+
+.bolan-memorial-tabela th,
+.bolan-memorial-tabela td {
+    padding: 6px 8px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+.bolan-memorial-tabela th {
+    font-weight: 700;
+    color: var(--text-primary, #333);
+}
+
+.bolan-memorial-aviso {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border-left: 4px solid var(--warning-border, #ffc107);
+    background: var(--warning-bg, #fff3cd);
+    color: var(--warning-text, #7a5b00) !important;
+}
+
+/* O seletor de sistema mora no próprio card, acima das duas telas (clássica e
+   bolån). Sem margem inferior dupla quando o bolån está aberto. */
+.controles-rapidos--sistema {
+    margin-bottom: 16px;
 }

@@ -1735,20 +1735,6 @@ function configurarEventListeners() {
         }
     }
     
-    // Configura botões de seta com aceleração variável
-    if (typeof configurarBotoesSliderComAceleracao === 'function') {
-        configurarBotoesSliderComAceleracao('.arrow-btn', ajustarValorFazenda);
-    } else {
-        // Fallback para código antigo se a função global não estiver disponível
-        document.querySelectorAll('.arrow-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetId = btn.getAttribute('data-target');
-                const step = parseFloat(btn.getAttribute('data-step'));
-                ajustarValorFazenda(targetId, step);
-            });
-        });
-    }
-    
     // Botões de plantas e animais já têm event listeners individuais
     // Não precisa de listener global aqui
     

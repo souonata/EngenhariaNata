@@ -6,7 +6,8 @@ import {
     totalizarTabela,
     calcularAmorteringskrav,
     calcularRanteavdrag,
-    calcularBolan
+    calcularBolan,
+    projetarBolan
 } from './mutuo-calc.js';
 
 const aprox = (n, casas = 2) => Number(n.toFixed(casas));
@@ -360,5 +361,81 @@ describe('Suécia — bolån', () => {
         const alta = calcularBolan({ valorImovel: 3000000, entrada: 300000, taxaJurosAnual: 4 });
         const baixa = calcularBolan({ valorImovel: 3000000, entrada: 1500000, taxaJurosAnual: 4 });
         expect(baixa.taxaAmortizacao).toBeLessThan(alta.taxaAmortizacao);
+    });
+});
+
+// ============================================
+// Suécia — projeção ano a ano (base do gráfico)
+// ============================================
+
+describe('projetarBolan', () => {
+    const caso = { valorImovel: 4000000, entrada: 600000, taxaJurosAnual: 4, anos: 30 };
+
+    it('parte do empréstimo original e da faixa correspondente à belåningsgrad', () => {
+        const p = projetarBolan(caso);
+        expect(p.emprestimoOriginal).toBe(3400000);
+        expect(p.linhas[0].belaningsgradInicial).toBeCloseTo(0.85, 6);
+        expect(p.linhas[0].taxaAmortizacao).toBeCloseTo(0.02, 6);
+        // 2% do empréstimo ORIGINAL, não do saldo.
+        expect(p.linhas[0].amortizacao).toBeCloseTo(68000, 2);
+    });
+
+    it('mantém a amortização constante dentro do intervalo de omvärdering', () => {
+        const p = projetarBolan(caso);
+        const primeiros = p.linhas.slice(0, 5).map(l => l.amortizacao);
+        expect(new Set(primeiros.map(v => Math.round(v))).size).toBe(1);
+    });
+
+    it('só baixa de faixa na omvärdering, de 5 em 5 anos', () => {
+        const p = projetarBolan(caso);
+        // A belåningsgrad cruza 70% no ano 9, mas a exigência só cai no ano 11.
+        expect(p.resumo.anoAbaixoDe70).toBe(9);
+        expect(p.linhas[9].taxaAmortizacao).toBeCloseTo(0.02, 6);  // ano 10
+        expect(p.linhas[10].taxaAmortizacao).toBeCloseTo(0.01, 6); // ano 11
+        expect(p.linhas[10].houveOmvardering).toBe(true);
+    });
+
+    it('o mínimo legal não quita a dívida: a exigência some abaixo de 50%', () => {
+        const p = projetarBolan({ ...caso, anos: 60 });
+        expect(p.resumo.minimoNaoQuita).toBe(true);
+        expect(p.resumo.anoQuitado).toBeNull();
+        const ultima = p.linhas[p.linhas.length - 1];
+        expect(ultima.saldoFinal).toBeGreaterThan(0);
+        // Estabiliza logo abaixo de 50% (a omvärdering é a cada 5 anos, então
+        // passa um pouco do gatilho antes de a exigência zerar) e para ali.
+        expect(p.resumo.belaningsgradFinal).toBeLessThan(0.5);
+        expect(p.resumo.belaningsgradFinal).toBeGreaterThan(0.4);
+        expect(ultima.taxaAmortizacao).toBe(0);
+        expect(ultima.amortizacao).toBe(0);
+    });
+
+    it('amortização voluntária antecipa a queda de faixa e pode quitar', () => {
+        const so = projetarBolan(caso);
+        const com = projetarBolan({ ...caso, amortizacaoExtraAnual: 200000 });
+        expect(com.resumo.saldoFinal).toBeLessThan(so.resumo.saldoFinal);
+        expect(com.resumo.totalJuros).toBeLessThan(so.resumo.totalJuros);
+        expect(com.resumo.anoQuitado).not.toBeNull();
+    });
+
+    it('para a projeção no ano da quitação', () => {
+        const p = projetarBolan({ ...caso, amortizacaoExtraAnual: 500000 });
+        const ultima = p.linhas[p.linhas.length - 1];
+        expect(ultima.saldoFinal).toBe(0);
+        expect(p.linhas.length).toBe(p.resumo.anoQuitado);
+    });
+
+    it('o ränteavdrag acumulado bate com a soma anual', () => {
+        const p = projetarBolan(caso);
+        const soma = p.linhas.reduce((t, l) => t + l.ranteavdrag, 0);
+        expect(p.resumo.totalRanteavdrag).toBeCloseTo(soma, 6);
+        expect(p.resumo.totalJurosLiquidos)
+            .toBeCloseTo(p.resumo.totalJuros - p.resumo.totalRanteavdrag, 6);
+    });
+
+    it('sem empréstimo não gera custo nenhum', () => {
+        const p = projetarBolan({ valorImovel: 2000000, entrada: 2000000, taxaJurosAnual: 4, anos: 10 });
+        expect(p.emprestimoOriginal).toBe(0);
+        expect(p.resumo.totalJuros).toBe(0);
+        expect(p.resumo.anoQuitado).toBe(1);
     });
 });

@@ -166,12 +166,6 @@ class ConfigSolarApp extends App {
             slider.addEventListener('input', atualizarDisplays);
         });
 
-        document.querySelectorAll('.arrow-btn').forEach(btn => {
-            const targetId = btn.getAttribute('data-target');
-            const step = parseFloat(btn.getAttribute('data-step'));
-            btn.addEventListener('click', () => ajustarValor(targetId, step));
-        });
-
         const btnSalvar = document.getElementById('btnSalvar');
         if (btnSalvar) btnSalvar.addEventListener('click', salvarValores);
 

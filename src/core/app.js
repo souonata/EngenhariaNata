@@ -1,6 +1,7 @@
 // Core da aplicação - inicialização comum a todos os apps
 
 import { i18n, configurarBotoesIdioma } from './i18n.js';
+import { configurarConfirmacaoAoSair } from '../utils/confirmar-ao-sair.js';
 import { loading } from '../components/loading.js';
 import { inicializarTema, atualizarIdiomaTema } from './theme.js';
 import {
@@ -48,6 +49,7 @@ export class App {
             this.configurarBotaoHome();
             this.configurarEventosComuns();
             this.configurarInputsNumericosMoveis();
+            configurarConfirmacaoAoSair();
 
             if (this.config.callbacks.aoInicializar) {
                 await this.config.callbacks.aoInicializar();

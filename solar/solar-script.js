@@ -2045,13 +2045,6 @@ class SolarApp extends App {
             });
         });
 
-        // Botões de seta (arrow buttons)
-        document.querySelectorAll('.arrow-btn').forEach(btn => {
-            const targetId = btn.getAttribute('data-target');
-            const step = parseFloat(btn.getAttribute('data-step'));
-            btn.addEventListener('click', () => ajustarValor(targetId, step));
-        });
-
         // Sliders
         const sliderConsumo = document.getElementById('sliderConsumo');
         const sliderAutonomia = document.getElementById('sliderAutonomia');

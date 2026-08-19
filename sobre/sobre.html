@@ -60,7 +60,7 @@
     <link rel="stylesheet" href="../assets/css/dock-global.css?v=1.2.0" />
     <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0" />
     <link rel="stylesheet" href="../assets/css/controls-styles.css?v=1.0.2" />
-    <link rel="stylesheet" href="sobre-styles.css?v=1.1.0" />
+    <link rel="stylesheet" href="sobre-styles.css?v=1.2.0" />
     <!-- Rede de seguranca global de erros (ver GUIA_FALHA_CONGELAMENTO.md) -->
     <script src="../assets/js/error-overlay.js"></script>
   </head>
@@ -297,7 +297,98 @@
         </div>
       </div>
 
-      <!-- CARTÃO 3: TECNOLOGIAS -->
+      <!-- CARTÃO 3: ADAPTAÇÃO POR PAÍS
+           Sete apps mudam de MÉTODO no modo sueco, não só de idioma. Sem este
+           cartão o "Sobre" descrevia o portfólio como se a tradução fosse toda
+           a diferença. -->
+      <div class="card card-expansivel">
+        <div
+          class="card-header card-header-clicavel"
+          role="button"
+          aria-expanded="false"
+        >
+          <span class="icon">🌍</span>
+          <h2 data-i18n="adaptacao.title">Adaptação por país</h2>
+          <span class="seta-expansao">▼</span>
+        </div>
+        <div class="card-content conteudo-expansivel">
+          <p data-i18n="adaptacao.intro">
+            Trocar de idioma não troca só o texto. Em sete apps a Suécia muda o
+            próprio método de cálculo, porque a pergunta que se faz lá não é a
+            mesma. Esses apps têm tela, entradas e resultados próprios no modo
+            sueco.
+          </p>
+
+          <div class="special-features">
+            <div class="special-feature">
+              <h4 data-i18n="adaptacao.salario.title">
+                Salário — modelo fiscal sueco
+              </h4>
+              <p data-i18n="adaptacao.salario.desc">
+                Grundavdrag, jobbskatteavdrag e kommunalskatt ajustável por
+                município.
+              </p>
+            </div>
+            <div class="special-feature">
+              <h4 data-i18n="adaptacao.mutuo.title">Empréstimo — bolån</h4>
+              <p data-i18n="adaptacao.mutuo.desc">
+                A amortização mínima é um percentual anual da dívida, definido
+                pela relação empréstimo/valor.
+              </p>
+            </div>
+            <div class="special-feature">
+              <h4 data-i18n="adaptacao.solar.title">
+                Energia solar — conectada à rede
+              </h4>
+              <p data-i18n="adaptacao.solar.desc">
+                Um sistema isolado dimensionado pelo inverno sueco pediria um
+                banco de baterias irreal.
+              </p>
+            </div>
+            <div class="special-feature">
+              <h4 data-i18n="adaptacao.ventilacao.title">
+                Ventilação — exigência de vazão
+              </h4>
+              <p data-i18n="adaptacao.ventilacao.desc">
+                A norma sueca exige litros por segundo o ano inteiro, não área
+                de janela.
+              </p>
+            </div>
+            <div class="special-feature">
+              <h4 data-i18n="adaptacao.arcondicionado.title">
+                Climatização — bomba de calor
+              </h4>
+              <p data-i18n="adaptacao.arcondicionado.desc">
+                O aparelho é comprado para aquecer; refrigerar é efeito
+                colateral.
+              </p>
+            </div>
+            <div class="special-feature">
+              <h4 data-i18n="adaptacao.aquecimento.title">
+                Aquecimento solar — complemento
+              </h4>
+              <p data-i18n="adaptacao.aquecimento.desc">
+                O que limita o tamanho é o excedente de verão, não o inverno.
+              </p>
+            </div>
+            <div class="special-feature">
+              <h4 data-i18n="adaptacao.chuva.title">
+                Água de chuva — limitada pelo congelamento
+              </h4>
+              <p data-i18n="adaptacao.chuva.desc">
+                O limite não é quanto chove, é a geada.
+              </p>
+            </div>
+          </div>
+
+          <p class="adaptacao-nota" data-i18n="adaptacao.nota">
+            Nos demais apps a Suécia muda só os parâmetros e as normas de
+            referência.
+          </p>
+        </div>
+      </div>
+
+      <!-- CARTÃO 4: TECNOLOGIAS -->
       <div class="card card-expansivel">
         <div
           class="card-header card-header-clicavel"
@@ -2208,6 +2299,6 @@
       </svg>
     </a>
 
-    <script type="module" src="sobre-script.js?v=1.1.0"></script>
+    <script type="module" src="sobre-script.js?v=1.2.0"></script>
   </body>
 </html>

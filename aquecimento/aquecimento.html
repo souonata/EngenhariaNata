@@ -113,9 +113,7 @@
                     <span data-i18n="tooltip-pessoas-texto">O número de pessoas determina o consumo diário de água quente. O consumo por pessoa varia conforme o padrão selecionado (Econômico: 30L/dia, Padrão: 40L/dia, Alto: 60L/dia). Este valor é usado para calcular o volume necessário do boiler e a área de coletores solares.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderPessoas" data-step="-1" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderPessoas" min="1" max="10" step="1" value="4">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderPessoas" data-step="1" data-i18n-aria="aria-increase">+</button>
                 </div>
             </div>
 
@@ -170,9 +168,7 @@
                     <span data-i18n="tooltip-latitude-texto">A latitude é a coordenada geográfica que indica a distância do local em relação ao Equador, medida em graus. Valores negativos indicam hemisfério sul (Brasil: -35° a -5°), valores positivos indicam hemisfério norte (Itália: 36° a 47°). A latitude afeta a intensidade e duração da radiação solar, influenciando diretamente o dimensionamento dos coletores solares.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderLatitude" data-step="-0.5" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderLatitude" min="-35" max="-5" step="0.5" value="-23.5">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderLatitude" data-step="0.5" data-i18n-aria="aria-increase">+</button>
                 </div>
             </div>
 
@@ -193,9 +189,7 @@
                     <span data-i18n="tooltip-altitude-texto">A altitude é a elevação do local de instalação em relação ao nível do mar, medida em metros. Locais em maior altitude têm menor pressão atmosférica e menor temperatura média, o que pode reduzir ligeiramente a eficiência dos coletores solares. A altitude também afeta o ponto de ebulição da água, importante para sistemas de aquecimento.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderAltitude" data-step="-50" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderAltitude" min="0" max="2000" step="50" value="800">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderAltitude" data-step="50" data-i18n-aria="aria-increase">+</button>
                 </div>
             </div>
 
@@ -221,9 +215,7 @@
                     <span data-i18n="tooltip-area-casa-texto">A área da casa é a área total construída em metros quadrados (m²) que será aquecida pelo sistema solar térmico. Este valor é usado para calcular a demanda de energia térmica necessária para aquecer o ambiente, considerando a classe energética da construção e as perdas térmicas através de paredes, teto e janelas.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderAreaCasa" data-step="-5" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderAreaCasa" min="20" max="300" step="5" value="100">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderAreaCasa" data-step="5" data-i18n-aria="aria-increase">+</button>
                 </div>
             </div>
 
@@ -244,9 +236,7 @@
                     <span data-i18n="tooltip-altura-casa-texto">A altura do pé direito é a distância do piso ao teto, medida em metros. Ambientes mais altos têm maior volume de ar para aquecer, aumentando a demanda de energia térmica. O cálculo considera o volume total (área × altura) para determinar a potência necessária do sistema de aquecimento ambiente. Altura padrão residencial: 2,7m.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderAlturaCasa" data-step="-0.1" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderAlturaCasa" min="2.0" max="4.0" step="0.1" value="2.7">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderAlturaCasa" data-step="0.1" data-i18n-aria="aria-increase">+</button>
                 </div>
             </div>
 
@@ -267,9 +257,7 @@
                     <span data-i18n="tooltip-autonomia-texto">Os dias de autonomia representam quantos dias consecutivos sem sol o sistema deve ser capaz de manter a casa aquecida usando apenas a energia armazenada no boiler. Valores maiores aumentam o volume necessário do boiler e a área de coletores, garantindo maior segurança em períodos de baixa insolação, mas também aumentam o custo do sistema.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn arrow-down" data-target="sliderDiasAutonomia" data-step="-1" data-i18n-aria="aria-decrease">−</button>
                     <input type="range" id="sliderDiasAutonomia" min="1" max="7" step="1" value="3">
-                    <button type="button" class="arrow-btn arrow-up" data-target="sliderDiasAutonomia" data-step="1" data-i18n-aria="aria-increase">+</button>
                 </div>
             </div>
 
@@ -425,6 +413,31 @@
                 </p>
             </div>
 
+        </section>
+
+        <!-- GRÁFICOS — logo após os controles, para a curva reagir ao slider
+             dentro do campo de visão. Antes ficavam no fim dos resultados. -->
+        <section class="card" id="graficosSection">
+            <div>
+                <h3 style="text-align: center; color: #2d9fa3ff; margin-bottom: 20px; font-size: 1.1rem;" data-i18n="graficos-title">📊 Visualizações</h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                    <!-- Gráfico de Distribuição -->
+                    <div style="background: var(--surface-raised, white); padding: 15px; border-radius: 8px; box-shadow: var(--shadow-elevated, 0 2px 4px rgba(0,0,0,0.1));">
+                        <canvas id="graficoDistribuicao" style="max-height: 300px;"></canvas>
+                    </div>
+                    
+                    <!-- Gráfico de Comparação -->
+                    <div style="background: var(--surface-raised, white); padding: 15px; border-radius: 8px; box-shadow: var(--shadow-elevated, 0 2px 4px rgba(0,0,0,0.1));">
+                        <canvas id="graficoComparacao" style="max-height: 300px;"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Gráfico de Eficiência (largura total) -->
+                <div style="background: var(--surface-raised, white); padding: 15px; border-radius: 8px; box-shadow: var(--shadow-elevated, 0 2px 4px rgba(0,0,0,0.1));">
+                    <canvas id="graficoEficiencia" style="max-height: 200px;"></canvas>
+                </div>
+            </div>
         </section>
 
         <!-- ========================================== -->
@@ -721,27 +734,6 @@
 
             <div id="v2-explicacao"></div>
 
-            <!-- Seção de Gráficos -->
-            <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid var(--border-color, #e0e0e0);">
-                <h3 style="text-align: center; color: #2d9fa3ff; margin-bottom: 20px; font-size: 1.1rem;" data-i18n="graficos-title">📊 Visualizações</h3>
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px;">
-                    <!-- Gráfico de Distribuição -->
-                    <div style="background: var(--surface-raised, white); padding: 15px; border-radius: 8px; box-shadow: var(--shadow-elevated, 0 2px 4px rgba(0,0,0,0.1));">
-                        <canvas id="graficoDistribuicao" style="max-height: 300px;"></canvas>
-                    </div>
-                    
-                    <!-- Gráfico de Comparação -->
-                    <div style="background: var(--surface-raised, white); padding: 15px; border-radius: 8px; box-shadow: var(--shadow-elevated, 0 2px 4px rgba(0,0,0,0.1));">
-                        <canvas id="graficoComparacao" style="max-height: 300px;"></canvas>
-                    </div>
-                </div>
-                
-                <!-- Gráfico de Eficiência (largura total) -->
-                <div style="background: var(--surface-raised, white); padding: 15px; border-radius: 8px; box-shadow: var(--shadow-elevated, 0 2px 4px rgba(0,0,0,0.1));">
-                    <canvas id="graficoEficiencia" style="max-height: 200px;"></canvas>
-                </div>
-            </div>
 
             <div class="info-box">
                 <p data-i18n="info-recomendacoes">💡 <strong>Recomendações de Instalação:</strong></p>
