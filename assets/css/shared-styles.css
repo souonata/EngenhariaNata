@@ -621,10 +621,11 @@ html:not([data-theme="dark"]) .home-button-fixed svg { fill: var(--accent-hover,
     text-align: center;
 }
 
-/* App icons on the home grid */
-.app-icon { display: inline-block; text-decoration: none; color: inherit; }
-.app-icon .icon { display:block; width: 60px; height: 60px; border-radius: 12px; overflow: hidden; }
-.app-icon .app-name { display:block; text-align:center; margin-top:6px; font-size:0.95rem; }
+/* App icons on the home grid: definidos em index-styles.css, que é o dono da
+   home (a classe .app-icon só existe lá). As regras que viviam aqui eram
+   duplicata: `.app-icon .app-name` tem especificidade maior que `.app-name`,
+   então vencia o index-styles por especificidade — e não por ordem — e travava
+   o tamanho do nome em 0,95rem, independentemente do que a home pedisse. */
 
 /* Arrow increment/decrement buttons next to inputs/sliders */
 .arrow-btn{

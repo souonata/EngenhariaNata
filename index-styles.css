@@ -299,10 +299,22 @@ html:not([data-theme="dark"]) .device-screen {
    ============================================ */
 .app-name {
     color: white;
-    font-size: 11px;
+    font-size: 10px;
     text-align: center;
-    max-width: 100px;
+    /* Largura maior + fonte menor para caber numa linha só: nomes compostos
+       do sueco são longos ("Luftkonditionering", "Båtförarbevis") e quebravam
+       no meio da palavra. */
+    max-width: 112px;
     line-height: 1.2;
+    /* Reserva DUAS linhas mesmo quando o nome usa uma: sem isso cada célula
+       tem altura própria e as linhas da grade saem desalinhadas entre si. */
+    min-height: 2.4em;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    /* Evita que uma palavra longa estoure a coluna. */
+    overflow-wrap: break-word;
+    hyphens: auto;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
@@ -315,7 +327,7 @@ html:not([data-theme="dark"]) .device-screen {
     
     .app-name {
         font-size: 11px;
-        max-width: 120px;
+        max-width: 132px;
     }
 }
 
