@@ -19,6 +19,8 @@
     --grid-ref:rgba(255,255,255,.05);
     --grid-cross:rgba(255,255,255,.18);
     --rain:#8fe9cf;                /* hachura de chuva (tema-aware) */
+    --sel:#4aa8ff;                 /* hora aberta no quadro de detalhes */
+    --sel-band:rgba(74,168,255,.16);
   }
 
   /* ─── Tema claro ─── */
@@ -37,6 +39,8 @@
     --grid-ref:rgba(0,0,0,.08);
     --grid-cross:rgba(0,0,0,.22);
     --rain:#2c8fb0;                /* tom de água, mais escuro p/ aparecer no claro */
+    --sel:#0b6bc4;
+    --sel-band:rgba(11,107,196,.14);
   }
   html[data-theme="light"] body{ background:#e7edf5; }
   html[data-theme="light"] .app{ background:#ffffff; }
@@ -251,6 +255,41 @@
   .c-chart{
     display:flex;flex-direction:column;
     height:100%;min-height:48px;gap:1px;min-width:0;
+    position:relative;                /* ancora a .hora-sel */
+  }
+
+  /* ──── Hora aberta no quadro de detalhes ────
+     O quadro sozinho não diz de qual hora veio o número. Esta barra marca a
+     coluna inteira (vento + eixo + temperatura), que compartilham a mesma
+     escala horizontal, então um único left% serve para as três faixas. */
+  .hora-sel{
+    position:absolute; top:0; bottom:0;
+    width:16px; transform:translateX(-50%);
+    background:var(--sel-band);
+    border-left:1px solid var(--sel);
+    border-right:1px solid var(--sel);
+    border-radius:3px;
+    pointer-events:none;
+    z-index:3;
+  }
+
+  /* Número/bola da hora aberta. Os dois trazem cor inline (gradiente da
+     temperatura), por isso o !important. */
+  .t-num.is-hora-sel{
+    color:var(--sel) !important;
+    text-shadow:
+      0 0 2px var(--bg), 0 0 2px var(--bg), 0 0 3px var(--bg),
+      0 0 6px var(--sel);
+    z-index:4;
+  }
+  .t-ball.is-hora-sel{
+    box-shadow:0 0 0 2px var(--sel), 0 0 0 3.5px var(--bg);
+    z-index:4;
+  }
+  /* O rótulo do eixo também vem com cor/peso inline. */
+  .hour-axis span.is-hora-sel{
+    color:var(--sel) !important;
+    font-weight:800 !important;
   }
   .wind-wrap{position:relative;flex:1 1 0;min-height:0;container-type:size}
   .spark-wrap{position:relative;flex:3 1 0;min-height:0;container-type:size}

@@ -378,17 +378,68 @@ function showTip(cx, cy, el){
     `<div class="tip-row">🌧️ <span>${pop}% · ${fmt1(mm)} mm</span></div>`;
   tip.style.display = 'block';
   tipOpen = true;
-  const vw = window.innerWidth, vh = window.innerHeight;
+  marcarHoraSelecionada(el);
+
+  // Área REALMENTE visível. Com pinch-zoom o visualViewport é um recorte do
+  // layout viewport, e window.innerWidth continua reportando o layout inteiro
+  // — posicionar por ele jogava o quadro para fora do que se está vendo.
+  const vv = window.visualViewport;
+  const vx = vv ? vv.offsetLeft : 0;
+  const vy = vv ? vv.offsetTop  : 0;
+  const vw = vv ? vv.width  : window.innerWidth;
+  const vh = vv ? vv.height : window.innerHeight;
+  const M  = 8; // margem mínima até a borda
+
+  // Nunca mais largo que a área visível, senão nenhum clamp consegue encaixá-lo.
+  tip.style.maxWidth = Math.max(120, vw - 2 * M) + 'px';
+
   const tw = tip.offsetWidth  || 160;
   const th = tip.offsetHeight || 90;
-  let lx = cx + 14, ly = cy - th / 2;
-  if (lx + tw > vw - 4) lx = cx - tw - 14;
-  if (ly < 4) ly = 4;
-  if (ly + th > vh - 4) ly = vh - th - 4;
+
+  // Preferência: à direita do toque; se não couber, à esquerda.
+  let lx = cx + 14;
+  if (lx + tw > vx + vw - M) lx = cx - tw - 14;
+  let ly = cy - th / 2;
+
+  // Clamp nos DOIS sentidos. Faltava o limite esquerdo: ao virar para a
+  // esquerda perto da borda, lx ficava negativo e o quadro saía da tela.
+  lx = Math.min(Math.max(lx, vx + M), vx + vw - tw - M);
+  ly = Math.min(Math.max(ly, vy + M), vy + vh - th - M);
+
   tip.style.left = lx + 'px';
   tip.style.top  = ly + 'px';
 }
-function closeTip(){ document.getElementById('hourTip').style.display = 'none'; tipOpen = false; }
+
+/* ──── Realce da coluna da hora aberta no quadro de detalhes ────
+   Sem isto o quadro aparece solto: dá o valor mas não diz de qual hora veio.
+   Marca a barra vertical daquela hora, o número e o rótulo do eixo. */
+function marcarHoraSelecionada(el){
+  limparHoraSelecionada();
+
+  const chart = el.closest('.c-chart');
+  if (!chart) return;
+
+  const hora = el.dataset.h;
+  const left = el.style.left; // mesma escala horizontal em toda a coluna
+
+  const barra = document.createElement('div');
+  barra.className = 'hora-sel';
+  barra.style.left = left;
+  chart.appendChild(barra);
+
+  el.classList.add('is-hora-sel');
+
+  // O rótulo do eixo é posicionado pelo mesmo left%, então casa por posição.
+  const alvo = [...chart.querySelectorAll('.hour-axis span:not(.axis-ico)')]
+    .find(sp => parseInt(sp.textContent, 10) === parseInt(hora, 10));
+  if (alvo) alvo.classList.add('is-hora-sel');
+}
+
+function limparHoraSelecionada(){
+  document.querySelectorAll('.hora-sel').forEach(n => n.remove());
+  document.querySelectorAll('.is-hora-sel').forEach(n => n.classList.remove('is-hora-sel'));
+}
+function closeTip(){ document.getElementById('hourTip').style.display = 'none'; tipOpen = false; limparHoraSelecionada(); }
 function wireTip(){
   // Fase de captura: interceta qualquer clique antes de todos os outros handlers.
   // Se tooltip aberto, fecha e consome o evento — nada mais abre.
