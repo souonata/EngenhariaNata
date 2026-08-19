@@ -100,7 +100,6 @@ const appPrevisao = new App({
       try {
         await loadAll();
         ensureHistMax();     // em background: atualiza o teto da escala e re-renderiza
-        setupHomeFade();     // botão home aparece em degradê só ao rolar até o rodapé
         scrollPastTopbar();  // abre já rolado com o gráfico no topo
       }
       catch (err) { showError(err.message); }
@@ -136,30 +135,6 @@ function scrollPastTopbar(){
     const screen = document.querySelector('.screen');
     if (screen) screen.scrollIntoView({ block: 'start' });  // alinha o gráfico ao topo, escondendo a barra
   });
-}
-
-/* ──── Botão home: aparece em degradê de transparência conforme a página rola
-   até perto do rodapé (abaixo do gráfico), deixando a tela limpa no topo. ──── */
-function setupHomeFade(){
-  const btn = document.querySelector('.home-button-fixed');
-  if (!btn) return;
-  const FAIXA = 100;   // px de transição da aparição perto do fundo
-  const atualizar = () => {
-    const doc = document.documentElement;
-    const rolavel = doc.scrollHeight - window.innerHeight;
-    let op;
-    if (rolavel <= 4) {
-      op = 1;                                   // não rola → sempre visível (fail-safe)
-    } else {
-      const distFundo = rolavel - window.scrollY;
-      op = Math.min(1, Math.max(0, 1 - distFundo / FAIXA));
-    }
-    btn.style.opacity = op.toFixed(3);
-    btn.style.pointerEvents = op > 0.05 ? 'auto' : 'none';
-  };
-  atualizar();
-  window.addEventListener('scroll', atualizar, { passive: true });
-  window.addEventListener('resize', atualizar);
 }
 
 /* ──── Constrói botões vazios (antes dos dados chegarem) ──── */
