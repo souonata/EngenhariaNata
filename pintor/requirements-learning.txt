@@ -1,0 +1,3 @@
+# Optional offline optimiser for Pintor decision policies. The production painter never imports
+# Optuna; its runtime dependencies are declared in pyproject.toml.
+optuna>=4.0,<5

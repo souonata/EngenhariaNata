@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en" class="boot">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            http-equiv="Content-Security-Policy"
+            content="default-src 'self'; script-src 'self' https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://pintor-api.engnata.eu http://127.0.0.1:8765 http://localhost:8765; font-src 'self' data:; connect-src 'self' https://souonata.goatcounter.com https://pintor-api.engnata.eu http://127.0.0.1:8765 http://localhost:8765; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;"
+        />
+
+        <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+        <link rel="apple-touch-icon" href="../favicon.svg" />
+
+        <title>Pintor beta — Engenharia NATA</title>
+        <meta
+            name="description"
+            content="Private beta for conservative colourization and review of vector wiring-diagram PDFs."
+        />
+        <meta name="author" content="Engenharia NATA" />
+        <meta name="robots" content="noindex, nofollow, noarchive" />
+        <link rel="canonical" href="https://engnata.eu/pintor/" />
+        <meta name="pintor-api-base" content="https://pintor-api.engnata.eu/api/" />
+
+        <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.4.0" />
+        <link rel="stylesheet" href="../assets/css/dock-global.css?v=1.2.0" />
+        <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0" />
+        <link rel="stylesheet" href="pintor-styles.css?v=0.1.0" />
+
+        <script
+            data-goatcounter="https://souonata.goatcounter.com/count"
+            async
+            src="https://gc.zgo.at/count.js"
+        ></script>
+        <script src="../assets/js/error-overlay.js"></script>
+    </head>
+    <body>
+        <main class="painter-shell">
+            <header class="painter-hero">
+                <div class="hero-mark" aria-hidden="true">
+                    <span class="hero-mark-line line-red"></span>
+                    <span class="hero-mark-line line-yellow"></span>
+                    <span class="hero-mark-line line-blue"></span>
+                </div>
+                <div class="hero-copy">
+                    <div class="eyebrow-row">
+                        <span class="beta-badge" data-i18n="hero.beta">Private beta</span>
+                        <span class="scope-badge" data-i18n="hero.scope"
+                            >Vector PDF + extractable text</span
+                        >
+                    </div>
+                    <h1 data-i18n="hero.title">Pintor</h1>
+                    <p data-i18n="hero.subtitle">
+                        Upload a wiring diagram. Pintor identifies physical conductors, reads the
+                        printed colour codes and adds a removable colour layer.
+                    </p>
+                </div>
+            </header>
+
+            <section
+                class="principles-strip"
+                aria-label="Safety principles"
+                data-i18n-aria="aria.principles"
+            >
+                <article>
+                    <span class="principle-index">01</span>
+                    <div>
+                        <strong data-i18n="principles.onlyWiresTitle">Only wires</strong>
+                        <p data-i18n="principles.onlyWiresText">
+                            Symbols, housings, terminals, frames and text stay untouched.
+                        </p>
+                    </div>
+                </article>
+                <article>
+                    <span class="principle-index">02</span>
+                    <div>
+                        <strong data-i18n="principles.abstainTitle">Doubt stays black</strong>
+                        <p data-i18n="principles.abstainText">
+                            Ambiguous geometry or conflicting evidence is never guessed.
+                        </p>
+                    </div>
+                </article>
+                <article>
+                    <span class="principle-index">03</span>
+                    <div>
+                        <strong data-i18n="principles.sourceTitle">Source preserved</strong>
+                        <p data-i18n="principles.sourceText">
+                            Painting is an additive PDF layer; the original drawing is verified
+                            before download.
+                        </p>
+                    </div>
+                </article>
+            </section>
+
+            <section id="accessPanel" class="panel access-panel" hidden>
+                <div class="panel-heading">
+                    <div>
+                        <span class="step-label" data-i18n="access.step">Private beta</span>
+                        <h2 data-i18n="access.title">Enter the beta access code</h2>
+                    </div>
+                    <span class="access-lock" aria-hidden="true">LOCK</span>
+                </div>
+                <p class="access-copy" data-i18n="access.help">
+                    The painter is visible through the Engenharia NATA easter egg, but processing is
+                    also protected at the API boundary.
+                </p>
+                <form id="accessForm" class="access-form">
+                    <label class="field-group" for="accessCode">
+                        <span data-i18n="access.label">Beta access code</span>
+                        <input
+                            id="accessCode"
+                            name="access-code"
+                            type="password"
+                            maxlength="128"
+                            autocomplete="current-password"
+                            required
+                        />
+                    </label>
+                    <div
+                        id="accessStatus"
+                        class="inline-status"
+                        role="status"
+                        aria-live="polite"
+                        hidden
+                    ></div>
+                    <button id="accessButton" class="primary-button" type="submit">
+                        <span data-i18n="access.submit">Unlock Pintor</span>
+                        <span aria-hidden="true">→</span>
+                    </button>
+                </form>
+            </section>
+
+            <section id="uploadPanel" class="panel upload-panel" hidden>
+                <div class="panel-heading">
+                    <div>
+                        <span class="step-label" data-i18n="upload.step">Step 1 · diagram</span>
+                        <h2 data-i18n="upload.title">Choose a PDF page to paint</h2>
+                    </div>
+                    <span class="limit-note" data-i18n="upload.limit">Up to 25 MB · 50 pages</span>
+                </div>
+
+                <form id="uploadForm" novalidate>
+                    <label id="dropzone" class="dropzone" for="pdfFile">
+                        <input
+                            id="pdfFile"
+                            name="pdf"
+                            type="file"
+                            accept="application/pdf,.pdf"
+                            required
+                        />
+                        <span class="drop-icon" aria-hidden="true">PDF</span>
+                        <strong id="dropTitle" data-i18n="upload.dropTitle"
+                            >Drop a wiring diagram here</strong
+                        >
+                        <span id="fileName" data-i18n="upload.dropHint"
+                            >or click to choose a PDF</span
+                        >
+                    </label>
+
+                    <div class="upload-options">
+                        <label class="field-group" for="pageNumber">
+                            <span data-i18n="upload.pageLabel">Page number</span>
+                            <input
+                                id="pageNumber"
+                                name="page"
+                                type="number"
+                                min="1"
+                                max="50"
+                                value="1"
+                                inputmode="numeric"
+                            />
+                        </label>
+                        <label class="field-group convention-field" for="convention">
+                            <span data-i18n="upload.conventionLabel">Colour-code convention</span>
+                            <select id="convention" name="convention">
+                                <option value="auto" data-i18n="upload.conventionAuto">
+                                    Detect automatically
+                                </option>
+                                <option value="iec_two_letter" data-i18n="upload.conventionIec">
+                                    IEC / two-letter codes
+                                </option>
+                                <option value="volvo_classic" data-i18n="upload.conventionVolvo">
+                                    Volvo classic codes
+                                </option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <label class="consent-row" for="trainingConsent">
+                        <input id="trainingConsent" type="checkbox" />
+                        <span>
+                            <strong data-i18n="upload.consentTitle"
+                                >Allow expert-reviewed learning</strong
+                            >
+                            <small data-i18n="upload.consentText"
+                                >If you report an error, the PDF and annotations may enter a
+                                quarantined training inbox. Nothing trains automatically.</small
+                            >
+                        </span>
+                    </label>
+
+                    <div
+                        id="uploadStatus"
+                        class="inline-status"
+                        role="status"
+                        aria-live="polite"
+                        hidden
+                    ></div>
+                    <button id="paintButton" class="primary-button" type="submit">
+                        <span data-i18n="upload.submit">Analyse and paint</span>
+                        <span aria-hidden="true">→</span>
+                    </button>
+                </form>
+            </section>
+
+            <section id="processingPanel" class="panel processing-panel" aria-live="polite" hidden>
+                <div class="processing-visual" aria-hidden="true">
+                    <span></span><span></span><span></span>
+                </div>
+                <div>
+                    <span class="step-label" data-i18n="processing.step"
+                        >Step 2 · protected analysis</span
+                    >
+                    <h2 data-i18n="processing.title">Tracing conductors and checking boundaries</h2>
+                    <p id="processingStage" data-i18n="processing.queued">
+                        Waiting for the isolated worker…
+                    </p>
+                </div>
+            </section>
+
+            <section id="reviewPanel" class="review-layout" hidden>
+                <div class="review-main panel">
+                    <div class="review-toolbar">
+                        <div>
+                            <span class="step-label" data-i18n="review.step">Step 3 · review</span>
+                            <h2 id="reviewTitle" data-i18n="review.title">
+                                Inspect the painted result
+                            </h2>
+                        </div>
+                        <div
+                            class="toolbar-actions"
+                            role="group"
+                            data-i18n-aria="aria.viewerControls"
+                        >
+                            <button
+                                id="showPainted"
+                                class="tool-button active"
+                                type="button"
+                                aria-pressed="true"
+                                data-i18n="review.painted"
+                            >
+                                Painted
+                            </button>
+                            <button
+                                id="showOriginal"
+                                class="tool-button"
+                                type="button"
+                                aria-pressed="false"
+                                data-i18n="review.original"
+                            >
+                                Original
+                            </button>
+                            <button
+                                id="zoomOut"
+                                class="icon-button"
+                                type="button"
+                                aria-label="Zoom out"
+                            >
+                                −
+                            </button>
+                            <button
+                                id="zoomFit"
+                                class="icon-button"
+                                type="button"
+                                aria-label="Fit diagram"
+                                data-i18n-aria="aria.fit"
+                            >
+                                ⌗
+                            </button>
+                            <button
+                                id="zoomIn"
+                                class="icon-button"
+                                type="button"
+                                aria-label="Zoom in"
+                            >
+                                +
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="diagramViewport" class="diagram-viewport">
+                        <div id="diagramPlane" class="diagram-plane">
+                            <img
+                                id="diagramImage"
+                                alt="Painted wiring diagram"
+                                data-i18n-alt="review.imageAlt"
+                            />
+                            <div id="annotationLayer" class="annotation-layer"></div>
+                        </div>
+                        <p id="viewerHint" class="viewer-hint" data-i18n="review.viewerHint">
+                            Without an error tool selected, drag to pan and use the wheel to zoom.
+                        </p>
+                    </div>
+                </div>
+
+                <aside class="review-sidebar">
+                    <section class="panel result-summary">
+                        <div class="summary-heading">
+                            <span class="status-dot"></span>
+                            <div>
+                                <strong data-i18n="summary.ready">Ready for human review</strong>
+                                <small id="summaryConvention">—</small>
+                            </div>
+                        </div>
+                        <dl class="metric-grid">
+                            <div>
+                                <dt data-i18n="summary.coverage">Painted coverage</dt>
+                                <dd id="metricCoverage">—</dd>
+                            </div>
+                            <div>
+                                <dt data-i18n="summary.wires">Runs painted</dt>
+                                <dd id="metricRuns">—</dd>
+                            </div>
+                            <div>
+                                <dt data-i18n="summary.codes">Codes read</dt>
+                                <dd id="metricCodes">—</dd>
+                            </div>
+                            <div>
+                                <dt data-i18n="summary.abstentions">Abstentions</dt>
+                                <dd id="metricAbstentions">—</dd>
+                            </div>
+                        </dl>
+                        <a
+                            id="downloadPdf"
+                            class="download-button"
+                            href="#"
+                            data-i18n="summary.download"
+                            >Download painted PDF</a
+                        >
+                        <button
+                            id="deleteJob"
+                            class="text-button danger"
+                            type="button"
+                            data-i18n="summary.delete"
+                        >
+                            Delete this private job now
+                        </button>
+                    </section>
+
+                    <section class="panel feedback-panel">
+                        <div class="panel-heading compact">
+                            <div>
+                                <span class="step-label" data-i18n="feedback.step"
+                                    >Found a mistake?</span
+                                >
+                                <h2 data-i18n="feedback.title">Mark it on the diagram</h2>
+                            </div>
+                            <span id="annotationCount" class="annotation-count">0</span>
+                        </div>
+                        <p class="feedback-help" data-i18n="feedback.help">
+                            Choose the error type, then point to the exact wire. Continuity and
+                            rendering errors use two points.
+                        </p>
+
+                        <div
+                            id="errorTools"
+                            class="error-tools"
+                            role="group"
+                            data-i18n-aria="aria.errorTypes"
+                        >
+                            <button type="button" data-error="wrong-colour" data-geometry="point">
+                                <span class="error-swatch wrong"></span
+                                ><span data-i18n="errors.wrongColour">Wrong colour</span>
+                            </button>
+                            <button type="button" data-error="non-wire" data-geometry="point">
+                                <span class="error-swatch nonwire"></span
+                                ><span data-i18n="errors.nonWire">Colour on a non-wire</span>
+                            </button>
+                            <button type="button" data-error="missing" data-geometry="point">
+                                <span class="error-swatch missing"></span
+                                ><span data-i18n="errors.missing">Missing colour</span>
+                            </button>
+                            <button type="button" data-error="stops-mid" data-geometry="segment">
+                                <span class="error-swatch stops"></span
+                                ><span data-i18n="errors.stops">Colour stops mid-wire</span>
+                            </button>
+                            <button type="button" data-error="bleed" data-geometry="segment">
+                                <span class="error-swatch bleed"></span
+                                ><span data-i18n="errors.bleed">Colour crosses a boundary</span>
+                            </button>
+                            <button type="button" data-error="dash-style" data-geometry="segment">
+                                <span class="error-swatch dash"></span
+                                ><span data-i18n="errors.dashStyle">Dashed wire became solid</span>
+                            </button>
+                            <button type="button" data-error="stripe-style" data-geometry="segment">
+                                <span class="error-swatch stripe"></span
+                                ><span data-i18n="errors.stripeStyle"
+                                    >Base/tracer stripe is wrong</span
+                                >
+                            </button>
+                        </div>
+
+                        <label id="expectedCodeGroup" class="field-group" for="expectedCode" hidden>
+                            <span data-i18n="feedback.expectedCode">Correct printed code</span>
+                            <input
+                                id="expectedCode"
+                                type="text"
+                                maxlength="7"
+                                placeholder="GN/YE"
+                                autocomplete="off"
+                            />
+                        </label>
+
+                        <div id="annotationList" class="annotation-list"></div>
+
+                        <label class="field-group" for="feedbackNote">
+                            <span data-i18n="feedback.noteLabel"
+                                >Additional context (optional)</span
+                            >
+                            <textarea
+                                id="feedbackNote"
+                                rows="3"
+                                maxlength="2000"
+                                data-i18n="feedback.notePlaceholder"
+                                placeholder="What should Pintor have understood here?"
+                            ></textarea>
+                        </label>
+                        <label class="revision-row" for="requestRevision">
+                            <input id="requestRevision" type="checkbox" checked />
+                            <span data-i18n="feedback.requestRevision"
+                                >Request an expert revision of this result</span
+                            >
+                        </label>
+                        <div
+                            id="feedbackStatus"
+                            class="inline-status"
+                            role="status"
+                            aria-live="polite"
+                            hidden
+                        ></div>
+                        <button
+                            id="submitFeedback"
+                            class="secondary-button"
+                            type="button"
+                            disabled
+                            data-i18n="feedback.submit"
+                        >
+                            Send markings for revision
+                        </button>
+                        <p class="learning-note" data-i18n="feedback.learningNote">
+                            Corrections are quarantined and adjudicated. They never retrain or
+                            promote a model automatically.
+                        </p>
+                    </section>
+                </aside>
+            </section>
+
+            <section id="declinedPanel" class="panel declined-panel" hidden>
+                <span class="declined-mark" aria-hidden="true">?</span>
+                <div>
+                    <span class="step-label" data-i18n="declined.step">Safe abstention</span>
+                    <h2 data-i18n="declined.title">This page was not painted</h2>
+                    <p id="declineReason"></p>
+                    <p data-i18n="declined.help">
+                        The beta currently accepts born-digital vector pages with extractable
+                        colour-code text. Choose the convention explicitly if automatic detection
+                        was uncertain.
+                    </p>
+                    <button
+                        id="tryAgain"
+                        class="secondary-button"
+                        type="button"
+                        data-i18n="declined.tryAgain"
+                    >
+                        Adjust and try again
+                    </button>
+                </div>
+            </section>
+
+            <section class="beta-boundary">
+                <strong data-i18n="boundary.title">What “beta” means here</strong>
+                <p data-i18n="boundary.text">
+                    Pintor is manufacturer-independent by architecture, but this release supports
+                    only the listed code profiles and vector PDFs. Scans, unknown conventions and
+                    uncertain topology are refused until they have equivalent validation evidence.
+                </p>
+            </section>
+        </main>
+
+        <footer>
+            <p data-i18n="footer">Pintor beta — Engenharia NATA @ 2026</p>
+        </footer>
+
+        <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria.home">
+            <svg
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                aria-hidden="true"
+            >
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+            </svg>
+        </a>
+
+        <script type="module" src="pintor-script.js?v=0.1.0"></script>
+    </body>
+</html>

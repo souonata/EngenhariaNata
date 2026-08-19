@@ -1,0 +1,23 @@
+{
+  "axis_mismatch_cost": 45.0,
+  "bridge_angle_tol_deg": 12.0,
+  "bridge_gap_factor": 0.6,
+  "bridge_lateral_factor": 0.12,
+  "bridge_lateral_min_px": 6.0,
+  "bridge_max_gap_px": 30.0,
+  "bridge_max_passes": 8,
+  "classifier_assignment_weight": 18.0,
+  "classifier_direct_min_probability": 0.08,
+  "classifier_propagated_min_probability": 0.3,
+  "continuation_max_passes": 12,
+  "continuation_snap_px": 1.5,
+  "constraint_solver": "auto",
+  "max_ownership_px": 150.0,
+  "milp_time_limit_seconds": 8.0,
+  "min_direct_assignment_margin": 0.0,
+  "name": "conservative-v1",
+  "promoted_max_fold": 2.5,
+  "promoted_min_run_factor": 4.0,
+  "refuse_cost": 90.0,
+  "schema_version": 1
+}

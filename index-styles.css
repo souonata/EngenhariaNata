@@ -274,6 +274,59 @@ html:not([data-theme="dark"]) .device-screen {
     display: block;
 }
 
+/* Pintor beta: schematic wires rendered with CSS so the secret app has no image dependency. */
+.pintor-catalog-icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    color: white;
+    background:
+        linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(135deg, #173f42, #0f7379);
+    background-size: 12px 12px, 12px 12px, auto;
+}
+
+.pintor-catalog-icon strong {
+    position: relative;
+    z-index: 2;
+    font: 800 24px/1 ui-monospace, Consolas, monospace;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.55);
+}
+
+.pintor-catalog-icon small {
+    position: absolute;
+    right: 6px;
+    bottom: 4px;
+    z-index: 2;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.pintor-catalog-wire {
+    position: absolute;
+    left: 7px;
+    right: 7px;
+    height: 4px;
+    border-radius: 999px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+.pintor-catalog-wire.wire-red {
+    top: 12px;
+    background: #ef464d;
+}
+
+.pintor-catalog-wire.wire-yellow {
+    top: 27px;
+    background: #f0c52d;
+}
+
+.pintor-catalog-wire.wire-blue {
+    top: 42px;
+    background: #3e91ec;
+}
+
 /* ============================================
    VERSION TEXT - Texto de versão nos ícones SVG
    ============================================ */
@@ -729,4 +782,3 @@ html[data-theme="dark"] .app-card:hover {
         gap: 24px;
     }
 }
-
