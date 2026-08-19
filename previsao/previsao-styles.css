@@ -118,20 +118,20 @@
   .site-footer .footer-github-link:hover{ color:var(--text); }
   .site-footer .footer-github-link svg{ width:13px; height:13px; fill:currentColor; }
 
-  /* Botão home — só aparece (em degradê) ao rolar até perto do rodapé */
+  /* Botão home — no fluxo, ao pé da página. Vem depois do rodapé no HTML,
+     então aparece ao rolar até o fim, sem precisar de fade por scroll. */
   .home-button-fixed{
-    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    margin:24px auto;
     width:50px; height:50px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
     background:linear-gradient(135deg,#1d3759,#1c2740);
     border:1px solid var(--prob);
     box-shadow:0 8px 22px rgba(74,168,255,.28);
     color:var(--prob); text-decoration:none;
-    opacity:0; pointer-events:none;
-    transition:opacity .28s ease, transform .2s ease;
-    z-index:60;
+    transition:transform .2s ease;
+    flex:0 0 auto;
   }
-  .home-button-fixed:hover{ transform:translateX(-50%) scale(1.08); }
+  .home-button-fixed:hover{ transform:scale(1.08); }
   .home-button-fixed svg{ width:24px; height:24px; fill:currentColor; }
 
   /* ─── City buttons (header) ─── */

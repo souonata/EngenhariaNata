@@ -105,11 +105,9 @@ body {
   border-color: var(--leaf);
 }
 
+/* Botão home — no fluxo, ao pé da página (era fixo no canto inferior). */
 .home-button-fixed {
-  position: fixed;
-  left: 0.85rem;
-  bottom: 0.85rem;
-  z-index: 40;
+  margin: 1.5rem auto;
   width: 2.6rem;
   height: 2.6rem;
   display: grid;

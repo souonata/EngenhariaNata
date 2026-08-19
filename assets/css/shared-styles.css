@@ -494,12 +494,12 @@ footer p {
     scrollbar-gutter: stable both-edges;
 }
 
-/* Home (floating) button — consistent across apps */
+/* Botão home — no FLUXO, ao pé da página (não flutua).
+   Fica depois do rodapé no HTML, então só aparece ao rolar até o fim. O nome
+   da classe segue `-fixed` por histórico: renomeá-la tocaria 19 páginas sem
+   ganho funcional. Não é mais position:fixed. */
 .home-button-fixed {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
+    margin: 28px auto;
     width: var(--home-size);
     height: var(--home-size);
     background: var(--home-bg);
@@ -514,7 +514,7 @@ footer p {
     color: white;
 }
 
-.home-button-fixed:hover { transform: translateX(-50%) scale(1.08); }
+.home-button-fixed:hover { transform: scale(1.08); }
 .home-button-fixed svg { width: calc(var(--home-size) * 0.45); height: calc(var(--home-size) * 0.45); fill: white; }
 
 /* No tema light (padrão, sem data-theme="dark"), o botão home fica claro
@@ -530,7 +530,7 @@ html:not([data-theme="dark"]) .home-button-fixed {
 html:not([data-theme="dark"]) .home-button-fixed svg { fill: var(--accent-hover, #1e7e82); }
 
 @media (max-width: 480px){
-    .home-button-fixed { bottom: 20px; width: var(--home-size-mobile); height: var(--home-size-mobile); }
+    .home-button-fixed { margin: 20px auto; width: var(--home-size-mobile); height: var(--home-size-mobile); }
     .home-button-fixed svg { width: calc(var(--home-size-mobile) * 0.5); height: calc(var(--home-size-mobile) * 0.5); }
 }
 
