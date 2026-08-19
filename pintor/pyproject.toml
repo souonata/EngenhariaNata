@@ -25,6 +25,7 @@ web = [
   "python-multipart>=0.0.20,<1",
   "uvicorn[standard]>=0.35,<1",
 ]
+test = ["httpx2==2.12.0"]
 dev = []
 
 [project.scripts]
