@@ -103,7 +103,6 @@ class HeliceApp extends App {
         this.configurarIconesInfo();
 
         // Botões de incremento/decremento (setas + e -)
-        this.configurarBotoesIncremento();
 
         // Inputs de texto
         this.configurarInputsTexto();
@@ -188,118 +187,6 @@ class HeliceApp extends App {
                     }
                 });
             }
-        });
-    }
-
-    configurarBotoesIncremento() {
-        document.querySelectorAll('.arrow-btn').forEach(btn => {
-            let animationFrame = null;
-            let tempoInicio = 0;
-            let estaSegurando = false;
-            let direcao = 1;
-
-            const animar = (timestamp) => {
-                if (!estaSegurando) return;
-
-                const targetId = btn.getAttribute('data-target');
-                const slider = document.getElementById(targetId);
-
-                if (!slider) return;
-
-                const tempoDecorrido = timestamp - tempoInicio;
-                const min = parseFloat(slider.min);
-                const max = parseFloat(slider.max);
-                const range = max - min;
-
-                const velocidade = range / 3000;
-                const distancia = velocidade * tempoDecorrido;
-
-                const valorInicial = parseFloat(btn.dataset.valorInicial);
-                let novoValor = valorInicial + (distancia * direcao);
-
-                novoValor = Math.max(min, Math.min(max, novoValor));
-
-                if ((direcao > 0 && novoValor >= max) || (direcao < 0 && novoValor <= min)) {
-                    slider.value = novoValor;
-                    slider.dispatchEvent(new Event('input', { bubbles: true }));
-                    pararIncremento();
-                    return;
-                }
-
-                slider.value = novoValor;
-                slider.dispatchEvent(new Event('input', { bubbles: true }));
-
-                animationFrame = requestAnimationFrame(animar);
-            };
-
-            const iniciarAnimacao = () => {
-                if (animationFrame) return;
-
-                const targetId = btn.getAttribute('data-target');
-                const slider = document.getElementById(targetId);
-                if (!slider) return;
-
-                const stepStr = btn.getAttribute('data-step');
-                direcao = parseFloat(stepStr) > 0 ? 1 : -1;
-                const step = Math.abs(parseFloat(stepStr) || parseFloat(slider.step) || 1);
-                const min = parseFloat(slider.min);
-                const max = parseFloat(slider.max);
-                const valorAtual = parseFloat(slider.value);
-                const valorComPasso = Math.max(min, Math.min(max, valorAtual + (step * direcao)));
-
-                slider.value = valorComPasso;
-                slider.dispatchEvent(new Event('input', { bubbles: true }));
-
-                if ((direcao > 0 && valorComPasso >= max) || (direcao < 0 && valorComPasso <= min)) {
-                    return;
-                }
-
-                btn.dataset.valorInicial = slider.value;
-
-                tempoInicio = performance.now();
-                animationFrame = requestAnimationFrame(animar);
-            };
-
-            const pararIncremento = () => {
-                estaSegurando = false;
-
-                if (animationFrame) {
-                    cancelAnimationFrame(animationFrame);
-                    animationFrame = null;
-                }
-
-                delete btn.dataset.valorInicial;
-            };
-
-            btn.addEventListener('mousedown', (e) => {
-                e.preventDefault();
-                estaSegurando = true;
-                iniciarAnimacao();
-            });
-
-            btn.addEventListener('mouseup', (e) => {
-                e.preventDefault();
-                pararIncremento();
-            });
-
-            btn.addEventListener('mouseleave', (e) => {
-                pararIncremento();
-            });
-
-            btn.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                estaSegurando = true;
-                iniciarAnimacao();
-            });
-
-            btn.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                pararIncremento();
-            });
-
-            btn.addEventListener('touchcancel', (e) => {
-                pararIncremento();
-            });
         });
     }
 

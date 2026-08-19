@@ -24,8 +24,9 @@
     "test:coverage": "vitest run --coverage --config vitest.config.js",
     "validate:patentenautica": "node ../patentenautica/scripts/validate_integrity.mjs",
     "validate:i18n": "node ../scripts/validate_i18n_parity.mjs",
-    "validate": "npm run lint:check && npm run format:check && npm run style:check && npm test && npm run validate:i18n && npm run validate:patentenautica",
-    "prebuild": "npm run lint:check"
+    "validate": "npm run lint:check && npm run format:check && npm run style:check && npm test && npm run validate:i18n && npm run validate:assets && npm run validate:patentenautica",
+    "prebuild": "npm run lint:check",
+    "validate:assets": "node ../scripts/validate_assets_referenciados.mjs"
   },
   "keywords": [
     "engenharia",

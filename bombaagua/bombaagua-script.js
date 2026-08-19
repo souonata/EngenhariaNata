@@ -51,7 +51,6 @@ class BombaAguaApp extends App {
 
     configurarEventos() {
         this.configurarIconesInfo();
-        this.configurarBotoesIncremento();
         this.configurarInputsTexto();
 
         Object.keys(SLIDER_TO_INPUT).forEach((id) => {
@@ -90,115 +89,6 @@ class BombaAguaApp extends App {
                     toggle();
                 }
             });
-        });
-    }
-
-    configurarBotoesIncremento() {
-        document.querySelectorAll('.arrow-btn').forEach((btn) => {
-            const HOLD_DELAY_MS = 180;
-            let animationFrame = null;
-            let timeoutSegurar = null;
-            let tempoInicio = 0;
-            let estaSegurando = false;
-            let iniciouAnimacaoContinua = false;
-            let direcao = 1;
-
-            const animar = (timestamp) => {
-                if (!estaSegurando) return;
-
-                const sliderId = btn.getAttribute('data-target');
-                const slider = document.getElementById(sliderId);
-                const inputEl = document.getElementById(SLIDER_TO_INPUT[sliderId]);
-                if (!slider) return;
-
-                const tempoDecorrido = timestamp - tempoInicio;
-                const sliderMin = parseFloat(slider.min);
-                const sliderMax = parseFloat(slider.max);
-                const velocidade = (sliderMax - sliderMin) / 3000;
-                const valorInicial = parseFloat(btn.dataset.valorInicial);
-                let novoValor = valorInicial + velocidade * tempoDecorrido * direcao;
-                novoValor = Math.max(sliderMin, Math.min(sliderMax, novoValor));
-
-                slider.value = novoValor;
-                if (inputEl) {
-                    inputEl.value = this.formatarValorCampo(sliderId, novoValor);
-                }
-
-                this.atualizarResultado();
-                animationFrame = requestAnimationFrame(animar);
-            };
-
-            const iniciarAnimacao = () => {
-                if (animationFrame) return;
-                const sliderId = btn.getAttribute('data-target');
-                const slider = document.getElementById(sliderId);
-                const inputEl = document.getElementById(SLIDER_TO_INPUT[sliderId]);
-                if (!slider) return;
-
-                direcao = parseFloat(btn.getAttribute('data-step')) > 0 ? 1 : -1;
-                const valorAtual = inputEl ? this.parsearValor(inputEl.value) : parseFloat(slider.value);
-                btn.dataset.valorInicial = isNaN(valorAtual) ? parseFloat(slider.value) : valorAtual;
-                tempoInicio = performance.now();
-                animationFrame = requestAnimationFrame(animar);
-            };
-
-            const aplicarIncrementoUnico = () => {
-                const sliderId = btn.getAttribute('data-target');
-                const slider = document.getElementById(sliderId);
-                const inputEl = document.getElementById(SLIDER_TO_INPUT[sliderId]);
-                if (!slider) return;
-                const passo = parseFloat(btn.getAttribute('data-step') || '0');
-                if (!passo) return;
-
-                const min = parseFloat(slider.min);
-                const max = parseFloat(slider.max);
-                const valorBase = inputEl ? this.parsearValor(inputEl.value) : parseFloat(slider.value);
-                const valorAtual = isNaN(valorBase) ? parseFloat(slider.value) : valorBase;
-                const casasDecimais = (String(Math.abs(passo)).split('.')[1] || '').length;
-                let novoValor = valorAtual + passo;
-                novoValor = Math.max(min, Math.min(max, novoValor));
-                novoValor = Number(novoValor.toFixed(Math.max(casasDecimais, 3)));
-
-                slider.value = novoValor;
-                if (inputEl) inputEl.value = this.formatarValorCampo(sliderId, novoValor);
-                this.atualizarResultado();
-            };
-
-            const parar = () => {
-                estaSegurando = false;
-                iniciouAnimacaoContinua = false;
-                if (timeoutSegurar) { clearTimeout(timeoutSegurar); timeoutSegurar = null; }
-                if (animationFrame) {
-                    cancelAnimationFrame(animationFrame);
-                    animationFrame = null;
-                }
-                delete btn.dataset.valorInicial;
-            };
-
-            const aoPressionar = (event) => {
-                event.preventDefault();
-                estaSegurando = true;
-                iniciouAnimacaoContinua = false;
-                timeoutSegurar = setTimeout(() => {
-                    if (!estaSegurando) return;
-                    iniciouAnimacaoContinua = true;
-                    iniciarAnimacao();
-                }, HOLD_DELAY_MS);
-            };
-
-            const aoSoltar = (event) => {
-                if (event) event.preventDefault();
-                const foiToqueRapido = estaSegurando && !iniciouAnimacaoContinua;
-                parar();
-                if (foiToqueRapido) aplicarIncrementoUnico();
-            };
-
-            btn.addEventListener('mousedown', aoPressionar);
-            btn.addEventListener('mouseup', aoSoltar);
-            btn.addEventListener('mouseleave', parar);
-            btn.addEventListener('touchstart', aoPressionar);
-            btn.addEventListener('touchend', aoSoltar);
-            btn.addEventListener('touchcancel', parar);
         });
     }
 

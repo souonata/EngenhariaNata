@@ -20,7 +20,8 @@ import { ExplicacaoResultado } from '../src/components/resultado-explicado.js';
 import {
     converterTaxaParaMensal,
     calcularAmortizacao as calcularAmortizacaoPuro,
-    calcularBolan
+    calcularBolan,
+    projetarBolan
 } from './mutuo-calc.js';
 
 // ============================================
@@ -39,7 +40,7 @@ class MutuoApp extends App {
 
         this.tabelaAmortizacao = [];
         this.ultimaParcelaSelecionada = 1;
-        this.graficos = { evolucao: null, extraRecorrente: null };
+        this.graficos = { evolucao: null, extraRecorrente: null, bolan: null };
         this.periodicidadeAnterior = 'ano'; // Rastrear periodicidade para conversão
         this.memorialSistemaSelecionado = 'price';
         this.explicacao = new ExplicacaoResultado('v2-explicacao', i18n);
@@ -95,11 +96,13 @@ class MutuoApp extends App {
         this.configurarEventos();
         this.configurarEventosBolan();
         this.aplicarModoPais();
+        this.aplicarSistemaPadrao();
         this.calcular();
     }
 
-    // Cada idioma carrega a sua jurisdição. A Suécia não usa sistema de
-    // amortização (SAC/Price/Americano): tem visão própria.
+    // O idioma define moeda e textos; o SISTEMA escolhido define a tela. Os
+    // quatro sistemas ficam disponíveis nos três idiomas — o bolån sueco
+    // inclusive, marcado com o país no seletor.
     get modoPais() {
         return { 'it-IT': 'it', 'sv-SE': 'se' }[i18n.obterIdiomaAtual()] || 'br';
     }
@@ -110,12 +113,46 @@ class MutuoApp extends App {
         document.body.classList.toggle('lang-se', this.modoPais === 'se');
     }
 
+    get sistemaSelecionado() {
+        return document.querySelector('input[name="sistemaRapido"]:checked')?.value || 'price';
+    }
+
+    /**
+     * Sistema padrão por idioma: quem abre em sueco cai no bolån, quem abre em
+     * pt/it cai no Price. Uma escolha manual do usuário passa a mandar e não é
+     * mais sobrescrita na troca de idioma.
+     */
+    aplicarSistemaPadrao() {
+        if (this.sistemaEscolhidoManualmente) {
+            this.aplicarSistemaNaTela();
+            return;
+        }
+        const padrao = this.modoPais === 'se' ? 'bolan' : 'price';
+        const radio = document.querySelector(`input[name="sistemaRapido"][value="${padrao}"]`);
+        if (radio) radio.checked = true;
+        this.aplicarSistemaNaTela();
+    }
+
+    // O bolån troca a tela inteira: entradas, gráfico e explicação são outros.
+    aplicarSistemaNaTela() {
+        document.body.classList.toggle('sistema-bolan', this.sistemaSelecionado === 'bolan');
+    }
+
     configurarEventosBolan() {
         const pares = [
             ['sliderPrecoImovel', 'inputPrecoImovel', 0],
             ['sliderEntrada', 'inputEntrada', 0],
-            ['sliderJurosBolan', 'inputJurosBolan', 2]
+            ['sliderJurosBolan', 'inputJurosBolan', 2],
+            ['sliderAnosBolan', 'inputAnosBolan', 0],
+            ['sliderExtraBolan', 'inputExtraBolan', 0]
         ];
+
+        // LÄS MER: memorial de cálculo sueco (fórmulas, premissas e fontes).
+        const btnSaibaMais = document.getElementById('btnBolanSaibaMais');
+        const memorial = document.getElementById('bolanMemorial');
+        if (btnSaibaMais && memorial) {
+            btnSaibaMais.addEventListener('click', () => this.alternarMemorialBolan());
+        }
 
         pares.forEach(([idSlider, idInput, casas]) => {
             const slider = document.getElementById(idSlider);
@@ -153,16 +190,22 @@ class MutuoApp extends App {
     }
 
     calcularBolanUI() {
-        if (this.modoPais !== 'se') return;
+        if (this.sistemaSelecionado !== 'bolan') return;
 
         const preco = this.lerNumeroBolan(document.getElementById('inputPrecoImovel')?.value);
         const entrada = this.lerNumeroBolan(document.getElementById('inputEntrada')?.value);
         const juros = this.lerNumeroBolan(document.getElementById('inputJurosBolan')?.value);
         if (!Number.isFinite(preco) || !Number.isFinite(entrada) || !Number.isFinite(juros)) return;
 
+        const anosLidos = this.lerNumeroBolan(document.getElementById('inputAnosBolan')?.value);
+        const extraLido = this.lerNumeroBolan(document.getElementById('inputExtraBolan')?.value);
+        const anos = Number.isFinite(anosLidos) ? Math.max(1, Math.round(anosLidos)) : 30;
+        const amortizacaoExtraAnual = Number.isFinite(extraLido) ? Math.max(0, extraLido) : 0;
+
+        const entradaEfetiva = Math.min(entrada, preco);
         const r = calcularBolan({
             valorImovel: preco,
-            entrada: Math.min(entrada, preco),
+            entrada: entradaEfetiva,
             taxaJurosAnual: juros
         });
 
@@ -196,6 +239,197 @@ class MutuoApp extends App {
         }
 
         this.renderizarExplicacaoBolan(r);
+
+        this.projecaoBolan = projetarBolan({
+            valorImovel: preco,
+            entrada: entradaEfetiva,
+            taxaJurosAnual: juros,
+            anos,
+            amortizacaoExtraAnual
+        });
+        this.atualizarGraficoBolan();
+        this.renderizarResumoProjecao(this.projecaoBolan);
+    }
+
+    /**
+     * Resumo em texto da projeção — o que a série do gráfico significa em
+     * números fechados. Fica logo abaixo do gráfico.
+     */
+    renderizarResumoProjecao(projecao) {
+        const alvo = document.getElementById('bolanProjecaoResumo');
+        if (!alvo || !projecao) return;
+
+        const kr = v => formatarMoeda(v, 'SEK', 0);
+        const pct = v => `${formatarNumero(v * 100, 1)} %`;
+        const { resumo } = projecao;
+        const anos = resumo.anos;
+
+        const itens = [
+            [this.textoBolan('resumoJuros'), kr(resumo.totalJurosLiquidos)],
+            [this.textoBolan('resumoAmortizado'), kr(resumo.totalAmortizado)],
+            [this.textoBolan('resumoSaldo'), `${kr(resumo.saldoFinal)} (${pct(resumo.belaningsgradFinal)})`]
+        ];
+
+        const linhas = itens
+            .map(([rotulo, valor]) => `
+                <div class="bolan-projecao-item">
+                    <span class="label-resultado">${rotulo}</span>
+                    <span class="valor-resultado">${valor}</span>
+                </div>`)
+            .join('');
+
+        // A frase que fecha o raciocínio: com o mínimo legal a dívida não zera.
+        const nota = resumo.minimoNaoQuita
+            ? this.textoBolan('resumoNaoQuita')
+            : this.textoBolan('resumoQuita').replace('{ano}', String(resumo.anoQuitado));
+
+        alvo.innerHTML = `
+            <p class="bolan-projecao-titulo">${this.textoBolan('resumoTitulo').replace('{anos}', String(anos))}</p>
+            <div class="bolan-projecao-grid">${linhas}</div>
+            <p class="bolan-projecao-nota">${nota}</p>
+        `;
+    }
+
+    /**
+     * Gráfico da projeção sueca. Barras empilhadas = custo do ano (amortização
+     * + juros líquidos); linha = belåningsgrad, com as duas fronteiras (70 % e
+     * 50 %) que fazem o amorteringskrav mudar de degrau.
+     */
+    atualizarGraficoBolan() {
+        const canvas = document.getElementById('graficoBolan');
+        const projecao = this.projecaoBolan;
+        if (!canvas || !projecao || typeof Chart === 'undefined') return;
+
+        if (this.graficos.bolan) {
+            this.graficos.bolan.destroy();
+            this.graficos.bolan = null;
+        }
+
+        const cores = this.obterCoresGrafico();
+        const linhas = projecao.linhas;
+        const rotulos = linhas.map(l => String(l.ano));
+        const kr = v => formatarMoeda(v, 'SEK', 0);
+
+        this.graficos.bolan = new Chart(canvas.getContext('2d'), {
+            data: {
+                labels: rotulos,
+                datasets: [
+                    {
+                        type: 'bar',
+                        label: this.textoBolan('serieAmortizacao'),
+                        data: linhas.map(l => l.amortizacao),
+                        backgroundColor: cores.green,
+                        stack: 'custo',
+                        yAxisID: 'y',
+                        order: 3
+                    },
+                    {
+                        type: 'bar',
+                        label: this.textoBolan('serieJuros'),
+                        data: linhas.map(l => l.jurosLiquidos),
+                        backgroundColor: cores.orange,
+                        stack: 'custo',
+                        yAxisID: 'y',
+                        order: 3
+                    },
+                    {
+                        type: 'line',
+                        label: this.textoBolan('serieBelaningsgrad'),
+                        data: linhas.map(l => l.belaningsgradFinal * 100),
+                        borderColor: cores.blue,
+                        backgroundColor: cores.blueSoft,
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        pointHoverRadius: 4,
+                        tension: 0.1,
+                        yAxisID: 'y1',
+                        order: 1
+                    },
+                    {
+                        type: 'line',
+                        label: this.textoBolan('serieLimite70'),
+                        data: linhas.map(() => 70),
+                        borderColor: cores.text,
+                        borderWidth: 1,
+                        borderDash: [6, 4],
+                        pointRadius: 0,
+                        pointHitRadius: 0,
+                        yAxisID: 'y1',
+                        order: 2
+                    },
+                    {
+                        type: 'line',
+                        label: this.textoBolan('serieLimite50'),
+                        data: linhas.map(() => 50),
+                        borderColor: cores.text,
+                        borderWidth: 1,
+                        borderDash: [2, 4],
+                        pointRadius: 0,
+                        pointHitRadius: 0,
+                        yAxisID: 'y1',
+                        order: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { position: 'top', labels: { color: cores.text } },
+                    tooltip: {
+                        callbacks: {
+                            title: (items) => `${this.textoBolan('eixoAno')} ${items[0]?.label}`,
+                            label: (ctx) => ctx.dataset.yAxisID === 'y1'
+                                ? `${ctx.dataset.label}: ${formatarNumero(ctx.parsed.y, 1)} %`
+                                : `${ctx.dataset.label}: ${kr(ctx.parsed.y)}`,
+                            afterBody: (items) => {
+                                const linha = linhas[items[0]?.dataIndex];
+                                if (!linha) return '';
+                                return `${this.textoBolan('amorteringskrav')}: ${formatarNumero(linha.taxaAmortizacao * 100, 0)} %`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        ticks: { color: cores.text, maxRotation: 0, autoSkip: true },
+                        grid: { color: cores.grid },
+                        title: { display: true, text: this.textoBolan('eixoAno'), color: cores.text }
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        position: 'left',
+                        ticks: { color: cores.text, callback: (v) => formatarNumero(Number(v), 0) },
+                        grid: { color: cores.grid },
+                        title: { display: true, text: this.textoBolan('eixoCusto'), color: cores.text }
+                    },
+                    y1: {
+                        position: 'right',
+                        beginAtZero: true,
+                        suggestedMax: 100,
+                        ticks: { color: cores.text, callback: (v) => `${formatarNumero(Number(v), 0)} %` },
+                        grid: { drawOnChartArea: false },
+                        title: { display: true, text: this.textoBolan('eixoBelaningsgrad'), color: cores.text }
+                    }
+                }
+            }
+        });
+    }
+
+    // Memorial de cálculo do bolån: fórmulas, premissas e fontes.
+    alternarMemorialBolan() {
+        const memorial = document.getElementById('bolanMemorial');
+        const botao = document.getElementById('btnBolanSaibaMais');
+        if (!memorial) return;
+
+        const aberto = !memorial.hidden;
+        memorial.hidden = aberto;
+        if (botao) botao.setAttribute('aria-expanded', String(!aberto));
+        if (!aberto) memorial.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     textoBolan(chave) {
@@ -254,6 +488,7 @@ class MutuoApp extends App {
 
     atualizarAposTrocaIdioma() {
         this.aplicarModoPais();
+        this.aplicarSistemaPadrao();
         this.calcular();
     }
 
@@ -265,7 +500,6 @@ class MutuoApp extends App {
         this.configurarPagamentosExtrasEspecificos();
 
         // Botões de incremento/decremento (setas + e -)
-        this.configurarBotoesIncremento();
 
         // Inputs de texto (valor, taxa, prazo)
         this.configurarInputsTexto();
@@ -304,7 +538,10 @@ class MutuoApp extends App {
         });
 
         document.querySelectorAll('input[name="sistemaRapido"]').forEach(radio => {
-            radio.addEventListener('change', () => this.calcular());
+            radio.addEventListener('change', () => {
+                this.sistemaEscolhidoManualmente = true;
+                this.calcular();
+            });
         });
 
         document.querySelectorAll('input[name="periodoExtra"]').forEach(radio => {
@@ -342,9 +579,13 @@ class MutuoApp extends App {
         const btnExemplos = document.getElementById('btnExemplos');
         if (btnExemplos) {
             btnExemplos.addEventListener('click', () => {
+                if (this.sistemaSelecionado === 'bolan') {
+                    this.alternarMemorialBolan();
+                    return;
+                }
                 const memorial = document.getElementById('memorialSection');
                 const resultados = document.getElementById('resultados');
-                const sistemaAtual = document.querySelector('input[name="sistemaRapido"]:checked')?.value || 'price';
+                const sistemaAtual = this.sistemaSelecionado;
                 if (memorial) {
                     memorial.style.display = 'block';
                 }
@@ -371,6 +612,10 @@ class MutuoApp extends App {
         }
 
         document.addEventListener('engnata:themechange', () => {
+            if (this.sistemaSelecionado === 'bolan') {
+                this.atualizarGraficoBolan();
+                return;
+            }
             if (this.tabelaAmortizacao.length > 0) {
                 this.atualizarGrafico();
                 this.atualizarGraficoExtraRecorrente(this.obterDadosEntrada());
@@ -456,204 +701,6 @@ class MutuoApp extends App {
                     }
                 });
             }
-        });
-    }
-
-    configurarBotoesIncremento() {
-        document.querySelectorAll('.arrow-btn').forEach(btn => {
-            const HOLD_DELAY_MS = 180;
-            let animationFrame = null;
-            let timeoutSegurar = null;
-            let tempoInicio = 0;
-            let estaSegurando = false;
-            let iniciouAnimacaoContinua = false;
-            let direcao = 1;
-
-            const obterChaveOverridePorTarget = (targetId) => {
-                const mapa = {
-                    sliderValor: 'valor',
-                    sliderTaxa: 'taxa',
-                    sliderPrazo: 'prazo',
-                    sliderExtraPagamento: 'extra'
-                };
-                return mapa[targetId] || null;
-            };
-
-            const normalizarValorPorChave = (chave, valor) => {
-                if (chave === 'prazo') return Math.max(1, valor);
-                if (chave === 'valor' || chave === 'extra' || chave === 'taxa') return Math.max(0, valor);
-                return valor;
-            };
-
-            const obterValorEfetivo = (slider, targetId) => {
-                const chave = obterChaveOverridePorTarget(targetId);
-                if (!chave) return parseFloat(slider.value);
-
-                const override = this.valoresEntradaOverride[chave];
-                if (override != null && !Number.isNaN(override)) {
-                    return Number(override);
-                }
-
-                return parseFloat(slider.value);
-            };
-
-            const aplicarValorNoControle = (slider, targetId, valor, casasDecimais = 3) => {
-                const chave = obterChaveOverridePorTarget(targetId);
-                const valorNormalizado = normalizarValorPorChave(chave, valor);
-                const valorArredondado = Number(valorNormalizado.toFixed(Math.max(casasDecimais, 3)));
-
-                const min = parseFloat(slider.min);
-                const max = parseFloat(slider.max);
-                slider.value = Math.max(min, Math.min(max, valorArredondado));
-
-                if (chave) {
-                    this.valoresEntradaOverride[chave] = valorArredondado;
-                    this.calcular();
-                    return;
-                }
-
-                slider.dispatchEvent(new Event('input', { bubbles: true }));
-            };
-
-            const animar = (timestamp) => {
-                if (!estaSegurando) return;
-
-                const targetId = btn.getAttribute('data-target');
-                const slider = document.getElementById(targetId);
-
-                if (!slider) return;
-
-                const tempoDecorrido = timestamp - tempoInicio;
-                const min = parseFloat(slider.min);
-                const max = parseFloat(slider.max);
-                const range = max - min;
-                const chaveOverride = obterChaveOverridePorTarget(targetId);
-
-                const velocidade = range / 3000;
-                const distancia = velocidade * tempoDecorrido;
-
-                const valorInicial = parseFloat(btn.dataset.valorInicial);
-                let novoValor = valorInicial + (distancia * direcao);
-
-                if (!chaveOverride) {
-                    novoValor = Math.max(min, Math.min(max, novoValor));
-
-                    if ((direcao > 0 && novoValor >= max) || (direcao < 0 && novoValor <= min)) {
-                        slider.value = novoValor;
-                        slider.dispatchEvent(new Event('input', { bubbles: true }));
-                        pararIncremento();
-                        return;
-                    }
-                }
-
-                aplicarValorNoControle(slider, targetId, novoValor);
-
-                animationFrame = requestAnimationFrame(animar);
-            };
-
-            const iniciarAnimacao = () => {
-                if (animationFrame) return;
-
-                const targetId = btn.getAttribute('data-target');
-                const slider = document.getElementById(targetId);
-                if (!slider) return;
-
-                const stepStr = btn.getAttribute('data-step');
-                direcao = parseFloat(stepStr) > 0 ? 1 : -1;
-
-                btn.dataset.valorInicial = String(obterValorEfetivo(slider, targetId));
-
-                tempoInicio = performance.now();
-                animationFrame = requestAnimationFrame(animar);
-            };
-
-            const aplicarIncrementoUnico = () => {
-                const targetId = btn.getAttribute('data-target');
-                const slider = document.getElementById(targetId);
-                if (!slider) return;
-
-                const passo = parseFloat(btn.getAttribute('data-step') || '0');
-                if (!passo) return;
-
-                const valorAtual = obterValorEfetivo(slider, targetId);
-                const casasDecimais = (String(Math.abs(passo)).split('.')[1] || '').length;
-
-                let novoValor = valorAtual + passo;
-
-                // Evita erro de ponto flutuante em passos decimais (ex: 0.01).
-                aplicarValorNoControle(slider, targetId, novoValor, casasDecimais);
-            };
-
-            const pararIncremento = () => {
-                estaSegurando = false;
-                iniciouAnimacaoContinua = false;
-
-                if (timeoutSegurar) {
-                    clearTimeout(timeoutSegurar);
-                    timeoutSegurar = null;
-                }
-
-                if (animationFrame) {
-                    cancelAnimationFrame(animationFrame);
-                    animationFrame = null;
-                }
-
-                delete btn.dataset.valorInicial;
-            };
-
-            btn.addEventListener('mousedown', (e) => {
-                e.preventDefault();
-                estaSegurando = true;
-                iniciouAnimacaoContinua = false;
-
-                timeoutSegurar = setTimeout(() => {
-                    if (!estaSegurando) return;
-                    iniciouAnimacaoContinua = true;
-                    iniciarAnimacao();
-                }, HOLD_DELAY_MS);
-            });
-
-            btn.addEventListener('mouseup', (e) => {
-                e.preventDefault();
-
-                const foiToqueRapido = estaSegurando && !iniciouAnimacaoContinua;
-                pararIncremento();
-
-                if (foiToqueRapido) {
-                    aplicarIncrementoUnico();
-                }
-            });
-
-            btn.addEventListener('mouseleave', (e) => {
-                pararIncremento();
-            });
-
-            btn.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                estaSegurando = true;
-                iniciouAnimacaoContinua = false;
-
-                timeoutSegurar = setTimeout(() => {
-                    if (!estaSegurando) return;
-                    iniciouAnimacaoContinua = true;
-                    iniciarAnimacao();
-                }, HOLD_DELAY_MS);
-            });
-
-            btn.addEventListener('touchend', (e) => {
-                e.preventDefault();
-
-                const foiToqueRapido = estaSegurando && !iniciouAnimacaoContinua;
-                pararIncremento();
-
-                if (foiToqueRapido) {
-                    aplicarIncrementoUnico();
-                }
-            });
-
-            btn.addEventListener('touchcancel', (e) => {
-                pararIncremento();
-            });
         });
     }
 
@@ -871,9 +918,7 @@ class MutuoApp extends App {
             const placeholderParcela = this.traducoes['extra-specific-installment-placeholder'] || 'Parcela';
             const labelValor = this.traducoes['extra-specific-value-label'] || 'Valor';
             const labelParcela = this.traducoes['extra-specific-installment-label'] || 'Parcela (nº)';
-            const ariaRemover = i18n.obterIdiomaAtual() === 'it-IT'
-                ? 'Rimuovi pagamento extra specifico'
-                : 'Remover pagamento extra específico';
+            const ariaRemover = this.textoExp('removerExtra');
 
             const novaLinha = document.createElement('div');
             novaLinha.className = 'extra-especifico-row';
@@ -920,21 +965,9 @@ class MutuoApp extends App {
             return 0.01;
         };
 
-        const atualizarStepBotoesTaxa = (periodo) => {
-            const passoTaxa = obterPassoTaxa(periodo);
-            document.querySelectorAll('.arrow-btn[data-target="sliderTaxa"]').forEach((btn) => {
-                const sinal = btn.classList.contains('arrow-down') ? -1 : 1;
-                btn.setAttribute('data-step', String(sinal * passoTaxa));
-                btn.setAttribute(
-                    'aria-label',
-                    sinal < 0
-                        ? `Diminuir taxa em ${passoTaxa}%`
-                        : `Aumentar taxa em ${passoTaxa}%`
-                );
-            });
-        };
-
-        atualizarStepBotoesTaxa(periodoNovo);
+        // O slider da taxa acompanha a periodicidade escolhida.
+        const sliderTaxaPasso = document.getElementById('sliderTaxa');
+        if (sliderTaxaPasso) sliderTaxaPasso.step = String(obterPassoTaxa(periodoNovo));
 
         // Determinar casas decimais baseado na periodicidade
         const casasDecimais = periodoNovo === 'dia' ? 4 : (periodoNovo === 'mes' ? 3 : 2);
@@ -1061,8 +1094,13 @@ class MutuoApp extends App {
     }
 
     calcular() {
-        // No modo sueco a tela é outra: bolån em vez de sistema de amortização.
-        this.calcularBolanUI();
+        this.aplicarSistemaNaTela();
+
+        // Bolån tem tela própria: nada da malha SAC/Price/Americano se aplica.
+        if (this.sistemaSelecionado === 'bolan') {
+            this.calcularBolanUI();
+            return;
+        }
 
         const dados = this.obterDadosEntrada();
 
@@ -1148,68 +1186,69 @@ class MutuoApp extends App {
         this.renderizarExplicacao({ dados, totalPago, jurosTotais, percJuros, mesesQuitacao });
     }
 
+    // Texto da explicação por chave i18n. Era um ternário pt/it, que deixava o
+    // sueco cair no italiano assim que o bolån virou o 4º sistema e o sueco
+    // passou a ver também as telas de SAC/Price/Americano.
+    textoExp(chave, substituicoes = {}) {
+        let texto = i18n.obterTraducao(`exp.${chave}`) || '';
+        for (const [alvo, valor] of Object.entries(substituicoes)) {
+            texto = texto.replaceAll(`{${alvo}}`, valor);
+        }
+        return texto;
+    }
+
     renderizarExplicacao({ dados, totalPago, jurosTotais, percJuros, mesesQuitacao }) {
-        const pt = i18n.obterIdiomaAtual() === 'pt-BR';
         const anos = Math.floor(mesesQuitacao / 12);
         const meses = mesesQuitacao % 12;
         const sistemaLabel = {
-            sac: pt ? 'SAC' : 'SAC (Italiano)',
-            price: pt ? 'Price (Francês)' : 'Price (Francese)',
-            americano: pt ? 'Americano' : 'Americano'
+            sac: this.textoExp('sistemaSac'),
+            price: this.textoExp('sistemaPrice'),
+            americano: this.textoExp('sistemaAmericano')
         }[dados.sistema] || dados.sistema;
 
         const totalPagoStr = this.formatarMoedaLocal(totalPago);
         const jurosTotaisStr = this.formatarMoedaLocal(jurosTotais);
         const valorStr = this.formatarMoedaLocal(dados.valor);
+        const percStr = formatarNumero(percJuros, 1);
         const primeiraParcela = this.tabelaAmortizacao[0]?.parcela || 0;
         const ultimaParcela = this.tabelaAmortizacao[this.tabelaAmortizacao.length - 1]?.parcela || 0;
         const tempoStr = anos > 0
-            ? (pt ? `${anos} ano(s) e ${meses} mês(es)` : `${anos} anno/i e ${meses} mese/i`)
-            : (pt ? `${meses} meses` : `${meses} mesi`);
+            ? this.textoExp('tempoAnosMeses', { anos, meses })
+            : this.textoExp('tempoMeses', { meses });
 
         this.explicacao.renderizar({
-            destaque: pt
-                ? `Para ${valorStr} emprestado no sistema ${sistemaLabel}, você pagará ${jurosTotaisStr} de juros (${formatarNumero(percJuros, 1)}% a mais).`
-                : `Per ${valorStr} preso in prestito con il sistema ${sistemaLabel}, pagherai ${jurosTotaisStr} di interessi (${formatarNumero(percJuros, 1)}% in più).`,
+            destaque: this.textoExp('destaque', {
+                valor: valorStr, sistema: sistemaLabel, juros: jurosTotaisStr, perc: percStr
+            }),
             linhas: [
                 {
                     icone: '💸',
-                    titulo: pt ? 'Total em Juros' : 'Totale Interessi',
-                    valor: `${jurosTotaisStr} (${formatarNumero(percJuros, 1)}%)`,
-                    descricao: pt
-                        ? `Quanto a mais você paga além dos ${valorStr} emprestados.`
-                        : `Quanto paghi in più rispetto ai ${valorStr} presi in prestito.`
+                    titulo: this.textoExp('jurosTitulo'),
+                    valor: `${jurosTotaisStr} (${percStr}%)`,
+                    descricao: this.textoExp('jurosTexto', { valor: valorStr })
                 },
                 {
                     icone: '📅',
-                    titulo: pt ? 'Prazo de Quitação' : 'Durata del Prestito',
+                    titulo: this.textoExp('prazoTitulo'),
                     valor: tempoStr,
-                    descricao: pt ? `${mesesQuitacao} parcelas mensais.` : `${mesesQuitacao} rate mensili.`
+                    descricao: this.textoExp('prazoTexto', { parcelas: mesesQuitacao })
                 },
                 {
                     icone: '💳',
-                    titulo: pt ? '1ª Parcela' : '1ª Rata',
+                    titulo: this.textoExp('primeiraTitulo'),
                     valor: this.formatarMoedaLocal(primeiraParcela),
-                    descricao: pt
-                        ? (dados.sistema === 'sac'
-                            ? `No SAC a parcela cai com o tempo. Última: ${this.formatarMoedaLocal(ultimaParcela)}.`
-                            : 'No Price as parcelas são fixas.')
-                        : (dados.sistema === 'sac'
-                            ? `Nel SAC la rata diminuisce nel tempo. Ultima: ${this.formatarMoedaLocal(ultimaParcela)}.`
-                            : 'Nel Price le rate sono fisse.')
+                    descricao: dados.sistema === 'sac'
+                        ? this.textoExp('primeiraTextoSac', { ultima: this.formatarMoedaLocal(ultimaParcela) })
+                        : this.textoExp('primeiraTextoFixa')
                 },
                 {
                     icone: '🏁',
-                    titulo: pt ? 'Total Pago' : 'Totale Pagato',
+                    titulo: this.textoExp('totalTitulo'),
                     valor: totalPagoStr,
-                    descricao: pt
-                        ? `Soma de capital (${valorStr}) + juros (${jurosTotaisStr}).`
-                        : `Somma di capitale (${valorStr}) + interessi (${jurosTotaisStr}).`
+                    descricao: this.textoExp('totalTexto', { valor: valorStr, juros: jurosTotaisStr })
                 }
             ],
-            dica: pt
-                ? 'Pagamentos extras reduzem juros totais e o tempo de quitação.'
-                : 'Pagamenti extra riducono interessi totali e tempo di estinzione.'
+            dica: this.textoExp('dica')
         });
     }
 
@@ -1317,10 +1356,9 @@ class MutuoApp extends App {
                 : dados.periodicidade === 'mes'
                     ? (this.traducoes['unidades']?.aoMes || 'ao mês')
                     : 'ao dia';
-            const pt = i18n.obterIdiomaAtual() === 'pt-BR';
-            const paraLabel = pt ? 'Para' : 'Per';
-            const porLabel = pt ? 'por' : 'per';
-            const mesesLabel = pt ? 'meses' : 'mesi';
+            const paraLabel = this.textoExp('comparacaoPara');
+            const porLabel = this.textoExp('comparacaoPor');
+            const mesesLabel = this.textoExp('comparacaoMeses');
             subtitle.innerHTML = `<strong>${paraLabel} ${valorStr} a ${taxaStr} ${periodoStr} ${porLabel} ${dados.numParcelas} ${mesesLabel}:</strong>`;
         }
 
@@ -1899,7 +1937,7 @@ class MutuoApp extends App {
         htmlConteudo += `
             <div class="memorial-item">
                 <h3>${this.traducoes['memorial-passo3-title'] || '3️⃣ Passo 3: Calcular Tabela de Amortização'}</h3>
-                <div class="memorial-system-switcher" role="tablist" aria-label="${i18n.obterIdiomaAtual() === 'it-IT' ? 'Sistema per le formule' : 'Sistema para fórmulas'}">
+                <div class="memorial-system-switcher" role="tablist" aria-label="${this.textoExp('memorialAbaAria')}">
                     <button type="button" class="js-system-tab" data-system="sac" aria-selected="false">
                         <span>${this.traducoes['system-sac-short'] || 'SAC'}</span>
                     </button>

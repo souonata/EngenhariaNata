@@ -21,7 +21,7 @@
       },
       "mutuo": {
         "name": "Empréstimo",
-        "desc": "Compara sistemas de amortização e facilita decisões financeiras com mais clareza"
+        "desc": "Compara sistemas de amortização e o bolån sueco para decidir melhor o financiamento"
       },
       "iluminacao": {
         "name": "Iluminação Residencial",
@@ -73,7 +73,7 @@
       },
       "salario": {
         "name": "Salário Líquido",
-        "desc": "Calculadora bilíngue de salário líquido Brasil/Itália com memorial e gráficos"
+        "desc": "Calculadora de salário trilíngue Brasil/Itália/Suécia com memorial de cálculo e gráficos"
       },
       "previsao": {
         "name": "Previsão 7 dias",
@@ -491,6 +491,39 @@
       "expandCard": "Expandir seção",
       "collapseCard": "Recolher seção",
       "contato": "Enviar e-mail para nata@engnata.eu"
+    },
+    "adaptacao": {
+      "title": "Adaptação por país",
+      "intro": "Trocar de idioma não troca só o texto. Em sete apps a Suécia muda o próprio método de cálculo, porque a pergunta que se faz lá não é a mesma. Esses apps têm tela, entradas e resultados próprios no modo sueco.",
+      "salario": {
+        "title": "Salário — modelo fiscal sueco",
+        "desc": "Grundavdrag, jobbskatteavdrag e kommunalskatt ajustável por município. Não existe 13º salário, FGTS nem verba rescisória: são institutos de Brasil e Itália, e ficam ocultos."
+      },
+      "mutuo": {
+        "title": "Empréstimo — bolån",
+        "desc": "Na Suécia não se escolhe sistema de amortização: a amortização mínima é um percentual anual da dívida, definido pela relação empréstimo/valor. O bolån está disponível como quarto sistema nos três idiomas, com projeção ano a ano e memorial próprio."
+      },
+      "solar": {
+        "title": "Energia solar — conectada à rede",
+        "desc": "Dimensionar um sistema isolado pelo inverno sueco pediria um banco de baterias irreal. O modo sueco é o de geração conectada à rede, com produção específica por região."
+      },
+      "ventilacao": {
+        "title": "Ventilação — exigência de vazão",
+        "desc": "A norma sueca não pergunta se a janela é grande o bastante: exige litros por segundo o ano inteiro (0,35 l/s·m² e 4 l/s por pessoa, BFS 2024:8). A tela calcula perda de calor por graus-dia e recuperação por tipo de sistema."
+      },
+      "arcondicionado": {
+        "title": "Climatização — bomba de calor",
+        "desc": "O aparelho que se instala lá é comprado para aquecer; refrigerar é efeito colateral. A economia sai do SCOP e da cobertura do aquecimento anual, com o ROT-avdrag no custo."
+      },
+      "aquecimento": {
+        "title": "Aquecimento solar — complemento",
+        "desc": "Entre novembro e fevereiro a produção é quase nula em qualquer área de coletor. O que limita o tamanho é o excedente de verão, não o inverno, e o circuito com glicol é obrigatório."
+      },
+      "chuva": {
+        "title": "Água de chuva — limitada pelo congelamento",
+        "desc": "O limite não é quanto chove, é a geada: o reservatório precisa ser esvaziado antes dela. A temporada usa o período de vegetação do SMHI, então captação anual não é captação utilizável."
+      },
+      "nota": "Nos demais apps a Suécia muda só os parâmetros e as normas de referência — SS 436 40 00 para condutores, SS-EN 12464-1 para iluminação, dados do SMHI para clima."
     }
   },
   "it-IT": {
@@ -514,7 +547,7 @@
       },
       "mutuo": {
         "name": "Mutuo",
-        "desc": "Confronta sistemi di ammortamento e supporta decisioni finanziarie più chiare"
+        "desc": "Confronta i sistemi di ammortamento e il bolån svedese per decidere meglio il mutuo"
       },
       "iluminacao": {
         "name": "Illuminazione Residenziale",
@@ -566,7 +599,7 @@
       },
       "salario": {
         "name": "Stipendio Netto",
-        "desc": "Calcolatore bilingue di stipendio netto Brasile/Italia con memoriale e grafici"
+        "desc": "Calcolatore di stipendio trilingue Brasile/Italia/Svezia con memoria di calcolo e grafici"
       },
       "previsao": {
         "name": "Previsioni 7 giorni",
@@ -984,6 +1017,39 @@
       "expandCard": "Espandi sezione",
       "collapseCard": "Comprimi sezione",
       "contato": "Invia un'e-mail a nata@engnata.eu"
+    },
+    "adaptacao": {
+      "title": "Adattamento per paese",
+      "intro": "Cambiare lingua non cambia solo il testo. In sette app la Svezia cambia il metodo di calcolo stesso, perché lì la domanda che ci si pone è un'altra. Queste app hanno schermata, dati di ingresso e risultati propri in modalità svedese.",
+      "salario": {
+        "title": "Stipendio — modello fiscale svedese",
+        "desc": "Grundavdrag, jobbskatteavdrag e aliquota comunale regolabile. Non esistono tredicesima, FGTS né indennità di fine rapporto all'italiana o alla brasiliana: restano nascosti."
+      },
+      "mutuo": {
+        "title": "Prestito — bolån",
+        "desc": "In Svezia non si sceglie il sistema di ammortamento: la quota minima è una percentuale annua del debito, fissata dal rapporto prestito/valore. Il bolån è disponibile come quarto sistema in tutte e tre le lingue, con proiezione anno per anno e memoria di calcolo dedicata."
+      },
+      "solar": {
+        "title": "Fotovoltaico — connesso alla rete",
+        "desc": "Dimensionare un impianto isolato sull'inverno svedese richiederebbe un banco batterie irreale. La modalità svedese è quella connessa alla rete, con produzione specifica per regione."
+      },
+      "ventilacao": {
+        "title": "Ventilazione — requisito di portata",
+        "desc": "La norma svedese non chiede se la finestra è abbastanza grande: impone litri al secondo tutto l'anno (0,35 l/s·m² e 4 l/s a persona, BFS 2024:8). La schermata calcola la dispersione termica per gradi giorno e il recupero per tipo di impianto."
+      },
+      "arcondicionado": {
+        "title": "Climatizzazione — pompa di calore",
+        "desc": "L'apparecchio che si installa lì si compra per riscaldare; raffrescare è un effetto collaterale. Il risparmio deriva dallo SCOP e dalla copertura del fabbisogno annuo, con il ROT-avdrag sul costo."
+      },
+      "aquecimento": {
+        "title": "Solare termico — integrazione",
+        "desc": "Da novembre a febbraio la produzione è quasi nulla con qualsiasi superficie di collettore. A limitare la dimensione è l'eccedenza estiva, non l'inverno, e il circuito con glicole è obbligatorio."
+      },
+      "chuva": {
+        "title": "Acqua piovana — limitata dal gelo",
+        "desc": "Il limite non è quanto piove, è il gelo: il serbatoio va svuotato prima. La stagione segue il periodo vegetativo dello SMHI, quindi la raccolta annua non è raccolta utilizzabile."
+      },
+      "nota": "Nelle altre app la Svezia cambia solo parametri e norme di riferimento — SS 436 40 00 per i conduttori, SS-EN 12464-1 per l'illuminazione, dati SMHI per il clima."
     }
   },
   "sv-SE": {
@@ -1007,7 +1073,7 @@
       },
       "mutuo": {
         "name": "Lån",
-        "desc": "Jämför amorteringsformer och ger tydligare underlag för ekonomiska beslut"
+        "desc": "Jämför amorteringsformer och det svenska bolånet, med amorteringskrav och ränteavdrag"
       },
       "iluminacao": {
         "name": "Belysning i bostäder",
@@ -1019,7 +1085,7 @@
       },
       "solar": {
         "name": "Solenergi",
-        "desc": "Dimensionerar fristående solcellssystem med teknisk och ekonomisk omsorg"
+        "desc": "Dimensionerar nätansluten solel med specifik produktion per region"
       },
       "bitola": {
         "name": "Kabelarea",
@@ -1027,11 +1093,11 @@
       },
       "arcondicionado": {
         "name": "Luftkonditionering",
-        "desc": "Dimensionerar värmelaster och föreslår lösningar för flera rum"
+        "desc": "Dimensionerar luftvärmepump för att värma, med SCOP, täckningsgrad och ROT-avdrag"
       },
       "aquecimento": {
         "name": "Solvärme",
-        "desc": "Dimensionerar solvärme för tappvatten och rumsvärme med energikriterier"
+        "desc": "Dimensionerar solvärme som komplement till uppvärmningen, med solfraktion och risk för stagnation"
       },
       "fazenda": {
         "name": "Gård",
@@ -1039,7 +1105,7 @@
       },
       "chuva": {
         "name": "Regn",
-        "desc": "Räknar ut uppsamling av regnvatten, tankstorlek och månadsbesparing"
+        "desc": "Räknar ut uppsamling av regnvatten under den frostfria säsongen och tunnans storlek"
       },
       "bombaagua": {
         "name": "Vattenpump",
@@ -1055,11 +1121,11 @@
       },
       "ventilacao": {
         "name": "Naturlig ventilation",
-        "desc": "Räknar ut luftomsättning (ACH), luftkvalitet och minsta ventilationsarea (Boverkets byggregler)"
+        "desc": "Räknar ut uteluftsflöde, luftomsättning (ACH) och värmeförlust enligt de svenska byggreglerna (BFS 2024:8)"
       },
       "salario": {
         "name": "Nettolön",
-        "desc": "Tvåspråkig lönekalkylator Brasilien/Italien med beräkningsredovisning och diagram"
+        "desc": "Trespråkig lönekalkylator Brasilien/Italien/Sverige med beräkningsredovisning och diagram"
       },
       "previsao": {
         "name": "Prognos 7 dagar",
@@ -1119,16 +1185,16 @@
       }
     },
     "calculator": {
-      "description": "Jämför lån och visar delbetalningar så att du kan spara."
+      "description": "Jämför lån — inklusive svenskt bolån — och visar vad de kostar per månad."
     },
     "arcondicionado": {
-      "description": "Räknar ut rätt luftkonditionering för dina rum."
+      "description": "Räknar ut besparingen med en luftvärmepump: apparaten köps för att värma, och kyla på sommaren är en bieffekt."
     },
     "aquecimento": {
-      "description": "Planerar ditt solvärmesystem och sparar energi."
+      "description": "Planerar solvärme som komplement: det är sommarens överskott som sätter gränsen för kollektorytan, inte vinterns behov."
     },
     "solar": {
-      "description": "Dimensionerar solpaneler så att du kan producera din egen el."
+      "description": "Dimensionerar nätansluten solel: i Sverige köper man el från nätet på vintern och exporterar överskottet på sommaren."
     },
     "fazenda": {
       "description": "Planerar din självförsörjande gård för egen produktion."
@@ -1161,13 +1227,13 @@
       "description": "Hjälper dig välja rätt propeller till din båt."
     },
     "mutuo": {
-      "description": "Räknar ut och jämför amorteringsformer (rak amortering, annuitet och stående lån) för bästa ekonomiska beslut."
+      "description": "Jämför amorteringsformerna rak amortering, annuitet och stående lån, och räknar dessutom svenskt bolån: amorteringskrav efter belåningsgrad, bolånetak och ränteavdrag."
     },
     "bugs": {
       "description": "Kanal för att rapportera problem, skicka förslag och bidra till att apparna blir bättre."
     },
     "chuva": {
-      "description": "Dimensionerar tankar för uppsamling av regnvatten och räknar ut uppsamlad volym och månadsbesparing, med nederbörd enligt SMHI."
+      "description": "Dimensionerar regnvattentunnan och räknar ut hur mycket som faktiskt går att använda: säsongen begränsas av frosten och följer SMHI:s vegetationsperiod."
     },
     "iluminacao": {
       "description": "Dimensionerar lamporna för varje rum och räknar ut förbrukning och elkostnad enligt SS-EN 12464-1."
@@ -1176,10 +1242,10 @@
       "description": "Sjudagarsprognos med timvisa data för temperatur, vind i m/s och regn via Open-Meteo (utan API-nyckel)."
     },
     "salario": {
-      "description": "Räknar ut nettolön för Brasilien (CLT) och Italien (IRPEF/INPS) med utförlig redovisning och diagram."
+      "description": "Räknar ut nettolön för Brasilien (CLT), Italien (IRPEF/INPS) och Sverige (grundavdrag, jobbskatteavdrag och kommunalskatt) med utförlig redovisning."
     },
     "ventilacao": {
-      "description": "Räknar ut luftomsättning (ACH) och minsta area för naturlig ventilation enligt Boverkets byggregler."
+      "description": "Räknar ut kravet på uteluftsflöde — 0,35 l/s·m² och 4 l/s per person enligt BFS 2024:8, 3 kap. 5 § — samt värmeförlusten med graddagar och återvinningen per systemtyp."
     },
     "stat": {
       "html": "rader HTML",
@@ -1282,12 +1348,12 @@
       },
       "autonomia": {
         "title": "Dagars autonomi",
-        "desc": "Ställ in antal dagars autonomi för vatten och hus, så att tanken dimensioneras rätt"
+        "desc": "Ställ in antal dagars autonomi för vatten och hus i läget för fristående system, så att tanken dimensioneras rätt"
       },
       "battery": {
         "title": "Batterier AGM/litium",
         "desc": "Jämför blysyra och LiFePO₄ med kapacitet i <strong>kWh</strong>, livslängdstabeller och inställbara parametrar.",
-        "note": "I inställningarna kan du justera kWh/Ah, spänning, pris och vikt (reglage upp till 180 kg)."
+        "note": "Gäller läget för fristående system (Brasilien/Italien). I inställningarna kan du justera kWh/Ah, spänning, pris och vikt (reglage upp till 180 kg)."
       },
       "config": {
         "title": "Inställbar",
@@ -1342,8 +1408,8 @@
         "desc": "Dimensionerar tankens lämpliga volym för att täcka den valda användningen"
       },
       "economia-chuva": {
-        "title": "Månadsbesparing",
-        "desc": "Uppskattar besparingen på vattenräkningen utifrån tänkt användning (trädgård, toaletter, städning)"
+        "title": "Besparing per säsong",
+        "desc": "Uppskattar besparingen under den frostfria säsongen — årsnederbörd är inte samma sak som användbar uppsamling"
       },
       "lux": {
         "title": "Belysningsstyrka (lux)",
@@ -1391,11 +1457,11 @@
       },
       "ach": {
         "title": "ACH — luftomsättning",
-        "desc": "Räknar ut luftomsättningen per timme utifrån rummets mått, fönsterarea och antal personer"
+        "desc": "Räknar ut luftomsättningen per timme utifrån rummets mått, uteluftsflöde och antal personer"
       },
       "nbr15575": {
-        "title": "Boverkets byggregler",
-        "desc": "Kontrollerar uteluftsflödet och minsta ventilationsarea mot de svenska byggreglerna"
+        "title": "Boverkets regler (BFS 2024:8)",
+        "desc": "Prövar uteluftsflödet mot de svenska byggreglerna. BBR ersattes och övergångstiden gick ut 1 juli 2026."
       },
       "qualidade-ventilacao": {
         "title": "Ventilationens kvalitet",
@@ -1477,6 +1543,39 @@
       "expandCard": "Expandera avsnittet",
       "collapseCard": "Fäll ihop avsnittet",
       "contato": "Skicka e-post till nata@engnata.eu"
+    },
+    "adaptacao": {
+      "title": "Anpassning per land",
+      "intro": "Att byta språk byter inte bara texten. I sju appar ändrar Sverige själva beräkningsmetoden, för att frågan man ställer här är en annan. De apparna har egen skärm, egna inmatningar och egna resultat i svenskt läge.",
+      "salario": {
+        "title": "Nettolön — svensk skattemodell",
+        "desc": "Grundavdrag, jobbskatteavdrag och justerbar kommunalskatt. Det finns varken trettonde månadslön, FGTS eller slutlön av brasiliansk eller italiensk typ — de raderna döljs."
+      },
+      "mutuo": {
+        "title": "Lån — bolån",
+        "desc": "I Sverige väljer man ingen amorteringsform: kravet är en andel av skulden per år och bestäms av belåningsgraden. Bolånet finns som fjärde system på alla tre språken, med utveckling år för år och egen beräkningsredovisning."
+      },
+      "solar": {
+        "title": "Solel — nätansluten",
+        "desc": "Att dimensionera ett fristående system efter den svenska vintern skulle kräva ett orimligt batteribank. Svenskt läge räknar nätansluten produktion, med specifik produktion per region."
+      },
+      "ventilacao": {
+        "title": "Ventilation — krav på luftflöde",
+        "desc": "Den svenska regeln frågar inte om fönstret är stort nog: den kräver liter per sekund året om (0,35 l/s·m² och 4 l/s per person, BFS 2024:8). Skärmen räknar värmeförlust med graddagar och återvinning per systemtyp."
+      },
+      "arcondicionado": {
+        "title": "Luftvärmepump i stället för luftkonditionering",
+        "desc": "Apparaten man sätter upp här köps för att värma; att kyla på sommaren är en bieffekt. Besparingen kommer ur SCOP och täckningsgraden av årsvärmen, med ROT-avdrag på kostnaden."
+      },
+      "aquecimento": {
+        "title": "Solvärme — ett komplement",
+        "desc": "Från november till februari ger vilken kollektoryta som helst nästan ingenting. Det som sätter gränsen är sommarens överskott, inte vintern, och glykol i slutet system är ett måste."
+      },
+      "chuva": {
+        "title": "Regnvatten — begränsat av frosten",
+        "desc": "Gränsen är inte hur mycket det regnar, det är frosten: tunnan måste tömmas före den. Säsongen följer SMHI:s vegetationsperiod, så årsnederbörd är inte samma sak som användbar uppsamling."
+      },
+      "nota": "I övriga appar byter Sverige bara parametrar och referensregler — SS 436 40 00 för ledararea, SS-EN 12464-1 för belysning och SMHI:s data för klimat."
     }
   }
 }

@@ -293,3 +293,133 @@ export function calcularBolan({ valorImovel, entrada, taxaJurosAnual }) {
         skarptAmorteringskravRevogado: true
     };
 }
+
+/**
+ * Projeção ano a ano do bolån — base do gráfico da tela sueca.
+ *
+ * Modelo (e o que ele assume, explicitamente):
+ *  - A amortização exigida é um percentual do EMPRÉSTIMO ORIGINAL
+ *    (`ursprungligt lånebelopp`), não do saldo — é assim que a regra da
+ *    Finansinspektionen é escrita. Por isso o valor amortizado por ano é
+ *    constante dentro de cada faixa.
+ *  - A FAIXA (0 / 1 / 2 %) é fixada na contratação e só muda com uma nova
+ *    avaliação do imóvel (`omvärdering`), permitida no máximo a cada 5 anos.
+ *    Por isso os degraus do gráfico caem de 5 em 5 anos, não continuamente.
+ *  - O valor do imóvel é mantido constante. Valorização real deslocaria os
+ *    degraus para antes; é uma simplificação declarada na tela.
+ *  - Os juros de cada ano incidem sobre o saldo do INÍCIO do ano. É uma
+ *    aproximação anual (o banco cobra ao mês), e superestima levemente.
+ *
+ * Ponto que o gráfico ensina: abaixo de 50 % de belåningsgrad a amortização
+ * exigida vira ZERO e a dívida PARA de cair sozinha. Quem só cumpre o mínimo
+ * nunca quita um bolån — na Suécia isso é normal, não é uma falha do cálculo.
+ *
+ * @param {object} p
+ * @param {number} p.valorImovel
+ * @param {number} p.entrada
+ * @param {number} p.taxaJurosAnual        Em percentual (ex.: 4 = 4 %).
+ * @param {number} [p.anos]                Horizonte da projeção.
+ * @param {number} [p.omvarderingIntervalAnos]
+ * @param {number} [p.amortizacaoExtraAnual]  Amortização voluntária por ano, em SEK.
+ */
+export function projetarBolan({
+    valorImovel,
+    entrada,
+    taxaJurosAnual,
+    anos = 30,
+    omvarderingIntervalAnos = 5,
+    amortizacaoExtraAnual = 0
+}) {
+    const emprestimoOriginal = Math.max(0, valorImovel - entrada);
+    const linhas = [];
+
+    let saldo = emprestimoOriginal;
+    let taxaVigente = valorImovel > 0
+        ? calcularAmorteringskrav(saldo / valorImovel)
+        : 0;
+
+    let totalJuros = 0;
+    let totalRanteavdrag = 0;
+    let totalAmortizado = 0;
+    let anoAbaixoDe70 = null;
+    let anoAbaixoDe50 = null;
+    let anoQuitado = null;
+
+    for (let ano = 1; ano <= anos; ano++) {
+        const saldoInicial = saldo;
+        const belaningsgradInicial = valorImovel > 0 ? saldoInicial / valorImovel : 0;
+
+        // Omvärdering: a faixa é revista na contratação e a cada N anos.
+        const houveOmvardering = (ano - 1) % omvarderingIntervalAnos === 0;
+        if (houveOmvardering) {
+            taxaVigente = calcularAmorteringskrav(belaningsgradInicial);
+        }
+
+        const juros = saldoInicial * (taxaJurosAnual / 100);
+        const ranteavdrag = calcularRanteavdrag(juros, true);
+        const jurosLiquidos = juros - ranteavdrag;
+
+        const amortizacaoExigida = Math.min(
+            taxaVigente * emprestimoOriginal,
+            saldoInicial
+        );
+        const extra = Math.min(
+            Math.max(0, amortizacaoExtraAnual),
+            saldoInicial - amortizacaoExigida
+        );
+        const amortizacao = amortizacaoExigida + extra;
+
+        saldo = Math.max(0, saldoInicial - amortizacao);
+
+        totalJuros += juros;
+        totalRanteavdrag += ranteavdrag;
+        totalAmortizado += amortizacao;
+
+        const belaningsgradFinal = valorImovel > 0 ? saldo / valorImovel : 0;
+        if (anoAbaixoDe70 === null && belaningsgradFinal <= 0.7) anoAbaixoDe70 = ano;
+        if (anoAbaixoDe50 === null && belaningsgradFinal <= 0.5) anoAbaixoDe50 = ano;
+        if (anoQuitado === null && saldo === 0) anoQuitado = ano;
+
+        linhas.push({
+            ano,
+            saldoInicial,
+            belaningsgradInicial,
+            houveOmvardering,
+            taxaAmortizacao: taxaVigente,
+            amortizacaoExigida,
+            amortizacaoExtra: extra,
+            amortizacao,
+            juros,
+            ranteavdrag,
+            jurosLiquidos,
+            custoAnualLiquido: amortizacao + jurosLiquidos,
+            saldoFinal: saldo,
+            belaningsgradFinal
+        });
+
+        if (saldo === 0) break;
+    }
+
+    const ultima = linhas[linhas.length - 1];
+
+    return {
+        emprestimoOriginal,
+        linhas,
+        resumo: {
+            anos: linhas.length,
+            anoAbaixoDe70,
+            anoAbaixoDe50,
+            anoQuitado,
+            saldoFinal: ultima ? ultima.saldoFinal : emprestimoOriginal,
+            belaningsgradFinal: ultima ? ultima.belaningsgradFinal : 0,
+            totalJuros,
+            totalRanteavdrag,
+            totalJurosLiquidos: totalJuros - totalRanteavdrag,
+            totalAmortizado,
+            custoTotalLiquido: totalAmortizado + totalJuros - totalRanteavdrag,
+            // O mínimo legal nunca quita a dívida: a exigência some abaixo de
+            // 50 %. Sinalizado para a tela poder dizer isso em texto.
+            minimoNaoQuita: anoQuitado === null
+        }
+    };
+}

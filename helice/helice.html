@@ -115,9 +115,7 @@
                     <span data-i18n="tooltips.velocidade">A velocidade desejada é a velocidade máxima que você quer que o barco alcance, medida em nós, mph ou km/h. Este valor é usado para calcular o passo ideal da hélice. Velocidades maiores exigem hélices com passo maior, mas também requerem mais potência do motor.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderVelocidade" data-step="-1" data-i18n-aria="aria.decrease">−</button>
                     <input type="range" id="sliderVelocidade" min="5" max="60" step="1" value="40">
-                    <button type="button" class="arrow-btn" data-target="sliderVelocidade" data-step="1" data-i18n-aria="aria.increase">+</button>
                 </div>
             </div>
 
@@ -136,9 +134,7 @@
                     <span data-i18n="tooltips.reducao">A redução da rabeta é a relação entre a rotação do motor e a rotação da hélice. Por exemplo, uma redução de 2:1 significa que o motor gira 2 vezes para a hélice girar 1 vez. Isso aumenta o torque disponível na hélice, permitindo hélices maiores e mais eficientes. Valores típicos variam de 1:1 a 3:1.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderReducao" data-step="-0.1" data-i18n-aria="aria.decrease">−</button>
                     <input type="range" id="sliderReducao" min="1.00" max="3.50" step="0.01" value="2.32">
-                    <button type="button" class="arrow-btn" data-target="sliderReducao" data-step="0.1" data-i18n-aria="aria.increase">+</button>
                 </div>
             </div>
 
@@ -157,9 +153,7 @@
                     <span data-i18n="tooltips.rpm">O RPM máximo do motor é a rotação máxima que o motor pode atingir, medida em rotações por minuto (rpm). Este valor é usado para calcular o RPM efetivo na hélice (dividindo pela redução) e determinar o passo ideal. Valores típicos para motores de barcos de lazer variam de 1500 a 7000 rpm.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderRPM" data-step="-100" data-i18n-aria="aria.decrease">−</button>
                     <input type="range" id="sliderRPM" min="1500" max="7000" step="100" value="5800">
-                    <button type="button" class="arrow-btn" data-target="sliderRPM" data-step="100" data-i18n-aria="aria.increase">+</button>
                 </div>
             </div>
 
@@ -178,9 +172,7 @@
                     <span data-i18n="tooltips.slip">O slip (deslizamento) é a perda de eficiência entre a hélice e a água, expressa como percentual. Representa quanto a hélice "desliza" na água em vez de empurrá-la efetivamente. Barcos de lazer típicos têm 10-20% de slip. Quanto menor o slip, mais eficiente a hélice, mas também mais difícil de alcançar. O valor padrão de 15% é um bom equilíbrio para a maioria dos barcos.</span>
                 </div>
                 <div class="slider-com-botoes">
-                    <button type="button" class="arrow-btn" data-target="sliderSlip" data-step="-1" data-i18n-aria="aria.decrease">−</button>
                     <input type="range" id="sliderSlip" min="10" max="20" step="1" value="15">
-                    <button type="button" class="arrow-btn" data-target="sliderSlip" data-step="1" data-i18n-aria="aria.increase">+</button>
                 </div>
             </div>
         </section>

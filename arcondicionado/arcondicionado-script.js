@@ -157,7 +157,6 @@ class ArcondicionadoApp extends App {
     inicializarArcondicionado() {
         this.configurarEventos();
         this.configurarClasseEnergetica();
-        this.configurarBotoesIncremento();
         this.configurarInputsTexto();
         this.configurarInfoIcons();
         this.configurarMemorial();
@@ -232,31 +231,7 @@ class ArcondicionadoApp extends App {
 
         this.configurarEventosSE();
     }
-    
-    configurarBotoesIncremento() {
-        const botoes = document.querySelectorAll('.arrow-btn');
-        botoes.forEach(botao => {
-            const targetId = botao.getAttribute('data-target');
-            const step = parseFloat(botao.getAttribute('data-step'));
-            
-            // Mouse events
-            botao.addEventListener('mousedown', (e) => {
-                e.preventDefault();
-                this.iniciarIncremento(targetId, step);
-            });
-            botao.addEventListener('mouseup', () => this.pararIncremento());
-            botao.addEventListener('mouseleave', () => this.pararIncremento());
-            
-            // Touch events
-            botao.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                this.iniciarIncremento(targetId, step);
-            });
-            botao.addEventListener('touchend', () => this.pararIncremento());
-            botao.addEventListener('touchcancel', () => this.pararIncremento());
-        });
-    }
-    
+        
     iniciarIncremento(targetId, step) {
         if (this.estadoBotoes.estaSegurando) return;
         

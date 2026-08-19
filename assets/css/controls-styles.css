@@ -34,8 +34,6 @@
     --slider-thumb-border: 3px;
     
     /* Botões de seta */
-    --arrow-btn-size: 30px;
-    --arrow-btn-size-mobile: 44px;
     
     /* Input com setas - gap entre elementos */
     --input-arrows-gap: 8px;
@@ -202,8 +200,6 @@ input[type="number"] {
     box-shadow: 0 0 0 3px rgba(45, 159, 163, 0.1);
 }
 
-/* Botões de seta (já definidos em shared-styles.css, mas mantemos referência aqui) */
-/* Use a classe .arrow-btn do shared-styles.css */
 
 /* ============================================
    SLIDERS (Range Input)
@@ -461,15 +457,6 @@ input[type="range"]::-moz-range-thumb:active {
    ============================================ */
 
 @media (max-width: 768px) {
-    /* Aumentar tamanho dos botões de seta no mobile */
-    .arrow-btn {
-        width: var(--arrow-btn-size-mobile, 44px);
-        height: var(--arrow-btn-size-mobile, 44px);
-        font-size: 24px;
-        border-width: 2px;
-        touch-action: manipulation;
-    }
-    
     /* Aumentar tamanho dos inputs no mobile */
     .controle-item input,
     .input-with-arrows input {
@@ -517,8 +504,7 @@ input[type="range"]::-moz-range-thumb:active {
 
     .input-with-arrows,
     .slider-com-botoes {
-        display: grid;
-        grid-template-columns: minmax(44px, auto) minmax(0, 1fr) minmax(44px, auto);
+        display: flex;
         align-items: center;
         gap: 8px;
         width: 100%;
