@@ -1,0 +1,33 @@
+{
+  "name": "volvo_classic",
+  "description": "Volvo Penta classic abbreviations (legend: 'Cable Colors in Wiring Diagrams'). Colours as RGB.",
+  "tokens": {
+    "BL":  [0, 110, 210],
+    "BN":  [110, 60, 25],
+    "BR":  [110, 60, 25],
+    "DB":  [0, 0, 150],
+    "DBL": [0, 0, 150],
+    "DGN": [0, 110, 40],
+    "GN":  [0, 165, 60],
+    "GR":  [140, 140, 140],
+    "LBL": [120, 190, 235],
+    "LBN": [180, 135, 85],
+    "LGN": [150, 205, 90],
+    "OR":  [240, 130, 0],
+    "P":   [235, 120, 190],
+    "PU":  [140, 50, 175],
+    "R":   [225, 30, 30],
+    "SB":  [25, 25, 25],
+    "T":   [195, 155, 95],
+    "VO":  [150, 60, 205],
+    "W":   [255, 255, 255],
+    "Y":   [240, 210, 0]
+  },
+  "white_token": "W",
+  "all_white_token": "WH",
+  "distinctive": ["SB", "VO", "GR", "BL", "OR", "LBL", "DBL", "DGN", "LGN", "LBN", "PU", "DB", "BR"],
+  "excluded_from_evidence": ["R", "W", "Y", "P", "T"],
+  "shared": ["GN", "BN"],
+  "grammars": ["code_first", "gauge_first"],
+  "two_color_sep": "/"
+}

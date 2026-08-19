@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pintor-wiring"
+version = "3.0.0"
+description = "Conservative, review-first wiring-diagram colourizer"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.26",
+  "opencv-python-headless>=4.8",
+  "Pillow>=10",
+  "PyMuPDF>=1.24",
+  "scikit-image>=0.22",
+  "scipy>=1.11",
+]
+
+[project.optional-dependencies]
+learning = ["optuna>=4.0,<5"]
+ocr = ["rapidocr>=3.0"]
+web = [
+  "fastapi>=0.117,<1",
+  "python-multipart>=0.0.20,<1",
+  "uvicorn[standard]>=0.35,<1",
+]
+test = ["httpx2==2.12.0"]
+dev = []
+
+[project.scripts]
+pintor = "wirecolor.tools.paint_vector:main"
+pintor-review = "wirecolor.tools.qa_dashboard:main"
+pintor-train = "wirecolor.tools.cross_validate_learning:main"
+pintor-web = "wirecolor.web_service:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+wirecolor = ["conventions/*.json", "policies/*.json"]

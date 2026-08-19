@@ -1,0 +1,24 @@
+{
+  "name": "iec_two_letter",
+  "description": "IEC 60757-style English two-letter abbreviations (PCU/EMD-era sheets, e.g. pubs 6994, 2515, 2481). Colours as RGB.",
+  "tokens": {
+    "BK": [25, 25, 25],
+    "BN": [110, 60, 25],
+    "RD": [225, 30, 30],
+    "OG": [240, 130, 0],
+    "YE": [240, 210, 0],
+    "GN": [0, 165, 60],
+    "BU": [0, 110, 210],
+    "VT": [150, 60, 205],
+    "GY": [140, 140, 140],
+    "WH": [255, 255, 255],
+    "PK": [235, 120, 190]
+  },
+  "white_token": "WH",
+  "all_white_token": "WH",
+  "distinctive": ["BK", "BU", "GY", "WH", "YE", "RD", "OG", "VT", "PK"],
+  "excluded_from_evidence": [],
+  "shared": ["GN", "BN"],
+  "grammars": ["code_first", "gauge_first"],
+  "two_color_sep": "/"
+}

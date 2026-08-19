@@ -1,0 +1,21 @@
+# Local environments and Python caches
+.venv*/
+venv/
+.claude/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Private source drawings, manual markups, and generated review artefacts
+assets/
+library/
+markups/
+workspaces/
+original_wiring_diagram/
+
+# Local model/training scratch outside the standard workspace tree
+*.pdf
+*.sqlite
+*.sqlite3
+*.log

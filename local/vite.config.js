@@ -16,6 +16,16 @@ const IGNORAR = new Set([
     'public',
     'dalie',
     'template-app',
+    // Pintor keeps private manuals, review exports, generated dashboards, models, and diagnostic
+    // HTML below these directories. They must never become Vite HTML entry points or reach Pages.
+    'workspaces',
+    'library',
+    'markups',
+    'assets',
+    'original_wiring_diagram',
+    'legacy',
+    'tests',
+    'docs',
     // br12c é standalone (scripts clássicos próprios). Não passa pelo bundle:
     // é copiado verbatim para o dist pelo workflow de deploy.
     'br12c'

@@ -1,0 +1,56 @@
+services:
+  api:
+    build:
+      context: .
+    image: engnata/pintor-api:0.1.0
+    restart: unless-stopped
+    init: true
+    ports:
+      - '${PINTOR_BIND_IP:-127.0.0.1}:8765:8765'
+    environment:
+      PINTOR_HOST: 0.0.0.0
+      PINTOR_PORT: 8765
+      PINTOR_WEB_ROOT: /data
+      PINTOR_ALLOWED_ORIGINS: https://engnata.eu
+      PINTOR_COOKIE_SECURE: '1'
+      PINTOR_BETA_KEY_HASH: '${PINTOR_BETA_KEY_HASH:?set PINTOR_BETA_KEY_HASH}'
+      PINTOR_SESSION_SECRET: '${PINTOR_SESSION_SECRET:?set PINTOR_SESSION_SECRET}'
+      PINTOR_TRUST_PROXY_HEADERS: '1'
+      PINTOR_ACCESS_ATTEMPTS: '5'
+      PINTOR_ACCESS_WINDOW_SECONDS: '600'
+      PINTOR_JOB_RATE_LIMIT: '10'
+      PINTOR_JOB_RATE_WINDOW_SECONDS: '3600'
+      PINTOR_REQUEST_RATE_LIMIT: '300'
+      PINTOR_REQUEST_RATE_WINDOW_SECONDS: '60'
+      PINTOR_MAX_CONCURRENT_JOBS: '1'
+      PINTOR_MAX_STORAGE_MB: '8192'
+      PINTOR_RETENTION_HOURS: '24'
+      PINTOR_MAX_UPLOAD_MB: '25'
+      PINTOR_JOB_TIMEOUT_SECONDS: '180'
+      PINTOR_JOB_MEMORY_MB: '2300'
+      PINTOR_JOB_CPU_SECONDS: '150'
+      PINTOR_PAINT_DPI: '720'
+      PINTOR_PAINT_PIXEL_BUDGET: '60000000'
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,noexec,nosuid,nodev
+    volumes:
+      - pintor-data:/data
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 128
+    mem_limit: 3g
+    cpus: 2.0
+    networks:
+      - pintor-private
+
+volumes:
+  pintor-data:
+
+networks:
+  pintor-private:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br-pintor
