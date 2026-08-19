@@ -1,19 +1,17 @@
 /* ==========================================================================
    DOCK GLOBAL — idioma (bandeiras) + tema (sol/lua), só ícones
    ==========================================================================
-   Controle único e sempre visível, criado por src/components/dock-global.js.
-   Fica FIXO NO TOPO E CENTRALIZADO, e reserva espaço no topo do documento em
-   vez de pairar por cima do conteúdo (era um pill flutuante no canto direito).
-   Por isso `.engnata-dock-ativo body` ganha padding em TODAS as larguras: no
-   centro do topo o dock cairia exatamente sobre o <h1> da página.
-   z-index acima de 1400 (usado pelo .language-selector legado) para não ficar
-   atrás de cabeçalhos fixos. */
+   Controle único, criado por src/components/dock-global.js como PRIMEIRO
+   elemento do <body>.
+
+   Faz parte do FLUXO da página: fica no topo, centralizado, e rola junto com
+   o conteúdo — ao descer, sai da tela com o topo. Não é fixo nem flutuante,
+   então não paira sobre nada e não precisa de espaço reservado no body.
+   Como a posição no DOM é a posição na tela, o componente precisa inseri-lo
+   no início do body (anexado no fim, apareceria no rodapé). */
 .engnata-dock {
-    position: fixed;
-    top: calc(env(safe-area-inset-top, 0px) + 10px);
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 9000;
+    position: relative;
+    margin: 10px auto;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -140,19 +138,6 @@
     }
 }
 
-/* Reserva o espaço do dock no topo do documento. Antes só era necessário em
-   telas estreitas, porque o dock ficava no canto direito; centralizado, ele
-   cobriria o título em qualquer largura. A classe vem de dock-global.js, então
-   o espaço só é reservado quando o dock realmente existe. */
-.engnata-dock-ativo body {
-    padding-top: calc(env(safe-area-inset-top, 0px) + 62px);
-}
-
-/* No toque os botões vão a 44px e o dock fica ~8px mais alto — sem este
-   ajuste sobrava só uma fresta entre o dock e o <h1>. Mesma condição da
-   regra que aumenta os botões, para os dois nunca saírem de sincronia. */
-@media (hover: none) and (pointer: coarse) {
-    .engnata-dock-ativo body {
-        padding-top: calc(env(safe-area-inset-top, 0px) + 76px);
-    }
-}
+/* Sem reserva de espaço no topo: o dock está no fluxo e já ocupa a própria
+   altura. (Enquanto era fixo, `.engnata-dock-ativo body` precisava de
+   padding-top para o conteúdo não passar por baixo dele.) */

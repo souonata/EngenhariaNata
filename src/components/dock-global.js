@@ -115,10 +115,14 @@ export function inicializarDockGlobal() {
 
     dock.appendChild(grupoIdiomas);
     dock.appendChild(grupoTema);
-    document.body.appendChild(dock);
 
-    // Marca o documento para o CSS reservar espaço no topo em telas estreitas,
-    // onde o cabeçalho ocupa a largura toda e ficaria por baixo do dock.
+    // PRIMEIRO elemento do body, não o último: o dock faz parte do fluxo da
+    // página (não é mais fixo), então a posição no DOM é a posição na tela.
+    // Anexado no fim, ele apareceria no rodapé.
+    document.body.insertBefore(dock, document.body.firstChild);
+
+    // Marca o documento para o CSS: usada pelas regras do dock e por quem
+    // precise saber que ele existe nesta página.
     document.documentElement.classList.add('engnata-dock-ativo');
 
     ocultarSeletoresLegados(dock);
