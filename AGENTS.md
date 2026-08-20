@@ -192,9 +192,14 @@ _Última atualização: 2026-08-20_
   job, 25 MB/50 páginas, análise 75 Mpx, overlay 60 Mpx, retenção 24 h. O frontend continua
   `noindex`, fora do sitemap e visível apenas no easter egg; autenticação beta, owner isolation,
   rate limits, worker isolado, container non-root/read-only sem egress e firewall do tunnel
-  permanecem. A imagem Linux `0.2.0` passou `rapidocr check` no host e um smoke externo image-only
-  chegou a `ready` em 6,8 s, liberou PDF reabrível e apagou o job; folhas densas A1/A0 ainda exigem
-  benchmark de tempo/RSS antes de serem anunciadas como qualificadas. Detalhes em `pintor/HANDOFF.md`.
+  permanecem. A imagem Linux `0.2.1` limita cada chamada ONNX a 1600², mantém A0 em grayscale,
+  restringe pools nativos e libera/trimma o runtime OCR antes da topologia. A reprodução real que
+  falhava (`9362 × 6623`, A0 image-only, PDF de 44 páginas) chegou a `ready` no host protegido em
+  279,3 s: convenção Volvo `high`, 80 labels, 3.107 runs/464 pintados, V2/V7 e preservação aprovados,
+  PDF final reaberto com 44 páginas, acesso anônimo `401` e exclusão `204`. Durante OCR foram
+  observados ~826 MB RSS/~1,45 GB VSZ, caindo depois para ~533 MB/~1,06 GB; o container continua
+  limitado a 3 GB, 2 CPUs, um job e sem egress. Isso qualifica a reprodução de capacidade, não
+  universaliza precisão para fabricantes/layouts ainda sem corpus. Detalhes em `pintor/HANDOFF.md`.
 
 - **SITE TRILÍNGUE — SUECO (`sv-SE`) + DOCK GLOBAL (branch `feat/i18n-sueco`):** iniciativa em
   andamento; plano completo e fases na seção própria do `ROADMAP.md`. **Decisões travadas:** idioma
