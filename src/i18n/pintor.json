@@ -3,7 +3,6 @@
   "pt-BR": {
     "hero": {
       "beta": "Beta privado",
-      "scope": "PDF vetorial ou scan + códigos visíveis",
       "title": "Pintor",
       "subtitle": "Envie um wiring diagram. O Pintor identifica os condutores físicos, lê os códigos de cor impressos e adiciona uma camada de cor removível."
     },
@@ -19,21 +18,59 @@
       "rateLimited": "Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.",
       "unavailable": "A API protegida do Pintor não está disponível neste momento."
     },
-    "principles": {
-      "onlyWiresTitle": "Somente fios",
-      "onlyWiresText": "Símbolos, carcaças, terminais, molduras e textos permanecem intactos.",
-      "abstainTitle": "Na dúvida, fica preto",
-      "abstainText": "Geometria ambígua ou evidência conflitante nunca vira palpite.",
-      "sourceTitle": "Fonte preservada",
-      "sourceText": "A pintura é uma camada aditiva no PDF; o desenho original é verificado antes do download."
+    "account": {
+      "step": "Conta beta",
+      "title": "Entre ou crie uma conta",
+      "help": "Sua conta isola os trabalhos privados e permite reabri-los em outro dispositivo durante o período de retenção.",
+      "loginTitle": "Entrar",
+      "registerTitle": "Criar conta",
+      "username": "Usuário",
+      "password": "Senha",
+      "passwordHelp": "No mínimo 4 caracteres; nenhuma outra regra de composição.",
+      "login": "Entrar",
+      "register": "Criar conta",
+      "signedInAs": "Conectado como",
+      "reviewReports": "Revisar relatos",
+      "logout": "Sair",
+      "usernameRequired": "Informe um usuário com pelo menos um caractere.",
+      "passwordShort": "A senha precisa ter pelo menos 4 caracteres.",
+      "duplicate": "Esse usuário já existe.",
+      "invalid": "Usuário ou senha inválidos.",
+      "createFailed": "Não foi possível criar a conta.",
+      "rateLimited": "Muitas tentativas. Aguarde alguns minutos.",
+      "unavailable": "O serviço de contas não está disponível neste momento."
+    },
+    "admin": {
+      "step": "Revisão especializada",
+      "title": "Relatos do beta",
+      "back": "Voltar ao Pintor",
+      "help": "Compare a marcação com as prévias original e pintada e registre uma decisão especializada. Relatos aceitos continuam apenas candidatos para treino offline.",
+      "queue": "Fila de revisão",
+      "page": "Página relatada",
+      "previewAria": "Prévia do relato",
+      "decisionNote": "Nota do especialista (opcional)",
+      "accept": "Aceitar",
+      "reject": "Rejeitar",
+      "clarify": "Pedir esclarecimento",
+      "empty": "Nenhum relato aguarda revisão.",
+      "loadFailed": "Não foi possível carregar os relatos.",
+      "decisionFailed": "Não foi possível salvar a decisão.",
+      "decisionSaved": "Decisão especializada salva.",
+      "unnamedDocument": "Documento sem nome",
+      "unknownUser": "Usuário desconhecido",
+      "statusQueued": "Aguardando revisão",
+      "statusAccepted": "Aceito pelo especialista",
+      "statusRejected": "Rejeitado pelo especialista",
+      "statusClarification": "Precisa de esclarecimento"
     },
     "upload": {
       "step": "Etapa 1 · diagrama",
-      "title": "Escolha a página do PDF que será pintada",
-      "limit": "Até 25 MB · 50 páginas",
+      "title": "Escolha as páginas do PDF que serão pintadas",
+      "limit": "Até 25 MB · selecione até 50 páginas",
       "dropTitle": "Solte um wiring diagram aqui",
       "dropHint": "ou clique para escolher um PDF",
-      "pageLabel": "Número da página",
+      "pageLabel": "Páginas que serão pintadas",
+      "pageHelp": "Aceita uma página (12), uma lista (1, 5, 9, 95), um intervalo (12-50) ou uma combinação (1, 3-5, 9-11, 15). O manual pode ter até 2.000 páginas.",
       "conventionLabel": "Convenção dos códigos de cor",
       "conventionAuto": "Detectar automaticamente",
       "conventionIec": "IEC / códigos de duas letras",
@@ -60,6 +97,9 @@
     "review": {
       "step": "Etapa 3 · revisão",
       "title": "Inspecione o resultado pintado",
+      "pageLabel": "Página",
+      "pagePainted": "pintada",
+      "pageUnchanged": "preservada sem pintura",
       "painted": "Pintado",
       "original": "Original",
       "imageAlt": "Wiring diagram pintado pelo Pintor",
@@ -100,21 +140,17 @@
     },
     "declined": {
       "step": "Abstenção segura",
-      "title": "Esta página não foi pintada",
+      "title": "As páginas selecionadas não foram pintadas",
       "help": "O beta aceita páginas vetoriais e scans formados apenas por imagem. Quando não há texto extraível, os códigos visíveis são lidos por OCR. Se a detecção automática ficou incerta, escolha a convenção explicitamente.",
       "tryAgain": "Ajustar e tentar novamente",
       "genericReason": "A página não atingiu os critérios conservadores do beta.",
       "conventionAmbiguous": "A convenção dos códigos de cor ficou ambígua. A melhor candidata já foi selecionada; confirme e tente novamente.",
       "unsupported": "Nenhum fio pôde receber uma cor com segurança; a página original foi preservada."
     },
-    "boundary": {
-      "title": "O que “beta” significa aqui",
-      "text": "O Pintor é independente de fabricante na arquitetura. Esta versão aceita os perfis de código listados em páginas vetoriais e scans; convenções desconhecidas e trechos com topologia incerta permanecem pretos para revisão humana."
-    },
     "messages": {
       "choosePdf": "Escolha um arquivo PDF válido.",
       "fileTooLarge": "O PDF ultrapassa o limite beta de 25 MB.",
-      "invalidPage": "Informe uma página entre 1 e 50.",
+      "invalidPage": "Informe até 50 páginas usando números, vírgulas ou intervalos, por exemplo: 1, 3-5, 9-11, 15.",
       "uploadFailed": "Não foi possível criar o trabalho privado.",
       "serviceUnavailable": "O serviço beta do Pintor não está disponível neste momento.",
       "statusFailed": "Não foi possível consultar o andamento.",
@@ -126,7 +162,6 @@
       "jobDeleted": "Trabalho privado apagado."
     },
     "aria": {
-      "principles": "Princípios de segurança do Pintor",
       "viewerControls": "Controles do visualizador",
       "fit": "Ajustar o diagrama à tela",
       "errorTypes": "Tipos de erro",
@@ -138,37 +173,74 @@
   "it-IT": {
     "hero": {
       "beta": "Beta privata",
-      "scope": "PDF vettoriale o scansione + codici visibili",
-      "title": "Pintor",
-      "subtitle": "Carica uno schema elettrico. Pintor identifica i conduttori fisici, legge i codici colore stampati e aggiunge un livello colore rimovibile."
+      "title": "Pittore",
+      "subtitle": "Carica uno schema elettrico. Pittore identifica i conduttori fisici, legge i codici colore stampati e aggiunge un livello colore rimovibile."
     },
     "access": {
       "step": "Beta privata",
       "title": "Inserisci il codice di accesso beta",
-      "help": "Pintor appare tramite l'easter egg di Engenharia NATA, ma l'elaborazione è protetta anche al confine dell'API.",
+      "help": "Pittore appare tramite l'easter egg di Engenharia NATA, ma l'elaborazione è protetta anche al confine dell'API.",
       "label": "Codice di accesso beta",
-      "submit": "Sblocca Pintor",
+      "submit": "Sblocca Pittore",
       "unlocking": "Verifica…",
       "required": "Inserisci il codice di accesso beta.",
       "invalid": "Codice di accesso non valido.",
       "rateLimited": "Troppi tentativi. Attendi qualche minuto prima di riprovare.",
-      "unavailable": "L'API protetta di Pintor non è disponibile in questo momento."
+      "unavailable": "L'API protetta di Pittore non è disponibile in questo momento."
     },
-    "principles": {
-      "onlyWiresTitle": "Solo fili",
-      "onlyWiresText": "Simboli, alloggiamenti, terminali, cornici e testi restano intatti.",
-      "abstainTitle": "Nel dubbio resta nero",
-      "abstainText": "Geometria ambigua o evidenze in conflitto non diventano mai un'ipotesi.",
-      "sourceTitle": "Fonte preservata",
-      "sourceText": "La colorazione è un livello PDF aggiuntivo; il disegno originale viene verificato prima del download."
+    "account": {
+      "step": "Account beta",
+      "title": "Accedi o crea un account",
+      "help": "Il tuo account separa i lavori privati e permette di riaprirli su un altro dispositivo durante il periodo di conservazione.",
+      "loginTitle": "Accedi",
+      "registerTitle": "Crea account",
+      "username": "Nome utente",
+      "password": "Password",
+      "passwordHelp": "Almeno 4 caratteri; nessun altro requisito di composizione.",
+      "login": "Accedi",
+      "register": "Crea account",
+      "signedInAs": "Accesso come",
+      "reviewReports": "Revisiona segnalazioni",
+      "logout": "Esci",
+      "usernameRequired": "Inserisci un nome utente di almeno un carattere.",
+      "passwordShort": "La password deve contenere almeno 4 caratteri.",
+      "duplicate": "Questo nome utente esiste già.",
+      "invalid": "Nome utente o password non validi.",
+      "createFailed": "Impossibile creare l'account.",
+      "rateLimited": "Troppi tentativi. Attendi qualche minuto.",
+      "unavailable": "Il servizio account non è disponibile in questo momento."
+    },
+    "admin": {
+      "step": "Revisione esperta",
+      "title": "Segnalazioni beta",
+      "back": "Torna a Pittore",
+      "help": "Confronta la marcatura con le anteprime originale e colorata, quindi registra una decisione esperta. Le segnalazioni accettate restano soltanto candidate per l'addestramento offline.",
+      "queue": "Coda di revisione",
+      "page": "Pagina segnalata",
+      "previewAria": "Anteprima della segnalazione",
+      "decisionNote": "Nota dell'esperto (facoltativa)",
+      "accept": "Accetta",
+      "reject": "Rifiuta",
+      "clarify": "Richiedi chiarimenti",
+      "empty": "Nessuna segnalazione in attesa di revisione.",
+      "loadFailed": "Impossibile caricare le segnalazioni.",
+      "decisionFailed": "Impossibile salvare la decisione.",
+      "decisionSaved": "Decisione esperta salvata.",
+      "unnamedDocument": "Documento senza nome",
+      "unknownUser": "Utente sconosciuto",
+      "statusQueued": "In attesa di revisione",
+      "statusAccepted": "Accettata dall'esperto",
+      "statusRejected": "Rifiutata dall'esperto",
+      "statusClarification": "Richiede chiarimenti"
     },
     "upload": {
       "step": "Passo 1 · schema",
-      "title": "Scegli la pagina PDF da colorare",
-      "limit": "Fino a 25 MB · 50 pagine",
+      "title": "Scegli le pagine PDF da colorare",
+      "limit": "Fino a 25 MB · seleziona fino a 50 pagine",
       "dropTitle": "Trascina qui uno schema elettrico",
       "dropHint": "oppure fai clic per scegliere un PDF",
-      "pageLabel": "Numero di pagina",
+      "pageLabel": "Pagine da colorare",
+      "pageHelp": "Accetta una pagina (12), un elenco (1, 5, 9, 95), un intervallo (12-50) o una combinazione (1, 3-5, 9-11, 15). Il manuale può contenere fino a 2.000 pagine.",
       "conventionLabel": "Convenzione dei codici colore",
       "conventionAuto": "Rileva automaticamente",
       "conventionIec": "IEC / codici a due lettere",
@@ -195,9 +267,12 @@
     "review": {
       "step": "Passo 3 · revisione",
       "title": "Controlla il risultato colorato",
+      "pageLabel": "Pagina",
+      "pagePainted": "colorata",
+      "pageUnchanged": "conservata senza colore",
       "painted": "Colorato",
       "original": "Originale",
-      "imageAlt": "Schema elettrico colorato da Pintor",
+      "imageAlt": "Schema elettrico colorato da Pittore",
       "viewerHint": "Senza uno strumento di errore selezionato, trascina per spostare e usa la rotella per ingrandire."
     },
     "summary": {
@@ -215,7 +290,7 @@
       "help": "Scegli il tipo di errore e indica il filo esatto. Gli errori di continuità e resa grafica usano due punti.",
       "expectedCode": "Codice corretto stampato",
       "noteLabel": "Contesto aggiuntivo (facoltativo)",
-      "notePlaceholder": "Che cosa avrebbe dovuto capire Pintor?",
+      "notePlaceholder": "Che cosa avrebbe dovuto capire Pittore?",
       "requestRevision": "Richiedi la revisione di questo risultato da parte di un esperto",
       "submit": "Invia le marcature per la revisione",
       "submitting": "Invio delle marcature…",
@@ -235,23 +310,19 @@
     },
     "declined": {
       "step": "Astensione sicura",
-      "title": "Questa pagina non è stata colorata",
+      "title": "Le pagine selezionate non sono state colorate",
       "help": "La beta accetta pagine vettoriali e scansioni composte solo da immagini. Se non esiste testo estraibile, i codici visibili vengono letti tramite OCR. Se il rilevamento automatico è incerto, scegli esplicitamente la convenzione.",
       "tryAgain": "Modifica e riprova",
       "genericReason": "La pagina non ha soddisfatto i criteri conservativi della beta.",
       "conventionAmbiguous": "La convenzione dei codici colore è ambigua. La candidata migliore è già selezionata: confermala e riprova.",
       "unsupported": "Nessun filo ha potuto ricevere un colore in sicurezza; la pagina originale è stata preservata."
     },
-    "boundary": {
-      "title": "Che cosa significa “beta” qui",
-      "text": "Pintor è indipendente dal produttore nell'architettura. Questa versione accetta i profili di codice elencati su pagine vettoriali e scansioni; convenzioni sconosciute e tratti con topologia incerta restano neri per la revisione umana."
-    },
     "messages": {
       "choosePdf": "Scegli un file PDF valido.",
       "fileTooLarge": "Il PDF supera il limite beta di 25 MB.",
-      "invalidPage": "Indica una pagina tra 1 e 50.",
+      "invalidPage": "Indica fino a 50 pagine usando numeri, virgole o intervalli, ad esempio: 1, 3-5, 9-11, 15.",
       "uploadFailed": "Impossibile creare il lavoro privato.",
-      "serviceUnavailable": "Il servizio beta di Pintor non è disponibile in questo momento.",
+      "serviceUnavailable": "Il servizio beta di Pittore non è disponibile in questo momento.",
       "statusFailed": "Impossibile verificare l'avanzamento.",
       "processingFailed": "L'analisi è fallita in sicurezza; nessun PDF è stato rilasciato.",
       "expectedCodeRequired": "Inserisci il codice colore corretto prima di segnare il filo.",
@@ -261,49 +332,85 @@
       "jobDeleted": "Lavoro privato eliminato."
     },
     "aria": {
-      "principles": "Principi di sicurezza di Pintor",
       "viewerControls": "Controlli del visualizzatore",
       "fit": "Adatta lo schema allo schermo",
       "errorTypes": "Tipi di errore",
       "home": "Torna alla pagina iniziale",
       "removeAnnotation": "Rimuovi marcatura"
     },
-    "footer": "Pintor beta — Engenharia NATA @ 2026"
+    "footer": "Pittore beta — Engenharia NATA @ 2026"
   },
   "sv-SE": {
     "hero": {
       "beta": "Privat beta",
-      "scope": "Vektor-PDF eller skanning + synliga koder",
-      "title": "Pintor",
-      "subtitle": "Ladda upp ett kopplingsschema. Pintor identifierar fysiska ledare, läser tryckta färgkoder och lägger till ett borttagbart färglager."
+      "title": "Målaren",
+      "subtitle": "Ladda upp ett kopplingsschema. Målaren identifierar fysiska ledare, läser tryckta färgkoder och lägger till ett borttagbart färglager."
     },
     "access": {
       "step": "Privat beta",
       "title": "Ange betans åtkomstkod",
-      "help": "Pintor visas via Engenharia NATA:s påskägg, men bearbetningen skyddas också vid API-gränsen.",
+      "help": "Målaren visas via Engenharia NATA:s påskägg, men bearbetningen skyddas också vid API-gränsen.",
       "label": "Betans åtkomstkod",
-      "submit": "Lås upp Pintor",
+      "submit": "Lås upp Målaren",
       "unlocking": "Verifierar…",
       "required": "Ange betans åtkomstkod.",
       "invalid": "Ogiltig åtkomstkod.",
       "rateLimited": "För många försök. Vänta några minuter innan du försöker igen.",
-      "unavailable": "Pintors skyddade API är inte tillgängligt just nu."
+      "unavailable": "Målarens skyddade API är inte tillgängligt just nu."
     },
-    "principles": {
-      "onlyWiresTitle": "Endast ledningar",
-      "onlyWiresText": "Symboler, kapslingar, anslutningar, ramar och text lämnas orörda.",
-      "abstainTitle": "Vid tvivel förblir det svart",
-      "abstainText": "Tvetydig geometri eller motstridiga beläggningar blir aldrig en gissning.",
-      "sourceTitle": "Källan bevaras",
-      "sourceText": "Färgläggningen är ett extra PDF-lager; originalritningen verifieras före hämtning."
+    "account": {
+      "step": "Betakonto",
+      "title": "Logga in eller skapa ett konto",
+      "help": "Kontot håller privata jobb åtskilda och låter dig öppna dem på en annan enhet under lagringstiden.",
+      "loginTitle": "Logga in",
+      "registerTitle": "Skapa konto",
+      "username": "Användarnamn",
+      "password": "Lösenord",
+      "passwordHelp": "Minst 4 tecken; inga andra sammansättningskrav.",
+      "login": "Logga in",
+      "register": "Skapa konto",
+      "signedInAs": "Inloggad som",
+      "reviewReports": "Granska rapporter",
+      "logout": "Logga ut",
+      "usernameRequired": "Ange ett användarnamn med minst ett tecken.",
+      "passwordShort": "Lösenordet måste innehålla minst 4 tecken.",
+      "duplicate": "Användarnamnet finns redan.",
+      "invalid": "Ogiltigt användarnamn eller lösenord.",
+      "createFailed": "Kontot kunde inte skapas.",
+      "rateLimited": "För många försök. Vänta några minuter.",
+      "unavailable": "Kontotjänsten är inte tillgänglig just nu."
+    },
+    "admin": {
+      "step": "Expertgranskning",
+      "title": "Betarapporter",
+      "back": "Tillbaka till Målaren",
+      "help": "Jämför markeringen med originalet och det färglagda resultatet och registrera sedan ett expertbeslut. Godkända rapporter förblir endast kandidater för offline-träning.",
+      "queue": "Granskningskö",
+      "page": "Rapporterad sida",
+      "previewAria": "Förhandsvisning av rapport",
+      "decisionNote": "Expertanteckning (valfritt)",
+      "accept": "Godkänn",
+      "reject": "Avvisa",
+      "clarify": "Begär förtydligande",
+      "empty": "Inga rapporter väntar på granskning.",
+      "loadFailed": "Rapporterna kunde inte läsas in.",
+      "decisionFailed": "Beslutet kunde inte sparas.",
+      "decisionSaved": "Expertbeslutet har sparats.",
+      "unnamedDocument": "Namnlöst dokument",
+      "unknownUser": "Okänd användare",
+      "statusQueued": "Väntar på granskning",
+      "statusAccepted": "Godkänd av expert",
+      "statusRejected": "Avvisad av expert",
+      "statusClarification": "Behöver förtydligas"
     },
     "upload": {
       "step": "Steg 1 · schema",
-      "title": "Välj PDF-sidan som ska färgläggas",
-      "limit": "Upp till 25 MB · 50 sidor",
+      "title": "Välj PDF-sidorna som ska färgläggas",
+      "limit": "Upp till 25 MB · välj högst 50 sidor",
       "dropTitle": "Släpp ett kopplingsschema här",
       "dropHint": "eller klicka för att välja en PDF",
-      "pageLabel": "Sidnummer",
+      "pageLabel": "Sidor som ska färgläggas",
+      "pageHelp": "En sida (12), en lista (1, 5, 9, 95), ett intervall (12-50) eller en kombination (1, 3-5, 9-11, 15) godtas. Manualen får ha upp till 2 000 sidor.",
       "conventionLabel": "Konvention för färgkoder",
       "conventionAuto": "Identifiera automatiskt",
       "conventionIec": "IEC / tvåbokstavskoder",
@@ -330,9 +437,12 @@
     "review": {
       "step": "Steg 3 · granskning",
       "title": "Granska det färglagda resultatet",
+      "pageLabel": "Sida",
+      "pagePainted": "färglagd",
+      "pageUnchanged": "bevarad utan färg",
       "painted": "Färglagt",
       "original": "Original",
-      "imageAlt": "Kopplingsschema färglagt av Pintor",
+      "imageAlt": "Kopplingsschema färglagt av Målaren",
       "viewerHint": "När inget felverktyg är valt kan du dra för att flytta och använda hjulet för att zooma."
     },
     "summary": {
@@ -350,7 +460,7 @@
       "help": "Välj feltyp och markera exakt ledning. Kontinuitets- och renderingsfel använder två punkter.",
       "expectedCode": "Korrekt tryckt kod",
       "noteLabel": "Ytterligare sammanhang (valfritt)",
-      "notePlaceholder": "Vad borde Pintor ha förstått här?",
+      "notePlaceholder": "Vad borde Målaren ha förstått här?",
       "requestRevision": "Begär expertgranskning av resultatet",
       "submit": "Skicka markeringar för granskning",
       "submitting": "Skickar markeringar…",
@@ -370,23 +480,19 @@
     },
     "declined": {
       "step": "Säker avhållsamhet",
-      "title": "Den här sidan färglades inte",
+      "title": "De valda sidorna färglades inte",
       "help": "Betan tar emot vektorsidor och skanningar som endast består av bilder. När extraherbar text saknas läses synliga koder med OCR. Välj konvention uttryckligen om automatisk identifiering var osäker.",
       "tryAgain": "Justera och försök igen",
       "genericReason": "Sidan uppfyllde inte betans konservativa kriterier.",
       "conventionAmbiguous": "Färgkodskonventionen är tvetydig. Den bästa kandidaten är redan vald; bekräfta den och försök igen.",
       "unsupported": "Ingen ledning kunde färgsättas säkert; originalsidan bevarades."
     },
-    "boundary": {
-      "title": "Vad “beta” betyder här",
-      "text": "Pintor är tillverkaroberoende i arkitekturen. Den här versionen stöder de angivna kodprofilerna på vektorsidor och skanningar; okända konventioner och avsnitt med osäker topologi förblir svarta för mänsklig granskning."
-    },
     "messages": {
       "choosePdf": "Välj en giltig PDF-fil.",
       "fileTooLarge": "PDF-filen överskrider betagränsen på 25 MB.",
-      "invalidPage": "Ange en sida mellan 1 och 50.",
+      "invalidPage": "Ange högst 50 sidor med nummer, kommatecken eller intervall, till exempel 1, 3-5, 9-11, 15.",
       "uploadFailed": "Det privata jobbet kunde inte skapas.",
-      "serviceUnavailable": "Pintors betatjänst är inte tillgänglig just nu.",
+      "serviceUnavailable": "Målarens betatjänst är inte tillgänglig just nu.",
       "statusFailed": "Förloppet kunde inte hämtas.",
       "processingFailed": "Analysen misslyckades säkert; ingen PDF släpptes.",
       "expectedCodeRequired": "Ange rätt färgkod innan du markerar ledningen.",
@@ -396,13 +502,12 @@
       "jobDeleted": "Det privata jobbet har raderats."
     },
     "aria": {
-      "principles": "Pintors säkerhetsprinciper",
       "viewerControls": "Visningskontroller",
       "fit": "Anpassa schemat till skärmen",
       "errorTypes": "Feltyper",
       "home": "Tillbaka till startsidan",
       "removeAnnotation": "Ta bort markering"
     },
-    "footer": "Pintor beta — Engenharia NATA @ 2026"
+    "footer": "Målaren beta — Engenharia NATA @ 2026"
   }
 }

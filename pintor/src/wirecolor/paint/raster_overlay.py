@@ -444,9 +444,26 @@ def render_native(pdf_path: str, page_index: int, nw: int, nh: int) -> np.ndarra
     return img
 
 
-def attach_overlay(src_pdf: str, out_pdf: str, page_index: int, rgba: np.ndarray) -> dict:
-    """Copy the original PDF to out_pdf untouched, then append the overlay with INCREMENTAL
-    save: an OCG'd full-page image above the artwork. Returns stats for the validators."""
+def write_overlay_png(path: str, rgba: np.ndarray) -> int:
+    """Persist one sparse BGRA overlay without retaining its full canvas in memory."""
+    ok, png = cv2.imencode(".png", rgba)
+    if not ok:
+        raise RuntimeError("overlay PNG encode failed")
+    payload = png.tobytes()
+    with open(path, "wb") as handle:
+        handle.write(payload)
+    return len(payload)
+
+
+def attach_overlays(src_pdf: str, out_pdf: str, overlays) -> dict:
+    """Append several selected-page overlays under one removable OCG.
+
+    ``overlays`` is an iterable of ``(zero_based_page, PNG path or PNG bytes)``. The source is
+    copied once and each page is appended under the same OCG in a separate incremental revision.
+    This bounds peak memory to one decoded overlay while every unselected page remains part of the
+    exact source byte prefix.
+    """
+    import os
     import shutil
 
     import fitz
@@ -455,12 +472,24 @@ def attach_overlay(src_pdf: str, out_pdf: str, page_index: int, rgba: np.ndarray
     # a doubly-painted file passes every preservation check while stacking a second opaque overlay.
     # The staged colorized PDF lives beside the source, so feeding one back is a live footgun.
     probe = fitz.open(src_pdf)
-    existing = {(cfg.get("text") or "") for cfg in probe.layer_ui_configs()}
-    probe.close()
+    try:
+        existing = {(cfg.get("text") or "") for cfg in probe.layer_ui_configs()}
+        page_count = len(probe)
+    finally:
+        probe.close()
     if OCG_NAME in existing:
         raise SystemExit(
             f"refusing to paint {src_pdf}: it already carries a '{OCG_NAME}' layer "
             "(this looks like a colorized output, not an original)")
+
+    prepared = list(overlays)
+    if not prepared:
+        raise ValueError("at least one overlay is required")
+    page_indices = [int(item[0]) for item in prepared]
+    if len(page_indices) != len(set(page_indices)):
+        raise ValueError("duplicate overlay page")
+    if any(page_index < 0 or page_index >= page_count for page_index in page_indices):
+        raise ValueError("overlay page is outside the PDF")
 
     shutil.copyfile(src_pdf, out_pdf)
     src_size = None
@@ -468,26 +497,61 @@ def attach_overlay(src_pdf: str, out_pdf: str, page_index: int, rgba: np.ndarray
         f.seek(0, 2)
         src_size = f.tell()
 
-    ok, png = cv2.imencode(".png", rgba)   # BGRA png; PyMuPDF embeds alpha as SMask
-    if not ok:
-        raise RuntimeError("overlay PNG encode failed")
-    png_bytes = png.tobytes()
+    overlay_bytes = 0
+    try:
+        for position, (page_index, payload) in enumerate(prepared):
+            doc = fitz.open(out_pdf)
+            try:
+                if position == 0:
+                    ocg = doc.add_ocg(OCG_NAME, on=True)
+                else:
+                    matching_ocgs = [
+                        xref for xref, config in doc.get_ocgs().items()
+                        if config.get("name") == OCG_NAME
+                    ]
+                    if len(matching_ocgs) != 1:
+                        raise RuntimeError("Pintor OCG was not preserved between overlays")
+                    ocg = matching_ocgs[0]
 
-    doc = fitz.open(out_pdf)
-    ocg = doc.add_ocg(OCG_NAME, on=True)
-    page = doc[page_index]
-    # insert in DISPLAY space: build the overlay in the same orientation as the working render
-    # (get_pixmap applies page rotation), so a rotated page needs the compensating rotate.
-    page.insert_image(page.rect, stream=png_bytes, oc=ocg,
-                      rotate=(360 - page.rotation) % 360, overlay=True)
-    # deflate: insert_image stores the decoded samples UNCOMPRESSED (an A0 overlay would append
-    # ~557 MB raw); the zeroed-outside-mask colour plane and sparse alpha flate down to a few MB.
-    doc.save(out_pdf, incremental=True, encryption=fitz.PDF_ENCRYPT_KEEP, deflate=True)
-    doc.close()
+                page_index = int(page_index)
+                png_bytes = payload if isinstance(payload, bytes) else None
+                if png_bytes is None:
+                    with open(payload, "rb") as handle:
+                        png_bytes = handle.read()
+                if not png_bytes.startswith(b"\x89PNG\r\n\x1a\n"):
+                    raise ValueError("overlay is not a PNG")
+                overlay_bytes += len(png_bytes)
+                page = doc[page_index]
+                # Insert in DISPLAY space: the working render already applies page rotation.
+                page.insert_image(
+                    page.rect, stream=png_bytes, oc=ocg,
+                    rotate=(360 - page.rotation) % 360, overlay=True,
+                )
+                # Saving each overlay separately prevents long selections from retaining every
+                # decoded image/alpha plane until the last page.
+                doc.save(
+                    out_pdf, incremental=True, encryption=fitz.PDF_ENCRYPT_KEEP, deflate=True,
+                )
+            finally:
+                doc.close()
+    except Exception:
+        try:
+            os.remove(out_pdf)
+        except OSError:
+            pass
+        raise
 
     out_size = None
     with open(out_pdf, "rb") as f:
         f.seek(0, 2)
         out_size = f.tell()
     return dict(src_bytes=src_size, out_bytes=out_size,
-                overlay_png_bytes=len(png_bytes), ocg=OCG_NAME)
+                overlay_png_bytes=overlay_bytes, overlays=len(prepared), ocg=OCG_NAME)
+
+
+def attach_overlay(src_pdf: str, out_pdf: str, page_index: int, rgba: np.ndarray) -> dict:
+    """Backward-compatible one-page wrapper around :func:`attach_overlays`."""
+    ok, png = cv2.imencode(".png", rgba)   # BGRA PNG; PyMuPDF embeds alpha as SMask
+    if not ok:
+        raise RuntimeError("overlay PNG encode failed")
+    return attach_overlays(src_pdf, out_pdf, [(page_index, png.tobytes())])

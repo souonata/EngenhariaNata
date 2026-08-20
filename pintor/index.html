@@ -11,7 +11,7 @@
         <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
         <link rel="apple-touch-icon" href="../favicon.svg" />
 
-        <title>Pintor beta — Engenharia NATA</title>
+        <title>Painter beta — Engenharia NATA</title>
         <meta
             name="description"
             content="Private beta for conservative colourization and review of vector or scanned wiring-diagram PDFs."
@@ -24,7 +24,7 @@
         <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.4.0" />
         <link rel="stylesheet" href="../assets/css/dock-global.css?v=1.2.0" />
         <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0" />
-        <link rel="stylesheet" href="pintor-styles.css?v=0.1.0" />
+        <link rel="stylesheet" href="pintor-styles.css?v=0.4.1" />
 
         <script
             data-goatcounter="https://souonata.goatcounter.com/count"
@@ -44,52 +44,14 @@
                 <div class="hero-copy">
                     <div class="eyebrow-row">
                         <span class="beta-badge" data-i18n="hero.beta">Private beta</span>
-                        <span class="scope-badge" data-i18n="hero.scope"
-                            >Vector or scanned PDF + visible colour codes</span
-                        >
                     </div>
-                    <h1 data-i18n="hero.title">Pintor</h1>
+                    <h1 data-i18n="hero.title">Painter</h1>
                     <p data-i18n="hero.subtitle">
-                        Upload a wiring diagram. Pintor identifies physical conductors, reads the
+                        Upload a wiring diagram. Painter identifies physical conductors, reads the
                         printed colour codes and adds a removable colour layer.
                     </p>
                 </div>
             </header>
-
-            <section
-                class="principles-strip"
-                aria-label="Safety principles"
-                data-i18n-aria="aria.principles"
-            >
-                <article>
-                    <span class="principle-index">01</span>
-                    <div>
-                        <strong data-i18n="principles.onlyWiresTitle">Only wires</strong>
-                        <p data-i18n="principles.onlyWiresText">
-                            Symbols, housings, terminals, frames and text stay untouched.
-                        </p>
-                    </div>
-                </article>
-                <article>
-                    <span class="principle-index">02</span>
-                    <div>
-                        <strong data-i18n="principles.abstainTitle">Doubt stays black</strong>
-                        <p data-i18n="principles.abstainText">
-                            Ambiguous geometry or conflicting evidence is never guessed.
-                        </p>
-                    </div>
-                </article>
-                <article>
-                    <span class="principle-index">03</span>
-                    <div>
-                        <strong data-i18n="principles.sourceTitle">Source preserved</strong>
-                        <p data-i18n="principles.sourceText">
-                            Painting is an additive PDF layer; the original drawing is verified
-                            before download.
-                        </p>
-                    </div>
-                </article>
-            </section>
 
             <section id="accessPanel" class="panel access-panel" hidden>
                 <div class="panel-heading">
@@ -123,19 +85,131 @@
                         hidden
                     ></div>
                     <button id="accessButton" class="primary-button" type="submit">
-                        <span data-i18n="access.submit">Unlock Pintor</span>
+                        <span data-i18n="access.submit">Unlock Painter</span>
                         <span aria-hidden="true">→</span>
                     </button>
                 </form>
+            </section>
+
+            <section id="accountPanel" class="panel account-panel" hidden>
+                <div class="panel-heading">
+                    <div>
+                        <span class="step-label" data-i18n="account.step">Beta account</span>
+                        <h2 data-i18n="account.title">Sign in or create an account</h2>
+                    </div>
+                    <span class="access-lock" aria-hidden="true">USER</span>
+                </div>
+                <p class="access-copy" data-i18n="account.help">
+                    Your account keeps private jobs isolated and lets you reopen them on another
+                    device during their retention period.
+                </p>
+                <div class="account-forms">
+                    <form id="loginForm" class="access-form account-form">
+                        <h3 data-i18n="account.loginTitle">Sign in</h3>
+                        <label class="field-group" for="loginUsername">
+                            <span data-i18n="account.username">Username</span>
+                            <input
+                                id="loginUsername"
+                                type="text"
+                                minlength="1"
+                                maxlength="64"
+                                autocomplete="username"
+                                required
+                            />
+                        </label>
+                        <label class="field-group" for="loginPassword">
+                            <span data-i18n="account.password">Password</span>
+                            <input
+                                id="loginPassword"
+                                type="password"
+                                minlength="4"
+                                maxlength="128"
+                                autocomplete="current-password"
+                                required
+                            />
+                        </label>
+                        <button id="loginButton" class="primary-button" type="submit">
+                            <span data-i18n="account.login">Sign in</span>
+                            <span aria-hidden="true">→</span>
+                        </button>
+                    </form>
+                    <form id="registerForm" class="access-form account-form">
+                        <h3 data-i18n="account.registerTitle">Create account</h3>
+                        <label class="field-group" for="registerUsername">
+                            <span data-i18n="account.username">Username</span>
+                            <input
+                                id="registerUsername"
+                                type="text"
+                                minlength="1"
+                                maxlength="64"
+                                autocomplete="username"
+                                required
+                            />
+                        </label>
+                        <label class="field-group" for="registerPassword">
+                            <span data-i18n="account.password">Password</span>
+                            <input
+                                id="registerPassword"
+                                type="password"
+                                minlength="4"
+                                maxlength="128"
+                                autocomplete="new-password"
+                                aria-describedby="passwordHelp"
+                                required
+                            />
+                            <small id="passwordHelp" data-i18n="account.passwordHelp"
+                                >At least 4 characters; no other composition rule.</small
+                            >
+                        </label>
+                        <button id="registerButton" class="secondary-button" type="submit">
+                            <span data-i18n="account.register">Create account</span>
+                        </button>
+                    </form>
+                </div>
+                <div
+                    id="accountStatus"
+                    class="inline-status"
+                    role="status"
+                    aria-live="polite"
+                    hidden
+                ></div>
+            </section>
+
+            <section id="accountBar" class="account-bar" hidden aria-live="polite">
+                <span
+                    ><span data-i18n="account.signedInAs">Signed in as</span>
+                    <strong id="accountName">—</strong></span
+                >
+                <div class="account-actions">
+                    <button
+                        id="openAdmin"
+                        class="secondary-button compact-button"
+                        type="button"
+                        data-i18n="account.reviewReports"
+                        hidden
+                    >
+                        Review reports
+                    </button>
+                    <button
+                        id="logoutButton"
+                        class="text-button"
+                        type="button"
+                        data-i18n="account.logout"
+                    >
+                        Sign out
+                    </button>
+                </div>
             </section>
 
             <section id="uploadPanel" class="panel upload-panel" hidden>
                 <div class="panel-heading">
                     <div>
                         <span class="step-label" data-i18n="upload.step">Step 1 · diagram</span>
-                        <h2 data-i18n="upload.title">Choose a PDF page to paint</h2>
+                        <h2 data-i18n="upload.title">Choose the PDF pages to paint</h2>
                     </div>
-                    <span class="limit-note" data-i18n="upload.limit">Up to 25 MB · 50 pages</span>
+                    <span class="limit-note" data-i18n="upload.limit"
+                        >Up to 25 MB · select up to 50 pages</span
+                    >
                 </div>
 
                 <form id="uploadForm" novalidate>
@@ -157,17 +231,21 @@
                     </label>
 
                     <div class="upload-options">
-                        <label class="field-group" for="pageNumber">
-                            <span data-i18n="upload.pageLabel">Page number</span>
+                        <label class="field-group" for="pageNumbers">
+                            <span data-i18n="upload.pageLabel">Pages to paint</span>
                             <input
-                                id="pageNumber"
-                                name="page"
-                                type="number"
-                                min="1"
-                                max="50"
+                                id="pageNumbers"
+                                name="pages"
+                                type="text"
                                 value="1"
-                                inputmode="numeric"
+                                placeholder="40, 42, 44, 46"
+                                autocomplete="off"
+                                spellcheck="false"
+                                aria-describedby="pageNumbersHelp"
                             />
+                            <small id="pageNumbersHelp" data-i18n="upload.pageHelp"
+                                >Use one page, a list, a range, or a mix: 1, 3-5, 9-11, 15.</small
+                            >
                         </label>
                         <label class="field-group convention-field" for="convention">
                             <span data-i18n="upload.conventionLabel">Colour-code convention</span>
@@ -236,54 +314,60 @@
                                 Inspect the painted result
                             </h2>
                         </div>
-                        <div
-                            class="toolbar-actions"
-                            role="group"
-                            data-i18n-aria="aria.viewerControls"
-                        >
-                            <button
-                                id="showPainted"
-                                class="tool-button active"
-                                type="button"
-                                aria-pressed="true"
-                                data-i18n="review.painted"
+                        <div class="review-controls">
+                            <label class="review-page-picker" for="reviewPage">
+                                <span data-i18n="review.pageLabel">Page</span>
+                                <select id="reviewPage"></select>
+                            </label>
+                            <div
+                                class="toolbar-actions"
+                                role="group"
+                                data-i18n-aria="aria.viewerControls"
                             >
-                                Painted
-                            </button>
-                            <button
-                                id="showOriginal"
-                                class="tool-button"
-                                type="button"
-                                aria-pressed="false"
-                                data-i18n="review.original"
-                            >
-                                Original
-                            </button>
-                            <button
-                                id="zoomOut"
-                                class="icon-button"
-                                type="button"
-                                aria-label="Zoom out"
-                            >
-                                −
-                            </button>
-                            <button
-                                id="zoomFit"
-                                class="icon-button"
-                                type="button"
-                                aria-label="Fit diagram"
-                                data-i18n-aria="aria.fit"
-                            >
-                                ⌗
-                            </button>
-                            <button
-                                id="zoomIn"
-                                class="icon-button"
-                                type="button"
-                                aria-label="Zoom in"
-                            >
-                                +
-                            </button>
+                                <button
+                                    id="showPainted"
+                                    class="tool-button active"
+                                    type="button"
+                                    aria-pressed="true"
+                                    data-i18n="review.painted"
+                                >
+                                    Painted
+                                </button>
+                                <button
+                                    id="showOriginal"
+                                    class="tool-button"
+                                    type="button"
+                                    aria-pressed="false"
+                                    data-i18n="review.original"
+                                >
+                                    Original
+                                </button>
+                                <button
+                                    id="zoomOut"
+                                    class="icon-button"
+                                    type="button"
+                                    aria-label="Zoom out"
+                                >
+                                    −
+                                </button>
+                                <button
+                                    id="zoomFit"
+                                    class="icon-button"
+                                    type="button"
+                                    aria-label="Fit diagram"
+                                    data-i18n-aria="aria.fit"
+                                >
+                                    ⌗
+                                </button>
+                                <button
+                                    id="zoomIn"
+                                    class="icon-button"
+                                    type="button"
+                                    aria-label="Zoom in"
+                                >
+                                    +
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -421,7 +505,7 @@
                                 rows="3"
                                 maxlength="2000"
                                 data-i18n="feedback.notePlaceholder"
-                                placeholder="What should Pintor have understood here?"
+                                placeholder="What should Painter have understood here?"
                             ></textarea>
                         </label>
                         <label class="revision-row" for="requestRevision">
@@ -476,18 +560,115 @@
                 </div>
             </section>
 
-            <section class="beta-boundary">
-                <strong data-i18n="boundary.title">What “beta” means here</strong>
-                <p data-i18n="boundary.text">
-                    Pintor is manufacturer-independent by architecture. This release supports the
-                    listed code profiles on vector pages and image-only scans; unknown conventions
-                    and uncertain conductor ownership remain black for human review.
+            <section id="adminPanel" class="panel admin-panel" hidden>
+                <div class="panel-heading">
+                    <div>
+                        <span class="step-label" data-i18n="admin.step">Expert review</span>
+                        <h2 data-i18n="admin.title">Beta reports</h2>
+                    </div>
+                    <button
+                        id="closeAdmin"
+                        class="secondary-button compact-button"
+                        type="button"
+                        data-i18n="admin.back"
+                    >
+                        Back to Painter
+                    </button>
+                </div>
+                <p class="access-copy" data-i18n="admin.help">
+                    Inspect the marked location against the original and painted previews, then
+                    record an expert decision. Accepted reports remain offline-training candidates.
                 </p>
+                <div
+                    id="adminStatus"
+                    class="inline-status"
+                    role="status"
+                    aria-live="polite"
+                    hidden
+                ></div>
+                <div class="admin-layout">
+                    <aside class="admin-queue" aria-labelledby="adminQueueTitle">
+                        <div class="admin-queue-heading">
+                            <h3 id="adminQueueTitle" data-i18n="admin.queue">Review queue</h3>
+                            <span id="adminQueueCount" class="annotation-count">0</span>
+                        </div>
+                        <div id="adminFeedbackList" class="admin-feedback-list"></div>
+                    </aside>
+                    <article id="adminDetail" class="admin-detail" hidden>
+                        <div class="admin-meta">
+                            <strong id="adminReporter">—</strong>
+                            <span id="adminCreated">—</span>
+                            <span id="adminFeedbackStatus" class="status-pill">—</span>
+                        </div>
+                        <label class="field-group admin-page-field" for="adminPage">
+                            <span data-i18n="admin.page">Reported page</span>
+                            <select id="adminPage"></select>
+                        </label>
+                        <div
+                            class="admin-preview-tabs"
+                            role="group"
+                            data-i18n-aria="admin.previewAria"
+                        >
+                            <button
+                                id="adminShowPainted"
+                                class="viewer-tab is-active"
+                                type="button"
+                                data-i18n="review.painted"
+                            >
+                                Painted
+                            </button>
+                            <button
+                                id="adminShowOriginal"
+                                class="viewer-tab"
+                                type="button"
+                                data-i18n="review.original"
+                            >
+                                Original
+                            </button>
+                        </div>
+                        <div class="admin-preview-stage">
+                            <img id="adminPreview" alt="" />
+                            <div id="adminAnnotationLayer" class="admin-annotation-layer"></div>
+                        </div>
+                        <div id="adminAnnotations" class="admin-annotations"></div>
+                        <p id="adminNote" class="admin-user-note"></p>
+                        <label class="field-group" for="adminDecisionNote">
+                            <span data-i18n="admin.decisionNote">Expert note (optional)</span>
+                            <textarea id="adminDecisionNote" maxlength="2000"></textarea>
+                        </label>
+                        <div class="admin-decisions">
+                            <button
+                                type="button"
+                                data-decision="accepted"
+                                class="decision-accept"
+                                data-i18n="admin.accept"
+                            >
+                                Accept
+                            </button>
+                            <button
+                                type="button"
+                                data-decision="rejected"
+                                class="decision-reject"
+                                data-i18n="admin.reject"
+                            >
+                                Reject
+                            </button>
+                            <button
+                                type="button"
+                                data-decision="needs-clarification"
+                                class="decision-clarify"
+                                data-i18n="admin.clarify"
+                            >
+                                Needs clarification
+                            </button>
+                        </div>
+                    </article>
+                </div>
             </section>
         </main>
 
         <footer>
-            <p data-i18n="footer">Pintor beta — Engenharia NATA @ 2026</p>
+            <p data-i18n="footer">Painter beta — Engenharia NATA @ 2026</p>
         </footer>
 
         <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria.home">
@@ -501,6 +682,6 @@
             </svg>
         </a>
 
-        <script type="module" src="pintor-script.js?v=0.2.2"></script>
+        <script type="module" src="pintor-script.js?v=0.4.1"></script>
     </body>
 </html>

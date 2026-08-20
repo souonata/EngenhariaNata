@@ -120,13 +120,15 @@ def _canvas_size(meta: dict, pixel_budget: int) -> tuple[int, int]:
 
 
 def paint_page(pdf_path: str, page_index: int, out_dir: str, convention_name: str = "auto",
-               paint_pixel_budget: int = 60_000_000) -> dict:
+               paint_pixel_budget: int = 60_000_000, overlay_path: str | None = None) -> dict:
     """Analyse, paint, and verify one raster or image-only page."""
     import cv2
 
     from ..instrument import reset_for_tests
     from ..labels.conventions import load_convention
-    from ..paint.raster_overlay import attach_overlay, build_overlay_rgba, render_native
+    from ..paint.raster_overlay import (
+        attach_overlay, build_overlay_rgba, render_native, write_overlay_png,
+    )
     from ..pipeline import run_page
     from ..prep import Transform, render_working_png
     from ..profile import measure_sheet_profile
@@ -206,8 +208,13 @@ def paint_page(pdf_path: str, page_index: int, out_dir: str, convention_name: st
 
     v2 = v2_protected_overlap(rgba, solution, transform)
     out_pdf = os.path.join(out_dir, f"{tag}_colored.pdf")
-    stats = attach_overlay(pdf_path, out_pdf, page_index, rgba)
-    v7 = v7_preservation(pdf_path, out_pdf, page_index, stats["ocg"])
+    if overlay_path:
+        write_overlay_png(overlay_path, rgba)
+        v7 = None
+        out_pdf = None
+    else:
+        stats = attach_overlay(pdf_path, out_pdf, page_index, rgba)
+        v7 = v7_preservation(pdf_path, out_pdf, page_index, stats["ocg"])
     coverage = profile["coverage"]
     codes = sorted({
         "/".join(claim[1])
@@ -233,6 +240,7 @@ def paint_page(pdf_path: str, page_index: int, out_dir: str, convention_name: st
         "v2": v2,
         "v7": v7,
         "out_pdf": out_pdf,
+        "overlay_png": overlay_path,
         "seconds": round(time.time() - started, 1),
     }
     with open(os.path.join(out_dir, f"{tag}_report.json"), "w", encoding="utf-8") as handle:

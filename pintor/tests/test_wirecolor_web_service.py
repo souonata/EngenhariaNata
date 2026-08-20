@@ -13,12 +13,15 @@ sys.path.insert(0, str(ROOT / "src"))
 from wirecolor.web_service import (
     InvalidUpload,
     JobStore,
+    MAX_SELECTED_PAGES,
     _owner_hash,
     create_app,
     inspect_pdf_source,
+    parse_page_selection,
     process_job,
     process_job_isolated,
 )
+from wirecolor.accounts import hash_password
 
 
 def _pdf_bytes(pages=1):
@@ -37,9 +40,22 @@ def _pdf_bytes(pages=1):
 def _ready_processor(store, job_id):
     state = store.read(job_id)
     source = store.job_dir(job_id) / "source.pdf"
-    store.update(job_id, **inspect_pdf_source(source, state["page"]), status="ready",
+    store.update(job_id, **inspect_pdf_source(source, state["selected_pages"]), status="ready",
                  stage="review", convention="iec_two_letter",
                  convention_confidence="user-selected", metrics={"paint_rate": 0.5})
+
+
+def _write_overlay(path, width=300, height=200):
+    import cv2
+    import numpy as np
+
+    rgba = np.zeros((height, width, 4), dtype=np.uint8)
+    cv2.line(rgba, (20, height // 2), (width - 20, height // 2), (0, 0, 255, 255), 3)
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    self_ok = cv2.imwrite(str(path), rgba)
+    if not self_ok:
+        raise RuntimeError("test overlay encode failed")
 
 
 class WebServiceTests(unittest.TestCase):
@@ -95,6 +111,9 @@ class WebServiceTests(unittest.TestCase):
         payload = response.json()
         self.assertEqual(payload["input"], "pdf-vector-or-raster-with-visible-colour-codes")
         self.assertEqual(payload["page_modes"], ["vector-text", "raster-ocr"])
+        self.assertEqual(payload["scope"], "selected-pages-in-one-preserved-document")
+        self.assertEqual(payload["max_selected_pages"], MAX_SELECTED_PAGES)
+        self.assertGreater(payload["max_document_pages"], 50)
         self.assertFalse(payload["automatic_training"])
         self.assertNotIn(str(Path(self.temp.name)), response.text)
 
@@ -156,6 +175,174 @@ class WebServiceTests(unittest.TestCase):
             finally:
                 client.close()
 
+    def test_accounts_require_beta_access_and_password_has_four_character_minimum(self):
+        code = "beta-account-code"
+        key_hash = __import__("hashlib").sha256(code.encode("utf-8")).hexdigest()
+        with patch.dict(os.environ, {
+            "PINTOR_BETA_KEY_HASH": key_hash,
+            "PINTOR_SESSION_SECRET": "a" * 48,
+            "PINTOR_COOKIE_SECURE": "0",
+            "PINTOR_ACCOUNTS_REQUIRED": "1",
+        }):
+            app = create_app(Path(self.temp.name) / "account-gate", processor=_ready_processor)
+            client = self.TestClient(app, base_url="http://testserver")
+            try:
+                self.assertEqual(client.post("/api/accounts/register", json={
+                    "username": "tester", "password": "1234",
+                }).status_code, 401)
+                self.assertEqual(client.post("/api/access", json={"code": code}).status_code, 200)
+                too_short = client.post("/api/accounts/register", json={
+                    "username": "tester", "password": "123",
+                })
+                self.assertEqual(too_short.status_code, 422)
+                created = client.post("/api/accounts/register", json={
+                    "username": "tester", "password": "1234",
+                })
+                self.assertEqual(created.status_code, 201)
+                self.assertIn("HttpOnly", created.headers["set-cookie"])
+                self.assertEqual(created.json()["account"]["role"], "user")
+                self.assertEqual(client.get("/api/account").status_code, 200)
+                self.assertEqual(client.get("/api/account/jobs").json()["jobs"], [])
+                self.assertEqual(client.post("/api/accounts/logout").status_code, 204)
+                self.assertEqual(client.get("/api/account").status_code, 401)
+                login = client.post("/api/accounts/login", json={
+                    "username": "TESTER", "password": "1234",
+                })
+                self.assertEqual(login.status_code, 200)
+            finally:
+                client.close()
+
+    def test_account_username_is_unique_and_login_errors_are_generic(self):
+        with patch.dict(os.environ, {
+            "PINTOR_SESSION_SECRET": "u" * 48,
+            "PINTOR_COOKIE_SECURE": "0",
+            "PINTOR_ACCOUNTS_REQUIRED": "1",
+        }):
+            app = create_app(Path(self.temp.name) / "account-unique", processor=_ready_processor)
+            client = self.TestClient(app, base_url="http://testserver")
+            try:
+                self.assertEqual(client.post("/api/accounts/register", json={
+                    "username": "BetaUser", "password": "abcd",
+                }).status_code, 201)
+                duplicate = client.post("/api/accounts/register", json={
+                    "username": "betauser", "password": "wxyz",
+                })
+                self.assertEqual(duplicate.status_code, 409)
+                client.post("/api/accounts/logout")
+                missing = client.post("/api/accounts/login", json={
+                    "username": "missing", "password": "abcd",
+                })
+                wrong = client.post("/api/accounts/login", json={
+                    "username": "BetaUser", "password": "wxyz",
+                })
+                self.assertEqual(missing.status_code, 401)
+                self.assertEqual(wrong.status_code, 401)
+                self.assertEqual(missing.json()["detail"], wrong.json()["detail"])
+            finally:
+                client.close()
+
+    def test_accounts_isolate_jobs_and_preserve_access_across_login_sessions(self):
+        with patch.dict(os.environ, {
+            "PINTOR_SESSION_SECRET": "j" * 48,
+            "PINTOR_COOKIE_SECURE": "0",
+            "PINTOR_ACCOUNTS_REQUIRED": "1",
+        }):
+            app = create_app(Path(self.temp.name) / "account-jobs", processor=_ready_processor)
+            owner = self.TestClient(app, base_url="http://testserver")
+            stranger = self.TestClient(app, base_url="http://testserver")
+            second_device = self.TestClient(app, base_url="http://testserver")
+            try:
+                owner.post("/api/accounts/register", json={
+                    "username": "owner", "password": "1234",
+                })
+                stranger.post("/api/accounts/register", json={
+                    "username": "stranger", "password": "1234",
+                })
+                created = owner.post(
+                    "/api/jobs",
+                    files={"file": ("diagram.pdf", _pdf_bytes(), "application/pdf")},
+                    data={"page": "0", "convention": "iec_two_letter"},
+                )
+                self.assertEqual(created.status_code, 202)
+                job_id = created.json()["id"]
+                self.assertEqual(stranger.get(f"/api/jobs/{job_id}").status_code, 404)
+                second_device.post("/api/accounts/login", json={
+                    "username": "owner", "password": "1234",
+                })
+                self.assertEqual(second_device.get(f"/api/jobs/{job_id}").status_code, 200)
+                jobs = second_device.get("/api/account/jobs").json()["jobs"]
+                self.assertEqual([item["id"] for item in jobs], [job_id])
+            finally:
+                owner.close()
+                stranger.close()
+                second_device.close()
+
+    def test_only_admin_can_review_feedback_and_acceptance_never_trains_automatically(self):
+        admin_hash = hash_password("admin-test")
+        root = Path(self.temp.name) / "admin-review"
+        with patch.dict(os.environ, {
+            "PINTOR_SESSION_SECRET": "m" * 48,
+            "PINTOR_COOKIE_SECURE": "0",
+            "PINTOR_ACCOUNTS_REQUIRED": "1",
+            "PINTOR_ADMIN_USERNAME": "review-admin",
+            "PINTOR_ADMIN_PASSWORD_HASH": admin_hash,
+        }):
+            app = create_app(root, processor=_ready_processor)
+            tester = self.TestClient(app, base_url="http://testserver")
+            admin = self.TestClient(app, base_url="http://testserver")
+            try:
+                tester.post("/api/accounts/register", json={
+                    "username": "reporter", "password": "1234",
+                })
+                created = tester.post(
+                    "/api/jobs",
+                    files={"file": ("diagram.pdf", _pdf_bytes(), "application/pdf")},
+                    data={"page": "0", "convention": "iec_two_letter",
+                          "consent_learning": "true"},
+                )
+                job_id = created.json()["id"]
+                job_dir = root / "jobs" / job_id
+                (job_dir / "painted.pdf").write_bytes(_pdf_bytes())
+                (job_dir / "original-p0.jpg").write_bytes(b"original-preview")
+                (job_dir / "painted-p0.jpg").write_bytes(b"painted-preview")
+                report = tester.post(f"/api/jobs/{job_id}/feedback", json={
+                    "annotations": [{
+                        "type": "missing",
+                        "geometry": {"type": "point", "points": [[0.4, 0.5]]},
+                        "page": 0,
+                    }],
+                    "note": "wire should be coloured",
+                    "consent_learning": True,
+                })
+                feedback_id = report.json()["id"]
+                self.assertEqual(tester.get("/api/admin/feedback").status_code, 403)
+                login = admin.post("/api/accounts/login", json={
+                    "username": "review-admin", "password": "admin-test",
+                })
+                self.assertEqual(login.status_code, 200)
+                queue = admin.get("/api/admin/feedback")
+                self.assertEqual(queue.status_code, 200)
+                self.assertEqual(queue.json()["feedback"][0]["account_username"], "reporter")
+                detail = admin.get(f"/api/admin/feedback/{feedback_id}")
+                self.assertEqual(detail.status_code, 200)
+                self.assertEqual(
+                    admin.get(
+                        f"/api/admin/feedback/{feedback_id}/preview/original?page=0",
+                    ).content,
+                    b"original-preview",
+                )
+                decided = admin.post(f"/api/admin/feedback/{feedback_id}/decision", json={
+                    "decision": "accepted", "note": "confirmed by expert",
+                })
+                self.assertEqual(decided.status_code, 200)
+                payload = decided.json()["feedback"]
+                self.assertEqual(payload["status"], "expert-accepted")
+                self.assertTrue(payload["eligible_for_dataset"])
+                self.assertFalse(payload["trainable"])
+            finally:
+                tester.close()
+                admin.close()
+
     def test_parser_rejects_password_protected_pdf_in_worker_boundary(self):
         import fitz
 
@@ -177,6 +364,37 @@ class WebServiceTests(unittest.TestCase):
         path.write_bytes(_pdf_bytes())
         with self.assertRaises(InvalidUpload):
             inspect_pdf_source(path, 4)
+
+    def test_page_notation_accepts_commas_ranges_and_rejects_oversized_selection(self):
+        self.assertEqual(parse_page_selection("40, 42, 44-46"), [39, 41, 43, 44, 45])
+        with self.assertRaises(InvalidUpload):
+            parse_page_selection(f"1-{MAX_SELECTED_PAGES + 1}")
+
+    def test_page_notation_contract_examples(self):
+        examples = {
+            "1": [0],
+            "12": [11],
+            "92": [91],
+            "1, 5, 9, 95": [0, 4, 8, 94],
+            "1-5": [0, 1, 2, 3, 4],
+            "2-7": [1, 2, 3, 4, 5, 6],
+            "12-50": list(range(11, 50)),
+            "1, 3-5, 9-11, 15": [0, 2, 3, 4, 8, 9, 10, 14],
+        }
+        for notation, expected in examples.items():
+            with self.subTest(notation=notation):
+                self.assertEqual(parse_page_selection(notation), expected)
+
+    def test_manual_over_50_pages_accepts_only_requested_pages(self):
+        response = self.client.post(
+            "/api/jobs",
+            files={"file": ("large-manual.pdf", _pdf_bytes(80), "application/pdf")},
+            data={"pages": "40, 42, 44, 46", "convention": "iec_two_letter"},
+        )
+        self.assertEqual(response.status_code, 202)
+        state = self.client.get(f"/api/jobs/{response.json()['id']}").json()
+        self.assertEqual(state["selected_pages"], [39, 41, 43, 45])
+        self.assertEqual(state["page_count"], 80)
 
     def test_job_is_visible_only_to_its_owner_session(self):
         created = self.upload()
@@ -262,8 +480,18 @@ class WebServiceTests(unittest.TestCase):
             _pdf_bytes(), "gate.pdf", 0, "iec_two_letter", False,
             25 * 1024 * 1024, _owner_hash("a" * 64),
         )
-        report = {"declined": False, "v2": {"passed": True}, "v7": {"passed": False}}
-        with patch("wirecolor.tools.paint_vector.paint_page", return_value=report) as paint_mock:
+        def vector_report(*_args, **kwargs):
+            _write_overlay(kwargs["overlay_path"])
+            return {
+                "declined": False, "v2": {"passed": True}, "runs": 1,
+                "runs_painted": 1, "legends": 1,
+            }
+
+        with patch("wirecolor.tools.paint_vector.paint_page", side_effect=vector_report) \
+                as paint_mock, patch(
+                    "wirecolor.verify.validators.v7_preservation",
+                    return_value={"passed": False},
+                ):
             process_job(store, state["id"])
         self.assertEqual(paint_mock.call_args.kwargs["paint_dpi"], 720)
         self.assertEqual(paint_mock.call_args.kwargs["paint_pixel_budget"], 60_000_000)
@@ -280,19 +508,14 @@ class WebServiceTests(unittest.TestCase):
             _pdf_bytes(), "scan.pdf", 0, "iec_two_letter", False,
             25 * 1024 * 1024, _owner_hash("b" * 64),
         )
-        generated = store.job_dir(state["id"]) / "generated" / "scan_p0_raster_colored.pdf"
-
-        def raster_report(*_args, **_kwargs):
-            generated.parent.mkdir(parents=True, exist_ok=True)
-            generated.write_bytes((store.job_dir(state["id"]) / "source.pdf").read_bytes())
+        def raster_report(*_args, **kwargs):
+            _write_overlay(kwargs["overlay_path"])
             return {
                 "declined": False,
                 "processing_mode": "raster-ocr",
                 "convention": "iec_two_letter",
                 "convention_confidence": "user-selected",
                 "v2": {"passed": True},
-                "v7": {"passed": True},
-                "out_pdf": str(generated),
                 "runs": 4,
                 "runs_painted": 2,
                 "paint_rate": 0.5,
@@ -315,6 +538,79 @@ class WebServiceTests(unittest.TestCase):
         self.assertEqual(result["metrics"]["processing_mode"], "raster-ocr")
         self.assertEqual(raster.call_args.kwargs["convention_name"], "iec_two_letter")
         self.assertTrue((store.job_dir(state["id"]) / "painted.pdf").is_file())
+
+    def test_one_job_paints_four_selected_pages_and_preserves_the_full_manual(self):
+        import fitz
+
+        store = JobStore(Path(self.temp.name) / "multi-page")
+        selected = [39, 41, 43, 45]
+        state = store.create(
+            _pdf_bytes(60), "manual.pdf", selected, "iec_two_letter", False,
+            25 * 1024 * 1024, _owner_hash("f" * 64),
+        )
+
+        def vector_report(*_args, **kwargs):
+            _write_overlay(kwargs["overlay_path"])
+            return {
+                "declined": False,
+                "processing_mode": "vector-text",
+                "v2": {"passed": True},
+                "legends": 1,
+                "runs": 3,
+                "runs_painted": 1,
+                "paint_rate": 1 / 3,
+                "codes": ["RD"],
+                "decision_abstentions": 0,
+                "seconds": 0.1,
+            }
+
+        with patch("wirecolor.tools.paint_vector.paint_page", side_effect=vector_report) as painter:
+            process_job(store, state["id"])
+
+        result = store.read(state["id"])
+        self.assertEqual(result["status"], "ready")
+        self.assertEqual([item["page"] for item in result["pages"]], selected)
+        self.assertTrue(all(item["status"] == "painted" for item in result["pages"]))
+        self.assertEqual(result["metrics"]["pages_painted"], 4)
+        self.assertEqual(painter.call_count, 4)
+        output = fitz.open(store.job_dir(state["id"]) / "painted.pdf")
+        try:
+            self.assertEqual(len(output), 60)
+        finally:
+            output.close()
+
+    def test_safe_page_abstention_does_not_discard_other_selected_pages(self):
+        store = JobStore(Path(self.temp.name) / "partial-multi-page")
+        state = store.create(
+            _pdf_bytes(4), "manual.pdf", [0, 2], "iec_two_letter", False,
+            25 * 1024 * 1024, _owner_hash("e" * 64),
+        )
+
+        def vector_report(_pdf, page_index, _out, **kwargs):
+            if page_index == 0:
+                _write_overlay(kwargs["overlay_path"])
+                return {
+                    "declined": False, "v2": {"passed": True}, "legends": 1,
+                    "runs": 1, "runs_painted": 1, "paint_rate": 1.0,
+                }
+            return {"declined": True, "legends": 1, "runs": 0, "runs_painted": 0}
+
+        raster_decline = {
+            "declined": True, "processing_mode": "raster-ocr",
+            "convention": "iec_two_letter", "convention_confidence": "user-selected",
+            "decline_reason": "no safe colour assignment", "runs": 0,
+        }
+        with patch("wirecolor.tools.paint_vector.paint_page", side_effect=vector_report), patch(
+            "wirecolor.tools.paint_raster.paint_page", return_value=raster_decline,
+        ):
+            process_job(store, state["id"])
+
+        result = store.read(state["id"])
+        self.assertEqual(result["status"], "ready")
+        self.assertEqual([item["status"] for item in result["pages"]], ["painted", "declined"])
+        self.assertEqual(result["metrics"]["pages_painted"], 1)
+        self.assertEqual(result["metrics"]["pages_declined"], 1)
+        self.assertTrue((store.job_dir(state["id"]) / "painted-p2.jpg").is_file())
 
     def test_isolated_worker_reaps_native_threads_after_terminal_failure(self):
         store = JobStore(Path(self.temp.name) / "terminal-worker")

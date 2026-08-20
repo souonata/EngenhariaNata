@@ -19,7 +19,7 @@ sys.path.insert(0, str(BACKEND / "src"))
 import numpy as np
 
 from wirecolor.batch import resolve_pages
-from wirecolor.paint.raster_overlay import OCG_NAME, attach_overlay
+from wirecolor.paint.raster_overlay import OCG_NAME, attach_overlay, attach_overlays
 from wirecolor.verify.validators import v2_vector_protected_overlap, v7_preservation
 
 
@@ -90,6 +90,44 @@ class IdempotencyTests(unittest.TestCase):
             stats = attach_overlay(src, out, 0, _overlay())
             self.assertEqual(stats["ocg"], OCG_NAME)
             self.assertGreater(stats["out_bytes"], stats["src_bytes"])
+
+    def test_selected_pages_share_one_layer_in_a_large_preserved_manual(self):
+        import cv2
+        import fitz
+
+        with tempfile.TemporaryDirectory() as tmp:
+            src = _blank_pdf(str(Path(tmp) / "manual.pdf"), pages=60)
+            out = str(Path(tmp) / "painted.pdf")
+            ok, encoded = cv2.imencode(".png", _overlay())
+            self.assertTrue(ok)
+            # Human notation 12-50: the full interval must be composable without one decoded
+            # overlay per page accumulating in memory.
+            selected = list(range(11, 50))
+            stats = attach_overlays(
+                src, out, [(page, encoded.tobytes()) for page in selected],
+            )
+            self.assertEqual(stats["overlays"], 39)
+
+            source, painted = fitz.open(src), fitz.open(out)
+            try:
+                self.assertEqual(len(painted), 60)
+                layers = [
+                    item for item in painted.layer_ui_configs()
+                    if item.get("text") == OCG_NAME
+                ]
+                self.assertEqual(len(layers), 1)
+                for page in range(60):
+                    source_images = len(source[page].get_images(full=True))
+                    painted_images = len(painted[page].get_images(full=True))
+                    if page in selected:
+                        self.assertGreater(painted_images, source_images)
+                    else:
+                        self.assertEqual(painted_images, source_images)
+            finally:
+                source.close()
+                painted.close()
+            for page in selected:
+                self.assertTrue(v7_preservation(src, out, page, stats["ocg"])["passed"])
 
 
 class V7RenderCheckTests(unittest.TestCase):

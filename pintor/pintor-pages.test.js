@@ -1,0 +1,32 @@
+import { describe, expect, it } from 'vitest';
+
+import { MAX_DOCUMENT_PAGES, MAX_SELECTED_PAGES, parsePageSelection } from './pintor-pages.js';
+
+describe('Pintor page selection', () => {
+    it.each([
+        ['1', [1]],
+        ['12', [12]],
+        ['92', [92]],
+        ['1, 5, 9, 95', [1, 5, 9, 95]],
+        ['1-5', [1, 2, 3, 4, 5]],
+        ['2-7', [2, 3, 4, 5, 6, 7]],
+        ['12-50', Array.from({ length: 39 }, (_, index) => index + 12)],
+        ['1, 3-5, 9-11, 15', [1, 3, 4, 5, 9, 10, 11, 15]]
+    ])('accepts the supported page notation %s', (notation, pages) => {
+        expect(parsePageSelection(notation)).toEqual(pages);
+    });
+
+    it('accepts comma-separated pages and inclusive ranges', () => {
+        expect(parsePageSelection('40, 42, 44-46')).toEqual([40, 42, 44, 45, 46]);
+    });
+
+    it('deduplicates pages while preserving the requested order', () => {
+        expect(parsePageSelection('44, 40-42, 41, 46')).toEqual([44, 40, 41, 42, 46]);
+    });
+
+    it('rejects descending, out-of-bound, and oversized selections', () => {
+        expect(() => parsePageSelection('46-40')).toThrow();
+        expect(() => parsePageSelection(`1,${MAX_DOCUMENT_PAGES + 1}`)).toThrow();
+        expect(() => parsePageSelection(`1-${MAX_SELECTED_PAGES + 1}`)).toThrow();
+    });
+});

@@ -1,5 +1,5 @@
 {
-  "index": "2.1.0",
+  "index": "2.1.1",
   "bombaagua": "2.0.0",
   "iluminacao": "2.0.0",
   "ventilacao": "2.0.0",
@@ -18,5 +18,5 @@
   "lastUpdate": "2026-08-20T00:00:00.000Z",
   "br12c": "2.0.0",
   "patentenautica": "3.9.2",
-  "pintor": "0.2.2"
+  "pintor": "0.4.1"
 }

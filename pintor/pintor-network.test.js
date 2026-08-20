@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { localizedFetchError } from './pintor-network.js';
 
 describe('Pintor network errors', () => {
-    const localized = "L'API protetta di Pintor non è disponibile in questo momento.";
+    const localized = "L'API protetta di Pittore non è disponibile in questo momento.";
 
     it('substitui o TypeError nativo do fetch pela mensagem localizada', () => {
         expect(localizedFetchError(new TypeError('Failed to fetch'), localized)).toBe(localized);
