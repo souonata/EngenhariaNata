@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from wirecolor.labels.conventions import load_convention
 from wirecolor.labels.harvest import (
+    MAX_ENGINE_PIXELS,
     _bounded_scales,
     _read_tile,
     _tiles,
@@ -28,11 +29,9 @@ from wirecolor.pipeline import resolve_physical_wire_colors
 from wirecolor.web_service import JobStore, _owner_hash, process_job
 
 
-# A 2000 x 2000 working tile became a 4000 x 4000 engine image at 2x. RapidOCR clamps its detector
-# tensor to a 2000 px side, but that session still failed with std::bad_alloc on TB66. Keeping the
-# image presented to the engine at or below 2000 x 2000 preserves the measured OCR scale while
-# bounding preprocessing and detector allocations independently of RapidOCR's internal resize.
-MAX_ENGINE_PIXELS = 4_000_000
+# A 2000 x 2000 working tile became a 4000 x 4000 engine image at 2x. RapidOCR clamped its detector
+# tensor to a 2000 px side, but Linux reproduced std::bad_alloc at that exact square shape. The
+# production constant below is therefore smaller than the proven failure, not merely equal to it.
 
 
 def _dark_box_engine(calls: list[tuple[int, int]]):
@@ -130,11 +129,11 @@ class OcrTilingMemoryTests(unittest.TestCase):
 
         # A hard ceiling catches accidental nested-tiling explosions. Rotated reads, when needed,
         # reuse this same schedule and are counted separately by the runtime diagnostics.
-        self.assertEqual(_working_tile_side(1.0, requested=2000), 2000)
-        self.assertEqual(_working_tile_side(2.0, requested=2000), 1000)
-        self.assertLessEqual(calls, 140)
+        self.assertEqual(_working_tile_side(1.0, requested=2000), 1600)
+        self.assertEqual(_working_tile_side(2.0, requested=2000), 800)
+        self.assertLessEqual(calls, 220)
 
-    def test_tb66_a0_drops_recovery_scale_and_worst_case_stays_within_48_calls(self):
+    def test_tb66_a0_drops_recovery_scale_and_worst_case_stays_within_70_calls(self):
         width, height = 9362, 6623
         scales = _bounded_scales(width, height, (1.0, 2.0))
 
@@ -143,8 +142,8 @@ class OcrTilingMemoryTests(unittest.TestCase):
         upright = len(list(_tiles(width, height, side, overlap=180)))
         worst_case_with_every_tile_rotated = upright * 2
 
-        self.assertEqual(upright, 24)
-        self.assertLessEqual(worst_case_with_every_tile_rotated, 48)
+        self.assertEqual(upright, 35)
+        self.assertLessEqual(worst_case_with_every_tile_rotated, 70)
 
     def test_two_x_read_never_sends_more_than_four_megapixels_to_onnx(self):
         image = np.full((2000, 2000, 3), 255, dtype=np.uint8)

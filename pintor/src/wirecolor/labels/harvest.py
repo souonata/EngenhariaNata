@@ -35,11 +35,12 @@ SCALE = 2.0
 # clip it and the fragment then reads as the WRONG code ('BL/ GR' -> 'GR').
 OVERLAP = 180
 
-# RapidOCR 3.9.2 clamps a large detector input to a 2000 px side.  Keep that limit categorical in
-# our code as well: the 2x pass reads at most a 1000 px source tile instead of allocating the old
+# RapidOCR 3.9.2 clamps a large detector input to a 2000 px side, but the Linux worker reproduced
+# std::bad_alloc at that exact square shape under RLIMIT_AS.  Keep every detector input below the
+# proven failure: the 2x pass reads at most an 800 px source tile instead of allocating the old
 # 4000 x 4000 preprocessing image and relying on RapidOCR to shrink it.  Grayscale page storage,
-# bounded native thread pools and a disabled ONNX arena provide the memory headroom at this limit.
-MAX_ENGINE_SIDE = 2000
+# bounded native thread pools and a disabled ONNX arena provide the remaining memory headroom.
+MAX_ENGINE_SIDE = 1600
 MAX_ENGINE_PIXELS = MAX_ENGINE_SIDE * MAX_ENGINE_SIDE
 
 # Above this page size the two-scale A0 schedule cannot finish inside the production worker's

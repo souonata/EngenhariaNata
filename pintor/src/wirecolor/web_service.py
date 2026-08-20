@@ -601,7 +601,31 @@ def process_job_isolated(store: JobStore, job_id: str) -> None:
         daemon=False,
     )
     worker.start()
-    worker.join(timeout)
+    deadline = time.monotonic() + timeout
+    terminal_since = None
+    terminal_states = {"ready", "declined", "failed", "revision-requested"}
+    while worker.is_alive():
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            break
+        worker.join(min(1.0, remaining))
+        if not worker.is_alive():
+            break
+        try:
+            status = store.read(job_id).get("status")
+        except Exception:
+            status = None
+        if status in terminal_states:
+            terminal_since = terminal_since or time.monotonic()
+            # ONNX/OpenCV may retain native threads after process_job has already written a
+            # fail-closed terminal state. Give normal interpreter cleanup a short grace period,
+            # then reap the child so one failed sheet cannot hold the single beta worker slot.
+            if time.monotonic() - terminal_since >= 5.0:
+                worker.terminate()
+                worker.join(10)
+                break
+        else:
+            terminal_since = None
     if worker.is_alive():
         worker.terminate()
         worker.join(10)

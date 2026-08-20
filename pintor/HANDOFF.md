@@ -57,14 +57,16 @@ Primary web entry points: `src/wirecolor/tools/paint_vector.py` and
   observed with 121 process threads; the production traceback had no thread telemetry, but the
   default ONNX pool is not bounded by the container's two-CPU cgroup quota.
 - The bounded OCR path now retains the page in grayscale, creates threshold/RGB buffers per tile,
-  caps every engine input at 2000 x 2000, maps upright and rotated overlap reads back to global
+  caps every engine input at 1600 x 1600 (below the 2000-square Linux failure), maps upright and
+  rotated overlap reads back to global
   coordinates, uses ONNX 2/1 intra/inter-op threads with its CPU arena disabled, and fixes OpenCV
   preprocessing to one thread. No worker memory, CPU, or wall-time limit was raised.
 - Pages above 60 million working pixels intentionally omit the 2x recovery pass. This is a
   fail-closed capacity policy: small legends may be missed, but a conductor without a trustworthy
-  ownership seed remains black. The A0 schedule is 24 upright calls and at most 24 rotated calls.
-- The real A0 native-scale harvest completed locally without `bad_alloc` in 122.3 seconds and 47
-  calls. It returned 86 labels, 80 at score >= 0.80, and selected `volvo_classic` with high
+  ownership seed remains black. The A0 schedule is 35 upright calls and at most 35 rotated calls.
+- A real A0 native-scale prototype at the earlier 2000-pixel cap completed locally without
+  `bad_alloc` in 122.3 seconds and 47 calls. It returned 86 labels, 80 at score >= 0.80, and
+  selected `volvo_classic` with high
   confidence (score 248 versus 0 for the runner-up). Observed peaks were 1.15 GB working set and
   1.89 GB paged memory; 33 process threads were observed. A two-scale trial was stopped after
   278 seconds wall/552 CPU seconds, confirming that the conservative scale policy is necessary.
@@ -152,7 +154,7 @@ These directories are intentionally ignored by Git.
 
 ## Session validation
 
-- `348` standalone Python tests pass, including the web boundary, tenant isolation, encrypted PDF,
+- `349` standalone Python tests pass, including the web boundary, tenant isolation, encrypted PDF,
   invalid page, typed feedback, hard branch/bridge rules, V2/V7 quarantine, and immediate deletion.
 - The complete Engenharia NATA validation passes: `340` JavaScript tests, lint, format, style,
   trilingual parity across 20 i18n files, asset references, and Rotta 12 integrity.
