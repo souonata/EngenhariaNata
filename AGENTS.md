@@ -185,9 +185,11 @@ _Última atualização: 2026-08-20_
 
 - **PINTOR — RASTER/OCR NA BETA PROTEGIDA:** o app secreto `/pintor/` e a API dedicada
   `pintor-api.engnata.eu` agora aceitam tanto páginas vetoriais quanto páginas formadas somente por
-  imagem. A interface publicada 0.4.1 traduz o nome exibido como **Pintor** (PT), **Pittore** (IT),
+  imagem. A interface 0.4.2 traduz o nome exibido como **Pintor** (PT), **Pittore** (IT),
   **Målaren** (SV) e **Painter** no fallback inglês, sem alterar a rota ou os identificadores
-  técnicos. A API publicada 0.4.0 também adiciona contas persistentes para testers externos atrás do
+  técnicos; o cabeçalho reúne o símbolo dos três fios ao nome e não repete o selo decorativo de beta.
+  A proteção continua explícita e ativa na tela de acesso. A API publicada 0.4.0 também adiciona
+  contas persistentes para testers externos atrás do
   código beta: usuário único, senha de no mínimo 4 caracteres armazenada apenas com scrypt+salt,
   sessão opaca HttpOnly e propriedade dos jobs por conta. Um console restrito ao papel admin lista
   feedback, compara original/resultado com as marcações e registra aceitar/rejeitar/pedir

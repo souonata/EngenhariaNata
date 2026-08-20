@@ -24,7 +24,7 @@
         <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.4.0" />
         <link rel="stylesheet" href="../assets/css/dock-global.css?v=1.2.0" />
         <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0" />
-        <link rel="stylesheet" href="pintor-styles.css?v=0.4.1" />
+        <link rel="stylesheet" href="pintor-styles.css?v=0.4.2" />
 
         <script
             data-goatcounter="https://souonata.goatcounter.com/count"
@@ -36,21 +36,18 @@
     <body>
         <main class="painter-shell">
             <header class="painter-hero">
-                <div class="hero-mark" aria-hidden="true">
-                    <span class="hero-mark-line line-red"></span>
-                    <span class="hero-mark-line line-yellow"></span>
-                    <span class="hero-mark-line line-blue"></span>
-                </div>
-                <div class="hero-copy">
-                    <div class="eyebrow-row">
-                        <span class="beta-badge" data-i18n="hero.beta">Private beta</span>
+                <div class="hero-title-row">
+                    <div class="hero-mark" aria-hidden="true">
+                        <span class="hero-mark-line line-red"></span>
+                        <span class="hero-mark-line line-yellow"></span>
+                        <span class="hero-mark-line line-blue"></span>
                     </div>
                     <h1 data-i18n="hero.title">Painter</h1>
-                    <p data-i18n="hero.subtitle">
-                        Upload a wiring diagram. Painter identifies physical conductors, reads the
-                        printed colour codes and adds a removable colour layer.
-                    </p>
                 </div>
+                <p class="hero-subtitle" data-i18n="hero.subtitle">
+                    Upload a wiring diagram. Painter identifies physical conductors, reads the
+                    printed colour codes and adds a removable colour layer.
+                </p>
             </header>
 
             <section id="accessPanel" class="panel access-panel" hidden>
@@ -682,6 +679,6 @@
             </svg>
         </a>
 
-        <script type="module" src="pintor-script.js?v=0.4.1"></script>
+        <script type="module" src="pintor-script.js?v=0.4.2"></script>
     </body>
 </html>
