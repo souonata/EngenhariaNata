@@ -17,6 +17,16 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-08-20 non-fatal resource errors (0.4.3, published)
+
+- Corrected the shared JavaScript safety overlay so failed images, previews, iframes, blocked
+  third-party analytics, and empty browser/extension error events do not claim that the page is
+  frozen. HTTP `401` session probes and handled `409` duplicate-account responses may still appear
+  in browser developer tools, as expected, but no longer produce the page-level fatal banner.
+- Same-origin script/stylesheet failures, real runtime exceptions, unhandled promise rejections,
+  and explicit fatal initialization reports still display the safety banner.
+- Added four JSDOM regression tests and cache-busted the classic overlay script on the Pintor page.
+
 ## 2026-08-20 compact product header (0.4.2, published)
 
 - Removed the decorative private-beta badge from the product header; beta access and account/API

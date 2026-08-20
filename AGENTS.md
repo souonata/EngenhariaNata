@@ -185,7 +185,7 @@ _Última atualização: 2026-08-20_
 
 - **PINTOR — RASTER/OCR NA BETA PROTEGIDA:** o app secreto `/pintor/` e a API dedicada
   `pintor-api.engnata.eu` agora aceitam tanto páginas vetoriais quanto páginas formadas somente por
-  imagem. A interface 0.4.2 traduz o nome exibido como **Pintor** (PT), **Pittore** (IT),
+  imagem. A interface 0.4.3 traduz o nome exibido como **Pintor** (PT), **Pittore** (IT),
   **Målaren** (SV) e **Painter** no fallback inglês, sem alterar a rota ou os identificadores
   técnicos; o cabeçalho reúne o símbolo dos três fios ao nome e não repete o selo decorativo de beta.
   A proteção continua explícita e ativa na tela de acesso. A API publicada 0.4.0 também adiciona
@@ -225,6 +225,11 @@ _Última atualização: 2026-08-20_
   em texto claro continua restrito a `/root/pintor-beta-access.txt` com modo `0600`. A rotação foi
   validada externamente: credencial anterior `401`, nova `200`, capability autenticada `200` e
   capability anônima `401`. Nenhuma credencial deve ser documentada ou commitada.
+  **OVERLAY SEM FALSO ALARME (0.4.3):** falhas de previews/imagens, analytics bloqueado e
+  ErrorEvents vazios de extensões não abrem mais a faixa de “página travada”; falha de
+  script/stylesheet same-origin, exceção real, promise rejeitada e reporte fatal explícito continuam
+  visíveis. Respostas HTTP tratadas como `401` de sessão e `409` de username duplicado podem aparecer
+  em vermelho apenas no DevTools, comportamento normal do navegador.
   **PUBLICAÇÃO 0.4.1/0.4.0:** o PR #21 foi integrado ao `main` em `a09c7b7`; Pages e CI passaram,
   a imagem `engnata/pintor-api:0.4.0` ficou saudável no host protegido e o smoke externo confirmou
   registro de conta efêmera, login, isolamento anônimo `401`, processamento/download de PDF e
