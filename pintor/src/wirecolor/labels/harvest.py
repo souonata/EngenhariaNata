@@ -20,6 +20,8 @@ lens" is then a query against this set instead of a new OCR call.
 """
 from __future__ import annotations
 
+import gc
+import math
 import re
 
 import numpy as np
@@ -34,6 +36,41 @@ SCALE = 2.0
 # clip it and the fragment then reads as the WRONG code ('BL/ GR' -> 'GR').
 OVERLAP = 180
 
+# RapidOCR 3.9.2 clamps a large detector input to a 2000 px side, but the Linux worker reproduced
+# std::bad_alloc at that exact square shape under RLIMIT_AS.  Keep every detector input below the
+# proven failure: the 2x pass reads at most an 800 px source tile instead of allocating the old
+# 4000 x 4000 preprocessing image and relying on RapidOCR to shrink it.  Grayscale page storage,
+# bounded native thread pools and a disabled ONNX arena provide the remaining memory headroom.
+MAX_ENGINE_SIDE = 1600
+MAX_ENGINE_PIXELS = MAX_ENGINE_SIDE * MAX_ENGINE_SIDE
+
+# Above this page size the two-scale A0 schedule cannot finish inside the production worker's
+# 480-second CPU gate.  Omitting the 2x recovery pass reduces recall only: undetected legends have
+# no ownership seed, so their conductors remain black under the existing abstention rules.
+MULTISCALE_PAGE_PIXEL_LIMIT = 60_000_000
+
+
+def _release_native_memory() -> None:
+    """Return OCR's native allocations before full-page topology starts.
+
+    ONNX Runtime and OpenCV allocate outside Python's object heap.  Dropping the engine and image
+    references is necessary but glibc may otherwise keep their freed arenas mapped, so the next
+    stage can hit RLIMIT_AS even while resident memory remains well below the container limit.
+    Collection plus ``malloc_trim`` is best-effort: non-glibc platforms simply skip the latter.
+    """
+    gc.collect()
+    try:
+        import ctypes
+
+        libc = ctypes.CDLL(None)
+        malloc_trim = getattr(libc, "malloc_trim", None)
+        if malloc_trim is not None:
+            malloc_trim.argtypes = [ctypes.c_size_t]
+            malloc_trim.restype = ctypes.c_int
+            malloc_trim(0)
+    except (AttributeError, OSError):
+        pass
+
 
 def _tiles(width, height, tile=TILE, overlap=OVERLAP):
     step = tile - overlap
@@ -44,7 +81,7 @@ def _tiles(width, height, tile=TILE, overlap=OVERLAP):
             yield x0, y0, min(width, x0 + tile), min(height, y0 + tile)
 
 
-def _tall_text_present(binary, x0, y0, x1, y1):
+def _tall_text_present(image, x0, y0, x1, y1):
     """Does this tile contain any tall/narrow glyph run, i.e. is a rotated read worth its cost?
 
     Vertical legends are rare -- 29 of 1,997 text clusters on pub 2503 -- so sweeping every tile
@@ -52,11 +89,14 @@ def _tall_text_present(binary, x0, y0, x1, y1):
     """
     import cv2
 
-    window = binary[y0:y1, x0:x1]
+    window = image[y0:y1, x0:x1]
     if not window.size:
         return False
-    count, _labels, stats, _centroids = cv2.connectedComponentsWithStats(window, 8)
-    glyphs = np.zeros(window.shape, np.uint8)
+    if window.ndim == 3:
+        window = cv2.cvtColor(window, cv2.COLOR_BGR2GRAY)
+    binary = (window < 210).astype(np.uint8)
+    count, _labels, stats, _centroids = cv2.connectedComponentsWithStats(binary, 8)
+    glyphs = np.zeros(binary.shape, np.uint8)
     for index in range(1, count):
         gx, gy, gw, gh, area = stats[index]
         if 4 <= gh <= 46 and 2 <= gw <= 46 and 8 <= area <= 900:
@@ -72,28 +112,63 @@ def _tall_text_present(binary, x0, y0, x1, y1):
     return False
 
 
+def _working_tile_side(scale: float, requested: int = TILE) -> int:
+    """Largest working-pixel tile whose scaled inference stays below the ONNX memory cap."""
+    if scale <= 0:
+        raise ValueError("OCR scale must be positive")
+    return max(1, min(int(requested), math.floor(MAX_ENGINE_SIDE / scale)))
+
+
+def _bounded_scales(width: int, height: int, scales) -> tuple[float, ...]:
+    """Conservatively drop magnified OCR when a page cannot fit the worker CPU budget."""
+    requested = tuple(float(scale) for scale in scales)
+    if width * height <= MULTISCALE_PAGE_PIXEL_LIMIT:
+        return requested
+    return (1.0,)
+
+
 def _read_tile(engine, image, x0, y0, x1, y1, scale, rotated):
+    """Read one outer tile through bounded inference subtiles in global page coordinates."""
     import cv2
 
-    crop = cv2.cvtColor(image[y0:y1, x0:x1], cv2.COLOR_BGR2RGB)
-    upscaled = cv2.resize(crop, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
-    height = crop.shape[0]
-    if rotated:
-        upscaled = cv2.rotate(upscaled, cv2.ROTATE_90_CLOCKWISE)
     tokens = []
-    for box, text, score in engine(upscaled):
-        if rotated:
-            # clockwise rotation: (xr, yr) -> (x = yr, y = tile_height - xr)
-            points = [(float(p[1]) / scale, height - float(p[0]) / scale) for p in box]
+    outer_width, outer_height = x1 - x0, y1 - y0
+    side = _working_tile_side(scale)
+    overlap = min(OVERLAP, max(0, side - 1))
+    for sx0, sy0, sx1, sy1 in _tiles(outer_width, outer_height, side, overlap):
+        px0, py0, px1, py1 = x0 + sx0, y0 + sy0, x0 + sx1, y0 + sy1
+        source = image[py0:py1, px0:px1]
+        if source.ndim == 2:
+            crop = cv2.cvtColor(source, cv2.COLOR_GRAY2RGB)
         else:
-            points = [(float(p[0]) / scale, float(p[1]) / scale) for p in box]
-        page = [[x0 + px, y0 + py] for px, py in points]
-        xs = [p[0] for p in page]
-        ys = [p[1] for p in page]
-        tokens.append({"raw": str(text), "score": float(score),
-                       "cx": sum(xs) / len(xs), "cy": sum(ys) / len(ys),
-                       "w": max(xs) - min(xs), "h": max(ys) - min(ys),
-                       "box": page})
+            crop = cv2.cvtColor(source, cv2.COLOR_BGR2RGB)
+        upscaled = cv2.resize(crop, None, fx=scale, fy=scale,
+                              interpolation=cv2.INTER_CUBIC)
+        del crop
+        height = source.shape[0]
+        inference = cv2.rotate(upscaled, cv2.ROTATE_90_CLOCKWISE) if rotated else upscaled
+        if inference.shape[0] * inference.shape[1] > MAX_ENGINE_PIXELS:
+            raise RuntimeError(
+                f"OCR inference tile exceeds memory cap: "
+                f"{inference.shape[1]}x{inference.shape[0]}"
+            )
+        readings = engine(inference)
+        del inference, upscaled
+        for box, text, score in readings:
+            if rotated:
+                # clockwise rotation: (xr, yr) -> (x = yr, y = tile_height - xr)
+                points = [(float(p[1]) / scale,
+                           height - float(p[0]) / scale) for p in box]
+            else:
+                points = [(float(p[0]) / scale, float(p[1]) / scale) for p in box]
+            page = [[px0 + px, py0 + py] for px, py in points]
+            xs = [p[0] for p in page]
+            ys = [p[1] for p in page]
+            tokens.append({"raw": str(text), "score": float(score),
+                           "cx": sum(xs) / len(xs), "cy": sum(ys) / len(ys),
+                           "w": max(xs) - min(xs), "h": max(ys) - min(ys),
+                           "box": page})
+        del readings
     return tokens
 
 
@@ -101,28 +176,40 @@ def harvest_labels(image_path: str, convention, scales=(1.0, SCALE), tile=TILE,
                    overlap=OVERLAP, verbose=True) -> dict:
     """One page-wide multi-scale text read; same output shape as the legacy tiled pass.
 
-    Both magnifications are swept because they see different text: measured on pub 2503, the 2x
+    Both magnifications normally run because they see different text: measured on pub 2503, the 2x
     pass recovers 67 legends the 1x pass never sees (small print) while missing 55 it does see
-    (large print, which 2x pushes past the detector's comfortable size).  Since cost is per call
-    and not per pixel, sweeping twice is cheap and the union is what an engineer actually ends up
-    with after looking at the drawing both ways.
+    (large print, which 2x pushes past the detector's comfortable size).  Pages above the explicit
+    CPU-safe pixel limit use only native scale.  This deliberately loses some recall on A0 while
+    preserving the hard rule that a legend without trustworthy evidence leaves its wire black.
     """
     import cv2
 
+    # OpenCV also sizes its native pool from the host (28 threads on the A0 reproduction machine),
+    # independently of the two-CPU container quota.  The job child is single-purpose, so one
+    # preprocessing thread avoids reserving needless stacks while ONNX uses the two allotted CPUs.
+    cv2.setNumThreads(1)
     engine = build_engine()
-    image = cv2.imread(image_path)
+    # A0 at 200 DPI is 9362 x 6623.  Reading it as BGR cost ~186 MB, then the old page-wide binary
+    # added another ~62 MB.  OCR only needs luminance: keep one ~62 MB grayscale page and create
+    # RGB plus threshold buffers for one bounded tile at a time.
+    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    if image is None:
+        raise ValueError(f"cannot read OCR page image: {image_path}")
     height, width = image.shape[:2]
-    binary = (cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) < 210).astype(np.uint8)
+    active_scales = _bounded_scales(width, height, scales)
     all_white = re.escape(convention.all_white_token)
 
     tokens = []
     white_hits = set()
     upright = rotated_reads = 0
-    for scale in scales:
-        for x0, y0, x1, y1 in _tiles(width, height, tile, overlap):
+    for scale in active_scales:
+        bounded_tile = _working_tile_side(scale, tile)
+        bounded_overlap = min(overlap, max(0, bounded_tile - 1))
+        for x0, y0, x1, y1 in _tiles(
+                width, height, bounded_tile, bounded_overlap):
             found = _read_tile(engine, image, x0, y0, x1, y1, scale, rotated=False)
             upright += 1
-            if _tall_text_present(binary, x0, y0, x1, y1):
+            if _tall_text_present(image, x0, y0, x1, y1):
                 found += _read_tile(engine, image, x0, y0, x1, y1, scale, rotated=True)
                 rotated_reads += 1
             for token in found:
@@ -154,9 +241,15 @@ def harvest_labels(image_path: str, convention, scales=(1.0, SCALE), tile=TILE,
               f"{convention.all_white_token} tokens): nothing to colourize")
         labels = []
     if verbose:
-        print(f"harvest: {upright} tiles at {'x/'.join(str(s) for s in scales)}x "
+        print(f"harvest: {upright} tiles at {'x/'.join(str(s) for s in active_scales)}x "
               f"+ {rotated_reads} rotated -> {len(labels)} labels")
-    return {"image": [width, height], "labels": labels}
+    result = {"image": [width, height], "labels": labels,
+              "ocr_scales": list(active_scales), "ocr_calls": upright + rotated_reads}
+    # The caller's next operation creates full-page connected-component label arrays.  Dispose of
+    # the three ONNX sessions and the page raster first, then ask glibc to unmap free arenas.
+    del engine, image, tokens, found, labels
+    _release_native_memory()
+    return result
 
 
 def labels_in_window(labels, x0, y0, x1, y1, exclude_ids=()):

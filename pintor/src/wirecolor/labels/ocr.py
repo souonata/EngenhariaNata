@@ -250,7 +250,16 @@ def merge_ocr_fragments(tokens: list[dict], convention) -> list[dict]:
 def build_engine():
     try:
         from rapidocr import RapidOCR
-        _eng = RapidOCR()
+        # ONNX sizes its default thread pools from the host, not necessarily the container CPU
+        # quota.  A local run of the failing A0 image created 121 process threads; those native
+        # stacks and workspaces consume the same RLIMIT_AS budget in production.  The beta
+        # container has two CPUs: make that bound explicit for all three OCR sessions and disable
+        # the arena so transient detector buffers can return to the allocator between tiles.
+        _eng = RapidOCR(params={
+            "EngineConfig.onnxruntime.intra_op_num_threads": 2,
+            "EngineConfig.onnxruntime.inter_op_num_threads": 1,
+            "EngineConfig.onnxruntime.enable_cpu_mem_arena": False,
+        })
 
         def engine(im):
             out = _eng(im)

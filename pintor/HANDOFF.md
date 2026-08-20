@@ -51,6 +51,42 @@ Primary web entry points: `src/wirecolor/tools/paint_vector.py` and
   V7, a removable OCG, and an unchanged source hash. A separate local real-OCR smoke recognized
   the same small 1200 x 800 fixture and completed end to end in 2.0 seconds. This is not a dense or
   large-sheet performance qualification.
+- A 9362 x 6623 A0 raster exposed `std::bad_alloc` inside the RapidOCR detector. The original OCR
+  process stored a full BGR page plus a page-wide binary image, passed a 4000 x 4000 preprocessing
+  tile at 2x, and let ONNX size native pools from the host. The local reproduction was directly
+  observed with 121 process threads; the production traceback had no thread telemetry, but the
+  default ONNX pool is not bounded by the container's two-CPU cgroup quota.
+- The bounded OCR path now retains the page in grayscale, creates threshold/RGB buffers per tile,
+  caps every engine input at 1600 x 1600 (below the 2000-square Linux failure), maps upright and
+  rotated overlap reads back to global
+  coordinates, uses ONNX 2/1 intra/inter-op threads with its CPU arena disabled, and fixes OpenCV
+  preprocessing to one thread. At the OCR/topology boundary it destroys the native OCR sessions,
+  releases the page raster, collects Python objects, and asks glibc to trim free arenas before the
+  full-page connected-component arrays are allocated.
+- Pages above 60 million working pixels intentionally omit the 2x recovery pass. This is a
+  fail-closed capacity policy: small legends may be missed, but a conductor without a trustworthy
+  ownership seed remains black. The A0 schedule is 35 upright calls and at most 35 rotated calls.
+- A real A0 native-scale prototype at the earlier 2000-pixel cap completed locally without
+  `bad_alloc` in 122.3 seconds and 47 calls. It returned 86 labels, 80 at score >= 0.80, and
+  selected `volvo_classic` with high
+  confidence (score 248 versus 0 for the runner-up). Observed peaks were 1.15 GB working set and
+  1.89 GB paged memory; 33 process threads were observed. A two-scale trial was stopped after
+  278 seconds wall/552 CPU seconds, confirming that the conservative scale policy is necessary.
+  The protected Linux host remains the authoritative full-pipeline capacity benchmark because the
+  local smoke used a different OS and ONNX Runtime build.
+- The protected Linux full-pipeline benchmark is now complete. A 4.7 MB, 44-page source with a
+  9362 x 6623 image-only A0 wiring page finished through the public protected API in 279.3 seconds:
+  35 upright plus 33 rotated OCR calls found 80 labels, selected `volvo_classic` at high confidence,
+  analysed 3,107 candidate runs, painted 464, passed V2/V7/source preservation, and released a
+  re-openable 44-page PDF. Visual review at full page and detailed crops found the overlay on wire
+  geometry while labels, symbols, and uncertain conductors stayed black.
+- The measured pre-fix Linux worker reached about 2.27 GB virtual space before a 248 MB OpenCV
+  topology allocation failed despite only about 820 MB resident. With bounded allocator/thread
+  settings, the successful run was observed around 1.45 GB virtual/826 MB resident during OCR and
+  fell to about 1.06 GB virtual/533 MB resident after native release. The isolated worker ceiling is
+  therefore 2.8 GB address space, 720 CPU seconds, and 900 wall seconds; the container retains its
+  separate hard 3 GB resident-memory cap, two CPUs, one-job semaphore, no egress, and fail-closed
+  release gates.
 
 ## Previous model measurement (not a current promotion)
 
@@ -133,7 +169,7 @@ These directories are intentionally ignored by Git.
 
 ## Session validation
 
-- `338` standalone Python tests pass, including the web boundary, tenant isolation, encrypted PDF,
+- `350` standalone Python tests pass, including the web boundary, tenant isolation, encrypted PDF,
   invalid page, typed feedback, hard branch/bridge rules, V2/V7 quarantine, and immediate deletion.
 - The complete Engenharia NATA validation passes: `340` JavaScript tests, lint, format, style,
   trilingual parity across 20 i18n files, asset references, and Rotta 12 integrity.
@@ -166,6 +202,10 @@ These directories are intentionally ignored by Git.
   commands: OCR recognized `RD`, the raster pipeline painted 1 of 7 candidate runs, V2/V7 allowed
   release with the source preserved, the downloaded one-page PDF reopened, and deletion returned
   `204`. The measured processing time was 6.8 seconds for the small 1200 x 800 fixture.
+- Image `engnata/pintor-api:0.2.1` then fixed A0 OCR memory pressure and terminal-worker cleanup.
+  The exact protected A0 reproduction that previously failed reached `ready` in 279.3 seconds,
+  returned a valid 44-page PDF, rejected unauthenticated access with `401`, and deleted the private
+  job with `204`. The source and downloaded diagnostic copies were removed after verification.
 - Intentionally did not place VM 206 in the seven-day VM backup rotation: job PDFs have a 24-hour
   retention contract, and snapshot backups would silently extend retention. Code is reproducible
   from Git; a lost beta secret is rotated instead of restored with stale user documents.
@@ -180,7 +220,6 @@ These directories are intentionally ignored by Git.
    current job intentionally paints only one selected page.
 4. Add expert adjudication tooling and immutable dataset manifests. Never auto-promote public
    feedback or reduce renderer/topology errors to a binary wire classifier label.
-5. Measure legally usable dense A1/A0 raster pages against the production 480-second CPU,
-   600-second wall-time, 2.3 GB child-worker, and 3 GB container limits before advertising those
-   sheet classes as qualified. The 1200 x 800 production smoke is deliberately not a capacity
-   claim.
+5. Expand the legally usable dense A1/A0 benchmark beyond the one qualified Volvo sheet and track
+   recall under the conservative native-scale-only policy. Do not infer universal manufacturer or
+   page-layout support from this successful capacity reproduction.

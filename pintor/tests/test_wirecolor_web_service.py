@@ -17,6 +17,7 @@ from wirecolor.web_service import (
     create_app,
     inspect_pdf_source,
     process_job,
+    process_job_isolated,
 )
 
 
@@ -314,6 +315,51 @@ class WebServiceTests(unittest.TestCase):
         self.assertEqual(result["metrics"]["processing_mode"], "raster-ocr")
         self.assertEqual(raster.call_args.kwargs["convention_name"], "iec_two_letter")
         self.assertTrue((store.job_dir(state["id"]) / "painted.pdf").is_file())
+
+    def test_isolated_worker_reaps_native_threads_after_terminal_failure(self):
+        store = JobStore(Path(self.temp.name) / "terminal-worker")
+        state = store.create(
+            _pdf_bytes(), "failed-a0.pdf", 0, "auto", False,
+            25 * 1024 * 1024, _owner_hash("e" * 64),
+        )
+        store.update(state["id"], status="failed", stage="failed",
+                     error="processing failed; the result was quarantined")
+
+        class FakeWorker:
+            def __init__(self):
+                self.alive = True
+                self.exitcode = None
+                self.terminated = False
+
+            def start(self):
+                pass
+
+            def join(self, _timeout=None):
+                pass
+
+            def is_alive(self):
+                return self.alive
+
+            def terminate(self):
+                self.terminated = True
+                self.alive = False
+                self.exitcode = -15
+
+        worker = FakeWorker()
+
+        class FakeContext:
+            @staticmethod
+            def Process(**_kwargs):
+                return worker
+
+        with patch("multiprocessing.get_context", return_value=FakeContext()), patch(
+            "wirecolor.web_service.time.monotonic",
+            side_effect=[0.0, 1.0, 2.0, 2.0, 3.0, 7.0],
+        ), patch.dict(os.environ, {"PINTOR_JOB_TIMEOUT_SECONDS": "100"}):
+            process_job_isolated(store, state["id"])
+
+        self.assertTrue(worker.terminated)
+        self.assertEqual(store.read(state["id"])["status"], "failed")
 
 
 if __name__ == "__main__":
