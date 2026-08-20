@@ -17,6 +17,14 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-08-20 compact product header (0.4.2, published)
+
+- Removed the decorative private-beta badge from the product header; beta access and account/API
+  protections remain unchanged.
+- Moved the three-wire mark immediately beside the localized product name and centred the subtitle
+  beneath the combined lockup. The compact row scales down without stacking at mobile widths.
+- Removed the now-unused trilingual badge keys and bumped the frontend asset version.
+
 ## 2026-08-20 localized product name (0.4.1, published)
 
 - Localized every visible product-name reference in the Italian and Swedish UI, including the

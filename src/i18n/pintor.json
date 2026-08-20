@@ -2,7 +2,6 @@
   "$schema": "./schema.json",
   "pt-BR": {
     "hero": {
-      "beta": "Beta privado",
       "title": "Pintor",
       "subtitle": "Envie um wiring diagram. O Pintor identifica os condutores físicos, lê os códigos de cor impressos e adiciona uma camada de cor removível."
     },
@@ -172,7 +171,6 @@
   },
   "it-IT": {
     "hero": {
-      "beta": "Beta privata",
       "title": "Pittore",
       "subtitle": "Carica uno schema elettrico. Pittore identifica i conduttori fisici, legge i codici colore stampati e aggiunge un livello colore rimovibile."
     },
@@ -342,7 +340,6 @@
   },
   "sv-SE": {
     "hero": {
-      "beta": "Privat beta",
       "title": "Målaren",
       "subtitle": "Ladda upp ett kopplingsschema. Målaren identifierar fysiska ledare, läser tryckta färgkoder och lägger till ett borttagbart färglager."
     },
