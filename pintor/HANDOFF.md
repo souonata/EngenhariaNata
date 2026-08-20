@@ -39,8 +39,9 @@ Primary web entry points: `src/wirecolor/tools/paint_vector.py` and
   OCR convention confidence, and exact pixel-budget enforcement.
 - A real image-only synthetic PDF (no extractable text and no vector drawing commands) completed
   OCR, topology, removable overlay, V2 and V7 in 2.1 seconds on the development workstation.
-  Dense A1/A0 timeout/RSS measurement and the digest-pinned Linux image build remain production
-  gates; the small synthetic timing must not be extrapolated to those sheets.
+  The digest-pinned Linux image subsequently built on the production host and passed its bundled
+  OCR self-check. Dense A1/A0 timeout/RSS measurement remains a production-capacity gate; the
+  small synthetic timing must not be extrapolated to those sheets.
 - The production image pins RapidOCR 3.9.2 and ONNX Runtime 1.29.0. All OCR transitives are frozen
   in `requirements-web.lock`; RapidOCR itself is installed with `--no-deps` so its `opencv-python`
   metadata cannot install a second OpenCV beside the existing headless runtime. `rapidocr check`
@@ -132,7 +133,7 @@ These directories are intentionally ignored by Git.
 
 ## Session validation
 
-- `337` standalone Python tests pass, including the web boundary, tenant isolation, encrypted PDF,
+- `338` standalone Python tests pass, including the web boundary, tenant isolation, encrypted PDF,
   invalid page, typed feedback, hard branch/bridge rules, V2/V7 quarantine, and immediate deletion.
 - The complete Engenharia NATA validation passes: `340` JavaScript tests, lint, format, style,
   trilingual parity across 20 i18n files, asset references, and Rotta 12 integrity.
@@ -141,8 +142,9 @@ These directories are intentionally ignored by Git.
   recursive input discovery now excludes all private/generated Pintor directories, and `postbuild`
   fails if any such path returns. The rebuilt output passed across 202 emitted files.
 - A synthetic born-digital IEC PDF completed the real processing path with status `ready`, original
-  preview, painted PDF, and all release gates. Docker was not available on this workstation, so
-  the container image itself still needs its CI/host smoke test.
+  preview, painted PDF, and all release gates. The Linux image was then built on the production
+  host; `rapidocr check` initialized ONNX Runtime and verified all three bundled models without a
+  runtime download.
 
 ## 2026-08-19 protected API publication
 
@@ -159,6 +161,11 @@ These directories are intentionally ignored by Git.
 - The external production smoke passed end to end: unauthenticated capabilities returned `401`,
   beta authentication succeeded, a synthetic vector IEC PDF reached `ready`, the released result
   reopened as PDF, and authenticated deletion returned `204`.
+- On 2026-08-20 image `engnata/pintor-api:0.2.0` replaced `0.1.0` and became healthy on the same
+  protected host. A second external smoke used an actual image-only PDF with zero PDF text/vector
+  commands: OCR recognized `RD`, the raster pipeline painted 1 of 7 candidate runs, V2/V7 allowed
+  release with the source preserved, the downloaded one-page PDF reopened, and deletion returned
+  `204`. The measured processing time was 6.8 seconds for the small 1200 x 800 fixture.
 - Intentionally did not place VM 206 in the seven-day VM backup rotation: job PDFs have a 24-hour
   retention contract, and snapshot backups would silently extend retention. Code is reproducible
   from Git; a lost beta secret is rotated instead of restored with stale user documents.
@@ -173,6 +180,7 @@ These directories are intentionally ignored by Git.
    current job intentionally paints only one selected page.
 4. Add expert adjudication tooling and immutable dataset manifests. Never auto-promote public
    feedback or reduce renderer/topology errors to a binary wire classifier label.
-5. Build and smoke the OCR image on Linux, then measure dense A1-class raster pages against the
-   150-second CPU, 180-second wall-time, and 2.3 GB worker limits before promoting raster input on
-   the production host. The local 1200 x 800 smoke is deliberately not a capacity claim.
+5. Measure legally usable dense A1/A0 raster pages against the production 480-second CPU,
+   600-second wall-time, 2.3 GB child-worker, and 3 GB container limits before advertising those
+   sheet classes as qualified. The 1200 x 800 production smoke is deliberately not a capacity
+   claim.

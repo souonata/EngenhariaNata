@@ -192,7 +192,9 @@ _Última atualização: 2026-08-20_
   job, 25 MB/50 páginas, análise 75 Mpx, overlay 60 Mpx, retenção 24 h. O frontend continua
   `noindex`, fora do sitemap e visível apenas no easter egg; autenticação beta, owner isolation,
   rate limits, worker isolado, container non-root/read-only sem egress e firewall do tunnel
-  permanecem. Detalhes e gates pendentes para folhas densas A1/A0 em `pintor/HANDOFF.md`.
+  permanecem. A imagem Linux `0.2.0` passou `rapidocr check` no host e um smoke externo image-only
+  chegou a `ready` em 6,8 s, liberou PDF reabrível e apagou o job; folhas densas A1/A0 ainda exigem
+  benchmark de tempo/RSS antes de serem anunciadas como qualificadas. Detalhes em `pintor/HANDOFF.md`.
 
 - **SITE TRILÍNGUE — SUECO (`sv-SE`) + DOCK GLOBAL (branch `feat/i18n-sueco`):** iniciativa em
   andamento; plano completo e fases na seção própria do `ROADMAP.md`. **Decisões travadas:** idioma
