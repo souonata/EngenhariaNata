@@ -172,11 +172,11 @@ class CorpusPriorTests(unittest.TestCase):
 class PaintCoverageTests(unittest.TestCase):
     """Round 16 shipped a 52%-painted sheet as 'good'. Coverage must be visible per sheet."""
 
-    def _solution(self, claims, dgroups=None):
+    def _solution(self, claims, dgroups=None, dclaims=None):
         segments = [_h(100, 0, 1000), _h(200, 0, 1000),
                     _h(300, 0, 1000), _h(400, 0, 500)]
         return {"segments": segments, "solver": {"claims": claims},
-                "dgroups": dgroups or {}, "edge_excluded": set(),
+                "dgroups": dgroups or {}, "dclaims": dclaims or {}, "edge_excluded": set(),
                 "pin_border_arcs": set(), "twist": set()}
 
     def test_fully_painted_sheet_reports_one(self):
@@ -200,7 +200,8 @@ class PaintCoverageTests(unittest.TestCase):
 
     def test_dashed_routes_count_as_painted(self):
         from wirecolor.profile import paint_coverage
-        report = paint_coverage(self._solution({}, dgroups={7: [0, 1, 2, 3]}))
+        report = paint_coverage(self._solution(
+            {}, dgroups={7: [0, 1, 2, 3]}, dclaims={7: (0, ["R"])}))
         self.assertEqual(report["painted_ink_fraction"], 1.0)
 
     def test_excluded_furniture_is_not_reported_as_a_missing_wire(self):

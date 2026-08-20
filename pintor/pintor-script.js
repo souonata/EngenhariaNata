@@ -318,9 +318,10 @@ class PintorApp extends App {
     showDeclined(job) {
         this.showOnly('declined');
         document.getElementById('declineReason').textContent =
-            job.stage === 'confirm-colour-convention'
+            job.decline_reason ||
+            (job.stage === 'confirm-colour-convention'
                 ? i18n.t('declined.conventionAmbiguous')
-                : i18n.t('declined.unsupported');
+                : i18n.t('declined.unsupported'));
         if (job.stage === 'confirm-colour-convention' && job.convention) {
             document.getElementById('convention').value = job.convention;
         }

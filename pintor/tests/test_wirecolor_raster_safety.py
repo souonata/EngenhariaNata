@@ -1,0 +1,208 @@
+"""Electrical safety contracts for the raster/OCR web fallback."""
+import os
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+import numpy as np
+
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+
+from wirecolor.prep import Transform
+from wirecolor.verify.validators import v2_protected_overlap
+from wirecolor.web_service import JobStore, _owner_hash, process_job
+
+
+def _pdf_bytes():
+    import fitz
+
+    document = fitz.open()
+    document.new_page(width=300, height=200)
+    payload = document.tobytes()
+    document.close()
+    return payload
+
+
+def _raster_solution():
+    label = {"code": "RD", "raw": "1.5 RD"}
+    return {
+        "segments": [{"order": [(20, 20), (20, 80)]}],
+        "solver": {"claims": {0: (label, ["RD"])}},
+        "dgroups": {},
+        "dclaims": {},
+        "housings": [],
+        "inline_components": [],
+    }
+
+
+class RasterElectricalSafetyTests(unittest.TestCase):
+    def test_auto_convention_needs_two_strong_labels(self):
+        from wirecolor.tools.paint_raster import _score_conventions
+
+        selected, confidence, labels = _score_conventions([
+            {"code": "RD", "score": 0.97},
+            {"code": "BU", "score": 0.41},
+        ])
+
+        self.assertEqual(selected, "iec_two_letter")
+        self.assertEqual(confidence, "low")
+        self.assertEqual([label["code"] for label in labels], ["RD"])
+
+    def test_raster_canvas_never_rounds_above_pixel_budget(self):
+        from wirecolor.tools.paint_raster import _canvas_size
+
+        meta = {
+            "working_w": 100,
+            "working_h": 100,
+            "native": {"width": 500, "height": 500},
+        }
+        width, height = _canvas_size(meta, 11_428)
+
+        self.assertLessEqual(width * height, 11_428)
+
+    def test_unclaimed_dashed_routes_do_not_inflate_paint_coverage(self):
+        from wirecolor.profile import paint_coverage
+
+        segment = {"order": [(0, 0), (0, 100)], "ends": [(0, 0), (0, 100)]}
+        solution = {
+            "segments": [segment],
+            "solver": {"claims": {}},
+            "dgroups": {7: [0]},
+            "dclaims": {},
+            "edge_excluded": set(),
+            "pin_border_arcs": set(),
+            "twist": set(),
+        }
+
+        coverage = paint_coverage(solution)
+
+        self.assertEqual(coverage["painted_ink_fraction"], 0.0)
+        self.assertEqual(coverage["painted_arcs"], 0)
+
+    def test_raster_production_wrapper_disables_splice_colour_propagation(self):
+        """A conductive splice must not imply one physical conductor colour."""
+        from wirecolor.tools.paint_raster import paint_page
+
+        solution = _raster_solution()
+        rgba = np.zeros((100, 100, 4), dtype=np.uint8)
+        rgba[20, 20, 3] = 255
+        profile = {
+            "coverage": {
+                "unresolved_roots": 0,
+                "painted_ink_fraction": 1.0,
+            },
+        }
+        meta = {
+            "working_w": 100,
+            "working_h": 100,
+            "page_w": 72,
+            "page_h": 72,
+            "native": None,
+        }
+
+        with tempfile.TemporaryDirectory() as directory, \
+                patch("wirecolor.instrument.reset_for_tests"), \
+                patch("wirecolor.prep.render_working_png", return_value=meta), \
+                patch(
+                    "wirecolor.tools.paint_raster._recognise_page_labels",
+                    return_value=("iec_two_letter", "user-selected", 1),
+                ), \
+                patch("wirecolor.pipeline.run_page", return_value=solution) as run_page, \
+                patch("wirecolor.profile.measure_sheet_profile", return_value=profile), \
+                patch(
+                    "wirecolor.paint.raster_overlay.render_native",
+                    return_value=np.zeros((100, 100, 3), dtype=np.uint8),
+                ), \
+                patch(
+                    "wirecolor.paint.raster_overlay.build_overlay_rgba",
+                    return_value=rgba,
+                ), \
+                patch(
+                    "wirecolor.verify.validators.v2_protected_overlap",
+                    return_value={"name": "V2", "passed": True},
+                ), \
+                patch(
+                    "wirecolor.paint.raster_overlay.attach_overlay",
+                    return_value={"ocg": "Pintor Wire Colors"},
+                ), \
+                patch(
+                    "wirecolor.verify.validators.v7_preservation",
+                    return_value={"name": "V7", "passed": True},
+                ):
+            report = paint_page(
+                "scan.pdf", 0, directory,
+                convention_name="iec_two_letter", paint_pixel_budget=10_000,
+            )
+
+        self.assertFalse(report["declined"])
+        self.assertFalse(run_page.call_args.kwargs["allow_splice_propagation"])
+
+    def test_v2_rejects_overlay_inside_a_component_housing(self):
+        rgba = np.zeros((120, 120, 4), dtype=np.uint8)
+        rgba[35, 40, 3] = 255
+        solution = {
+            "housings": [(20, 20, 40, 30)],
+            "inline_components": [],
+        }
+
+        verdict = v2_protected_overlap(rgba, solution, Transform(1.0, 1.0))
+
+        self.assertFalse(verdict["passed"])
+        self.assertGreater(verdict["painted_px_in_protected"], 0)
+
+    def test_v2_rejects_overlay_crossing_an_inline_component(self):
+        rgba = np.zeros((120, 120, 4), dtype=np.uint8)
+        rgba[75, 60, 3] = 255
+        solution = {
+            "housings": [],
+            "inline_components": [(20, 75, 95, 75, 6)],
+        }
+
+        verdict = v2_protected_overlap(rgba, solution, Transform(1.0, 1.0))
+
+        self.assertFalse(verdict["passed"])
+        self.assertGreater(verdict["painted_px_in_protected"], 0)
+
+    def test_web_quarantines_a_raster_result_when_v2_fails(self):
+        with tempfile.TemporaryDirectory() as directory, patch.dict(
+            os.environ, {"PINTOR_COOKIE_SECURE": "0"},
+        ):
+            store = JobStore(directory)
+            state = store.create(
+                _pdf_bytes(), "scan.pdf", 0, "iec_two_letter", False,
+                25 * 1024 * 1024, _owner_hash("b" * 64),
+            )
+            vector_report = {
+                "declined": True,
+                "decline_reason": "raster scan with no trustworthy vector geometry",
+                "runs": 0,
+                "runs_painted": 0,
+            }
+            raster_report = {
+                "declined": False,
+                "processing_mode": "raster-ocr",
+                "v2": {"name": "V2", "passed": False},
+                "v7": {"name": "V7", "passed": True},
+            }
+            with patch(
+                "wirecolor.tools.paint_vector.paint_page", return_value=vector_report,
+            ), patch(
+                "wirecolor.tools.paint_raster.paint_page", return_value=raster_report,
+            ) as raster_painter:
+                process_job(store, state["id"])
+
+            result = store.read(state["id"])
+
+        self.assertEqual(result["status"], "failed")
+        self.assertIn("V2", result["internal_error"])
+        self.assertEqual(
+            raster_painter.call_args.kwargs["convention_name"], "iec_two_letter",
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()

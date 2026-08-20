@@ -523,7 +523,8 @@ def resolved_label_ids(sol, segments=None):
 def ensure_labels(image_path: str, labels_path: str, convention) -> None:
     if not os.path.exists(labels_path):
         from .labels.ocr import ocr_labels
-        json.dump(ocr_labels(image_path, convention), open(labels_path, "w"))
+        with open(labels_path, "w", encoding="utf-8") as handle:
+            json.dump(ocr_labels(image_path, convention), handle)
         print(f"OCR labels written to {labels_path}")
 
 
@@ -537,8 +538,10 @@ def ensure_harvest(image_path: str, harvest_path: str, convention) -> list:
     """
     if not os.path.exists(harvest_path):
         from .labels.harvest import harvest_labels
-        json.dump(harvest_labels(image_path, convention), open(harvest_path, "w"))
-    return json.load(open(harvest_path))["labels"]
+        with open(harvest_path, "w", encoding="utf-8") as handle:
+            json.dump(harvest_labels(image_path, convention), handle)
+    with open(harvest_path, encoding="utf-8") as handle:
+        return json.load(handle)["labels"]
 
 
 def _unseen(harvested, known, reach=22.0):
@@ -556,7 +559,7 @@ def _unseen(harvested, known, reach=22.0):
 
 def run_page(image_path: str, labels_path: str, convention,
              probe=None, who=None, netends=None, deadends=False,
-             harvest_path=None) -> dict:
+             harvest_path=None, allow_splice_propagation=False) -> dict:
     """Run detection + solve + dash pass on one raster page. Returns the PageSolution dict
     (segments, claims, dash groups/claims, housings, dots, labels, solver state) -- everything
     the painters and the later verification stack consume."""
@@ -584,7 +587,8 @@ def run_page(image_path: str, labels_path: str, convention,
     img = cv2.imread(image_path)
     H, W = img.shape[:2]
 
-    data = json.load(open(labels_path))
+    with open(labels_path, encoding="utf-8") as handle:
+        data = json.load(handle)
     labels = filter_labels(data["labels"])
     # round 7: grid zone letters (P/R/T...) in the page-edge margin are not cable labels
     labels = filter_margin_labels(labels, W, H)
@@ -1128,7 +1132,11 @@ def run_page(image_path: str, labels_path: str, convention,
     # An unlabelled conductor spliced to coloured ones takes their colour when they all agree.
     # Runs after the dash pass so it cannot disturb dash candidacy, and before the pin-border
     # guard so any colour it puts on connector furniture is cleaned up again.
-    _spliced = propagate_through_splices(segments, sol, splice_dots)
+    # A splice proves electrical continuity, not the physical colour of every conductor entering
+    # it.  This unsafe legacy inference is disabled by default; a controlled replay may opt in
+    # explicitly for before/after measurement, but no production caller does so.
+    _spliced = propagate_through_splices(segments, sol, splice_dots) \
+        if allow_splice_propagation else {"adopted": 0, "revoked": 0}
     if _spliced["adopted"] or _spliced["revoked"]:
         print(f"splice_continuity: {_spliced['adopted']} unlabelled conductors coloured by "
               f"agreeing splices, {_spliced['revoked']} revoked on disagreement")

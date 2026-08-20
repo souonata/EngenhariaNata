@@ -1,6 +1,6 @@
 # Pintor handoff
 
-Last updated: 2026-08-19
+Last updated: 2026-08-20
 
 ## Product boundary
 
@@ -8,9 +8,10 @@ Pintor has been extracted from the Volvo Penta Assistant into this directory. Th
 remain independently installable and runnable. The Volvo material is a corpus/convention, not a
 runtime dependency.
 
-The Engenharia NATA beta is now a private-job web app, but its honest capability boundary is
-vector PDF plus extractable text, one selected page per job, and a supported/confirmed colour
-convention. Raster/OCR and generic-manufacturer claims remain out of scope.
+The Engenharia NATA beta is a private-job web app supporting one selected vector or rasterized page
+per job. Exact text/strokes are preferred; image-only pages use the bundled OCR and conservative
+pixel-topology pipeline. A supported/confirmed colour convention remains mandatory, and uncertain
+segments stay black.
 
 ## Current architecture
 
@@ -19,7 +20,37 @@ abstention. Atomic conductor pieces are classified after topology extraction, wi
 constraints retaining final authority. Bayesian/evolutionary search is limited to tunable policy
 parameters. Evaluation splits are grouped by publication.
 
-Primary entry point: `src/wirecolor/tools/paint_vector.py`.
+Primary web entry points: `src/wirecolor/tools/paint_vector.py` and
+`src/wirecolor/tools/paint_raster.py`.
+
+## 2026-08-20 raster/OCR web capability
+
+- Added a production raster wrapper around the existing page-wide OCR, skeleton, component,
+  conductor-ownership, removable-overlay, V2, and V7 modules.
+- Auto-detection reads the page once against the union vocabulary, requires two strong OCR labels
+  and a decisive convention margin, then filters all evidence back to the selected profile.
+- Vector refusal falls back to OCR only for raster geometry or a page with no extractable legends;
+  it never bypasses an ordinary vector ownership abstention.
+- Splice colour propagation is disabled by default and explicitly disabled in the web wrapper:
+  electrical continuity never proves physical conductor colour.
+- Raster canvases have a categorical 60-million-pixel ceiling, including rounding, and all output
+  remains an additive optional-content layer over byte-preserved source pages.
+- Added raster safety tests for splice behaviour, component/housing V2 overlap, release quarantine,
+  OCR convention confidence, and exact pixel-budget enforcement.
+- A real image-only synthetic PDF (no extractable text and no vector drawing commands) completed
+  OCR, topology, removable overlay, V2 and V7 in 2.1 seconds on the development workstation.
+  The digest-pinned Linux image subsequently built on the production host and passed its bundled
+  OCR self-check. Dense A1/A0 timeout/RSS measurement remains a production-capacity gate; the
+  small synthetic timing must not be extrapolated to those sheets.
+- The production image pins RapidOCR 3.9.2 and ONNX Runtime 1.29.0. All OCR transitives are frozen
+  in `requirements-web.lock`; RapidOCR itself is installed with `--no-deps` so its `opencv-python`
+  metadata cannot install a second OpenCV beside the existing headless runtime. `rapidocr check`
+  now blocks the image build if the bundled models or ONNX backend cannot initialize.
+- A corpus-free synthetic PDF test embeds one full-page raster with no PDF text or vector paths,
+  injects deterministic OCR evidence, runs the real pixel topology/overlay path, and requires V2,
+  V7, a removable OCG, and an unchanged source hash. A separate local real-OCR smoke recognized
+  the same small 1200 x 800 fixture and completed end to end in 2.0 seconds. This is not a dense or
+  large-sheet performance qualification.
 
 ## Previous model measurement (not a current promotion)
 
@@ -102,7 +133,7 @@ These directories are intentionally ignored by Git.
 
 ## Session validation
 
-- `327` standalone Python tests pass, including the web boundary, tenant isolation, encrypted PDF,
+- `338` standalone Python tests pass, including the web boundary, tenant isolation, encrypted PDF,
   invalid page, typed feedback, hard branch/bridge rules, V2/V7 quarantine, and immediate deletion.
 - The complete Engenharia NATA validation passes: `340` JavaScript tests, lint, format, style,
   trilingual parity across 20 i18n files, asset references, and Rotta 12 integrity.
@@ -111,8 +142,9 @@ These directories are intentionally ignored by Git.
   recursive input discovery now excludes all private/generated Pintor directories, and `postbuild`
   fails if any such path returns. The rebuilt output passed across 202 emitted files.
 - A synthetic born-digital IEC PDF completed the real processing path with status `ready`, original
-  preview, painted PDF, and all release gates. Docker was not available on this workstation, so
-  the container image itself still needs its CI/host smoke test.
+  preview, painted PDF, and all release gates. The Linux image was then built on the production
+  host; `rapidocr check` initialized ONNX Runtime and verified all three bundled models without a
+  runtime download.
 
 ## 2026-08-19 protected API publication
 
@@ -129,6 +161,11 @@ These directories are intentionally ignored by Git.
 - The external production smoke passed end to end: unauthenticated capabilities returned `401`,
   beta authentication succeeded, a synthetic vector IEC PDF reached `ready`, the released result
   reopened as PDF, and authenticated deletion returned `204`.
+- On 2026-08-20 image `engnata/pintor-api:0.2.0` replaced `0.1.0` and became healthy on the same
+  protected host. A second external smoke used an actual image-only PDF with zero PDF text/vector
+  commands: OCR recognized `RD`, the raster pipeline painted 1 of 7 candidate runs, V2/V7 allowed
+  release with the source preserved, the downloaded one-page PDF reopened, and deletion returned
+  `204`. The measured processing time was 6.8 seconds for the small 1200 x 800 fixture.
 - Intentionally did not place VM 206 in the seven-day VM backup rotation: job PDFs have a 24-hour
   retention contract, and snapshot backups would silently extend retention. Code is reproducible
   from Git; a lost beta secret is rotated instead of restored with stale user documents.
@@ -143,5 +180,7 @@ These directories are intentionally ignored by Git.
    current job intentionally paints only one selected page.
 4. Add expert adjudication tooling and immutable dataset manifests. Never auto-promote public
    feedback or reduce renderer/topology errors to a binary wire classifier label.
-5. Add raster/OCR only after it has protected-region and preservation gates equivalent to the
-   vector path.
+5. Measure legally usable dense A1/A0 raster pages against the production 480-second CPU,
+   600-second wall-time, 2.3 GB child-worker, and 3 GB container limits before advertising those
+   sheet classes as qualified. The 1200 x 800 production smoke is deliberately not a capacity
+   claim.
