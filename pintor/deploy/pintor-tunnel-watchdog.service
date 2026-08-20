@@ -1,0 +1,18 @@
+[Unit]
+Description=Recover the Engenharia NATA Cloudflare tunnel after sustained public failure
+After=docker.service network-online.target
+Requires=docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+Environment=CLOUDFLARED_CONTAINER=cloudflared
+Environment=CLOUDFLARED_FAILURE_THRESHOLD=3
+Environment=CLOUDFLARED_STATE_FILE=/run/pintor-cloudflared-watchdog.failures
+ExecStart=/usr/local/sbin/pintor-cloudflared-watchdog.sh
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/run
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6

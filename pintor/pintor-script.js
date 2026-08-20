@@ -3,6 +3,7 @@
  */
 
 import { App, i18n } from '../src/core/app.js';
+import { localizedFetchError } from './pintor-network.js';
 
 const TERMINAL_STATES = new Set(['ready', 'declined', 'failed', 'revision-requested']);
 const ERROR_LABEL_KEYS = {
@@ -87,7 +88,11 @@ class PintorApp extends App {
                 this.showOnly('upload');
             }
         } catch (error) {
-            this.showStatus(status, error.message || i18n.t('access.unavailable'), 'error');
+            this.showStatus(
+                status,
+                localizedFetchError(error, i18n.t('access.unavailable')),
+                'error'
+            );
         }
     }
 
@@ -117,7 +122,11 @@ class PintorApp extends App {
             document.getElementById('accessCode').value = '';
             this.showOnly('upload');
         } catch (error) {
-            this.showStatus(status, error.message || i18n.t('access.unavailable'), 'error');
+            this.showStatus(
+                status,
+                localizedFetchError(error, i18n.t('access.unavailable')),
+                'error'
+            );
         } finally {
             button.disabled = false;
             button.querySelector('span').textContent = i18n.t('access.submit');
@@ -219,7 +228,7 @@ class PintorApp extends App {
             this.returnToUpload();
             this.showStatus(
                 status,
-                error.message || i18n.t('messages.serviceUnavailable'),
+                localizedFetchError(error, i18n.t('messages.serviceUnavailable')),
                 'error'
             );
         } finally {
@@ -730,7 +739,11 @@ class PintorApp extends App {
             this.pendingPoints = [];
             this.renderAnnotations();
         } catch (error) {
-            this.showStatus(status, error.message || i18n.t('messages.feedbackFailed'), 'error');
+            this.showStatus(
+                status,
+                localizedFetchError(error, i18n.t('messages.feedbackFailed')),
+                'error'
+            );
         } finally {
             button.textContent = i18n.t('feedback.submit');
             button.disabled = this.annotations.length === 0;
