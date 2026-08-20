@@ -21,6 +21,10 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Callable
 
+from .accounts import (
+    ACCOUNT_COOKIE, AccountError, AccountStore, DuplicateUsername, InvalidCredentials,
+)
+
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_WORKSPACE = PACKAGE_ROOT / "workspaces" / "web"
@@ -31,13 +35,16 @@ ERROR_TYPES = frozenset({
     "wrong-colour", "non-wire", "stops-mid", "missing", "bleed",
     "dash-style", "stripe-style",
 })
-MAX_PAGES = 50
+MAX_DOCUMENT_PAGES = 2_000
+MAX_SELECTED_PAGES = 50
 MAX_PAGE_SIDE_PT = 12_000
 MAX_PAGE_AREA_PT2 = 24_000_000
 ANALYSIS_DPI = 200
 MAX_ANALYSIS_PIXELS = 75_000_000
 BETA_COOKIE = "pintor_beta"
 BETA_COOKIE_PURPOSE = b"pintor-beta-access-v1"
+ACCOUNT_OWNER_PURPOSE = b"pintor-account-owner-v1:"
+FEEDBACK_ID_RE = re.compile(r"^[a-f0-9]{32}$")
 
 
 class JobNotFound(KeyError):
@@ -91,12 +98,52 @@ def _owner_hash(session_id: str) -> str:
     return hashlib.sha256(session_id.encode("ascii")).hexdigest()
 
 
+def _account_owner_token(secret: str, account_id: str) -> str:
+    return hmac.new(
+        secret.encode("utf-8"), ACCOUNT_OWNER_PURPOSE + account_id.encode("ascii"), hashlib.sha256,
+    ).hexdigest()
+
+
+def parse_page_selection(value: str) -> list[int]:
+    """Parse human page notation into unique, zero-based indices.
+
+    Accepted examples: ``40, 42, 44, 46`` and ``40-46``. Ranges are inclusive and the selected
+    page count is bounded independently from the total manual length.
+    """
+    if not isinstance(value, str) or not value.strip() or len(value) > 200:
+        raise InvalidUpload("enter at least one page number")
+    selected = []
+    seen = set()
+    for raw_part in value.split(","):
+        part = raw_part.strip()
+        match = re.fullmatch(r"(\d+)(?:\s*-\s*(\d+))?", part)
+        if not match:
+            raise InvalidUpload("pages must use numbers separated by commas or ascending ranges")
+        first = int(match.group(1))
+        last = int(match.group(2) or first)
+        if first < 1 or last < first or last > MAX_DOCUMENT_PAGES:
+            raise InvalidUpload(
+                f"pages must be ascending numbers between 1 and {MAX_DOCUMENT_PAGES}"
+            )
+        for page_number in range(first, last + 1):
+            page_index = page_number - 1
+            if page_index not in seen:
+                selected.append(page_index)
+                seen.add(page_index)
+            if len(selected) > MAX_SELECTED_PAGES:
+                raise InvalidUpload(
+                    f"select at most {MAX_SELECTED_PAGES} pages per private job"
+                )
+    return selected
+
+
 def _public_state(state: dict) -> dict:
     allowed = {
-        "id", "status", "stage", "original_name", "page", "page_count", "convention",
+        "id", "status", "stage", "original_name", "page", "selected_pages", "pages",
+        "page_count", "convention",
         "requested_convention", "convention_confidence", "created_at", "updated_at", "metrics",
         "processing_mode", "decline_reason", "error", "preview_original", "preview_painted",
-        "download", "feedback_id",
+        "download", "feedback_id", "current_page", "completed_pages", "selected_page_count",
     }
     return {key: state[key] for key in allowed if key in state}
 
@@ -143,9 +190,9 @@ class JobStore:
         _atomic_json(self.job_dir(job_id) / "state.json", state)
         return state
 
-    def create(self, content: bytes, filename: str | None, page: int, convention: str,
+    def create(self, content: bytes, filename: str | None, pages: list[int] | int, convention: str,
                consent_learning: bool, max_bytes: int, owner_hash: str,
-               max_storage_bytes: int = 0) -> dict:
+               max_storage_bytes: int = 0, account: dict | None = None) -> dict:
         if not content or len(content) > max_bytes:
             raise InvalidUpload("PDF is empty or exceeds the upload limit")
         if not content.startswith(b"%PDF-"):
@@ -173,6 +220,13 @@ class JobStore:
         if active >= 2:
             raise InvalidUpload("this beta session already has two active jobs")
 
+        selected_pages = [pages] if isinstance(pages, int) else list(pages)
+        if not selected_pages or len(selected_pages) > MAX_SELECTED_PAGES:
+            raise InvalidUpload(f"select between 1 and {MAX_SELECTED_PAGES} pages")
+        if any(not isinstance(page, int) or page < 0 for page in selected_pages):
+            raise InvalidUpload("invalid selected page")
+        selected_pages = list(dict.fromkeys(selected_pages))
+
         job_id = uuid.uuid4().hex
         directory = self.jobs / job_id
         directory.mkdir(mode=0o700)
@@ -185,11 +239,15 @@ class JobStore:
             "status": "queued",
             "stage": "queued",
             "original_name": _safe_name(filename),
-            "page": page,
+            "page": selected_pages[0],
+            "selected_pages": selected_pages,
+            "selected_page_count": len(selected_pages),
             "requested_convention": convention,
             "consent_learning": bool(consent_learning),
             "source_sha256": hashlib.sha256(content).hexdigest(),
             "owner_hash": owner_hash,
+            "account_id": account.get("id") if account else None,
+            "account_username": account.get("username") if account else None,
             "created_at": now,
             "updated_at": now,
         }
@@ -197,7 +255,9 @@ class JobStore:
         return state
 
     def artifact(self, job_id: str, name: str, session_id: str | None = None) -> Path:
-        if name not in {"original.jpg", "painted.jpg", "painted.pdf"}:
+        if name != "painted.pdf" and not re.fullmatch(
+            r"(?:original|painted)-p\d{1,4}\.jpg", name,
+        ):
             raise JobNotFound(job_id)
         if session_id is not None:
             self.read_owned(job_id, session_id)
@@ -206,7 +266,8 @@ class JobStore:
             raise JobNotFound(job_id)
         return path
 
-    def add_feedback(self, job_id: str, payload: dict, session_id: str | None = None) -> dict:
+    def add_feedback(self, job_id: str, payload: dict, session_id: str | None = None,
+                     account: dict | None = None) -> dict:
         state = self.read_owned(job_id, session_id) if session_id is not None else self.read(job_id)
         if state.get("status") not in {"ready", "revision-requested"}:
             raise ValueError("job is not ready for review")
@@ -222,7 +283,9 @@ class JobStore:
             "source_sha256": state["source_sha256"],
             "document_group_candidate": state["source_sha256"],
             "publication_group": None,
-            "page": state["page"],
+            "page": annotations[0]["page"] if len({item["page"] for item in annotations}) == 1
+                else None,
+            "pages": sorted({item["page"] for item in annotations}),
             "convention": state.get("convention"),
             "annotations": annotations,
             "note": str(payload.get("note") or "").strip()[:2000],
@@ -232,6 +295,11 @@ class JobStore:
             "created_at": int(time.time()),
             "status": "queued-for-review",
             "trainable": False,
+            "eligible_for_dataset": False,
+            "account_id": account.get("id") if account else state.get("account_id"),
+            "account_username": account.get("username") if account
+                else state.get("account_username"),
+            "original_name": state.get("original_name"),
         }
         feedback_dir = self.job_dir(job_id) / "feedback"
         _atomic_json(feedback_dir / f"{feedback_id}.json", record)
@@ -240,11 +308,156 @@ class JobStore:
             inbox = self.training / feedback_id
             inbox.mkdir(mode=0o700)
             shutil.copyfile(self.job_dir(job_id) / "source.pdf", inbox / "source.pdf")
+            painted = self.job_dir(job_id) / "painted.pdf"
+            if painted.is_file():
+                shutil.copyfile(painted, inbox / "painted.pdf")
+            for page_index in record["pages"]:
+                for kind in ("original", "painted"):
+                    preview = self.job_dir(job_id) / f"{kind}-p{page_index}.jpg"
+                    if preview.is_file():
+                        shutil.copyfile(preview, inbox / preview.name)
+            _atomic_json(inbox / "job.json", {
+                "id": job_id,
+                "original_name": state.get("original_name"),
+                "selected_pages": state.get("selected_pages") or [state.get("page")],
+                "page_dimensions": state.get("page_dimensions", {}),
+                "convention": state.get("convention"),
+                "processing_mode": state.get("processing_mode"),
+                "metrics": state.get("metrics", {}),
+                "source_sha256": state.get("source_sha256"),
+            })
             _atomic_json(inbox / "feedback.json", record)
 
         self.update(job_id, status="revision-requested", stage="human-review",
                     feedback_id=feedback_id)
         return record
+
+    def list_owned(self, session_id: str) -> list[dict]:
+        owner_hash = _owner_hash(session_id)
+        records = []
+        for state_path in self.jobs.glob("*/state.json"):
+            try:
+                state = json.loads(state_path.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            if state.get("owner_hash") != owner_hash:
+                continue
+            records.append(_public_state(state))
+        return sorted(records, key=lambda item: item.get("created_at", 0), reverse=True)
+
+    def _feedback_locations(self) -> dict[str, tuple[Path, dict]]:
+        records: dict[str, tuple[Path, dict]] = {}
+        for record_path in self.jobs.glob("*/feedback/*.json"):
+            try:
+                record = json.loads(record_path.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            feedback_id = record.get("id")
+            if isinstance(feedback_id, str) and FEEDBACK_ID_RE.fullmatch(feedback_id):
+                records[feedback_id] = (record_path, record)
+        for record_path in self.training.glob("*/feedback.json"):
+            try:
+                record = json.loads(record_path.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            feedback_id = record.get("id")
+            if isinstance(feedback_id, str) and FEEDBACK_ID_RE.fullmatch(feedback_id):
+                records.setdefault(feedback_id, (record_path, record))
+        return records
+
+    @staticmethod
+    def _public_feedback(record: dict, detailed: bool = False) -> dict:
+        allowed = {
+            "id", "job_id", "pages", "page", "convention", "annotations", "note",
+            "request_revision", "consent_learning", "created_at", "status", "trainable",
+            "eligible_for_dataset", "account_username", "original_name", "reviewed_at",
+            "review_note", "reviewer_username", "decision", "review_history",
+        }
+        payload = {key: record[key] for key in allowed if key in record}
+        if not detailed:
+            payload["annotation_count"] = len(record.get("annotations") or [])
+            payload.pop("annotations", None)
+            payload.pop("review_history", None)
+        return payload
+
+    def list_feedback(self) -> list[dict]:
+        records = [
+            self._public_feedback(record)
+            for _, record in self._feedback_locations().values()
+        ]
+        return sorted(records, key=lambda item: item.get("created_at", 0), reverse=True)
+
+    def get_feedback(self, feedback_id: str) -> dict:
+        if not FEEDBACK_ID_RE.fullmatch(feedback_id):
+            raise JobNotFound(feedback_id)
+        located = self._feedback_locations().get(feedback_id)
+        if not located:
+            raise JobNotFound(feedback_id)
+        return self._public_feedback(located[1], detailed=True)
+
+    def feedback_artifact(self, feedback_id: str, name: str) -> Path:
+        if not FEEDBACK_ID_RE.fullmatch(feedback_id) or not (
+            name in {"source.pdf", "painted.pdf"}
+            or re.fullmatch(r"(?:original|painted)-p\d{1,4}\.jpg", name)
+        ):
+            raise JobNotFound(feedback_id)
+        located = self._feedback_locations().get(feedback_id)
+        if not located:
+            raise JobNotFound(feedback_id)
+        record_path, record = located
+        live = self.jobs / str(record.get("job_id")) / name
+        archived = self.training / feedback_id / name
+        for candidate in (live, archived):
+            try:
+                resolved = candidate.resolve()
+            except OSError:
+                continue
+            if resolved.is_file() and (
+                self.jobs in resolved.parents or self.training in resolved.parents
+            ):
+                return resolved
+        raise JobNotFound(feedback_id)
+
+    def adjudicate_feedback(self, feedback_id: str, decision: str, note: str,
+                            reviewer: dict) -> dict:
+        if decision not in {"accepted", "rejected", "needs-clarification"}:
+            raise ValueError("invalid expert decision")
+        locations = self._feedback_locations()
+        located = locations.get(feedback_id)
+        if not located:
+            raise JobNotFound(feedback_id)
+        record = dict(located[1])
+        now = int(time.time())
+        history = list(record.get("review_history") or [])
+        history.append({
+            "decision": decision,
+            "note": str(note or "").strip()[:2000],
+            "reviewed_at": now,
+            "reviewer_id": reviewer["id"],
+            "reviewer_username": reviewer["username"],
+        })
+        record.update({
+            "decision": decision,
+            "status": f"expert-{decision}",
+            "review_note": str(note or "").strip()[:2000],
+            "reviewed_at": now,
+            "reviewer_id": reviewer["id"],
+            "reviewer_username": reviewer["username"],
+            "review_history": history,
+            # Adjudication only makes a consented report eligible for a later offline dataset.
+            # The web service never trains or promotes a model.
+            "eligible_for_dataset": bool(
+                decision == "accepted" and record.get("consent_learning")
+            ),
+            "trainable": False,
+        })
+        live_path = self.jobs / str(record.get("job_id")) / "feedback" / f"{feedback_id}.json"
+        archive_path = self.training / feedback_id / "feedback.json"
+        if live_path.is_file():
+            _atomic_json(live_path, record)
+        if archive_path.is_file():
+            _atomic_json(archive_path, record)
+        return self._public_feedback(record, detailed=True)
 
     def cleanup_expired(self, now: int | None = None) -> int:
         threshold = (now or int(time.time())) - self.retention_seconds
@@ -282,6 +495,13 @@ def normalize_annotations(raw, state: dict) -> list[dict]:
         raise ValueError("annotations must be a list with at most 100 entries")
 
     normalized = []
+    selected_pages = state.get("selected_pages") or [state["page"]]
+    page_dimensions = state.get("page_dimensions") or {
+        str(state["page"]): {
+            "page_width_pt": state["page_width_pt"],
+            "page_height_pt": state["page_height_pt"],
+        }
+    }
     for item in raw:
         if not isinstance(item, dict) or item.get("type") not in ERROR_TYPES:
             raise ValueError("unknown annotation type")
@@ -315,6 +535,14 @@ def normalize_annotations(raw, state: dict) -> list[dict]:
         if expected and not COLOUR_CODE_RE.fullmatch(expected):
             raise ValueError("invalid expected colour code")
 
+        try:
+            page_index = int(item.get("page", state["page"]))
+        except (TypeError, ValueError) as error:
+            raise ValueError("annotation page must be an integer") from error
+        if page_index not in selected_pages or str(page_index) not in page_dimensions:
+            raise ValueError("annotation page was not selected for this job")
+        dimensions = page_dimensions[str(page_index)]
+
         expectation = {
             "wrong-colour": f"painted:{expected}",
             "non-wire": "black",
@@ -326,8 +554,10 @@ def normalize_annotations(raw, state: dict) -> list[dict]:
         }[item["type"]]
         centre_x = sum(point[0] for point in clean_points) / len(clean_points)
         centre_y = sum(point[1] for point in clean_points) / len(clean_points)
-        analysis_at = [round(centre_x * float(state["page_width_pt"]) * 200.0 / 72.0, 1),
-                       round(centre_y * float(state["page_height_pt"]) * 200.0 / 72.0, 1)]
+        analysis_at = [
+            round(centre_x * float(dimensions["page_width_pt"]) * 200.0 / 72.0, 1),
+            round(centre_y * float(dimensions["page_height_pt"]) * 200.0 / 72.0, 1),
+        ]
         training_target = {
             "non-wire": "wire-vs-furniture",
             "missing": "tracing-or-abstention",
@@ -338,6 +568,7 @@ def normalize_annotations(raw, state: dict) -> list[dict]:
             "stripe-style": "renderer-base-tracer",
         }[item["type"]]
         normalized.append({
+            "page": page_index,
             "type": item["type"],
             "class": item["type"],
             "geometry": {"type": geometry["type"], "points": clean_points},
@@ -352,7 +583,7 @@ def normalize_annotations(raw, state: dict) -> list[dict]:
     return normalized
 
 
-def inspect_pdf_source(pdf_path: Path, page_index: int) -> dict:
+def inspect_pdf_source(pdf_path: Path, page_indices: list[int] | int) -> dict:
     """Parse and validate an untrusted source inside the isolated job process."""
     import fitz
 
@@ -366,28 +597,37 @@ def inspect_pdf_source(pdf_path: Path, page_index: int) -> dict:
         page_count = len(document)
         if page_count < 1:
             raise InvalidUpload("PDF has no pages")
-        if page_count > MAX_PAGES:
-            raise InvalidUpload(f"PDF has more than the beta limit of {MAX_PAGES} pages")
-        if page_index < 0 or page_index >= page_count:
-            raise InvalidUpload(f"page must be between 1 and {page_count}")
+        if page_count > MAX_DOCUMENT_PAGES:
+            raise InvalidUpload(
+                f"PDF has more than the safety limit of {MAX_DOCUMENT_PAGES} pages"
+            )
+        selected_pages = [page_indices] if isinstance(page_indices, int) else list(page_indices)
+        if not selected_pages or len(selected_pages) > MAX_SELECTED_PAGES:
+            raise InvalidUpload(f"select between 1 and {MAX_SELECTED_PAGES} pages")
+        if any(index < 0 or index >= page_count for index in selected_pages):
+            raise InvalidUpload(f"selected pages must be between 1 and {page_count}")
 
-        selected = None
-        for index in range(page_count):
+        dimensions = {}
+        for index in selected_pages:
             rect = document[index].rect
             values = (rect.width, rect.height, rect.width * rect.height)
             if not all(math.isfinite(value) and value > 0 for value in values):
                 raise InvalidUpload(f"page {index + 1} has invalid dimensions")
             if max(values[:2]) > MAX_PAGE_SIDE_PT or values[2] > MAX_PAGE_AREA_PT2:
                 raise InvalidUpload(f"page {index + 1} exceeds the beta dimension limit")
-            if index == page_index:
-                analysis_pixels = values[2] * (ANALYSIS_DPI / 72.0) ** 2
-                if analysis_pixels > MAX_ANALYSIS_PIXELS:
-                    raise InvalidUpload("selected page exceeds the beta processing budget")
-                selected = rect
+            analysis_pixels = values[2] * (ANALYSIS_DPI / 72.0) ** 2
+            if analysis_pixels > MAX_ANALYSIS_PIXELS:
+                raise InvalidUpload(f"selected page {index + 1} exceeds the processing budget")
+            dimensions[str(index)] = {
+                "page_width_pt": rect.width,
+                "page_height_pt": rect.height,
+            }
         return {
             "page_count": page_count,
-            "page_width_pt": selected.width,
-            "page_height_pt": selected.height,
+            "page_dimensions": dimensions,
+            # Legacy fields keep old feedback fixtures and one-page clients compatible.
+            "page_width_pt": dimensions[str(selected_pages[0])]["page_width_pt"],
+            "page_height_pt": dimensions[str(selected_pages[0])]["page_height_pt"],
         }
     finally:
         document.close()
@@ -456,78 +696,135 @@ def _render_preview(pdf_path: Path, page_index: int, out_path: Path,
 
 
 def process_job(store: JobStore, job_id: str) -> None:
-    """Run the conservative painter and write only sanitized job state."""
+    """Paint selected pages sequentially and release one preserved multi-page PDF."""
     try:
         state = store.update(job_id, status="processing", stage="reading-diagram")
         directory = store.job_dir(job_id)
         source = directory / "source.pdf"
-        state = store.update(job_id, **inspect_pdf_source(source, state["page"]))
-        convention, confidence = _select_convention(
-            source, state["page"], state["requested_convention"])
-        original_size = _render_preview(source, state["page"], directory / "original.jpg")
-        store.update(job_id, stage="tracing-conductors", convention=convention,
-                     convention_confidence=confidence)
-
+        selected_pages = state.get("selected_pages") or [state["page"]]
+        state = store.update(job_id, **inspect_pdf_source(source, selected_pages))
         generated = directory / "generated"
-        if confidence == "low" and state["requested_convention"] == "auto":
-            # Exact vector geometry is not permission to guess its colour vocabulary.  Let the
-            # convention-neutral OCR sweep decide from visible labels, or abstain.
-            report = {"declined": True, "runs": 0, "runs_painted": 0}
-        else:
-            from .tools.paint_vector import paint_page
+        generated.mkdir(parents=True, exist_ok=True)
+        page_results = []
+        overlays = []
+        policy, classifier = _load_models()
+        paint_budget = int(os.getenv("PINTOR_PAINT_PIXEL_BUDGET", "60000000"))
 
-            policy, classifier = _load_models()
-            report = paint_page(
-                str(source), state["page"], str(generated), convention_name=convention,
-                paint_dpi=int(os.getenv("PINTOR_PAINT_DPI", "720")),
-                paint_pixel_budget=int(os.getenv("PINTOR_PAINT_PIXEL_BUDGET", "60000000")),
-                decision_policy=policy, run_classifier=classifier,
-            )
-        # Raster-only scans and pages whose colour legends are image pixels deliberately fail the
-        # vector capability gate.  Re-run the same source through OCR + pixel topology instead of
-        # treating that honest vector refusal as a terminal error.
-        vector_needs_ocr = (
-            report.get("runs_painted") == 0 and report.get("legends") == 0
-        )
-        if report.get("declined") or vector_needs_ocr:
-            store.update(job_id, stage="reading-raster-labels", processing_mode="raster-ocr")
-            from .tools.paint_raster import paint_page as paint_raster_page
-
-            report = paint_raster_page(
-                str(source), state["page"], str(generated),
-                convention_name=state["requested_convention"],
-                paint_pixel_budget=int(
-                    os.getenv("PINTOR_PAINT_PIXEL_BUDGET", "60000000")
-                ),
-            )
-            if report.get("convention"):
-                convention = report["convention"]
-            confidence = report.get("convention_confidence", confidence)
-            store.update(job_id, convention=convention, convention_confidence=confidence)
-
-        if report.get("declined"):
-            stage = "confirm-colour-convention" \
-                if confidence == "low" and state["requested_convention"] == "auto" \
-                else "needs-manual-review"
+        for position, page_index in enumerate(selected_pages, start=1):
             store.update(
-                job_id, status="declined", stage=stage,
-                decline_reason=report.get("decline_reason", "unsupported page geometry"),
-                processing_mode=report.get("processing_mode", "vector-text"),
-                preview_original=f"/api/jobs/{job_id}/preview/original",
-                metrics={
-                    "preview_width": original_size[0], "preview_height": original_size[1],
-                    "labels": report.get("labels", 0), "runs": report.get("runs", 0),
-                    "abstentions": report.get("decision_abstentions", 0),
-                },
+                job_id, stage="reading-diagram", current_page=page_index,
+                completed_pages=position - 1, pages=page_results,
+            )
+            original_name = f"original-p{page_index}.jpg"
+            original_size = _render_preview(source, page_index, directory / original_name)
+            convention, confidence = _select_convention(
+                source, page_index, state["requested_convention"])
+            store.update(
+                job_id, stage="tracing-conductors", convention=convention,
+                convention_confidence=confidence,
+            )
+            overlay_path = generated / f"page-{page_index}-overlay.png"
+
+            if confidence == "low" and state["requested_convention"] == "auto":
+                # Exact vector geometry is not permission to guess its colour vocabulary. Let the
+                # convention-neutral OCR sweep decide from visible labels, or abstain.
+                report = {"declined": True, "runs": 0, "runs_painted": 0}
+            else:
+                from .tools.paint_vector import paint_page
+
+                report = paint_page(
+                    str(source), page_index, str(generated), convention_name=convention,
+                    paint_dpi=int(os.getenv("PINTOR_PAINT_DPI", "720")),
+                    paint_pixel_budget=paint_budget, decision_policy=policy,
+                    run_classifier=classifier, overlay_path=str(overlay_path),
+                )
+
+            vector_needs_ocr = (
+                report.get("runs_painted") == 0 and report.get("legends") == 0
+            )
+            if report.get("declined") or vector_needs_ocr:
+                store.update(job_id, stage="reading-raster-labels", processing_mode="raster-ocr")
+                from .tools.paint_raster import paint_page as paint_raster_page
+
+                report = paint_raster_page(
+                    str(source), page_index, str(generated),
+                    convention_name=state["requested_convention"],
+                    paint_pixel_budget=paint_budget, overlay_path=str(overlay_path),
+                )
+                if report.get("convention"):
+                    convention = report["convention"]
+                confidence = report.get("convention_confidence", confidence)
+
+            page_metrics = {
+                "paint_rate": report.get("paint_rate", 0),
+                "labels": report.get("labels", report.get("legends", 0)),
+                "runs": report.get("runs", 0),
+                "runs_painted": report.get("runs_painted", 0),
+                "codes": report.get("codes", []),
+                "abstentions": report.get("decision_abstentions", 0)
+                    + report.get("learned_abstentions", 0),
+                "paint_dpi": report.get("paint_dpi"),
+                "seconds": report.get("seconds"),
+                "preview_width": original_size[0],
+                "preview_height": original_size[1],
+            }
+            page_result = {
+                "page": page_index,
+                "page_number": page_index + 1,
+                "status": "declined" if report.get("declined") else "painted",
+                "decline_reason": report.get("decline_reason"),
+                "convention": convention,
+                "convention_confidence": confidence,
+                "processing_mode": report.get("processing_mode", "vector-text"),
+                "preview_original": f"/api/jobs/{job_id}/preview/original?page={page_index}",
+                "metrics": page_metrics,
+            }
+            page_results.append(page_result)
+
+            if report.get("declined"):
+                overlay_path.unlink(missing_ok=True)
+                continue
+            if not (report.get("v2") or {}).get("passed"):
+                raise RuntimeError(f"protected-region gate V2 failed on page {page_index + 1}")
+            if not overlay_path.is_file():
+                raise RuntimeError(f"painter did not produce page {page_index + 1} overlay")
+            overlays.append((page_index, str(overlay_path)))
+
+        if not overlays:
+            reasons = [
+                f"page {item['page_number']}: {item['decline_reason'] or 'no safe colour assignment'}"
+                for item in page_results
+            ]
+            ambiguous = all(
+                item["convention_confidence"] == "low" for item in page_results
+            ) and state["requested_convention"] == "auto"
+            store.update(
+                job_id, status="declined",
+                stage="confirm-colour-convention" if ambiguous else "needs-manual-review",
+                decline_reason="; ".join(reasons)[:500], pages=page_results,
+                completed_pages=len(selected_pages), current_page=None,
+                preview_original=page_results[0]["preview_original"],
+                processing_mode="mixed" if len({p["processing_mode"] for p in page_results}) > 1
+                    else page_results[0]["processing_mode"],
             )
             return
 
-        if not (report.get("v2") or {}).get("passed"):
-            raise RuntimeError("protected-region gate V2 failed")
-        if not (report.get("v7") or {}).get("passed"):
-            raise RuntimeError("source-preservation gate V7 failed")
+        from .paint.raster_overlay import attach_overlays
+        from .verify.validators import v7_preservation
+
         painted = directory / "painted.pdf"
-        shutil.move(report["out_pdf"], painted)
+        stats = attach_overlays(str(source), str(painted), overlays)
+        for item in page_results:
+            if item["status"] != "painted":
+                continue
+            v7 = v7_preservation(str(source), str(painted), item["page"], stats["ocg"])
+            if not v7.get("passed"):
+                painted.unlink(missing_ok=True)
+                raise RuntimeError(
+                    f"source-preservation gate V7 failed on page {item['page_number']}"
+                )
+            item["metrics"]["original_preserved"] = True
+
         import fitz
 
         verification = fitz.open(painted)
@@ -536,27 +833,51 @@ def process_job(store: JobStore, job_id: str) -> None:
             painted.unlink(missing_ok=True)
             raise RuntimeError("generated PDF failed reopen/page-count verification")
         verification.close()
-        painted_size = _render_preview(painted, state["page"], directory / "painted.jpg")
-        v7 = report.get("v7") or {}
+
+        for item in page_results:
+            painted_name = f"painted-p{item['page']}.jpg"
+            painted_size = _render_preview(
+                painted, item["page"], directory / painted_name,
+            )
+            item["preview_painted"] = (
+                f"/api/jobs/{job_id}/preview/painted?page={item['page']}"
+            )
+            item["metrics"]["preview_width"] = painted_size[0]
+            item["metrics"]["preview_height"] = painted_size[1]
+            item["metrics"].setdefault("original_preserved", True)
+
+        total_runs = sum(item["metrics"]["runs"] for item in page_results)
+        weighted_rate = sum(
+            item["metrics"]["paint_rate"] * item["metrics"]["runs"]
+            for item in page_results
+        )
+        modes = {item["processing_mode"] for item in page_results}
+        conventions = {item["convention"] for item in page_results if item["convention"]}
         metrics = {
-            "paint_rate": report.get("paint_rate", 0),
-            "runs": report.get("runs", 0),
-            "runs_painted": report.get("runs_painted", 0),
-            "codes": report.get("codes", []),
-            "abstentions": report.get("decision_abstentions", 0)
-                + report.get("learned_abstentions", 0),
-            "original_preserved": bool(v7.get("passed")),
-            "paint_dpi": report.get("paint_dpi"),
-            "seconds": report.get("seconds"),
-            "processing_mode": report.get("processing_mode", "vector-text"),
-            "preview_width": painted_size[0],
-            "preview_height": painted_size[1],
+            "paint_rate": weighted_rate / total_runs if total_runs else 0,
+            "runs": total_runs,
+            "runs_painted": sum(item["metrics"]["runs_painted"] for item in page_results),
+            "codes": sorted({
+                code for item in page_results for code in item["metrics"]["codes"]
+            }),
+            "abstentions": sum(item["metrics"]["abstentions"] for item in page_results),
+            "original_preserved": True,
+            "seconds": round(sum(item["metrics"]["seconds"] or 0 for item in page_results), 1),
+            "processing_mode": "mixed" if len(modes) > 1 else next(iter(modes)),
+            "pages_requested": len(page_results),
+            "pages_painted": sum(item["status"] == "painted" for item in page_results),
+            "pages_declined": sum(item["status"] == "declined" for item in page_results),
         }
         store.update(
             job_id, status="ready", stage="review", metrics=metrics,
-            processing_mode=report.get("processing_mode", "vector-text"),
-            preview_original=f"/api/jobs/{job_id}/preview/original",
-            preview_painted=f"/api/jobs/{job_id}/preview/painted",
+            pages=page_results, completed_pages=len(selected_pages), current_page=None,
+            convention="mixed" if len(conventions) > 1 else next(iter(conventions), None),
+            convention_confidence="mixed" if len({
+                item["convention_confidence"] for item in page_results
+            }) > 1 else page_results[0]["convention_confidence"],
+            processing_mode=metrics["processing_mode"],
+            preview_original=page_results[0]["preview_original"],
+            preview_painted=page_results[0]["preview_painted"],
             download=f"/api/jobs/{job_id}/download",
         )
     except InvalidUpload as error:
@@ -567,6 +888,7 @@ def process_job(store: JobStore, job_id: str) -> None:
             pass
     except Exception as error:
         try:
+            (store.job_dir(job_id) / "painted.pdf").unlink(missing_ok=True)
             store.update(job_id, status="failed", stage="failed",
                          error="processing failed; the result was quarantined",
                          internal_error=f"{type(error).__name__}: {error}"[:1000])
@@ -650,6 +972,9 @@ def create_app(workspace_root: str | Path | None = None,
 
     store = JobStore(workspace_root or os.getenv("PINTOR_WEB_ROOT", str(DEFAULT_WORKSPACE)),
                      retention_hours=int(os.getenv("PINTOR_RETENTION_HOURS", "24")))
+    accounts_required = os.getenv("PINTOR_ACCOUNTS_REQUIRED", "0") == "1"
+    account_session_days = int(os.getenv("PINTOR_ACCOUNT_SESSION_DAYS", "30"))
+    accounts = AccountStore(store.root / "accounts.sqlite3", session_days=account_session_days)
     processor = processor or process_job_isolated
     max_bytes = int(os.getenv("PINTOR_MAX_UPLOAD_MB", "25")) * 1024 * 1024
     secure_cookie = os.getenv("PINTOR_COOKIE_SECURE", "1") != "0"
@@ -657,7 +982,7 @@ def create_app(workspace_root: str | Path | None = None,
     session_secret = os.getenv("PINTOR_SESSION_SECRET", "")
     if beta_key_hash and not re.fullmatch(r"[a-f0-9]{64}", beta_key_hash):
         raise RuntimeError("PINTOR_BETA_KEY_HASH must be a SHA-256 hex digest")
-    if beta_key_hash and len(session_secret) < 32:
+    if (beta_key_hash or accounts_required) and len(session_secret) < 32:
         raise RuntimeError("PINTOR_SESSION_SECRET must contain at least 32 characters")
     beta_enabled = bool(beta_key_hash)
     expected_beta_cookie = _beta_cookie_token(session_secret) if beta_enabled else ""
@@ -670,6 +995,8 @@ def create_app(workspace_root: str | Path | None = None,
     request_window = int(os.getenv("PINTOR_REQUEST_RATE_WINDOW_SECONDS", "60"))
     max_storage_bytes = int(os.getenv("PINTOR_MAX_STORAGE_MB", "8192")) * 1024 * 1024
     max_concurrent_jobs = int(os.getenv("PINTOR_MAX_CONCURRENT_JOBS", "1"))
+    account_limit = int(os.getenv("PINTOR_ACCOUNT_ATTEMPTS", "10"))
+    account_window = int(os.getenv("PINTOR_ACCOUNT_WINDOW_SECONDS", "600"))
     limiter = SlidingWindowLimiter()
     processing_slots = threading.BoundedSemaphore(max(1, max_concurrent_jobs))
     origins = [value.strip() for value in os.getenv(
@@ -686,14 +1013,35 @@ def create_app(workspace_root: str | Path | None = None,
     class AccessPayload(BaseModel):
         code: str = Field(min_length=1, max_length=128)
 
+    class AccountPayload(BaseModel):
+        username: str = Field(min_length=1, max_length=64)
+        password: str = Field(min_length=4, max_length=128)
+
+    class DecisionPayload(BaseModel):
+        decision: str
+        note: str = Field(default="", max_length=2000)
+
+    admin_username = os.getenv("PINTOR_ADMIN_USERNAME", "").strip()
+    admin_password_hash = os.getenv("PINTOR_ADMIN_PASSWORD_HASH", "").strip()
+    if bool(admin_username) != bool(admin_password_hash):
+        raise RuntimeError(
+            "PINTOR_ADMIN_USERNAME and PINTOR_ADMIN_PASSWORD_HASH must be configured together"
+        )
+    if admin_username:
+        try:
+            accounts.bootstrap_admin(admin_username, admin_password_hash)
+        except AccountError as error:
+            raise RuntimeError(f"administrator bootstrap failed: {error}") from error
+
     @asynccontextmanager
     async def lifespan(_app):
         store.cleanup_expired()
         yield
 
-    app = FastAPI(title="Pintor beta API", version="0.2.1", docs_url=None, redoc_url=None,
+    app = FastAPI(title="Pintor beta API", version="0.4.0", docs_url=None, redoc_url=None,
                   lifespan=lifespan)
     app.state.store = store
+    app.state.accounts = accounts
 
     def request_ip(request: Request) -> str:
         if trust_proxy_headers:
@@ -715,6 +1063,42 @@ def create_app(workspace_root: str | Path | None = None,
         if retry_after is not None:
             headers["Retry-After"] = str(retry_after)
         return JSONResponse({"detail": detail}, status_code=status, headers=headers)
+
+    def account_from_token(token: str | None) -> dict | None:
+        return accounts.current(token)
+
+    def require_account(token: str | None) -> dict:
+        account = account_from_token(token)
+        if not account:
+            raise HTTPException(status_code=401, detail="account authentication required")
+        return account
+
+    def require_admin(token: str | None) -> dict:
+        account = require_account(token)
+        if account.get("role") != "admin":
+            raise HTTPException(status_code=403, detail="administrator access required")
+        return account
+
+    def resolve_owner(account_token: str | None, legacy_session: str | None) -> tuple[str, dict | None]:
+        account = account_from_token(account_token)
+        if account:
+            return _account_owner_token(session_secret, account["id"]), account
+        if accounts_required:
+            raise HTTPException(status_code=401, detail="account authentication required")
+        session = legacy_session if legacy_session and SESSION_RE.fullmatch(legacy_session) \
+            else uuid.uuid4().hex + uuid.uuid4().hex
+        return session, None
+
+    def set_account_cookies(response: Response, token: str, account: dict) -> None:
+        max_age = accounts.session_seconds
+        response.set_cookie(
+            ACCOUNT_COOKIE, token, max_age=max_age, httponly=True, secure=secure_cookie,
+            samesite="strict", path="/api",
+        )
+        response.set_cookie(
+            "pintor_session", _account_owner_token(session_secret, account["id"]),
+            max_age=max_age, httponly=True, secure=secure_cookie, samesite="strict", path="/api",
+        )
 
     @app.middleware("http")
     async def protect_private_beta(request: Request, call_next):
@@ -751,9 +1135,11 @@ def create_app(workspace_root: str | Path | None = None,
         authenticated = not beta_enabled or hmac.compare_digest(
             supplied, expected_beta_cookie,
         )
+        account = account_from_token(request.cookies.get(ACCOUNT_COOKIE))
         return {
             "status": "ok", "beta": True, "access_required": beta_enabled,
-            "authenticated": authenticated,
+            "authenticated": authenticated, "accounts_required": accounts_required,
+            "account_authenticated": bool(account),
         }
 
     @app.post("/api/access")
@@ -776,43 +1162,106 @@ def create_app(workspace_root: str | Path | None = None,
         )
         return response
 
+    @app.post("/api/accounts/register", status_code=201)
+    def register_account(request: Request, payload: AccountPayload,
+                         pintor_account: str | None = Cookie(default=None)):
+        client = request_ip(request)
+        allowed, retry_after = limiter.allow(
+            f"account-register:{client}", account_limit, account_window,
+        )
+        if not allowed:
+            return api_error(request, 429, "too many account attempts", retry_after)
+        try:
+            account = accounts.register(payload.username, payload.password)
+        except DuplicateUsername as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
+        except AccountError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+        accounts.revoke(pintor_account)
+        token, _ = accounts.create_session(account["id"])
+        response = JSONResponse({"account": account}, status_code=201)
+        set_account_cookies(response, token, account)
+        return response
+
+    @app.post("/api/accounts/login")
+    def login_account(request: Request, payload: AccountPayload,
+                      pintor_account: str | None = Cookie(default=None)):
+        client = request_ip(request)
+        allowed, retry_after = limiter.allow(
+            f"account-login:{client}", account_limit, account_window,
+        )
+        if not allowed:
+            return api_error(request, 429, "too many account attempts", retry_after)
+        try:
+            account = accounts.authenticate(payload.username, payload.password)
+        except InvalidCredentials as error:
+            raise HTTPException(status_code=401, detail="invalid username or password") from error
+        accounts.revoke(pintor_account)
+        token, _ = accounts.create_session(account["id"])
+        response = JSONResponse({"account": account})
+        set_account_cookies(response, token, account)
+        return response
+
+    @app.get("/api/account")
+    def current_account(pintor_account: str | None = Cookie(default=None)):
+        return {"account": require_account(pintor_account)}
+
+    @app.post("/api/accounts/logout", status_code=204)
+    def logout_account(pintor_account: str | None = Cookie(default=None)):
+        accounts.revoke(pintor_account)
+        response = Response(status_code=204)
+        response.delete_cookie(ACCOUNT_COOKIE, path="/api", secure=secure_cookie, samesite="strict")
+        response.delete_cookie("pintor_session", path="/api", secure=secure_cookie,
+                               samesite="strict")
+        return response
+
+    @app.get("/api/account/jobs")
+    def account_jobs(pintor_account: str | None = Cookie(default=None)):
+        account = require_account(pintor_account)
+        owner_token = _account_owner_token(session_secret, account["id"])
+        return {"jobs": store.list_owned(owner_token)}
+
     @app.get("/api/capabilities")
     def capabilities():
         from .labels.conventions import list_conventions
 
         return {
-            "version": "0.2.1",
+            "version": "0.4.0",
             "beta": True,
             "input": "pdf-vector-or-raster-with-visible-colour-codes",
             "page_modes": ["vector-text", "raster-ocr"],
-            "scope": "one-selected-page-per-job",
+            "scope": "selected-pages-in-one-preserved-document",
             "max_upload_bytes": max_bytes,
-            "max_pages": MAX_PAGES,
+            "max_document_pages": MAX_DOCUMENT_PAGES,
+            "max_selected_pages": MAX_SELECTED_PAGES,
             "max_analysis_pixels": MAX_ANALYSIS_PIXELS,
             "max_concurrent_jobs": max(1, max_concurrent_jobs),
             "retention_hours": store.retention_seconds // 3600,
             "conventions": ["auto", *list_conventions()],
             "model": "operator-mounted-revalidated-artifact-or-conservative-baseline",
             "automatic_training": False,
+            "accounts_required": accounts_required,
         }
 
     @app.post("/api/jobs", status_code=202)
     async def create_job(request: Request, background: BackgroundTasks,
                          file: UploadFile = File(...),
-                         page: int = Form(0), convention: str = Form("auto"),
+                         page: int = Form(0), pages: str = Form(""),
+                         convention: str = Form("auto"),
                          consent_learning: bool = Form(False),
-                         pintor_session: str | None = Cookie(default=None)):
+                         pintor_session: str | None = Cookie(default=None),
+                         pintor_account: str | None = Cookie(default=None)):
         client = request_ip(request)
         allowed, retry_after = limiter.allow(f"job:{client}", job_limit, job_window)
         if not allowed:
             return api_error(request, 429, "job creation rate limit exceeded", retry_after)
-        session_id = pintor_session if pintor_session and SESSION_RE.fullmatch(pintor_session) \
-            else uuid.uuid4().hex + uuid.uuid4().hex
+        session_id, account = resolve_owner(pintor_account, pintor_session)
         content = await file.read(max_bytes + 1)
         try:
-            state = store.create(content, file.filename, page, convention,
+            selected_pages = parse_page_selection(pages) if pages.strip() else [page]
+            state = store.create(content, file.filename, selected_pages, convention,
                                  consent_learning, max_bytes, _owner_hash(session_id),
-                                 max_storage_bytes=max_storage_bytes)
+                                 max_storage_bytes=max_storage_bytes, account=account)
         except InvalidUpload as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
 
@@ -829,31 +1278,41 @@ def create_app(workspace_root: str | Path | None = None,
         return response
 
     @app.get("/api/jobs/{job_id}")
-    def job_status(job_id: str, pintor_session: str | None = Cookie(default=None)):
+    def job_status(job_id: str, pintor_session: str | None = Cookie(default=None),
+                   pintor_account: str | None = Cookie(default=None)):
         try:
-            return _public_state(store.read_owned(job_id, pintor_session))
+            owner_token, _ = resolve_owner(pintor_account, pintor_session)
+            return _public_state(store.read_owned(job_id, owner_token))
         except JobNotFound as error:
             raise HTTPException(status_code=404, detail="job not found") from error
 
     @app.get("/api/jobs/{job_id}/preview/{kind}")
-    def preview(job_id: str, kind: str,
-                pintor_session: str | None = Cookie(default=None)):
-        name = {"original": "original.jpg", "painted": "painted.jpg"}.get(kind)
-        if not name:
+    def preview(job_id: str, kind: str, page: int | None = None,
+                pintor_session: str | None = Cookie(default=None),
+                pintor_account: str | None = Cookie(default=None)):
+        if kind not in {"original", "painted"}:
             raise HTTPException(status_code=404, detail="preview not found")
         try:
-            return FileResponse(store.artifact(job_id, name, pintor_session),
+            owner_token, _ = resolve_owner(pintor_account, pintor_session)
+            state = store.read_owned(job_id, owner_token)
+            page_index = state["page"] if page is None else page
+            if page_index not in (state.get("selected_pages") or [state["page"]]):
+                raise JobNotFound(job_id)
+            name = f"{kind}-p{page_index}.jpg"
+            return FileResponse(store.artifact(job_id, name, owner_token),
                                 media_type="image/jpeg",
                                 headers={"Cache-Control": "private, no-store"})
         except JobNotFound as error:
             raise HTTPException(status_code=404, detail="preview not found") from error
 
     @app.get("/api/jobs/{job_id}/download")
-    def download(job_id: str, pintor_session: str | None = Cookie(default=None)):
+    def download(job_id: str, pintor_session: str | None = Cookie(default=None),
+                 pintor_account: str | None = Cookie(default=None)):
         try:
-            state = store.read_owned(job_id, pintor_session)
+            owner_token, _ = resolve_owner(pintor_account, pintor_session)
+            state = store.read_owned(job_id, owner_token)
             stem = Path(state["original_name"]).stem[:80]
-            return FileResponse(store.artifact(job_id, "painted.pdf", pintor_session),
+            return FileResponse(store.artifact(job_id, "painted.pdf", owner_token),
                                 media_type="application/pdf",
                                 filename=f"{stem}-painted.pdf",
                                 headers={"Cache-Control": "private, no-store"})
@@ -862,9 +1321,11 @@ def create_app(workspace_root: str | Path | None = None,
 
     @app.post("/api/jobs/{job_id}/feedback", status_code=202)
     def feedback(job_id: str, payload: FeedbackPayload,
-                 pintor_session: str | None = Cookie(default=None)):
+                 pintor_session: str | None = Cookie(default=None),
+                 pintor_account: str | None = Cookie(default=None)):
         try:
-            record = store.add_feedback(job_id, payload.model_dump(), pintor_session)
+            owner_token, account = resolve_owner(pintor_account, pintor_session)
+            record = store.add_feedback(job_id, payload.model_dump(), owner_token, account=account)
         except JobNotFound as error:
             raise HTTPException(status_code=404, detail="job not found") from error
         except ValueError as error:
@@ -873,12 +1334,69 @@ def create_app(workspace_root: str | Path | None = None,
                 "learning": record["consent_learning"]}
 
     @app.delete("/api/jobs/{job_id}", status_code=204)
-    def delete_job(job_id: str, pintor_session: str | None = Cookie(default=None)):
+    def delete_job(job_id: str, pintor_session: str | None = Cookie(default=None),
+                   pintor_account: str | None = Cookie(default=None)):
         try:
-            store.delete_owned(job_id, pintor_session)
+            owner_token, _ = resolve_owner(pintor_account, pintor_session)
+            store.delete_owned(job_id, owner_token)
         except JobNotFound as error:
             raise HTTPException(status_code=404, detail="job not found") from error
         return Response(status_code=204)
+
+    @app.get("/api/admin/feedback")
+    def admin_feedback_list(pintor_account: str | None = Cookie(default=None)):
+        require_admin(pintor_account)
+        return {"feedback": store.list_feedback()}
+
+    @app.get("/api/admin/feedback/{feedback_id}")
+    def admin_feedback_detail(feedback_id: str,
+                              pintor_account: str | None = Cookie(default=None)):
+        require_admin(pintor_account)
+        try:
+            return {"feedback": store.get_feedback(feedback_id)}
+        except JobNotFound as error:
+            raise HTTPException(status_code=404, detail="feedback not found") from error
+
+    @app.get("/api/admin/feedback/{feedback_id}/preview/{kind}")
+    def admin_feedback_preview(feedback_id: str, kind: str, page: int,
+                               pintor_account: str | None = Cookie(default=None)):
+        require_admin(pintor_account)
+        if kind not in {"original", "painted"}:
+            raise HTTPException(status_code=404, detail="preview not found")
+        try:
+            artifact = store.feedback_artifact(feedback_id, f"{kind}-p{page}.jpg")
+            return FileResponse(artifact, media_type="image/jpeg",
+                                headers={"Cache-Control": "private, no-store"})
+        except JobNotFound as error:
+            raise HTTPException(status_code=404, detail="preview not found") from error
+
+    @app.get("/api/admin/feedback/{feedback_id}/document/{kind}")
+    def admin_feedback_document(feedback_id: str, kind: str,
+                                pintor_account: str | None = Cookie(default=None)):
+        require_admin(pintor_account)
+        names = {"source": "source.pdf", "painted": "painted.pdf"}
+        if kind not in names:
+            raise HTTPException(status_code=404, detail="document not found")
+        try:
+            artifact = store.feedback_artifact(feedback_id, names[kind])
+            return FileResponse(artifact, media_type="application/pdf",
+                                headers={"Cache-Control": "private, no-store"})
+        except JobNotFound as error:
+            raise HTTPException(status_code=404, detail="document not found") from error
+
+    @app.post("/api/admin/feedback/{feedback_id}/decision")
+    def admin_feedback_decision(feedback_id: str, payload: DecisionPayload,
+                                pintor_account: str | None = Cookie(default=None)):
+        reviewer = require_admin(pintor_account)
+        try:
+            record = store.adjudicate_feedback(
+                feedback_id, payload.decision, payload.note, reviewer,
+            )
+        except JobNotFound as error:
+            raise HTTPException(status_code=404, detail="feedback not found") from error
+        except ValueError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+        return {"feedback": record}
 
     return app
 

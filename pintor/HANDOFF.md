@@ -8,10 +8,23 @@ Pintor has been extracted from the Volvo Penta Assistant into this directory. Th
 remain independently installable and runnable. The Volvo material is a corpus/convention, not a
 runtime dependency.
 
-The Engenharia NATA beta is a private-job web app supporting one selected vector or rasterized page
-per job. Exact text/strokes are preferred; image-only pages use the bundled OCR and conservative
-pixel-topology pipeline. A supported/confirmed colour convention remains mandatory, and uncertain
-segments stay black.
+The Engenharia NATA beta is a private-job web app supporting up to 50 selected vector or
+rasterized pages per job inside manuals of up to 2,000 pages. Exact text/strokes are preferred;
+image-only pages use the bundled OCR and conservative pixel-topology pipeline. A
+supported/confirmed colour convention remains mandatory, and uncertain segments stay black.
+
+The product name is localized in the interface: **Pintor** in Portuguese, **Pittore** in Italian,
+**Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
+paths, package names, and the public route remain `pintor` and `/pintor/`.
+
+## 2026-08-20 localized product name (0.4.1, local)
+
+- Localized every visible product-name reference in the Italian and Swedish UI, including the
+  document title, access flow, review copy, unavailable-state messages, image alternative text,
+  and footer.
+- Localized the hidden Engenharia NATA catalogue label to **Pittore beta** and **Målaren beta**.
+- Updated the unlocalized HTML fallback to **Painter** while preserving **Pintor** in Portuguese.
+- No route, API hostname, package, class, or storage identifier was renamed.
 
 ## Current architecture
 
@@ -22,6 +35,61 @@ parameters. Evaluation splits are grouped by publication.
 
 Primary web entry points: `src/wirecolor/tools/paint_vector.py` and
 `src/wirecolor/tools/paint_raster.py`.
+
+## 2026-08-20 external tester accounts and expert inbox (0.4.0, local)
+
+- Added beta-code-gated registration and login. Usernames contain 1–64 visible characters and are
+  unique under NFKC + case-folding. Passwords contain 4–128 characters with no composition rule;
+  they are stored only as independently salted scrypt hashes.
+- Added SQLite persistence in the existing private `/data` volume. Browser sessions are random
+  256-bit tokens whose database representation is only a SHA-256 digest. Cookies remain
+  `HttpOnly`, `Secure`, `SameSite=Strict`, and scoped to `/api`.
+- Job ownership now derives from the authenticated account, so the same account can reach retained
+  work from another device while other accounts receive the same not-found response as an unknown
+  job. Production enables `PINTOR_ACCOUNTS_REQUIRED=1`; legacy anonymous mode exists only for local
+  compatibility tests.
+- Added an administrator-only review console and API. It lists beta reports, shows original and
+  painted previews with normalized point/segment overlays, and records accepted, rejected, or
+  needs-clarification decisions plus an expert note.
+- A consented report archives its source, result, selected previews, sanitized job metadata, and
+  typed feedback in the private training inbox. Non-consented reports exist only with the live job
+  and expire/delete with it. Expert acceptance never trains or promotes a model: `trainable`
+  remains false and only consented + accepted evidence becomes `eligible_for_dataset`.
+- The administrator is created at API startup from an environment username and a precomputed
+  scrypt hash. No administrator plaintext credential is present in source, Compose, documentation,
+  frontend assets, API responses, or the SQLite database. `pintor-hash-password` and the root-only
+  deployment bootstrap provide interactive secret entry.
+- This version has not been committed, pushed, built into the protected API image, or deployed.
+
+## 2026-08-20 selected-page manuals (0.3.0, local)
+
+- Replaced the one-page web field with a bounded page-selection grammar. Users may enter comma
+  lists and ascending ranges such as `40, 42, 44-46`; duplicates are removed while input order is
+  retained. The legacy single `page` form field remains accepted for old clients.
+- Raised only the document-length boundary from 50 to 2,000 pages. File size remains 25 MB, and a
+  job may analyse at most 50 selected pages, so a long manual does not multiply worker load
+  without bound.
+- Selected pages run sequentially through the existing vector/raster, convention, V2, and
+  abstention paths. No client-controlled worker, DPI, or pixel-budget settings were added.
+- Added a memory-bounded overlay composer: the source is copied once, one `Wire colors` OCG is
+  created, and every approved page overlay is appended in its own incremental revision so only one
+  decoded overlay is resident at a time. The final document retains the exact source byte prefix
+  and all original pages.
+- Each selected page has its own status, metrics, original/result preview, convention evidence,
+  and feedback page identity. The review interface has a page selector; server-side feedback
+  validation rejects annotations for pages that were not selected.
+- Local proof used an 80-page synthetic manual and selected human pages 40, 42, 44, and 46. The
+  released PDF reopened with all 80 pages and one OCG; exactly those four pages gained an overlay,
+  all 76 unselected pages retained their original resources, and V7 passed for every selected page.
+  Poppler and PyMuPDF visual renders both preserved the source text/code while colouring only the
+  conductor. This verifies the generic contract, not the named private Volvo manual itself.
+- The page-notation contract explicitly covers one page (`12`), lists (`1, 5, 9, 95`), inclusive
+  intervals (`12-50`), and mixed notation (`1, 3-5, 9-11, 15`). A 60-page preservation test attaches
+  all 39 overlays selected by `12-50`, retains exactly one OCG, and runs V7 on every selected page.
+- Simplified the customer-facing landing surface at the owner's request: removed the capability
+  badge, the three safety-principle cards, and the explanatory beta boundary. The private-beta
+  badge remains; the unused HTML, CSS, and PT/IT/SV translation keys were removed together.
+- This version has not been committed, pushed, built into the protected API image, or deployed.
 
 ## 2026-08-20 raster/OCR web capability
 
@@ -118,7 +186,8 @@ default.
 
 - Added the trilingual Engenharia NATA page at `/pintor/`, hidden behind the generic nine-tap
   Easter egg, marked `noindex`, and intentionally absent from the sitemap/public About catalog.
-- Added the FastAPI private-job boundary in `src/wirecolor/web_service.py`: 25 MB/50-page limits,
+- Added the FastAPI private-job boundary in `src/wirecolor/web_service.py`: original 25 MB/50-page
+  limits (document length was raised to 2,000 in 0.3.0),
   opaque owner sessions, exact CORS allowlist, 24-hour retention, private previews/downloads,
   deletion, and typed feedback.
 - Untrusted PDF parsing now happens only inside the killable child worker. The parent API checks
@@ -169,9 +238,9 @@ These directories are intentionally ignored by Git.
 
 ## Session validation
 
-- `350` standalone Python tests pass, including the web boundary, tenant isolation, encrypted PDF,
+- `356` standalone Python tests pass, including the web boundary, tenant isolation, encrypted PDF,
   invalid page, typed feedback, hard branch/bridge rules, V2/V7 quarantine, and immediate deletion.
-- The complete Engenharia NATA validation passes: `343` JavaScript tests, lint, format, style,
+- The complete Engenharia NATA validation passes: `354` JavaScript tests, lint, format, style,
   trilingual parity across 20 i18n files, asset references, and Rotta 12 integrity.
 - The production Vite build emits `/pintor/index.html` and its hashed JS/CSS bundles.
 - The first production build exposed private Pintor workspace HTML as accidental Vite entries. The
@@ -215,6 +284,13 @@ These directories are intentionally ignored by Git.
   consecutive failures. Its real success path and a mock failure/restart path passed; the timer is
   enabled on the connector host. A fresh external smoke then passed beta authentication, `401`
   rejection without credentials, PDF processing/release, download, and authenticated deletion.
+- Later on 2026-08-20 the owner-requested beta credential rotation was applied directly to the
+  protected VM. Only the SHA-256 digest is injected into the container; the plaintext recovery file
+  and `.env` remain root-owned mode `0600`, and no credential value entered Git. The HMAC session
+  secret was rotated at the same time so previously issued cookies became invalid. External checks
+  confirmed the former credential returns `401`, the replacement returns `200`, an authenticated
+  session reaches capabilities with `200`, anonymous capabilities remain `401`, and the cookie keeps
+  `HttpOnly`, `Secure`, and `SameSite=Strict`.
 - Intentionally did not place VM 206 in the seven-day VM backup rotation: job PDFs have a 24-hour
   retention contract, and snapshot backups would silently extend retention. Code is reproducible
   from Git; a lost beta secret is rotated instead of restored with stale user documents.
@@ -225,10 +301,8 @@ These directories are intentionally ignored by Git.
    to training or promotion data.
 2. Create a new legally usable, multi-manufacturer publication corpus. Revalidate each convention,
    the changed topology rules, and any mounted model against a new one-shot lockbox.
-3. Implement a single-save multipage overlay API before offering whole-document painting. The
-   current job intentionally paints only one selected page.
-4. Add expert adjudication tooling and immutable dataset manifests. Never auto-promote public
+3. Add expert adjudication tooling and immutable dataset manifests. Never auto-promote public
    feedback or reduce renderer/topology errors to a binary wire classifier label.
-5. Expand the legally usable dense A1/A0 benchmark beyond the one qualified Volvo sheet and track
+4. Expand the legally usable dense A1/A0 benchmark beyond the one qualified Volvo sheet and track
    recall under the conservative native-scale-only policy. Do not infer universal manufacturer or
    page-layout support from this successful capacity reproduction.

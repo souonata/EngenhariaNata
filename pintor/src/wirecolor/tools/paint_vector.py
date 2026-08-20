@@ -69,7 +69,7 @@ def paint_dpi_for(page, analysis_dpi, want=PAINT_DPI, budget=PAINT_PIXEL_BUDGET)
 
 def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_classic",
                diagnose=False, band_scale=None, paint_dpi=None, paint_pixel_budget=None, force=False,
-               decision_policy=None, run_classifier=None):
+               decision_policy=None, run_classifier=None, overlay_path=None):
     import fitz
 
     from ..detect.vector_dashes import dashed_geometry, mark_dashed
@@ -78,7 +78,7 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
     from ..engine.vector_page import decide_vector_context, extract_vector_context
     from ..eval.vector_truth import geometry_is_trustworthy
     from ..labels.conventions import load_convention
-    from ..paint.raster_overlay import attach_overlay
+    from ..paint.raster_overlay import attach_overlay, write_overlay_png
     from ..paint.vector_overlay import band_mm_for, band_px, build_rgba
     from ..verify.validators import v2_vector_protected_overlap, v7_preservation
 
@@ -143,8 +143,13 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
     suffix_scale = "" if band_scale is None else f"_s{band_scale:g}".replace(".", "")
     out_pdf = os.path.join(out_dir, f"{tag}{suffix_scale}_diagnostic.pdf" if diagnose
                            else f"{tag}{suffix_scale}_colored.pdf")
-    stats = attach_overlay(pdf_path, out_pdf, page_index, rgba)
-    v7 = v7_preservation(pdf_path, out_pdf, page_index, stats["ocg"])
+    if overlay_path:
+        write_overlay_png(overlay_path, rgba)
+        v7 = None
+        out_pdf = None
+    else:
+        stats = attach_overlay(pdf_path, out_pdf, page_index, rgba)
+        v7 = v7_preservation(pdf_path, out_pdf, page_index, stats["ocg"])
 
     # A learned decision may split one extracted run into atomic edges.  Counting those edges as
     # new runs produces impossible coverage above 100%.  Report unique parent runs for counts and
@@ -192,6 +197,7 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
         "v7": v7,
         "v2": v2,
         "out_pdf": out_pdf,
+        "overlay_png": overlay_path,
         "seconds": round(time.time() - started, 1),
     }
     suffix = "_diagnostic_report.json" if diagnose else "_report.json"

@@ -143,7 +143,6 @@ body {
 }
 
 .beta-badge,
-.scope-badge,
 .limit-note {
     display: inline-flex;
     align-items: center;
@@ -161,43 +160,6 @@ body {
     background: #8ce0d8;
 }
 
-.scope-badge {
-    color: rgb(255 255 255 / 90%);
-    border: 1px solid rgb(255 255 255 / 28%);
-}
-
-.principles-strip {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    margin-bottom: 18px;
-    overflow: hidden;
-    border: 1px solid rgb(255 255 255 / 16%);
-    border-radius: 18px;
-    background: rgb(255 255 255 / 16%);
-}
-
-.principles-strip article {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 14px;
-    padding: 22px;
-    color: white;
-    background: rgb(19 61 58 / 88%);
-}
-
-.principles-strip strong {
-    display: block;
-    margin-bottom: 4px;
-}
-
-.principles-strip p {
-    color: rgb(255 255 255 / 68%);
-    font-size: 0.84rem;
-    line-height: 1.45;
-}
-
-.principle-index,
 .step-label {
     color: var(--painter-accent);
     font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
@@ -216,7 +178,8 @@ body {
 }
 
 .upload-panel,
-.access-panel {
+.access-panel,
+.account-panel {
     max-width: 940px;
     margin: 28px auto;
     padding: clamp(22px, 4vw, 40px);
@@ -224,6 +187,10 @@ body {
 
 .access-panel {
     max-width: 680px;
+}
+
+.account-panel {
+    max-width: 940px;
 }
 
 .access-lock {
@@ -252,6 +219,63 @@ body {
 .access-form {
     display: grid;
     gap: 14px;
+}
+
+.account-forms {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.account-form {
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: var(--surface-muted);
+}
+
+.account-form h3,
+.admin-queue h3 {
+    margin: 0;
+    color: var(--painter-ink);
+    font-size: 1.08rem;
+}
+
+.account-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    max-width: 940px;
+    margin: 0 auto 10px;
+    padding: 10px 14px;
+    color: white;
+    border: 1px solid rgb(255 255 255 / 22%);
+    border-radius: 13px;
+    background: rgb(13 55 54 / 64%);
+}
+
+.account-actions,
+.admin-decisions,
+.admin-preview-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.account-bar .text-button {
+    width: auto;
+    min-height: 38px;
+    margin: 0;
+    color: white;
+    border-color: rgb(255 255 255 / 22%);
+    background: rgb(255 255 255 / 8%);
+}
+
+.compact-button {
+    width: auto;
+    min-height: 38px;
+    padding: 8px 14px;
 }
 
 .panel-heading,
@@ -351,7 +375,7 @@ body {
 
 .upload-options {
     display: grid;
-    grid-template-columns: 160px minmax(240px, 1fr);
+    grid-template-columns: minmax(240px, 0.75fr) minmax(280px, 1fr);
     gap: 16px;
     margin-top: 18px;
 }
@@ -362,6 +386,13 @@ body {
     color: var(--text-secondary);
     font-size: 0.83rem;
     font-weight: 700;
+}
+
+.field-group small {
+    color: var(--text-tertiary);
+    font-size: 0.76rem;
+    font-weight: 500;
+    line-height: 1.35;
 }
 
 .field-group input,
@@ -577,6 +608,36 @@ html[data-theme='dark'] .inline-status.error {
     align-items: center;
     flex-wrap: wrap;
     justify-content: flex-end;
+}
+
+.review-controls {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.review-page-picker {
+    display: grid;
+    gap: 4px;
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    font-weight: 750;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.review-page-picker select {
+    min-height: 40px;
+    padding: 7px 30px 7px 10px;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--surface-muted);
+    font: inherit;
+    font-size: 0.82rem;
+    text-transform: none;
 }
 
 .tool-button,
@@ -926,21 +987,178 @@ html[data-theme='dark'] .diagram-viewport {
     margin-top: 18px;
 }
 
-.beta-boundary {
-    display: grid;
-    grid-template-columns: minmax(180px, 0.35fr) 1fr;
-    gap: 26px;
-    margin: 28px 0 0;
-    padding: 26px 30px;
-    color: white;
-    border: 1px solid rgb(255 255 255 / 20%);
-    border-radius: 16px;
-    background: rgb(11 43 42 / 42%);
+.secondary-button.compact-button {
+    width: auto;
+    min-height: 38px;
+    padding: 8px 14px;
 }
 
-.beta-boundary p {
-    color: rgb(255 255 255 / 72%);
-    line-height: 1.55;
+.admin-panel {
+    max-width: 1320px;
+    margin: 28px auto;
+    padding: clamp(22px, 4vw, 40px);
+}
+
+.admin-layout {
+    display: grid;
+    grid-template-columns: minmax(250px, 0.34fr) minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.admin-queue,
+.admin-detail {
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: var(--surface-muted);
+}
+
+.admin-queue-heading,
+.admin-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-feedback-list {
+    display: grid;
+    gap: 8px;
+    max-height: 680px;
+    margin-top: 14px;
+    overflow: auto;
+}
+
+.admin-feedback-item {
+    display: grid;
+    gap: 5px;
+    width: 100%;
+    padding: 12px;
+    color: var(--text-primary);
+    text-align: left;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--surface-bg);
+    cursor: pointer;
+}
+
+.admin-feedback-item span,
+.admin-feedback-item small,
+.admin-meta span {
+    color: var(--text-secondary);
+    font-size: 0.76rem;
+}
+
+.admin-feedback-item.is-active {
+    border-color: var(--painter-accent);
+    box-shadow: 0 0 0 3px rgb(27 156 163 / 12%);
+}
+
+.admin-detail {
+    display: grid;
+    gap: 14px;
+}
+
+.admin-page-field {
+    max-width: 240px;
+}
+
+.status-pill {
+    padding: 6px 9px;
+    border-radius: 999px;
+    background: rgb(27 156 163 / 12%);
+}
+
+.admin-preview-stage {
+    position: relative;
+    min-height: 300px;
+    overflow: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: #d7dedc;
+}
+
+.admin-preview-stage img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.admin-annotation-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.admin-marker {
+    position: absolute;
+    background: var(--painter-red);
+    box-shadow:
+        0 0 0 2px white,
+        0 2px 8px rgb(0 0 0 / 45%);
+}
+
+.admin-marker.is-point {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    color: white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    font:
+        800 10px/1 ui-monospace,
+        Consolas,
+        monospace;
+}
+
+.admin-marker.is-segment {
+    height: 4px;
+    border-radius: 999px;
+    transform-origin: 0 50%;
+}
+
+.admin-annotations {
+    display: grid;
+    gap: 6px;
+}
+
+.admin-annotations p,
+.admin-user-note {
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1.45;
+}
+
+.admin-user-note:not(:empty) {
+    padding: 12px;
+    border-left: 3px solid var(--painter-accent);
+    background: rgb(27 156 163 / 8%);
+}
+
+.admin-decisions button {
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 9px;
+    color: white;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.decision-accept {
+    background: #23855d;
+}
+
+.decision-reject {
+    background: var(--painter-red);
+}
+
+.decision-clarify {
+    background: #9a7414;
 }
 
 footer {
@@ -954,6 +1172,14 @@ footer {
 
     .review-sidebar {
         grid-template-columns: 0.85fr 1.15fr;
+    }
+
+    .admin-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-feedback-list {
+        max-height: 280px;
     }
 }
 
@@ -985,10 +1211,18 @@ footer {
         top: 78px;
     }
 
-    .principles-strip,
-    .review-sidebar,
-    .beta-boundary {
+    .review-sidebar {
         grid-template-columns: 1fr;
+    }
+
+    .account-forms {
+        grid-template-columns: 1fr;
+    }
+
+    .account-bar,
+    .admin-meta {
+        align-items: flex-start;
+        flex-direction: column;
     }
 
     .panel-heading,
@@ -1018,6 +1252,12 @@ footer {
 
     .toolbar-actions {
         width: 100%;
+        justify-content: flex-start;
+    }
+
+    .review-controls {
+        width: 100%;
+        align-items: stretch;
         justify-content: flex-start;
     }
 

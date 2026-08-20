@@ -16,17 +16,32 @@ The Engenharia NATA beta has two page-analysis modes:
   whose printed colour codes are legible to the bundled OCR engine;
 - conventions: IEC two-letter and Volvo classic, with explicit confirmation when auto-detection is
   uncertain;
-- scope: one selected page per job; all other PDF pages remain unchanged;
+- scope: up to 50 selected pages per job, using page numbers and ascending ranges such as
+  `40, 42, 44-46`; the released PDF still contains the complete manual and every unselected page
+  remains unchanged;
 - declined: password-protected files, unknown notation, illegible/unsupported colour codes,
   uncertain conductor ownership, or any result that fails a preservation gate;
-- limits: 25 MB, 50 pages, 24-hour retention by default.
+- limits: 25 MB, 2,000 document pages, 50 selected pages, and 24-hour retention by default.
 
 The static frontend lives in `index.html`, `pintor-script.js`, and `pintor-styles.css`. It is built
 by the main Engenharia NATA Vite pipeline. The Python API is a separate service; GitHub Pages does
 not execute it. The app remains outside the sitemap and catalog until its secret Easter egg is
 unlocked.
 
+External testers first enter the shared beta access code, then register a private account. A
+username contains 1–64 visible characters and is unique after Unicode normalization and
+case-folding. A password contains 4–128 characters; there are no digit, symbol, or case rules.
+Passwords use a unique salt and `scrypt`, account session tokens are stored only by SHA-256 digest,
+and jobs use stable per-account ownership without exposing account identifiers as authorization.
+
 See `docs/ELECTRICAL_SAFETY_RULES.md` for the non-tunable electrical and drawing invariants.
+
+Page selection accepts each of these forms:
+
+- one page: `1`, `12`, or `92`;
+- comma-separated pages: `1, 5, 9, 95`;
+- an inclusive ascending interval: `1-5`, `2-7`, or `12-50`;
+- any mix of them: `1, 3-5, 9-11, 15`.
 
 ## Design
 
@@ -79,20 +94,32 @@ when the frontend runs on localhost.
 The minimal beta API is:
 
 - public `GET /api/health` plus beta-code `POST /api/access`;
+- beta-protected registration/login/logout and `GET /api/account`;
+- `GET /api/account/jobs` for the signed-in user's retained jobs;
 - protected `GET /api/capabilities`;
 - `POST /api/jobs`, then `GET /api/jobs/{id}`;
 - authenticated original/painted previews and result download;
 - `POST /api/jobs/{id}/feedback` for typed point/segment annotations;
 - `DELETE /api/jobs/{id}` for immediate job and pending-consent-copy deletion.
+- administrator-only feedback list/detail/preview/document/decision routes under `/api/admin/`.
 
 Production also requires a SHA-256 beta-code digest and a separate HMAC secret. Successful access
 sets a 30-day `HttpOnly`, `Secure`, `SameSite=Strict` cookie; the plaintext code is never shipped in
 the frontend or container environment. Access attempts, all requests, and job creation have
-independent sliding-window limits. Every job belongs to an opaque, secure session cookie. Random job
-IDs are not authorization. The source, previews, output, and feedback stay outside the public web
-root and are removed after the retention window. Learning consent is separate and optional.
-Submitted feedback is always `trainable: false` until expert adjudication; the API has no training
-or model-promotion endpoint.
+independent sliding-window limits. Every job belongs to an authenticated account and an opaque,
+secure session cookie. Random job IDs are not authorization. The source, previews, output, and
+feedback stay outside the public web root and are removed after the retention window. Learning
+consent is separate and optional. Submitted feedback is always `trainable: false` until expert
+adjudication; the API has no training or model-promotion endpoint.
+
+The administrator is bootstrapped only from `PINTOR_ADMIN_USERNAME` and
+`PINTOR_ADMIN_PASSWORD_HASH`. Generate a hash interactively with `pintor-hash-password`; never put
+the plaintext password in Compose, HTML, JavaScript, shell history, or Git. On the deployment host,
+`deploy/bootstrap-secrets.sh` prompts through the terminal and writes only the encoded hash to the
+root-owned mode-0600 `.env`. The admin console compares original/result previews with user point or
+segment annotations and records `accepted`, `rejected`, or `needs-clarification`. Even accepted
+feedback remains `trainable: false`; it only becomes eligible for a separately controlled offline
+dataset when the user also consented to learning.
 
 The worker runs in a killable child process with time, CPU, and memory ceilings, with one processing
 slot per 3 GB container by default. The provided container runs as a non-root user with a read-only

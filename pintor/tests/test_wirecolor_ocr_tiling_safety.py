@@ -300,16 +300,28 @@ class OcrTilingReleaseGateTests(unittest.TestCase):
                 "runs": 0,
                 "runs_painted": 0,
             }
-            raster_report = {
-                "declined": False,
-                "processing_mode": "raster-ocr",
-                "v2": {"name": "V2", "passed": True},
-                "v7": {"name": "V7", "passed": False},
-            }
+            def raster_report(*_args, **kwargs):
+                import cv2
+
+                rgba = np.zeros((200, 300, 4), dtype=np.uint8)
+                rgba[95:105, 20:280, 2:4] = 255
+                Path(kwargs["overlay_path"]).parent.mkdir(parents=True, exist_ok=True)
+                self.assertTrue(cv2.imwrite(kwargs["overlay_path"], rgba))
+                return {
+                    "declined": False,
+                    "processing_mode": "raster-ocr",
+                    "v2": {"name": "V2", "passed": True},
+                    "runs": 1,
+                    "runs_painted": 1,
+                }
+
             with patch(
                 "wirecolor.tools.paint_vector.paint_page", return_value=vector_report,
             ), patch(
-                "wirecolor.tools.paint_raster.paint_page", return_value=raster_report,
+                "wirecolor.tools.paint_raster.paint_page", side_effect=raster_report,
+            ), patch(
+                "wirecolor.verify.validators.v7_preservation",
+                return_value={"name": "V7", "passed": False},
             ):
                 process_job(store, state["id"])
 
