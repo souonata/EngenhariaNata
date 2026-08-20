@@ -3,7 +3,7 @@
   "pt-BR": {
     "hero": {
       "beta": "Beta privado",
-      "scope": "PDF vetorial + texto extraível",
+      "scope": "PDF vetorial ou scan + códigos visíveis",
       "title": "Pintor",
       "subtitle": "Envie um wiring diagram. O Pintor identifica os condutores físicos, lê os códigos de cor impressos e adiciona uma camada de cor removível."
     },
@@ -51,7 +51,8 @@
       "working": "Analisando a página sem alterar o original…",
       "stages": {
         "queued": "Aguardando o worker isolado…",
-        "reading-diagram": "Lendo vetores, textos e códigos de cor…",
+        "reading-diagram": "Lendo a página e os códigos de cor…",
+        "reading-raster-labels": "Lendo códigos visíveis com OCR e rastreando os fios…",
         "tracing-conductors": "Separando fios físicos de símbolos, terminais e molduras…",
         "review": "Preparando a revisão visual…"
       }
@@ -100,15 +101,15 @@
     "declined": {
       "step": "Abstenção segura",
       "title": "Esta página não foi pintada",
-      "help": "O beta aceita, por enquanto, páginas vetoriais digitais com texto extraível dos códigos de cor. Se a detecção automática ficou incerta, escolha a convenção explicitamente.",
+      "help": "O beta aceita páginas vetoriais e scans formados apenas por imagem. Quando não há texto extraível, os códigos visíveis são lidos por OCR. Se a detecção automática ficou incerta, escolha a convenção explicitamente.",
       "tryAgain": "Ajustar e tentar novamente",
       "genericReason": "A página não atingiu os critérios conservadores do beta.",
       "conventionAmbiguous": "A convenção dos códigos de cor ficou ambígua. A melhor candidata já foi selecionada; confirme e tente novamente.",
-      "unsupported": "A página não oferece geometria vetorial e texto de códigos com confiança suficiente."
+      "unsupported": "Nenhum fio pôde receber uma cor com segurança; a página original foi preservada."
     },
     "boundary": {
       "title": "O que “beta” significa aqui",
-      "text": "O Pintor é independente de fabricante na arquitetura, mas esta versão aceita somente os perfis de código listados e PDFs vetoriais. Scans, convenções desconhecidas e topologia incerta são recusados até terem evidência de validação equivalente."
+      "text": "O Pintor é independente de fabricante na arquitetura. Esta versão aceita os perfis de código listados em páginas vetoriais e scans; convenções desconhecidas e trechos com topologia incerta permanecem pretos para revisão humana."
     },
     "messages": {
       "choosePdf": "Escolha um arquivo PDF válido.",
@@ -137,7 +138,7 @@
   "it-IT": {
     "hero": {
       "beta": "Beta privata",
-      "scope": "PDF vettoriale + testo estraibile",
+      "scope": "PDF vettoriale o scansione + codici visibili",
       "title": "Pintor",
       "subtitle": "Carica uno schema elettrico. Pintor identifica i conduttori fisici, legge i codici colore stampati e aggiunge un livello colore rimovibile."
     },
@@ -185,7 +186,8 @@
       "working": "Analisi della pagina senza modificare l'originale…",
       "stages": {
         "queued": "In attesa del worker isolato…",
-        "reading-diagram": "Lettura di vettori, testi e codici colore…",
+        "reading-diagram": "Lettura della pagina e dei codici colore…",
+        "reading-raster-labels": "Lettura OCR dei codici visibili e tracciamento dei fili…",
         "tracing-conductors": "Separazione dei fili fisici da simboli, terminali e cornici…",
         "review": "Preparazione della revisione visiva…"
       }
@@ -234,15 +236,15 @@
     "declined": {
       "step": "Astensione sicura",
       "title": "Questa pagina non è stata colorata",
-      "help": "Per ora la beta accetta pagine vettoriali native con testo estraibile dei codici colore. Se il rilevamento automatico è incerto, scegli esplicitamente la convenzione.",
+      "help": "La beta accetta pagine vettoriali e scansioni composte solo da immagini. Se non esiste testo estraibile, i codici visibili vengono letti tramite OCR. Se il rilevamento automatico è incerto, scegli esplicitamente la convenzione.",
       "tryAgain": "Modifica e riprova",
       "genericReason": "La pagina non ha soddisfatto i criteri conservativi della beta.",
       "conventionAmbiguous": "La convenzione dei codici colore è ambigua. La candidata migliore è già selezionata: confermala e riprova.",
-      "unsupported": "La pagina non offre geometria vettoriale e testo dei codici con sufficiente affidabilità."
+      "unsupported": "Nessun filo ha potuto ricevere un colore in sicurezza; la pagina originale è stata preservata."
     },
     "boundary": {
       "title": "Che cosa significa “beta” qui",
-      "text": "Pintor è indipendente dal produttore nell'architettura, ma questa versione accetta solo i profili colore elencati e PDF vettoriali. Scansioni, convenzioni sconosciute e topologia incerta vengono rifiutate finché non dispongono di prove di validazione equivalenti."
+      "text": "Pintor è indipendente dal produttore nell'architettura. Questa versione accetta i profili di codice elencati su pagine vettoriali e scansioni; convenzioni sconosciute e tratti con topologia incerta restano neri per la revisione umana."
     },
     "messages": {
       "choosePdf": "Scegli un file PDF valido.",
@@ -271,7 +273,7 @@
   "sv-SE": {
     "hero": {
       "beta": "Privat beta",
-      "scope": "Vektor-PDF + extraherbar text",
+      "scope": "Vektor-PDF eller skanning + synliga koder",
       "title": "Pintor",
       "subtitle": "Ladda upp ett kopplingsschema. Pintor identifierar fysiska ledare, läser tryckta färgkoder och lägger till ett borttagbart färglager."
     },
@@ -319,7 +321,8 @@
       "working": "Analyserar sidan utan att ändra originalet…",
       "stages": {
         "queued": "Väntar på den isolerade arbetaren…",
-        "reading-diagram": "Läser vektorer, text och färgkoder…",
+        "reading-diagram": "Läser sidan och färgkoderna…",
+        "reading-raster-labels": "Läser synliga koder med OCR och spårar ledningar…",
         "tracing-conductors": "Skiljer fysiska ledningar från symboler, anslutningar och ramar…",
         "review": "Förbereder den visuella granskningen…"
       }
@@ -368,15 +371,15 @@
     "declined": {
       "step": "Säker avhållsamhet",
       "title": "Den här sidan färglades inte",
-      "help": "Betan tar för närvarande emot digitala vektorsidor med extraherbar färgkodstext. Välj konvention uttryckligen om automatisk identifiering var osäker.",
+      "help": "Betan tar emot vektorsidor och skanningar som endast består av bilder. När extraherbar text saknas läses synliga koder med OCR. Välj konvention uttryckligen om automatisk identifiering var osäker.",
       "tryAgain": "Justera och försök igen",
       "genericReason": "Sidan uppfyllde inte betans konservativa kriterier.",
       "conventionAmbiguous": "Färgkodskonventionen är tvetydig. Den bästa kandidaten är redan vald; bekräfta den och försök igen.",
-      "unsupported": "Sidan saknar tillräckligt tillförlitlig vektorgeometri och färgkodstext."
+      "unsupported": "Ingen ledning kunde färgsättas säkert; originalsidan bevarades."
     },
     "boundary": {
       "title": "Vad “beta” betyder här",
-      "text": "Pintor är tillverkaroberoende i arkitekturen, men den här versionen accepterar endast de listade färgprofilerna och vektor-PDF:er. Skanningar, okända konventioner och osäker topologi avvisas tills de har likvärdig valideringsbevisning."
+      "text": "Pintor är tillverkaroberoende i arkitekturen. Den här versionen stöder de angivna kodprofilerna på vektorsidor och skanningar; okända konventioner och avsnitt med osäker topologi förblir svarta för mänsklig granskning."
     },
     "messages": {
       "choosePdf": "Välj en giltig PDF-fil.",

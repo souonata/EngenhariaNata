@@ -35,7 +35,7 @@ MAX_PAGES = 50
 MAX_PAGE_SIDE_PT = 12_000
 MAX_PAGE_AREA_PT2 = 24_000_000
 ANALYSIS_DPI = 200
-MAX_ANALYSIS_PIXELS = 60_000_000
+MAX_ANALYSIS_PIXELS = 75_000_000
 BETA_COOKIE = "pintor_beta"
 BETA_COOKIE_PURPOSE = b"pintor-beta-access-v1"
 
@@ -95,7 +95,8 @@ def _public_state(state: dict) -> dict:
     allowed = {
         "id", "status", "stage", "original_name", "page", "page_count", "convention",
         "requested_convention", "convention_confidence", "created_at", "updated_at", "metrics",
-        "decline_reason", "error", "preview_original", "preview_painted", "download", "feedback_id",
+        "processing_mode", "decline_reason", "error", "preview_original", "preview_painted",
+        "download", "feedback_id",
     }
     return {key: state[key] for key in allowed if key in state}
 
@@ -464,34 +465,60 @@ def process_job(store: JobStore, job_id: str) -> None:
         convention, confidence = _select_convention(
             source, state["page"], state["requested_convention"])
         original_size = _render_preview(source, state["page"], directory / "original.jpg")
-        if confidence == "low" and state["requested_convention"] == "auto":
-            store.update(
-                job_id, status="declined", stage="confirm-colour-convention",
-                convention=convention, convention_confidence=confidence,
-                decline_reason="colour-code convention is ambiguous; select it explicitly",
-                preview_original=f"/api/jobs/{job_id}/preview/original",
-                metrics={"preview_width": original_size[0], "preview_height": original_size[1]},
-            )
-            return
         store.update(job_id, stage="tracing-conductors", convention=convention,
                      convention_confidence=confidence)
 
-        from .tools.paint_vector import paint_page
-
-        policy, classifier = _load_models()
         generated = directory / "generated"
-        report = paint_page(
-            str(source), state["page"], str(generated), convention_name=convention,
-            paint_dpi=int(os.getenv("PINTOR_PAINT_DPI", "720")),
-            paint_pixel_budget=int(os.getenv("PINTOR_PAINT_PIXEL_BUDGET", "60000000")),
-            decision_policy=policy, run_classifier=classifier,
+        if confidence == "low" and state["requested_convention"] == "auto":
+            # Exact vector geometry is not permission to guess its colour vocabulary.  Let the
+            # convention-neutral OCR sweep decide from visible labels, or abstain.
+            report = {"declined": True, "runs": 0, "runs_painted": 0}
+        else:
+            from .tools.paint_vector import paint_page
+
+            policy, classifier = _load_models()
+            report = paint_page(
+                str(source), state["page"], str(generated), convention_name=convention,
+                paint_dpi=int(os.getenv("PINTOR_PAINT_DPI", "720")),
+                paint_pixel_budget=int(os.getenv("PINTOR_PAINT_PIXEL_BUDGET", "60000000")),
+                decision_policy=policy, run_classifier=classifier,
+            )
+        # Raster-only scans and pages whose colour legends are image pixels deliberately fail the
+        # vector capability gate.  Re-run the same source through OCR + pixel topology instead of
+        # treating that honest vector refusal as a terminal error.
+        vector_needs_ocr = (
+            report.get("runs_painted") == 0 and report.get("legends") == 0
         )
+        if report.get("declined") or vector_needs_ocr:
+            store.update(job_id, stage="reading-raster-labels", processing_mode="raster-ocr")
+            from .tools.paint_raster import paint_page as paint_raster_page
+
+            report = paint_raster_page(
+                str(source), state["page"], str(generated),
+                convention_name=state["requested_convention"],
+                paint_pixel_budget=int(
+                    os.getenv("PINTOR_PAINT_PIXEL_BUDGET", "60000000")
+                ),
+            )
+            if report.get("convention"):
+                convention = report["convention"]
+            confidence = report.get("convention_confidence", confidence)
+            store.update(job_id, convention=convention, convention_confidence=confidence)
+
         if report.get("declined"):
+            stage = "confirm-colour-convention" \
+                if confidence == "low" and state["requested_convention"] == "auto" \
+                else "needs-manual-review"
             store.update(
-                job_id, status="declined", stage="needs-compatible-vector-pdf",
+                job_id, status="declined", stage=stage,
                 decline_reason=report.get("decline_reason", "unsupported page geometry"),
+                processing_mode=report.get("processing_mode", "vector-text"),
                 preview_original=f"/api/jobs/{job_id}/preview/original",
-                metrics={"preview_width": original_size[0], "preview_height": original_size[1]},
+                metrics={
+                    "preview_width": original_size[0], "preview_height": original_size[1],
+                    "labels": report.get("labels", 0), "runs": report.get("runs", 0),
+                    "abstentions": report.get("decision_abstentions", 0),
+                },
             )
             return
 
@@ -521,11 +548,13 @@ def process_job(store: JobStore, job_id: str) -> None:
             "original_preserved": bool(v7.get("passed")),
             "paint_dpi": report.get("paint_dpi"),
             "seconds": report.get("seconds"),
+            "processing_mode": report.get("processing_mode", "vector-text"),
             "preview_width": painted_size[0],
             "preview_height": painted_size[1],
         }
         store.update(
             job_id, status="ready", stage="review", metrics=metrics,
+            processing_mode=report.get("processing_mode", "vector-text"),
             preview_original=f"/api/jobs/{job_id}/preview/original",
             preview_painted=f"/api/jobs/{job_id}/preview/painted",
             download=f"/api/jobs/{job_id}/download",
@@ -728,9 +757,10 @@ def create_app(workspace_root: str | Path | None = None,
         from .labels.conventions import list_conventions
 
         return {
-            "version": "0.1.0",
+            "version": "0.2.0",
             "beta": True,
-            "input": "vector-pdf-with-extractable-text",
+            "input": "pdf-vector-or-raster-with-visible-colour-codes",
+            "page_modes": ["vector-text", "raster-ocr"],
             "scope": "one-selected-page-per-job",
             "max_upload_bytes": max_bytes,
             "max_pages": MAX_PAGES,

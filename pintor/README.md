@@ -10,15 +10,15 @@ database, or write into its application directories.
 
 ## Web beta capability
 
-The Engenharia NATA beta is deliberately narrower than the long-term goal of accepting any wiring
-diagram:
+The Engenharia NATA beta has two page-analysis modes:
 
-- accepted: born-digital vector PDF with extractable colour-code text;
+- accepted: born-digital vector pages with extractable legends, plus image-only/rasterized pages
+  whose printed colour codes are legible to the bundled OCR engine;
 - conventions: IEC two-letter and Volvo classic, with explicit confirmation when auto-detection is
   uncertain;
 - scope: one selected page per job; all other PDF pages remain unchanged;
-- declined: raster-only scans, password-protected files, unknown notation, uncertain topology, or
-  any result that fails a preservation gate;
+- declined: password-protected files, unknown notation, illegible/unsupported colour codes,
+  uncertain conductor ownership, or any result that fails a preservation gate;
 - limits: 25 MB, 50 pages, 24-hour retention by default.
 
 The static frontend lives in `index.html`, `pintor-script.js`, and `pintor-styles.css`. It is built
@@ -30,9 +30,9 @@ See `docs/ELECTRICAL_SAFETY_RULES.md` for the non-tunable electrical and drawing
 
 ## Design
 
-The shipping decision path combines:
+The shipping decision paths combine:
 
-- whole-page vector topology represented as a graph;
+- exact vector topology when available, otherwise a 200-DPI OCR/skeleton page analysis;
 - electrical and drawing constraints;
 - a calibrated lightweight classifier over atomic conductor pieces;
 - explicit abstention whenever the evidence is not strong enough;
@@ -60,8 +60,8 @@ python -m venv .venv
 .\.venv\Scripts\python -m pip install -e ".[learning,ocr]"
 ```
 
-For vector PDFs, OCR is usually unnecessary. Install only `-e ".[learning]"` when raster/OCR
-experiments are not needed.
+For vector-only CLI work, OCR is usually unnecessary. The production web image always includes the
+OCR runtime because raster pages are part of its supported input boundary.
 
 Install the private-job web boundary locally with:
 
@@ -97,8 +97,8 @@ or model-promotion endpoint.
 The worker runs in a killable child process with time, CPU, and memory ceilings, with one processing
 slot per 3 GB container by default. The provided container runs as a non-root user with a read-only
 root filesystem. `deploy/apply-firewall.sh` limits inbound traffic to the Cloudflare connector and
-blocks container egress. The web path caps analysis at 60 million pixels and defaults the removable
-overlay to 720 DPI/60 million pixels; browser clients cannot override those budgets:
+blocks container egress. The web path caps 200-DPI analysis at 75 million pixels (enough for A0) and
+the removable overlay at 60 million pixels; browser clients cannot override those budgets:
 
 ```powershell
 docker compose -f compose.yml up --build
@@ -126,8 +126,9 @@ pintor --pdf C:\path\drawing.pdf --page 0 --out-dir workspaces\manual_run `
   --run-classifier workspaces\wirecolor_qa\models\run_classifier_cv_v3.json
 ```
 
-The command declines raster-only pages and ambiguous geometry unless `--force` is explicitly used.
-That override is intended for diagnostics, not accepted output.
+This CLI entry point is the exact-vector route and declines raster-only pages. The web service
+automatically selects the raster/OCR route; `--force` remains a vector diagnostic override and is
+never accepted from the API.
 
 ## Review and mark errors
 

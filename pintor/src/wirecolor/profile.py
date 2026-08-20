@@ -119,7 +119,13 @@ def paint_coverage(solution, top=10):
     """
     segments = solution["segments"]
     claims = solution["solver"].get("claims", {})
-    dash_members = {si for members in solution.get("dgroups", {}).values() for si in members}
+    # A detected dashed route is not necessarily coloured.  Only roots with an explicit claim are
+    # paint coverage; counting every dgroup made unresolved dashed furniture look successfully
+    # painted in the web metric even though the renderer correctly left it black.
+    dash_members = {
+        si for root, members in solution.get("dgroups", {}).items()
+        if root in solution.get("dclaims", {}) for si in members
+    }
     excluded = set(solution.get("edge_excluded", ())) | set(solution.get("pin_border_arcs", ())) \
         | set(solution.get("twist", ()))
 

@@ -2,7 +2,7 @@ services:
   api:
     build:
       context: .
-    image: engnata/pintor-api:0.1.0
+    image: engnata/pintor-api:0.2.0
     restart: unless-stopped
     init: true
     ports:
@@ -26,9 +26,9 @@ services:
       PINTOR_MAX_STORAGE_MB: '8192'
       PINTOR_RETENTION_HOURS: '24'
       PINTOR_MAX_UPLOAD_MB: '25'
-      PINTOR_JOB_TIMEOUT_SECONDS: '180'
+      PINTOR_JOB_TIMEOUT_SECONDS: '600'
       PINTOR_JOB_MEMORY_MB: '2300'
-      PINTOR_JOB_CPU_SECONDS: '150'
+      PINTOR_JOB_CPU_SECONDS: '480'
       PINTOR_PAINT_DPI: '720'
       PINTOR_PAINT_PIXEL_BUDGET: '60000000'
     read_only: true

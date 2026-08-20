@@ -14,7 +14,7 @@
         <title>Pintor beta — Engenharia NATA</title>
         <meta
             name="description"
-            content="Private beta for conservative colourization and review of vector wiring-diagram PDFs."
+            content="Private beta for conservative colourization and review of vector or scanned wiring-diagram PDFs."
         />
         <meta name="author" content="Engenharia NATA" />
         <meta name="robots" content="noindex, nofollow, noarchive" />
@@ -45,7 +45,7 @@
                     <div class="eyebrow-row">
                         <span class="beta-badge" data-i18n="hero.beta">Private beta</span>
                         <span class="scope-badge" data-i18n="hero.scope"
-                            >Vector PDF + extractable text</span
+                            >Vector or scanned PDF + visible colour codes</span
                         >
                     </div>
                     <h1 data-i18n="hero.title">Pintor</h1>
@@ -461,9 +461,9 @@
                     <h2 data-i18n="declined.title">This page was not painted</h2>
                     <p id="declineReason"></p>
                     <p data-i18n="declined.help">
-                        The beta currently accepts born-digital vector pages with extractable
-                        colour-code text. Choose the convention explicitly if automatic detection
-                        was uncertain.
+                        The beta accepts vector pages and image-only scans. Visible colour codes are
+                        read with OCR when the PDF has no usable text layer. Choose the convention
+                        explicitly if automatic detection was uncertain.
                     </p>
                     <button
                         id="tryAgain"
@@ -479,9 +479,9 @@
             <section class="beta-boundary">
                 <strong data-i18n="boundary.title">What “beta” means here</strong>
                 <p data-i18n="boundary.text">
-                    Pintor is manufacturer-independent by architecture, but this release supports
-                    only the listed code profiles and vector PDFs. Scans, unknown conventions and
-                    uncertain topology are refused until they have equivalent validation evidence.
+                    Pintor is manufacturer-independent by architecture. This release supports the
+                    listed code profiles on vector pages and image-only scans; unknown conventions
+                    and uncertain conductor ownership remain black for human review.
                 </p>
             </section>
         </main>

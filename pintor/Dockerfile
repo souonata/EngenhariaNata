@@ -11,6 +11,8 @@ COPY pyproject.toml README.md requirements-web.lock ./
 COPY src ./src
 
 RUN python -m pip install --no-cache-dir -r requirements-web.lock \
+    && python -m pip install --no-cache-dir --no-deps rapidocr==3.9.2 \
+    && rapidocr check \
     && python -m pip install --no-cache-dir --no-build-isolation --no-deps . \
     && groupadd --gid 10001 pintor \
     && useradd --uid 10001 --gid 10001 --no-create-home --shell /usr/sbin/nologin pintor \

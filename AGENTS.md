@@ -181,7 +181,18 @@ npm run build          # build de produção (gera local/dist)
 
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
-_Última atualização: 2026-08-18_
+_Última atualização: 2026-08-20_
+
+- **PINTOR — RASTER/OCR NA BETA PROTEGIDA:** o app secreto `/pintor/` e a API dedicada
+  `pintor-api.engnata.eu` agora aceitam tanto páginas vetoriais quanto páginas formadas somente por
+  imagem. A rota raster usa RapidOCR/ONNX Runtime pinados, skeletonização e as mesmas regras
+  elétricas/gates V2/V7; emendas não propagam cor, convenção automática exige duas leituras OCR
+  fortes e trechos incertos permanecem pretos. Um PDF sintético realmente image-only (zero texto e
+  zero desenho vetorial) completou OCR, pintura removível e preservação. Limites: uma página por
+  job, 25 MB/50 páginas, análise 75 Mpx, overlay 60 Mpx, retenção 24 h. O frontend continua
+  `noindex`, fora do sitemap e visível apenas no easter egg; autenticação beta, owner isolation,
+  rate limits, worker isolado, container non-root/read-only sem egress e firewall do tunnel
+  permanecem. Detalhes e gates pendentes para folhas densas A1/A0 em `pintor/HANDOFF.md`.
 
 - **SITE TRILÍNGUE — SUECO (`sv-SE`) + DOCK GLOBAL (branch `feat/i18n-sueco`):** iniciativa em
   andamento; plano completo e fases na seção própria do `ROADMAP.md`. **Decisões travadas:** idioma

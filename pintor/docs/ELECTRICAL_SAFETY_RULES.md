@@ -6,14 +6,16 @@ colour.
 
 ## Supported evidence boundary
 
-The beta accepts a born-digital vector PDF page whose wire legends are extractable text and whose
-colour convention is either selected by the user or detected with a decisive margin. It declines
-raster scans, uncertain conventions, unsupported notation, and ambiguous topology. A job paints
-one selected page while preserving every other page in the PDF.
+The beta accepts a vector or rasterized PDF page whose visible wire legends match a supported code
+profile. Vector pages use exact strokes and text when available; image-only pages use OCR and pixel
+topology. The colour convention is either selected by the user or detected from at least two
+strong OCR observations with a decisive margin. It declines uncertain conventions, unsupported
+notation, illegible legends, and ambiguous topology. A job paints one selected page while
+preserving every other page in the PDF.
 
-"Any wiring diagram" is the product direction, not the present capability claim. A new drawing
-family becomes supported only after its convention and symbol grammar pass a publication-grouped
-evaluation corpus.
+"Any wiring diagram" remains a product direction rather than permission to guess. A new colour
+profile or symbol grammar becomes supported only after publication-grouped evaluation. Unknown or
+unrecognised component geometry is a hard abstention boundary.
 
 ## Hard electrical and drawing invariants
 

@@ -92,7 +92,8 @@ class WebServiceTests(unittest.TestCase):
         response = self.client.get("/api/capabilities")
         self.assertEqual(response.status_code, 200)
         payload = response.json()
-        self.assertEqual(payload["input"], "vector-pdf-with-extractable-text")
+        self.assertEqual(payload["input"], "pdf-vector-or-raster-with-visible-colour-codes")
+        self.assertEqual(payload["page_modes"], ["vector-text", "raster-ocr"])
         self.assertFalse(payload["automatic_training"])
         self.assertNotIn(str(Path(self.temp.name)), response.text)
 
@@ -271,6 +272,48 @@ class WebServiceTests(unittest.TestCase):
         self.assertIn("V7", result["internal_error"])
         self.assertNotIn("internal_error", self.client.get("/api/capabilities").text)
         self.assertFalse((store.job_dir(state["id"]) / "painted.pdf").exists())
+
+    def test_vector_refusal_falls_back_to_raster_ocr(self):
+        store = JobStore(Path(self.temp.name) / "raster-fallback")
+        state = store.create(
+            _pdf_bytes(), "scan.pdf", 0, "iec_two_letter", False,
+            25 * 1024 * 1024, _owner_hash("b" * 64),
+        )
+        generated = store.job_dir(state["id"]) / "generated" / "scan_p0_raster_colored.pdf"
+
+        def raster_report(*_args, **_kwargs):
+            generated.parent.mkdir(parents=True, exist_ok=True)
+            generated.write_bytes((store.job_dir(state["id"]) / "source.pdf").read_bytes())
+            return {
+                "declined": False,
+                "processing_mode": "raster-ocr",
+                "convention": "iec_two_letter",
+                "convention_confidence": "user-selected",
+                "v2": {"passed": True},
+                "v7": {"passed": True},
+                "out_pdf": str(generated),
+                "runs": 4,
+                "runs_painted": 2,
+                "paint_rate": 0.5,
+                "codes": ["RD"],
+            }
+
+        vector_report = {
+            "declined": True,
+            "decline_reason": "raster scan",
+            "runs": 0,
+            "runs_painted": 0,
+        }
+        with patch("wirecolor.tools.paint_vector.paint_page", return_value=vector_report), \
+                patch("wirecolor.tools.paint_raster.paint_page", side_effect=raster_report) as raster:
+            process_job(store, state["id"])
+
+        result = store.read(state["id"])
+        self.assertEqual(result["status"], "ready")
+        self.assertEqual(result["processing_mode"], "raster-ocr")
+        self.assertEqual(result["metrics"]["processing_mode"], "raster-ocr")
+        self.assertEqual(raster.call_args.kwargs["convention_name"], "iec_two_letter")
+        self.assertTrue((store.job_dir(state["id"]) / "painted.pdf").is_file())
 
 
 if __name__ == "__main__":
