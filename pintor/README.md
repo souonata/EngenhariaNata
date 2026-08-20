@@ -112,6 +112,19 @@ PDF processing, release, download, and deletion. A mounted policy or classifier 
 the operator explicitly sets `PINTOR_POLICY_PATH` or `PINTOR_CLASSIFIER_PATH`; otherwise the
 conservative deterministic baseline runs.
 
+The connector host also runs `deploy/pintor-tunnel-watchdog.timer`. Every minute it checks the
+uncached public health endpoint. Three consecutive failures restart only the `cloudflared`
+container; a single transient edge failure does not flap the tunnel. Install the tracked script and
+units on the connector, verify them with `systemd-analyze verify`, then enable the timer:
+
+```sh
+install -m 0755 deploy/cloudflared-watchdog.sh /usr/local/sbin/pintor-cloudflared-watchdog.sh
+install -m 0644 deploy/pintor-tunnel-watchdog.service /etc/systemd/system/
+install -m 0644 deploy/pintor-tunnel-watchdog.timer /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable --now pintor-tunnel-watchdog.timer
+```
+
 ## Paint one page
 
 ```powershell

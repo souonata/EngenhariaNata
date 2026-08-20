@@ -200,6 +200,13 @@ _Última atualização: 2026-08-20_
   observados ~826 MB RSS/~1,45 GB VSZ, caindo depois para ~533 MB/~1,06 GB; o container continua
   limitado a 3 GB, 2 CPUs, um job e sem egress. Isso qualifica a reprodução de capacidade, não
   universaliza precisão para fabricantes/layouts ainda sem corpus. Detalhes em `pintor/HANDOFF.md`.
+  **TÚNEL AUTO-RECUPERÁVEL (0.2.2):** em 20/08 o origin/API continuava saudável, mas as quatro
+  conexões do `cloudflared` caíram e o hostname público respondeu `530/1033`; por isso o browser
+  mostrava o inglês nativo `Failed to fetch` antes de validar o código. O conector `.10` foi
+  reiniciado, voltou com quatro conexões HTTP/2 e CORS correto, e recebeu
+  `pintor-tunnel-watchdog.timer`: health público a cada minuto, restart somente após três falhas
+  consecutivas. O frontend 0.2.2 traduz falhas de transporte em PT/IT/SV. Script e units ficam em
+  `pintor/deploy/`; o timer está enabled/active no host.
 
 - **SITE TRILÍNGUE — SUECO (`sv-SE`) + DOCK GLOBAL (branch `feat/i18n-sueco`):** iniciativa em
   andamento; plano completo e fases na seção própria do `ROADMAP.md`. **Decisões travadas:** idioma

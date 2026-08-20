@@ -171,7 +171,7 @@ These directories are intentionally ignored by Git.
 
 - `350` standalone Python tests pass, including the web boundary, tenant isolation, encrypted PDF,
   invalid page, typed feedback, hard branch/bridge rules, V2/V7 quarantine, and immediate deletion.
-- The complete Engenharia NATA validation passes: `340` JavaScript tests, lint, format, style,
+- The complete Engenharia NATA validation passes: `343` JavaScript tests, lint, format, style,
   trilingual parity across 20 i18n files, asset references, and Rotta 12 integrity.
 - The production Vite build emits `/pintor/index.html` and its hashed JS/CSS bundles.
 - The first production build exposed private Pintor workspace HTML as accidental Vite entries. The
@@ -206,6 +206,15 @@ These directories are intentionally ignored by Git.
   The exact protected A0 reproduction that previously failed reached `ready` in 279.3 seconds,
   returned a valid 44-page PDF, rejected unauthenticated access with `401`, and deleted the private
   job with `204`. The source and downloaded diagnostic copies were removed after verification.
+- On 2026-08-20 the API origin stayed healthy while all four Cloudflare edge connections dropped;
+  the public hostname returned `530 / 1033`, so browsers surfaced the native English `Failed to
+  fetch` before beta-code validation. Restarting the connector restored four HTTP/2 connections and
+  external health/CORS immediately. Version `0.2.2` maps browser transport exceptions to the
+  existing PT/IT/SV unavailable message. The connector now has a systemd timer that probes the
+  uncached public health endpoint every minute and restarts only `cloudflared` after three
+  consecutive failures. Its real success path and a mock failure/restart path passed; the timer is
+  enabled on the connector host. A fresh external smoke then passed beta authentication, `401`
+  rejection without credentials, PDF processing/release, download, and authenticated deletion.
 - Intentionally did not place VM 206 in the seven-day VM backup rotation: job PDFs have a 24-hour
   retention contract, and snapshot backups would silently extend retention. Code is reproducible
   from Git; a lost beta secret is rotated instead of restored with stale user documents.
