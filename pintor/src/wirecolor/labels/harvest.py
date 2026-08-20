@@ -20,6 +20,7 @@ lens" is then a query against this set instead of a new OCR call.
 """
 from __future__ import annotations
 
+import gc
 import math
 import re
 
@@ -47,6 +48,28 @@ MAX_ENGINE_PIXELS = MAX_ENGINE_SIDE * MAX_ENGINE_SIDE
 # 480-second CPU gate.  Omitting the 2x recovery pass reduces recall only: undetected legends have
 # no ownership seed, so their conductors remain black under the existing abstention rules.
 MULTISCALE_PAGE_PIXEL_LIMIT = 60_000_000
+
+
+def _release_native_memory() -> None:
+    """Return OCR's native allocations before full-page topology starts.
+
+    ONNX Runtime and OpenCV allocate outside Python's object heap.  Dropping the engine and image
+    references is necessary but glibc may otherwise keep their freed arenas mapped, so the next
+    stage can hit RLIMIT_AS even while resident memory remains well below the container limit.
+    Collection plus ``malloc_trim`` is best-effort: non-glibc platforms simply skip the latter.
+    """
+    gc.collect()
+    try:
+        import ctypes
+
+        libc = ctypes.CDLL(None)
+        malloc_trim = getattr(libc, "malloc_trim", None)
+        if malloc_trim is not None:
+            malloc_trim.argtypes = [ctypes.c_size_t]
+            malloc_trim.restype = ctypes.c_int
+            malloc_trim(0)
+    except (AttributeError, OSError):
+        pass
 
 
 def _tiles(width, height, tile=TILE, overlap=OVERLAP):
@@ -220,8 +243,13 @@ def harvest_labels(image_path: str, convention, scales=(1.0, SCALE), tile=TILE,
     if verbose:
         print(f"harvest: {upright} tiles at {'x/'.join(str(s) for s in active_scales)}x "
               f"+ {rotated_reads} rotated -> {len(labels)} labels")
-    return {"image": [width, height], "labels": labels,
-            "ocr_scales": list(active_scales), "ocr_calls": upright + rotated_reads}
+    result = {"image": [width, height], "labels": labels,
+              "ocr_scales": list(active_scales), "ocr_calls": upright + rotated_reads}
+    # The caller's next operation creates full-page connected-component label arrays.  Dispose of
+    # the three ONNX sessions and the page raster first, then ask glibc to unmap free arenas.
+    del engine, image, tokens, found, labels
+    _release_native_memory()
+    return result
 
 
 def labels_in_window(labels, x0, y0, x1, y1, exclude_ids=()):

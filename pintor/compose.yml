@@ -26,11 +26,18 @@ services:
       PINTOR_MAX_STORAGE_MB: '8192'
       PINTOR_RETENTION_HOURS: '24'
       PINTOR_MAX_UPLOAD_MB: '25'
-      PINTOR_JOB_TIMEOUT_SECONDS: '600'
-      PINTOR_JOB_MEMORY_MB: '2300'
-      PINTOR_JOB_CPU_SECONDS: '480'
+      PINTOR_JOB_TIMEOUT_SECONDS: '900'
+      # RLIMIT_AS bounds virtual address space, not resident RAM. A0 OCR maps native runtimes and
+      # the following topology pass needs one 248 MB label image; the container still hard-caps
+      # actual memory at 3 GB and admits only one job at a time.
+      PINTOR_JOB_MEMORY_MB: '2800'
+      PINTOR_JOB_CPU_SECONDS: '720'
       PINTOR_PAINT_DPI: '720'
       PINTOR_PAINT_PIXEL_BUDGET: '60000000'
+      MALLOC_ARENA_MAX: '2'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
     read_only: true
     tmpfs:
       - /tmp:size=256m,noexec,nosuid,nodev

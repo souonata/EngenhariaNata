@@ -20,6 +20,7 @@ from wirecolor.labels.harvest import (
     MAX_ENGINE_PIXELS,
     _bounded_scales,
     _read_tile,
+    _release_native_memory,
     _tiles,
     _working_tile_side,
     harvest_labels,
@@ -71,6 +72,10 @@ def _pdf_bytes():
 
 
 class OcrTilingMemoryTests(unittest.TestCase):
+    def test_native_release_is_best_effort_when_malloc_trim_is_unavailable(self):
+        with patch("ctypes.CDLL", side_effect=OSError("non-glibc runtime")):
+            _release_native_memory()
+
     def test_rapidocr_onnx_threads_and_arena_are_memory_bounded(self):
         captured = {}
 
@@ -195,12 +200,15 @@ class OcrTilingMemoryTests(unittest.TestCase):
                 return_value=_dark_box_engine(calls),
             ), patch(
                 "wirecolor.labels.harvest._tall_text_present", return_value=False,
-            ):
+            ), patch(
+                "wirecolor.labels.harvest._release_native_memory",
+            ) as release_native:
                 harvested = harvest_labels(
                     str(path), convention, scales=(2.0,), tile=2000,
                     overlap=180, verbose=False,
                 )
 
+        release_native.assert_called_once_with()
         self.assertTrue(all(width * height <= MAX_ENGINE_PIXELS for width, height in calls))
         self.assertEqual(len(harvested["labels"]), 1, harvested["labels"])
         label = harvested["labels"][0]
