@@ -667,7 +667,7 @@ def create_app(workspace_root: str | Path | None = None,
         store.cleanup_expired()
         yield
 
-    app = FastAPI(title="Pintor beta API", version="0.1.0", docs_url=None, redoc_url=None,
+    app = FastAPI(title="Pintor beta API", version="0.2.1", docs_url=None, redoc_url=None,
                   lifespan=lifespan)
     app.state.store = store
 
@@ -757,7 +757,7 @@ def create_app(workspace_root: str | Path | None = None,
         from .labels.conventions import list_conventions
 
         return {
-            "version": "0.2.0",
+            "version": "0.2.1",
             "beta": True,
             "input": "pdf-vector-or-raster-with-visible-colour-codes",
             "page_modes": ["vector-text", "raster-ocr"],

@@ -87,7 +87,12 @@ def _recognise_page_labels(image_path: str, labels_path: str, harvest_path: str,
         labels = [label for label in labels
                   if all(part in convention.codes for part in label["code"].split("/"))]
 
-    payload = {"image": harvested.get("image", []), "labels": labels}
+    payload = {
+        "image": harvested.get("image", []),
+        "labels": labels,
+        "ocr_scales": harvested.get("ocr_scales", []),
+        "ocr_calls": harvested.get("ocr_calls", 0),
+    }
     for path in (labels_path, harvest_path):
         with open(path, "w", encoding="utf-8") as handle:
             json.dump(payload, handle)

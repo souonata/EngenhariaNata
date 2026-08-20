@@ -287,7 +287,7 @@ class PintorApp extends App {
         this.returnToUpload();
         this.showStatus(
             document.getElementById('uploadStatus'),
-            `${i18n.t('messages.processingFailed')} ${job.error || ''}`.trim(),
+            i18n.t('messages.processingFailed'),
             'error'
         );
     }
