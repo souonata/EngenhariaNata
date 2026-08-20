@@ -185,9 +185,9 @@ _Última atualização: 2026-08-20_
 
 - **PINTOR — RASTER/OCR NA BETA PROTEGIDA:** o app secreto `/pintor/` e a API dedicada
   `pintor-api.engnata.eu` agora aceitam tanto páginas vetoriais quanto páginas formadas somente por
-  imagem. A interface local 0.4.1 traduz o nome exibido como **Pintor** (PT), **Pittore** (IT),
+  imagem. A interface publicada 0.4.1 traduz o nome exibido como **Pintor** (PT), **Pittore** (IT),
   **Målaren** (SV) e **Painter** no fallback inglês, sem alterar a rota ou os identificadores
-  técnicos. A versão local 0.4.0 também adiciona contas persistentes para testers externos atrás do
+  técnicos. A API publicada 0.4.0 também adiciona contas persistentes para testers externos atrás do
   código beta: usuário único, senha de no mínimo 4 caracteres armazenada apenas com scrypt+salt,
   sessão opaca HttpOnly e propriedade dos jobs por conta. Um console restrito ao papel admin lista
   feedback, compara original/resultado com as marcações e registra aceitar/rejeitar/pedir
@@ -196,14 +196,15 @@ _Última atualização: 2026-08-20_
   frontend. A rota raster usa RapidOCR/ONNX Runtime pinados, skeletonização e as mesmas regras
   elétricas/gates V2/V7; emendas não propagam cor, convenção automática exige duas leituras OCR
   fortes e trechos incertos permanecem pretos. Um PDF sintético realmente image-only (zero texto e
-  zero desenho vetorial) completou OCR, pintura removível e preservação. A versão local 0.3.0 aceita
+  zero desenho vetorial) completou OCR, pintura removível e preservação. A versão publicada aceita
   manuais de até 2.000 páginas e até 50 páginas escolhidas por job (`40, 42, 44-46`), processa-as
-  sequencialmente e entrega um único PDF completo com uma OCG; a API publicada ainda permanece na
-  versão anterior até novo deploy autorizado. Os demais limites continuam 25 MB, análise 75 Mpx,
+  sequencialmente e entrega um único PDF completo com uma OCG. Os demais limites continuam 25 MB,
+  análise 75 Mpx,
   overlay 60 Mpx e retenção 24 h. O frontend continua
   `noindex`, fora do sitemap e visível apenas no easter egg; autenticação beta, owner isolation,
   rate limits, worker isolado, container non-root/read-only sem egress e firewall do tunnel
-  permanecem. A imagem Linux `0.2.1` limita cada chamada ONNX a 1600², mantém A0 em grayscale,
+  permanecem. A imagem Linux atual `0.4.0` conserva o limite de cada chamada ONNX em 1600², mantém
+  A0 em grayscale,
   restringe pools nativos e libera/trimma o runtime OCR antes da topologia. A reprodução real que
   falhava (`9362 × 6623`, A0 image-only, PDF de 44 páginas) chegou a `ready` no host protegido em
   279,3 s: convenção Volvo `high`, 80 labels, 3.107 runs/464 pintados, V2/V7 e preservação aprovados,
@@ -222,6 +223,12 @@ _Última atualização: 2026-08-20_
   em texto claro continua restrito a `/root/pintor-beta-access.txt` com modo `0600`. A rotação foi
   validada externamente: credencial anterior `401`, nova `200`, capability autenticada `200` e
   capability anônima `401`. Nenhuma credencial deve ser documentada ou commitada.
+  **PUBLICAÇÃO 0.4.1/0.4.0:** o PR #21 foi integrado ao `main` em `a09c7b7`; Pages e CI passaram,
+  a imagem `engnata/pintor-api:0.4.0` ficou saudável no host protegido e o smoke externo confirmou
+  registro de conta efêmera, login, isolamento anônimo `401`, processamento/download de PDF e
+  exclusão `204`. O administrador `popov` é bootstrapado apenas por hash no `.env` root-only; a
+  senha não consta do repositório, imagem ou documentação. O frontend foi conferido em PT/IT/SV
+  sem erros de console. O rollback pré-publicação foi preservado sem copiar o `.env`.
 
 - **SITE TRILÍNGUE — SUECO (`sv-SE`) + DOCK GLOBAL (branch `feat/i18n-sueco`):** iniciativa em
   andamento; plano completo e fases na seção própria do `ROADMAP.md`. **Decisões travadas:** idioma

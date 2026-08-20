@@ -17,7 +17,7 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
-## 2026-08-20 localized product name (0.4.1, local)
+## 2026-08-20 localized product name (0.4.1, published)
 
 - Localized every visible product-name reference in the Italian and Swedish UI, including the
   document title, access flow, review copy, unavailable-state messages, image alternative text,
@@ -36,7 +36,7 @@ parameters. Evaluation splits are grouped by publication.
 Primary web entry points: `src/wirecolor/tools/paint_vector.py` and
 `src/wirecolor/tools/paint_raster.py`.
 
-## 2026-08-20 external tester accounts and expert inbox (0.4.0, local)
+## 2026-08-20 external tester accounts and expert inbox (0.4.0, published)
 
 - Added beta-code-gated registration and login. Usernames contain 1–64 visible characters and are
   unique under NFKC + case-folding. Passwords contain 4–128 characters with no composition rule;
@@ -59,9 +59,10 @@ Primary web entry points: `src/wirecolor/tools/paint_vector.py` and
   scrypt hash. No administrator plaintext credential is present in source, Compose, documentation,
   frontend assets, API responses, or the SQLite database. `pintor-hash-password` and the root-only
   deployment bootstrap provide interactive secret entry.
-- This version has not been committed, pushed, built into the protected API image, or deployed.
+- This account and expert-review boundary is active in the protected `0.4.0` API image. Publication
+  evidence is recorded in the protected API section below.
 
-## 2026-08-20 selected-page manuals (0.3.0, local)
+## 2026-08-20 selected-page manuals (published in 0.4.0)
 
 - Replaced the one-page web field with a bounded page-selection grammar. Users may enter comma
   lists and ascending ranges such as `40, 42, 44-46`; duplicates are removed while input order is
@@ -89,7 +90,8 @@ Primary web entry points: `src/wirecolor/tools/paint_vector.py` and
 - Simplified the customer-facing landing surface at the owner's request: removed the capability
   badge, the three safety-principle cards, and the explanatory beta boundary. The private-beta
   badge remains; the unused HTML, CSS, and PT/IT/SV translation keys were removed together.
-- This version has not been committed, pushed, built into the protected API image, or deployed.
+- This page-selection and simplified-interface release is active in the protected `0.4.0` API and
+  the public `0.4.1` frontend.
 
 ## 2026-08-20 raster/OCR web capability
 
@@ -238,7 +240,7 @@ These directories are intentionally ignored by Git.
 
 ## Session validation
 
-- `356` standalone Python tests pass, including the web boundary, tenant isolation, encrypted PDF,
+- `366` standalone Python tests pass, including the web boundary, tenant isolation, encrypted PDF,
   invalid page, typed feedback, hard branch/bridge rules, V2/V7 quarantine, and immediate deletion.
 - The complete Engenharia NATA validation passes: `354` JavaScript tests, lint, format, style,
   trilingual parity across 20 i18n files, asset references, and Rotta 12 integrity.
@@ -291,18 +293,32 @@ These directories are intentionally ignored by Git.
   confirmed the former credential returns `401`, the replacement returns `200`, an authenticated
   session reaches capabilities with `200`, anonymous capabilities remain `401`, and the cookie keeps
   `HttpOnly`, `Secure`, and `SameSite=Strict`.
+- PR #21 was merged to `main` as `a09c7b7`. The GitHub Pages deployment and all four PR checks
+  completed successfully. Public browser verification loaded the localized **Pintor**, **Pittore**,
+  and **Målaren** interfaces without console errors.
+- The protected host built and deployed `engnata/pintor-api:0.4.0`; its bundled `rapidocr check`
+  passed, the container became healthy, and the existing 3 GB/two-CPU/read-only/non-root/no-egress
+  controls remained active. Production requires accounts and bootstraps administrator `popov` from
+  a root-only environment username plus scrypt hash; no plaintext administrator password is stored
+  in Git, the image, the SQLite database, or this documentation.
+- The updated external smoke created an ephemeral beta account, authenticated it, confirmed
+  anonymous access returns `401`, processed and downloaded a synthetic IEC PDF, and deleted the job
+  with `204`. Its cleanup path removed the ephemeral account. The pre-deployment image remains
+  available and `/opt/pintor-api-backups/pintor-api-0.2.1-before-a09c7b7.tar.gz` preserves the
+  previous code without `.env`; the live private data volume was reused rather than replaced.
 - Intentionally did not place VM 206 in the seven-day VM backup rotation: job PDFs have a 24-hour
   retention contract, and snapshot backups would silently extend retention. Code is reproducible
   from Git; a lost beta secret is rotated instead of restored with stale user documents.
 
 ## Next work
 
-1. Add operational alerts and an expert-only review console without granting the public API access
-   to training or promotion data.
+1. Add operational alerts for API health, queue latency, job failures, storage pressure, and
+   account abuse; keep the public API isolated from training and promotion data.
 2. Create a new legally usable, multi-manufacturer publication corpus. Revalidate each convention,
    the changed topology rules, and any mounted model against a new one-shot lockbox.
-3. Add expert adjudication tooling and immutable dataset manifests. Never auto-promote public
-   feedback or reduce renderer/topology errors to a binary wire classifier label.
+3. Export expert-accepted evidence into immutable, publication-grouped dataset manifests through
+   an offline process. Never auto-promote public feedback or reduce renderer/topology errors to a
+   binary wire-classifier label.
 4. Expand the legally usable dense A1/A0 benchmark beyond the one qualified Volvo sheet and track
    recall under the conservative native-scale-only policy. Do not infer universal manufacturer or
    page-layout support from this successful capacity reproduction.
