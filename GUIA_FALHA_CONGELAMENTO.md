@@ -188,6 +188,12 @@ Antes, o projeto **não tinha nenhum tratador de erro global**, então a falha
 `unhandledrejection`, e mostra uma **faixa vermelha no topo com arquivo+linha**.
 Agora "tudo congelado, não sei por quê" vira **"o erro está em `src/core/x.js:42`"**.
 
+O overlay alerta somente para falhas capazes de quebrar a aplicação: scripts e folhas de estilo
+same-origin, exceções de runtime, promises não tratadas e reportes fatais explícitos. Imagens,
+previews, iframes, recursos de terceiros bloqueados e ErrorEvents vazios são ignorados; respostas
+HTTP tratadas pelo app (`401`, `409` etc.) podem continuar vermelhas no DevTools sem indicar que a
+página travou.
+
 > Ele **não substitui** o Console (F12) — alguns erros exóticos de resolução de
 > módulo só aparecem lá. É uma rede de segurança que torna a falha *visível*; o
 > Console continua sendo o diagnóstico definitivo (§3).

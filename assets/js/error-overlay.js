@@ -102,16 +102,27 @@
     window.addEventListener('error', function (ev) {
         try {
             var alvo = ev.target;
-            if (alvo && alvo !== window && (alvo.tagName === 'SCRIPT' || alvo.tagName === 'LINK')) {
-                var url = alvo.src || alvo.href;
-                // Recurso de terceiros (ex.: analytics bloqueado por adblock) não
-                // trava a página — ignora pra não dar falso alarme. Só alerta
-                // sobre recurso same-origin, que aí sim indica deploy quebrado.
-                if (!mesmaOrigem(url)) return;
-                registrar('Falha ao carregar: ' + local(url));
+            if (alvo && alvo !== window) {
+                if (alvo.tagName === 'SCRIPT' || alvo.tagName === 'LINK') {
+                    var url = alvo.src || alvo.href;
+                    // Recurso de terceiros (ex.: analytics bloqueado por adblock) não
+                    // trava a página — ignora pra não dar falso alarme. Só alerta
+                    // sobre recurso same-origin, que aí sim indica deploy quebrado.
+                    if (!mesmaOrigem(url)) return;
+                    registrar('Falha ao carregar: ' + local(url));
+                }
+                // Imagem, vídeo, iframe e outros recursos podem falhar sem quebrar
+                // o JavaScript. O evento chega aqui na fase de captura, mas não é
+                // um erro de runtime e não deve abrir a faixa de página travada.
                 return;
             }
-            var msg = (ev.error && ev.error.message) || ev.message || 'Erro desconhecido';
+
+            var msg = (ev.error && ev.error.message) || ev.message;
+            // Alguns navegadores/extensões disparam ErrorEvent vazio ao bloquear
+            // recursos. Sem mensagem, erro ou origem não existe diagnóstico útil
+            // nem evidência de que o app esteja travado.
+            if (!msg && !ev.error && !ev.filename) return;
+            msg = msg || 'Erro desconhecido';
             registrar(msg + '  [' + local(ev.filename, ev.lineno, ev.colno) + ']');
         } catch (e) {}
     }, true);
