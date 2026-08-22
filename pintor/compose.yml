@@ -2,7 +2,7 @@ services:
   api:
     build:
       context: .
-    image: engnata/pintor-api:0.4.0
+    image: engnata/pintor-api:0.5.0
     restart: unless-stopped
     init: true
     ports:
@@ -29,15 +29,33 @@ services:
       PINTOR_REQUEST_RATE_LIMIT: '300'
       PINTOR_REQUEST_RATE_WINDOW_SECONDS: '60'
       PINTOR_MAX_CONCURRENT_JOBS: '1'
+      PINTOR_MAX_ACTIVE_JOBS: '20'
+      # The VM has a 20 GB disk, so the workspace ceiling stays well under it even though uploads
+      # are now eight times larger; per-account storage is bounded independently.
       PINTOR_MAX_STORAGE_MB: '8192'
+      PINTOR_MAX_ACCOUNT_STORAGE_MB: '2048'
       PINTOR_RETENTION_HOURS: '24'
-      PINTOR_MAX_UPLOAD_MB: '25'
-      PINTOR_JOB_TIMEOUT_SECONDS: '900'
+      # Enforce expiry even when the beta is idle and receives no new uploads.
+      PINTOR_CLEANUP_INTERVAL_SECONDS: '300'
+      PINTOR_MAX_UPLOAD_MB: '200'
+      # Starlette spools an upload larger than 1 MB to a temporary file. Left on the default it
+      # would land in /tmp, which is a 256 MB tmpfs counted against the container's 3 GB -- a
+      # 200 MB manual would be held in RAM. Point it at the data volume instead.
+      TMPDIR: /data/tmp
+      PINTOR_EAGER_PREVIEWS: '12'
+      PINTOR_SCAN_MAX_PAGES: '0'
+      # A long manual is not a hung job. The supervisor kills a job that stops reporting progress
+      # for 15 minutes, or one that passes the 6-hour ceiling -- never one that is merely long.
+      # PINTOR_JOB_TIMEOUT_SECONDS is deliberately unset: it would override the ceiling below.
+      PINTOR_JOB_STALL_SECONDS: '900'
+      PINTOR_JOB_MAX_SECONDS: '21600'
       # RLIMIT_AS bounds virtual address space, not resident RAM. A0 OCR maps native runtimes and
       # the following topology pass needs one 248 MB label image; the container still hard-caps
       # actual memory at 3 GB and admits only one job at a time.
       PINTOR_JOB_MEMORY_MB: '2800'
-      PINTOR_JOB_CPU_SECONDS: '720'
+      # A backstop against a runaway loop, not the working bound: painting several hundred pages
+      # legitimately costs more CPU than one sheet ever did.
+      PINTOR_JOB_CPU_SECONDS: '21600'
       PINTOR_PAINT_DPI: '720'
       PINTOR_PAINT_PIXEL_BUDGET: '60000000'
       MALLOC_ARENA_MAX: '2'

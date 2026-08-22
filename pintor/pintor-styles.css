@@ -1157,6 +1157,244 @@ html[data-theme='dark'] .diagram-viewport {
     background: #9a7414;
 }
 
+/* Personal panel: the drawings an account owns, and closing the account. */
+
+.jobs-storage {
+    margin: 14px 0 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.jobs-storage.is-tight {
+    color: var(--painter-red);
+    font-weight: 700;
+}
+
+.jobs-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.job-card {
+    display: grid;
+    gap: 8px;
+    padding: 14px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: var(--surface-muted);
+}
+
+.job-card-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.job-card-meta {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+}
+
+.job-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.job-card-actions a {
+    text-decoration: none;
+}
+
+.job-card.is-working {
+    border-color: color-mix(in srgb, var(--painter-accent) 60%, var(--border-color));
+    background: rgb(27 156 163 / 8%);
+}
+
+.job-card-progress {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.job-card-retention {
+    margin: 0;
+    color: var(--text-tertiary);
+    font-size: 0.86rem;
+}
+
+.job-card-retention.is-shared {
+    color: #23855d;
+    font-weight: 700;
+}
+
+.job-new-badge {
+    padding: 3px 8px;
+    border-radius: 999px;
+    color: white;
+    background: #23855d;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.upload-queue-hint {
+    margin: 12px 0 0;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    line-height: 1.45;
+}
+
+.danger-zone {
+    display: grid;
+    gap: 10px;
+    margin-top: 26px;
+    padding: 16px;
+    border: 1px solid color-mix(in srgb, var(--painter-red) 45%, var(--border-color));
+    border-radius: 14px;
+    background: rgb(198 40 40 / 6%);
+}
+
+.danger-zone h3 {
+    margin: 0;
+    color: var(--painter-ink);
+    font-size: 1.05rem;
+}
+
+.danger-zone p {
+    margin: 0;
+    color: var(--text-secondary);
+    line-height: 1.45;
+}
+
+.danger-button {
+    min-height: 44px;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 9px;
+    color: white;
+    background: var(--painter-red);
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.danger-button:disabled {
+    cursor: progress;
+    opacity: 0.6;
+}
+
+.danger-text {
+    color: var(--painter-red);
+}
+
+/* Administration console: tabs, account table and improvement rounds. */
+
+.admin-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.admin-empty {
+    margin: 0;
+    padding: 14px 0;
+    color: var(--text-secondary);
+}
+
+.admin-table-wrap {
+    margin-top: 16px;
+    overflow-x: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: var(--surface-muted);
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.94rem;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 11px 14px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid color-mix(in srgb, var(--border-color) 60%, transparent);
+    white-space: nowrap;
+}
+
+.admin-table th {
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.admin-table tr:last-child td {
+    border-bottom: 0;
+}
+
+.admin-table tr.is-suspended td {
+    opacity: 0.62;
+}
+
+.admin-row-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.round-form {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    margin: 16px 0 20px;
+}
+
+.round-form .field-group {
+    flex: 1 1 260px;
+    max-width: 420px;
+}
+
+.admin-round-items {
+    display: grid;
+    gap: 8px;
+}
+
+.admin-round-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--painter-paper);
+    color: var(--text-primary);
+    font-size: 0.92rem;
+}
+
+.admin-round-item.is-missing {
+    color: var(--text-tertiary);
+    font-style: italic;
+}
+
+.round-disclaimer {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+}
+
 footer {
     color: rgb(255 255 255 / 72%);
 }
@@ -1176,6 +1414,11 @@ footer {
 
     .admin-feedback-list {
         max-height: 280px;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        white-space: normal;
     }
 }
 

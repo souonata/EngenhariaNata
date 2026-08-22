@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { MAX_DOCUMENT_PAGES, MAX_SELECTED_PAGES, parsePageSelection } from './pintor-pages.js';
+import { MAX_PAGE_NUMBER, parsePageSelection } from './pintor-pages.js';
 
 describe('Pintor page selection', () => {
     it.each([
@@ -24,9 +24,14 @@ describe('Pintor page selection', () => {
         expect(parsePageSelection('44, 40-42, 41, 46')).toEqual([44, 40, 41, 42, 46]);
     });
 
-    it('rejects descending, out-of-bound, and oversized selections', () => {
+    it('accepts a whole manual, because the page count is no longer capped', () => {
+        expect(parsePageSelection('1-4000')).toHaveLength(4000);
+    });
+
+    it('rejects empty, descending, and out-of-bound selections', () => {
+        expect(() => parsePageSelection('')).toThrow();
         expect(() => parsePageSelection('46-40')).toThrow();
-        expect(() => parsePageSelection(`1,${MAX_DOCUMENT_PAGES + 1}`)).toThrow();
-        expect(() => parsePageSelection(`1-${MAX_SELECTED_PAGES + 1}`)).toThrow();
+        expect(() => parsePageSelection('0')).toThrow();
+        expect(() => parsePageSelection(`1,${MAX_PAGE_NUMBER + 1}`)).toThrow();
     });
 });

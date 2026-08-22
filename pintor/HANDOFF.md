@@ -1,6 +1,6 @@
 # Pintor handoff
 
-Last updated: 2026-08-20
+Last updated: 2026-08-22
 
 ## Product boundary
 
@@ -8,14 +8,180 @@ Pintor has been extracted from the Volvo Penta Assistant into this directory. Th
 remain independently installable and runnable. The Volvo material is a corpus/convention, not a
 runtime dependency.
 
-The Engenharia NATA beta is a private-job web app supporting up to 50 selected vector or
-rasterized pages per job inside manuals of up to 2,000 pages. Exact text/strokes are preferred;
+The Engenharia NATA beta is a private-job web app that paints any number of vector or rasterized
+pages inside a manual of any length, either from an explicit page selection or from a sweep that
+finds the wiring diagrams itself. Files are accepted up to 200 MB and processed one page at a time.
+Nothing is archived: an upload is erased 24 hours after it is done, unless its owner marked errors
+on it and chose to share that report. Exact text/strokes are preferred;
 image-only pages use the bundled OCR and conservative pixel-topology pipeline. A
 supported/confirmed colour convention remains mandatory, and uncertain segments stay black.
 
 The product name is localized in the interface: **Pintor** in Portuguese, **Pittore** in Italian,
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
+
+## 2026-08-22 large manuals, 24-hour retention, page-by-page work (0.5.0, not published)
+
+Same branch, second pass. The first pass removed the page caps; this one makes a long manual
+actually survivable while preserving the temporary-storage contract.
+
+**200 MB per file, streamed.** `PINTOR_MAX_UPLOAD_MB` is 200. The endpoint no longer does
+`await file.read(max_bytes + 1)` -- it streams the body to `workspace/incoming/` in 1 MB chunks,
+enforces the limit while writing, and hands `store.create` a path. `create` accepts bytes or a
+path, hashes the file in 1 MB chunks and moves it into the job directory. Measured against a
+running API: a 188.8 MB upload grew the API process by 13.1 MB and stored `source_bytes`
+188,757,233 intact.
+
+**The service is not an archive.** `PINTOR_RETENTION_HOURS` stays at 24 and now applies to every
+upload, account-owned or not: held long enough for its owner to download the result, then erased.
+The one exception is a manual the owner deliberately contributed -- marked errors plus learning
+consent. `shared_job_ids()` reads that from the feedback records and `cleanup_expired` skips those
+jobs, so the contribution survives *and* the owner keeps a handle on it: deleting the job still
+withdraws the shared copy, which is the revocation path. Consent is taken from the upload as well
+as the report, so a report on a manual uploaded without consent does not silently keep it.
+`/api/account/jobs` returns `expires_at` and `shared_for_improvement` per job, and the interface
+shows either a countdown or "kept -- shared for improvement". Cleanup runs at startup, before a
+new upload, and every five minutes while the API is idle; queued and processing jobs are excluded,
+so the 24-hour download window starts only after a terminal state is available. Production caps
+live storage at `PINTOR_MAX_ACCOUNT_STORAGE_MB` (2 GB) per account and
+`PINTOR_MAX_STORAGE_MB` (8 GB) overall because 200 MB uploads make a day's worth substantial.
+The VM had 13 GB free before publication.
+Regression fixed while the permanent-storage variant was in place: the `pintor_session` cookie used
+`max_age=retention_seconds`, which at retention 0 emitted `Max-Age=0` and deleted the cookie on
+arrival, breaking every anonymous session. It now follows the account session or the window.
+
+**Page by page.** The sweep reopens the document every 50 pages, because MuPDF's per-document
+store keeps everything it has parsed until the document is closed. Painting attaches each overlay
+the moment it exists (`append_overlays`, extracted from `attach_overlays` so a second overlay can
+join a file that already carries the OCG), runs V7 on that page immediately, then deletes the
+staged PNG -- overlays are never all on disk at once, and a preservation failure surfaces on the
+page that caused it. Previews are eager only for the first `PINTOR_EAGER_PREVIEWS` (12) pages; the
+rest render on first view and are cached. `_release_page_caches()` shrinks the MuPDF store and runs
+`gc.collect()` between pages.
+
+**Supervision follows progress, not the clock.** The old fixed `PINTOR_JOB_TIMEOUT_SECONDS=180`
+would have killed every long manual. The supervisor now compares a marker of
+`(updated_at, stage, current_page, completed_pages, scanned_pages)` between polls: a job is killed
+when it stops moving (`PINTOR_JOB_STALL_SECONDS`, 900 s) or when it passes an absolute ceiling
+(`PINTOR_JOB_MAX_SECONDS`, 21,600 s; `PINTOR_JOB_TIMEOUT_SECONDS` still overrides it if set). The
+CPU rlimit defaults to the ceiling instead of 150 s. The sweep reports progress every 50 pages,
+which is both the UI's progress bar and the liveness signal.
+
+**Measured.** Synthetic manuals, 50 wiring pages each, real pipeline, no mocks:
+
+| manual | found/painted | time | peak RSS | peak workspace | output |
+| ------ | ------------- | ---- | -------- | -------------- | ------ |
+| 400 pages | 50 / 50 | 144.5 s | 1,173.7 MB | 17.7 MB | 400 pages, 9.8 MB |
+| 1,200 pages | 50 / 50 | 144.6 s | 1,175.6 MB | 27.2 MB | 1,200 pages, 14.6 MB |
+
+Tripling manual length moved peak RSS by 1.9 MB (0.16%). No overlay PNGs were left staged and only
+24 preview files were written instead of 100. Both runs are far under the 2,560 MB worker rlimit
+and the 3 GB container.
+
+**Verified.** 72 Python tests in the web/account/preservation modules, plus `npm run validate`
+with 359 Vitest tests. New coverage:
+streamed upload keeps bytes and digest and leaves nothing in staging; an oversized file is refused
+without being kept; only a manual shared for improvement survives `cleanup_expired` and a report
+without upload consent does not keep one; cleanup runs periodically without a restart or upload and
+never removes a queued or processing job; the per-account quota refuses a manual and accepts it
+again after a deletion; a skipped preview is rendered on first view; a job that keeps reporting
+progress is not killed, and one that stops is killed as `ProcessingStalled`. Against a live API:
+two manuals were uploaded, one was reported with a marked error and shared, both were aged past the
+window, and the restart sweep erased the unshared one while keeping the contributed one plus its
+training-inbox copy.
+
+**Deployment configuration (required, not optional).** `compose.yml` pinned the old behaviour by
+hand, so a new image alone would have changed nothing: it set `PINTOR_MAX_UPLOAD_MB: 25` and
+`PINTOR_JOB_TIMEOUT_SECONDS: 900`, and that timeout is exactly the ceiling this pass replaced. The
+file now carries `engnata/pintor-api:0.5.0`, `PINTOR_MAX_UPLOAD_MB: 200`,
+`PINTOR_MAX_ACCOUNT_STORAGE_MB: 2048` (the VM has a 20 GB disk, so the 8 GB workspace ceiling
+stays), `PINTOR_JOB_STALL_SECONDS: 900` with `PINTOR_JOB_MAX_SECONDS: 21600`, no
+`PINTOR_JOB_TIMEOUT_SECONDS`, `PINTOR_JOB_CPU_SECONDS: 21600`, and a five-minute
+`PINTOR_CLEANUP_INTERVAL_SECONDS`. It also sets `TMPDIR=/data/tmp`:
+Starlette spools any upload over 1 MB to a temporary file, and on the default that lands in the
+container's 256 MB RAM-backed `/tmp`, so a 200 MB manual would be held in memory inside a 3 GB cap.
+`JobStore` creates that directory.
+
+**Order of publication matters.** The 0.5.x frontend calls endpoints 0.4.0 does not have
+(`/api/admin/accounts`, `/api/admin/rounds`, `DELETE /api/account`) and relies on an upload with no
+page selection meaning "sweep the document" -- on 0.4.0 that same request paints page 1 instead.
+Merging to `main` publishes the frontend within minutes, so the API image must be built and running
+on the protected host FIRST; only then merge.
+
+**Still open.** Nothing published. The measurements above use synthetic vector manuals; a real
+scanned A0 foldout is far heavier per page, and the per-page budgets -- not manual length -- are
+what bound it. Peak RSS of ~1.2 GB is a *per-page* cost that a raster A0 page can exceed on its
+own, so the memory ceiling still deserves a real-corpus run before promising a specific manual.
+
+## 2026-08-22 accounts console, sweeps, and the processing queue (0.5.0, not published)
+
+Branch `feat/pintor-admin-contas`. Verified locally against a running API and the Vite dev server;
+nothing was merged into `main` and nothing was deployed.
+
+**Administration console.** The admin panel is now three tabs. *Accounts* lists every tester with
+role, status, job count and report counts, and can suspend/reactivate, promote/demote, or delete an
+account together with all of its jobs and pending training copies. Two rules are enforced in the
+store, not only in the interface: an administrator cannot act on their own account from the
+console, and the beta can never be left without an active administrator. `bootstrap_admin`
+reactivates the configured administrator on boot, so a suspension cannot lock everyone out. A role
+change and a suspension both revoke that account's sessions, so powers never travel on an old
+cookie.
+
+**Improvement rounds.** A round is a curated batch of expert-accepted reports, stored in
+`improvement_rounds/`. One round is open at a time; every acceptance carrying learning consent
+joins it automatically and leaves it if the decision is reversed. Closing a round freezes the list
+and writes `<id>-manifest.json` with the full reports and the artifacts present in the training
+inbox. `automatic_training` is `false` in the manifest, and the service still trains and promotes
+nothing.
+
+**Self-service.** *My drawings* shows everything an account owns — queued, painting, finished —
+with the queue position, the live stage, a badge on whatever finished since the previous sign-in,
+and buttons to reopen, download or delete a drawing. Closing the account re-asks for the password
+and erases credentials, sessions, jobs and pending feedback copies.
+
+**No page limits.** `MAX_DOCUMENT_PAGES` (2,000) and `MAX_SELECTED_PAGES` (50) are gone from the
+API and the frontend parser. What remains is `MAX_PAGE_NUMBER = 100_000`, purely so a mistyped
+range cannot expand into a list that exhausts memory before the PDF is opened, and the unchanged
+per-page dimension and analysis-pixel budgets. During a sweep a page that exceeds the per-page
+budget is now skipped and reported instead of failing the whole job; for an explicitly requested
+page it is still a hard error.
+
+**Whole-document sweep.** An upload with no page selection is swept by
+`tools/discover_pages.scan_document`, which reuses the evidence rules already validated against the
+library corpus: at least eight wire colour codes in a page's text layer means confirmed; a
+near-full-page image on a large sheet with almost no text, inside a document independently known to
+be about wiring, is a candidate for OCR. Stroke count alone is still not evidence. With
+`convention=auto` the code tokens of every convention are unioned, because detection only has to
+decide *whether* a page is a wiring diagram — `_select_convention` still decides which vocabulary
+it is written in, per page. A document where nothing qualifies is declined with stage
+`no-wiring-page`, not failed. `PINTOR_SCAN_MAX_PAGES` (default 0 = unlimited) lets an operator
+bound a sweep.
+
+**Queue.** `ProcessingQueue` grants the single painting slot in arrival order and can answer "how
+many files are ahead of mine", which the interface shows both on the processing screen and on each
+queued card. The upload form accepts several files at once and creates one job per file.
+`PINTOR_MAX_ACTIVE_JOBS` (default 20) replaces the old two-active-jobs rule. On boot, jobs left
+`queued` or `processing` by a restart are put back at the front of the line
+(`PINTOR_RESUME_ON_START=0` disables it).
+
+**Returning owners.** Accounts now record `previous_login_at`, so `/api/account/jobs` returns
+`since` and flags each job with `finished_since_last_login`. Retention is still 24 h, so that view
+only ever reaches back one day.
+
+**Verified.** 50 Python tests in the two web/account modules (104 across the four modules run) and
+`npm run validate` with 359 Vitest tests, i18n parity, ESLint, Prettier and Stylelint. Against a
+live API: a six-page synthetic manual with two wiring pages was swept, both pages were found and
+painted, and the released PDF still reopened with all six pages; three files uploaded together
+queued in arrival order with visible positions and drained one at a time; killing the service
+mid-queue and restarting it resumed both interrupted jobs to `ready`; a returning owner saw only
+the conversions that finished while they were away. In the browser: account suspension, promotion,
+deletion, round creation/closing, multi-file upload, live queue cards and the localized sweep
+refusal were exercised in PT/IT/SV.
+
+**Still open.** Nothing is published: this branch has not been merged into `main`, the API image
+has not been rebuilt, and the host still runs 0.4.0. Sweeping a very long manual is bounded only by
+the per-page budgets and the container's 3 GB/2 CPU ceiling — measure a real 500+ page manual
+before advertising it. "Finished since your last visit" cannot outlive the 24-hour retention.
 
 ## 2026-08-20 non-fatal resource errors (0.4.3, published)
 

@@ -181,7 +181,105 @@ npm run build          # build de produção (gera local/dist)
 
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
-_Última atualização: 2026-08-20_
+_Última atualização: 2026-08-22_
+
+- **PINTOR — MANUAIS GRANDES, ARQUIVO PERMANENTE E TRABALHO PÁGINA A PÁGINA (0.5.0, mesma branch,
+  NÃO publicado):** segunda leva. **200 MB por arquivo** (`PINTOR_MAX_UPLOAD_MB=200`) e o upload
+  deixou de ser `await file.read(...)`: agora escorre para `workspace/incoming/` em blocos de 1 MB,
+  com o limite conferido durante a escrita, e o `store.create` recebe um caminho (aceita bytes ou
+  path, faz o sha256 em blocos e move para a pasta do job). Medido contra API viva: upload de
+  188,8 MB cresceu o processo da API em **13,1 MB** e gravou `source_bytes` 188.757.233 intacto.
+  **O SERVIÇO NÃO É ARQUIVO:** `PINTOR_RETENTION_HOURS` continua 24 e agora vale para TODO upload,
+  com ou sem conta — fica o tempo de o dono baixar o resultado e é apagado do servidor. A única
+  exceção é o manual que o dono marcou com erros e escolheu compartilhar: `shared_job_ids()` lê isso
+  dos registros de feedback e o `cleanup_expired` pula esses jobs, então a contribuição sobrevive E
+  o dono mantém o controle dela — excluir o job continua retirando a cópia compartilhada, que é o
+  caminho de revogação. O consentimento é exigido no upload E no relato, então relatar um manual
+  enviado sem consentimento não o guarda por tabela. `/api/account/jobs` devolve `expires_at` e
+  `shared_for_improvement`, e a tela mostra contagem regressiva ou "Guardado — compartilhado para
+  melhorias". O armazenamento vivo mantém cota: `PINTOR_MAX_ACCOUNT_STORAGE_MB` (5 GB) por conta,
+  visível ao dono e ao admin (coluna Disco), e `PINTOR_MAX_STORAGE_MB` (20 GB) no workspace —
+  **conferir o disco livre da VM antes de publicar.** Bug corrigido no caminho: o cookie
+  `pintor_session` usava `max_age=retention_seconds`, o que com retenção 0 mandava `Max-Age=0` e
+  apagava o cookie na chegada, quebrando toda sessão anônima.
+  **PÁGINA A PÁGINA:** a varredura reabre o documento a cada 50 páginas (o store por documento do
+  MuPDF segura tudo o que já foi lido até fechar); a pintura anexa cada overlay assim que ele
+  existe (`append_overlays`, extraído de `attach_overlays`), roda o V7 daquela página na hora e
+  apaga o PNG — nunca há todos os overlays em disco ao mesmo tempo, e uma falha de preservação
+  aparece na página que a causou. Previews só são pré-renderizados nas primeiras
+  `PINTOR_EAGER_PREVIEWS` (12) páginas; o resto é renderizado na primeira visualização e cacheado.
+  **SUPERVISÃO POR PROGRESSO:** o antigo `PINTOR_JOB_TIMEOUT_SECONDS=180` mataria qualquer manual
+  longo. Agora o supervisor compara `(updated_at, stage, current_page, completed_pages,
+  scanned_pages)` entre polls e só mata quando o job PARA (`PINTOR_JOB_STALL_SECONDS`, 900 s) ou
+  quando passa do teto absoluto (`PINTOR_JOB_MAX_SECONDS`, 6 h). O rlimit de CPU passou de 150 s
+  para o teto.
+  **MEDIDO** (manuais sintéticos, 50 páginas de fiação cada, pipeline real):
+  400 páginas → 50/50 pintadas, 144,5 s, pico 1.173,7 MB RSS, 17,7 MB de workspace;
+  1.200 páginas → 50/50, 144,6 s, pico 1.175,6 MB, 27,2 MB. Triplicar o manual mexeu 1,9 MB
+  (0,16%) no pico de memória, e o PDF final reabriu com 400 e 1.200 páginas. Nenhum overlay ficou
+  em disco; 24 previews em vez de 100.
+  **VERIFICADO:** 58 testes Python nos módulos de web/contas + `npm run validate`. Cobertura nova:
+  upload em streaming preserva bytes/digest e não deixa lixo no staging; arquivo acima do limite é
+  recusado sem ser guardado; só o manual compartilhado sobrevive ao `cleanup_expired`, e relato sem
+  consentimento no upload não guarda nada; a cota recusa e volta a aceitar depois de uma exclusão;
+  preview pulado é renderizado na primeira visualização; job que reporta progresso não é morto e
+  job parado morre como `ProcessingStalled`. Contra API viva: dois manuais enviados, um relatado com
+  erro marcado e compartilhado, ambos envelhecidos além da janela — a varredura de reinício apagou o
+  não-compartilhado e manteve o contribuído junto com a cópia no inbox de treino.
+  **PENDENTE:** as medições usam manuais vetoriais sintéticos. Uma folha A0 escaneada custa muito
+  mais POR PÁGINA, e é o orçamento por página — não o tamanho do manual — que a limita. O pico de
+  ~1,2 GB é custo de UMA página; uma A0 raster pode passar disso sozinha, então vale uma rodada com
+  corpus real antes de prometer um manual específico.
+
+- **PINTOR — CONSOLE DE CADASTROS, VARREDURA E FILA (0.5.0, branch `feat/pintor-admin-contas`,
+  NÃO publicado):** o painel de admin virou três abas. **Cadastros** lista cada tester com papel,
+  situação, nº de desenhos e de relatos, e permite suspender/reativar (derruba as sessões sem
+  apagar nada), promover/rebaixar e excluir a conta junto com todos os jobs e cópias de treino
+  pendentes. Duas regras vivem no store, não só na tela: o admin não mexe na própria conta pelo
+  console e o beta nunca fica sem administrador ativo — o `bootstrap_admin` reativa o admin
+  configurado no boot, então suspensão não tranca ninguém para fora. Trocar papel ou suspender
+  revoga as sessões da conta. **Rounds** são lotes curados de relatos aceitos (em
+  `improvement_rounds/`): um round aberto por vez, todo aceite com consentimento entra sozinho,
+  reverter a decisão tira, e fechar congela a lista e grava `<id>-manifest.json` para curadoria
+  offline — `automatic_training: false`, o serviço continua sem treinar nem promover modelo.
+  **Meus desenhos** mostra ao dono tudo o que é dele (na fila, pintando, pronto), com posição na
+  fila, etapa ao vivo, selo no que ficou pronto desde o acesso anterior, e reabrir/baixar/excluir.
+  Excluir a conta repede a senha e apaga credenciais, sessões, jobs e cópias de feedback.
+  **SEM LIMITE DE PÁGINAS:** `MAX_DOCUMENT_PAGES` (2.000) e `MAX_SELECTED_PAGES` (50) sumiram da API
+  e do parser do front. Sobrou `MAX_PAGE_NUMBER = 100_000`, só para um intervalo digitado errado não
+  virar uma lista que estoura a memória antes de abrir o PDF, mais os orçamentos por página
+  (dimensão e pixels de análise), inalterados. Numa varredura, página fora do orçamento é pulada e
+  reportada em vez de derrubar o job; em página pedida explicitamente continua erro.
+  **VARREDURA:** upload sem seleção de páginas passa por `tools/discover_pages.scan_document`, que
+  reaproveita as regras de evidência já validadas contra o corpus: ≥8 códigos de cor no texto da
+  página = confirmada; imagem quase de página inteira em folha grande e quase sem texto, dentro de
+  um documento sabidamente de fiação = candidata para OCR. Contagem de traços continua não sendo
+  evidência. Com `convention=auto` os tokens de todas as convenções são unidos, porque a detecção só
+  decide SE a página é wiring diagram — qual vocabulário é ela continua sendo decidido por
+  `_select_convention`, página a página. Documento sem nada qualificável é `declined` com stage
+  `no-wiring-page`, não `failed`. `PINTOR_SCAN_MAX_PAGES` (padrão 0 = ilimitado) limita a varredura.
+  **FILA:** `ProcessingQueue` concede o único slot de pintura em ordem de chegada e sabe responder
+  quantos arquivos estão na frente; a posição aparece na tela de processamento e em cada card na
+  fila. O formulário aceita vários arquivos de uma vez (um job por arquivo).
+  `PINTOR_MAX_ACTIVE_JOBS` (padrão 20) substituiu a regra de dois jobs ativos. No boot, jobs
+  deixados em `queued`/`processing` por um restart voltam para a frente da fila
+  (`PINTOR_RESUME_ON_START=0` desliga).
+  **VOLTAR DEPOIS:** contas guardam `previous_login_at`; `/api/account/jobs` devolve `since` e marca
+  cada job com `finished_since_last_login`. A retenção continua 24 h, então essa visão só alcança um
+  dia para trás.
+  **VERIFICADO:** 50 testes Python nos módulos de web/contas (104 rodados nos quatro módulos) e
+  `npm run validate` com 359 testes Vitest, paridade i18n, ESLint, Prettier e Stylelint. Contra API
+  viva: manual sintético de 6 páginas com 2 de fiação varrido, as 2 achadas e pintadas, PDF final
+  reaberto com as 6 páginas; três arquivos juntos enfileiraram em ordem com posição visível e
+  drenaram um a um; matar o serviço no meio da fila e reiniciar retomou os dois jobs interrompidos
+  até `ready`; dono que volta viu só o que terminou na ausência. No browser: suspensão, promoção,
+  exclusão de conta, criar/fechar round, upload múltiplo, cards de fila ao vivo e a recusa da
+  varredura localizada em PT/IT/SV.
+  **PENDENTE:** nada publicado — a branch não foi mergeada no `main`, a imagem da API não foi
+  reconstruída e o host segue com 0.4.0. Varrer manual muito longo é limitado só pelos orçamentos
+  por página e pelo teto de 3 GB/2 CPUs do container: medir um manual real de 500+ páginas antes de
+  prometer. "Pronto desde o último acesso" não sobrevive à retenção de 24 h. Detalhes em
+  `pintor/HANDOFF.md`.
 
 - **PINTOR — RASTER/OCR NA BETA PROTEGIDA:** o app secreto `/pintor/` e a API dedicada
   `pintor-api.engnata.eu` agora aceitam tanto páginas vetoriais quanto páginas formadas somente por
@@ -330,7 +428,7 @@ _Última atualização: 2026-08-20_
   italiana. `npm run validate` passou com 284 testes e a validação náutica; `npm run build` e o
   smoke HTTP passaram com página, JS, CSS e Carta 5/D retornando 200. Repetir esses checks após
   alterações futuras na carta ou na navegação.
-  Origem `C:\projetos\patenteNautica` removida após verificação de 116/116 arquivos e SHA-256 dos
+  Origem `C:\Users\abros\OneDrive\Documentos\projetos\patenteNautica` removida após verificação de 116/116 arquivos e SHA-256 dos
   103 PNGs, quatro PDFs e dados canônicos. A publicação é feita pelo workflow do GitHub Pages
   após integração em `main`; arquivos locais de `.claude` e `lichiabonsai` permanecem fora do escopo.
 

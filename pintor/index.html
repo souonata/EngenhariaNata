@@ -24,7 +24,7 @@
         <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.4.0" />
         <link rel="stylesheet" href="../assets/css/dock-global.css?v=1.2.0" />
         <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0" />
-        <link rel="stylesheet" href="pintor-styles.css?v=0.4.2" />
+        <link rel="stylesheet" href="pintor-styles.css?v=0.5.2" />
 
         <script
             data-goatcounter="https://souonata.goatcounter.com/count"
@@ -179,6 +179,14 @@
                 >
                 <div class="account-actions">
                     <button
+                        id="openJobs"
+                        class="secondary-button compact-button"
+                        type="button"
+                        data-i18n="account.myJobs"
+                    >
+                        My drawings
+                    </button>
+                    <button
                         id="openAdmin"
                         class="secondary-button compact-button"
                         type="button"
@@ -205,7 +213,7 @@
                         <h2 data-i18n="upload.title">Choose the PDF pages to paint</h2>
                     </div>
                     <span class="limit-note" data-i18n="upload.limit"
-                        >Up to 25 MB · select up to 50 pages</span
+                        >Up to 200 MB per file · no page limit</span
                     >
                 </div>
 
@@ -216,6 +224,7 @@
                             name="pdf"
                             type="file"
                             accept="application/pdf,.pdf"
+                            multiple
                             required
                         />
                         <span class="drop-icon" aria-hidden="true">PDF</span>
@@ -234,14 +243,15 @@
                                 id="pageNumbers"
                                 name="pages"
                                 type="text"
-                                value="1"
+                                value=""
                                 placeholder="40, 42, 44, 46"
                                 autocomplete="off"
                                 spellcheck="false"
                                 aria-describedby="pageNumbersHelp"
                             />
                             <small id="pageNumbersHelp" data-i18n="upload.pageHelp"
-                                >Use one page, a list, a range, or a mix: 1, 3-5, 9-11, 15.</small
+                                >Leave it empty to sweep the whole document and paint every wiring
+                                diagram found. Or name them: 1, 3-5, 9-11, 15.</small
                             >
                         </label>
                         <label class="field-group convention-field" for="convention">
@@ -284,6 +294,10 @@
                         <span data-i18n="upload.submit">Analyse and paint</span>
                         <span aria-hidden="true">→</span>
                     </button>
+                    <p class="upload-queue-hint" data-i18n="upload.queueHint">
+                        One file is painted at a time. Extra files wait in line, and you can close
+                        the page: the queue keeps running and is waiting for you in My drawings.
+                    </p>
                 </form>
             </section>
 
@@ -557,6 +571,65 @@
                 </div>
             </section>
 
+            <section id="jobsPanel" class="panel jobs-panel" hidden>
+                <div class="panel-heading">
+                    <div>
+                        <span class="step-label" data-i18n="jobs.step">Your account</span>
+                        <h2 data-i18n="jobs.title">Your painted drawings</h2>
+                    </div>
+                    <button
+                        id="closeJobs"
+                        class="secondary-button compact-button"
+                        type="button"
+                        data-i18n="jobs.back"
+                    >
+                        Back to Painter
+                    </button>
+                </div>
+                <p class="access-copy" data-i18n="jobs.help">
+                    Everything you uploaded stays isolated in your account and is erased on its own
+                    when the retention period ends.
+                </p>
+                <div
+                    id="jobsStatus"
+                    class="inline-status"
+                    role="status"
+                    aria-live="polite"
+                    hidden
+                ></div>
+                <p id="jobsStorage" class="jobs-storage" hidden></p>
+                <div id="jobsList" class="jobs-list"></div>
+
+                <section class="danger-zone">
+                    <h3 data-i18n="jobs.dangerTitle">Delete my account</h3>
+                    <p data-i18n="jobs.dangerHelp">
+                        Deletion removes the account, open sessions and every uploaded drawing,
+                        including copies still waiting for review.
+                    </p>
+                    <form id="deleteAccountForm" class="access-form">
+                        <label class="field-group" for="deleteAccountPassword">
+                            <span data-i18n="jobs.confirmPassword">Confirm your password</span>
+                            <input
+                                id="deleteAccountPassword"
+                                name="delete-account-password"
+                                type="password"
+                                maxlength="128"
+                                autocomplete="current-password"
+                                required
+                            />
+                        </label>
+                        <button
+                            id="deleteAccountButton"
+                            class="danger-button"
+                            type="submit"
+                            data-i18n="jobs.deleteAccount"
+                        >
+                            Delete account and every drawing
+                        </button>
+                    </form>
+                </section>
+            </section>
+
             <section id="adminPanel" class="panel admin-panel" hidden>
                 <div class="panel-heading">
                     <div>
@@ -583,83 +656,192 @@
                     aria-live="polite"
                     hidden
                 ></div>
-                <div class="admin-layout">
-                    <aside class="admin-queue" aria-labelledby="adminQueueTitle">
-                        <div class="admin-queue-heading">
-                            <h3 id="adminQueueTitle" data-i18n="admin.queue">Review queue</h3>
-                            <span id="adminQueueCount" class="annotation-count">0</span>
-                        </div>
-                        <div id="adminFeedbackList" class="admin-feedback-list"></div>
-                    </aside>
-                    <article id="adminDetail" class="admin-detail" hidden>
-                        <div class="admin-meta">
-                            <strong id="adminReporter">—</strong>
-                            <span id="adminCreated">—</span>
-                            <span id="adminFeedbackStatus" class="status-pill">—</span>
-                        </div>
-                        <label class="field-group admin-page-field" for="adminPage">
-                            <span data-i18n="admin.page">Reported page</span>
-                            <select id="adminPage"></select>
+                <div class="admin-tabs" role="group" data-i18n-aria="admin.tabsAria">
+                    <button
+                        class="viewer-tab is-active"
+                        type="button"
+                        data-admin-view="reports"
+                        data-i18n="admin.tabReports"
+                    >
+                        Reports
+                    </button>
+                    <button
+                        class="viewer-tab"
+                        type="button"
+                        data-admin-view="accounts"
+                        data-i18n="admin.tabAccounts"
+                    >
+                        Accounts
+                    </button>
+                    <button
+                        class="viewer-tab"
+                        type="button"
+                        data-admin-view="rounds"
+                        data-i18n="admin.tabRounds"
+                    >
+                        Rounds
+                    </button>
+                </div>
+                <div id="adminViewReports" class="admin-view">
+                    <div class="admin-layout">
+                        <aside class="admin-queue" aria-labelledby="adminQueueTitle">
+                            <div class="admin-queue-heading">
+                                <h3 id="adminQueueTitle" data-i18n="admin.queue">Review queue</h3>
+                                <span id="adminQueueCount" class="annotation-count">0</span>
+                            </div>
+                            <div id="adminFeedbackList" class="admin-feedback-list"></div>
+                        </aside>
+                        <article id="adminDetail" class="admin-detail" hidden>
+                            <div class="admin-meta">
+                                <strong id="adminReporter">—</strong>
+                                <span id="adminCreated">—</span>
+                                <span id="adminFeedbackStatus" class="status-pill">—</span>
+                            </div>
+                            <label class="field-group admin-page-field" for="adminPage">
+                                <span data-i18n="admin.page">Reported page</span>
+                                <select id="adminPage"></select>
+                            </label>
+                            <div
+                                class="admin-preview-tabs"
+                                role="group"
+                                data-i18n-aria="admin.previewAria"
+                            >
+                                <button
+                                    id="adminShowPainted"
+                                    class="viewer-tab is-active"
+                                    type="button"
+                                    data-i18n="review.painted"
+                                >
+                                    Painted
+                                </button>
+                                <button
+                                    id="adminShowOriginal"
+                                    class="viewer-tab"
+                                    type="button"
+                                    data-i18n="review.original"
+                                >
+                                    Original
+                                </button>
+                            </div>
+                            <div class="admin-preview-stage">
+                                <img id="adminPreview" alt="" />
+                                <div id="adminAnnotationLayer" class="admin-annotation-layer"></div>
+                            </div>
+                            <div id="adminAnnotations" class="admin-annotations"></div>
+                            <p id="adminNote" class="admin-user-note"></p>
+                            <label class="field-group" for="adminDecisionNote">
+                                <span data-i18n="admin.decisionNote">Expert note (optional)</span>
+                                <textarea id="adminDecisionNote" maxlength="2000"></textarea>
+                            </label>
+                            <div class="admin-decisions">
+                                <button
+                                    type="button"
+                                    data-decision="accepted"
+                                    class="decision-accept"
+                                    data-i18n="admin.accept"
+                                >
+                                    Accept
+                                </button>
+                                <button
+                                    type="button"
+                                    data-decision="rejected"
+                                    class="decision-reject"
+                                    data-i18n="admin.reject"
+                                >
+                                    Reject
+                                </button>
+                                <button
+                                    type="button"
+                                    data-decision="needs-clarification"
+                                    class="decision-clarify"
+                                    data-i18n="admin.clarify"
+                                >
+                                    Needs clarification
+                                </button>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <div id="adminViewAccounts" class="admin-view" hidden>
+                    <p class="access-copy" data-i18n="admin.accountsHelp">
+                        Every beta account, with what it has already sent.
+                    </p>
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="admin.colUser">User</th>
+                                    <th data-i18n="admin.colRole">Role</th>
+                                    <th data-i18n="admin.colStatus">Status</th>
+                                    <th data-i18n="admin.colJobs">Drawings</th>
+                                    <th data-i18n="admin.colStorage">Storage</th>
+                                    <th data-i18n="admin.colReports">Reports</th>
+                                    <th data-i18n="admin.colLastLogin">Last sign-in</th>
+                                    <th data-i18n="admin.colActions">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminAccountsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="adminViewRounds" class="admin-view" hidden>
+                    <p class="access-copy" data-i18n="admin.roundsHelp">
+                        A round groups the reports you accepted. Closing it writes an offline
+                        manifest; nothing is trained or promoted by the service.
+                    </p>
+                    <form id="roundForm" class="round-form">
+                        <label class="field-group" for="roundName">
+                            <span data-i18n="admin.roundName">New round name</span>
+                            <input id="roundName" name="round-name" type="text" maxlength="80" />
                         </label>
-                        <div
-                            class="admin-preview-tabs"
-                            role="group"
-                            data-i18n-aria="admin.previewAria"
+                        <button
+                            id="roundCreate"
+                            class="secondary-button"
+                            type="submit"
+                            data-i18n="admin.roundCreate"
                         >
-                            <button
-                                id="adminShowPainted"
-                                class="viewer-tab is-active"
-                                type="button"
-                                data-i18n="review.painted"
-                            >
-                                Painted
-                            </button>
-                            <button
-                                id="adminShowOriginal"
-                                class="viewer-tab"
-                                type="button"
-                                data-i18n="review.original"
-                            >
-                                Original
-                            </button>
-                        </div>
-                        <div class="admin-preview-stage">
-                            <img id="adminPreview" alt="" />
-                            <div id="adminAnnotationLayer" class="admin-annotation-layer"></div>
-                        </div>
-                        <div id="adminAnnotations" class="admin-annotations"></div>
-                        <p id="adminNote" class="admin-user-note"></p>
-                        <label class="field-group" for="adminDecisionNote">
-                            <span data-i18n="admin.decisionNote">Expert note (optional)</span>
-                            <textarea id="adminDecisionNote" maxlength="2000"></textarea>
-                        </label>
-                        <div class="admin-decisions">
-                            <button
-                                type="button"
-                                data-decision="accepted"
-                                class="decision-accept"
-                                data-i18n="admin.accept"
-                            >
-                                Accept
-                            </button>
-                            <button
-                                type="button"
-                                data-decision="rejected"
-                                class="decision-reject"
-                                data-i18n="admin.reject"
-                            >
-                                Reject
-                            </button>
-                            <button
-                                type="button"
-                                data-decision="needs-clarification"
-                                class="decision-clarify"
-                                data-i18n="admin.clarify"
-                            >
-                                Needs clarification
-                            </button>
-                        </div>
-                    </article>
+                            Open round
+                        </button>
+                    </form>
+                    <div class="admin-layout">
+                        <aside class="admin-queue" aria-labelledby="adminRoundsTitle">
+                            <div class="admin-queue-heading">
+                                <h3 id="adminRoundsTitle" data-i18n="admin.tabRounds">Rounds</h3>
+                                <span id="adminRoundsCount" class="annotation-count">0</span>
+                            </div>
+                            <div id="adminRoundsList" class="admin-feedback-list"></div>
+                        </aside>
+                        <article id="adminRoundDetail" class="admin-detail" hidden>
+                            <div class="admin-meta">
+                                <strong id="adminRoundName">&mdash;</strong>
+                                <span id="adminRoundCreated">&mdash;</span>
+                                <span id="adminRoundStatus" class="status-pill">&mdash;</span>
+                            </div>
+                            <h4 data-i18n="admin.roundItems">Reports in the round</h4>
+                            <div id="adminRoundItems" class="admin-round-items"></div>
+                            <label class="field-group" for="adminRoundNote">
+                                <span data-i18n="admin.roundCloseNote"
+                                    >Closing note (optional)</span
+                                >
+                                <textarea id="adminRoundNote" maxlength="2000"></textarea>
+                            </label>
+                            <p class="round-disclaimer" data-i18n="admin.roundNoTraining">
+                                Closing a round trains and promotes nothing.
+                            </p>
+                            <div class="admin-decisions">
+                                <button
+                                    id="adminRoundClose"
+                                    type="button"
+                                    class="decision-accept"
+                                    data-i18n="admin.roundClose"
+                                >
+                                    Close round and write the manifest
+                                </button>
+                            </div>
+                        </article>
+                    </div>
                 </div>
             </section>
         </main>
@@ -679,6 +861,6 @@
             </svg>
         </a>
 
-        <script type="module" src="pintor-script.js?v=0.4.2"></script>
+        <script type="module" src="pintor-script.js?v=0.5.2"></script>
     </body>
 </html>

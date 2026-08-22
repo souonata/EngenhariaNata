@@ -33,6 +33,8 @@ import os
 import re
 import sqlite3
 from collections import Counter, defaultdict
+from pathlib import Path
+from types import SimpleNamespace
 
 # A page needs this many colour codes before it is a diagram rather than a passing mention in prose.
 MIN_CODES = 8
@@ -157,6 +159,121 @@ def classify(geometry, codes, wiring_publication=False):
     if foldout and wiring_publication:
         return f"{geometry_axis}+ocr", "candidate"
     return f"{geometry_axis}+ocr", "rejected"
+
+
+def merged_convention(names=None):
+    """One matcher covering several conventions, for uploads that did not name one.
+
+    Detection only has to answer "is this page a wiring diagram", not "which vocabulary is it
+    written in" -- that question is settled later, per page, by ``_select_convention``. Taking the
+    union of the code tokens keeps a Volvo foldout and an IEC schematic equally visible to the
+    sweep.
+    """
+    from ..labels.conventions import list_conventions, load_convention
+
+    chosen = list(names) if names else list_conventions()
+    codes = set()
+    separator = "/"
+    for name in chosen:
+        try:
+            convention = load_convention(name)
+        except Exception:
+            continue
+        codes.update(convention.codes)
+        separator = convention.two_color_sep
+    if not codes:
+        raise ValueError("no usable convention for page discovery")
+    return SimpleNamespace(codes=frozenset(codes), two_color_sep=separator)
+
+
+def scan_document(pdf_path, convention_name="auto", min_codes=MIN_CODES, max_pages=0,
+                  progress=None, chunk_pages=50):
+    """Judge every page of ONE uploaded document and report the paintable ones.
+
+    Same two kinds of evidence as the library sweep, applied to a single file:
+
+    * **codes in the text layer** -- a page carrying at least ``min_codes`` wire colour codes IS a
+      wiring diagram, whatever the document is called;
+    * **raster foldout inside a wiring document** -- a near-full-page image on a large sheet with
+      almost no text, in a file that is independently known to be about wiring. It carries no text
+      to count, so it is a *candidate*: only OCR can confirm it, and the painter abstains if the
+      labels never materialise.
+
+    Returns the page indices to paint plus the evidence behind each one, so the interface can say
+    why a page was chosen and the operator can audit a sweep afterwards.
+    """
+    import fitz
+
+    convention = merged_convention(None if convention_name in ("", "auto") else [convention_name])
+    gauged_re, striped_re = code_patterns(convention)
+    document = fitz.open(pdf_path)
+    try:
+        page_count = len(document)
+    finally:
+        document.close()
+    limit = page_count if max_pages <= 0 else min(page_count, max_pages)
+    evidence = []
+    wiring_phrase = bool(SUSPECT_TITLE.search(Path(pdf_path).name))
+
+    # The document is reopened every ``chunk_pages`` pages. MuPDF keeps the parsed content, fonts
+    # and decoded images of every page it has touched in a per-document store, so a single open
+    # document walked from page 1 to page 2,000 grows for the whole walk. Closing it hands all of
+    # that back, which is what keeps a 2,000-page sweep flat instead of linear in manual length.
+    start = 0
+    while start < limit:
+        stop = min(start + max(1, chunk_pages), limit)
+        document = fitz.open(pdf_path)
+        try:
+            for index in range(start, stop):
+                page = document[index]
+                text = page.get_text("text") or ""
+                lowered = text.lower()
+                if not wiring_phrase and any(phrase in lowered for phrase in SUSPECT_TEXT):
+                    wiring_phrase = True
+                codes = len(gauged_re.findall(text)) + len(striped_re.findall(text))
+                evidence.append({
+                    "page": index,
+                    "codes": codes,
+                    "geometry": page_geometry(page, len(text.strip())),
+                })
+        finally:
+            document.close()
+        start = stop
+        if progress is not None:
+            # Progress is also the liveness signal the job supervisor watches during a long sweep.
+            progress(start, limit)
+
+    # A file that contains one confirmed diagram is a wiring document, which is what lets its
+    # untyped foldouts be treated as candidates rather than noise.
+    confirmed_anywhere = any(item["codes"] >= min_codes for item in evidence)
+    wiring_document = wiring_phrase or confirmed_anywhere
+
+    pages = []
+    for item in evidence:
+        tier, status = classify(item["geometry"], item["codes"], wiring_document)
+        if item["codes"] >= min_codes:
+            status = "confirmed"
+        pages.append({
+            "page": item["page"],
+            "codes": item["codes"],
+            "tier": tier,
+            "status": status,
+            "image_coverage": item["geometry"]["image_coverage"],
+            "stroke_primitives": item["geometry"]["stroke_primitives"],
+        })
+
+    confirmed = [item["page"] for item in pages if item["status"] == "confirmed"]
+    candidates = [item["page"] for item in pages if item["status"] == "candidate"]
+    return {
+        "page_count": page_count,
+        "pages_scanned": limit,
+        "wiring_document": wiring_document,
+        "min_codes": min_codes,
+        "confirmed": confirmed,
+        "candidates": candidates,
+        "selected": sorted(set(confirmed) | set(candidates)),
+        "evidence": [item for item in pages if item["status"] != "rejected"],
+    }
 
 
 def main():

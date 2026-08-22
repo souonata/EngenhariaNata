@@ -16,12 +16,30 @@ The Engenharia NATA beta has two page-analysis modes:
   whose printed colour codes are legible to the bundled OCR engine;
 - conventions: IEC two-letter and Volvo classic, with explicit confirmation when auto-detection is
   uncertain;
-- scope: up to 50 selected pages per job, using page numbers and ascending ranges such as
+- scope: any number of pages per job, using page numbers and ascending ranges such as
   `40, 42, 44-46`; the released PDF still contains the complete manual and every unselected page
   remains unchanged;
+- discovery: leaving the page field empty sweeps the whole document and paints every page that
+  carries readable wire colour codes, wherever those pages sit. Evidence rules are shared with the
+  corpus discovery tool: a page with at least eight colour codes in its text layer is confirmed; a
+  near-full-page image on a large sheet inside a document independently known to be about wiring is
+  a candidate that only OCR can confirm. Everything else is left alone;
+- queue: one file is painted at a time. Extra files, from the same owner or from other testers, wait
+  in arrival order and report their position. Uploads survive a page close and a service restart;
 - declined: password-protected files, unknown notation, illegible/unsupported colour codes,
-  uncertain conductor ownership, or any result that fails a preservation gate;
-- limits: 25 MB, 2,000 document pages, 50 selected pages, and 24-hour retention by default.
+  uncertain conductor ownership, documents with no readable colour codes at all, or any result that
+  fails a preservation gate;
+- limits: 200 MB per file, 20 simultaneously active jobs and 2 GB of live storage per account in the
+  production Compose profile. There is no cap on document length or on how many pages one job may
+  paint; the page ceiling of 100,000 exists only so a mistyped range cannot exhaust memory before
+  the PDF is read. A single page still has to fit the per-page analysis budget, and during a sweep a
+  page that does not is skipped instead of sinking the job;
+- storage: the service is not an archive. An upload is held for 24 hours so its owner can download
+  the result, then erased from the server automatically. The single exception is a manual whose
+  owner marked errors on it and agreed to share the report: that contribution is what the beta
+  keeps, and deleting the job still withdraws it. Cleanup runs at startup, before new uploads and
+  every five minutes while the API is idle. Queued and processing jobs are never removed; their
+  24-hour download window begins when processing reaches a terminal state.
 
 The static frontend lives in `index.html`, `pintor-script.js`, and `pintor-styles.css`. It is built
 by the main Engenharia NATA Vite pipeline. The Python API is a separate service; GitHub Pages does
@@ -35,6 +53,60 @@ Passwords use a unique salt and `scrypt`, account session tokens are stored only
 and jobs use stable per-account ownership without exposing account identifiers as authorization.
 
 See `docs/ELECTRICAL_SAFETY_RULES.md` for the non-tunable electrical and drawing invariants.
+
+## Working page by page
+
+Manual length must not drive memory or disk, so nothing about a job is held whole:
+
+- **the upload** is streamed to disk in 1 MB chunks and hashed on the way past. A 188 MB upload
+  measured 13 MB of growth in the API process, not 188 MB;
+- **the sweep** reopens the document every 50 pages. MuPDF keeps the parsed content, fonts and
+  decoded images of every page it has touched in a per-document store, so one open document walked
+  from page 1 to page 1,200 grows for the entire walk; closing it hands all of that back;
+- **painting** attaches each overlay to the output PDF as soon as it is produced, verifies gate V7
+  on that page immediately, and deletes the staged PNG. Overlays are never all on disk at once, and
+  a preservation failure surfaces on the page that caused it rather than hours later;
+- **previews** are rendered eagerly only for the first `PINTOR_EAGER_PREVIEWS` pages (12 by
+  default); the rest are rendered the first time somebody opens them, and cached from then on;
+- **supervision** watches progress rather than the clock. A job is killed when it stops moving
+  (`PINTOR_JOB_STALL_SECONDS`, 15 min) or when it passes an absolute ceiling
+  (`PINTOR_JOB_MAX_SECONDS`, 6 h) -- never merely for being long.
+
+Measured on this pipeline with synthetic manuals, 50 wiring pages each:
+
+| manual      | wiring pages | time    | peak RSS | peak workspace |
+| ----------- | ------------ | ------- | -------- | -------------- |
+| 400 pages   | 50 painted   | 144.5 s | 1,174 MB | 17.7 MB        |
+| 1,200 pages | 50 painted   | 144.6 s | 1,176 MB | 27.2 MB        |
+
+Tripling the manual left peak memory unchanged: what costs memory is painting one page, not the
+length of the document around it. Both runs stayed well under the 2,560 MB worker ceiling.
+
+## Accounts and the administration console
+
+Each account owns its jobs. From **My drawings** an owner sees everything they uploaded — queued,
+being painted, and finished — reopens or downloads a result, deletes a single drawing, and closes
+the account entirely. Every card states what happens next: a countdown to the moment the upload
+leaves the server, or, for a manual shared with marked errors, that it is being kept. Closing an
+account asks for the password again and erases the credentials, the sessions, every stored job, and
+any feedback copy still waiting for adjudication.
+
+The administrator account, bootstrapped only from a username plus a scrypt hash in the environment,
+has a three-tab console:
+
+- **Reports** — the existing expert review queue: compare the marked location against the original
+  and painted previews, then accept, reject, or ask for clarification.
+- **Accounts** — every registered tester with role, status, job count, and report counts. An
+  administrator can suspend and reactivate an account (which drops its live sessions without
+  deleting anything), promote or demote it, or delete it together with all of its data. The console
+  refuses to act on the signed-in administrator's own account and refuses to leave the beta without
+  an active administrator; the configured administrator is also reactivated on boot, so suspension
+  can never lock everyone out.
+- **Rounds** — an improvement round is a curated batch of expert-accepted reports. One round is open
+  at a time and every acceptance with learning consent joins it automatically; reversing the
+  decision takes the report back out. Closing the round freezes the list and writes
+  `improvement_rounds/<id>-manifest.json` for offline curation. Closing a round still trains nothing
+  and promotes nothing: the web service never touches a model.
 
 Page selection accepts each of these forms:
 

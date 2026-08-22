@@ -24,6 +24,7 @@ ACCOUNT_COOKIE = "pintor_account"
 MIN_PASSWORD_LENGTH = 4
 MAX_PASSWORD_LENGTH = 128
 MAX_USERNAME_LENGTH = 64
+ACCOUNT_STATUSES = ("active", "suspended")
 SESSION_RE = __import__("re").compile(r"^[a-f0-9]{64}$")
 SCRYPT_N = 2**14
 SCRYPT_R = 8
@@ -41,6 +42,14 @@ class DuplicateUsername(AccountError):
 
 class InvalidCredentials(AccountError):
     """Raised for the deliberately generic login failure."""
+
+
+class AccountSuspended(AccountError):
+    """Raised when valid credentials belong to an account an administrator suspended."""
+
+
+class LastAdministrator(AccountError):
+    """Raised when an operation would leave the beta without any administrator."""
 
 
 def normalize_username(username: str) -> tuple[str, str]:
@@ -134,9 +143,12 @@ class AccountStore:
                     username_key TEXT NOT NULL UNIQUE,
                     password_hash TEXT NOT NULL,
                     role TEXT NOT NULL CHECK (role IN ('user', 'admin')),
+                    status TEXT NOT NULL DEFAULT 'active'
+                        CHECK (status IN ('active', 'suspended')),
                     created_at INTEGER NOT NULL,
                     updated_at INTEGER NOT NULL,
-                    last_login_at INTEGER
+                    last_login_at INTEGER,
+                    previous_login_at INTEGER
                 );
                 CREATE TABLE IF NOT EXISTS account_sessions (
                     token_hash TEXT PRIMARY KEY,
@@ -147,6 +159,17 @@ class AccountStore:
                 CREATE INDEX IF NOT EXISTS account_sessions_expiry
                     ON account_sessions(expires_at);
             """)
+            columns = {
+                row["name"] for row in connection.execute("PRAGMA table_info(accounts)")
+            }
+            if "status" not in columns:
+                # Beta databases created before suspension existed: everyone starts active.
+                connection.execute(
+                    "ALTER TABLE accounts ADD COLUMN status TEXT NOT NULL DEFAULT 'active'"
+                )
+            if "previous_login_at" not in columns:
+                # Without a previous visit on record, everything counts as new on the next one.
+                connection.execute("ALTER TABLE accounts ADD COLUMN previous_login_at INTEGER")
         try:
             os.chmod(self.database, 0o600)
         except OSError:
@@ -158,7 +181,12 @@ class AccountStore:
             "id": row["id"],
             "username": row["username"],
             "role": row["role"],
+            "status": row["status"] if "status" in row.keys() else "active",
             "created_at": row["created_at"],
+            "last_login_at": row["last_login_at"],
+            "previous_login_at": (
+                row["previous_login_at"] if "previous_login_at" in row.keys() else None
+            ),
         }
 
     def register(self, username: str, password: str, role: str = "user") -> dict:
@@ -171,14 +199,16 @@ class AccountStore:
         try:
             with self._connection() as connection:
                 connection.execute(
-                    "INSERT INTO accounts "
-                    "(id, username, username_key, password_hash, role, created_at, updated_at) "
-                    "VALUES (?, ?, ?, ?, ?, ?, ?)",
-                    (account_id, display, key, credential, role, now, now),
+                    "INSERT INTO accounts (id, username, username_key, password_hash, role, "
+                    "created_at, updated_at, last_login_at) "
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    (account_id, display, key, credential, role, now, now, now),
                 )
         except sqlite3.IntegrityError as error:
             raise DuplicateUsername("username is already registered") from error
-        return {"id": account_id, "username": display, "role": role, "created_at": now}
+        # Registration signs the account in straight away, so it counts as the first login.
+        return {"id": account_id, "username": display, "role": role, "status": "active",
+                "created_at": now, "last_login_at": now, "previous_login_at": None}
 
     def bootstrap_admin(self, username: str, password_hash: str) -> dict:
         """Create the configured administrator once, without accepting plaintext secrets."""
@@ -193,6 +223,15 @@ class AccountStore:
             if existing:
                 if existing["role"] != "admin":
                     raise DuplicateUsername("configured administrator username belongs to a user")
+                if existing["status"] != "active":
+                    # The configured administrator is the recovery path; suspension never sticks.
+                    connection.execute(
+                        "UPDATE accounts SET status = 'active', updated_at = ? WHERE id = ?",
+                        (now, existing["id"]),
+                    )
+                    existing = connection.execute(
+                        "SELECT * FROM accounts WHERE id = ?", (existing["id"],),
+                    ).fetchone()
                 return self._public_account(existing)
             account_id = uuid.uuid4().hex
             connection.execute(
@@ -201,7 +240,8 @@ class AccountStore:
                 "VALUES (?, ?, ?, ?, 'admin', ?, ?)",
                 (account_id, display, key, password_hash, now, now),
             )
-        return {"id": account_id, "username": display, "role": "admin", "created_at": now}
+        return {"id": account_id, "username": display, "role": "admin", "status": "active",
+                "created_at": now, "last_login_at": None, "previous_login_at": None}
 
     def authenticate(self, username: str, password: str) -> dict:
         try:
@@ -217,12 +257,20 @@ class AccountStore:
             valid = verify_password(password if isinstance(password, str) else "", credential)
             if not row or not valid:
                 raise InvalidCredentials("invalid username or password")
+            if row["status"] != "active":
+                raise AccountSuspended("this account is suspended")
             now = int(time.time())
+            # The visit that is ending becomes the reference for "what happened while I was away".
+            previous = row["last_login_at"] or row["created_at"]
             connection.execute(
-                "UPDATE accounts SET last_login_at = ?, updated_at = ? WHERE id = ?",
-                (now, now, row["id"]),
+                "UPDATE accounts SET last_login_at = ?, previous_login_at = ?, updated_at = ? "
+                "WHERE id = ?",
+                (now, previous, now, row["id"]),
             )
-            return self._public_account(row)
+            account = self._public_account(row)
+            account["last_login_at"] = now
+            account["previous_login_at"] = previous
+            return account
 
     def create_session(self, account_id: str, now: int | None = None) -> tuple[str, int]:
         issued = int(time.time()) if now is None else int(now)
@@ -249,7 +297,9 @@ class AccountStore:
                 "WHERE account_sessions.token_hash = ? AND account_sessions.expires_at > ?",
                 (token_hash, timestamp),
             ).fetchone()
-        return self._public_account(row) if row else None
+        if not row or row["status"] != "active":
+            return None
+        return self._public_account(row)
 
     def revoke(self, token: str | None) -> None:
         if not token or not SESSION_RE.fullmatch(token):
@@ -258,6 +308,93 @@ class AccountStore:
             connection.execute(
                 "DELETE FROM account_sessions WHERE token_hash = ?", (_session_hash(token),),
             )
+
+    def get(self, account_id: str) -> dict | None:
+        with self._connection() as connection:
+            row = connection.execute(
+                "SELECT * FROM accounts WHERE id = ?", (account_id,),
+            ).fetchone()
+        return self._public_account(row) if row else None
+
+    def list_accounts(self) -> list[dict]:
+        """Return every account for the administration console, oldest registration first."""
+        with self._connection() as connection:
+            rows = connection.execute(
+                "SELECT * FROM accounts ORDER BY created_at ASC",
+            ).fetchall()
+        return [self._public_account(row) for row in rows]
+
+    @staticmethod
+    def _count_admins(connection, exclude_id: str | None = None) -> int:
+        query = "SELECT COUNT(*) FROM accounts WHERE role = 'admin' AND status = 'active'"
+        parameters: tuple = ()
+        if exclude_id:
+            query += " AND id != ?"
+            parameters = (exclude_id,)
+        return int(connection.execute(query, parameters).fetchone()[0])
+
+    def count_admins(self, exclude_id: str | None = None) -> int:
+        with self._connection() as connection:
+            return self._count_admins(connection, exclude_id)
+
+    def _require_row(self, connection, account_id: str):
+        row = connection.execute(
+            "SELECT * FROM accounts WHERE id = ?", (account_id,),
+        ).fetchone()
+        if not row:
+            raise AccountError("account not found")
+        return row
+
+    def set_status(self, account_id: str, status: str) -> dict:
+        """Suspend or reactivate an account, never removing the last active administrator."""
+        if status not in ACCOUNT_STATUSES:
+            raise AccountError("invalid account status")
+        now = int(time.time())
+        with self._connection() as connection:
+            row = self._require_row(connection, account_id)
+            if status == "suspended" and row["role"] == "admin"                     and self._count_admins(connection, exclude_id=account_id) == 0:
+                raise LastAdministrator("the beta must keep one active administrator")
+            connection.execute(
+                "UPDATE accounts SET status = ?, updated_at = ? WHERE id = ?",
+                (status, now, account_id),
+            )
+            if status == "suspended":
+                connection.execute(
+                    "DELETE FROM account_sessions WHERE account_id = ?", (account_id,),
+                )
+            updated = self._require_row(connection, account_id)
+            return self._public_account(updated)
+
+    def set_role(self, account_id: str, role: str) -> dict:
+        """Promote or demote an account, never removing the last active administrator."""
+        if role not in {"user", "admin"}:
+            raise AccountError("invalid account role")
+        now = int(time.time())
+        with self._connection() as connection:
+            row = self._require_row(connection, account_id)
+            if role == "user" and row["role"] == "admin"                     and self._count_admins(connection, exclude_id=account_id) == 0:
+                raise LastAdministrator("the beta must keep one active administrator")
+            connection.execute(
+                "UPDATE accounts SET role = ?, updated_at = ? WHERE id = ?",
+                (role, now, account_id),
+            )
+            # A change of powers always restarts from a fresh sign-in.
+            connection.execute(
+                "DELETE FROM account_sessions WHERE account_id = ?", (account_id,),
+            )
+            updated = self._require_row(connection, account_id)
+            return self._public_account(updated)
+
+    def delete_account(self, account_id: str) -> dict:
+        """Remove an account and its sessions; stored jobs are deleted by the caller."""
+        with self._connection() as connection:
+            row = self._require_row(connection, account_id)
+            if row["role"] == "admin"                     and self._count_admins(connection, exclude_id=account_id) == 0:
+                raise LastAdministrator("the beta must keep one active administrator")
+            account = self._public_account(row)
+            connection.execute("DELETE FROM account_sessions WHERE account_id = ?", (account_id,))
+            connection.execute("DELETE FROM accounts WHERE id = ?", (account_id,))
+        return account
 
     def revoke_account_sessions(self, account_id: str) -> None:
         with self._connection() as connection:
