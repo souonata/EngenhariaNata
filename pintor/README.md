@@ -29,11 +29,14 @@ The Engenharia NATA beta has two page-analysis modes:
 - declined: password-protected files, unknown notation, illegible/unsupported colour codes,
   uncertain conductor ownership, documents with no readable colour codes at all, or any result that
   fails a preservation gate;
-- limits: 25 MB per file, 24-hour retention, and 20 simultaneously active jobs per account by
+- limits: 200 MB per file, 20 simultaneously active jobs and 5 GB of stored manuals per account by
   default. There is no cap on document length or on how many pages one job may paint; the page
   ceiling of 100,000 exists only so a mistyped range cannot exhaust memory before the PDF is read. A
   single page still has to fit the per-page analysis budget, and during a sweep a page that does not
-  is skipped instead of sinking the job.
+  is skipped instead of sinking the job;
+- storage: a manual uploaded by an account is kept until its owner or an administrator deletes it.
+  Only jobs created without an account still expire, on a 24-hour window, because nobody can sign
+  back in to find them.
 
 The static frontend lives in `index.html`, `pintor-script.js`, and `pintor-styles.css`. It is built
 by the main Engenharia NATA Vite pipeline. The Python API is a separate service; GitHub Pages does
@@ -47,6 +50,34 @@ Passwords use a unique salt and `scrypt`, account session tokens are stored only
 and jobs use stable per-account ownership without exposing account identifiers as authorization.
 
 See `docs/ELECTRICAL_SAFETY_RULES.md` for the non-tunable electrical and drawing invariants.
+
+## Working page by page
+
+Manual length must not drive memory or disk, so nothing about a job is held whole:
+
+- **the upload** is streamed to disk in 1 MB chunks and hashed on the way past. A 188 MB upload
+  measured 13 MB of growth in the API process, not 188 MB;
+- **the sweep** reopens the document every 50 pages. MuPDF keeps the parsed content, fonts and
+  decoded images of every page it has touched in a per-document store, so one open document walked
+  from page 1 to page 1,200 grows for the entire walk; closing it hands all of that back;
+- **painting** attaches each overlay to the output PDF as soon as it is produced, verifies gate V7
+  on that page immediately, and deletes the staged PNG. Overlays are never all on disk at once, and
+  a preservation failure surfaces on the page that caused it rather than hours later;
+- **previews** are rendered eagerly only for the first `PINTOR_EAGER_PREVIEWS` pages (12 by
+  default); the rest are rendered the first time somebody opens them, and cached from then on;
+- **supervision** watches progress rather than the clock. A job is killed when it stops moving
+  (`PINTOR_JOB_STALL_SECONDS`, 15 min) or when it passes an absolute ceiling
+  (`PINTOR_JOB_MAX_SECONDS`, 6 h) -- never merely for being long.
+
+Measured on this pipeline with synthetic manuals, 50 wiring pages each:
+
+| manual      | wiring pages | time    | peak RSS | peak workspace |
+| ----------- | ------------ | ------- | -------- | -------------- |
+| 400 pages   | 50 painted   | 144.5 s | 1,174 MB | 17.7 MB        |
+| 1,200 pages | 50 painted   | 144.6 s | 1,176 MB | 27.2 MB        |
+
+Tripling the manual left peak memory unchanged: what costs memory is painting one page, not the
+length of the document around it. Both runs stayed well under the 2,560 MB worker ceiling.
 
 ## Accounts and the administration console
 

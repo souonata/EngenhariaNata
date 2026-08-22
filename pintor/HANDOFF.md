@@ -10,13 +10,77 @@ runtime dependency.
 
 The Engenharia NATA beta is a private-job web app that paints any number of vector or rasterized
 pages inside a manual of any length, either from an explicit page selection or from a sweep that
-finds the wiring diagrams itself. Exact text/strokes are preferred;
+finds the wiring diagrams itself. Files are accepted up to 200 MB, processed one page at a time,
+and kept in the owner's account until the owner deletes them. Exact text/strokes are preferred;
 image-only pages use the bundled OCR and conservative pixel-topology pipeline. A
 supported/confirmed colour convention remains mandatory, and uncertain segments stay black.
 
 The product name is localized in the interface: **Pintor** in Portuguese, **Pittore** in Italian,
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
+
+## 2026-08-22 large manuals, kept storage, page-by-page work (0.5.0, not published)
+
+Same branch, second pass. The first pass removed the page caps; this one makes a long manual
+actually survivable and stops treating stored work as temporary.
+
+**200 MB per file, streamed.** `PINTOR_MAX_UPLOAD_MB` is 200. The endpoint no longer does
+`await file.read(max_bytes + 1)` -- it streams the body to `workspace/incoming/` in 1 MB chunks,
+enforces the limit while writing, and hands `store.create` a path. `create` accepts bytes or a
+path, hashes the file in 1 MB chunks and moves it into the job directory. Measured against a
+running API: a 188.8 MB upload grew the API process by 13.1 MB and stored `source_bytes`
+188,757,233 intact.
+
+**Manuals are kept.** `PINTOR_RETENTION_HOURS` now defaults to `0`, meaning no expiry for anything
+an account owns; `cleanup_expired` only deletes jobs with no `account_id`, still on 24 hours,
+because nobody can sign back in to claim those. Deletion is the owner's (or an administrator's)
+act. Since storage is now permanent it carries a quota: `PINTOR_MAX_ACCOUNT_STORAGE_MB` (5 GB) per
+account, reported to the owner in *My drawings* and to the administrator as a Storage column, and
+`PINTOR_MAX_STORAGE_MB` for the whole workspace (60 GB) -- **check the VM's free disk before
+publishing; these defaults assume there is room for them.**
+Regression fixed while doing this: the `pintor_session` cookie used `max_age=retention_seconds`,
+which with retention 0 emitted `Max-Age=0` and deleted the cookie on arrival, breaking every
+anonymous session. It now follows the account session, or the anonymous window.
+
+**Page by page.** The sweep reopens the document every 50 pages, because MuPDF's per-document
+store keeps everything it has parsed until the document is closed. Painting attaches each overlay
+the moment it exists (`append_overlays`, extracted from `attach_overlays` so a second overlay can
+join a file that already carries the OCG), runs V7 on that page immediately, then deletes the
+staged PNG -- overlays are never all on disk at once, and a preservation failure surfaces on the
+page that caused it. Previews are eager only for the first `PINTOR_EAGER_PREVIEWS` (12) pages; the
+rest render on first view and are cached. `_release_page_caches()` shrinks the MuPDF store and runs
+`gc.collect()` between pages.
+
+**Supervision follows progress, not the clock.** The old fixed `PINTOR_JOB_TIMEOUT_SECONDS=180`
+would have killed every long manual. The supervisor now compares a marker of
+`(updated_at, stage, current_page, completed_pages, scanned_pages)` between polls: a job is killed
+when it stops moving (`PINTOR_JOB_STALL_SECONDS`, 900 s) or when it passes an absolute ceiling
+(`PINTOR_JOB_MAX_SECONDS`, 21,600 s; `PINTOR_JOB_TIMEOUT_SECONDS` still overrides it if set). The
+CPU rlimit defaults to the ceiling instead of 150 s. The sweep reports progress every 50 pages,
+which is both the UI's progress bar and the liveness signal.
+
+**Measured.** Synthetic manuals, 50 wiring pages each, real pipeline, no mocks:
+
+| manual | found/painted | time | peak RSS | peak workspace | output |
+| ------ | ------------- | ---- | -------- | -------------- | ------ |
+| 400 pages | 50 / 50 | 144.5 s | 1,173.7 MB | 17.7 MB | 400 pages, 9.8 MB |
+| 1,200 pages | 50 / 50 | 144.6 s | 1,175.6 MB | 27.2 MB | 1,200 pages, 14.6 MB |
+
+Tripling manual length moved peak RSS by 1.9 MB (0.16%). No overlay PNGs were left staged and only
+24 preview files were written instead of 100. Both runs are far under the 2,560 MB worker rlimit
+and the 3 GB container.
+
+**Verified.** 57 Python tests in the web/account modules, plus `npm run validate`. New coverage:
+streamed upload keeps bytes and digest and leaves nothing in staging; an oversized file is refused
+without being kept; account manuals survive `cleanup_expired` while anonymous ones expire; the
+per-account quota refuses a manual and accepts it again after a deletion; a skipped preview is
+rendered on first view; a job that keeps reporting progress is not killed, and one that stops is
+killed as `ProcessingStalled`.
+
+**Still open.** Nothing published. The measurements above use synthetic vector manuals; a real
+scanned A0 foldout is far heavier per page, and the per-page budgets -- not manual length -- are
+what bound it. Peak RSS of ~1.2 GB is a *per-page* cost that a raster A0 page can exceed on its
+own, so the memory ceiling still deserves a real-corpus run before promising a specific manual.
 
 ## 2026-08-22 accounts console, sweeps, and the processing queue (0.5.0, not published)
 

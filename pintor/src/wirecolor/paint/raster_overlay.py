@@ -455,22 +455,16 @@ def write_overlay_png(path: str, rgba: np.ndarray) -> int:
     return len(payload)
 
 
-def attach_overlays(src_pdf: str, out_pdf: str, overlays) -> dict:
-    """Append several selected-page overlays under one removable OCG.
+def _refuse_painted_source(src_pdf: str) -> int:
+    """Reject an already-colorized source and return its page count.
 
-    ``overlays`` is an iterable of ``(zero_based_page, PNG path or PNG bytes)``. The source is
-    copied once and each page is appended under the same OCG in a separate incremental revision.
-    This bounds peak memory to one decoded overlay while every unselected page remains part of the
-    exact source byte prefix.
+    V7 cannot catch double painting: a previously colorized PDF is a valid byte PREFIX of
+    itself-plus-another-layer and keeps every original image hash, so a doubly-painted file passes
+    every preservation check while stacking a second opaque overlay. The staged colorized PDF lives
+    beside the source, so feeding one back is a live footgun.
     """
-    import os
-    import shutil
-
     import fitz
-    # Refuse to paint an already-painted sheet. V7 cannot catch this: a previously colorized PDF
-    # is a valid byte PREFIX of itself-plus-another-layer and keeps every original image hash, so
-    # a doubly-painted file passes every preservation check while stacking a second opaque overlay.
-    # The staged colorized PDF lives beside the source, so feeding one back is a live footgun.
+
     probe = fitz.open(src_pdf)
     try:
         existing = {(cfg.get("text") or "") for cfg in probe.layer_ui_configs()}
@@ -481,6 +475,13 @@ def attach_overlays(src_pdf: str, out_pdf: str, overlays) -> dict:
         raise SystemExit(
             f"refusing to paint {src_pdf}: it already carries a '{OCG_NAME}' layer "
             "(this looks like a colorized output, not an original)")
+    return page_count
+
+
+def _apply_overlays(target_pdf: str, overlays, page_count: int, create_ocg: bool,
+                    on_attached=None) -> tuple[int, int]:
+    """Append overlays to ``target_pdf`` in place, one decoded PNG at a time."""
+    import fitz
 
     prepared = list(overlays)
     if not prepared:
@@ -491,62 +492,100 @@ def attach_overlays(src_pdf: str, out_pdf: str, overlays) -> dict:
     if any(page_index < 0 or page_index >= page_count for page_index in page_indices):
         raise ValueError("overlay page is outside the PDF")
 
-    shutil.copyfile(src_pdf, out_pdf)
-    src_size = None
-    with open(src_pdf, "rb") as f:
-        f.seek(0, 2)
-        src_size = f.tell()
-
     overlay_bytes = 0
-    try:
-        for position, (page_index, payload) in enumerate(prepared):
-            doc = fitz.open(out_pdf)
-            try:
-                if position == 0:
-                    ocg = doc.add_ocg(OCG_NAME, on=True)
-                else:
-                    matching_ocgs = [
-                        xref for xref, config in doc.get_ocgs().items()
-                        if config.get("name") == OCG_NAME
-                    ]
-                    if len(matching_ocgs) != 1:
-                        raise RuntimeError("Pintor OCG was not preserved between overlays")
-                    ocg = matching_ocgs[0]
+    for position, (page_index, payload) in enumerate(prepared):
+        doc = fitz.open(target_pdf)
+        try:
+            if create_ocg and position == 0:
+                ocg = doc.add_ocg(OCG_NAME, on=True)
+            else:
+                matching_ocgs = [
+                    xref for xref, config in doc.get_ocgs().items()
+                    if config.get("name") == OCG_NAME
+                ]
+                if len(matching_ocgs) != 1:
+                    raise RuntimeError("Pintor OCG was not preserved between overlays")
+                ocg = matching_ocgs[0]
 
-                page_index = int(page_index)
-                png_bytes = payload if isinstance(payload, bytes) else None
-                if png_bytes is None:
-                    with open(payload, "rb") as handle:
-                        png_bytes = handle.read()
-                if not png_bytes.startswith(b"\x89PNG\r\n\x1a\n"):
-                    raise ValueError("overlay is not a PNG")
-                overlay_bytes += len(png_bytes)
-                page = doc[page_index]
-                # Insert in DISPLAY space: the working render already applies page rotation.
-                page.insert_image(
-                    page.rect, stream=png_bytes, oc=ocg,
-                    rotate=(360 - page.rotation) % 360, overlay=True,
-                )
-                # Saving each overlay separately prevents long selections from retaining every
-                # decoded image/alpha plane until the last page.
-                doc.save(
-                    out_pdf, incremental=True, encryption=fitz.PDF_ENCRYPT_KEEP, deflate=True,
-                )
-            finally:
-                doc.close()
+            page_index = int(page_index)
+            png_bytes = payload if isinstance(payload, bytes) else None
+            if png_bytes is None:
+                with open(payload, "rb") as handle:
+                    png_bytes = handle.read()
+            if not png_bytes.startswith(b"\x89PNG\r\n\x1a\n"):
+                raise ValueError("overlay is not a PNG")
+            overlay_bytes += len(png_bytes)
+            page = doc[page_index]
+            # Insert in DISPLAY space: the working render already applies page rotation.
+            page.insert_image(
+                page.rect, stream=png_bytes, oc=ocg,
+                rotate=(360 - page.rotation) % 360, overlay=True,
+            )
+            # Saving each overlay separately prevents long selections from retaining every
+            # decoded image/alpha plane until the last page.
+            doc.save(
+                target_pdf, incremental=True, encryption=fitz.PDF_ENCRYPT_KEEP, deflate=True,
+            )
+        finally:
+            doc.close()
+        if on_attached is not None:
+            # Lets the caller release the staged PNG immediately, which is what keeps a
+            # several-hundred-page sweep from needing every overlay on disk at once.
+            on_attached(page_index, payload)
+    return overlay_bytes, len(prepared)
+
+
+def _file_size(path: str) -> int:
+    with open(path, "rb") as handle:
+        handle.seek(0, 2)
+        return handle.tell()
+
+
+def attach_overlays(src_pdf: str, out_pdf: str, overlays, on_attached=None) -> dict:
+    """Append several selected-page overlays under one removable OCG.
+
+    ``overlays`` is an iterable of ``(zero_based_page, PNG path or PNG bytes)``. The source is
+    copied once and each page is appended under the same OCG in a separate incremental revision.
+    This bounds peak memory to one decoded overlay while every unselected page remains part of the
+    exact source byte prefix.
+    """
+    import os
+    import shutil
+
+    page_count = _refuse_painted_source(src_pdf)
+    src_size = _file_size(src_pdf)
+    shutil.copyfile(src_pdf, out_pdf)
+    try:
+        overlay_bytes, count = _apply_overlays(out_pdf, overlays, page_count, True, on_attached)
     except Exception:
         try:
             os.remove(out_pdf)
         except OSError:
             pass
         raise
+    return dict(src_bytes=src_size, out_bytes=_file_size(out_pdf),
+                overlay_png_bytes=overlay_bytes, overlays=count, ocg=OCG_NAME)
 
-    out_size = None
-    with open(out_pdf, "rb") as f:
-        f.seek(0, 2)
-        out_size = f.tell()
-    return dict(src_bytes=src_size, out_bytes=out_size,
-                overlay_png_bytes=overlay_bytes, overlays=len(prepared), ocg=OCG_NAME)
+
+def append_overlays(out_pdf: str, overlays, on_attached=None) -> dict:
+    """Add more overlays to a PDF this module already painted.
+
+    Used to interleave painting and attaching: a manual with hundreds of diagram pages would
+    otherwise have to stage every overlay PNG on disk before the first one is attached.
+    """
+    import fitz
+
+    doc = fitz.open(out_pdf)
+    try:
+        page_count = len(doc)
+        carries_layer = OCG_NAME in {(cfg.get("text") or "") for cfg in doc.layer_ui_configs()}
+    finally:
+        doc.close()
+    if not carries_layer:
+        raise ValueError(f"{out_pdf} does not carry a '{OCG_NAME}' layer to extend")
+    overlay_bytes, count = _apply_overlays(out_pdf, overlays, page_count, False, on_attached)
+    return dict(out_bytes=_file_size(out_pdf), overlay_png_bytes=overlay_bytes,
+                overlays=count, ocg=OCG_NAME)
 
 
 def attach_overlay(src_pdf: str, out_pdf: str, page_index: int, rgba: np.ndarray) -> dict:

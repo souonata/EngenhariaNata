@@ -212,7 +212,8 @@ def _public_state(state: dict) -> dict:
         "requested_convention", "convention_confidence", "created_at", "updated_at", "metrics",
         "processing_mode", "decline_reason", "error", "preview_original", "preview_painted",
         "download", "feedback_id", "current_page", "completed_pages", "selected_page_count",
-        "page_discovery", "discovery", "queue_position", "finished_at",
+        "page_discovery", "discovery", "queue_position", "finished_at", "source_bytes",
+        "scanned_pages",
     }
     return {key: state[key] for key in allowed if key in state}
 
@@ -220,13 +221,15 @@ def _public_state(state: dict) -> dict:
 class JobStore:
     """Filesystem-backed beta job store with random, path-safe identifiers."""
 
-    def __init__(self, root: str | Path = DEFAULT_WORKSPACE, retention_hours: int = 24):
+    def __init__(self, root: str | Path = DEFAULT_WORKSPACE, retention_hours: int = 0):
         self.root = Path(root).resolve()
         self.jobs = self.root / "jobs"
         self.training = self.root / "training_feedback"
         # Improvement rounds live outside the training inbox so the feedback globs stay exact.
         self.rounds = self.root / "improvement_rounds"
-        self.retention_seconds = max(1, retention_hours) * 3600
+        # Zero hours means "keep it": a manual an account owns stays until its owner deletes it.
+        # Anonymous jobs still expire, because nobody can ever come back for them.
+        self.retention_seconds = max(0, retention_hours) * 3600
         self.jobs.mkdir(parents=True, exist_ok=True)
         self.training.mkdir(parents=True, exist_ok=True)
         self.rounds.mkdir(parents=True, exist_ok=True)
@@ -262,25 +265,34 @@ class JobStore:
         _atomic_json(self.job_dir(job_id) / "state.json", state)
         return state
 
-    def create(self, content: bytes, filename: str | None, pages: list[int] | int, convention: str,
-               consent_learning: bool, max_bytes: int, owner_hash: str,
+    def create(self, content: bytes | Path, filename: str | None, pages: list[int] | int,
+               convention: str, consent_learning: bool, max_bytes: int, owner_hash: str,
                max_storage_bytes: int = 0, account: dict | None = None,
-               max_active_jobs: int = 20) -> dict:
-        if not content or len(content) > max_bytes:
+               max_active_jobs: int = 20, max_owner_bytes: int = 0) -> dict:
+        """Create a job from PDF bytes, or from a file already streamed to disk.
+
+        A 200 MB manual must never be held in memory to be checked, so the HTTP layer streams the
+        upload to a temporary file and hands over the path.
+        """
+        staged = Path(content) if isinstance(content, (str, Path)) else None
+        if staged is not None:
+            size = staged.stat().st_size
+            with staged.open("rb") as handle:
+                signature = handle.read(5)
+        else:
+            size = len(content)
+            signature = content[:5]
+        if not size or size > max_bytes:
             raise InvalidUpload("PDF is empty or exceeds the upload limit")
-        if not content.startswith(b"%PDF-"):
+        if signature != b"%PDF-":
             raise InvalidUpload("file does not have a PDF signature")
         self.cleanup_expired()
-        if max_storage_bytes:
-            used = 0
-            for path in self.root.rglob("*"):
-                try:
-                    if path.is_file():
-                        used += path.stat().st_size
-                except OSError:
-                    continue
-            if used + len(content) > max_storage_bytes:
-                raise InvalidUpload("private beta storage is temporarily full")
+        if max_owner_bytes and self.bytes_for_owner_hash(owner_hash) + size > max_owner_bytes:
+            raise InvalidUpload(
+                "this account has filled its storage; delete a drawing to make room"
+            )
+        if max_storage_bytes and self.directory_bytes(self.root) + size > max_storage_bytes:
+            raise InvalidUpload("private beta storage is temporarily full")
         active = 0
         for state_path in self.jobs.glob("*/state.json"):
             try:
@@ -306,7 +318,15 @@ class JobStore:
         directory = self.jobs / job_id
         directory.mkdir(mode=0o700)
         source = directory / "source.pdf"
-        source.write_bytes(content)
+        digest = hashlib.sha256()
+        if staged is not None:
+            os.replace(staged, source)
+            with source.open("rb") as handle:
+                for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                    digest.update(chunk)
+        else:
+            source.write_bytes(content)
+            digest.update(content)
 
         now = int(time.time())
         state = {
@@ -320,7 +340,8 @@ class JobStore:
             "page_discovery": "auto" if discovery else "manual",
             "requested_convention": convention,
             "consent_learning": bool(consent_learning),
-            "source_sha256": hashlib.sha256(content).hexdigest(),
+            "source_bytes": size,
+            "source_sha256": digest.hexdigest(),
             "owner_hash": owner_hash,
             "account_id": account.get("id") if account else None,
             "account_username": account.get("username") if account else None,
@@ -739,7 +760,14 @@ class JobStore:
         return self._public_round(record)
 
     def cleanup_expired(self, now: int | None = None) -> int:
-        threshold = (now or int(time.time())) - self.retention_seconds
+        """Delete only what nobody can come back for.
+
+        Jobs belonging to an account are kept until their owner (or an administrator) deletes
+        them; that is the whole point of having an account. Jobs created without one are tied to a
+        cookie that outlives nothing, so they still expire on the anonymous retention window.
+        """
+        window = self.anonymous_retention_seconds
+        threshold = (now or int(time.time())) - window
         removed = 0
         for directory in self.jobs.iterdir():
             state_path = directory / "state.json"
@@ -747,11 +775,44 @@ class JobStore:
                 state = json.loads(state_path.read_text(encoding="utf-8"))
             except Exception:
                 continue
+            if state.get("account_id"):
+                continue
             if state.get("updated_at", 0) >= threshold:
                 continue
             shutil.rmtree(directory, ignore_errors=True)
             removed += 1
         return removed
+
+    @property
+    def anonymous_retention_seconds(self) -> int:
+        return self.retention_seconds or 24 * 3600
+
+    @staticmethod
+    def directory_bytes(directory: Path) -> int:
+        total = 0
+        for path in directory.rglob("*"):
+            try:
+                if path.is_file():
+                    total += path.stat().st_size
+            except OSError:
+                continue
+        return total
+
+    def owner_bytes(self, session_id: str) -> int:
+        """Disk held by one owner, so a permanent archive can still carry a quota."""
+        return self.bytes_for_owner_hash(_owner_hash(session_id))
+
+    def bytes_for_owner_hash(self, owner_hash: str) -> int:
+        total = 0
+        for state_path in self.jobs.glob("*/state.json"):
+            try:
+                state = json.loads(state_path.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            if state.get("owner_hash") != owner_hash:
+                continue
+            total += self.directory_bytes(state_path.parent)
+        return total
 
     def delete_owned(self, job_id: str, session_id: str | None) -> None:
         self.read_owned(job_id, session_id)
@@ -970,6 +1031,24 @@ def _load_models():
     return policy, classifier
 
 
+def _release_page_caches() -> None:
+    """Drop MuPDF's per-page store between pages.
+
+    Without this a sweep grows steadily across a long manual: every page that has been touched
+    keeps its parsed content, fonts and decoded images in the shared store, and the process only
+    gives them back when the document is closed -- which, for a single job, is at the very end.
+    """
+    import gc
+
+    try:
+        import fitz
+
+        fitz.TOOLS.store_shrink(100)
+    except Exception:
+        pass
+    gc.collect()
+
+
 def _render_preview(pdf_path: Path, page_index: int, out_path: Path,
                     max_side: int = 4800, max_pixels: int = 22_000_000) -> tuple[int, int]:
     import fitz
@@ -991,9 +1070,14 @@ def discover_job_pages(store: JobStore, job_id: str, source: Path, state: dict) 
     from .tools.discover_pages import scan_document
 
     store.update(job_id, stage="scanning-document")
+    def report_progress(scanned: int, total: int) -> None:
+        store.update(job_id, stage="scanning-document", scanned_pages=scanned,
+                     page_count=total)
+
     report = scan_document(
         source, state.get("requested_convention", "auto"),
         max_pages=int(os.getenv("PINTOR_SCAN_MAX_PAGES", "0")),
+        progress=report_progress,
     )
     summary = {
         "page_count": report["page_count"],
@@ -1042,17 +1126,25 @@ def process_job(store: JobStore, job_id: str) -> None:
         generated = directory / "generated"
         generated.mkdir(parents=True, exist_ok=True)
         page_results = []
-        overlays = []
         policy, classifier = _load_models()
         paint_budget = int(os.getenv("PINTOR_PAINT_PIXEL_BUDGET", "60000000"))
+        # Previews are rendered up front only for the pages a reviewer opens first; the rest are
+        # rendered on demand. On a 300-page sweep the eager version alone would write gigabytes.
+        eager_previews = int(os.getenv("PINTOR_EAGER_PREVIEWS", "12"))
+        painted = directory / "painted.pdf"
+        overlay_ocg = None
+        attached = 0
 
         for position, page_index in enumerate(selected_pages, start=1):
             store.update(
                 job_id, stage="reading-diagram", current_page=page_index,
                 completed_pages=position - 1, pages=page_results,
             )
-            original_name = f"original-p{page_index}.jpg"
-            original_size = _render_preview(source, page_index, directory / original_name)
+            original_size = (0, 0)
+            if position <= eager_previews:
+                original_size = _render_preview(
+                    source, page_index, directory / f"original-p{page_index}.jpg",
+                )
             convention, confidence = _select_convention(
                 source, page_index, state["requested_convention"])
             store.update(
@@ -1119,14 +1211,48 @@ def process_job(store: JobStore, job_id: str) -> None:
 
             if report.get("declined"):
                 overlay_path.unlink(missing_ok=True)
+                _release_page_caches()
                 continue
             if not (report.get("v2") or {}).get("passed"):
                 raise RuntimeError(f"protected-region gate V2 failed on page {page_index + 1}")
             if not overlay_path.is_file():
                 raise RuntimeError(f"painter did not produce page {page_index + 1} overlay")
-            overlays.append((page_index, str(overlay_path)))
 
-        if not overlays:
+            # Attach and verify this page NOW, then drop its PNG. Staging every overlay until the
+            # end is what makes a long manual run out of disk, and it also hides a preservation
+            # failure until hours of painting have already been spent.
+            store.update(job_id, stage="attaching-layer", current_page=page_index)
+            from .paint.raster_overlay import append_overlays, attach_overlays
+            from .verify.validators import v7_preservation
+
+            release = lambda _page, staged: Path(staged).unlink(missing_ok=True)  # noqa: E731
+            if attached == 0:
+                stats = attach_overlays(
+                    str(source), str(painted), [(page_index, str(overlay_path))],
+                    on_attached=release,
+                )
+                overlay_ocg = stats["ocg"]
+            else:
+                stats = append_overlays(
+                    str(painted), [(page_index, str(overlay_path))], on_attached=release,
+                )
+            attached += 1
+            v7 = v7_preservation(str(source), str(painted), page_index, overlay_ocg)
+            if not v7.get("passed"):
+                painted.unlink(missing_ok=True)
+                raise RuntimeError(
+                    f"source-preservation gate V7 failed on page {page_index + 1}"
+                )
+            page_result["metrics"]["original_preserved"] = True
+            if position <= eager_previews:
+                painted_size = _render_preview(
+                    painted, page_index, directory / f"painted-p{page_index}.jpg",
+                )
+                page_result["metrics"]["preview_width"] = painted_size[0]
+                page_result["metrics"]["preview_height"] = painted_size[1]
+            _release_page_caches()
+
+        if not attached:
             reasons = [
                 f"page {item['page_number']}: {item['decline_reason'] or 'no safe colour assignment'}"
                 for item in page_results
@@ -1146,22 +1272,6 @@ def process_job(store: JobStore, job_id: str) -> None:
             )
             return
 
-        from .paint.raster_overlay import attach_overlays
-        from .verify.validators import v7_preservation
-
-        painted = directory / "painted.pdf"
-        stats = attach_overlays(str(source), str(painted), overlays)
-        for item in page_results:
-            if item["status"] != "painted":
-                continue
-            v7 = v7_preservation(str(source), str(painted), item["page"], stats["ocg"])
-            if not v7.get("passed"):
-                painted.unlink(missing_ok=True)
-                raise RuntimeError(
-                    f"source-preservation gate V7 failed on page {item['page_number']}"
-                )
-            item["metrics"]["original_preserved"] = True
-
         import fitz
 
         verification = fitz.open(painted)
@@ -1170,18 +1280,19 @@ def process_job(store: JobStore, job_id: str) -> None:
             painted.unlink(missing_ok=True)
             raise RuntimeError("generated PDF failed reopen/page-count verification")
         verification.close()
+        _release_page_caches()
 
-        for item in page_results:
-            painted_name = f"painted-p{item['page']}.jpg"
-            painted_size = _render_preview(
-                painted, item["page"], directory / painted_name,
-            )
-            item["preview_painted"] = (
-                f"/api/jobs/{job_id}/preview/painted?page={item['page']}"
-            )
-            item["metrics"]["preview_width"] = painted_size[0]
-            item["metrics"]["preview_height"] = painted_size[1]
+        # A declined page is still shown under "painted": the sheet the reviewer sees there is the
+        # untouched original, which is exactly what abstention means.
+        for position, item in enumerate(page_results, start=1):
+            item["preview_painted"] = f"/api/jobs/{job_id}/preview/painted?page={item['page']}"
             item["metrics"].setdefault("original_preserved", True)
+            preview = directory / f"painted-p{item['page']}.jpg"
+            if position <= eager_previews and not preview.is_file():
+                size = _render_preview(painted, item["page"], preview)
+                item["metrics"]["preview_width"] = size[0]
+                item["metrics"]["preview_height"] = size[1]
+        _release_page_caches()
 
         total_runs = sum(item["metrics"]["runs"] for item in page_results)
         weighted_rate = sum(
@@ -1214,7 +1325,10 @@ def process_job(store: JobStore, job_id: str) -> None:
             }) > 1 else page_results[0]["convention_confidence"],
             processing_mode=metrics["processing_mode"],
             preview_original=page_results[0]["preview_original"],
-            preview_painted=page_results[0]["preview_painted"],
+            preview_painted=next(
+                (item["preview_painted"] for item in page_results if item.get("preview_painted")),
+                None,
+            ),
             download=f"/api/jobs/{job_id}/download",
             finished_at=int(time.time()),
         )
@@ -1249,12 +1363,23 @@ def _worker_entry(workspace_root: str, job_id: str, memory_mb: int, cpu_seconds:
 
 
 def process_job_isolated(store: JobStore, job_id: str) -> None:
-    """Run one untrusted PDF in a killable process instead of the API process."""
+    """Run one untrusted PDF in a killable process instead of the API process.
+
+    Supervision watches PROGRESS, not only the clock. A fixed 180-second deadline was fine while a
+    job meant a handful of pages; a 400-page manual painted page by page is a healthy job that runs
+    for hours, and killing it at three minutes would be indistinguishable from the feature not
+    existing. So a job is killed when it stops moving (no state change for ``stall_seconds``), or
+    when it passes an absolute ceiling -- never merely for being long.
+    """
     import multiprocessing
 
-    timeout = int(os.getenv("PINTOR_JOB_TIMEOUT_SECONDS", "180"))
+    ceiling = os.getenv("PINTOR_JOB_TIMEOUT_SECONDS") or os.getenv("PINTOR_JOB_MAX_SECONDS")
+    max_seconds = int(ceiling or 21_600)
+    stall_seconds = int(os.getenv("PINTOR_JOB_STALL_SECONDS", "900"))
     memory_mb = int(os.getenv("PINTOR_JOB_MEMORY_MB", "2560"))
-    cpu_seconds = int(os.getenv("PINTOR_JOB_CPU_SECONDS", "150"))
+    # The CPU rlimit is a backstop against a runaway loop, not the primary bound; tying it to the
+    # ceiling keeps it from cutting off legitimate long work.
+    cpu_seconds = int(os.getenv("PINTOR_JOB_CPU_SECONDS", str(max_seconds)))
     context = multiprocessing.get_context("spawn")
     worker = context.Process(
         target=_worker_entry,
@@ -1262,20 +1387,31 @@ def process_job_isolated(store: JobStore, job_id: str) -> None:
         daemon=False,
     )
     worker.start()
-    deadline = time.monotonic() + timeout
+    deadline = time.monotonic() + max_seconds
     terminal_since = None
+    last_progress = time.monotonic()
+    last_marker = None
+    stalled = False
     terminal_states = {"ready", "declined", "failed", "revision-requested"}
     while worker.is_alive():
-        remaining = deadline - time.monotonic()
-        if remaining <= 0:
+        now = time.monotonic()
+        if now >= deadline:
             break
-        worker.join(min(1.0, remaining))
+        worker.join(min(1.0, deadline - now))
         if not worker.is_alive():
             break
         try:
-            status = store.read(job_id).get("status")
+            state = store.read(job_id)
         except Exception:
-            status = None
+            state = {}
+        status = state.get("status")
+        marker = (
+            state.get("updated_at"), state.get("stage"), state.get("current_page"),
+            state.get("completed_pages"), state.get("scanned_pages"),
+        )
+        if marker != last_marker:
+            last_marker = marker
+            last_progress = time.monotonic()
         if status in terminal_states:
             terminal_since = terminal_since or time.monotonic()
             # ONNX/OpenCV may retain native threads after process_job has already written a
@@ -1287,11 +1423,18 @@ def process_job_isolated(store: JobStore, job_id: str) -> None:
                 break
         else:
             terminal_since = None
+            if time.monotonic() - last_progress >= stall_seconds:
+                stalled = True
+                break
     if worker.is_alive():
         worker.terminate()
         worker.join(10)
-        store.update(job_id, status="failed", stage="failed",
-                     error="ProcessingTimeout: beta processing time limit exceeded")
+        store.update(
+            job_id, status="failed", stage="failed",
+            error="ProcessingStalled: no progress for the stall window"
+            if stalled else "ProcessingTimeout: beta processing time limit exceeded",
+            finished_at=int(time.time()),
+        )
     elif worker.exitcode != 0:
         state = store.read(job_id)
         if state.get("status") not in {"ready", "declined", "failed"}:
@@ -1309,13 +1452,15 @@ def create_app(workspace_root: str | Path | None = None,
     from fastapi.responses import FileResponse, JSONResponse, Response
     from pydantic import BaseModel, Field
 
+    # Retention 0 keeps every account-owned manual until its owner deletes it; anonymous jobs
+    # still expire, since no one can sign back in to find them.
     store = JobStore(workspace_root or os.getenv("PINTOR_WEB_ROOT", str(DEFAULT_WORKSPACE)),
-                     retention_hours=int(os.getenv("PINTOR_RETENTION_HOURS", "24")))
+                     retention_hours=int(os.getenv("PINTOR_RETENTION_HOURS", "0")))
     accounts_required = os.getenv("PINTOR_ACCOUNTS_REQUIRED", "0") == "1"
     account_session_days = int(os.getenv("PINTOR_ACCOUNT_SESSION_DAYS", "30"))
     accounts = AccountStore(store.root / "accounts.sqlite3", session_days=account_session_days)
     processor = processor or process_job_isolated
-    max_bytes = int(os.getenv("PINTOR_MAX_UPLOAD_MB", "25")) * 1024 * 1024
+    max_bytes = int(os.getenv("PINTOR_MAX_UPLOAD_MB", "200")) * 1024 * 1024
     secure_cookie = os.getenv("PINTOR_COOKIE_SECURE", "1") != "0"
     beta_key_hash = os.getenv("PINTOR_BETA_KEY_HASH", "").strip().lower()
     session_secret = os.getenv("PINTOR_SESSION_SECRET", "")
@@ -1332,7 +1477,8 @@ def create_app(workspace_root: str | Path | None = None,
     job_window = int(os.getenv("PINTOR_JOB_RATE_WINDOW_SECONDS", "3600"))
     request_limit = int(os.getenv("PINTOR_REQUEST_RATE_LIMIT", "300"))
     request_window = int(os.getenv("PINTOR_REQUEST_RATE_WINDOW_SECONDS", "60"))
-    max_storage_bytes = int(os.getenv("PINTOR_MAX_STORAGE_MB", "8192")) * 1024 * 1024
+    max_storage_bytes = int(os.getenv("PINTOR_MAX_STORAGE_MB", "61440")) * 1024 * 1024
+    max_owner_bytes = int(os.getenv("PINTOR_MAX_ACCOUNT_STORAGE_MB", "5120")) * 1024 * 1024
     max_concurrent_jobs = int(os.getenv("PINTOR_MAX_CONCURRENT_JOBS", "1"))
     account_limit = int(os.getenv("PINTOR_ACCOUNT_ATTEMPTS", "10"))
     account_window = int(os.getenv("PINTOR_ACCOUNT_WINDOW_SECONDS", "600"))
@@ -1622,7 +1768,9 @@ def create_app(workspace_root: str | Path | None = None,
             "jobs": jobs,
             "since": since,
             "active": sum(job.get("status") in {"queued", "processing"} for job in jobs),
-            "retention_hours": store.retention_seconds // 3600,
+            "kept_until_deleted": store.retention_seconds == 0,
+            "storage_used_bytes": store.owner_bytes(owner_token),
+            "storage_limit_bytes": max_owner_bytes,
         }
 
     @app.delete("/api/account", status_code=204)
@@ -1673,6 +1821,9 @@ def create_app(workspace_root: str | Path | None = None,
             "max_analysis_pixels": MAX_ANALYSIS_PIXELS,
             "max_concurrent_jobs": max(1, max_concurrent_jobs),
             "retention_hours": store.retention_seconds // 3600,
+            "kept_until_deleted": store.retention_seconds == 0,
+            "anonymous_retention_hours": store.anonymous_retention_seconds // 3600,
+            "max_account_storage_bytes": max_owner_bytes,
             "conventions": ["auto", *list_conventions()],
             "model": "operator-mounted-revalidated-artifact-or-conservative-baseline",
             "automatic_training": False,
@@ -1694,8 +1845,22 @@ def create_app(workspace_root: str | Path | None = None,
         if not allowed:
             return api_error(request, 429, "job creation rate limit exceeded", retry_after)
         session_id, account = resolve_owner(pintor_account, pintor_session)
-        content = await file.read(max_bytes + 1)
+        # A 200 MB manual is streamed straight to disk: reading it into the API process would
+        # cost more memory than the whole painting worker is allowed.
+        staging = store.root / "incoming"
+        staging.mkdir(parents=True, exist_ok=True)
+        staged = staging / f"{uuid.uuid4().hex}.pdf"
+        received = 0
         try:
+            with staged.open("wb") as handle:
+                while True:
+                    chunk = await file.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    received += len(chunk)
+                    if received > max_bytes:
+                        raise InvalidUpload("PDF is empty or exceeds the upload limit")
+                    handle.write(chunk)
             # No page notation and no explicit page: the worker sweeps the whole document.
             if pages.strip():
                 selected_pages = parse_page_selection(pages)
@@ -1703,12 +1868,17 @@ def create_app(workspace_root: str | Path | None = None,
                 selected_pages = [page]
             else:
                 selected_pages = []
-            state = store.create(content, file.filename, selected_pages, convention,
+            state = store.create(staged, file.filename, selected_pages, convention,
                                  consent_learning, max_bytes, _owner_hash(session_id),
                                  max_storage_bytes=max_storage_bytes, account=account,
-                                 max_active_jobs=max_active_jobs)
+                                 max_active_jobs=max_active_jobs,
+                                 max_owner_bytes=max_owner_bytes if account else 0)
         except InvalidUpload as error:
+            staged.unlink(missing_ok=True)
             raise HTTPException(status_code=400, detail=str(error)) from error
+        except Exception:
+            staged.unlink(missing_ok=True)
+            raise
 
         job_id = state["id"]
         position = queue.enqueue(job_id)
@@ -1724,11 +1894,32 @@ def create_app(workspace_root: str | Path | None = None,
         response = JSONResponse(
             {**_public_state(state), "queue_position": position}, status_code=202,
         )
+        # Retention no longer bounds this cookie: for an anonymous owner it is the only handle on
+        # the job, and for an account it is reissued on every sign-in.
         response.set_cookie(
-            "pintor_session", session_id, max_age=store.retention_seconds,
+            "pintor_session", session_id,
+            max_age=accounts.session_seconds if account else store.anonymous_retention_seconds,
             httponly=True, secure=secure_cookie, samesite="strict", path="/api",
         )
         return response
+
+    def ensure_preview(job_id: str, kind: str, page_index: int) -> None:
+        """Render a preview the worker skipped.
+
+        Long sweeps only pre-render the first pages, so the rest are produced the first time
+        somebody actually looks at them and cached from then on.
+        """
+        directory = store.job_dir(job_id)
+        target = directory / f"{kind}-p{page_index}.jpg"
+        if target.is_file():
+            return
+        origin = directory / ("source.pdf" if kind == "original" else "painted.pdf")
+        if not origin.is_file():
+            raise JobNotFound(job_id)
+        try:
+            _render_preview(origin, page_index, target)
+        except Exception as error:
+            raise JobNotFound(job_id) from error
 
     def with_queue(state: dict) -> dict:
         payload = _public_state(state)
@@ -1757,6 +1948,7 @@ def create_app(workspace_root: str | Path | None = None,
             page_index = state["page"] if page is None else page
             if page_index not in (state.get("selected_pages") or [state["page"]]):
                 raise JobNotFound(job_id)
+            ensure_preview(job_id, kind, page_index)
             name = f"{kind}-p{page_index}.jpg"
             return FileResponse(store.artifact(job_id, name, owner_token),
                                 media_type="image/jpeg",
@@ -1824,7 +2016,13 @@ def create_app(workspace_root: str | Path | None = None,
         if kind not in {"original", "painted"}:
             raise HTTPException(status_code=404, detail="preview not found")
         try:
-            artifact = store.feedback_artifact(feedback_id, f"{kind}-p{page}.jpg")
+            try:
+                artifact = store.feedback_artifact(feedback_id, f"{kind}-p{page}.jpg")
+            except JobNotFound:
+                # The reporter's job may still hold the page even if no preview was staged.
+                report = store.get_feedback(feedback_id)
+                ensure_preview(str(report.get("job_id")), kind, page)
+                artifact = store.feedback_artifact(feedback_id, f"{kind}-p{page}.jpg")
             return FileResponse(artifact, media_type="image/jpeg",
                                 headers={"Cache-Control": "private, no-store"})
         except JobNotFound as error:
@@ -1885,6 +2083,7 @@ def create_app(workspace_root: str | Path | None = None,
             summary = by_username.get(account["username"], {})
             listing.append({
                 **account,
+                "storage_bytes": store.owner_bytes(owner_token_for(account["id"])),
                 "job_count": store.count_owned(owner_token_for(account["id"])),
                 "report_count": summary.get("total", 0),
                 "accepted_count": summary.get("accepted", 0),

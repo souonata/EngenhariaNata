@@ -24,7 +24,7 @@
         <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.4.0" />
         <link rel="stylesheet" href="../assets/css/dock-global.css?v=1.2.0" />
         <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0" />
-        <link rel="stylesheet" href="pintor-styles.css?v=0.5.0" />
+        <link rel="stylesheet" href="pintor-styles.css?v=0.5.1" />
 
         <script
             data-goatcounter="https://souonata.goatcounter.com/count"
@@ -213,7 +213,7 @@
                         <h2 data-i18n="upload.title">Choose the PDF pages to paint</h2>
                     </div>
                     <span class="limit-note" data-i18n="upload.limit"
-                        >Up to 25 MB per file · no page limit</span
+                        >Up to 200 MB per file · no page limit</span
                     >
                 </div>
 
@@ -597,6 +597,7 @@
                     aria-live="polite"
                     hidden
                 ></div>
+                <p id="jobsStorage" class="jobs-storage" hidden></p>
                 <div id="jobsList" class="jobs-list"></div>
 
                 <section class="danger-zone">
@@ -774,6 +775,7 @@
                                     <th data-i18n="admin.colRole">Role</th>
                                     <th data-i18n="admin.colStatus">Status</th>
                                     <th data-i18n="admin.colJobs">Drawings</th>
+                                    <th data-i18n="admin.colStorage">Storage</th>
                                     <th data-i18n="admin.colReports">Reports</th>
                                     <th data-i18n="admin.colLastLogin">Last sign-in</th>
                                     <th data-i18n="admin.colActions">Actions</th>
@@ -859,6 +861,6 @@
             </svg>
         </a>
 
-        <script type="module" src="pintor-script.js?v=0.5.0"></script>
+        <script type="module" src="pintor-script.js?v=0.5.1"></script>
     </body>
 </html>

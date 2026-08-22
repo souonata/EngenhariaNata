@@ -1,4 +1,5 @@
 """Web boundary tests: upload validation, tenant isolation, feedback schema, and deletion."""
+import itertools
 import json
 import os
 import threading
@@ -656,9 +657,11 @@ class WebServiceTests(unittest.TestCase):
             def Process(**_kwargs):
                 return worker
 
+        # A clock that simply advances, so the test asserts the grace period rather than the
+        # exact number of times the supervisor happens to read the clock.
+        ticks = itertools.count(0.0, 1.0)
         with patch("multiprocessing.get_context", return_value=FakeContext()), patch(
-            "wirecolor.web_service.time.monotonic",
-            side_effect=[0.0, 1.0, 2.0, 2.0, 3.0, 7.0],
+            "wirecolor.web_service.time.monotonic", side_effect=lambda: next(ticks),
         ), patch.dict(os.environ, {"PINTOR_JOB_TIMEOUT_SECONDS": "100"}):
             process_job_isolated(store, state["id"])
 
@@ -1112,6 +1115,245 @@ class DiscoveryAndQueueTests(unittest.TestCase):
         flags = {job["original_name"]: job["finished_since_last_login"]
                  for job in listing["jobs"]}
         self.assertEqual(flags, {"old.pdf": False, "fresh.pdf": True})
+
+
+class LargeManualTests(unittest.TestCase):
+    """A 200 MB manual kept for good: streamed in, quota-bounded, supervised by progress."""
+
+    def setUp(self):
+        try:
+            from fastapi.testclient import TestClient
+        except ImportError as error:
+            self.skipTest(f"web extra not installed: {error}")
+        self.TestClient = TestClient
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name) / "large"
+        self.env = patch.dict(os.environ, {
+            "PINTOR_SESSION_SECRET": "l" * 48,
+            "PINTOR_COOKIE_SECURE": "0",
+            "PINTOR_ACCOUNTS_REQUIRED": "1",
+        })
+        self.env.start()
+
+    def tearDown(self):
+        self.env.stop()
+        self.temp.cleanup()
+
+    def signed_in(self, app, username="owner"):
+        client = self.TestClient(app, base_url="http://testserver")
+        self.addCleanup(client.close)
+        client.post("/api/accounts/register", json={"username": username, "password": "1234"})
+        return client
+
+    def test_upload_is_streamed_to_disk_and_keeps_its_bytes_and_digest(self):
+        import hashlib
+
+        app = create_app(self.root / "streamed", processor=_ready_processor)
+        client = self.signed_in(app)
+        payload = _pdf_bytes(40)
+        # Larger than one read chunk would be if the endpoint still slurped the whole body.
+        created = client.post(
+            "/api/jobs",
+            files={"file": ("manual.pdf", payload, "application/pdf")},
+            data={"page": "0", "convention": "iec_two_letter"},
+        )
+        self.assertEqual(created.status_code, 202)
+        state = app.state.store.read(created.json()["id"])
+        self.assertEqual(state["source_bytes"], len(payload))
+        self.assertEqual(state["source_sha256"], hashlib.sha256(payload).hexdigest())
+        stored = app.state.store.job_dir(state["id"]) / "source.pdf"
+        self.assertEqual(stored.read_bytes(), payload)
+        # Nothing is left behind in the staging area.
+        staging = app.state.store.root / "incoming"
+        self.assertFalse(staging.is_dir() and any(staging.iterdir()))
+
+    def test_a_file_over_the_limit_is_refused_without_being_kept(self):
+        with patch.dict(os.environ, {"PINTOR_MAX_UPLOAD_MB": "1"}):
+            app = create_app(self.root / "too-big", processor=_ready_processor)
+            client = self.signed_in(app)
+            oversized = _pdf_bytes(1) + b"\0" * (2 * 1024 * 1024)
+            response = client.post(
+                "/api/jobs",
+                files={"file": ("huge.pdf", oversized, "application/pdf")},
+                data={"page": "0", "convention": "auto"},
+            )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(app.state.store.list_all(), [])
+        staging = app.state.store.root / "incoming"
+        self.assertFalse(staging.is_dir() and any(staging.iterdir()))
+
+    def test_account_manuals_are_kept_while_anonymous_jobs_still_expire(self):
+        store = JobStore(self.root / "kept")
+        self.assertEqual(store.retention_seconds, 0)
+        owned = store.create(_pdf_bytes(), "kept.pdf", [0], "auto", False,
+                             25 * 1024 * 1024, _owner_hash("k" * 64),
+                             account={"id": "acc-1", "username": "keeper"})
+        stray = store.create(_pdf_bytes(), "stray.pdf", [0], "auto", False,
+                             25 * 1024 * 1024, _owner_hash("s" * 64))
+        long_ago = int(time.time()) - 40 * 3600
+        store.update(owned["id"], updated_at=long_ago)
+        store.update(stray["id"], updated_at=long_ago)
+        # update() stamps its own updated_at, so write the old value straight into the file.
+        for job_id in (owned["id"], stray["id"]):
+            path = store.job_dir(job_id) / "state.json"
+            record = json.loads(path.read_text(encoding="utf-8"))
+            record["updated_at"] = long_ago
+            path.write_text(json.dumps(record), encoding="utf-8")
+
+        self.assertEqual(store.cleanup_expired(), 1)
+        self.assertTrue(store.job_dir(owned["id"]).is_dir())
+        self.assertEqual([record["id"] for record in store.list_all()], [owned["id"]])
+
+    def test_an_account_over_its_storage_quota_is_asked_to_make_room(self):
+        with patch.dict(os.environ, {"PINTOR_MAX_ACCOUNT_STORAGE_MB": "1"}):
+            app = create_app(self.root / "quota", processor=_ready_processor)
+            client = self.signed_in(app)
+            filler = _pdf_bytes(1) + b"\0" * (900 * 1024)
+            first = client.post(
+                "/api/jobs",
+                files={"file": ("first.pdf", filler, "application/pdf")},
+                data={"page": "0", "convention": "auto"},
+            )
+            self.assertEqual(first.status_code, 202)
+            second = client.post(
+                "/api/jobs",
+                files={"file": ("second.pdf", filler, "application/pdf")},
+                data={"page": "0", "convention": "auto"},
+            )
+            self.assertEqual(second.status_code, 400)
+            self.assertIn("storage", second.json()["detail"])
+            listing = client.get("/api/account/jobs").json()
+            self.assertTrue(listing["kept_until_deleted"])
+            self.assertGreater(listing["storage_used_bytes"], 0)
+            self.assertEqual(listing["storage_limit_bytes"], 1024 * 1024)
+            # Deleting the first manual makes room again.
+            client.delete(f"/api/jobs/{first.json()['id']}")
+            third = client.post(
+                "/api/jobs",
+                files={"file": ("third.pdf", filler, "application/pdf")},
+                data={"page": "0", "convention": "auto"},
+            )
+            self.assertEqual(third.status_code, 202)
+
+    def test_a_page_preview_the_worker_skipped_is_rendered_on_first_view(self):
+        with patch.dict(os.environ, {"PINTOR_EAGER_PREVIEWS": "0"}):
+            app = create_app(self.root / "lazy", processor=_ready_processor)
+            client = self.signed_in(app)
+            created = client.post(
+                "/api/jobs",
+                files={"file": ("manual.pdf", _pdf_bytes(3), "application/pdf")},
+                data={"pages": "1", "convention": "iec_two_letter"},
+            )
+            job_id = created.json()["id"]
+            directory = app.state.store.job_dir(job_id)
+            self.assertFalse((directory / "original-p0.jpg").is_file())
+            response = client.get(f"/api/jobs/{job_id}/preview/original?page=0")
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.headers["content-type"], "image/jpeg")
+            self.assertTrue((directory / "original-p0.jpg").is_file())
+
+    def test_a_long_job_survives_as_long_as_it_keeps_reporting_progress(self):
+        store = JobStore(self.root / "supervised")
+        state = store.create(_pdf_bytes(), "long.pdf", [0], "auto", False,
+                             25 * 1024 * 1024, _owner_hash("p" * 64))
+        job_id = state["id"]
+        clock = itertools.count(0.0, 60.0)
+
+        class FakeWorker:
+            def __init__(self):
+                self.alive = True
+                self.exitcode = 0
+                self.terminated = False
+                self.polls = 0
+
+            def start(self):
+                pass
+
+            def join(self, _timeout=None):
+                self.polls += 1
+                if self.polls <= 8:
+                    # A healthy long job: every poll it has moved on to another page.
+                    store.update(job_id, completed_pages=self.polls, current_page=self.polls)
+                if self.polls >= 12:
+                    store.update(job_id, status="ready", stage="review")
+                    self.alive = False
+
+            def is_alive(self):
+                return self.alive
+
+            def terminate(self):
+                self.terminated = True
+                self.alive = False
+                self.exitcode = -15
+
+        worker = FakeWorker()
+
+        class FakeContext:
+            @staticmethod
+            def Process(**_kwargs):
+                return worker
+
+        with patch("multiprocessing.get_context", return_value=FakeContext()), patch(
+            "wirecolor.web_service.time.monotonic", side_effect=lambda: next(clock),
+        ), patch.dict(os.environ, {
+            "PINTOR_JOB_MAX_SECONDS": "100000",
+            "PINTOR_JOB_STALL_SECONDS": "900",
+        }, clear=False):
+            os.environ.pop("PINTOR_JOB_TIMEOUT_SECONDS", None)
+            process_job_isolated(store, job_id)
+
+        # Fifteen simulated minutes of real work is not a hang: nothing was killed.
+        self.assertFalse(worker.terminated)
+        self.assertEqual(store.read(job_id)["status"], "ready")
+
+    def test_a_job_that_stops_moving_is_killed_as_stalled(self):
+        store = JobStore(self.root / "stalled")
+        state = store.create(_pdf_bytes(), "stuck.pdf", [0], "auto", False,
+                             25 * 1024 * 1024, _owner_hash("q" * 64))
+        job_id = state["id"]
+        store.update(job_id, status="processing", stage="tracing-conductors")
+        clock = itertools.count(0.0, 60.0)
+
+        class FrozenWorker:
+            def __init__(self):
+                self.alive = True
+                self.exitcode = None
+                self.terminated = False
+
+            def start(self):
+                pass
+
+            def join(self, _timeout=None):
+                pass
+
+            def is_alive(self):
+                return self.alive
+
+            def terminate(self):
+                self.terminated = True
+                self.alive = False
+                self.exitcode = -15
+
+        worker = FrozenWorker()
+
+        class FakeContext:
+            @staticmethod
+            def Process(**_kwargs):
+                return worker
+
+        with patch("multiprocessing.get_context", return_value=FakeContext()), patch(
+            "wirecolor.web_service.time.monotonic", side_effect=lambda: next(clock),
+        ), patch.dict(os.environ, {
+            "PINTOR_JOB_MAX_SECONDS": "100000",
+            "PINTOR_JOB_STALL_SECONDS": "600",
+        }, clear=False):
+            os.environ.pop("PINTOR_JOB_TIMEOUT_SECONDS", None)
+            process_job_isolated(store, job_id)
+
+        self.assertTrue(worker.terminated)
+        result = store.read(job_id)
+        self.assertEqual(result["status"], "failed")
+        self.assertIn("ProcessingStalled", result["error"])
 
 
 if __name__ == "__main__":

@@ -119,12 +119,13 @@
       "roundConfirmClose": "Fechar este round? A lista de relatos fica congelada.",
       "roundOpenedBy": "Aberto por",
       "roundClosedBy": "Fechado por",
-      "roundNoTraining": "Fechar um round não treina nem promove modelo nenhum."
+      "roundNoTraining": "Fechar um round não treina nem promove modelo nenhum.",
+      "colStorage": "Disco"
     },
     "upload": {
       "step": "Etapa 1 · diagrama",
       "title": "Escolha as páginas do PDF que serão pintadas",
-      "limit": "Até 25 MB por arquivo · sem limite de páginas",
+      "limit": "Até 200 MB por arquivo · sem limite de páginas",
       "dropTitle": "Solte um wiring diagram aqui",
       "dropHint": "ou clique para escolher um PDF",
       "pageLabel": "Páginas que serão pintadas",
@@ -171,7 +172,7 @@
       "step": "Sua conta",
       "title": "Seus desenhos pintados",
       "back": "Voltar ao Pintor",
-      "help": "Tudo o que você enviou continua isolado na sua conta e é apagado sozinho ao fim do período de retenção. Aqui você pode baixar ou remover cada desenho antes disso.",
+      "help": "Seus manuais ficam guardados na sua conta até você mesmo apagá-los — nada expira sozinho. Aqui você reabre, baixa ou remove cada um.",
       "empty": "Você ainda não tem desenhos guardados.",
       "loadFailed": "Não foi possível carregar seus desenhos.",
       "pages": "Páginas",
@@ -188,7 +189,7 @@
       "statusFailed": "Falhou",
       "statusRevision": "Revisão pedida",
       "dangerTitle": "Excluir minha conta",
-      "dangerHelp": "A exclusão remove a conta, as sessões abertas e todos os desenhos enviados, inclusive as cópias que ainda aguardavam revisão. É definitivo.",
+      "dangerHelp": "A exclusão remove a conta, as sessões abertas e todos os manuais guardados, inclusive as cópias que ainda aguardavam revisão. É definitivo.",
       "confirmPassword": "Confirme sua senha",
       "deleteAccount": "Excluir conta e todos os desenhos",
       "confirmAccount": "Excluir definitivamente sua conta e todos os seus desenhos?",
@@ -200,7 +201,8 @@
       "queuePosition": "Na fila · {position}º",
       "sweeping": "varrendo o documento",
       "found": "{count} encontradas na varredura",
-      "newSinceLastLogin": "Novo"
+      "newSinceLastLogin": "Novo",
+      "storage": "{used} de {limit} usados ({percent}%)"
     },
     "summary": {
       "ready": "Pronto para revisão humana",
@@ -246,7 +248,7 @@
     },
     "messages": {
       "choosePdf": "Escolha um arquivo PDF válido.",
-      "fileTooLarge": "O PDF ultrapassa o limite beta de 25 MB.",
+      "fileTooLarge": "O arquivo ultrapassa o limite de 200 MB.",
       "invalidPage": "Informe até 50 páginas usando números, vírgulas ou intervalos, por exemplo: 1, 3-5, 9-11, 15.",
       "uploadFailed": "Não foi possível criar o trabalho privado.",
       "serviceUnavailable": "O serviço beta do Pintor não está disponível neste momento.",
@@ -257,7 +259,8 @@
       "feedbackAccepted": "Marcações recebidas e colocadas na fila de revisão humana.",
       "confirmDelete": "Apagar imediatamente o PDF, as prévias e o resultado deste trabalho?",
       "jobDeleted": "Trabalho privado apagado.",
-      "noWiringPage": "Nenhuma página deste documento traz códigos de cor legíveis."
+      "noWiringPage": "Nenhuma página deste documento traz códigos de cor legíveis.",
+      "storageFull": "Sua conta atingiu o limite de armazenamento. Exclua um desenho para abrir espaço."
     },
     "aria": {
       "viewerControls": "Controles do visualizador",
@@ -387,12 +390,13 @@
       "roundConfirmClose": "Chiudere questo round? L'elenco delle segnalazioni resta congelato.",
       "roundOpenedBy": "Aperto da",
       "roundClosedBy": "Chiuso da",
-      "roundNoTraining": "Chiudere un round non addestra né promuove alcun modello."
+      "roundNoTraining": "Chiudere un round non addestra né promuove alcun modello.",
+      "colStorage": "Spazio"
     },
     "upload": {
       "step": "Passo 1 · schema",
       "title": "Scegli le pagine PDF da colorare",
-      "limit": "Fino a 25 MB per file · nessun limite di pagine",
+      "limit": "Fino a 200 MB per file · nessun limite di pagine",
       "dropTitle": "Trascina qui uno schema elettrico",
       "dropHint": "oppure fai clic per scegliere un PDF",
       "pageLabel": "Pagine da colorare",
@@ -439,7 +443,7 @@
       "step": "Il tuo account",
       "title": "I tuoi disegni colorati",
       "back": "Torna a Pittore",
-      "help": "Tutto ciò che hai caricato resta isolato nel tuo account e viene cancellato da solo alla fine del periodo di conservazione. Qui puoi scaricare o rimuovere ogni disegno prima di allora.",
+      "help": "I tuoi manuali restano nel tuo account finché non li elimini tu: nulla scade da solo. Qui puoi riaprire, scaricare o rimuovere ciascuno.",
       "empty": "Non hai ancora disegni salvati.",
       "loadFailed": "Impossibile caricare i tuoi disegni.",
       "pages": "Pagine",
@@ -456,7 +460,7 @@
       "statusFailed": "Non riuscito",
       "statusRevision": "Revisione richiesta",
       "dangerTitle": "Elimina il mio account",
-      "dangerHelp": "L'eliminazione rimuove l'account, le sessioni aperte e tutti i disegni caricati, comprese le copie ancora in attesa di revisione. È definitiva.",
+      "dangerHelp": "L'eliminazione rimuove l'account, le sessioni aperte e tutti i manuali archiviati, comprese le copie ancora in attesa di revisione. È definitiva.",
       "confirmPassword": "Conferma la password",
       "deleteAccount": "Elimina account e tutti i disegni",
       "confirmAccount": "Eliminare definitivamente il tuo account e tutti i tuoi disegni?",
@@ -468,7 +472,8 @@
       "queuePosition": "In coda · {position}º",
       "sweeping": "scansione del documento",
       "found": "{count} trovate nella scansione",
-      "newSinceLastLogin": "Nuovo"
+      "newSinceLastLogin": "Nuovo",
+      "storage": "{used} di {limit} usati ({percent}%)"
     },
     "summary": {
       "ready": "Pronto per la revisione umana",
@@ -514,7 +519,7 @@
     },
     "messages": {
       "choosePdf": "Scegli un file PDF valido.",
-      "fileTooLarge": "Il PDF supera il limite beta di 25 MB.",
+      "fileTooLarge": "Il file supera il limite di 200 MB.",
       "invalidPage": "Indica fino a 50 pagine usando numeri, virgole o intervalli, ad esempio: 1, 3-5, 9-11, 15.",
       "uploadFailed": "Impossibile creare il lavoro privato.",
       "serviceUnavailable": "Il servizio beta di Pittore non è disponibile in questo momento.",
@@ -525,7 +530,8 @@
       "feedbackAccepted": "Marcature ricevute e inserite nella coda di revisione umana.",
       "confirmDelete": "Eliminare immediatamente PDF, anteprime e risultato di questo lavoro?",
       "jobDeleted": "Lavoro privato eliminato.",
-      "noWiringPage": "Nessuna pagina di questo documento riporta codici colore leggibili."
+      "noWiringPage": "Nessuna pagina di questo documento riporta codici colore leggibili.",
+      "storageFull": "Il tuo account ha raggiunto il limite di spazio. Elimina un disegno per fare posto."
     },
     "aria": {
       "viewerControls": "Controlli del visualizzatore",
@@ -655,12 +661,13 @@
       "roundConfirmClose": "Stänga omgången? Rapportlistan fryses.",
       "roundOpenedBy": "Öppnad av",
       "roundClosedBy": "Stängd av",
-      "roundNoTraining": "Att stänga en omgång tränar eller befordrar ingen modell."
+      "roundNoTraining": "Att stänga en omgång tränar eller befordrar ingen modell.",
+      "colStorage": "Lagring"
     },
     "upload": {
       "step": "Steg 1 · schema",
       "title": "Välj PDF-sidorna som ska färgläggas",
-      "limit": "Upp till 25 MB per fil · ingen sidgräns",
+      "limit": "Upp till 200 MB per fil · ingen sidgräns",
       "dropTitle": "Släpp ett kopplingsschema här",
       "dropHint": "eller klicka för att välja en PDF",
       "pageLabel": "Sidor som ska färgläggas",
@@ -707,7 +714,7 @@
       "step": "Ditt konto",
       "title": "Dina färglagda ritningar",
       "back": "Tillbaka till Målaren",
-      "help": "Allt du laddat upp ligger isolerat på ditt konto och raderas automatiskt när lagringstiden går ut. Här kan du hämta eller ta bort varje ritning dessförinnan.",
+      "help": "Dina manualer ligger kvar på kontot tills du själv raderar dem — ingenting förfaller av sig självt. Här öppnar, hämtar eller tar du bort dem.",
       "empty": "Du har inga sparade ritningar ännu.",
       "loadFailed": "Dina ritningar kunde inte läsas in.",
       "pages": "Sidor",
@@ -724,7 +731,7 @@
       "statusFailed": "Misslyckades",
       "statusRevision": "Granskning begärd",
       "dangerTitle": "Radera mitt konto",
-      "dangerHelp": "Raderingen tar bort kontot, öppna sessioner och alla uppladdade ritningar, även kopior som fortfarande väntade på granskning. Det är oåterkalleligt.",
+      "dangerHelp": "Raderingen tar bort kontot, öppna sessioner och alla sparade manualer, även kopior som fortfarande väntade på granskning. Det är oåterkalleligt.",
       "confirmPassword": "Bekräfta lösenordet",
       "deleteAccount": "Radera konto och alla ritningar",
       "confirmAccount": "Radera kontot och alla dina ritningar permanent?",
@@ -736,7 +743,8 @@
       "queuePosition": "I kö · plats {position}",
       "sweeping": "sveper dokumentet",
       "found": "{count} hittade i svepet",
-      "newSinceLastLogin": "Ny"
+      "newSinceLastLogin": "Ny",
+      "storage": "{used} av {limit} använt ({percent}%)"
     },
     "summary": {
       "ready": "Klar för mänsklig granskning",
@@ -782,7 +790,7 @@
     },
     "messages": {
       "choosePdf": "Välj en giltig PDF-fil.",
-      "fileTooLarge": "PDF-filen överskrider betagränsen på 25 MB.",
+      "fileTooLarge": "Filen överskrider gränsen på 200 MB.",
       "invalidPage": "Ange högst 50 sidor med nummer, kommatecken eller intervall, till exempel 1, 3-5, 9-11, 15.",
       "uploadFailed": "Det privata jobbet kunde inte skapas.",
       "serviceUnavailable": "Målarens betatjänst är inte tillgänglig just nu.",
@@ -793,7 +801,8 @@
       "feedbackAccepted": "Markeringarna har tagits emot och lagts i kön för mänsklig granskning.",
       "confirmDelete": "Radera PDF, förhandsvisningar och resultat för jobbet omedelbart?",
       "jobDeleted": "Det privata jobbet har raderats.",
-      "noWiringPage": "Ingen sida i dokumentet har läsbara färgkoder."
+      "noWiringPage": "Ingen sida i dokumentet har läsbara färgkoder.",
+      "storageFull": "Kontot har nått sin lagringsgräns. Ta bort en ritning för att få plats."
     },
     "aria": {
       "viewerControls": "Visningskontroller",

@@ -7,6 +7,7 @@ import { localizedFetchError } from './pintor-network.js';
 import { parsePageSelection } from './pintor-pages.js';
 
 const TERMINAL_STATES = new Set(['ready', 'declined', 'failed', 'revision-requested']);
+const MAX_UPLOAD_BYTES = 200 * 1024 * 1024;
 const ERROR_LABEL_KEYS = {
     'wrong-colour': 'errors.wrongColour',
     'non-wire': 'errors.nonWire',
@@ -295,6 +296,7 @@ class PintorApp extends App {
             }
             this.jobs = body.jobs || [];
             this.jobsSince = body.since || 0;
+            this.renderStorage(body);
             this.renderOwnJobs();
             this.scheduleJobsRefresh();
         } catch (error) {
@@ -304,6 +306,22 @@ class PintorApp extends App {
                 this.showFetchStatus(status, error, 'jobs.loadFailed');
             }
         }
+    }
+
+    renderStorage(body) {
+        const line = document.getElementById('jobsStorage');
+        if (!body.storage_limit_bytes) {
+            line.hidden = true;
+            return;
+        }
+        line.hidden = false;
+        const share = Math.round((body.storage_used_bytes / body.storage_limit_bytes) * 100);
+        line.textContent = i18n
+            .t('jobs.storage')
+            .replace('{used}', this.formatBytes(body.storage_used_bytes || 0))
+            .replace('{limit}', this.formatBytes(body.storage_limit_bytes))
+            .replace('{percent}', String(Math.min(share, 100)));
+        line.classList.toggle('is-tight', share >= 85);
     }
 
     scheduleJobsRefresh() {
@@ -359,6 +377,9 @@ class PintorApp extends App {
         const stageKey = `processing.stages.${job.stage}`;
         const stage = i18n.t(stageKey);
         const label = stage === stageKey ? i18n.t('processing.working') : stage;
+        if (job.stage === 'scanning-document' && job.page_count) {
+            return `${label} · ${job.scanned_pages || 0}/${job.page_count}`;
+        }
         if (job.selected_page_count) {
             const done = Number(job.completed_pages || 0) + 1;
             return `${label} · ${Math.min(done, job.selected_page_count)}/${job.selected_page_count}`;
@@ -402,9 +423,10 @@ class PintorApp extends App {
 
             const meta = document.createElement('p');
             meta.className = 'job-card-meta';
+            const size = job.source_bytes ? ` · ${this.formatBytes(job.source_bytes)}` : '';
             meta.textContent =
                 `${i18n.t('jobs.pages')} ${this.jobPagesLabel(job)} · ` +
-                `${i18n.t('jobs.sent')} ${this.formatMoment(job.created_at)}`;
+                `${i18n.t('jobs.sent')} ${this.formatMoment(job.created_at)}${size}`;
             card.append(heading, meta);
 
             const progress = this.jobProgressLabel(job);
@@ -870,7 +892,7 @@ class PintorApp extends App {
         if (!this.adminAccounts.length) {
             const row = document.createElement('tr');
             const cell = document.createElement('td');
-            cell.colSpan = 7;
+            cell.colSpan = 8;
             cell.className = 'admin-empty';
             cell.textContent = i18n.t('admin.accountsEmpty');
             row.append(cell);
@@ -908,6 +930,9 @@ class PintorApp extends App {
 
             const jobs = document.createElement('td');
             jobs.textContent = String(account.job_count ?? 0);
+
+            const storage = document.createElement('td');
+            storage.textContent = this.formatBytes(account.storage_bytes || 0);
 
             const reports = document.createElement('td');
             reports.textContent = i18n
@@ -964,7 +989,7 @@ class PintorApp extends App {
                 actions.append(locked);
             }
 
-            row.append(name, role, state, jobs, reports, seen, actions);
+            row.append(name, role, state, jobs, storage, reports, seen, actions);
             body.append(row);
         });
     }
@@ -1312,7 +1337,10 @@ class PintorApp extends App {
         if (bytes < 1024 * 1024) {
             return `${Math.ceil(bytes / 1024)} KB`;
         }
-        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+        if (bytes < 1024 * 1024 * 1024) {
+            return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+        }
+        return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
     }
 
     async submitPdf(event) {
@@ -1328,7 +1356,7 @@ class PintorApp extends App {
             this.showStatus(status, i18n.t('messages.choosePdf'), 'error');
             return;
         }
-        if (files.some(file => file.size > 25 * 1024 * 1024)) {
+        if (files.some(file => file.size > MAX_UPLOAD_BYTES)) {
             this.showStatus(status, i18n.t('messages.fileTooLarge'), 'error');
             return;
         }
@@ -1439,6 +1467,9 @@ class PintorApp extends App {
                 document.getElementById('processingStage').textContent = i18n
                     .t('processing.queuePosition')
                     .replace('{position}', String(body.queue_position));
+            } else if (body.stage === 'scanning-document' && body.page_count) {
+                document.getElementById('processingStage').textContent +=
+                    ` · ${body.scanned_pages || 0}/${body.page_count}`;
             } else if (body.current_page !== null && body.current_page !== undefined) {
                 document.getElementById('processingStage').textContent +=
                     ` · ${Number(body.completed_pages || 0) + 1}/${body.selected_page_count || 1}`;

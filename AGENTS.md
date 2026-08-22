@@ -183,6 +183,46 @@ npm run build          # build de produção (gera local/dist)
 
 _Última atualização: 2026-08-22_
 
+- **PINTOR — MANUAIS GRANDES, ARQUIVO PERMANENTE E TRABALHO PÁGINA A PÁGINA (0.5.0, mesma branch,
+  NÃO publicado):** segunda leva. **200 MB por arquivo** (`PINTOR_MAX_UPLOAD_MB=200`) e o upload
+  deixou de ser `await file.read(...)`: agora escorre para `workspace/incoming/` em blocos de 1 MB,
+  com o limite conferido durante a escrita, e o `store.create` recebe um caminho (aceita bytes ou
+  path, faz o sha256 em blocos e move para a pasta do job). Medido contra API viva: upload de
+  188,8 MB cresceu o processo da API em **13,1 MB** e gravou `source_bytes` 188.757.233 intacto.
+  **ARQUIVO PERMANENTE:** `PINTOR_RETENTION_HOURS` passa a `0` — nada que pertence a uma conta
+  expira; `cleanup_expired` só apaga job sem `account_id`, ainda em 24 h, porque ninguém consegue
+  voltar para buscá-lo. Quem apaga é o dono (ou o admin). Como o armazenamento virou permanente,
+  ganhou cota: `PINTOR_MAX_ACCOUNT_STORAGE_MB` (5 GB) por conta, mostrada ao dono em Meus desenhos e
+  ao admin numa coluna Disco, e `PINTOR_MAX_STORAGE_MB` (60 GB) no workspace inteiro — **conferir o
+  disco livre da VM antes de publicar: esses padrões presumem que cabe.** Bug corrigido no caminho:
+  o cookie `pintor_session` usava `max_age=retention_seconds`, o que com retenção 0 mandava
+  `Max-Age=0` e apagava o cookie na chegada, quebrando toda sessão anônima.
+  **PÁGINA A PÁGINA:** a varredura reabre o documento a cada 50 páginas (o store por documento do
+  MuPDF segura tudo o que já foi lido até fechar); a pintura anexa cada overlay assim que ele
+  existe (`append_overlays`, extraído de `attach_overlays`), roda o V7 daquela página na hora e
+  apaga o PNG — nunca há todos os overlays em disco ao mesmo tempo, e uma falha de preservação
+  aparece na página que a causou. Previews só são pré-renderizados nas primeiras
+  `PINTOR_EAGER_PREVIEWS` (12) páginas; o resto é renderizado na primeira visualização e cacheado.
+  **SUPERVISÃO POR PROGRESSO:** o antigo `PINTOR_JOB_TIMEOUT_SECONDS=180` mataria qualquer manual
+  longo. Agora o supervisor compara `(updated_at, stage, current_page, completed_pages,
+  scanned_pages)` entre polls e só mata quando o job PARA (`PINTOR_JOB_STALL_SECONDS`, 900 s) ou
+  quando passa do teto absoluto (`PINTOR_JOB_MAX_SECONDS`, 6 h). O rlimit de CPU passou de 150 s
+  para o teto.
+  **MEDIDO** (manuais sintéticos, 50 páginas de fiação cada, pipeline real):
+  400 páginas → 50/50 pintadas, 144,5 s, pico 1.173,7 MB RSS, 17,7 MB de workspace;
+  1.200 páginas → 50/50, 144,6 s, pico 1.175,6 MB, 27,2 MB. Triplicar o manual mexeu 1,9 MB
+  (0,16%) no pico de memória, e o PDF final reabriu com 400 e 1.200 páginas. Nenhum overlay ficou
+  em disco; 24 previews em vez de 100.
+  **VERIFICADO:** 57 testes Python nos módulos de web/contas + `npm run validate`. Cobertura nova:
+  upload em streaming preserva bytes/digest e não deixa lixo no staging; arquivo acima do limite é
+  recusado sem ser guardado; manual de conta sobrevive ao `cleanup_expired` e o anônimo não; a cota
+  recusa e volta a aceitar depois de uma exclusão; preview pulado é renderizado na primeira
+  visualização; job que reporta progresso não é morto e job parado morre como `ProcessingStalled`.
+  **PENDENTE:** as medições usam manuais vetoriais sintéticos. Uma folha A0 escaneada custa muito
+  mais POR PÁGINA, e é o orçamento por página — não o tamanho do manual — que a limita. O pico de
+  ~1,2 GB é custo de UMA página; uma A0 raster pode passar disso sozinha, então vale uma rodada com
+  corpus real antes de prometer um manual específico.
+
 - **PINTOR — CONSOLE DE CADASTROS, VARREDURA E FILA (0.5.0, branch `feat/pintor-admin-contas`,
   NÃO publicado):** o painel de admin virou três abas. **Cadastros** lista cada tester com papel,
   situação, nº de desenhos e de relatos, e permite suspender/reativar (derruba as sessões sem

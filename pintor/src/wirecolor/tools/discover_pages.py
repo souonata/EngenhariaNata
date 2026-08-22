@@ -186,7 +186,8 @@ def merged_convention(names=None):
     return SimpleNamespace(codes=frozenset(codes), two_color_sep=separator)
 
 
-def scan_document(pdf_path, convention_name="auto", min_codes=MIN_CODES, max_pages=0):
+def scan_document(pdf_path, convention_name="auto", min_codes=MIN_CODES, max_pages=0,
+                  progress=None, chunk_pages=50):
     """Judge every page of ONE uploaded document and report the paintable ones.
 
     Same two kinds of evidence as the library sweep, applied to a single file:
@@ -208,23 +209,39 @@ def scan_document(pdf_path, convention_name="auto", min_codes=MIN_CODES, max_pag
     document = fitz.open(pdf_path)
     try:
         page_count = len(document)
-        limit = page_count if max_pages <= 0 else min(page_count, max_pages)
-        evidence = []
-        wiring_phrase = bool(SUSPECT_TITLE.search(Path(pdf_path).name))
-        for index in range(limit):
-            page = document[index]
-            text = page.get_text("text") or ""
-            lowered = text.lower()
-            if not wiring_phrase and any(phrase in lowered for phrase in SUSPECT_TEXT):
-                wiring_phrase = True
-            codes = len(gauged_re.findall(text)) + len(striped_re.findall(text))
-            evidence.append({
-                "page": index,
-                "codes": codes,
-                "geometry": page_geometry(page, len(text.strip())),
-            })
     finally:
         document.close()
+    limit = page_count if max_pages <= 0 else min(page_count, max_pages)
+    evidence = []
+    wiring_phrase = bool(SUSPECT_TITLE.search(Path(pdf_path).name))
+
+    # The document is reopened every ``chunk_pages`` pages. MuPDF keeps the parsed content, fonts
+    # and decoded images of every page it has touched in a per-document store, so a single open
+    # document walked from page 1 to page 2,000 grows for the whole walk. Closing it hands all of
+    # that back, which is what keeps a 2,000-page sweep flat instead of linear in manual length.
+    start = 0
+    while start < limit:
+        stop = min(start + max(1, chunk_pages), limit)
+        document = fitz.open(pdf_path)
+        try:
+            for index in range(start, stop):
+                page = document[index]
+                text = page.get_text("text") or ""
+                lowered = text.lower()
+                if not wiring_phrase and any(phrase in lowered for phrase in SUSPECT_TEXT):
+                    wiring_phrase = True
+                codes = len(gauged_re.findall(text)) + len(striped_re.findall(text))
+                evidence.append({
+                    "page": index,
+                    "codes": codes,
+                    "geometry": page_geometry(page, len(text.strip())),
+                })
+        finally:
+            document.close()
+        start = stop
+        if progress is not None:
+            # Progress is also the liveness signal the job supervisor watches during a long sweep.
+            progress(start, limit)
 
     # A file that contains one confirmed diagram is a wiring document, which is what lets its
     # untyped foldouts be treated as candidates rather than noise.

@@ -1159,6 +1159,17 @@ html[data-theme='dark'] .diagram-viewport {
 
 /* Personal panel: the drawings an account owns, and closing the account. */
 
+.jobs-storage {
+    margin: 14px 0 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.jobs-storage.is-tight {
+    color: var(--painter-red);
+    font-weight: 700;
+}
+
 .jobs-list {
     display: grid;
     gap: 12px;
