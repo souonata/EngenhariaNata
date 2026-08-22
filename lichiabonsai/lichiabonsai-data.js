@@ -37,7 +37,7 @@ export const STATUS = {
   // Cada item vira um "card" de status atual
   fase: {
     rotulo: { pt: 'Fase', it: 'Fase' },
-    valor: { pt: 'Enraizamento', it: 'Radicazione' },
+    valor: { pt: 'Berçário · crescimento livre', it: 'Vivaio · crescita libera' },
   },
   inicio: {
     rotulo: { pt: 'Início', it: 'Inizio' },
@@ -76,6 +76,28 @@ export const PLANO_PET = {
 
 // LINHA DO TEMPO — adicione novas entradas no topo (mais recente primeiro).
 export const TIMELINE = [
+  {
+    data: '2026-08-22',
+    titulo: { pt: 'Novo fluxo e 11 cm de altura', it: 'Nuovo getto e 11 cm di altezza' },
+    texto: {
+      pt: 'Pouco mais de um mês depois do último registro, a muda alcançou 11 cm — 3 cm a mais que na medição de 12/07 — e agora soma 11 folhas. Três delas pertencem ao novo ramo que emerge do solo; as outras oito estão no tronco principal. No ápice, um novo par ainda fino e acobreado amadurece, enquanto o ramo basal exibe seu próprio crescimento verde-claro. A planta segue no berçário, na PET protegida pelo vaso maior, sem poda nem intervenção nas raízes.',
+      it: 'Poco più di un mese dopo l’ultimo aggiornamento, la piantina ha raggiunto 11 cm — 3 cm in più rispetto alla misurazione del 12/07 — e ora conta 11 foglie. Tre appartengono al nuovo ramo che emerge dal terreno; le altre otto si trovano sul tronco principale. All’apice, una nuova coppia ancora sottile e color rame sta maturando, mentre il ramo basale mostra la propria crescita verde chiaro. La pianta rimane nel vivaio, nella bottiglia PET protetta dal vaso più grande, senza potature né interventi sulle radici.',
+    },
+    fotos: [
+      {
+        arquivo: '2026-08-22-vista-geral.webp',
+        legenda: { pt: 'Vista lateral: 11 cm de altura, com o tronco principal e o novo ramo que emerge do solo', it: 'Vista laterale: 11 cm di altezza, con il tronco principale e il nuovo ramo che emerge dal terreno' },
+      },
+      {
+        arquivo: '2026-08-22-vista-do-topo.webp',
+        legenda: { pt: 'Vista de cima das 11 folhas: oito no tronco principal e três no novo ramo', it: 'Vista dall’alto delle 11 foglie: otto sul tronco principale e tre sul nuovo ramo' },
+      },
+      {
+        arquivo: '2026-08-22-brotacoes-novas.webp',
+        legenda: { pt: 'Detalhe do novo par acobreado no tronco principal e do crescimento verde-claro do ramo basal', it: 'Dettaglio della nuova coppia color rame sul tronco principale e della crescita verde chiaro del ramo basale' },
+      },
+    ],
+  },
   {
     data: '2026-07-18',
     titulo: { pt: 'O bronze virou verde', it: 'Il bronzo è diventato verde' },
@@ -266,6 +288,7 @@ export const MEDICOES = [
   { data: '2026-06-25', alturaCm: 7, folhas: 2 },
   { data: '2026-07-04', alturaCm: 7, folhas: 2 },
   { data: '2026-07-12', alturaCm: 8, folhas: 4 },
+  { data: '2026-08-22', alturaCm: 11, folhas: 11 },
 ];
 
 // REGISTROS POR FASE — SUAS fotos/notas reais de cada fase do guia (o loop de
@@ -276,8 +299,8 @@ export const MEDICOES = [
 export const FASE_REGISTROS = {
   f0: {
     nota: {
-      pt: 'Germinação em 21/06, transplante para a garrafa PET de 2 L em 25/06 e, em 26/06, a garrafa (furada no fundo) foi para dentro de um vaso maior com terra — isolando as raízes do calor e da luz. Rega com água de condensação do ar-condicionado (macia, levemente ácida). A raiz pivotante foi preservada. Em 04/07 surgiu o primeiro broto no nó entre as duas folhas; em 12/07 ele já havia alongado, aberto duas folhas novas e levado a muda a 8 cm e quatro folhas. Entre 14/07 e 18/07 essas folhas novas perderam o vermelho de brotação e amadureceram para verde — o lançamento firmou.',
-      it: 'Germinazione il 21/06, trapianto nella bottiglia PET da 2 L il 25/06 e, il 26/06, la bottiglia (forata sul fondo) è finita dentro un vaso più grande con terra — isolando le radici dal calore e dalla luce. Irrigazione con acqua di condensa del condizionatore (dolce, leggermente acida). Il fittone è stato preservato. Il 04/07 è comparso il primo germoglio nel nodo tra le due foglie; il 12/07 si era già allungato, aveva aperto due foglie nuove e portato la piantina a 8 cm e quattro foglie. Tra il 14/07 e il 18/07 quelle foglie nuove hanno perso il rosso di germogliazione e sono maturate al verde — il getto si è consolidato.',
+      pt: 'Germinação em 21/06, transplante para a garrafa PET de 2 L em 25/06 e, em 26/06, a garrafa (furada no fundo) foi para dentro de um vaso maior com terra — isolando as raízes do calor e da luz. Rega com água de condensação do ar-condicionado (macia, levemente ácida). A raiz pivotante foi preservada. Em 04/07 surgiu o primeiro broto no nó entre as duas folhas; em 12/07 ele já havia alongado, aberto duas folhas novas e levado a muda a 8 cm e quatro folhas. Entre 14/07 e 18/07 essas folhas novas perderam o vermelho de brotação e amadureceram para verde — o lançamento firmou. Em 22/08, a muda chegou a 11 cm e 11 folhas: três no novo ramo que emerge do solo e oito no tronco principal, incluindo um novo par acobreado no ápice.',
+      it: 'Germinazione il 21/06, trapianto nella bottiglia PET da 2 L il 25/06 e, il 26/06, la bottiglia (forata sul fondo) è finita dentro un vaso più grande con terra — isolando le radici dal calore e dalla luce. Irrigazione con acqua di condensa del condizionatore (dolce, leggermente acida). Il fittone è stato preservato. Il 04/07 è comparso il primo germoglio nel nodo tra le due foglie; il 12/07 si era già allungato, aveva aperto due foglie nuove e portato la piantina a 8 cm e quattro foglie. Tra il 14/07 e il 18/07 quelle foglie nuove hanno perso il rosso di germogliazione e sono maturate al verde — il getto si è consolidato. Il 22/08 la piantina ha raggiunto 11 cm e 11 foglie: tre sul nuovo ramo che emerge dal terreno e otto sul tronco principale, compresa una nuova coppia color rame all’apice.',
     },
     fotos: [
       { arquivo: '2026-06-26-vaso-isolante-detalhe.webp', legenda: { pt: 'O vaso isolante: garrafa furada dentro de um vaso com terra', it: 'Il vaso isolante: bottiglia forata dentro un vaso con terra' } },
@@ -285,6 +308,8 @@ export const FASE_REGISTROS = {
       { arquivo: '2026-07-04-broto-novo.webp', legenda: { pt: 'O primeiro broto de um ramo novo, no nó entre as duas folhas', it: 'Il primo germoglio di un nuovo ramo, nel nodo tra le due foglie' } },
       { arquivo: '2026-07-12-folhas-acobreadas.webp', legenda: { pt: 'O primeiro fluxo com duas folhas novas', it: 'Il primo getto con due foglie nuove' } },
       { arquivo: '2026-07-18-ramo-verde.webp', legenda: { pt: 'Seis dias depois: as folhas novas já verdes, o lançamento firmado', it: 'Sei giorni dopo: le foglie nuove ormai verdi, il getto consolidato' } },
+      { arquivo: '2026-08-22-vista-geral.webp', legenda: { pt: 'A muda com 11 cm e a copa mais cheia', it: 'La piantina a 11 cm con la chioma più piena' } },
+      { arquivo: '2026-08-22-brotacoes-novas.webp', legenda: { pt: 'Novo par acobreado no tronco principal e crescimento verde-claro no ramo basal', it: 'Nuova coppia color rame sul tronco principale e crescita verde chiaro sul ramo basale' } },
     ],
   },
   // f1: { nota: { pt: '', it: '' }, fotos: [{ arquivo: 'AAAA-MM-DD-....webp', legenda: { pt: '', it: '' } }] },

@@ -418,6 +418,10 @@ _Última atualização: 2026-08-20_
   desprezível nas 24 marcas; build e checkup passaram. A inspeção visual a 97% confirmou 11° 9,2′
   entre 9′ e 10′, e os layouts 390 × 844 e 820 × 1180 permaneceram sem overflow horizontal.
 
+- **ATUALIZAÇÃO DO DIÁRIO (22/08):** novo post bilíngue com três fotos tratadas em WebP; muda
+  registrada com 11 cm e 11 folhas — três no novo ramo que emerge do solo e oito no tronco
+  principal. Status atualizado para crescimento livre no berçário e cache-bust do script para
+  1.2.2. Build Vite e verificação local PT/IT concluídos; as três imagens carregam corretamente.
 - **ATUALIZAÇÃO DO DIÁRIO (12/07):** novo post bilíngue registrando o primeiro fluxo com duas
   folhas novas; muda medida em 8 cm e quatro folhas totais. Três fotos da nova leva foram
   selecionadas, tratadas e convertidas para WebP (régua, vista geral e detalhe das folhas
