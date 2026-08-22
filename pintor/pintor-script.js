@@ -320,7 +320,8 @@ class PintorApp extends App {
             .t('jobs.storage')
             .replace('{used}', this.formatBytes(body.storage_used_bytes || 0))
             .replace('{limit}', this.formatBytes(body.storage_limit_bytes))
-            .replace('{percent}', String(Math.min(share, 100)));
+            .replace('{percent}', String(Math.min(share, 100)))
+            .replace('{hours}', String(body.retention_hours || 24));
         line.classList.toggle('is-tight', share >= 85);
     }
 
@@ -363,6 +364,28 @@ class PintorApp extends App {
         return job.page_discovery === 'auto'
             ? `${label} · ${i18n.t('jobs.found').replace('{count}', String(pages.length))}`
             : label;
+    }
+
+    jobRetentionLabel(job) {
+        if (job.shared_for_improvement) {
+            return i18n.t('jobs.shared');
+        }
+        if (!job.expires_at) {
+            return '';
+        }
+        const remaining = job.expires_at * 1000 - Date.now();
+        if (remaining <= 0) {
+            return i18n.t('jobs.expiringNow');
+        }
+        // Round once, in minutes, or 23 h 59.7 min renders as "23 h 60 min".
+        const totalMinutes = Math.max(1, Math.round(remaining / 60000));
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        let left = `${minutes} min`;
+        if (hours) {
+            left = minutes ? `${hours} h ${minutes} min` : `${hours} h`;
+        }
+        return i18n.t('jobs.expiresIn').replace('{left}', left);
     }
 
     jobProgressLabel(job) {
@@ -428,6 +451,16 @@ class PintorApp extends App {
                 `${i18n.t('jobs.pages')} ${this.jobPagesLabel(job)} · ` +
                 `${i18n.t('jobs.sent')} ${this.formatMoment(job.created_at)}${size}`;
             card.append(heading, meta);
+
+            const retention = this.jobRetentionLabel(job);
+            if (retention && !working) {
+                const line = document.createElement('p');
+                line.className = job.shared_for_improvement
+                    ? 'job-card-retention is-shared'
+                    : 'job-card-retention';
+                line.textContent = retention;
+                card.append(line);
+            }
 
             const progress = this.jobProgressLabel(job);
             if (progress) {

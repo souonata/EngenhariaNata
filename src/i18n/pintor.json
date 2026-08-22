@@ -139,7 +139,7 @@
       "submit": "Analisar e pintar",
       "submitting": "Enviando com segurança…",
       "filesChosen": "{count} arquivos escolhidos",
-      "queueHint": "Um arquivo é pintado por vez. Os demais esperam na fila, e você pode fechar a página: a fila continua e o resultado fica em Meus desenhos."
+      "queueHint": "Um arquivo é pintado por vez. Os demais esperam na fila, e você pode fechar a página: a fila continua e o resultado fica em Meus desenhos por 24 h."
     },
     "processing": {
       "step": "Etapa 2 · análise protegida",
@@ -172,7 +172,7 @@
       "step": "Sua conta",
       "title": "Seus desenhos pintados",
       "back": "Voltar ao Pintor",
-      "help": "Seus manuais ficam guardados na sua conta até você mesmo apagá-los — nada expira sozinho. Aqui você reabre, baixa ou remove cada um.",
+      "help": "O Pintor não arquiva seus manuais: cada envio fica disponível 24 h para você baixar e depois é apagado do servidor automaticamente. Só continua guardado o que você marcar com erros e escolher compartilhar para melhorar o Pintor.",
       "empty": "Você ainda não tem desenhos guardados.",
       "loadFailed": "Não foi possível carregar seus desenhos.",
       "pages": "Páginas",
@@ -189,7 +189,7 @@
       "statusFailed": "Falhou",
       "statusRevision": "Revisão pedida",
       "dangerTitle": "Excluir minha conta",
-      "dangerHelp": "A exclusão remove a conta, as sessões abertas e todos os manuais guardados, inclusive as cópias que ainda aguardavam revisão. É definitivo.",
+      "dangerHelp": "A exclusão remove a conta, as sessões abertas, os manuais ainda no prazo e as cópias que você compartilhou para melhorias. É definitivo.",
       "confirmPassword": "Confirme sua senha",
       "deleteAccount": "Excluir conta e todos os desenhos",
       "confirmAccount": "Excluir definitivamente sua conta e todos os seus desenhos?",
@@ -202,7 +202,10 @@
       "sweeping": "varrendo o documento",
       "found": "{count} encontradas na varredura",
       "newSinceLastLogin": "Novo",
-      "storage": "{used} de {limit} usados ({percent}%)"
+      "storage": "{used} de {limit} em uso agora ({percent}%) · tudo expira em {hours} h, exceto o que você compartilhar",
+      "expiresIn": "Some do servidor em {left}",
+      "expiringNow": "Sendo apagado do servidor",
+      "shared": "Guardado — compartilhado para melhorias"
     },
     "summary": {
       "ready": "Pronto para revisão humana",
@@ -410,7 +413,7 @@
       "submit": "Analizza e colora",
       "submitting": "Invio sicuro…",
       "filesChosen": "{count} file scelti",
-      "queueHint": "Viene colorato un file alla volta. Gli altri restano in coda e puoi chiudere la pagina: la coda prosegue e il risultato ti aspetta in I miei disegni."
+      "queueHint": "Viene colorato un file alla volta. Gli altri restano in coda e puoi chiudere la pagina: la coda prosegue e il risultato resta in I miei disegni per 24 h."
     },
     "processing": {
       "step": "Passo 2 · analisi protetta",
@@ -443,7 +446,7 @@
       "step": "Il tuo account",
       "title": "I tuoi disegni colorati",
       "back": "Torna a Pittore",
-      "help": "I tuoi manuali restano nel tuo account finché non li elimini tu: nulla scade da solo. Qui puoi riaprire, scaricare o rimuovere ciascuno.",
+      "help": "Pittore non archivia i tuoi manuali: ogni invio resta disponibile 24 h per il download e poi viene cancellato automaticamente dal server. Resta salvato soltanto ciò che segnali con errori e scegli di condividere per migliorare Pittore.",
       "empty": "Non hai ancora disegni salvati.",
       "loadFailed": "Impossibile caricare i tuoi disegni.",
       "pages": "Pagine",
@@ -460,7 +463,7 @@
       "statusFailed": "Non riuscito",
       "statusRevision": "Revisione richiesta",
       "dangerTitle": "Elimina il mio account",
-      "dangerHelp": "L'eliminazione rimuove l'account, le sessioni aperte e tutti i manuali archiviati, comprese le copie ancora in attesa di revisione. È definitiva.",
+      "dangerHelp": "L'eliminazione rimuove l'account, le sessioni aperte, i manuali ancora nel periodo e le copie che hai condiviso per i miglioramenti. È definitiva.",
       "confirmPassword": "Conferma la password",
       "deleteAccount": "Elimina account e tutti i disegni",
       "confirmAccount": "Eliminare definitivamente il tuo account e tutti i tuoi disegni?",
@@ -473,7 +476,10 @@
       "sweeping": "scansione del documento",
       "found": "{count} trovate nella scansione",
       "newSinceLastLogin": "Nuovo",
-      "storage": "{used} di {limit} usati ({percent}%)"
+      "storage": "{used} di {limit} in uso ora ({percent}%) · tutto scade in {hours} h, tranne ciò che condividi",
+      "expiresIn": "Sparisce dal server tra {left}",
+      "expiringNow": "In corso di cancellazione dal server",
+      "shared": "Conservato — condiviso per i miglioramenti"
     },
     "summary": {
       "ready": "Pronto per la revisione umana",
@@ -681,7 +687,7 @@
       "submit": "Analysera och färglägg",
       "submitting": "Skickar säkert…",
       "filesChosen": "{count} filer valda",
-      "queueHint": "En fil färgläggs i taget. Övriga står i kö och du kan stänga sidan: kön fortsätter och resultatet väntar under Mina ritningar."
+      "queueHint": "En fil färgläggs i taget. Övriga står i kö och du kan stänga sidan: kön fortsätter och resultatet ligger under Mina ritningar i 24 h."
     },
     "processing": {
       "step": "Steg 2 · skyddad analys",
@@ -714,7 +720,7 @@
       "step": "Ditt konto",
       "title": "Dina färglagda ritningar",
       "back": "Tillbaka till Målaren",
-      "help": "Dina manualer ligger kvar på kontot tills du själv raderar dem — ingenting förfaller av sig självt. Här öppnar, hämtar eller tar du bort dem.",
+      "help": "Målaren arkiverar inte dina manualer: varje uppladdning finns kvar 24 h för nedladdning och raderas sedan automatiskt från servern. Kvar blir bara det du markerar fel på och väljer att dela för att förbättra Målaren.",
       "empty": "Du har inga sparade ritningar ännu.",
       "loadFailed": "Dina ritningar kunde inte läsas in.",
       "pages": "Sidor",
@@ -731,7 +737,7 @@
       "statusFailed": "Misslyckades",
       "statusRevision": "Granskning begärd",
       "dangerTitle": "Radera mitt konto",
-      "dangerHelp": "Raderingen tar bort kontot, öppna sessioner och alla sparade manualer, även kopior som fortfarande väntade på granskning. Det är oåterkalleligt.",
+      "dangerHelp": "Raderingen tar bort kontot, öppna sessioner, manualer som fortfarande ligger kvar och de kopior du delat för förbättringar. Det är oåterkalleligt.",
       "confirmPassword": "Bekräfta lösenordet",
       "deleteAccount": "Radera konto och alla ritningar",
       "confirmAccount": "Radera kontot och alla dina ritningar permanent?",
@@ -744,7 +750,10 @@
       "sweeping": "sveper dokumentet",
       "found": "{count} hittade i svepet",
       "newSinceLastLogin": "Ny",
-      "storage": "{used} av {limit} använt ({percent}%)"
+      "storage": "{used} av {limit} används nu ({percent}%) · allt upphör om {hours} h, utom det du delar",
+      "expiresIn": "Försvinner från servern om {left}",
+      "expiringNow": "Håller på att raderas från servern",
+      "shared": "Sparad — delad för förbättringar"
     },
     "summary": {
       "ready": "Klar för mänsklig granskning",

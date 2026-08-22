@@ -1221,6 +1221,17 @@ html[data-theme='dark'] .diagram-viewport {
     font-size: 0.9rem;
 }
 
+.job-card-retention {
+    margin: 0;
+    color: var(--text-tertiary);
+    font-size: 0.86rem;
+}
+
+.job-card-retention.is-shared {
+    color: #23855d;
+    font-weight: 700;
+}
+
 .job-new-badge {
     padding: 3px 8px;
     border-radius: 999px;

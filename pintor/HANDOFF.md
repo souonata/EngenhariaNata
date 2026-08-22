@@ -10,8 +10,9 @@ runtime dependency.
 
 The Engenharia NATA beta is a private-job web app that paints any number of vector or rasterized
 pages inside a manual of any length, either from an explicit page selection or from a sweep that
-finds the wiring diagrams itself. Files are accepted up to 200 MB, processed one page at a time,
-and kept in the owner's account until the owner deletes them. Exact text/strokes are preferred;
+finds the wiring diagrams itself. Files are accepted up to 200 MB and processed one page at a time.
+Nothing is archived: an upload is erased 24 hours after it is done, unless its owner marked errors
+on it and chose to share that report. Exact text/strokes are preferred;
 image-only pages use the bundled OCR and conservative pixel-topology pipeline. A
 supported/confirmed colour convention remains mandatory, and uncertain segments stay black.
 
@@ -31,16 +32,21 @@ path, hashes the file in 1 MB chunks and moves it into the job directory. Measur
 running API: a 188.8 MB upload grew the API process by 13.1 MB and stored `source_bytes`
 188,757,233 intact.
 
-**Manuals are kept.** `PINTOR_RETENTION_HOURS` now defaults to `0`, meaning no expiry for anything
-an account owns; `cleanup_expired` only deletes jobs with no `account_id`, still on 24 hours,
-because nobody can sign back in to claim those. Deletion is the owner's (or an administrator's)
-act. Since storage is now permanent it carries a quota: `PINTOR_MAX_ACCOUNT_STORAGE_MB` (5 GB) per
-account, reported to the owner in *My drawings* and to the administrator as a Storage column, and
-`PINTOR_MAX_STORAGE_MB` for the whole workspace (60 GB) -- **check the VM's free disk before
-publishing; these defaults assume there is room for them.**
-Regression fixed while doing this: the `pintor_session` cookie used `max_age=retention_seconds`,
-which with retention 0 emitted `Max-Age=0` and deleted the cookie on arrival, breaking every
-anonymous session. It now follows the account session, or the anonymous window.
+**The service is not an archive.** `PINTOR_RETENTION_HOURS` stays at 24 and now applies to every
+upload, account-owned or not: held long enough for its owner to download the result, then erased.
+The one exception is a manual the owner deliberately contributed -- marked errors plus learning
+consent. `shared_job_ids()` reads that from the feedback records and `cleanup_expired` skips those
+jobs, so the contribution survives *and* the owner keeps a handle on it: deleting the job still
+withdraws the shared copy, which is the revocation path. Consent is taken from the upload as well
+as the report, so a report on a manual uploaded without consent does not silently keep it.
+`/api/account/jobs` returns `expires_at` and `shared_for_improvement` per job, and the interface
+shows either a countdown or "kept -- shared for improvement". Live storage still carries
+`PINTOR_MAX_ACCOUNT_STORAGE_MB` (5 GB) per account and `PINTOR_MAX_STORAGE_MB` (20 GB) overall,
+because 200 MB uploads make a day's worth substantial -- **check the VM's free disk before
+publishing.**
+Regression fixed while the permanent-storage variant was in place: the `pintor_session` cookie used
+`max_age=retention_seconds`, which at retention 0 emitted `Max-Age=0` and deleted the cookie on
+arrival, breaking every anonymous session. It now follows the account session or the window.
 
 **Page by page.** The sweep reopens the document every 50 pages, because MuPDF's per-document
 store keeps everything it has parsed until the document is closed. Painting attaches each overlay
@@ -70,12 +76,15 @@ Tripling manual length moved peak RSS by 1.9 MB (0.16%). No overlay PNGs were le
 24 preview files were written instead of 100. Both runs are far under the 2,560 MB worker rlimit
 and the 3 GB container.
 
-**Verified.** 57 Python tests in the web/account modules, plus `npm run validate`. New coverage:
+**Verified.** 58 Python tests in the web/account modules, plus `npm run validate`. New coverage:
 streamed upload keeps bytes and digest and leaves nothing in staging; an oversized file is refused
-without being kept; account manuals survive `cleanup_expired` while anonymous ones expire; the
-per-account quota refuses a manual and accepts it again after a deletion; a skipped preview is
-rendered on first view; a job that keeps reporting progress is not killed, and one that stops is
-killed as `ProcessingStalled`.
+without being kept; only a manual shared for improvement survives `cleanup_expired` and a report
+without upload consent does not keep one; the per-account quota refuses a manual and accepts it
+again after a deletion; a skipped preview is rendered on first view; a job that keeps reporting
+progress is not killed, and one that stops is killed as `ProcessingStalled`. Against a live API:
+two manuals were uploaded, one was reported with a marked error and shared, both were aged past the
+window, and the restart sweep erased the unshared one while keeping the contributed one plus its
+training-inbox copy.
 
 **Still open.** Nothing published. The measurements above use synthetic vector manuals; a real
 scanned A0 foldout is far heavier per page, and the per-page budgets -- not manual length -- are

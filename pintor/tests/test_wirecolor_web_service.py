@@ -1182,27 +1182,69 @@ class LargeManualTests(unittest.TestCase):
         staging = app.state.store.root / "incoming"
         self.assertFalse(staging.is_dir() and any(staging.iterdir()))
 
-    def test_account_manuals_are_kept_while_anonymous_jobs_still_expire(self):
-        store = JobStore(self.root / "kept")
-        self.assertEqual(store.retention_seconds, 0)
-        owned = store.create(_pdf_bytes(), "kept.pdf", [0], "auto", False,
-                             25 * 1024 * 1024, _owner_hash("k" * 64),
+    def test_only_a_manual_shared_for_improvement_outlives_the_retention_window(self):
+        store = JobStore(self.root / "retention")
+        self.assertEqual(store.retention_seconds, 24 * 3600)
+        session = "ab" * 32
+        owner = _owner_hash(session)
+        plain = store.create(_pdf_bytes(), "plain.pdf", [0], "auto", True,
+                             25 * 1024 * 1024, owner,
                              account={"id": "acc-1", "username": "keeper"})
-        stray = store.create(_pdf_bytes(), "stray.pdf", [0], "auto", False,
-                             25 * 1024 * 1024, _owner_hash("s" * 64))
+        shared = store.create(_pdf_bytes(), "shared.pdf", [0], "auto", True,
+                              25 * 1024 * 1024, owner,
+                              account={"id": "acc-1", "username": "keeper"})
+        for job in (plain, shared):
+            store.update(job["id"], **inspect_pdf_source(
+                store.job_dir(job["id"]) / "source.pdf", [0]), status="ready", stage="review")
+
+        # Marking an error and agreeing to share it is what makes a manual worth keeping.
+        store.add_feedback(shared["id"], {
+            "annotations": [{
+                "type": "missing",
+                "geometry": {"type": "point", "points": [[0.4, 0.5]]},
+                "page": 0,
+            }],
+            "note": "this wire should be coloured",
+            "consent_learning": True,
+        }, session)
+
         long_ago = int(time.time()) - 40 * 3600
-        store.update(owned["id"], updated_at=long_ago)
-        store.update(stray["id"], updated_at=long_ago)
-        # update() stamps its own updated_at, so write the old value straight into the file.
-        for job_id in (owned["id"], stray["id"]):
+        for job_id in (plain["id"], shared["id"]):
             path = store.job_dir(job_id) / "state.json"
             record = json.loads(path.read_text(encoding="utf-8"))
             record["updated_at"] = long_ago
             path.write_text(json.dumps(record), encoding="utf-8")
 
         self.assertEqual(store.cleanup_expired(), 1)
-        self.assertTrue(store.job_dir(owned["id"]).is_dir())
-        self.assertEqual([record["id"] for record in store.list_all()], [owned["id"]])
+        self.assertFalse(store.job_dir_exists(plain["id"]))
+        self.assertTrue((store.job_dir(shared["id"]) / "source.pdf").is_file())
+        self.assertEqual([record["id"] for record in store.list_all()], [shared["id"]])
+
+    def test_a_report_kept_without_consent_does_not_keep_the_manual(self):
+        store = JobStore(self.root / "no-consent")
+        session = "cd" * 32
+        owner = _owner_hash(session)
+        job = store.create(_pdf_bytes(), "quiet.pdf", [0], "auto", False,
+                           25 * 1024 * 1024, owner)
+        store.update(job["id"], **inspect_pdf_source(
+            store.job_dir(job["id"]) / "source.pdf", [0]), status="ready", stage="review")
+        store.add_feedback(job["id"], {
+            "annotations": [{
+                "type": "missing",
+                "geometry": {"type": "point", "points": [[0.4, 0.5]]},
+                "page": 0,
+            }],
+            "note": "reported but not shared",
+            "consent_learning": True,
+        }, session)
+        # The job was uploaded without learning consent, so the report cannot grant it.
+        self.assertEqual(store.shared_job_ids(), set())
+        path = store.job_dir(job["id"]) / "state.json"
+        record = json.loads(path.read_text(encoding="utf-8"))
+        record["updated_at"] = int(time.time()) - 40 * 3600
+        path.write_text(json.dumps(record), encoding="utf-8")
+        self.assertEqual(store.cleanup_expired(), 1)
+        self.assertEqual(store.list_all(), [])
 
     def test_an_account_over_its_storage_quota_is_asked_to_make_room(self):
         with patch.dict(os.environ, {"PINTOR_MAX_ACCOUNT_STORAGE_MB": "1"}):
@@ -1223,7 +1265,7 @@ class LargeManualTests(unittest.TestCase):
             self.assertEqual(second.status_code, 400)
             self.assertIn("storage", second.json()["detail"])
             listing = client.get("/api/account/jobs").json()
-            self.assertTrue(listing["kept_until_deleted"])
+            self.assertEqual(listing["retention_hours"], 24)
             self.assertGreater(listing["storage_used_bytes"], 0)
             self.assertEqual(listing["storage_limit_bytes"], 1024 * 1024)
             # Deleting the first manual makes room again.

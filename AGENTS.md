@@ -189,14 +189,19 @@ _Última atualização: 2026-08-22_
   com o limite conferido durante a escrita, e o `store.create` recebe um caminho (aceita bytes ou
   path, faz o sha256 em blocos e move para a pasta do job). Medido contra API viva: upload de
   188,8 MB cresceu o processo da API em **13,1 MB** e gravou `source_bytes` 188.757.233 intacto.
-  **ARQUIVO PERMANENTE:** `PINTOR_RETENTION_HOURS` passa a `0` — nada que pertence a uma conta
-  expira; `cleanup_expired` só apaga job sem `account_id`, ainda em 24 h, porque ninguém consegue
-  voltar para buscá-lo. Quem apaga é o dono (ou o admin). Como o armazenamento virou permanente,
-  ganhou cota: `PINTOR_MAX_ACCOUNT_STORAGE_MB` (5 GB) por conta, mostrada ao dono em Meus desenhos e
-  ao admin numa coluna Disco, e `PINTOR_MAX_STORAGE_MB` (60 GB) no workspace inteiro — **conferir o
-  disco livre da VM antes de publicar: esses padrões presumem que cabe.** Bug corrigido no caminho:
-  o cookie `pintor_session` usava `max_age=retention_seconds`, o que com retenção 0 mandava
-  `Max-Age=0` e apagava o cookie na chegada, quebrando toda sessão anônima.
+  **O SERVIÇO NÃO É ARQUIVO:** `PINTOR_RETENTION_HOURS` continua 24 e agora vale para TODO upload,
+  com ou sem conta — fica o tempo de o dono baixar o resultado e é apagado do servidor. A única
+  exceção é o manual que o dono marcou com erros e escolheu compartilhar: `shared_job_ids()` lê isso
+  dos registros de feedback e o `cleanup_expired` pula esses jobs, então a contribuição sobrevive E
+  o dono mantém o controle dela — excluir o job continua retirando a cópia compartilhada, que é o
+  caminho de revogação. O consentimento é exigido no upload E no relato, então relatar um manual
+  enviado sem consentimento não o guarda por tabela. `/api/account/jobs` devolve `expires_at` e
+  `shared_for_improvement`, e a tela mostra contagem regressiva ou "Guardado — compartilhado para
+  melhorias". O armazenamento vivo mantém cota: `PINTOR_MAX_ACCOUNT_STORAGE_MB` (5 GB) por conta,
+  visível ao dono e ao admin (coluna Disco), e `PINTOR_MAX_STORAGE_MB` (20 GB) no workspace —
+  **conferir o disco livre da VM antes de publicar.** Bug corrigido no caminho: o cookie
+  `pintor_session` usava `max_age=retention_seconds`, o que com retenção 0 mandava `Max-Age=0` e
+  apagava o cookie na chegada, quebrando toda sessão anônima.
   **PÁGINA A PÁGINA:** a varredura reabre o documento a cada 50 páginas (o store por documento do
   MuPDF segura tudo o que já foi lido até fechar); a pintura anexa cada overlay assim que ele
   existe (`append_overlays`, extraído de `attach_overlays`), roda o V7 daquela página na hora e
@@ -213,11 +218,14 @@ _Última atualização: 2026-08-22_
   1.200 páginas → 50/50, 144,6 s, pico 1.175,6 MB, 27,2 MB. Triplicar o manual mexeu 1,9 MB
   (0,16%) no pico de memória, e o PDF final reabriu com 400 e 1.200 páginas. Nenhum overlay ficou
   em disco; 24 previews em vez de 100.
-  **VERIFICADO:** 57 testes Python nos módulos de web/contas + `npm run validate`. Cobertura nova:
+  **VERIFICADO:** 58 testes Python nos módulos de web/contas + `npm run validate`. Cobertura nova:
   upload em streaming preserva bytes/digest e não deixa lixo no staging; arquivo acima do limite é
-  recusado sem ser guardado; manual de conta sobrevive ao `cleanup_expired` e o anônimo não; a cota
-  recusa e volta a aceitar depois de uma exclusão; preview pulado é renderizado na primeira
-  visualização; job que reporta progresso não é morto e job parado morre como `ProcessingStalled`.
+  recusado sem ser guardado; só o manual compartilhado sobrevive ao `cleanup_expired`, e relato sem
+  consentimento no upload não guarda nada; a cota recusa e volta a aceitar depois de uma exclusão;
+  preview pulado é renderizado na primeira visualização; job que reporta progresso não é morto e
+  job parado morre como `ProcessingStalled`. Contra API viva: dois manuais enviados, um relatado com
+  erro marcado e compartilhado, ambos envelhecidos além da janela — a varredura de reinício apagou o
+  não-compartilhado e manteve o contribuído junto com a cópia no inbox de treino.
   **PENDENTE:** as medições usam manuais vetoriais sintéticos. Uma folha A0 escaneada custa muito
   mais POR PÁGINA, e é o orçamento por página — não o tamanho do manual — que a limita. O pico de
   ~1,2 GB é custo de UMA página; uma A0 raster pode passar disso sozinha, então vale uma rodada com

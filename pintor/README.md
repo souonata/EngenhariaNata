@@ -29,14 +29,15 @@ The Engenharia NATA beta has two page-analysis modes:
 - declined: password-protected files, unknown notation, illegible/unsupported colour codes,
   uncertain conductor ownership, documents with no readable colour codes at all, or any result that
   fails a preservation gate;
-- limits: 200 MB per file, 20 simultaneously active jobs and 5 GB of stored manuals per account by
+- limits: 200 MB per file, 20 simultaneously active jobs and 5 GB of live storage per account by
   default. There is no cap on document length or on how many pages one job may paint; the page
   ceiling of 100,000 exists only so a mistyped range cannot exhaust memory before the PDF is read. A
   single page still has to fit the per-page analysis budget, and during a sweep a page that does not
   is skipped instead of sinking the job;
-- storage: a manual uploaded by an account is kept until its owner or an administrator deletes it.
-  Only jobs created without an account still expire, on a 24-hour window, because nobody can sign
-  back in to find them.
+- storage: the service is not an archive. An upload is held for 24 hours so its owner can download
+  the result, then erased from the server automatically. The single exception is a manual whose
+  owner marked errors on it and agreed to share the report: that contribution is what the beta
+  keeps, and deleting the job still withdraws it.
 
 The static frontend lives in `index.html`, `pintor-script.js`, and `pintor-styles.css`. It is built
 by the main Engenharia NATA Vite pipeline. The Python API is a separate service; GitHub Pages does
@@ -83,8 +84,10 @@ length of the document around it. Both runs stayed well under the 2,560 MB worke
 
 Each account owns its jobs. From **My drawings** an owner sees everything they uploaded — queued,
 being painted, and finished — reopens or downloads a result, deletes a single drawing, and closes
-the account entirely. Closing an account asks for the password again and erases the credentials, the
-sessions, every stored job, and any feedback copy still waiting for adjudication.
+the account entirely. Every card states what happens next: a countdown to the moment the upload
+leaves the server, or, for a manual shared with marked errors, that it is being kept. Closing an
+account asks for the password again and erases the credentials, the sessions, every stored job, and
+any feedback copy still waiting for adjudication.
 
 The administrator account, bootstrapped only from a username plus a scrypt hash in the environment,
 has a three-tab console:

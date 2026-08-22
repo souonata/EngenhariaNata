@@ -213,7 +213,7 @@ def _public_state(state: dict) -> dict:
         "processing_mode", "decline_reason", "error", "preview_original", "preview_painted",
         "download", "feedback_id", "current_page", "completed_pages", "selected_page_count",
         "page_discovery", "discovery", "queue_position", "finished_at", "source_bytes",
-        "scanned_pages",
+        "scanned_pages", "expires_at", "shared_for_improvement",
     }
     return {key: state[key] for key in allowed if key in state}
 
@@ -221,15 +221,16 @@ def _public_state(state: dict) -> dict:
 class JobStore:
     """Filesystem-backed beta job store with random, path-safe identifiers."""
 
-    def __init__(self, root: str | Path = DEFAULT_WORKSPACE, retention_hours: int = 0):
+    def __init__(self, root: str | Path = DEFAULT_WORKSPACE, retention_hours: int = 24):
         self.root = Path(root).resolve()
         self.jobs = self.root / "jobs"
         self.training = self.root / "training_feedback"
         # Improvement rounds live outside the training inbox so the feedback globs stay exact.
         self.rounds = self.root / "improvement_rounds"
-        # Zero hours means "keep it": a manual an account owns stays until its owner deletes it.
-        # Anonymous jobs still expire, because nobody can ever come back for them.
-        self.retention_seconds = max(0, retention_hours) * 3600
+        # The service is not an archive. An uploaded manual is held long enough to be downloaded
+        # and then erased; the only thing that outlives the window is what its owner deliberately
+        # shared by marking errors on it.
+        self.retention_seconds = max(1, retention_hours) * 3600
         self.jobs.mkdir(parents=True, exist_ok=True)
         self.training.mkdir(parents=True, exist_ok=True)
         self.rounds.mkdir(parents=True, exist_ok=True)
@@ -243,6 +244,9 @@ class JobStore:
         if not path.is_dir():
             raise JobNotFound(job_id)
         return path
+
+    def job_dir_exists(self, job_id: str) -> bool:
+        return (self.jobs / job_id).is_dir()
 
     def read(self, job_id: str) -> dict:
         path = self.job_dir(job_id) / "state.json"
@@ -759,15 +763,22 @@ class JobStore:
         _atomic_json(self.rounds / f"{round_id}-manifest.json", manifest)
         return self._public_round(record)
 
-    def cleanup_expired(self, now: int | None = None) -> int:
-        """Delete only what nobody can come back for.
+    def shared_job_ids(self) -> set[str]:
+        """Jobs whose owner marked errors on them and agreed to share the result.
 
-        Jobs belonging to an account are kept until their owner (or an administrator) deletes
-        them; that is the whole point of having an account. Jobs created without one are tied to a
-        cookie that outlives nothing, so they still expire on the anonymous retention window.
+        Those are the only uploads that outlive the retention window, because they are the ones
+        somebody deliberately contributed. Everything else is transient by design.
         """
-        window = self.anonymous_retention_seconds
-        threshold = (now or int(time.time())) - window
+        shared = set()
+        for _, record in self._feedback_locations().values():
+            if record.get("consent_learning") and record.get("job_id"):
+                shared.add(str(record["job_id"]))
+        return shared
+
+    def cleanup_expired(self, now: int | None = None) -> int:
+        """Erase every upload past the retention window that was not shared for improvement."""
+        threshold = (now or int(time.time())) - self.retention_seconds
+        protected = self.shared_job_ids()
         removed = 0
         for directory in self.jobs.iterdir():
             state_path = directory / "state.json"
@@ -775,17 +786,13 @@ class JobStore:
                 state = json.loads(state_path.read_text(encoding="utf-8"))
             except Exception:
                 continue
-            if state.get("account_id"):
+            if str(state.get("id")) in protected:
                 continue
             if state.get("updated_at", 0) >= threshold:
                 continue
             shutil.rmtree(directory, ignore_errors=True)
             removed += 1
         return removed
-
-    @property
-    def anonymous_retention_seconds(self) -> int:
-        return self.retention_seconds or 24 * 3600
 
     @staticmethod
     def directory_bytes(directory: Path) -> int:
@@ -1452,10 +1459,10 @@ def create_app(workspace_root: str | Path | None = None,
     from fastapi.responses import FileResponse, JSONResponse, Response
     from pydantic import BaseModel, Field
 
-    # Retention 0 keeps every account-owned manual until its owner deletes it; anonymous jobs
-    # still expire, since no one can sign back in to find them.
+    # Uploads are transient: kept long enough to be downloaded, then erased. Only a manual whose
+    # owner marked errors and agreed to share it survives the window.
     store = JobStore(workspace_root or os.getenv("PINTOR_WEB_ROOT", str(DEFAULT_WORKSPACE)),
-                     retention_hours=int(os.getenv("PINTOR_RETENTION_HOURS", "0")))
+                     retention_hours=int(os.getenv("PINTOR_RETENTION_HOURS", "24")))
     accounts_required = os.getenv("PINTOR_ACCOUNTS_REQUIRED", "0") == "1"
     account_session_days = int(os.getenv("PINTOR_ACCOUNT_SESSION_DAYS", "30"))
     accounts = AccountStore(store.root / "accounts.sqlite3", session_days=account_session_days)
@@ -1477,7 +1484,7 @@ def create_app(workspace_root: str | Path | None = None,
     job_window = int(os.getenv("PINTOR_JOB_RATE_WINDOW_SECONDS", "3600"))
     request_limit = int(os.getenv("PINTOR_REQUEST_RATE_LIMIT", "300"))
     request_window = int(os.getenv("PINTOR_REQUEST_RATE_WINDOW_SECONDS", "60"))
-    max_storage_bytes = int(os.getenv("PINTOR_MAX_STORAGE_MB", "61440")) * 1024 * 1024
+    max_storage_bytes = int(os.getenv("PINTOR_MAX_STORAGE_MB", "20480")) * 1024 * 1024
     max_owner_bytes = int(os.getenv("PINTOR_MAX_ACCOUNT_STORAGE_MB", "5120")) * 1024 * 1024
     max_concurrent_jobs = int(os.getenv("PINTOR_MAX_CONCURRENT_JOBS", "1"))
     account_limit = int(os.getenv("PINTOR_ACCOUNT_ATTEMPTS", "10"))
@@ -1756,6 +1763,7 @@ def create_app(workspace_root: str | Path | None = None,
         account = require_account(pintor_account)
         owner_token = _account_owner_token(session_secret, account["id"])
         since = account.get("previous_login_at") or 0
+        shared = store.shared_job_ids()
         jobs = []
         for record in store.list_owned(owner_token):
             if record.get("status") == "queued":
@@ -1763,12 +1771,17 @@ def create_app(workspace_root: str | Path | None = None,
             record["finished_since_last_login"] = bool(
                 record.get("finished_at") and record["finished_at"] > since
             )
+            # A shared manual has no deadline; everything else says exactly when it disappears.
+            record["shared_for_improvement"] = record["id"] in shared
+            record["expires_at"] = None if record["shared_for_improvement"] else (
+                record.get("updated_at", 0) + store.retention_seconds
+            )
             jobs.append(record)
         return {
             "jobs": jobs,
             "since": since,
             "active": sum(job.get("status") in {"queued", "processing"} for job in jobs),
-            "kept_until_deleted": store.retention_seconds == 0,
+            "retention_hours": store.retention_seconds // 3600,
             "storage_used_bytes": store.owner_bytes(owner_token),
             "storage_limit_bytes": max_owner_bytes,
         }
@@ -1821,8 +1834,8 @@ def create_app(workspace_root: str | Path | None = None,
             "max_analysis_pixels": MAX_ANALYSIS_PIXELS,
             "max_concurrent_jobs": max(1, max_concurrent_jobs),
             "retention_hours": store.retention_seconds // 3600,
-            "kept_until_deleted": store.retention_seconds == 0,
-            "anonymous_retention_hours": store.anonymous_retention_seconds // 3600,
+            "kept_until_deleted": False,
+            "shared_reports_outlive_retention": True,
             "max_account_storage_bytes": max_owner_bytes,
             "conventions": ["auto", *list_conventions()],
             "model": "operator-mounted-revalidated-artifact-or-conservative-baseline",
@@ -1898,7 +1911,7 @@ def create_app(workspace_root: str | Path | None = None,
         # the job, and for an account it is reissued on every sign-in.
         response.set_cookie(
             "pintor_session", session_id,
-            max_age=accounts.session_seconds if account else store.anonymous_retention_seconds,
+            max_age=accounts.session_seconds if account else store.retention_seconds,
             httponly=True, secure=secure_cookie, samesite="strict", path="/api",
         )
         return response
