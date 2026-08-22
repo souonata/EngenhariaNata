@@ -20,7 +20,7 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
-## 2026-08-22 large manuals, 24-hour retention, page-by-page work (0.5.0, not published)
+## 2026-08-22 large manuals, 24-hour retention, page-by-page work (0.5.0, published)
 
 Same branch, second pass. The first pass removed the page caps; this one makes a long manual
 actually survivable while preserving the temporary-storage contract.
@@ -105,18 +105,23 @@ container's 256 MB RAM-backed `/tmp`, so a 200 MB manual would be held in memory
 **Order of publication matters.** The 0.5.x frontend calls endpoints 0.4.0 does not have
 (`/api/admin/accounts`, `/api/admin/rounds`, `DELETE /api/account`) and relies on an upload with no
 page selection meaning "sweep the document" -- on 0.4.0 that same request paints page 1 instead.
-Merging to `main` publishes the frontend within minutes, so the API image must be built and running
-on the protected host FIRST; only then merge.
+Publication followed that dependency: API image `engnata/pintor-api:0.5.0` was built from exact
+commit `656aa9a` and made healthy on the protected host before PR #25 was merged as `d384128`.
+The image ID is `sha256:f632812ebad38f5bacee8fcb6cc7f78941556a63ca09787c7d2fe95d993cf6ce`.
+The external smoke then passed beta access, temporary account creation, anonymous rejection,
+real PDF processing to `ready`, valid PDF download and deletion; its temporary account and job
+were removed. GitHub Pages run `32572129340` completed successfully, and the public page loaded
+the new `pintor-index-maUAZSLI.js` bundle with the 0.5.x account/admin endpoints.
 
-**Still open.** Nothing published. The measurements above use synthetic vector manuals; a real
+**Still open.** The measurements above use synthetic vector manuals; a real
 scanned A0 foldout is far heavier per page, and the per-page budgets -- not manual length -- are
 what bound it. Peak RSS of ~1.2 GB is a *per-page* cost that a raster A0 page can exceed on its
 own, so the memory ceiling still deserves a real-corpus run before promising a specific manual.
 
-## 2026-08-22 accounts console, sweeps, and the processing queue (0.5.0, not published)
+## 2026-08-22 accounts console, sweeps, and the processing queue (0.5.0, published)
 
-Branch `feat/pintor-admin-contas`. Verified locally against a running API and the Vite dev server;
-nothing was merged into `main` and nothing was deployed.
+Developed on branch `feat/pintor-admin-contas`, published through PR #25 after the API-first
+deployment and external smoke recorded above.
 
 **Administration console.** The admin panel is now three tabs. *Accounts* lists every tester with
 role, status, job count and report counts, and can suspend/reactivate, promote/demote, or delete an
@@ -178,10 +183,9 @@ the conversions that finished while they were away. In the browser: account susp
 deletion, round creation/closing, multi-file upload, live queue cards and the localized sweep
 refusal were exercised in PT/IT/SV.
 
-**Still open.** Nothing is published: this branch has not been merged into `main`, the API image
-has not been rebuilt, and the host still runs 0.4.0. Sweeping a very long manual is bounded only by
-the per-page budgets and the container's 3 GB/2 CPU ceiling — measure a real 500+ page manual
-before advertising it. "Finished since your last visit" cannot outlive the 24-hour retention.
+**Still open.** Sweeping a very long manual is bounded only by the per-page budgets and the
+container's 3 GB/2 CPU ceiling — measure a real 500+ page manual before advertising it. "Finished
+since your last visit" cannot outlive the 24-hour retention.
 
 ## 2026-08-20 non-fatal resource errors (0.4.3, published)
 
