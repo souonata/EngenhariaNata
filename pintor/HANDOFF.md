@@ -1,6 +1,6 @@
 # Pintor handoff
 
-Last updated: 2026-08-20
+Last updated: 2026-08-22
 
 ## Product boundary
 
@@ -8,14 +8,85 @@ Pintor has been extracted from the Volvo Penta Assistant into this directory. Th
 remain independently installable and runnable. The Volvo material is a corpus/convention, not a
 runtime dependency.
 
-The Engenharia NATA beta is a private-job web app supporting up to 50 selected vector or
-rasterized pages per job inside manuals of up to 2,000 pages. Exact text/strokes are preferred;
+The Engenharia NATA beta is a private-job web app that paints any number of vector or rasterized
+pages inside a manual of any length, either from an explicit page selection or from a sweep that
+finds the wiring diagrams itself. Exact text/strokes are preferred;
 image-only pages use the bundled OCR and conservative pixel-topology pipeline. A
 supported/confirmed colour convention remains mandatory, and uncertain segments stay black.
 
 The product name is localized in the interface: **Pintor** in Portuguese, **Pittore** in Italian,
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
+
+## 2026-08-22 accounts console, sweeps, and the processing queue (0.5.0, not published)
+
+Branch `feat/pintor-admin-contas`. Verified locally against a running API and the Vite dev server;
+nothing was merged into `main` and nothing was deployed.
+
+**Administration console.** The admin panel is now three tabs. *Accounts* lists every tester with
+role, status, job count and report counts, and can suspend/reactivate, promote/demote, or delete an
+account together with all of its jobs and pending training copies. Two rules are enforced in the
+store, not only in the interface: an administrator cannot act on their own account from the
+console, and the beta can never be left without an active administrator. `bootstrap_admin`
+reactivates the configured administrator on boot, so a suspension cannot lock everyone out. A role
+change and a suspension both revoke that account's sessions, so powers never travel on an old
+cookie.
+
+**Improvement rounds.** A round is a curated batch of expert-accepted reports, stored in
+`improvement_rounds/`. One round is open at a time; every acceptance carrying learning consent
+joins it automatically and leaves it if the decision is reversed. Closing a round freezes the list
+and writes `<id>-manifest.json` with the full reports and the artifacts present in the training
+inbox. `automatic_training` is `false` in the manifest, and the service still trains and promotes
+nothing.
+
+**Self-service.** *My drawings* shows everything an account owns — queued, painting, finished —
+with the queue position, the live stage, a badge on whatever finished since the previous sign-in,
+and buttons to reopen, download or delete a drawing. Closing the account re-asks for the password
+and erases credentials, sessions, jobs and pending feedback copies.
+
+**No page limits.** `MAX_DOCUMENT_PAGES` (2,000) and `MAX_SELECTED_PAGES` (50) are gone from the
+API and the frontend parser. What remains is `MAX_PAGE_NUMBER = 100_000`, purely so a mistyped
+range cannot expand into a list that exhausts memory before the PDF is opened, and the unchanged
+per-page dimension and analysis-pixel budgets. During a sweep a page that exceeds the per-page
+budget is now skipped and reported instead of failing the whole job; for an explicitly requested
+page it is still a hard error.
+
+**Whole-document sweep.** An upload with no page selection is swept by
+`tools/discover_pages.scan_document`, which reuses the evidence rules already validated against the
+library corpus: at least eight wire colour codes in a page's text layer means confirmed; a
+near-full-page image on a large sheet with almost no text, inside a document independently known to
+be about wiring, is a candidate for OCR. Stroke count alone is still not evidence. With
+`convention=auto` the code tokens of every convention are unioned, because detection only has to
+decide *whether* a page is a wiring diagram — `_select_convention` still decides which vocabulary
+it is written in, per page. A document where nothing qualifies is declined with stage
+`no-wiring-page`, not failed. `PINTOR_SCAN_MAX_PAGES` (default 0 = unlimited) lets an operator
+bound a sweep.
+
+**Queue.** `ProcessingQueue` grants the single painting slot in arrival order and can answer "how
+many files are ahead of mine", which the interface shows both on the processing screen and on each
+queued card. The upload form accepts several files at once and creates one job per file.
+`PINTOR_MAX_ACTIVE_JOBS` (default 20) replaces the old two-active-jobs rule. On boot, jobs left
+`queued` or `processing` by a restart are put back at the front of the line
+(`PINTOR_RESUME_ON_START=0` disables it).
+
+**Returning owners.** Accounts now record `previous_login_at`, so `/api/account/jobs` returns
+`since` and flags each job with `finished_since_last_login`. Retention is still 24 h, so that view
+only ever reaches back one day.
+
+**Verified.** 50 Python tests in the two web/account modules (104 across the four modules run) and
+`npm run validate` with 359 Vitest tests, i18n parity, ESLint, Prettier and Stylelint. Against a
+live API: a six-page synthetic manual with two wiring pages was swept, both pages were found and
+painted, and the released PDF still reopened with all six pages; three files uploaded together
+queued in arrival order with visible positions and drained one at a time; killing the service
+mid-queue and restarting it resumed both interrupted jobs to `ready`; a returning owner saw only
+the conversions that finished while they were away. In the browser: account suspension, promotion,
+deletion, round creation/closing, multi-file upload, live queue cards and the localized sweep
+refusal were exercised in PT/IT/SV.
+
+**Still open.** Nothing is published: this branch has not been merged into `main`, the API image
+has not been rebuilt, and the host still runs 0.4.0. Sweeping a very long manual is bounded only by
+the per-page budgets and the container's 3 GB/2 CPU ceiling — measure a real 500+ page manual
+before advertising it. "Finished since your last visit" cannot outlive the 24-hour retention.
 
 ## 2026-08-20 non-fatal resource errors (0.4.3, published)
 

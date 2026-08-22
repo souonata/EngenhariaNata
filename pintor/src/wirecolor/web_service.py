@@ -22,7 +22,8 @@ from pathlib import Path
 from typing import Callable
 
 from .accounts import (
-    ACCOUNT_COOKIE, AccountError, AccountStore, DuplicateUsername, InvalidCredentials,
+    ACCOUNT_COOKIE, AccountError, AccountStore, AccountSuspended, DuplicateUsername,
+    InvalidCredentials, LastAdministrator,
 )
 
 
@@ -35,8 +36,10 @@ ERROR_TYPES = frozenset({
     "wrong-colour", "non-wire", "stops-mid", "missing", "bleed",
     "dash-style", "stripe-style",
 })
-MAX_DOCUMENT_PAGES = 2_000
-MAX_SELECTED_PAGES = 50
+# Neither the length of a manual nor the number of pages one job may paint is capped: a whole
+# wiring manual is a legitimate job. Page notation still needs a ceiling, because "1-999999999"
+# would expand into a list that exhausts memory before the PDF is even opened.
+MAX_PAGE_NUMBER = 100_000
 MAX_PAGE_SIDE_PT = 12_000
 MAX_PAGE_AREA_PT2 = 24_000_000
 ANALYSIS_DPI = 200
@@ -45,6 +48,8 @@ BETA_COOKIE = "pintor_beta"
 BETA_COOKIE_PURPOSE = b"pintor-beta-access-v1"
 ACCOUNT_OWNER_PURPOSE = b"pintor-account-owner-v1:"
 FEEDBACK_ID_RE = re.compile(r"^[a-f0-9]{32}$")
+ROUND_ID_RE = re.compile(r"^[a-f0-9]{32}$")
+MAX_ROUND_NAME = 80
 
 
 class JobNotFound(KeyError):
@@ -74,6 +79,73 @@ class SlidingWindowLimiter:
                 return False, retry_after
             events.append(now)
             return True, 0
+
+
+class ProcessingQueue:
+    """First-in, first-out admission to the single painting slot.
+
+    The beta paints one file at a time on purpose: a wiring sweep is memory-hungry and the host is
+    capped at 3 GB and 2 CPUs. A plain semaphore already serialised the work, but it granted the
+    slot in wake-up order and told nobody where they stood. This grants it in arrival order and can
+    answer "how many files are ahead of mine", which is the whole difference between a wait and a
+    hang for someone who uploaded ten manuals.
+    """
+
+    def __init__(self, slots: int = 1):
+        self._condition = threading.Condition()
+        self._waiting: deque[str] = deque()
+        self._running: list[str] = []
+        self._slots = max(1, slots)
+
+    def enqueue(self, job_id: str) -> int:
+        with self._condition:
+            if job_id not in self._waiting and job_id not in self._running:
+                self._waiting.append(job_id)
+            return self._position(job_id)
+
+    def _position(self, job_id: str) -> int:
+        if job_id in self._running:
+            return 0
+        try:
+            return self._waiting.index(job_id) + 1
+        except ValueError:
+            return 0
+
+    def position(self, job_id: str) -> int:
+        with self._condition:
+            return self._position(job_id)
+
+    def snapshot(self) -> dict:
+        with self._condition:
+            return {"running": list(self._running), "waiting": list(self._waiting)}
+
+    def _may_start(self, job_id: str) -> bool:
+        return len(self._running) < self._slots and bool(self._waiting) \
+            and self._waiting[0] == job_id
+
+    def acquire(self, job_id: str) -> None:
+        """Block until this job is at the head of the queue and a slot is free."""
+        with self._condition:
+            if job_id not in self._waiting and job_id not in self._running:
+                self._waiting.append(job_id)
+            while not self._may_start(job_id):
+                if job_id in self._running:
+                    return
+                self._condition.wait(timeout=1.0)
+            self._waiting.remove(job_id)
+            self._running.append(job_id)
+
+    def release(self, job_id: str) -> None:
+        with self._condition:
+            if job_id in self._running:
+                self._running.remove(job_id)
+            self._condition.notify_all()
+
+    def forget(self, job_id: str) -> None:
+        with self._condition:
+            if job_id in self._waiting:
+                self._waiting.remove(job_id)
+            self._condition.notify_all()
 
 
 def _beta_cookie_token(secret: str) -> str:
@@ -110,7 +182,7 @@ def parse_page_selection(value: str) -> list[int]:
     Accepted examples: ``40, 42, 44, 46`` and ``40-46``. Ranges are inclusive and the selected
     page count is bounded independently from the total manual length.
     """
-    if not isinstance(value, str) or not value.strip() or len(value) > 200:
+    if not isinstance(value, str) or not value.strip() or len(value) > 400:
         raise InvalidUpload("enter at least one page number")
     selected = []
     seen = set()
@@ -121,19 +193,15 @@ def parse_page_selection(value: str) -> list[int]:
             raise InvalidUpload("pages must use numbers separated by commas or ascending ranges")
         first = int(match.group(1))
         last = int(match.group(2) or first)
-        if first < 1 or last < first or last > MAX_DOCUMENT_PAGES:
+        if first < 1 or last < first or last > MAX_PAGE_NUMBER:
             raise InvalidUpload(
-                f"pages must be ascending numbers between 1 and {MAX_DOCUMENT_PAGES}"
+                f"pages must be ascending numbers between 1 and {MAX_PAGE_NUMBER}"
             )
         for page_number in range(first, last + 1):
             page_index = page_number - 1
             if page_index not in seen:
                 selected.append(page_index)
                 seen.add(page_index)
-            if len(selected) > MAX_SELECTED_PAGES:
-                raise InvalidUpload(
-                    f"select at most {MAX_SELECTED_PAGES} pages per private job"
-                )
     return selected
 
 
@@ -144,6 +212,7 @@ def _public_state(state: dict) -> dict:
         "requested_convention", "convention_confidence", "created_at", "updated_at", "metrics",
         "processing_mode", "decline_reason", "error", "preview_original", "preview_painted",
         "download", "feedback_id", "current_page", "completed_pages", "selected_page_count",
+        "page_discovery", "discovery", "queue_position", "finished_at",
     }
     return {key: state[key] for key in allowed if key in state}
 
@@ -155,9 +224,12 @@ class JobStore:
         self.root = Path(root).resolve()
         self.jobs = self.root / "jobs"
         self.training = self.root / "training_feedback"
+        # Improvement rounds live outside the training inbox so the feedback globs stay exact.
+        self.rounds = self.root / "improvement_rounds"
         self.retention_seconds = max(1, retention_hours) * 3600
         self.jobs.mkdir(parents=True, exist_ok=True)
         self.training.mkdir(parents=True, exist_ok=True)
+        self.rounds.mkdir(parents=True, exist_ok=True)
 
     def job_dir(self, job_id: str) -> Path:
         if not JOB_ID_RE.fullmatch(job_id):
@@ -192,7 +264,8 @@ class JobStore:
 
     def create(self, content: bytes, filename: str | None, pages: list[int] | int, convention: str,
                consent_learning: bool, max_bytes: int, owner_hash: str,
-               max_storage_bytes: int = 0, account: dict | None = None) -> dict:
+               max_storage_bytes: int = 0, account: dict | None = None,
+               max_active_jobs: int = 20) -> dict:
         if not content or len(content) > max_bytes:
             raise InvalidUpload("PDF is empty or exceeds the upload limit")
         if not content.startswith(b"%PDF-"):
@@ -217,15 +290,17 @@ class JobStore:
             if existing.get("owner_hash") == owner_hash \
                     and existing.get("status") in {"queued", "processing"}:
                 active += 1
-        if active >= 2:
-            raise InvalidUpload("this beta session already has two active jobs")
+        if max_active_jobs and active >= max_active_jobs:
+            raise InvalidUpload(
+                f"this account already has {max_active_jobs} files waiting or being painted"
+            )
 
         selected_pages = [pages] if isinstance(pages, int) else list(pages)
-        if not selected_pages or len(selected_pages) > MAX_SELECTED_PAGES:
-            raise InvalidUpload(f"select between 1 and {MAX_SELECTED_PAGES} pages")
         if any(not isinstance(page, int) or page < 0 for page in selected_pages):
             raise InvalidUpload("invalid selected page")
         selected_pages = list(dict.fromkeys(selected_pages))
+        # No selection means "sweep the document and paint every wiring diagram in it".
+        discovery = not selected_pages
 
         job_id = uuid.uuid4().hex
         directory = self.jobs / job_id
@@ -239,9 +314,10 @@ class JobStore:
             "status": "queued",
             "stage": "queued",
             "original_name": _safe_name(filename),
-            "page": selected_pages[0],
+            "page": selected_pages[0] if selected_pages else None,
             "selected_pages": selected_pages,
             "selected_page_count": len(selected_pages),
+            "page_discovery": "auto" if discovery else "manual",
             "requested_convention": convention,
             "consent_learning": bool(consent_learning),
             "source_sha256": hashlib.sha256(content).hexdigest(),
@@ -332,6 +408,16 @@ class JobStore:
                     feedback_id=feedback_id)
         return record
 
+    def list_all(self) -> list[dict]:
+        """Every stored job, used only by restart recovery inside the service."""
+        records = []
+        for state_path in self.jobs.glob("*/state.json"):
+            try:
+                records.append(json.loads(state_path.read_text(encoding="utf-8")))
+            except Exception:
+                continue
+        return records
+
     def list_owned(self, session_id: str) -> list[dict]:
         owner_hash = _owner_hash(session_id)
         records = []
@@ -344,6 +430,20 @@ class JobStore:
                 continue
             records.append(_public_state(state))
         return sorted(records, key=lambda item: item.get("created_at", 0), reverse=True)
+
+    def count_owned(self, session_id: str) -> int:
+        return len(self.list_owned(session_id))
+
+    def delete_all_owned(self, session_id: str) -> int:
+        """Erase every job of one owner, including copies still awaiting adjudication."""
+        removed = 0
+        for record in self.list_owned(session_id):
+            try:
+                self.delete_owned(record["id"], session_id)
+            except (JobNotFound, OSError):
+                continue
+            removed += 1
+        return removed
 
     def _feedback_locations(self) -> dict[str, tuple[Path, dict]]:
         records: dict[str, tuple[Path, dict]] = {}
@@ -371,7 +471,7 @@ class JobStore:
             "id", "job_id", "pages", "page", "convention", "annotations", "note",
             "request_revision", "consent_learning", "created_at", "status", "trainable",
             "eligible_for_dataset", "account_username", "original_name", "reviewed_at",
-            "review_note", "reviewer_username", "decision", "review_history",
+            "review_note", "reviewer_username", "decision", "review_history", "round_id",
         }
         payload = {key: record[key] for key in allowed if key in record}
         if not detailed:
@@ -451,13 +551,192 @@ class JobStore:
             ),
             "trainable": False,
         })
+        current_round = self.open_round()
+        joined = (
+            decision == "accepted" and record.get("consent_learning") and current_round is not None
+        )
+        if joined:
+            record["round_id"] = current_round["id"]
+        elif record.get("round_id"):
+            # A report that stops being accepted leaves the batch it had joined.
+            previous = record["round_id"]
+            record["round_id"] = None
+            try:
+                stale = self.read_round(previous)
+                if stale.get("status") == "open":
+                    self._write_round_membership(stale, feedback_id, False)
+            except JobNotFound:
+                pass
         live_path = self.jobs / str(record.get("job_id")) / "feedback" / f"{feedback_id}.json"
         archive_path = self.training / feedback_id / "feedback.json"
         if live_path.is_file():
             _atomic_json(live_path, record)
         if archive_path.is_file():
             _atomic_json(archive_path, record)
+        if joined:
+            self._write_round_membership(current_round, feedback_id, True)
         return self._public_feedback(record, detailed=True)
+
+    # ---- Improvement rounds -------------------------------------------------------------
+    # A round is a curated batch of expert-accepted reports. Closing one writes an offline
+    # manifest; the web service still never trains or promotes a model by itself.
+
+    def _round_path(self, round_id: str) -> Path:
+        if not ROUND_ID_RE.fullmatch(round_id):
+            raise JobNotFound(round_id)
+        path = (self.rounds / f"{round_id}.json").resolve()
+        if path.parent != self.rounds:
+            raise JobNotFound(round_id)
+        return path
+
+    def read_round(self, round_id: str) -> dict:
+        path = self._round_path(round_id)
+        if not path.is_file():
+            raise JobNotFound(round_id)
+        return json.loads(path.read_text(encoding="utf-8"))
+
+    @staticmethod
+    def _public_round(record: dict) -> dict:
+        return {
+            "id": record.get("id"),
+            "name": record.get("name"),
+            "status": record.get("status", "open"),
+            "created_at": record.get("created_at"),
+            "created_by": record.get("created_by"),
+            "closed_at": record.get("closed_at"),
+            "closed_by": record.get("closed_by"),
+            "note": record.get("note", ""),
+            "item_count": len(record.get("items") or []),
+        }
+
+    def list_rounds(self) -> list[dict]:
+        records = []
+        for path in self.rounds.glob("*.json"):
+            if path.name.endswith("-manifest.json"):
+                continue
+            try:
+                records.append(self._public_round(json.loads(path.read_text(encoding="utf-8"))))
+            except Exception:
+                continue
+        return sorted(records, key=lambda item: item.get("created_at") or 0, reverse=True)
+
+    def open_round(self) -> dict | None:
+        for path in sorted(self.rounds.glob("*.json")):
+            if path.name.endswith("-manifest.json"):
+                continue
+            try:
+                record = json.loads(path.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            if record.get("status") == "open":
+                return record
+        return None
+
+    def create_round(self, name: str, admin: dict) -> dict:
+        label = str(name or "").strip()[:MAX_ROUND_NAME]
+        if not label:
+            raise ValueError("the round needs a name")
+        if self.open_round():
+            raise ValueError("close the open round before starting another one")
+        record = {
+            "id": uuid.uuid4().hex,
+            "name": label,
+            "status": "open",
+            "created_at": int(time.time()),
+            "created_by": admin.get("username"),
+            "closed_at": None,
+            "closed_by": None,
+            "note": "",
+            "items": [],
+        }
+        _atomic_json(self._round_path(record["id"]), record)
+        return self._public_round(record)
+
+    def _write_round_membership(self, record: dict, feedback_id: str, include: bool) -> dict:
+        items = [item for item in (record.get("items") or []) if item != feedback_id]
+        if include:
+            items.append(feedback_id)
+        record["items"] = items
+        _atomic_json(self._round_path(record["id"]), record)
+        return record
+
+    def _tag_feedback_round(self, feedback_id: str, round_id: str | None) -> None:
+        located = self._feedback_locations().get(feedback_id)
+        if not located:
+            return
+        record = dict(located[1])
+        record["round_id"] = round_id
+        live_path = self.jobs / str(record.get("job_id")) / "feedback" / f"{feedback_id}.json"
+        archive_path = self.training / feedback_id / "feedback.json"
+        for path in (live_path, archive_path):
+            if path.is_file():
+                _atomic_json(path, record)
+
+    def set_round_item(self, round_id: str, feedback_id: str, include: bool) -> dict:
+        record = self.read_round(round_id)
+        if record.get("status") != "open":
+            raise ValueError("a closed round can no longer change")
+        if include:
+            report = self.get_feedback(feedback_id)
+            if report.get("decision") != "accepted":
+                raise ValueError("only expert-accepted reports enter an improvement round")
+            for other in self.list_rounds():
+                if other["id"] == round_id:
+                    continue
+                if feedback_id in (self.read_round(other["id"]).get("items") or []):
+                    raise ValueError("this report already belongs to another round")
+        record = self._write_round_membership(record, feedback_id, include)
+        self._tag_feedback_round(feedback_id, round_id if include else None)
+        return self._public_round(record)
+
+    def round_detail(self, round_id: str) -> dict:
+        record = self.read_round(round_id)
+        located = self._feedback_locations()
+        items = []
+        for feedback_id in record.get("items") or []:
+            found = located.get(feedback_id)
+            if not found:
+                # The reporter deleted the job, or the account was removed with its data.
+                items.append({"id": feedback_id, "missing": True})
+                continue
+            items.append({**self._public_feedback(found[1]), "missing": False})
+        payload = self._public_round(record)
+        payload["items"] = items
+        return payload
+
+    def close_round(self, round_id: str, admin: dict, note: str = "") -> dict:
+        record = self.read_round(round_id)
+        if record.get("status") != "open":
+            raise ValueError("this round is already closed")
+        detail = self.round_detail(round_id)
+        now = int(time.time())
+        record.update({
+            "status": "closed",
+            "closed_at": now,
+            "closed_by": admin.get("username"),
+            "note": str(note or "").strip()[:2000],
+        })
+        _atomic_json(self._round_path(round_id), record)
+        manifest = {
+            "round": self._public_round(record),
+            "generated_at": now,
+            "automatic_training": False,
+            "reports": [],
+        }
+        for item in detail["items"]:
+            if item.get("missing"):
+                manifest["reports"].append({"id": item["id"], "missing": True})
+                continue
+            full = self.get_feedback(item["id"])
+            inbox = self.training / item["id"]
+            manifest["reports"].append({
+                **full,
+                "artifacts_present": sorted(
+                    path.name for path in inbox.glob("*")
+                ) if inbox.is_dir() else [],
+            })
+        _atomic_json(self.rounds / f"{round_id}-manifest.json", manifest)
+        return self._public_round(record)
 
     def cleanup_expired(self, now: int | None = None) -> int:
         threshold = (now or int(time.time())) - self.retention_seconds
@@ -583,8 +862,13 @@ def normalize_annotations(raw, state: dict) -> list[dict]:
     return normalized
 
 
-def inspect_pdf_source(pdf_path: Path, page_indices: list[int] | int) -> dict:
-    """Parse and validate an untrusted source inside the isolated job process."""
+def inspect_pdf_source(pdf_path: Path, page_indices: list[int] | int,
+                       tolerate_oversized: bool = False) -> dict:
+    """Parse and validate an untrusted source inside the isolated job process.
+
+    ``tolerate_oversized`` is used by the discovery sweep: one page too large for the analysis
+    budget must not sink a whole manual, so it is reported and skipped instead of raising.
+    """
     import fitz
 
     try:
@@ -597,37 +881,44 @@ def inspect_pdf_source(pdf_path: Path, page_indices: list[int] | int) -> dict:
         page_count = len(document)
         if page_count < 1:
             raise InvalidUpload("PDF has no pages")
-        if page_count > MAX_DOCUMENT_PAGES:
-            raise InvalidUpload(
-                f"PDF has more than the safety limit of {MAX_DOCUMENT_PAGES} pages"
-            )
         selected_pages = [page_indices] if isinstance(page_indices, int) else list(page_indices)
-        if not selected_pages or len(selected_pages) > MAX_SELECTED_PAGES:
-            raise InvalidUpload(f"select between 1 and {MAX_SELECTED_PAGES} pages")
+        if not selected_pages:
+            raise InvalidUpload("no page to paint")
         if any(index < 0 or index >= page_count for index in selected_pages):
             raise InvalidUpload(f"selected pages must be between 1 and {page_count}")
 
         dimensions = {}
+        oversized = []
         for index in selected_pages:
             rect = document[index].rect
             values = (rect.width, rect.height, rect.width * rect.height)
+            reason = None
             if not all(math.isfinite(value) and value > 0 for value in values):
-                raise InvalidUpload(f"page {index + 1} has invalid dimensions")
-            if max(values[:2]) > MAX_PAGE_SIDE_PT or values[2] > MAX_PAGE_AREA_PT2:
-                raise InvalidUpload(f"page {index + 1} exceeds the beta dimension limit")
-            analysis_pixels = values[2] * (ANALYSIS_DPI / 72.0) ** 2
-            if analysis_pixels > MAX_ANALYSIS_PIXELS:
-                raise InvalidUpload(f"selected page {index + 1} exceeds the processing budget")
+                reason = f"page {index + 1} has invalid dimensions"
+            elif max(values[:2]) > MAX_PAGE_SIDE_PT or values[2] > MAX_PAGE_AREA_PT2:
+                reason = f"page {index + 1} exceeds the beta dimension limit"
+            elif values[2] * (ANALYSIS_DPI / 72.0) ** 2 > MAX_ANALYSIS_PIXELS:
+                reason = f"page {index + 1} exceeds the processing budget"
+            if reason:
+                if not tolerate_oversized:
+                    raise InvalidUpload(reason)
+                oversized.append({"page": index, "reason": reason})
+                continue
             dimensions[str(index)] = {
                 "page_width_pt": rect.width,
                 "page_height_pt": rect.height,
             }
+        kept = [index for index in selected_pages if str(index) in dimensions]
+        if not kept:
+            raise InvalidUpload("no selected page fits the processing budget")
         return {
             "page_count": page_count,
             "page_dimensions": dimensions,
+            "selected_pages": kept,
+            "oversized_pages": oversized,
             # Legacy fields keep old feedback fixtures and one-page clients compatible.
-            "page_width_pt": dimensions[str(selected_pages[0])]["page_width_pt"],
-            "page_height_pt": dimensions[str(selected_pages[0])]["page_height_pt"],
+            "page_width_pt": dimensions[str(kept[0])]["page_width_pt"],
+            "page_height_pt": dimensions[str(kept[0])]["page_height_pt"],
         }
     finally:
         document.close()
@@ -695,14 +986,59 @@ def _render_preview(pdf_path: Path, page_index: int, out_path: Path,
     return size
 
 
+def discover_job_pages(store: JobStore, job_id: str, source: Path, state: dict) -> dict | None:
+    """Sweep a whole document for wiring diagrams; returns None when nothing is paintable."""
+    from .tools.discover_pages import scan_document
+
+    store.update(job_id, stage="scanning-document")
+    report = scan_document(
+        source, state.get("requested_convention", "auto"),
+        max_pages=int(os.getenv("PINTOR_SCAN_MAX_PAGES", "0")),
+    )
+    summary = {
+        "page_count": report["page_count"],
+        "pages_scanned": report["pages_scanned"],
+        "wiring_document": report["wiring_document"],
+        "confirmed": len(report["confirmed"]),
+        "candidates": len(report["candidates"]),
+        # Evidence is kept only for the pages that were chosen, so the operator can audit a sweep.
+        "evidence": report["evidence"][:500],
+    }
+    if not report["selected"]:
+        store.update(
+            job_id, status="declined", stage="no-wiring-page", discovery=summary,
+            page_count=report["page_count"],
+            decline_reason="no page in this document carries readable wire colour codes",
+            completed_pages=0, current_page=None,
+        )
+        return None
+    return store.update(
+        job_id, selected_pages=report["selected"], page=report["selected"][0],
+        selected_page_count=len(report["selected"]), discovery=summary,
+        page_count=report["page_count"],
+    )
+
+
 def process_job(store: JobStore, job_id: str) -> None:
     """Paint selected pages sequentially and release one preserved multi-page PDF."""
     try:
         state = store.update(job_id, status="processing", stage="reading-diagram")
         directory = store.job_dir(job_id)
         source = directory / "source.pdf"
-        selected_pages = state.get("selected_pages") or [state["page"]]
-        state = store.update(job_id, **inspect_pdf_source(source, selected_pages))
+        selected_pages = list(state.get("selected_pages") or [])
+        if not selected_pages and state.get("page") is not None:
+            selected_pages = [state["page"]]
+        sweeping = not selected_pages
+        if sweeping:
+            state = discover_job_pages(store, job_id, source, state)
+            if state is None:
+                return
+            selected_pages = state["selected_pages"]
+        # A page too large to analyse sinks an explicit request, but never a whole-manual sweep.
+        state = store.update(
+            job_id, **inspect_pdf_source(source, selected_pages, tolerate_oversized=sweeping),
+        )
+        selected_pages = state["selected_pages"]
         generated = directory / "generated"
         generated.mkdir(parents=True, exist_ok=True)
         page_results = []
@@ -806,6 +1142,7 @@ def process_job(store: JobStore, job_id: str) -> None:
                 preview_original=page_results[0]["preview_original"],
                 processing_mode="mixed" if len({p["processing_mode"] for p in page_results}) > 1
                     else page_results[0]["processing_mode"],
+                finished_at=int(time.time()),
             )
             return
 
@@ -879,11 +1216,12 @@ def process_job(store: JobStore, job_id: str) -> None:
             preview_original=page_results[0]["preview_original"],
             preview_painted=page_results[0]["preview_painted"],
             download=f"/api/jobs/{job_id}/download",
+            finished_at=int(time.time()),
         )
     except InvalidUpload as error:
         try:
             store.update(job_id, status="declined", stage="invalid-pdf",
-                         decline_reason=str(error)[:500])
+                         decline_reason=str(error)[:500], finished_at=int(time.time()))
         except Exception:
             pass
     except Exception as error:
@@ -891,7 +1229,8 @@ def process_job(store: JobStore, job_id: str) -> None:
             (store.job_dir(job_id) / "painted.pdf").unlink(missing_ok=True)
             store.update(job_id, status="failed", stage="failed",
                          error="processing failed; the result was quarantined",
-                         internal_error=f"{type(error).__name__}: {error}"[:1000])
+                         internal_error=f"{type(error).__name__}: {error}"[:1000],
+                         finished_at=int(time.time()))
         except Exception:
             pass
 
@@ -997,8 +1336,9 @@ def create_app(workspace_root: str | Path | None = None,
     max_concurrent_jobs = int(os.getenv("PINTOR_MAX_CONCURRENT_JOBS", "1"))
     account_limit = int(os.getenv("PINTOR_ACCOUNT_ATTEMPTS", "10"))
     account_window = int(os.getenv("PINTOR_ACCOUNT_WINDOW_SECONDS", "600"))
+    max_active_jobs = int(os.getenv("PINTOR_MAX_ACTIVE_JOBS", "20"))
     limiter = SlidingWindowLimiter()
-    processing_slots = threading.BoundedSemaphore(max(1, max_concurrent_jobs))
+    queue = ProcessingQueue(max(1, max_concurrent_jobs))
     origins = [value.strip() for value in os.getenv(
         "PINTOR_ALLOWED_ORIGINS",
         "https://engnata.eu,http://localhost:5173,http://127.0.0.1:5173",
@@ -1021,6 +1361,25 @@ def create_app(workspace_root: str | Path | None = None,
         decision: str
         note: str = Field(default="", max_length=2000)
 
+    class AccountStatusPayload(BaseModel):
+        status: str
+
+    class AccountRolePayload(BaseModel):
+        role: str
+
+    class AccountDeletePayload(BaseModel):
+        password: str = Field(min_length=1, max_length=128)
+
+    class RoundPayload(BaseModel):
+        name: str = Field(min_length=1, max_length=MAX_ROUND_NAME)
+
+    class RoundClosePayload(BaseModel):
+        note: str = Field(default="", max_length=2000)
+
+    class RoundItemPayload(BaseModel):
+        feedback_id: str
+        include: bool = True
+
     admin_username = os.getenv("PINTOR_ADMIN_USERNAME", "").strip()
     admin_password_hash = os.getenv("PINTOR_ADMIN_PASSWORD_HASH", "").strip()
     if bool(admin_username) != bool(admin_password_hash):
@@ -1033,15 +1392,39 @@ def create_app(workspace_root: str | Path | None = None,
         except AccountError as error:
             raise RuntimeError(f"administrator bootstrap failed: {error}") from error
 
+    def requeue_interrupted() -> None:
+        """After a restart, files that were waiting or mid-paint go back to the front of the line."""
+        pending = []
+        for record in store.list_all():
+            if record.get("status") in {"queued", "processing"}:
+                pending.append(record)
+        for record in sorted(pending, key=lambda item: item.get("created_at", 0)):
+            store.update(record["id"], status="queued", stage="queued")
+            job_id = record["id"]
+            queue.enqueue(job_id)
+
+            def resume(job_id=job_id) -> None:
+                queue.acquire(job_id)
+                try:
+                    processor(store, job_id)
+                finally:
+                    queue.release(job_id)
+
+            threading.Thread(target=resume, name=f"pintor-resume-{job_id[:8]}",
+                             daemon=True).start()
+
     @asynccontextmanager
     async def lifespan(_app):
         store.cleanup_expired()
+        if os.getenv("PINTOR_RESUME_ON_START", "1") == "1":
+            requeue_interrupted()
         yield
 
-    app = FastAPI(title="Pintor beta API", version="0.4.0", docs_url=None, redoc_url=None,
+    app = FastAPI(title="Pintor beta API", version="0.5.0", docs_url=None, redoc_url=None,
                   lifespan=lifespan)
     app.state.store = store
     app.state.accounts = accounts
+    app.state.queue = queue
 
     def request_ip(request: Request) -> str:
         if trust_proxy_headers:
@@ -1194,6 +1577,8 @@ def create_app(workspace_root: str | Path | None = None,
             return api_error(request, 429, "too many account attempts", retry_after)
         try:
             account = accounts.authenticate(payload.username, payload.password)
+        except AccountSuspended as error:
+            raise HTTPException(status_code=403, detail="this account is suspended") from error
         except InvalidCredentials as error:
             raise HTTPException(status_code=401, detail="invalid username or password") from error
         accounts.revoke(pintor_account)
@@ -1217,23 +1602,74 @@ def create_app(workspace_root: str | Path | None = None,
 
     @app.get("/api/account/jobs")
     def account_jobs(pintor_account: str | None = Cookie(default=None)):
+        """Everything this account owns: still queued, being painted, or finished.
+
+        ``since`` is the previous sign-in, so the interface can point at what finished while the
+        owner was away. Jobs older than the retention window are gone by then, by design.
+        """
         account = require_account(pintor_account)
         owner_token = _account_owner_token(session_secret, account["id"])
-        return {"jobs": store.list_owned(owner_token)}
+        since = account.get("previous_login_at") or 0
+        jobs = []
+        for record in store.list_owned(owner_token):
+            if record.get("status") == "queued":
+                record["queue_position"] = queue.position(record["id"])
+            record["finished_since_last_login"] = bool(
+                record.get("finished_at") and record["finished_at"] > since
+            )
+            jobs.append(record)
+        return {
+            "jobs": jobs,
+            "since": since,
+            "active": sum(job.get("status") in {"queued", "processing"} for job in jobs),
+            "retention_hours": store.retention_seconds // 3600,
+        }
+
+    @app.delete("/api/account", status_code=204)
+    def delete_own_account(request: Request, payload: AccountDeletePayload,
+                           pintor_account: str | None = Cookie(default=None)):
+        """Close an account: the password is retyped, then jobs and credentials both go away."""
+        account = require_account(pintor_account)
+        client = request_ip(request)
+        allowed, retry_after = limiter.allow(
+            f"account-delete:{client}", account_limit, account_window,
+        )
+        if not allowed:
+            return api_error(request, 429, "too many account attempts", retry_after)
+        try:
+            accounts.authenticate(account["username"], payload.password)
+        except AccountError as error:
+            raise HTTPException(status_code=401, detail="invalid password") from error
+        store.delete_all_owned(_account_owner_token(session_secret, account["id"]))
+        try:
+            accounts.delete_account(account["id"])
+        except LastAdministrator as error:
+            raise HTTPException(
+                status_code=409, detail="the beta must keep one active administrator",
+            ) from error
+        response = Response(status_code=204)
+        response.delete_cookie(ACCOUNT_COOKIE, path="/api", secure=secure_cookie,
+                               samesite="strict")
+        response.delete_cookie("pintor_session", path="/api", secure=secure_cookie,
+                               samesite="strict")
+        return response
 
     @app.get("/api/capabilities")
     def capabilities():
         from .labels.conventions import list_conventions
 
         return {
-            "version": "0.4.0",
+            "version": "0.5.0",
             "beta": True,
             "input": "pdf-vector-or-raster-with-visible-colour-codes",
             "page_modes": ["vector-text", "raster-ocr"],
             "scope": "selected-pages-in-one-preserved-document",
             "max_upload_bytes": max_bytes,
-            "max_document_pages": MAX_DOCUMENT_PAGES,
-            "max_selected_pages": MAX_SELECTED_PAGES,
+            "max_document_pages": None,
+            "max_selected_pages": None,
+            "page_number_ceiling": MAX_PAGE_NUMBER,
+            "automatic_page_discovery": True,
+            "max_active_jobs_per_account": max_active_jobs,
             "max_analysis_pixels": MAX_ANALYSIS_PIXELS,
             "max_concurrent_jobs": max(1, max_concurrent_jobs),
             "retention_hours": store.retention_seconds // 3600,
@@ -1241,12 +1677,14 @@ def create_app(workspace_root: str | Path | None = None,
             "model": "operator-mounted-revalidated-artifact-or-conservative-baseline",
             "automatic_training": False,
             "accounts_required": accounts_required,
+            "self_service_account_deletion": True,
+            "improvement_rounds": "expert-curated-offline-manifest",
         }
 
     @app.post("/api/jobs", status_code=202)
     async def create_job(request: Request, background: BackgroundTasks,
                          file: UploadFile = File(...),
-                         page: int = Form(0), pages: str = Form(""),
+                         page: int | None = Form(None), pages: str = Form(""),
                          convention: str = Form("auto"),
                          consent_learning: bool = Form(False),
                          pintor_session: str | None = Cookie(default=None),
@@ -1258,31 +1696,52 @@ def create_app(workspace_root: str | Path | None = None,
         session_id, account = resolve_owner(pintor_account, pintor_session)
         content = await file.read(max_bytes + 1)
         try:
-            selected_pages = parse_page_selection(pages) if pages.strip() else [page]
+            # No page notation and no explicit page: the worker sweeps the whole document.
+            if pages.strip():
+                selected_pages = parse_page_selection(pages)
+            elif page is not None:
+                selected_pages = [page]
+            else:
+                selected_pages = []
             state = store.create(content, file.filename, selected_pages, convention,
                                  consent_learning, max_bytes, _owner_hash(session_id),
-                                 max_storage_bytes=max_storage_bytes, account=account)
+                                 max_storage_bytes=max_storage_bytes, account=account,
+                                 max_active_jobs=max_active_jobs)
         except InvalidUpload as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
 
+        job_id = state["id"]
+        position = queue.enqueue(job_id)
+
         def run_queued_job() -> None:
-            with processing_slots:
-                processor(store, state["id"])
+            queue.acquire(job_id)
+            try:
+                processor(store, job_id)
+            finally:
+                queue.release(job_id)
 
         background.add_task(run_queued_job)
-        response = JSONResponse(_public_state(state), status_code=202)
+        response = JSONResponse(
+            {**_public_state(state), "queue_position": position}, status_code=202,
+        )
         response.set_cookie(
             "pintor_session", session_id, max_age=store.retention_seconds,
             httponly=True, secure=secure_cookie, samesite="strict", path="/api",
         )
         return response
 
+    def with_queue(state: dict) -> dict:
+        payload = _public_state(state)
+        if payload.get("status") == "queued":
+            payload["queue_position"] = queue.position(state["id"])
+        return payload
+
     @app.get("/api/jobs/{job_id}")
     def job_status(job_id: str, pintor_session: str | None = Cookie(default=None),
                    pintor_account: str | None = Cookie(default=None)):
         try:
             owner_token, _ = resolve_owner(pintor_account, pintor_session)
-            return _public_state(store.read_owned(job_id, owner_token))
+            return with_queue(store.read_owned(job_id, owner_token))
         except JobNotFound as error:
             raise HTTPException(status_code=404, detail="job not found") from error
 
@@ -1339,6 +1798,7 @@ def create_app(workspace_root: str | Path | None = None,
         try:
             owner_token, _ = resolve_owner(pintor_account, pintor_session)
             store.delete_owned(job_id, owner_token)
+            queue.forget(job_id)
         except JobNotFound as error:
             raise HTTPException(status_code=404, detail="job not found") from error
         return Response(status_code=204)
@@ -1397,6 +1857,137 @@ def create_app(workspace_root: str | Path | None = None,
         except ValueError as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
         return {"feedback": record}
+
+    def owner_token_for(account_id: str) -> str:
+        return _account_owner_token(session_secret, account_id)
+
+    def report_summary() -> dict[str, dict]:
+        summary: dict[str, dict] = {}
+        for record in store.list_feedback():
+            # list_feedback() hides account_id, so reports are grouped by the stored username.
+            key = record.get("account_username")
+            if not key:
+                continue
+            entry = summary.setdefault(key, {"total": 0, "accepted": 0, "pending": 0})
+            entry["total"] += 1
+            if record.get("decision") == "accepted":
+                entry["accepted"] += 1
+            elif not record.get("decision"):
+                entry["pending"] += 1
+        return summary
+
+    @app.get("/api/admin/accounts")
+    def admin_accounts(pintor_account: str | None = Cookie(default=None)):
+        admin = require_admin(pintor_account)
+        by_username = report_summary()
+        listing = []
+        for account in accounts.list_accounts():
+            summary = by_username.get(account["username"], {})
+            listing.append({
+                **account,
+                "job_count": store.count_owned(owner_token_for(account["id"])),
+                "report_count": summary.get("total", 0),
+                "accepted_count": summary.get("accepted", 0),
+                "pending_count": summary.get("pending", 0),
+                "is_self": account["id"] == admin["id"],
+            })
+        return {"accounts": listing}
+
+    def guard_self(admin: dict, account_id: str) -> None:
+        if admin["id"] == account_id:
+            raise HTTPException(
+                status_code=400,
+                detail="administrators cannot change their own account from the console",
+            )
+
+    @app.post("/api/admin/accounts/{account_id}/status")
+    def admin_account_status(account_id: str, payload: AccountStatusPayload,
+                             pintor_account: str | None = Cookie(default=None)):
+        admin = require_admin(pintor_account)
+        guard_self(admin, account_id)
+        try:
+            return {"account": accounts.set_status(account_id, payload.status)}
+        except LastAdministrator as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
+        except AccountError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.post("/api/admin/accounts/{account_id}/role")
+    def admin_account_role(account_id: str, payload: AccountRolePayload,
+                           pintor_account: str | None = Cookie(default=None)):
+        admin = require_admin(pintor_account)
+        guard_self(admin, account_id)
+        try:
+            return {"account": accounts.set_role(account_id, payload.role)}
+        except LastAdministrator as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
+        except AccountError as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.delete("/api/admin/accounts/{account_id}", status_code=204)
+    def admin_delete_account(account_id: str,
+                             pintor_account: str | None = Cookie(default=None)):
+        admin = require_admin(pintor_account)
+        guard_self(admin, account_id)
+        if not accounts.get(account_id):
+            raise HTTPException(status_code=404, detail="account not found")
+        store.delete_all_owned(owner_token_for(account_id))
+        try:
+            accounts.delete_account(account_id)
+        except LastAdministrator as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
+        except AccountError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+        return Response(status_code=204)
+
+    @app.get("/api/admin/rounds")
+    def admin_rounds(pintor_account: str | None = Cookie(default=None)):
+        require_admin(pintor_account)
+        current = store.open_round()
+        return {
+            "rounds": store.list_rounds(),
+            "open_round_id": current["id"] if current else None,
+        }
+
+    @app.post("/api/admin/rounds", status_code=201)
+    def admin_create_round(payload: RoundPayload,
+                           pintor_account: str | None = Cookie(default=None)):
+        admin = require_admin(pintor_account)
+        try:
+            return {"round": store.create_round(payload.name, admin)}
+        except ValueError as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
+
+    @app.get("/api/admin/rounds/{round_id}")
+    def admin_round_detail(round_id: str, pintor_account: str | None = Cookie(default=None)):
+        require_admin(pintor_account)
+        try:
+            return {"round": store.round_detail(round_id)}
+        except JobNotFound as error:
+            raise HTTPException(status_code=404, detail="round not found") from error
+
+    @app.post("/api/admin/rounds/{round_id}/items")
+    def admin_round_items(round_id: str, payload: RoundItemPayload,
+                          pintor_account: str | None = Cookie(default=None)):
+        require_admin(pintor_account)
+        try:
+            store.set_round_item(round_id, payload.feedback_id, payload.include)
+            return {"round": store.round_detail(round_id)}
+        except JobNotFound as error:
+            raise HTTPException(status_code=404, detail="round or report not found") from error
+        except ValueError as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
+
+    @app.post("/api/admin/rounds/{round_id}/close")
+    def admin_close_round(round_id: str, payload: RoundClosePayload,
+                          pintor_account: str | None = Cookie(default=None)):
+        admin = require_admin(pintor_account)
+        try:
+            return {"round": store.close_round(round_id, admin, payload.note)}
+        except JobNotFound as error:
+            raise HTTPException(status_code=404, detail="round not found") from error
+        except ValueError as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
 
     return app
 

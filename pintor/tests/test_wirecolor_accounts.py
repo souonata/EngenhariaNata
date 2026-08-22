@@ -12,8 +12,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from wirecolor.accounts import (
-    AccountError, AccountStore, DuplicateUsername, InvalidCredentials, hash_password,
-    verify_password,
+    AccountError, AccountStore, AccountSuspended, DuplicateUsername, InvalidCredentials,
+    LastAdministrator, hash_password, verify_password,
 )
 
 
@@ -80,6 +80,72 @@ class AccountStoreTests(unittest.TestCase):
         self.store.register("reserved", "1234")
         with self.assertRaises(DuplicateUsername):
             self.store.bootstrap_admin("RESERVED", credential)
+
+    def test_suspension_blocks_login_and_kills_live_sessions(self):
+        account = self.store.register("tester", "1234")
+        token, _ = self.store.create_session(account["id"])
+        self.assertIsNotNone(self.store.current(token))
+        suspended = self.store.set_status(account["id"], "suspended")
+        self.assertEqual(suspended["status"], "suspended")
+        self.assertIsNone(self.store.current(token))
+        with self.assertRaises(AccountSuspended):
+            self.store.authenticate("tester", "1234")
+        self.store.set_status(account["id"], "active")
+        self.assertEqual(self.store.authenticate("tester", "1234")["status"], "active")
+
+    def test_role_change_revokes_sessions_so_powers_never_travel_on_an_old_cookie(self):
+        account = self.store.register("promoted", "1234")
+        token, _ = self.store.create_session(account["id"])
+        self.assertEqual(self.store.set_role(account["id"], "admin")["role"], "admin")
+        self.assertIsNone(self.store.current(token))
+
+    def test_the_last_active_administrator_cannot_be_suspended_demoted_or_deleted(self):
+        admin = self.store.bootstrap_admin("operator", hash_password("admin-pass"))
+        self.store.register("plain", "1234")
+        for action in (
+            lambda: self.store.set_status(admin["id"], "suspended"),
+            lambda: self.store.set_role(admin["id"], "user"),
+            lambda: self.store.delete_account(admin["id"]),
+        ):
+            with self.assertRaises(LastAdministrator):
+                action()
+        second = self.store.register("second-admin", "1234", role="admin")
+        self.assertEqual(self.store.delete_account(admin["id"])["id"], admin["id"])
+        self.assertEqual(self.store.count_admins(), 1)
+        self.assertEqual(second["role"], "admin")
+
+    def test_bootstrap_reactivates_the_configured_administrator(self):
+        credential = hash_password("admin-pass")
+        admin = self.store.bootstrap_admin("operator", credential)
+        self.store.register("second-admin", "1234", role="admin")
+        self.store.set_status(admin["id"], "suspended")
+        restored = self.store.bootstrap_admin("operator", credential)
+        self.assertEqual(restored["status"], "active")
+        self.assertEqual(restored["id"], admin["id"])
+
+    def test_database_created_before_suspension_gains_the_column_with_everyone_active(self):
+        legacy = Path(self.temp.name) / "legacy.sqlite3"
+        with closing(sqlite3.connect(legacy)) as connection:
+            connection.executescript("""
+                CREATE TABLE accounts (
+                    id TEXT PRIMARY KEY,
+                    username TEXT NOT NULL,
+                    username_key TEXT NOT NULL UNIQUE,
+                    password_hash TEXT NOT NULL,
+                    role TEXT NOT NULL CHECK (role IN ('user', 'admin')),
+                    created_at INTEGER NOT NULL,
+                    updated_at INTEGER NOT NULL,
+                    last_login_at INTEGER
+                );
+            """)
+            connection.execute(
+                "INSERT INTO accounts VALUES (?, ?, ?, ?, 'user', 1, 1, NULL)",
+                ("abc", "old-tester", "old-tester", hash_password("1234")),
+            )
+            connection.commit()
+        store = AccountStore(legacy)
+        self.assertEqual(store.authenticate("old-tester", "1234")["status"], "active")
+        self.assertEqual(store.list_accounts()[0]["username"], "old-tester")
 
 
 if __name__ == "__main__":

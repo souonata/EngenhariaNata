@@ -32,6 +32,14 @@ class PintorApp extends App {
         this.adminFeedback = [];
         this.adminReport = null;
         this.adminView = 'painted';
+        this.adminSection = 'reports';
+        this.adminAccounts = [];
+        this.adminRounds = [];
+        this.adminRound = null;
+        this.openRoundId = null;
+        this.jobs = [];
+        this.jobsSince = 0;
+        this.jobsTimer = null;
         this.job = null;
         this.pollToken = 0;
         this.annotations = [];
@@ -66,6 +74,7 @@ class PintorApp extends App {
     setup() {
         this.bindAccess();
         this.bindAccounts();
+        this.bindOwnJobs();
         this.bindAdmin();
         this.bindUpload();
         this.bindViewer();
@@ -204,6 +213,8 @@ class PintorApp extends App {
                 let key = mode === 'login' ? 'account.invalid' : 'account.createFailed';
                 if (response.status === 409) {
                     key = 'account.duplicate';
+                } else if (response.status === 403) {
+                    key = 'account.suspended';
                 } else if (response.status === 429) {
                     key = 'account.rateLimited';
                 }
@@ -242,7 +253,300 @@ class PintorApp extends App {
             this.annotations = [];
             this.adminFeedback = [];
             this.adminReport = null;
+            this.adminAccounts = [];
+            this.adminRounds = [];
+            this.adminRound = null;
+            this.jobs = [];
+            window.clearTimeout(this.jobsTimer);
             this.showOnly(this.accountsRequired ? 'account' : 'upload');
+        }
+    }
+
+    bindOwnJobs() {
+        document.getElementById('openJobs').addEventListener('click', () => {
+            void this.openOwnJobs();
+        });
+        document.getElementById('closeJobs').addEventListener('click', () => {
+            window.clearTimeout(this.jobsTimer);
+            this.showOnly('upload');
+        });
+        document.getElementById('deleteAccountForm').addEventListener('submit', event => {
+            void this.deleteOwnAccount(event);
+        });
+    }
+
+    async openOwnJobs() {
+        this.showOnly('jobs');
+        document.getElementById('deleteAccountPassword').value = '';
+        document.getElementById('jobsStatus').hidden = true;
+        await this.refreshOwnJobs();
+    }
+
+    async refreshOwnJobs(quiet = false) {
+        const status = document.getElementById('jobsStatus');
+        try {
+            const response = await fetch(this.apiUrl('account/jobs'), {
+                credentials: 'include',
+                cache: 'no-store'
+            });
+            const body = await this.readResponse(response);
+            if (!response.ok) {
+                throw new Error(body.detail || i18n.t('jobs.loadFailed'));
+            }
+            this.jobs = body.jobs || [];
+            this.jobsSince = body.since || 0;
+            this.renderOwnJobs();
+            this.scheduleJobsRefresh();
+        } catch (error) {
+            if (!quiet) {
+                this.jobs = [];
+                this.renderOwnJobs();
+                this.showFetchStatus(status, error, 'jobs.loadFailed');
+            }
+        }
+    }
+
+    scheduleJobsRefresh() {
+        window.clearTimeout(this.jobsTimer);
+        const working = this.jobs.some(job => ['queued', 'processing'].includes(job.status));
+        // Polling only exists while something is moving; a settled list stops asking.
+        if (!working || document.getElementById('jobsPanel').hidden) {
+            return;
+        }
+        this.jobsTimer = window.setTimeout(() => void this.refreshOwnJobs(true), 2500);
+    }
+
+    jobStatusLabel(state) {
+        const key = {
+            ready: 'jobs.statusReady',
+            processing: 'jobs.statusProcessing',
+            queued: 'jobs.statusQueued',
+            declined: 'jobs.statusDeclined',
+            failed: 'jobs.statusFailed',
+            'revision-requested': 'jobs.statusRevision'
+        }[state];
+        return i18n.t(key || 'jobs.statusProcessing');
+    }
+
+    formatMoment(seconds) {
+        return new Intl.DateTimeFormat(document.documentElement.lang || undefined, {
+            dateStyle: 'medium',
+            timeStyle: 'short'
+        }).format(new Date((seconds || 0) * 1000));
+    }
+
+    jobPagesLabel(job) {
+        const pages = (job.selected_pages || []).map(page => Number(page) + 1);
+        if (!pages.length) {
+            return job.page_discovery === 'auto' ? i18n.t('jobs.sweeping') : '—';
+        }
+        const shown = pages.slice(0, 12).join(', ');
+        const label = pages.length > 12 ? `${shown}… (${pages.length})` : shown;
+        return job.page_discovery === 'auto'
+            ? `${label} · ${i18n.t('jobs.found').replace('{count}', String(pages.length))}`
+            : label;
+    }
+
+    jobProgressLabel(job) {
+        if (job.status === 'queued') {
+            return job.queue_position > 0
+                ? i18n.t('jobs.queuePosition').replace('{position}', String(job.queue_position))
+                : i18n.t('jobs.statusQueued');
+        }
+        if (job.status !== 'processing') {
+            return '';
+        }
+        const stageKey = `processing.stages.${job.stage}`;
+        const stage = i18n.t(stageKey);
+        const label = stage === stageKey ? i18n.t('processing.working') : stage;
+        if (job.selected_page_count) {
+            const done = Number(job.completed_pages || 0) + 1;
+            return `${label} · ${Math.min(done, job.selected_page_count)}/${job.selected_page_count}`;
+        }
+        return label;
+    }
+
+    renderOwnJobs() {
+        const list = document.getElementById('jobsList');
+        list.replaceChildren();
+        if (!this.jobs.length) {
+            const empty = document.createElement('p');
+            empty.className = 'admin-empty';
+            empty.textContent = i18n.t('jobs.empty');
+            list.append(empty);
+            return;
+        }
+        this.jobs.forEach(job => {
+            const card = document.createElement('article');
+            card.className = 'job-card';
+            const working = ['queued', 'processing'].includes(job.status);
+            if (working) {
+                card.classList.add('is-working');
+            }
+
+            const heading = document.createElement('div');
+            heading.className = 'job-card-heading';
+            const title = document.createElement('strong');
+            title.textContent = job.original_name || i18n.t('admin.unnamedDocument');
+            heading.append(title);
+            if (!working && job.finished_since_last_login) {
+                const badge = document.createElement('span');
+                badge.className = 'job-new-badge';
+                badge.textContent = i18n.t('jobs.newSinceLastLogin');
+                heading.append(badge);
+            }
+            const state = document.createElement('span');
+            state.className = 'status-pill';
+            state.textContent = this.jobStatusLabel(job.status);
+            heading.append(state);
+
+            const meta = document.createElement('p');
+            meta.className = 'job-card-meta';
+            meta.textContent =
+                `${i18n.t('jobs.pages')} ${this.jobPagesLabel(job)} · ` +
+                `${i18n.t('jobs.sent')} ${this.formatMoment(job.created_at)}`;
+            card.append(heading, meta);
+
+            const progress = this.jobProgressLabel(job);
+            if (progress) {
+                const line = document.createElement('p');
+                line.className = 'job-card-progress';
+                line.textContent = progress;
+                card.append(line);
+            }
+            const declineText = this.declineReasonLabel(job);
+            if (declineText) {
+                const reason = document.createElement('p');
+                reason.className = 'job-card-progress';
+                reason.textContent = declineText;
+                card.append(reason);
+            }
+
+            const actions = document.createElement('div');
+            actions.className = 'job-card-actions';
+            if (job.status === 'ready' || job.status === 'revision-requested') {
+                const open = document.createElement('button');
+                open.type = 'button';
+                open.className = 'secondary-button compact-button';
+                open.textContent = i18n.t('jobs.open');
+                open.addEventListener('click', () => void this.openStoredJob(job.id));
+                const download = document.createElement('a');
+                download.className = 'secondary-button compact-button';
+                download.href = this.apiUrl(`jobs/${job.id}/download`);
+                download.textContent = i18n.t('jobs.download');
+                actions.append(open, download);
+            }
+            const remove = document.createElement('button');
+            remove.type = 'button';
+            remove.className = 'text-button danger-text';
+            remove.textContent = i18n.t('jobs.delete');
+            remove.addEventListener('click', () => void this.deleteOwnJob(job.id));
+            actions.append(remove);
+
+            card.append(actions);
+            list.append(card);
+        });
+    }
+
+    declineReasonLabel(job) {
+        if (job.status !== 'declined') {
+            return '';
+        }
+        if (job.stage === 'no-wiring-page') {
+            return i18n.t('messages.noWiringPage');
+        }
+        return job.decline_reason || '';
+    }
+
+    async openStoredJob(jobId) {
+        const status = document.getElementById('jobsStatus');
+        try {
+            const response = await fetch(this.apiUrl(`jobs/${jobId}`), {
+                credentials: 'include',
+                cache: 'no-store'
+            });
+            const body = await this.readResponse(response);
+            if (!response.ok) {
+                throw new Error(body.detail || i18n.t('jobs.loadFailed'));
+            }
+            window.clearTimeout(this.jobsTimer);
+            this.job = body;
+            this.annotations = [];
+            this.handleTerminalJob(body);
+        } catch (error) {
+            this.showFetchStatus(status, error, 'jobs.loadFailed');
+        }
+    }
+
+    async deleteOwnJob(jobId) {
+        if (!window.confirm(i18n.t('jobs.confirmDelete'))) {
+            return;
+        }
+        const status = document.getElementById('jobsStatus');
+        try {
+            const response = await fetch(this.apiUrl(`jobs/${jobId}`), {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+            if (!response.ok) {
+                const body = await this.readResponse(response);
+                throw new Error(body.detail || i18n.t('jobs.deleteFailed'));
+            }
+            if (this.job?.id === jobId) {
+                this.job = null;
+                this.annotations = [];
+            }
+            this.jobs = this.jobs.filter(job => job.id !== jobId);
+            this.renderOwnJobs();
+            this.showStatus(status, i18n.t('jobs.deleted'), 'success', 'jobs.deleted');
+        } catch (error) {
+            this.showFetchStatus(status, error, 'jobs.deleteFailed');
+        }
+    }
+
+    async deleteOwnAccount(event) {
+        event.preventDefault();
+        const status = document.getElementById('jobsStatus');
+        const field = document.getElementById('deleteAccountPassword');
+        const button = document.getElementById('deleteAccountButton');
+        const password = field.value;
+        if (!password) {
+            this.showStatus(status, i18n.t('jobs.wrongPassword'), 'error', 'jobs.wrongPassword');
+            return;
+        }
+        if (!window.confirm(i18n.t('jobs.confirmAccount'))) {
+            return;
+        }
+        button.disabled = true;
+        try {
+            const response = await fetch(this.apiUrl('account'), {
+                method: 'DELETE',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+            if (!response.ok) {
+                const body = await this.readResponse(response);
+                const key =
+                    response.status === 401 ? 'jobs.wrongPassword' : 'jobs.accountDeleteFailed';
+                throw new Error(i18n.t(key) || body.detail);
+            }
+            field.value = '';
+            this.account = null;
+            this.job = null;
+            this.jobs = [];
+            this.annotations = [];
+            this.showOnly(this.accountsRequired ? 'account' : 'upload');
+            this.showStatus(
+                document.getElementById('accountStatus'),
+                i18n.t('jobs.accountDeleted'),
+                'success',
+                'jobs.accountDeleted'
+            );
+        } catch (error) {
+            this.showFetchStatus(status, error, 'jobs.accountDeleteFailed');
+        } finally {
+            button.disabled = false;
         }
     }
 
@@ -271,6 +575,34 @@ class PintorApp extends App {
                 void this.decideFeedback(button.dataset.decision);
             }
         });
+        document.querySelector('.admin-tabs').addEventListener('click', event => {
+            const tab = event.target.closest('[data-admin-view]');
+            if (tab) {
+                void this.showAdminSection(tab.dataset.adminView);
+            }
+        });
+        document.getElementById('roundForm').addEventListener('submit', event => {
+            void this.createRound(event);
+        });
+        document.getElementById('adminRoundClose').addEventListener('click', () => {
+            void this.closeRound();
+        });
+    }
+
+    async showAdminSection(section) {
+        this.adminSection = section;
+        document.querySelectorAll('.admin-tabs [data-admin-view]').forEach(tab => {
+            tab.classList.toggle('is-active', tab.dataset.adminView === section);
+        });
+        document.getElementById('adminViewReports').hidden = section !== 'reports';
+        document.getElementById('adminViewAccounts').hidden = section !== 'accounts';
+        document.getElementById('adminViewRounds').hidden = section !== 'rounds';
+        document.getElementById('adminStatus').hidden = true;
+        if (section === 'accounts') {
+            await this.loadAccounts();
+        } else if (section === 'rounds') {
+            await this.loadRounds();
+        }
     }
 
     async openAdmin() {
@@ -280,6 +612,13 @@ class PintorApp extends App {
         this.showOnly('admin');
         const status = document.getElementById('adminStatus');
         status.hidden = true;
+        this.adminSection = 'reports';
+        document.querySelectorAll('.admin-tabs [data-admin-view]').forEach(tab => {
+            tab.classList.toggle('is-active', tab.dataset.adminView === 'reports');
+        });
+        document.getElementById('adminViewReports').hidden = false;
+        document.getElementById('adminViewAccounts').hidden = true;
+        document.getElementById('adminViewRounds').hidden = true;
         try {
             const response = await fetch(this.apiUrl('admin/feedback'), {
                 credentials: 'include',
@@ -503,6 +842,421 @@ class PintorApp extends App {
         }
     }
 
+    // ---- Account administration ------------------------------------------------------
+
+    async loadAccounts() {
+        const status = document.getElementById('adminStatus');
+        try {
+            const response = await fetch(this.apiUrl('admin/accounts'), {
+                credentials: 'include',
+                cache: 'no-store'
+            });
+            const body = await this.readResponse(response);
+            if (!response.ok) {
+                throw new Error(body.detail || i18n.t('admin.accountsFailed'));
+            }
+            this.adminAccounts = body.accounts || [];
+            this.renderAccounts();
+        } catch (error) {
+            this.adminAccounts = [];
+            this.renderAccounts();
+            this.showFetchStatus(status, error, 'admin.accountsFailed');
+        }
+    }
+
+    renderAccounts() {
+        const body = document.getElementById('adminAccountsBody');
+        body.replaceChildren();
+        if (!this.adminAccounts.length) {
+            const row = document.createElement('tr');
+            const cell = document.createElement('td');
+            cell.colSpan = 7;
+            cell.className = 'admin-empty';
+            cell.textContent = i18n.t('admin.accountsEmpty');
+            row.append(cell);
+            body.append(row);
+            return;
+        }
+        this.adminAccounts.forEach(account => {
+            const row = document.createElement('tr');
+            if (account.status === 'suspended') {
+                row.classList.add('is-suspended');
+            }
+
+            const name = document.createElement('td');
+            const label = document.createElement('strong');
+            label.textContent = account.username;
+            name.append(label);
+            if (account.is_self) {
+                const self = document.createElement('small');
+                self.textContent = ` (${i18n.t('admin.you')})`;
+                name.append(self);
+            }
+
+            const role = document.createElement('td');
+            role.textContent = i18n.t(
+                account.role === 'admin' ? 'admin.roleAdmin' : 'admin.roleUser'
+            );
+
+            const state = document.createElement('td');
+            const pill = document.createElement('span');
+            pill.className = 'status-pill';
+            pill.textContent = i18n.t(
+                account.status === 'suspended' ? 'admin.statusSuspended' : 'admin.statusActive'
+            );
+            state.append(pill);
+
+            const jobs = document.createElement('td');
+            jobs.textContent = String(account.job_count ?? 0);
+
+            const reports = document.createElement('td');
+            reports.textContent = i18n
+                .t('admin.reportsCount')
+                .replace('{total}', String(account.report_count ?? 0))
+                .replace('{accepted}', String(account.accepted_count ?? 0))
+                .replace('{pending}', String(account.pending_count ?? 0));
+
+            const seen = document.createElement('td');
+            seen.textContent = account.last_login_at
+                ? this.formatMoment(account.last_login_at)
+                : i18n.t('admin.never');
+
+            const actions = document.createElement('td');
+            actions.className = 'admin-row-actions';
+            if (!account.is_self) {
+                const suspended = account.status === 'suspended';
+                actions.append(
+                    this.accountAction(
+                        i18n.t(suspended ? 'admin.reactivate' : 'admin.suspend'),
+                        suspended
+                            ? ''
+                            : i18n.t('admin.confirmSuspend').replace('{user}', account.username),
+                        () =>
+                            this.changeAccount(account, 'status', {
+                                status: suspended ? 'active' : 'suspended'
+                            })
+                    )
+                );
+                const promoting = account.role !== 'admin';
+                actions.append(
+                    this.accountAction(
+                        i18n.t(promoting ? 'admin.promote' : 'admin.demote'),
+                        i18n
+                            .t(promoting ? 'admin.confirmPromote' : 'admin.confirmDemote')
+                            .replace('{user}', account.username),
+                        () =>
+                            this.changeAccount(account, 'role', {
+                                role: promoting ? 'admin' : 'user'
+                            })
+                    )
+                );
+                actions.append(
+                    this.accountAction(
+                        i18n.t('admin.removeAccount'),
+                        i18n.t('admin.confirmRemove').replace('{user}', account.username),
+                        () => this.removeAccount(account),
+                        'danger-text'
+                    )
+                );
+            } else {
+                const locked = document.createElement('small');
+                locked.textContent = i18n.t('admin.selfLocked');
+                actions.append(locked);
+            }
+
+            row.append(name, role, state, jobs, reports, seen, actions);
+            body.append(row);
+        });
+    }
+
+    accountAction(label, confirmation, run, extraClass = '') {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `text-button${extraClass ? ` ${extraClass}` : ''}`;
+        button.textContent = label;
+        button.addEventListener('click', () => {
+            if (confirmation && !window.confirm(confirmation)) {
+                return;
+            }
+            void run();
+        });
+        return button;
+    }
+
+    async changeAccount(account, action, payload) {
+        const status = document.getElementById('adminStatus');
+        try {
+            const response = await fetch(this.apiUrl(`admin/accounts/${account.id}/${action}`), {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const body = await this.readResponse(response);
+            if (!response.ok) {
+                const byStatus = { 409: 'admin.lastAdmin', 400: 'admin.selfLocked' };
+                const key = byStatus[response.status] || 'admin.accountFailed';
+                throw new Error(i18n.t(key) || body.detail);
+            }
+            await this.loadAccounts();
+            this.showStatus(status, i18n.t('admin.accountSaved'), 'success', 'admin.accountSaved');
+        } catch (error) {
+            this.showFetchStatus(status, error, 'admin.accountFailed');
+        }
+    }
+
+    async removeAccount(account) {
+        const status = document.getElementById('adminStatus');
+        try {
+            const response = await fetch(this.apiUrl(`admin/accounts/${account.id}`), {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+            if (!response.ok) {
+                const body = await this.readResponse(response);
+                const key = response.status === 409 ? 'admin.lastAdmin' : 'admin.accountFailed';
+                throw new Error(i18n.t(key) || body.detail);
+            }
+            await this.loadAccounts();
+            this.showStatus(
+                status,
+                i18n.t('admin.accountRemoved'),
+                'success',
+                'admin.accountRemoved'
+            );
+        } catch (error) {
+            this.showFetchStatus(status, error, 'admin.accountFailed');
+        }
+    }
+
+    // ---- Improvement rounds ------------------------------------------------------------
+
+    async loadRounds(selectId = null) {
+        const status = document.getElementById('adminStatus');
+        try {
+            const response = await fetch(this.apiUrl('admin/rounds'), {
+                credentials: 'include',
+                cache: 'no-store'
+            });
+            const body = await this.readResponse(response);
+            if (!response.ok) {
+                throw new Error(body.detail || i18n.t('admin.roundsFailed'));
+            }
+            this.adminRounds = body.rounds || [];
+            this.openRoundId = body.open_round_id || null;
+            this.renderRounds();
+            const target =
+                selectId ||
+                this.adminRound?.id ||
+                this.openRoundId ||
+                this.adminRounds[0]?.id ||
+                null;
+            if (target) {
+                await this.openRound(target);
+            } else {
+                this.adminRound = null;
+                document.getElementById('adminRoundDetail').hidden = true;
+            }
+        } catch (error) {
+            this.adminRounds = [];
+            this.renderRounds();
+            this.showFetchStatus(status, error, 'admin.roundsFailed');
+        }
+    }
+
+    renderRounds() {
+        const list = document.getElementById('adminRoundsList');
+        list.replaceChildren();
+        document.getElementById('adminRoundsCount').textContent = String(this.adminRounds.length);
+        if (!this.adminRounds.length) {
+            const empty = document.createElement('p');
+            empty.className = 'admin-empty';
+            empty.textContent = i18n.t('admin.roundsEmpty');
+            list.append(empty);
+            return;
+        }
+        this.adminRounds.forEach(round => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'admin-feedback-item';
+            if (round.id === this.adminRound?.id) {
+                button.classList.add('is-active');
+            }
+            const title = document.createElement('strong');
+            title.textContent = round.name;
+            const meta = document.createElement('span');
+            meta.textContent = `${round.item_count} · ${this.formatMoment(round.created_at)}`;
+            const state = document.createElement('small');
+            state.textContent = i18n.t(
+                round.status === 'closed' ? 'admin.roundStatusClosed' : 'admin.roundStatusOpen'
+            );
+            button.append(title, meta, state);
+            button.addEventListener('click', () => void this.openRound(round.id));
+            list.append(button);
+        });
+    }
+
+    async openRound(roundId) {
+        const status = document.getElementById('adminStatus');
+        try {
+            const response = await fetch(this.apiUrl(`admin/rounds/${roundId}`), {
+                credentials: 'include',
+                cache: 'no-store'
+            });
+            const body = await this.readResponse(response);
+            if (!response.ok) {
+                throw new Error(body.detail || i18n.t('admin.roundsFailed'));
+            }
+            this.adminRound = body.round;
+            this.renderRounds();
+            this.renderRoundDetail();
+        } catch (error) {
+            this.showFetchStatus(status, error, 'admin.roundsFailed');
+        }
+    }
+
+    renderRoundDetail() {
+        const detail = document.getElementById('adminRoundDetail');
+        if (!this.adminRound) {
+            detail.hidden = true;
+            return;
+        }
+        const round = this.adminRound;
+        const closed = round.status === 'closed';
+        detail.hidden = false;
+        document.getElementById('adminRoundName').textContent = round.name;
+        document.getElementById('adminRoundCreated').textContent =
+            `${i18n.t(closed ? 'admin.roundClosedBy' : 'admin.roundOpenedBy')} ` +
+            `${(closed ? round.closed_by : round.created_by) || '—'} · ` +
+            `${this.formatMoment(closed ? round.closed_at : round.created_at)}`;
+        document.getElementById('adminRoundStatus').textContent = i18n.t(
+            closed ? 'admin.roundStatusClosed' : 'admin.roundStatusOpen'
+        );
+        const note = document.getElementById('adminRoundNote');
+        note.value = round.note || '';
+        note.disabled = closed;
+        document.getElementById('adminRoundClose').disabled = closed;
+
+        const items = document.getElementById('adminRoundItems');
+        items.replaceChildren();
+        if (!round.items?.length) {
+            const empty = document.createElement('p');
+            empty.className = 'admin-empty';
+            empty.textContent = i18n.t('admin.roundEmpty');
+            items.append(empty);
+            return;
+        }
+        round.items.forEach(item => {
+            const row = document.createElement('div');
+            row.className = 'admin-round-item';
+            const label = document.createElement('span');
+            if (item.missing) {
+                label.textContent = i18n.t('admin.roundMissing');
+                row.classList.add('is-missing');
+            } else {
+                const pages = (item.pages || []).map(page => Number(page) + 1).join(', ');
+                label.textContent =
+                    `${item.original_name || i18n.t('admin.unnamedDocument')} · ` +
+                    `${item.account_username || i18n.t('admin.unknownUser')} · ` +
+                    `${i18n.t('admin.page')} ${pages || '—'}`;
+            }
+            row.append(label);
+            if (!closed) {
+                const remove = document.createElement('button');
+                remove.type = 'button';
+                remove.className = 'text-button danger-text';
+                remove.textContent = i18n.t('admin.roundRemove');
+                remove.addEventListener('click', () => void this.removeFromRound(item.id));
+                row.append(remove);
+            }
+            items.append(row);
+        });
+    }
+
+    async createRound(event) {
+        event.preventDefault();
+        const status = document.getElementById('adminStatus');
+        const field = document.getElementById('roundName');
+        const name = field.value.trim();
+        if (!name) {
+            return;
+        }
+        try {
+            const response = await fetch(this.apiUrl('admin/rounds'), {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+            const body = await this.readResponse(response);
+            if (!response.ok) {
+                const key = response.status === 409 ? 'admin.roundOpenExists' : 'admin.roundFailed';
+                throw new Error(i18n.t(key) || body.detail);
+            }
+            field.value = '';
+            this.adminRound = null;
+            await this.loadRounds(body.round.id);
+            this.showStatus(status, i18n.t('admin.roundCreated'), 'success', 'admin.roundCreated');
+        } catch (error) {
+            this.showFetchStatus(status, error, 'admin.roundFailed');
+        }
+    }
+
+    async removeFromRound(feedbackId) {
+        if (!this.adminRound) {
+            return;
+        }
+        const status = document.getElementById('adminStatus');
+        try {
+            const response = await fetch(this.apiUrl(`admin/rounds/${this.adminRound.id}/items`), {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ feedback_id: feedbackId, include: false })
+            });
+            const body = await this.readResponse(response);
+            if (!response.ok) {
+                throw new Error(body.detail || i18n.t('admin.roundFailed'));
+            }
+            this.adminRound = body.round;
+            this.renderRoundDetail();
+            await this.loadRounds(this.adminRound.id);
+            this.showStatus(status, i18n.t('admin.roundRemoved'), 'success', 'admin.roundRemoved');
+        } catch (error) {
+            this.showFetchStatus(status, error, 'admin.roundFailed');
+        }
+    }
+
+    async closeRound() {
+        if (!this.adminRound || !window.confirm(i18n.t('admin.roundConfirmClose'))) {
+            return;
+        }
+        const status = document.getElementById('adminStatus');
+        const button = document.getElementById('adminRoundClose');
+        button.disabled = true;
+        try {
+            const response = await fetch(this.apiUrl(`admin/rounds/${this.adminRound.id}/close`), {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    note: document.getElementById('adminRoundNote').value.trim()
+                })
+            });
+            const body = await this.readResponse(response);
+            if (!response.ok) {
+                throw new Error(body.detail || i18n.t('admin.roundFailed'));
+            }
+            await this.loadRounds(body.round.id);
+            this.showStatus(status, i18n.t('admin.roundClosed'), 'success', 'admin.roundClosed');
+        } catch (error) {
+            this.showFetchStatus(status, error, 'admin.roundFailed');
+        } finally {
+            // A closed round keeps the button disabled; only a failure hands it back.
+            button.disabled = this.adminRound?.status === 'closed';
+        }
+    }
+
     bindUpload() {
         const form = document.getElementById('uploadForm');
         const input = document.getElementById('pdfFile');
@@ -524,12 +1278,12 @@ class PintorApp extends App {
             });
         });
         dropzone.addEventListener('drop', event => {
-            const file = event.dataTransfer?.files?.[0];
-            if (!file) {
+            const dropped = [...(event.dataTransfer?.files || [])];
+            if (!dropped.length) {
                 return;
             }
             const transfer = new DataTransfer();
-            transfer.items.add(file);
+            dropped.forEach(file => transfer.items.add(file));
             input.files = transfer.files;
             this.showSelectedFile();
         });
@@ -538,10 +1292,20 @@ class PintorApp extends App {
     }
 
     showSelectedFile() {
-        const file = document.getElementById('pdfFile').files[0];
-        document.getElementById('fileName').textContent = file
-            ? `${file.name} · ${this.formatBytes(file.size)}`
-            : i18n.t('upload.dropHint');
+        const files = [...document.getElementById('pdfFile').files];
+        const label = document.getElementById('fileName');
+        if (!files.length) {
+            label.textContent = i18n.t('upload.dropHint');
+            return;
+        }
+        if (files.length === 1) {
+            label.textContent = `${files[0].name} · ${this.formatBytes(files[0].size)}`;
+            return;
+        }
+        const total = files.reduce((sum, file) => sum + file.size, 0);
+        label.textContent = `${i18n
+            .t('upload.filesChosen')
+            .replace('{count}', String(files.length))} · ${this.formatBytes(total)}`;
     }
 
     formatBytes(bytes) {
@@ -553,49 +1317,59 @@ class PintorApp extends App {
 
     async submitPdf(event) {
         event.preventDefault();
-        const file = document.getElementById('pdfFile').files[0];
+        const files = [...document.getElementById('pdfFile').files];
         const status = document.getElementById('uploadStatus');
         if (
-            !file ||
-            (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf')
+            !files.length ||
+            files.some(
+                file => !file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf'
+            )
         ) {
             this.showStatus(status, i18n.t('messages.choosePdf'), 'error');
             return;
         }
-        if (file.size > 25 * 1024 * 1024) {
+        if (files.some(file => file.size > 25 * 1024 * 1024)) {
             this.showStatus(status, i18n.t('messages.fileTooLarge'), 'error');
             return;
         }
 
-        let pages;
-        try {
-            pages = parsePageSelection(document.getElementById('pageNumbers').value);
-        } catch {
-            this.showStatus(status, i18n.t('messages.invalidPage'), 'error');
-            return;
+        // An empty page field is a request, not an omission: sweep the document.
+        const notation = document.getElementById('pageNumbers').value.trim();
+        let pages = [];
+        if (notation) {
+            try {
+                pages = parsePageSelection(notation);
+            } catch {
+                this.showStatus(status, i18n.t('messages.invalidPage'), 'error');
+                return;
+            }
         }
 
         this.setUploadBusy(true);
-        this.showOnly('processing');
-        document.getElementById('processingStage').textContent = i18n.t('processing.uploading');
-        const form = new FormData();
-        form.append('file', file);
-        form.append('pages', pages.join(','));
-        form.append('convention', document.getElementById('convention').value);
-        form.append('consent_learning', String(document.getElementById('trainingConsent').checked));
+        if (files.length === 1) {
+            this.showOnly('processing');
+            document.getElementById('processingStage').textContent = i18n.t('processing.uploading');
+        }
 
         try {
-            const response = await fetch(this.apiUrl('jobs'), {
-                method: 'POST',
-                credentials: 'include',
-                body: form
-            });
-            const body = await this.readResponse(response);
-            if (!response.ok) {
-                throw new Error(body.detail || i18n.t('messages.uploadFailed'));
+            const created = [];
+            for (const file of files) {
+                created.push(await this.createJob(file, pages));
             }
-            this.job = body;
-            await this.pollJob(body.id);
+            document.getElementById('pdfFile').value = '';
+            this.showSelectedFile();
+            if (created.length === 1) {
+                this.job = created[0];
+                await this.pollJob(created[0].id);
+                return;
+            }
+            // A batch has no single result to show, so hand the owner the queue instead.
+            await this.openOwnJobs();
+            this.showStatus(
+                document.getElementById('jobsStatus'),
+                i18n.t('jobs.queued').replace('{count}', String(created.length)),
+                'success'
+            );
         } catch (error) {
             this.returnToUpload();
             this.showStatus(
@@ -606,6 +1380,26 @@ class PintorApp extends App {
         } finally {
             this.setUploadBusy(false);
         }
+    }
+
+    async createJob(file, pages) {
+        const form = new FormData();
+        form.append('file', file);
+        if (pages.length) {
+            form.append('pages', pages.join(','));
+        }
+        form.append('convention', document.getElementById('convention').value);
+        form.append('consent_learning', String(document.getElementById('trainingConsent').checked));
+        const response = await fetch(this.apiUrl('jobs'), {
+            method: 'POST',
+            credentials: 'include',
+            body: form
+        });
+        const body = await this.readResponse(response);
+        if (!response.ok) {
+            throw new Error(body.detail || i18n.t('messages.uploadFailed'));
+        }
+        return body;
     }
 
     async readResponse(response) {
@@ -641,7 +1435,11 @@ class PintorApp extends App {
             }
             this.job = body;
             this.updateProcessingStage(body.stage);
-            if (body.current_page !== null && body.current_page !== undefined) {
+            if (body.status === 'queued' && body.queue_position > 0) {
+                document.getElementById('processingStage').textContent = i18n
+                    .t('processing.queuePosition')
+                    .replace('{position}', String(body.queue_position));
+            } else if (body.current_page !== null && body.current_page !== undefined) {
                 document.getElementById('processingStage').textContent +=
                     ` · ${Number(body.completed_pages || 0) + 1}/${body.selected_page_count || 1}`;
             }
@@ -753,6 +1551,7 @@ class PintorApp extends App {
     showDeclined(job) {
         this.showOnly('declined');
         document.getElementById('declineReason').textContent =
+            (job.stage === 'no-wiring-page' ? i18n.t('messages.noWiringPage') : '') ||
             job.decline_reason ||
             (job.stage === 'confirm-colour-convention'
                 ? i18n.t('declined.conventionAmbiguous')
@@ -778,6 +1577,7 @@ class PintorApp extends App {
         document.getElementById('processingPanel').hidden = name !== 'processing';
         document.getElementById('reviewPanel').hidden = name !== 'review';
         document.getElementById('declinedPanel').hidden = name !== 'declined';
+        document.getElementById('jobsPanel').hidden = name !== 'jobs';
         document.getElementById('adminPanel').hidden = name !== 'admin';
         document.getElementById('accountBar').hidden =
             !this.account || ['access', 'account'].includes(name);
@@ -1255,6 +2055,16 @@ class PintorApp extends App {
         if (this.account) {
             document.getElementById('accountName').textContent = this.account.username;
             document.getElementById('openAdmin').hidden = this.account.role !== 'admin';
+        }
+        if (this.jobs.length) {
+            this.renderOwnJobs();
+        }
+        if (this.adminAccounts.length) {
+            this.renderAccounts();
+        }
+        if (this.adminRounds.length) {
+            this.renderRounds();
+            this.renderRoundDetail();
         }
         if (this.adminFeedback.length) {
             this.renderAdminQueue();
