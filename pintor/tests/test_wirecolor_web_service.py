@@ -1,4 +1,5 @@
 """Web boundary tests: upload validation, tenant isolation, feedback schema, and deletion."""
+import asyncio
 import itertools
 import json
 import os
@@ -19,6 +20,7 @@ from wirecolor.web_service import (
     JobStore,
     MAX_PAGE_NUMBER,
     ProcessingQueue,
+    _cleanup_expired_periodically,
     _owner_hash,
     create_app,
     inspect_pdf_source,
@@ -61,6 +63,24 @@ def _write_overlay(path, width=300, height=200):
     self_ok = cv2.imwrite(str(path), rgba)
     if not self_ok:
         raise RuntimeError("test overlay encode failed")
+
+
+class RetentionLoopTests(unittest.IsolatedAsyncioTestCase):
+    async def test_cleanup_runs_without_waiting_for_a_restart_or_new_upload(self):
+        class CountingStore:
+            def __init__(self):
+                self.calls = 0
+
+            def cleanup_expired(self):
+                self.calls += 1
+
+        store = CountingStore()
+        task = asyncio.create_task(_cleanup_expired_periodically(store, 0.01))
+        await asyncio.sleep(0.035)
+        task.cancel()
+        with self.assertRaises(asyncio.CancelledError):
+            await task
+        self.assertGreaterEqual(store.calls, 2)
 
 
 class WebServiceTests(unittest.TestCase):
@@ -1118,7 +1138,7 @@ class DiscoveryAndQueueTests(unittest.TestCase):
 
 
 class LargeManualTests(unittest.TestCase):
-    """A 200 MB manual kept for good: streamed in, quota-bounded, supervised by progress."""
+    """A 200 MB manual: streamed in, quota-bounded, supervised, and retention-limited."""
 
     def setUp(self):
         try:
@@ -1219,6 +1239,29 @@ class LargeManualTests(unittest.TestCase):
         self.assertFalse(store.job_dir_exists(plain["id"]))
         self.assertTrue((store.job_dir(shared["id"]) / "source.pdf").is_file())
         self.assertEqual([record["id"] for record in store.list_all()], [shared["id"]])
+
+    def test_retention_starts_after_processing_and_never_removes_an_active_job(self):
+        store = JobStore(self.root / "active-retention")
+        session = "ef" * 32
+        job = store.create(
+            _pdf_bytes(), "waiting.pdf", [0], "auto", False,
+            25 * 1024 * 1024, _owner_hash(session),
+        )
+        state_path = store.job_dir(job["id"]) / "state.json"
+        long_ago = int(time.time()) - 40 * 3600
+
+        for status in ("queued", "processing"):
+            record = json.loads(state_path.read_text(encoding="utf-8"))
+            record.update(status=status, updated_at=long_ago)
+            state_path.write_text(json.dumps(record), encoding="utf-8")
+            self.assertEqual(store.cleanup_expired(), 0)
+            self.assertTrue(store.job_dir_exists(job["id"]))
+
+        record = json.loads(state_path.read_text(encoding="utf-8"))
+        record.update(status="ready", updated_at=long_ago, finished_at=long_ago)
+        state_path.write_text(json.dumps(record), encoding="utf-8")
+        self.assertEqual(store.cleanup_expired(), 1)
+        self.assertFalse(store.job_dir_exists(job["id"]))
 
     def test_a_report_kept_without_consent_does_not_keep_the_manual(self):
         store = JobStore(self.root / "no-consent")

@@ -5,6 +5,7 @@ review submission. Source files remain outside the served Engenharia NATA tree. 
 copied into the training inbox only after explicit consent; a single review never changes the
 production model directly.
 """
+import asyncio
 import hashlib
 import hmac
 import ipaddress
@@ -50,6 +51,7 @@ ACCOUNT_OWNER_PURPOSE = b"pintor-account-owner-v1:"
 FEEDBACK_ID_RE = re.compile(r"^[a-f0-9]{32}$")
 ROUND_ID_RE = re.compile(r"^[a-f0-9]{32}$")
 MAX_ROUND_NAME = 80
+ACTIVE_JOB_STATUSES = frozenset({"queued", "processing"})
 
 
 class JobNotFound(KeyError):
@@ -780,7 +782,12 @@ class JobStore:
         return shared
 
     def cleanup_expired(self, now: int | None = None) -> int:
-        """Erase every upload past the retention window that was not shared for improvement."""
+        """Erase expired terminal jobs that were not deliberately shared for improvement.
+
+        A queued or running job has no download window yet. Its final state update starts the
+        retention clock, so a long queue or a legitimate multi-hour manual cannot be removed from
+        underneath the worker.
+        """
         threshold = (now or int(time.time())) - self.retention_seconds
         protected = self.shared_job_ids()
         removed = 0
@@ -791,6 +798,8 @@ class JobStore:
             except Exception:
                 continue
             if str(state.get("id")) in protected:
+                continue
+            if state.get("status") in ACTIVE_JOB_STATUSES:
                 continue
             if state.get("updated_at", 0) >= threshold:
                 continue
@@ -1453,6 +1462,13 @@ def process_job_isolated(store: JobStore, job_id: str) -> None:
                          error=f"WorkerExit: isolated worker exited with code {worker.exitcode}")
 
 
+async def _cleanup_expired_periodically(store: JobStore, interval_seconds: float) -> None:
+    """Keep the 24-hour contract even when the API receives no new uploads."""
+    while True:
+        await asyncio.sleep(interval_seconds)
+        store.cleanup_expired()
+
+
 def create_app(workspace_root: str | Path | None = None,
                processor: Callable[[JobStore, str], None] | None = None):
     """Create the FastAPI application without making the CLI depend on web packages."""
@@ -1467,6 +1483,9 @@ def create_app(workspace_root: str | Path | None = None,
     # owner marked errors and agreed to share it survives the window.
     store = JobStore(workspace_root or os.getenv("PINTOR_WEB_ROOT", str(DEFAULT_WORKSPACE)),
                      retention_hours=int(os.getenv("PINTOR_RETENTION_HOURS", "24")))
+    cleanup_interval_seconds = max(
+        1, int(os.getenv("PINTOR_CLEANUP_INTERVAL_SECONDS", "300")),
+    )
     accounts_required = os.getenv("PINTOR_ACCOUNTS_REQUIRED", "0") == "1"
     account_session_days = int(os.getenv("PINTOR_ACCOUNT_SESSION_DAYS", "30"))
     accounts = AccountStore(store.root / "accounts.sqlite3", session_days=account_session_days)
@@ -1575,7 +1594,17 @@ def create_app(workspace_root: str | Path | None = None,
         store.cleanup_expired()
         if os.getenv("PINTOR_RESUME_ON_START", "1") == "1":
             requeue_interrupted()
-        yield
+        cleanup_task = asyncio.create_task(
+            _cleanup_expired_periodically(store, cleanup_interval_seconds),
+        )
+        try:
+            yield
+        finally:
+            cleanup_task.cancel()
+            try:
+                await cleanup_task
+            except asyncio.CancelledError:
+                pass
 
     app = FastAPI(title="Pintor beta API", version="0.5.0", docs_url=None, redoc_url=None,
                   lifespan=lifespan)
@@ -1777,9 +1806,10 @@ def create_app(workspace_root: str | Path | None = None,
             )
             # A shared manual has no deadline; everything else says exactly when it disappears.
             record["shared_for_improvement"] = record["id"] in shared
-            record["expires_at"] = None if record["shared_for_improvement"] else (
-                record.get("updated_at", 0) + store.retention_seconds
-            )
+            record["expires_at"] = None if (
+                record["shared_for_improvement"]
+                or record.get("status") in ACTIVE_JOB_STATUSES
+            ) else record.get("updated_at", 0) + store.retention_seconds
             jobs.append(record)
         return {
             "jobs": jobs,

@@ -35,6 +35,8 @@ services:
       PINTOR_MAX_STORAGE_MB: '8192'
       PINTOR_MAX_ACCOUNT_STORAGE_MB: '2048'
       PINTOR_RETENTION_HOURS: '24'
+      # Enforce expiry even when the beta is idle and receives no new uploads.
+      PINTOR_CLEANUP_INTERVAL_SECONDS: '300'
       PINTOR_MAX_UPLOAD_MB: '200'
       # Starlette spools an upload larger than 1 MB to a temporary file. Left on the default it
       # would land in /tmp, which is a 256 MB tmpfs counted against the container's 3 GB -- a

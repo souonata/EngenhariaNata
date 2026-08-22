@@ -20,10 +20,10 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
-## 2026-08-22 large manuals, kept storage, page-by-page work (0.5.0, not published)
+## 2026-08-22 large manuals, 24-hour retention, page-by-page work (0.5.0, not published)
 
 Same branch, second pass. The first pass removed the page caps; this one makes a long manual
-actually survivable and stops treating stored work as temporary.
+actually survivable while preserving the temporary-storage contract.
 
 **200 MB per file, streamed.** `PINTOR_MAX_UPLOAD_MB` is 200. The endpoint no longer does
 `await file.read(max_bytes + 1)` -- it streams the body to `workspace/incoming/` in 1 MB chunks,
@@ -40,10 +40,12 @@ jobs, so the contribution survives *and* the owner keeps a handle on it: deletin
 withdraws the shared copy, which is the revocation path. Consent is taken from the upload as well
 as the report, so a report on a manual uploaded without consent does not silently keep it.
 `/api/account/jobs` returns `expires_at` and `shared_for_improvement` per job, and the interface
-shows either a countdown or "kept -- shared for improvement". Live storage still carries
-`PINTOR_MAX_ACCOUNT_STORAGE_MB` (5 GB) per account and `PINTOR_MAX_STORAGE_MB` (20 GB) overall,
-because 200 MB uploads make a day's worth substantial -- **check the VM's free disk before
-publishing.**
+shows either a countdown or "kept -- shared for improvement". Cleanup runs at startup, before a
+new upload, and every five minutes while the API is idle; queued and processing jobs are excluded,
+so the 24-hour download window starts only after a terminal state is available. Production caps
+live storage at `PINTOR_MAX_ACCOUNT_STORAGE_MB` (2 GB) per account and
+`PINTOR_MAX_STORAGE_MB` (8 GB) overall because 200 MB uploads make a day's worth substantial.
+The VM had 13 GB free before publication.
 Regression fixed while the permanent-storage variant was in place: the `pintor_session` cookie used
 `max_age=retention_seconds`, which at retention 0 emitted `Max-Age=0` and deleted the cookie on
 arrival, breaking every anonymous session. It now follows the account session or the window.
@@ -76,10 +78,12 @@ Tripling manual length moved peak RSS by 1.9 MB (0.16%). No overlay PNGs were le
 24 preview files were written instead of 100. Both runs are far under the 2,560 MB worker rlimit
 and the 3 GB container.
 
-**Verified.** 58 Python tests in the web/account modules, plus `npm run validate`. New coverage:
+**Verified.** 72 Python tests in the web/account/preservation modules, plus `npm run validate`
+with 359 Vitest tests. New coverage:
 streamed upload keeps bytes and digest and leaves nothing in staging; an oversized file is refused
 without being kept; only a manual shared for improvement survives `cleanup_expired` and a report
-without upload consent does not keep one; the per-account quota refuses a manual and accepts it
+without upload consent does not keep one; cleanup runs periodically without a restart or upload and
+never removes a queued or processing job; the per-account quota refuses a manual and accepts it
 again after a deletion; a skipped preview is rendered on first view; a job that keeps reporting
 progress is not killed, and one that stops is killed as `ProcessingStalled`. Against a live API:
 two manuals were uploaded, one was reported with a marked error and shared, both were aged past the
@@ -92,7 +96,8 @@ hand, so a new image alone would have changed nothing: it set `PINTOR_MAX_UPLOAD
 file now carries `engnata/pintor-api:0.5.0`, `PINTOR_MAX_UPLOAD_MB: 200`,
 `PINTOR_MAX_ACCOUNT_STORAGE_MB: 2048` (the VM has a 20 GB disk, so the 8 GB workspace ceiling
 stays), `PINTOR_JOB_STALL_SECONDS: 900` with `PINTOR_JOB_MAX_SECONDS: 21600`, no
-`PINTOR_JOB_TIMEOUT_SECONDS`, and `PINTOR_JOB_CPU_SECONDS: 21600`. It also sets `TMPDIR=/data/tmp`:
+`PINTOR_JOB_TIMEOUT_SECONDS`, `PINTOR_JOB_CPU_SECONDS: 21600`, and a five-minute
+`PINTOR_CLEANUP_INTERVAL_SECONDS`. It also sets `TMPDIR=/data/tmp`:
 Starlette spools any upload over 1 MB to a temporary file, and on the default that lands in the
 container's 256 MB RAM-backed `/tmp`, so a 200 MB manual would be held in memory inside a 3 GB cap.
 `JobStore` creates that directory.

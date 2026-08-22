@@ -29,15 +29,17 @@ The Engenharia NATA beta has two page-analysis modes:
 - declined: password-protected files, unknown notation, illegible/unsupported colour codes,
   uncertain conductor ownership, documents with no readable colour codes at all, or any result that
   fails a preservation gate;
-- limits: 200 MB per file, 20 simultaneously active jobs and 5 GB of live storage per account by
-  default. There is no cap on document length or on how many pages one job may paint; the page
-  ceiling of 100,000 exists only so a mistyped range cannot exhaust memory before the PDF is read. A
-  single page still has to fit the per-page analysis budget, and during a sweep a page that does not
-  is skipped instead of sinking the job;
+- limits: 200 MB per file, 20 simultaneously active jobs and 2 GB of live storage per account in the
+  production Compose profile. There is no cap on document length or on how many pages one job may
+  paint; the page ceiling of 100,000 exists only so a mistyped range cannot exhaust memory before
+  the PDF is read. A single page still has to fit the per-page analysis budget, and during a sweep a
+  page that does not is skipped instead of sinking the job;
 - storage: the service is not an archive. An upload is held for 24 hours so its owner can download
   the result, then erased from the server automatically. The single exception is a manual whose
   owner marked errors on it and agreed to share the report: that contribution is what the beta
-  keeps, and deleting the job still withdraws it.
+  keeps, and deleting the job still withdraws it. Cleanup runs at startup, before new uploads and
+  every five minutes while the API is idle. Queued and processing jobs are never removed; their
+  24-hour download window begins when processing reaches a terminal state.
 
 The static frontend lives in `index.html`, `pintor-script.js`, and `pintor-styles.css`. It is built
 by the main Engenharia NATA Vite pipeline. The Python API is a separate service; GitHub Pages does
