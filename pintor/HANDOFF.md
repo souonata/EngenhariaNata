@@ -86,6 +86,23 @@ two manuals were uploaded, one was reported with a marked error and shared, both
 window, and the restart sweep erased the unshared one while keeping the contributed one plus its
 training-inbox copy.
 
+**Deployment configuration (required, not optional).** `compose.yml` pinned the old behaviour by
+hand, so a new image alone would have changed nothing: it set `PINTOR_MAX_UPLOAD_MB: 25` and
+`PINTOR_JOB_TIMEOUT_SECONDS: 900`, and that timeout is exactly the ceiling this pass replaced. The
+file now carries `engnata/pintor-api:0.5.0`, `PINTOR_MAX_UPLOAD_MB: 200`,
+`PINTOR_MAX_ACCOUNT_STORAGE_MB: 2048` (the VM has a 20 GB disk, so the 8 GB workspace ceiling
+stays), `PINTOR_JOB_STALL_SECONDS: 900` with `PINTOR_JOB_MAX_SECONDS: 21600`, no
+`PINTOR_JOB_TIMEOUT_SECONDS`, and `PINTOR_JOB_CPU_SECONDS: 21600`. It also sets `TMPDIR=/data/tmp`:
+Starlette spools any upload over 1 MB to a temporary file, and on the default that lands in the
+container's 256 MB RAM-backed `/tmp`, so a 200 MB manual would be held in memory inside a 3 GB cap.
+`JobStore` creates that directory.
+
+**Order of publication matters.** The 0.5.x frontend calls endpoints 0.4.0 does not have
+(`/api/admin/accounts`, `/api/admin/rounds`, `DELETE /api/account`) and relies on an upload with no
+page selection meaning "sweep the document" -- on 0.4.0 that same request paints page 1 instead.
+Merging to `main` publishes the frontend within minutes, so the API image must be built and running
+on the protected host FIRST; only then merge.
+
 **Still open.** Nothing published. The measurements above use synthetic vector manuals; a real
 scanned A0 foldout is far heavier per page, and the per-page budgets -- not manual length -- are
 what bound it. Peak RSS of ~1.2 GB is a *per-page* cost that a raster A0 page can exceed on its

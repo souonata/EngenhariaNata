@@ -231,9 +231,13 @@ class JobStore:
         # and then erased; the only thing that outlives the window is what its owner deliberately
         # shared by marking errors on it.
         self.retention_seconds = max(1, retention_hours) * 3600
+        # Deployments point TMPDIR here so a 200 MB upload spools onto the data volume instead of
+        # the container's small RAM-backed /tmp.
+        self.spool = self.root / "tmp"
         self.jobs.mkdir(parents=True, exist_ok=True)
         self.training.mkdir(parents=True, exist_ok=True)
         self.rounds.mkdir(parents=True, exist_ok=True)
+        self.spool.mkdir(parents=True, exist_ok=True)
 
     def job_dir(self, job_id: str) -> Path:
         if not JOB_ID_RE.fullmatch(job_id):
