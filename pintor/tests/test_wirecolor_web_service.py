@@ -968,8 +968,18 @@ class AdminConsoleTests(unittest.TestCase):
         # A report still awaiting a verdict is locked, and so is the endpoint for non-admins.
         pending = self.admin.get(f"/api/admin/feedback/{feedback_id}").json()["feedback"]
         self.assertFalse(pending["deletable"])
-        self.assertEqual(pending["delete_blocked_reason"], "not-accepted")
+        self.assertEqual(pending["delete_blocked_reason"], "not-adjudicated")
         self.assertEqual(tester.delete(f"/api/admin/feedback/{feedback_id}").status_code, 403)
+        self.assertEqual(
+            self.admin.delete(f"/api/admin/feedback/{feedback_id}").status_code, 409,
+        )
+
+        # So is one sent back to its author: that conversation is still open.
+        asked = self.admin.post(f"/api/admin/feedback/{feedback_id}/decision", json={
+            "decision": "needs-clarification", "note": "which wire?",
+        }).json()["feedback"]
+        self.assertFalse(asked["deletable"])
+        self.assertEqual(asked["delete_blocked_reason"], "awaiting-clarification")
         self.assertEqual(
             self.admin.delete(f"/api/admin/feedback/{feedback_id}").status_code, 409,
         )
@@ -1033,6 +1043,36 @@ class AdminConsoleTests(unittest.TestCase):
         self.assertEqual(self.admin.delete(f"/api/admin/feedback/{feedback_id}").status_code, 200)
         self.assertEqual(store.cleanup_expired(now=later), 1)
         self.assertFalse((self.root / "jobs" / job_id).is_dir())
+
+    def test_a_rejected_report_is_spent_and_frees_its_drawing_immediately(self):
+        tester = self.client_for("rejected-reporter")
+        job_id = self.upload_for(tester)
+        feedback_id = self.report_for(tester, job_id)
+        store = JobStore(self.root)
+        later = int(time.time()) + store.retention_seconds + 60
+
+        # Before the verdict the shared drawing is protected and the report cannot be removed.
+        self.assertEqual(store.cleanup_expired(now=later), 0)
+        self.assertEqual(
+            self.admin.delete(f"/api/admin/feedback/{feedback_id}").status_code, 409,
+        )
+
+        rejected = self.admin.post(f"/api/admin/feedback/{feedback_id}/decision", json={
+            "decision": "rejected", "note": "not a wire",
+        }).json()["feedback"]
+        # A rejection ends the contribution: it can never enter a round, so it is already spent.
+        self.assertTrue(rejected["deletable"])
+        self.assertIsNone(rejected["delete_blocked_reason"])
+        # The drawing rejoins the retention contract instead of being held forever, but the
+        # evidence the reporter shared stays in the training inbox for the record.
+        self.assertEqual(store.cleanup_expired(now=later), 1)
+        self.assertFalse((self.root / "jobs" / job_id).is_dir())
+        inbox = self.root / "training_feedback" / feedback_id
+        self.assertTrue((inbox / "source.pdf").is_file())
+
+        self.assertEqual(self.admin.delete(f"/api/admin/feedback/{feedback_id}").status_code, 200)
+        self.assertEqual(self.admin.get("/api/admin/feedback").json()["feedback"], [])
+        self.assertFalse(inbox.exists())
 
     def test_an_accepted_report_without_learning_consent_is_removable_at_once(self):
         tester = self.client_for("private-reporter")

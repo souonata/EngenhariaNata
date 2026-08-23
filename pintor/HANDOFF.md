@@ -20,6 +20,32 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-08-23 a rejected report is spent too (0.6.2, working branch)
+
+The 0.6.1 rule only released an **accepted** report, which left every rejected one locked in the
+queue forever: a rejection is final, so such a report can never enter an improvement round and
+could never satisfy the condition. Worse, `shared_job_ids()` protected a job from the retention
+sweep on consent alone, without looking at the verdict, so a consented report that an expert had
+already rejected held its drawing on disk indefinitely, against the 24-hour retention contract.
+Four reports in the production queue exposed both.
+
+Removal now follows whether the report is spent, not which way the verdict went. Rejected is spent
+in the other direction and is removable at once. Accepted keeps the 0.6.1 condition: the round that
+carried it into the code must be closed, unless the reporter never consented to learning and it
+could not have joined one. Only two states stay locked, and both are genuinely live: a report with
+no verdict yet, and one sent back to its author for clarification. The blocked reasons the API
+returns are now `not-adjudicated` and `awaiting-clarification` instead of the single
+`not-accepted`.
+
+`shared_job_ids()` skips rejected reports, so the drawing rejoins the ordinary sweep. The evidence
+is not lost with it: a consented report keeps its own copy of the source, result and previews in
+the training inbox, which the sweep never touches and `feedback_artifact()` already prefers as a
+fallback.
+
+Local validation: **439 Python tests** (one new, covering the whole life of a rejected report: the
+lock before the verdict, the release after it, the freed sweep, the surviving inbox and the
+removal), `npm run validate`, `npm run checkup`, and i18n parity across pt-BR, it-IT and sv-SE.
+
 ## 2026-08-23 administrative removal of spent beta reports (0.6.1, published)
 
 A report is the only thing a reporter deliberately leaves behind, so it outlives the 24-hour
