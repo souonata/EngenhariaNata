@@ -20,6 +20,45 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-08-23 administrative removal of spent beta reports (0.6.1, published)
+
+A report is the only thing a reporter deliberately leaves behind, so it outlives the 24-hour
+retention window and protects the drawing it points at. The console had no way to clear one even
+after the improvement work that justified keeping it was finished, so the queue and the disk grew
+without a floor. Removal is now allowed exactly when the report is spent: an expert accepted it
+**and** the improvement round that carried it into the code was closed. A report whose reporter
+never consented to learning cannot join a round at all, so an accepted one is already spent and is
+removable at once. Everything else answers `409` with a reason, and the list and detail payloads
+carry `deletable` and `delete_blocked_reason` so the console explains the lock instead of hiding
+the control.
+
+Deleting erases the live record and the archived inbox with its source, painted PDF and previews,
+then hands the reporter back a plain `ready` job. The drawing stops being protected and rejoins the
+ordinary retention sweep, which is the point: it was only held because a report referenced it. The
+closed round's manifest is untouched and the item is reported as `missing` from then on, reusing
+the path that already existed for reports deleted by their authors. `DELETE
+/api/admin/feedback/{id}` is administrator-only and never touches an open round.
+
+Local validation: **438 Python tests** (three new: the blocked and allowed removal paths, the
+freed retention sweep, and the no-consent case), `npm run validate`, `npm run checkup`, and i18n
+parity across pt-BR, it-IT and sv-SE.
+
+Published API-first through PR #29. Source commit `f9c8f0e` built image `engnata/pintor-api:0.6.1`
+in host release `/opt/pintor-api-releases/f9c8f0e`; the container became healthy on the existing
+protected VM and the live `pintor-api_pintor-data` volume was reused rather than replaced. The
+external smoke passed end to end: `external_auth=ok account=ok unauthenticated=401 job=ready
+result=pdf delete=204`. PR #29 merged as `f309190` and the GitHub Pages deployment completed; the
+public config reports Pintor 0.6.1. Image 0.6.0 and release `b73d286` remain available for
+rollback.
+
+Two operational notes from this deployment. The deploy scripts were tracked mode `100644` because
+the repository is developed on Windows with `core.filemode=false`, so a fresh clone could not
+execute `smoke-production.sh`; the four `.sh` files under `deploy/` are now tracked `100755`. And
+the Compose project name is `pintor-api` while the release directory is named `pintor`, so every
+invocation must pass `-p pintor-api --env-file /opt/pintor-api/.env` explicitly — the `.env` lives
+outside the release directories on purpose, and defaulting the project name would bind a new empty
+volume instead of the live one.
+
 ## 2026-08-23 role-first engineering semantics (0.6.0, published)
 
 Every production route now shares one fail-closed electrical/electronic semantic gate: vector,
