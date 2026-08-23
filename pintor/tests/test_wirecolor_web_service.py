@@ -959,6 +959,106 @@ class AdminConsoleTests(unittest.TestCase):
         }).status_code, 409)
 
 
+    def test_an_accepted_report_is_removable_only_after_its_round_is_closed(self):
+        tester = self.client_for("cleanup-reporter")
+        job_id = self.upload_for(tester)
+        feedback_id = self.report_for(tester, job_id)
+        inbox = self.root / "training_feedback" / feedback_id
+
+        # A report still awaiting a verdict is locked, and so is the endpoint for non-admins.
+        pending = self.admin.get(f"/api/admin/feedback/{feedback_id}").json()["feedback"]
+        self.assertFalse(pending["deletable"])
+        self.assertEqual(pending["delete_blocked_reason"], "not-accepted")
+        self.assertEqual(tester.delete(f"/api/admin/feedback/{feedback_id}").status_code, 403)
+        self.assertEqual(
+            self.admin.delete(f"/api/admin/feedback/{feedback_id}").status_code, 409,
+        )
+
+        round_id = self.admin.post(
+            "/api/admin/rounds", json={"name": "cleanup"},
+        ).json()["round"]["id"]
+        accepted = self.admin.post(f"/api/admin/feedback/{feedback_id}/decision", json={
+            "decision": "accepted", "note": "confirmed",
+        }).json()["feedback"]
+        # Accepted, but the batch that will carry it into the code is still open.
+        self.assertFalse(accepted["deletable"])
+        self.assertEqual(accepted["delete_blocked_reason"], "round-open")
+        self.assertEqual(
+            self.admin.delete(f"/api/admin/feedback/{feedback_id}").status_code, 409,
+        )
+        self.assertTrue(inbox.is_dir())
+
+        self.admin.post(f"/api/admin/rounds/{round_id}/close", json={"note": "curated"})
+        listed = self.admin.get("/api/admin/feedback").json()["feedback"][0]
+        self.assertTrue(listed["deletable"])
+        removed = self.admin.delete(f"/api/admin/feedback/{feedback_id}")
+        self.assertEqual(removed.status_code, 200)
+        self.assertEqual(removed.json()["removed"]["id"], feedback_id)
+
+        # The report and everything it kept alive are gone, and it cannot be removed twice.
+        self.assertEqual(self.admin.get("/api/admin/feedback").json()["feedback"], [])
+        self.assertFalse(inbox.exists())
+        self.assertFalse((self.root / "jobs" / job_id / "feedback" / f"{feedback_id}.json").is_file())
+        self.assertEqual(self.admin.delete(f"/api/admin/feedback/{feedback_id}").status_code, 404)
+        # The closed round keeps its history: the item is simply reported as missing now.
+        detail = self.admin.get(f"/api/admin/rounds/{round_id}").json()["round"]
+        self.assertEqual(detail["items"], [{"id": feedback_id, "missing": True}])
+        manifest = json.loads(
+            (self.root / "improvement_rounds" / f"{round_id}-manifest.json")
+            .read_text(encoding="utf-8")
+        )
+        self.assertEqual(manifest["reports"][0]["id"], feedback_id)
+        # The reporter is left with a plain finished job, no longer held back from the sweep.
+        state = tester.get(f"/api/jobs/{job_id}").json()
+        self.assertEqual(state["status"], "ready")
+        self.assertNotIn("feedback_id", state)
+
+    def test_removing_a_report_frees_its_drawing_for_the_retention_sweep(self):
+        tester = self.client_for("sweep-reporter")
+        job_id = self.upload_for(tester)
+        feedback_id = self.report_for(tester, job_id)
+        round_id = self.admin.post(
+            "/api/admin/rounds", json={"name": "sweep"},
+        ).json()["round"]["id"]
+        self.admin.post(f"/api/admin/feedback/{feedback_id}/decision", json={
+            "decision": "accepted", "note": "confirmed",
+        })
+        self.admin.post(f"/api/admin/rounds/{round_id}/close", json={"note": ""})
+
+        store = JobStore(self.root)
+        later = int(time.time()) + store.retention_seconds + 60
+        # While the report exists the shared drawing is protected from the sweep.
+        self.assertEqual(store.cleanup_expired(now=later), 0)
+        self.assertTrue((self.root / "jobs" / job_id).is_dir())
+        self.assertEqual(self.admin.delete(f"/api/admin/feedback/{feedback_id}").status_code, 200)
+        self.assertEqual(store.cleanup_expired(now=later), 1)
+        self.assertFalse((self.root / "jobs" / job_id).is_dir())
+
+    def test_an_accepted_report_without_learning_consent_is_removable_at_once(self):
+        tester = self.client_for("private-reporter")
+        job_id = self.upload_for(tester)
+        report = tester.post(f"/api/jobs/{job_id}/feedback", json={
+            "annotations": [{
+                "type": "missing",
+                "geometry": {"type": "point", "points": [[0.4, 0.5]]},
+                "page": 0,
+            }],
+            "note": "kept private",
+            "consent_learning": False,
+        })
+        self.assertEqual(report.status_code, 202)
+        feedback_id = report.json()["id"]
+        self.admin.post(f"/api/admin/feedback/{feedback_id}/decision", json={
+            "decision": "accepted", "note": "confirmed",
+        })
+        # It can never join a round, so an accepted verdict is the whole of its life cycle.
+        detail = self.admin.get(f"/api/admin/feedback/{feedback_id}").json()["feedback"]
+        self.assertTrue(detail["deletable"])
+        self.assertIsNone(detail["delete_blocked_reason"])
+        self.assertEqual(self.admin.delete(f"/api/admin/feedback/{feedback_id}").status_code, 200)
+        self.assertEqual(self.admin.get("/api/admin/feedback").json()["feedback"], [])
+
+
 class DiscoveryAndQueueTests(unittest.TestCase):
     """Whole-document sweeps, the single painting slot, and what a returning owner sees."""
 

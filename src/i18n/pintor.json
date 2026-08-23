@@ -121,7 +121,15 @@
       "roundOpenedBy": "Aberto por",
       "roundClosedBy": "Fechado por",
       "roundNoTraining": "Fechar um round não treina nem promove modelo nenhum.",
-      "colStorage": "Disco"
+      "colStorage": "Disco",
+      "removeReport": "Remover relato",
+      "removeReady": "Este relato foi aceito e o round que o levou ao código já foi fechado. Remover apaga o relato e os arquivos que ele mantinha guardados.",
+      "removeBlockedAccept": "Só é possível remover um relato depois de aceitá-lo.",
+      "removeBlockedRound": "Este relato aceito ainda não entrou em nenhum round de melhoria.",
+      "removeBlockedOpen": "Feche o round de melhoria antes de remover os relatos dele.",
+      "removeConfirm": "Remover este relato? O relato e os arquivos guardados com ele são apagados definitivamente. O manifesto do round fechado é preservado.",
+      "removed": "Relato removido.",
+      "removeFailed": "Não foi possível remover o relato."
     },
     "upload": {
       "step": "Etapa 1 · diagrama",
@@ -409,7 +417,15 @@
       "roundOpenedBy": "Aperto da",
       "roundClosedBy": "Chiuso da",
       "roundNoTraining": "Chiudere un round non addestra né promuove alcun modello.",
-      "colStorage": "Spazio"
+      "colStorage": "Spazio",
+      "removeReport": "Rimuovi segnalazione",
+      "removeReady": "Questa segnalazione è stata accettata e il round che l'ha portata nel codice è già chiuso. Rimuoverla cancella la segnalazione e i file che teneva in archivio.",
+      "removeBlockedAccept": "Una segnalazione può essere rimossa solo dopo essere stata accettata.",
+      "removeBlockedRound": "Questa segnalazione accettata non è ancora entrata in un round di miglioramento.",
+      "removeBlockedOpen": "Chiudi il round di miglioramento prima di rimuoverne le segnalazioni.",
+      "removeConfirm": "Rimuovere questa segnalazione? La segnalazione e i file archiviati con essa vengono cancellati definitivamente. Il manifesto del round chiuso resta intatto.",
+      "removed": "Segnalazione rimossa.",
+      "removeFailed": "Non è stato possibile rimuovere la segnalazione."
     },
     "upload": {
       "step": "Passo 1 · schema",
@@ -697,7 +713,15 @@
       "roundOpenedBy": "Öppnad av",
       "roundClosedBy": "Stängd av",
       "roundNoTraining": "Att stänga en omgång tränar eller befordrar ingen modell.",
-      "colStorage": "Lagring"
+      "colStorage": "Lagring",
+      "removeReport": "Ta bort rapport",
+      "removeReady": "Rapporten är godkänd och rundan som förde in den i koden är redan stängd. Att ta bort den raderar rapporten och filerna den höll kvar.",
+      "removeBlockedAccept": "En rapport kan bara tas bort efter att den har godkänts.",
+      "removeBlockedRound": "Den här godkända rapporten har ännu inte kommit med i någon förbättringsrunda.",
+      "removeBlockedOpen": "Stäng förbättringsrundan innan du tar bort dess rapporter.",
+      "removeConfirm": "Ta bort den här rapporten? Rapporten och filerna som sparats med den raderas permanent. Manifestet för den stängda rundan behålls.",
+      "removed": "Rapporten togs bort.",
+      "removeFailed": "Det gick inte att ta bort rapporten."
     },
     "upload": {
       "step": "Steg 1 · schema",

@@ -18,6 +18,12 @@ const ERROR_LABEL_KEYS = {
     'dash-style': 'errors.dashStyle',
     'stripe-style': 'errors.stripeStyle'
 };
+// Why the console keeps a report locked. The service answers with these reasons.
+const REMOVE_BLOCKED_KEYS = {
+    'not-accepted': 'admin.removeBlockedAccept',
+    'round-pending': 'admin.removeBlockedRound',
+    'round-open': 'admin.removeBlockedOpen'
+};
 
 class PintorApp extends App {
     constructor() {
@@ -642,6 +648,9 @@ class PintorApp extends App {
                 void this.decideFeedback(button.dataset.decision);
             }
         });
+        document.getElementById('adminRemoveReport').addEventListener('click', () => {
+            void this.removeFeedback();
+        });
         document.querySelector('.admin-tabs').addEventListener('click', event => {
             const tab = event.target.closest('[data-admin-view]');
             if (tab) {
@@ -710,6 +719,7 @@ class PintorApp extends App {
             } else {
                 this.adminReport = null;
                 document.getElementById('adminDetail').hidden = true;
+                this.renderAdminRemoval();
                 this.showStatus(status, i18n.t('admin.empty'), 'success');
             }
         } catch (error) {
@@ -783,9 +793,25 @@ class PintorApp extends App {
             picker.append(option);
         });
         this.renderAdminQueue();
+        this.renderAdminRemoval();
         this.renderAdminPreview(true);
         this.renderAdminAnnotations();
         this.renderAdminEngineeringSummary();
+    }
+
+    renderAdminRemoval() {
+        const button = document.getElementById('adminRemoveReport');
+        const hint = document.getElementById('adminRemoveHint');
+        const report = this.adminReport;
+        if (!report) {
+            button.disabled = true;
+            hint.textContent = '';
+            return;
+        }
+        button.disabled = !report.deletable;
+        const blocked =
+            REMOVE_BLOCKED_KEYS[report.delete_blocked_reason] || 'admin.removeBlockedAccept';
+        hint.textContent = i18n.t(report.deletable ? 'admin.removeReady' : blocked);
     }
 
     feedbackStatusLabel(status) {
@@ -967,6 +993,45 @@ class PintorApp extends App {
         return i18n.t(ERROR_LABEL_KEYS[type] || type);
     }
 
+    async removeFeedback() {
+        const report = this.adminReport;
+        if (!report || !report.deletable) {
+            return;
+        }
+        if (!window.confirm(i18n.t('admin.removeConfirm'))) {
+            return;
+        }
+        const button = document.getElementById('adminRemoveReport');
+        const status = document.getElementById('adminStatus');
+        button.disabled = true;
+        try {
+            const response = await fetch(this.apiUrl(`admin/feedback/${report.id}`), {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+            const body = await this.readResponse(response);
+            if (!response.ok) {
+                throw new Error(body.detail || i18n.t('admin.removeFailed'));
+            }
+            this.adminFeedback = this.adminFeedback.filter(item => item.id !== report.id);
+            this.adminReport = null;
+            document.getElementById('adminDetail').hidden = true;
+            this.renderAdminQueue();
+            this.renderAdminRemoval();
+            this.showStatus(status, i18n.t('admin.removed'), 'success', 'admin.removed');
+            if (this.adminFeedback.length) {
+                await this.openFeedback(this.adminFeedback[0].id);
+            }
+        } catch (error) {
+            button.disabled = false;
+            this.showStatus(
+                status,
+                localizedFetchError(error, i18n.t('admin.removeFailed')),
+                'error'
+            );
+        }
+    }
+
     async decideFeedback(decision) {
         if (!this.adminReport) {
             return;
@@ -1004,6 +1069,7 @@ class PintorApp extends App {
                 this.adminReport.status
             );
             this.renderAdminQueue();
+            this.renderAdminRemoval();
             this.showStatus(
                 document.getElementById('adminStatus'),
                 i18n.t('admin.decisionSaved'),

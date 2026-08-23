@@ -1231,6 +1231,41 @@ html[data-theme='dark'] .admin-preview-stage {
     background: #9a7414;
 }
 
+/* Erasing an already-curated report is deliberate, so it sits apart from the verdicts. */
+
+.admin-remove {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+.admin-remove-hint {
+    flex: 1 1 220px;
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.admin-remove button {
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 0;
+    border-radius: 9px;
+    color: white;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.admin-remove button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
 /* Personal panel: the drawings an account owns, and closing the account. */
 
 .jobs-storage {
