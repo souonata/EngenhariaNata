@@ -183,8 +183,8 @@ npm run build          # build de produção (gera local/dist)
 
 _Última atualização: 2026-08-23_
 
-- **PINTOR — SEMÂNTICA DE ENGENHARIA GLOBAL (0.6.0, branch
-  `codex/pintor-exhaustive-discovery`):** todas as rotas de produção (vetorial, raster/OCR,
+- **PINTOR — SEMÂNTICA DE ENGENHARIA GLOBAL (0.6.0, PUBLICADO via PR #27):** todas as rotas de
+  produção (vetorial, raster/OCR,
   chicote pictórico, pinos, lote, P1, pipeline legado e worker web) passam pelo mesmo gate antes
   de renderizar: gramática da página → papéis dos objetos → condutores físicos entre fronteiras →
   fonte de cor impressa → conflitos/desconhecidos → pintura. Só condutor físico e pino confirmado
@@ -194,7 +194,8 @@ _Última atualização: 2026-08-23_
   privada de cada claim. Validação real: `pub81:334` = 27 pinos/0 fios; `pub3763:20` = 8 fios/8
   chamadas excluídas; ambos V2/V7. Suíte: 435 testes Python, 362 Vitest e build. Detalhes em
   `pintor/HANDOFF.md` e
-  `pintor/docs/ELECTRICAL_SAFETY_RULES.md`.
+  `pintor/docs/ELECTRICAL_SAFETY_RULES.md`. API `engnata/pintor-api:0.6.0` saudável no SHA
+  `b73d286`, smoke externo completo; merge `4612f0e`, Pages e testes pós-merge passaram.
 
 - **PINTOR — FIOS PICTÓRICOS CONTORNADOS (0.5.6, branch
   `codex/pintor-exhaustive-discovery`):** a amostra real `pub3763:20` desenha os 8 fios como tubos
