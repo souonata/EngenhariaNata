@@ -192,7 +192,7 @@ _Última atualização: 2026-08-23_
   pretos. Contexto elétrico pode rejeitar uma associação, nunca inventar cor. Resultado e detalhe
   administrativo mostram gramática, papéis, anotações excluídas e evidências, sem expor a geometria
   privada de cada claim. Validação real: `pub81:334` = 27 pinos/0 fios; `pub3763:20` = 8 fios/8
-  chamadas excluídas; ambos V2/V7. Suíte: 434 testes Python, 362 Vitest e build. Detalhes em
+  chamadas excluídas; ambos V2/V7. Suíte: 435 testes Python, 362 Vitest e build. Detalhes em
   `pintor/HANDOFF.md` e
   `pintor/docs/ELECTRICAL_SAFETY_RULES.md`.
 

@@ -57,6 +57,18 @@ MECHANICAL_PAGE_PATTERN = re.compile(
 )
 
 
+def _normalise_hough_lines(lines):
+    """Return OpenCV Hough segments across its Linux and Windows result shapes."""
+    if lines is None:
+        return []
+    import numpy as np
+
+    values = np.asarray(lines)
+    if values.size == 0:
+        return []
+    return [tuple(int(value) for value in row) for row in values.reshape(-1, 4)]
+
+
 def _page_text(page) -> str:
     return re.sub(r"\s+", " ", (page.get_text("text") or "").replace("\x00", " ")).strip()
 
@@ -411,7 +423,7 @@ def inspect_ocr_image(image_path: str, convention_names: list[str] | None = None
         ink, 1, np.pi / 180, threshold=max(18, minimum // 2),
         minLineLength=minimum, maxLineGap=max(8, minimum // 3),
     )
-    segments = [tuple(int(value) for value in line[0]) for line in lines] if lines is not None else []
+    segments = _normalise_hough_lines(lines)
     associated = []
     chromatic_near_labels = 0
     for label in labels:

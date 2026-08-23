@@ -22,7 +22,11 @@ from wirecolor.tools.inventory_wiring_pages import (
     scan_library,
     write_reports,
 )
-from wirecolor.tools.wiring_evidence import inspect_ocr_image, inspect_vector_page
+from wirecolor.tools.wiring_evidence import (
+    _normalise_hough_lines,
+    inspect_ocr_image,
+    inspect_vector_page,
+)
 
 
 class WiringEvidenceTests(unittest.TestCase):
@@ -50,6 +54,16 @@ class WiringEvidenceTests(unittest.TestCase):
         self.assertEqual(evidence["status"], "confirmed")
         self.assertIn("RD", evidence["assigned_codes"])
         self.assertGreaterEqual(evidence["assigned_runs"], 1)
+
+    def test_hough_lines_accept_linux_and_windows_opencv_shapes(self):
+        import numpy as np
+
+        expected = [(1, 2, 3, 4), (5, 6, 7, 8)]
+        linux_shape = np.array(expected, dtype=np.int32)
+        windows_shape = linux_shape.reshape(2, 1, 4)
+
+        self.assertEqual(_normalise_hough_lines(linux_shape), expected)
+        self.assertEqual(_normalise_hough_lines(windows_shape), expected)
 
     def test_already_coloured_vector_wire_is_ignored(self):
         def draw(page):

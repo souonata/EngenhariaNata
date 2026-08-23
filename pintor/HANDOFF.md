@@ -45,7 +45,7 @@ strokes**, V2/V7 passed. `pub3763:20` was classified as a pictorial outlined har
 conductors and 8 annotation leaders excluded**, V2/V7 passed in 2.1 seconds. The private PDFs,
 previews, full semantic reports and compact `review.html` are under
 `output/pdf/random_validation_20260823/semantic_0_6_0` and are not committed. The complete Python
-suite passed **434 tests**; repository validation passed **362 Vitest tests** plus lint, format,
+suite passed **435 tests**; repository validation passed **362 Vitest tests** plus lint, format,
 style, i18n, asset, nautical and Pintor guards; the production build and privacy gate passed.
 The production Compose image tag is advanced to `engnata/pintor-api:0.6.0`; deploy the protected
 API before exposing the 0.6.0 frontend because the new UI expects semantic summaries in job and
