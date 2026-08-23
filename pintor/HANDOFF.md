@@ -20,7 +20,7 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
-## 2026-08-23 role-first engineering semantics (0.6.0, working branch)
+## 2026-08-23 role-first engineering semantics (0.6.0, published)
 
 Every production route now shares one fail-closed electrical/electronic semantic gate: vector,
 raster/OCR, outlined pictorial harness, connector pins, batch, P1 diagnostics, legacy pipeline and
@@ -50,6 +50,16 @@ style, i18n, asset, nautical and Pintor guards; the production build and privacy
 The production Compose image tag is advanced to `engnata/pintor-api:0.6.0`; deploy the protected
 API before exposing the 0.6.0 frontend because the new UI expects semantic summaries in job and
 administrator report payloads.
+
+Published API-first through PR #27. Exact source commit `b73d286` built image
+`engnata/pintor-api:0.6.0` (`sha256:9b3818a0e8258f03b6c2b28581224918be82604d1971df27c4762b320beb1230`)
+in immutable host release `/opt/pintor-api-releases/b73d286`; RapidOCR and the semantic/inventory
+imports passed before the existing private volume was mounted. The container became healthy and
+the external smoke passed beta/account authentication, a real PDF job to `ready`, valid download
+and deletion. PR #27 merged as `4612f0e`; GitHub Pages run `32649281134` and post-merge tests run
+`32649281216` passed. The public config reports Pintor 0.6.0 and the deployed bundle
+`pintor-index-UEbpjLIY.js` contains both job and administrator semantic summaries. Image 0.5.0 and
+release `656aa9a` remain available for rollback.
 
 ## 2026-08-23 outlined pictorial conductors (0.5.6, working branch)
 
