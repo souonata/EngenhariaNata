@@ -94,16 +94,30 @@ def _scaled_strokers(convention, t: Transform):
             _pair_stroke(canvas, mask, pts, codes, thick)
         # NOTE: thick values are v1 200-DPI units; scaling to native px happens via w().
 
-    return render_seg, render_dash
+    def render_outlined(canvas, mask, order, codes, width):
+        """Fill the medial path of an outlined cable without touching either black edge."""
+        if len(order) < 10:
+            return
+        pts = _pts(order)
+        if len(codes) == 1:
+            _stroke(canvas, mask, pts, codes[0], width)
+        else:
+            _pair_stroke(canvas, mask, pts, codes, width)
+
+    return render_seg, render_dash, render_outlined
 
 
 def build_overlay_rgba(solution: dict, native_bgr: np.ndarray, t: Transform) -> np.ndarray:
     """Paint the bands onto a copy of the native render and cut the RGBA overlay out of it.
     native_bgr: the page rendered at native-canvas resolution (band AA blends against it)."""
+    from ..engine.semantics import enforce_raster_semantics
     from .orient import _canonical_forward, orient_segments
 
     convention = solution["convention"]
-    render_seg, render_dash = _scaled_strokers(convention, t)
+    # Renderer-level enforcement covers the web wrapper, batch tools, P1 diagnostics and any
+    # future caller.  A caller cannot bypass electrical roles by invoking the painter directly.
+    solution, _engineering_semantics = enforce_raster_semantics(solution, convention)
+    render_seg, render_dash, render_outlined = _scaled_strokers(convention, t)
     segments = solution["segments"]
 
     canvas = native_bgr.copy()
@@ -349,6 +363,21 @@ def build_overlay_rgba(solution: dict, native_bgr: np.ndarray, t: Transform) -> 
                 order = order[::-1]
             render_dash(canvas, mask, order, codes)
 
+    # Hybrid illustrated pages carry exact vector callouts over a separate bitonal image.  Their
+    # cable geometry is the medial path between the two raster outline edges; the callout leader is
+    # evidence only and is never rendered.  These paths already end inside the sealed cable core,
+    # so normal terminal trimming would shorten them twice.
+    for wire in solution.get("outlined_wires", ()):
+        code = wire.code if hasattr(wire, "code") else wire["code"]
+        order = list(wire.order if hasattr(wire, "order") else wire["order"])
+        width = wire.width if hasattr(wire, "width") else wire["width"]
+        if not _canonical_forward(order):
+            order.reverse()
+        codes = [part for part in code.split(convention.two_color_sep)
+                 if part in convention.colors_bgr]
+        if codes:
+            render_outlined(canvas, mask, order, codes, width)
+
     # protected-region knockout: v1's housing restore, scaled -- each cable stops just before
     # its terminal and connector outlines/pins can never stay painted. The margin is wider
     # than v1's TERM_GAP (round 9c): relay/component pin circles STRADDLE the housing outline,
@@ -417,6 +446,21 @@ def build_overlay_rgba(solution: dict, native_bgr: np.ndarray, t: Transform) -> 
                         # wire skeleton fuses with the rim -- the disc must swallow the curl.
                         r = round((hs / 2 + 6 + TERM_GAP + 12) * t.s)
                         cv2.circle(mask, (round(cx), round(cy)), r, 0, -1)
+
+    # Drafting leaders are evidence about a conductor, never conductors themselves.  They are
+    # classified from the PDF's exact vector/text layer independently of raster tracing, so this
+    # knockout protects them even when the specialised outlined-cable route abstains and the page
+    # falls back to OCR topology.
+    for leader in solution.get("semantic_exclusions", ()):
+        order = leader.order if hasattr(leader, "order") else leader.get("order", ())
+        if len(order) < 2:
+            continue
+        pts = np.array([(x * t.sx, y * t.sy) for y, x in order], np.int32)
+        width = leader.width if hasattr(leader, "width") else leader.get("width", 2.0)
+        cv2.polylines(
+            mask, [pts], False, 0,
+            max(1, round(float(width) * t.s)), cv2.LINE_AA,
+        )
 
     # zero the colour plane wherever the overlay is transparent: the RGB channel would otherwise
     # carry the ENTIRE native render (558 MB flate on an A0 sheet); constant zeros compress to

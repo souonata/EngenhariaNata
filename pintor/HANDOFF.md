@@ -1,6 +1,6 @@
 # Pintor handoff
 
-Last updated: 2026-08-22
+Last updated: 2026-08-23
 
 ## Product boundary
 
@@ -19,6 +19,187 @@ supported/confirmed colour convention remains mandatory, and uncertain segments 
 The product name is localized in the interface: **Pintor** in Portuguese, **Pittore** in Italian,
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
+
+## 2026-08-23 role-first engineering semantics (0.6.0, working branch)
+
+Every production route now shares one fail-closed electrical/electronic semantic gate: vector,
+raster/OCR, outlined pictorial harness, connector pins, batch, P1 diagnostics, legacy pipeline and
+the web worker. The mandatory order is page grammar, object roles, physical conductors between
+hard boundaries, authoritative printed colour evidence, conflict/unknown rejection, then render.
+Only a physical conductor or a clearance-bounded connector pin can receive colour. Annotation
+leaders, component/connector outlines, terminals, junctions and unresolved geometry stay black.
+Electrical context may reject an association but never invents a colour from voltage, polarity,
+net name or expected function.
+
+The renderer itself repeats the critical checks so a direct caller cannot bypass the semantic
+layer. Raster overlays erase globally detected callout leaders from the final mask even when a
+generic OCR path proposed pixels below them. Job results expose a bounded explanation—page
+grammar, approved roles, excluded annotations, colour/geometry evidence and abstentions—and the
+same explanation follows consented error feedback into the administrator detail without copying
+private per-object geometry into the UI record. Focused regressions cover missing colour sources,
+unbranched continuation, invented raster codes, annotation exclusion and renderer bypass.
+
+Two real pages were reprocessed through the common gate. `pub81:334` was classified as a
+pictorial connector schedule: **27 connector pins, zero physical conductors, 37 unresolved drawing
+strokes**, V2/V7 passed. `pub3763:20` was classified as a pictorial outlined harness: **8/8 physical
+conductors and 8 annotation leaders excluded**, V2/V7 passed in 2.1 seconds. The private PDFs,
+previews, full semantic reports and compact `review.html` are under
+`output/pdf/random_validation_20260823/semantic_0_6_0` and are not committed. The complete Python
+suite passed **434 tests**; repository validation passed **362 Vitest tests** plus lint, format,
+style, i18n, asset, nautical and Pintor guards; the production build and privacy gate passed.
+The production Compose image tag is advanced to `engnata/pintor-api:0.6.0`; deploy the protected
+API before exposing the 0.6.0 frontend because the new UI expects semantic summaries in job and
+administrator report payloads.
+
+## 2026-08-23 outlined pictorial conductors (0.5.6, working branch)
+
+The second deterministic real-manual sample (`pub3763`, PDF page 20, **Installation EMS 2 —
+temperature instruments**) draws each real conductor as a hollow raster tube: two thick black
+edges with a white centre. Its thin vector strokes from `Y`, `R/SB`, `SB`, `R/BL` and `LBN` are
+only callout leaders. The old flattened raster route confused those representations and painted
+just one of 1,046 candidates after 189.2 seconds.
+
+The new hybrid route reads exact vector legends and pairs them one-to-one with straight vector
+leaders, but uses each leader only to locate a narrow closed white component in the bitonal raster
+illustration. It skeletonizes that cable interior and paints its measured width; the leader, text,
+instrument outline, terminals and original black cable borders never become paint geometry. A page
+needs at least two independently resolved callouts and complete pair coverage before this route is
+exclusive. Nominally bitonal PNGs with only antialiasing fringes are accepted, while shaded images
+are rejected before thresholding.
+
+The repaired sample resolves **8/8 outlined wires** across the oil- and coolant-temperature
+figures: top `Y`, `R/SB`, `SB`, `R/BL`; bottom `LBN`, `R/SB`, `SB`, `R/BL`. Two-colour codes use
+equal longitudinal bands. The exact route skips OCR, completes in **2.2 seconds**, and passes V2/V7
+with zero protected pixels touched. Focused regressions prove centreline recovery, the OCR bypass,
+and that every thin vector leader remains absent from the overlay. The private PDF, preview, report
+and review index live only under `output/pdf/random_validation_20260823` and are not committed.
+The complete suite passed **428 Python tests**; repository `npm run validate` passed **362 Vitest
+tests** plus lint, format, style, i18n, asset, nautical and Pintor guards; the production build and
+privacy gate also passed.
+
+## 2026-08-23 connector-pin markers (0.5.5, working branch)
+
+The first deterministic real-manual sample (`pub81`, PDF page 334, **D3 Aquamatic, twin
+installation**) is a pictorial connector schedule, not a drawing of the conductors themselves. Its
+colour text used to claim the nearest closed vector furniture, painting connector housings, relay
+cases, and component outlines as if they were wires. Exact vector pin circles are now grouped under
+their smallest enclosing connector housing and matched to same-row/column legends. A connector is
+accepted only after at least two independent legend-to-pin matches; its accepted legends are then
+withheld from normal wire ownership.
+
+Each accepted pin receives a colour disc centered inside its original circle. The marker radius is
+the minimum of 72% of the pin radius, 32% of the nearest-pin distance, and 55% of the housing-edge
+clearance. On the measured page this gives a diameter of approximately **0.62 mm**, leaving the pin
+rim and surrounding drawing visible. Two-colour codes are rendered as equal left/right
+semicircles, with the outline and divider inside that same reserved radius. The repaired sample has
+**27 pin markers, 0/37 vector runs painted**, and passes V2/V7. A separate dense wiring sample kept
+its previous 99/150 assignments and produced zero pin markers, confirming that the new semantic
+path does not take codes away from ordinary conductors.
+
+Five focused regressions cover six-pin matching, the two-match ambiguity gate, grid alignment, radius clearance,
+two-colour splitting, and white visibility. The private review PDF and preview under
+`output/pdf/random_validation_20260823` were regenerated; no manual or generated review artifact
+is committed. The vector-context cache version was advanced so cached pre-marker decisions are
+rebuilt instead of being replayed. The complete suite passed **425 Python tests**, repository
+`npm run validate` passed **362 Vitest tests** plus all guards, and the production build completed.
+
+## 2026-08-23 administrator drawing viewport and real-manual validation (0.5.4, working branch)
+
+The administrator already manages the complete consent boundary: only a drawing whose owner
+submitted marked errors and explicitly shared it appears in **Reports**. Unshared uploads remain
+private and disappear under the normal 24-hour retention rule. The reviewer can open the original
+or painted preview, inspect typed point/segment annotations, and decide `accepted`, `rejected`, or
+`needs-clarification`. Accepted + consented evidence joins the open improvement round, but remains
+`trainable: false`; closing a round freezes an offline curation manifest and never changes a model
+from the web service.
+
+The report detail now uses the same transform discipline as the owner's viewer: fit, zoom-out and
+zoom-in controls, cursor-focused wheel zoom, drag pan, resize refit, and a transform shared by the
+preview image and annotation layer. Switching between original and painted preserves scale and pan.
+Pure viewport math lives in `pintor-viewport.js`, with regression tests for fit/centering, zoom
+focus invariance and scale limits. A local live-API browser fixture verified 33% fit, 50% zoom, pan,
+two aligned annotations, and an unchanged transform after switching to the original preview.
+
+The repeatable real-manual probe uses deterministic seed `20260823`: four confirmed plus two
+probable black-and-white candidates, all from different manuals. The six one-page extracts,
+painted outputs, per-page reports and comparison index belong only in the ignored private output
+workspace `output/pdf/random_validation_20260823`; no source manual or generated review artifact is
+committed. The final accounting is intentionally gate-aware: four painted results passed V2/V7,
+one raster page was left byte-identical because no conductor could be owned safely, and the dense
+vector `pub80:163` draft was retained only for expert diagnosis after V2 blocked 20,184 painted
+pixels in protected component zones. It must not be treated as a releasable result. Image-bearing
+pages used the production raster/OCR fallback. This run also exposed and fixed a Windows-only
+best-effort memory-release failure: `ctypes.CDLL(None)` raises `TypeError` there, so the glibc
+`malloc_trim` optimization is now safely skipped on that platform and covered by a regression test.
+
+## 2026-08-22 exhaustive wiring-page inventory robot (working branch)
+
+`pintor-inventory` now enumerates every page in every PDF supplied through a private library
+manifest or recursive `--pdf-root`. It never edits a source manual. The old discovery threshold
+required eight colour codes on one page and therefore missed the exact class requested here:
+small sensor, relay and diagnostic figures with only one or two coded wires.
+
+**Evidence rule.** Exact PDF text is read against every installed convention. One strong legend is
+enough when a sufficiently long vector stroke is within the measured discovery reach. Lower-case
+word collisions (`or` versus Volvo `OR`), bare single letters inside symbols, colour-key rows and
+compact one-letter designators (`P1`, `T1`, `R1`) are excluded. Small curved relay leads are kept:
+the library example `85 SB` sits 175 px beyond its final Bezier chord, so inventory uses a 220 px
+reach while paint ownership remains at its stricter 150 px. Discovery inclusion is not permission
+to colour: the normal production topology, ownership, abstention and preservation gates still run
+before painting. A page is excluded as already coloured only when a conductor-scale chromatic
+stroke sits beside an actual wire-colour legend. Page-wide colour is deliberately insufficient:
+logos, warnings, component marks and coloured mechanical illustrations do not hide a separate
+black-and-white circuit. The web whole-document sweep uses the same rule before its old eight-code
+evidence rule without reviving the old raw eight-code threshold.
+
+**Incremental and reviewable.** `pages.jsonl` is flushed after each page and a resumed run skips
+completed work. Each record carries manual SHA/path, 1-based PDF page, exact legends/codes, adjacent
+line evidence, confidence, image coverage, text size, legacy-manifest membership and thumbnail.
+`summary.json`, `candidates.csv` and a thumbnail-backed `report.html` are rebuilt from the latest
+record per page. `--start-manual` plus `--limit-manuals` creates disjoint parallel shards;
+`--merge-ledgers` safely merges them, keeps the newest record for each page and copies only the
+referenced thumbnails. The legacy eight-code list is retained only as comparison metadata; it no
+longer overrides semantic or geometric evidence.
+
+**Measured current private library.** The completed vector + RapidOCR pass covered all **78 manuals /
+9,027 pages**: **233 confirmed**, **182 probable**, **2 review**, **56 already-coloured pages
+ignored**, **4,238 excluded as non-wiring**, **4,316 with no evidence**, zero pending OCR, zero
+errors and zero duplicate page keys. There are **417 black-and-white candidate pages total**, of
+which **251 were absent from the old eight-code scan**. CSV rows and referenced thumbnails both
+reconcile exactly to 417. The remaining two review pages (`pub3714`, PDF pages 37 and 41) were
+visually confirmed as rotated electrical schematics with printed conductor codes; they remain
+labelled review so the report preserves the robot's confidence instead of rewriting it by hand.
+
+The final audit explicitly excludes product bulletins, mechanical dimensions/shimming, connector
+pin tables, cable-colour reference layouts, hydraulic/fuel-flow diagrams, service decision trees,
+component-location/diagnostic prose and pages where `R1`/`P1`/`T1` are component designators rather
+than colour labels. This covers every false positive supplied by the user, including `pub865:3`,
+`pub91:73/114/228/229`, `pub140:60/61`, `pub141:80/81` and `pub158:86`. Small black-and-white
+sensor/installation drawings remain candidates when an actual wire and colour code are present.
+
+Private generated report (ignored, never commit):
+`workspaces/wiring_inventory_bw_ocr_final/{summary.json,candidates.csv,report.html,pages.jsonl,thumbnails/}`.
+Rebuild the complete pass with:
+
+```powershell
+pintor-inventory --library-manifest C:\path\library\manifest.json `
+  --out workspaces\wiring_inventory
+```
+
+**OCR is installed and complete.** The editable `.[ocr]` extra installed RapidOCR **3.9.2** and
+ONNX Runtime **1.29.0**; `rapidocr check` initialized the detector, classifier and recognizer models.
+The default `--ocr-mode missing` reused one bounded-thread engine across the inventory and OCRed
+undecided raster-bearing or nearly textless pages. Ordinary pages use one OCR pass and oversized
+pages are tiled. Image-only evidence remains conservative (`probable`/`review` until line proximity
+is measured), and raster conductor colour filtering is applied before a page can enter the report.
+
+**Verified.** Twenty-three inventory regressions cover a one-wire sensor, bare sensor `P`, lower-case
+`or`, hydraulic `P1`/`T1`, colour-like prose without a wire, vector and raster already-coloured
+wires, short decorative colour, a separate coloured illustration, raster OCR line proximity,
+semantic non-wiring exclusions, whole-manual selection and ledger resume/merge/report
+reconciliation. The complete Python discovery/painting suite passed **419 tests**, and repository
+`npm run validate` passed **359 Vitest tests** plus lint, formatting, style, i18n parity, asset
+checks, nautical integrity and the Pintor frontend guards.
 
 ## 2026-08-22 large manuals, 24-hour retention, page-by-page work (0.5.0, published)
 

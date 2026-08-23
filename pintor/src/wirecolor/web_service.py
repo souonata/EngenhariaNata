@@ -220,6 +220,18 @@ def _public_state(state: dict) -> dict:
     return {key: state[key] for key in allowed if key in state}
 
 
+def _public_engineering_semantics(analysis: dict | None) -> dict | None:
+    """Bounded semantic explanation for job/admin UIs; per-run geometry stays in private reports."""
+    if not isinstance(analysis, dict):
+        return None
+    allowed = {
+        "schema", "page_grammar", "decision_order", "object_roles", "physical_boundaries",
+        "approved_claims", "abstained_claim_count", "colour_sources", "geometry_sources",
+        "release_safe", "invariants", "notes", "semantic_abstentions",
+    }
+    return {key: analysis[key] for key in allowed if key in analysis}
+
+
 class JobStore:
     """Filesystem-backed beta job store with random, path-safe identifiers."""
 
@@ -384,6 +396,13 @@ class JobStore:
             raise ValueError("at least one annotation is required")
 
         feedback_id = uuid.uuid4().hex
+        reported_pages = sorted({item["page"] for item in annotations})
+        engineering_semantics = {
+            str(item.get("page")): _public_engineering_semantics(
+                item.get("engineering_semantics"))
+            for item in state.get("pages", ())
+            if item.get("page") in reported_pages and item.get("engineering_semantics")
+        }
         record = {
             "id": feedback_id,
             "job_id": job_id,
@@ -392,8 +411,9 @@ class JobStore:
             "publication_group": None,
             "page": annotations[0]["page"] if len({item["page"] for item in annotations}) == 1
                 else None,
-            "pages": sorted({item["page"] for item in annotations}),
+            "pages": reported_pages,
             "convention": state.get("convention"),
+            "engineering_semantics": engineering_semantics,
             "annotations": annotations,
             "note": str(payload.get("note") or "").strip()[:2000],
             "request_revision": bool(payload.get("request_revision", True)),
@@ -430,6 +450,7 @@ class JobStore:
                 "page_dimensions": state.get("page_dimensions", {}),
                 "convention": state.get("convention"),
                 "processing_mode": state.get("processing_mode"),
+                "pages": state.get("pages", []),
                 "metrics": state.get("metrics", {}),
                 "source_sha256": state.get("source_sha256"),
             })
@@ -503,12 +524,14 @@ class JobStore:
             "request_revision", "consent_learning", "created_at", "status", "trainable",
             "eligible_for_dataset", "account_username", "original_name", "reviewed_at",
             "review_note", "reviewer_username", "decision", "review_history", "round_id",
+            "engineering_semantics",
         }
         payload = {key: record[key] for key in allowed if key in record}
         if not detailed:
             payload["annotation_count"] = len(record.get("annotations") or [])
             payload.pop("annotations", None)
             payload.pop("review_history", None)
+            payload.pop("engineering_semantics", None)
         return payload
 
     def list_feedback(self) -> list[dict]:
@@ -1105,6 +1128,8 @@ def discover_job_pages(store: JobStore, job_id: str, source: Path, state: dict) 
         "wiring_document": report["wiring_document"],
         "confirmed": len(report["confirmed"]),
         "candidates": len(report["candidates"]),
+        "excluded_non_wiring": len(report["excluded_non_wiring"]),
+        "already_colored": len(report["already_colored"]),
         # Evidence is kept only for the pages that were chosen, so the operator can audit a sweep.
         "evidence": report["evidence"][:500],
     }
@@ -1210,7 +1235,8 @@ def process_job(store: JobStore, job_id: str) -> None:
                 "runs_painted": report.get("runs_painted", 0),
                 "codes": report.get("codes", []),
                 "abstentions": report.get("decision_abstentions", 0)
-                    + report.get("learned_abstentions", 0),
+                    + report.get("learned_abstentions", 0)
+                    + report.get("semantic_abstentions", 0),
                 "paint_dpi": report.get("paint_dpi"),
                 "seconds": report.get("seconds"),
                 "preview_width": original_size[0],
@@ -1224,6 +1250,8 @@ def process_job(store: JobStore, job_id: str) -> None:
                 "convention": convention,
                 "convention_confidence": confidence,
                 "processing_mode": report.get("processing_mode", "vector-text"),
+                "engineering_semantics": _public_engineering_semantics(
+                    report.get("engineering_semantics")),
                 "preview_original": f"/api/jobs/{job_id}/preview/original?page={page_index}",
                 "metrics": page_metrics,
             }

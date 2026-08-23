@@ -181,7 +181,70 @@ npm run build          # build de produção (gera local/dist)
 
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
-_Última atualização: 2026-08-22_
+_Última atualização: 2026-08-23_
+
+- **PINTOR — SEMÂNTICA DE ENGENHARIA GLOBAL (0.6.0, branch
+  `codex/pintor-exhaustive-discovery`):** todas as rotas de produção (vetorial, raster/OCR,
+  chicote pictórico, pinos, lote, P1, pipeline legado e worker web) passam pelo mesmo gate antes
+  de renderizar: gramática da página → papéis dos objetos → condutores físicos entre fronteiras →
+  fonte de cor impressa → conflitos/desconhecidos → pintura. Só condutor físico e pino confirmado
+  podem receber cor; chamada de legenda, contorno, terminal, junção e geometria incerta ficam
+  pretos. Contexto elétrico pode rejeitar uma associação, nunca inventar cor. Resultado e detalhe
+  administrativo mostram gramática, papéis, anotações excluídas e evidências, sem expor a geometria
+  privada de cada claim. Validação real: `pub81:334` = 27 pinos/0 fios; `pub3763:20` = 8 fios/8
+  chamadas excluídas; ambos V2/V7. Suíte: 434 testes Python, 362 Vitest e build. Detalhes em
+  `pintor/HANDOFF.md` e
+  `pintor/docs/ELECTRICAL_SAFETY_RULES.md`.
+
+- **PINTOR — FIOS PICTÓRICOS CONTORNADOS (0.5.6, branch
+  `codex/pintor-exhaustive-discovery`):** a amostra real `pub3763:20` desenha os 8 fios como tubos
+  raster grossos e vazios; as linhas vetoriais finas saindo de `Y`, `R/SB`, `SB`, `R/BL` e `LBN`
+  são apenas chamadas de legenda. A nova rota híbrida usa texto + chamadas exatos somente para
+  localizar cada tubo bitonal, extrai o eixo do interior fechado e pinta sua largura medida. Exige
+  pelo menos duas chamadas independentes e cobertura completa antes de assumir exclusividade;
+  imagem sombreada e ambiguidade causam abstinência. O reparo fez 8/8 em 2,2 s, contra 1/1046 em
+  189,2 s, manteve todas as chamadas pretas e passou V2/V7 com zero pixels protegidos. Detalhes e
+  regressões em `pintor/HANDOFF.md`.
+
+- **PINTOR — MARCADORES DE PINO DE CONECTOR (0.5.5, branch
+  `codex/pintor-exhaustive-discovery`):** a amostra real `pub81:334` não desenha os fios; ela só
+  imprime os códigos ao lado dos pinos. Esses rótulos agora são separados do algoritmo de posse de
+  fios e geram círculos centralizados dentro dos pinos, com duas metades iguais para códigos de duas
+  cores. O raio respeita simultaneamente 72% do raio do pino, a distância ao pino vizinho e a borda
+  do conector; nesta página o diâmetro ficou em ~0,62 mm. Resultado: 27 pinos marcados, 0/37
+  contornos pintados, V2/V7 aprovados. Um gate exige ao menos dois pares rótulo↔pino por conector,
+  e uma página densa de fios manteve 99/150 atribuições com zero falsos marcadores. Detalhes e
+  regressões em `pintor/HANDOFF.md`.
+
+- **PINTOR — REVISÃO ADMIN COM ZOOM/PAN + AMOSTRA REAL (0.5.4, branch
+  `codex/pintor-exhaustive-discovery`):** só desenhos cujos donos marcaram erros e escolheram
+  compartilhar aparecem em **Relatos**; uploads privados continuam invisíveis ao admin e expiram
+  normalmente. O detalhe do relato agora tem ajustar/zoom, roda do mouse e pan por arraste, usando
+  a mesma transformação para imagem e marcações; trocar Pintado/Original preserva a vista. A
+  matemática foi extraída para `pintor/pintor-viewport.js` e ganhou regressões. Um fixture local com
+  API viva confirmou 33%→50%, pan, duas marcações alinhadas e transformação idêntica ao alternar a
+  imagem. Foi sorteada uma amostra reproduzível de seis páginas P&B reais (seed `20260823`, quatro
+  confirmadas + duas prováveis, manuais distintos) em
+  `pintor/output/pdf/random_validation_20260823`; os artefatos são privados/ignorados. A queda
+  terminou com quatro resultados aprovados por V2/V7, uma abstinência integral byte-idêntica e um
+  rascunho denso (`pub80:163`) mantido só para diagnóstico porque V2 bloqueou 20.184 pixels em zonas
+  protegidas. O raster revelou ainda que `ctypes.CDLL(None)` lança `TypeError` no Windows após o
+  OCR; o `malloc_trim` opcional agora é ignorado com segurança nessa plataforma e tem teste de
+  regressão.
+
+- **PINTOR — ROBÔ DE INVENTÁRIO (branch `codex/pintor-exhaustive-discovery`):** varre cada página
+  de cada PDF, encontra até diagramas mínimos de sensor/relé com um único código junto ao fio,
+  rejeita palavras/designadores que imitam cores e ignora somente páginas cujos próprios condutores
+  já são cromáticos junto aos códigos — cor decorativa ou numa ilustração separada não elimina um
+  circuito P&B. Gera ledger retomável + JSON/CSV/HTML/miniaturas sem alterar os manuais. Passagem
+  vetorial + RapidOCR concluída nos 78 manuais/9.027 páginas: 233 confirmadas, 182 prováveis, 2
+  para revisão, 56 páginas já coloridas ignoradas, 4.238 páginas não-elétricas excluídas e **417
+  candidatas P&B** no total (251 novas além da lista antiga); zero pendências, erros ou chaves
+  duplicadas. RapidOCR 3.9.2 + ONNX Runtime 1.29.0 estão instalados e os três modelos passaram no
+  `rapidocr check`. A revisão remove produto/boletim, dimensão mecânica, pin table, layout de cores
+  de cabos, hidráulica/combustível, fluxo de serviço e `R1/P1/T1` usados como designadores. Os
+  exemplos rejeitados pelo usuário estão todos fora do relatório final em
+  `pintor/workspaces/wiring_inventory_bw_ocr_final`. Detalhes em `pintor/HANDOFF.md`.
 
 - **PINTOR — MANUAIS GRANDES, RETENÇÃO DE 24 H E TRABALHO PÁGINA A PÁGINA (0.5.0, PUBLICADO EM
   2026-08-22):** segunda leva. **200 MB por arquivo** (`PINTOR_MAX_UPLOAD_MB=200`) e o upload
@@ -255,10 +318,12 @@ _Última atualização: 2026-08-22_
   (dimensão e pixels de análise), inalterados. Numa varredura, página fora do orçamento é pulada e
   reportada em vez de derrubar o job; em página pedida explicitamente continua erro.
   **VARREDURA:** upload sem seleção de páginas passa por `tools/discover_pages.scan_document`, que
-  reaproveita as regras de evidência já validadas contra o corpus: ≥8 códigos de cor no texto da
-  página = confirmada; imagem quase de página inteira em folha grande e quase sem texto, dentro de
-  um documento sabidamente de fiação = candidata para OCR. Contagem de traços continua não sendo
-  evidência. Com `convention=auto` os tokens de todas as convenções são unidos, porque a detecção só
+  reaproveita as regras de evidência já validadas contra o corpus: uma legenda exata precisa ser
+  associada geometricamente a um traço vetorial de condutor; a antiga contagem bruta de oito códigos
+  não confirma mais uma página nem supera as exclusões semânticas. Imagem quase de página inteira em
+  folha grande e quase sem texto, dentro de um documento sabidamente de fiação, é candidata para
+  OCR. Contagem de traços continua não sendo evidência. Com `convention=auto` os tokens de todas as
+  convenções são unidos, porque a detecção só
   decide SE a página é wiring diagram — qual vocabulário é ela continua sendo decidido por
   `_select_convention`, página a página. Documento sem nada qualificável é `declined` com stage
   `no-wiring-page`, não `failed`. `PINTOR_SCAN_MAX_PAGES` (padrão 0 = ilimitado) limita a varredura.

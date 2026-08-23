@@ -107,6 +107,7 @@ class RasterElectricalSafetyTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory, \
                 patch("wirecolor.instrument.reset_for_tests"), \
                 patch("wirecolor.prep.render_working_png", return_value=meta), \
+                patch("wirecolor.tools.paint_raster._recognise_outlined_page", return_value=None), \
                 patch(
                     "wirecolor.tools.paint_raster._recognise_page_labels",
                     return_value=("iec_two_letter", "user-selected", 1),

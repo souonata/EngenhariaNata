@@ -247,7 +247,8 @@ def merge_ocr_fragments(tokens: list[dict], convention) -> list[dict]:
     return [token for token in merged if str(token.get("raw", "")).strip()]
 
 
-def build_engine():
+def build_engine(intra_op_threads: int = 2):
+    """Build an OCR engine; callers running a batch may explicitly reuse the returned callable."""
     try:
         from rapidocr import RapidOCR
         # ONNX sizes its default thread pools from the host, not necessarily the container CPU
@@ -256,7 +257,8 @@ def build_engine():
         # container has two CPUs: make that bound explicit for all three OCR sessions and disable
         # the arena so transient detector buffers can return to the allocator between tiles.
         _eng = RapidOCR(params={
-            "EngineConfig.onnxruntime.intra_op_num_threads": 2,
+            "Global.log_level": "ERROR",
+            "EngineConfig.onnxruntime.intra_op_num_threads": intra_op_threads,
             "EngineConfig.onnxruntime.inter_op_num_threads": 1,
             "EngineConfig.onnxruntime.enable_cpu_mem_arena": False,
         })
@@ -278,10 +280,10 @@ def build_engine():
     return engine
 
 
-def ocr_labels(image_path: str, convention) -> dict:
+def ocr_labels(image_path: str, convention, engine=None) -> dict:
     """Tiled RapidOCR pass that returns {"labels": [{code, raw, score, cx, cy, w, h, box}]}."""
     from PIL import Image
-    engine = build_engine()
+    engine = engine or build_engine()
     _aw = re.escape(convention.all_white_token)   # "WH" escapes to itself: regex parity with v1
 
     arr = np.array(Image.open(image_path).convert("RGB"))
@@ -291,8 +293,13 @@ def ocr_labels(image_path: str, convention) -> dict:
     #                         (positions, not a count: the tile overlap reads border tokens twice)
     # dynamic tiling: ~1200px tiles regardless of sheet size, so an A0 sheet rendered at 200 DPI
     # (the scale all detection constants are tuned for) OCRs as reliably as an A2 one.
-    ny = max(3, (ih + 1099) // 1100)
-    nx = max(4, (iw + 1199) // 1200)
+    if max(ih, iw) <= 2600:
+        # RapidOCR's detector keeps an ordinary 200-DPI page within its supported resize bound.
+        # A single pass is both faster and less likely to duplicate legends across tile seams.
+        ny = nx = 1
+    else:
+        ny = max(1, (ih + 1099) // 1100)
+        nx = max(1, (iw + 1199) // 1200)
     ov = 180     # a vertical two-colour label is ~160 px tall at 200 DPI; a smaller overlap lets a
     #              tile boundary clip it and the fragment reads as the WRONG code ('BL/ GR' -> 'GR')
     for iy in range(ny):
@@ -330,4 +337,8 @@ def ocr_labels(image_path: str, convention) -> dict:
     if len(wh_hits) >= 10 and len(wh_hits) > 2 * len(labels_out):
         print(f"all-white cabinet sheet detected ({len(wh_hits)} {_aw} tokens): nothing to colourize")
         labels_out = []
-    return {"image": [iw, ih], "labels": labels_out}
+    return {
+        "image": [iw, ih],
+        "labels": labels_out,
+        "text": " ".join(str(token.get("raw", "")).strip() for token in tokens).strip(),
+    }

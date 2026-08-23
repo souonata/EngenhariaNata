@@ -24,7 +24,7 @@
         <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.4.0" />
         <link rel="stylesheet" href="../assets/css/dock-global.css?v=1.2.0" />
         <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0" />
-        <link rel="stylesheet" href="pintor-styles.css?v=0.5.2" />
+        <link rel="stylesheet" href="pintor-styles.css?v=0.6.0" />
 
         <script
             data-goatcounter="https://souonata.goatcounter.com/count"
@@ -358,6 +358,7 @@
                                     class="icon-button"
                                     type="button"
                                     aria-label="Zoom out"
+                                    data-i18n-aria="aria.zoomOut"
                                 >
                                     −
                                 </button>
@@ -375,6 +376,7 @@
                                     class="icon-button"
                                     type="button"
                                     aria-label="Zoom in"
+                                    data-i18n-aria="aria.zoomIn"
                                 >
                                     +
                                 </button>
@@ -422,6 +424,24 @@
                             <div>
                                 <dt data-i18n="summary.abstentions">Abstentions</dt>
                                 <dd id="metricAbstentions">—</dd>
+                            </div>
+                            <div>
+                                <dt data-i18n="summary.engineeringGrammar">Engineering reading</dt>
+                                <dd id="metricEngineeringGrammar" class="engineering-metric-text">
+                                    —
+                                </dd>
+                            </div>
+                            <div>
+                                <dt data-i18n="summary.engineeringRoles">Approved roles</dt>
+                                <dd id="metricEngineeringRoles" class="engineering-metric-text">
+                                    —
+                                </dd>
+                            </div>
+                            <div>
+                                <dt data-i18n="summary.annotationsExcluded">
+                                    Annotations excluded
+                                </dt>
+                                <dd id="metricAnnotationsExcluded">—</dd>
                             </div>
                         </dl>
                         <a
@@ -701,33 +721,86 @@
                                 <span data-i18n="admin.page">Reported page</span>
                                 <select id="adminPage"></select>
                             </label>
-                            <div
-                                class="admin-preview-tabs"
-                                role="group"
-                                data-i18n-aria="admin.previewAria"
-                            >
-                                <button
-                                    id="adminShowPainted"
-                                    class="viewer-tab is-active"
-                                    type="button"
-                                    data-i18n="review.painted"
+                            <div class="admin-preview-toolbar">
+                                <div
+                                    class="admin-preview-tabs"
+                                    role="group"
+                                    data-i18n-aria="admin.previewAria"
                                 >
-                                    Painted
-                                </button>
-                                <button
-                                    id="adminShowOriginal"
-                                    class="viewer-tab"
-                                    type="button"
-                                    data-i18n="review.original"
+                                    <button
+                                        id="adminShowPainted"
+                                        class="viewer-tab is-active"
+                                        type="button"
+                                        data-i18n="review.painted"
+                                    >
+                                        Painted
+                                    </button>
+                                    <button
+                                        id="adminShowOriginal"
+                                        class="viewer-tab"
+                                        type="button"
+                                        data-i18n="review.original"
+                                    >
+                                        Original
+                                    </button>
+                                </div>
+                                <div
+                                    class="toolbar-actions"
+                                    role="group"
+                                    data-i18n-aria="aria.viewerControls"
                                 >
-                                    Original
-                                </button>
+                                    <button
+                                        id="adminZoomOut"
+                                        class="icon-button"
+                                        type="button"
+                                        aria-label="Zoom out"
+                                        data-i18n-aria="aria.zoomOut"
+                                    >
+                                        −
+                                    </button>
+                                    <button
+                                        id="adminZoomFit"
+                                        class="icon-button"
+                                        type="button"
+                                        aria-label="Fit diagram"
+                                        data-i18n-aria="aria.fit"
+                                    >
+                                        ⌗
+                                    </button>
+                                    <span id="adminZoomValue" class="admin-zoom-value">100%</span>
+                                    <button
+                                        id="adminZoomIn"
+                                        class="icon-button"
+                                        type="button"
+                                        aria-label="Zoom in"
+                                        data-i18n-aria="aria.zoomIn"
+                                    >
+                                        +
+                                    </button>
+                                </div>
                             </div>
-                            <div class="admin-preview-stage">
-                                <img id="adminPreview" alt="" />
-                                <div id="adminAnnotationLayer" class="admin-annotation-layer"></div>
+                            <div id="adminPreviewStage" class="admin-preview-stage">
+                                <div id="adminPreviewPlane" class="admin-preview-plane">
+                                    <img id="adminPreview" alt="" />
+                                    <div
+                                        id="adminAnnotationLayer"
+                                        class="admin-annotation-layer"
+                                    ></div>
+                                </div>
+                                <p class="viewer-hint" data-i18n="admin.viewerHint">
+                                    Drag to pan and use the wheel to zoom. The markings stay aligned
+                                    in both views.
+                                </p>
                             </div>
                             <div id="adminAnnotations" class="admin-annotations"></div>
+                            <div id="adminEngineeringSummary" class="engineering-summary" hidden>
+                                <strong data-i18n="summary.engineeringGrammar"
+                                    >Engineering reading</strong
+                                >
+                                <span id="adminEngineeringGrammar">—</span>
+                                <span id="adminEngineeringRoles">—</span>
+                                <span id="adminEngineeringEvidence">—</span>
+                            </div>
                             <p id="adminNote" class="admin-user-note"></p>
                             <label class="field-group" for="adminDecisionNote">
                                 <span data-i18n="admin.decisionNote">Expert note (optional)</span>
@@ -861,6 +934,6 @@
             </svg>
         </a>
 
-        <script type="module" src="pintor-script.js?v=0.5.2"></script>
+        <script type="module" src="pintor-script.js?v=0.6.0"></script>
     </body>
 </html>

@@ -16,6 +16,68 @@ import time
 MIN_OCR_SCORE = 0.80
 
 
+def _recognise_outlined_page(pdf_path: str, page_index: int, requested: str):
+    """Select a convention from exact vector callouts over bitonal outlined-wire art."""
+    from ..detect.outlined_wires import detect_outlined_wires
+    from ..labels.conventions import list_conventions, load_convention
+
+    names = [requested] if requested != "auto" else list_conventions()
+    ranked = []
+    for name in names:
+        convention = load_convention(name)
+        result = detect_outlined_wires(pdf_path, page_index, convention)
+        if not result["exclusive"]:
+            continue
+        distinctive = sum(
+            any(part in convention.distinctive
+                for part in wire.code.split(convention.two_color_sep))
+            for wire in result["wires"]
+        )
+        ranked.append((len(result["wires"]) + 3 * distinctive,
+                       len(result["wires"]), name, result))
+    ranked.sort(key=lambda row: (row[0], row[1], row[2]), reverse=True)
+    if not ranked:
+        return None
+    if requested == "auto" and len(ranked) > 1 and ranked[0][:2] == ranked[1][:2]:
+        return None
+    _score, _count, name, result = ranked[0]
+    return name, result
+
+
+def _outlined_solution(convention, detection):
+    """Minimal PageSolution for a page whose exact callouts cover every outlined cable."""
+    return {
+        "convention": convention,
+        "segments": [],
+        "solver": {"claims": {}, "mate": {}, "at_dot": {}, "dot_arcs": {}},
+        "dgroups": {},
+        "dclaims": {},
+        "housings": [],
+        "inline_components": [],
+        "terminal_dots": frozenset(),
+        "holes": [],
+        "twist": frozenset(),
+        "bridge_twist": frozenset(),
+        "outlined_wires": detection["wires"],
+        "semantic_exclusions": detection.get("callout_leaders", ()),
+    }
+
+
+def _semantic_callout_exclusions(pdf_path: str, page_index: int, requested: str):
+    """Find annotation leaders for every raster path; unreadable metadata simply yields none."""
+    from ..detect.outlined_wires import detect_callout_leaders
+    from ..labels.conventions import list_conventions, load_convention
+
+    names = [requested] if requested != "auto" else list_conventions()
+    try:
+        return detect_callout_leaders(
+            pdf_path, page_index, [load_convention(name) for name in names])
+    except (FileNotFoundError, OSError, RuntimeError, ValueError):
+        # The ordinary raster route remains available for a valid image-only PDF with no vector
+        # annotation layer.  Release safety still comes from the common semantic gate and V2/V7.
+        return []
+
+
 def _union_convention():
     """Closed vocabulary used only for one convention-neutral OCR sweep."""
     from ..labels.conventions import Convention, list_conventions, load_convention
@@ -124,6 +186,7 @@ def paint_page(pdf_path: str, page_index: int, out_dir: str, convention_name: st
     """Analyse, paint, and verify one raster or image-only page."""
     import cv2
 
+    from ..engine.semantics import declined_analysis, enforce_raster_semantics
     from ..instrument import reset_for_tests
     from ..labels.conventions import load_convention
     from ..paint.raster_overlay import (
@@ -146,37 +209,57 @@ def paint_page(pdf_path: str, page_index: int, out_dir: str, convention_name: st
     )
 
     meta = render_working_png(pdf_path, page_index, work)
-    selected, confidence, label_count = _recognise_page_labels(
-        work, labels_path, harvest_path, convention_name,
-    )
-    if selected is None or (convention_name == "auto" and confidence == "low"):
-        return {
-            "pdf": pdf_path,
-            "page": page_index,
-            "declined": True,
-            "decline_reason": (
-                "OCR could not identify the colour-code convention with enough confidence; "
-                "select the convention explicitly and try again"
-            ),
-            "convention": selected,
-            "convention_confidence": confidence,
-            "labels": label_count,
-            "runs": 0,
-            "runs_painted": 0,
-            "paint_rate": 0.0,
-            "processing_mode": "raster-ocr",
-            "seconds": round(time.time() - started, 1),
-        }
+    outlined = _recognise_outlined_page(pdf_path, page_index, convention_name)
+    if outlined is not None:
+        selected, outlined_detection = outlined
+        confidence = ("user-selected-exact-callouts" if convention_name != "auto"
+                      else "exact-callouts")
+        label_count = outlined_detection["pair_count"]
+        convention = load_convention(selected)
+        solution = _outlined_solution(convention, outlined_detection)
+        profile = {"coverage": {
+            "unresolved_roots": 0,
+            "painted_ink_fraction": 1.0,
+        }}
+    else:
+        selected, confidence, label_count = _recognise_page_labels(
+            work, labels_path, harvest_path, convention_name,
+        )
+        if selected is None or (convention_name == "auto" and confidence == "low"):
+            return {
+                "pdf": pdf_path,
+                "page": page_index,
+                "declined": True,
+                "decline_reason": (
+                    "OCR could not identify the colour-code convention with enough confidence; "
+                    "select the convention explicitly and try again"
+                ),
+                "convention": selected,
+                "convention_confidence": confidence,
+                "labels": label_count,
+                "runs": 0,
+                "runs_painted": 0,
+                "paint_rate": 0.0,
+                "processing_mode": "raster-ocr",
+                "engineering_semantics": declined_analysis(
+                    "colour convention could not be established"),
+                "seconds": round(time.time() - started, 1),
+            }
 
-    convention = load_convention(selected)
-    solution = run_page(
-        work, labels_path, convention, harvest_path=harvest_path,
-        allow_splice_propagation=False,
-    )
-    profile = measure_sheet_profile(solution, meta)
+        convention = load_convention(selected)
+        solution = run_page(
+            work, labels_path, convention, harvest_path=harvest_path,
+            allow_splice_propagation=False,
+        )
+        solution["semantic_exclusions"] = _semantic_callout_exclusions(
+            pdf_path, page_index, selected)
+    solution, engineering_semantics = enforce_raster_semantics(solution, convention)
+    if outlined is None:
+        profile = measure_sheet_profile(solution, meta)
     solid_claims = len(solution["solver"].get("claims", {}))
     dashed_claims = sum(len(solution["dgroups"][root]) for root in solution.get("dclaims", {}))
-    if solid_claims + dashed_claims == 0:
+    outlined_claims = len(solution.get("outlined_wires", ()))
+    if solid_claims + dashed_claims + outlined_claims == 0:
         return {
             "pdf": pdf_path,
             "page": page_index,
@@ -192,6 +275,8 @@ def paint_page(pdf_path: str, page_index: int, out_dir: str, convention_name: st
             "runs_painted": 0,
             "paint_rate": 0.0,
             "processing_mode": "raster-ocr",
+            "engineering_semantics": engineering_semantics,
+            "semantic_abstentions": engineering_semantics["semantic_abstentions"],
             "seconds": round(time.time() - started, 1),
         }
 
@@ -226,17 +311,26 @@ def paint_page(pdf_path: str, page_index: int, out_dir: str, convention_name: st
         "pdf": pdf_path,
         "page": page_index,
         "declined": False,
-        "processing_mode": "raster-ocr",
+        "processing_mode": ("hybrid-vector-callout-raster-outline"
+                            if outlined_claims else "raster-ocr"),
         "convention": selected,
         "convention_confidence": confidence,
         "labels": label_count,
-        "runs": len(solution["segments"]),
-        "runs_painted": solid_claims + dashed_claims,
+        "runs": len(solution["segments"]) + outlined_claims,
+        "runs_painted": solid_claims + dashed_claims + outlined_claims,
+        "outlined_wires_painted": outlined_claims,
         "decision_abstentions": coverage.get("unresolved_roots", 0),
         "learned_abstentions": 0,
+        "semantic_abstentions": engineering_semantics["semantic_abstentions"],
         "paint_rate": coverage.get("painted_ink_fraction", 0.0),
         "paint_dpi": round(72.0 * width / float(meta["page_w"])),
-        "codes": codes,
+        "codes": sorted(set(codes) | {
+            wire.code if hasattr(wire, "code") else wire["code"]
+            for wire in solution.get("outlined_wires", ())
+        }),
+        "coverage_metric": ("exact-outlined-callout-realization"
+                            if outlined_claims else "painted-raster-ink"),
+        "engineering_semantics": engineering_semantics,
         "v2": v2,
         "v7": v7,
         "out_pdf": out_pdf,
