@@ -68,7 +68,7 @@ def _release_native_memory() -> None:
             malloc_trim.argtypes = [ctypes.c_size_t]
             malloc_trim.restype = ctypes.c_int
             malloc_trim(0)
-    except (AttributeError, OSError):
+    except (AttributeError, OSError, TypeError):
         pass
 
 

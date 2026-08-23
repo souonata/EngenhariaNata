@@ -33,6 +33,8 @@ def main():
 
     import cv2
 
+    from ..detect.outlined_wires import detect_callout_leaders
+    from ..engine.semantics import enforce_raster_semantics
     from ..labels.conventions import load_convention
     from ..paint.raster_overlay import attach_overlay, build_overlay_rgba, render_native
     from ..pipeline import run_page
@@ -60,6 +62,9 @@ def main():
     labels_path = os.path.join(args.workdir, f"{tag}_labels.json")
     harvest_path = os.path.join(args.workdir, f"{tag}_harvest.json") if args.harvest else None
     solution = run_page(wpng, labels_path, convention, harvest_path=harvest_path)
+    solution["semantic_exclusions"] = detect_callout_leaders(
+        pdf_path, args.page, [convention])
+    solution, engineering_semantics = enforce_raster_semantics(solution, convention)
 
     # Observation only: record what this drawing does (dash rhythm, legend offset, code census)
     # so the corpus can build priors and flag a sheet whose style sits outside them.
@@ -69,6 +74,9 @@ def main():
     rhythm = profile["dash_rhythm"]
     print(f"profile -> {profile_path} (dash pitch {rhythm['pitch']} / stroke {rhythm['stroke']} "
           f"from {rhythm['periods_measured']} periods)")
+    print(f"engineering semantics -> {engineering_semantics['page_grammar']}; "
+          f"{engineering_semantics['approved_claims']} approved, "
+          f"{engineering_semantics['abstained_claim_count']} abstained")
 
     if args.analysis_only:
         print(f"analysis-only: {len(solution['segments'])} arcs, "

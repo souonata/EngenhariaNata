@@ -17,6 +17,25 @@ preserving every other page in the PDF.
 profile or symbol grammar becomes supported only after publication-grouped evaluation. Unknown or
 unrecognised component geometry is a hard abstention boundary.
 
+## Mandatory engineering decision order
+
+Every production entry point applies the same semantic gate before a renderer receives colour.
+The order is fixed because drawing geometry alone cannot distinguish a wire from a leader or a
+component outline:
+
+1. classify the page grammar (schematic, connector schedule, pictorial harness, or unresolved);
+2. classify object roles (physical conductor, connector pin, annotation leader, component or
+   connector boundary, terminal or junction, and unresolved geometry);
+3. build each physical conductor only between hard electrical/drawing boundaries;
+4. associate an authoritative printed colour legend with that physical object;
+5. reject conflicts, unsupported codes and unknown ownership;
+6. render only approved physical conductors and connector pins.
+
+The electrical context can disprove a proposed association—for example at a fuse, splice, branch
+or connector—but voltage, polarity, net name and expected circuit function never invent a colour.
+Every result keeps a bounded audit of the page grammar, object-role counts, colour sources and
+abstentions; per-object geometry remains private to the processing report.
+
 ## Hard electrical and drawing invariants
 
 1. **Electrical connectivity is not physical conductor identity.** A connected net may contain

@@ -76,7 +76,10 @@ class RetentionLoopTests(unittest.IsolatedAsyncioTestCase):
 
         store = CountingStore()
         task = asyncio.create_task(_cleanup_expired_periodically(store, 0.01))
-        await asyncio.sleep(0.035)
+        # Windows commonly rounds a 10 ms asyncio timer to its ~15.6 ms clock tick.  Leave enough
+        # ticks for two iterations instead of making the retention contract depend on scheduler
+        # luck on a busy test host.
+        await asyncio.sleep(0.075)
         task.cancel()
         with self.assertRaises(asyncio.CancelledError):
             await task
@@ -439,6 +442,21 @@ class WebServiceTests(unittest.TestCase):
 
     def test_feedback_requires_typed_geometry_and_stays_pending(self):
         job_id = self.upload(consent=True).json()["id"]
+        semantic_summary = {
+            "schema": "pintor-engineering-semantics-v1",
+            "page_grammar": "raster-wiring-schematic",
+            "object_roles": {
+                "physical-conductor": 1,
+                "annotation-leader": 1,
+            },
+            "approved_claims": 1,
+            "colour_sources": {"exact-raster-callout": 1},
+            "paint_claims": [{"object_id": "private-run-geometry"}],
+        }
+        JobStore(self.temp.name).update(job_id, pages=[{
+            "page": 0,
+            "engineering_semantics": semantic_summary,
+        }])
         response = self.client.post(f"/api/jobs/{job_id}/feedback", json={
             "annotations": [{
                 "type": "wrong-colour",
@@ -457,6 +475,10 @@ class WebServiceTests(unittest.TestCase):
         self.assertEqual(payload["document_group_candidate"], payload["source_sha256"])
         self.assertEqual(payload["annotations"][0]["training_target"], "legend-ownership")
         self.assertEqual(payload["annotations"][0]["expect"], "painted:GN/YE")
+        recorded_semantics = payload["engineering_semantics"]["0"]
+        self.assertEqual(recorded_semantics["page_grammar"], "raster-wiring-schematic")
+        self.assertEqual(recorded_semantics["object_roles"]["annotation-leader"], 1)
+        self.assertNotIn("paint_claims", recorded_semantics)
 
     def test_bleed_requires_a_segment_not_a_single_point(self):
         job_id = self.upload().json()["id"]

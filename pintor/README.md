@@ -20,10 +20,31 @@ The Engenharia NATA beta has two page-analysis modes:
   `40, 42, 44-46`; the released PDF still contains the complete manual and every unselected page
   remains unchanged;
 - discovery: leaving the page field empty sweeps the whole document and paints every page that
-  carries readable wire colour codes, wherever those pages sit. Evidence rules are shared with the
-  corpus discovery tool: a page with at least eight colour codes in its text layer is confirmed; a
-  near-full-page image on a large sheet inside a document independently known to be about wiring is
-  a candidate that only OCR can confirm. Everything else is left alone;
+  carries readable wire colour codes, wherever those pages sit. One strong positioned code is enough
+  when a sufficiently long vector stroke runs beside it, so a two-wire sensor or relay is not lost
+  merely because it is not a full-page schematic. Lower-case word collisions, bare one-letter
+  component marks, connector pin tables, cable-colour reference sheets and colour-key rows are
+  rejected. A diagnostic or instructional prose page with only an incidental mini-circuit is not a
+  wiring-diagram page. Wiring whose conductor paths are already chromatic is also ignored; isolated
+  coloured logos, warnings and short component marks do not hide an otherwise black-and-white
+  schematic. A near-full-page image on a large sheet inside a document independently known to be
+  about wiring remains an OCR candidate;
+- connector schedules: when a pictorial installation page shows colour codes beside connector pins
+  but does not draw the conductors, those codes never enter wire ownership. Pintor instead places a
+  clearance-bounded disc inside the corresponding pin; a two-colour code uses two equal semicircles.
+  The connector housing, component outline, and implied-but-absent wire stay black;
+- outlined pictorial cables: when the real conductors are hollow raster tubes and separate thin
+  vector leaders point from exact colour codes to those tubes, Pintor follows the closed cable
+  interior instead of the leader. At least two independent one-to-one callouts must resolve on the
+  page; otherwise this special path abstains. Two-colour cables use equal longitudinal bands while
+  the original black tube borders, callout lines, text and instrument drawing stay untouched;
+- engineering semantics: every vector, raster, batch, web and diagnostic path passes through the
+  same role-first gate before rendering. It classifies the page grammar, distinguishes physical
+  conductors and connector pins from leaders, terminals, junctions, component boundaries and
+  unresolved geometry, then requires an exact printed colour source for every approved object.
+  Electrical connectivity may reject an impossible association but never supplies a missing colour.
+  The result and the administrator report show the grammar, approved roles, excluded annotations and
+  evidence count;
 - queue: one file is painted at a time. Extra files, from the same owner or from other testers, wait
   in arrival order and report their position. Uploads survive a page close and a service restart;
 - declined: password-protected files, unknown notation, illegible/unsupported colour codes,
@@ -82,6 +103,34 @@ Measured on this pipeline with synthetic manuals, 50 wiring pages each:
 Tripling the manual left peak memory unchanged: what costs memory is painting one page, not the
 length of the document around it. Both runs stayed well under the 2,560 MB worker ceiling.
 
+## Exhaustive manual inventory
+
+`pintor-inventory` scans every page of every PDF in a directory or private library manifest. It
+never changes the PDFs. Each page records the exact code text, adjacent vector or raster-line
+evidence, whether conductor strokes are already coloured, confidence, old-manifest membership and
+source page number. Only black-and-white wiring candidates enter the CSV and HTML report. The run
+appends one JSONL record after every page and resumes from that ledger after an interruption. It
+also rebuilds a summary JSON, candidate CSV, thumbnail-backed HTML report and the count of newly
+discovered pages.
+
+The default `--ocr-mode missing` first takes the fast exact vector pass, then renders and OCRs every
+undecided page that contains raster content or almost no extractable text. A one-per-cent page image
+is enough to include a small inset. This avoids rereading text-only prose through OCR. Use
+`--ocr-mode all` only when a deliberately redundant OCR pass over text-only pages is wanted. Use
+`--ocr-mode off` for an immediate vector census and resume the same output directory later with the
+default mode for the exhaustive raster pass.
+
+```powershell
+pintor-inventory --library-manifest C:\private-library\manifest.json `
+  --out workspaces\wiring_inventory --ocr-mode off
+
+pintor-inventory --library-manifest C:\private-library\manifest.json `
+  --out workspaces\wiring_inventory
+```
+
+For an ordinary folder, replace `--library-manifest` with `--pdf-root C:\manuals`. Source paths and
+reports belong in ignored private workspaces; no source manual or inventory result is committed.
+
 ## Accounts and the administration console
 
 Each account owns its jobs. From **My drawings** an owner sees everything they uploaded — queued,
@@ -94,8 +143,10 @@ any feedback copy still waiting for adjudication.
 The administrator account, bootstrapped only from a username plus a scrypt hash in the environment,
 has a three-tab console:
 
-- **Reports** — the existing expert review queue: compare the marked location against the original
-  and painted previews, then accept, reject, or ask for clarification.
+- **Reports** — only drawings whose owners explicitly marked errors and chose to share them enter
+  this expert queue; ordinary private uploads are never listed. Compare the original and painted
+  previews, zoom with the buttons or wheel, drag to pan while the point/segment marks remain
+  aligned, then accept, reject, or ask for clarification.
 - **Accounts** — every registered tester with role, status, job count, and report counts. An
   administrator can suspend and reactivate an account (which drops its live sessions without
   deleting anything), promote or demote it, or delete it together with all of its data. The console
@@ -189,9 +240,10 @@ The administrator is bootstrapped only from `PINTOR_ADMIN_USERNAME` and
 the plaintext password in Compose, HTML, JavaScript, shell history, or Git. On the deployment host,
 `deploy/bootstrap-secrets.sh` prompts through the terminal and writes only the encoded hash to the
 root-owned mode-0600 `.env`. The admin console compares original/result previews with user point or
-segment annotations and records `accepted`, `rejected`, or `needs-clarification`. Even accepted
-feedback remains `trainable: false`; it only becomes eligible for a separately controlled offline
-dataset when the user also consented to learning.
+segment annotations. Its shared transform lets the reviewer zoom and pan without losing annotation
+alignment, then record `accepted`, `rejected`, or `needs-clarification`. Even accepted feedback
+remains `trainable: false`; it only becomes eligible for a separately controlled offline dataset
+when the user also consented to learning.
 
 The worker runs in a killable child process with time, CPU, and memory ceilings, with one processing
 slot per 3 GB container by default. The provided container runs as a non-root user with a read-only

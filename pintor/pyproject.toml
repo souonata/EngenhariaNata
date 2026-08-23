@@ -34,6 +34,7 @@ pintor-review = "wirecolor.tools.qa_dashboard:main"
 pintor-train = "wirecolor.tools.cross_validate_learning:main"
 pintor-web = "wirecolor.web_service:main"
 pintor-hash-password = "wirecolor.tools.hash_password:main"
+pintor-inventory = "wirecolor.tools.inventory_wiring_pages:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

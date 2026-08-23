@@ -16,6 +16,7 @@ import argparse
 import json
 import os
 import time
+from dataclasses import replace
 
 
 # The overlay is a raster image laid over the page, so its resolution is independent of the
@@ -75,6 +76,7 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
     from ..detect.vector_dashes import dashed_geometry, mark_dashed
     from ..engine.ownership import corroboration_rate
     from ..engine.policy import DecisionPolicy
+    from ..engine.semantics import declined_analysis, enforce_vector_semantics
     from ..engine.vector_page import decide_vector_context, extract_vector_context
     from ..eval.vector_truth import geometry_is_trustworthy
     from ..labels.conventions import load_convention
@@ -100,6 +102,8 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
             "pdf": pdf_path, "page": page_index, "dpi": dpi,
             "declined": True, "decline_reason": decline_reason,
             "runs": 0, "runs_painted": 0, "paint_rate": 0.0,
+            "engineering_semantics": declined_analysis(
+                decline_reason, grammar="raster-or-unsupported-vector-page"),
             "seconds": round(time.time() - started, 1),
         }
         document.close()
@@ -119,6 +123,8 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
     # sheet's own title block, so the dash has to survive the paint.
     dashed_segments, dash_pitch = dashed_geometry(page, dpi)
     dashed = mark_dashed(owned, dashed_segments)
+    owned, semantic_pin_markers, engineering_semantics = enforce_vector_semantics(
+        context, owned, context.pin_markers, convention, decision=decision)
 
     # paint at the sheet's affordable resolution; geometry was analysed at `dpi`
     out_dpi = paint_dpi_for(
@@ -128,13 +134,21 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
     if factor != 1.0:
         for run in owned:
             run.points = [(x * factor, y * factor) for x, y in run.points]
+    pin_markers = [replace(
+        marker,
+        x=marker.x * factor,
+        y=marker.y * factor,
+        radius=marker.radius * factor,
+        outer_radius=marker.outer_radius * factor,
+        connector_bbox=tuple(value * factor for value in marker.connector_bbox),
+    ) for marker in semantic_pin_markers]
     scale = out_dpi / 72.0
     canvas_hw = (int(round(page.rect.height * scale)), int(round(page.rect.width * scale)))
     page_pt = (page.rect.width, page.rect.height)
     scaled_pitch = None if dash_pitch is None else (dash_pitch[0] * factor, dash_pitch[1] * factor)
     rgba, painted = build_rgba(owned, canvas_hw, convention, out_dpi, pen_px=pen_px * factor,
                                diagnose=diagnose, scale=band_scale, page_pt=page_pt,
-                               dash_pitch=scaled_pitch)
+                               dash_pitch=scaled_pitch, pin_markers=pin_markers)
     v2 = v2_vector_protected_overlap(
         rgba, context.blocked_zones, analysis_dpi=dpi, paint_dpi=out_dpi)
     document.close()
@@ -166,6 +180,8 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
         "symbol_zones": context.symbol_zones,
         "symbol_strokes_removed": context.symbol_strokes_removed,
         "legends": len(context.legends),
+        "pin_markers_painted": len(pin_markers),
+        "pin_marker_codes": sorted({marker.code for marker in pin_markers}),
         "runs_painted": len(painted_parents),
         "painted_atomic_pieces": painted,
         "runs_by_legend": len(painted_parents - continuation_parents),
@@ -177,6 +193,7 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
         "frames_stripped": decision["frames_stripped"],
         "frame_splits": decision["frame_splits"],
         "learned_abstentions": decision["learned_abstentions"],
+        "semantic_abstentions": engineering_semantics["semantic_abstentions"],
         "decision_abstentions": decision["abstained"],
         "decision": decision,
         "decision_policy": decision_policy.to_dict(),
@@ -192,8 +209,11 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
         "total_length_px": round(total_length, 1),
         "paint_rate": round(coverage["paint_rate"], 3),
         "coverage_metric": "painted-vector-length-v2",
+        "engineering_semantics": engineering_semantics,
         "corroboration_rate": round(corroboration_rate(owned), 3),
-        "codes": sorted({run.code for run in owned if run.code}),
+        "codes": sorted(
+            {run.code for run in owned if run.code}
+            | {marker.code for marker in pin_markers}),
         "v7": v7,
         "v2": v2,
         "out_pdf": out_pdf,

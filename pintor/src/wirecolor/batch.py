@@ -106,6 +106,8 @@ def resolve_pages(spec, pdf_path):
 def process_sheet(pub, page, title, staging, db, base, convention_name, routes_dir):
     """Colorize one page entirely inside ``staging``; return its report."""
     from .instrument import reset_for_tests
+    from .detect.outlined_wires import detect_callout_leaders
+    from .engine.semantics import enforce_raster_semantics
     from .labels.conventions import load_convention
     from .paint.raster_overlay import attach_overlay, build_overlay_rgba, render_native
     from .pipeline import run_page
@@ -136,6 +138,9 @@ def process_sheet(pub, page, title, staging, db, base, convention_name, routes_d
 
     convention = load_convention(convention_name)
     solution = run_page(work, os.path.join(sheet_dir, f"{tag}_labels.json"), convention)
+    solution["semantic_exclusions"] = detect_callout_leaders(
+        pdf_path, page, [convention])
+    solution, engineering_semantics = enforce_raster_semantics(solution, convention)
     profile = measure_sheet_profile(solution, meta)
     save_profile(profile, os.path.join(sheet_dir, f"{tag}_profile.json"))
 
@@ -171,6 +176,7 @@ def process_sheet(pub, page, title, staging, db, base, convention_name, routes_d
         "seconds": round(time.time() - started, 1),
         "validators": {"V2": v2, "V7": v7},
         "passed": bool(v2["passed"] and v7["passed"]),
+        "engineering_semantics": engineering_semantics,
         "profile": {"dash_pitch": profile["dash_rhythm"]["pitch"],
                     "dash_stroke": profile["dash_rhythm"]["stroke"],
                     "labels": profile["labels"]["count"],

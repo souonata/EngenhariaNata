@@ -128,7 +128,7 @@ def page_geometry(page, text_chars, want_strokes=None):
     }
 
 
-def classify(geometry, codes, wiring_publication=False):
+def classify(geometry, codes, wiring_publication=False, allow_text_confirmation=True):
     """Evidence tier for one page, and how strongly it is believed to be a wiring diagram.
 
     Returns ``(tier, status)`` where status is ``confirmed``, ``candidate`` or ``rejected``.
@@ -154,7 +154,7 @@ def classify(geometry, codes, wiring_publication=False):
     foldout = (geometry["image_coverage"] >= 0.5 and long_edge_pt >= 700
                and geometry["text_chars"] < 200)
 
-    if codes >= MIN_CODES:
+    if allow_text_confirmation and codes >= MIN_CODES:
         return f"{geometry_axis}+text", "confirmed"
     if foldout and wiring_publication:
         return f"{geometry_axis}+ocr", "candidate"
@@ -192,8 +192,8 @@ def scan_document(pdf_path, convention_name="auto", min_codes=MIN_CODES, max_pag
 
     Same two kinds of evidence as the library sweep, applied to a single file:
 
-    * **codes in the text layer** -- a page carrying at least ``min_codes`` wire colour codes IS a
-      wiring diagram, whatever the document is called;
+    * **positioned code beside vector ink** -- one strong legend is enough when a sufficiently long
+      stroke runs beside it, which retains small sensor and relay figures;
     * **raster foldout inside a wiring document** -- a near-full-page image on a large sheet with
       almost no text, in a file that is independently known to be about wiring. It carries no text
       to count, so it is a *candidate*: only OCR can confirm it, and the painter abstains if the
@@ -204,8 +204,10 @@ def scan_document(pdf_path, convention_name="auto", min_codes=MIN_CODES, max_pag
     """
     import fitz
 
-    convention = merged_convention(None if convention_name in ("", "auto") else [convention_name])
+    convention_names = None if convention_name in ("", "auto") else [convention_name]
+    convention = merged_convention(convention_names)
     gauged_re, striped_re = code_patterns(convention)
+    from .wiring_evidence import inspect_vector_page
     document = fitz.open(pdf_path)
     try:
         page_count = len(document)
@@ -231,10 +233,16 @@ def scan_document(pdf_path, convention_name="auto", min_codes=MIN_CODES, max_pag
                 if not wiring_phrase and any(phrase in lowered for phrase in SUSPECT_TEXT):
                     wiring_phrase = True
                 codes = len(gauged_re.findall(text)) + len(striped_re.findall(text))
+                vector = inspect_vector_page(page, convention_names=convention_names)
+                # The ownership graph already materialised the drawing primitives on pages with
+                # legends. Pages without legends need only the cheap image-coverage probe here.
+                geometry = page_geometry(page, len(text.strip()), want_strokes=False)
+                geometry["stroke_primitives"] = int(vector.get("segments", 0))
                 evidence.append({
                     "page": index,
                     "codes": codes,
-                    "geometry": page_geometry(page, len(text.strip())),
+                    "geometry": geometry,
+                    "vector": vector,
                 })
         finally:
             document.close()
@@ -245,14 +253,27 @@ def scan_document(pdf_path, convention_name="auto", min_codes=MIN_CODES, max_pag
 
     # A file that contains one confirmed diagram is a wiring document, which is what lets its
     # untyped foldouts be treated as candidates rather than noise.
-    confirmed_anywhere = any(item["codes"] >= min_codes for item in evidence)
+    confirmed_anywhere = any(
+        item["vector"].get("status") == "confirmed" for item in evidence)
     wiring_document = wiring_phrase or confirmed_anywhere
 
     pages = []
     for item in evidence:
-        tier, status = classify(item["geometry"], item["codes"], wiring_document)
-        if item["codes"] >= min_codes:
-            status = "confirmed"
+        # The whole-document sweep has the ownership graph above, so raw text density must never
+        # confirm a page here.  Tables, connector schedules and colour-code glossaries routinely
+        # contain eight or more valid tokens without containing a paintable wire.
+        tier, status = classify(
+            item["geometry"], item["codes"], wiring_document,
+            allow_text_confirmation=False,
+        )
+        if item["vector"].get("status") == "excluded_non_wiring":
+            tier, status = "vector+non-wiring", "rejected"
+        elif item["vector"].get("status") == "already_colored":
+            tier, status = "vector+already-coloured", "rejected"
+        elif item["vector"].get("status") == "confirmed":
+            tier, status = "vector+owned-colour", "confirmed"
+        elif item["vector"].get("status") == "review":
+            tier, status = "vector+colour-review", "candidate"
         pages.append({
             "page": item["page"],
             "codes": item["codes"],
@@ -260,10 +281,19 @@ def scan_document(pdf_path, convention_name="auto", min_codes=MIN_CODES, max_pag
             "status": status,
             "image_coverage": item["geometry"]["image_coverage"],
             "stroke_primitives": item["geometry"]["stroke_primitives"],
+            "vector": item["vector"],
         })
 
     confirmed = [item["page"] for item in pages if item["status"] == "confirmed"]
     candidates = [item["page"] for item in pages if item["status"] == "candidate"]
+    excluded_non_wiring = [
+        item["page"] for item in pages
+        if item["vector"].get("status") == "excluded_non_wiring"
+    ]
+    already_colored = [
+        item["page"] for item in pages
+        if item["vector"].get("status") == "already_colored"
+    ]
     return {
         "page_count": page_count,
         "pages_scanned": limit,
@@ -271,6 +301,8 @@ def scan_document(pdf_path, convention_name="auto", min_codes=MIN_CODES, max_pag
         "min_codes": min_codes,
         "confirmed": confirmed,
         "candidates": candidates,
+        "excluded_non_wiring": excluded_non_wiring,
+        "already_colored": already_colored,
         "selected": sorted(set(confirmed) | set(candidates)),
         "evidence": [item for item in pages if item["status"] != "rejected"],
     }

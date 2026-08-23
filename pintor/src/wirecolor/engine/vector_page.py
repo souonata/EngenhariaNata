@@ -13,7 +13,7 @@ from math import hypot
 from .policy import DecisionPolicy
 
 
-CONTEXT_SCHEMA_VERSION = 4
+CONTEXT_SCHEMA_VERSION = 5
 
 
 @dataclass
@@ -22,6 +22,7 @@ class VectorPageContext:
     raw_legends: list
     legends: list
     promoted: list
+    pin_markers: list
     min_run_px: float
     page_diagonal_px: float
     pen_px: float
@@ -42,6 +43,7 @@ class VectorPageContext:
             "raw_legends": [asdict(legend) for legend in self.raw_legends],
             "legends": [asdict(legend) for legend in self.legends],
             "promoted": [asdict(legend) for legend in self.promoted],
+            "pin_markers": [asdict(marker) for marker in self.pin_markers],
             "min_run_px": self.min_run_px,
             "page_diagonal_px": self.page_diagonal_px,
             "pen_px": self.pen_px,
@@ -57,6 +59,7 @@ class VectorPageContext:
 
     @classmethod
     def from_dict(cls, raw):
+        from ..detect.vector_pins import PinMarker
         from ..labels.text_layer import Legend
 
         if int(raw.get("schema_version", 0)) != CONTEXT_SCHEMA_VERSION:
@@ -65,7 +68,11 @@ class VectorPageContext:
         return cls(
             runs=[[(float(x), float(y)) for x, y in points] for points in raw["runs"]],
             raw_legends=legends("raw_legends"), legends=legends("legends"),
-            promoted=legends("promoted"), min_run_px=float(raw["min_run_px"]),
+            promoted=legends("promoted"),
+            pin_markers=[PinMarker(
+                **{**item, "connector_bbox": tuple(item["connector_bbox"])})
+                for item in raw.get("pin_markers", ())],
+            min_run_px=float(raw["min_run_px"]),
             page_diagonal_px=float(raw["page_diagonal_px"]), pen_px=float(raw["pen_px"]),
             segments=int(raw["segments"]), nets=int(raw["nets"]),
             symbol_zones=int(raw["symbol_zones"]),
@@ -86,6 +93,7 @@ class VectorPageContext:
 
 def extract_vector_context(page, dpi, convention):
     """Read immutable geometry and text evidence once."""
+    from ..detect.vector_pins import connector_pin_markers
     from ..detect.vector_symbols import strip_symbol_strokes, symbol_geometry
     from ..eval.vector_truth import (MIN_CONDUCTOR_DIAGONAL_FRACTION, build_nets,
                                      canvas_diagonal_px, decompose_runs, extract_segments,
@@ -108,14 +116,18 @@ def extract_vector_context(page, dpi, convention):
             if length >= minimum:
                 runs.append(points)
     raw_legends = read_legends(page, dpi, convention)
-    legends = strong_legends(raw_legends)
-    promoted = promote_bare_letters(raw_legends, legends, zones, convention)
+    pin_markers, pin_legend_indexes = connector_pin_markers(page, dpi, raw_legends)
+    conductor_legends = [legend for index, legend in enumerate(raw_legends)
+                         if index not in pin_legend_indexes]
+    legends = strong_legends(conductor_legends)
+    promoted = promote_bare_letters(conductor_legends, legends, zones, convention)
     from .classifier import atomic_piece_feature_rows, run_feature_rows
 
     run_features = run_feature_rows(runs, legends, minimum)
     pieces, piece_features = atomic_piece_feature_rows(runs, legends, minimum)
     return VectorPageContext(
         runs=runs, raw_legends=raw_legends, legends=legends, promoted=promoted,
+        pin_markers=pin_markers,
         min_run_px=minimum, page_diagonal_px=diagonal, pen_px=pen_px,
         segments=len(segments), nets=len(nets), symbol_zones=len(zones),
         blocked_zones=list(zones),

@@ -206,7 +206,7 @@ UNPAINTED_BGR = (255, 0, 255)
 
 
 def build_rgba(owned_runs, canvas_hw, convention, dpi, pen_px=None, diagnose=False, scale=None,
-               page_pt=None, dash_pitch=None):
+               page_pt=None, dash_pitch=None, pin_markers=()):
     """RGBA overlay painting every run that carries a code.
 
     Runs without a code are left untouched -- an unpainted conductor is a miss, a wrongly painted
@@ -226,6 +226,10 @@ def build_rgba(owned_runs, canvas_hw, convention, dpi, pen_px=None, diagnose=Fal
                 cv2.polylines(canvas, [np.array(run.points, np.int32)], False,
                               (*UNPAINTED_BGR, 255), band, cv2.LINE_AA)
             continue
+        # Renderer-level semantic gate: a colour must still trace back to printed evidence even
+        # when a diagnostic or future caller invokes this module without the production wrapper.
+        if not run.legend_raw or run.contested or run.abstained:
+            continue
         tokens = _colours(run.code, convention)
         if not tokens:
             continue
@@ -240,10 +244,65 @@ def build_rgba(owned_runs, canvas_hw, convention, dpi, pen_px=None, diagnose=Fal
             _paint_piece(canvas, np.array(piece, np.float32), tokens, band, convention)
         painted += 1
 
+    paint_pin_markers(canvas, pin_markers, convention)
+
     # Anti-aliased strokes leave a halo of partly-transparent pixels; keep only solidly painted
     # ones so the overlay cannot fog the artwork it sits on.
     canvas[canvas[:, :, 3] < 128] = 0
     return canvas, painted
+
+
+def paint_pin_markers(canvas, markers, convention):
+    """Paint compact colour discs inside connector pins.
+
+    The marker's radius already includes geometric clearance from the original pin rim, connector
+    housing, and neighbouring pins.  The outline and the divider are drawn *inside* that radius,
+    so rendering cannot consume the reserved clearance.  A two-colour code is split into equal
+    left and right semicircles in the same printed order as the code.
+    """
+    height, width = canvas.shape[:2]
+    painted = 0
+    for marker in markers:
+        if not marker.legend_raw:
+            continue
+        tokens = _colours(marker.code, convention)
+        if not tokens:
+            continue
+        radius = max(1.0, float(marker.radius))
+        x0 = max(0, int(np.floor(marker.x - radius)))
+        y0 = max(0, int(np.floor(marker.y - radius)))
+        x1 = min(width, int(np.ceil(marker.x + radius)) + 1)
+        y1 = min(height, int(np.ceil(marker.y + radius)) + 1)
+        if x0 >= x1 or y0 >= y1:
+            continue
+
+        yy, xx = np.ogrid[y0:y1, x0:x1]
+        distance_sq = (xx - marker.x) ** 2 + (yy - marker.y) ** 2
+        disc = distance_sq <= radius ** 2
+        if not np.any(disc):
+            continue
+        roi = canvas[y0:y1, x0:x1]
+
+        def colour(token):
+            return ((255, 255, 255, 255) if token == convention.white_token
+                    else (*convention.colors_bgr[token], 255))
+
+        if len(tokens) == 1:
+            roi[disc] = colour(tokens[0])
+        else:
+            roi[disc & (xx < marker.x)] = colour(tokens[0])
+            roi[disc & (xx >= marker.x)] = colour(tokens[1])
+
+        # One-pixel-at-analysis-resolution geometry, scaled with the marker.  Both the border and
+        # the two-colour divider stay within the reserved disc radius.
+        outline = max(1.0, radius * 0.10)
+        inner = max(0.0, radius - outline)
+        roi[disc & (distance_sq >= inner ** 2)] = (0, 0, 0, 255)
+        if len(tokens) >= 2:
+            divider = max(0.5, radius * 0.055)
+            roi[disc & (np.abs(xx - marker.x) <= divider)] = (0, 0, 0, 255)
+        painted += 1
+    return painted
 
 
 def _paint_piece(canvas, points, tokens, band, convention):

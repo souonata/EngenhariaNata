@@ -76,6 +76,10 @@ class OcrTilingMemoryTests(unittest.TestCase):
         with patch("ctypes.CDLL", side_effect=OSError("non-glibc runtime")):
             _release_native_memory()
 
+    def test_native_release_is_best_effort_on_windows_python(self):
+        with patch("ctypes.CDLL", side_effect=TypeError("None is not a Windows library name")):
+            _release_native_memory()
+
     def test_rapidocr_onnx_threads_and_arena_are_memory_bounded(self):
         captured = {}
 

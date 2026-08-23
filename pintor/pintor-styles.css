@@ -638,6 +638,7 @@ html[data-theme='dark'] .inline-status.error {
 
 .tool-button,
 .icon-button,
+.viewer-tab,
 .error-tools button,
 .text-button {
     min-height: 40px;
@@ -659,6 +660,7 @@ html[data-theme='dark'] .inline-status.error {
 }
 
 .tool-button.active,
+.viewer-tab.is-active,
 .error-tools button.active {
     color: white;
     border-color: var(--painter-accent-deep);
@@ -844,6 +846,14 @@ html[data-theme='dark'] .diagram-viewport {
     font-weight: 850;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.engineering-metric-text {
+    font-family: inherit;
+    font-size: 0.84rem;
+    line-height: 1.3;
+    text-overflow: clip;
+    white-space: normal;
 }
 
 .download-button {
@@ -1061,6 +1071,24 @@ html[data-theme='dark'] .diagram-viewport {
     max-width: 240px;
 }
 
+.admin-preview-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.admin-zoom-value {
+    min-width: 54px;
+    color: var(--text-secondary);
+    text-align: center;
+    font:
+        750 0.76rem/1 ui-monospace,
+        Consolas,
+        monospace;
+}
+
 .status-pill {
     padding: 6px 9px;
     border-radius: 999px;
@@ -1069,22 +1097,50 @@ html[data-theme='dark'] .diagram-viewport {
 
 .admin-preview-stage {
     position: relative;
-    min-height: 300px;
-    overflow: auto;
+    height: min(70vh, 760px);
+    min-height: 420px;
+    overflow: hidden;
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    background: #d7dedc;
+    background:
+        linear-gradient(rgb(32 72 74 / 8%) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(32 72 74 / 8%) 1px, transparent 1px), #d7dedc;
+    background-size: 24px 24px;
+    touch-action: none;
+    cursor: grab;
 }
 
-.admin-preview-stage img {
-    display: block;
-    width: 100%;
-    height: auto;
+.admin-preview-stage.is-panning {
+    cursor: grabbing;
 }
 
+html[data-theme='dark'] .admin-preview-stage {
+    background-color: #151b1c;
+}
+
+.admin-preview-plane {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+    will-change: transform;
+}
+
+.admin-preview-plane img,
 .admin-annotation-layer {
     position: absolute;
     inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.admin-preview-plane img {
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.admin-annotation-layer {
     pointer-events: none;
 }
 
@@ -1119,6 +1175,24 @@ html[data-theme='dark'] .diagram-viewport {
 .admin-annotations {
     display: grid;
     gap: 6px;
+}
+
+.engineering-summary {
+    display: grid;
+    gap: 4px;
+    padding: 12px;
+    border: 1px solid color-mix(in srgb, var(--painter-accent) 36%, var(--border-color));
+    border-radius: 10px;
+    background: rgb(27 156 163 / 8%);
+}
+
+.engineering-summary[hidden] {
+    display: none;
+}
+
+.engineering-summary span {
+    color: var(--text-secondary);
+    font-size: 0.82rem;
 }
 
 .admin-annotations p,

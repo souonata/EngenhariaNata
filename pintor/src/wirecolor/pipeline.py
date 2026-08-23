@@ -1185,6 +1185,10 @@ def run_page(image_path: str, labels_path: str, convention,
 
 def paint_page_legacy(solution: dict, out_path: str) -> dict:
     """v1-equivalent full-page repaint + the v1 summary line (P0 golden comparison target)."""
+    from .engine.semantics import enforce_raster_semantics
+
+    solution, engineering_semantics = enforce_raster_semantics(
+        solution, solution["convention"])
     out, dash_painted = paint_legacy(
         solution["img"], solution["segments"], solution["solver"]["claims"],
         solution["dgroups"], solution["dclaims"], solution["housings"], solution["convention"])
@@ -1192,4 +1196,4 @@ def paint_page_legacy(solution: dict, out_path: str) -> dict:
     print(f"labels={len(solution['labels'])} painted={solution['solver']['painted']} | "
           f"housings={len(solution['housings'])} dots={len(solution['dots'])} "
           f"segments={len(solution['segments'])} dash_cables={dash_painted} -> {out_path}")
-    return dict(dash_painted=dash_painted)
+    return dict(dash_painted=dash_painted, engineering_semantics=engineering_semantics)

@@ -5,6 +5,7 @@
 import { App, i18n } from '../src/core/app.js';
 import { localizedFetchError } from './pintor-network.js';
 import { parsePageSelection } from './pintor-pages.js';
+import { createViewportState, fitViewport, zoomViewport } from './pintor-viewport.js';
 
 const TERMINAL_STATES = new Set(['ready', 'declined', 'failed', 'revision-requested']);
 const MAX_UPLOAD_BYTES = 200 * 1024 * 1024;
@@ -46,16 +47,11 @@ class PintorApp extends App {
         this.annotations = [];
         this.activeTool = null;
         this.pendingPoints = [];
-        this.viewer = {
-            scale: 1,
-            offsetX: 0,
-            offsetY: 0,
-            width: 0,
-            height: 0,
-            dragging: null,
+        this.viewer = createViewportState({
             currentPage: 0,
             currentView: 'painted'
-        };
+        });
+        this.adminViewer = createViewportState();
     }
 
     resolveApiBase() {
@@ -613,8 +609,9 @@ class PintorApp extends App {
             this.showOnly('upload');
         });
         document.getElementById('adminPage').addEventListener('change', () => {
-            this.renderAdminPreview();
+            this.renderAdminPreview(true);
             this.renderAdminAnnotations();
+            this.renderAdminEngineeringSummary();
         });
         document.getElementById('adminShowPainted').addEventListener('click', () => {
             this.adminView = 'painted';
@@ -624,6 +621,21 @@ class PintorApp extends App {
             this.adminView = 'original';
             this.renderAdminPreview();
         });
+        document
+            .getElementById('adminZoomIn')
+            .addEventListener('click', () => this.zoomAdminBy(1.22));
+        document
+            .getElementById('adminZoomOut')
+            .addEventListener('click', () => this.zoomAdminBy(1 / 1.22));
+        document
+            .getElementById('adminZoomFit')
+            .addEventListener('click', () => this.fitAdminPreview());
+        const preview = document.getElementById('adminPreviewStage');
+        preview.addEventListener('wheel', event => this.onAdminWheel(event), { passive: false });
+        preview.addEventListener('pointerdown', event => this.onAdminPointerDown(event));
+        preview.addEventListener('pointermove', event => this.onAdminPointerMove(event));
+        preview.addEventListener('pointerup', () => this.cancelAdminPointer());
+        preview.addEventListener('pointercancel', () => this.cancelAdminPointer());
         document.querySelector('.admin-decisions').addEventListener('click', event => {
             const button = event.target.closest('[data-decision]');
             if (button) {
@@ -641,6 +653,14 @@ class PintorApp extends App {
         });
         document.getElementById('adminRoundClose').addEventListener('click', () => {
             void this.closeRound();
+        });
+        window.addEventListener('resize', () => {
+            if (
+                !document.getElementById('adminPanel').hidden &&
+                !document.getElementById('adminViewReports').hidden
+            ) {
+                this.fitAdminPreview();
+            }
         });
     }
 
@@ -763,8 +783,9 @@ class PintorApp extends App {
             picker.append(option);
         });
         this.renderAdminQueue();
-        this.renderAdminPreview();
+        this.renderAdminPreview(true);
         this.renderAdminAnnotations();
+        this.renderAdminEngineeringSummary();
     }
 
     feedbackStatusLabel(status) {
@@ -777,15 +798,23 @@ class PintorApp extends App {
         return i18n.t(key || 'admin.statusQueued');
     }
 
-    renderAdminPreview() {
+    renderAdminPreview(reset = false) {
         if (!this.adminReport) {
             return;
         }
         const page = Number(document.getElementById('adminPage').value);
         const image = document.getElementById('adminPreview');
         image.onload = () => {
-            document.getElementById('adminAnnotationLayer').style.height =
-                `${image.clientHeight}px`;
+            const plane = document.getElementById('adminPreviewPlane');
+            this.adminViewer.width = image.naturalWidth;
+            this.adminViewer.height = image.naturalHeight;
+            plane.style.width = `${this.adminViewer.width}px`;
+            plane.style.height = `${this.adminViewer.height}px`;
+            if (reset) {
+                this.fitAdminPreview();
+            } else {
+                this.applyAdminTransform();
+            }
         };
         image.src = this.apiUrl(
             `admin/feedback/${this.adminReport.id}/preview/${this.adminView}?page=${page}`
@@ -797,6 +826,80 @@ class PintorApp extends App {
         document
             .getElementById('adminShowOriginal')
             .classList.toggle('is-active', this.adminView === 'original');
+    }
+
+    fitAdminPreview() {
+        if (!this.adminViewer.width || !this.adminViewer.height) {
+            return;
+        }
+        const viewport = document.getElementById('adminPreviewStage');
+        fitViewport(this.adminViewer, viewport.clientWidth, viewport.clientHeight);
+        this.applyAdminTransform();
+    }
+
+    zoomAdminBy(factor, clientX = null, clientY = null) {
+        if (!this.adminViewer.width || !this.adminViewer.height) {
+            return;
+        }
+        const viewport = document.getElementById('adminPreviewStage');
+        const rect = viewport.getBoundingClientRect();
+        const focusX = clientX === null ? viewport.clientWidth / 2 : clientX - rect.left;
+        const focusY = clientY === null ? viewport.clientHeight / 2 : clientY - rect.top;
+        zoomViewport(this.adminViewer, factor, focusX, focusY);
+        this.applyAdminTransform();
+    }
+
+    onAdminWheel(event) {
+        event.preventDefault();
+        this.zoomAdminBy(Math.exp(-event.deltaY * 0.0015), event.clientX, event.clientY);
+    }
+
+    onAdminPointerDown(event) {
+        if (event.button !== 0 || !this.adminViewer.width) {
+            return;
+        }
+        const viewport = document.getElementById('adminPreviewStage');
+        this.adminViewer.dragging = {
+            x: event.clientX,
+            y: event.clientY,
+            offsetX: this.adminViewer.offsetX,
+            offsetY: this.adminViewer.offsetY
+        };
+        viewport.classList.add('is-panning');
+        viewport.setPointerCapture(event.pointerId);
+    }
+
+    onAdminPointerMove(event) {
+        const drag = this.adminViewer.dragging;
+        if (!drag) {
+            return;
+        }
+        this.adminViewer.offsetX = drag.offsetX + event.clientX - drag.x;
+        this.adminViewer.offsetY = drag.offsetY + event.clientY - drag.y;
+        this.applyAdminTransform();
+    }
+
+    cancelAdminPointer() {
+        this.adminViewer.dragging = null;
+        document.getElementById('adminPreviewStage').classList.remove('is-panning');
+    }
+
+    applyAdminTransform() {
+        document.getElementById('adminPreviewPlane').style.transform =
+            `translate(${this.adminViewer.offsetX}px, ${this.adminViewer.offsetY}px) ` +
+            `scale(${this.adminViewer.scale})`;
+        document
+            .querySelectorAll('#adminAnnotationLayer .admin-marker.is-point')
+            .forEach(marker => {
+                marker.style.transform = `translate(-50%, -50%) scale(${1 / this.adminViewer.scale})`;
+            });
+        document
+            .querySelectorAll('#adminAnnotationLayer .admin-marker.is-segment')
+            .forEach(marker => {
+                marker.style.height = `${4 / this.adminViewer.scale}px`;
+            });
+        document.getElementById('adminZoomValue').textContent =
+            `${Math.round(this.adminViewer.scale * 100)}%`;
     }
 
     renderAdminAnnotations() {
@@ -836,6 +939,28 @@ class PintorApp extends App {
                 item.textContent = `${index + 1}. ${this.errorLabel(annotation.type)}${expected}`;
                 list.append(item);
             });
+        this.applyAdminTransform();
+    }
+
+    renderAdminEngineeringSummary() {
+        const panel = document.getElementById('adminEngineeringSummary');
+        const page = String(Number(document.getElementById('adminPage').value));
+        const semantic = this.adminReport?.engineering_semantics?.[page];
+        panel.hidden = !semantic;
+        if (!semantic) {
+            return;
+        }
+        document.getElementById('adminEngineeringGrammar').textContent =
+            this.engineeringGrammarLabel(semantic.page_grammar);
+        document.getElementById('adminEngineeringRoles').textContent =
+            this.engineeringRoleSummary(semantic);
+        const evidence = Object.values(semantic.colour_sources || {}).reduce(
+            (total, count) => total + Number(count || 0),
+            0
+        );
+        document.getElementById('adminEngineeringEvidence').textContent = i18n
+            .t('summary.colourEvidence')
+            .replace('{count}', String(evidence));
     }
 
     errorLabel(type) {
@@ -1553,6 +1678,7 @@ class PintorApp extends App {
                     page_number: Number(job.page) + 1,
                     status: 'painted',
                     convention: job.convention,
+                    engineering_semantics: job.engineering_semantics,
                     metrics: job.metrics || {},
                     preview_original: job.preview_original,
                     preview_painted: job.preview_painted
@@ -1585,6 +1711,7 @@ class PintorApp extends App {
                 page: this.job?.page,
                 status: 'painted',
                 convention: this.job?.convention,
+                engineering_semantics: this.job?.engineering_semantics,
                 metrics: this.job?.metrics || {},
                 preview_original: this.job?.preview_original,
                 preview_painted: this.job?.preview_painted
@@ -1602,6 +1729,14 @@ class PintorApp extends App {
         document.getElementById('metricCodes').textContent =
             (metrics.codes || []).join(', ') || '—';
         document.getElementById('metricAbstentions').textContent = String(metrics.abstentions || 0);
+        const semantic = result.engineering_semantics || {};
+        document.getElementById('metricEngineeringGrammar').textContent =
+            this.engineeringGrammarLabel(semantic.page_grammar);
+        document.getElementById('metricEngineeringRoles').textContent =
+            this.engineeringRoleSummary(semantic);
+        document.getElementById('metricAnnotationsExcluded').textContent = String(
+            semantic.object_roles?.['annotation-leader'] || 0
+        );
         document.getElementById('summaryConvention').textContent = this.conventionLabel(
             result.convention || this.job.convention
         );
@@ -1632,6 +1767,32 @@ class PintorApp extends App {
             volvo_classic: 'upload.conventionVolvo'
         }[value];
         return key ? i18n.t(key) : value || '—';
+    }
+
+    engineeringGrammarLabel(value) {
+        const key = {
+            'born-digital-wiring-schematic': 'summary.grammarVector',
+            'raster-wiring-schematic': 'summary.grammarRaster',
+            'pictorial-connector-schedule': 'summary.grammarConnector',
+            'pictorial-outlined-harness': 'summary.grammarOutlined',
+            'raster-or-unsupported-vector-page': 'summary.grammarRaster',
+            unresolved: 'summary.grammarUnresolved'
+        }[value];
+        return key ? i18n.t(key) : value || '—';
+    }
+
+    engineeringRoleSummary(semantic) {
+        const roles = semantic?.object_roles || {};
+        const items = [];
+        const conductors = Number(roles['physical-conductor'] || 0);
+        const pins = Number(roles['connector-pin'] || 0);
+        if (conductors) {
+            items.push(i18n.t('summary.physicalConductors').replace('{count}', String(conductors)));
+        }
+        if (pins) {
+            items.push(i18n.t('summary.connectorPins').replace('{count}', String(pins)));
+        }
+        return items.join(' · ') || '—';
     }
 
     showOnly(name) {
@@ -1726,14 +1887,7 @@ class PintorApp extends App {
             return;
         }
         const viewport = document.getElementById('diagramViewport');
-        const padding = 34;
-        this.viewer.scale = Math.min(
-            (viewport.clientWidth - padding) / this.viewer.width,
-            (viewport.clientHeight - padding) / this.viewer.height
-        );
-        this.viewer.scale = Math.max(0.03, this.viewer.scale);
-        this.viewer.offsetX = (viewport.clientWidth - this.viewer.width * this.viewer.scale) / 2;
-        this.viewer.offsetY = (viewport.clientHeight - this.viewer.height * this.viewer.scale) / 2;
+        fitViewport(this.viewer, viewport.clientWidth, viewport.clientHeight);
         this.applyTransform();
     }
 
@@ -1742,11 +1896,7 @@ class PintorApp extends App {
         const rect = viewport.getBoundingClientRect();
         const focusX = clientX === null ? viewport.clientWidth / 2 : clientX - rect.left;
         const focusY = clientY === null ? viewport.clientHeight / 2 : clientY - rect.top;
-        const next = Math.min(12, Math.max(0.025, this.viewer.scale * factor));
-        const ratio = next / this.viewer.scale;
-        this.viewer.offsetX = focusX - (focusX - this.viewer.offsetX) * ratio;
-        this.viewer.offsetY = focusY - (focusY - this.viewer.offsetY) * ratio;
-        this.viewer.scale = next;
+        zoomViewport(this.viewer, factor, focusX, focusY);
         this.applyTransform();
     }
 
@@ -2142,5 +2292,5 @@ class PintorApp extends App {
     }
 }
 
-const app = new PintorApp();
+export const app = new PintorApp();
 app.inicializar();
