@@ -253,9 +253,15 @@ root filesystem. `deploy/apply-firewall.sh` limits inbound traffic to the Cloudf
 blocks container egress. The web path caps 200-DPI analysis at 75 million pixels (enough for A0) and
 the removable overlay at 60 million pixels; browser clients cannot override those budgets:
 
-```powershell
-docker compose -f compose.yml up --build
+```sh
+docker compose -p pintor-api --env-file /opt/pintor-api/.env -f compose.yml up --build -d
 ```
+
+The project name and the env file are explicit on purpose. The release directory is named `pintor`
+but the live stack is the `pintor-api` project, so a defaulted project name would bind a new empty
+`pintor_pintor-data` volume instead of the live `pintor-api_pintor-data`. The `.env` written by
+`deploy/bootstrap-secrets.sh` stays at `/opt/pintor-api/.env`, outside the immutable release
+directories, so it survives every release.
 
 TLS terminates at the Cloudflare tunnel for `https://pintor-api.engnata.eu`; the VM port is bound to
 its LAN address but the `DOCKER-USER` firewall accepts only the tunnel connector. The Python base
