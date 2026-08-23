@@ -55,7 +55,8 @@ ACTIVE_JOB_STATUSES = frozenset({"queued", "processing"})
 # Why an administrator cannot erase a report yet. The console localizes its own copy; these
 # strings are the API's answer to a direct call.
 REMOVAL_BLOCKED_MESSAGES = {
-    "not-accepted": "only an expert-accepted report can be removed",
+    "not-adjudicated": "an expert must decide this report before it can be removed",
+    "awaiting-clarification": "this report is waiting for its author to clarify it",
     "round-pending": "this report has not entered an improvement round yet",
     "round-open": "close the improvement round before removing its reports",
 }
@@ -545,12 +546,21 @@ class JobStore:
         """Whether an administrator may erase this report, and why not when they may not.
 
         A report is the only thing a reporter deliberately left behind, so it is erasable only
-        once the improvement work that justified keeping it is finished: the expert accepted it
-        and the batch that carried it into the code was closed. A report the reporter never
-        shared for learning cannot enter a batch at all, so an accepted one is already spent.
+        once it is spent. Accepted, that means the batch which carried it into the code was
+        closed; a report the reporter never shared for learning cannot enter a batch at all, so
+        an accepted one is already spent. Rejected is spent in the other direction: it can never
+        enter a batch either. Only an undecided report and one awaiting its author's clarification
+        are still live.
         """
-        if record.get("decision") != "accepted":
-            return {"deletable": False, "reason": "not-accepted"}
+        decision = record.get("decision")
+        if not decision:
+            return {"deletable": False, "reason": "not-adjudicated"}
+        if decision == "needs-clarification":
+            # Still live: the author was asked for more and may yet answer.
+            return {"deletable": False, "reason": "awaiting-clarification"}
+        if decision == "rejected":
+            # A rejected report can never enter an improvement round, so it is already spent.
+            return {"deletable": True, "reason": None}
         if not record.get("consent_learning"):
             return {"deletable": True, "reason": None}
         round_id = record.get("round_id")
@@ -875,9 +885,16 @@ class JobStore:
 
         Those are the only uploads that outlive the retention window, because they are the ones
         somebody deliberately contributed. Everything else is transient by design.
+
+        An expert rejection ends the contribution, so the drawing rejoins the retention contract
+        instead of being held forever by a report that will never improve anything. The evidence
+        the reporter shared is not lost with it: a consented report keeps its own copy of the
+        source, result and previews in the training inbox, which the sweep never touches.
         """
         shared = set()
         for _, record in self._feedback_locations().values():
+            if record.get("decision") == "rejected":
+                continue
             if record.get("consent_learning") and record.get("job_id"):
                 shared.add(str(record["job_id"]))
         return shared

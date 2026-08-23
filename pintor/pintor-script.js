@@ -20,7 +20,8 @@ const ERROR_LABEL_KEYS = {
 };
 // Why the console keeps a report locked. The service answers with these reasons.
 const REMOVE_BLOCKED_KEYS = {
-    'not-accepted': 'admin.removeBlockedAccept',
+    'not-adjudicated': 'admin.removeBlockedDecision',
+    'awaiting-clarification': 'admin.removeBlockedClarify',
     'round-pending': 'admin.removeBlockedRound',
     'round-open': 'admin.removeBlockedOpen'
 };
@@ -810,7 +811,7 @@ class PintorApp extends App {
         }
         button.disabled = !report.deletable;
         const blocked =
-            REMOVE_BLOCKED_KEYS[report.delete_blocked_reason] || 'admin.removeBlockedAccept';
+            REMOVE_BLOCKED_KEYS[report.delete_blocked_reason] || 'admin.removeBlockedDecision';
         hint.textContent = i18n.t(report.deletable ? 'admin.removeReady' : blocked);
     }
 
