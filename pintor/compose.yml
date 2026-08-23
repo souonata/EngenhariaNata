@@ -2,7 +2,7 @@ services:
   api:
     build:
       context: .
-    image: engnata/pintor-api:0.6.0
+    image: engnata/pintor-api:0.6.1
     restart: unless-stopped
     init: true
     ports:

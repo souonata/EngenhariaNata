@@ -225,6 +225,8 @@ The minimal beta API is:
 - `POST /api/jobs/{id}/feedback` for typed point/segment annotations;
 - `DELETE /api/jobs/{id}` for immediate job and pending-consent-copy deletion.
 - administrator-only feedback list/detail/preview/document/decision routes under `/api/admin/`.
+- `DELETE /api/admin/feedback/{id}` retires a report the expert accepted once the improvement round
+  that carried it into the code is closed; the closed round's manifest is kept.
 
 Production also requires a SHA-256 beta-code digest and a separate HMAC secret. Successful access
 sets a 30-day `HttpOnly`, `Secure`, `SameSite=Strict` cookie; the plaintext code is never shipped in

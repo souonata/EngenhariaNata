@@ -52,6 +52,13 @@ FEEDBACK_ID_RE = re.compile(r"^[a-f0-9]{32}$")
 ROUND_ID_RE = re.compile(r"^[a-f0-9]{32}$")
 MAX_ROUND_NAME = 80
 ACTIVE_JOB_STATUSES = frozenset({"queued", "processing"})
+# Why an administrator cannot erase a report yet. The console localizes its own copy; these
+# strings are the API's answer to a direct call.
+REMOVAL_BLOCKED_MESSAGES = {
+    "not-accepted": "only an expert-accepted report can be removed",
+    "round-pending": "this report has not entered an improvement round yet",
+    "round-open": "close the improvement round before removing its reports",
+}
 
 
 class JobNotFound(KeyError):
@@ -534,9 +541,39 @@ class JobStore:
             payload.pop("engineering_semantics", None)
         return payload
 
+    def removal_state(self, record: dict) -> dict:
+        """Whether an administrator may erase this report, and why not when they may not.
+
+        A report is the only thing a reporter deliberately left behind, so it is erasable only
+        once the improvement work that justified keeping it is finished: the expert accepted it
+        and the batch that carried it into the code was closed. A report the reporter never
+        shared for learning cannot enter a batch at all, so an accepted one is already spent.
+        """
+        if record.get("decision") != "accepted":
+            return {"deletable": False, "reason": "not-accepted"}
+        if not record.get("consent_learning"):
+            return {"deletable": True, "reason": None}
+        round_id = record.get("round_id")
+        if not round_id:
+            return {"deletable": False, "reason": "round-pending"}
+        try:
+            batch = self.read_round(str(round_id))
+        except (JobNotFound, OSError, ValueError):
+            # The batch is unreadable, so nothing proves the report was already used.
+            return {"deletable": False, "reason": "round-pending"}
+        if batch.get("status") != "closed":
+            return {"deletable": False, "reason": "round-open"}
+        return {"deletable": True, "reason": None}
+
+    def _with_removal_state(self, record: dict, payload: dict) -> dict:
+        state = self.removal_state(record)
+        payload["deletable"] = state["deletable"]
+        payload["delete_blocked_reason"] = state["reason"]
+        return payload
+
     def list_feedback(self) -> list[dict]:
         records = [
-            self._public_feedback(record)
+            self._with_removal_state(record, self._public_feedback(record))
             for _, record in self._feedback_locations().values()
         ]
         return sorted(records, key=lambda item: item.get("created_at", 0), reverse=True)
@@ -547,7 +584,48 @@ class JobStore:
         located = self._feedback_locations().get(feedback_id)
         if not located:
             raise JobNotFound(feedback_id)
-        return self._public_feedback(located[1], detailed=True)
+        return self._with_removal_state(
+            located[1], self._public_feedback(located[1], detailed=True),
+        )
+
+    def delete_feedback(self, feedback_id: str) -> dict:
+        """Erase an accepted, already-curated report and everything it kept alive.
+
+        The closed round's manifest already froze what the report contributed, so removing it
+        loses no history: the round detail simply reports the item as missing from then on. The
+        reporter's job stops being protected from the retention sweep, which is the point — the
+        drawing was only held because a report referenced it.
+        """
+        if not FEEDBACK_ID_RE.fullmatch(feedback_id):
+            raise JobNotFound(feedback_id)
+        located = self._feedback_locations().get(feedback_id)
+        if not located:
+            raise JobNotFound(feedback_id)
+        record = located[1]
+        state = self.removal_state(record)
+        if not state["deletable"]:
+            raise ValueError(REMOVAL_BLOCKED_MESSAGES[state["reason"]])
+
+        job_id = str(record.get("job_id") or "")
+        live_path = self.jobs / job_id / "feedback" / f"{feedback_id}.json"
+        try:
+            live_path.unlink()
+        except OSError:
+            pass
+        shutil.rmtree(self.training / feedback_id, ignore_errors=True)
+        # Give the reporter back a plain finished job instead of one pointing at a report that
+        # no longer exists; the retention sweep may now collect it like any other.
+        try:
+            job_state = self.read(job_id)
+        except (JobNotFound, ValueError, OSError):
+            job_state = None
+        if job_state is not None and job_state.get("feedback_id") == feedback_id:
+            job_state.pop("feedback_id", None)
+            job_state["status"] = "ready"
+            job_state["stage"] = "review"
+            job_state["updated_at"] = int(time.time())
+            _atomic_json(self.job_dir(job_id) / "state.json", job_state)
+        return {"id": feedback_id, "job_id": job_id, "round_id": record.get("round_id")}
 
     def feedback_artifact(self, feedback_id: str, name: str) -> Path:
         if not FEEDBACK_ID_RE.fullmatch(feedback_id) or not (
@@ -629,7 +707,7 @@ class JobStore:
             _atomic_json(archive_path, record)
         if joined:
             self._write_round_membership(current_round, feedback_id, True)
-        return self._public_feedback(record, detailed=True)
+        return self._with_removal_state(record, self._public_feedback(record, detailed=True))
 
     # ---- Improvement rounds -------------------------------------------------------------
     # A round is a curated batch of expert-accepted reports. Closing one writes an offline
@@ -2130,6 +2208,18 @@ def create_app(workspace_root: str | Path | None = None,
         except ValueError as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
         return {"feedback": record}
+
+    @app.delete("/api/admin/feedback/{feedback_id}")
+    def admin_delete_feedback(feedback_id: str,
+                              pintor_account: str | None = Cookie(default=None)):
+        require_admin(pintor_account)
+        try:
+            removed = store.delete_feedback(feedback_id)
+        except JobNotFound as error:
+            raise HTTPException(status_code=404, detail="feedback not found") from error
+        except ValueError as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
+        return {"removed": removed}
 
     def owner_token_for(account_id: str) -> str:
         return _account_owner_token(session_secret, account_id)
