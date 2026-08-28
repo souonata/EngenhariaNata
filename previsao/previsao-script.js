@@ -12,8 +12,9 @@
 
 import { App, i18n } from '../src/core/app.js';
 
-// 4 slots persistentes no localStorage. Os dois primeiros têm defaults (Milano e
-// Curitiba) que são gravados no boot se o slot ainda não foi definido pelo usuário.
+// 4 slots persistentes no localStorage. Os quatro têm defaults (Milano, Curitiba,
+// Gotemburgo e Balneário Camboriú) gravados no boot se o slot ainda não foi
+// definido pelo usuário.
 // Qualquer slot pode ser apagado com a lixeira e substituído por uma busca.
 const N_SLOTS = 4;
 const LS_SLOT    = i => `previsao_slot_${i}_v2`;   // v2: all-4-slots layout
@@ -24,7 +25,8 @@ const HISTMAX_TTL_DAYS = 7;
 const SLOT_DEFAULTS = [
   { id:'milao',    name:'Milão',    nameIt:'Milano', lat: 45.4642, lon:  9.1900 },
   { id:'curitiba', name:'Curitiba', lat:-25.4284,    lon:-49.2733 },
-  null, null
+  { id:'goteborg', name:'Gotemburgo', nameIt:'Göteborg', lat: 57.7089, lon: 11.9746 },
+  { id:'balneario-camboriu', name:'Balneário Camboriú', lat:-26.9906, lon:-48.6348 }
 ];
 
 function loadSlotCity(i){

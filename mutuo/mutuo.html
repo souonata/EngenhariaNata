@@ -405,6 +405,24 @@
                     </div>
                 </div>
 
+                <!-- Gráfico da projeção: equivalente sueco do gráfico de evolução
+                     de PT/IT. Fica junto aos controles para tornar imediato o
+                     efeito de cada slider sobre a dívida e o custo anual. -->
+                <div class="bolan-grafico-bloco">
+                    <div class="graficos-header">
+                        <h3 data-i18n="bolan.graficoTitulo">Skulden år för år</h3>
+                    </div>
+                    <p class="bolan-grafico-intro" data-i18n="bolan.graficoIntro">
+                        Staplarna visar årets kostnad, uppdelad i amortering och ränta efter
+                        ränteavdrag. Linjen visar belåningsgraden och de två nivåer som styr
+                        amorteringskravet.
+                    </p>
+                    <div class="grafico-unico">
+                        <canvas id="graficoBolan"></canvas>
+                    </div>
+                    <div class="bolan-projecao-resumo" id="bolanProjecaoResumo"></div>
+                </div>
+
                 <div id="bolanAviso" class="bolan-aviso" role="status"></div>
 
                 <div class="bolan-resultados">
@@ -439,24 +457,6 @@
                 </div>
 
                 <div id="v2-explicacao-bolan"></div>
-
-                <!-- Gráfico da projeção: equivalente sueco do gráfico de evolução
-                     de PT/IT. Mostra os degraus do amorteringskrav (2 % → 1 % → 0 %)
-                     e o ponto em que a dívida para de cair sozinha. -->
-                <div class="bolan-grafico-bloco">
-                    <div class="graficos-header">
-                        <h3 data-i18n="bolan.graficoTitulo">Skulden år för år</h3>
-                    </div>
-                    <p class="bolan-grafico-intro" data-i18n="bolan.graficoIntro">
-                        Staplarna visar årets kostnad, uppdelad i amortering och ränta efter
-                        ränteavdrag. Linjen visar belåningsgraden och de två nivåer som styr
-                        amorteringskravet.
-                    </p>
-                    <div class="grafico-unico">
-                        <canvas id="graficoBolan"></canvas>
-                    </div>
-                    <div class="bolan-projecao-resumo" id="bolanProjecaoResumo"></div>
-                </div>
 
                 <!-- LÄS MER — memorial de cálculo sueco: fórmulas, premissas e fontes. -->
                 <div class="bolan-saibamais">

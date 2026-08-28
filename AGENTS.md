@@ -449,7 +449,12 @@ _Última atualização: 2026-08-23_
     em sueco), com `body.lang-se` aplicado pelo app.
     - `salario`: campo de kommunalskatt ajustável; linhas próprias; 13ª/FGTS/rescisão OCULTAS.
     - `mutuo`: visão **bolån** — sem SAC/Price/tabela de parcelas; amortização vem da
-      belåningsgrad; aviso quando a entrada não atinge o bolånetak de 90%.
+      belåningsgrad; aviso quando a entrada não atinge o bolånetak de 90%. O **gráfico da
+      projeção** (`.bolan-grafico-bloco`, chaves `bolan.graficoTitulo`/`bolan.graficoIntro`)
+      fica **junto aos sliders**, antes do aviso do bolånetak e dos cartões de resultado, para
+      o efeito de cada slider sobre a dívida e o custo anual ser imediato: barras de custo do
+      ano (amortização × juros após ränteavdrag) e linha da belåningsgrad com os dois níveis
+      que regem o amorteringskrav. Mudança só de ordem visual em `mutuo/mutuo.html`.
     - `solar`: visão **conectada à rede** — era o único app dando conselho ATIVAMENTE ERRADO
       (off-grid dimensionado pelo inverno sueco pedia banco de baterias irreal).
   - **AUDITORIA (2026-08-18) — quais apps mudam de MÉTODO:** grupo A (só parâmetros, tradução
