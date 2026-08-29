@@ -144,13 +144,15 @@ Finansinspektionen por LTV/renda, ränteavdrag). Testes em `<app>-calc.test.js` 
 - **Migração do app meteo**: preservar as 4 cidades, o histórico de 365 dias e os tooltips ao sair do inline.
 - **Formatação numérica sueca** e SEK em gráficos e memoriais.
 - Cache de `?v=` por app e cache do service worker do `br12c`.
-- **Line endings no Windows quebram o `npm run validate`.** `core.autocrlf=true` reescreve os
-  arquivos em CRLF a cada checkout/merge, e o Prettier está em `endOfLine: "lf"` — então
-  `format:check` falha em arquivos que ninguém editou (aconteceu com `local/vite.config.js`,
-  `vitest.config.js` e `package.json` logo após um merge). O `.gitattributes` atual só declara
-  binários. Correção durável: acrescentar `* text=auto eol=lf` ao `.gitattributes` (afeta o repo
-  inteiro e as duas máquinas, por isso não foi feito unilateralmente). Paliativo: converter os
-  arquivos acusados para LF antes de validar.
+- ~~**Line endings no Windows quebram o `npm run validate`.**~~ **RESOLVIDO em 2026-08-18:**
+  o `.gitattributes` passou a declarar `* text=auto eol=lf`, então o `core.autocrlf=true` do
+  Windows não reescreve mais os arquivos em CRLF a cada checkout e o `format:check` do Prettier
+  (`endOfLine: "lf"`) para de falhar em arquivos que ninguém editou.
+  **Atenção ao trocar de máquina:** uma árvore de trabalho anterior à regra não é
+  renormalizada sozinha. Se o `git status` acusar dezenas de arquivos "modificados" sem
+  mudança de conteúdo, é isso — confirme com `git diff --ignore-cr-at-eol <arquivo>` (sai
+  vazio) e resolva com um checkout limpo dos arquivos afetados, não editando um a um.
+  Aconteceu nesta máquina em 2026-08-29: 78 dos 93 arquivos acusados eram só fim de linha.
 
 ## Próximo app sugerido
 
