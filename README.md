@@ -5,7 +5,9 @@ Portfólio de apps web educativos para engenharia, energia, utilidades residenci
 - Site: `https://engnata.eu/`
 - Stack principal: HTML, CSS e JavaScript modular (ESM)
 - Status atual: 12 calculadoras ativas + previsão do tempo + app de patente náutica + 2 páginas de suporte (`sobre/` e `bugs/`)
-- Cobertura de testes: **109 testes automatizados** (Vitest) cobrindo `salario` e `mutuo`
+- Cobertura de testes: **362 testes automatizados** (Vitest) em 41 arquivos — `br12c` (31,
+  o handbook do HP-12C), `pintor` (3), `src/utils` (2), `patentenautica` (2), `src/core` (1),
+  `salario` (1) e `mutuo` (1)
 - Backlog e prioridades: [ROADMAP.md](./ROADMAP.md)
 - Checklist de release/commit: [PRE_COMMIT.md](./PRE_COMMIT.md)
 
@@ -19,7 +21,7 @@ Portfólio de apps web educativos para engenharia, energia, utilidades residenci
 | `chuva/`          | Água / sustentabilidade | Dimensiona captação de chuva, cisterna e economia mensal       |                |
 | `mutuo/`          | Finanças                | Compara SAC, Price e Americano com memorial e gráficos         |       ✅       |
 | `helice/`         | Náutica                 | Apoia escolha de passo de hélice para embarcações de lazer     |                |
-| `patentenautica/` | Educação náutica        | Banco filtrável, conta opcional, fontes oficiais e Carta 5/D   |      n/a       |
+| `patentenautica/` | Educação náutica        | Banco filtrável, conta opcional, fontes oficiais e Carta 5/D   |       ✅       |
 | `solar/`          | Energia                 | Dimensiona sistema fotovoltaico off-grid e configurações       |                |
 | `bitola/`         | Instalações elétricas   | Define bitola de cabos considerando corrente e queda de tensão |                |
 | `arcondicionado/` | Climatização            | Dimensiona BTU e cenários multi-split                          |                |
@@ -30,7 +32,7 @@ Portfólio de apps web educativos para engenharia, energia, utilidades residenci
 | `bugs/`           | Suporte                 | Canal de reporte de problemas e sugestões                      |      n/a       |
 | `sobre/`          | Institucional           | Página de visão geral do projeto e apps ativos                 |      n/a       |
 
-A coluna **Calc. extraído** sinaliza apps cuja lógica numérica foi separada em `<app>/<app>-calc.js` (ESM puro, sem DOM) e está coberta por testes automatizados. Os demais seguem o padrão original (cálculo dentro da classe da app); a migração será feita em ondas — ver [ROADMAP.md](./ROADMAP.md).
+A coluna **Calc. extraído** sinaliza apps cuja lógica numérica foi separada num módulo `*-calc.js` (ESM puro, sem DOM) e está coberta por testes automatizados. Hoje são três: `mutuo/mutuo-calc.js`, `salario/salario-calc.js` e `patentenautica/exercise-answers-calc.js` — este último não segue o padrão `<app>/<app>-calc.js` porque cobre a correção de exercícios, não um cálculo do app inteiro. Os demais seguem o padrão original (cálculo dentro da classe da app); a migração será feita em ondas — ver [ROADMAP.md](./ROADMAP.md).
 
 ## Arquitetura resumida
 

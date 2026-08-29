@@ -4,15 +4,21 @@ Panorama do estado atual do portfólio Engenharia NATA, com foco no que já est�
 
 ## Snapshot atual
 
-- Portfólio estático com 15 páginas/apps públicas, além dos apps discretos do easter egg.
+- Portfólio estático com 16 páginas/apps públicas, além dos apps discretos do easter egg
+  (`br12c`, `lichiabonsai` e `pintor`): estão no HTML, mas fora do `sitemap.xml` e só
+  alcançáveis pelo dock que o easter egg de toques libera.
 - Núcleo atual cobre engenharia residencial, energia, água, finanças, planejamento rural e educação náutica.
-- Idiomas suportados: `pt-BR` e `it-IT` (iniciativa ativa: adicionar `sv-SE` — ver "Iniciativa — Site trilíngue").
+- Idiomas suportados: `pt-BR`, `it-IT` e `sv-SE`. O sueco **está no ar**: 18 dos 21 arquivos
+  de i18n de app já têm a seção `sv-SE`, e os grupos B e C da auditoria (apps que mudam de
+  método, não só de idioma) foram entregues — ver `AGENTS.md`. Faltam `fazenda.json` e
+  `lichiabonsai.json` (o `TEMPLATE_APP.json` é modelo, não conta).
 - Qualidade local hoje depende principalmente de `npm run validate`, revisão manual dos apps alterados e sincronização de documentação.
 
 ## Entregues
 
 - [x] `sobre/` - página institucional do projeto
 - [x] `bugs/` - formulário de reporte de problemas e sugestões
+- [x] `previsao/` - previsão de 7 dias (Open-Meteo) em até 4 cidades configuráveis
 - [x] `mutuo/` - calculadora de empréstimos com SAC, Price e Americano
 - [x] `salario/` - salário líquido Brasil/Itália com memorial e gráficos
 - [x] `solar/` - dimensionamento fotovoltaico off-grid com configuração local
