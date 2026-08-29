@@ -12,7 +12,8 @@
 Portfólio **estático** de apps web educativos (engenharia, energia, utilidades, finanças).
 
 - **Stack:** HTML + CSS + JavaScript modular (ESM). Sem framework. `Chart.js` local em `assets/js/vendor/`.
-- **Bilíngue:** `pt-BR` (padrão) e `it-IT`. Textos em `src/i18n/<app>.json`.
+- **Trilíngue:** `pt-BR` (padrão), `it-IT` e `sv-SE`. Textos em `src/i18n/<app>.json`.
+  O sueco não é só tradução: vários apps mudam de método (ver a seção da iniciativa sv-SE).
 - **Build/dev:** Vite (config e toolchain ficam em `local/`).
 - **Site no ar:** `https://engnata.eu/` (custom domain nativo do GitHub Pages; `www` e
   `https://souonata.github.io/EngenhariaNata/` redirecionam pra cá). Ver seção 4 (Deploy).
@@ -28,15 +29,17 @@ EngenhariaNata/
 ├── src/{core,components,utils,i18n}/   # base de app, i18n, tema
 ├── patentenautica/          # app ESM bilíngue IT/PT para patente náutica italiana
 ├── <app>/                  # cada app: <app>.html + <app>-script.js + <app>-styles.css
-│   ├── <app>-calc.js       # núcleo numérico puro (apps migrados: salario, mutuo)
+│   ├── <app>-calc.js       # núcleo numérico puro (migrados: salario, mutuo)
 │   └── <app>-calc.test.js  # Vitest (apps migrados)
 ├── br12c/                  # app STANDALONE (HP-12C); excluído do bundle Vite
 ├── .github/workflows/      # deploy.yml (Pages) + test.yml (CI)
 └── local/                  # toolchain: Vite, Vitest, ESLint, Prettier, Stylelint
 ```
 
-Apps migrados (cálculo extraído + testes): **`salario`, `mutuo`**. Os demais ainda têm o
-cálculo dentro da classe da app (migração em ondas — ver `ROADMAP.md`).
+Apps migrados (cálculo extraído + testes): **`salario`, `mutuo`**. O `patentenautica` também
+tem núcleo puro coberto por testes (`exercise-answers-calc.js`), fora do padrão
+`<app>/<app>-calc.js` por cobrir a correção de exercícios, não um cálculo do app. Os demais
+ainda têm o cálculo dentro da classe da app (migração em ondas — ver `ROADMAP.md`).
 
 ## 3. Comandos (sempre a partir de `local/`)
 
@@ -79,8 +82,8 @@ npm run build          # build de produção (gera local/dist)
 1. Atualize `index.html` (catálogo) se o conjunto de apps mudar.
 2. Sincronize `src/i18n/index.json`, `src/i18n/sobre.json` e `sobre/sobre.html`.
 3. Registre versão/mudança em `config/versions.json`.
-4. Para apps migrados (`salario`, `mutuo`): mexeu no cálculo → atualize/adicione testes em `<app>-calc.test.js` **antes** do commit.
-5. Texto sempre nos dois idiomas (`pt-BR` e `it-IT`).
+4. Para apps com núcleo extraído (`salario`, `mutuo`, `patentenautica`): mexeu no cálculo → atualize/adicione testes **antes** do commit.
+5. Texto sempre nos três idiomas (`pt-BR`, `it-IT` e `sv-SE`) — o validador de paridade exige.
 6. Rode `npm run validate` antes de commitar.
 
 ## 6. Gotchas (já mordidos)
@@ -181,7 +184,7 @@ npm run build          # build de produção (gera local/dist)
 
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
-_Última atualização: 2026-08-23_
+_Última atualização: 2026-08-29_
 
 - **PINTOR — SEMÂNTICA DE ENGENHARIA GLOBAL (0.6.0, PUBLICADO via PR #27):** todas as rotas de
   produção (vetorial, raster/OCR,
