@@ -3,3 +3,6 @@ node_modules/
 
 # Cache de build/dev/test do Vite e Vitest (raiz e subpastas)
 .vite/
+
+# Config do agente especifica da maquina (o launch.json fica versionado de proposito)
+.claude/settings.local.json

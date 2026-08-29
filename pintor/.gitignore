@@ -13,6 +13,7 @@ library/
 markups/
 workspaces/
 original_wiring_diagram/
+output/
 
 # Local model/training scratch outside the standard workspace tree
 *.pdf
