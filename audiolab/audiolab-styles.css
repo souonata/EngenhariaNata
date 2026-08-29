@@ -1,0 +1,198 @@
+/* AudioLab para Jellyfin — estilos proprios da pagina.
+   Cores e cards vem do shared-styles/v2-components; aqui ficam so os blocos
+   que este app introduz: selo, grade de recursos, medicoes e caixas de rota. */
+
+.al-selo {
+    display: inline-block;
+    margin-top: 0.6rem;
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--cor-borda, #d5d9e0);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    opacity: 0.75;
+}
+
+.al-nota {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    line-height: 1.55;
+}
+
+/* --- Grade de recursos --- */
+
+.al-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.1rem;
+    margin-top: 1rem;
+}
+
+.al-item h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1rem;
+}
+
+.al-item p {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.55;
+}
+
+/* --- Medicoes --- */
+
+.al-medida {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4rem 0.9rem;
+    padding: 0.85rem 1rem;
+    margin: 0.7rem 0;
+    border-left: 3px solid var(--cor-aviso, #e0a800);
+    border-radius: 0 8px 8px 0;
+    background: rgba(128, 128, 128, 0.07);
+}
+
+.al-medida-ok {
+    border-left-color: var(--cor-sucesso, #2e9e5b);
+}
+
+.al-medida-num {
+    flex: 0 0 auto;
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.al-medida-txt {
+    flex: 1 1 260px;
+    font-size: 0.92rem;
+    line-height: 1.55;
+}
+
+/* --- Rotas de instalacao --- */
+
+.al-rota {
+    padding: 1rem 1.1rem;
+    margin: 1rem 0;
+    border: 1px solid var(--cor-borda, #d5d9e0);
+    border-radius: 10px;
+}
+
+.al-rota h3 {
+    margin: 0 0 0.6rem;
+    font-size: 1.02rem;
+}
+
+.al-rota ol {
+    margin: 0 0 0.6rem;
+    padding-left: 1.3rem;
+    line-height: 1.7;
+}
+
+.al-passos {
+    padding-left: 1.3rem;
+    line-height: 1.8;
+}
+
+/* --- Bloco de copiar o manifest --- */
+
+.al-copiar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 0.85rem;
+    margin: 0.6rem 0 0.9rem;
+    border-radius: 8px;
+    background: rgba(128, 128, 128, 0.1);
+}
+
+.al-copiar code {
+    flex: 1 1 260px;
+    /* O endereco e longo e nao tem espaco: sem isto ele estoura no celular. */
+    word-break: break-all;
+    font-size: 0.84rem;
+    line-height: 1.5;
+}
+
+.al-btn-copiar {
+    flex: 0 0 auto;
+    padding: 0.45rem 1rem;
+    border: 1px solid var(--cor-borda, #d5d9e0);
+    border-radius: 6px;
+    background: var(--cor-fundo-card, #fff);
+    color: inherit;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.al-btn-copiar:hover {
+    border-color: var(--cor-primaria, #2f6fed);
+}
+
+.al-btn-copiar.al-copiado {
+    border-color: var(--cor-sucesso, #2e9e5b);
+    color: var(--cor-sucesso, #2e9e5b);
+}
+
+/* --- Aviso de HTTPS --- */
+
+.al-aviso {
+    padding: 0.9rem 1.1rem;
+    margin-top: 1.2rem;
+    border: 1px solid var(--cor-aviso, #e0a800);
+    border-radius: 10px;
+    background: rgba(224, 168, 0, 0.08);
+}
+
+.al-aviso h3 {
+    margin: 0 0 0.45rem;
+    font-size: 1rem;
+}
+
+.al-aviso p {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+/* --- Links --- */
+
+.al-links-botoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    margin: 0.9rem 0;
+}
+
+.al-btn {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    background: var(--cor-primaria, #2f6fed);
+    color: #fff;
+    font-size: 0.92rem;
+    text-decoration: none;
+    transition: opacity 0.15s;
+}
+
+.al-btn:hover {
+    opacity: 0.88;
+}
+
+.al-btn-sec {
+    background: transparent;
+    color: inherit;
+    border: 1px solid var(--cor-borda, #d5d9e0);
+}
+
+@media (max-width: 520px) {
+    .al-medida-num {
+        font-size: 1.1rem;
+    }
+
+    .al-btn-copiar {
+        width: 100%;
+    }
+}

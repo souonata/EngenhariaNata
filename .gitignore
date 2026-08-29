@@ -6,3 +6,7 @@ node_modules/
 
 # Config do agente especifica da maquina (o launch.json fica versionado de proposito)
 .claude/settings.local.json
+
+# Relatorio de cobertura: o vitest roda com raiz no projeto, entao `test:coverage`
+# escreve aqui, nao em local/ (onde ja havia regra).
+coverage/

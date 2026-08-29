@@ -75,6 +75,10 @@
         "name": "Salário Líquido",
         "desc": "Calculadora de salário trilíngue Brasil/Itália/Suécia com memorial de cálculo e gráficos"
       },
+      "audiolab": {
+        "name": "AudioLab para Jellyfin",
+        "desc": "Equalizador de 10 bandas e loudness igualado para o player web de música do Jellyfin, com guia de instalação"
+      },
       "previsao": {
         "name": "Previsão 7 dias",
         "desc": "Previsão meteorológica de 7 dias (Open-Meteo) com gráfico de temperatura e chuva"
@@ -601,6 +605,10 @@
         "name": "Stipendio Netto",
         "desc": "Calcolatore di stipendio trilingue Brasile/Italia/Svezia con memoria di calcolo e grafici"
       },
+      "audiolab": {
+        "name": "AudioLab per Jellyfin",
+        "desc": "Equalizzatore a 10 bande e loudness allineato per il lettore musicale web di Jellyfin, con guida all’installazione"
+      },
       "previsao": {
         "name": "Previsioni 7 giorni",
         "desc": "Previsioni meteo a 7 giorni (Open-Meteo) con grafico di temperatura e pioggia"
@@ -1126,6 +1134,10 @@
       "salario": {
         "name": "Nettolön",
         "desc": "Trespråkig lönekalkylator Brasilien/Italien/Sverige med beräkningsredovisning och diagram"
+      },
+      "audiolab": {
+        "name": "AudioLab för Jellyfin",
+        "desc": "Tiobands equalizer och utjämnad loudness för Jellyfins webbaserade musikspelare, med installationsguide"
       },
       "previsao": {
         "name": "Prognos 7 dagar",

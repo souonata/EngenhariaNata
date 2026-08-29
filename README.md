@@ -1,10 +1,10 @@
 # Engenharia NATA
 
-Portfólio de apps web educativos para engenharia, energia, utilidades residenciais e finanças. O projeto é estático, bilíngue (`pt-BR` / `it-IT`) e prioriza cálculo prático com explicação passo a passo no navegador.
+Portfólio de apps web educativos para engenharia, energia, utilidades residenciais e finanças. O projeto é estático, trilíngue (`pt-BR` / `it-IT` / `sv-SE`) e prioriza cálculo prático com explicação passo a passo no navegador.
 
 - Site: `https://engnata.eu/`
 - Stack principal: HTML, CSS e JavaScript modular (ESM)
-- Status atual: 12 calculadoras ativas + previsão do tempo + app de patente náutica + 2 páginas de suporte (`sobre/` e `bugs/`)
+- Status atual: 12 calculadoras ativas + previsão do tempo + app de patente náutica + página do plugin AudioLab + 2 páginas de suporte (`sobre/` e `bugs/`)
 - Cobertura de testes: **362 testes automatizados** (Vitest) em 41 arquivos — `br12c` (31,
   o handbook do HP-12C), `pintor` (3), `src/utils` (2), `patentenautica` (2), `src/core` (1),
   `salario` (1) e `mutuo` (1)
@@ -29,6 +29,7 @@ Portfólio de apps web educativos para engenharia, energia, utilidades residenci
 | `salario/`        | Finanças                | Calcula salário líquido Brasil/Itália com memorial e gráficos  |       ✅       |
 | `fazenda/`        | Planejamento rural      | Planeja produção auto-sustentável com base regional            |                |
 | `previsao/`       | Meteorologia            | Previsão de 7 dias (Open-Meteo): temperatura horária e chuva   |      n/a       |
+| `audiolab/`       | Áudio / software livre  | Apresenta o plugin AudioLab para Jellyfin e ensina a instalar  |      n/a       |
 | `bugs/`           | Suporte                 | Canal de reporte de problemas e sugestões                      |      n/a       |
 | `sobre/`          | Institucional           | Página de visão geral do projeto e apps ativos                 |      n/a       |
 
@@ -69,15 +70,18 @@ npm run test:watch      # modo watch durante desenvolvimento
 npm run test:coverage   # gera relatório de cobertura
 ```
 
-Cobertura atual nos apps já migrados (`salario`, `mutuo`):
+Cobertura atual dos núcleos `salario-calc.js` e `mutuo-calc.js` (medida em 2026-08-29):
 
 | Métrica     |   Valor    |
 | ----------- | :--------: |
-| Statements  | **97,67%** |
-| Branches    | **91,52%** |
+| Statements  | **98,24%** |
+| Branches    | **88,88%** |
 | Functions   |  **100%**  |
-| Lines       | **97,92%** |
-| Total casos |  **109**   |
+| Lines       | **98,42%** |
+| Total casos |  **143**   |
+
+Os 143 casos são só destes dois núcleos (`salario` 84, `mutuo` 59). A suíte completa do
+projeto tem 362 testes — o restante cobre `br12c`, `pintor`, `patentenautica` e o `src/`.
 
 A camada UI (`<app>-script.js`) ainda não é coberta automaticamente — testes de DOM ficam para fase futura.
 

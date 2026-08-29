@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://souonata.goatcounter.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="apple-touch-icon" href="../favicon.svg">
+
+    <!-- SEO Meta Tags -->
+    <title>AudioLab para Jellyfin - Engenharia NATA</title>
+    <meta name="description" content="Equalizador de 10 bandas, normalizacao de loudness e limitador de pico para o player web de musica do Jellyfin. Como instalar e usar.">
+    <meta name="author" content="Engenharia NATA">
+    <link rel="canonical" href="https://engnata.eu/audiolab/audiolab.html">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.4.0">
+    <link rel="stylesheet" href="../assets/css/dock-global.css?v=1.2.0">
+    <link rel="stylesheet" href="../assets/css/v2-components.css?v=2.0.0">
+    <link rel="stylesheet" href="audiolab-styles.css?v=1.0.0">
+
+    <!-- Analytics: GoatCounter (privacy-friendly, LGPD/GDPR-compliant) -->
+    <script data-goatcounter="https://souonata.goatcounter.com/count"
+            async src="https://gc.zgo.at/count.js"></script>
+    <!-- Rede de seguranca global de erros (ver GUIA_FALHA_CONGELAMENTO.md) -->
+    <script src="../assets/js/error-overlay.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 data-i18n="titulo">🎛️ AudioLab para Jellyfin</h1>
+            <p class="subtitulo" data-i18n="descricao">Equalizador de 10 bandas, loudness igualado e limitador de pico — tudo dentro do navegador.</p>
+            <p class="al-selo" data-i18n="selo">Plugin não oficial, sem vínculo com o projeto Jellyfin.</p>
+        </header>
+
+        <!-- 1. O que é o Jellyfin -->
+        <section class="card">
+            <h2 data-i18n="jellyfin.titulo">📺 Primeiro: o que é o Jellyfin?</h2>
+            <p data-i18n="jellyfin.p1">É um servidor de mídia livre e de código aberto. Você guarda seus filmes, séries e músicas numa máquina sua — um PC velho, um mini servidor, um NAS — e assiste de qualquer aparelho, pelo navegador ou por aplicativo.</p>
+            <p data-i18n="jellyfin.p2">Não tem conta obrigatória, nem mensalidade, nem recurso preso atrás de assinatura. É a alternativa livre ao Plex, e convive com ele: os dois podem ler a mesma pasta de mídia.</p>
+            <p class="al-nota" data-i18n="jellyfin.p3">O AudioLab é um complemento para ele. Se você ainda não usa Jellyfin, o plugin não tem onde rodar.</p>
+        </section>
+
+        <!-- 2. O problema -->
+        <section class="card">
+            <h2 data-i18n="problema.titulo">🎧 O problema que ele resolve</h2>
+            <p data-i18n="problema.p1">O player de música do Jellyfin no navegador não tem equalizador. Também não iguala o volume entre faixas: um álbum masterizado baixo entra abafado depois de um single moderno, e você corrige no volume, faixa a faixa.</p>
+            <p data-i18n="problema.p2">O AudioLab acrescenta as duas coisas — e um limitador para que nada estoure quando você levanta os graves.</p>
+        </section>
+
+        <!-- 3. O que faz -->
+        <section class="card">
+            <h2 data-i18n="recursos.titulo">⚙️ O que ele faz</h2>
+            <div class="al-grid">
+                <div class="al-item">
+                    <h3 data-i18n="recursos.eqTitulo">Equalizador de 10 bandas</h3>
+                    <p data-i18n="recursos.eqTexto">Bandas espaçadas por oitava, de 31 Hz a 16 kHz, com 28 presets prontos — de Rock e Jazz a Podcast, Fones e Escuta Noturna — mais o seu, ajustado à mão.</p>
+                </div>
+                <div class="al-item">
+                    <h3 data-i18n="recursos.loudTitulo">Loudness igualado</h3>
+                    <p data-i18n="recursos.loudTexto">Trocar de preset não muda o volume percebido. A compensação é calculada como a norma BS.1770 ouve, não pelo pico do sinal.</p>
+                </div>
+                <div class="al-item">
+                    <h3 data-i18n="recursos.limTitulo">Limitador com antecipação</h3>
+                    <p data-i18n="recursos.limTexto">Um limitador de verdade, com lookahead — não um cortador. Ele segura o pico antes de ele acontecer, em vez de ceifar a onda depois.</p>
+                </div>
+                <div class="al-item">
+                    <h3 data-i18n="recursos.privTitulo">Tudo no seu navegador</h3>
+                    <p data-i18n="recursos.privTexto">O processamento acontece na sua máquina. O servidor só entrega o código; nenhum áudio seu é enviado para lugar nenhum.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. A engenharia -->
+        <section class="card al-engenharia">
+            <h2 data-i18n="engenharia.titulo">🔬 Por que não é só mais um equalizador</h2>
+            <p data-i18n="engenharia.intro">Quase todo equalizador de navegador trata as bandas como se fossem independentes. Elas não são — filtros vizinhos se sobrepõem, e o resultado que você ouve não é a curva que você desenhou.</p>
+
+            <div class="al-medida">
+                <span class="al-medida-num" data-i18n="engenharia.m1Num">+12,4 dB</span>
+                <span class="al-medida-txt" data-i18n="engenharia.m1Txt">é o que a soma ingênua produz em algumas frequências quando você põe todas as bandas em +6 dB. Um erro medido de 6,4 dB.</span>
+            </div>
+            <div class="al-medida al-medida-ok">
+                <span class="al-medida-num" data-i18n="engenharia.m2Num">0,0085 dB</span>
+                <span class="al-medida-txt" data-i18n="engenharia.m2Txt">é o desvio máximo do AudioLab em toda a banda audível. Ele resolve a matriz de interação entre os filtros (Levenberg–Marquardt) para que a resposta medida seja a curva pedida.</span>
+            </div>
+            <div class="al-medida al-medida-ok">
+                <span class="al-medida-num" data-i18n="engenharia.m3Num">−0,04 LU</span>
+                <span class="al-medida-txt" data-i18n="engenharia.m3Txt">é a diferença de volume percebido entre o preset Rock e o som plano. Pop fica em −0,08 LU e Bass Boost em +0,16 LU: você troca o timbre sem trocar o volume.</span>
+            </div>
+
+            <h3 data-i18n="engenharia.falhaTitulo">E quando não dá para funcionar, ele avisa</h3>
+            <p data-i18n="engenharia.falhaTexto">Transmitindo para uma TV, no AirPlay, num stream bloqueado por CORS ou em HLS no Safari, o botão fica cinza e diz o motivo — em vez de fingir que está ligado. E existe um vigia: se a cadeia de áudio emitir silêncio enquanto a música deveria tocar, ele abandona o processamento e liga o som direto. Você perde o equalizador, nunca a música.</p>
+            <p class="al-nota" data-i18n="engenharia.evidencia">Cada número acima é reproduzível: o repositório guarda a medição, a data e o comando de cada um — inclusive os que provaram o autor errado.</p>
+        </section>
+
+        <!-- 5. Instalação -->
+        <section class="card">
+            <h2 data-i18n="instalar.titulo">📦 Como instalar</h2>
+            <p data-i18n="instalar.intro">São dois caminhos. O primeiro é melhor, mas exige que você administre o servidor; o segundo funciona em qualquer Jellyfin, inclusive o de outra pessoa.</p>
+
+            <div class="al-rota">
+                <h3 data-i18n="instalar.rotaATitulo">Caminho A — como plugin (você administra o servidor)</h3>
+                <ol>
+                    <li data-i18n="instalar.a1">No Jellyfin, abra <strong>Painel → Plugins → Repositórios</strong> e clique em <strong>+</strong>.</li>
+                    <li data-i18n="instalar.a2">Dê um nome qualquer ao repositório e cole este endereço:</li>
+                </ol>
+                <div class="al-copiar">
+                    <code id="manifestUrl">https://raw.githubusercontent.com/souonata/jellyfin-audiolab/main/manifest.json</code>
+                    <button type="button" id="btnCopiar" class="al-btn-copiar" data-i18n="instalar.copiar">Copiar</button>
+                </div>
+                <ol start="3">
+                    <li data-i18n="instalar.a3">Vá em <strong>Catálogo</strong>, instale o <strong>AudioLab</strong> e reinicie o Jellyfin.</li>
+                    <li data-i18n="instalar.a4">No navegador, recarregue forçando o cache: <strong>Ctrl+Shift+R</strong> (ou <strong>Cmd+Shift+R</strong> no Mac).</li>
+                </ol>
+                <p class="al-nota" data-i18n="instalar.aNota">O plugin nunca escreve dentro da pasta do Jellyfin: ele acrescenta a própria tag de script à resposta da página, enquanto ela é enviada. Por isso uma atualização do servidor não o apaga, e instalações em Docker com pasta somente leitura funcionam normalmente.</p>
+            </div>
+
+            <div class="al-rota">
+                <h3 data-i18n="instalar.rotaBTitulo">Caminho B — como userscript (não precisa do servidor)</h3>
+                <ol>
+                    <li data-i18n="instalar.b1">Instale a extensão <strong>Tampermonkey</strong> ou <strong>Violentmonkey</strong> no seu navegador.</li>
+                    <li data-i18n="instalar.b2">Baixe o arquivo <code>audiolab.user.js</code> da última versão publicada e abra-o: a extensão oferece a instalação.</li>
+                    <li data-i18n="instalar.b3">Abra o Jellyfin e recarregue a página.</li>
+                </ol>
+                <p class="al-nota" data-i18n="instalar.bNota">É o mesmo código do plugin. Esta é a única opção quando você usa um servidor que não administra.</p>
+            </div>
+
+            <div class="al-aviso">
+                <h3 data-i18n="instalar.httpsTitulo">⚠️ Use HTTPS</h3>
+                <p data-i18n="instalar.httpsTexto">O limitador é construído sobre o AudioWorklet, que só existe em contexto seguro. Em <code>http://</code> puro o equalizador continua funcionando, mas o limitador não carrega — e como a margem cai para uma regra conservadora, os presets soam audivelmente mais baixos: <strong>−2,6 LU</strong> contra <strong>−0,04 LU</strong> no preset Rock.</p>
+            </div>
+        </section>
+
+        <!-- 6. Como usar -->
+        <section class="card">
+            <h2 data-i18n="usar.titulo">▶️ Como usar</h2>
+            <ol class="al-passos">
+                <li data-i18n="usar.p1">Abra o Jellyfin no navegador e comece a tocar uma música.</li>
+                <li data-i18n="usar.p2">Abra o painel do AudioLab pelo controle que aparece no player.</li>
+                <li data-i18n="usar.p3">Escolha um preset. Se for o primeiro teste, compare <strong>Flat</strong> com <strong>Rock</strong>: a diferença deve ser de timbre, não de volume.</li>
+                <li data-i18n="usar.p4">Para ajustar à mão, mexa nas dez bandas e salve como <strong>Custom</strong>.</li>
+            </ol>
+            <p class="al-nota" data-i18n="usar.dica">Se o controle aparecer cinza, ele diz o porquê ao passar o mouse — normalmente é transmissão para outro aparelho ou uma página servida sem HTTPS.</p>
+        </section>
+
+        <!-- 7. Limites honestos -->
+        <section class="card">
+            <h2 data-i18n="limites.titulo">🙋 O que ainda não foi testado</h2>
+            <p data-i18n="limites.p1">Ser específico vale mais que soar confiante: <strong>Safari em iPhone real e navegadores em Android real</strong> não foram testados. O ambiente emulado passa na suíte inteira, mas um usuário relatou silêncio num aparelho físico que não foi possível reproduzir.</p>
+            <p data-i18n="limites.p2">O vigia que desliga o processamento e devolve o som direto existe por causa desse relato. Se acontecer com você, abrir uma issue no repositório ajuda.</p>
+        </section>
+
+        <!-- 8. Links -->
+        <section class="card al-links">
+            <h2 data-i18n="links.titulo">🔗 Código e versões</h2>
+            <p data-i18n="links.texto">O AudioLab é aberto. O código, as medições e as versões publicadas ficam no repositório.</p>
+            <div class="al-links-botoes">
+                <a class="al-btn" href="https://github.com/souonata/jellyfin-audiolab" target="_blank" rel="noopener noreferrer" data-i18n="links.repo">Repositório no GitHub</a>
+                <a class="al-btn al-btn-sec" href="https://github.com/souonata/jellyfin-audiolab/releases" target="_blank" rel="noopener noreferrer" data-i18n="links.releases">Versões para download</a>
+            </div>
+            <p class="al-nota" data-i18n="links.licenca">Projeto independente, sem vínculo com o projeto Jellyfin nem endosso dele.</p>
+        </section>
+    </div>
+
+    <footer>
+        <p data-i18n="footer">🎛️ AudioLab para Jellyfin - Engenharia Nata @ 2026</p>
+    </footer>
+
+    <!-- Botão de retorno à tela inicial -->
+    <a href="../index.html" class="home-button-fixed" data-i18n-aria="aria.home">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+    </a>
+
+    <!-- Scripts Modulares ES6 -->
+    <script type="module" src="audiolab-script.js?v=1.0.0"></script>
+</body>
+</html>

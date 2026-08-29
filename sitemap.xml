@@ -162,6 +162,17 @@
         <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/bugs/bugs.html"/>
     </url>
 
+    <!-- AudioLab para Jellyfin -->
+    <url>
+        <loc>https://engnata.eu/audiolab/audiolab.html</loc>
+        <lastmod>2026-08-29</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/audiolab/audiolab.html"/>
+        <xhtml:link rel="alternate" hreflang="it-IT" href="https://engnata.eu/audiolab/audiolab.html"/>
+        <xhtml:link rel="alternate" hreflang="sv-SE" href="https://engnata.eu/audiolab/audiolab.html"/>
+    </url>
+
     <!-- Previsão 7 dias -->
     <url>
         <loc>https://engnata.eu/previsao/previsao.html</loc>

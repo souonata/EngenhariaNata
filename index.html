@@ -952,6 +952,52 @@
             <span class="app-name" data-i18n="app-previsao">Previsão</span>
           </a>
 
+          <!-- Ícone do aplicativo AudioLab -->
+          <a
+            href="audiolab/audiolab.html"
+            class="app-icon"
+            data-i18n-aria="app-audiolab"
+          >
+            <div class="icon">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-audiolab"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #7b3fe4; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #00b3a4; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  x="5"
+                  y="5"
+                  width="50"
+                  height="50"
+                  rx="12"
+                  fill="url(#gradient-audiolab)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  🎛️
+                </text>
+              </svg>
+            </div>
+            <span class="app-name" data-i18n="app-audiolab">AudioLab</span>
+          </a>
+
           <!-- Ícone do aplicativo Salário -->
           <a
             href="salario/salario.html"
@@ -2237,6 +2283,64 @@
             class="app-link"
             data-i18n="app-link-forecast"
             >Ver previsão →</a
+          >
+        </div>
+
+        <!-- App: AudioLab -->
+        <div class="app-card">
+          <div class="app-card-header">
+            <a href="audiolab/audiolab.html" data-i18n-aria="app-audiolab">
+              <svg
+                viewBox="0 0 60 60"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                class="app-icon-large"
+              >
+                <defs>
+                  <linearGradient
+                    id="gradient-audiolab-desc"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="0%"
+                      style="stop-color: #7b3fe4; stop-opacity: 1"
+                    />
+                    <stop
+                      offset="100%"
+                      style="stop-color: #00b3a4; stop-opacity: 1"
+                    />
+                  </linearGradient>
+                </defs>
+                <rect
+                  width="60"
+                  height="60"
+                  rx="12"
+                  fill="url(#gradient-audiolab-desc)"
+                />
+                <text x="30" y="40" font-size="28" text-anchor="middle">
+                  🎛️
+                </text>
+              </svg>
+            </a>
+            <h3>
+              <a href="audiolab/audiolab.html" data-i18n="app-audiolab-title"
+                >AudioLab para Jellyfin</a
+              >
+            </h3>
+          </div>
+          <p class="app-description" data-i18n="app-audiolab-description">
+            Equalizador de 10 bandas, loudness igualado e limitador de pico para
+            o player web de música do Jellyfin. O que é, como instalar e como
+            usar.
+          </p>
+          <a
+            href="audiolab/audiolab.html"
+            class="app-link"
+            data-i18n="app-link-view"
+            >Ver página →</a
           >
         </div>
 

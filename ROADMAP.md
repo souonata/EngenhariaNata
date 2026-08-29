@@ -4,7 +4,7 @@ Panorama do estado atual do portfólio Engenharia NATA, com foco no que já est�
 
 ## Snapshot atual
 
-- Portfólio estático com 16 páginas/apps públicas, além dos apps discretos do easter egg
+- Portfólio estático com 17 páginas/apps públicas, além dos apps discretos do easter egg
   (`br12c`, `lichiabonsai` e `pintor`): estão no HTML, mas fora do `sitemap.xml` e só
   alcançáveis pelo dock que o easter egg de toques libera.
 - Núcleo atual cobre engenharia residencial, energia, água, finanças, planejamento rural e educação náutica.
@@ -19,6 +19,7 @@ Panorama do estado atual do portfólio Engenharia NATA, com foco no que já est�
 - [x] `sobre/` - página institucional do projeto
 - [x] `bugs/` - formulário de reporte de problemas e sugestões
 - [x] `previsao/` - previsão de 7 dias (Open-Meteo) em até 4 cidades configuráveis
+- [x] `audiolab/` - página do plugin AudioLab para Jellyfin: o que é, como instalar e usar
 - [x] `mutuo/` - calculadora de empréstimos com SAC, Price e Americano
 - [x] `salario/` - salário líquido Brasil/Itália com memorial e gráficos
 - [x] `solar/` - dimensionamento fotovoltaico off-grid com configuração local

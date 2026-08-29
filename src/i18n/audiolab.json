@@ -1,0 +1,264 @@
+{
+  "$schema": "./schema.json",
+  "pt-BR": {
+    "titles": {
+      "pagina": "AudioLab para Jellyfin - Engenharia NATA"
+    },
+    "aria": {
+      "home": "Voltar à página inicial"
+    },
+    "titulo": "🎛️ AudioLab para Jellyfin",
+    "descricao": "Equalizador de 10 bandas, loudness igualado e limitador de pico — tudo dentro do navegador.",
+    "selo": "Plugin não oficial, sem vínculo com o projeto Jellyfin.",
+    "jellyfin": {
+      "titulo": "📺 Primeiro: o que é o Jellyfin?",
+      "p1": "É um servidor de mídia livre e de código aberto. Você guarda seus filmes, séries e músicas numa máquina sua — um PC velho, um mini servidor, um NAS — e assiste de qualquer aparelho, pelo navegador ou por aplicativo.",
+      "p2": "Não tem conta obrigatória, nem mensalidade, nem recurso preso atrás de assinatura. É a alternativa livre ao Plex, e convive com ele: os dois podem ler a mesma pasta de mídia.",
+      "p3": "O AudioLab é um complemento para ele. Se você ainda não usa Jellyfin, o plugin não tem onde rodar."
+    },
+    "problema": {
+      "titulo": "🎧 O problema que ele resolve",
+      "p1": "O player de música do Jellyfin no navegador não tem equalizador. Também não iguala o volume entre faixas: um álbum masterizado baixo entra abafado depois de um single moderno, e você corrige no volume, faixa a faixa.",
+      "p2": "O AudioLab acrescenta as duas coisas — e um limitador para que nada estoure quando você levanta os graves."
+    },
+    "recursos": {
+      "titulo": "⚙️ O que ele faz",
+      "eqTitulo": "Equalizador de 10 bandas",
+      "eqTexto": "Bandas espaçadas por oitava, de 31 Hz a 16 kHz, com 28 presets prontos — de Rock e Jazz a Podcast, Fones e Escuta Noturna — mais o seu, ajustado à mão.",
+      "loudTitulo": "Loudness igualado",
+      "loudTexto": "Trocar de preset não muda o volume percebido. A compensação é calculada como a norma BS.1770 ouve, não pelo pico do sinal.",
+      "limTitulo": "Limitador com antecipação",
+      "limTexto": "Um limitador de verdade, com lookahead — não um cortador. Ele segura o pico antes de ele acontecer, em vez de ceifar a onda depois.",
+      "privTitulo": "Tudo no seu navegador",
+      "privTexto": "O processamento acontece na sua máquina. O servidor só entrega o código; nenhum áudio seu é enviado para lugar nenhum."
+    },
+    "engenharia": {
+      "titulo": "🔬 Por que não é só mais um equalizador",
+      "intro": "Quase todo equalizador de navegador trata as bandas como se fossem independentes. Elas não são — filtros vizinhos se sobrepõem, e o resultado que você ouve não é a curva que você desenhou.",
+      "m1Num": "+12,4 dB",
+      "m1Txt": "é o que a soma ingênua produz em algumas frequências quando você põe todas as bandas em +6 dB. Um erro medido de 6,4 dB.",
+      "m2Num": "0,0085 dB",
+      "m2Txt": "é o desvio máximo do AudioLab em toda a banda audível. Ele resolve a matriz de interação entre os filtros (Levenberg–Marquardt) para que a resposta medida seja a curva pedida.",
+      "m3Num": "−0,04 LU",
+      "m3Txt": "é a diferença de volume percebido entre o preset Rock e o som plano. Pop fica em −0,08 LU e Bass Boost em +0,16 LU: você troca o timbre sem trocar o volume.",
+      "falhaTitulo": "E quando não dá para funcionar, ele avisa",
+      "falhaTexto": "Transmitindo para uma TV, no AirPlay, num stream bloqueado por CORS ou em HLS no Safari, o botão fica cinza e diz o motivo — em vez de fingir que está ligado. E existe um vigia: se a cadeia de áudio emitir silêncio enquanto a música deveria tocar, ele abandona o processamento e liga o som direto. Você perde o equalizador, nunca a música.",
+      "evidencia": "Cada número acima é reproduzível: o repositório guarda a medição, a data e o comando de cada um — inclusive os que provaram o autor errado."
+    },
+    "instalar": {
+      "titulo": "📦 Como instalar",
+      "intro": "São dois caminhos. O primeiro é melhor, mas exige que você administre o servidor; o segundo funciona em qualquer Jellyfin, inclusive o de outra pessoa.",
+      "rotaATitulo": "Caminho A — como plugin (você administra o servidor)",
+      "a1": "No Jellyfin, abra Painel → Plugins → Repositórios e clique em +.",
+      "a2": "Dê um nome qualquer ao repositório e cole este endereço:",
+      "a3": "Vá em Catálogo, instale o AudioLab e reinicie o Jellyfin.",
+      "a4": "No navegador, recarregue forçando o cache: Ctrl+Shift+R (ou Cmd+Shift+R no Mac).",
+      "aNota": "O plugin nunca escreve dentro da pasta do Jellyfin: ele acrescenta a própria tag de script à resposta da página, enquanto ela é enviada. Por isso uma atualização do servidor não o apaga, e instalações em Docker com pasta somente leitura funcionam normalmente.",
+      "rotaBTitulo": "Caminho B — como userscript (não precisa do servidor)",
+      "b1": "Instale a extensão Tampermonkey ou Violentmonkey no seu navegador.",
+      "b2": "Baixe o arquivo audiolab.user.js da última versão publicada e abra-o: a extensão oferece a instalação.",
+      "b3": "Abra o Jellyfin e recarregue a página.",
+      "bNota": "É o mesmo código do plugin. Esta é a única opção quando você usa um servidor que não administra.",
+      "httpsTitulo": "⚠️ Use HTTPS",
+      "httpsTexto": "O limitador é construído sobre o AudioWorklet, que só existe em contexto seguro. Em http:// puro o equalizador continua funcionando, mas o limitador não carrega — e como a margem cai para uma regra conservadora, os presets soam audivelmente mais baixos: −2,6 LU contra −0,04 LU no preset Rock.",
+      "copiar": "Copiar",
+      "copiado": "Copiado!",
+      "copiarFalhou": "Selecione e copie"
+    },
+    "usar": {
+      "titulo": "▶️ Como usar",
+      "p1": "Abra o Jellyfin no navegador e comece a tocar uma música.",
+      "p2": "Abra o painel do AudioLab pelo controle que aparece no player.",
+      "p3": "Escolha um preset. Se for o primeiro teste, compare Flat com Rock: a diferença deve ser de timbre, não de volume.",
+      "p4": "Para ajustar à mão, mexa nas dez bandas e salve como Custom.",
+      "dica": "Se o controle aparecer cinza, ele diz o porquê ao passar o mouse — normalmente é transmissão para outro aparelho ou uma página servida sem HTTPS."
+    },
+    "limites": {
+      "titulo": "🙋 O que ainda não foi testado",
+      "p1": "Ser específico vale mais que soar confiante: Safari em iPhone real e navegadores em Android real não foram testados. O ambiente emulado passa na suíte inteira, mas um usuário relatou silêncio num aparelho físico que não foi possível reproduzir.",
+      "p2": "O vigia que desliga o processamento e devolve o som direto existe por causa desse relato. Se acontecer com você, abrir uma issue no repositório ajuda."
+    },
+    "links": {
+      "titulo": "🔗 Código e versões",
+      "texto": "O AudioLab é aberto. O código, as medições e as versões publicadas ficam no repositório.",
+      "repo": "Repositório no GitHub",
+      "releases": "Versões para download",
+      "licenca": "Projeto independente, sem vínculo com o projeto Jellyfin nem endosso dele."
+    },
+    "footer": "🎛️ AudioLab para Jellyfin - Engenharia Nata @ 2026"
+  },
+  "it-IT": {
+    "titles": {
+      "pagina": "AudioLab per Jellyfin - Engenharia NATA"
+    },
+    "aria": {
+      "home": "Torna alla pagina iniziale"
+    },
+    "titulo": "🎛️ AudioLab per Jellyfin",
+    "descricao": "Equalizzatore a 10 bande, loudness allineato e limitatore di picco — tutto dentro il browser.",
+    "selo": "Plugin non ufficiale, senza alcun legame con il progetto Jellyfin.",
+    "jellyfin": {
+      "titulo": "📺 Prima di tutto: cos'è Jellyfin?",
+      "p1": "È un server multimediale libero e open source. Tieni film, serie e musica su una macchina tua — un vecchio PC, un mini server, un NAS — e li guardi da qualsiasi dispositivo, dal browser o da un'app.",
+      "p2": "Nessun account obbligatorio, nessun abbonamento, nessuna funzione chiusa dietro un paywall. È l'alternativa libera a Plex e ci convive: entrambi possono leggere la stessa cartella di media.",
+      "p3": "AudioLab è un complemento per Jellyfin. Se non lo usi ancora, il plugin non ha dove girare."
+    },
+    "problema": {
+      "titulo": "🎧 Il problema che risolve",
+      "p1": "Il lettore musicale di Jellyfin nel browser non ha equalizzatore. E non allinea nemmeno il volume tra i brani: un album masterizzato basso entra smorzato dopo un singolo moderno, e tu correggi a mano, brano per brano.",
+      "p2": "AudioLab aggiunge entrambe le cose — e un limitatore perché niente vada in clipping quando alzi i bassi."
+    },
+    "recursos": {
+      "titulo": "⚙️ Che cosa fa",
+      "eqTitulo": "Equalizzatore a 10 bande",
+      "eqTexto": "Bande spaziate per ottava, da 31 Hz a 16 kHz, con 28 preset pronti — da Rock e Jazz a Podcast, Cuffie e Ascolto Notturno — più il tuo, regolato a mano.",
+      "loudTitulo": "Loudness allineato",
+      "loudTexto": "Cambiare preset non cambia il volume percepito. La compensazione è calcolata come la norma BS.1770 ascolta, non dal picco del segnale.",
+      "limTitulo": "Limitatore con lookahead",
+      "limTexto": "Un limitatore vero, con anticipo — non un clipper. Trattiene il picco prima che accada, invece di tagliare l'onda dopo.",
+      "privTitulo": "Tutto nel tuo browser",
+      "privTexto": "L'elaborazione avviene sulla tua macchina. Il server consegna solo il codice; nessun tuo audio viene inviato da nessuna parte."
+    },
+    "engenharia": {
+      "titulo": "🔬 Perché non è solo un altro equalizzatore",
+      "intro": "Quasi tutti gli equalizzatori da browser trattano le bande come se fossero indipendenti. Non lo sono — i filtri vicini si sovrappongono, e il risultato che senti non è la curva che hai disegnato.",
+      "m1Num": "+12,4 dB",
+      "m1Txt": "è ciò che la somma ingenua produce ad alcune frequenze quando metti tutte le bande a +6 dB. Un errore misurato di 6,4 dB.",
+      "m2Num": "0,0085 dB",
+      "m2Txt": "è lo scostamento massimo di AudioLab su tutta la banda udibile. Risolve la matrice di interazione tra i filtri (Levenberg–Marquardt) perché la risposta misurata sia la curva richiesta.",
+      "m3Num": "−0,04 LU",
+      "m3Txt": "è la differenza di volume percepito tra il preset Rock e il suono piatto. Pop resta a −0,08 LU e Bass Boost a +0,16 LU: cambi il timbro senza cambiare il volume.",
+      "falhaTitulo": "E quando non può funzionare, lo dice",
+      "falhaTexto": "In casting verso una TV, su AirPlay, su uno stream bloccato da CORS o in HLS su Safari, il pulsante diventa grigio e spiega il motivo — invece di fingere di essere attivo. E c'è una sentinella: se la catena audio emette silenzio mentre la musica dovrebbe suonare, abbandona l'elaborazione e collega il suono diretto. Perdi l'equalizzatore, mai la musica.",
+      "evidencia": "Ogni numero qui sopra è riproducibile: il repository conserva la misura, la data e il comando di ciascuno — compresi quelli che hanno dato torto all'autore."
+    },
+    "instalar": {
+      "titulo": "📦 Come installare",
+      "intro": "Ci sono due strade. La prima è migliore ma richiede che tu amministri il server; la seconda funziona su qualsiasi Jellyfin, anche quello di un'altra persona.",
+      "rotaATitulo": "Strada A — come plugin (amministri tu il server)",
+      "a1": "In Jellyfin apri Dashboard → Plugin → Repository e premi +.",
+      "a2": "Dai un nome qualsiasi al repository e incolla questo indirizzo:",
+      "a3": "Vai in Catalogo, installa AudioLab e riavvia Jellyfin.",
+      "a4": "Nel browser ricarica forzando la cache: Ctrl+Shift+R (o Cmd+Shift+R su Mac).",
+      "aNota": "Il plugin non scrive mai dentro la cartella di Jellyfin: aggiunge il proprio tag script alla risposta della pagina, mentre viene inviata. Per questo un aggiornamento del server non lo cancella, e le installazioni Docker con cartella in sola lettura funzionano normalmente.",
+      "rotaBTitulo": "Strada B — come userscript (senza toccare il server)",
+      "b1": "Installa l'estensione Tampermonkey o Violentmonkey nel browser.",
+      "b2": "Scarica il file audiolab.user.js dall'ultima versione pubblicata e aprilo: l'estensione propone l'installazione.",
+      "b3": "Apri Jellyfin e ricarica la pagina.",
+      "bNota": "È lo stesso codice del plugin. Questa è l'unica opzione quando usi un server che non amministri.",
+      "httpsTitulo": "⚠️ Usa HTTPS",
+      "httpsTexto": "Il limitatore è costruito sull'AudioWorklet, che esiste solo in contesto sicuro. Su http:// puro l'equalizzatore continua a funzionare, ma il limitatore non si carica — e poiché il margine ripiega su una regola conservativa, i preset suonano percepibilmente più bassi: −2,6 LU contro −0,04 LU nel preset Rock.",
+      "copiar": "Copia",
+      "copiado": "Copiato!",
+      "copiarFalhou": "Seleziona e copia"
+    },
+    "usar": {
+      "titulo": "▶️ Come si usa",
+      "p1": "Apri Jellyfin nel browser e metti in riproduzione un brano.",
+      "p2": "Apri il pannello di AudioLab dal controllo che compare nel player.",
+      "p3": "Scegli un preset. Se è la prima prova, confronta Flat con Rock: la differenza deve essere di timbro, non di volume.",
+      "p4": "Per regolare a mano, muovi le dieci bande e salva come Custom.",
+      "dica": "Se il controllo appare grigio, passando il mouse spiega il perché — di solito è il casting verso un altro dispositivo o una pagina servita senza HTTPS."
+    },
+    "limites": {
+      "titulo": "🙋 Che cosa non è ancora stato testato",
+      "p1": "Essere specifici vale più che sembrare sicuri: Safari su iPhone reale e i browser su Android reale non sono stati testati. L'ambiente emulato supera l'intera suite, ma un utente ha segnalato silenzio su un telefono fisico che non è stato possibile riprodurre.",
+      "p2": "La sentinella che disattiva l'elaborazione e restituisce il suono diretto esiste proprio per quella segnalazione. Se capita anche a te, aprire una issue nel repository aiuta."
+    },
+    "links": {
+      "titulo": "🔗 Codice e versioni",
+      "texto": "AudioLab è aperto. Il codice, le misure e le versioni pubblicate stanno nel repository.",
+      "repo": "Repository su GitHub",
+      "releases": "Versioni da scaricare",
+      "licenca": "Progetto indipendente, senza legami con il progetto Jellyfin né suo endorsement."
+    },
+    "footer": "🎛️ AudioLab per Jellyfin - Engenharia Nata @ 2026"
+  },
+  "sv-SE": {
+    "titles": {
+      "pagina": "AudioLab för Jellyfin - Engenharia NATA"
+    },
+    "aria": {
+      "home": "Tillbaka till startsidan"
+    },
+    "titulo": "🎛️ AudioLab för Jellyfin",
+    "descricao": "Tiobands equalizer, utjämnad loudness och en toppbegränsare — allt inuti webbläsaren.",
+    "selo": "Inofficiellt tillägg, utan koppling till Jellyfin-projektet.",
+    "jellyfin": {
+      "titulo": "📺 Först: vad är Jellyfin?",
+      "p1": "Det är en fri mediaserver med öppen källkod. Du förvarar dina filmer, serier och din musik på en egen maskin — en gammal dator, en liten server, en NAS — och ser dem från vilken enhet som helst, i webbläsaren eller via en app.",
+      "p2": "Inget obligatoriskt konto, ingen månadsavgift, ingen funktion bakom betalvägg. Det är det fria alternativet till Plex, och de samsas: båda kan läsa samma mediemapp.",
+      "p3": "AudioLab är ett tillägg till Jellyfin. Använder du inte Jellyfin har tillägget ingenstans att köra."
+    },
+    "problema": {
+      "titulo": "🎧 Problemet det löser",
+      "p1": "Jellyfins musikspelare i webbläsaren saknar equalizer. Den jämnar inte heller ut volymen mellan spår: ett lågt mastrat album låter dovt efter en modern singel, och du får rätta till med volymratten, spår för spår.",
+      "p2": "AudioLab lägger till båda delarna — och en begränsare så att inget klipper när du höjer basen."
+    },
+    "recursos": {
+      "titulo": "⚙️ Vad det gör",
+      "eqTitulo": "Tiobands equalizer",
+      "eqTexto": "Band med oktavavstånd, från 31 Hz till 16 kHz, med 28 färdiga förval — från Rock och Jazz till Podd, Hörlurar och Nattlyssning — plus ditt eget, justerat för hand.",
+      "loudTitulo": "Utjämnad loudness",
+      "loudTexto": "Att byta förval ändrar inte den upplevda volymen. Kompensationen beräknas som standarden BS.1770 hör, inte utifrån signalens topp.",
+      "limTitulo": "Begränsare med framförhållning",
+      "limTexto": "En riktig begränsare med lookahead — ingen klippare. Den håller tillbaka toppen innan den inträffar i stället för att kapa vågen efteråt.",
+      "privTitulo": "Allt i din webbläsare",
+      "privTexto": "Bearbetningen sker på din maskin. Servern levererar bara koden; inget av ditt ljud skickas någonstans."
+    },
+    "engenharia": {
+      "titulo": "🔬 Varför det inte är ännu en equalizer",
+      "intro": "Nästan alla equalizrar i webbläsare behandlar banden som om de vore oberoende. Det är de inte — närliggande filter överlappar, och det du hör är inte kurvan du ritade.",
+      "m1Num": "+12,4 dB",
+      "m1Txt": "är vad den naiva summan ger vid vissa frekvenser när du sätter alla band på +6 dB. Ett uppmätt fel på 6,4 dB.",
+      "m2Num": "0,0085 dB",
+      "m2Txt": "är AudioLabs största avvikelse över hela det hörbara bandet. Det löser filtrens interaktionsmatris (Levenberg–Marquardt) så att det uppmätta svaret blir den kurva du bad om.",
+      "m3Num": "−0,04 LU",
+      "m3Txt": "är skillnaden i upplevd volym mellan förvalet Rock och platt ljud. Pop hamnar på −0,08 LU och Bass Boost på +0,16 LU: du byter klangfärg utan att byta volym.",
+      "falhaTitulo": "Och när det inte går säger det ifrån",
+      "falhaTexto": "Vid casting till en TV, på AirPlay, på en ström blockerad av CORS eller HLS i Safari blir knappen grå och anger orsaken — i stället för att låtsas vara på. Och det finns en vakt: om ljudkedjan skickar tystnad medan musiken borde spela överger den bearbetningen och kopplar ljudet direkt. Du förlorar equalizern, aldrig musiken.",
+      "evidencia": "Varje siffra ovan går att reproducera: förrådet sparar mätningen, datumet och kommandot för var och en — även de som gav upphovsmannen fel."
+    },
+    "instalar": {
+      "titulo": "📦 Så installerar du",
+      "intro": "Det finns två vägar. Den första är bäst men kräver att du administrerar servern; den andra fungerar på vilken Jellyfin som helst, även någon annans.",
+      "rotaATitulo": "Väg A — som tillägg (du administrerar servern)",
+      "a1": "Öppna Kontrollpanel → Tillägg → Förråd i Jellyfin och tryck på +.",
+      "a2": "Ge förrådet valfritt namn och klistra in den här adressen:",
+      "a3": "Gå till Katalog, installera AudioLab och starta om Jellyfin.",
+      "a4": "Ladda om i webbläsaren och tvinga förbi cachen: Ctrl+Shift+R (eller Cmd+Shift+R på Mac).",
+      "aNota": "Tillägget skriver aldrig inuti Jellyfins mapp: det lägger till sin egen skripttagg i sidans svar medan det skickas. Därför raderas det inte av en serveruppdatering, och Docker-installationer med skrivskyddad mapp fungerar som vanligt.",
+      "rotaBTitulo": "Väg B — som userscript (utan att röra servern)",
+      "b1": "Installera tillägget Tampermonkey eller Violentmonkey i webbläsaren.",
+      "b2": "Hämta filen audiolab.user.js från senaste publicerade versionen och öppna den: tillägget erbjuder installation.",
+      "b3": "Öppna Jellyfin och ladda om sidan.",
+      "bNota": "Det är samma kod som i tillägget. Detta är enda alternativet när du använder en server du inte administrerar.",
+      "httpsTitulo": "⚠️ Använd HTTPS",
+      "httpsTexto": "Begränsaren bygger på AudioWorklet, som bara finns i säker kontext. Över rena http:// fungerar equalizern fortfarande, men begränsaren laddas inte — och eftersom marginalen då faller tillbaka på en försiktig regel låter förvalen hörbart svagare: −2,6 LU mot −0,04 LU för förvalet Rock.",
+      "copiar": "Kopiera",
+      "copiado": "Kopierat!",
+      "copiarFalhou": "Markera och kopiera"
+    },
+    "usar": {
+      "titulo": "▶️ Så använder du det",
+      "p1": "Öppna Jellyfin i webbläsaren och börja spela en låt.",
+      "p2": "Öppna AudioLabs panel via kontrollen som dyker upp i spelaren.",
+      "p3": "Välj ett förval. Är det första testet, jämför Flat med Rock: skillnaden ska vara klangfärg, inte volym.",
+      "p4": "Vill du justera för hand, dra i de tio banden och spara som Custom.",
+      "dica": "Om kontrollen är grå anger den orsaken när du håller muspekaren över den — oftast casting till en annan enhet eller en sida utan HTTPS."
+    },
+    "limites": {
+      "titulo": "🙋 Vad som ännu inte testats",
+      "p1": "Att vara specifik är värt mer än att låta säker: Safari på en riktig iPhone och webbläsare på riktiga Android-telefoner har inte testats. Den emulerade miljön klarar hela sviten, men en användare rapporterade tystnad på en fysisk telefon som inte gick att återskapa.",
+      "p2": "Vakten som stänger av bearbetningen och lämnar tillbaka det direkta ljudet finns just på grund av den rapporten. Händer det dig hjälper det att öppna ett ärende i förrådet."
+    },
+    "links": {
+      "titulo": "🔗 Kod och versioner",
+      "texto": "AudioLab är öppet. Koden, mätningarna och de publicerade versionerna finns i förrådet.",
+      "repo": "Förrådet på GitHub",
+      "releases": "Versioner att hämta",
+      "licenca": "Fristående projekt, utan koppling till eller stöd från Jellyfin-projektet."
+    },
+    "footer": "🎛️ AudioLab för Jellyfin - Engenharia Nata @ 2026"
+  }
+}
