@@ -186,7 +186,7 @@ npm run build          # build de produção (gera local/dist)
 
 _Última atualização: 2026-08-30_
 
-- **PINTOR — DUAS FALHAS REAIS DO SITE CORRIGIDAS (3.1.6, WORKING TREE):** reproduzi localmente os
+- **PINTOR — DUAS FALHAS REAIS DO SITE CORRIGIDAS (3.1.6, PUBLICADO — API 0.6.3):** reproduzi localmente os
   dois erros reportados em `engnata.eu/pintor/`. (1) *Uma página insegura matava a varredura
   inteira*: no `Group 30 Electrical system`, a página 22 punha 27 pixels de tinta dentro de um
   símbolo protegido, o portão V2 fazia `raise` e o trabalho terminava `failed` sem libertar nada —
@@ -203,10 +203,13 @@ _Última atualização: 2026-08-30_
   coloridas (régua de pinos da unidade de alarme e conector do ponto morto) e o V2 aprovou —
   o detetor de alojamentos da rota raster não as reconhece. É comportamento pré-existente da rota
   raster; é o próximo a corrigir. Suíte: 474 testes Python e `npm run validate`.
-  **A API em produção é a imagem `engnata/pintor-api:0.6.2`, publicada à mão num VM — nada disto
-  (nem o 3.1.2→3.1.5) está no ar até a imagem ser reconstruída e reimplantada.**
+  **PUBLICADO:** commit `d76a125` → release `/opt/pintor-api-releases/d76a125` → imagem
+  `engnata/pintor-api:0.6.3` (com `pintor-wiring-3.1.6`). Volume `pintor-api_pintor-data`
+  reutilizado, container saudável, smoke externo `external_auth=ok account=ok
+  unauthenticated=401 job=ready result=pdf delete=204`. Rollback: release `2b08f7e` /
+  imagem `0.6.2`. **Lembrete: a API NÃO sai do `main` — publicar exige reconstruir no VM.**
 
-- **PINTOR — ROUND 2 FECHADO: TABELAS DE CÓDIGO POR PÁGINA E OCR FRESCO (3.1.5, WORKING TREE):**
+- **PINTOR — ROUND 2 FECHADO: TABELAS DE CÓDIGO POR PÁGINA E OCR FRESCO (3.1.5, PUBLICADO — API 0.6.3):**
   as 60 decisões do Round 2 (45 pintáveis, 15 rejeições) fecharam quatro lacunas sem alargar o
   vocabulário global: tabelas de código locais da página (`B`=preto, `Gr`=verde) só valem com
   cabeçalho `Wire Colour`/`Kod/Code` e seis nomes de cor; chicotes curtos de diagnóstico exigem três
@@ -219,7 +222,7 @@ _Última atualização: 2026-08-30_
   12 revisão). O único falso negativo conservador é `140:51`. Suíte: 467 testes Python, 362 Vitest e
   `npm run validate`. Detalhes em `pintor/HANDOFF.md`.
 
-- **PINTOR — DETECÇÃO CALIBRADA PELO FEEDBACK + ROUND 2 (3.1.4, WORKING TREE):** o JSON do
+- **PINTOR — DETECÇÃO CALIBRADA PELO FEEDBACK + ROUND 2 (3.1.4, PUBLICADO — API 0.6.3):** o JSON do
   primeiro round validou 142 decisões (92 pintáveis, 50 rejeições). O gate novo zerou os 39 falsos
   positivos vetoriais rotulados: texto PDF corrompido exige OCR; tabelas de pino, layouts Multilink,
   ilustrações de sensor/componente e mapas dominados por marcadores de pino não podem virar fios.
@@ -230,7 +233,7 @@ _Última atualização: 2026-08-30_
   zero repetição das 142 decisões e zero erros. Suíte: 459 testes Python, 362 Vitest e validação
   completa. Detalhes em `pintor/HANDOFF.md`.
 
-- **PINTOR — REVISÃO HUMANA OFFLINE DO INVENTÁRIO (3.1.3, WORKING TREE):**
+- **PINTOR — REVISÃO HUMANA OFFLINE DO INVENTÁRIO (3.1.3, PUBLICADO — API 0.6.3):**
   `pintor-review-inventory` gera um pacote local e móvel a partir de um ou vários ledgers amplos,
   sem tocar nos PDFs. A grade mostra evidência automática, busca/filtros e três decisões orientadas
   à pintura (`paintable_wiring`, `do_not_paint`, `unsure`); o visor abre uma imagem de 2800 px sob
@@ -242,7 +245,7 @@ _Última atualização: 2026-08-30_
   decisão/motivo/nota, autosave após reload, zoom/pan e console limpo. Suíte: 452 testes Python, 362
   Vitest e `npm run validate`. Detalhes em `pintor/HANDOFF.md`.
 
-- **PINTOR — VERIFICAÇÃO ESTRITA DE WIRING DIAGRAMS (3.1.2, WORKING TREE):** o inventário amplo
+- **PINTOR — VERIFICAÇÃO ESTRITA DE WIRING DIAGRAMS (3.1.2, PUBLICADO — API 0.6.3):** o inventário amplo
   ganhou uma segunda etapa retomável, `pintor-verify-inventory`. Ela reaproveita texto/OCR já
   coletado, mas só publica no CSV/HTML páginas em que a topologia e a semântica de produção aprovam
   ao menos um condutor físico com código de cor; rejeitados, ambíguos e erros ficam apenas no ledger
