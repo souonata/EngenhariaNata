@@ -630,6 +630,65 @@ class WebServiceTests(unittest.TestCase):
         finally:
             output.close()
 
+    def test_protected_region_gate_declines_its_page_without_failing_the_job(self):
+        """One page tripping V2 must not destroy the pages that painted safely.
+
+        The gate stays categorical -- that overlay is discarded and never attached. What must not
+        happen is the whole sweep failing: a 54-page manual selected eight pages, page 22 put 27
+        painted pixels inside a component symbol, and the job returned "analysis failed safely"
+        with nothing released at all.
+        """
+        store = JobStore(Path(self.temp.name) / "v2-gate")
+        state = store.create(
+            _pdf_bytes(4), "manual.pdf", [0, 2], "iec_two_letter", False,
+            25 * 1024 * 1024, _owner_hash("d" * 64),
+        )
+
+        def vector_report(_pdf, page_index, _out, **kwargs):
+            _write_overlay(kwargs["overlay_path"])
+            passed = page_index == 0
+            return {
+                "declined": False, "legends": 1, "runs": 1, "runs_painted": 1,
+                "paint_rate": 1.0,
+                "v2": {"name": "V2-vector", "passed": passed,
+                       "painted_px_in_protected": 0 if passed else 27},
+            }
+
+        with patch("wirecolor.tools.paint_vector.paint_page", side_effect=vector_report):
+            process_job(store, state["id"])
+
+        result = store.read(state["id"])
+        self.assertEqual(result["status"], "ready")
+        self.assertEqual([item["status"] for item in result["pages"]], ["painted", "declined"])
+        self.assertEqual(result["metrics"]["pages_painted"], 1)
+        self.assertEqual(result["metrics"]["pages_declined"], 1)
+        self.assertIn("27 painted pixels", result["pages"][1]["decline_reason"])
+        self.assertFalse(
+            (store.job_dir(state["id"]) / "generated" / "page-2-overlay.png").exists())
+
+    def test_every_page_failing_the_protected_region_gate_declines_the_job(self):
+        store = JobStore(Path(self.temp.name) / "v2-gate-all")
+        state = store.create(
+            _pdf_bytes(2), "manual.pdf", [0], "iec_two_letter", False,
+            25 * 1024 * 1024, _owner_hash("c" * 64),
+        )
+
+        def vector_report(*_args, **kwargs):
+            _write_overlay(kwargs["overlay_path"])
+            return {
+                "declined": False, "legends": 1, "runs": 1, "runs_painted": 1,
+                "paint_rate": 1.0,
+                "v2": {"name": "V2", "passed": False, "painted_px_in_protected": 5},
+            }
+
+        with patch("wirecolor.tools.paint_vector.paint_page", side_effect=vector_report):
+            process_job(store, state["id"])
+
+        result = store.read(state["id"])
+        self.assertEqual(result["status"], "declined")
+        self.assertIn("protected-region gate", result["decline_reason"])
+        self.assertFalse((store.job_dir(state["id"]) / "painted.pdf").exists())
+
     def test_safe_page_abstention_does_not_discard_other_selected_pages(self):
         store = JobStore(Path(self.temp.name) / "partial-multi-page")
         state = store.create(

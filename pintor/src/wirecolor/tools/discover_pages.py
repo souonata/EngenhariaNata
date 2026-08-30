@@ -153,10 +153,18 @@ def classify(geometry, codes, wiring_publication=False, allow_text_confirmation=
     long_edge_pt = max(geometry["page_pt"])
     foldout = (geometry["image_coverage"] >= 0.5 and long_edge_pt >= 700
                and geometry["text_chars"] < 200)
+    # A scanned plate does not stop being a wiring diagram because a component list is typeset
+    # beside it. The 2000-era Volvo wiring manuals print exactly that shape -- a half-page scan of
+    # the schematic with 700-1300 characters of parts list next to it -- and the text-free foldout
+    # rule rejected every one of them, so a file whose title is "Wiring Diagram" was declined for
+    # carrying no readable colour codes. Requiring no vector schematic of its own keeps this from
+    # competing with the exact route, and OCR still has to find the codes before anything is
+    # painted.
+    scanned_plate = (geometry["image_coverage"] >= 0.25 and long_edge_pt >= 700 and not vector)
 
     if allow_text_confirmation and codes >= MIN_CODES:
         return f"{geometry_axis}+text", "confirmed"
-    if foldout and wiring_publication:
+    if (foldout or scanned_plate) and wiring_publication:
         return f"{geometry_axis}+ocr", "candidate"
     return f"{geometry_axis}+ocr", "rejected"
 

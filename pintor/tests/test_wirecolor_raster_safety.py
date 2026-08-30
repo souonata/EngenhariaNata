@@ -198,8 +198,8 @@ class RasterElectricalSafetyTests(unittest.TestCase):
 
             result = store.read(state["id"])
 
-        self.assertEqual(result["status"], "failed")
-        self.assertIn("V2", result["internal_error"])
+        self.assertEqual(result["status"], "declined")
+        self.assertIn("V2", result["decline_reason"])
         self.assertEqual(
             raster_painter.call_args.kwargs["convention_name"], "iec_two_letter",
         )

@@ -14,7 +14,7 @@ sys.path.insert(0, str(BACKEND / "src"))
 
 import fitz
 
-from wirecolor.tools.discover_pages import scan_document
+from wirecolor.tools.discover_pages import classify, scan_document
 from wirecolor.tools.inventory_wiring_pages import (
     Manual,
     SCANNER_VERSION,
@@ -484,6 +484,65 @@ class WiringEvidenceTests(unittest.TestCase):
             self.assertEqual(
                 (merged_dir / "thumbnails" / "m-p1.jpg").read_bytes(), b"thumbnail")
         self.assertEqual(merged[("m", 1)]["status"], "confirmed")
+
+
+class PageClassificationTests(unittest.TestCase):
+    """The candidate shapes a whole-document sweep is allowed to send to OCR."""
+
+    @staticmethod
+    def _geometry(coverage, text_chars, strokes=0, page_pt=(595.0, 842.0)):
+        return {
+            "stroke_primitives": strokes,
+            "strokes_counted": True,
+            "image_coverage": coverage,
+            "page_pt": list(page_pt),
+            "text_chars": text_chars,
+        }
+
+    def test_scanned_plate_with_a_parts_list_beside_it_is_a_candidate(self):
+        """The shape of the 2000-era Volvo wiring manuals: a scan plus a typeset component list.
+
+        The text-free foldout rule rejected every page of those files, so a document titled
+        "Wiring Diagram" was declined for carrying no readable colour codes -- while OCR on one of
+        those pages reads twelve codes and the production topology approves 91 conductors.
+        """
+        geometry = self._geometry(coverage=0.519, text_chars=903)
+        tier, status = classify(geometry, codes=0, wiring_publication=True,
+                                allow_text_confirmation=False)
+        self.assertEqual((tier, status), ("raster+ocr", "candidate"))
+
+    def test_a_scanned_plate_outside_a_wiring_publication_stays_rejected(self):
+        geometry = self._geometry(coverage=0.519, text_chars=903)
+        self.assertEqual(
+            classify(geometry, codes=0, wiring_publication=False,
+                     allow_text_confirmation=False)[1],
+            "rejected",
+        )
+
+    def test_a_small_inset_image_is_not_a_scanned_plate(self):
+        geometry = self._geometry(coverage=0.07, text_chars=128)
+        self.assertEqual(
+            classify(geometry, codes=0, wiring_publication=True,
+                     allow_text_confirmation=False)[1],
+            "rejected",
+        )
+
+    def test_a_vector_page_is_not_promoted_by_the_scanned_plate_rule(self):
+        """A page with its own vector schematic is the exact route's business, not OCR's."""
+        geometry = self._geometry(coverage=0.30, text_chars=2027, strokes=1619)
+        self.assertEqual(
+            classify(geometry, codes=0, wiring_publication=True,
+                     allow_text_confirmation=False)[1],
+            "rejected",
+        )
+
+    def test_the_text_free_foldout_remains_a_candidate(self):
+        geometry = self._geometry(coverage=0.94, text_chars=12, page_pt=(1684.0, 1190.0))
+        self.assertEqual(
+            classify(geometry, codes=0, wiring_publication=True,
+                     allow_text_confirmation=False)[1],
+            "candidate",
+        )
 
 
 if __name__ == "__main__":
