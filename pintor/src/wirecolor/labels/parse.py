@@ -15,6 +15,7 @@ and gauge-first ("1 Y (w3)", "1.5 BL/R (w6)", "0.75 GR/OR").
 from __future__ import annotations
 
 import re
+import unicodedata
 
 # Standard conductor cross-sections seen in the library (mm2). A closed set: '0.750' or '7'
 # can never be gauges, which is what stops a stray 0/7 from being eaten as one.
@@ -43,6 +44,7 @@ _PIN_TAIL_RE = re.compile(r"(?<=[A-Za-z])\s+[1-9]\d?\s*$")
 # DGN, "LT BL" is LBL. Also whitespace-gated and exact-text only.
 _LIGHTNESS_RE = re.compile(r"^(DK|LT)\s+(?=[A-Za-z])", re.IGNORECASE)
 _LIGHTNESS = {"DK": "D", "LT": "L"}
+_WORD_GAUGE_RE = re.compile(r"(?<!\d)\d{1,2}[.,]\d{1,2}(?!\d)")
 
 
 def _wire_digits(match):
@@ -146,11 +148,43 @@ def parse_code(text: str, convention, allow_pin: bool = False) -> str | None:
     """
     if allow_pin:
         for candidate in _pin_candidates(text):
-            code = _parse_code_core(candidate, convention)
+            code = _parse_code_core(candidate, convention) \
+                or _parse_word_code(candidate, convention)
             if code:
                 return code
         return None
-    return _parse_code_core(text, convention)
+    return _parse_code_core(text, convention) or _parse_word_code(text, convention)
+
+
+def _parse_word_code(text: str, convention) -> str | None:
+    """Parse old bilingual colour words only when accompanied by a decimal wire gauge.
+
+    Vintage scanned Volvo drawings spell labels along the conductor (for example
+    ``Grön 1,5 - Green 1.5``) instead of using modern abbreviations.  Requiring a decimal gauge
+    keeps prose, indicator legends such as ``Green - Power`` and numbered component lists out.
+    Multiple language spellings may occur in one OCR token; they must resolve to one colour.
+    """
+    aliases = getattr(convention, "word_aliases", {})
+    if not aliases or not _WORD_GAUGE_RE.search(text):
+        return None
+    normalized = unicodedata.normalize("NFKD", text)
+    normalized = "".join(character for character in normalized
+                         if not unicodedata.combining(character)).upper()
+    def codes_in(fragment: str) -> set[str]:
+        return {
+            code for alias, code in aliases.items()
+            if re.search(rf"(?<![A-Z]){re.escape(alias)}(?![A-Z])", fragment)
+        }
+
+    if "/" in normalized:
+        left, right = normalized.split("/", 1)
+        left_codes, right_codes = codes_in(left), codes_in(right)
+        if len(left_codes) == len(right_codes) == 1:
+            pair = f"{next(iter(left_codes))}/{next(iter(right_codes))}"
+            if all(part in convention.codes for part in pair.split("/")):
+                return pair
+    matched = codes_in(normalized)
+    return next(iter(matched)) if len(matched) == 1 else None
 
 
 def _parse_code_core(text: str, convention) -> str | None:

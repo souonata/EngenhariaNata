@@ -16,7 +16,10 @@ from .instrument import diag
 
 def _strong(label):
     raw = str(label.get("raw", "")).upper()
-    return any(ch.isdigit() for ch in raw) or "/" in label.get("code", "")
+    return (any(ch.isdigit() for ch in raw) or "/" in label.get("code", "")
+            or label.get("evidence_source") in {
+                "page-code-table", "parallel-bare-bundle",
+            })
 
 
 def _axis(segment):

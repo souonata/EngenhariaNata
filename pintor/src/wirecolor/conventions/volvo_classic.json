@@ -29,5 +29,31 @@
   "excluded_from_evidence": ["R", "W", "Y", "P", "T"],
   "shared": ["GN", "BN"],
   "grammars": ["code_first", "gauge_first"],
-  "two_color_sep": "/"
+  "two_color_sep": "/",
+  "word_aliases": {
+    "BLACK": "SB", "SVART": "SB",
+    "BLUE": "BL", "BLA": "BL", "BLO": "BL",
+    "BROWN": "BN", "BRUN": "BN",
+    "GREEN": "GN", "GRON": "GN",
+    "GREY": "GR", "GRAY": "GR", "GRA": "GR",
+    "ORANGE": "OR",
+    "PURPLE": "PU", "PURPUR": "PU",
+    "RED": "R", "ROD": "R",
+    "VIOLET": "VO", "LILA": "VO",
+    "WHITE": "W", "IVORY": "W", "VIT": "W",
+    "YELLOW": "Y", "GUL": "Y"
+  },
+  "table_aliases": {
+    "T": "T",
+    "B": "SB",
+    "BL": "BL",
+    "BI": "BL",
+    "G": "GN",
+    "GR": "GN",
+    "Y": "Y",
+    "O": "OR",
+    "W": "W",
+    "BR": "BN",
+    "R": "R"
+  }
 }

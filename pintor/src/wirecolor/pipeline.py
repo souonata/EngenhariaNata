@@ -99,7 +99,10 @@ def _reocr_region(img, x0, y0, x1, y1, convention, known_labels, allow_bare=Fals
 
 def _strong_label(label):
     raw = str(label.get("raw", "")).upper()
-    return any(ch.isdigit() for ch in raw) or "/" in label.get("code", "")
+    return (any(ch.isdigit() for ch in raw) or "/" in label.get("code", "")
+            or label.get("evidence_source") in {
+                "page-code-table", "parallel-bare-bundle",
+            })
 
 
 def resolve_physical_wire_colors(segments, sol, include_bare=False, channel="solid"):

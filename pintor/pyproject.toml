@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pintor-wiring"
-version = "3.1.1"
+version = "3.1.5"
 description = "Conservative, review-first wiring-diagram colourizer"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -35,6 +35,8 @@ pintor-train = "wirecolor.tools.cross_validate_learning:main"
 pintor-web = "wirecolor.web_service:main"
 pintor-hash-password = "wirecolor.tools.hash_password:main"
 pintor-inventory = "wirecolor.tools.inventory_wiring_pages:main"
+pintor-verify-inventory = "wirecolor.tools.verify_wiring_inventory:main"
+pintor-review-inventory = "wirecolor.tools.review_wiring_inventory:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

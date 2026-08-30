@@ -230,7 +230,7 @@ class WiringEvidenceTests(unittest.TestCase):
         self.assertEqual(evidence["status"], "excluded_non_wiring")
         self.assertIn("prose-dominant", evidence["reason"])
 
-    def test_fault_tracing_page_is_explicitly_excluded(self):
+    def test_diagnostic_heading_alone_is_not_mistaken_for_wiring_evidence(self):
         document = fitz.open()
         page = document.new_page(width=500, height=700)
         page.insert_text(fitz.Point(40, 50), "30-2 Fault Tracing", fontsize=12)
@@ -241,10 +241,9 @@ class WiringEvidenceTests(unittest.TestCase):
             evidence = inspect_vector_page(reopened[0])
         finally:
             reopened.close()
-        self.assertEqual(evidence["status"], "excluded_non_wiring")
-        self.assertIn("diagnostic", evidence["reason"])
+        self.assertEqual(evidence["status"], "no_evidence")
 
-    def test_ocr_fault_tracing_page_is_explicitly_excluded(self):
+    def test_ocr_diagnostic_heading_without_labels_has_no_evidence(self):
         ocr_result = {
             "image": [700, 500],
             "text": "Fault tracing Circuit description 1.5 RD 0.75 SB",
@@ -252,8 +251,39 @@ class WiringEvidenceTests(unittest.TestCase):
         }
         with patch("wirecolor.labels.ocr.ocr_labels", return_value=ocr_result):
             evidence = inspect_ocr_image("unused.png")
+        self.assertEqual(evidence["status"], "no_evidence")
+
+    def test_small_real_circuit_on_diagnostic_page_remains_a_candidate(self):
+        def draw(page):
+            page.insert_text(fitz.Point(40, 35), "Circuit Description", fontsize=12)
+            page.draw_line(fitz.Point(70, 150), fitz.Point(350, 150), width=0.8)
+            page.insert_text(fitz.Point(150, 141), "GN/Y", fontsize=9)
+
+        document = self._page(draw)
+        try:
+            evidence = inspect_vector_page(document[0])
+        finally:
+            document.close()
+        self.assertEqual(evidence["status"], "confirmed")
+        self.assertIn("GN/Y", evidence["assigned_codes"])
+
+    def test_connector_table_continuation_is_excluded(self):
+        def draw(page):
+            page.insert_text(fitz.Point(40, 35), "Symptoms", fontsize=12)
+            rows = ["IAT Signal", "ECT Signal", "MIL Driver", "Battery Feed",
+                    "Power Ground", "IAC Coil", "Pump Relay Output", "Shift Input"]
+            for row, label in enumerate(rows):
+                y = 70 + row * 24
+                page.draw_line(fitz.Point(40, y), fitz.Point(360, y), width=0.8)
+                page.insert_text(fitz.Point(60, y - 4), f"{row + 1} GN/Y {label}", fontsize=8)
+
+        document = self._page(draw)
+        try:
+            evidence = inspect_vector_page(document[0])
+        finally:
+            document.close()
         self.assertEqual(evidence["status"], "excluded_non_wiring")
-        self.assertIn("diagnostic", evidence["reason"])
+        self.assertIn("table continuation", evidence["reason"])
 
     def test_ocr_component_designator_is_not_a_colour_legend(self):
         ocr_result = {

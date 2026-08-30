@@ -41,18 +41,27 @@ NON_WIRING_PAGE_PATTERNS = (
      "mechanical drive page, not a wiring diagram"),
     (re.compile(r"\bNMEA\s+2000\s+interface\b|\bpin-out\s+connector\b", re.I),
      "interface/connector layout page, not a conductor diagram"),
+    (re.compile(r"\bmultilink\s+hub\b", re.I),
+     "multilink connector installation page, not a physical conductor diagram"),
+    (re.compile(r"\blocation\s+of\s+sensors?\b|\bdisassembly,?\s+complete\s+engine\b", re.I),
+     "sensor-location/engine illustration, not a physical conductor diagram"),
+    (re.compile(r"\bcomponent\s+description\b", re.I),
+     "component-description page, not a physical conductor diagram"),
     (re.compile(r"\bbleeding\b.{0,180}\bfuel\s+shut-off\s+valve\b", re.I),
      "fuel-service decision flow, not a wiring diagram"),
 )
 
-DIAGNOSTIC_PROSE_PATTERN = re.compile(
-    r"\b(?:fault\s+tracing|fault\s+code\s+explanation|circuit\s+description|"
-    r"component\s+location)\b",
+MECHANICAL_PAGE_PATTERN = re.compile(
+    r"\b(?:propeller\s+shaft|bearing\s+box)\b",
     re.IGNORECASE,
 )
 
-MECHANICAL_PAGE_PATTERN = re.compile(
-    r"\b(?:propeller\s+shaft|bearing\s+box)\b",
+CONNECTOR_TABLE_HEADER_PATTERN = re.compile(
+    r"\b(?:ECM\s+connector\s+identification|pin\s+colou?r\s+function)\b",
+    re.IGNORECASE,
+)
+CONNECTOR_TABLE_ROW_PATTERN = re.compile(
+    r"\b(?:signal|driver|feed|ground|coil|input|output)\b",
     re.IGNORECASE,
 )
 
@@ -73,14 +82,36 @@ def _page_text(page) -> str:
     return re.sub(r"\s+", " ", (page.get_text("text") or "").replace("\x00", " ")).strip()
 
 
+def _text_layer_is_corrupted(text: str) -> bool:
+    """Whether exact PDF text is too corrupt to support colour ownership.
+
+    Some manuals render readable English through a substituted font but expose control-heavy
+    gibberish such as ``7URXEOHVKRRWLQJ\x03`` to text extraction.  Parsing a fragment like ``1R``
+    from that layer created dozens of convincing-looking flowchart wires.  Such a page is not
+    declared non-electrical: it is routed to OCR, where the visible glyphs can be read honestly.
+    """
+    controls = sum(
+        ord(character) < 32 and character not in "\t\n\r"
+        for character in text
+    )
+    return controls >= 6 and controls >= max(6, len(text) // 250)
+
+
 def _explicit_non_wiring_reason(text: str) -> str | None:
     for pattern, reason in NON_WIRING_PAGE_PATTERNS:
         if pattern.search(text):
             return reason
     if MECHANICAL_PAGE_PATTERN.search(text):
         return "mechanical repair/shaft page, not a wiring diagram"
-    if DIAGNOSTIC_PROSE_PATTERN.search(text) and not PRIMARY_WIRING_HEADING.search(text):
-        return "diagnostic/component-description page, not a wiring diagram"
+    if CONNECTOR_TABLE_HEADER_PATTERN.search(text):
+        return "connector pin/function table, not a physical conductor diagram"
+    # Continuation sheets often omit the table heading.  A dense run of signal/driver/feed rows,
+    # under a Symptoms/ECM context and without a wiring heading, is the same connector schedule.
+    row_terms = len(CONNECTOR_TABLE_ROW_PATTERN.findall(text))
+    if row_terms >= 5 and len(text) < 1400 \
+            and re.search(r"\b(?:symptoms|ECM)\b", text, re.I) \
+            and not PRIMARY_WIRING_HEADING.search(text):
+        return "connector pin/function table continuation, not a physical conductor diagram"
     return None
 
 
@@ -121,8 +152,267 @@ def _looks_like_printed_code(legend) -> bool:
     raw = legend.raw.strip()
     if len(legend.code) == 1 and re.fullmatch(r"[A-Za-z]\d{1,4}", raw):
         return False                       # P1 / T1 / R1 are ambiguous component designators
+    # Exact PDF text preserves case.  Real engineering abbreviations are printed in capitals;
+    # prose and units are not.  The old parser upper-cased everything and consequently read
+    # ``r/p`` (return permission), ``25w04`` (a date/week code) and ``25 gr`` (grams) as R/P, W
+    # and GR beside ordinary form/table lines.  A lower-case parenthesised wire identifier remains
+    # valid: ``0.75 WH (w14)`` is a real modern conductor legend.
+    without_wire_id = re.sub(r"\(\s*w[0-9il|]+\s*\)?\s*$", "", raw, flags=re.IGNORECASE)
+    if any(character.isalpha() and character.islower() for character in without_wire_id):
+        return False
     return any(character.isdigit() for character in raw) or "/" in legend.code \
         or (len(legend.code) >= 2 and raw == raw.upper())
+
+
+def _pin_layout_dominates(context) -> bool:
+    """True for connector maps where colour text overwhelmingly annotates pins, not wires."""
+    pins = len(context.pin_markers)
+    conductors = len(context.legends)
+    return pins >= 8 and pins > 2 * max(1, conductors)
+
+
+def verify_vector_page(page, convention_name: str, dpi: int = DISCOVERY_DPI) -> dict:
+    """Require the production vector graph to approve a physical conductor.
+
+    The fast inventory pass intentionally has high recall: a positioned colour legend beside a
+    long stroke is enough to become a candidate.  This second pass answers the stricter product
+    question: can the same page be decomposed into physical conductors, associated with printed
+    colour evidence and approved by the common engineering-semantics gate?  Connector-pin markers
+    do not qualify because the requested report is specifically a list of diagrams containing
+    paintable wires.
+    """
+    from ..engine.semantics import PHYSICAL_CONDUCTOR, enforce_vector_semantics
+    from ..engine.vector_page import decide_vector_context, extract_vector_context
+    from ..eval.vector_truth import geometry_is_trustworthy
+    from ..labels.conventions import load_convention
+
+    raw_text = page.get_text("text") or ""
+    text = re.sub(r"\s+", " ", raw_text.replace("\x00", " ")).strip()
+    if _text_layer_is_corrupted(raw_text):
+        return {
+            "status": "review",
+            "mode": "vector-text-corrupt",
+            "reason": "corrupted PDF text layer cannot prove printed colour codes; OCR required",
+            "convention": convention_name,
+            "physical_conductors": 0,
+            "codes": [],
+        }
+    explicit_exclusion = _explicit_non_wiring_reason(text)
+    if explicit_exclusion:
+        return {
+            "status": "rejected",
+            "mode": "vector-topology",
+            "reason": explicit_exclusion,
+            "convention": convention_name,
+            "physical_conductors": 0,
+            "codes": [],
+        }
+
+    trustworthy, decline_reason = geometry_is_trustworthy(page, dpi)
+    if not trustworthy:
+        return {
+            "status": "rejected",
+            "mode": "vector-topology",
+            "reason": decline_reason,
+            "convention": convention_name,
+            "physical_conductors": 0,
+            "codes": [],
+        }
+
+    convention = load_convention(convention_name)
+    context = extract_vector_context(
+        page, dpi, convention, legend_filter=_looks_like_printed_code)
+    if _pin_layout_dominates(context):
+        return {
+            "status": "rejected",
+            "mode": "vector-connector-pin-layout",
+            "reason": "colour labels predominantly identify connector pins, not physical wires",
+            "convention": convention_name,
+            "physical_conductors": 0,
+            "codes": [],
+            "runs": len(context.runs),
+            "legends": len(context.legends),
+            "pin_markers": len(context.pin_markers),
+        }
+    owned, decision = decide_vector_context(context)
+    owned, _pin_markers, semantics = enforce_vector_semantics(
+        context, owned, context.pin_markers, convention, decision=decision)
+    physical = int(semantics["object_roles"].get(PHYSICAL_CONDUCTOR, 0))
+    codes = sorted({
+        str(claim["code"])
+        for claim in semantics.get("paint_claims", ())
+        if claim.get("role") == PHYSICAL_CONDUCTOR
+    })
+    verified = physical > 0 and bool(codes) and bool(semantics.get("release_safe"))
+    return {
+        "status": "verified" if verified else "rejected",
+        "mode": "vector-topology",
+        "reason": (
+            "production semantics approved at least one physical vector conductor"
+            if verified else
+            "nearby colour-like text did not own any production-approved physical conductor"
+        ),
+        "convention": convention_name,
+        "physical_conductors": physical,
+        "codes": codes,
+        "runs": len(context.runs),
+        "legends": len(context.legends),
+        "engineering_semantics": semantics,
+    }
+
+
+def verify_raster_image(image_path: str, ocr_evidence: dict,
+                        convention_name: str = "auto") -> dict:
+    """Reuse saved OCR and require the production raster graph to approve a conductor.
+
+    No OCR is repeated here.  The broad inventory's page-level observations are written to the two
+    cache files consumed by ``run_page``; the normal topology, ownership and engineering-semantics
+    stages then run unchanged.  Automatic convention selection remains fail-closed, so a single
+    ambiguous OCR token stays in review instead of turning an illustration into a wiring diagram.
+    """
+    import json
+    from pathlib import Path
+    import tempfile
+
+    import cv2
+
+    from ..engine.semantics import PHYSICAL_CONDUCTOR, enforce_raster_semantics
+    from ..instrument import reset_for_tests
+    from ..labels.conventions import load_convention
+    from ..pipeline import run_page
+    from .paint_raster import _score_conventions
+
+    labels = list(ocr_evidence.get("legends") or ocr_evidence.get("labels") or ())
+    if convention_name == "auto":
+        selected, confidence, matching = _score_conventions(labels)
+        if selected is None or confidence == "low":
+            return {
+                "status": "review",
+                "mode": "raster-ocr-topology",
+                "reason": "OCR did not establish one colour-code convention automatically",
+                "convention": selected,
+                "convention_confidence": confidence,
+                "physical_conductors": 0,
+                "codes": [],
+            }
+    else:
+        convention = load_convention(convention_name)
+        selected, confidence = convention_name, "explicit"
+        matching = [
+            label for label in labels
+            if float(label.get("score", 0.0)) >= 0.80
+            and all(part in convention.codes for part in str(label.get("code", "")).split("/"))
+        ]
+        if not matching:
+            return {
+                "status": "review",
+                "mode": "raster-ocr-topology",
+                "reason": "OCR found no strong label in the requested colour-code convention",
+                "convention": selected,
+                "convention_confidence": confidence,
+                "physical_conductors": 0,
+                "codes": [],
+            }
+
+    image = cv2.imread(str(image_path), cv2.IMREAD_GRAYSCALE)
+    if image is None:
+        raise ValueError(f"cannot read rendered page {image_path}")
+    height, width = image.shape[:2]
+    del image
+    payload = {
+        "image": [width, height],
+        "labels": matching,
+        "ocr_scales": list(ocr_evidence.get("ocr_scales", ())),
+        "ocr_calls": 0,
+    }
+    convention = load_convention(selected)
+    with tempfile.TemporaryDirectory(prefix="pintor-strict-raster-") as temp_name:
+        root = Path(temp_name)
+        labels_path = root / "labels.json"
+        harvest_path = root / "harvest.json"
+        encoded = json.dumps(payload, ensure_ascii=False)
+        labels_path.write_text(encoded, encoding="utf-8")
+        harvest_path.write_text(encoded, encoding="utf-8")
+        # The supplied harvest contains every saved OCR observation, so contextual lenses are
+        # lookup-only.  Disabling instrumentation also guarantees this verifier creates no OCR
+        # memo or private geometric diagnostics outside its temporary directory.
+        reset_for_tests()
+        solution = run_page(
+            str(image_path), str(labels_path), convention,
+            harvest_path=str(harvest_path), allow_splice_propagation=False,
+        )
+        solution, semantics = enforce_raster_semantics(solution, convention)
+
+    physical = int(semantics["object_roles"].get(PHYSICAL_CONDUCTOR, 0))
+    codes = sorted({
+        str(claim["code"])
+        for claim in semantics.get("paint_claims", ())
+        if claim.get("role") == PHYSICAL_CONDUCTOR
+    })
+    verified = physical > 0 and bool(codes) and bool(semantics.get("release_safe"))
+    return {
+        "status": "verified" if verified else "rejected",
+        "mode": "raster-ocr-topology",
+        "reason": (
+            "saved OCR plus production topology approved at least one physical conductor"
+            if verified else
+            "OCR labels did not own any production-approved physical conductor"
+        ),
+        "convention": selected,
+        "convention_confidence": confidence,
+        "physical_conductors": physical,
+        "codes": codes,
+        "segments": len(solution.get("segments", ())),
+        "engineering_semantics": semantics,
+    }
+
+
+def verify_outlined_page(pdf_path: str, page_index: int,
+                         convention_name: str = "auto") -> dict:
+    """Verify a pictorial page whose physical wires are closed raster outlines.
+
+    These pages carry exact vector callout text and leaders but draw the actual cable bodies in a
+    bitmap.  They are neither ordinary vector schematics nor generic OCR pages, so the strict
+    verifier gives their existing exact hybrid detector an explicit route.
+    """
+    from ..engine.semantics import PHYSICAL_CONDUCTOR, enforce_raster_semantics
+    from .paint_raster import _outlined_solution, _recognise_outlined_page
+
+    recognised = _recognise_outlined_page(pdf_path, page_index, convention_name)
+    if recognised is None:
+        return {
+            "status": "rejected",
+            "mode": "hybrid-outlined-topology",
+            "reason": "no exclusive exact-callout outlined-conductor scene was found",
+            "convention": None,
+            "physical_conductors": 0,
+            "codes": [],
+        }
+    selected, detection = recognised
+    from ..labels.conventions import load_convention
+    convention = load_convention(selected)
+    solution = _outlined_solution(convention, detection)
+    solution, semantics = enforce_raster_semantics(solution, convention)
+    physical = int(semantics["object_roles"].get(PHYSICAL_CONDUCTOR, 0))
+    codes = sorted({
+        str(claim["code"])
+        for claim in semantics.get("paint_claims", ())
+        if claim.get("role") == PHYSICAL_CONDUCTOR
+    })
+    verified = physical > 0 and bool(codes) and bool(semantics.get("release_safe"))
+    return {
+        "status": "verified" if verified else "rejected",
+        "mode": "hybrid-outlined-topology",
+        "reason": (
+            "exact callouts cover production-approved outlined physical conductors"
+            if verified else
+            "outlined-wire evidence did not produce a production-approved physical conductor"
+        ),
+        "convention": selected,
+        "physical_conductors": physical,
+        "codes": codes,
+        "engineering_semantics": semantics,
+    }
 
 
 def inspect_vector_colour(page, dpi: int = DISCOVERY_DPI, legends: list | None = None) -> dict:
@@ -204,7 +494,20 @@ def inspect_vector_page(page, dpi: int = DISCOVERY_DPI,
     from ..labels.conventions import list_conventions, load_convention
     from ..labels.text_layer import read_legends, strong_legends
 
-    text = _page_text(page)
+    raw_text = page.get_text("text") or ""
+    text = re.sub(r"\s+", " ", raw_text.replace("\x00", " ")).strip()
+    if _text_layer_is_corrupted(raw_text):
+        return {
+            "status": "review",
+            "confidence": "low",
+            "convention": None,
+            "legends": [],
+            "assigned_codes": [],
+            "assigned_runs": 0,
+            "runs": 0,
+            "requires_ocr": True,
+            "reason": "corrupted PDF text layer requires OCR before colour evidence is trusted",
+        }
     explicit_exclusion = _explicit_non_wiring_reason(text)
     if explicit_exclusion:
         return _excluded_payload(explicit_exclusion)
@@ -345,12 +648,16 @@ def combined_convention(names: list[str] | None = None):
     shared = set()
     grammars = set()
     excluded = set()
+    word_aliases = {}
+    table_aliases = {}
     for convention in loaded:
         colours.update(convention.colors_bgr)
         distinctive.update(convention.distinctive)
         shared.update(convention.shared)
         grammars.update(convention.grammars)
         excluded.update(convention.excluded_from_evidence)
+        word_aliases.update(convention.word_aliases)
+        table_aliases.update(convention.table_aliases)
     return Convention(
         name="all-installed",
         codes=frozenset(colours),
@@ -362,6 +669,8 @@ def combined_convention(names: list[str] | None = None):
         shared=frozenset(shared),
         grammars=tuple(sorted(grammars)),
         two_color_sep="/",
+        word_aliases=word_aliases,
+        table_aliases=table_aliases,
     )
 
 
@@ -372,6 +681,62 @@ def _point_segment_distance(px: float, py: float, segment: tuple[int, int, int, 
     position = 0.0 if not length_sq else max(
         0.0, min(1.0, ((px - x1) * dx + (py - y1) * dy) / length_sq))
     return hypot(px - (x1 + position * dx), py - (y1 + position * dy))
+
+
+def _tag_parallel_bare_bundle(labels: list[dict],
+                              segments: list[tuple[int, int, int, int]]) -> int:
+    """Promote bare codes only when parallel ink crosses every label in a compact bundle.
+
+    Diagnostic break-out harnesses may print ``GN``, ``GR`` and ``SB`` directly on several short,
+    parallel conductors with no gauge. A lone bare token remains weak; three distinct,
+    high-confidence codes aligned as one bundle and independently bounded by ink on both sides are
+    physical-conductor evidence. Tables and connector schedules fail the two-sided ink test.
+    """
+    candidates = [
+        label for label in labels
+        if float(label.get("score", 0.0)) >= 0.95
+        and re.fullmatch(r"[A-Za-z]{2,3}", str(label.get("raw", "")).strip())
+        and len(str(label.get("code", ""))) >= 2
+    ]
+    if len({str(label.get("code")) for label in candidates}) < 3:
+        return 0
+
+    def supported(label: dict, axis: str) -> bool:
+        cx, cy = float(label["cx"]), float(label["cy"])
+        # Codes are commonly printed in the channel between two closely-spaced conductors rather
+        # than centred on the stroke. The whole bundle is still compact and aligned, so allow one
+        # wire pitch of cross-axis offset while retaining the mandatory ink on both axial sides.
+        thickness = max(70.0, 2.2 * min(float(label.get("w", 0)),
+                                        float(label.get("h", 0))))
+        before = after = False
+        for x1, y1, x2, y2 in segments:
+            dx, dy = abs(x2 - x1), abs(y2 - y1)
+            if axis == "h":
+                if dx < 3 * max(dy, 1) or abs((y1 + y2) / 2 - cy) > thickness:
+                    continue
+                before |= min(x1, x2) < cx - 0.45 * float(label.get("w", 0))
+                after |= max(x1, x2) > cx + 0.45 * float(label.get("w", 0))
+            else:
+                if dy < 3 * max(dx, 1) or abs((x1 + x2) / 2 - cx) > thickness:
+                    continue
+                before |= min(y1, y2) < cy - 0.45 * float(label.get("h", 0))
+                after |= max(y1, y2) > cy + 0.45 * float(label.get("h", 0))
+        return before and after
+
+    for axis, aligned, spread in (
+        ("h", "cx", "w"), ("v", "cy", "h"),
+    ):
+        qualified = [label for label in candidates if supported(label, axis)]
+        if len({str(label.get("code")) for label in qualified}) < 3:
+            continue
+        positions = [float(label[aligned]) for label in qualified]
+        allowance = max(70.0, 2.2 * max(float(label.get(spread, 0)) for label in qualified))
+        if max(positions) - min(positions) > allowance:
+            continue
+        for label in qualified:
+            label["evidence_source"] = "parallel-bare-bundle"
+        return len(qualified)
+    return 0
 
 
 def inspect_ocr_image(image_path: str, convention_names: list[str] | None = None,
@@ -392,13 +757,15 @@ def inspect_ocr_image(image_path: str, convention_names: list[str] | None = None
         return _excluded_payload(explicit_exclusion)
     labels = [
         label for label in result.get("labels", ())
-        if _strong_raw(str(label.get("raw", "")), str(label.get("code", "")))
+        if label.get("evidence_source") == "page-code-table"
+        or _strong_raw(str(label.get("raw", "")), str(label.get("code", "")))
     ]
     if not labels:
         return {
             "status": "no_evidence", "confidence": "none", "legends": [],
             "near_wire": 0, "line_segments": 0,
             "reason": "OCR found no strong colour legend",
+            "page_code_table": bool(result.get("page_code_table")),
         }
 
     colour_image = cv2.imread(str(image_path), cv2.IMREAD_COLOR)
@@ -464,7 +831,20 @@ def inspect_ocr_image(image_path: str, convention_names: list[str] | None = None
             "chromatic_near_labels": chromatic_near_labels,
             "line_segments": len(segments),
             "reason": "ignored because OCR colour legends sit beside chromatic line work",
+            "page_code_table": bool(result.get("page_code_table")),
         }
+
+    parallel_bare_bundle = _tag_parallel_bare_bundle(associated, segments)
+    if parallel_bare_bundle:
+        for promoted in associated:
+            if promoted.get("evidence_source") != "parallel-bare-bundle":
+                continue
+            for label in labels:
+                if (label.get("code") == promoted.get("code")
+                        and abs(float(label["cx"]) - float(promoted["cx"])) < 1.0
+                        and abs(float(label["cy"]) - float(promoted["cy"])) < 1.0):
+                    label["evidence_source"] = "parallel-bare-bundle"
+                    break
 
     if len(associated) >= 2:
         status, confidence = "probable", "medium"
@@ -484,4 +864,6 @@ def inspect_ocr_image(image_path: str, convention_names: list[str] | None = None
         "chromatic_near_labels": 0,
         "line_segments": len(segments),
         "reason": reason,
+        "page_code_table": bool(result.get("page_code_table")),
+        "parallel_bare_bundle": parallel_bare_bundle,
     }

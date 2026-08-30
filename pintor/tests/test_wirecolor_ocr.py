@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -10,7 +11,12 @@ BACKEND = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BACKEND / "src"))
 
 from wirecolor.labels.conventions import load_convention
-from wirecolor.labels.ocr import merge_ocr_fragments
+from wirecolor.labels.ocr import (
+    _page_table_mapping,
+    _table_code,
+    merge_ocr_fragments,
+    ocr_labels,
+)
 from wirecolor.labels.parse import parse_code
 
 
@@ -24,6 +30,63 @@ def _token(raw, x0, y0, x1, y1, score=0.95):
         "h": y1 - y0,
         "box": [[x0, y0], [x1, y0], [x1, y1], [x0, y1]],
     }
+
+
+class PageCodeTableTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.convention = load_convention("volvo_classic")
+
+    def test_legacy_aliases_require_an_explicit_dense_colour_table(self):
+        words = ["Black", "Blue", "Green", "Yellow", "Orange", "White", "Brown", "Red"]
+        tokens = [_token("Wire Colour", 0, 0, 20, 10),
+                  _token("Kod/Code", 0, 15, 20, 25)]
+        tokens.extend(_token(word, 30 + index * 20, 0, 45 + index * 20, 10)
+                      for index, word in enumerate(words))
+        mapping = _page_table_mapping(tokens, self.convention)
+
+        self.assertEqual(mapping["B"], "SB")
+        self.assertEqual(mapping["GR"], "GN")
+        self.assertEqual(_table_code("Bl", mapping), "BL")
+        self.assertEqual(_table_code("BI", mapping), "BL")
+        self.assertIsNone(_table_code("2W)", mapping))
+
+    def test_colour_words_without_code_table_headers_do_not_enable_aliases(self):
+        tokens = [_token(word, index * 20, 0, index * 20 + 15, 10)
+                  for index, word in enumerate(
+                      ["Black", "Blue", "Green", "Yellow", "Orange", "White"])]
+        self.assertEqual(_page_table_mapping(tokens, self.convention), {})
+
+    def test_ocr_labels_tag_page_local_table_evidence(self):
+        from PIL import Image
+
+        reads = ["Wire Colour", "Kod/Code", "Black", "Blue", "Green", "Yellow",
+                 "Orange", "White", "Brown", "Red", "B", "Gr", "R"]
+
+        def engine(_image):
+            return [
+                ([[index * 12, 0], [index * 12 + 10, 0],
+                  [index * 12 + 10, 10], [index * 12, 10]], raw, 0.99)
+                for index, raw in enumerate(reads)
+            ]
+
+        with tempfile.TemporaryDirectory() as temp_name:
+            image_path = Path(temp_name) / "table.png"
+            Image.new("RGB", (300, 100), "white").save(image_path)
+            result = ocr_labels(str(image_path), self.convention, engine=engine)
+
+        self.assertTrue(result["page_code_table"])
+        table_labels = {
+            (label["raw"], label["code"])
+            for label in result["labels"]
+            if label["evidence_source"] == "page-code-table"
+        }
+        self.assertIn(("B", "SB"), table_labels)
+        self.assertIn(("Gr", "GN"), table_labels)
+
+    def test_can_bus_names_are_not_colour_codes(self):
+        self.assertIsNone(parse_code("CAN H", self.convention))
+        self.assertIsNone(parse_code("CAN L", self.convention))
 
 
 class OcrFragmentMergeTests(unittest.TestCase):
@@ -164,6 +227,17 @@ class OcrFragmentMergeTests(unittest.TestCase):
         merge_ocr_fragments(source, self.convention)
 
         self.assertEqual(source, before)
+
+    def test_vintage_bilingual_word_label_maps_to_classic_code(self):
+        self.assertEqual(parse_code("Grön 1,5 - Green 1.5", self.convention), "GN")
+        self.assertEqual(parse_code("Blå 0,75 - Blue 0.75", self.convention), "BL")
+        self.assertEqual(parse_code("Vit 1,5 - Ivory 1.5", self.convention), "W")
+        self.assertEqual(parse_code("Blå/Gul 0,75", self.convention), "BL/Y")
+        self.assertEqual(parse_code("Blo/Gul 1,5", self.convention), "BL/Y")
+
+    def test_colour_words_without_decimal_wire_gauge_are_not_labels(self):
+        self.assertIsNone(parse_code("Green - Power", self.convention))
+        self.assertIsNone(parse_code("1. Green indicator", self.convention))
 
 
 if __name__ == "__main__":
