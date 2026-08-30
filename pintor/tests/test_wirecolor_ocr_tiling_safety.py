@@ -285,8 +285,10 @@ class OcrTilingReleaseGateTests(unittest.TestCase):
             result = store.read(state["id"])
             painted_exists = (store.job_dir(state["id"]) / "painted.pdf").exists()
 
-        self.assertEqual(result["status"], "failed")
-        self.assertIn("V2", result["internal_error"])
+        # The quarantine is the contract: no painted PDF is released and V2 is named. The job
+        # declines rather than failing, so a sweep that refuses one page still delivers the rest.
+        self.assertEqual(result["status"], "declined")
+        self.assertIn("V2", result["decline_reason"])
         self.assertFalse(painted_exists)
 
     def test_web_quarantines_raster_output_when_v7_fails(self):

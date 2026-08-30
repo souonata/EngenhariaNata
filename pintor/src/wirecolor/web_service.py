@@ -1356,8 +1356,22 @@ def process_job(store: JobStore, job_id: str) -> None:
                 overlay_path.unlink(missing_ok=True)
                 _release_page_caches()
                 continue
-            if not (report.get("v2") or {}).get("passed"):
-                raise RuntimeError(f"protected-region gate V2 failed on page {page_index + 1}")
+            gate = report.get("v2") or {}
+            if not gate.get("passed"):
+                # The overlay put colour inside a protected housing or component symbol. That paint
+                # is discarded and never attached -- the gate stays categorical. What changed is the
+                # blast radius: this used to raise, so one page tripping the gate destroyed a whole
+                # manual sweep and released nothing, including the pages that had passed. A page
+                # that cannot be painted safely is exactly what "declined" means.
+                page_result["status"] = "declined"
+                page_result["decline_reason"] = (
+                    f"protected-region gate {gate.get('name', 'V2')} refused this page: "
+                    f"{gate.get('painted_px_in_protected', 0)} painted pixels fell inside a "
+                    "protected housing or component symbol"
+                )
+                overlay_path.unlink(missing_ok=True)
+                _release_page_caches()
+                continue
             if not overlay_path.is_file():
                 raise RuntimeError(f"painter did not produce page {page_index + 1} overlay")
 

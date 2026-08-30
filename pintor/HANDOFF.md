@@ -20,6 +20,37 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-08-31 one unsafe page no longer destroys a sweep, and scanned plates reach OCR (3.1.6, working tree)
+
+Two live failures on `engnata.eu/pintor/`, both reproduced locally against the source manuals.
+
+**A whole sweep died for one page.** `Group 30 Electrical system` selected eight pages; page 22
+painted nine of thirty-three conductors and the protected-region gate found 27 overlay pixels
+inside a component symbol. That raised, so the job ended `failed` with nothing released -- the
+seven other pages included. The gate stays categorical and that overlay is still discarded and
+never attached; what changed is the blast radius. A page the gate refuses is now `declined`, with
+the gate name and the offending pixel count as its reason, and the sweep continues. When every
+page is refused the job declines with those per-page reasons instead of reporting a failure. The
+same manual now finishes `ready`: one page painted, seven declined -- four by the gate (27, 2989,
+17846 and 8751 pixels) and three because OCR could not settle the convention on its own.
+
+**A wiring manual was declined for having no wiring.** `Wiring Diagram MD2010-40 22-series` from
+2000 is scanned plates with the component list typeset beside each one, 700-1300 characters. The
+only raster candidate shape required `text_chars < 200`, so every page was rejected before OCR ran
+and a file titled *Wiring Diagram* was declined for carrying no readable colour codes. A scanned
+plate is now also a candidate: image coverage >= 0.25 on a full-size sheet with no vector schematic
+of its own, inside a document already known to be about wiring. It stays a *candidate* -- OCR must
+still find the codes. That manual goes from zero selected pages to twelve; the job finishes `ready`
+with eleven painted and one declined, and its schematic pages carry 40 to 135 painted conductors.
+
+**Known defect this exposed.** On painted page 19 of that manual the conductors follow their
+printed codes, but two connector bodies are coloured: the pin strip under the alarm unit and the
+neutral-switch connector. V2 passed the page, so the raster housing detector did not recognise
+those two rectangles as protected. This is pre-existing raster-route behaviour -- the recall change
+only routes more pages through it -- and it is the next thing to fix.
+
+Suite: **474 Python tests** and the full repository validation.
+
 ## 2026-08-30 Round 2 feedback: page-local code tables and fresh OCR (3.1.5, working tree)
 
 The 60-page Round 2 export returned **45 paintable** and **15 do not paint** decisions. Four gaps

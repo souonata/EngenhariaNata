@@ -186,6 +186,26 @@ npm run build          # build de produção (gera local/dist)
 
 _Última atualização: 2026-08-30_
 
+- **PINTOR — DUAS FALHAS REAIS DO SITE CORRIGIDAS (3.1.6, WORKING TREE):** reproduzi localmente os
+  dois erros reportados em `engnata.eu/pintor/`. (1) *Uma página insegura matava a varredura
+  inteira*: no `Group 30 Electrical system`, a página 22 punha 27 pixels de tinta dentro de um
+  símbolo protegido, o portão V2 fazia `raise` e o trabalho terminava `failed` sem libertar nada —
+  incluindo as 7 páginas que tinham passado. O portão continua categórico e a camada é descartada;
+  agora a página fica `declined` com o nome do portão e a contagem de pixels, e a varredura segue.
+  O manual passa a `ready` com 1 pintada e 7 declinadas. (2) *Manual de cablagem declinado por não
+  ter cablagem*: o `Wiring Diagram MD2010-40` de 2000 são chapas digitalizadas com a lista de
+  componentes ao lado (700–1300 caracteres), e a única forma de candidato raster exigia
+  `text_chars < 200` — nenhuma página chegava ao OCR. Agora uma chapa digitalizada (cobertura de
+  imagem ≥0,25, folha inteira, sem esquema vetorial próprio, dentro de documento de cablagem) é
+  candidata; continua a precisar que o OCR ache os códigos. O manual vai de 0 para 12 páginas e
+  termina `ready` com 11 pintadas, 40 a 135 condutores nas páginas de esquema.
+  **Defeito conhecido que isto expôs:** na página 19 pintada, duas caixas de conector ficam
+  coloridas (régua de pinos da unidade de alarme e conector do ponto morto) e o V2 aprovou —
+  o detetor de alojamentos da rota raster não as reconhece. É comportamento pré-existente da rota
+  raster; é o próximo a corrigir. Suíte: 474 testes Python e `npm run validate`.
+  **A API em produção é a imagem `engnata/pintor-api:0.6.2`, publicada à mão num VM — nada disto
+  (nem o 3.1.2→3.1.5) está no ar até a imagem ser reconstruída e reimplantada.**
+
 - **PINTOR — ROUND 2 FECHADO: TABELAS DE CÓDIGO POR PÁGINA E OCR FRESCO (3.1.5, WORKING TREE):**
   as 60 decisões do Round 2 (45 pintáveis, 15 rejeições) fecharam quatro lacunas sem alargar o
   vocabulário global: tabelas de código locais da página (`B`=preto, `Gr`=verde) só valem com
