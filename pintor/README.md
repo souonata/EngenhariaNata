@@ -103,6 +103,20 @@ Measured on this pipeline with synthetic manuals, 50 wiring pages each:
 Tripling the manual left peak memory unchanged: what costs memory is painting one page, not the
 length of the document around it. Both runs stayed well under the 2,560 MB worker ceiling.
 
+## Rebuilding the library index
+
+`discover_pages` and `batch` read a SQLite index of `publications` and `pdf_pages`. That index is
+produced on the machine that ingested the archive, so its `local_path` values follow that machine's
+drive letters and it is blind to every PDF added afterwards. Pointing a sweep at a stale index
+silently narrows the corpus. Rebuild it from a plain folder instead:
+
+```powershell
+python -m wirecolor.tools.library_index --root E:\drawings --out workspaces\library.sqlite3
+```
+
+Add `--resume` to continue an interrupted walk. The index is a derived private artefact and belongs
+in an ignored workspace.
+
 ## Exhaustive manual inventory
 
 `pintor-inventory` scans every page of every PDF in a directory or private library manifest. It
@@ -130,6 +144,61 @@ pintor-inventory --library-manifest C:\private-library\manifest.json `
 
 For an ordinary folder, replace `--library-manifest` with `--pdf-root C:\manuals`. Source paths and
 reports belong in ignored private workspaces; no source manual or inventory result is committed.
+
+### Strict wiring-diagram verification
+
+The broad inventory is a candidate generator, not the final claim that a page is a wiring diagram.
+Run `pintor-verify-inventory` over its ledger to keep only pages where the production topology and
+engineering-semantics gate approve at least one physical colour-coded conductor. The verifier uses
+the exact vector graph when available, the exact-callout/outlined-wire route for pictorial
+harnesses, and the OCR observations already saved by the first stage for raster pages. It does not
+OCR the whole library again.
+
+```powershell
+pintor-verify-inventory --inventory workspaces\wiring_inventory `
+  --out workspaces\wiring_inventory_strict
+```
+
+`report.html` and `wiring_diagrams.csv` contain verified wiring pages only. Ambiguous one-label OCR
+reads, nearby prose/table lines, connector-pin-only pages, rejections and failures remain out of the
+visible result and are retained in the resumable `verification.jsonl` audit ledger. The input can be
+a merged inventory, one or more shard directories, or a root containing shard ledgers.
+
+### Human review of inventory candidates
+
+`pintor-review-inventory` builds an offline `review.html` from the broad candidate ledger. It keeps
+the original PDFs read-only, copies lightweight grid thumbnails and renders a bounded 2800 px page
+image for the inspector. Click a page to open the full-screen viewer, zoom with the wheel or
+buttons, drag to pan, and classify it as **Paintable**, **Do not paint**, or **Unsure**. Filters,
+search, automatic evidence, a link to the original PDF page, reason codes and free notes are
+included.
+
+```powershell
+pintor-review-inventory --inventory workspaces\wiring_inventory `
+  --out workspaces\wiring_inventory
+```
+
+Decisions are autosaved in that browser, but **Export feedback JSON** is the portable copy to keep
+and return for detector improvements. **Import feedback** restores a prior export. The
+`pintor-wiring-page-feedback-v1` schema binds every decision to the manual digest, page and exact
+detector evidence fingerprint; mismatched revisions are rejected instead of silently relabelled.
+Feedback is ground truth for reviewed tests and rule changes, never automatic model promotion.
+
+For a later, smaller round, pass the prior export and ask the sampler to remove reviewed pages,
+apply the current cheap page-family exclusions and interleave the remaining evidence modes. The
+limits prevent one repetitive manual or one repeated evidence signature from dominating the work:
+
+```powershell
+pintor-review-inventory --inventory workspaces\wiring_inventory `
+  --out workspaces\wiring_inventory_round_02 `
+  --feedback pintor-wiring-feedback.json --exclude-reviewed `
+  --apply-current-prefilter --max-pages 60 --max-per-manual 2 `
+  --max-per-signature 1
+```
+
+The manifest records how many prior decisions and current prefilter matches were removed. Sampling
+is deterministic and balances vector-confirmed, raster-probable and OCR-review lanes; it does not
+infer labels for skipped pages.
 
 ## Accounts and the administration console
 

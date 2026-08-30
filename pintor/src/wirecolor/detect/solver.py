@@ -167,7 +167,11 @@ def solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
         designators read as codes). Round 10b: bare letters no longer enter net_colors, so
         a stray designator can never BLOCK a legitimate merge (a lone 'P' at the fuel-press
         sensor kept {P} on the upper run and vetoed its collinear join to the BL/OR net)."""
-        return any(ch.isdigit() for ch in str(L.get("raw", "")).upper()) or "/" in L["code"]
+        return (any(ch.isdigit() for ch in str(L.get("raw", "")).upper())
+                or "/" in L["code"]
+                or L.get("evidence_source") in {
+                    "page-code-table", "parallel-bare-bundle",
+                })
 
     def _seed(L, si):
         seeds.append((L, si))

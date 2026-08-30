@@ -28,6 +28,8 @@ class Convention:
     shared: frozenset = field(default_factory=frozenset)
     grammars: tuple = ("code_first", "gauge_first")
     two_color_sep: str = "/"
+    word_aliases: dict = field(default_factory=dict)
+    table_aliases: dict = field(default_factory=dict)
 
 
 def load_convention(name: str) -> Convention:
@@ -47,6 +49,10 @@ def load_convention(name: str) -> Convention:
         shared=frozenset(raw.get("shared", ())),
         grammars=tuple(raw.get("grammars", ("code_first", "gauge_first"))),
         two_color_sep=raw.get("two_color_sep", "/"),
+        word_aliases={str(alias).upper(): str(code)
+                      for alias, code in raw.get("word_aliases", {}).items()},
+        table_aliases={str(alias).upper(): str(code)
+                       for alias, code in raw.get("table_aliases", {}).items()},
     )
 
 

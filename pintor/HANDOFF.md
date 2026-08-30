@@ -1,6 +1,6 @@
 # Pintor handoff
 
-Last updated: 2026-08-23
+Last updated: 2026-08-30
 
 ## Product boundary
 
@@ -19,6 +19,147 @@ supported/confirmed colour convention remains mandatory, and uncertain segments 
 The product name is localized in the interface: **Pintor** in Portuguese, **Pittore** in Italian,
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
+
+## 2026-08-30 Round 2 feedback: page-local code tables and fresh OCR (3.1.5, working tree)
+
+The 60-page Round 2 export returned **45 paintable** and **15 do not paint** decisions. Four gaps
+that review exposed are now closed, all of them refusing to widen the global vocabulary:
+
+- **Page-local code tables.** Vintage scans print their own legend, where `B` is black and `Gr` is
+  green while the modern vocabulary spells those `SB` and reserves `GR` for grey. Accepting those
+  spellings globally would be unsafe, so the aliases activate only for the page that proves them: a
+  bilingual `Wire Colour` / `Kod/Code` heading plus at least six independent colour names. Labels
+  read that way are tagged `page-code-table` instead of being laundered into ordinary OCR evidence.
+- **Short diagnostic harnesses.** A break-out drawing may print `GN`, `GR` and `SB` straight onto
+  short parallel conductors with no gauge. A lone bare token stays weak; three distinct codes at
+  OCR confidence >= 0.95, aligned as one compact bundle and independently bounded by ink on both
+  axial sides, are promoted as `parallel-bare-bundle`. Tables and connector schedules fail the
+  two-sided ink test. Both new sources count as strong evidence in the four ownership resolvers.
+- **Stale saved OCR.** The strict verifier reused whatever the inventory had recorded. It now
+  re-reads the page whenever the ledger's `scanner_version` is behind the current scanner, so an
+  improved reader is actually applied instead of being masked by an old ledger. The scanner is at
+  `wiring-page-inventory-v15`.
+- **Hybrid raster foldouts.** A page whose PDF text is exact but whose conductors live in a large
+  embedded scan was answered by the vector pre-flight rejection. That `raster foldout:` verdict now
+  routes to fresh OCR plus the production raster topology instead of ending the page.
+
+`CAN H` and `CAN L` remain signal names, never colour codes; a regression pins that.
+
+Measured over all 60 reviewed pages, one verifier run per page: the 45 paintable pages produced
+**44 verified** (17 exact vector topology, 27 raster/OCR topology, every one of those 27 through a
+refreshed read) and one rejection. Together they carry **3148 physical conductors**, 2 to 244 per
+page, across **73 distinct colour codes**. The 15 do-not-paint pages produced **zero verified** (3
+rejected, 12 review), so the round added no false positive. The single conservative false negative
+is manual `140` page 51, where the OCR labels owned no production-approved conductor; it stays out
+rather than being released on weaker evidence.
+
+Suite: **467 Python tests** and the full repository validation with **362 Vitest tests**, lint,
+formatting, style, i18n parity, asset checks, nautical integrity and the Pintor build-privacy gate.
+The exported feedback JSON is derived from the private library and is ignored, not committed.
+
+## 2026-08-30 feedback-calibrated detection and Round 2 (3.1.4, working tree)
+
+The first exported review was validated against all 560 source fingerprints: **142 decisions** by
+Alexandre, comprising **92 paintable** and **50 do not paint**. Negative reasons were 23 service
+flowcharts, 11 connector/pin tables, 10 pages without physical coded wires, 4 connector-pin-only
+layouts and 2 non-electrical illustrations. The positive set contained 89 raster wiring pages, 2
+outlined harness pages and one special tape-ring harness. Skipped pages were intentionally left
+unlabelled; no label was inferred from an adjacent or visually similar page.
+
+That feedback exposed that production topology alone was insufficient page grammar: the old strict
+verifier approved all 39 vector negatives in the labelled set. Version 2 now fails closed before
+ownership when the exact PDF layer is control-heavy substituted-font gibberish, when a dense
+Symptoms/ECM pin-function schedule is present, when a Multilink connector installation or
+sensor-location/component illustration is named, or when connector pin markers outnumber remaining
+conductor labels by more than 2:1. Corrupt exact text is marked for OCR rather than interpreted as
+colour evidence; inventory v14 explicitly invokes OCR for that state. Diagnostic prose is no
+longer a blanket exclusion because the reviewed corpus contains real one- and four-wire circuits on
+troubleshooting pages.
+
+The legacy scanned drawings also gained conservative bilingual word labels. A decimal wire gauge
+is mandatory, so `Grön 1,5 - Green 1.5`, `Blå 0,75`, `Svart`, `Röd`, `Gul` and their English pairs
+map to Volvo codes while prose such as `Green - Power` remains invalid. Re-running OCR on the
+reviewed vintage page `308:107` changed one low-confidence `Gy` observation into nine associated
+word labels; strict production topology then verified 20 physical conductors with `BL`, `GN`, `SB`
+and `Y`.
+
+Measured after the changes, the 39 vector negatives produced **0 verified**, 16 rejected and 23
+OCR-review decisions; the old result was 39 verified. Thirteen of 18 vector positives still verify;
+five small diagnostic connector-tail drawings remain conservative false negatives. All 11 labelled
+raster negatives stayed outside verification (2 rejected, 9 review). A diverse 16-page raster
+positive sample produced 8 verified and 8 review; no unsafe page was promoted. The tape-ring-only
+harness remains review-only until Pintor has geometry that paints just the tape bands.
+
+`pintor-review-inventory` now supports repeat rounds with `--exclude-reviewed`,
+`--apply-current-prefilter`, `--max-pages`, `--max-per-manual` and `--max-per-signature`. Selection
+is deterministic, interleaves evidence lanes and never copies prior decisions onto unreviewed
+pages. Round 2 is at `D:/volvo-library/inv/shard_00/round_02/review.html`: **60 pages from 42
+manuals**, exactly 20 vector-confirmed, 20 raster-probable and 20 OCR-review pages, at most two per
+manual, zero overlap with the 142 prior decisions and zero render errors. From 560 source
+candidates it removed the 142 reviewed pages and 91 matches from the new cheap prefilter, leaving
+327 eligible before diversity sampling.
+
+Browser QA against a loopback server found 60 cards, loaded real high-resolution imagery, changed
+the zoom transform, enabled reason selection, preserved a decision after reload and reported no
+console warnings/errors. Validation passed **459 Python tests**, **362 Vitest tests** and the full
+repository lint, formatting, style, i18n, asset, nautical-integrity and Pintor checks.
+
+## 2026-08-30 offline human inventory review (3.1.3, working tree)
+
+`pintor-review-inventory` now turns one broad inventory, several shards or a root of shard ledgers
+into a movable local review package. `review.html` embeds the candidate facts so it works directly
+under `file://`; the only companion files are relative page images. The grid exposes the detector's
+status, vector/OCR mode, confidence, colour codes, signal count and reason. Search and automatic or
+human-decision filters make large reviews manageable. The full-screen inspector loads a 2800 px
+page image on demand and supports wheel/button zoom, cursor-centred scaling, drag pan, fit and
+keyboard `Y`/`N`/`U` decisions. Grid thumbnails are copied locally and loaded through an explicit
+intersection observer, so opening 560 candidates loads six nearby thumbnails instead of all 560
+review images.
+
+The human labels are deliberately paint-oriented: `paintable_wiring`, `do_not_paint` and `unsure`,
+each with a controlled reason and optional note. Browser storage preserves progress across reloads;
+JSON export/import is the durable handoff. The `pintor-wiring-page-feedback-v1` validator binds a
+label to the manual key, SHA-256, one-based page and exact detector-evidence fingerprint. Unknown
+IDs, unsupported decisions, duplicate IDs and changed source fingerprints fail closed. Feedback is
+never promoted or trained automatically; it becomes reviewed ground truth for later regressions and
+rule changes.
+
+The requested private dashboard is at `D:/volvo-library/inv/shard_00/review.html`: **560 candidates
+from 105 manuals**, 560 high-resolution images (2800 px, 203.9 MB), 560 lazy grid thumbnails (66.4
+MB) and **zero render errors**. Browser QA exercised real images, search DOM, a paintable decision,
+reason/note, reload autosave, full-resolution loading, button zoom and pointer pan; the image
+transform changed for both operations and the console stayed clean. The in-app test browser blocks
+`file://`, so QA used the identical files through a temporary loopback-only HTTP server, removed
+after testing. Validation passed **452 Python tests** and the complete repository validation with
+**362 Vitest tests**, lint, formatting, style, i18n parity, asset checks and nautical integrity.
+
+## 2026-08-30 strict automatic wiring-diagram verification (3.1.2, working tree)
+
+The exhaustive inventory now has an explicit precision stage instead of presenting every broad
+candidate as a wiring diagram. `pintor-verify-inventory` consumes one merged ledger, individual
+shards or an inventory root, deduplicates resumed records and writes an append-only, resumable
+`verification.jsonl`. Its visible `wiring_diagrams.csv` and `report.html` contain **only** pages for
+which the same production topology and engineering-semantics gate used before painting approves at
+least one physical colour-coded conductor. Rejected, ambiguous and failed pages remain audit-only.
+
+The verifier routes exact vector pages through the complete vector graph, pictorial hollow-wire
+pages through the exact-callout/outlined-conductor detector, and raster pages through the saved OCR
+observations plus the production pixel topology. It does not repeat OCR. Automatic raster selection
+still requires a decisive colour convention; a single ambiguous label stays in review. Connector
+pin markers do not qualify because this report is specifically for pages containing real wires.
+Exact PDF case is now evidence too: lower-case `r/p` (return permission), `25w04` (week code) and
+`25 gr` (grams) can no longer become electrical `R/P`, `W` or `GR`; lower-case parenthesised wire
+IDs such as `0.75 WH (w14)` remain valid.
+
+Real-corpus smoke on the completed small shard 01 processed 19 candidates: **8 verified**, **8
+rejected**, **3 review**, **0 errors**. The three previously confirmed administrative flowcharts
+were rejected with zero physical conductors; two service illustrations and one one-label page stayed
+in review; eight raster wiring pages in one multi-page manual passed with 4-118 approved physical
+conductors. Independent controls kept a born-digital wiring page at 11 conductors and the outlined
+`pub3763:20` page at 8 conductors, while the `r/p` flowchart stayed at zero. Focused discovery tests:
+34 passed; the complete Python suite passed **449 tests**. Repository validation passed 362 Vitest
+tests plus lint, formatting, style, i18n parity, asset checks and nautical integrity after formatting
+the README.
 
 ## 2026-08-23 a rejected report is spent too (0.6.2, working branch)
 

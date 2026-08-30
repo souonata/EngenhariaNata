@@ -57,7 +57,10 @@ def _dash_shape(segments, si, min_points=10):
 def _strong_label(label):
     """Match the page ownership resolver's evidence-strength definition."""
     raw = str(label.get("raw", "")).upper()
-    return any(ch.isdigit() for ch in raw) or "/" in str(label.get("code", ""))
+    return (any(ch.isdigit() for ch in raw) or "/" in str(label.get("code", ""))
+            or label.get("evidence_source") in {
+                "page-code-table", "parallel-bare-bundle",
+            })
 
 
 def filter_terminal_holes(holes, labels, in_housing, terminal_dots=(),

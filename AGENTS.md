@@ -184,7 +184,55 @@ npm run build          # build de produção (gera local/dist)
 
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
-_Última atualização: 2026-08-29_
+_Última atualização: 2026-08-30_
+
+- **PINTOR — ROUND 2 FECHADO: TABELAS DE CÓDIGO POR PÁGINA E OCR FRESCO (3.1.5, WORKING TREE):**
+  as 60 decisões do Round 2 (45 pintáveis, 15 rejeições) fecharam quatro lacunas sem alargar o
+  vocabulário global: tabelas de código locais da página (`B`=preto, `Gr`=verde) só valem com
+  cabeçalho `Wire Colour`/`Kod/Code` e seis nomes de cor; chicotes curtos de diagnóstico exigem três
+  códigos distintos, OCR ≥0,95, alinhamento compacto e tinta dos dois lados; o verificador estrito
+  refaz o OCR quando o `scanner_version` do ledger está atrasado (agora v15); e o *foldout* raster
+  dentro de PDF com texto exato passa a cair no OCR fresco + topologia raster em vez de morrer na
+  rejeição vetorial. `CAN H`/`CAN L` continuam nomes de sinal, nunca cores. Medido nas 60 páginas:
+  **44 de 45 pintáveis verificadas** (17 vetoriais, 27 raster, todas com leitura refeita), 3148
+  condutores físicos e 73 códigos distintos; **zero falsos positivos** nas 15 rejeições (3 rejeitadas,
+  12 revisão). O único falso negativo conservador é `140:51`. Suíte: 467 testes Python, 362 Vitest e
+  `npm run validate`. Detalhes em `pintor/HANDOFF.md`.
+
+- **PINTOR — DETECÇÃO CALIBRADA PELO FEEDBACK + ROUND 2 (3.1.4, WORKING TREE):** o JSON do
+  primeiro round validou 142 decisões (92 pintáveis, 50 rejeições). O gate novo zerou os 39 falsos
+  positivos vetoriais rotulados: texto PDF corrompido exige OCR; tabelas de pino, layouts Multilink,
+  ilustrações de sensor/componente e mapas dominados por marcadores de pino não podem virar fios.
+  Páginas diagnósticas com circuitos reais continuam elegíveis. OCR antigo ganhou nomes de cores
+  suecos/ingleses condicionados a bitola decimal; `308:107` passou de um `Gy` fraco para 9 labels e
+  20 condutores verificados. O Round 2 em `D:/volvo-library/inv/shard_00/round_02/review.html` tem
+  60 páginas/42 manuais (20 vetoriais, 20 raster prováveis, 20 OCR review), máximo 2 por manual,
+  zero repetição das 142 decisões e zero erros. Suíte: 459 testes Python, 362 Vitest e validação
+  completa. Detalhes em `pintor/HANDOFF.md`.
+
+- **PINTOR — REVISÃO HUMANA OFFLINE DO INVENTÁRIO (3.1.3, WORKING TREE):**
+  `pintor-review-inventory` gera um pacote local e móvel a partir de um ou vários ledgers amplos,
+  sem tocar nos PDFs. A grade mostra evidência automática, busca/filtros e três decisões orientadas
+  à pintura (`paintable_wiring`, `do_not_paint`, `unsure`); o visor abre uma imagem de 2800 px sob
+  demanda, com roda/botões de zoom, pan por arraste, ajuste e atalhos Y/N/U. O progresso fica no
+  navegador e pode ser exportado/importado em `pintor-wiring-page-feedback-v1`, amarrado ao SHA do
+  manual, página e fingerprint da evidência; revisão divergente falha fechada e nada é treinado ou
+  promovido automaticamente. Gerado em `D:/volvo-library/inv/shard_00/review.html`: 560 candidatos
+  de 105 manuais, 560 imagens de alta resolução + miniaturas lazy, zero erros. Browser real aprovou
+  decisão/motivo/nota, autosave após reload, zoom/pan e console limpo. Suíte: 452 testes Python, 362
+  Vitest e `npm run validate`. Detalhes em `pintor/HANDOFF.md`.
+
+- **PINTOR — VERIFICAÇÃO ESTRITA DE WIRING DIAGRAMS (3.1.2, WORKING TREE):** o inventário amplo
+  ganhou uma segunda etapa retomável, `pintor-verify-inventory`. Ela reaproveita texto/OCR já
+  coletado, mas só publica no CSV/HTML páginas em que a topologia e a semântica de produção aprovam
+  ao menos um condutor físico com código de cor; rejeitados, ambíguos e erros ficam apenas no ledger
+  de auditoria. Há rotas separadas para vetor exato, chicote pictórico contornado e raster/OCR.
+  Páginas só com pinos não qualificam. O texto exato minúsculo `r/p`, `25w04` e `25 gr` deixou de
+  virar os falsos códigos `R/P`, `W` e `GR`, preservando IDs reais como `0.75 WH (w14)`. Smoke real
+  no shard 01: 19 candidatos → 8 verificados, 8 rejeitados, 3 revisão, 0 erros; os três fluxogramas
+  administrativos ficaram com zero fios, oito páginas raster reais passaram e `pub3763:20`
+  preservou seus 8 fios contornados. Suíte: 449 testes Python, 362 Vitest e `npm run validate`.
+  Detalhes em `pintor/HANDOFF.md`.
 
 - **PINTOR — SEMÂNTICA DE ENGENHARIA GLOBAL (0.6.0, PUBLICADO via PR #27):** todas as rotas de
   produção (vetorial, raster/OCR,

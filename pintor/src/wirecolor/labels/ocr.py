@@ -2,10 +2,51 @@
 from __future__ import annotations
 
 import re
+import unicodedata
 
 import numpy as np
 
 from .parse import GAUGES, parse_code
+
+
+def _plain_text(value: str) -> str:
+    normalized = unicodedata.normalize("NFKD", value)
+    return "".join(character for character in normalized
+                   if not unicodedata.combining(character)).upper()
+
+
+def _page_table_mapping(tokens: list[dict], convention) -> dict[str, str]:
+    """Return page-local legacy aliases only when an explicit code/colour table proves them.
+
+    Older Volvo scans use one-letter labels whose meaning differs from the modern convention:
+    ``B`` is black and ``Gr`` is green, while the current vocabulary uses ``SB`` and reserves
+    ``GR`` for grey. Accepting those spellings globally would be unsafe. A bilingual table headed
+    ``Wire Colour`` and ``Kod/Code`` is authoritative page-local evidence, so it may enable the
+    aliases for other tokens on that same page.
+    """
+    aliases = getattr(convention, "table_aliases", {})
+    word_aliases = getattr(convention, "word_aliases", {})
+    if not aliases or not word_aliases:
+        return {}
+    text = " ".join(_plain_text(str(token.get("raw", ""))) for token in tokens)
+    compact = re.sub(r"[^A-Z]", "", text)
+    if not ("WIRECOLOUR" in compact or "WIRECOLOR" in compact):
+        return {}
+    if "KODCODE" not in compact and not re.search(r"\bCODE\b", text):
+        return {}
+    table_colours = {
+        word_aliases[word]
+        for token in tokens
+        for word in [_plain_text(str(token.get("raw", ""))).strip()]
+        if word in word_aliases
+    }
+    # Six independent colour names make this a code legend rather than ordinary prose.
+    return dict(aliases) if len(table_colours) >= 6 else {}
+
+
+def _table_code(raw: str, mapping: dict[str, str]) -> str | None:
+    token = re.sub(r"\s+", "", _plain_text(raw).strip())
+    return mapping.get(token) if re.fullmatch(r"[A-Z]{1,3}", token) else None
 
 
 def _copy_token(token: dict) -> dict:
@@ -318,15 +359,20 @@ def ocr_labels(image_path: str, convention, engine=None) -> dict:
     # Repair split legends before parsing. In addition to the historical ``BL/`` + ``GR``
     # repair, RapidOCR sometimes emits a power-wire legend as ``25`` + ``R``/``SB``.
     tokens = merge_ocr_fragments(tokens, convention)
+    table_mapping = _page_table_mapping(tokens, convention)
     found = []
     for t in tokens:
-        code = parse_code(t["raw"], convention)
+        table_code = (_table_code(str(t["raw"]), table_mapping)
+                      if table_mapping else None)
+        code = table_code or parse_code(t["raw"], convention)
+        evidence_source = "page-code-table" if table_code else "ocr-legend"
         if not code:
             continue
         found.append({"code": code, "raw": t["raw"], "score": round(t["score"], 3),
                       "cx": round(t["cx"], 1), "cy": round(t["cy"], 1),
                       "w": round(t["w"], 1), "h": round(t["h"], 1),
-                      "box": [[round(a, 1), round(b, 1)] for a, b in t["box"]]})
+                      "box": [[round(a, 1), round(b, 1)] for a, b in t["box"]],
+                      "evidence_source": evidence_source})
     uniq = {}
     for lab in found:
         key = (lab["code"], round(lab["cx"] / 30), round(lab["cy"] / 30))
@@ -341,4 +387,5 @@ def ocr_labels(image_path: str, convention, engine=None) -> dict:
         "image": [iw, ih],
         "labels": labels_out,
         "text": " ".join(str(token.get("raw", "")).strip() for token in tokens).strip(),
+        "page_code_table": bool(table_mapping),
     }

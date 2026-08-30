@@ -20,3 +20,6 @@ output/
 *.sqlite
 *.sqlite3
 *.log
+
+# Exported human review feedback (derived from the private manual library)
+pintor-wiring-feedback-*.json

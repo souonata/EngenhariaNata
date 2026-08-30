@@ -91,8 +91,14 @@ class VectorPageContext:
         )
 
 
-def extract_vector_context(page, dpi, convention):
-    """Read immutable geometry and text evidence once."""
+def extract_vector_context(page, dpi, convention, *, legend_filter=None):
+    """Read immutable geometry and text evidence once.
+
+    ``legend_filter`` is a discovery-only precision gate.  Production painting keeps the default
+    and therefore preserves its established behaviour; the exhaustive inventory can require the
+    exact printed spelling to look like an engineering colour code before it spends the full
+    topology pass on a candidate page.
+    """
     from ..detect.vector_pins import connector_pin_markers
     from ..detect.vector_symbols import strip_symbol_strokes, symbol_geometry
     from ..eval.vector_truth import (MIN_CONDUCTOR_DIAGONAL_FRACTION, build_nets,
@@ -116,6 +122,8 @@ def extract_vector_context(page, dpi, convention):
             if length >= minimum:
                 runs.append(points)
     raw_legends = read_legends(page, dpi, convention)
+    if legend_filter is not None:
+        raw_legends = [legend for legend in raw_legends if legend_filter(legend)]
     pin_markers, pin_legend_indexes = connector_pin_markers(page, dpi, raw_legends)
     conductor_legends = [legend for index, legend in enumerate(raw_legends)
                          if index not in pin_legend_indexes]

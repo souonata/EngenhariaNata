@@ -35,7 +35,7 @@ from .wiring_evidence import (
 )
 
 
-SCANNER_VERSION = "wiring-page-inventory-v13"
+SCANNER_VERSION = "wiring-page-inventory-v15"
 CANDIDATE_STATUSES = {"confirmed", "probable", "review"}
 OCR_IMAGE_COVERAGE_MIN = 0.01
 OCR_TEXT_CHARS_MAX = 80
@@ -161,6 +161,8 @@ def _ocr_required(mode: str, vector: dict, *, image_coverage: float | None = Non
         return False
     if mode == "all":
         return True
+    if vector.get("requires_ocr"):
+        return mode != "off"
     if mode != "missing" or vector.get("status") == "confirmed":
         return False
     # OCR is the fallback for raster content, not a second reading of text-only prose.  One per
