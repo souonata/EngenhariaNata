@@ -20,7 +20,7 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
-## 2026-08-31 one unsafe page no longer destroys a sweep, and scanned plates reach OCR (3.1.6, working tree)
+## 2026-08-31 one unsafe page no longer destroys a sweep, and scanned plates reach OCR (3.1.6, published as API 0.6.3)
 
 Two live failures on `engnata.eu/pintor/`, both reproduced locally against the source manuals.
 
@@ -51,7 +51,22 @@ only routes more pages through it -- and it is the next thing to fix.
 
 Suite: **474 Python tests** and the full repository validation.
 
-## 2026-08-30 Round 2 feedback: page-local code tables and fresh OCR (3.1.5, working tree)
+Published as **0.6.3**. Source commit `d76a125` was cloned into host release
+`/opt/pintor-api-releases/d76a125` and built image `engnata/pintor-api:0.6.3` with
+`pintor-wiring-3.1.6` inside. The image was built before the container was touched, so a build
+failure could not take the beta down. The live `pintor-api_pintor-data` volume was reused rather
+than replaced -- the five jobs on disk survived the recreate -- and images `0.6.2`, `0.6.1` and
+`0.6.0` remain for rollback beside their release directories. The container became healthy and the
+external smoke passed end to end: `external_auth=ok account=ok unauthenticated=401 job=ready
+result=pdf delete=204`. GitHub Pages deployed and the public config reports Pintor 0.6.3.
+
+Before this publication the deployed image was `0.6.2`, built from `2b08f7e` on 2026-08-23, which
+carried none of the 3.1.2-3.1.6 detection work. That is why the two reported failures were live on
+the site while the fixes had been merged: the API does not deploy from `main`. Rollback is
+`cd /opt/pintor-api-releases/2b08f7e/pintor && docker compose -p pintor-api --env-file
+/opt/pintor-api/.env up -d`.
+
+## 2026-08-30 Round 2 feedback: page-local code tables and fresh OCR (3.1.5, published as API 0.6.3)
 
 The 60-page Round 2 export returned **45 paintable** and **15 do not paint** decisions. Four gaps
 that review exposed are now closed, all of them refusing to widen the global vocabulary:
@@ -88,7 +103,7 @@ Suite: **467 Python tests** and the full repository validation with **362 Vitest
 formatting, style, i18n parity, asset checks, nautical integrity and the Pintor build-privacy gate.
 The exported feedback JSON is derived from the private library and is ignored, not committed.
 
-## 2026-08-30 feedback-calibrated detection and Round 2 (3.1.4, working tree)
+## 2026-08-30 feedback-calibrated detection and Round 2 (3.1.4, published as API 0.6.3)
 
 The first exported review was validated against all 560 source fingerprints: **142 decisions** by
 Alexandre, comprising **92 paintable** and **50 do not paint**. Negative reasons were 23 service
@@ -135,7 +150,7 @@ the zoom transform, enabled reason selection, preserved a decision after reload 
 console warnings/errors. Validation passed **459 Python tests**, **362 Vitest tests** and the full
 repository lint, formatting, style, i18n, asset, nautical-integrity and Pintor checks.
 
-## 2026-08-30 offline human inventory review (3.1.3, working tree)
+## 2026-08-30 offline human inventory review (3.1.3, published as API 0.6.3)
 
 `pintor-review-inventory` now turns one broad inventory, several shards or a root of shard ledgers
 into a movable local review package. `review.html` embeds the candidate facts so it works directly
@@ -164,7 +179,7 @@ transform changed for both operations and the console stayed clean. The in-app t
 after testing. Validation passed **452 Python tests** and the complete repository validation with
 **362 Vitest tests**, lint, formatting, style, i18n parity, asset checks and nautical integrity.
 
-## 2026-08-30 strict automatic wiring-diagram verification (3.1.2, working tree)
+## 2026-08-30 strict automatic wiring-diagram verification (3.1.2, published as API 0.6.3)
 
 The exhaustive inventory now has an explicit precision stage instead of presenting every broad
 candidate as a wiring diagram. `pintor-verify-inventory` consumes one merged ledger, individual
