@@ -9,6 +9,10 @@ import { createViewportState, fitViewport, zoomViewport } from './pintor-viewpor
 
 const TERMINAL_STATES = new Set(['ready', 'declined', 'failed', 'revision-requested']);
 const MAX_UPLOAD_BYTES = 200 * 1024 * 1024;
+// Mirrors MAX_FEEDBACK_ANNOTATIONS in the API. The reviewer is stopped at the ceiling with an
+// explanation instead of placing marks the submission would reject as a whole: a rejected batch
+// used to discard every mark the reviewer had placed, because they only live in this page.
+const MAX_ANNOTATIONS = 1000;
 const ERROR_LABEL_KEYS = {
     'wrong-colour': 'errors.wrongColour',
     'non-wire': 'errors.nonWire',
@@ -2112,6 +2116,17 @@ class PintorApp extends App {
             return;
         }
 
+        if (this.annotations.length >= MAX_ANNOTATIONS) {
+            this.pendingPoints = [];
+            this.renderAnnotations();
+            this.showStatus(
+                document.getElementById('feedbackStatus'),
+                i18n.t('messages.annotationLimit'),
+                'error'
+            );
+            return;
+        }
+
         this.pendingPoints.push([Number(x.toFixed(6)), Number(y.toFixed(6))]);
         const required = this.activeTool.geometry === 'segment' ? 2 : 1;
         if (this.pendingPoints.length < required) {
@@ -2253,7 +2268,16 @@ class PintorApp extends App {
             });
             const body = await this.readResponse(response);
             if (!response.ok) {
-                throw new Error(body.detail || i18n.t('messages.feedbackFailed'));
+                // A 422 carries FastAPI's validation list, not a sentence. Rendering it directly
+                // printed "[object Object]" and left the reviewer with no idea why the batch was
+                // refused, while their marks stayed unsent in this page.
+                let detail = i18n.t('messages.feedbackFailed');
+                if (typeof body.detail === 'string') {
+                    detail = body.detail;
+                } else if (response.status === 422) {
+                    detail = i18n.t('messages.annotationLimit');
+                }
+                throw new Error(detail);
             }
             this.showStatus(status, i18n.t('messages.feedbackAccepted'), 'success');
             this.annotations = [];
