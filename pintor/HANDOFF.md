@@ -20,6 +20,59 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-08-31 the marks became a number, and the number chose the round (3.1.7 / 0.6.7)
+
+The reviewer's marks were being read by eye. `wirecolor.tools.feedback_fitness` turns each typed
+mark into an assertion about the finished page -- *missing* and *stops-mid* demand colour at the
+point and along the whole segment, *non-wire* and *bleed* demand its absence, *wrong-colour*
+compares against the named code -- and `pintor-bench` paints only the marked pages and scores them.
+The weights are asymmetric on purpose: a wrong colour costs 6, painting a non-wire 4, a miss 1, so
+no change can buy coverage by painting everything. A test pins that property.
+
+**The benchmark chose the work.** Of 232 scorable marks across four manuals, **152 sat on four pages
+the engine refused whole**. No parameter value answers a refusal, so a policy search would have
+spent itself on the remaining third. Baseline: **0.1171**.
+
+So the round went to the refusal. The protected-region gate condemned a sheet for a defect that
+belongs to individual conductors, while the rest of the engine abstains object by object. A
+conductor traced *through* a component symbol, or reaching deep inside one, is now withdrawn -- it
+loses its colour along its whole length, because that is where the claim stops being trustworthy --
+and the sheet is released. The loop closes on the measurement: if the pixels still report a zone,
+every conductor touching it is withdrawn and the page is painted again.
+
+| | before | after |
+| --- | --- | --- |
+| pages painted | 7 | 10 |
+| marks satisfied | 24 | 82 |
+| weighted score | 0.1171 | **0.3006** |
+| `missing` met | 9/175 | 67/175 |
+| `non-wire` met | 1/21 | 1/21 |
+
+Coverage rose 2.6x while the precision categories did not move, which is the result that matters:
+the gain was not bought with false paint.
+
+Two mistakes on the way, both caught by measuring rather than reading. The crossing test first
+looked only at run vertices, and a conductor drawn as one stroke crosses a small symbol without
+placing a vertex in it. And the repair pass compared zones in analysis pixels against runs already
+scaled to paint pixels, so it withdrew nothing at all.
+
+### What was measured and deliberately not shipped
+
+The opaque-housing work of the previous entry is on `wip/pintor-opaque-housings`, not here. Run
+together with this round it scores **0.2627 against 0.3006**, and the whole loss is one page: page
+46 improves as its pictures show (2/10 to 5/10 marks met) while page 40 is refused again and gives
+back 24 of its 27. With clipping active, the two stubs of a conductor cut at a *narrow* housing each
+paint a band cap, and together those caps span the zone in pixels although neither centreline enters
+it -- the gate reads that as a crossing. It is a false positive of the pixel test, not a tracing
+defect, and fixing it means moving the crossing verdict onto geometry, which knows the opaque zones
+were cut by construction. That is the next round, and it should recover both gains.
+
+Also recorded: the earlier opaque-housing commit was reported here as published and was not. PR #38
+merged only its first commit; `44d66fb` never reached `main`, so image 0.6.6 carries the stroke-cap
+change alone. The commit was recovered from the local object store.
+
+Suite: **494 Python tests** and the full repository validation.
+
 ## 2026-08-31 a stroke cap is not a routing error (0.6.6)
 
 The protected-region gate counted two different things as one failure and made the whole page pay
