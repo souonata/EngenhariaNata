@@ -1381,7 +1381,11 @@ def process_job(store: JobStore, job_id: str) -> None:
                 # manual sweep and released nothing, including the pages that had passed. A page
                 # that cannot be painted safely is exactly what "declined" means.
                 page_result["status"] = "declined"
+                crossed = int(gate.get("zones_crossed") or 0)
                 page_result["decline_reason"] = (
+                    f"colour ran through {crossed} component symbol(s), which would assert a "
+                    "connection the drawing does not show"
+                    if crossed else
                     f"protected-region gate {gate.get('name', 'V2')} refused this page: "
                     f"{gate.get('painted_px_in_protected', 0)} painted pixels fell inside a "
                     "protected housing or component symbol"

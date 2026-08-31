@@ -82,18 +82,31 @@ def v2_protected_overlap(rgba: np.ndarray, solution: dict, transform) -> dict:
 
 
 def v2_vector_protected_overlap(rgba: np.ndarray, protected_zones, analysis_dpi: int,
-                                paint_dpi: int) -> dict:
-    """No vector overlay alpha inside the interior of a detected component symbol.
+                                paint_dpi: int, pen_px: float = 0.0) -> dict:
+    """No colour survives inside a component symbol, and a conductor may not run through one.
 
-    Vector zones are measured in analysis pixels while the overlay may be rendered at a much
-    higher DPI. A narrow edge margin excludes antialiasing where a conductor legitimately ends at
-    a symbol boundary; paint in the symbol interior remains a categorical failure.
+    Two different things used to be counted as the same failure, and the whole page paid for both.
+
+    * A conductor that legitimately **ends** at a symbol paints up to the boundary, and the stroke
+      cap overshoots it by about the pen width. On one reviewed sheet that was 27 pixels, three
+      deep, against a single edge -- and it refused a page whose colours were correct.
+    * A conductor painted **through** a symbol is a routing error: the tracer joined two nets
+      across a component. Erasing that paint would leave colour on both sides and assert a
+      continuity the drawing denies, so the page must still fail.
+
+    Incursions are erased from ``rgba`` either way, so a released overlay never carries colour
+    inside a symbol. The verdict then depends on what was erased: a shallow bite out of one edge
+    is a stroke cap, while paint reaching two opposite edges crossed the component.
     """
     alpha = rgba[:, :, 3]
     height, width = alpha.shape
     factor = paint_dpi / float(analysis_dpi)
     margin = max(2, round(2.0 * factor))
-    bad = 0
+    # A stroke cap may sit a pen width inside the boundary; anything deeper is not a cap.
+    allowed_depth = max(margin, int(round(pen_px))) if pen_px else margin
+    trimmed = 0
+    crossings = 0
+    deep = 0
     checked = 0
     for x0, y0, x1, y1 in protected_zones:
         left = max(0, round(x0 * factor) + margin)
@@ -103,9 +116,32 @@ def v2_vector_protected_overlap(rgba: np.ndarray, protected_zones, analysis_dpi:
         if right <= left or bottom <= top:
             continue
         checked += 1
-        bad += int(np.count_nonzero(alpha[top:bottom, left:right]))
-    return dict(name="V2-vector", passed=bad == 0, protected_zones_checked=checked,
-                painted_px_in_protected=bad)
+        window = alpha[top:bottom, left:right]
+        painted = window > 0
+        count = int(np.count_nonzero(painted))
+        if not count:
+            continue
+        trimmed += count
+        rows = np.flatnonzero(painted.any(axis=1))
+        columns = np.flatnonzero(painted.any(axis=0))
+        spans_vertically = bool(painted[0].any() and painted[-1].any())
+        spans_horizontally = bool(painted[:, 0].any() and painted[:, -1].any())
+        if spans_vertically or spans_horizontally:
+            crossings += 1
+        else:
+            # Depth is measured from whichever edge the paint actually touches.
+            depth = min(
+                int(rows[-1]) + 1 if painted[0].any() else painted.shape[0],
+                painted.shape[0] - int(rows[0]) if painted[-1].any() else painted.shape[0],
+                int(columns[-1]) + 1 if painted[:, 0].any() else painted.shape[1],
+                painted.shape[1] - int(columns[0]) if painted[:, -1].any() else painted.shape[1],
+            )
+            if depth > allowed_depth:
+                deep += 1
+        rgba[top:bottom, left:right, 3] = np.where(painted, 0, window)
+    return dict(name="V2-vector", passed=crossings == 0 and deep == 0,
+                protected_zones_checked=checked, painted_px_in_protected=trimmed,
+                zones_crossed=crossings, zones_entered_deeply=deep)
 
 
 def _sha(b: bytes) -> str:
