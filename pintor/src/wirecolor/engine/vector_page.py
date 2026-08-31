@@ -100,15 +100,19 @@ def extract_vector_context(page, dpi, convention, *, legend_filter=None):
     topology pass on a candidate page.
     """
     from ..detect.vector_pins import connector_pin_markers
-    from ..detect.vector_symbols import strip_symbol_strokes, symbol_geometry
+    from ..detect.vector_symbols import (clip_segments_to_opaque, strip_symbol_strokes,
+                                         symbol_geometry)
     from ..eval.vector_truth import (MIN_CONDUCTOR_DIAGONAL_FRACTION, build_nets,
                                      canvas_diagonal_px, decompose_runs, extract_segments,
                                      modal_pen_px, node_segments)
     from ..labels.text_layer import promote_bare_letters, read_legends, strong_legends
 
     pen_px = modal_pen_px(page, dpi)
-    zones, symbol_strokes = symbol_geometry(page, dpi, pen_px)
+    zones, symbol_strokes, opaque_zones = symbol_geometry(page, dpi, pen_px)
     stripped, zone_dropped = strip_symbol_strokes(extract_segments(page, dpi), symbol_strokes)
+    # An opaque housing hides the sheet beneath it, so a stroke crossing one is not evidence that
+    # the conductor continues. Cutting there stops a legend colouring both sides of a fuse.
+    stripped, _ = clip_segments_to_opaque(stripped, opaque_zones)
     segments = node_segments(stripped)
     nets = build_nets(segments)
     diagonal = canvas_diagonal_px(page, dpi)

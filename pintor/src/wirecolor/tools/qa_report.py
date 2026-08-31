@@ -45,7 +45,7 @@ def analyse(pdf_path, page_index, dpi=200, convention_name="volvo_classic"):
     page_pt = (page.rect.width, page.rect.height)
 
     pen_px = modal_pen_px(page, dpi)
-    zones, symbol_strokes = symbol_geometry(page, dpi, pen_px)
+    zones, symbol_strokes, _opaque = symbol_geometry(page, dpi, pen_px)
     stripped, dropped = strip_symbol_strokes(extract_segments(page, dpi), symbol_strokes)
     segments = node_segments(stripped)
     nets = build_nets(segments)

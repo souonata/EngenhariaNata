@@ -20,6 +20,44 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-08-31 an opaque housing hides the sheet, so colour must stop at it (0.6.6, part two)
+
+The reviewer's 107 marks pointed at one cause. On Group 30 page 46 the sensor box outline and the
+diagonal inside it were painted blue, an `OR` conductor was painted straight down through the
+middle fuse body to ground, and one of two identical `W/BL 1,5` wires came out solid black. Three
+"not a wire", two "bleed" and one "wrong colour", all from a single false premise.
+
+`symbol_geometry` read every filled path as a junction dot: *"component housings are drawn as
+outlines"*. Measured on that page, they are not -- the sensor boxes and the fuse bodies are
+`fill=(1,1,1)` stroked in `(0.12, 0.10, 0.09)`. Paper fill, ink outline. They read as outlines and
+the PDF calls them filled, so every one was discarded: never a protected zone, strokes never
+stripped, outline and diagonal traced as conductors, and nothing for the gate to catch.
+
+Recognising them is only half of it. Clipping conductors at symbols had been tried before and
+measured worse, because the twisted-pair lens lies *on top of* a cable that visibly continues, and
+cutting there severed nine correctly coloured wires. The distinction is opacity: a housing filled
+with paper **paints over** whatever runs beneath, so the sheet itself refuses to say the conductor
+continues; a stroked mark hides nothing. Only opaque housings clip, and the twisted-pair regression
+stays green.
+
+Measured on the reviewed manual:
+
+| page | before | after |
+| --- | --- | --- |
+| 22 | refused | painted |
+| 40 | 2989 px inside symbols | 148 px, still refused for 2 crossings |
+| 46 | painted, 7 marks | painted, all 7 resolved |
+
+Page 46 was checked against the reviewer's own coordinates: the sensor symbol is clean, the `OR`
+conductor stops at the top of the fuse and the body below it is untouched, and **both** `W/BL 1,5`
+wires are white-and-blue. The wrong colour fixed itself, because the symbol outline was what bonded
+that wire into another net -- the behaviour this module's own docstring predicted.
+
+Pages 42 and 44 are unchanged: their crossings are through stroked symbols, not opaque ones. That
+is the next sub-case.
+
+Suite: **489 Python tests** and the full repository validation.
+
 ## 2026-08-31 a stroke cap is not a routing error (0.6.6)
 
 The protected-region gate counted two different things as one failure and made the whole page pay
