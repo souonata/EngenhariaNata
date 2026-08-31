@@ -20,6 +20,24 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-08-31 a review larger than a hundred marks was thrown away (0.6.4)
+
+A reviewer marking a whole manual hit `POST /api/jobs/{id}/feedback` three times and got **422**
+each time. Annotations live only in the open page, so every mark placed was still unsent and one
+reload would have destroyed the lot. The batch was refused for its size: `FeedbackPayload` capped
+`annotations` at 100, and `normalize_annotations` capped it again at 100 with a 400. One earlier
+report of 36 marks had gone through, which is why the ceiling had never been felt.
+
+A single dense sheet already drew 28 marks, so a manual-wide review runs to several hundred. Both
+ceilings now come from one `MAX_FEEDBACK_ANNOTATIONS = 1000`, which `/api/capabilities` publishes.
+The browser stops the reviewer *at* the ceiling with an explanation instead of letting them place
+marks a later submission would reject wholesale, and a 422 no longer renders as `[object Object]`:
+FastAPI returns a validation list, not a sentence, and the old code passed it straight to
+`new Error`, so the reviewer was told nothing usable while their work sat unsent.
+
+Suite: **477 Python tests** (three new: a 250-mark review is accepted, a submission past the
+ceiling is still refused, and the ceiling is published) and the full repository validation.
+
 ## 2026-08-31 one unsafe page no longer destroys a sweep, and scanned plates reach OCR (3.1.6, published as API 0.6.3)
 
 Two live failures on `engnata.eu/pintor/`, both reproduced locally against the source manuals.

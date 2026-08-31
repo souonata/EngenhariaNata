@@ -23,6 +23,7 @@ from wirecolor.web_service import (
     _cleanup_expired_periodically,
     _owner_hash,
     create_app,
+    MAX_FEEDBACK_ANNOTATIONS,
     inspect_pdf_source,
     parse_page_selection,
     process_job,
@@ -629,6 +630,42 @@ class WebServiceTests(unittest.TestCase):
             self.assertEqual(len(output), 60)
         finally:
             output.close()
+
+    def test_a_whole_manual_review_is_accepted_beyond_a_hundred_marks(self):
+        """A reviewer marked 28 defects on one dense sheet; a manual-wide review runs to hundreds.
+
+        The ceiling was 100 and the 101st mark made the API reject the whole submission with 422.
+        Annotations live only in the reviewer's open page, so that refusal discarded every mark
+        they had placed -- the failure this test exists to prevent.
+        """
+        job_id = self.upload().json()["id"]
+        marks = [{
+            "type": "missing",
+            "geometry": {"type": "point", "points": [[0.4, 0.5]]},
+        } for _ in range(250)]
+
+        response = self.client.post(f"/api/jobs/{job_id}/feedback",
+                                    json={"annotations": marks})
+
+        self.assertEqual(response.status_code, 202)
+        record = JobStore(self.temp.name).get_feedback(response.json()["id"])
+        self.assertEqual(len(record["annotations"]), 250)
+
+    def test_a_submission_past_the_ceiling_is_still_refused(self):
+        job_id = self.upload().json()["id"]
+        marks = [{
+            "type": "missing",
+            "geometry": {"type": "point", "points": [[0.4, 0.5]]},
+        } for _ in range(MAX_FEEDBACK_ANNOTATIONS + 1)]
+
+        response = self.client.post(f"/api/jobs/{job_id}/feedback",
+                                    json={"annotations": marks})
+
+        self.assertEqual(response.status_code, 422)
+
+    def test_capabilities_publishes_the_annotation_ceiling(self):
+        published = self.client.get("/api/capabilities").json()
+        self.assertEqual(published["max_feedback_annotations"], MAX_FEEDBACK_ANNOTATIONS)
 
     def test_protected_region_gate_declines_its_page_without_failing_the_job(self):
         """One page tripping V2 must not destroy the pages that painted safely.

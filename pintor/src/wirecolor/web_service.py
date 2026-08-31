@@ -51,6 +51,11 @@ ACCOUNT_OWNER_PURPOSE = b"pintor-account-owner-v1:"
 FEEDBACK_ID_RE = re.compile(r"^[a-f0-9]{32}$")
 ROUND_ID_RE = re.compile(r"^[a-f0-9]{32}$")
 MAX_ROUND_NAME = 80
+# One reviewer marked 28 defects on a single dense sheet, so a whole-manual review legitimately
+# runs to several hundred. The old ceiling of 100 rejected the whole submission with a 422 and the
+# reviewer lost every mark they had placed; a bound this size still refuses an abusive payload
+# while never being reached by honest work.
+MAX_FEEDBACK_ANNOTATIONS = 1_000
 ACTIVE_JOB_STATUSES = frozenset({"queued", "processing"})
 # Why an administrator cannot erase a report yet. The console localizes its own copy; these
 # strings are the API's answer to a direct call.
@@ -969,8 +974,9 @@ class JobStore:
 
 
 def normalize_annotations(raw, state: dict) -> list[dict]:
-    if not isinstance(raw, list) or len(raw) > 100:
-        raise ValueError("annotations must be a list with at most 100 entries")
+    if not isinstance(raw, list) or len(raw) > MAX_FEEDBACK_ANNOTATIONS:
+        raise ValueError("annotations must be a list with at most "
+                         f"{MAX_FEEDBACK_ANNOTATIONS} entries")
 
     normalized = []
     selected_pages = state.get("selected_pages") or [state["page"]]
@@ -1658,7 +1664,8 @@ def create_app(workspace_root: str | Path | None = None,
     ).split(",") if value.strip()]
 
     class FeedbackPayload(BaseModel):
-        annotations: list[dict] = Field(min_length=1, max_length=100)
+        annotations: list[dict] = Field(min_length=1,
+                                        max_length=MAX_FEEDBACK_ANNOTATIONS)
         note: str = Field(default="", max_length=2000)
         request_revision: bool = True
         consent_learning: bool = False
@@ -2000,6 +2007,7 @@ def create_app(workspace_root: str | Path | None = None,
             "max_document_pages": None,
             "max_selected_pages": None,
             "page_number_ceiling": MAX_PAGE_NUMBER,
+            "max_feedback_annotations": MAX_FEEDBACK_ANNOTATIONS,
             "automatic_page_discovery": True,
             "max_active_jobs_per_account": max_active_jobs,
             "max_analysis_pixels": MAX_ANALYSIS_PIXELS,
