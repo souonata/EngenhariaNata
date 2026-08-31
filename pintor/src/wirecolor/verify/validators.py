@@ -106,6 +106,8 @@ def v2_vector_protected_overlap(rgba: np.ndarray, protected_zones, analysis_dpi:
     allowed_depth = max(margin, int(round(pen_px))) if pen_px else margin
     trimmed = 0
     crossings = 0
+    crossed_zones = []
+    deep_zones = []
     deep = 0
     checked = 0
     for x0, y0, x1, y1 in protected_zones:
@@ -128,6 +130,7 @@ def v2_vector_protected_overlap(rgba: np.ndarray, protected_zones, analysis_dpi:
         spans_horizontally = bool(painted[:, 0].any() and painted[:, -1].any())
         if spans_vertically or spans_horizontally:
             crossings += 1
+            crossed_zones.append((x0, y0, x1, y1))
         else:
             # Depth is measured from whichever edge the paint actually touches.
             depth = min(
@@ -138,10 +141,12 @@ def v2_vector_protected_overlap(rgba: np.ndarray, protected_zones, analysis_dpi:
             )
             if depth > allowed_depth:
                 deep += 1
+                deep_zones.append((x0, y0, x1, y1))
         rgba[top:bottom, left:right, 3] = np.where(painted, 0, window)
     return dict(name="V2-vector", passed=crossings == 0 and deep == 0,
                 protected_zones_checked=checked, painted_px_in_protected=trimmed,
-                zones_crossed=crossings, zones_entered_deeply=deep)
+                zones_crossed=crossings, zones_entered_deeply=deep,
+                crossed_zones=crossed_zones, deep_zones=deep_zones)
 
 
 def _sha(b: bytes) -> str:

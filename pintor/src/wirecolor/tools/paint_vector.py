@@ -142,6 +142,24 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
         outer_radius=marker.outer_radius * factor,
         connector_bbox=tuple(value * factor for value in marker.connector_bbox),
     ) for marker in semantic_pin_markers]
+    # A conductor traced THROUGH a component symbol asserts a connection the sheet does not show,
+    # so its colour is untrustworthy along its whole length -- but only its own. Refusing the page
+    # for it was measured against a reviewer's marks and cost far more than it protected: four such
+    # pages carried 152 of 232 marks and satisfied none, because a page never released satisfies
+    # nothing. Abstaining per conductor is what the rest of the engine already does.
+    from ..detect.vector_symbols import runs_crossing_zones
+
+    scaled_zones = [tuple(value * factor for value in zone) for zone in context.blocked_zones]
+    # The painted band is wider than the centreline it follows, so a conductor skimming a small
+    # symbol can cover it end to end without its centreline spanning it. Judging both with the same
+    # half-band tolerance keeps the geometric withdrawal and the pixel gate from disagreeing.
+    half_band = max(1.0, band_px(pen_px * factor, band_scale, out_dpi,
+                                 (page.rect.width, page.rect.height)) / 2.0)
+    crossing = runs_crossing_zones(owned, scaled_zones, tolerance=half_band)
+    runs_withdrawn = len(crossing)
+    if crossing:
+        owned = [run for index, run in enumerate(owned) if index not in crossing]
+
     scale = out_dpi / 72.0
     canvas_hw = (int(round(page.rect.height * scale)), int(round(page.rect.width * scale)))
     page_pt = (page.rect.width, page.rect.height)
@@ -152,6 +170,25 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
     v2 = v2_vector_protected_overlap(
         rgba, context.blocked_zones, analysis_dpi=dpi, paint_dpi=out_dpi,
         pen_px=pen_px * factor)
+    if v2.get("zones_crossed") or v2.get("zones_entered_deeply"):
+        # The centreline test misses paint that reaches a symbol through dash groups or a band
+        # wider than the stroke it follows. Close the loop on the measurement that matters: drop
+        # every conductor touching a zone the pixels say was crossed, and paint once more. One
+        # repair pass, then the page is judged on what it actually produced.
+        # The gate reports zones in ANALYSIS pixels; the runs are already in paint pixels.
+        repair_zones = [tuple(value * factor for value in zone)
+                        for zone in (*v2["crossed_zones"], *v2.get("deep_zones", ()))]
+        touching = runs_crossing_zones(owned, repair_zones, tolerance=1e9)
+        if touching:
+            runs_withdrawn += len(touching)
+            owned = [run for index, run in enumerate(owned) if index not in touching]
+            rgba, painted = build_rgba(
+                owned, canvas_hw, convention, out_dpi, pen_px=pen_px * factor,
+                diagnose=diagnose, scale=band_scale, page_pt=page_pt,
+                dash_pitch=scaled_pitch, pin_markers=pin_markers)
+            v2 = v2_vector_protected_overlap(
+                rgba, context.blocked_zones, analysis_dpi=dpi, paint_dpi=out_dpi,
+                pen_px=pen_px * factor)
     document.close()
 
     tag = f"{os.path.splitext(os.path.basename(pdf_path))[0][:40]}_p{page_index}"
@@ -195,6 +232,7 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
         "frame_splits": decision["frame_splits"],
         "learned_abstentions": decision["learned_abstentions"],
         "semantic_abstentions": engineering_semantics["semantic_abstentions"],
+        "runs_withdrawn_crossing_symbols": runs_withdrawn,
         "decision_abstentions": decision["abstained"],
         "decision": decision,
         "decision_policy": decision_policy.to_dict(),

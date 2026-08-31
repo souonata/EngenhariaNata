@@ -216,3 +216,59 @@ def strip_symbol_strokes(segments, stroke_keys):
         return list(segments), 0
     kept = [(a, b) for a, b in segments if _seg_key(a, b) not in stroke_keys]
     return kept, len(segments) - len(kept)
+
+
+def _segment_inside_zone(a, b, zone):
+    """The part of segment a->b that lies inside ``zone``, as endpoints, or None."""
+    x0, y0, x1, y1 = zone
+    enter, leave = 0.0, 1.0
+    for lo, hi, start, delta in ((x0, x1, a[0], b[0] - a[0]), (y0, y1, a[1], b[1] - a[1])):
+        if abs(delta) < 1e-9:
+            if start < lo or start > hi:
+                return None
+            continue
+        first, second = (lo - start) / delta, (hi - start) / delta
+        enter = max(enter, min(first, second))
+        leave = min(leave, max(first, second))
+    if leave <= enter:
+        return None
+    return ((a[0] + (b[0] - a[0]) * enter, a[1] + (b[1] - a[1]) * enter),
+            (a[0] + (b[0] - a[0]) * leave, a[1] + (b[1] - a[1]) * leave))
+
+
+def runs_crossing_zones(runs, zones, tolerance=1.0):
+    """Indices of the runs whose polyline passes THROUGH a protected zone, not merely into it.
+
+    A conductor that ends at a component is normal and its stroke cap may sit inside the outline.
+    A conductor that enters one side of a symbol and leaves by the opposite side is the tracer
+    asserting a connection across a component, and its colour cannot be trusted anywhere along it.
+
+    Dropping just those runs is what lets the rest of the sheet be released. Refusing the whole page
+    for them was measured against a reviewer's marks: four pages carried 152 of 232 marks, and every
+    one of those marks went unmet, because a page that is never released satisfies nothing.
+
+    The test is on the segments, not the vertices: a conductor drawn as one long stroke crosses a
+    small symbol without placing a single point inside it.
+    """
+    crossing = set()
+    for index, run in enumerate(runs):
+        points = [(float(x), float(y)) for x, y in getattr(run, "points", run)]
+        if len(points) < 2:
+            continue
+        for zone in zones:
+            covered = []
+            for a, b in zip(points, points[1:]):
+                part = _segment_inside_zone(a, b, zone)
+                if part is not None:
+                    covered.extend(part)
+            if not covered:
+                continue
+            x0, y0, x1, y1 = zone
+            spans_x = (max(p[0] for p in covered) - min(p[0] for p in covered)
+                       >= (x1 - x0) - 2 * tolerance)
+            spans_y = (max(p[1] for p in covered) - min(p[1] for p in covered)
+                       >= (y1 - y0) - 2 * tolerance)
+            if spans_x or spans_y:
+                crossing.add(index)
+                break
+    return crossing
