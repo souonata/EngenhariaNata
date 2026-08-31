@@ -104,10 +104,16 @@ def _union_convention():
 
 
 def _score_conventions(labels: list[dict]) -> tuple[str | None, str, list[dict]]:
-    from ..labels.conventions import list_conventions, load_convention
+    from ..labels.conventions import (HOUSE_CONVENTION, colour_conflicts, list_conventions,
+                                      load_convention)
 
-    # Convention selection is a document-level decision.  Weak one-off OCR reads must never pick
-    # the colour vocabulary for the whole page; an uncertain page asks the user to confirm it.
+    # Convention selection is a document-level decision, and the only decision that matters is
+    # which *colours* the page gets. Two vocabularies that agree on every observed code are
+    # interchangeable, so ranking them is enough and there is nothing for a reviewer to confirm.
+    # The old rule demanded a score gap and called a narrow win "low", which declined whole pages
+    # over an ambiguity that did not exist. Whether the evidence is *sufficient* is a separate
+    # question, answered downstream by the production topology and the semantics gate, per
+    # conductor rather than per page.
     labels = [label for label in labels if float(label.get("score", 0.0)) >= MIN_OCR_SCORE]
     ranked = []
     for name in list_conventions():
@@ -119,14 +125,16 @@ def _score_conventions(labels: list[dict]) -> tuple[str | None, str, list[dict]]
             for label in matching
         )
         ranked.append((len(matching) + 3 * distinctive, len(matching), name, matching))
-    ranked.sort(key=lambda row: (row[0], row[1], row[2]), reverse=True)
+    # Score, then raw matches, then the house vocabulary ahead of an exact tie.
+    ranked.sort(key=lambda row: (row[0], row[1], row[2] == HOUSE_CONVENTION, row[2]),
+                reverse=True)
     if not ranked or ranked[0][0] == 0:
         return None, "low", []
     best = ranked[0]
-    runner_score = ranked[1][0] if len(ranked) > 1 else 0
-    confidence = "high" if best[1] >= 2 and best[0] >= 5 \
-        and best[0] >= runner_score + 3 else "low"
-    return best[2], confidence, best[3]
+    observed = {label["code"] for label in best[3]}
+    rivals = [row[2] for row in ranked[1:] if row[1] > 0]
+    ambiguous = bool(rivals) and bool(colour_conflicts([best[2], *rivals], observed))
+    return best[2], "low" if ambiguous else "high", best[3]
 
 
 def _recognise_page_labels(image_path: str, labels_path: str, harvest_path: str,
@@ -231,8 +239,10 @@ def paint_page(pdf_path: str, page_index: int, out_dir: str, convention_name: st
                 "page": page_index,
                 "declined": True,
                 "decline_reason": (
-                    "OCR could not identify the colour-code convention with enough confidence; "
-                    "select the convention explicitly and try again"
+                    "no readable colour code was found on this page"
+                    if selected is None else
+                    "the readable colour codes are claimed by two vocabularies that would paint "
+                    "them differently, so no colour is safe to assert"
                 ),
                 "convention": selected,
                 "convention_confidence": confidence,

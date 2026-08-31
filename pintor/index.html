@@ -254,20 +254,6 @@
                                 diagram found. Or name them: 1, 3-5, 9-11, 15.</small
                             >
                         </label>
-                        <label class="field-group convention-field" for="convention">
-                            <span data-i18n="upload.conventionLabel">Colour-code convention</span>
-                            <select id="convention" name="convention">
-                                <option value="auto" data-i18n="upload.conventionAuto">
-                                    Detect automatically
-                                </option>
-                                <option value="iec_two_letter" data-i18n="upload.conventionIec">
-                                    IEC / two-letter codes
-                                </option>
-                                <option value="volvo_classic" data-i18n="upload.conventionVolvo">
-                                    Volvo classic codes
-                                </option>
-                            </select>
-                        </label>
                     </div>
 
                     <label class="consent-row" for="trainingConsent">
@@ -577,8 +563,8 @@
                     <p id="declineReason"></p>
                     <p data-i18n="declined.help">
                         The beta accepts vector pages and image-only scans. Visible colour codes are
-                        read with OCR when the PDF has no usable text layer. Choose the convention
-                        explicitly if automatic detection was uncertain.
+                        read with OCR when the PDF has no usable text layer. A page is left
+                        untouched whenever no colour can be asserted safely.
                     </p>
                     <button
                         id="tryAgain"
