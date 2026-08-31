@@ -2,6 +2,8 @@
 import os
 import sys
 import tempfile
+from dataclasses import replace
+
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -40,7 +42,7 @@ def _raster_solution():
 
 
 class RasterElectricalSafetyTests(unittest.TestCase):
-    def test_auto_convention_needs_two_strong_labels(self):
+    def test_a_weak_ocr_read_is_dropped_before_the_vocabulary_is_chosen(self):
         from wirecolor.tools.paint_raster import _score_conventions
 
         selected, confidence, labels = _score_conventions([
@@ -48,9 +50,37 @@ class RasterElectricalSafetyTests(unittest.TestCase):
             {"code": "BU", "score": 0.41},
         ])
 
-        self.assertEqual(selected, "iec_two_letter")
-        self.assertEqual(confidence, "low")
         self.assertEqual([label["code"] for label in labels], ["RD"])
+        self.assertEqual(selected, "iec_two_letter")
+        # `RD` exists in one vocabulary only, so nothing disagrees about the colour it would be
+        # painted. Calling that "low" used to decline the page and ask a reviewer to break a tie
+        # that had no second side. How much evidence is enough is decided per conductor downstream.
+        self.assertEqual(confidence, "high")
+
+    def test_a_vocabulary_is_only_ambiguous_when_the_colour_would_differ(self):
+        from wirecolor.labels.conventions import colour_conflicts, list_conventions
+
+        # The two registries overlap on BN and GN alone, and agree on both.
+        self.assertEqual(colour_conflicts(list_conventions(), {"BN", "GN", "RD", "SB"}), set())
+
+    def test_a_registry_that_repaints_a_shared_code_is_reported_as_conflicting(self):
+        from unittest.mock import patch
+
+        from wirecolor.labels import conventions as registry
+
+        real = registry.load_convention
+
+        def fake(name):
+            convention = real("volvo_classic" if name == "rival" else name)
+            if name == "rival":
+                recoloured = dict(convention.colors_bgr)
+                recoloured["GN"] = (0, 0, 255)
+                return replace(convention, name="rival", colors_bgr=recoloured)
+            return convention
+
+        with patch.object(registry, "load_convention", fake):
+            self.assertEqual(
+                registry.colour_conflicts(["volvo_classic", "rival"], {"GN", "SB"}), {"GN"})
 
     def test_raster_canvas_never_rounds_above_pixel_budget(self):
         from wirecolor.tools.paint_raster import _canvas_size

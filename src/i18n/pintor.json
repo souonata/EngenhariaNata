@@ -140,7 +140,6 @@
       "dropHint": "ou clique para escolher um PDF",
       "pageLabel": "Páginas que serão pintadas",
       "pageHelp": "Deixe em branco para varrer o documento inteiro e pintar todos os wiring diagrams encontrados. Ou indique: 1, 3-5, 9-11, 15.",
-      "conventionLabel": "Convenção dos códigos de cor",
       "conventionAuto": "Detectar automaticamente",
       "conventionIec": "IEC / códigos de duas letras",
       "conventionVolvo": "Códigos Volvo clássicos",
@@ -264,10 +263,10 @@
     "declined": {
       "step": "Abstenção segura",
       "title": "As páginas selecionadas não foram pintadas",
-      "help": "O beta aceita páginas vetoriais e scans formados apenas por imagem. Quando não há texto extraível, os códigos visíveis são lidos por OCR. Se a detecção automática ficou incerta, escolha a convenção explicitamente.",
+      "help": "O beta aceita páginas vetoriais e scans formados apenas por imagem. Quando não há texto extraível, os códigos visíveis são lidos por OCR. A convenção é decidida a partir da própria página; se nenhuma cor puder ser afirmada com segurança, a página fica intacta.",
       "tryAgain": "Ajustar e tentar novamente",
       "genericReason": "A página não atingiu os critérios conservadores do beta.",
-      "conventionAmbiguous": "A convenção dos códigos de cor ficou ambígua. A melhor candidata já foi selecionada; confirme e tente novamente.",
+      "conventionAmbiguous": "Dois vocabulários de código reivindicam estes rótulos e pintariam cores diferentes, por isso nenhuma cor é segura de afirmar.",
       "unsupported": "Nenhum fio pôde receber uma cor com segurança; a página original foi preservada."
     },
     "messages": {
@@ -438,7 +437,6 @@
       "dropHint": "oppure fai clic per scegliere un PDF",
       "pageLabel": "Pagine da colorare",
       "pageHelp": "Lascia vuoto per scandire l'intero documento e colorare tutti gli schemi elettrici trovati. Oppure indica: 1, 3-5, 9-11, 15.",
-      "conventionLabel": "Convenzione dei codici colore",
       "conventionAuto": "Rileva automaticamente",
       "conventionIec": "IEC / codici a due lettere",
       "conventionVolvo": "Codici Volvo classici",
@@ -562,10 +560,10 @@
     "declined": {
       "step": "Astensione sicura",
       "title": "Le pagine selezionate non sono state colorate",
-      "help": "La beta accetta pagine vettoriali e scansioni composte solo da immagini. Se non esiste testo estraibile, i codici visibili vengono letti tramite OCR. Se il rilevamento automatico è incerto, scegli esplicitamente la convenzione.",
+      "help": "La beta accetta pagine vettoriali e scansioni composte solo da immagini. Se non esiste testo estraibile, i codici visibili vengono letti tramite OCR. La convenzione viene decisa dalla pagina stessa; se nessun colore può essere affermato con sicurezza, la pagina resta intatta.",
       "tryAgain": "Modifica e riprova",
       "genericReason": "La pagina non ha soddisfatto i criteri conservativi della beta.",
-      "conventionAmbiguous": "La convenzione dei codici colore è ambigua. La candidata migliore è già selezionata: confermala e riprova.",
+      "conventionAmbiguous": "Due vocabolari di codici rivendicano queste etichette e dipingerebbero colori diversi, quindi nessun colore è sicuro da affermare.",
       "unsupported": "Nessun filo ha potuto ricevere un colore in sicurezza; la pagina originale è stata preservata."
     },
     "messages": {
@@ -736,7 +734,6 @@
       "dropHint": "eller klicka för att välja en PDF",
       "pageLabel": "Sidor som ska färgläggas",
       "pageHelp": "Lämna tomt för att svepa hela dokumentet och färglägga varje kopplingsschema som hittas. Eller ange: 1, 3-5, 9-11, 15.",
-      "conventionLabel": "Konvention för färgkoder",
       "conventionAuto": "Identifiera automatiskt",
       "conventionIec": "IEC / tvåbokstavskoder",
       "conventionVolvo": "Klassiska Volvo-koder",
@@ -860,10 +857,10 @@
     "declined": {
       "step": "Säker avhållsamhet",
       "title": "De valda sidorna färglades inte",
-      "help": "Betan tar emot vektorsidor och skanningar som endast består av bilder. När extraherbar text saknas läses synliga koder med OCR. Välj konvention uttryckligen om automatisk identifiering var osäker.",
+      "help": "Betan tar emot vektorsidor och skanningar som endast består av bilder. När extraherbar text saknas läses synliga koder med OCR. Konventionen avgörs utifrån sidan själv; om ingen färg kan påstås säkert lämnas sidan orörd.",
       "tryAgain": "Justera och försök igen",
       "genericReason": "Sidan uppfyllde inte betans konservativa kriterier.",
-      "conventionAmbiguous": "Färgkodskonventionen är tvetydig. Den bästa kandidaten är redan vald; bekräfta den och försök igen.",
+      "conventionAmbiguous": "Två kodvokabulär gör anspråk på dessa etiketter och skulle måla olika färger, så ingen färg är säker att påstå.",
       "unsupported": "Ingen ledning kunde färgsättas säkert; originalsidan bevarades."
     },
     "messages": {

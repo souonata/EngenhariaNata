@@ -20,6 +20,33 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-08-31 the colour vocabulary is decided from the page, never from the reviewer (0.6.5)
+
+The upload form asked for a "colour-code convention" and pages were declined with *select the
+convention explicitly and try again*. Both are gone: the picker is removed and the choice is made
+in the backend from the page itself.
+
+The picker could never have helped. The two registries overlap on `BN` and `GN` alone and paint
+both identically, so **no observed code changes colour with the choice**. The reviewer was being
+asked to break a tie that had no second side.
+
+Underneath, one rule was answering two different questions. Selection demanded `best >= 5`, two
+matches and a three-point gap over the runner-up, and called anything else "low" -- which declined
+the whole page. But "which vocabulary is this" and "is there enough evidence" are separate, and
+the second already has an answer downstream, per conductor, in the production topology and the
+semantics gate. Selection now asks only whether the candidates would paint an observed code in
+*different* colours, which `colour_conflicts` measures rather than assumes; a registry added later
+that repaints a shared code starts abstaining on its own, and a test pins that. An exact tie goes
+to the house vocabulary, `volvo_classic`.
+
+Measured on the reviewed manual: pages 48, 50 and 52 stop saying the convention was uncertain and
+say what is true -- no readable colour code was found. They are blank ruled note pages with a
+pencil icon; abstaining on them was always right, while the old message sent the reviewer to a
+setting that could not have changed anything. No page changed its painted result, which is the
+point: the picker never affected a pixel.
+
+Suite: **479 Python tests** and the full repository validation.
+
 ## 2026-08-31 a review larger than a hundred marks was thrown away (0.6.4)
 
 A reviewer marking a whole manual hit `POST /api/jobs/{id}/feedback` three times and got **422**

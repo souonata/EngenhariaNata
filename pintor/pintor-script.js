@@ -1645,7 +1645,8 @@ class PintorApp extends App {
         if (pages.length) {
             form.append('pages', pages.join(','));
         }
-        form.append('convention', document.getElementById('convention').value);
+        // The colour vocabulary is decided from the page itself, by the backend.
+        form.append('convention', 'auto');
         form.append('consent_learning', String(document.getElementById('trainingConsent').checked));
         const response = await fetch(this.apiUrl('jobs'), {
             method: 'POST',
@@ -1826,9 +1827,6 @@ class PintorApp extends App {
             (job.stage === 'confirm-colour-convention'
                 ? i18n.t('declined.conventionAmbiguous')
                 : i18n.t('declined.unsupported'));
-        if (job.stage === 'confirm-colour-convention' && job.convention) {
-            document.getElementById('convention').value = job.convention;
-        }
     }
 
     conventionLabel(value) {

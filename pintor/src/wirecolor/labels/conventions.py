@@ -70,3 +70,31 @@ def validate_disjointness() -> None:
             if overlap:
                 raise ValueError(
                     f"conventions {a.name} and {b.name} share distinctive tokens: {sorted(overlap)}")
+
+
+# The library this beta serves is Volvo Penta, so when the observed codes are equally explained by
+# more than one vocabulary the house one is the honest default rather than an alphabetical accident.
+HOUSE_CONVENTION = "volvo_classic"
+
+
+def colour_conflicts(names, codes) -> set:
+    """Codes among ``codes`` that these conventions would paint in *different* colours.
+
+    Choosing a vocabulary only matters when the choice changes what ends up on the page. Today
+    ``volvo_classic`` and ``iec_two_letter`` overlap on ``BN`` and ``GN`` alone and agree on both,
+    so no observed code is actually ambiguous -- which is why asking a reviewer to break the tie
+    could never have improved a single painted pixel. This computes that fact instead of assuming
+    it, so adding a genuinely conflicting registry later starts abstaining on its own.
+    """
+    loaded = [load_convention(name) for name in names]
+    conflicting = set()
+    for code in codes:
+        painted = set()
+        for convention in loaded:
+            parts = str(code).split("/")
+            if not all(part in convention.codes for part in parts):
+                continue
+            painted.add(tuple(convention.colors_bgr.get(part) for part in parts))
+        if len(painted) > 1:
+            conflicting.add(code)
+    return conflicting

@@ -1130,7 +1130,15 @@ def inspect_pdf_source(pdf_path: Path, page_indices: list[int] | int,
 
 
 def _select_convention(pdf_path: Path, page_index: int, requested: str) -> tuple[str, str]:
-    from .labels.conventions import list_conventions, load_convention
+    """Pick the colour vocabulary for one page from the page itself, never from the reviewer.
+
+    "Low" here means *this route cannot read the page* -- no legend in the text layer -- which
+    hands the page to the OCR route. It does not mean "two vocabularies are plausible": that only
+    matters when they would paint an observed code in different colours, which ``colour_conflicts``
+    measures. A narrow score gap between vocabularies that agree changes no pixel.
+    """
+    from .labels.conventions import (HOUSE_CONVENTION, colour_conflicts, list_conventions,
+                                     load_convention)
     from .labels.text_layer import read_legends, strong_legends
 
     available = list_conventions()
@@ -1149,13 +1157,16 @@ def _select_convention(pdf_path: Path, page_index: int, requested: str) -> tuple
         legends = strong_legends(read_legends(page, 200, convention))
         distinctive = sum(legend.code.split("/")[0] in convention.distinctive for legend in legends)
         score = len(legends) + distinctive * 3
-        scored.append((score, len(legends), name))
+        scored.append((score, len(legends), name == HOUSE_CONVENTION, name,
+                       {legend.code for legend in legends}))
     document.close()
     scored.sort(reverse=True)
     best = scored[0]
-    confidence = "high" if best[0] >= 6 and (len(scored) == 1 or best[0] >= scored[1][0] + 3) \
-        else "low"
-    return best[2], confidence
+    if best[0] == 0:
+        return best[3], "low"
+    rivals = [row[3] for row in scored[1:] if row[1] > 0]
+    ambiguous = bool(rivals) and bool(colour_conflicts([best[3], *rivals], best[4]))
+    return best[3], "low" if ambiguous else "high"
 
 
 def _load_models():
