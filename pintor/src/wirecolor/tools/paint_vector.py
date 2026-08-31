@@ -150,7 +150,8 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
                                diagnose=diagnose, scale=band_scale, page_pt=page_pt,
                                dash_pitch=scaled_pitch, pin_markers=pin_markers)
     v2 = v2_vector_protected_overlap(
-        rgba, context.blocked_zones, analysis_dpi=dpi, paint_dpi=out_dpi)
+        rgba, context.blocked_zones, analysis_dpi=dpi, paint_dpi=out_dpi,
+        pen_px=pen_px * factor)
     document.close()
 
     tag = f"{os.path.splitext(os.path.basename(pdf_path))[0][:40]}_p{page_index}"

@@ -15,7 +15,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from wirecolor.prep import Transform
-from wirecolor.verify.validators import v2_protected_overlap
+from wirecolor.verify.validators import (v2_protected_overlap,
+                                         v2_vector_protected_overlap)
 from wirecolor.web_service import JobStore, _owner_hash, process_job
 
 
@@ -171,6 +172,58 @@ class RasterElectricalSafetyTests(unittest.TestCase):
 
         self.assertFalse(report["declined"])
         self.assertFalse(run_page.call_args.kwargs["allow_splice_propagation"])
+
+    def test_a_stroke_cap_at_a_symbol_edge_is_trimmed_not_refused(self):
+        """A conductor ending at a component overshoots the boundary by about the pen width.
+
+        On a reviewed sheet that was 27 pixels, three deep, against one edge -- and it refused a
+        whole page whose colours were correct. The paint is erased; the page is not condemned.
+        """
+        # The conductor arrives from outside and its cap stops three pixels past the boundary.
+        rgba = np.zeros((120, 120, 4), dtype=np.uint8)
+        rgba[44:50, 0:25, 3] = 255
+
+        verdict = v2_vector_protected_overlap(
+            rgba, [(20, 20, 80, 80)], analysis_dpi=200, paint_dpi=200, pen_px=6)
+
+        self.assertTrue(verdict["passed"])
+        self.assertEqual(verdict["zones_crossed"], 0)
+        self.assertGreater(verdict["painted_px_in_protected"], 0)
+        # Erased inside the symbol, untouched outside it.
+        self.assertEqual(int(rgba[44:50, 22:25, 3].sum()), 0)
+        self.assertEqual(int(rgba[44:50, 0:20, 3].sum()), 6 * 20 * 255)
+
+    def test_colour_running_through_a_symbol_still_fails(self):
+        """Erasing this would leave colour on both sides and assert a connection that is not there."""
+        rgba = np.zeros((120, 120, 4), dtype=np.uint8)
+        rgba[48:52, 0:120, 3] = 255
+
+        verdict = v2_vector_protected_overlap(
+            rgba, [(20, 20, 80, 80)], analysis_dpi=200, paint_dpi=200, pen_px=6)
+
+        self.assertFalse(verdict["passed"])
+        self.assertEqual(verdict["zones_crossed"], 1)
+
+    def test_paint_reaching_deep_from_one_edge_is_not_a_stroke_cap(self):
+        rgba = np.zeros((120, 120, 4), dtype=np.uint8)
+        rgba[30:70, 30:60, 3] = 255
+
+        verdict = v2_vector_protected_overlap(
+            rgba, [(20, 20, 80, 80)], analysis_dpi=200, paint_dpi=200, pen_px=6)
+
+        self.assertFalse(verdict["passed"])
+        self.assertEqual(verdict["zones_entered_deeply"], 1)
+
+    def test_a_clean_page_is_left_untouched(self):
+        rgba = np.zeros((120, 120, 4), dtype=np.uint8)
+        rgba[100:110, 100:110, 3] = 255
+
+        verdict = v2_vector_protected_overlap(
+            rgba, [(20, 20, 80, 80)], analysis_dpi=200, paint_dpi=200, pen_px=6)
+
+        self.assertTrue(verdict["passed"])
+        self.assertEqual(verdict["painted_px_in_protected"], 0)
+        self.assertEqual(int(rgba[100:110, 100:110, 3].sum()), 10 * 10 * 255)
 
     def test_v2_rejects_overlay_inside_a_component_housing(self):
         rgba = np.zeros((120, 120, 4), dtype=np.uint8)

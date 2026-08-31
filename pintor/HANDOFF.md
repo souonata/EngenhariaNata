@@ -20,6 +20,38 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-08-31 a stroke cap is not a routing error (0.6.6)
+
+The protected-region gate counted two different things as one failure and made the whole page pay
+for both. A conductor that *ends* at a component paints up to the boundary and its stroke cap
+overshoots by about the pen width; a conductor painted *through* a component is a routing error,
+because the tracer joined two nets across it. The gate saw only "pixels inside a symbol".
+
+Measured on the four refused pages of the reviewed manual, per zone, by whether the incursion
+reaches two opposite edges:
+
+| page | trimmed px | zones crossed | verdict |
+| --- | --- | --- | --- |
+| 22 | 27 | 0 | stroke cap, three pixels deep against one edge |
+| 40 | 2989 | 2 | colour runs through two symbols |
+| 42 | 17846 | 3 | one incursion spans 361x342 px |
+| 44 | 8751 | 2 | one spans a 378x378 symbol on all four edges |
+
+Incursions are now erased from the overlay either way, so a released page never carries colour
+inside a symbol -- something the old gate never did, it only refused. The verdict then depends on
+what was erased: a shallow bite out of one edge, no deeper than the pen, is a cap and the page is
+released; paint reaching two opposite edges crossed the component and the page still fails, now
+saying so. Erasing a crossing instead would leave colour on both sides and assert a connection the
+drawing denies.
+
+Page 22 is released and its colours are correct -- `BL/W` blue, `SB` black, `Y/GR` and `Y/W`
+yellow -- though only 9 of its 33 runs are painted. Pages 40, 42 and 44 stay refused, and they are
+refused rightly: the remaining defect is upstream, in whatever lets a traced conductor cross a
+component symbol. That is the next target, and it is what stands between the reviewer and the
+pages they marked.
+
+Suite: **483 Python tests** and the full repository validation.
+
 ## 2026-08-31 the colour vocabulary is decided from the page, never from the reviewer (0.6.5)
 
 The upload form asked for a "colour-code convention" and pages were declined with *select the
