@@ -41,6 +41,11 @@ MAX_SIDE_DIAGONAL_FRACTION = 0.12
 # A closed shape longer than this relative to its width is a rule, a bar or a frame, not a housing.
 MAX_ASPECT = 14.0
 
+# An OPAQUE housing is filled with the page colour and stroked in ink; a junction dot is filled
+# with ink. Measured on Group 30 page 46: the sensor boxes and the fuse bodies are fill=(1,1,1)
+# stroked in (0.12, 0.10, 0.09), so treating every fill as a junction discarded every one.
+PAPER_FILL_MIN_CHANNEL = 0.9
+
 # ---- twisted-pair (bowtie / X) marks -------------------------------------------------------------
 # The twist mark on these sheets is a small BOWTIE drawn ON TOP of the cable: two crossing diagonals
 # of near-equal length sharing a midpoint, emitted as ONE path (l, c, l, c). Its SHORT side is only
@@ -120,6 +125,20 @@ def _path_segments_px(items, matrix):
     return out
 
 
+def _is_opaque_housing(path) -> bool:
+    """True when a path is filled with paper and stroked in ink -- a housing that HIDES the sheet.
+
+    This is the one symbol that may cut a conductor. A stroked mark such as the twisted-pair lens
+    lies on top of a live cable and the cable continues underneath, which is why clipping every
+    stroke crossing a symbol was measured worse and rejected. An opaque housing is the opposite: it
+    paints over whatever runs beneath, so the drawing itself refuses to say the conductor continues.
+    """
+    fill = path.get("fill")
+    if fill is None or path.get("color") is None:
+        return False
+    return min(fill) >= PAPER_FILL_MIN_CHANNEL
+
+
 def _is_twist_mark(items, matrix, max_len):
     """True when a path is a bowtie twisted-pair mark: two near-equal diagonals crossing at a shared
     midpoint, both shorter than a conductor. The tiny end-cap curves are ignored."""
@@ -162,7 +181,7 @@ def symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
     max_side = diagonal * max_side_fraction
     max_twist_len = diagonal * MIN_CONDUCTOR_DIAGONAL_FRACTION * TWIST_LEN_FRACTION
 
-    zones, strokes = [], set()
+    zones, strokes, opaque_zones = [], set(), []
     for path in page.get_drawings():
         items = path.get("items", ())
         # A twisted-pair bowtie is stroked (fill=None) but is not a closed housing; strip its own
@@ -175,7 +194,8 @@ def symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
         # connection, not a component. Measured on pub 2543 p0: 125 of 228 candidate zones were the
         # 24 px filled splice markers, and cutting the graph at those severs every splice on the
         # sheet. Component housings are drawn as outlines.
-        if path.get("fill") is not None:
+        opaque = _is_opaque_housing(path)
+        if path.get("fill") is not None and not opaque:
             continue
         for subpath in _subpaths(items):
             if len(subpath) < 3:
@@ -193,10 +213,12 @@ def symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
             if long_ > MAX_ASPECT * max(short, 1e-6):
                 continue                      # a bar or a frame, not a housing
             zones.append((x0, y0, x1, y1))
+            if opaque:
+                opaque_zones.append((x0, y0, x1, y1))
             for a, b in zip(points, points[1:]):
                 if a.x != b.x or a.y != b.y:
                     strokes.add(_seg_key((a.x, a.y), (b.x, b.y)))
-    return zones, strokes
+    return zones, strokes, opaque_zones
 
 
 def strip_symbol_strokes(segments, stroke_keys):
@@ -216,3 +238,64 @@ def strip_symbol_strokes(segments, stroke_keys):
         return list(segments), 0
     kept = [(a, b) for a, b in segments if _seg_key(a, b) not in stroke_keys]
     return kept, len(segments) - len(kept)
+
+
+def clip_segments_to_opaque(segments, opaque_zones, margin=0.0):
+    """Cut conductor ink where an OPAQUE housing covers it, keeping the parts outside.
+
+    A wire drawn as one long stroke can run underneath a fuse body or a sensor box, because the
+    housing is painted over it. Topology then walks straight through the component and one legend
+    colours both sides, which is a connection the sheet never shows -- on Group 30 page 46 an `OR`
+    conductor was painted down through the middle fuse to ground.
+
+    Only opaque housings clip. A stroked mark such as the twisted-pair lens lies *on top of* a cable
+    that visibly continues, and clipping there was measured to sever nine correctly coloured wires
+    (see ``strip_symbol_strokes``); those never reach this function.
+    """
+    if not opaque_zones:
+        return list(segments), 0
+
+    def _outside_parts(a, b):
+        """The parts of segment a->b that no zone covers, as (start, end) fractions."""
+        spans = [(0.0, 1.0)]
+        for x0, y0, x1, y1 in opaque_zones:
+            x0, y0, x1, y1 = x0 - margin, y0 - margin, x1 + margin, y1 + margin
+            enter, leave = 0.0, 1.0
+            for lo, hi, start, delta in (
+                (x0, x1, a[0], b[0] - a[0]),
+                (y0, y1, a[1], b[1] - a[1]),
+            ):
+                if abs(delta) < 1e-9:
+                    if start < lo or start > hi:
+                        enter, leave = 1.0, 0.0
+                        break
+                    continue
+                first, second = (lo - start) / delta, (hi - start) / delta
+                enter = max(enter, min(first, second))
+                leave = min(leave, max(first, second))
+            if leave <= enter:
+                continue                      # this zone does not cover any of the segment
+            kept = []
+            for lo, hi in spans:
+                if enter > lo:
+                    kept.append((lo, min(hi, enter)))
+                if leave < hi:
+                    kept.append((max(lo, leave), hi))
+            spans = [(lo, hi) for lo, hi in kept if hi - lo > 1e-6]
+            if not spans:
+                break
+        return spans
+
+    kept, cut = [], 0
+    for a, b in segments:
+        spans = _outside_parts(a, b)
+        if len(spans) == 1 and spans[0] == (0.0, 1.0):
+            kept.append((a, b))
+            continue
+        cut += 1
+        for lo, hi in spans:
+            start = (a[0] + (b[0] - a[0]) * lo, a[1] + (b[1] - a[1]) * lo)
+            end = (a[0] + (b[0] - a[0]) * hi, a[1] + (b[1] - a[1]) * hi)
+            if start != end:
+                kept.append((start, end))
+    return kept, cut

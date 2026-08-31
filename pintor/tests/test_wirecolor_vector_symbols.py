@@ -20,7 +20,8 @@ sys.path.insert(0, str(BACKEND / "src"))
 
 import fitz
 
-from wirecolor.detect.vector_symbols import (_is_twist_mark, strip_symbol_strokes,
+from wirecolor.detect.vector_symbols import (_is_twist_mark, clip_segments_to_opaque,
+                                             strip_symbol_strokes,
                                              symbol_geometry)
 from wirecolor.eval.vector_truth import build_nets, extract_segments, node_segments
 
@@ -50,10 +51,18 @@ def line(page, x0, y0, x1, y1):
     shape.commit()
 
 
+
+def filled_rect(page, x0, y0, x1, y1, fill=(1, 1, 1)):
+    """A housing as these manuals actually draw one: paper fill, ink outline."""
+    shape = page.new_shape()
+    shape.draw_rect(fitz.Rect(x0, y0, x1, y1))
+    shape.finish(color=(0, 0, 0), fill=fill, width=1.0)
+    shape.commit()
+
 class SymbolZones(unittest.TestCase):
     def test_component_rectangle_is_a_symbol(self):
         doc, page = page_with(lambda p: rect(p, 100, 100, 140, 140))
-        zones, strokes = symbol_geometry(page, DPI, PEN_PX)
+        zones, strokes, _ = symbol_geometry(page, DPI, PEN_PX)
         doc.close()
         self.assertEqual(len(zones), 1)
         self.assertEqual(len(strokes), 4)
@@ -61,13 +70,13 @@ class SymbolZones(unittest.TestCase):
     def test_junction_dot_is_not_a_symbol(self):
         """A closed shape only a few pen widths across is a connection, not a component."""
         doc, page = page_with(lambda p: rect(p, 100, 100, 103, 103))
-        zones, _ = symbol_geometry(page, DPI, PEN_PX)
+        zones, _, _ = symbol_geometry(page, DPI, PEN_PX)
         doc.close()
         self.assertEqual(zones, [])
 
     def test_page_border_is_not_a_symbol(self):
         doc, page = page_with(lambda p: rect(p, 5, 5, 395, 295))
-        zones, _ = symbol_geometry(page, DPI, PEN_PX)
+        zones, _, _ = symbol_geometry(page, DPI, PEN_PX)
         doc.close()
         self.assertEqual(zones, [])
 
@@ -76,7 +85,7 @@ class SymbolZones(unittest.TestCase):
             line(p, 50, 50, 150, 50)
             line(p, 150, 50, 150, 150)
         doc, page = page_with(draw)
-        zones, _ = symbol_geometry(page, DPI, PEN_PX)
+        zones, _, _ = symbol_geometry(page, DPI, PEN_PX)
         doc.close()
         self.assertEqual(zones, [])
 
@@ -94,7 +103,7 @@ class StripSymbolStrokes(unittest.TestCase):
         self.assertEqual(len(build_nets(node_segments(segments))), 1,
                          "precondition: the housing outline bonds both cables")
 
-        _, strokes = symbol_geometry(page, DPI, PEN_PX)
+        _, strokes, _ = symbol_geometry(page, DPI, PEN_PX)
         stripped, removed = strip_symbol_strokes(segments, strokes)
         doc.close()
 
@@ -108,7 +117,7 @@ class StripSymbolStrokes(unittest.TestCase):
 
         doc, page = page_with(draw)
         segments = extract_segments(page, DPI)
-        _, strokes = symbol_geometry(page, DPI, PEN_PX)
+        _, strokes, _ = symbol_geometry(page, DPI, PEN_PX)
         stripped, removed = strip_symbol_strokes(segments, strokes)
         doc.close()
 
@@ -162,9 +171,59 @@ class TwistMarkStripping(unittest.TestCase):
             line(p, 100, 100, 500, 500)
             line(p, 100, 500, 500, 100)
         doc, page = page_with(draw, width=800, height=600)
-        _zones, strokes = symbol_geometry(page, DPI, PEN_PX)
+        _zones, strokes, _ = symbol_geometry(page, DPI, PEN_PX)
         doc.close()
         self.assertEqual(strokes, set(), "real crossings of routed cables must survive")
+
+
+class OpaqueHousings(unittest.TestCase):
+    """A housing filled with paper reads as an outline, and it hides what runs beneath it."""
+
+    def test_a_paper_filled_housing_is_a_symbol(self):
+        doc, page = page_with(lambda p: filled_rect(p, 100, 100, 140, 140))
+        zones, _strokes, opaque = symbol_geometry(page, DPI, PEN_PX)
+        doc.close()
+        # Group 30 page 46 draws its sensor boxes and fuse bodies exactly this way. Reading every
+        # fill as a junction dot discarded them, so their outlines were traced and painted.
+        self.assertEqual(len(zones), 1)
+        self.assertEqual(len(opaque), 1)
+
+    def test_an_ink_filled_dot_is_still_a_junction_not_a_housing(self):
+        doc, page = page_with(lambda p: filled_rect(p, 100, 100, 140, 140, fill=(0, 0, 0)))
+        zones, _strokes, opaque = symbol_geometry(page, DPI, PEN_PX)
+        doc.close()
+        self.assertEqual(zones, [])
+        self.assertEqual(opaque, [])
+
+    def test_a_conductor_is_cut_where_an_opaque_housing_covers_it(self):
+        segments = [((0.0, 50.0), (100.0, 50.0))]
+
+        kept, cut = clip_segments_to_opaque(segments, [(40.0, 40.0, 60.0, 60.0)])
+
+        self.assertEqual(cut, 1)
+        self.assertEqual(kept, [((0.0, 50.0), (40.0, 50.0)), ((60.0, 50.0), (100.0, 50.0))])
+
+    def test_a_conductor_clear_of_every_housing_is_untouched(self):
+        segments = [((0.0, 5.0), (100.0, 5.0))]
+
+        kept, cut = clip_segments_to_opaque(segments, [(40.0, 40.0, 60.0, 60.0)])
+
+        self.assertEqual(cut, 0)
+        self.assertEqual(kept, segments)
+
+    def test_nothing_is_cut_when_the_page_has_no_opaque_housing(self):
+        segments = [((0.0, 50.0), (100.0, 50.0))]
+
+        self.assertEqual(clip_segments_to_opaque(segments, []), (segments, 0))
+
+    def test_a_conductor_ending_inside_a_housing_keeps_only_its_outside_part(self):
+        segments = [((0.0, 50.0), (50.0, 50.0))]
+
+        kept, cut = clip_segments_to_opaque(segments, [(40.0, 40.0, 60.0, 60.0)])
+
+        self.assertEqual(cut, 1)
+        self.assertEqual(kept, [((0.0, 50.0), (40.0, 50.0))])
+
 
 
 if __name__ == "__main__":
