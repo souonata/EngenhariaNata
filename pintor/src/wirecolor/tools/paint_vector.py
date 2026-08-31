@@ -34,6 +34,10 @@ PAINT_DPI = 1200
 # almost entirely transparent and compresses away.
 PAINT_PIXEL_BUDGET = 150_000_000
 
+# Withdrawing a conductor can expose a zone the previous overlay covered, so the repair
+# loop runs until the gate is clean. Bounded because each pass repaints the sheet.
+MAX_REPAIR_PASSES = 6
+
 
 def vector_coverage_stats(source_runs, owned_runs, source_scale=1.0):
     """Count parent runs and geometric coverage after optional atomic-edge splitting."""
@@ -170,25 +174,29 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
     v2 = v2_vector_protected_overlap(
         rgba, context.blocked_zones, analysis_dpi=dpi, paint_dpi=out_dpi,
         pen_px=pen_px * factor)
-    if v2.get("zones_crossed") or v2.get("zones_entered_deeply"):
-        # The centreline test misses paint that reaches a symbol through dash groups or a band
-        # wider than the stroke it follows. Close the loop on the measurement that matters: drop
-        # every conductor touching a zone the pixels say was crossed, and paint once more. One
-        # repair pass, then the page is judged on what it actually produced.
+    # The centreline test misses paint that reaches a symbol through a dash group or a band wider
+    # than the stroke it follows, so close the loop on the measurement itself: withdraw every
+    # conductor touching a zone the pixels report, paint again, and look again. One pass was not
+    # enough -- withdrawing a conductor can expose a zone the first overlay had hidden, and on the
+    # measured corpus a single pass left page 40 refused, costing 24 of its 27 reviewer marks.
+    for _repair in range(MAX_REPAIR_PASSES):
+        if not (v2.get("zones_crossed") or v2.get("zones_entered_deeply")):
+            break
         # The gate reports zones in ANALYSIS pixels; the runs are already in paint pixels.
         repair_zones = [tuple(value * factor for value in zone)
                         for zone in (*v2["crossed_zones"], *v2.get("deep_zones", ()))]
         touching = runs_crossing_zones(owned, repair_zones, tolerance=1e9)
-        if touching:
-            runs_withdrawn += len(touching)
-            owned = [run for index, run in enumerate(owned) if index not in touching]
-            rgba, painted = build_rgba(
-                owned, canvas_hw, convention, out_dpi, pen_px=pen_px * factor,
-                diagnose=diagnose, scale=band_scale, page_pt=page_pt,
-                dash_pitch=scaled_pitch, pin_markers=pin_markers)
-            v2 = v2_vector_protected_overlap(
-                rgba, context.blocked_zones, analysis_dpi=dpi, paint_dpi=out_dpi,
-                pen_px=pen_px * factor)
+        if not touching:
+            break                          # nothing left to withdraw; the page is judged as is
+        runs_withdrawn += len(touching)
+        owned = [run for index, run in enumerate(owned) if index not in touching]
+        rgba, painted = build_rgba(
+            owned, canvas_hw, convention, out_dpi, pen_px=pen_px * factor,
+            diagnose=diagnose, scale=band_scale, page_pt=page_pt,
+            dash_pitch=scaled_pitch, pin_markers=pin_markers)
+        v2 = v2_vector_protected_overlap(
+            rgba, context.blocked_zones, analysis_dpi=dpi, paint_dpi=out_dpi,
+            pen_px=pen_px * factor)
     document.close()
 
     tag = f"{os.path.splitext(os.path.basename(pdf_path))[0][:40]}_p{page_index}"
