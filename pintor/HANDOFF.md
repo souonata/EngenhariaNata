@@ -20,6 +20,48 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-09-05 the first trustworthy number, and what it says to do next
+
+`balanced_fitness` replaced the weighted total as the objective, and the first measurement worth
+quoting is:
+
+| | |
+| --- | --- |
+| fitness | **0.3558** |
+| coverage | 0.3883 |
+| clean regions | **0.1739** |
+| exact colour | 0.6667 |
+| macro average per publication | 0.337 |
+| pages painted | 10 of 11 |
+
+The bottleneck moved. In a geometric mean the lowest component rules, so while clean regions sit at
+0.17 more coverage barely moves the total -- the opposite of what the old weighted score implied,
+and the reason the previous round chased the wrong quantity.
+
+### Connector shells are drawn as loose strokes
+
+Nineteen clean-region marks are unmet and **fifteen are on D4/D6 page 111**, spread corner to
+corner rather than clustered: the signature of a systematic defect. Painting the page shows it --
+every connector shell is outlined in the red of the `R2,5` conductor that reaches its first pin.
+The colour does not stop at the connector, it runs around the body.
+
+The engine already carries `connector_bbox` on each pin marker, and that box is even scaled to the
+paint resolution, yet it protects nothing. Wiring it into `blocked_zones` was tried and measured
+**exactly zero change**, because that page has *no* pin markers at all: `connector_pin_markers`
+returns none. The change was reverted rather than shipped inert.
+
+The reason is the geometry. The shell near the marked point is not a closed subpath and not a rect
+path; it is four independent orthogonal strokes -- `288x0`, `0x119`, `83x0`, `0x25` -- the same
+primitive a conductor is made of. The closed-shape detector cannot see it and neither can the
+connector detector, so the outline enters topology as conductor geometry and inherits the colour of
+whatever wire touches it.
+
+Recognising a rectangle assembled from separate strokes is the next piece of work. It is a
+detection feature, not a threshold, and it is what stands between the reviewer and fifteen of the
+nineteen clean-region marks.
+
+Suite: **505 Python tests**.
+
 ## 2026-08-31 the marks became a number, and the number chose the round (3.1.7 / 0.6.7)
 
 The reviewer's marks were being read by eye. `wirecolor.tools.feedback_fitness` turns each typed
