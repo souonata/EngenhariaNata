@@ -19,6 +19,7 @@ from wirecolor.engine.ownership import OwnedRun, assign
 from wirecolor.engine.policy import DecisionPolicy
 from wirecolor.labels.text_layer import Legend
 from wirecolor.tools.tune_decision_policy import (_measurably_better,
+                                                   _genetic_candidates,
                                                    _zero_regression_candidates)
 from wirecolor.tools.cross_validate_learning import balanced_group_folds
 from wirecolor.tools.train_run_classifier import drawing_group_key
@@ -81,6 +82,72 @@ class DecisionPolicyTests(unittest.TestCase):
         combined = aggregate_scores([left, right])
         self.assertEqual(combined.baseline_regressions, 1)
         self.assertAlmostEqual(combined.loss, 10.375)
+
+
+class GeneticPolicyTests(unittest.TestCase):
+    class QuadraticLedger:
+        def __init__(self, target=220.0):
+            self.target = target
+            self.calls = 0
+
+        def score(self, policy, _classifier, _protected):
+            self.calls += 1
+            return SimpleNamespace(
+                loss=((policy.max_ownership_px - self.target) / 130.0) ** 2,
+                baseline_regressions=0,
+            )
+
+    @staticmethod
+    def signature(ranked):
+        return [
+            (loss, tuple(policy.to_dict()[name] for name in (
+                "max_ownership_px", "refuse_cost", "axis_mismatch_cost",
+                "bridge_gap_factor", "continuation_snap_px",
+            )))
+            for loss, policy in ranked
+        ]
+
+    def test_genetic_search_is_deterministic_for_one_seed(self):
+        left_ledger = self.QuadraticLedger(target=197.0)
+        right_ledger = self.QuadraticLedger(target=197.0)
+
+        left, left_meta = _genetic_candidates(
+            left_ledger, DecisionPolicy(), set(), 64, 9137, None)
+        right, right_meta = _genetic_candidates(
+            right_ledger, DecisionPolicy(), set(), 64, 9137, None)
+
+        self.assertEqual(self.signature(left), self.signature(right))
+        self.assertEqual(left_meta, right_meta)
+        self.assertEqual(left_ledger.calls, 64)
+        self.assertEqual(right_ledger.calls, 64)
+        self.assertTrue(left_meta["baseline_included"])
+
+    def test_every_genetic_candidate_respects_policy_bounds_and_coherence(self):
+        ranked, metadata = _genetic_candidates(
+            self.QuadraticLedger(), DecisionPolicy(), set(), 80, 42, None)
+        bounds = DecisionPolicy.tunable_bounds()
+
+        self.assertEqual(len(ranked), metadata["evaluations"])
+        self.assertLessEqual(metadata["evaluations"], metadata["requested_trials"])
+        for _loss, policy in ranked:
+            self.assertEqual(policy.validate(), policy)
+            self.assertLess(policy.refuse_cost, policy.max_ownership_px)
+            for field, (low, high) in bounds.items():
+                self.assertLessEqual(low, getattr(policy, field), field)
+                self.assertLessEqual(getattr(policy, field), high, field)
+
+    def test_genetic_search_improves_a_fake_ledger_without_losing_the_baseline(self):
+        ledger = self.QuadraticLedger(target=220.0)
+        baseline = DecisionPolicy()
+        baseline_loss = ledger.score(baseline, None, set()).loss
+
+        ranked, metadata = _genetic_candidates(
+            ledger, baseline, set(), 48, 20260901, None)
+
+        self.assertLess(ranked[0][0], baseline_loss)
+        self.assertAlmostEqual(ranked[0][1].max_ownership_px, 220.0)
+        self.assertGreater(metadata["generations"], 0)
+        self.assertTrue(any(policy == baseline for _loss, policy in ranked))
 
 
 class GraphFeatureTests(unittest.TestCase):

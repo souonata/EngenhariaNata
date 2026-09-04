@@ -82,7 +82,8 @@ def v2_protected_overlap(rgba: np.ndarray, solution: dict, transform) -> dict:
 
 
 def v2_vector_protected_overlap(rgba: np.ndarray, protected_zones, analysis_dpi: int,
-                                paint_dpi: int, pen_px: float = 0.0) -> dict:
+                                paint_dpi: int, pen_px: float = 0.0,
+                                geometrically_severed_zones=()) -> dict:
     """No colour survives inside a component symbol, and a conductor may not run through one.
 
     Two different things used to be counted as the same failure, and the whole page paid for both.
@@ -97,6 +98,12 @@ def v2_vector_protected_overlap(rgba: np.ndarray, protected_zones, analysis_dpi:
     Incursions are erased from ``rgba`` either way, so a released overlay never carries colour
     inside a symbol. The verdict then depends on what was erased: a shallow bite out of one edge
     is a stroke cap, while paint reaching two opposite edges crossed the component.
+
+    A narrow opaque housing is the one exception to the pixel-span heuristic. Its source topology
+    has already been severed at both boundaries, so two legitimate end caps can meet in the small
+    interior and look like one crossing in pixels. The caller may identify such a zone only after
+    independently proving that no painted centreline crosses it; V2 still erases every interior
+    pixel and reports the exemption for audit.
     """
     alpha = rgba[:, :, 3]
     height, width = alpha.shape
@@ -109,7 +116,12 @@ def v2_vector_protected_overlap(rgba: np.ndarray, protected_zones, analysis_dpi:
     crossed_zones = []
     deep_zones = []
     deep = 0
+    severed_cap_zones = []
     checked = 0
+    severed = {
+        tuple(round(float(value), 6) for value in zone)
+        for zone in geometrically_severed_zones
+    }
     for x0, y0, x1, y1 in protected_zones:
         left = max(0, round(x0 * factor) + margin)
         top = max(0, round(y0 * factor) + margin)
@@ -128,7 +140,9 @@ def v2_vector_protected_overlap(rgba: np.ndarray, protected_zones, analysis_dpi:
         columns = np.flatnonzero(painted.any(axis=0))
         spans_vertically = bool(painted[0].any() and painted[-1].any())
         spans_horizontally = bool(painted[:, 0].any() and painted[:, -1].any())
-        if spans_vertically or spans_horizontally:
+        zone_key = tuple(round(float(value), 6) for value in (x0, y0, x1, y1))
+        geometry_proves_severed = zone_key in severed
+        if (spans_vertically or spans_horizontally) and not geometry_proves_severed:
             crossings += 1
             crossed_zones.append((x0, y0, x1, y1))
         else:
@@ -139,14 +153,17 @@ def v2_vector_protected_overlap(rgba: np.ndarray, protected_zones, analysis_dpi:
                 int(columns[-1]) + 1 if painted[:, 0].any() else painted.shape[1],
                 painted.shape[1] - int(columns[0]) if painted[:, -1].any() else painted.shape[1],
             )
-            if depth > allowed_depth:
+            if depth > allowed_depth and not geometry_proves_severed:
                 deep += 1
                 deep_zones.append((x0, y0, x1, y1))
+            elif geometry_proves_severed:
+                severed_cap_zones.append((x0, y0, x1, y1))
         rgba[top:bottom, left:right, 3] = np.where(painted, 0, window)
     return dict(name="V2-vector", passed=crossings == 0 and deep == 0,
                 protected_zones_checked=checked, painted_px_in_protected=trimmed,
                 zones_crossed=crossings, zones_entered_deeply=deep,
-                crossed_zones=crossed_zones, deep_zones=deep_zones)
+                crossed_zones=crossed_zones, deep_zones=deep_zones,
+                geometry_severed_cap_zones=severed_cap_zones)
 
 
 def _sha(b: bytes) -> str:

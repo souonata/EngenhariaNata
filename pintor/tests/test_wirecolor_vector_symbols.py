@@ -20,7 +20,8 @@ sys.path.insert(0, str(BACKEND / "src"))
 
 import fitz
 
-from wirecolor.detect.vector_symbols import (_is_twist_mark, strip_symbol_strokes,
+from wirecolor.detect.vector_symbols import (_is_twist_mark, classify_symbol_geometry,
+                                             clip_segments_to_opaque, strip_symbol_strokes,
                                              symbol_geometry)
 from wirecolor.eval.vector_truth import build_nets, extract_segments, node_segments
 
@@ -47,6 +48,13 @@ def line(page, x0, y0, x1, y1):
     shape = page.new_shape()
     shape.draw_line(fitz.Point(x0, y0), fitz.Point(x1, y1))
     shape.finish(color=(0, 0, 0), width=1.0)
+    shape.commit()
+
+
+def filled_rect(page, x0, y0, x1, y1, fill=(1, 1, 1)):
+    shape = page.new_shape()
+    shape.draw_rect(fitz.Rect(x0, y0, x1, y1))
+    shape.finish(color=(0, 0, 0), fill=fill, width=1.0)
     shape.commit()
 
 
@@ -120,6 +128,55 @@ class StripSymbolStrokes(unittest.TestCase):
         stripped, removed = strip_symbol_strokes(segments, set())
         self.assertEqual(removed, 0)
         self.assertEqual(stripped, segments)
+
+
+class OpaqueHousings(unittest.TestCase):
+    def test_a_paper_filled_housing_is_classified_without_breaking_the_legacy_api(self):
+        doc, page = page_with(lambda p: filled_rect(p, 100, 100, 140, 140))
+        details = classify_symbol_geometry(page, DPI, PEN_PX)
+        legacy_zones, legacy_strokes = symbol_geometry(page, DPI, PEN_PX)
+        doc.close()
+
+        self.assertEqual(details.zones, legacy_zones)
+        self.assertEqual(details.stroke_keys, legacy_strokes)
+        self.assertEqual(details.opaque_zones, details.zones)
+
+    def test_an_ink_filled_shape_is_still_a_junction(self):
+        doc, page = page_with(
+            lambda p: filled_rect(p, 100, 100, 140, 140, fill=(0, 0, 0)))
+        details = classify_symbol_geometry(page, DPI, PEN_PX)
+        doc.close()
+
+        self.assertEqual(details.zones, [])
+        self.assertEqual(details.opaque_zones, [])
+
+    def test_a_conductor_is_cut_only_inside_an_opaque_housing(self):
+        segments = [((0.0, 50.0), (100.0, 50.0))]
+
+        kept, clipped = clip_segments_to_opaque(
+            segments, [(40.0, 40.0, 60.0, 60.0)])
+
+        self.assertEqual(clipped, 1)
+        self.assertEqual(
+            kept,
+            [((0.0, 50.0), (40.0, 50.0)), ((60.0, 50.0), (100.0, 50.0))],
+        )
+
+    def test_clear_and_absent_housings_are_no_ops(self):
+        segments = [((0.0, 5.0), (100.0, 5.0))]
+
+        self.assertEqual(
+            clip_segments_to_opaque(segments, [(40.0, 40.0, 60.0, 60.0)]),
+            (segments, 0),
+        )
+        self.assertEqual(clip_segments_to_opaque(segments, []), (segments, 0))
+
+    def test_a_conductor_ending_under_the_fill_keeps_only_visible_geometry(self):
+        kept, clipped = clip_segments_to_opaque(
+            [((0.0, 50.0), (50.0, 50.0))], [(40.0, 40.0, 60.0, 60.0)])
+
+        self.assertEqual(clipped, 1)
+        self.assertEqual(kept, [((0.0, 50.0), (40.0, 50.0))])
 
 
 class TwistMarkDetector(unittest.TestCase):

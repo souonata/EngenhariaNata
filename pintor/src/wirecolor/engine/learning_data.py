@@ -10,7 +10,7 @@ from .policy import DecisionPolicy
 from .vector_page import VectorPageContext, decide_vector_context, extract_vector_context
 
 
-CACHE_VERSION = 4
+CACHE_VERSION = 5
 
 
 def _sha256(path):

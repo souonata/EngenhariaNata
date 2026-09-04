@@ -13,7 +13,7 @@ from math import hypot
 from .policy import DecisionPolicy
 
 
-CONTEXT_SCHEMA_VERSION = 5
+CONTEXT_SCHEMA_VERSION = 6
 
 
 @dataclass
@@ -30,7 +30,9 @@ class VectorPageContext:
     nets: int
     symbol_zones: int
     blocked_zones: list[tuple[float, float, float, float]]
+    opaque_zones: list[tuple[float, float, float, float]]
     symbol_strokes_removed: int
+    opaque_segments_clipped: int
     run_features: list[dict]
     pieces: list[dict]
     piece_features: list[dict]
@@ -51,7 +53,9 @@ class VectorPageContext:
             "nets": self.nets,
             "symbol_zones": self.symbol_zones,
             "blocked_zones": [list(zone) for zone in self.blocked_zones],
+            "opaque_zones": [list(zone) for zone in self.opaque_zones],
             "symbol_strokes_removed": self.symbol_strokes_removed,
+            "opaque_segments_clipped": self.opaque_segments_clipped,
             "run_features": self.run_features,
             "pieces": self.pieces,
             "piece_features": self.piece_features,
@@ -78,7 +82,10 @@ class VectorPageContext:
             symbol_zones=int(raw["symbol_zones"]),
             blocked_zones=[tuple(float(value) for value in zone)
                            for zone in raw.get("blocked_zones", ())],
+            opaque_zones=[tuple(float(value) for value in zone)
+                          for zone in raw.get("opaque_zones", ())],
             symbol_strokes_removed=int(raw["symbol_strokes_removed"]),
+            opaque_segments_clipped=int(raw.get("opaque_segments_clipped", 0)),
             run_features=[{str(key): float(value) for key, value in row.items()}
                           for row in raw["run_features"]],
             pieces=[{
@@ -100,15 +107,20 @@ def extract_vector_context(page, dpi, convention, *, legend_filter=None):
     topology pass on a candidate page.
     """
     from ..detect.vector_pins import connector_pin_markers
-    from ..detect.vector_symbols import strip_symbol_strokes, symbol_geometry
+    from ..detect.vector_symbols import (classify_symbol_geometry, clip_segments_to_opaque,
+                                         strip_symbol_strokes)
     from ..eval.vector_truth import (MIN_CONDUCTOR_DIAGONAL_FRACTION, build_nets,
                                      canvas_diagonal_px, decompose_runs, extract_segments,
                                      modal_pen_px, node_segments)
     from ..labels.text_layer import promote_bare_letters, read_legends, strong_legends
 
     pen_px = modal_pen_px(page, dpi)
-    zones, symbol_strokes = symbol_geometry(page, dpi, pen_px)
-    stripped, zone_dropped = strip_symbol_strokes(extract_segments(page, dpi), symbol_strokes)
+    symbols = classify_symbol_geometry(page, dpi, pen_px)
+    stripped, zone_dropped = strip_symbol_strokes(
+        extract_segments(page, dpi), symbols.stroke_keys)
+    # Paper-filled housings hide the source stroke beneath them. The page therefore provides no
+    # evidence of continuity through the body, so topology must stop at each visible boundary.
+    stripped, opaque_clipped = clip_segments_to_opaque(stripped, symbols.opaque_zones)
     segments = node_segments(stripped)
     nets = build_nets(segments)
     diagonal = canvas_diagonal_px(page, dpi)
@@ -128,7 +140,8 @@ def extract_vector_context(page, dpi, convention, *, legend_filter=None):
     conductor_legends = [legend for index, legend in enumerate(raw_legends)
                          if index not in pin_legend_indexes]
     legends = strong_legends(conductor_legends)
-    promoted = promote_bare_letters(conductor_legends, legends, zones, convention)
+    promoted = promote_bare_letters(
+        conductor_legends, legends, symbols.zones, convention)
     from .classifier import atomic_piece_feature_rows, run_feature_rows
 
     run_features = run_feature_rows(runs, legends, minimum)
@@ -137,9 +150,10 @@ def extract_vector_context(page, dpi, convention, *, legend_filter=None):
         runs=runs, raw_legends=raw_legends, legends=legends, promoted=promoted,
         pin_markers=pin_markers,
         min_run_px=minimum, page_diagonal_px=diagonal, pen_px=pen_px,
-        segments=len(segments), nets=len(nets), symbol_zones=len(zones),
-        blocked_zones=list(zones),
+        segments=len(segments), nets=len(nets), symbol_zones=len(symbols.zones),
+        blocked_zones=list(symbols.zones), opaque_zones=list(symbols.opaque_zones),
         symbol_strokes_removed=zone_dropped,
+        opaque_segments_clipped=opaque_clipped,
         run_features=run_features,
         pieces=pieces, piece_features=piece_features,
     )

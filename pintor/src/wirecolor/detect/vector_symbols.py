@@ -29,6 +29,8 @@ and deleting a junction dot would sever every tap on the page.
 """
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 # A symbol is at least this many modal pen widths across its SHORT side. Below it live the pin
 # circles and junction dots -- closed, but electrical connections rather than components. Measured
 # on pub 34 p148 (pen 1.58 px): pin circles are ~5 px, the twisted-pair lens is 19 px.
@@ -40,6 +42,11 @@ MAX_SIDE_DIAGONAL_FRACTION = 0.12
 
 # A closed shape longer than this relative to its width is a rule, a bar or a frame, not a housing.
 MAX_ASPECT = 14.0
+
+# An opaque housing is filled with the page colour and stroked in ink; a junction dot is filled
+# with ink. Measured on Group 30 page 46, the sensor boxes and fuse bodies are white-filled paths,
+# so treating every filled path as a junction discarded the very boundaries that must stop colour.
+PAPER_FILL_MIN_CHANNEL = 0.9
 
 # ---- twisted-pair (bowtie / X) marks -------------------------------------------------------------
 # The twist mark on these sheets is a small BOWTIE drawn ON TOP of the cable: two crossing diagonals
@@ -120,6 +127,24 @@ def _path_segments_px(items, matrix):
     return out
 
 
+def _is_opaque_housing(path) -> bool:
+    """Whether a path is paper-filled and ink-stroked, so it hides geometry underneath."""
+    fill = path.get("fill")
+    stroke = path.get("color")
+    if fill is None or stroke is None or len(fill) < 3:
+        return False
+    return min(float(channel) for channel in fill[:3]) >= PAPER_FILL_MIN_CHANNEL
+
+
+@dataclass(frozen=True)
+class SymbolGeometry:
+    """Classified component geometry without changing the legacy two-value API."""
+
+    zones: list
+    stroke_keys: set
+    opaque_zones: list
+
+
 def _is_twist_mark(items, matrix, max_len):
     """True when a path is a bowtie twisted-pair mark: two near-equal diagonals crossing at a shared
     midpoint, both shorter than a conductor. The tiny end-cap curves are ignored."""
@@ -146,13 +171,13 @@ def _is_twist_mark(items, matrix, max_len):
     return min(diff, 180.0 - diff) >= TWIST_MIN_ANGLE_DEG
 
 
-def symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
-                    max_side_fraction=MAX_SIDE_DIAGONAL_FRACTION):
-    """(zones, stroke_keys) for the page's component symbols, in working pixels.
+def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
+                             max_side_fraction=MAX_SIDE_DIAGONAL_FRACTION):
+    """Return all component boundaries and the subset that is genuinely opaque.
 
-    ``zones`` are the bounding boxes. ``stroke_keys`` identify the individual straight segments the
-    symbols are drawn with, keyed exactly as ``eval.vector_truth.extract_segments`` emits them, so
-    the symbol can be lifted out of the segment soup without touching anything else.
+    ``zones`` are protected bounding boxes. ``stroke_keys`` identify the individual straight
+    segments the symbols are drawn with. ``opaque_zones`` are the paper-filled housings that hide
+    any conductor drawn underneath and may therefore sever topology safely.
     """
     from ..eval.vector_truth import (MIN_CONDUCTOR_DIAGONAL_FRACTION, _matrix, canvas_diagonal_px)
 
@@ -162,7 +187,7 @@ def symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
     max_side = diagonal * max_side_fraction
     max_twist_len = diagonal * MIN_CONDUCTOR_DIAGONAL_FRACTION * TWIST_LEN_FRACTION
 
-    zones, strokes = [], set()
+    zones, strokes, opaque_zones = [], set(), []
     for path in page.get_drawings():
         items = path.get("items", ())
         # A twisted-pair bowtie is stroked (fill=None) but is not a closed housing; strip its own
@@ -171,11 +196,10 @@ def symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
             for a, b in _path_segments_px(items, matrix):
                 strokes.add(_seg_key(a, b))
             continue
-        # A FILLED closed shape is a junction dot, a splice star or a pin circle -- an electrical
-        # connection, not a component. Measured on pub 2543 p0: 125 of 228 candidate zones were the
-        # 24 px filled splice markers, and cutting the graph at those severs every splice on the
-        # sheet. Component housings are drawn as outlines.
-        if path.get("fill") is not None:
+        # Ink-filled shapes are junction dots, splice stars or pin circles. Paper-filled shapes are
+        # different: these manuals use them for opaque housings whose ink outline remains visible.
+        opaque = _is_opaque_housing(path)
+        if path.get("fill") is not None and not opaque:
             continue
         for subpath in _subpaths(items):
             if len(subpath) < 3:
@@ -192,11 +216,25 @@ def symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
                 continue
             if long_ > MAX_ASPECT * max(short, 1e-6):
                 continue                      # a bar or a frame, not a housing
-            zones.append((x0, y0, x1, y1))
+            zone = (x0, y0, x1, y1)
+            zones.append(zone)
+            if opaque:
+                opaque_zones.append(zone)
             for a, b in zip(points, points[1:]):
                 if a.x != b.x or a.y != b.y:
                     strokes.add(_seg_key((a.x, a.y), (b.x, b.y)))
-    return zones, strokes
+    return SymbolGeometry(zones=zones, stroke_keys=strokes, opaque_zones=opaque_zones)
+
+
+def symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
+                    max_side_fraction=MAX_SIDE_DIAGONAL_FRACTION):
+    """Legacy ``(zones, stroke_keys)`` view used by diagnostics and existing callers."""
+    result = classify_symbol_geometry(
+        page, dpi, pen_px,
+        min_side_pens=min_side_pens,
+        max_side_fraction=max_side_fraction,
+    )
+    return result.zones, result.stroke_keys
 
 
 def strip_symbol_strokes(segments, stroke_keys):
@@ -216,6 +254,64 @@ def strip_symbol_strokes(segments, stroke_keys):
         return list(segments), 0
     kept = [(a, b) for a, b in segments if _seg_key(a, b) not in stroke_keys]
     return kept, len(segments) - len(kept)
+
+
+def clip_segments_to_opaque(segments, opaque_zones, margin=0.0):
+    """Remove only the portions of conductor strokes hidden by opaque component housings.
+
+    A paper-filled housing erases what lies beneath it in the authored drawing, so the source does
+    not assert electrical continuity through that body. Stroked symbols are intentionally excluded:
+    a twisted-pair mark lies over a conductor that visibly continues and must not sever it.
+    """
+    if not opaque_zones:
+        return list(segments), 0
+
+    def outside_parts(a, b):
+        spans = [(0.0, 1.0)]
+        for raw_zone in opaque_zones:
+            x0, y0, x1, y1 = (float(value) for value in raw_zone)
+            x0, y0, x1, y1 = x0 - margin, y0 - margin, x1 + margin, y1 + margin
+            enter, leave = 0.0, 1.0
+            for low, high, start, delta in (
+                (x0, x1, a[0], b[0] - a[0]),
+                (y0, y1, a[1], b[1] - a[1]),
+            ):
+                if abs(delta) < 1e-9:
+                    if start < low or start > high:
+                        enter, leave = 1.0, 0.0
+                        break
+                    continue
+                first, second = (low - start) / delta, (high - start) / delta
+                enter = max(enter, min(first, second))
+                leave = min(leave, max(first, second))
+            if leave <= enter:
+                continue
+            kept = []
+            for low, high in spans:
+                if enter > low:
+                    kept.append((low, min(high, enter)))
+                if leave < high:
+                    kept.append((max(low, leave), high))
+            spans = [(low, high) for low, high in kept if high - low > 1e-6]
+            if not spans:
+                break
+        return spans
+
+    kept, clipped = [], 0
+    for raw_a, raw_b in segments:
+        a = (float(raw_a[0]), float(raw_a[1]))
+        b = (float(raw_b[0]), float(raw_b[1]))
+        spans = outside_parts(a, b)
+        if len(spans) == 1 and spans[0] == (0.0, 1.0):
+            kept.append((raw_a, raw_b))
+            continue
+        clipped += 1
+        for low, high in spans:
+            start = (a[0] + (b[0] - a[0]) * low, a[1] + (b[1] - a[1]) * low)
+            end = (a[0] + (b[0] - a[0]) * high, a[1] + (b[1] - a[1]) * high)
+            if start != end:
+                kept.append((start, end))
+    return kept, clipped
 
 
 def _segment_inside_zone(a, b, zone):

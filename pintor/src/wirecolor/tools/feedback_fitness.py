@@ -41,8 +41,9 @@ WEIGHTS = {"missing": 1.0, "stops-mid": 1.0, "non-wire": 4.0, "bleed": 4.0, "wro
 class MarkOutcome:
     kind: str
     page: int
-    satisfied: bool
+    satisfied: bool | None
     detail: str = ""
+    scorable: bool = True
 
     @property
     def weight(self) -> float:
@@ -58,8 +59,9 @@ class PageScore:
     outcomes: list = field(default_factory=list)
 
     def totals(self) -> tuple[float, float]:
-        earned = sum(item.weight for item in self.outcomes if item.satisfied)
-        possible = sum(item.weight for item in self.outcomes)
+        scorable = [item for item in self.outcomes if item.scorable]
+        earned = sum(item.weight for item in scorable if item.satisfied)
+        possible = sum(item.weight for item in scorable)
         return earned, possible
 
 
@@ -106,6 +108,8 @@ def _dominant_colour(rgba, x: float, y: float, radius_px: float):
 
 
 def _expected_rgb(code: str, convention) -> tuple | None:
+    if convention is None:
+        return None
     parts = str(code).split("/")
     if not all(part in convention.codes for part in parts):
         return None
@@ -123,6 +127,9 @@ def score_page(overlay_rgba, marks: list, convention, colour_tolerance: int = 60
         kind = str(mark.get("type"))
         points = _sample_points(mark.get("geometry") or {})
         if not points:
+            outcomes.append(MarkOutcome(
+                kind=kind, page=int(mark.get("page", -1)), satisfied=None,
+                detail="mark has no usable point geometry", scorable=False))
             continue
         hits = [_painted_near(alpha, x, y, radius)[0] for x, y in points]
         if kind in WANT_PAINT:
@@ -136,15 +143,48 @@ def score_page(overlay_rgba, marks: list, convention, colour_tolerance: int = 60
             wanted = _expected_rgb(mark.get("expected_code") or "", convention)
             found = _dominant_colour(overlay_rgba, points[0][0], points[0][1], radius)
             if wanted is None:
-                continue                      # the reviewer named a code this convention lacks
+                outcomes.append(MarkOutcome(
+                    kind=kind, page=int(mark.get("page", -1)), satisfied=None,
+                    detail=("expected colour code is absent from the selected convention: "
+                            f"{mark.get('expected_code')!r}"), scorable=False))
+                continue
             satisfied = found is not None and all(
                 abs(int(a) - int(b)) <= colour_tolerance for a, b in zip(found, wanted))
             detail = f"esperado {wanted}, encontrado {found}"
         else:
+            outcomes.append(MarkOutcome(
+                kind=kind, page=int(mark.get("page", -1)), satisfied=None,
+                detail=f"unsupported mark type: {kind}", scorable=False))
             continue
         outcomes.append(MarkOutcome(kind=kind, page=int(mark.get("page", -1)),
                                     satisfied=satisfied, detail=detail))
     return outcomes
+
+
+def balanced_fitness(outcomes: list[MarkOutcome]) -> tuple[float, dict]:
+    """Geometric mean of coverage, clean-region safety, and exact-colour correctness.
+
+    The weighted score remains useful for a human-readable severity total, but it is unsafe as a
+    genetic objective by itself: on the first real export an entirely blank overlay scored 0.2911
+    because the few high-weight negative marks outweighed 206 missing-colour marks. Requiring every
+    represented objective prevents both blank output and paint-everything output from winning.
+    """
+    groups = {
+        "coverage": WANT_PAINT,
+        "clean_regions": WANT_BARE,
+        "exact_colour": WANT_CODE,
+    }
+    components = {}
+    for name, kinds in groups.items():
+        relevant = [item for item in outcomes if item.scorable and item.kind in kinds]
+        if relevant:
+            components[name] = sum(bool(item.satisfied) for item in relevant) / len(relevant)
+    if not components:
+        return 0.0, {}
+    product = 1.0
+    for value in components.values():
+        product *= value
+    return product ** (1.0 / len(components)), components
 
 
 def load_reports(path: str | Path) -> list:
@@ -167,20 +207,47 @@ def summarise(scores: list) -> dict:
 
     per_kind = Counter()
     per_kind_ok = Counter()
+    per_kind_unscorable = Counter()
     earned = possible = 0.0
+    all_outcomes = []
+    publication_totals = {}
     for page in scores:
         page_earned, page_possible = page.totals()
         earned += page_earned
         possible += page_possible
+        manual_totals = publication_totals.setdefault(page.manual, [0.0, 0.0])
+        manual_totals[0] += page_earned
+        manual_totals[1] += page_possible
         for outcome in page.outcomes:
+            all_outcomes.append(outcome)
+            if not outcome.scorable:
+                per_kind_unscorable[outcome.kind] += 1
+                continue
             per_kind[outcome.kind] += 1
             per_kind_ok[outcome.kind] += int(outcome.satisfied)
+    fitness, components = balanced_fitness(all_outcomes)
+    publication_scores = [earned_ / possible_ for earned_, possible_ in publication_totals.values()
+                          if possible_]
     return {
         "pages": len(scores),
         "pages_painted": sum(1 for page in scores if page.painted),
         "marks": int(sum(per_kind.values())),
+        "marks_total": len(all_outcomes),
+        "marks_unscorable": int(sum(per_kind_unscorable.values())),
         "marks_satisfied": int(sum(per_kind_ok.values())),
         "weighted_score": round(earned / possible, 4) if possible else 0.0,
-        "by_kind": {kind: {"total": per_kind[kind], "satisfied": per_kind_ok[kind]}
-                    for kind in sorted(per_kind)},
+        "publication_macro_weighted_score": (
+            round(sum(publication_scores) / len(publication_scores), 4)
+            if publication_scores else 0.0),
+        "fitness_score": round(fitness, 4),
+        "fitness_components": {
+            key: round(value, 4) for key, value in sorted(components.items())},
+        "by_kind": {
+            kind: {
+                "total": per_kind[kind],
+                "satisfied": per_kind_ok[kind],
+                "unscorable": per_kind_unscorable[kind],
+            }
+            for kind in sorted(set(per_kind) | set(per_kind_unscorable))
+        },
     }
