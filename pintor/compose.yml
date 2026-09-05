@@ -2,7 +2,7 @@ services:
   api:
     build:
       context: .
-    image: engnata/pintor-api:0.6.7
+    image: engnata/pintor-api:0.6.8
     restart: unless-stopped
     init: true
     ports:
@@ -10,7 +10,7 @@ services:
     environment:
       # Must equal the image tag above; scripts/validate_pintor_release.mjs enforces it, and
       # /api/health reports it so a stale VM is visible from outside.
-      PINTOR_RELEASE: '0.6.7'
+      PINTOR_RELEASE: '0.6.8'
       PINTOR_HOST: 0.0.0.0
       PINTOR_PORT: 8765
       PINTOR_WEB_ROOT: /data
