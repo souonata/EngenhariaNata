@@ -20,6 +20,58 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-09-05 a twist mark that replaces the cable, and a bridge sized for A4
+
+A reviewer opened a D13 wiring diagram twice and reported the same defects both times, at the same
+coordinates: colour dying part-way up several conductors, and the twist bowties painted as if they
+were wire. Reproducibility that exact means a mechanism, not an accident.
+
+**The first mechanism was real and was not the cause.** `_is_twist_mark` reads a bowtie emitted as
+one two-line path; D13 emits each diagonal as its own path, so no twist on the sheet was ever
+recognised and their ink was painted as conductor. `paired_twist_strokes` now pairs across paths
+using the four constants the one-path detector already uses -- on D13 the pair matches with room to
+spare: two 85 px diagonals, equal length, midpoints coincident to 0.0 px, crossing at 44 degrees.
+No new threshold. A first attempt dropped the structural guard entirely and paired 834 strokes on a
+page that offers 15553 short lines, nearly all of them text glyphs; requiring each diagonal to *be*
+its path restored specificity, giving 84 twists on page 1 and 57 on page 2.
+
+Measured against the reviewer's marks, that fix changed **nothing** -- identical to the digit, mark
+by mark. Which was the useful result, because it sent the search somewhere else.
+
+**The cable is not severed by the twist; it is not drawn across it.** In the marked column there is
+no ink at all between y=980 and y=1012: the conductor stops, the bowtie occupies the 32 px, and the
+conductor resumes. The twist *replaces* a piece of cable rather than lying on top of one, which is
+the opposite of the case this module was built for. Stripping ink could never reconnect it.
+
+**The bridge exists, and its ceiling is scale-blind.** The budget is
+`min(bridge_max_gap_px, bridge_gap_factor * min_run_px)`. On A4 the relative term governs -- 29.2
+against a 30 ceiling, so the ceiling never binds. On the D13 foldout the relative term asks for 117
+and the ceiling cuts it to 30. Its only real effect is to give a large-format sheet a bridge sized
+for A4, in a file where every other geometric constant is a fraction of the page diagonal.
+
+Raising the ceiling to 36, inside its existing bounds:
+
+| | 30 | 36 | 42 |
+| --- | --- | --- | --- |
+| fitness | 0.2535 | **0.2610** | 0.2610 |
+| coverage | 0.2933 | **0.3200** | 0.3200 |
+| stops-mid | 19/46 | **23/46** | 23/46 |
+| clean regions | 0.1111 | 0.1111 | 0.1111 |
+| exact colour | 0.5 | 0.5 | 0.5 |
+
+Every precision category is unchanged across four manuals, and 36 and 42 measure identically, so
+this is not an edge fitted to one drawing. On D13 page 1 alone the nine stops-mid marks go from 5/9
+to 9/9. 36 is the more conservative of two equal answers.
+
+Making the ceiling itself relative to the sheet is the real repair and is deliberately not attempted
+here: on D13 that would hand the bridge 117 px, far beyond anything measured.
+
+Still unexplained on D13: five *non-wire* and two *missing*. The non-wire marks sit on the bowties,
+and a point mark cannot separate "you painted the symbol" from "you painted the cable beneath the
+symbol" -- and the second is what the rule asks for, so those may never reach zero.
+
+Suite: **509 Python tests** and the full repository validation.
+
 ## 2026-09-05 the release number now has to agree with itself
 
 The site publishes `config/versions.json` from `main` automatically; the API image is built by hand

@@ -299,6 +299,33 @@ class ClassifierTrainingTests(unittest.TestCase):
             self.assertIsInstance(loaded, RunClassifierEnsemble)
             self.assertAlmostEqual(loaded.predict_probability(row), 0.5)
 
+class BridgeBudget(unittest.TestCase):
+
+    def test_the_bridge_ceiling_clears_a_twist_that_replaces_cable(self):
+        """A twist mark can stand in a gap the cable does not cross, and the gap scales with the sheet.
+
+        On D13 page 1 the conductor stops at y=980 and resumes at y=1012 with the bowtie in the 32
+        px between; no ink crosses, so colour cannot pass. The budget is
+        `min(bridge_max_gap_px, bridge_gap_factor * min_run_px)`, and on that foldout the relative
+        term asks for 117 while the ceiling cuts it to 30 -- a large sheet given an A4 bridge.
+        """
+        policy = DecisionPolicy()
+
+        self.assertGreater(policy.bridge_max_gap_px, 32.0)
+        # ...and the ceiling stays inside the bounds a search is allowed to move it within.
+        low, high = DecisionPolicy._BOUNDS["bridge_max_gap_px"]
+        self.assertGreaterEqual(policy.bridge_max_gap_px, low)
+        self.assertLessEqual(policy.bridge_max_gap_px, high)
+
+    def test_the_bridge_ceiling_only_binds_on_a_large_sheet(self):
+        """On A4 the relative term governs, so raising the ceiling changes nothing there."""
+        policy = DecisionPolicy()
+        a4_relative = policy.bridge_gap_factor * 48.7        # measured min_run_px on D1/D2 p46
+        foldout_relative = policy.bridge_gap_factor * 194.9  # measured min_run_px on D13 p1
+
+        self.assertLess(a4_relative, policy.bridge_max_gap_px)
+        self.assertGreater(foldout_relative, policy.bridge_max_gap_px)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -40,7 +40,22 @@ class DecisionPolicy:
     promoted_max_fold: float = 2.5
 
     # Continuity across a small symbol gap.
-    bridge_max_gap_px: float = 30.0
+    #
+    # This ceiling is scale-blind, and it is the only term that binds on a large sheet. The budget
+    # is `min(this, bridge_gap_factor * min_run_px)`: on A4 the relative term governs (29.2 against
+    # a 30 ceiling), while on the D13 foldout the relative term asks for 117 and the ceiling cuts it
+    # to 30. So a large-format drawing gets a bridge sized for A4.
+    #
+    # A twist mark on these sheets does not lie on top of the cable, it REPLACES a piece of it: on
+    # D13 page 1 the conductor stops at y=980 and resumes at y=1012 with the bowtie in the 32 px
+    # between, and no ink crosses. A reviewer marked that twice, at the same coordinates -- colour
+    # dying at every twist on the sheet.
+    #
+    # Measured over four manuals: 30 -> 36 lifts stops-mid from 19/46 to 23/46 and coverage from
+    # 0.2933 to 0.3200, with every precision category unchanged. 36 and 42 measure identically, so
+    # this is not an edge fitted to one drawing; 36 is the more conservative of two equal answers.
+    # Making the ceiling itself relative to the sheet is the real repair and is not attempted here.
+    bridge_max_gap_px: float = 36.0
     bridge_gap_factor: float = 0.60
     bridge_angle_tol_deg: float = 12.0
     bridge_lateral_min_px: float = 6.0
