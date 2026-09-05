@@ -160,6 +160,17 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
     if crossing:
         owned = [run for index, run in enumerate(owned) if index not in crossing]
 
+    scaled_opaque_zones = [
+        tuple(value * factor for value in zone) for zone in context.opaque_zones]
+
+    def proven_severed_opaque_zones():
+        """Opaque zones whose post-decision centrelines do not enter the hidden interior."""
+        return [
+            analysis_zone
+            for analysis_zone, paint_zone in zip(context.opaque_zones, scaled_opaque_zones)
+            if not runs_crossing_zones(owned, [paint_zone], tolerance=1e9)
+        ]
+
     scale = out_dpi / 72.0
     canvas_hw = (int(round(page.rect.height * scale)), int(round(page.rect.width * scale)))
     page_pt = (page.rect.width, page.rect.height)
@@ -169,7 +180,8 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
                                dash_pitch=scaled_pitch, pin_markers=pin_markers)
     v2 = v2_vector_protected_overlap(
         rgba, context.blocked_zones, analysis_dpi=dpi, paint_dpi=out_dpi,
-        pen_px=pen_px * factor)
+        pen_px=pen_px * factor,
+        geometrically_severed_zones=proven_severed_opaque_zones())
     if v2.get("zones_crossed") or v2.get("zones_entered_deeply"):
         # The centreline test misses paint that reaches a symbol through dash groups or a band
         # wider than the stroke it follows. Close the loop on the measurement that matters: drop
@@ -188,7 +200,8 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
                 dash_pitch=scaled_pitch, pin_markers=pin_markers)
             v2 = v2_vector_protected_overlap(
                 rgba, context.blocked_zones, analysis_dpi=dpi, paint_dpi=out_dpi,
-                pen_px=pen_px * factor)
+                pen_px=pen_px * factor,
+                geometrically_severed_zones=proven_severed_opaque_zones())
     document.close()
 
     tag = f"{os.path.splitext(os.path.basename(pdf_path))[0][:40]}_p{page_index}"
@@ -216,7 +229,9 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
         "pdf": pdf_path, "page": page_index, "dpi": dpi,
         "segments": context.segments, "nets": context.nets, "runs": len(runs),
         "symbol_zones": context.symbol_zones,
+        "opaque_symbol_zones": len(context.opaque_zones),
         "symbol_strokes_removed": context.symbol_strokes_removed,
+        "opaque_segments_clipped": context.opaque_segments_clipped,
         "legends": len(context.legends),
         "pin_markers_painted": len(pin_markers),
         "pin_marker_codes": sorted({marker.code for marker in pin_markers}),

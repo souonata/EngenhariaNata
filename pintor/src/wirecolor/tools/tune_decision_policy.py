@@ -10,6 +10,11 @@ Evolutionary comparison (SciPy differential evolution):
     python -m wirecolor.tools.tune_decision_policy --train-root workspaces/wirecolor_qa \
       --sampler differential-evolution --trials 180 --out policy-de.json
 
+Deterministic genetic search with an exact evaluation budget:
+
+    python -m wirecolor.tools.tune_decision_policy --train-root workspaces/wirecolor_qa \
+      --sampler genetic --trials 240 --seed 20260901 --out policy-ga.json
+
 The optimiser sees the training ledger only.  Validation selects among the best training
 candidates; an optional lockbox is scored exactly once after selection and can never influence the
 parameters.  Existing passing cases are hard constraints through a dominating penalty.
@@ -21,6 +26,7 @@ from datetime import datetime, timezone
 import json
 import math
 import os
+import random
 
 
 SEARCH_FIELDS = (
@@ -165,6 +171,220 @@ def _de_candidates(ledger, base, protected, trials, seed, classifier):
                     "requested_trials": trials, "seed": seed}
 
 
+def _genetic_candidates(ledger, base, protected, trials, seed, classifier,
+                        seed_profiles=None):
+    """Evolve bounded policies with deterministic, budgeted genetic search.
+
+    The chromosome lives in the unit cube and is decoded exclusively through
+    :meth:`DecisionPolicy.tunable_bounds`.  The proven baseline is always the first evaluated
+    member.  Only fields that can affect the supplied classifier are active, so a shadow run does
+    not spend its finite budget evolving inert genes.  Every decoded policy is repaired for the
+    sole cross-field invariant and then passed through ``DecisionPolicy.validate()`` by
+    :func:`_candidate` before it can reach the ledger.
+
+    ``trials`` is a hard cap on unique calls to ``ledger.score``.  Elites and duplicate offspring
+    are served from a canonical-policy cache and therefore do not consume that budget.
+    """
+    budget = int(trials)
+    if budget < 1:
+        raise ValueError("genetic optimisation needs at least one evaluation")
+
+    rng = random.Random(int(seed))
+    bounds_map = base.tunable_bounds()
+    classifier_unit = (getattr(classifier, "metadata", None) or {}).get("unit")
+    active_fields = tuple(
+        name for name in SEARCH_FIELDS
+        if name not in CLASSIFIER_FIELDS
+        or (classifier is not None and (
+            name != "classifier_assignment_weight" or classifier_unit != "atomic-piece"))
+    )
+    dimensions = len(active_fields)
+    if not dimensions:
+        raise ValueError("genetic optimisation has no active decision-policy fields")
+
+    population_size = min(budget, max(6, min(32, 2 * dimensions)))
+    elite_count = max(1, population_size // 5)
+    tournament_size = 3
+    crossover_rate = 0.90
+    mutation_rate = 1.0 / dimensions
+    mutation_sigma = 0.12
+    cache = {}
+    cache_hits = 0
+    repaired_candidates = 0
+    rejected_candidates = 0
+    clipped_genes = 0
+    nonfinite_scores = 0
+    generations = 0
+
+    def encode(policy):
+        return tuple(
+            (float(getattr(policy, name)) - bounds_map[name][0])
+            / (bounds_map[name][1] - bounds_map[name][0])
+            for name in active_fields
+        )
+
+    def decode(genome):
+        nonlocal clipped_genes, repaired_candidates, rejected_candidates
+        clipped = []
+        for raw in genome:
+            value = min(1.0, max(0.0, float(raw)))
+            clipped_genes += int(value != raw)
+            clipped.append(value)
+        values = {name: getattr(base, name) for name in SEARCH_FIELDS}
+        for name, unit_value in zip(active_fields, clipped):
+            low, high = bounds_map[name]
+            value = low + unit_value * (high - low)
+            if name in INTEGER_FIELDS:
+                value = int(round(value))
+            values[name] = value
+
+        # Refusal must become cheaper before the absolute ownership reach ends.  Repairing this
+        # dependent constraint keeps crossover productive while the policy loader remains the final
+        # authority over every bound and coherence rule.
+        if values["refuse_cost"] >= values["max_ownership_px"]:
+            values["refuse_cost"] = max(
+                bounds_map["refuse_cost"][0], values["max_ownership_px"] - 1e-6)
+            repaired_candidates += 1
+        policy = _candidate(base, values)
+        if policy is None:
+            rejected_candidates += 1
+            return None, tuple(clipped)
+        # Return the repaired policy's chromosome, rather than the pre-repair proposal, so its
+        # descendants inherit exactly the decision that earned this fitness.
+        return policy, encode(policy)
+
+    def canonical_key(policy):
+        # The JSON policy is the replay unit.  Names are provenance, not decisions, and are omitted
+        # so the baseline and an equivalent evolved chromosome share one cached score.
+        return tuple(round(float(getattr(policy, name)), 12) for name in SEARCH_FIELDS)
+
+    def evaluate(genome, policy=None):
+        nonlocal cache_hits, nonfinite_scores
+        if policy is None:
+            policy, genome = decode(genome)
+        else:
+            genome = tuple(min(1.0, max(0.0, float(value))) for value in genome)
+        if policy is None:
+            return None, False
+        key = canonical_key(policy)
+        if key in cache:
+            cache_hits += 1
+            return cache[key], False
+        if len(cache) >= budget:
+            return None, False
+        loss = float(ledger.score(policy, classifier, protected).loss)
+        if not math.isfinite(loss):
+            loss = math.inf
+            nonfinite_scores += 1
+        record = (loss, policy, tuple(genome), key)
+        cache[key] = record
+        return record, True
+
+    baseline_genome = encode(base)
+    baseline_record, _ = evaluate(baseline_genome, policy=base)
+    population = [baseline_record]
+    population_keys = {baseline_record[3]}
+
+    def add_initial(genome, policy=None):
+        if len(population) >= population_size or len(cache) >= budget:
+            return
+        record, _new = evaluate(genome, policy=policy)
+        if record is not None and record[3] not in population_keys:
+            population.append(record)
+            population_keys.add(record[3])
+
+    # Safe, measured profiles and both corners make the first generation cover the full bounded
+    # range.  The baseline remains first and survives through elitism if every mutation is worse.
+    for profile in seed_profiles or ():
+        changes = {name: value for name, value in profile.items() if name in active_fields}
+        try:
+            seeded = base.evolved(name="learned-v1", **changes)
+        except ValueError:
+            continue
+        add_initial(encode(seeded), policy=seeded)
+    add_initial((0.0,) * dimensions)
+    add_initial((1.0,) * dimensions)
+    attempts = 0
+    while len(population) < population_size and len(cache) < budget:
+        before = len(population)
+        add_initial(tuple(rng.random() for _ in range(dimensions)))
+        attempts = 0 if len(population) > before else attempts + 1
+        if attempts > max(100, 20 * population_size):
+            break
+
+    def rank(records):
+        return sorted(records, key=lambda item: (item[0], item[3]))
+
+    def tournament(records):
+        contestants = [records[rng.randrange(len(records))]
+                       for _ in range(min(tournament_size, len(records)))]
+        return min(contestants, key=lambda item: (item[0], item[3]))
+
+    while len(cache) < budget and population:
+        ordered = rank(population)
+        elites = ordered[:min(elite_count, len(ordered))]
+        wanted_new = min(max(1, population_size - len(elites)), budget - len(cache))
+        offspring = []
+        offspring_keys = set()
+        attempts = 0
+        max_attempts = max(200, 50 * wanted_new)
+        while len(offspring) < wanted_new and len(cache) < budget and attempts < max_attempts:
+            attempts += 1
+            left = tournament(population)[2]
+            right = tournament(population)[2]
+            if rng.random() < crossover_rate:
+                # Blend crossover permits a small extrapolation; decode clips it to the certified
+                # unit cube before any policy can be scored.
+                child = []
+                for a, b in zip(left, right):
+                    blend = rng.uniform(-0.15, 1.15)
+                    child.append(blend * a + (1.0 - blend) * b)
+            else:
+                child = list(left)
+
+            mutated = False
+            for index in range(dimensions):
+                if rng.random() < mutation_rate:
+                    child[index] += rng.gauss(0.0, mutation_sigma)
+                    mutated = True
+            if not mutated:
+                index = rng.randrange(dimensions)
+                child[index] += rng.gauss(0.0, mutation_sigma)
+
+            record, is_new = evaluate(child)
+            if is_new and record[3] not in offspring_keys:
+                offspring.append(record)
+                offspring_keys.add(record[3])
+
+        # Floating chromosomes almost never collide, but a deterministic immigrant prevents a
+        # narrow, converged population from ending before its requested evaluation budget.
+        while len(offspring) < wanted_new and len(cache) < budget and attempts < 2 * max_attempts:
+            attempts += 1
+            record, is_new = evaluate(tuple(rng.random() for _ in range(dimensions)))
+            if is_new and record[3] not in offspring_keys:
+                offspring.append(record)
+                offspring_keys.add(record[3])
+        if not offspring:
+            break
+        population = elites + offspring
+        generations += 1
+
+    ranked = [(record[0], record[1]) for record in rank(cache.values())]
+    return ranked, {
+        "sampler": "genetic", "trials": len(cache), "evaluations": len(cache),
+        "requested_trials": budget, "seed": int(seed), "generations": generations,
+        "population_size": population_size, "final_population_size": len(population),
+        "elite_count": elite_count, "tournament_size": tournament_size,
+        "crossover_rate": crossover_rate, "mutation_rate": mutation_rate,
+        "mutation_sigma": mutation_sigma, "genes": list(active_fields),
+        "normalization": "unit-interval-to-decision-policy-bounds",
+        "baseline_included": True, "cache_hits": cache_hits,
+        "repaired_candidates": repaired_candidates,
+        "rejected_candidates": rejected_candidates, "clipped_genes": clipped_genes,
+        "nonfinite_scores": nonfinite_scores,
+    }
+
+
 def optimise(train_root, out_path, validation_root=None, lockbox_root=None, cache_dir=None,
              trials=120, sampler="tpe", seed=20260725, classifier_path=None, report_path=None):
     from ..engine.classifier import CalibratedRunClassifier
@@ -186,8 +406,13 @@ def optimise(train_root, out_path, validation_root=None, lockbox_root=None, cach
     baseline = train.score(base, classifier, protected)
     if sampler == "tpe":
         ranked, run_meta = _tpe_candidates(train, base, protected, trials, seed, classifier)
-    else:
+    elif sampler == "differential-evolution":
         ranked, run_meta = _de_candidates(train, base, protected, trials, seed, classifier)
+    elif sampler == "genetic":
+        ranked, run_meta = _genetic_candidates(
+            train, base, protected, trials, seed, classifier)
+    else:
+        raise ValueError(f"unknown decision-policy sampler {sampler!r}")
     if not ranked:
         raise RuntimeError("optimiser produced no valid decision policy")
 
@@ -292,7 +517,8 @@ def main():
     parser.add_argument("--lockbox-root")
     parser.add_argument("--cache-dir")
     parser.add_argument("--trials", type=int, default=120)
-    parser.add_argument("--sampler", choices=("tpe", "differential-evolution"), default="tpe")
+    parser.add_argument(
+        "--sampler", choices=("tpe", "differential-evolution", "genetic"), default="tpe")
     parser.add_argument("--seed", type=int, default=20260725)
     parser.add_argument("--classifier")
     parser.add_argument("--out", required=True)

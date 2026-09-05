@@ -14,6 +14,7 @@ cache between runs; a second pass over the same corpus re-solves rather than re-
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import time
@@ -21,23 +22,31 @@ import time
 from .feedback_fitness import PageScore, load_reports, marks_by_page, score_page, summarise
 
 
-def find_source(name: str, library: Path, digest: str | None = None) -> Path | None:
-    """Locate the manual a report refers to, by file name and then by digest."""
-    if not name:
-        return None
-    direct = list(library.rglob(name))
-    if direct:
-        return direct[0]
-    stem = Path(name).stem
-    for candidate in library.rglob("*.pdf"):
-        if candidate.stem == stem:
-            return candidate
-    if digest:
-        import hashlib
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
-        for candidate in library.rglob("*.pdf"):
-            if hashlib.sha256(candidate.read_bytes()).hexdigest() == digest:
-                return candidate
+
+def find_source(name: str, library: Path, digest: str | None = None,
+                candidates: list[Path] | None = None,
+                digest_cache: dict[Path, str] | None = None) -> Path | None:
+    """Locate a source deterministically and enforce its exported SHA-256 when present."""
+    candidates = sorted(candidates if candidates is not None else library.rglob("*.pdf"))
+    digest_cache = digest_cache if digest_cache is not None else {}
+    wanted_digest = str(digest or "").lower()
+    stem = Path(name).stem if name else ""
+    named = [candidate for candidate in candidates
+             if candidate.name == name or (stem and candidate.stem == stem)]
+    ordered = named + [candidate for candidate in candidates if candidate not in set(named)]
+    if not wanted_digest:
+        return named[0] if named else None
+    for candidate in ordered:
+        actual = digest_cache.setdefault(candidate, _sha256_file(candidate))
+        if actual.lower() == wanted_digest:
+            return candidate
     return None
 
 
@@ -91,11 +100,13 @@ def paint_and_score(pdf: Path, page_index: int, marks: list, out_dir: Path,
 def run(feedback: Path, library: Path, out_dir: Path, policy=None,
         limit_pages: int | None = None) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
-    scores, missing_sources = [], []
+    scores, missing_sources, benchmark_errors = [], [], []
+    source_candidates = sorted(library.rglob("*.pdf"))
+    digest_cache = {}
     started = time.time()
     for report in load_reports(feedback):
         pdf = find_source(report.get("original_name") or "", library,
-                          report.get("source_sha256"))
+                          report.get("source_sha256"), source_candidates, digest_cache)
         if pdf is None:
             missing_sources.append(report.get("original_name"))
             continue
@@ -106,17 +117,31 @@ def run(feedback: Path, library: Path, out_dir: Path, policy=None,
             try:
                 scores.append(paint_and_score(pdf, page_index, marks, out_dir, policy=policy))
             except Exception as error:                 # one bad page never stops a benchmark
+                import numpy as np
+
+                from ..labels.conventions import load_convention
+
+                message = f"{type(error).__name__}: {error}"
+                benchmark_errors.append({
+                    "manual": pdf.name, "page_1_based": page_index + 1, "error": message})
+                outcomes = score_page(
+                    np.zeros((4, 4, 4), dtype=np.uint8), marks,
+                    load_convention(report.get("convention") or "volvo_classic"),
+                )
                 scores.append(PageScore(manual=pdf.stem, page=page_index, painted=False,
-                                        reason=f"{type(error).__name__}: {error}"))
+                                        reason=message, outcomes=outcomes))
     payload = {
         "schema": "pintor-feedback-benchmark-v1",
         "seconds": round(time.time() - started, 1),
+        "complete": not missing_sources and not benchmark_errors,
         "sources_not_found": missing_sources,
+        "errors": benchmark_errors,
         "summary": summarise(scores),
         "pages": [{
             "manual": page.manual, "page_1_based": page.page + 1, "painted": page.painted,
             "reason": page.reason,
-            "marks": [{"kind": item.kind, "satisfied": item.satisfied, "detail": item.detail}
+            "marks": [{"kind": item.kind, "satisfied": item.satisfied,
+                       "scorable": item.scorable, "detail": item.detail}
                       for item in page.outcomes],
         } for page in scores],
     }

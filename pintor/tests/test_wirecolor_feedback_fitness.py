@@ -10,7 +10,8 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from wirecolor.detect.vector_symbols import runs_crossing_zones
 from wirecolor.labels.conventions import load_convention
-from wirecolor.tools.feedback_fitness import WEIGHTS, score_page, summarise
+from wirecolor.tools.feedback_fitness import (WEIGHTS, PageScore, balanced_fitness,
+                                              score_page, summarise)
 
 
 def _mark(kind, points, expected=None):
@@ -77,6 +78,30 @@ class MarkScoring(unittest.TestCase):
         self.assertGreater(honest_score, greedy_score)
         self.assertGreater(WEIGHTS["non-wire"], WEIGHTS["missing"])
 
+    def test_neither_blank_nor_paint_everything_can_win_genetic_fitness(self):
+        blank = np.zeros((100, 100, 4), dtype=np.uint8)
+        everything = np.full((100, 100, 4), 255, dtype=np.uint8)
+        marks = [
+            _mark("missing", [[0.5, 0.5]]),
+            _mark("non-wire", [[0.2, 0.2]]),
+        ]
+
+        blank_score, _ = balanced_fitness(score_page(blank, marks, self.convention))
+        greedy_score, _ = balanced_fitness(score_page(everything, marks, self.convention))
+        honest_score, _ = balanced_fitness(score_page(_painted_band(), marks, self.convention))
+
+        self.assertEqual(blank_score, 0.0)
+        self.assertEqual(greedy_score, 0.0)
+        self.assertEqual(honest_score, 1.0)
+
+    def test_unknown_expected_code_is_reported_as_unscorable(self):
+        outcomes = score_page(
+            _painted_band(), [_mark("wrong-colour", [[0.5, 0.5]], "E")], self.convention)
+
+        self.assertEqual(len(outcomes), 1)
+        self.assertFalse(outcomes[0].scorable)
+        self.assertIsNone(outcomes[0].satisfied)
+
 
 class CrossingConductors(unittest.TestCase):
     ZONE = [(40.0, 40.0, 60.0, 60.0)]
@@ -109,19 +134,42 @@ class Summary(unittest.TestCase):
             _mark("non-wire", [[0.5, 0.9]]),
         ], convention)
 
-        class Page:
-            painted = True
-
-            def totals(self):
-                return (sum(i.weight for i in outcomes if i.satisfied),
-                        sum(i.weight for i in outcomes))
-
-        Page.outcomes = outcomes
-        report = summarise([Page()])
+        # Use the real PageScore: a hand-rolled stand-in went stale the moment `summarise` began
+        # averaging by publication, and the test failed for its own shape rather than the code's.
+        report = summarise([PageScore(manual="m", page=0, painted=True, outcomes=outcomes)])
 
         self.assertEqual(report["marks"], 3)
-        self.assertEqual(report["by_kind"]["missing"], {"total": 2, "satisfied": 1})
-        self.assertEqual(report["by_kind"]["non-wire"], {"total": 1, "satisfied": 1})
+        self.assertEqual(
+            report["by_kind"]["missing"],
+            {"total": 2, "satisfied": 1, "unscorable": 0},
+        )
+        self.assertEqual(
+            report["by_kind"]["non-wire"],
+            {"total": 1, "satisfied": 1, "unscorable": 0},
+        )
+
+    def test_a_blank_overlay_cannot_win_the_fitness(self):
+        """The failure that made the first reported number meaningless.
+
+        The weighted total is a severity sum, and the few high-weight negative marks outweighed 206
+        missing-colour ones: an entirely blank overlay scored 0.2911 on the real export, against
+        0.3006 for a build that actually painted. The balanced fitness is a geometric mean over the
+        objectives, so any objective left at zero takes the whole score with it.
+        """
+        import numpy as np
+
+        convention = load_convention("volvo_classic")
+        marks = [_mark("missing", [[0.5, 0.5]]), _mark("non-wire", [[0.2, 0.2]])]
+        blank = np.zeros((100, 100, 4), dtype=np.uint8)
+        everything = np.full((100, 100, 4), 255, dtype=np.uint8)
+
+        blank_fitness, _ = balanced_fitness(score_page(blank, marks, convention))
+        greedy_fitness, _ = balanced_fitness(score_page(everything, marks, convention))
+        honest_fitness, _ = balanced_fitness(score_page(_painted_band(), marks, convention))
+
+        self.assertEqual(blank_fitness, 0.0)
+        self.assertEqual(greedy_fitness, 0.0)
+        self.assertGreater(honest_fitness, 0.0)
 
 
 if __name__ == "__main__":
