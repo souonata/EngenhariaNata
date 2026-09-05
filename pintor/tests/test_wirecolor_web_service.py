@@ -631,6 +631,26 @@ class WebServiceTests(unittest.TestCase):
         finally:
             output.close()
 
+    def test_health_declares_the_release_it_answers_as(self):
+        """A stale VM is invisible unless the API says which release is actually serving.
+
+        The site publishes its version from `main` automatically while this image is built by hand,
+        so the two drifted twice -- the second time the site advertised 0.6.7 for four days with
+        0.6.6 answering every request.
+        """
+        with patch.dict(os.environ, {"PINTOR_RELEASE": "9.9.9"}):
+            body = self.client.get("/api/health").json()
+
+        self.assertEqual(body["release"], "9.9.9")
+        self.assertIn("engine", body)
+
+    def test_health_says_unset_rather_than_guessing(self):
+        """"unset" means nobody declared a release -- never that the drift check passed."""
+        with patch.dict(os.environ, {"PINTOR_RELEASE": ""}):
+            body = self.client.get("/api/health").json()
+
+        self.assertEqual(body["release"], "unset")
+
     def test_a_whole_manual_review_is_accepted_beyond_a_hundred_marks(self):
         """A reviewer marked 28 defects on one dense sheet; a manual-wide review runs to hundreds.
 

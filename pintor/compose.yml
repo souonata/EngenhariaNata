@@ -8,6 +8,9 @@ services:
     ports:
       - '${PINTOR_BIND_IP:-127.0.0.1}:8765:8765'
     environment:
+      # Must equal the image tag above; scripts/validate_pintor_release.mjs enforces it, and
+      # /api/health reports it so a stale VM is visible from outside.
+      PINTOR_RELEASE: '0.6.7'
       PINTOR_HOST: 0.0.0.0
       PINTOR_PORT: 8765
       PINTOR_WEB_ROOT: /data

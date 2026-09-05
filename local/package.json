@@ -29,9 +29,10 @@
     "format:pintor": "prettier --config .prettierrc.json --check \"../pintor/index.html\" \"../pintor/pintor-script.js\" \"../pintor/pintor-network.js\" \"../pintor/pintor-network.test.js\" \"../pintor/pintor-pages.js\" \"../pintor/pintor-pages.test.js\" \"../pintor/pintor-viewport.js\" \"../pintor/pintor-viewport.test.js\" \"../pintor/pintor-styles.css\" \"../pintor/README.md\" \"../pintor/HANDOFF.md\" \"../pintor/docs/ELECTRICAL_SAFETY_RULES.md\" \"../scripts/validate_no_private_build_artifacts.mjs\" \"../src/i18n/pintor.json\"",
     "style:pintor": "stylelint \"../pintor/pintor-styles.css\" --config .stylelintrc.json --allow-empty-input",
     "validate:pintor": "npm run lint:pintor && npm run format:pintor && npm run style:pintor",
-    "validate": "npm run lint:check && npm run format:check && npm run style:check && npm test && npm run validate:i18n && npm run validate:assets && npm run validate:patentenautica && npm run validate:pintor",
+    "validate": "npm run lint:check && npm run format:check && npm run style:check && npm test && npm run validate:i18n && npm run validate:assets && npm run validate:patentenautica && npm run validate:pintor-release && npm run validate:pintor",
     "prebuild": "npm run lint:check",
-    "validate:assets": "node ../scripts/validate_assets_referenciados.mjs"
+    "validate:assets": "node ../scripts/validate_assets_referenciados.mjs",
+    "validate:pintor-release": "node ../scripts/validate_pintor_release.mjs"
   },
   "keywords": [
     "engenharia",

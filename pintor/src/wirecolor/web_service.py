@@ -51,6 +51,28 @@ ACCOUNT_OWNER_PURPOSE = b"pintor-account-owner-v1:"
 FEEDBACK_ID_RE = re.compile(r"^[a-f0-9]{32}$")
 ROUND_ID_RE = re.compile(r"^[a-f0-9]{32}$")
 MAX_ROUND_NAME = 80
+
+def release_name() -> str:
+    """The release this container answers as, from `PINTOR_RELEASE` in compose.
+
+    scripts/validate_pintor_release.mjs keeps that value equal to the image tag and to the version
+    the site publishes. "unset" is honest: it means nobody declared one, not that the check passed.
+    Read per request rather than at import so the value is never a stale copy of the environment.
+    """
+    return os.getenv("PINTOR_RELEASE", "").strip() or "unset"
+
+
+def _engine_version() -> str:
+    """The painting engine's own package version, independent of the API release number."""
+    try:
+        from importlib.metadata import version
+
+        return version("pintor-wiring")
+    except Exception:
+        return "unknown"
+
+
+ENGINE_VERSION = _engine_version()
 # One reviewer marked 28 defects on a single dense sheet, so a whole-manual review legitimately
 # runs to several hundred. The old ceiling of 100 rejected the whole submission with a 422 and the
 # reviewer lost every mark they had placed; a bound this size still refuses an abusive payload
@@ -1868,6 +1890,11 @@ def create_app(workspace_root: str | Path | None = None,
             "status": "ok", "beta": True, "access_required": beta_enabled,
             "authenticated": authenticated, "accounts_required": accounts_required,
             "account_authenticated": bool(account),
+            # The site publishes its version from `main` automatically while this image is built by
+            # hand, so the two can drift apart silently -- and did, for four days. Reporting the
+            # release here is what makes a stale VM visible from outside it.
+            "release": release_name(),
+            "engine": ENGINE_VERSION,
         }
 
     @app.post("/api/access")
