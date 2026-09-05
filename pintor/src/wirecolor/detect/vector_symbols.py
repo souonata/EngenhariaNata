@@ -188,6 +188,9 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
     max_twist_len = diagonal * MIN_CONDUCTOR_DIAGONAL_FRACTION * TWIST_LEN_FRACTION
 
     zones, strokes, opaque_zones = [], set(), []
+    # Whether a bowtie's two diagonals share a path is the producer's choice, not the
+    # drawing's, so look for the pair across paths as well as within one.
+    strokes |= paired_twist_strokes(page, matrix, max_twist_len)
     for path in page.get_drawings():
         items = path.get("items", ())
         # A twisted-pair bowtie is stroked (fill=None) but is not a closed housing; strip its own
@@ -225,6 +228,75 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
                     strokes.add(_seg_key((a.x, a.y), (b.x, b.y)))
     return SymbolGeometry(zones=zones, stroke_keys=strokes, opaque_zones=opaque_zones)
 
+
+
+def paired_twist_strokes(page, matrix, max_len):
+    """Twist marks whose two diagonals arrive as SEPARATE paths, not one.
+
+    ``_is_twist_mark`` reads a bowtie emitted as a single two-line path. That grouping is a choice
+    the PDF producer makes, not a property of the drawing: the D13 wiring diagram emits each
+    diagonal as its own one-line path, so the detector could never see them and every twist on the
+    sheet severed its cable. A reviewer marked the result twice, at the same coordinates both
+    times -- colour stopping dead at each twist, and the bowtie's own ink painted as if it were
+    wire.
+
+    No new threshold is introduced. The pair must satisfy exactly the constants the one-path
+    detector already uses, and on D13 they do so with room to spare: two 85 px diagonals, equal in
+    length, midpoints coincident to 0.0 px, crossing at 44 degrees.
+
+    Midpoint coincidence is what makes this specific. Two unrelated strokes essentially never share
+    a midpoint, which is why pairing across the whole page stays safe.
+    """
+    from math import atan2, degrees, hypot
+
+    candidates = []
+    for path in page.get_drawings():
+        items = path.get("items", ())
+        # The diagonal must BE the path, not a stroke inside a bigger one. That is the structural
+        # guard the one-path detector gets from `len(lines) != 2`, and without an equivalent this
+        # pairs glyph strokes: page 1 of D13 offers 15553 short lines, nearly all of them text.
+        if path.get("fill") is not None or len(items) != 1:
+            continue
+        for item in items:
+            if item[0] != "l":
+                continue
+            start, end = item[1] * matrix, item[2] * matrix
+            a, b = (start.x, start.y), (end.x, end.y)
+            length = hypot(b[0] - a[0], b[1] - a[1])
+            if length < 4.0 or length > max_len:
+                continue
+            middle = ((a[0] + b[0]) / 2.0, (a[1] + b[1]) / 2.0)
+            candidates.append((middle, length, atan2(b[1] - a[1], b[0] - a[0]), a, b))
+
+    # Bucket by midpoint so pairing stays linear on a sheet with thousands of short strokes.
+    buckets = {}
+    cell = max(max_len * TWIST_MID_FRACTION, 1.0)
+    for index, (middle, *_rest) in enumerate(candidates):
+        key = (int(middle[0] // cell), int(middle[1] // cell))
+        buckets.setdefault(key, []).append(index)
+
+    strokes = set()
+    for (column, row), members in buckets.items():
+        near = [index for dx in (-1, 0, 1) for dy in (-1, 0, 1)
+                for index in buckets.get((column + dx, row + dy), ())]
+        for position, first in enumerate(members):
+            m1, l1, angle1, a1, b1 = candidates[first]
+            for second in near:
+                if second <= first:
+                    continue
+                m2, l2, angle2, a2, b2 = candidates[second]
+                long_, short_ = max(l1, l2), min(l1, l2)
+                if short_ < TWIST_LEN_RATIO * long_:
+                    continue
+                if hypot(m1[0] - m2[0], m1[1] - m2[1]) > TWIST_MID_FRACTION * long_:
+                    continue
+                difference = abs(degrees(angle1 - angle2)) % 180.0
+                if min(difference, 180.0 - difference) < TWIST_MIN_ANGLE_DEG:
+                    continue
+                strokes.add(_seg_key(a1, b1))
+                strokes.add(_seg_key(a2, b2))
+            del position
+    return strokes
 
 def symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
                     max_side_fraction=MAX_SIDE_DIAGONAL_FRACTION):
