@@ -20,6 +20,37 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-09-05 the release number now has to agree with itself
+
+The site publishes `config/versions.json` from `main` automatically; the API image is built by hand
+on its VM. Twice they drifted, and the second time the site advertised **0.6.7 for four days while
+0.6.6 answered every request** -- the per-conductor abstention users were told about was not
+running. Nothing in the repository or on the wire could have shown that.
+
+Two checks now can, at the two places the mistake is actually made.
+
+**Before the commit.** `scripts/validate_pintor_release.mjs` runs inside `npm run validate` and
+fails unless three literals agree: the `image:` tag in `pintor/compose.yml`, the `PINTOR_RELEASE`
+environment entry beside it, and `config/versions.json`. Both half-bumps were provoked to confirm
+it refuses them, with a message naming the consequence rather than the mismatch -- *"the site would
+announce a version the API does not carry"*.
+
+**On the wire.** `/api/health` reports `release` (from `PINTOR_RELEASE`) and `engine` (the installed
+`pintor-wiring` version, which is a different number and drifts for different reasons).
+`pintor/deploy/check-release-drift.sh` compares the live API against the live site and exits
+non-zero when they disagree, with no dependency on `jq`. Run against production before this change
+shipped it correctly reported `release <none>` and exited 2: the running image predates the
+variable, and the script says so rather than assuming agreement.
+
+`release` reads the environment per request rather than at import. The first attempt read it once
+at module load, which forced the test to `importlib.reload` the web service -- and that broke nine
+unrelated tests, because a reloaded module's exception classes no longer match the ones already
+caught. Reading per request is both simpler and what a test can drive honestly.
+
+"unset" is a deliberate value: it means nobody declared a release, never that the check passed.
+
+Suite: **507 Python tests** and the full repository validation.
+
 ## 2026-09-05 the first trustworthy number, and what it says to do next
 
 `balanced_fitness` replaced the weighted total as the objective, and the first measurement worth
