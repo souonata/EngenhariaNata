@@ -75,17 +75,47 @@ def _sample_points(geometry, samples: int = 9) -> list:
              y0 + (y1 - y0) * index / (samples - 1.0)) for index in range(samples)]
 
 
-def _painted_near(alpha, x: float, y: float, radius_px: float):
-    """(is_painted, column, row) for the overlay pixel nearest a normalised point."""
+def _painted_near(alpha, x: float, y: float, radius_px: float, direction=None):
+    """Is the conductor painted at this point?
+
+    A reviewer clicking beside a wire scatters ACROSS it, not along it, so the tolerance belongs on
+    the perpendicular. Applying it in both directions gives the scorer a blind spot exactly the size
+    of its own tolerance: on the D13 foldout the disc has a 46 px radius, and after the bridge fix
+    the reviewer's remaining marks were 30 px long. Every one scored as satisfied while they were
+    still looking at a real gap. Probing across the mark keeps the along-track resolution.
+
+    Without a direction -- a point mark asserts no extent -- the disc is still the honest shape.
+    """
     height, width = alpha.shape[:2]
     column, row = int(round(x * width)), int(round(y * height))
     reach = max(1, int(round(radius_px)))
-    left, right = max(0, column - reach), min(width, column + reach + 1)
-    top, bottom = max(0, row - reach), min(height, row + reach + 1)
-    if right <= left or bottom <= top:
-        return False, column, row
-    window = alpha[top:bottom, left:right]
-    return bool((window > 0).any()), column, row
+    if direction is None:
+        left, right = max(0, column - reach), min(width, column + reach + 1)
+        top, bottom = max(0, row - reach), min(height, row + reach + 1)
+        if right <= left or bottom <= top:
+            return False, column, row
+        return bool((alpha[top:bottom, left:right] > 0).any()), column, row
+
+    # Probe a line perpendicular to the mark, one pixel thick along it.
+    across_x, across_y = -direction[1], direction[0]
+    for step in range(-reach, reach + 1):
+        probe_column = int(round(column + across_x * step))
+        probe_row = int(round(row + across_y * step))
+        if 0 <= probe_column < width and 0 <= probe_row < height:
+            if alpha[probe_row, probe_column] > 0:
+                return True, column, row
+    return False, column, row
+
+
+def _mark_direction(points) -> tuple | None:
+    """Unit vector along a segment mark, or None when the mark is a single point."""
+    if len(points) < 2:
+        return None
+    (x0, y0), (x1, y1) = points[0], points[-1]
+    length = math.hypot(x1 - x0, y1 - y0)
+    if length <= 0:
+        return None
+    return ((x1 - x0) / length, (y1 - y0) / length)
 
 
 def _dominant_colour(rgba, x: float, y: float, radius_px: float):
@@ -131,7 +161,8 @@ def score_page(overlay_rgba, marks: list, convention, colour_tolerance: int = 60
                 kind=kind, page=int(mark.get("page", -1)), satisfied=None,
                 detail="mark has no usable point geometry", scorable=False))
             continue
-        hits = [_painted_near(alpha, x, y, radius)[0] for x, y in points]
+        direction = _mark_direction(points)
+        hits = [_painted_near(alpha, x, y, radius, direction)[0] for x, y in points]
         if kind in WANT_PAINT:
             # A segment is satisfied when colour survives along it, not merely at one end.
             satisfied = all(hits) if len(points) > 1 else hits[0]
