@@ -41,6 +41,38 @@ class MarkScoring(unittest.TestCase):
 
         self.assertEqual([item.satisfied for item in outcomes], [True, False])
 
+    def test_a_gap_smaller_than_the_tolerance_is_still_seen(self):
+        """The scorer must not go blind exactly where the remaining work is.
+
+        The tolerance exists for the scatter of a reviewer's click, which is ACROSS the wire. Applied
+        as a disc it also blurs ALONG the mark, so a defect shorter than the radius always scores as
+        satisfied. On the D13 foldout the radius is 46 px; after the bridge fix the reviewer's
+        remaining marks were 30 px long, and all five scored 5/5 while they were still looking at a
+        real gap. Probing perpendicular keeps the along-track resolution.
+        """
+        import numpy as np
+
+        convention = load_convention("volvo_classic")
+        # A painted wire with a short bare stub at the top, shorter than the tolerance radius.
+        rgba = np.zeros((400, 400, 4), dtype=np.uint8)
+        rgba[40:400, 198:202, :] = 255
+        mark = _mark("stops-mid", [[0.5, 0.03], [0.5, 0.09]])
+
+        outcome = score_page(rgba, [mark], convention)[0]
+
+        self.assertFalse(outcome.satisfied)
+
+    def test_a_point_mark_keeps_the_disc(self):
+        """A point mark asserts no extent, so shrinking its tolerance would only add noise."""
+        import numpy as np
+
+        convention = load_convention("volvo_classic")
+        rgba = np.zeros((400, 400, 4), dtype=np.uint8)
+        rgba[198:202, 0:400, :] = 255
+        beside = _mark("missing", [[0.5, 0.502]])
+
+        self.assertTrue(score_page(rgba, [beside], convention)[0].satisfied)
+
     def test_a_non_wire_mark_is_violated_by_paint(self):
         outcomes = score_page(_painted_band(), [_mark("non-wire", [[0.5, 0.5]])], self.convention)
 
