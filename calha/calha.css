@@ -1324,9 +1324,45 @@ table.tabela {
 .fig-seta { fill: var(--grafite); }
 .fig-hachura-linha { stroke: var(--agua); stroke-width: 1.3; }
 
-.tema legend {
-  margin-bottom: 0.3rem;
+/* Idioma e tema no padrão do Engenharia Nata (cópia de assets/css/dock-global.css:
+   o calha é standalone e não carrega o CSS do site). Topo e centro, no fluxo da página. */
+.engnata-dock {
+  display: flex; align-items: center; gap: 6px; width: max-content; max-width: calc(100vw - 20px);
+  margin: 10px auto; padding: 5px 7px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82); border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16); color: var(--nanquim);
 }
+.engnata-dock__grupo { display: flex; align-items: center; gap: 4px; }
+.engnata-dock__grupo--tema { padding-left: 6px; border-left: 1px solid rgba(0, 0, 0, 0.12); }
+.engnata-dock .lang-btn,
+.engnata-dock .theme-toggle-btn {
+  display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px;
+  padding: 0; margin: 0; border-radius: 50%; border: 1px solid transparent; background: transparent;
+  color: inherit; cursor: pointer; transition: background-color 0.2s ease, transform 0.15s ease;
+}
+.engnata-dock svg { display: block; width: 21px; height: auto; border-radius: 2px; }
+.engnata-dock .theme-toggle-btn svg { width: 18px; height: 18px; border-radius: 0; }
+.engnata-dock button:not(:disabled):hover { background: rgba(0, 0, 0, 0.08); transform: translateY(-1px); }
+.engnata-dock button:focus-visible { outline: 2px solid #2f7fd1; outline-offset: 2px; }
+.engnata-dock .lang-btn.active { background: rgba(0, 0, 0, 0.1); border-color: rgba(0, 0, 0, 0.38); cursor: default; }
+.engnata-dock .lang-btn:not(.active) svg { opacity: 0.6; }
+.engnata-dock .lang-btn:disabled { cursor: not-allowed; }
+.engnata-dock .lang-btn:disabled svg { opacity: 0.35; filter: grayscale(0.4); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .engnata-dock { background: rgba(28, 32, 38, 0.85); border-color: rgba(255, 255, 255, 0.16); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45); }
+  :root:not([data-theme='light']) .engnata-dock__grupo--tema { border-left-color: rgba(255, 255, 255, 0.18); }
+  :root:not([data-theme='light']) .engnata-dock button:not(:disabled):hover { background: rgba(255, 255, 255, 0.14); }
+  :root:not([data-theme='light']) .engnata-dock .lang-btn.active { background: rgba(255, 255, 255, 0.18); border-color: rgba(255, 255, 255, 0.62); }
+}
+:root[data-theme='dark'] .engnata-dock { background: rgba(28, 32, 38, 0.85); border-color: rgba(255, 255, 255, 0.16); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45); }
+:root[data-theme='dark'] .engnata-dock__grupo--tema { border-left-color: rgba(255, 255, 255, 0.18); }
+:root[data-theme='dark'] .engnata-dock button:not(:disabled):hover { background: rgba(255, 255, 255, 0.14); }
+:root[data-theme='dark'] .engnata-dock .lang-btn.active { background: rgba(255, 255, 255, 0.18); border-color: rgba(255, 255, 255, 0.62); }
+@media (hover: none) and (pointer: coarse) {
+  .engnata-dock .lang-btn,
+  .engnata-dock .theme-toggle-btn { width: 44px; height: 44px; }
+}
+@media print { .engnata-dock { display: none !important; } }
 
 /* ------------------------------------------------------------------ */
 /* Campos dinâmicos (revisão técnica)                                 */
@@ -1430,6 +1466,11 @@ input.num {
 .termos dt { font-family: var(--f-titulo); font-size: var(--t-19); font-weight: 600; }
 .termos dt span { color: var(--patina); font-size: var(--t-14); margin-left: 0.45rem; }
 .termos dd { margin: 0.15rem 0 0; font-size: var(--t-14); color: var(--grafite); }
+.verificacoes { list-style: none; margin: 0; padding: 0; }
+.verificacoes label { display: flex; align-items: flex-start; gap: 0.7rem; min-height: 44px; padding: 0.55rem 0; border-top: 1px solid var(--linha); cursor: pointer; }
+.verificacoes input { flex: none; width: 1.15rem; height: 1.15rem; margin: 0.2rem 0 0; accent-color: var(--patina); }
+.verificacoes .ref { flex: none; min-width: 4.2rem; color: var(--patina); font-size: var(--t-14); font-variant-numeric: tabular-nums; }
+.verificacoes input:checked ~ .verif-texto { color: var(--apagado); }
 .mem-grupo { display: grid; gap: 0.8rem; }
 .mem-grupo + .mem-grupo { border-top: 1px solid var(--linha); padding-top: 0.9rem; }
 .mem-grupo-t {
@@ -1548,9 +1589,19 @@ html.com-relatorio body { overflow: hidden; }
 .rel-fig .esq { min-width: 0; }
 .rel-tabela { width: 100%; margin: 0.5rem 0; font-size: var(--t-12); }
 .rel-tabela tr { break-inside: avoid; }
+/* Relatório sem rolagem: a tabela cabe na largura da folha e o texto longo quebra em mais linhas. */
+.rel .rolagem { overflow: visible; }
+.rel table.rel-tabela { width: 100%; min-width: 0; }
+.rel .rel-tabela th,
+.rel .rel-tabela td { white-space: normal; overflow-wrap: break-word; padding-left: 0.35rem; padding-right: 0.35rem; vertical-align: top; }
+.rel .rel-tabela th { letter-spacing: 0.02em; hyphens: auto; overflow-wrap: anywhere; }
 .rel-tabela tr.grupo th { text-align: left; background: var(--papel); }
 .rel-conclusao { font-weight: 600; margin-top: 0.6rem !important; }
 .rel-nota { font-size: var(--t-12); color: var(--apagado); }
+.rel-verif { list-style: none; margin: 0.5rem 0 0; padding: 0; font-size: var(--t-12); }
+.rel-verif li { display: flex; gap: 0.5rem; padding: 0.25rem 0; border-top: 1px solid var(--linha); break-inside: avoid; }
+.rel-verif .rel-marca { flex: none; }
+.rel-verif .rel-ref { flex: none; min-width: 3.8rem; color: var(--patina); }
 .rel-rodape { margin-top: 1.5rem; border-top: 1px solid var(--linha-forte); padding-top: 0.6rem; font-size: var(--t-12); color: var(--grafite); break-inside: avoid; }
 .rel-assina { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin: 2.2rem 0 0.8rem; }
 .rel-assina span { border-top: 1px solid var(--nanquim); padding-top: 0.25rem; }

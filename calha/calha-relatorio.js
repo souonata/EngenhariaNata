@@ -105,6 +105,15 @@
           }).join('') + '</tbody>';
         }).join('') + '</table></div></section>';
     }
+    const verif = o.verificacoes || [];
+    if (verif.length) {
+      const feitos = verif.filter(function (v) { return v.ok; }).length;
+      h += '<section class="rel-bloco"><h2>O que a conta não verifica</h2><p class="rel-nota">Exigências dos itens 4 e 5 que dependem do projeto e da obra. Conferidas: ' +
+        feitos + ' de ' + verif.length + '.</p><ul class="rel-verif">' + verif.map(function (v) {
+          return '<li' + (v.ok ? ' class="ok"' : '') + '><span class="rel-marca" aria-label="' + (v.ok ? 'conferido' : 'não conferido') + '">' + (v.ok ? '☑' : '☐') +
+            '</span><span class="rel-ref">' + esc(v.ref) + '</span><span>' + esc(v.texto) + '</span></li>';
+        }).join('') + '</ul></section>';
+    }
     h += '<footer class="rel-rodape"><div class="rel-assina"><span>Responsável técnico</span><span>Registro profissional</span><span>Data e assinatura</span></div>' +
       '<p>Documento gerado pela ferramenta Calhas a partir da ABNT NBR 10844:1989. As curvas dos ábacos da Figura 3 foram digitalizadas da norma impressa. ' +
       'Não substitui a leitura da norma nem a responsabilidade técnica do projetista.</p></footer>';

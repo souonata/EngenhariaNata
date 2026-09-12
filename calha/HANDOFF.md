@@ -88,8 +88,16 @@ com `root` apontando para lá. Leia o artifact antes (action `read`) em chat nov
   iOS); área segura; abas e tabelas rolam no próprio quadro. Conferido em 390 × 844 e
   820 × 1180 sem rolagem lateral.
 
-Removida a pedido do usuário (2026-09-12): a seção "O que a conta não verifica" (lista de
-itens 4 e 5 para marcar) e o bloco correspondente do relatório.
+- 3.5.1 (2026-09-12, a pedido do usuário): volta a seção "O que a conta não verifica"
+  (15 itens dos itens 4 e 5 para marcar, marcas em `localStorage` `calha10844:verificacoes`)
+  e o bloco correspondente no relatório, com ☑/☐ e contagem de conferidos. No esquema, nenhum
+  texto cruza traço: rótulo do coletor abaixo da linha do coletor e rótulo de condutor só no
+  lado sem outro condutor a menos de 110 px. Relatório sem rolagem lateral: as tabelas cabem
+  na largura da folha e o texto das células quebra em mais linhas. Tema e idioma no padrão do
+  Engenharia Nata: barra no topo e centro (`.engnata-dock`, CSS copiado de
+  `assets/css/dock-global.css` porque o calha é standalone), bandeiras BR/IT/SV + sol/lua.
+  Só o português funciona; IT e SV ficam desabilitadas de propósito — serão outro app, com a
+  EN 12056-3 (4.0), não uma tradução. Não trabalhar nelas até a versão BR estar redonda.
 
 ## Ábacos (Figura 3)
 Retas H: Q = a + b·D. Curva L = ∞ bate com Q = (π/4)·D²·√(2gD/f), f = 0,04 (bom teste).
