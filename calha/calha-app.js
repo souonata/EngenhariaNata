@@ -134,6 +134,45 @@
     }).join('');
   }
 
+  /* Barra da calha: presa no topo enquanto se preenchem os itens 5.2 a 5.6, com a calha em
+     edição e os atalhos para trocar, criar, duplicar e remover. */
+  let assinaturaBarra = '';
+  function montarBarraCalha() {
+    const ass = estado.ativa + '|' + estado.calhas.map(function (c) { return c.id + ':' + (c.nome || ''); }).join('|');
+    if (ass !== assinaturaBarra) {
+      assinaturaBarra = ass;
+      const n = estado.calhas.length;
+      $('#barra-calha-sel').innerHTML = estado.calhas.map(function (c, i) {
+        return '<option value="' + c.id + '"' + (c.id === estado.ativa ? ' selected' : '') + '>' +
+          (n > 1 ? (i + 1) + ' de ' + n + ': ' : '') + esc(c.nome || 'Calha sem nome') + '</option>';
+      }).join('');
+    }
+    $('[data-acao-calha="remover"]').disabled = estado.calhas.length < 2;
+    agendarBarra();
+  }
+  // São três medições baratas: roda direto no scroll, sem requestAnimationFrame (que não dispara
+  // com a aba oculta e deixaria a barra presa no estado errado até a próxima rolagem).
+  function posicionarBarraCalha() {
+    const barra = $('#barra-calha');
+    // No computador o resumo fica preso no topo e a barra vem logo abaixo; no celular o resumo
+    // vai para baixo e a barra ocupa o topo.
+    const r = $('.resumo').getBoundingClientRect();
+    const topo = r.top < 1 && r.bottom < innerHeight / 2 ? r.bottom : 0;
+    const ini = $('#s52').getBoundingClientRect().top;
+    const fim = $('#s56').getBoundingClientRect().bottom;
+    const ver = !document.documentElement.classList.contains('com-relatorio') && ini < topo + 80 && fim > topo + 120;
+    barra.style.top = topo + 'px';
+    if (barra.hidden === ver) barra.hidden = !ver;
+    // Âncoras e "Ir até lá" param abaixo da barra enquanto ela aparece.
+    document.documentElement.style.scrollPaddingTop = ver ? (topo + barra.offsetHeight + 16) + 'px' : '';
+  }
+  const agendarBarra = function () { posicionarBarraCalha(); };
+  function iniciarBarraCalha() {
+    window.addEventListener('scroll', agendarBarra, { passive: true });
+    window.addEventListener('resize', agendarBarra);
+    agendarBarra();
+  }
+
   function montarAbas() {
     $('#abas-calhas').innerHTML = estado.calhas.map(function (c) {
       const sel = c.id === estado.ativa;
@@ -588,6 +627,7 @@
   }
 
   function renderAbasEstado(P) {
+    montarBarraCalha();
     P.calhas.forEach(function (r) {
       $$('[data-nome-calha="' + r.c.id + '"]').forEach(function (el) { el.textContent = r.c.nome || 'Calha sem nome'; });
       const p = document.querySelector('[data-ponto-calha="' + r.c.id + '"]');
@@ -934,6 +974,20 @@
     });
   }
 
+  // Pelo painel das calhas, foca o nome da nova; pela barra do topo, leva ao item 5.2.
+  function criarCalha(focarNome) {
+    ler();
+    const c = novaCalha('Calha ' + (estado.calhas.length + 1));
+    estado.calhas.push(c);
+    estado.ativa = c.id;
+    nomeExemplo = null;
+    preencher();
+    atualizar();
+    if (focarNome) $('#nome-calha').focus();
+    else $('#s52').scrollIntoView();
+    toast('Nova calha criada. Marque-a no trecho de coletor que recebe seus condutores (5.7).');
+  }
+
   function ativarCalha(id, rolar) {
     ler();
     estado.ativa = id;
@@ -974,6 +1028,7 @@
     document.addEventListener('change', function (ev) {
       const t = ev.target;
       if (t.dataset.verif) { salvarVerificacoes(); return; }
+      if (t.id === 'barra-calha-sel') { ativarCalha(t.value, false); return; }
       if (t.id === 'exemplo') {
         const f = EXEMPLOS[t.value];
         t.value = '';
@@ -996,6 +1051,13 @@
     });
     document.addEventListener('click', function (ev) {
       if (ev.target.closest('#btn-tema')) { alternarTema(); return; }
+      const acao = ev.target.closest('[data-acao-calha]');
+      if (acao) {
+        const a = acao.dataset.acaoCalha;
+        if (a === 'nova') criarCalha(false);
+        else $(a === 'duplicar' ? '#btn-duplicar-calha' : '#btn-remover-calha').click();
+        return;
+      }
       if (ev.target.closest('#btn-coach')) { irPara(pendAtual[0]); return; }
       const remTubo = ev.target.closest('[data-remover-tubo]');
       if (remTubo) {
@@ -1050,17 +1112,7 @@
       if (b) b.focus();
       ev.preventDefault();
     });
-    $('#btn-nova-calha').addEventListener('click', function () {
-      ler();
-      const c = novaCalha('Calha ' + (estado.calhas.length + 1));
-      estado.calhas.push(c);
-      estado.ativa = c.id;
-      nomeExemplo = null;
-      preencher();
-      atualizar();
-      $('#nome-calha').focus();
-      toast('Nova calha criada. Marque-a no trecho de coletor que recebe seus condutores (5.7).');
-    });
+    $('#btn-nova-calha').addEventListener('click', function () { criarCalha(true); });
     $('#btn-duplicar-calha').addEventListener('click', function () {
       ler();
       const orig = calhaAtiva();
@@ -1182,6 +1234,7 @@
     iniciarTema();
     iniciarPreferencias();
     iniciarVerificacoes();
+    iniciarBarraCalha();
     montarSelects();
     const ini = carregarInicial();
     estado = ini.estado;
