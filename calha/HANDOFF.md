@@ -1,6 +1,6 @@
 # HANDOFF — Calha 10844 (app de calhas da NBR 10844)
 
-_Atualizado: 2026-09-12 (versão 3.5.4). Leia isto antes de mexer em qualquer arquivo desta pasta._
+_Atualizado: 2026-09-12 (versão 3.5.5). Leia isto antes de mexer em qualquer arquivo desta pasta._
 
 ## O que é
 App didático do portfólio Engenharia NATA para dimensionar calhas, condutores verticais e
@@ -70,7 +70,7 @@ O Artifact só publica arquivos sob o diretório de trabalho ou o scratchpad: se
 estiver na raiz do repositório, copie `calha/*.css` e `calha/*.js` para o scratchpad e publique
 com `root` apontando para lá. Leia o artifact antes (action `read`) em chat novo.
 
-## Estado atual: versão 3.5.4
+## Estado atual: versão 3.5.5
 - 2.0: várias calhas em abas, coletores por trechos, esquema, quadro-resumo, memorial por
   calha, termos do item 3, três exemplos (residência Curitiba, galpão SP, sobrado POA).
 - 3.0: Tabela 1 só em beiral/platibanda (5.5.6); material do condutor vertical (4.1.2); tubos
@@ -137,3 +137,15 @@ norma europeia. Os módulos puros ajudam: trocar o núcleo `nbr10844-*.js` por u
   (branca); a da esquerda excede em cima (hachura a × b) e a da direita excede para o lado
   (hachura c × d), coerente com `A = |a·b − c·d| / 2`. O recorte PNG da norma da 3.5.3 saiu do
   repositório (era trecho da NBR, protegida por direitos) junto com o CSS `.fig-norma`.
+
+- 3.5.5 (2026-09-12, a pedido do usuário): "Posição da calha" virou oito situações
+  (`POSICOES` em `calha-app.js`, rádio `posicao`): beiral, platibanda, água-furtada e cinco
+  casos com as superfícies (d) a (h) — entre paredes com uma mais alta, entre paredes
+  desiguais, canto de paredes, pátio em U e quatro paredes. Cada uma define o `tipoCalha` usado
+  no cálculo (as cinco novas contam como platibanda, Tabela 1) e as superfícies da Figura 2;
+  escolher a posição já troca a lista, aproveitando valores digitados das que continuam, com
+  "Desfazer" no aviso. Estados antigos e exemplos só têm `tipoCalha`: a posição sai dele.
+  Campos pendentes à vista (`marcarPendencias` em `calha-app.js`, chamada em `atualizar`):
+  os alvos das pendências da calha ativa e do projeto e toda medida de superfície vazia ficam
+  em âmbar com "· preencher" no rótulo; número digitado que não se lê fica em vermelho com
+  "· valor inválido"; grupo de opções ganha contorno e o botão de dimensionar, destaque.

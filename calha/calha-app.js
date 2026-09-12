@@ -29,7 +29,7 @@
   const G_NUM = ['areaProj', 'Imanual', 'Tmanual', 'idfK', 'idfA', 'idfB', 'idfC'];
   const C_NUM = ['Lc', 'xSaida', 'nSaidas', 'decl', 'b', 'h', 'Dcalha', 'bt', 'z', 'ht', 'abas', 'Hlam', 'Lcond'];
   const G_RADIO = ['modoI', 'T'];
-  const C_RADIO = ['saidas', 'curva', 'faixa', 'tipoCalha', 'forma', 'fracLamina', 'saida', 'fonteH'];
+  const C_RADIO = ['saidas', 'curva', 'faixa', 'posicao', 'forma', 'fracLamina', 'saida', 'fonteH'];
   const C_CHECK = ['otima'];
 
   let estado = null;
@@ -201,6 +201,8 @@
     G_RADIO.forEach(function (nome) {
       $$('input[name="' + nome + '"]').forEach(function (r) { r.checked = String(estado[nome]) === r.value; });
     });
+    // Estados antigos e exemplos só têm tipoCalha: a posição sai dele.
+    if (!POSICOES[c.posicao] || POSICOES[c.posicao].tipo !== c.tipoCalha) c.posicao = c.tipoCalha;
     C_RADIO.forEach(function (nome) {
       $$('input[name="' + nome + '"]').forEach(function (r) { r.checked = String(c[nome]) === r.value; });
     });
@@ -231,6 +233,7 @@
       const r = $('input[name="' + nome + '"]:checked');
       if (r) c[nome] = r.value;
     });
+    if (POSICOES[c.posicao]) c.tipoCalha = POSICOES[c.posicao].tipo;
     C_CHECK.forEach(function (id) { c[id] = document.getElementById(id).checked; });
     $$('[data-sup]').forEach(function (el) {
       const s = c.superficies[Number(el.dataset.sup)];
@@ -262,11 +265,64 @@
     }
   }
 
-  const DICAS_AREA = {
-    beiral: 'Calha de beiral: some a água do telhado que desce para ela, Figura 2(b), e as paredes mais altas que despejam chuva nesse telhado.',
-    platibanda: 'Calha de platibanda: além da água do telhado, inclua a face interna da platibanda, que recebe a chuva inclinada, Figura 2(c).',
-    'agua-furtada': 'Calha de água-furtada: o vale recebe as duas águas que se encontram nele. Adicione uma superfície (b) para cada lado.',
+  // Posições da calha: cada uma diz o tipo usado no cálculo (Tabela 1 e declividade) e as
+  // superfícies da Figura 2 que se aplicam. Escolher uma posição já monta essas superfícies.
+  const POSICOES = {
+    beiral: { nome: 'Beiral', tipo: 'beiral', sups: ['b'],
+      dica: 'Calha de beiral: some a água do telhado que desce para ela, Figura 2(b), e as paredes mais altas que despejam chuva nesse telhado.' },
+    platibanda: { nome: 'Platibanda', tipo: 'platibanda', sups: ['b', 'c'],
+      dica: 'Calha de platibanda: além da água do telhado, inclua a face interna da platibanda, que recebe a chuva inclinada, Figura 2(c).' },
+    'agua-furtada': { nome: 'Água-furtada', tipo: 'agua-furtada', sups: ['b', 'b'],
+      dica: 'Calha de água-furtada: o vale recebe as duas águas que se encontram nele, uma superfície (b) para cada lado.' },
+    'parede-mais-alta': { nome: 'Entre paredes, uma mais alta', tipo: 'platibanda', sups: ['b', 'd'],
+      dica: 'Telhado entre duas paredes opostas, uma mais alta: some a água do telhado, Figura 2(b), e o excedente da parede mais alta, Figura 2(d).' },
+    'paredes-desiguais': { nome: 'Entre paredes desiguais', tipo: 'platibanda', sups: ['b', 'e'],
+      dica: 'Telhado entre duas paredes opostas de medidas diferentes: some a água do telhado, Figura 2(b), e as duas paredes, Figura 2(e).' },
+    canto: { nome: 'Canto de paredes', tipo: 'platibanda', sups: ['b', 'f'],
+      dica: 'Telhado no canto de duas paredes adjacentes e perpendiculares: some a água do telhado, Figura 2(b), e as duas paredes, Figura 2(f).' },
+    'patio-u': { nome: 'Pátio em U', tipo: 'platibanda', sups: ['b', 'g'],
+      dica: 'Telhado cercado por três paredes em U, as opostas iguais: some a água do telhado, Figura 2(b), e as paredes, Figura 2(g).' },
+    'quatro-paredes': { nome: 'Quatro paredes', tipo: 'platibanda', sups: ['a', 'h'],
+      dica: 'Laje cercada por quatro paredes, uma mais alta: some a laje, Figura 2(a), e o excedente da parede mais alta, Figura 2(h).' },
   };
+
+  // Troca as superfícies pelas da posição escolhida, aproveitando os valores já digitados das
+  // que continuam valendo. As que saem ficam guardadas por calha (nesta sessão) e voltam com
+  // as medidas se outra posição usar o mesmo tipo. O aviso ainda oferece desfazer.
+  const guardadas = {};
+  function aplicarPosicao(c, anterior) {
+    const P = POSICOES[c.posicao];
+    if (!P) return;
+    c.tipoCalha = P.tipo;
+    const antes = copia(c.superficies);
+    const sobra = c.superficies.slice();
+    const reserva = guardadas[c.id] || (guardadas[c.id] = []);
+    const tirar = function (lista, tipo) {
+      const k = lista.findIndex(function (s) { return s.tipo === tipo; });
+      return k >= 0 ? lista.splice(k, 1)[0] : null;
+    };
+    c.superficies = P.sups.map(function (tipo) {
+      const s = tirar(sobra, tipo) || tirar(reserva, tipo);
+      if (s) return s;
+      const v = {};
+      N.SUPERFICIES[tipo].campos.forEach(function (cc) { v[cc[0]] = ''; });
+      return { tipo: tipo, v: v };
+    });
+    sobra.forEach(function (s) { reserva.unshift(s); });
+    montarSuperficies();
+    const mesmas = antes.length === c.superficies.length && antes.every(function (s, i) { return s.tipo === c.superficies[i].tipo; });
+    if (mesmas) return;
+    toast('Superfícies de "' + P.nome + '": ' + P.sups.map(function (t) { return '(' + t + ')'; }).join(' + '), {
+      rotulo: 'Desfazer',
+      fn: function () {
+        c.superficies = antes;
+        c.posicao = anterior;
+        if (POSICOES[anterior]) c.tipoCalha = POSICOES[anterior].tipo;
+        preencher();
+        atualizar();
+      },
+    });
+  }
 
   function mostrar(sel, cond) { $$(sel).forEach(function (el) { el.hidden = !cond; }); }
 
@@ -291,7 +347,7 @@
     $('#btn-dimensionar').textContent = c.forma === 'semicircular' ? 'Escolher o menor diâmetro'
       : c.forma === 'retangular' && c.otima ? 'Calcular a seção econômica' : 'Calcular a altura mínima';
     mostrar('[data-so-h]', c.fonteH === 'digitada');
-    $('#dica-area').textContent = DICAS_AREA[c.tipoCalha] || '';
+    $('#dica-area').textContent = (POSICOES[c.posicao] || POSICOES[c.tipoCalha] || {}).dica || '';
     const pos = estado.calhas.indexOf(c) + 1;
     const tag = 'Calha ' + (estado.calhas.length > 1 ? pos + ' de ' + estado.calhas.length + ': ' : ': ') + (c.nome || 'sem nome');
     $$('[data-calha-tag]').forEach(function (el) { el.textContent = tag; });
@@ -627,6 +683,26 @@
       '<button type="button" class="btn primario" id="btn-coach">Ir até lá</button>';
   }
 
+  // Deixa visível o que falta ou está inválido: os campos das pendências da calha ativa e do
+  // projeto, as medidas de superfície vazias e todo número digitado que não se lê.
+  function marcarPendencias() {
+    $$('.pendente, .invalido').forEach(function (el) { el.classList.remove('pendente', 'invalido'); });
+    const marcar = function (el) {
+      if (el.type === 'radio') { const g = el.closest('fieldset'); if (g) g.classList.add('pendente'); return; }
+      el.classList.add('pendente');
+    };
+    pendAtual.forEach(function (p) {
+      if (p.calhaId && p.calhaId !== estado.ativa) return;
+      const cands = $$(p.alvo).filter(function (x) { return x.offsetParent !== null && !x.disabled; });
+      const vazios = cands.filter(function (x) { return x.tagName === 'INPUT' && x.type === 'text' && !x.value.trim(); });
+      (vazios.length ? vazios : cands.slice(0, 1)).forEach(marcar);
+    });
+    $$('#superficies input').forEach(function (x) { if (!x.value.trim()) x.classList.add('pendente'); });
+    $$('.folha input.num').forEach(function (x) {
+      if (x.value.trim() && lerNum(x.value) === '') { x.classList.remove('pendente'); x.classList.add('invalido'); }
+    });
+  }
+
   // Leva ao campo da pendência: troca de calha se preciso e foca o primeiro campo vazio.
   function irPara(p) {
     if (!p) return;
@@ -739,6 +815,7 @@
     renderQuadro(P);
     renderResumo(P);
     renderCoach(P);
+    marcarPendencias();
     renderResposta(P);
     renderMateriais(P);
     ultimoMemorial = renderMemorial(P);
@@ -876,7 +953,8 @@
   function ligarEventos() {
     document.addEventListener('input', function (ev) {
       const t = ev.target;
-      if (t.id === 'exemplo' || t.dataset.verif) return;
+      // A posição é tratada no change, que precisa ver a posição anterior antes de ler().
+      if (t.id === 'exemplo' || t.dataset.verif || t.name === 'posicao') return;
       if (!t.closest('.folha, .carimbo')) return;
       nomeExemplo = null;
       if (t.id === 'busca-local') {
@@ -908,7 +986,9 @@
       }
       if (t.type === 'radio' || t.tagName === 'SELECT' || t.type === 'checkbox') {
         nomeExemplo = null;
+        const posAntes = calhaAtiva().posicao;
         ler();
+        if (t.name === 'posicao') aplicarPosicao(calhaAtiva(), posAntes);
         normalizarOpcoes();
         if (t.id === 'local' || t.name === 'modoI') montarOpcoesT();
         atualizar();
