@@ -32,6 +32,7 @@ EngenhariaNata/
 │   ├── <app>-calc.js       # núcleo numérico puro (migrados: salario, mutuo)
 │   └── <app>-calc.test.js  # Vitest (apps migrados)
 ├── br12c/                  # app STANDALONE (HP-12C); excluído do bundle Vite
+├── calha/                  # app STANDALONE (NBR 10844, calhas); copiado pro dist pelo plugin copiarStandalone
 ├── .github/workflows/      # deploy.yml (Pages) + test.yml (CI)
 └── local/                  # toolchain: Vite, Vitest, ESLint, Prettier, Stylelint
 ```
@@ -184,7 +185,24 @@ npm run build          # build de produção (gera local/dist)
 
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
-_Última atualização: 2026-08-30_
+_Última atualização: 2026-09-12_
+
+- **CALHAS NBR 10844 (`calha/`, branch `feat/calha-nbr10844`, versão 3.5.0 — PUBLICADO EM 2026-09-12; ícone, aba e Sobre chamam-se só "Calhas"; PDFs das normas em `calha/` ficam no .gitignore):**
+  app standalone que dimensiona calhas, condutores verticais e coletores de águas
+  pluviais pela ABNT NBR 10844:1989; a norma é a única base (sem complementos de fora). Scripts
+  clássicos UMD (núcleo `nbr10844-*.js` + módulos `calha-*.js`), interface só em pt-BR porque a
+  norma é brasileira; o card do catálogo tem nome e descrição em pt/it/sv avisando isso (IT/SV
+  com a EN 12056-3 é a versão 4.0 planejada). Várias calhas, coletores por trechos, próximo
+  passo guiado, lista de materiais e **relatório em PDF** de todas as calhas (pré-visualização +
+  `window.print`). Celular/tablet: barra de resultados fixa embaixo até 820 px, toques ≥ 44 px,
+  área segura; conferido em 390 × 844 e 820 × 1180 sem rolagem lateral. **Build:** fora do
+  bundle (`IGNORAR` no `vite.config.js`) e o plugin `copiarStandalone('calha')` copia
+  html/css/js para `dist/calha/` — sem mexer no `deploy.yml`. Testes Vitest em `calha/tests/`
+  (28). `npm run validate` passou (43 arquivos/390 testes, paridade i18n em 21 arquivos). O
+  `npm run build` local gera `dist/calha/`, mas o `postbuild` acusa
+  `pintor/output/pdf/random_validation_20260823/*.html`, artefatos privados locais deste PC
+  (ignorados no git, inexistentes no CI) — não é do calha. Bancada local não versionada em
+  `calha2/` com os PDFs das normas (**não commitar**). Detalhes em `calha/HANDOFF.md`.
 
 - **PINTOR — DUAS FALHAS REAIS DO SITE CORRIGIDAS (3.1.6, PUBLICADO — API 0.6.3):** reproduzi localmente os
   dois erros reportados em `engnata.eu/pintor/`. (1) *Uma página insegura matava a varredura

@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import { resolve, relative } from 'path';
-import { readdirSync, statSync } from 'fs';
+import { cpSync, mkdirSync, readdirSync, statSync } from 'fs';
 
 const projectRoot = resolve(__dirname, '..');
 
@@ -28,7 +28,11 @@ const IGNORAR = new Set([
     'docs',
     // br12c é standalone (scripts clássicos próprios). Não passa pelo bundle:
     // é copiado verbatim para o dist pelo workflow de deploy.
-    'br12c'
+    'br12c',
+    // calha (NBR 10844) também é standalone: o plugin copiarStandalone o põe no dist.
+    'calha',
+    // Bancada local não versionada do calha, com os PDFs das normas: nunca entra no build.
+    'calha2'
 ]);
 
 function descobrirPaginasHtml(dir, acc = {}) {
@@ -49,12 +53,33 @@ function descobrirPaginasHtml(dir, acc = {}) {
     return acc;
 }
 
+// Apps standalone de scripts clássicos não passam pelo bundle: ao fim do build,
+// os arquivos do app (html, css e js, sem testes nem notas) são copiados como estão.
+function copiarStandalone(pasta) {
+    return {
+        name: `copiar-standalone-${pasta}`,
+        apply: 'build',
+        closeBundle() {
+            const origem = resolve(projectRoot, pasta);
+            const destino = resolve(__dirname, 'dist', pasta);
+            mkdirSync(destino, { recursive: true });
+            for (const nome of readdirSync(origem)) {
+                if (/\.(html|css|js)$/.test(nome) && !nome.endsWith('.test.js')) {
+                    cpSync(resolve(origem, nome), resolve(destino, nome));
+                }
+            }
+        }
+    };
+}
+
 export default defineConfig(({ command }) => ({
     // Diretório raiz do projeto
     root: projectRoot,
 
     // Diretório público (assets não processados, copiados como estão)
     publicDir: resolve(projectRoot, 'public'),
+
+    plugins: [copiarStandalone('calha')],
 
     // Base RELATIVA no build: os assets resolvem a partir da localização do HTML,
     // então o site funciona tanto em https://souonata.github.io/EngenhariaNata/

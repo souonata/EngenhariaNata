@@ -19,6 +19,10 @@
         "name": "BR 12C Niobium",
         "desc": "Emulador da calculadora financeira HP 12C Platinum (RPN), para finanças e engenharia econômica"
       },
+      "calha": {
+        "name": "Calhas",
+        "desc": "Calhas, condutores e coletores de águas pluviais pela NBR 10844, com relatório em PDF"
+      },
       "mutuo": {
         "name": "Empréstimo",
         "desc": "Compara sistemas de amortização e o bolån sueco para decidir melhor o financiamento"
@@ -549,6 +553,10 @@
         "name": "BR 12C Niobium",
         "desc": "Emulatore della calcolatrice finanziaria HP 12C Platinum (RPN), per finanza e ingegneria economica"
       },
+      "calha": {
+        "name": "Grondaie",
+        "desc": "Grondaie, pluviali e collettori secondo la norma brasiliana NBR 10844, con relazione in PDF"
+      },
       "mutuo": {
         "name": "Mutuo",
         "desc": "Confronta i sistemi di ammortamento e il bolån svedese per decidere meglio il mutuo"
@@ -1078,6 +1086,10 @@
       "br12c": {
         "name": "BR 12C Niobium",
         "desc": "Emulator av finansräknaren HP 12C Platinum (RPN), för ekonomi och investeringskalkyl"
+      },
+      "calha": {
+        "name": "Takrännor",
+        "desc": "Takrännor, stuprör och ledningar enligt brasilianska NBR 10844, med rapport i PDF"
       },
       "mutuo": {
         "name": "Lån",
