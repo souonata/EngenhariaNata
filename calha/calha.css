@@ -1552,7 +1552,28 @@ fieldset.pendente {
 .como-usar ol { margin: 0.6rem 0 0; padding: 0; list-style: none; counter-reset: passo; display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 0.6rem 1.4rem; }
 .como-usar li { counter-increment: passo; font-size: var(--t-14); color: var(--grafite); line-height: 1.45; }
 .como-usar li a { display: block; font-family: var(--f-titulo); font-size: var(--t-19); font-weight: 600; color: var(--nanquim); text-decoration: none; }
-.como-usar li a::before { content: counter(passo) '. '; color: var(--patina); }
+.como-usar .passo { color: var(--patina); }
+.como-usar li ol { display: grid; gap: 0.35rem; grid-template-columns: none; margin: 0.4rem 0 0; padding-left: 0.8rem; border-left: 2px solid var(--linha); }
+.como-usar li li a { font-size: var(--t-16); }
+
+/* Barra da calha em edição: presa no topo durante os itens 5.2 a 5.6, abaixo do resumo. */
+.barra-calha {
+  position: fixed; left: 0; right: 0; z-index: 9;
+  background: color-mix(in srgb, var(--folha) 94%, transparent); backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--linha-forte); box-shadow: var(--sombra);
+}
+.barra-calha-in { max-width: 78rem; margin: 0 auto; padding: 0.4rem 1.5rem; display: flex; align-items: center; gap: 0.5rem 0.8rem; flex-wrap: wrap; }
+.barra-calha-sel { display: flex; align-items: center; gap: 0.5rem; flex: 1 1 14rem; min-width: 0; }
+.barra-calha-sel span { font-family: var(--f-titulo); font-size: var(--t-12); letter-spacing: 0.08em; text-transform: uppercase; color: var(--patina); }
+.barra-calha-sel select { flex: 1; min-width: 0; font-family: var(--f-titulo); font-size: var(--t-19); font-weight: 600; }
+.barra-calha-acoes { display: flex; gap: 0.4rem; }
+.barra-calha .btn { padding: 0.3rem 0.7rem; }
+@media (max-width: 820px) {
+  .barra-calha-in { padding: 0.35rem 0.75rem; }
+  .barra-calha-acoes { flex: 1 1 100%; }
+  .barra-calha-acoes .btn { flex: 1; }
+}
+@media print { .barra-calha { display: none !important; } }
 .como-usar li a:hover { color: var(--patina); }
 .como-usar > p { margin: 0.6rem 0 0.2rem; font-size: var(--t-14); color: var(--apagado); }
 .tubos { list-style: none; margin: 0 0 0.6rem; padding: 0; display: grid; gap: 0.5rem; }

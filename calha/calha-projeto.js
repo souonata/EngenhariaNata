@@ -286,45 +286,85 @@
     return { status: R.status, texto: partes.join('; ') + '.' };
   }
 
-  // Levantamento que sai do cálculo. É o mínimo: cantos, emendas, suportes e
-  // mudanças de direção do traçado real acrescentam peças.
+  // Levantamento do projeto inteiro, que sai do cálculo. É o mínimo: cantos, emendas,
+  // suportes e mudanças de direção do traçado real acrescentam peças. A mesma peça vinda de
+  // calhas ou trechos diferentes é somada numa linha; quando há mais de uma origem, a base
+  // mostra cada parcela.
   function listaMateriais(P, estado) {
     const matV = matVertical(estado).toLowerCase();
-    const grupos = P.calhas.map(function (R) {
+    const CALHAS = 0, VERTICAIS = 1, COLETORES = 2;
+    const grupos = [
+      { titulo: 'Calhas', itens: [] },
+      { titulo: 'Condutores verticais', itens: [] },
+      { titulo: 'Coletores horizontais', itens: [] },
+    ];
+    const porChave = {};
+    const fmt = function (x, un) { return un === 'kg' ? nf(x, 1) : un === 'm' ? na(x) : String(x); };
+    // qtd null = medida não informada naquela origem; qtd texto = quantidade que não se soma.
+    function somar(g, peca, qtd, un, ref, origem) {
+      const chave = g + '|' + peca + '|' + un;
+      let it = porChave[chave];
+      if (!it) {
+        it = porChave[chave] = { peca: peca, un: un, ref: ref, total: 0, texto: null, partes: [], falta: [] };
+        grupos[g].itens.push(it);
+      }
+      if (typeof qtd === 'string') { it.texto = qtd; it.partes.push(origem); }
+      else if (qtd == null) it.falta.push(origem);
+      else { it.total += qtd; it.partes.push(origem + ' ' + fmt(qtd, un)); }
+    }
+
+    P.calhas.forEach(function (R) {
       const c = R.c;
       const k = R.calha;
       const v = R.vert;
+      const nome = c.nome || 'calha sem nome';
       const Lc = num(c.Lc);
-      const itens = [];
-      if (k.pronta) itens.push({ peca: 'Calha ' + descSecao(k) + ' mm, ' + k.mat.rotulo.toLowerCase(), qtd: Lc > 0 ? na(Lc) : '—', un: 'm', ref: '5.5' });
+      if (k.pronta) somar(CALHAS, 'Calha ' + descSecao(k) + ' mm, ' + k.mat.rotulo.toLowerCase(), Lc > 0 ? Lc : null, 'm', '5.5', nome);
       if (k.chapa && k.chapa.corte) {
-        itens.push({
-          peca: 'Chapa de ' + k.chapa.metal + ' ' + nf(Number(c.espessura), 2) + ' mm, corte ' + k.chapa.corte + ' mm',
-          qtd: Lc > 0 ? nf(k.chapa.massa * Lc, 1) : nf(k.chapa.massa, 2) + ' por m', un: 'kg', ref: 'massa aproximada',
-        });
+        somar(CALHAS, 'Chapa de ' + k.chapa.metal + ' ' + nf(Number(c.espessura), 2) + ' mm, corte ' + k.chapa.corte + ' mm',
+          Lc > 0 ? k.chapa.massa * Lc : null, 'kg', 'massa aproximada', nome);
       }
-      if (R.Q > 0) itens.push({ peca: 'Saída ' + (c.saida === 'b' ? 'com funil' : 'em aresta viva'), qtd: String(R.dist.n), un: 'un', ref: '5.6.4.1' });
+      if (R.Q > 0) somar(CALHAS, 'Saída ' + (c.saida === 'b' ? 'com funil' : 'em aresta viva'), R.dist.n, 'un', '5.6.4.1', nome);
       if (v.pronto && v.adocao.tubo) {
         const Lv = num(c.Lcond);
-        itens.push({ peca: 'Condutor vertical DN ' + v.adocao.tubo.dn + ', ' + matV, qtd: na(R.dist.n * Lv), un: 'm', ref: R.dist.n + ' × ' + na(Lv) + ' m' });
-        itens.push({ peca: 'Curva de raio longo no pé do condutor', qtd: String(R.dist.n), un: 'un', ref: '5.7.5' });
-        itens.push({ peca: 'Inspeção ou caixa de areia no pé do condutor', qtd: String(R.dist.n), un: 'un', ref: '5.7.5' });
+        somar(VERTICAIS, 'Condutor vertical DN ' + v.adocao.tubo.dn + ', ' + matV, R.dist.n * Lv, 'm', '5.6', nome);
+        somar(VERTICAIS, 'Curva de raio longo no pé do condutor', R.dist.n, 'un', '5.7.5', nome);
+        somar(VERTICAIS, 'Inspeção ou caixa de areia no pé do condutor', R.dist.n, 'un', '5.7.5', nome);
       }
-      return { titulo: 'Calha: ' + (c.nome || 'sem nome'), itens: itens };
     });
     P.trechos.forEach(function (T) {
+      const nome = T.t.nome || 'trecho';
       const comp = num(T.t.comp);
       const enterrado = T.t.instalacao !== 'aparente';
-      const itens = [];
+      const base = enterrado ? '5.7.4' : '5.7.3';
       if (T.escolhido) {
-        itens.push({ peca: 'Tubo de diâmetro interno ' + T.escolhido.D + ' mm, ' + T.mat.rotulo.toLowerCase() + (enterrado ? ', enterrado' : ', aparente'), qtd: comp > 0 ? na(comp) : '—', un: 'm', ref: '5.7.2' });
+        somar(COLETORES, 'Tubo de diâmetro interno ' + T.escolhido.D + ' mm, ' + T.mat.rotulo.toLowerCase() + (enterrado ? ', enterrado' : ', aparente'),
+          comp > 0 ? comp : null, 'm', '5.7.2', nome);
       }
       const inter = comp > 0 ? Math.max(0, Math.ceil(comp / 20 - 1e-9) - 1) : 0;
-      if (inter) itens.push({ peca: (enterrado ? 'Caixa de areia' : 'Inspeção') + ' intermediária em trecho reto', qtd: String(inter), un: 'un', ref: enterrado ? '5.7.4' : '5.7.3' });
-      if (T.Q > 0) itens.push({ peca: (enterrado ? 'Caixas de areia' : 'Inspeções') + ' nas conexões e mudanças de direção ou de declividade', qtd: 'pelo traçado', un: '', ref: enterrado ? '5.7.4' : '5.7.3' });
-      grupos.push({ titulo: 'Coletor: ' + (T.t.nome || 'trecho'), itens: itens });
+      if (inter) somar(COLETORES, (enterrado ? 'Caixa de areia' : 'Inspeção') + ' intermediária em trecho reto', inter, 'un', base, nome);
+      if (T.Q > 0) somar(COLETORES, (enterrado ? 'Caixas de areia' : 'Inspeções') + ' nas conexões e mudanças de direção ou de declividade', 'pelo traçado', '', base, nome);
     });
-    return grupos;
+
+    // Dentro do grupo: tubos primeiro, depois as peças contadas, por fim o que sai do traçado.
+    const ordem = function (it) { return it.texto ? 2 : /^Tubo /.test(it.peca) ? 0 : 1; };
+    return grupos.map(function (g) {
+      return {
+        titulo: g.titulo,
+        itens: g.itens.map(function (it, i) { return { it: it, i: i }; }).sort(function (a, b) {
+          return ordem(a.it) - ordem(b.it) || a.i - b.i;
+        }).map(function (x) {
+          const it = x.it;
+          const origens = it.partes.length + it.falta.length;
+          let ref = it.ref;
+          if (!it.texto && origens > 1) ref += ' · ' + it.partes.join(' + ');
+          if (it.texto && origens > 1) ref += ' · ' + it.partes.join(', ');
+          if (it.falta.length) ref += ' · sem medida: ' + it.falta.join(', ');
+          const qtd = it.texto || (it.partes.length ? fmt(it.total, it.un) : '—') + (it.partes.length && it.falta.length ? ' + ?' : '');
+          return { peca: it.peca, qtd: qtd, un: it.un, ref: ref };
+        }),
+      };
+    });
   }
 
   return {

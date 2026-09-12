@@ -56,17 +56,34 @@ test('Pendência de seção que transborda aponta o botão de dimensionar', () =
   assert.equal(p[0].alvo, '#btn-dimensionar');
 });
 
-test('Lista de materiais do galpão: condutores, curvas e caixas de areia', () => {
+test('Lista de materiais do galpão: projeto inteiro em três grupos, peças iguais somadas', () => {
   const e = E.EXEMPLOS.galpao().estado;
-  const g = P.listaMateriais(P.calcularProjeto(e), e);
-  const leste = g[0].itens;
-  assert.ok(leste.some((i) => /^Condutor vertical DN 75/.test(i.peca) && i.qtd === '12'), 'duas descidas de 6 m');
-  assert.ok(leste.some((i) => /raio longo/.test(i.peca) && i.qtd === '2'));
-  const trechoA = g.find((x) => /Trecho A/.test(x.titulo)).itens;
-  assert.ok(trechoA.some((i) => /^Caixa de areia intermediária/.test(i.peca) && i.qtd === '1'), '30 m pedem uma caixa no meio');
+  const PR = P.calcularProjeto(e);
+  const g = P.listaMateriais(PR, e);
+  const lerQtd = (s) => Number(String(s).replace(/\./g, '').replace(',', '.'));
+  assert.deepEqual(g.map((x) => x.titulo), ['Calhas', 'Condutores verticais', 'Coletores horizontais']);
+  g.forEach((x) => assert.equal(new Set(x.itens.map((i) => i.peca)).size, x.itens.length, 'nenhuma peça repetida em ' + x.titulo));
+
+  const vert = g[1].itens;
+  const comTubo = PR.calhas.filter((R) => R.vert.pronto && R.vert.adocao.tubo);
+  assert.ok(comTubo.length >= 2, 'o galpão tem duas calhas com condutor');
+  const porDN = {};
+  comTubo.forEach((R) => { const dn = R.vert.adocao.tubo.dn; porDN[dn] = (porDN[dn] || 0) + R.dist.n * Number(R.c.Lcond); });
+  Object.keys(porDN).forEach((dn) => {
+    const linha = vert.find((i) => i.peca.startsWith('Condutor vertical DN ' + dn + ','));
+    assert.ok(linha && lerQtd(linha.qtd) === porDN[dn], 'metros de todas as descidas DN ' + dn);
+  });
+  const descidas = comTubo.reduce((s, R) => s + R.dist.n, 0);
+  const curva = vert.find((i) => /raio longo/.test(i.peca));
+  assert.equal(lerQtd(curva.qtd), descidas, 'uma curva por descida, somando as calhas');
+  comTubo.forEach((R) => assert.ok(curva.ref.includes(R.c.nome), 'a base mostra a parcela de ' + R.c.nome));
+
+  const caixas = PR.trechos.reduce((s, T) => s + Math.max(0, Math.ceil(Number(T.t.comp) / 20 - 1e-9) - 1), 0);
+  assert.ok(caixas >= 1, 'o trecho A de 30 m pede ao menos uma caixa no meio');
+  assert.ok(g[2].itens.some((i) => /^Caixa de areia intermediária/.test(i.peca) && lerQtd(i.qtd) === caixas));
   e.trechos[0].instalacao = 'aparente';
   const g2 = P.listaMateriais(P.calcularProjeto(e), e);
-  assert.ok(g2.find((x) => /Trecho A/.test(x.titulo)).itens.some((i) => /^Inspeção intermediária/.test(i.peca)));
+  assert.ok(g2[2].itens.some((i) => /^Inspeção intermediária/.test(i.peca)));
 });
 
 test('Migração: estado da versão 2 vira projeto com uma calha e um trecho', () => {

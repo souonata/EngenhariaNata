@@ -185,9 +185,19 @@ npm run build          # build de produção (gera local/dist)
 
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
-_Última atualização: 2026-09-12_
+_Última atualização: 2026-09-13_
 
-- **CALHAS NBR 10844 (`calha/`, branch `feat/calha-figura-2e`, versão 3.5.3 em preparação; 3.5.2 PUBLICADA EM 2026-09-12; PDFs das normas em `calha/` ficam no .gitignore):**
+- **CALHA — PROMPT PARA PLANEJAR AS CORREÇÕES DA AUDITORIA (2026-09-13):** criado
+  `calha/referencias/prompt-plano-correcoes-9-10.md` após leitura integral da auditoria de
+  13/09/2026 (site 3.5.5), do HANDOFF e inspeção dos pontos de entrada do código local.
+  Cobre os 24 achados e os sete quesitos, exige conferência normativa, reprodução,
+  arquitetura/migração, entregas por dependência, critérios de aceite e reauditoria.
+  Registra recomendações controversas do parecer (especialmente C3, A1/TC6, A3, M5 e M6)
+  como hipóteses a validar, sem prometer notas. Nesta sessão foi produzido somente o prompt;
+  o plano e as correções ainda não foram executados, e as alterações locais anteriores
+  foram preservadas. O arquivo é um artefato local, ainda não commitado.
+
+- **CALHAS NBR 10844 (`calha/`, versão 3.5.6 PUBLICADA EM 2026-09-13 (posições da calha com superfícies, campos pendentes à vista, lista de materiais do projeto inteiro, barra da calha fixa no topo, "Como usar" por letras); PDFs das normas em `calha/` ficam no .gitignore):**
   app standalone que dimensiona calhas, condutores verticais e coletores de águas
   pluviais pela ABNT NBR 10844:1989; a norma é a única base (sem complementos de fora). Scripts
   clássicos UMD (núcleo `nbr10844-*.js` + módulos `calha-*.js`), interface só em pt-BR porque a

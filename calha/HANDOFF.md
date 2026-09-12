@@ -1,6 +1,6 @@
 # HANDOFF — Calha 10844 (app de calhas da NBR 10844)
 
-_Atualizado: 2026-09-12 (versão 3.5.5). Leia isto antes de mexer em qualquer arquivo desta pasta._
+_Atualizado: 2026-09-12 (versão 3.5.6). Leia isto antes de mexer em qualquer arquivo desta pasta._
 
 ## O que é
 App didático do portfólio Engenharia NATA para dimensionar calhas, condutores verticais e
@@ -70,7 +70,7 @@ O Artifact só publica arquivos sob o diretório de trabalho ou o scratchpad: se
 estiver na raiz do repositório, copie `calha/*.css` e `calha/*.js` para o scratchpad e publique
 com `root` apontando para lá. Leia o artifact antes (action `read`) em chat novo.
 
-## Estado atual: versão 3.5.5
+## Estado atual: versão 3.5.6
 - 2.0: várias calhas em abas, coletores por trechos, esquema, quadro-resumo, memorial por
   calha, termos do item 3, três exemplos (residência Curitiba, galpão SP, sobrado POA).
 - 3.0: Tabela 1 só em beiral/platibanda (5.5.6); material do condutor vertical (4.1.2); tubos
@@ -149,3 +149,35 @@ norma europeia. Os módulos puros ajudam: trocar o núcleo `nbr10844-*.js` por u
   os alvos das pendências da calha ativa e do projeto e toda medida de superfície vazia ficam
   em âmbar com "· preencher" no rótulo; número digitado que não se lê fica em vermelho com
   "· valor inválido"; grupo de opções ganha contorno e o botão de dimensionar, destaque.
+
+- 3.5.6 (2026-09-13, a pedido do usuário): "Como usar, em quatro passos" com os nomes da
+  norma e letras: A) Intensidade pluviométrica (5.1); B) Calhas, com B.1) Áreas de
+  contribuição (5.2), B.2) Vazão de projeto (5.3) e B.3) Calha (5.5); C) Condutores verticais
+  (5.6); D) Coletores horizontais (5.7). Rótulos no HTML (`.passo`), sem contador CSS.
+  Pedido recusado com o usuário de acordo: DN 50 na lista padrão de tubos do condutor
+  vertical — o 5.6.3 exige diâmetro interno mínimo de 70 mm, então nunca seria adotado.
+  Lista de materiais do projeto inteiro (`listaMateriais` em `calha-projeto.js`): três
+  grupos — Calhas, Condutores verticais, Coletores horizontais — com a mesma peça de calhas
+  ou trechos diferentes somada numa linha; com mais de uma origem, a base mostra cada
+  parcela ("Água leste 30 + Água oeste 30"); medida faltando vira "+ ?" e "sem medida: …".
+  Vale para a tela, o texto copiado e o relatório em PDF.
+  Barra da calha em edição (`#barra-calha`, `montarBarraCalha`/`posicionarBarraCalha` em
+  `calha-app.js`): aparece presa no topo enquanto se rolam os itens 5.2 a 5.6 — logo abaixo do
+  resumo no computador, no topo no celular (o resumo vai para baixo) — com seletor da calha
+  ("1 de 3: nome") e Nova / Duplicar / Remover (reaproveitam os botões do painel; Nova pela
+  barra leva ao 5.2). Enquanto visível, o `scroll-padding-top` inclui a altura dela.
+
+## Auditoria técnica de 2026-09-13 (site 3.5.5) — pendências
+Parecer completo: https://claude.ai/code/artifact/76fd5513-21c6-44d3-9860-c1a39d5eeeca
+(banco de testes em Node usado na auditoria: refazer a partir dos casos TC1–TC10 do parecer).
+A aritmética do núcleo bateu com referência independente em todos os casos; o que falha:
+- C1 coletor horizontal escolhido pelo D teórico da Tabela 4, não pelo Di do tubo comercial
+  (Q 280 L/min a 1%: "Di 100" leva 287; o DN 100 com Di 97 leva 265).
+- C2 chuva de período menor que o pedido (Congonhas T=25) sai "atende" no quadro e no PDF.
+- C3 São Carlos: T=25 dá 161 mm/h < 178 de T=5; adotar intensidade monotônica em T.
+- C4 H digitado sem limite (pode passar da altura da calha e reduzir o DN).
+- C5 negativos e superfícies incompletas zerados em silêncio, com "tudo atende".
+- A1 altura mínima da calha ignora H >= 50 mm do ábaco (TC6 propõe 300 x 40).
+- A2 lâmina padrão 2/3 contra a base da Tabela 3 (semicircular 100 reprovada numa garagem).
+- A3 coletor menor que o condutor vertical; A4 rede de coletores montada à mão;
+  A5 "D 220" fora do ábaco mostrado como leitura; A6 5.1.4 com projeção digitada; A7 I sem faixa.

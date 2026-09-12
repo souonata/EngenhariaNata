@@ -95,14 +95,33 @@
       <div class="coach" id="coach" aria-live="polite"></div>
     </nav>
 
+    <!-- Calha em edição: aparece presa no topo durante os itens 5.2 a 5.6 (calha-app.js). -->
+    <div class="barra-calha" id="barra-calha" role="region" aria-label="Calha em edição" hidden>
+      <div class="barra-calha-in">
+        <label class="barra-calha-sel"><span>Calha</span><select id="barra-calha-sel"></select></label>
+        <div class="barra-calha-acoes">
+          <button class="btn" type="button" data-acao-calha="nova">Nova</button>
+          <button class="btn" type="button" data-acao-calha="duplicar">Duplicar</button>
+          <button class="btn fantasma" type="button" data-acao-calha="remover">Remover</button>
+        </div>
+      </div>
+    </div>
+
     <main class="folha">
       <details class="como-usar" id="como-usar" open>
         <summary>Como usar, em quatro passos</summary>
         <ol>
-          <li><a href="#s51">Chuva</a>Escolha a cidade e o período de retorno (5.1). Vale para a obra toda.</li>
-          <li><a href="#calhas">Calhas</a>Crie uma aba para cada calha. Informe as águas de telhado e as paredes que escoam para ela (5.2) e onde ficam as saídas (5.3).</li>
-          <li><a href="#s55">Seção</a>Escolha material, caimento e forma. O botão de dimensionar acha a menor seção que atende (5.5).</li>
-          <li><a href="#s56">Condutores</a>Informe o comprimento dos condutores verticais (5.6) e monte o coletor em trechos (5.7).</li>
+          <li><a href="#s51"><span class="passo">A)</span> Intensidade pluviométrica</a>Escolha a cidade e o período de retorno (5.1). Vale para a obra toda.</li>
+          <li>
+            <a href="#calhas"><span class="passo">B)</span> Calhas</a>Crie uma aba para cada calha e, em cada uma:
+            <ol>
+              <li><a href="#s52"><span class="passo">B.1)</span> Áreas de contribuição</a>Águas de telhado e paredes que escoam para ela (5.2).</li>
+              <li><a href="#s53"><span class="passo">B.2)</span> Vazão de projeto</a>Onde ficam as saídas (5.3).</li>
+              <li><a href="#s55"><span class="passo">B.3)</span> Calha</a>Material, caimento e forma; o botão de dimensionar acha a menor seção que atende (5.5).</li>
+            </ol>
+          </li>
+          <li><a href="#s56"><span class="passo">C)</span> Condutores verticais</a>Informe o comprimento dos condutores verticais (5.6).</li>
+          <li><a href="#s57"><span class="passo">D)</span> Coletores horizontais</a>Monte o coletor em trechos e marque as calhas que chegam a cada um (5.7).</li>
         </ol>
       </details>
       <!-- 5.1 --------------------------------------------------------------->
