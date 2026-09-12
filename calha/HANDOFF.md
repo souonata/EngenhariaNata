@@ -1,6 +1,6 @@
 # HANDOFF — Calha 10844 (app de calhas da NBR 10844)
 
-_Atualizado: 2026-09-12 (versão 3.5.3). Leia isto antes de mexer em qualquer arquivo desta pasta._
+_Atualizado: 2026-09-12 (versão 3.5.4). Leia isto antes de mexer em qualquer arquivo desta pasta._
 
 ## O que é
 App didático do portfólio Engenharia NATA para dimensionar calhas, condutores verticais e
@@ -70,7 +70,7 @@ O Artifact só publica arquivos sob o diretório de trabalho ou o scratchpad: se
 estiver na raiz do repositório, copie `calha/*.css` e `calha/*.js` para o scratchpad e publique
 com `root` apontando para lá. Leia o artifact antes (action `read`) em chat novo.
 
-## Estado atual: versão 3.5.3
+## Estado atual: versão 3.5.4
 - 2.0: várias calhas em abas, coletores por trechos, esquema, quadro-resumo, memorial por
   calha, termos do item 3, três exemplos (residência Curitiba, galpão SP, sobrado POA).
 - 3.0: Tabela 1 só em beiral/platibanda (5.5.6); material do condutor vertical (4.1.2); tubos
@@ -131,3 +131,9 @@ norma europeia. Os módulos puros ajudam: trocar o núcleo `nbr10844-*.js` por u
 - Cache do navegador segura os scripts clássicos: ao conferir, force `fetch(src, {cache:'reload'})`.
 - `npm run build` local pode falhar no `postbuild` por artefatos privados do Pintor em
   `pintor/output/` (só existem neste PC, ignorados no git); não é do calha.
+
+- 3.5.4 (2026-09-12, a pedido do usuário): a Figura 2(e) voltou a ser vetorial, no mesmo
+  estilo das demais, e foi corrigida: duas paredes opostas e paralelas com a mesma parte comum
+  (branca); a da esquerda excede em cima (hachura a × b) e a da direita excede para o lado
+  (hachura c × d), coerente com `A = |a·b − c·d| / 2`. O recorte PNG da norma da 3.5.3 saiu do
+  repositório (era trecho da NBR, protegida por direitos) junto com o CSS `.fig-norma`.

@@ -170,9 +170,7 @@
     $('#superficies').innerHTML = calhaAtiva().superficies.map(function (s, idx) {
       const def = N.SUPERFICIES[s.tipo];
       const rotuloFigura = 'Figura 2(' + s.tipo + '): ' + esc(def.nome);
-      const figura = s.tipo === 'e'
-        ? '<img class="fig fig-norma" src="figura-2e-nbr10844-sem-formula.png" width="1414" height="683" alt="' + rotuloFigura + '" />'
-        : '<svg class="fig" viewBox="-4 0 224 150" role="img" aria-label="' + rotuloFigura + '">' + FIGURAS[s.tipo] + '</svg>';
+      const figura = '<svg class="fig" viewBox="-4 0 224 150" role="img" aria-label="' + rotuloFigura + '">' + FIGURAS[s.tipo] + '</svg>';
       const campos = def.campos.map(function (c) {
         const v = s.v[c[0]];
         return '<label class="campo"><span>' + esc(c[1]) + '</span><input type="text" class="num" inputmode="decimal" data-sup="' +

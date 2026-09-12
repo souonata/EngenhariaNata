@@ -40,6 +40,15 @@
       '<path class="fo" d="M124 92 H24 M204 48 H104"/>' + ralo(62, 116) +
       '<path class="fx" d="M5 62 H15 M5 92 H15 M17 58 L11 50 M97 14 L91 6"/>' +
       '<path class="fc" d="M9 64 V90 M12 54 L92 10"/>' + vr(-2, 81, 'a') + vr(44, 28, 'b'),
+    // Duas paredes opostas com a mesma parte comum (branca): a da esquerda excede em cima
+    // (a × b), a da direita excede para o lado (c × d). As projeções ficam atrás das paredes.
+    e: '<path class="fo" d="M108 120 H20 M174 87 H80"/>' +
+      '<path class="fs" d="M20 120 L80 87 V22 L20 55 Z"/><path class="fh" d="M20 80 L80 47 V22 L20 55 Z"/><path class="fx" d="M20 80 L80 47"/>' +
+      '<path class="fl" d="M14 120 V55 H20 M14 55 L74 22 H80 M14 120 H20"/>' +
+      '<path class="fs" d="M114 120 L202 71.6 V31.6 L114 80 Z"/><path class="fh" d="M174 87 L202 71.6 V31.6 L174 47 Z"/><path class="fx" d="M174 87 V47"/>' +
+      '<path class="fl" d="M108 120 V80 H114 M108 80 L196 31.6 H202 M108 120 H114"/>' + ralo(58, 116) +
+      '<path class="fx" d="M1 55 H11 M1 80 H11 M13 51 L7 43 M73 18 L67 10 M205 71.6 H214 M205 31.6 H214 M175 91 L181 98 M203 75.6 L209 82.6"/>' +
+      '<path class="fc" d="M5 57 V78 M8 47 L68 14 M210 33.6 V69.6 M179 96 L207 80.6"/>' + vr(-3, 72, 'a') + vr(32, 26, 'b') + vr(213, 56, 'c') + vr(196, 101, 'd'),
     f: '<path class="fa" d="M22 136 V52 L72 24 V108 Z"/><path class="fl" d="M22 136 V52 L72 24 V108 Z"/>' +
       '<path class="fa" d="M72 44 H196 V108 H72 Z"/><path class="fl" d="M72 44 H196 V108 H72"/>' + ralo(80, 124) +
       '<text class="fv" x="36" y="92">A<tspan dy="3">1</tspan></text><text class="fv" x="126" y="82">A<tspan dy="3">2</tspan></text>',
