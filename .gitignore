@@ -10,3 +10,7 @@ node_modules/
 # Relatorio de cobertura: o vitest roda com raiz no projeto, entao `test:coverage`
 # escreve aqui, nao em local/ (onde ja havia regra).
 coverage/
+
+# Normas (NBR/EN/HR Wallingford) usadas como referencia do calha: protegidas por direitos, nunca commitar
+calha/*.pdf
+calha2/

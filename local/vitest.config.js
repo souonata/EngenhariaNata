@@ -35,9 +35,10 @@ export default defineConfig({
             '**/*-calc.test.js',
             'src/**/*.test.js',
             'br12c/tests/**/*.test.js',
+            'calha/tests/**/*.test.js',
             'pintor/**/*.test.js'
         ],
-        exclude: ['**/node_modules/**', '**/dist/**', '**/local/**'],
+        exclude: ['**/node_modules/**', '**/dist/**', '**/local/**', '**/calha2/**'],
         reporters: ['default'],
         coverage: {
             provider: 'v8',

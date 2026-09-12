@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Calhas</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+    <link rel="canonical" href="https://engnata.eu/calha/" />
+    <meta
+      name="description"
+      content="Dimensionamento de calhas e condutores de águas pluviais pela ABNT NBR 10844:1989, passo a passo, com as tabelas e os ábacos da norma."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;1,400&family=Barlow+Condensed:wght@500;600;700&family=STIX+Two+Text:ital,wght@1,400;1,500&display=swap"
+    />
+    <link rel="stylesheet" href="calha.css" />
+  </head>
+  <body>
+    <svg aria-hidden="true" width="0" height="0" style="position: absolute">
+      <defs>
+        <marker id="cota-seta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 1.5 L10 5 L0 8.5 z" class="fig-seta" />
+        </marker>
+        <pattern id="fig-hachura" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(-55)">
+          <line x1="0" y1="0" x2="0" y2="6" class="fig-hachura-linha" />
+        </pattern>
+      </defs>
+    </svg>
+    <header class="carimbo">
+      <div class="carimbo-marca">
+        <a class="voltar-portfolio" id="voltar-portfolio" href="../index.html" hidden>← Engenharia Nata</a>
+        <p class="sobrescrito">Águas pluviais · ABNT NBR 10844:1989</p>
+        <h1>Calha <span>10844</span></h1>
+        <p class="lead">
+          Do temporal ao diâmetro do tubo: intensidade, área, vazão, calha e condutores, na ordem
+          da norma, com cada conta à vista.
+        </p>
+      </div>
+      <div class="carimbo-obra">
+        <label class="campo">
+          <span>Obra</span>
+          <input id="projeto" type="text" autocomplete="off" />
+        </label>
+        <div class="acoes">
+          <select id="exemplo" aria-label="Carregar um exemplo"><option value="">Carregar exemplo…</option><option value="residencia">Residência em Curitiba (1 calha)</option><option value="galpao">Galpão em São Paulo (2 calhas e coletor em 2 trechos)</option><option value="sobrado">Sobrado com platibanda em Porto Alegre (T = 25)</option></select>
+          <button class="btn" type="button" id="btn-limpar">Começar do zero</button>
+          <button class="btn" type="button" id="btn-link">Copiar link do cálculo</button>
+          <a class="btn" href="#memorial">Ver memorial</a>
+          <button class="btn primario" type="button" id="btn-pdf-topo">PDF do projeto</button>
+        </div>
+        <fieldset class="seg tema">
+          <legend>Tema</legend>
+          <div>
+            <label><input type="radio" name="tema" value="sistema" /><span>Sistema</span></label>
+            <label><input type="radio" name="tema" value="claro" /><span>Claro</span></label>
+            <label><input type="radio" name="tema" value="escuro" /><span>Escuro</span></label>
+          </div>
+        </fieldset>
+        <p id="estado-exemplo" class="nota-exemplo">
+          Exemplo carregado: uma residência em Curitiba. Troque pelos dados da sua obra.
+        </p>
+      </div>
+    </header>
+
+    <nav class="resumo" aria-label="Resumo do dimensionamento">
+      <ol>
+        <li>
+          <a href="#s51"><span class="rot"><i class="ponto" data-ponto="I"></i>Intensidade</span><span class="val" id="res-I">—</span></a>
+        </li>
+        <li>
+          <a href="#quadro"><span class="rot"><i class="ponto" data-ponto="A"></i>Área total</span><span class="val" id="res-A">—</span></a>
+        </li>
+        <li>
+          <a href="#quadro"><span class="rot"><i class="ponto" data-ponto="Q"></i>Vazão total</span><span class="val" id="res-Q">—</span></a>
+        </li>
+        <li>
+          <a href="#s55"><span class="rot"><i class="ponto" data-ponto="calha"></i>Calha ativa</span><span class="val" id="res-calha">—</span></a>
+        </li>
+        <li>
+          <a href="#s56"><span class="rot"><i class="ponto" data-ponto="vertical"></i>Condutores</span><span class="val" id="res-vertical">—</span></a>
+        </li>
+        <li>
+          <a href="#s57"><span class="rot"><i class="ponto" data-ponto="horizontal"></i>Coletores</span><span class="val" id="res-horizontal">—</span></a>
+        </li>
+      </ol>
+      <div class="coach" id="coach" aria-live="polite"></div>
+    </nav>
+
+    <main class="folha">
+      <details class="como-usar" id="como-usar" open>
+        <summary>Como usar, em quatro passos</summary>
+        <ol>
+          <li><a href="#s51">Chuva</a>Escolha a cidade e o período de retorno (5.1). Vale para a obra toda.</li>
+          <li><a href="#calhas">Calhas</a>Crie uma aba para cada calha. Informe as águas de telhado e as paredes que escoam para ela (5.2) e onde ficam as saídas (5.3).</li>
+          <li><a href="#s55">Seção</a>Escolha material, caimento e forma. O botão de dimensionar acha a menor seção que atende (5.5).</li>
+          <li><a href="#s56">Condutores</a>Informe o comprimento dos condutores verticais (5.6) e monte o coletor em trechos (5.7).</li>
+        </ol>
+        <p>A barra fixa (no topo; no celular e no tablet, embaixo) diz o próximo passo e leva até o campo. O cálculo fica salvo neste navegador; "Copiar link do cálculo" o leva a outra pessoa. No fim, "Gerar PDF do projeto" monta o relatório com todas as calhas.</p>
+      </details>
+      <!-- 5.1 --------------------------------------------------------------->
+      <section class="etapa" id="s51" aria-labelledby="t51">
+        <div class="etapa-num"><span class="item">Item</span>5.1</div>
+        <div class="etapa-entradas">
+          <h2 id="t51">Intensidade pluviométrica</h2>
+          <p class="explica">
+            A chuva de projeto dura 5 minutos (5.1.3). O que muda de uma obra para outra é o local e
+            o período de retorno, isto é, quão rara é a tempestade que a instalação precisa aguentar.
+          </p>
+          <fieldset class="seg">
+            <legend>De onde vem o valor de <var>I</var></legend>
+            <div>
+              <label><input type="radio" name="modoI" value="tabela" /><span>Tabela 5</span></label>
+              <label><input type="radio" name="modoI" value="idf" /><span>Equação IDF</span></label>
+              <label><input type="radio" name="modoI" value="pequena" /><span>Até 100 m²</span></label>
+              <label><input type="radio" name="modoI" value="manual" /><span>Valor local</span></label>
+            </div>
+          </fieldset>
+
+          <div data-modo-i="tabela" class="linha-campos">
+            <label class="campo">
+              <span>Buscar local</span>
+              <input id="busca-local" type="search" autocomplete="off" placeholder="Ex.: sao paulo, curitiba" />
+            </label>
+            <label class="campo">
+              <span>Posto pluviográfico da Tabela 5</span>
+              <select id="local"></select>
+            </label>
+          </div>
+
+          <div data-modo-i="idf" hidden>
+            <p class="formula">
+              <var>i</var> = <var>K</var> · <var>T</var><sup><var>a</var></sup> / (<var>t</var> +
+              <var>b</var>)<sup><var>c</var></sup>, com <var>t</var> = 5 min
+            </p>
+            <div class="linha-campos">
+              <label class="campo"><span><var>K</var></span><input id="idfK" class="num" type="text" inputmode="decimal" /></label>
+              <label class="campo"><span><var>a</var></span><input id="idfA" class="num" type="text" inputmode="decimal" /></label>
+              <label class="campo"><span><var>b</var> (min)</span><input id="idfB" class="num" type="text" inputmode="decimal" /></label>
+              <label class="campo"><span><var>c</var></span><input id="idfC" class="num" type="text" inputmode="decimal" /></label>
+            </div>
+            <p class="nota-norma">
+              <strong>Onde achar</strong>Estudos de chuvas intensas do seu estado ou município trazem
+              <var>K</var>, <var>a</var>, <var>b</var> e <var>c</var> prontos. Use os coeficientes
+              que dão <var>i</var> em mm/h com <var>t</var> em minutos. A norma permite esses dados
+              locais (5.1.1 e 5.1.3.1).
+            </p>
+          </div>
+
+          <div data-modo-i="pequena" hidden>
+            <label class="campo" style="max-width: 20rem">
+              <span>Área de projeção horizontal da construção</span>
+              <span class="com-unidade"><input id="areaProj" class="num" type="text" inputmode="decimal" /><em>m²</em></span>
+            </label>
+          </div>
+
+          <div data-modo-i="manual" hidden>
+            <div class="linha-campos">
+              <label class="campo">
+                <span>Intensidade (5 min)</span>
+                <span class="com-unidade"><input id="Imanual" class="num" type="text" inputmode="decimal" /><em>mm/h</em></span>
+              </label>
+              <label class="campo">
+                <span>Período de retorno adotado</span>
+                <span class="com-unidade"><input id="Tmanual" class="num" type="text" inputmode="numeric" /><em>anos</em></span>
+              </label>
+            </div>
+          </div>
+
+          <fieldset data-bloco-t>
+            <legend>Período de retorno <var>T</var> (5.1.2)</legend>
+            <div class="cartoes" id="opcoes-T"></div>
+          </fieldset>
+        </div>
+        <div class="etapa-resultado" id="r51" aria-live="polite"></div>
+      </section>
+
+      <!-- Calhas do projeto ------------------------------------------------->
+      <section class="calhas-painel" id="calhas" aria-labelledby="tc">
+        <div class="calhas-topo">
+          <div>
+            <p class="sobrescrito">Uma obra, várias calhas</p>
+            <h2 id="tc">Calhas do projeto</h2>
+            <p class="explica">
+              Cada calha tem sua área, suas saídas, sua seção e seus condutores. Os itens 5.2 a 5.6
+              mostram a calha escolhida aqui; a chuva do item 5.1 vale para todas.
+            </p>
+          </div>
+          <div class="calha-acoes">
+            <button class="btn" type="button" id="btn-nova-calha">Nova calha</button>
+            <button class="btn" type="button" id="btn-duplicar-calha">Duplicar</button>
+            <button class="btn fantasma" type="button" id="btn-remover-calha">Remover</button>
+          </div>
+        </div>
+        <div class="abas" role="tablist" aria-label="Calhas do projeto" id="abas-calhas"></div>
+        <label class="campo campo-nome">
+          <span>Nome da calha escolhida</span>
+          <input id="nome-calha" type="text" autocomplete="off" />
+        </label>
+        <div class="resposta" id="resposta-calha" aria-live="polite" hidden></div>
+        <figure class="esquema">
+          <div class="rolagem" id="esquema"></div>
+          <figcaption>Esquema fora de escala vertical: a calha corre para as saídas mais próximas; cada condutor desce até o coletor.</figcaption>
+        </figure>
+      </section>
+
+      <!-- 5.2 --------------------------------------------------------------->
+      <section class="etapa" id="s52" aria-labelledby="t52">
+        <div class="etapa-num"><span class="item">Item</span>5.2</div>
+        <div class="etapa-entradas">
+          <p class="calha-tag" data-calha-tag></p>
+          <h2 id="t52">Área de contribuição</h2>
+          <fieldset>
+            <legend>Posição da calha</legend>
+            <div class="cartoes cartoes-tipo">
+              <label><input type="radio" name="tipoCalha" value="beiral" /><svg viewBox="0 0 80 40" aria-hidden="true" fill="none" stroke="currentColor"><path d="M4 9 L57 25" stroke-width="3"/><path d="M40 20 V40" stroke-width="3"/><path d="M53 22 V33 H70 V22" stroke-width="2.5"/></svg><b>Beiral</b>Na borda livre do telhado, por fora da parede (3.7).</label>
+              <label><input type="radio" name="tipoCalha" value="platibanda" /><svg viewBox="0 0 80 40" aria-hidden="true" fill="none" stroke="currentColor"><path d="M4 9 L50 26" stroke-width="3"/><path d="M68 3 V40" stroke-width="5"/><path d="M47 23 V34 H66" stroke-width="2.5"/></svg><b>Platibanda</b>Junto à mureta que esconde o telhado (3.8).</label>
+              <label><input type="radio" name="tipoCalha" value="agua-furtada" /><svg viewBox="0 0 80 40" aria-hidden="true" fill="none" stroke="currentColor"><path d="M4 7 L40 29 L76 7" stroke-width="3"/><path d="M31 25 V35 H49 V25" stroke-width="2.5"/></svg><b>Água-furtada</b>No vale onde duas águas se encontram (3.6).</label>
+            </div>
+          </fieldset>
+          <p class="explica" id="dica-area"></p>
+          <ul class="superficies" id="superficies"></ul>
+          <div class="adicionar">
+            <select id="add-tipo" aria-label="Tipo de superfície a adicionar"></select>
+            <button class="btn" type="button" id="btn-add">Adicionar superfície</button>
+          </div>
+          <div class="figura-vento">
+            <svg viewBox="0 0 300 212" class="fig" role="img" aria-labelledby="fv-t">
+              <title id="fv-t">Figura 1 redesenhada: com a chuva inclinada 1 na horizontal para 2 na vertical, a água do telhado da direita recebe uma faixa de largura a igual a b mais c sobre 2</title>
+              <g class="fchuva" opacity="0.55"><line x1="14" y1="26" x2="19" y2="16" /><line x1="40" y1="26" x2="45" y2="16" /><line x1="66" y1="26" x2="71" y2="16" /><line x1="92" y1="26" x2="97" y2="16" /><line x1="118" y1="26" x2="123" y2="16" /><line x1="144" y1="26" x2="149" y2="16" /><line x1="170" y1="26" x2="175" y2="16" /><line x1="196" y1="26" x2="201" y2="16" /><line x1="222" y1="26" x2="227" y2="16" /><line x1="248" y1="26" x2="253" y2="16" /><line x1="274" y1="26" x2="279" y2="16" /><line x1="27" y1="47" x2="32" y2="37" /><line x1="53" y1="47" x2="58" y2="37" /><line x1="79" y1="47" x2="84" y2="37" /><line x1="105" y1="47" x2="110" y2="37" /><line x1="131" y1="47" x2="136" y2="37" /><line x1="157" y1="47" x2="162" y2="37" /><line x1="183" y1="47" x2="188" y2="37" /><line x1="209" y1="47" x2="214" y2="37" /><line x1="235" y1="47" x2="240" y2="37" /><line x1="261" y1="47" x2="266" y2="37" /><line x1="287" y1="47" x2="292" y2="37" /><line x1="14" y1="68" x2="19" y2="58" /><line x1="40" y1="68" x2="45" y2="58" /><line x1="66" y1="68" x2="71" y2="58" /><line x1="92" y1="68" x2="97" y2="58" /><line x1="118" y1="68" x2="123" y2="58" /><line x1="144" y1="68" x2="149" y2="58" /><line x1="170" y1="68" x2="175" y2="58" /><line x1="196" y1="68" x2="201" y2="58" /><line x1="222" y1="68" x2="227" y2="58" /><line x1="248" y1="68" x2="253" y2="58" /><line x1="274" y1="68" x2="279" y2="58" /><line x1="27" y1="89" x2="32" y2="79" /><line x1="53" y1="89" x2="58" y2="79" /><line x1="79" y1="89" x2="84" y2="79" /><line x1="105" y1="89" x2="110" y2="79" /><line x1="131" y1="89" x2="136" y2="79" /><line x1="157" y1="89" x2="162" y2="79" /><line x1="183" y1="89" x2="188" y2="79" /><line x1="209" y1="89" x2="214" y2="79" /><line x1="235" y1="89" x2="240" y2="79" /><line x1="261" y1="89" x2="266" y2="79" /><line x1="287" y1="89" x2="292" y2="79" /><line x1="14" y1="110" x2="19" y2="100" /><line x1="40" y1="110" x2="45" y2="100" /><line x1="66" y1="110" x2="71" y2="100" /><line x1="92" y1="110" x2="97" y2="100" /><line x1="118" y1="110" x2="123" y2="100" /><line x1="144" y1="110" x2="149" y2="100" /><line x1="170" y1="110" x2="175" y2="100" /><line x1="196" y1="110" x2="201" y2="100" /><line x1="222" y1="110" x2="227" y2="100" /><line x1="248" y1="110" x2="253" y2="100" /><line x1="274" y1="110" x2="279" y2="100" /><line x1="27" y1="131" x2="32" y2="121" /><line x1="53" y1="131" x2="58" y2="121" /><line x1="209" y1="131" x2="214" y2="121" /><line x1="235" y1="131" x2="240" y2="121" /><line x1="261" y1="131" x2="266" y2="121" /><line x1="287" y1="131" x2="292" y2="121" /><line x1="14" y1="152" x2="19" y2="142" /><line x1="40" y1="152" x2="45" y2="142" /><line x1="66" y1="152" x2="71" y2="142" /><line x1="222" y1="152" x2="227" y2="142" /><line x1="248" y1="152" x2="253" y2="142" /><line x1="274" y1="152" x2="279" y2="142" /><line x1="27" y1="173" x2="32" y2="163" /><line x1="53" y1="173" x2="58" y2="163" /><line x1="209" y1="173" x2="214" y2="163" /><line x1="235" y1="173" x2="240" y2="163" /><line x1="261" y1="173" x2="266" y2="163" /><line x1="287" y1="173" x2="292" y2="163" /><line x1="14" y1="194" x2="19" y2="184" /><line x1="40" y1="194" x2="45" y2="184" /><line x1="66" y1="194" x2="71" y2="184" /><line x1="222" y1="194" x2="227" y2="184" /><line x1="248" y1="194" x2="253" y2="184" /><line x1="274" y1="194" x2="279" y2="184" /></g>
+              <path class="fl" d="M8 202 H292 M80 202 V127 M200 202 V127 M72 126 H80 M200 126 H208" />
+              <path class="fl" d="M66 124 L140 84 L214 124" />
+              <path class="fmolhada" d="M142 85 L212 123" />
+              <path class="fl" d="M61 124 a5 5 0 0 0 10 0 M209 124 a5 5 0 0 0 10 0" />
+              <path class="fx" d="M140 84 L180 4 M214 124 L274 4" />
+              <path class="fx" d="M150 44 H160 M150 44 V64" />
+              <text class="ftxt" x="153" y="41">1</text>
+              <text class="ftxt" x="142" y="58">2</text>
+              <text class="fv" x="156" y="57" style="font-size: 11px">θ</text>
+              <path class="fc" d="M143 84 H211 M217 84 H232 M214 87 V121 M179 12 H268" />
+              <text class="fv" x="174" y="79">b</text>
+              <text class="fv" x="219" y="79">c/2</text>
+              <text class="fv" x="219" y="108">c</text>
+              <text class="fv" x="221" y="9">a</text>
+              <text class="ftxt" x="140" y="170" text-anchor="middle">Edifício</text>
+              <path class="fx" d="M216 131 L230 145" />
+              <text class="ftxt" x="232" y="150">calha</text>
+            </svg>
+            <p class="nota-norma">
+              <strong>Figura 1 · 5.1.5</strong>Chuva com inclinação arc tg 2 em relação à
+              horizontal (1 na horizontal para 2 na vertical), na direção do vento que faz as
+              superfícies interceptarem mais chuva. A água da direita recebe a faixa
+              <var>a</var> = <var>b</var> + <var>c</var>/2, a mesma conta da Figura 2(b):
+              (<var>a</var> + <var>h</var>/2) · <var>b</var>.
+            </p>
+          </div>
+        </div>
+        <div class="etapa-resultado" id="r52" aria-live="polite"></div>
+      </section>
+
+      <!-- 5.3 --------------------------------------------------------------->
+      <section class="etapa" id="s53" aria-labelledby="t53">
+        <div class="etapa-num"><span class="item">Item</span>5.3</div>
+        <div class="etapa-entradas">
+          <p class="calha-tag" data-calha-tag></p>
+          <h2 id="t53">Vazão de projeto</h2>
+          <p class="explica">
+            A vazão total vem direto de <var>I</var> e <var>A</var>. Depois, a posição das saídas
+            define quanto dela a calha carrega no trecho mais longo (5.5.4) e quanto chega a cada
+            condutor.
+          </p>
+          <fieldset>
+            <legend>Saídas da calha</legend>
+            <div class="cartoes cartoes-saidas" id="opcoes-saidas">
+              <label><input type="radio" name="saidas" value="ponta" /><svg viewBox="0 0 80 40" aria-hidden="true" fill="none" stroke="currentColor"><path d="M6 12 H74" stroke-width="3"/><path d="M71 12 V31" stroke-width="5"/><path d="M20 7 l4 5 l-4 5" stroke-width="1.8"/><path d="M36 7 l4 5 l-4 5" stroke-width="1.8"/><path d="M52 7 l4 5 l-4 5" stroke-width="1.8"/></svg><b>Uma, na ponta</b>Toda a calha escoa para ela.</label>
+              <label><input type="radio" name="saidas" value="intermediaria" /><svg viewBox="0 0 80 40" aria-hidden="true" fill="none" stroke="currentColor"><path d="M6 12 H74" stroke-width="3"/><path d="M30 12 V31" stroke-width="5"/><path d="M13 7 l4 5 l-4 5" stroke-width="1.8"/><path d="M47 7 l-4 5 l4 5" stroke-width="1.8"/><path d="M61 7 l-4 5 l4 5" stroke-width="1.8"/></svg><b>Uma, no meio</b>Vale o maior dos dois lados.</label>
+              <label><input type="radio" name="saidas" value="duas-pontas" /><svg viewBox="0 0 80 40" aria-hidden="true" fill="none" stroke="currentColor"><path d="M6 12 H74" stroke-width="3"/><path d="M8 12 V31" stroke-width="5"/><path d="M72 12 V31" stroke-width="5"/><path d="M28 7 l-4 5 l4 5" stroke-width="1.8"/><path d="M50 7 l4 5 l-4 5" stroke-width="1.8"/><path d="M40 3 V21" stroke-width="1" stroke-dasharray="2 2"/></svg><b>Nas duas pontas</b>Divisor de águas no centro.</label>
+              <label><input type="radio" name="saidas" value="espacadas" /><svg viewBox="0 0 80 40" aria-hidden="true" fill="none" stroke="currentColor"><path d="M6 12 H74" stroke-width="3"/><path d="M17 12 V31" stroke-width="5"/><path d="M40 12 V31" stroke-width="5"/><path d="M63 12 V31" stroke-width="5"/></svg><b>Várias, espaçadas</b>Cada uma no meio do seu trecho.</label>
+              <label><input type="radio" name="saidas" value="personalizadas" /><svg viewBox="0 0 80 40" aria-hidden="true" fill="none" stroke="currentColor"><path d="M6 12 H74" stroke-width="3"/><path d="M13 12 V31" stroke-width="5"/><path d="M47 12 V31" stroke-width="5"/><path d="M66 12 V31" stroke-width="5"/></svg><b>Posições livres</b>Você informa onde fica cada uma.</label>
+            </div>
+          </fieldset>
+          <div class="linha-campos">
+            <label class="campo">
+              <span id="rot-Lc">Comprimento da calha</span>
+              <span class="com-unidade"><input id="Lc" class="num" type="text" inputmode="decimal" /><em>m</em></span>
+              <small class="dica">Medido ao longo da calha, de ponta a ponta.</small>
+            </label>
+            <label class="campo" data-so-saidas="intermediaria">
+              <span>Distância da saída a uma ponta</span>
+              <span class="com-unidade"><input id="xSaida" class="num" type="text" inputmode="decimal" /><em>m</em></span>
+            </label>
+            <label class="campo" data-so-saidas="espacadas">
+              <span>Número de saídas</span>
+              <input id="nSaidas" class="num" type="text" inputmode="numeric" />
+            </label>
+          </div>
+          <label class="campo" data-so-saidas="personalizadas">
+            <span>Posição de cada saída, a partir de uma ponta (m), separadas por ponto e vírgula</span>
+            <input id="listaSaidas" type="text" inputmode="decimal" placeholder="Ex.: 0; 7,5; 15" />
+          </label>
+          <fieldset data-tabela1>
+            <legend>Mudança de direção a menos de 4 m de uma saída (5.5.6 e Tabela 1)</legend>
+            <div class="seg">
+              <div>
+                <label><input type="radio" name="curva" value="nenhuma" /><span>Não há</span></label>
+                <label><input type="radio" name="curva" value="canto-reto" /><span>Canto reto</span></label>
+                <label><input type="radio" name="curva" value="canto-arredondado" /><span>Canto arredondado</span></label>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset data-so-curva>
+            <legend>Distância da curva até a saída</legend>
+            <div class="seg">
+              <div>
+                <label><input type="radio" name="faixa" value="ate2m" /><span>Menos de 2 m</span></label>
+                <label><input type="radio" name="faixa" value="de2a4m" /><span>Entre 2 e 4 m</span></label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+        <div class="etapa-resultado" id="r53" aria-live="polite"></div>
+      </section>
+
+      <!-- 5.5 --------------------------------------------------------------->
+      <section class="etapa" id="s55" aria-labelledby="t55">
+        <div class="etapa-num"><span class="item">Item</span>5.5</div>
+        <div class="etapa-entradas">
+          <p class="calha-tag" data-calha-tag></p>
+          <h2 id="t55">Calha</h2>
+          <p class="explica">
+            Manning-Strickler (5.5.7): a calha precisa escoar a vazão de projeto com a lâmina
+            d'água abaixo do limite que você adotar para o bordo livre.
+          </p>
+          <div class="linha-campos">
+            <label class="campo campo-largo">
+              <span>Material (4.1.1) e rugosidade <var>n</var> (Tabela 2)</span>
+              <select id="material"></select>
+            </label>
+            <label class="campo">
+              <span id="rot-decl">Declividade <var>i</var></span>
+              <span class="com-unidade"><input id="decl" class="num" type="text" inputmode="decimal" /><em>%</em></span>
+              <small class="dica">0,5% = 5 mm de queda a cada metro.</small>
+            </label>
+          </div>
+          <fieldset>
+            <legend>Seção</legend>
+            <div class="cartoes" id="opcoes-forma">
+              <label data-forma-card="retangular"
+                ><input type="radio" name="forma" value="retangular" />
+                <svg viewBox="0 0 80 40" aria-hidden="true"><path d="M20 6 V34 H60 V6" fill="none" stroke="currentColor" stroke-width="3" /></svg>
+                <b>Retangular</b></label
+              >
+              <label data-forma-card="semicircular"
+                ><input type="radio" name="forma" value="semicircular" />
+                <svg viewBox="0 0 80 40" aria-hidden="true"><path d="M18 8 A22 22 0 0 0 62 8" fill="none" stroke="currentColor" stroke-width="3" /></svg>
+                <b>Semicircular</b></label
+              >
+              <label data-forma-card="trapezoidal"
+                ><input type="radio" name="forma" value="trapezoidal" />
+                <svg viewBox="0 0 80 40" aria-hidden="true"><path d="M12 6 L26 34 H54 L68 6" fill="none" stroke="currentColor" stroke-width="3" /></svg>
+                <b>Trapezoidal</b></label
+              >
+            </div>
+          </fieldset>
+          <div class="linha-campos" data-forma="retangular">
+            <label class="campo">
+              <span>Largura <var>b</var></span>
+              <span class="com-unidade"><input id="b" class="num" type="text" inputmode="decimal" /><em>mm</em></span>
+            </label>
+            <label class="campo">
+              <span>Altura <var>h</var></span>
+              <span class="com-unidade"><input id="h" class="num" type="text" inputmode="decimal" /><em>mm</em></span>
+            </label>
+          </div>
+          <div class="linha-campos" data-forma="semicircular" hidden>
+            <label class="campo">
+              <span>Diâmetro interno <var>D</var></span>
+              <span class="com-unidade"><input id="Dcalha" class="num" type="text" inputmode="decimal" list="semis" /><em>mm</em></span>
+              <datalist id="semis">
+                <option value="100"></option>
+                <option value="125"></option>
+                <option value="150"></option>
+                <option value="200"></option>
+              </datalist>
+            </label>
+          </div>
+          <div class="linha-campos" data-forma="trapezoidal" hidden>
+            <label class="campo">
+              <span>Fundo <var>b</var></span>
+              <span class="com-unidade"><input id="bt" class="num" type="text" inputmode="decimal" /><em>mm</em></span>
+            </label>
+            <label class="campo">
+              <span>Talude <var>z</var> (H:V)</span>
+              <input id="z" class="num" type="text" inputmode="decimal" />
+            </label>
+            <label class="campo">
+              <span>Altura <var>h</var></span>
+              <span class="com-unidade"><input id="ht" class="num" type="text" inputmode="decimal" /><em>mm</em></span>
+            </label>
+          </div>
+          <fieldset id="bloco-chapa">
+            <legend>Chapa da calha</legend>
+            <div class="linha-campos">
+              <label class="campo">
+                <span>Espessura</span>
+                <select id="espessura"></select>
+              </label>
+              <label class="campo">
+                <span>Abas e dobras (total)</span>
+                <span class="com-unidade"><input id="abas" class="num" type="text" inputmode="decimal" /><em>mm</em></span>
+                <small class="dica">Soma das abas de fixação e das dobras de reforço.</small>
+              </label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend id="leg-lamina">Lâmina máxima admitida</legend>
+            <div class="seg">
+              <div>
+                <label><input type="radio" name="fracLamina" value="1" /><span>Seção cheia</span></label>
+                <label><input type="radio" name="fracLamina" value="0.6667" /><span>⅔ da altura</span></label>
+                <label><input type="radio" name="fracLamina" value="0.5" /><span>½ da altura</span></label>
+              </div>
+            </div>
+          </fieldset>
+          <div class="adicionar">
+            <button class="btn primario" type="button" id="btn-dimensionar">Calcular a altura mínima</button>
+            <label class="caixa-check" data-forma="retangular">
+              <input type="checkbox" id="otima" />
+              <span>Liberar a largura (seção econômica, <var>b</var> = 2<var>y</var>)</span>
+            </label>
+          </div>
+        </div>
+        <div class="etapa-resultado" id="r55" aria-live="polite"></div>
+      </section>
+
+      <!-- 5.6 --------------------------------------------------------------->
+      <section class="etapa" id="s56" aria-labelledby="t56">
+        <div class="etapa-num"><span class="item">Item</span>5.6</div>
+        <div class="etapa-entradas">
+          <p class="calha-tag" data-calha-tag></p>
+          <h2 id="t56">Condutor vertical</h2>
+          <p class="explica">
+            Ábacos da Figura 3: suba pela vertical de <var>Q</var> até as curvas de <var>H</var> e de
+            <var>L</var>, fique com a interseção mais alta e leve-a ao eixo <var>D</var> (5.6.4.1).
+          </p>
+          <fieldset>
+            <legend>Saída da calha</legend>
+            <div class="cartoes">
+              <label
+                ><input type="radio" name="saida" value="a" />
+                <svg viewBox="0 0 80 40" aria-hidden="true"><path d="M10 6 V16 H34 V38 M46 38 V16 H70 V6" fill="none" stroke="currentColor" stroke-width="3" /></svg>
+                <b>Aresta viva</b>Ábaco (a)</label
+              >
+              <label
+                ><input type="radio" name="saida" value="b" />
+                <svg viewBox="0 0 80 40" aria-hidden="true"><path d="M10 6 V16 H26 Q34 18 34 28 V38 M46 38 V28 Q46 18 54 16 H70 V6" fill="none" stroke="currentColor" stroke-width="3" /></svg>
+                <b>Funil de saída</b>Ábaco (b)</label
+              >
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Lâmina <var>H</var> na calha, usada no ábaco</legend>
+            <div class="seg">
+              <div>
+                <label><input type="radio" name="fonteH" value="limite" /><span>Lâmina máxima admitida</span></label>
+                <label><input type="radio" name="fonteH" value="calculada" /><span>Lâmina calculada</span></label>
+                <label><input type="radio" name="fonteH" value="digitada" /><span>Digitar</span></label>
+              </div>
+            </div>
+          </fieldset>
+          <div class="linha-campos">
+            <label class="campo" data-so-h>
+              <span>Lâmina na calha <var>H</var></span>
+              <span class="com-unidade"><input id="Hlam" class="num" type="text" inputmode="decimal" /><em>mm</em></span>
+            </label>
+            <label class="campo">
+              <span>Comprimento do condutor <var>L</var></span>
+              <span class="com-unidade"><input id="Lcond" class="num" type="text" inputmode="decimal" /><em>m</em></span>
+              <small class="dica">Da saída da calha até a curva do pé.</small>
+            </label>
+          </div>
+          <label class="campo campo-largo">
+            <span>Material dos condutores verticais (4.1.2), para a obra toda</span>
+            <select id="materialV"></select>
+          </label>
+          <fieldset>
+            <legend>Tubos que você vai comprar: DN e diâmetro interno do catálogo</legend>
+            <ul class="tubos" id="tubos"></ul>
+            <div class="adicionar">
+              <button class="btn" type="button" id="btn-add-tubo">Adicionar tubo</button>
+              <button class="btn fantasma" type="button" id="btn-tubos-padrao">Restaurar lista</button>
+            </div>
+          </fieldset>
+          <p class="nota-norma">
+            <strong>Atenção</strong>A lista vem com diâmetros internos aproximados de PVC. A norma
+            adota o DN cujo diâmetro <em>interno</em> seja maior ou igual ao do ábaco (5.6.4.1), e
+            o nominal não serve para cálculo (3.11). O catálogo costuma trazer o diâmetro externo
+            <var>DE</var> e a espessura <var>e</var> da parede: <var>D</var><sub>i</sub> =
+            <var>DE</var> − 2·<var>e</var>. Troque os valores pelos do tubo da obra.
+          </p>
+        </div>
+        <div class="etapa-resultado" id="r56" aria-live="polite"></div>
+      </section>
+
+      <!-- 5.7 --------------------------------------------------------------->
+      <section class="etapa" id="s57" aria-labelledby="t57">
+        <div class="etapa-num"><span class="item">Item</span>5.7</div>
+        <div class="etapa-entradas">
+          <h2 id="t57">Coletores horizontais</h2>
+          <p class="explica">
+            Monte o coletor em trechos, de montante para jusante. Cada trecho recebe as calhas cujos
+            condutores chegam até ele; o trecho seguinte repete as anteriores e soma as novas. Tubo
+            circular com lâmina de 2/3 do diâmetro interno (5.7.2).
+          </p>
+          <ul class="trechos" id="trechos"></ul>
+          <div class="adicionar">
+            <button class="btn" type="button" id="btn-add-trecho">Adicionar trecho</button>
+          </div>
+          <p class="nota-norma">
+            <strong>Na obra</strong>Tubo aparente: inspeção nas conexões, nas mudanças de direção ou
+            declividade e a cada 20 m em trecho reto (5.7.3). Tubo enterrado: caixa de areia nos
+            mesmos pontos (5.7.4). A ligação do condutor vertical com o horizontal é por curva de
+            raio longo, com inspeção ou caixa de areia (5.7.5).
+          </p>
+        </div>
+        <div class="etapa-resultado" id="r57" aria-live="polite"></div>
+      </section>
+
+      <!-- Quadro-resumo ------------------------------------------------------>
+      <section class="etapa etapa-final etapa-quadro" id="quadro" aria-labelledby="tq">
+        <div class="etapa-num"><span class="item">Projeto</span>Σ</div>
+        <div class="etapa-entradas">
+          <h2 id="tq">Quadro-resumo</h2>
+          <p class="explica">Todas as calhas e todos os trechos do projeto. Clique no nome de uma calha para editá-la.</p>
+          <div id="quadro-corpo"></div>
+        </div>
+      </section>
+
+      <!-- Lista de materiais ---------------------------------------------------->
+      <section class="etapa etapa-final etapa-materiais" id="materiais" aria-labelledby="tl">
+        <div class="etapa-num"><span class="item">Obra</span>≡</div>
+        <div class="etapa-entradas">
+          <h2 id="tl">Lista de materiais</h2>
+          <p class="explica">
+            Levantamento que sai do cálculo, para orçar e conferir com o fornecedor. É o mínimo:
+            cantos, emendas, suportes e mudanças de direção do traçado real acrescentam peças.
+          </p>
+          <div class="acoes no-print">
+            <button class="btn" type="button" id="btn-copiar-materiais">Copiar lista</button>
+          </div>
+          <div id="materiais-corpo"></div>
+        </div>
+      </section>
+
+      <!-- Termos da norma ---------------------------------------------------->
+      <section class="etapa etapa-final" id="termos" aria-labelledby="tt">
+        <div class="etapa-num"><span class="item">Item</span>3</div>
+        <div class="etapa-entradas">
+          <h2 id="tt">Termos da norma</h2>
+          <p class="explica">Definições do item 3 da NBR 10844 em linguagem direta, para consulta rápida.</p>
+          <dl class="termos">
+            <div><dt>Altura pluviométrica<span>3.1</span></dt><dd>Volume de chuva por unidade de área horizontal, dado como altura de água (mm).</dd></div>
+            <div><dt>Área de contribuição<span>3.2</span></dt><dd>Soma das superfícies que recebem chuva e levam a água a um mesmo ponto da instalação.</dd></div>
+            <div><dt>Bordo livre<span>3.3</span></dt><dd>Prolongamento vertical da calha acima da lâmina, que evita o transbordamento.</dd></div>
+            <div><dt>Caixa de areia<span>3.4</span></dt><dd>Caixa no condutor horizontal que retém detritos por deposição.</dd></div>
+            <div><dt>Calha<span>3.5</span></dt><dd>Canal que recolhe a água de coberturas e terraços e a leva a um destino.</dd></div>
+            <div><dt>Calha de água-furtada<span>3.6</span></dt><dd>Calha na linha de água-furtada, o vale onde duas águas se encontram.</dd></div>
+            <div><dt>Calha de beiral<span>3.7</span></dt><dd>Calha na linha do beiral da cobertura.</dd></div>
+            <div><dt>Calha de platibanda<span>3.8</span></dt><dd>Calha no encontro da cobertura com a platibanda.</dd></div>
+            <div><dt>Condutor horizontal<span>3.9</span></dt><dd>Canal ou tubo horizontal que leva a água até os locais permitidos.</dd></div>
+            <div><dt>Condutor vertical<span>3.10</span></dt><dd>Tubo vertical que desce a água de calhas e coberturas até a parte inferior do edifício.</dd></div>
+            <div><dt>Diâmetro nominal<span>3.11</span></dt><dd>Número que classifica tubos e peças. Não é medida e não serve para cálculo.</dd></div>
+            <div><dt>Duração de precipitação<span>3.12</span></dt><dd>Intervalo de tempo de referência da chuva; a norma fixa 5 minutos (5.1.3).</dd></div>
+            <div><dt>Funil de saída<span>3.13</span></dt><dd>Saída em forma de funil, que engole mais água que a saída de aresta viva.</dd></div>
+            <div><dt>Intensidade pluviométrica<span>3.14</span></dt><dd>Altura de chuva dividida pelo tempo em que ela caiu (mm/h).</dd></div>
+            <div><dt>Perímetro molhado<span>3.15</span></dt><dd>Contorno da seção em contato com a água, nas paredes e no fundo.</dd></div>
+            <div><dt>Período de retorno<span>3.16</span></dt><dd>Número médio de anos em que uma intensidade, para a mesma duração, é igualada ou superada uma vez.</dd></div>
+            <div><dt>Ralo<span>3.17 a 3.19</span></dt><dd>Caixa com grelha na parte de cima que recebe a água; a grelha pode ser plana ou hemisférica.</dd></div>
+            <div><dt>Saída<span>3.20</span></dt><dd>Orifício na calha, na cobertura ou no terraço para onde a água converge.</dd></div>
+            <div><dt>Seção molhada<span>3.21</span></dt><dd>Área útil de escoamento na seção transversal do condutor ou da calha.</dd></div>
+            <div><dt>Tempo de concentração<span>3.22</span></dt><dd>Tempo entre o início da chuva e o momento em que toda a área passa a contribuir num ponto.</dd></div>
+            <div><dt>Vazão de projeto<span>3.23</span></dt><dd>Vazão de referência para dimensionar calhas e condutores.</dd></div>
+            <div><dt>Raio hidráulico<span>5.5.7</span></dt><dd>Seção molhada dividida pelo perímetro molhado; entra na fórmula de Manning-Strickler.</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <!-- Memorial ----------------------------------------------------------->
+      <section class="etapa etapa-final etapa-memorial" id="memorial" aria-labelledby="tm">
+        <div class="etapa-num"><span class="item">Saída</span>M</div>
+        <div class="etapa-entradas">
+          <h2 id="tm" class="no-print">Memorial de cálculo</h2>
+          <div class="acoes no-print">
+            <button class="btn" type="button" id="btn-copiar">Copiar texto</button>
+            <button class="btn" type="button" id="btn-imprimir">PDF do projeto</button>
+          </div>
+          <article class="memorial" id="memorial-corpo"></article>
+        </div>
+      </section>
+
+      <!-- Projeto em PDF ----------------------------------------------------->
+      <section class="etapa etapa-final etapa-pdf" id="pdf" aria-labelledby="tp">
+        <div class="etapa-num"><span class="item">Saída</span>PDF</div>
+        <div class="etapa-entradas">
+          <h2 id="tp">Projeto em PDF</h2>
+          <p class="explica">
+            Relatório com todas as calhas: chuva de projeto e quadro-resumo; para cada calha, as
+            áreas da Figura 2, a vazão, as saídas, a seção desenhada com a lâmina, a leitura do
+            ábaco da Figura 3 e os condutores; depois os coletores, e a lista de materiais. Confira na tela e use "Imprimir ou salvar em PDF".
+          </p>
+          <div class="acoes">
+            <button class="btn primario btn-grande" type="button" id="btn-pdf">Gerar PDF do projeto</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="rodape">
+      <p>
+        Ferramenta didática baseada na ABNT NBR 10844:1989. Não substitui a leitura da norma nem a
+        responsabilidade técnica do projetista. As curvas dos ábacos da Figura 3 foram
+        digitalizadas da norma impressa; confira os casos-limite no ábaco original.
+      </p>
+      <p>
+        Dados de chuva da Tabela 5: Otto Pfafstetter, <em>Chuvas intensas no Brasil</em> (1957),
+        com grafias e UFs como na norma.
+      </p>
+    </footer>
+
+    <div class="relatorio" id="relatorio" role="dialog" aria-modal="true" aria-labelledby="rel-t" hidden>
+      <div class="relatorio-barra no-print">
+        <p id="rel-t">Relatório do projeto</p>
+        <button class="btn primario" type="button" id="btn-rel-imprimir">Imprimir ou salvar em PDF</button>
+        <button class="btn" type="button" id="btn-rel-fechar">Fechar</button>
+      </div>
+      <div class="relatorio-folha" id="relatorio-corpo"></div>
+    </div>
+
+    <div class="toast" id="toast" role="status" hidden></div>
+
+    <script src="nbr10844-dados.js"></script>
+    <script src="nbr10844-abacos.js"></script>
+    <script src="nbr10844-calc.js"></script>
+    <script src="calha-util.js"></script>
+    <script src="calha-estado.js"></script>
+    <script src="calha-projeto.js"></script>
+    <script src="calha-desenhos.js"></script>
+    <script src="calha-memorial.js"></script>
+    <script src="calha-relatorio.js"></script>
+    <script src="calha-app.js"></script>
+  </body>
+</html>
