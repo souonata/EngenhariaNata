@@ -24,6 +24,7 @@
   const REL = window.CalhaRelatorio;
   const CHAVE_TEMA_SITE = 'engnata_theme_mode';
   const CHAVE_GUIA = 'calha10844:guia';
+  const CHAVE_VERIF = 'calha10844:verificacoes';
 
   const G_NUM = ['areaProj', 'Imanual', 'Tmanual', 'idfK', 'idfA', 'idfB', 'idfC'];
   const C_NUM = ['Lc', 'xSaida', 'nSaidas', 'decl', 'b', 'h', 'Dcalha', 'bt', 'z', 'ht', 'abas', 'Hlam', 'Lcond'];
@@ -691,6 +692,7 @@
     const P = PJ.calcularProjeto(estado);
     $('#relatorio-corpo').innerHTML = REL.relatorio(P, estado, {
       data: new Date().toLocaleDateString('pt-BR'),
+      verificacoes: listaVerificacoes(),
     });
     focoAntes = document.activeElement;
     $('#relatorio').hidden = false;
@@ -771,27 +773,57 @@
     } else alternativa();
   }
 
-  /* Tema: sem escolha salva, respeita o sistema (ou o tema do visualizador). */
+  /* Tema: botão sol/lua do Engenharia Nata. Sem escolha salva, respeita o sistema. */
+  const ICONE_SOL = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.5" fill="currentColor" />' +
+    '<g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1.5" x2="12" y2="4" /><line x1="12" y1="20" x2="12" y2="22.5" />' +
+    '<line x1="1.5" y1="12" x2="4" y2="12" /><line x1="20" y1="12" x2="22.5" y2="12" /><line x1="4.2" y1="4.2" x2="6" y2="6" /><line x1="18" y1="18" x2="19.8" y2="19.8" />' +
+    '<line x1="19.8" y1="4.2" x2="18" y2="6" /><line x1="6" y1="18" x2="4.2" y2="19.8" /></g></svg>';
+  const ICONE_LUA = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M21 13.2A9.2 9.2 0 0 1 10.8 3a9 9 0 1 0 10.2 10.2Z" fill="currentColor" /></svg>';
+  const escuroNoSistema = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
   function aplicarTema(v) {
     const r = document.documentElement;
     if (v === 'claro') r.setAttribute('data-theme', 'light');
     else if (v === 'escuro') r.setAttribute('data-theme', 'dark');
     else r.removeAttribute('data-theme');
   }
+  function temaEfetivo() {
+    const d = document.documentElement.getAttribute('data-theme');
+    if (d === 'dark' || d === 'light') return d === 'dark' ? 'escuro' : 'claro';
+    return escuroNoSistema && escuroNoSistema.matches ? 'escuro' : 'claro';
+  }
+  // O botão mostra o tema de destino: no escuro, o sol (clicar → claro).
+  function desenharBotaoTema() {
+    const escuro = temaEfetivo() === 'escuro';
+    const b = $('#btn-tema');
+    const rotulo = escuro ? 'Ativar tema claro' : 'Ativar tema escuro';
+    b.innerHTML = escuro ? ICONE_SOL : ICONE_LUA;
+    b.setAttribute('aria-label', rotulo);
+    b.title = rotulo;
+  }
+  function alternarTema() {
+    const novo = temaEfetivo() === 'escuro' ? 'claro' : 'escuro';
+    aplicarTema(novo);
+    try {
+      localStorage.setItem(CHAVE_TEMA, novo);
+      localStorage.setItem(CHAVE_TEMA_SITE, JSON.stringify(novo === 'escuro' ? 'dark' : 'light'));
+    } catch (e) { /* sem armazenamento */ }
+    desenharBotaoTema();
+  }
   function iniciarTema() {
     let v = null;
     try { v = localStorage.getItem(CHAVE_TEMA); } catch (e) { v = null; }
-    if (!v) {
+    if (v !== 'claro' && v !== 'escuro') {
       // Sem escolha própria, segue o tema do portfólio Engenharia Nata (mesma chave dos outros apps).
+      v = null;
       try {
         const s = JSON.parse(localStorage.getItem(CHAVE_TEMA_SITE));
         if (s === 'dark' || s === 'light') v = s === 'dark' ? 'escuro' : 'claro';
       } catch (e) { v = null; }
     }
     if (v) aplicarTema(v);
-    const d = document.documentElement.getAttribute('data-theme');
-    const atual = v || (d === 'light' ? 'claro' : d === 'dark' ? 'escuro' : 'sistema');
-    $$('input[name="tema"]').forEach(function (r) { r.checked = r.value === atual; });
+    desenharBotaoTema();
+    if (escuroNoSistema && escuroNoSistema.addEventListener) escuroNoSistema.addEventListener('change', desenharBotaoTema);
   }
 
   /* Guia de uso aberto ou recolhido: preferência do visitante. */
@@ -802,6 +834,24 @@
     try { if (localStorage.getItem(CHAVE_GUIA) === 'fechado') guia.open = false; } catch (e) { /* sem armazenamento */ }
     guia.addEventListener('toggle', function () {
       try { localStorage.setItem(CHAVE_GUIA, guia.open ? 'aberto' : 'fechado'); } catch (e) { /* sem armazenamento */ }
+    });
+  }
+
+  /* Itens da norma que a conta não verifica: marcas salvas neste navegador. */
+  function iniciarVerificacoes() {
+    let marcas = {};
+    try { marcas = JSON.parse(localStorage.getItem(CHAVE_VERIF)) || {}; } catch (e) { marcas = {}; }
+    $$('[data-verif]').forEach(function (c) { c.checked = marcas[c.dataset.verif] === true; });
+  }
+  function salvarVerificacoes() {
+    const marcas = {};
+    $$('[data-verif]').forEach(function (c) { if (c.checked) marcas[c.dataset.verif] = true; });
+    try { localStorage.setItem(CHAVE_VERIF, JSON.stringify(marcas)); } catch (e) { /* sem armazenamento */ }
+  }
+  function listaVerificacoes() {
+    return $$('[data-verif]').map(function (c) {
+      const l = c.closest('label');
+      return { ref: l.querySelector('.ref').textContent, texto: l.querySelector('.verif-texto').textContent.trim(), ok: c.checked };
     });
   }
 
@@ -824,7 +874,7 @@
   function ligarEventos() {
     document.addEventListener('input', function (ev) {
       const t = ev.target;
-      if (t.name === 'tema' || t.id === 'exemplo') return;
+      if (t.id === 'exemplo' || t.dataset.verif) return;
       if (!t.closest('.folha, .carimbo')) return;
       nomeExemplo = null;
       if (t.id === 'busca-local') {
@@ -843,14 +893,7 @@
     });
     document.addEventListener('change', function (ev) {
       const t = ev.target;
-      if (t.name === 'tema') {
-        aplicarTema(t.value);
-        try {
-          localStorage.setItem(CHAVE_TEMA, t.value);
-          if (t.value !== 'sistema') localStorage.setItem(CHAVE_TEMA_SITE, JSON.stringify(t.value === 'escuro' ? 'dark' : 'light'));
-        } catch (e) { /* sem armazenamento */ }
-        return;
-      }
+      if (t.dataset.verif) { salvarVerificacoes(); return; }
       if (t.id === 'exemplo') {
         const f = EXEMPLOS[t.value];
         t.value = '';
@@ -870,6 +913,7 @@
       }
     });
     document.addEventListener('click', function (ev) {
+      if (ev.target.closest('#btn-tema')) { alternarTema(); return; }
       if (ev.target.closest('#btn-coach')) { irPara(pendAtual[0]); return; }
       const remTubo = ev.target.closest('[data-remover-tubo]');
       if (remTubo) {
@@ -1055,6 +1099,7 @@
   function iniciar() {
     iniciarTema();
     iniciarPreferencias();
+    iniciarVerificacoes();
     montarSelects();
     const ini = carregarInicial();
     estado = ini.estado;

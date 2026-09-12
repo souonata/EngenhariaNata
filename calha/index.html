@@ -29,6 +29,24 @@
         </pattern>
       </defs>
     </svg>
+    <!-- Idioma e tema no padrão do Engenharia Nata. Só o português funciona: italiano e sueco
+         serão outro app, com a norma europeia EN 12056-3 (versão 4.0), não uma tradução. -->
+    <div class="engnata-dock" role="toolbar" aria-label="Idioma e tema">
+      <div class="engnata-dock__grupo">
+        <button type="button" class="lang-btn active" aria-pressed="true" aria-label="Português" title="Português">
+          <svg viewBox="0 0 14 10" width="20" height="14" aria-hidden="true" focusable="false"><rect width="14" height="10" fill="#009c3b" /><polygon points="7,1.4 12.6,5 7,8.6 1.4,5" fill="#ffdf00" /><circle cx="7" cy="5" r="1.9" fill="#002776" /></svg>
+        </button>
+        <button type="button" class="lang-btn" disabled aria-label="Italiano (em breve)" title="Italiano: em breve, com a norma europeia EN 12056-3">
+          <svg viewBox="0 0 15 10" width="21" height="14" aria-hidden="true" focusable="false"><rect width="5" height="10" fill="#009246" /><rect width="5" height="10" x="5" fill="#ffffff" /><rect width="5" height="10" x="10" fill="#ce2b37" /></svg>
+        </button>
+        <button type="button" class="lang-btn" disabled aria-label="Svenska (kommer snart)" title="Svenska: kommer snart, med den europeiska standarden EN 12056-3">
+          <svg viewBox="0 0 16 10" width="21" height="14" aria-hidden="true" focusable="false"><rect width="16" height="10" fill="#005293" /><rect x="5" width="2" height="10" fill="#fecc00" /><rect y="4" width="16" height="2" fill="#fecc00" /></svg>
+        </button>
+      </div>
+      <div class="engnata-dock__grupo engnata-dock__grupo--tema">
+        <button type="button" class="theme-toggle-btn" id="btn-tema" aria-label="Alternar tema"></button>
+      </div>
+    </div>
     <header class="carimbo">
       <div class="carimbo-marca">
         <a class="voltar-portfolio" id="voltar-portfolio" href="../index.html" hidden>← Engenharia Nata</a>
@@ -51,14 +69,6 @@
           <a class="btn" href="#memorial">Ver memorial</a>
           <button class="btn primario" type="button" id="btn-pdf-topo">PDF do projeto</button>
         </div>
-        <fieldset class="seg tema">
-          <legend>Tema</legend>
-          <div>
-            <label><input type="radio" name="tema" value="sistema" /><span>Sistema</span></label>
-            <label><input type="radio" name="tema" value="claro" /><span>Claro</span></label>
-            <label><input type="radio" name="tema" value="escuro" /><span>Escuro</span></label>
-          </div>
-        </fieldset>
         <p id="estado-exemplo" class="nota-exemplo">
           Exemplo carregado: uma residência em Curitiba. Troque pelos dados da sua obra.
         </p>
@@ -554,6 +564,35 @@
         </div>
       </section>
 
+      <!-- O que a conta não verifica ----------------------------------------->
+      <section class="etapa etapa-final" id="verificacoes" aria-labelledby="tv">
+        <div class="etapa-num"><span class="item">Itens</span>4 · 5</div>
+        <div class="etapa-entradas">
+          <h2 id="tv">O que a conta não verifica</h2>
+          <p class="explica">
+            Exigências da norma que dependem do projeto e da obra. Marque à medida que conferir; as
+            marcas ficam salvas neste navegador.
+          </p>
+          <ul class="verificacoes">
+            <li><label><input type="checkbox" data-verif="4.1" /><span class="ref">4.1</span><span class="verif-texto">Materiais de calhas e condutores entre os admitidos pela norma.</span></label></li>
+            <li><label><input type="checkbox" data-verif="4.2.2" /><span class="ref">4.2.2</span><span class="verif-texto">Nenhum lançamento de água pluvial na rede de esgoto.</span></label></li>
+            <li><label><input type="checkbox" data-verif="4.2.3" /><span class="ref">4.2.3</span><span class="verif-texto">Instalação exclusiva para águas pluviais, sem interligação com outras instalações.</span></label></li>
+            <li><label><input type="checkbox" data-verif="4.2.4" /><span class="ref">4.2.4</span><span class="verif-texto">Proteção contra entrada de gases onde houver esse risco.</span></label></li>
+            <li><label><input type="checkbox" data-verif="4.2.1c" /><span class="ref">4.2.1 c</span><span class="verif-texto">Todo ponto da instalação pode ser limpo e desobstruído.</span></label></li>
+            <li><label><input type="checkbox" data-verif="4.2.1d" /><span class="ref">4.2.1 d</span><span class="verif-texto">Dilatação térmica absorvida (juntas, fixações que deixam a peça trabalhar).</span></label></li>
+            <li><label><input type="checkbox" data-verif="5.4.2" /><span class="ref">5.4.2</span><span class="verif-texto">Lajes planas com caimento mínimo de 0,5% até os pontos de drenagem.</span></label></li>
+            <li><label><input type="checkbox" data-verif="5.4.3" /><span class="ref">5.4.3</span><span class="verif-texto">Cobertura de laje drenada por mais de uma saída, salvo sem risco de obstrução.</span></label></li>
+            <li><label><input type="checkbox" data-verif="5.4.6" /><span class="ref">5.4.6</span><span class="verif-texto">Ralos hemisféricos onde ralos planos possam obstruir.</span></label></li>
+            <li><label><input type="checkbox" data-verif="5.5.1" /><span class="ref">5.5.1</span><span class="verif-texto">Calha de beiral ou platibanda centrada sob a borda da cobertura, o mais próximo dela.</span></label></li>
+            <li><label><input type="checkbox" data-verif="5.5.5" /><span class="ref">5.5.5</span><span class="verif-texto">Extravasores, descarregando em local adequado, onde nenhum transbordamento é tolerado.</span></label></li>
+            <li><label><input type="checkbox" data-verif="5.6.1" /><span class="ref">5.6.1</span><span class="verif-texto">Condutor vertical em uma só prumada; desvios com curvas de 90° de raio longo ou de 45°, com inspeção.</span></label></li>
+            <li><label><input type="checkbox" data-verif="5.7.3" /><span class="ref">5.7.3</span><span class="verif-texto">Tubulação aparente: inspeção em conexões, mudanças de direção ou declividade e a cada 20 m.</span></label></li>
+            <li><label><input type="checkbox" data-verif="5.7.4" /><span class="ref">5.7.4</span><span class="verif-texto">Tubulação enterrada: caixa de areia nos mesmos pontos e a cada 20 m.</span></label></li>
+            <li><label><input type="checkbox" data-verif="5.7.5" /><span class="ref">5.7.5</span><span class="verif-texto">Ligação vertical–horizontal por curva de raio longo, com inspeção ou caixa de areia.</span></label></li>
+          </ul>
+        </div>
+      </section>
+
       <!-- Termos da norma ---------------------------------------------------->
       <section class="etapa etapa-final" id="termos" aria-labelledby="tt">
         <div class="etapa-num"><span class="item">Item</span>3</div>
@@ -608,7 +647,7 @@
           <p class="explica">
             Relatório com todas as calhas: chuva de projeto e quadro-resumo; para cada calha, as
             áreas da Figura 2, a vazão, as saídas, a seção desenhada com a lâmina, a leitura do
-            ábaco da Figura 3 e os condutores; depois os coletores, e a lista de materiais. Confira na tela e use "Imprimir ou salvar em PDF".
+            ábaco da Figura 3 e os condutores; depois os coletores, a lista de materiais e o que a conta não verifica. Confira na tela e use "Imprimir ou salvar em PDF".
           </p>
           <div class="acoes">
             <button class="btn primario btn-grande" type="button" id="btn-pdf">Gerar PDF do projeto</button>

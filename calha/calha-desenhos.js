@@ -203,7 +203,9 @@
 
   function svgEsquema(R, P) {
     const c = R.c;
-    const W = 960, Hh = 300, X0 = 120, X1 = 820, yC = 110, yG = 246, yCol = 270;
+    // Nenhum texto cruza traço: o rótulo do coletor fica abaixo da linha do coletor, onde
+    // não passa condutor, e a cota da saída intermediária vai abaixo dele.
+    const W = 960, Hh = 334, X0 = 120, X1 = 820, yC = 110, yG = 246, yCol = 270;
     const temL = num(c.Lc) > 0;
     const L = temL ? num(c.Lc) : 10;
     const XX = function (x) { return X0 + (x / L) * (X1 - X0); };
@@ -234,11 +236,19 @@
     s += '<text class="esq-rot" x="' + (X0 + X1) / 2 + '" y="94" text-anchor="middle">Calha ' + (k.pronta ? descSecao(k) + ' mm' : 'a dimensionar') +
       (k.i > 0 ? ' · i = ' + na(k.i * 100) + '%' : '') + (k.desnivel != null ? ' · desnível ' + nf(k.desnivel * 100, 1) + ' cm' : '') + '</text>';
     const dn = R.vert.pronto && R.vert.adocao.tubo ? 'DN ' + R.vert.adocao.tubo.dn : 'DN a definir';
+    const xsTubo = pos.map(XX);
+    // Lado livre para o rótulo de um condutor: sem outro condutor a menos de LARG_ROT.
+    const LARG_ROT = 110;
+    const ladoLivre = function (x, dir) {
+      return xsTubo.every(function (o) { const d = (o - x) * dir; return d <= 0 || d > LARG_ROT; });
+    };
     pos.forEach(function (p, j) {
       const x = XX(p);
       s += '<rect class="esq-tubo" x="' + (x - 6) + '" y="' + (yC + 8) + '" width="12" height="' + (yCol - yC - 8) + '"/>';
       if (pos.length <= 4 || j === 0) {
-        const dir = p > L * 0.8 ? -1 : 1;
+        let dir = p > L * 0.8 ? -1 : 1;
+        if (!ladoLivre(x, dir)) dir = -dir;
+        if (!ladoLivre(x, dir)) return;
         const tx = x + 14 * dir;
         const anc = dir < 0 ? 'end' : 'start';
         s += '<text class="esq-rot" x="' + tx + '" y="' + (yC + 66) + '" text-anchor="' + anc + '">' + dn + '</text>';
@@ -251,7 +261,7 @@
     const xb = W - 56;
     s += '<path class="esq-coletor" d="M' + xa + ' ' + yCol + ' H' + xb + '"/>';
     s += '<path class="esq-seta" d="M' + xb + ' ' + (yCol - 8) + ' L' + (xb + 16) + ' ' + yCol + ' L' + xb + ' ' + (yCol + 8) + ' Z"/>';
-    s += '<text class="esq-rot" x="' + xb + '" y="' + (yCol - 12) + '" text-anchor="end">' +
+    s += '<text class="esq-rot" x="' + (xb + 16) + '" y="' + (yCol + 24) + '" text-anchor="end">' +
       (T ? esc(T.t.nome || 'Coletor') + (T.pronto && T.escolhido ? ': D ' + T.escolhido.D + ' mm · i = ' + na(T.i * 100) + '%' : '') : 'Sem coletor: marque esta calha num trecho (5.7)') + '</text>';
     if (temL && c.saidas === 'intermediaria' && pos.length === 1) {
       s += '<path class="esq-cota" d="M' + X0 + ' ' + (Hh - 8) + ' H' + XX(pos[0]) + '"/>';
