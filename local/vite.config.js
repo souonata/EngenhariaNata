@@ -54,7 +54,7 @@ function descobrirPaginasHtml(dir, acc = {}) {
 }
 
 // Apps standalone de scripts clássicos não passam pelo bundle: ao fim do build,
-// os arquivos do app (html, css e js, sem testes nem notas) são copiados como estão.
+// os arquivos do app (html, css, js e imagens PNG, sem testes nem notas) são copiados como estão.
 function copiarStandalone(pasta) {
     return {
         name: `copiar-standalone-${pasta}`,
@@ -64,7 +64,7 @@ function copiarStandalone(pasta) {
             const destino = resolve(__dirname, 'dist', pasta);
             mkdirSync(destino, { recursive: true });
             for (const nome of readdirSync(origem)) {
-                if (/\.(html|css|js)$/.test(nome) && !nome.endsWith('.test.js')) {
+                if (/\.(html|css|js|png)$/.test(nome) && !nome.endsWith('.test.js')) {
                     cpSync(resolve(origem, nome), resolve(destino, nome));
                 }
             }

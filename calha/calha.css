@@ -799,9 +799,29 @@ legend {
   border-radius: 2px;
 }
 
-.sup svg {
+.sup svg,
+.sup img {
   width: 11rem;
   height: auto;
+}
+
+.sup .fig-norma {
+  align-self: center;
+  object-fit: contain;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .sup .fig-norma {
+    filter: invert(1);
+  }
+}
+
+:root[data-theme='dark'] .sup .fig-norma {
+  filter: invert(1);
+}
+
+:root[data-theme='light'] .sup .fig-norma {
+  filter: none;
 }
 
 .sup .corpo {
@@ -1247,7 +1267,8 @@ table.tabela {
   .sup {
     grid-template-columns: minmax(0, 1fr) auto;
   }
-  .sup svg {
+  .sup svg,
+  .sup img {
     grid-column: 1 / -1;
     width: min(100%, 16rem);
   }
@@ -1269,6 +1290,9 @@ table.tabela {
   }
   body {
     background: #fff;
+  }
+  .sup .fig-norma {
+    filter: none !important;
   }
   .resumo,
   .folha > .etapa,
