@@ -40,14 +40,6 @@
       '<path class="fo" d="M124 92 H24 M204 48 H104"/>' + ralo(62, 116) +
       '<path class="fx" d="M5 62 H15 M5 92 H15 M17 58 L11 50 M97 14 L91 6"/>' +
       '<path class="fc" d="M9 64 V90 M12 54 L92 10"/>' + vr(-2, 81, 'a') + vr(44, 28, 'b'),
-    e: '<path class="fl" d="M25 54 L65 32 V106 L25 128 Z M20 128 V54 H25 M20 54 L60 32 H65 M20 128 H25"/>' +
-      '<path class="fh" d="M25 54 L65 32 V68 L25 90 Z"/><path class="fx" d="M25 90 L65 68"/>' +
-      '<path class="fl" d="M150 72 L198 46 V102 L150 128 Z"/>' +
-      '<path class="fh" d="M150 72 L198 46 V76 L150 102 Z"/><path class="fx" d="M150 102 L198 76"/>' +
-      '<path class="fo" d="M65 32 L150 72 M65 68 L150 102"/>' + ralo(96, 124) +
-      '<path class="fx" d="M6 54 H17 M6 90 H22 M19 50 L14 43 M59 28 L54 21 M200 46 H212 M200 76 H212 M152 106 L158 113 M200 80 L206 87"/>' +
-      '<path class="fc" d="M10 56 V88 M15 46 L55 24 M208 48 V74 M156 110 L204 84"/>' +
-      vr(-1, 77, 'a') + vr(27, 31, 'b') + vr(211, 66, 'c') + vr(184, 108, 'd'),
     f: '<path class="fa" d="M22 136 V52 L72 24 V108 Z"/><path class="fl" d="M22 136 V52 L72 24 V108 Z"/>' +
       '<path class="fa" d="M72 44 H196 V108 H72 Z"/><path class="fl" d="M72 44 H196 V108 H72"/>' + ralo(80, 124) +
       '<text class="fv" x="36" y="92">A<tspan dy="3">1</tspan></text><text class="fv" x="126" y="82">A<tspan dy="3">2</tspan></text>',

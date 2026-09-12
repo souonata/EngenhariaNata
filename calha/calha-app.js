@@ -169,12 +169,16 @@
   function montarSuperficies() {
     $('#superficies').innerHTML = calhaAtiva().superficies.map(function (s, idx) {
       const def = N.SUPERFICIES[s.tipo];
+      const rotuloFigura = 'Figura 2(' + s.tipo + '): ' + esc(def.nome);
+      const figura = s.tipo === 'e'
+        ? '<img class="fig fig-norma" src="figura-2e-nbr10844-sem-formula.png" width="1414" height="683" alt="' + rotuloFigura + '" />'
+        : '<svg class="fig" viewBox="-4 0 224 150" role="img" aria-label="' + rotuloFigura + '">' + FIGURAS[s.tipo] + '</svg>';
       const campos = def.campos.map(function (c) {
         const v = s.v[c[0]];
         return '<label class="campo"><span>' + esc(c[1]) + '</span><input type="text" class="num" inputmode="decimal" data-sup="' +
           idx + '" data-var="' + c[0] + '" value="' + esc(mostrarNum(v)) + '" /></label>';
       }).join('');
-      return '<li class="sup"><svg class="fig" viewBox="-4 0 224 150" role="img" aria-label="Figura 2(' + s.tipo + '): ' + esc(def.nome) + '">' + FIGURAS[s.tipo] + '</svg>' +
+      return '<li class="sup">' + figura +
         '<div class="corpo"><b style="font-family:var(--f-titulo);font-weight:600">(' + s.tipo + ') ' + esc(def.nome) + '</b>' +
         '<div class="linha-campos">' + campos + '</div><p class="parcial" data-parcial="' + idx + '"></p></div>' +
         '<button type="button" class="btn fantasma" data-remover="' + idx + '" aria-label="Remover superfície ' + (idx + 1) + '">Remover</button></li>';
