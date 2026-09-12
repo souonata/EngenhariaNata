@@ -805,25 +805,6 @@ legend {
   height: auto;
 }
 
-.sup .fig-norma {
-  align-self: center;
-  object-fit: contain;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .sup .fig-norma {
-    filter: invert(1);
-  }
-}
-
-:root[data-theme='dark'] .sup .fig-norma {
-  filter: invert(1);
-}
-
-:root[data-theme='light'] .sup .fig-norma {
-  filter: none;
-}
-
 .sup .corpo {
   display: grid;
   gap: 0.5rem;
@@ -1290,9 +1271,6 @@ table.tabela {
   }
   body {
     background: #fff;
-  }
-  .sup .fig-norma {
-    filter: none !important;
   }
   .resumo,
   .folha > .etapa,
