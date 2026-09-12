@@ -1390,6 +1390,42 @@ input.num {
   font-variant-numeric: tabular-nums;
 }
 
+/* O que falta para um cálculo válido: âmbar e "preencher" quando falta ou precisa mudar,
+   vermelho e "valor inválido" quando o texto digitado não é um número. */
+input.pendente,
+select.pendente {
+  border-color: var(--atencao);
+  background: var(--atencao-fundo);
+  box-shadow: inset 3px 0 0 var(--atencao);
+}
+input.invalido {
+  border-color: var(--erro);
+  background: var(--erro-fundo);
+  box-shadow: inset 3px 0 0 var(--erro);
+}
+.campo:has(.pendente) > span:first-child::after {
+  content: ' · preencher';
+  color: var(--atencao);
+  font-weight: 600;
+}
+.campo:has(.invalido) > span:first-child::after {
+  content: ' · valor inválido';
+  color: var(--erro);
+  font-weight: 600;
+}
+fieldset.pendente {
+  outline: 2px dashed var(--atencao);
+  outline-offset: 4px;
+}
+.btn.pendente {
+  box-shadow: 0 0 0 3px var(--atencao);
+}
+@media print {
+  input.pendente,
+  input.invalido { background: none; box-shadow: none; }
+  .campo > span:first-child::after { content: none !important; }
+}
+
 .cartoes-saidas {
   grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
 }
