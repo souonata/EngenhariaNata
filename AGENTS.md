@@ -187,7 +187,7 @@ npm run build          # build de produção (gera local/dist)
 
 _Última atualização: 2026-09-12_
 
-- **CALHAS NBR 10844 (`calha/`, branch `feat/calha-nbr10844`, versão 3.5.0 — PUBLICADO EM 2026-09-12; ícone, aba e Sobre chamam-se só "Calhas"; PDFs das normas em `calha/` ficam no .gitignore):**
+- **CALHAS NBR 10844 (`calha/`, branch `feat/calha-textos-enxutos`, versão 3.5.2 — PUBLICADO EM 2026-09-12; PDFs das normas em `calha/` ficam no .gitignore):**
   app standalone que dimensiona calhas, condutores verticais e coletores de águas
   pluviais pela ABNT NBR 10844:1989; a norma é a única base (sem complementos de fora). Scripts
   clássicos UMD (núcleo `nbr10844-*.js` + módulos `calha-*.js`), interface só em pt-BR porque a
@@ -202,7 +202,9 @@ _Última atualização: 2026-09-12_
   `npm run build` local gera `dist/calha/`, mas o `postbuild` acusa
   `pintor/output/pdf/random_validation_20260823/*.html`, artefatos privados locais deste PC
   (ignorados no git, inexistentes no CI) — não é do calha. Bancada local não versionada em
-  `calha2/` com os PDFs das normas (**não commitar**). Detalhes em `calha/HANDOFF.md`.
+  `calha2/` com os PDFs das normas (**não commitar**). Na 3.5.2, o cabeçalho passou a exibir
+  apenas "Calha" e foram removidos a frase promocional e o parágrafo final do guia de quatro
+  passos, conforme marcação do usuário. Detalhes em `calha/HANDOFF.md`.
 
 - **PINTOR — DUAS FALHAS REAIS DO SITE CORRIGIDAS (3.1.6, PUBLICADO — API 0.6.3):** reproduzi localmente os
   dois erros reportados em `engnata.eu/pintor/`. (1) *Uma página insegura matava a varredura
