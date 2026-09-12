@@ -1,6 +1,6 @@
 # HANDOFF — Calha 10844 (app de calhas da NBR 10844)
 
-_Atualizado: 2026-09-12 (versão 3.5.0). Leia isto antes de mexer em qualquer arquivo desta pasta._
+_Atualizado: 2026-09-12 (versão 3.5.2). Leia isto antes de mexer em qualquer arquivo desta pasta._
 
 ## O que é
 App didático do portfólio Engenharia NATA para dimensionar calhas, condutores verticais e
@@ -70,7 +70,7 @@ O Artifact só publica arquivos sob o diretório de trabalho ou o scratchpad: se
 estiver na raiz do repositório, copie `calha/*.css` e `calha/*.js` para o scratchpad e publique
 com `root` apontando para lá. Leia o artifact antes (action `read`) em chat novo.
 
-## Estado atual: versão 3.5.0
+## Estado atual: versão 3.5.2
 - 2.0: várias calhas em abas, coletores por trechos, esquema, quadro-resumo, memorial por
   calha, termos do item 3, três exemplos (residência Curitiba, galpão SP, sobrado POA).
 - 3.0: Tabela 1 só em beiral/platibanda (5.5.6); material do condutor vertical (4.1.2); tubos
@@ -98,6 +98,11 @@ com `root` apontando para lá. Leia o artifact antes (action `read`) em chat nov
   `assets/css/dock-global.css` porque o calha é standalone), bandeiras BR/IT/SV + sol/lua.
   Só o português funciona; IT e SV ficam desabilitadas de propósito — serão outro app, com a
   EN 12056-3 (4.0), não uma tradução. Não trabalhar nelas até a versão BR estar redonda.
+
+- 3.5.2 (2026-09-12, a pedido do usuário): cabeçalho mais direto, com o título reduzido a
+  "Calha" e sem a frase promocional; removida também a observação final do quadro "Como usar,
+  em quatro passos". `npm run validate`: 43 arquivos e 390 testes aprovados; o Vite gerou o
+  build, e o `postbuild` parou apenas nos dois artefatos privados conhecidos do Pintor.
 
 ## Ábacos (Figura 3)
 Retas H: Q = a + b·D. Curva L = ∞ bate com Q = (π/4)·D²·√(2gD/f), f = 0,04 (bom teste).
