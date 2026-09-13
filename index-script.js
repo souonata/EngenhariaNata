@@ -247,7 +247,9 @@ class IndexApp extends App {
             'bombaagua/bombaagua.html': 'bombaagua',
             'salario/salario.html': 'salario',
             'previsao/previsao.html': 'previsao',
-            'br12c/index.html': 'br12c'
+            'br12c/index.html': 'br12c',
+            'audiolab/audiolab.html': 'audiolab',
+            'calha/index.html': 'calha'
         };
 
         const appIcons = document.querySelectorAll('.app-icon');

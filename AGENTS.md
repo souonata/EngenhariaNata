@@ -187,6 +187,14 @@ npm run build          # build de produção (gera local/dist)
 
 _Última atualização: 2026-09-13_
 
+- **CATÁLOGO — ÍCONE DO AUDIOLAB E ESCUDO DO DOCK (2026-09-13):** o fundo do ícone do AudioLab
+  ocupa o quadro 60 × 60 como os demais (antes 50 × 50, sobrava borda) e o emoji ficou branco com
+  sombra; AudioLab e Calhas entraram no mapa `hrefParaApp` do `index-script.js` e ganharam a
+  etiqueta de versão. O escudo do logo do dock descia até y = 29 num `viewBox` de 24 (ponta
+  cortada): trocado pelo contorno que cabe (y 1–23). O `.dock-marquee-viewport` ganhou folga
+  (padding com margem negativa) para o brilho e a pulsação não serem recortados; parado, também
+  nas laterais. `?v=` do CSS 1.0.7 e do script 1.1.1.
+
 - **CALHA 3.7.0 — ONDA 2 E PASSOS A–C (PUBLICADA EM 2026-09-13, branch `feat/calha-onda2-catalogo`):**
   D4 = Tigre e Amanco Wavin (fichas levantadas em `calha/referencias/catalogo-tubos-tigre-amanco.md`,
   local). Catálogo com Di = DE − 2e por linha (PVC Série Normal/Reforçada NBR 5688, condutores

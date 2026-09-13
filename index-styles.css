@@ -435,6 +435,17 @@ html:not([data-theme="dark"]) .device-screen {
     display: block;
     max-width: 100%;
     overflow: hidden;
+    /* Folga para o brilho (drop-shadow de até 12px) e a pulsação do escudo não serem
+       recortados; a margem negativa devolve o espaço e o dock mantém a altura. */
+    padding: 14px 0;
+    margin: -14px 0;
+}
+
+/* Parado, o escudo fica na borda esquerda do recorte: folga lateral também. Rodando, o
+   letreiro precisa do recorte na largura exata do dock. */
+.dock[data-easter-state="locked"] .dock-marquee-viewport {
+    padding-inline: 12px;
+    margin-inline: -12px;
 }
 
 .dock-marquee-track {
