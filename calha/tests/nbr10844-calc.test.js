@@ -144,10 +144,12 @@ test('Ábaco: famílias ordenadas (mais H ou mais L ⇒ menor D) e interseção 
     const r = N.abaco({ saida: k, Q, H: 70, L: 2 });
     assert.equal(r.D, Math.max(r.DH, r.DL));
   });
-  // funil de saída engole mais água que a aresta viva com a mesma lâmina
-  const Da = N.abaco({ saida: 'a', Q: 1200, H: 60, L: 25 }).DH;
-  const Db = N.abaco({ saida: 'b', Q: 1200, H: 60, L: 25 }).DH;
+  // funil de saída engole mais água que a aresta viva com a mesma lâmina (leitura da reta H;
+  // com Q = 1200 e H = 60 o diâmetro passa de 150 mm, então o ábaco inteiro fica sem leitura)
+  const Da = N.diametroNaFamilia(N.ABACOS.a.H, 60, 1200, 'H');
+  const Db = N.diametroNaFamilia(N.ABACOS.b.H, 60, 1200, 'H');
   assert.ok(Db < Da);
+  assert.equal(N.abaco({ saida: 'a', Q: 1200, H: 60, L: 25 }).fora, 'D');
 });
 
 test('Ábaco: curvas L não se cruzam dentro do trecho desenhado', () => {

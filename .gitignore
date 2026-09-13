@@ -14,3 +14,9 @@ coverage/
 # Normas (NBR/EN/HR Wallingford) usadas como referencia do calha: protegidas por direitos, nunca commitar
 calha/*.pdf
 calha2/
+
+# Referências privadas do calha (normas protegidas por direitos, texto extraído delas) e
+# experimentos locais: nunca commitar.
+calha/referencias/*.pdf
+calha/referencias/auditoria-2026-09-13/nbr10844-texto-extraido.txt
+calha/tmp/

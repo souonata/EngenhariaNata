@@ -310,6 +310,10 @@ var,
 .ponto.ok { background: var(--ok); }
 .ponto.atencao { background: var(--atencao); }
 .ponto.erro { background: var(--erro); }
+.ponto.ressalva { background: var(--atencao); }
+.ponto.fora,
+.ponto.semsuporte,
+.ponto.invalida { background: var(--erro); }
 
 /* ------------------------------------------------------------------ */
 /* Folha e etapas                                                     */
@@ -775,6 +779,10 @@ legend {
 .selo.ok { color: var(--ok); background: var(--ok-fundo); }
 .selo.atencao { color: var(--atencao); background: var(--atencao-fundo); }
 .selo.erro { color: var(--erro); background: var(--erro-fundo); }
+.selo.ressalva { color: var(--atencao); background: var(--atencao-fundo); }
+.selo.fora,
+.selo.semsuporte,
+.selo.invalida { color: var(--erro); background: var(--erro-fundo); }
 
 /* ------------------------------------------------------------------ */
 /* Superfícies (5.2)                                                  */
@@ -1546,6 +1554,15 @@ fieldset.pendente {
 .resposta.ok { border-left-color: var(--ok); }
 .resposta.atencao { border-left-color: var(--atencao); }
 .resposta.erro { border-left-color: var(--erro); }
+.resposta.ressalva { border-left-color: var(--atencao); }
+.resposta.fora, .resposta.semsuporte, .resposta.invalida { border-left-color: var(--erro); }
+/* Faixa de situação no topo do relatório (PDF). */
+.rel-faixa { border: 1.5px solid var(--linha-forte); border-left-width: 6px; padding: 0.6rem 0.9rem; margin: 0 0 1rem; break-inside: avoid; }
+.rel-faixa p { margin: 0; }
+.rel-faixa ul { margin: 0.4rem 0 0; padding-left: 1.1rem; font-size: var(--t-12); }
+.rel-faixa.ok { border-color: var(--ok); }
+.rel-faixa.ressalva { border-color: var(--atencao); background: var(--atencao-fundo); }
+.rel-faixa.erro, .rel-faixa.fora, .rel-faixa.semsuporte, .rel-faixa.invalida, .rel-faixa.incompleta { border-color: var(--erro); background: var(--erro-fundo); }
 .dica { font-size: var(--t-12); color: var(--apagado); line-height: 1.35; }
 .como-usar { margin: 1.5rem 0 0; border: 1px solid var(--linha-forte); background: var(--folha); padding: 0.6rem 1rem; }
 .como-usar summary { cursor: pointer; font-family: var(--f-titulo); font-size: var(--t-19); font-weight: 600; }

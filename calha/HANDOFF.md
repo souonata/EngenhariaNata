@@ -1,6 +1,6 @@
 # HANDOFF — Calha 10844 (app de calhas da NBR 10844)
 
-_Atualizado: 2026-09-12 (versão 3.5.6). Leia isto antes de mexer em qualquer arquivo desta pasta._
+_Atualizado: 2026-09-13 (versão 3.6.0). Leia isto antes de mexer em qualquer arquivo desta pasta._
 
 ## O que é
 App didático do portfólio Engenharia NATA para dimensionar calhas, condutores verticais e
@@ -70,7 +70,7 @@ O Artifact só publica arquivos sob o diretório de trabalho ou o scratchpad: se
 estiver na raiz do repositório, copie `calha/*.css` e `calha/*.js` para o scratchpad e publique
 com `root` apontando para lá. Leia o artifact antes (action `read`) em chat novo.
 
-## Estado atual: versão 3.5.6
+## Estado atual: versão 3.6.0
 - 2.0: várias calhas em abas, coletores por trechos, esquema, quadro-resumo, memorial por
   calha, termos do item 3, três exemplos (residência Curitiba, galpão SP, sobrado POA).
 - 3.0: Tabela 1 só em beiral/platibanda (5.5.6); material do condutor vertical (4.1.2); tubos
@@ -181,3 +181,26 @@ A aritmética do núcleo bateu com referência independente em todos os casos; o
 - A2 lâmina padrão 2/3 contra a base da Tabela 3 (semicircular 100 reprovada numa garagem).
 - A3 coletor menor que o condutor vertical; A4 rede de coletores montada à mão;
   A5 "D 220" fora do ábaco mostrado como leitura; A6 5.1.4 com projeção digitada; A7 I sem faixa.
+
+## 3.6.0 — Onda 1 do plano de 13/09/2026 (nenhum falso "atende")
+Plano: `calha/referencias/plano-implementacao-auditoria.md` (decisões D1: período do dado menor e
+coerente = ressalva, sem dado ou inconsistente = sem suporte; D5: lâmina padrão continua 2/3).
+- Uma avaliação só (`calcularProjeto` põe `estado`/`status` em calha, trecho e projeto, mais
+  `P.diagnosticos`): quadro, coach, resumo, resposta, memorial, lista de materiais e PDF leem a
+  mesma situação. Precedência: inválida > incompleta > sem suporte > fora do domínio > não atende >
+  ressalva > atende (`N.ESTADOS`, `N.piorEstado`, `N.situacao`). Rótulos em `ROTULO_STATUS`.
+- Chuva: Congonhas e os outros 7 postos sem T=25 → "sem dado válido"; São Carlos T=25 (161 < 178)
+  → sem suporte; coluna com período entre parênteses e coerente (Cruz Alta, Porto Alegre, Rio
+  Branco T5…) → "atende com ressalva". O memorial e o PDF escrevem período pedido e período do
+  dado. Dado local/IDF sem fonte (`#fonteChuva`) → ressalva; fora de 96–347 mm/h só é anotado.
+  5.1.4 exige a projeção e confere a soma das coberturas (a) e (b).
+- Superfície com medida vazia, zero (exceto h) ou negativa não soma área (`areaSuperficie` sem
+  clamp); o trecho que recebe uma calha incompleta fica incompleto.
+- H digitado acima da altura da calha → inválido; acima da lâmina limite → não atende.
+- Ábaco: acima de Qmax ou de D 150 → "sem leitura" (sem os números de busca 20/220), com a
+  sugestão de saídas. Saídas, z, declividade, L, Qextra e comprimentos negativos ou quebrados →
+  inválidos (nada ajustado em silêncio); declividade de calha > 5% só é anotada.
+- PDF com faixa de situação no topo. Scripts e CSS com `?v=3.6.0` (cache dos clássicos).
+- Testes: `tests/onda1-estados.test.js` + referência independente `tests/referencia/nbr10844-ref.js`;
+  `npm run validate` 44 arquivos/401 testes. Build gera `dist/calha/`; o `postbuild` para só nos
+  artefatos privados do Pintor (ignorados no git). Próximo: Onda 2 (catálogo de tubos, C1).

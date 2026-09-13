@@ -34,6 +34,19 @@
       '</tr></thead><tbody>' + linhas.map(function (l) { return '<tr>' + l.map(function (c) { return '<td>' + c + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
   }
 
+  // Faixa de situação no topo: o PDF não pode parecer aprovado quando o projeto tem entrada
+  // inválida ou incompleta, dado de chuva sem suporte, leitura fora do ábaco ou ressalva.
+  function faixaSituacao(P) {
+    if (P.status === 'ok') {
+      return '<section class="rel-faixa ok"><p><b>Situação: atende</b> às verificações hidráulicas listadas neste relatório (NBR 10844:1989). ' +
+        'Não substitui a responsabilidade técnica do projetista.</p></section>';
+    }
+    const d = P.diagnosticos || [];
+    return '<section class="rel-faixa ' + (P.status || 'incompleta') + '"><p><b>Situação do projeto: ' + ROTULO_STATUS[P.status] + '</b>' +
+      (P.status === 'ressalva' ? '. O cálculo fecha, mas depende das premissas abaixo.' : '. Este relatório não comprova conformidade enquanto houver os itens abaixo.') + '</p>' +
+      (d.length ? '<ul>' + d.map(function (x) { return '<li><b>' + esc(x.nome) + ':</b> ' + esc(x.texto) + '</li>'; }).join('') + '</ul>' : '') + '</section>';
+  }
+
   function tabelaCalhas(P) {
     return tabela(['Calha', 'Área (m²)', 'Q (L/min)', 'Q calha', 'Seção (mm)', 'Lâmina / limite (mm)', 'Condutores', 'Situação'], P.calhas.map(function (r) {
       const c = r.calha;
@@ -80,6 +93,7 @@
     let h = '<article class="rel">';
     h += '<header class="rel-capa"><p class="rel-sobre">Instalação predial de águas pluviais · ABNT NBR 10844:1989</p><h1>' +
       esc(estado.projeto || 'Obra sem nome') + '</h1>' + (o.data ? '<p class="rel-data">Emitido em ' + esc(o.data) + '</p>' : '') + '</header>';
+    h += faixaSituacao(P);
     h += '<section class="rel-bloco"><h2>Chuva de projeto</h2>' + paragrafos(m.grupos[0].passos[0][2]) +
       '<dl class="pares rel-pares"><div><dt>Área de contribuição total</dt><dd>' + nf(P.A, 2) + ' m²</dd></div><div><dt>Vazão total</dt><dd>' + nf(P.Q, 1) +
       ' L/min</dd></div><div><dt>Calhas</dt><dd>' + P.calhas.length + '</dd></div><div><dt>Trechos de coletor</dt><dd>' + P.trechos.length + '</dd></div></dl></section>';

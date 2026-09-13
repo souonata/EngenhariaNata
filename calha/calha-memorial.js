@@ -76,11 +76,22 @@
     const e = estado;
     const ch = P.chuva;
     let t1 = '';
-    if (e.modoI === 'tabela') t1 = 'Local: ' + (ch.I.linha ? ch.I.linha.local : '—') + ' (Tabela 5). Período de retorno T = ' + (ch.I.T || '—') + ' anos, duração de 5 min. I = ' + nf(ch.I.I) + ' mm/h.';
-    else if (e.modoI === 'idf') t1 = 'Equação IDF local i = K·T^a/(t+b)^c com K = ' + na(num(e.idfK)) + ', a = ' + na(num(e.idfA)) + ', b = ' + na(num(e.idfB)) + ', c = ' + na(num(e.idfC)) + ', T = ' + e.T + ' anos e t = 5 min: I = ' + nf(ch.I.I, 1) + ' mm/h.';
-    else if (e.modoI === 'pequena') t1 = 'Construção com até 100 m² de projeção horizontal (' + na(num(e.areaProj)) + ' m²): I = 150 mm/h (5.1.4).';
-    else t1 = 'Intensidade de dado pluviométrico local: I = ' + nf(ch.I.I) + ' mm/h' + (ch.I.T ? ', T = ' + ch.I.T + ' anos' : '') + '.';
-    const grupos = [{ titulo: 'Chuva de projeto', passos: [['5.1', 'Intensidade pluviométrica', [t1]]] }];
+    const fonte = String(e.fonteChuva || '').trim();
+    if (e.modoI === 'tabela') {
+      // Período pedido e período a que o valor se refere (nota b da Tabela 5), sempre os dois.
+      const Tp = Number(e.T);
+      t1 = 'Local: ' + (ch.I.linha ? ch.I.linha.local : '—') + ' (Tabela 5). Período de retorno pedido T = ' + Tp + ' anos' +
+        (ch.I.T && ch.I.T !== Tp ? '; o valor usado refere-se a T = ' + ch.I.T + ' anos' : '') + ', duração de 5 min. I = ' + nf(ch.I.I) + ' mm/h.';
+    } else if (e.modoI === 'idf') {
+      t1 = 'Equação IDF local i = K·T^a/(t+b)^c com K = ' + na(num(e.idfK)) + ', a = ' + na(num(e.idfA)) + ', b = ' + na(num(e.idfB)) + ', c = ' + na(num(e.idfC)) +
+        ', T = ' + e.T + ' anos e t = 5 min: I = ' + nf(ch.I.I, 1) + ' mm/h. Fonte: ' + (fonte || 'não informada') + '.';
+    } else if (e.modoI === 'pequena') {
+      t1 = 'Construção com até 100 m² de projeção horizontal (' + na(num(e.areaProj)) + ' m²): I = 150 mm/h (5.1.4).';
+    } else {
+      t1 = 'Intensidade de dado pluviométrico local: I = ' + nf(ch.I.I) + ' mm/h' + (ch.I.T ? ', T = ' + ch.I.T + ' anos' : '') + '. Fonte: ' + (fonte || 'não informada') + '.';
+    }
+    const obs51 = ch.avisos51.filter(function (a) { return a.classe && a.classe !== 'informativa'; }).map(function (a) { return 'Obs.: ' + a.texto; });
+    const grupos = [{ titulo: 'Chuva de projeto', passos: [['5.1', 'Intensidade pluviométrica', [t1].concat(obs51)]] }];
     P.calhas.forEach(function (R) { grupos.push({ titulo: 'Calha: ' + (R.c.nome || 'sem nome'), passos: memorialCalha(R, estado) }); });
     if (P.trechos.length) {
       grupos.push({
@@ -108,7 +119,10 @@
     if (dns.length) concl.push('condutores verticais: ' + dns.map(function (dn) { return porDN[dn] + ' × DN ' + dn; }).join(', '));
     const trs = P.trechos.filter(function (T) { return T.escolhido; });
     if (trs.length) concl.push('coletores: ' + trs.map(function (T) { return (T.t.nome || 'trecho') + ' D ' + T.escolhido.D + ' mm'; }).join(', '));
-    return { grupos: grupos, conclusao: concl.length ? 'Resultado: ' + concl.join('; ') + '.' : '' };
+    // A conclusão diz a situação do projeto antes do resultado: nunca um resultado "limpo" de
+    // um projeto com pendência ou ressalva.
+    const sit = P.status !== 'ok' ? 'Situação do projeto: ' + ROTULO_STATUS[P.status] + '. ' : '';
+    return { grupos: grupos, conclusao: concl.length ? sit + 'Resultado: ' + concl.join('; ') + '.' : sit.trim() };
   }
 
   function textoMemorial(m, estado) {

@@ -229,6 +229,7 @@
   function preencher() {
     const c = calhaAtiva();
     $('#projeto').value = estado.projeto || '';
+    $('#fonteChuva').value = estado.fonteChuva || '';
     $('#nome-calha').value = c.nome || '';
     $('#listaSaidas').value = c.listaSaidas || '';
     montarLocais();
@@ -256,6 +257,7 @@
   function ler() {
     const c = calhaAtiva();
     estado.projeto = $('#projeto').value;
+    estado.fonteChuva = $('#fonteChuva').value;
     c.nome = $('#nome-calha').value;
     c.listaSaidas = $('#listaSaidas').value;
     estado.localId = $('#local').value === '' ? '' : Number($('#local').value);
@@ -370,6 +372,7 @@
     const mat = matCalha(c.material);
     $$('[data-modo-i]').forEach(function (el) { el.hidden = el.dataset.modoI !== estado.modoI; });
     $('[data-bloco-t]').hidden = !(estado.modoI === 'tabela' || estado.modoI === 'idf');
+    mostrar('[data-fonte-chuva]', estado.modoI === 'idf' || estado.modoI === 'manual');
     $$('[data-so-saidas]').forEach(function (el) { el.hidden = el.dataset.soSaidas !== c.saidas; });
     const precisaL = c.saidas === 'intermediaria' || c.saidas === 'personalizadas';
     $('#rot-Lc').textContent = precisaL ? 'Comprimento da calha' : 'Comprimento da calha (dá o desnível)';
@@ -485,7 +488,7 @@
       return;
     }
     const yMm = c.y != null ? c.y * 1000 : null;
-    const selo = c.ok ? '<span class="selo ok">Atende</span>' : c.y == null ? '<span class="selo erro">Transborda</span>' : '<span class="selo atencao">Sem bordo livre suficiente</span>';
+    const selo = c.ok ? '<span class="selo ok">Atende</span>' : c.y == null ? '<span class="selo erro">Transborda</span>' : '<span class="selo erro">Acima do limite adotado</span>';
     let h = cabecalho(yMm != null ? grande('y', nf(yMm), 'mm de lâmina') : grande('y', '&gt; h', 'a seção cheia não basta'), selo);
     h += svgSecao(c.forma, c.dims, c.y, c.yLim);
     const g = c.y != null ? c : null;
@@ -521,7 +524,7 @@
     }
     const av = c.avisos.slice();
     if (c.y == null) av.unshift({ nivel: 'erro', texto: 'Mesmo cheia até a borda, a seção escoa ' + nf(c.Qcheia, 0) + ' L/min, menos que os ' + nf(R.Qcalha, 0) + ' L/min de projeto. Use "' + $('#btn-dimensionar').textContent + '" ou distribua mais saídas.' });
-    else if (!c.ok) av.unshift({ nivel: 'atencao', texto: 'A lâmina passa do limite adotado (' + nf(c.yLim * 1000) + ' mm). Aumente a seção, a declividade ou o número de saídas.' });
+    else if (!c.ok) av.unshift({ nivel: 'erro', texto: 'A lâmina passa do limite adotado (' + nf(c.yLim * 1000) + ' mm): a calha não atende ao critério escolhido. Aumente a seção, a declividade ou o número de saídas.' });
     h += avisosHtml(av);
     $('#r55').innerHTML = h;
   }
@@ -530,15 +533,25 @@
   function render56(R) {
     const v = R.vert;
     const e = R.c;
+    const sugestao = function () {
+      return {
+        nivel: 'atencao',
+        html: 'Com <b>' + v.sugestao.n + ' saídas espaçadas</b>, cada condutor recebe ' + nf(v.sugestao.Q, 0) + ' L/min e cabe em DN ' +
+          v.sugestao.tubo.dn + '. <button type="button" class="btn" data-usar-saidas="' + v.sugestao.n + '">Usar ' + v.sugestao.n + ' saídas</button>',
+      };
+    };
     if (!v.pronto) {
-      const falta = v.faltando === 'H' ? (e.fonteH === 'digitada' ? 'Informe a lâmina H na calha.' : 'A lâmina H vem da calha: complete o item 5.5, ou escolha "Digitar".') :
+      const falta = v.invalido ? 'Corrija o dado indicado abaixo.' :
+        v.faltando === 'H' ? (e.fonteH === 'digitada' ? 'Informe a lâmina H na calha.' : 'A lâmina H vem da calha: complete o item 5.5, ou escolha "Digitar".') :
         v.faltando === 'L' ? 'Informe o comprimento L do condutor vertical.' : 'O condutor é dimensionado quando houver vazão.';
-      $('#r56').innerHTML = aguardando(falta) + '<div class="abaco-quadro">' + svgAbaco(e.saida, 0, 0, 0, null) + '</div>';
+      $('#r56').innerHTML = aguardando(falta) + avisosHtml(v.avisos) + '<div class="abaco-quadro">' + svgAbaco(e.saida, 0, 0, 0, null) + '</div>';
       return;
     }
     if (v.fora) {
-      $('#r56').innerHTML = cabecalho(grande('D', '—', 'fora do ábaco (' + e.saida + ')'), '<span class="selo erro">Sem leitura</span>') +
-        '<div class="abaco-quadro">' + svgAbaco(e.saida, 0, 0, 0, null) + '</div>' + avisosHtml(v.avisos);
+      const avFora = v.avisos.slice();
+      if (v.sugestao) avFora.push(sugestao());
+      $('#r56').innerHTML = cabecalho(grande('D', '—', 'fora do ábaco (' + e.saida + ')'), '<span class="selo fora">Sem leitura</span>') +
+        '<div class="abaco-quadro">' + svgAbaco(e.saida, 0, 0, 0, null) + '</div>' + avisosHtml(avFora);
       return;
     }
     const a = v.adocao;
@@ -558,12 +571,8 @@
     if (a.peloMinimo) av.push({ nivel: 'info', texto: 'O ábaco pede menos de 70 mm; vale o diâmetro interno mínimo da norma (5.6.3).' });
     if (!a.tubo) av.push({ nivel: 'erro', texto: 'Nenhum tubo da lista tem diâmetro interno ≥ ' + nf(a.minimo) + ' mm.' });
     if (v.sugestao) {
-      av.push({
-        nivel: 'atencao',
-        html: 'Com <b>' + v.sugestao.n + ' saídas espaçadas</b>, cada condutor recebe ' + nf(v.sugestao.Q, 0) + ' L/min e cabe em DN ' +
-          v.sugestao.tubo.dn + '. <button type="button" class="btn" data-usar-saidas="' + v.sugestao.n + '">Usar ' + v.sugestao.n + ' saídas</button>',
-      });
-    } else if (!a.tubo || v.D > 150) {
+      av.push(sugestao());
+    } else if (!a.tubo) {
       av.push({ nivel: 'erro', texto: 'Nem com 12 saídas os condutores cabem: reveja a lâmina H, o comprimento L ou use funil de saída.' });
     }
     h += avisosHtml(av);
@@ -666,11 +675,11 @@
     $('#quadro-corpo').innerHTML = h;
   }
 
+  // Mesma precedência dos estados do projeto, na forma de exibição ('' = incompleta).
+  const ORDEM_EXIBICAO = ['ok', 'ressalva', 'atencao', 'erro', 'fora', 'semsuporte', '', 'invalida'];
   function piorStatus(lista) {
-    if (lista.some(function (s) { return s === 'erro'; })) return 'erro';
-    if (lista.some(function (s) { return s === 'atencao'; })) return 'atencao';
-    if (lista.length && lista.every(function (s) { return s === 'ok'; })) return 'ok';
-    return '';
+    if (!lista.length) return '';
+    return lista.reduce(function (a, s) { return ORDEM_EXIBICAO.indexOf(s) > ORDEM_EXIBICAO.indexOf(a) ? s : a; }, 'ok');
   }
 
   function renderResumo(P) {
@@ -678,7 +687,7 @@
     const ponto = function (k, cls) { document.querySelector('[data-ponto="' + k + '"]').className = 'ponto ' + (cls || ''); };
     const ch = P.chuva;
     set('res-I', ch.I.I > 0 ? nf(ch.I.I) + '<small>mm/h</small>' : '—');
-    ponto('I', ch.I.I > 0 ? (temNivel(ch.avisos51, 'erro') ? 'erro' : temNivel(ch.avisos51, 'atencao') ? 'atencao' : 'ok') : '');
+    ponto('I', ch.I.I > 0 ? PJ.EXIBICAO[ch.estado] : '');
     set('res-A', P.A > 0 ? nf(P.A, 1) + '<small>m²</small>' : '—');
     ponto('A', P.A > 0 ? 'ok' : '');
     set('res-Q', P.Q > 0 ? nf(P.Q, 0) + '<small>L/min</small>' : '—');
@@ -709,9 +718,12 @@
     pendAtual = PJ.pendencias(P, estado);
     const el = $('#coach');
     if (!pendAtual.length) {
-      const st = piorStatus(P.calhas.map(function (r) { return r.status; }).concat(P.trechos.map(function (T) { return T.status; })));
-      el.className = 'coach ' + (st === 'atencao' ? 'atencao' : 'ok');
-      el.innerHTML = '<p><b>' + (st === 'atencao' ? 'Tudo calculado, com avisos em amarelo para revisar.' : 'Projeto completo: tudo atende.') +
+      // A mesma situação do quadro e do PDF: "tudo atende" só quando o projeto atende.
+      const st = P.status;
+      const ressalvas = (P.diagnosticos || []).filter(function (d) { return d.classe === 'ressalva'; }).length;
+      el.className = 'coach ' + (st === 'ok' ? 'ok' : 'atencao');
+      el.innerHTML = '<p><b>' + (st === 'ok' ? 'Projeto completo: tudo atende.' : st === 'ressalva' ? 'Tudo calculado: atende com ressalva' +
+        (ressalvas ? ' (' + ressalvas + (ressalvas > 1 ? ' ressalvas' : ' ressalva') + ' no quadro e no PDF).' : '.') : 'Tudo calculado, com avisos para revisar.') +
         '</b> Veja o <a href="#quadro">quadro-resumo</a>, a <a href="#materiais">lista de materiais</a> e o <a href="#memorial">memorial</a>.</p>';
       return;
     }
@@ -731,15 +743,22 @@
       if (el.type === 'radio') { const g = el.closest('fieldset'); if (g) g.classList.add('pendente'); return; }
       el.classList.add('pendente');
     };
+    const marcarInvalido = function (el) { el.classList.remove('pendente'); el.classList.add('invalido'); };
     pendAtual.forEach(function (p) {
       if (p.calhaId && p.calhaId !== estado.ativa) return;
       const cands = $$(p.alvo).filter(function (x) { return x.offsetParent !== null && !x.disabled; });
+      if (p.classe === 'invalida') { cands.slice(0, 1).forEach(function (x) { if (x.tagName === 'INPUT' && x.type === 'text') marcarInvalido(x); else marcar(x); }); return; }
       const vazios = cands.filter(function (x) { return x.tagName === 'INPUT' && x.type === 'text' && !x.value.trim(); });
       (vazios.length ? vazios : cands.slice(0, 1)).forEach(marcar);
     });
-    $$('#superficies input').forEach(function (x) { if (!x.value.trim()) x.classList.add('pendente'); });
+    // Medida de superfície vazia ou zerada falta (só a altura h pode ser zero); nenhum campo
+    // numérico aceita valor negativo ou texto que não é número.
+    $$('#superficies input').forEach(function (x) {
+      if (!x.value.trim() || (lerNum(x.value) === 0 && x.dataset.var !== 'h')) x.classList.add('pendente');
+    });
     $$('.folha input.num').forEach(function (x) {
-      if (x.value.trim() && lerNum(x.value) === '') { x.classList.remove('pendente'); x.classList.add('invalido'); }
+      const v = lerNum(x.value);
+      if (x.value.trim() && (v === '' || v < 0)) marcarInvalido(x);
     });
   }
 
@@ -767,8 +786,12 @@
 
   function renderMateriais(P) {
     ultimaLista = PJ.listaMateriais(P, estado).filter(function (g) { return g.itens.length; });
+    const ressalva = P.status !== 'ok' && ultimaLista.length
+      ? '<p class="aviso ' + (P.status === 'ressalva' ? 'atencao' : 'erro') + '">Situação do projeto: ' + ROTULO_STATUS[P.status] +
+        '. As quantidades valem como estimativa até as pendências e ressalvas serem resolvidas.</p>'
+      : '';
     $('#materiais-corpo').innerHTML = ultimaLista.length
-      ? '<div class="rolagem"><table class="tabela materiais"><thead><tr><th>Peça</th><th>Qtd.</th><th>Un.</th><th>Base</th></tr></thead>' +
+      ? ressalva + '<div class="rolagem"><table class="tabela materiais"><thead><tr><th>Peça</th><th>Qtd.</th><th>Un.</th><th>Base</th></tr></thead>' +
         ultimaLista.map(function (g) {
           return '<tbody><tr class="grupo"><th colspan="4">' + esc(g.titulo) + '</th></tr>' + g.itens.map(function (it) {
             return '<tr><td>' + esc(it.peca) + '</td><td>' + esc(it.qtd) + '</td><td>' + esc(it.un) + '</td><td>' + esc(it.ref) + '</td></tr>';
