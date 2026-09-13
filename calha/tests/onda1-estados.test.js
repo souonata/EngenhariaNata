@@ -85,22 +85,13 @@ test('C3 e D1: valor inconsistente bloqueia; período do dado menor e coerente f
   }));
 });
 
-test('C4: H digitado acima da altura da calha é inválido; acima da lâmina limite não atende', () => {
+test('C4 (3.7.1): H é sempre a lâmina máxima admitida; um H digitado salvo é ignorado', () => {
   // A calha do exemplo tem 120 × 80 mm e lâmina limite de 2/3 (53,3 mm).
-  const acima = residencia((e, c) => Object.assign(c, { fonteH: 'digitada', Hlam: 100 })).r.calhas[0];
-  assert.equal(acima.status, 'invalida');
-  assert.ok(!acima.vert.pronto);
-  assert.equal(acima.vert.avisos[0].codigo, 'H_ACIMA_ALTURA');
-  const limite = residencia((e, c) => Object.assign(c, { fonteH: 'digitada', Hlam: 70 })).r.calhas[0];
-  assert.equal(limite.status, 'erro');
-  assert.ok(limite.vert.avisos.some((a) => a.codigo === 'H_ACIMA_LIMITE'));
-  const dentro = residencia((e, c) => Object.assign(c, { fonteH: 'digitada', Hlam: 50 })).r.calhas[0];
-  assert.equal(dentro.status, 'ok');
-  const { e, r } = residencia((x, c) => Object.assign(c, { fonteH: 'digitada', Hlam: 150 }));
-  semAtende(canais(e, r), 'H 150 numa calha de 80');
-  const p = P.pendencias(r, e)[0];
-  assert.equal(p.alvo, '#Hlam');
-  assert.equal(p.classe, 'invalida');
+  const R = residencia((e, c) => Object.assign(c, { fonteH: 'digitada', Hlam: 150 })).r.calhas[0];
+  assert.ok(Math.abs(R.H - R.calha.yLim * 1000) < 1e-9);
+  assert.ok(R.H <= R.calha.hTotal * 1000, 'a lâmina nunca passa da altura da calha');
+  assert.equal(R.status, 'ok');
+  assert.equal(E.migrar({ versao: 3, calhas: [{ fonteH: 'digitada', Hlam: 150 }], trechos: [] }).calhas[0].fonteH, 'limite');
 });
 
 test('C5: medida negativa, vazia ou zerada não soma área nem libera "atende"', () => {

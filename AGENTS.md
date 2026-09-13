@@ -187,6 +187,12 @@ npm run build          # build de produção (gera local/dist)
 
 _Última atualização: 2026-09-13_
 
+- **CALHA 3.7.1 (PUBLICADA EM 2026-09-13):** no passo B.4 saíram as opções "Lâmina calculada"
+  e "Digitar" (pedido do usuário): H é sempre a lâmina máxima admitida do passo B.3; abaixo de
+  50 mm a pendência leva à altura da calha. O botão "Escolher o menor diâmetro" (semicircular)
+  usa só os diâmetros da Tabela 3 (100–200 mm) e não inventa medida fora dela; a conferência com a
+  Tabela 3 interpola entre os nós (`N.qTabela3`). Detalhes em `calha/HANDOFF.md`.
+
 - **CATÁLOGO — ÍCONE DO AUDIOLAB E ESCUDO DO DOCK (2026-09-13):** o fundo do ícone do AudioLab
   ocupa o quadro 60 × 60 como os demais (antes 50 × 50, sobrava borda) e o emoji ficou branco com
   sombra; AudioLab e Calhas entraram no mapa `hrefParaApp` do `index-script.js` e ganharam a

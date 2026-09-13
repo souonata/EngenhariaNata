@@ -381,6 +381,27 @@
     return Math.ceil(x / passo - 1e-9) * passo;
   }
 
+  // Tabela 3 interpolada (linear em D e em i), só dentro dela: 100 ≤ D ≤ 200 mm e
+  // 0,5% ≤ i ≤ 2%, n = 0,011, lâmina D/2 (seção cheia). Fora disso não há valor: a tabela
+  // não é extrapolada.
+  function qTabela3(Dmm, i) {
+    const t = DADOS.TABELA3;
+    const Ds = t.linhas.map(function (l) { return l.D; });
+    const is = t.declividades;
+    if (!(Dmm >= Ds[0] - 1e-9 && Dmm <= Ds[Ds.length - 1] + 1e-9 && i >= is[0] - 1e-12 && i <= is[is.length - 1] + 1e-12)) return null;
+    const pos = function (arr, x) {
+      let k = 1;
+      while (k < arr.length - 1 && arr[k] < x) k++;
+      return { k: k, t: Math.min(Math.max((x - arr[k - 1]) / (arr[k] - arr[k - 1]), 0), 1) };
+    };
+    const a = pos(Ds, Dmm);
+    const b = pos(is, i);
+    const q = function (r, c) { return t.linhas[r].Q[c]; };
+    const cima = q(a.k - 1, b.k - 1) + b.t * (q(a.k - 1, b.k) - q(a.k - 1, b.k - 1));
+    const baixo = q(a.k, b.k - 1) + b.t * (q(a.k, b.k) - q(a.k, b.k - 1));
+    return cima + a.t * (baixo - cima);
+  }
+
   // Dimensiona a menor seção da forma escolhida (medidas em m, múltiplos de 5 mm).
   function dimensionarCalha(p) {
     const frac = p.fracLamina;
@@ -392,8 +413,10 @@
         if (qSecao('semicircular', { D: mid }, (frac * mid) / 2, p.n, p.i) < p.Q) lo = mid;
         else hi = mid;
       }
-      const comercial = DADOS.CALHAS_SEMICIRCULARES.find(function (d) { return d / 1000 >= hi - 1e-9; });
-      return { dims: { D: comercial ? comercial / 1000 : arredondaCima(hi, 0.005) }, Dmin: hi, comercial: !!comercial };
+      // Só os diâmetros da Tabela 3 (100 a 200 mm), que a própria tabela confere. Se nem o de
+      // 200 mm basta, não se inventa um diâmetro fora dela: dims fica nulo.
+      const tabela = DADOS.CALHAS_SEMICIRCULARES.find(function (d) { return d / 1000 >= hi - 1e-9; });
+      return { dims: tabela ? { D: tabela / 1000 } : null, Dmin: hi, comercial: !!tabela, semTabela: !tabela };
     }
     if (p.forma === 'retangular' && p.otima) {
       // Seção retangular de máxima eficiência: b = 2y.
@@ -598,6 +621,7 @@
     qSecao: qSecao,
     laminaNormal: laminaNormal,
     verificarCalha: verificarCalha,
+    qTabela3: qTabela3,
     dimensionarCalha: dimensionarCalha,
     desenvolvimento: desenvolvimento,
     corteComercial: corteComercial,

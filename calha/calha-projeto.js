@@ -177,34 +177,37 @@
     }
     if (num(e.decl) < 0) R.calha.avisos.push({ nivel: 'erro', classe: 'invalida', codigo: 'DECL_NEGATIVA', texto: 'A declividade da calha não pode ser negativa.' });
     else if (!(i > 0)) R.calha.avisos.push({ nivel: 'erro', classe: 'incompleta', texto: 'Informe a declividade da calha.' });
-    if (e.forma === 'semicircular' && n === 0.011 && temSecao) {
+    // Conferência com a Tabela 3 (semicircular, n 0,011): valor exato ou interpolado dentro da
+    // tabela; fora dela (D de 100 a 200 mm, i de 0,5% a 2%) só vale o cálculo por Manning.
+    if (e.forma === 'semicircular' && n === 0.011 && temSecao && i > 0) {
       const t3 = DD.TABELA3;
-      const lin = t3.linhas.find(function (l) { return l.D === Math.round(dims.D * 1000); });
-      const j = t3.declividades.findIndex(function (d) { return Math.abs(d - i) < 1e-9; });
-      if (lin && j >= 0) R.calha.tabela3 = { D: lin.D, Q: lin.Q[j], i: i };
+      const Dmm = dims.D * 1000;
+      const Qt = N.qTabela3(Dmm, i);
+      if (Qt != null) {
+        const exata = t3.linhas.some(function (l) { return Math.abs(l.D - Dmm) < 0.05; }) && t3.declividades.some(function (d) { return Math.abs(d - i) < 1e-9; });
+        R.calha.tabela3 = { D: Dmm, Q: Qt, i: i, exata: exata };
+      } else {
+        R.calha.avisos.push({
+          nivel: 'info', classe: 'informativa', codigo: 'FORA_TABELA3',
+          texto: 'D = ' + nf(Dmm) + ' mm com i = ' + na(i * 100) + '% fica fora da Tabela 3 (D de 100 a 200 mm, i de 0,5% a 2%): sem conferência pela tabela, vale o cálculo por Manning (5.5.7). O botão "Escolher o menor diâmetro" usa só os diâmetros da tabela.',
+        });
+      }
     }
 
-    // 5.6 — H é a lâmina de água na calha (5.6.4): digitada, não passa da altura da calha.
-    let H = NaN;
-    if (e.fonteH === 'digitada') H = num(e.Hlam);
-    else if (R.calha.pronta) H = e.fonteH === 'calculada' ? (R.calha.y != null ? R.calha.y * 1000 : NaN) : R.calha.yLim * 1000;
+    // 5.6 — H é a lâmina de água na calha (5.6.4): a lâmina máxima admitida no passo B.3.
+    // A 3.7.1 tirou as opções "lâmina calculada" e "digitar" (pedido do usuário): a calculada
+    // quase sempre fica abaixo de 50 mm, onde o ábaco não tem leitura, e um H digitado fora da
+    // própria calha não tinha como valer.
+    const H = R.calha.pronta ? R.calha.yLim * 1000 : NaN;
     R.H = H;
     R.vert = { avisos: [] };
     const tubos = tubosVerticais(estado);
     const linhaV = linhaVertical(estado);
     const Lv = num(e.Lcond);
-    let bloqueio = null;
-    if (e.fonteH === 'digitada' && H < 0) {
-      bloqueio = { codigo: 'H_NEGATIVO', texto: 'A lâmina H não pode ser negativa.' };
-    } else if (e.fonteH === 'digitada' && H > 0 && R.calha.pronta && H > R.calha.hTotal * 1000 + 1e-9) {
-      bloqueio = { codigo: 'H_ACIMA_ALTURA', texto: 'H = ' + nf(H) + ' mm passa da altura da calha (' + nf(R.calha.hTotal * 1000) + ' mm): a lâmina não pode ser maior que a própria calha (5.6.4).' };
-    } else if (Lv < 0) {
-      bloqueio = { codigo: 'L_NEGATIVO', texto: 'O comprimento L do condutor não pode ser negativo.' };
-    }
-    if (bloqueio) {
-      R.vert.avisos.push(Object.assign({ nivel: 'erro', classe: 'invalida' }, bloqueio));
+    if (Lv < 0) {
+      R.vert.avisos.push({ nivel: 'erro', classe: 'invalida', codigo: 'L_NEGATIVO', texto: 'O comprimento L do condutor não pode ser negativo.' });
       R.vert.invalido = true;
-      R.vert.faltando = bloqueio.codigo === 'L_NEGATIVO' ? 'L' : 'H';
+      R.vert.faltando = 'L';
     } else if (R.Qcond > 0 && H > 0 && Lv > 0) {
       R.vert = N.abaco({ saida: e.saida, Q: R.Qcond, H: H, L: Lv });
       R.vert.pronto = true;
@@ -213,9 +216,6 @@
       if (R.vert.adocao.tubo) R.vert.folga = R.vert.adocao.tubo.di / R.vert.adocao.minimo - 1;
       if (tubos.length && (R.vert.fora === 'D' || R.vert.fora === 'Q' || (!R.vert.fora && !R.vert.adocao.tubo))) {
         R.vert.sugestao = N.sugerirSaidas({ Q: R.Q, H: H, L: Lv, saida: e.saida, tubos: tubos });
-      }
-      if (e.fonteH === 'digitada' && R.calha.pronta && H > R.calha.yLim * 1000 + 1e-9) {
-        R.vert.avisos.push({ nivel: 'erro', classe: 'nao_atende', codigo: 'H_ACIMA_LIMITE', texto: 'H = ' + nf(H) + ' mm passa da lâmina limite adotada na calha (' + nf(R.calha.yLim * 1000) + ' mm): com essa lâmina a calha não atende ao próprio critério.' });
       }
     } else {
       R.vert.faltando = !(H > 0) ? 'H' : !(Lv > 0) ? 'L' : 'Q';
@@ -419,8 +419,6 @@
 
   const TEXTO_FONTE_H = {
     limite: 'lâmina máxima admitida na calha',
-    calculada: 'lâmina calculada na calha (a favor da segurança)',
-    digitada: 'valor digitado',
   };
 
   /* ------------------------------------------------------------------ */
@@ -482,24 +480,24 @@
     const c = R.c;
     const v = R.vert;
     const semTubos = (v.avisos || []).find(function (a) { return a.codigo === 'TUBOS_V_FALTA'; });
-    if (v.invalido) return ['5.6', v.avisos[0].texto, v.faltando === 'L' ? '#Lcond' : '#Hlam', 'invalida'];
+    if (v.invalido) return ['5.6', v.avisos[0].texto, '#Lcond', 'invalida'];
     if (!v.pronto) {
       // O comprimento L não depende da calha: é pedido mesmo antes de a lâmina H existir.
       if (v.faltando === 'L' || !(num(c.Lcond) > 0)) return ['5.6', 'informe o comprimento L do condutor vertical.', '#Lcond'];
-      if (v.faltando === 'H' && c.fonteH === 'digitada') return ['5.6', 'informe a lâmina H na calha.', '#Hlam'];
       if (semTubos) return ['5.6', semTubos.texto, '#tubos input, #btn-add-tubo', 'incompleta'];
       return null;
     }
     if (v.fora === 'D' || v.fora === 'Q') {
       return ['5.6', v.sugestao ? 'o condutor passa do fim do ábaco: use ' + v.sugestao.n + ' saídas espaçadas.' : primeiro(v.avisos, 'erro').texto, '#r56', 'fora_do_dominio'];
     }
-    if (v.fora) return ['5.6', primeiro(v.avisos, 'erro').texto, v.fora === 'L' ? '#Lcond' : c.fonteH === 'digitada' ? '#Hlam' : 'input[name="fonteH"]', 'fora_do_dominio'];
+    // H abaixo do ábaco com a lâmina limite: a saída é uma calha mais alta (altura da seção).
+    if (v.fora) return ['5.6', primeiro(v.avisos, 'erro').texto, v.fora === 'L' ? '#Lcond' : { retangular: '#h', semicircular: '#Dcalha', trapezoidal: '#ht' }[c.forma], 'fora_do_dominio'];
     if (semTubos) return ['5.6', semTubos.texto, '#tubos input, #btn-add-tubo', 'incompleta'];
     if (!v.adocao.tubo) {
       return ['5.6', v.sugestao ? 'nenhum tubo da linha atende: use ' + v.sugestao.n + ' saídas espaçadas.' : 'nenhum tubo da linha atende ao ábaco.', '#r56'];
     }
     const eH = primeiro(v.avisos, 'erro');
-    if (eH) return ['5.6', eH.texto, '#Hlam', eH.classe];
+    if (eH) return ['5.6', eH.texto, '#r56', eH.classe];
     return null;
   }
   function pendenciasCalha(R) {
@@ -587,7 +585,7 @@
     if (v.invalido) s = N.piorEstado(s, 'invalida');
     else if (v.pronto && v.fora) s = N.piorEstado(s, 'fora_do_dominio');
     else if (v.pronto && !v.adocao.tubo && !v.adocao.semTubos) s = N.piorEstado(s, 'nao_atende');
-    else if (!v.pronto && (v.faltando === 'L' || !(num(R.c.Lcond) > 0) || (v.faltando === 'H' && R.c.fonteH === 'digitada'))) s = N.piorEstado(s, 'incompleta');
+    else if (!v.pronto && (v.faltando === 'L' || !(num(R.c.Lcond) > 0))) s = N.piorEstado(s, 'incompleta');
     return comEspera(s, v.pronto);
   }
 

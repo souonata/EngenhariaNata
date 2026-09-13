@@ -50,7 +50,7 @@
     forma: {
       opcoes: {
         retangular: ['Retangular', 'Calha de chapa dobrada ou de alvenaria em que você define a largura e a altura. Com "Liberar a largura", o app acha a seção econômica, com largura igual ao dobro da lâmina.'],
-        semicircular: ['Semicircular', 'Meia-cana de PVC ou de chapa. A Tabela 3 da norma traz a capacidade dos diâmetros de 100 a 200 mm, e o app a usa para conferir. Não se aplica à alvenaria.'],
+        semicircular: ['Semicircular', 'Meia-cana de PVC ou de chapa. A Tabela 3 da norma traz a capacidade dos diâmetros de 100 a 200 mm; o botão escolhe só entre 100, 125, 150 e 200 mm, e o app confere o resultado pela tabela, interpolando quando a declividade fica entre as colunas. Não se aplica à alvenaria.'],
         trapezoidal: ['Trapezoidal', 'Paredes inclinadas (talude z na horizontal para 1 na vertical), como em calhas moldadas de concreto: mais larga em cima para a mesma largura de fundo.'],
       },
     },
@@ -65,13 +65,6 @@
       opcoes: {
         a: ['Aresta viva', 'Furo simples no fundo da calha, com a borda reta: a saída mais simples de fazer. Usa o ábaco (a) da Figura 3.'],
         b: ['Funil de saída', 'Peça em forma de funil na saída da calha (3.13). Engole mais água com a mesma lâmina, então o condutor pode ser menor. Usa o ábaco (b).'],
-      },
-    },
-    fonteH: {
-      opcoes: {
-        limite: ['Lâmina máxima admitida', 'Usa a lâmina limite da calha, a do bordo livre escolhido no passo B.3: a calha trabalhando no limite do projeto.'],
-        calculada: ['Lâmina calculada', 'Usa a lâmina da vazão de projeto, menor que o limite. Lâmina menor dá diâmetro maior no ábaco, a favor da segurança. Abaixo de 50 mm o ábaco não tem leitura.'],
-        digitada: ['Digitar', 'Para impor outro valor de H, até a altura da calha. Acima da lâmina limite, a calha deixa de atender ao próprio critério.'],
       },
     },
     materialV: {

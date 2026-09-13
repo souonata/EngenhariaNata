@@ -82,7 +82,7 @@
       ]]);
     } else if (v.pronto) {
       passos.push(['5.6', 'Condutor vertical', [
-        'Ábaco (' + e.saida + ') da Figura 3, ' + (e.saida === 'a' ? 'saída em aresta viva' : 'funil de saída') + ': Q = ' + nf(R.Qcond, 1) + ' L/min, H = ' + nf(R.H) + ' mm (' + TEXTO_FONTE_H[e.fonteH] + '), L = ' + na(num(e.Lcond)) + ' m.',
+        'Ábaco (' + e.saida + ') da Figura 3, ' + (e.saida === 'a' ? 'saída em aresta viva' : 'funil de saída') + ': Q = ' + nf(R.Qcond, 1) + ' L/min, H = ' + nf(R.H) + ' mm (' + TEXTO_FONTE_H.limite + '), L = ' + na(num(e.Lcond)) + ' m.',
         'D pela curva H = ' + (v.DH < 50 ? '< 50' : nf(v.DH)) + ' mm; pela curva L = ' + (v.DL < 50 ? '< 50' : nf(v.DL)) + ' mm; vale a interseção mais alta: D = ' + (v.D < 50 ? '< 50' : nf(v.D)) + ' mm.',
         v.adocao.tubo ? textoTuboV(v, estado) : v.adocao.semTubos ? 'Sem tubos: informe o diâmetro interno dos tubos de ' + PJ.matVertical(estado).toLowerCase() + ' (Di ≥ ' + nf(v.adocao.minimo) + ' mm).' : 'Nenhum tubo disponível atende.',
       ].concat(v.avisos.map(function (a) { return 'Obs.: ' + a.texto; }))]);
