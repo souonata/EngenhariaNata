@@ -197,10 +197,17 @@
     <!-- Calhas NBR 10844 (águas pluviais) -->
     <url>
         <loc>https://engnata.eu/calha/</loc>
-        <lastmod>2026-09-12</lastmod>
+        <lastmod>2026-09-13</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
         <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/calha/"/>
+    </url>
+    <url>
+        <loc>https://engnata.eu/calha/avancado.html</loc>
+        <lastmod>2026-09-13</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+        <xhtml:link rel="alternate" hreflang="pt-BR" href="https://engnata.eu/calha/avancado.html"/>
     </url>
 
 </urlset>

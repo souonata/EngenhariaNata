@@ -1,6 +1,6 @@
 # HANDOFF — Calha 10844 (app de calhas da NBR 10844)
 
-_Atualizado: 2026-09-13 (versão 3.7.0). Leia isto antes de mexer em qualquer arquivo desta pasta._
+_Atualizado: 2026-09-13 (versão 3.8.0). Leia isto antes de mexer em qualquer arquivo desta pasta._
 
 ## O que é
 App didático do portfólio Engenharia NATA para dimensionar calhas, condutores verticais e
@@ -23,7 +23,7 @@ guarda os PDFs das normas (NBR 10844 sem marca d'água, BS EN 12056-3, HR Wallin
 - Em aberto com o usuário: dados de chapa (corte, espessura, kg/m) e lista de materiais não
   vêm da norma — perguntei se saem; ele respondeu "tá bem legal já" e seguiu, então ficaram.
 
-## Arquivos (scripts clássicos UMD, nesta ordem no index.html)
+## Arquivos (scripts clássicos UMD, nesta ordem no avancado.html)
 | Arquivo | Papel |
 |---|---|
 | `nbr10844-dados.js` | Tabelas 1–5, materiais 4.1.1/4.1.2/4.1.3, chapas, tubos |
@@ -36,8 +36,12 @@ guarda os PDFs das normas (NBR 10844 sem marca d'água, BS EN 12056-3, HR Wallin
 | `calha-memorial.js` | memorial por calha e em texto |
 | `calha-relatorio.js` | relatório do projeto (HTML) para imprimir/salvar em PDF |
 | `calha-app.js` | interface: estado vivo, formulário, visibilidade, render, eventos |
-| `index.html`, `calha.css` | página; tema claro/escuro (contraste WCAG AA) e layout móvel |
-| `tests/*.test.js` | Vitest (28): núcleo, projeto, relatório — `cd local && npm test` |
+| `calha-simples.js` | modo simples, parte pura: entradas → estado do avançado → resultado → `CalhaSimples` |
+| `calha-simples-app.js` | modo simples, a tela (chave própria `calha10844:simples:v1`) |
+| `index.html` | modo simples (entrada do app): dados, abacos, calc, util, estado, projeto, simples, simples-app |
+| `avancado.html` | modo avançado, a ferramenta completa (antigo `index.html`) |
+| `calha.css` | as duas páginas; tema claro/escuro (contraste WCAG AA) e layout móvel; bloco 3.8 = modo simples |
+| `tests/*.test.js` | Vitest (63): núcleo, projeto, relatório, modo simples — `cd local && npm test` |
 
 Em Node os módulos carregam com `require` (os testes usam `createRequire`).
 
@@ -56,11 +60,12 @@ Em Node os módulos carregam com `require` (os testes usam `createRequire`).
   (porta 8745, serve a raiz) → `http://localhost:8745/calha/index.html`.
 
 ## Como publicar o artifact
-Página gerada do `calha/index.html` sem `<html>/<head>/<body>`, sem as metas charset/viewport
-e sem os links `icon`/`canonical` (no artifact eles quebram):
+Página gerada do `calha/avancado.html` (o artifact é a ferramenta completa) sem
+`<html>/<head>/<body>`, sem as metas charset/viewport e sem os links `icon`/`canonical` (no
+artifact eles quebram):
 ```python
 import re
-h=open("calha/index.html",encoding="utf-8").read()
+h=open("calha/avancado.html",encoding="utf-8").read()
 head=re.search(r"<head>(.*?)</head>",h,re.S).group(1); body=re.search(r"<body>(.*?)</body>",h,re.S).group(1)
 for p in [r'\s*<meta charset="utf-8" />',r'\s*<meta name="viewport"[^>]*/>',r'\s*<link rel="icon"[^>]*/>',r'\s*<link rel="canonical"[^>]*/>']:
     head=re.sub(p,"",head)
@@ -262,3 +267,36 @@ deixa a lâmina limite em pelo menos 50 mm (`H_MIN_ABACO`, a menor curva da Figu
 interpola): semicircular só da Tabela 3 (⅔ → D ≥ 150; ½ → D = 200; cheia → D ≥ 100); retangular
 e trapezoidal com h em múltiplos de 5 mm (⅔ → h ≥ 75; ½ → h ≥ 100). `peloAbaco` indica quando foi
 o ábaco que decidiu, e o aviso diz isso. Com H < 50 mm, o passo B.4 manda usar o botão do B.3.
+
+## 3.8.0 — modo simples na entrada, modo avançado preservado
+Pedido do usuário: quem só quer a calha da casa não deve ver artigo da norma, tabela ou fórmula.
+- **Duas páginas.** `index.html` (engnata.eu/calha/) é o modo simples; a página completa foi
+  para `avancado.html` com `git mv` e continua sendo a ferramenta mantida. Cada uma linka a outra
+  ("← Modo simples" no carimbo do avançado; "Modo avançado" no rodapé do simples). Links antigos
+  do cálculo (`calha/#s=…`) são redirecionados para `avancado.html` por um script no `<head>` do
+  simples, antes de qualquer outra coisa.
+- **Fluxo.** 1) cidade (busca na Tabela 5) e posição da calha: beiral → T = 5; atrás de mureta
+  (platibanda) → T = 25 (5.1.2). Cidade fora da tabela: construção até 100 m² → 150 mm/h (5.1.4)
+  ou a chuva local com fonte; nunca se inventa a chuva. 2) comprimento da calha, largura da água
+  (projeção), altura da cumeeira (Figura 2(b)), altura da mureta (Figura 2(c), só na platibanda),
+  altura da calha até o chão (= L do ábaco), canos de descida (ponta, meio, duas pontas, vários) e
+  formato (retangular com a largura liberada, b = 2y, ou meia-cana da Tabela 3). 3) resultado.
+  Água-furtada e paredes mais altas: só no avançado (dito no passo 1).
+- **Nenhuma conta nova.** `CalhaSimples.resolver` monta o estado do avançado, dimensiona pelo
+  caminho do botão da 3.7.2 (`dimensionarCalha` com `H_MIN_ABACO`) e lê `calcularProjeto`. O
+  resultado só aparece em `atende` ou `ressalva`; o título de sucesso só em `atende`. Os demais
+  estados viram frase comum com a ação: "Falta preencher…" com foco no campo, "Usar N descidas"
+  (sugestão do motor quando o ábaco estoura), "Usar a calha retangular" (meia-cana sem diâmetro na
+  Tabela 3), chuva sem dado confiável (Ouro Preto e São Carlos em T = 25) sem números.
+- **Padrões ditos no resultado**, em letra pequena: chapa galvanizada (mesmo n do PVC), caimento
+  de 0,5% (mínimo da norma), lâmina de ⅔ e saída em aresta viva (critérios do app), PVC Série
+  Normal com Di de catálogo (dado de fabricante).
+- **Estado.** O simples guarda só as entradas, em `calha10844:simples:v1`. "Abrir no modo
+  avançado com estes dados" gera `avancado.html#s=…` (o formato do "Copiar link do cálculo") e,
+  se o avançado tiver projeto próprio salvo (não exemplo), pede confirmação antes de substituir.
+- **Testes** em `tests/modo-simples.test.js`: resultado idêntico ao `calcularProjeto` e ao estado
+  aberto no avançado (link → `migrar`), H ≥ 50 mm sempre que há resultado, nenhum sucesso fora de
+  `atende`, 5.1.4 acima de 100 m² sem resultado, platibanda com T = 25 e a face da mureta,
+  pendências em palavras comuns, ações de vazão grande, busca de cidades.
+- Conferido no navegador em 390 × 844 e 820 × 1180 (sem rolagem lateral), tema escuro, passagem
+  para o avançado, confirmação e redirecionamento de link antigo, console sem erros.

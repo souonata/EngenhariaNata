@@ -187,6 +187,17 @@ npm run build          # build de produção (gera local/dist)
 
 _Última atualização: 2026-09-13_
 
+- **CALHA 3.8.0 — MODO SIMPLES NA ENTRADA (PUBLICADA EM 2026-09-13, branch `feat/calha-modo-simples`):**
+  `calha/index.html` virou um assistente de três passos (cidade e posição da calha → medidas do
+  telhado → resultado) sem jargão nem citação de norma na tela; o rodapé diz que a base é a NBR
+  10844. A página completa foi para `calha/avancado.html` (`git mv`, histórico preservado) e
+  continua mantida. O modo simples não calcula nada próprio: `calha-simples.js` monta o mesmo
+  estado do avançado, dimensiona pelo caminho do botão da 3.7.2 e lê `calcularProjeto`;
+  `calha-simples-app.js` é a tela, com chave própria `calha10844:simples:v1` (não apaga projeto do
+  avançado). "Abrir no modo avançado" usa o formato `#s=` do link do cálculo e pede confirmação
+  se houver projeto salvo lá; links antigos `calha/#s=…` redirecionam para o avançado. Detalhes
+  em `calha/HANDOFF.md`. `npm run validate` 46/425.
+
 - **CALHA 3.7.2 (PUBLICADA EM 2026-09-13):** o botão de dimensionar escolhe a menor medida
   comercial que escoa a vazão **e** deixa a lâmina limite em pelo menos 50 mm (início do ábaco
   da Figura 3), para o condutor vertical ter leitura com os mesmos dados: semicircular só da
