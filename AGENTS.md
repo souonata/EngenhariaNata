@@ -187,6 +187,12 @@ npm run build          # build de produção (gera local/dist)
 
 _Última atualização: 2026-09-13_
 
+- **CALHA 3.7.2 (PUBLICADA EM 2026-09-13):** o botão de dimensionar escolhe a menor medida
+  comercial que escoa a vazão **e** deixa a lâmina limite em pelo menos 50 mm (início do ábaco
+  da Figura 3), para o condutor vertical ter leitura com os mesmos dados: semicircular só da
+  Tabela 3 (⅔ → D ≥ 150; ½ → D = 200; cheia → D ≥ 100), retangular/trapezoidal com h em múltiplos
+  de 5 mm (⅔ → h ≥ 75). O aviso diz quando foi o ábaco que decidiu. Detalhes em `calha/HANDOFF.md`.
+
 - **CALHA 3.7.1 (PUBLICADA EM 2026-09-13):** no passo B.4 saíram as opções "Lâmina calculada"
   e "Digitar" (pedido do usuário): H é sempre a lâmina máxima admitida do passo B.3; abaixo de
   50 mm a pendência leva à altura da calha. O botão "Escolher o menor diâmetro" (semicircular)

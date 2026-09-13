@@ -123,6 +123,27 @@ test('Semicircular: o botão só escolhe diâmetros da Tabela 3; fora dela não 
   });
 });
 
+test('O botão de dimensionar deixa a lâmina limite em pelo menos 50 mm, o início do ábaco', () => {
+  const semi = (frac) => N.dimensionarCalha({ forma: 'semicircular', dims: {}, Q: 100, n: 0.011, i: 0.005, fracLamina: frac });
+  assert.equal(Math.round(semi(0.6667).dims.D * 1000), 150, '⅔ de D/2 ≥ 50 pede D ≥ 150');
+  assert.equal(semi(0.6667).peloAbaco, true);
+  assert.equal(Math.round(semi(0.5).dims.D * 1000), 200, '½ de D/2 ≥ 50 pede D ≥ 200');
+  assert.equal(Math.round(semi(1).dims.D * 1000), 100, 'seção cheia: D/2 ≥ 50');
+  const ret = N.dimensionarCalha({ forma: 'retangular', dims: { b: 0.3 }, Q: 100, n: 0.011, i: 0.005, fracLamina: 0.6667 });
+  assert.equal(Math.round(ret.dims.h * 1000), 75);
+  assert.equal(ret.peloAbaco, true);
+  const trap = N.dimensionarCalha({ forma: 'trapezoidal', dims: { b: 0.2, z: 0.5 }, Q: 100, n: 0.011, i: 0.005, fracLamina: 0.5 });
+  assert.equal(Math.round(trap.dims.h * 1000), 100);
+  [[semi(0.6667), 'semicircular', 0.6667], [semi(0.5), 'semicircular', 0.5], [ret, 'retangular', 0.6667], [trap, 'trapezoidal', 0.5]].forEach(([r, forma, frac]) => {
+    const v = N.verificarCalha({ forma, dims: r.dims, Q: 100, n: 0.011, i: 0.005, fracLamina: frac });
+    assert.ok(v.ok, forma);
+    assert.ok(v.yLim * 1000 >= 50, forma + ' com lâmina limite ' + v.yLim * 1000);
+  });
+  // Vazão grande: quem decide é a vazão, e o ábaco não pesa.
+  const grande = N.dimensionarCalha({ forma: 'retangular', dims: { b: 0.3 }, Q: 2000, n: 0.011, i: 0.005, fracLamina: 0.6667 });
+  assert.equal(grande.peloAbaco, false);
+});
+
 test('Tabela 3 interpolada: valores exatos nos nós, linear entre eles e nada fora da tabela', () => {
   assert.equal(N.qTabela3(150, 0.01), 541);
   assert.equal(N.qTabela3(100, 0.02), 256);

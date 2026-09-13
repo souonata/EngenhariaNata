@@ -402,9 +402,17 @@
     return cima + a.t * (baixo - cima);
   }
 
-  // Dimensiona a menor seção da forma escolhida (medidas em m, múltiplos de 5 mm).
+  // A menor curva do ábaco da Figura 3 é H = 50 mm, e 5.6.4.1 só interpola. H é a lâmina limite
+  // da calha, então a seção escolhida pelo botão deixa essa lâmina em pelo menos 50 mm: assim o
+  // condutor vertical tem leitura com os mesmos dados.
+  const H_MIN_ABACO = 0.05;
+
+  // Dimensiona a menor seção comercial da forma escolhida (medidas em m, múltiplos de 5 mm;
+  // semicircular só com os diâmetros da Tabela 3) que escoa a vazão e deixa a lâmina limite no
+  // domínio do ábaco. `peloAbaco` diz quando foi o ábaco, e não a vazão, que decidiu.
   function dimensionarCalha(p) {
     const frac = p.fracLamina;
+    const yMin = p.yMin != null ? p.yMin : H_MIN_ABACO;
     if (p.forma === 'semicircular') {
       let lo = 0.01;
       let hi = 2;
@@ -413,11 +421,17 @@
         if (qSecao('semicircular', { D: mid }, (frac * mid) / 2, p.n, p.i) < p.Q) lo = mid;
         else hi = mid;
       }
-      // Só os diâmetros da Tabela 3 (100 a 200 mm), que a própria tabela confere. Se nem o de
-      // 200 mm basta, não se inventa um diâmetro fora dela: dims fica nulo.
-      const tabela = DADOS.CALHAS_SEMICIRCULARES.find(function (d) { return d / 1000 >= hi - 1e-9; });
-      return { dims: tabela ? { D: tabela / 1000 } : null, Dmin: hi, comercial: !!tabela, semTabela: !tabela };
+      // Só os diâmetros da Tabela 3 (100 a 200 mm), que a própria tabela confere. Se nenhum
+      // serve, não se inventa um diâmetro fora dela: dims fica nulo.
+      const DminAbaco = (2 * yMin) / frac;
+      const precisa = Math.max(hi, DminAbaco);
+      const tabela = DADOS.CALHAS_SEMICIRCULARES.find(function (d) { return d / 1000 >= precisa - 1e-6; });
+      return {
+        dims: tabela ? { D: tabela / 1000 } : null, Dmin: hi, DminAbaco: DminAbaco, peloAbaco: DminAbaco > hi + 1e-9,
+        comercial: !!tabela, semTabela: !tabela,
+      };
     }
+    const hAbaco = arredondaCima(yMin / frac, 0.005);
     if (p.forma === 'retangular' && p.otima) {
       // Seção retangular de máxima eficiência: b = 2y.
       let lo = 0.001;
@@ -429,11 +443,13 @@
       }
       const b = arredondaCima(2 * hi, 0.005);
       const y = laminaNormal('retangular', { b: b, h: 10 }, p.Q, p.n, p.i, 10).y;
-      return { dims: { b: b, h: arredondaCima(y / frac, 0.005) }, y: y };
+      const hVazao = arredondaCima(y / frac, 0.005);
+      return { dims: { b: b, h: Math.max(hVazao, hAbaco) }, y: y, peloAbaco: hAbaco > hVazao };
     }
     const dims = Object.assign({}, p.dims, { h: 10 });
     const y = laminaNormal(p.forma, dims, p.Q, p.n, p.i, 10).y;
-    return { dims: Object.assign({}, p.dims, { h: arredondaCima(y / frac, 0.005) }), y: y };
+    const hVazao = arredondaCima(y / frac, 0.005);
+    return { dims: Object.assign({}, p.dims, { h: Math.max(hVazao, hAbaco) }), y: y, peloAbaco: hAbaco > hVazao };
   }
 
   // Desenvolvimento da chapa (largura planificada) em m: perímetro da seção + abas.
