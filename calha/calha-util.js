@@ -93,7 +93,10 @@
     if (c.forma === 'retangular') return nf(c.dims.b * 1000) + ' × ' + nf(c.dims.h * 1000);
     return 'trapezoidal ' + nf(c.dims.b * 1000) + ' × ' + nf(c.dims.h * 1000);
   }
-  const ROTULO_STATUS = { ok: 'atende', atencao: 'revisar', erro: 'não atende', '': 'incompleta' };
+  const ROTULO_STATUS = {
+    ok: 'atende', ressalva: 'atende com ressalva', atencao: 'revisar', erro: 'não atende',
+    fora: 'sem leitura', semsuporte: 'sem dado válido', invalida: 'entrada inválida', '': 'incompleta',
+  };
   function seloStatus(st) { return '<span class="selo ' + st + '">' + ROTULO_STATUS[st] + '</span>'; }
 
   return {

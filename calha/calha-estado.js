@@ -37,7 +37,7 @@
     const c = novaCalha('Calha 1');
     return {
       versao: 3, projeto: '',
-      modoI: 'tabela', localId: '', T: 5, areaProj: '', Imanual: '', Tmanual: '',
+      modoI: 'tabela', localId: '', T: 5, areaProj: '', Imanual: '', Tmanual: '', fonteChuva: '',
       idfK: '', idfA: '', idfB: '', idfC: '',
       materialV: 'pvc', tubos: tubosPadrao(),
       calhas: [c], ativa: c.id,

@@ -187,17 +187,23 @@ npm run build          # build de produção (gera local/dist)
 
 _Última atualização: 2026-09-13_
 
-- **CALHA — PROMPT PARA PLANEJAR AS CORREÇÕES DA AUDITORIA (2026-09-13):** criado
-  `calha/referencias/prompt-plano-correcoes-9-10.md` após leitura integral da auditoria de
-  13/09/2026 (site 3.5.5), do HANDOFF e inspeção dos pontos de entrada do código local.
-  Cobre os 24 achados e os sete quesitos, exige conferência normativa, reprodução,
-  arquitetura/migração, entregas por dependência, critérios de aceite e reauditoria.
-  Registra recomendações controversas do parecer (especialmente C3, A1/TC6, A3, M5 e M6)
-  como hipóteses a validar, sem prometer notas. Nesta sessão foi produzido somente o prompt;
-  o plano e as correções ainda não foram executados, e as alterações locais anteriores
-  foram preservadas. O arquivo é um artefato local, ainda não commitado.
+- **CALHA — PLANO DA AUDITORIA E ONDA 1 (3.6.0, 2026-09-13):** o plano de correções para
+  nota 9–10 está em `calha/referencias/plano-implementacao-auditoria.md` (artefato local, não
+  versionado, como o resto de `calha/referencias/`; os PDFs de norma e o texto extraído dela
+  estão no `.gitignore`). Decisões tomadas: **D1** — coluna da Tabela 5 com período menor e
+  coerente vira "atende com ressalva"; ausente ou incoerente (São Carlos T25 < T5) vira "sem
+  dado válido"; **D5** — lâmina padrão continua ⅔ da altura. A 3.6.0 entrega Onda 0 + Onda 1a:
+  um contrato único de estados (`invalida > incompleta > sem_suporte > fora_do_dominio >
+  nao_atende > ressalva > atende`) lido por selo, coach, resumo, quadro, memorial, materiais e
+  PDF (com faixa de situação); nenhuma entrada vazia/negativa/fora de faixa é mais ajustada em
+  silêncio; ábaco fora de D/Q não mostra mais diâmetro; campo "Fonte do dado de chuva" para
+  valor local/IDF. Testes novos em `calha/tests/onda1-estados.test.js` e referência
+  independente em `calha/tests/referencia/`. Scripts com `?v=3.6.0` (cache-bust). **Pendente:**
+  Ondas 2–7 do plano (catálogo de tubos com Di real — decisão D4 sobre a fonte dos dados —,
+  acoplamento A1, rede por saída A4, redigitalização da Figura 3, relatório/a11y, reauditoria)
+  e as decisões D2, D3, D4, D6 e D7.
 
-- **CALHAS NBR 10844 (`calha/`, versão 3.5.6 PUBLICADA EM 2026-09-13 (posições da calha com superfícies, campos pendentes à vista, lista de materiais do projeto inteiro, barra da calha fixa no topo, "Como usar" por letras); PDFs das normas em `calha/` ficam no .gitignore):**
+- **CALHAS NBR 10844 (`calha/`, versão 3.6.0 PUBLICADA EM 2026-09-13 (nenhum falso "atende": estados únicos em todos os canais, Onda 1 da auditoria); PDFs das normas em `calha/` e `calha/referencias/` ficam no .gitignore):**
   app standalone que dimensiona calhas, condutores verticais e coletores de águas
   pluviais pela ABNT NBR 10844:1989; a norma é a única base (sem complementos de fora). Scripts
   clássicos UMD (núcleo `nbr10844-*.js` + módulos `calha-*.js`), interface só em pt-BR porque a
@@ -207,15 +213,14 @@ _Última atualização: 2026-09-13_
   `window.print`). Celular/tablet: barra de resultados fixa embaixo até 820 px, toques ≥ 44 px,
   área segura; conferido em 390 × 844 e 820 × 1180 sem rolagem lateral. **Build:** fora do
   bundle (`IGNORAR` no `vite.config.js`) e o plugin `copiarStandalone('calha')` copia
-  html/css/js para `dist/calha/` — sem mexer no `deploy.yml`. Testes Vitest em `calha/tests/`
-  (28). `npm run validate` passou (43 arquivos/390 testes, paridade i18n em 21 arquivos). O
+  html/css/js para `dist/calha/` — sem mexer no `deploy.yml`. Testes Vitest em `calha/tests/`.
+  `npm run validate` passou (44 arquivos/401 testes, paridade i18n OK). O
   `npm run build` local gera `dist/calha/`, mas o `postbuild` acusa
   `pintor/output/pdf/random_validation_20260823/*.html`, artefatos privados locais deste PC
   (ignorados no git, inexistentes no CI) — não é do calha. Bancada local não versionada em
-  `calha2/` com os PDFs das normas (**não commitar**). Na 3.5.3, a Figura 2(e) usa um recorte
-  direto da própria norma, com fundo transparente e somente as duas fórmulas impressas apagadas;
-  traços, hachuras, cotas e projeções permanecem originais. A fórmula escrita pelo app continua
-  com módulo, sem área negativa. Detalhes em `calha/HANDOFF.md`.
+  `calha2/` com os PDFs das normas (**não commitar**). Desde a 3.5.4, a Figura 2(e) é vetorial
+  no estilo das demais (duas superfícies iguais paralelas + a maior em cima e a lateral); a
+  fórmula escrita pelo app usa módulo, sem área negativa. Detalhes em `calha/HANDOFF.md`.
 
 - **PINTOR — DUAS FALHAS REAIS DO SITE CORRIGIDAS (3.1.6, PUBLICADO — API 0.6.3):** reproduzi localmente os
   dois erros reportados em `engnata.eu/pintor/`. (1) *Uma página insegura matava a varredura

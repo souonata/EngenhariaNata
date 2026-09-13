@@ -27,6 +27,18 @@
   }, [Infinity, 0]);
 
   /* ------------------------------------------------------------------ */
+  /* Situações (plano de 13/09/2026, seção 3.1)                          */
+  /* ------------------------------------------------------------------ */
+
+  // Da mais branda para a mais grave. Só 'atende' e 'ressalva' deixam dizer que atende.
+  const ESTADOS = ['atende', 'ressalva', 'nao_atende', 'fora_do_dominio', 'sem_suporte', 'incompleta', 'invalida'];
+  function piorEstado(a, b) { return ESTADOS.indexOf(b) > ESTADOS.indexOf(a) ? b : a; }
+  // Pior situação de uma lista de avisos; aviso sem classe (ou 'informativa') não conta.
+  function situacao(lista) {
+    return (lista || []).reduce(function (s, x) { return ESTADOS.indexOf(x.classe) >= 0 ? piorEstado(s, x.classe) : s; }, 'atende');
+  }
+
+  /* ------------------------------------------------------------------ */
   /* 5.1 — Intensidade pluviométrica                                     */
   /* ------------------------------------------------------------------ */
 
@@ -41,66 +53,81 @@
     return (Kc * Math.pow(T, a)) / Math.pow((p.t || DURACAO) + b, c);
   }
 
+  // Situação da chuva (decisão D1 de 13/09/2026):
+  // - coluna pedida da Tabela 5 com valor de período menor (entre parênteses, nota b) e coerente
+  //   com os períodos menores → 'ressalva';
+  // - sem valor na coluna, ou valor menor que o de um período menor → 'sem_suporte';
+  // - falta dado → 'incompleta'; valor impossível → 'invalida'.
+  // Um valor fora da faixa observada da Tabela 5 só é anotado: não é limite da norma.
   function intensidade(p) {
     const avisos = [];
-    if (p.modo === 'pequena') {
-      if (p.areaProjecao > DADOS.AREA_PEQUENA) {
-        avisos.push({
-          nivel: 'erro',
-          texto:
-            'I = 150 mm/h só vale para construções com até 100 m² de área de projeção horizontal (5.1.4). ' +
-            'Use a Tabela 5 ou dados locais.',
-        });
+    const aviso = function (nivel, classe, codigo, texto) { avisos.push({ nivel: nivel, classe: classe, codigo: codigo, texto: texto }); };
+    const fim = function (r) { r.avisos = avisos; r.estado = situacao(avisos); r.Tpedido = p.T; return r; };
+    const atipico = function (I) {
+      if (I > FAIXA_T5[1] || I < FAIXA_T5[0]) {
+        aviso('atencao', 'informativa', 'CHUVA_ATIPICA',
+          'O valor está fora da faixa observada na Tabela 5 para 5 minutos (' + FAIXA_T5[0] + ' a ' + FAIXA_T5[1] + ' mm/h). ' +
+          'Não é um limite da norma: confira se o dado está em mm/h e para t = 5 min (há equações em mm/min ou com t em horas).');
       }
-      return { I: DADOS.I_PEQUENA_AREA, T: null, fonte: '5.1.4', avisos: avisos };
+    };
+    if (p.modo === 'pequena') {
+      if (!(p.areaProjecao > 0)) {
+        aviso('erro', 'incompleta', 'CHUVA_PROJECAO_FALTA',
+          'Informe a área de projeção horizontal da construção: I = 150 mm/h só vale até 100 m² (5.1.4).');
+      } else if (p.areaProjecao > DADOS.AREA_PEQUENA) {
+        aviso('erro', 'sem_suporte', 'CHUVA_PROJECAO_ACIMA',
+          'I = 150 mm/h só vale para construções com até 100 m² de área de projeção horizontal (5.1.4). Use a Tabela 5 ou dados locais.');
+      }
+      return fim({ I: DADOS.I_PEQUENA_AREA, T: null, fonte: '5.1.4' });
     }
     if (p.modo === 'manual') {
-      if (!(p.valor > 0)) avisos.push({ nivel: 'erro', texto: 'Informe uma intensidade maior que zero.' });
-      return { I: p.valor || 0, T: p.T || null, fonte: '5.1.1', avisos: avisos };
+      if (p.valor < 0) aviso('erro', 'invalida', 'CHUVA_VALOR_NEGATIVO', 'A intensidade não pode ser negativa: informe o valor em mm/h.');
+      else if (!(p.valor > 0)) aviso('erro', 'incompleta', 'CHUVA_VALOR_FALTA', 'Informe uma intensidade maior que zero.');
+      else atipico(p.valor);
+      return fim({ I: p.valor > 0 ? p.valor : 0, T: p.T || null, fonte: '5.1.1' });
     }
     if (p.modo === 'idf') {
       const I = intensidadeIDF(p);
       if (!(I > 0)) {
-        avisos.push({ nivel: 'erro', texto: 'Informe K, a, b e c da equação de chuvas intensas do local.' });
-        return { I: 0, T: p.T, fonte: 'equação IDF', avisos: avisos };
+        aviso('erro', 'incompleta', 'CHUVA_IDF_FALTA', 'Informe K, a, b e c da equação de chuvas intensas do local.');
+        return fim({ I: 0, T: p.T, fonte: 'equação IDF' });
       }
-      if (I > FAIXA_T5[1] || I < FAIXA_T5[0]) {
-        avisos.push({
-          nivel: 'atencao',
-          texto:
-            'O valor está fora da faixa da Tabela 5 para 5 minutos (' + FAIXA_T5[0] + ' a ' + FAIXA_T5[1] + ' mm/h). ' +
-            'Confira se a equação dá i em mm/h com t em minutos (há equações em mm/min ou com t em horas).',
-        });
-      }
-      return { I: I, T: p.T, fonte: 'equação IDF', avisos: avisos };
+      atipico(I);
+      return fim({ I: I, T: p.T, fonte: 'equação IDF' });
     }
     const linha = DADOS.TABELA5.find(function (l) { return l.id === p.localId; });
-    if (!linha) return { I: 0, T: p.T, fonte: 'Tabela 5', avisos: [{ nivel: 'erro', texto: 'Escolha um local.' }] };
-    let T = p.T;
-    let I = linha.I[T];
+    if (!linha) {
+      aviso('erro', 'incompleta', 'CHUVA_LOCAL_FALTA', 'Escolha um local.');
+      return fim({ I: 0, T: p.T, fonte: 'Tabela 5' });
+    }
+    const T = p.T;
+    const I = linha.I[T];
     if (I == null) {
-      // Sem dado para o período pedido: cai para o maior período disponível abaixo dele.
+      // Sem valor para o período pedido: o maior período disponível abaixo dele entra só como
+      // referência numérica; a situação fica sem suporte (não comprova conformidade).
       const alternativo = [25, 5, 1].find(function (t) { return t < T && linha.I[t] != null; });
-      avisos.push({
-        nivel: 'erro',
-        texto:
-          'A Tabela 5 não traz valor para T = ' + T + ' anos em ' + linha.local + '. ' +
-          'Mostrando T = ' + linha.Treal[alternativo] + ' anos, que é MENOR que o exigido: ' +
-          'busque dados locais ou um posto vizinho de clima semelhante (nota a da Tabela 5).',
-      });
-      T = alternativo;
-      I = linha.I[alternativo];
+      aviso('erro', 'sem_suporte', 'CHUVA_SEM_DADO_T',
+        'A Tabela 5 não traz intensidade para T = ' + T + ' anos em ' + linha.local + '. Os números abaixo usam T = ' +
+        linha.Treal[alternativo] + ' anos só como referência e não comprovam conformidade: informe um dado local (5.1.1) em "Valor local".');
+      return fim({ I: linha.I[alternativo], T: linha.Treal[alternativo], linha: linha, fonte: 'Tabela 5' });
     }
     const Treal = linha.Treal[T];
     if (Treal !== T) {
-      avisos.push({
-        nivel: Treal < T ? 'atencao' : 'info',
-        texto:
-          'Na Tabela 5 este valor corresponde a T = ' + Treal + ' anos (entre parênteses na norma), ' +
-          'porque o posto não tinha observações suficientes para ' + T + ' anos.',
-      });
+      // Nota b: o número entre parênteses é o período de retorno a que o valor se refere.
+      const menores = [1, 5].filter(function (t) { return t < T && linha.I[t] != null && linha.I[t] > I; });
+      if (menores.length) {
+        const t0 = menores[menores.length - 1];
+        aviso('erro', 'sem_suporte', 'CHUVA_INCONSISTENTE',
+          'Na Tabela 5, o valor de ' + linha.local + ' na coluna de ' + T + ' anos (' + I + ' mm/h) refere-se a T = ' + Treal +
+          ' anos (entre parênteses, nota b) e é menor que o de T = ' + t0 + ' anos (' + linha.I[t0] + ' mm/h). O dado não sustenta T = ' +
+          T + ' anos: informe um dado local (5.1.1).');
+      } else {
+        aviso('atencao', 'ressalva', 'CHUVA_T_DADO_MENOR',
+          'Na Tabela 5, o valor da coluna de ' + T + ' anos em ' + linha.local + ' refere-se a T = ' + Treal +
+          ' anos (entre parênteses, nota b): o posto não tinha observação suficiente para ' + T + ' anos. O resultado fica com ressalva de dado.');
+      }
     }
-    return { I: I, T: Treal, linha: linha, fonte: 'Tabela 5', avisos: avisos };
+    return fim({ I: I, T: Treal, linha: linha, fonte: 'Tabela 5' });
   }
 
   /* ------------------------------------------------------------------ */
@@ -173,11 +200,29 @@
     return (Math.round(x * 100) / 100).toLocaleString('pt-BR');
   }
 
+  // Só a altura h da água inclinada pode valer zero (h = 0 é a superfície horizontal).
+  const PODE_ZERO = { h: true };
+
+  // Área de uma superfície e a situação de cada medida: vazia ou zero = incompleta, negativa
+  // ou ilegível = inválida. Superfície que não está 'ok' não soma área nenhuma: nada de área
+  // parcial nem de negativo trocado por zero em silêncio.
   function areaSuperficie(s) {
     const def = SUPERFICIES[s.tipo];
     const v = {};
-    def.campos.forEach(function (c) { v[c[0]] = Math.max(0, Number(s.v[c[0]]) || 0); });
-    return { A: def.calc(v), formula: def.formula, subst: def.subst(v) };
+    const campos = {};
+    def.campos.forEach(function (c) {
+      const k = c[0];
+      const bruto = s.v[k];
+      const vazio = bruto === '' || bruto === null || bruto === undefined;
+      const x = vazio ? NaN : Number(bruto);
+      if (vazio) campos[k] = 'incompleta';
+      else if (!Number.isFinite(x) || x < 0) campos[k] = 'invalida';
+      else if (x === 0 && !PODE_ZERO[k]) campos[k] = 'incompleta';
+      v[k] = Number.isFinite(x) && x > 0 ? x : 0;
+    });
+    const sit = Object.keys(campos).map(function (k) { return campos[k]; });
+    const estado = sit.indexOf('invalida') >= 0 ? 'invalida' : sit.length ? 'incompleta' : 'ok';
+    return { A: estado === 'ok' ? def.calc(v) : 0, formula: def.formula, subst: def.subst(v), estado: estado, campos: campos };
   }
 
   function areaTotal(lista) {
@@ -436,6 +481,8 @@
     if (H < 50 || L < 0.3) {
       avisos.push({
         nivel: 'erro',
+        classe: 'fora_do_dominio',
+        codigo: H < 50 ? 'ABACO_H_ABAIXO' : 'ABACO_L_ABAIXO',
         texto: H < 50
           ? 'H = ' + Math.round(H) + ' mm está abaixo da menor curva do ábaco (H = 50 mm). A norma manda interpolar entre as curvas existentes, sem extrapolar (5.6.4.1): use H entre 50 e 100 mm.'
           : 'L = ' + String(L).replace('.', ',') + ' m está abaixo da menor curva do ábaco (L = 0,3 m). A norma manda interpolar entre as curvas existentes, sem extrapolar (5.6.4.1).',
@@ -445,24 +492,33 @@
     if (H > 100) {
       avisos.push({
         nivel: 'info',
+        classe: 'informativa',
         texto: 'H acima de 100 mm: lida a curva H = 100 mm, a mais alta do ábaco, o que dá diâmetro maior (a favor da segurança).',
       });
       H = 100;
     }
-    const DH = diametroNaFamilia(ab.H, H, p.Q, 'H');
-    const DL = diametroNaFamilia(ab.L, L, p.Q, 'L');
-    const D = Math.max(DH, DL);
+    // Fora do ábaco não há leitura: nenhum número (a busca vai de 20 a 220 mm e os extremos
+    // dela não são diâmetros).
     if (p.Q > ab.Qmax) {
       avisos.push({
         nivel: 'erro',
-        texto: 'Q acima de ' + ab.Qmax + ' L/min sai do ábaco: divida a vazão entre mais condutores.',
+        classe: 'fora_do_dominio',
+        codigo: 'ABACO_Q_ACIMA',
+        texto: 'Q = ' + Math.round(p.Q) + ' L/min passa do fim do ábaco (' + ab.Qmax + ' L/min): não há leitura. Divida a vazão entre mais saídas.',
       });
+      return { DH: NaN, DL: NaN, D: NaN, governa: null, fora: 'Q', Hcurva: H, Lcurva: L, avisos: avisos };
     }
+    const DH = diametroNaFamilia(ab.H, H, p.Q, 'H');
+    const DL = diametroNaFamilia(ab.L, L, p.Q, 'L');
+    const D = Math.max(DH, DL);
     if (D > 150) {
       avisos.push({
         nivel: 'erro',
-        texto: 'O diâmetro passa de 150 mm, limite do ábaco: aumente o número de condutores.',
+        classe: 'fora_do_dominio',
+        codigo: 'ABACO_D_ACIMA',
+        texto: 'O diâmetro passaria de 150 mm, o fim do ábaco: não há leitura. Divida a vazão entre mais saídas.',
       });
+      return { DH: DH > 150 ? NaN : DH, DL: DL > 150 ? NaN : DL, D: NaN, governa: null, fora: 'D', Hcurva: H, Lcurva: L, avisos: avisos };
     }
     return { DH: DH, DL: DL, D: D, governa: DH >= DL ? 'H' : 'L', Hcurva: H, Lcurva: L, avisos: avisos };
   }
@@ -481,8 +537,9 @@
       const Qc = p.Q / n;
       if (Qc > ab.Qmax) continue;
       const r = abaco({ saida: p.saida, Q: Qc, H: p.H, L: p.L });
-      if (r.fora) return null;
-      if (r.D > 150) continue;
+      // H ou L fora do ábaco não mudam com o número de saídas; D ou Q acima mudam.
+      if (r.fora === 'H' || r.fora === 'L') return null;
+      if (r.fora) continue;
       const t = adotarTubo(r.D, p.tubos);
       if (t.tubo) return { n: n, Q: Qc, D: r.D, tubo: t.tubo };
     }
@@ -514,6 +571,9 @@
     ABACOS: ABACOS,
     SUPERFICIES: SUPERFICIES,
     SECOES: SECOES,
+    ESTADOS: ESTADOS,
+    piorEstado: piorEstado,
+    situacao: situacao,
     intensidade: intensidade,
     intensidadeIDF: intensidadeIDF,
     areaSuperficie: areaSuperficie,

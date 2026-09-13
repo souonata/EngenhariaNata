@@ -110,7 +110,7 @@ test('Lâmina calculada abaixo do ábaco vira pendência do item 5.6, sem diâme
   assert.ok(R.H < 50);
   assert.equal(R.vert.fora, 'H');
   assert.equal(R.vert.adocao.tubo, null);
-  assert.equal(R.status, 'erro');
+  assert.equal(R.status, 'fora');
   const p = P.pendencias(r, e);
   assert.equal(p[0].item, '5.6');
   assert.equal(p[0].alvo, 'input[name="fonteH"]');
