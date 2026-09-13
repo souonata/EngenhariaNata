@@ -1,6 +1,6 @@
 # HANDOFF — Calha 10844 (app de calhas da NBR 10844)
 
-_Atualizado: 2026-09-13 (versão 3.6.0). Leia isto antes de mexer em qualquer arquivo desta pasta._
+_Atualizado: 2026-09-13 (versão 3.7.0). Leia isto antes de mexer em qualquer arquivo desta pasta._
 
 ## O que é
 App didático do portfólio Engenharia NATA para dimensionar calhas, condutores verticais e
@@ -70,7 +70,7 @@ O Artifact só publica arquivos sob o diretório de trabalho ou o scratchpad: se
 estiver na raiz do repositório, copie `calha/*.css` e `calha/*.js` para o scratchpad e publique
 com `root` apontando para lá. Leia o artifact antes (action `read`) em chat novo.
 
-## Estado atual: versão 3.6.0
+## Estado atual: versão 3.7.0
 - 2.0: várias calhas em abas, coletores por trechos, esquema, quadro-resumo, memorial por
   calha, termos do item 3, três exemplos (residência Curitiba, galpão SP, sobrado POA).
 - 3.0: Tabela 1 só em beiral/platibanda (5.5.6); material do condutor vertical (4.1.2); tubos
@@ -204,3 +204,38 @@ coerente = ressalva, sem dado ou inconsistente = sem suporte; D5: lâmina padrã
 - Testes: `tests/onda1-estados.test.js` + referência independente `tests/referencia/nbr10844-ref.js`;
   `npm run validate` 44 arquivos/401 testes. Build gera `dist/calha/`; o `postbuild` para só nos
   artefatos privados do Pintor (ignorados no git). Próximo: Onda 2 (catálogo de tubos, C1).
+
+## 3.7.0 — Onda 2 (catálogo de tubos) e passos A–C
+Decisão D4 (13/09/2026): fabricantes Tigre e Amanco Wavin. Levantamento completo, com as URLs e
+revisões das fichas, em `calha/referencias/catalogo-tubos-tigre-amanco.md` (local).
+- **Catálogo** (`nbr10844-dados.js`: `LINHAS_TUBO`, `CATALOGO_TUBOS`): Di = DE − 2e impressos
+  pelo fabricante; onde as marcas diferem (Série Normal DN 150: e 2,5 × 2,6) fica o menor Di.
+  Linhas: PVC Série Normal e Reforçada (NBR 5688), condutor Aquapluv 88 (Di 84,6), condutor da
+  Calha Pluvial Amanco DN 100 (Di 98,0) e coletor PVC NBR 7362 (DN 100–400). Condutor retangular
+  e quadrado ficam fora (o ábaco é de seção circular). Vazões anunciadas pelos fabricantes não
+  são usadas.
+- **Vertical**: `estado.linhaV` (padrão `pvc-sn`) só com PVC; outros materiais ou "Meus tubos"
+  usam `estado.tubos` (DN + Di informados). Sem nenhum tubo o app não inventa Di: a calha fica
+  incompleta e o passo B.4 pede os tubos. Di < 70 mm fica fora (5.6.3), com aviso.
+- **Coletor** (`trecho.linha`, padrão `auto`): enterrado → coletor NBR 7362; aparente → Série
+  Normal; material sem catálogo → D da Tabela 4 como Di, com **ressalva** `TUBO_DI_TABELA4`;
+  "Meus tubos" → `trecho.tubosH` (Di separados por ;). Seleção pelo menor tubo com Manning a
+  2/3 do **Di real** (C1). Política da Tabela 4 (M1): com Di = D da tabela (±0,05 mm) e n e i de
+  uma coluna, vale o valor impresso (`fonteQ: 'Tabela 4'`).
+- **Margens** (B3): `T.uso`, `T.margem` (coletor), `R.vert.folga` (vertical); legenda no quadro.
+- DN, Di, linha e fonte no memorial, na lista de materiais, no quadro, no esquema e no PDF
+  (nova seção "Tubos adotados: origem do diâmetro interno").
+- **Migração**: a lista antiga de tubos intacta (72/97/146/194) vira `linhaV: 'pvc-sn'`; lista
+  editada vira "Meus tubos"; material sem catálogo com a lista antiga fica sem tubos (pede).
+- **Passos no lugar dos números da norma** (pedido do usuário): A) intensidade, B) calhas com
+  B.1 áreas, B.2 saídas e vazão, B.3 seção, B.4 condutores verticais (o condutor é por calha,
+  por isso saiu de "C"), C) coletores. "Como usar, em três passos" mostra a situação de cada
+  passo (`P.passos` = `situacaoPassos`: pronto, falta, aguarda o anterior, ressalva…) e o
+  clique leva ao campo da pendência; o chip do próximo passo mostra a letra. As referências à
+  norma continuam dentro dos textos, do memorial e do PDF.
+- **Como escolher** (`calha-guias.js`): em cada grupo de opções, a escolhida em destaque e as
+  demais para comparar (de onde vem I, T, saídas, curva, material, forma, lâmina, saída, fonte
+  de H, material e linha do vertical, instalação e linha do coletor). No período de retorno, o
+  guia avisa quando há calha de platibanda ou água-furtada com T < 25 (5.1.2 c).
+- Testes: `tests/onda2-catalogo.test.js` (T-C1-01/02/04, T-M1, B2, B3, migração, passos);
+  `npm run validate` 45 arquivos/411 testes. Scripts com `?v=3.7.0`.

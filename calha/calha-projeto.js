@@ -13,7 +13,46 @@
   'use strict';
 
   const DD = N.DADOS;
-  const { esc, nf, na, num, z, lerNum, mostrarNum, lerLista, normaliza, uid, copia, MAT_C, MAT_H, matCalha, matHor, tubosPadrao, avisosHtml, grande, pares, nota, aguardando, cabecalho, descSecao, ROTULO_STATUS, seloStatus } = U;
+  const { esc, nf, na, num, z, lerNum, mostrarNum, lerLista, normaliza, uid, copia, MAT_C, MAT_H, matCalha, matHor, tubosPadrao, linhaTubo, tubosDaLinha, rotuloTubo, avisosHtml, grande, pares, nota, aguardando, cabecalho, descSecao, ROTULO_STATUS, seloStatus } = U;
+
+  /* ------------------------------------------------------------------ */
+  /* Tubos: linha do catálogo, Tabela 4 ou tubos informados              */
+  /* ------------------------------------------------------------------ */
+
+  // Condutores verticais: a linha do catálogo existe só para PVC; os demais materiais usam os
+  // tubos que o usuário informa. Sem nenhum, o app não inventa um Di (plano, seção 3.2, regra 6).
+  function linhaVertical(estado) {
+    return estado.materialV === 'pvc' && estado.linhaV && estado.linhaV !== 'usuario' ? estado.linhaV : 'usuario';
+  }
+  function tubosVerticais(estado) {
+    const id = linhaVertical(estado);
+    if (id !== 'usuario') return tubosDaLinha(id, 'vertical').map(function (t) { return Object.assign({}, t); });
+    return (estado.tubos || []).filter(function (t) { return num(t.di) > 0; }).map(function (t) {
+      return { dn: num(t.dn) > 0 ? num(t.dn) : null, di: num(t.di), linha: 'usuario', origem: 'usuario' };
+    });
+  }
+  // Coletor: 'auto' é o coletor NBR 7362 enterrado e a Série Normal aparente (PVC); sem
+  // catálogo, os diâmetros da Tabela 4 como Di, com ressalva para confirmar o tubo.
+  function linhaDoTrecho(t) {
+    const pvc = t.material === 'pvc';
+    const l = t.linha || 'auto';
+    if (l === 'auto') return pvc ? (t.instalacao === 'aparente' ? 'pvc-sn' : 'pvc-7362') : 'tabela4';
+    if (!pvc && l !== 'usuario') return 'tabela4';
+    return l;
+  }
+  // "Tubo de concreto" → "tubo de concreto"; "Ferro fundido" → "tubo de ferro fundido"; siglas ficam.
+  function tuboDoMaterial(rotulo) {
+    const r = String(rotulo).replace(/^tubo de /i, '');
+    return 'tubo de ' + (/^[A-Z]{2,}/.test(r) ? r : r.charAt(0).toLowerCase() + r.slice(1));
+  }
+  function tubosTrecho(t) {
+    const id = linhaDoTrecho(t);
+    if (id === 'tabela4') return DD.TABELA4.diametros.map(function (D) { return { dn: null, di: D, linha: 'tabela4', origem: 'norma' }; });
+    if (id === 'usuario') {
+      return lerLista(t.tubosH).filter(function (x) { return x > 0; }).map(function (x) { return { dn: null, di: x, linha: 'usuario', origem: 'usuario' }; });
+    }
+    return tubosDaLinha(id, 'horizontal').map(function (x) { return Object.assign({}, x); });
+  }
 
   /* ------------------------------------------------------------------ */
   /* Cálculo: chuva (5.1), cada calha (5.2 a 5.6), coletores (5.7)       */
@@ -151,7 +190,8 @@
     else if (R.calha.pronta) H = e.fonteH === 'calculada' ? (R.calha.y != null ? R.calha.y * 1000 : NaN) : R.calha.yLim * 1000;
     R.H = H;
     R.vert = { avisos: [] };
-    const tubos = e.tubos.filter(function (t) { return num(t.di) > 0; }).map(function (t) { return { dn: t.dn, di: num(t.di) }; });
+    const tubos = tubosVerticais(estado);
+    const linhaV = linhaVertical(estado);
     const Lv = num(e.Lcond);
     let bloqueio = null;
     if (e.fonteH === 'digitada' && H < 0) {
@@ -169,7 +209,9 @@
       R.vert = N.abaco({ saida: e.saida, Q: R.Qcond, H: H, L: Lv });
       R.vert.pronto = true;
       R.vert.adocao = R.vert.fora ? { tubo: null, minimo: NaN, peloMinimo: false } : N.adotarTubo(R.vert.D, tubos);
-      if (R.vert.fora === 'D' || R.vert.fora === 'Q' || (!R.vert.fora && !R.vert.adocao.tubo)) {
+      if (!R.vert.fora && !tubos.length) R.vert.adocao.semTubos = true;
+      if (R.vert.adocao.tubo) R.vert.folga = R.vert.adocao.tubo.di / R.vert.adocao.minimo - 1;
+      if (tubos.length && (R.vert.fora === 'D' || R.vert.fora === 'Q' || (!R.vert.fora && !R.vert.adocao.tubo))) {
         R.vert.sugestao = N.sugerirSaidas({ Q: R.Q, H: H, L: Lv, saida: e.saida, tubos: tubos });
       }
       if (e.fonteH === 'digitada' && R.calha.pronta && H > R.calha.yLim * 1000 + 1e-9) {
@@ -177,6 +219,23 @@
       }
     } else {
       R.vert.faltando = !(H > 0) ? 'H' : !(Lv > 0) ? 'L' : 'Q';
+    }
+    R.vert.linha = linhaV;
+    R.vert.nTubos = tubos.length;
+    // Sem catálogo do material e sem tubos informados: pede os tubos, não inventa um Di.
+    if (!tubos.length) {
+      const minimo = R.vert.adocao && Number.isFinite(R.vert.adocao.minimo) ? ' O ábaco pede Di ≥ ' + nf(R.vert.adocao.minimo) + ' mm.' : '';
+      R.vert.avisos.push({
+        nivel: 'erro', classe: 'incompleta', codigo: 'TUBOS_V_FALTA',
+        texto: 'Informe os tubos de ' + matVertical(estado).toLowerCase() + ' que você vai comprar (DN e diâmetro interno do catálogo).' + minimo,
+      });
+    }
+    const pequenos = linhaV === 'usuario' ? tubos.filter(function (t) { return t.di < DD.DIAMETRO_MINIMO_VERTICAL; }) : [];
+    if (pequenos.length) {
+      R.vert.avisos.push({
+        nivel: 'info', classe: 'informativa', codigo: 'TUBO_V_MENOR_70',
+        texto: pequenos.map(rotuloTubo).join(', ') + ': diâmetro interno abaixo de 70 mm não serve para condutor vertical (5.6.3) e fica fora da escolha.',
+      });
     }
     return R;
   }
@@ -201,7 +260,7 @@
     if (v.invalido) sobe('invalida');
     else if (!v.pronto) sobe('incompleta');
     else if (v.fora) sobe('fora_do_dominio');
-    else if (!v.adocao.tubo) sobe('nao_atende');
+    else if (!v.adocao.tubo) sobe(v.adocao.semTubos ? 'incompleta' : 'nao_atende');
     sobe(chuva.estado);
     if (!(chuva.I.I > 0)) sobe('incompleta');
     return s;
@@ -215,7 +274,13 @@
     T.mat = matHor(t.material);
     T.n = T.mat.n;
     T.i = z(num(t.decl)) / 100;
-    if (T.Q > 0 && T.i > 0) Object.assign(T, N.condutorHorizontal({ Q: T.Q, n: T.n, i: T.i }), { pronto: true });
+    T.linha = linhaDoTrecho(t);
+    T.linhaInfo = linhaTubo(T.linha);
+    T.tubos = tubosTrecho(t);
+    if (T.Q > 0 && T.i > 0 && T.tubos.length) Object.assign(T, N.condutorHorizontal({ Q: T.Q, n: T.n, i: T.i, tubos: T.tubos }), { pronto: true });
+    if (T.linha === 'usuario' && !T.tubos.length) {
+      T.avisos.push({ nivel: 'erro', classe: 'incompleta', codigo: 'TUBOS_H_FALTA', texto: 'Informe os diâmetros internos dos tubos disponíveis (mm), separados por ponto e vírgula.' });
+    }
     if (extra < 0) T.avisos.push({ nivel: 'erro', classe: 'invalida', codigo: 'QEXTRA_NEGATIVA', texto: 'A vazão extra não pode ser negativa.' });
     if (num(t.decl) < 0) T.avisos.push({ nivel: 'erro', classe: 'invalida', codigo: 'DECL_NEGATIVA', texto: 'A declividade não pode ser negativa.' });
     else if (!(T.i > 0)) T.avisos.push({ nivel: 'erro', classe: 'incompleta', texto: 'Informe a declividade.' });
@@ -231,10 +296,25 @@
           ' a cada 20 m de trecho reto, além das conexões e das mudanças de direção ou de declividade.',
       });
     }
-    if (T.pronto && !T.escolhido) T.avisos.push({ nivel: 'erro', classe: 'nao_atende', texto: 'Nem o tubo de 300 mm basta: divida o coletor ou aumente a declividade.' });
-    const t4 = DD.TABELA4;
-    const j = t4.declividades.findIndex(function (d) { return Math.abs(d - T.i) < 1e-9; });
-    T.colT4 = t4.Q[T.n] && j >= 0 ? t4.Q[T.n].map(function (l) { return l[j]; }) : null;
+    if (T.pronto && !T.escolhido) {
+      const maior = T.linhas[T.linhas.length - 1];
+      T.avisos.push({
+        nivel: 'erro', classe: 'nao_atende', codigo: 'TUBO_H_INSUFICIENTE',
+        texto: 'Nenhum tubo da linha "' + T.linhaInfo.curto + '" basta: o maior, ' + rotuloTubo(maior) + ', leva ' + nf(maior.Q, 0) + ' L/min. Divida o coletor, aumente a declividade ou escolha outra linha.',
+      });
+    }
+    if (T.escolhido) {
+      // Grandezas de margem (plano, seção 3.8): uso = Q / capacidade; margem = capacidade / Q − 1.
+      T.uso = T.Q / T.escolhido.Q;
+      T.margem = T.escolhido.Q / T.Q - 1;
+      if (T.linha === 'tabela4') {
+        T.avisos.push({
+          nivel: 'atencao', classe: 'ressalva', codigo: 'TUBO_DI_TABELA4',
+          texto: 'O Di de ' + nf(T.escolhido.di) + ' mm é o D da Tabela 4, não de um tubo de catálogo: confirme que o ' + tuboDoMaterial(T.mat.rotulo) +
+            ' comprado tem diâmetro interno igual ou maior (o DN não serve para cálculo, 3.11), ou informe os seus tubos.',
+        });
+      }
+    }
     return T;
   }
 
@@ -280,7 +360,7 @@
       if (c.pronta && !v.pronto && !v.invalido) {
         out.push({ nome: nome, classe: 'incompleta', texto: 'condutor vertical sem ' + (v.faltando === 'L' ? 'o comprimento L.' : v.faltando === 'H' ? 'a lâmina H.' : 'vazão.') });
       }
-      if (v.pronto && !v.fora && !v.adocao.tubo) out.push({ nome: nome, classe: 'nao_atende', texto: 'nenhum tubo da lista atende ao ábaco.' });
+      if (v.pronto && !v.fora && !v.adocao.tubo && !v.adocao.semTubos) out.push({ nome: nome, classe: 'nao_atende', texto: 'nenhum tubo da lista atende ao ábaco.' });
     });
     P.trechos.forEach(function (T) {
       const nome = 'Trecho "' + (T.t.nome || 'sem nome') + '"';
@@ -318,6 +398,12 @@
     P.estado = s;
     P.status = EXIBICAO[s];
     P.diagnosticos = diagnosticos(P);
+    P.passos = situacaoPassos(P, estado);
+    // Linhas de tubo adotadas, com a fonte: vão para o memorial e o PDF.
+    const usadas = {};
+    Rs.forEach(function (R) { if (R.vert.adocao && R.vert.adocao.tubo) usadas[R.vert.linha] = true; });
+    Ts.forEach(function (T) { if (T.escolhido) usadas[T.linha] = true; });
+    P.linhasUsadas = Object.keys(usadas).map(linhaTubo);
     return P;
   }
 
@@ -348,11 +434,16 @@
     return (l.find(function (m) { return m.id === estado.materialV; }) || l[0]).rotulo;
   }
 
-  // O que falta ou falha numa calha, na ordem da norma: [item, texto, seletor, classe].
-  function pendenciaCalha(R) {
+  // O que falta ou falha numa calha, passo a passo (B.1 a B.4): [item, texto, seletor, classe]
+  // do primeiro problema de cada passo. Um passo que só espera o anterior não entra.
+  const SECAO_ALVO = { retangular: '#b', semicircular: '#Dcalha', trapezoidal: '#bt' };
+  function semSecao(c) {
+    if (c.forma === 'semicircular') return !(num(c.Dcalha) > 0);
+    if (c.forma === 'retangular') return !(num(c.b) > 0 && num(c.h) > 0);
+    return !(num(c.bt) > 0 && num(c.ht) > 0);
+  }
+  function pend52(R) {
     const c = R.c;
-    const k = R.calha;
-    const v = R.vert;
     const iSup = R.sups.findIndex(function (s) { return s.estado !== 'ok'; });
     if (iSup >= 0) {
       const s = R.sups[iSup];
@@ -365,43 +456,62 @@
       '#superficies [data-sup="' + iSup + '"][data-var="' + campo + '"]', cl];
     }
     if (!(R.A > 0)) return ['5.2', 'preencha as medidas das superfícies que escoam para a calha.', '#superficies input'];
+    return null;
+  }
+  function pend53(R) {
+    const c = R.c;
     const e53 = primeiro(R.avisos53, 'erro');
-    if (e53) {
-      return ['5.3', e53.texto, e53.codigo === 'SAIDAS_N' ? '#nSaidas' : c.saidas === 'personalizadas' ? '#listaSaidas' : c.saidas === 'intermediaria' && num(c.Lc) > 0 ? '#xSaida' : '#Lc', e53.classe];
-    }
+    if (!e53) return null;
+    return ['5.3', e53.texto, e53.codigo === 'SAIDAS_N' ? '#nSaidas' : c.saidas === 'personalizadas' ? '#listaSaidas' : c.saidas === 'intermediaria' && num(c.Lc) > 0 ? '#xSaida' : '#Lc', e53.classe];
+  }
+  function pend55(R) {
+    const c = R.c;
+    const k = R.calha;
     const k55 = (k.avisos || []).find(function (a) { return a.classe === 'invalida'; });
-    if (k55) {
-      return ['5.5', k55.texto, k55.codigo === 'DECL_NEGATIVA' ? '#decl' : k55.codigo === 'Z_NEGATIVO' ? '#z' : { retangular: '#b', semicircular: '#Dcalha', trapezoidal: '#bt' }[c.forma], 'invalida'];
-    }
+    if (k55) return ['5.5', k55.texto, k55.codigo === 'DECL_NEGATIVA' ? '#decl' : k55.codigo === 'Z_NEGATIVO' ? '#z' : SECAO_ALVO[c.forma], 'invalida'];
     if (!(k.i > 0)) return ['5.5', 'informe a declividade da calha.', '#decl'];
-    if (!k.pronta) return ['5.5', 'informe as medidas da seção da calha.', { retangular: '#b', semicircular: '#Dcalha', trapezoidal: '#bt' }[c.forma]];
+    if (semSecao(c)) return ['5.5', 'informe as medidas da seção da calha.', SECAO_ALVO[c.forma]];
+    if (!k.pronta) return null;
     const e55 = primeiro(k.avisos, 'erro');
     if (e55) return ['5.5', e55.texto, '#decl', e55.classe];
     if (k.y == null) return ['5.5', 'a seção transborda. Use o botão de dimensionar, aumente a declividade ou ponha mais saídas.', '#btn-dimensionar'];
     if (!k.ok) return ['5.5', 'a lâmina passa do limite adotado. Use o botão de dimensionar ou aumente a declividade.', '#btn-dimensionar'];
+    return null;
+  }
+  function pend56(R) {
+    const c = R.c;
+    const v = R.vert;
+    const semTubos = (v.avisos || []).find(function (a) { return a.codigo === 'TUBOS_V_FALTA'; });
     if (v.invalido) return ['5.6', v.avisos[0].texto, v.faltando === 'L' ? '#Lcond' : '#Hlam', 'invalida'];
     if (!v.pronto) {
-      if (v.faltando === 'L') return ['5.6', 'informe o comprimento L do condutor vertical.', '#Lcond'];
-      if (v.faltando === 'H') return ['5.6', 'informe a lâmina H na calha.', '#Hlam'];
+      // O comprimento L não depende da calha: é pedido mesmo antes de a lâmina H existir.
+      if (v.faltando === 'L' || !(num(c.Lcond) > 0)) return ['5.6', 'informe o comprimento L do condutor vertical.', '#Lcond'];
+      if (v.faltando === 'H' && c.fonteH === 'digitada') return ['5.6', 'informe a lâmina H na calha.', '#Hlam'];
+      if (semTubos) return ['5.6', semTubos.texto, '#tubos input, #btn-add-tubo', 'incompleta'];
       return null;
     }
     if (v.fora === 'D' || v.fora === 'Q') {
       return ['5.6', v.sugestao ? 'o condutor passa do fim do ábaco: use ' + v.sugestao.n + ' saídas espaçadas.' : primeiro(v.avisos, 'erro').texto, '#r56', 'fora_do_dominio'];
     }
     if (v.fora) return ['5.6', primeiro(v.avisos, 'erro').texto, v.fora === 'L' ? '#Lcond' : c.fonteH === 'digitada' ? '#Hlam' : 'input[name="fonteH"]', 'fora_do_dominio'];
+    if (semTubos) return ['5.6', semTubos.texto, '#tubos input, #btn-add-tubo', 'incompleta'];
     if (!v.adocao.tubo) {
-      return ['5.6', v.sugestao ? 'nenhum tubo da lista atende: use ' + v.sugestao.n + ' saídas espaçadas.' : 'nenhum tubo da lista atende ao ábaco.', '#r56'];
+      return ['5.6', v.sugestao ? 'nenhum tubo da linha atende: use ' + v.sugestao.n + ' saídas espaçadas.' : 'nenhum tubo da linha atende ao ábaco.', '#r56'];
     }
     const eH = primeiro(v.avisos, 'erro');
     if (eH) return ['5.6', eH.texto, '#Hlam', eH.classe];
     return null;
   }
+  function pendenciasCalha(R) {
+    return [pend52(R), pend53(R), pend55(R), pend56(R)].filter(Boolean);
+  }
+  function pendenciaCalha(R) { return pendenciasCalha(R)[0] || null; }
 
   // Pendências do projeto; a calha ativa vem primeiro. Sem chuva, nada mais adianta.
   function pendencias(P, estado) {
     const out = [];
     const add = function (item, texto, alvo, calhaId, classe) {
-      out.push({ item: item, texto: texto, alvo: alvo, calhaId: calhaId || null, classe: classe || null });
+      out.push({ item: item, passo: PASSO_DO_ITEM[item], texto: texto, alvo: alvo, calhaId: calhaId || null, classe: classe || null });
     };
     const ch = P.chuva;
     if (!(ch.I.I > 0)) {
@@ -427,13 +537,105 @@
       const alvo = '[data-trecho="' + i + '"][data-campo="decl"]';
       const inval = T.avisos.find(function (a) { return a.classe === 'invalida'; });
       if (inval) add('5.7', nome + inval.texto, inval.codigo === 'QEXTRA_NEGATIVA' ? '[data-trecho="' + i + '"][data-campo="Qextra"]' : inval.codigo === 'COMP_NEGATIVO' ? '[data-trecho="' + i + '"][data-campo="comp"]' : alvo, null, 'invalida');
-      else if (!(T.Q > 0)) add('5.7', nome + 'marque as calhas que chegam a ele.', '[data-trecho-calha="' + i + '"]');
+      else if (!(T.Q > 0)) {
+        // Trecho que já recebe calhas só espera a vazão delas (passo B): nada a fazer aqui.
+        if (!T.recebe.length) add('5.7', nome + 'marque as calhas que chegam a ele.', '[data-trecho-calha="' + i + '"]');
+      }
       else if (!(T.i > 0)) add('5.7', nome + 'informe a declividade.', alvo);
       else {
         const er = primeiro(T.avisos, 'erro');
-        if (er) add('5.7', nome + er.texto, alvo, null, er.classe);
+        if (er) add('5.7', nome + er.texto, er.codigo === 'TUBOS_H_FALTA' ? '[data-trecho="' + i + '"][data-campo="tubosH"]' : er.codigo === 'TUBO_H_INSUFICIENTE' ? '[data-trecho="' + i + '"][data-campo="linha"]' : alvo, null, er.classe);
       }
     });
+    return out;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Passos do "Como usar": A, B (B.1 a B.4) e C                         */
+  /* ------------------------------------------------------------------ */
+
+  const PASSOS = [
+    { id: 'A', item: '5.1', secao: '#s51', titulo: 'Intensidade pluviométrica' },
+    { id: 'B.1', item: '5.2', secao: '#s52', titulo: 'Áreas de contribuição' },
+    { id: 'B.2', item: '5.3', secao: '#s53', titulo: 'Saídas e vazão de projeto' },
+    { id: 'B.3', item: '5.5', secao: '#s55', titulo: 'Seção da calha' },
+    { id: 'B.4', item: '5.6', secao: '#s56', titulo: 'Condutores verticais' },
+    { id: 'C', item: '5.7', secao: '#s57', titulo: 'Coletores horizontais' },
+  ];
+  const PASSO_DO_ITEM = { '5.1': 'A', '5.2': 'B.1', '5.3': 'B.2', '5.5': 'B.3', '5.6': 'B.4', '5.7': 'C' };
+
+  // 'aguarda' = o passo não tem problema próprio, só espera um anterior. Não pesa na piora.
+  function piorPasso(a, b) {
+    if (a === 'aguarda') return b === 'atende' ? 'aguarda' : b;
+    if (b === 'aguarda') return a === 'atende' ? 'aguarda' : a;
+    return N.piorEstado(a, b);
+  }
+  function comEspera(proprio, pronto) { return proprio !== 'atende' ? proprio : pronto ? 'atende' : 'aguarda'; }
+
+  function estadoPassoCalha(R, id) {
+    const k = R.calha;
+    const v = R.vert;
+    if (id === 'B.1') return N.piorEstado(R.supEstado, R.A > 0 ? 'atende' : 'incompleta');
+    if (id === 'B.2') return comEspera(N.situacao(R.avisos53), R.Q > 0);
+    if (id === 'B.3') {
+      let s = N.situacao(k.avisos);
+      if (semSecao(R.c)) s = N.piorEstado(s, 'incompleta');
+      if (k.pronta && (k.y == null || !k.ok)) s = N.piorEstado(s, 'nao_atende');
+      return comEspera(s, k.pronta);
+    }
+    let s = N.situacao(v.avisos);
+    if (v.invalido) s = N.piorEstado(s, 'invalida');
+    else if (v.pronto && v.fora) s = N.piorEstado(s, 'fora_do_dominio');
+    else if (v.pronto && !v.adocao.tubo && !v.adocao.semTubos) s = N.piorEstado(s, 'nao_atende');
+    else if (!v.pronto && (v.faltando === 'L' || !(num(R.c.Lcond) > 0) || (v.faltando === 'H' && R.c.fonteH === 'digitada'))) s = N.piorEstado(s, 'incompleta');
+    return comEspera(s, v.pronto);
+  }
+
+  function primeiraRessalva(listas) {
+    for (let k = 0; k < listas.length; k++) {
+      const a = (listas[k] || []).find(function (x) { return x.classe === 'ressalva'; });
+      if (a) return a.texto;
+    }
+    return null;
+  }
+
+  // Situação de cada passo para o "Como usar": estado, o que fazer e para onde levar o clique.
+  function situacaoPassos(P, estado) {
+    const pend = pendencias(P, estado);
+    const multi = P.calhas.length > 1;
+    const ordem = [P.ativa].concat(P.calhas.filter(function (r) { return r !== P.ativa; }));
+    const out = {};
+    const ch = P.chuva;
+    const pA = pend.find(function (p) { return p.passo === 'A'; }) || null;
+    out.A = { estado: ch.I.I > 0 ? ch.estado : 'incompleta', pend: pA, texto: pA ? pA.texto : primeiraRessalva([ch.avisos51]) };
+    ['B.1', 'B.2', 'B.3', 'B.4'].forEach(function (id) {
+      const item = PASSOS.find(function (p) { return p.id === id; }).item;
+      let s = 'atende';
+      let pp = null;
+      let ressalva = null;
+      ordem.forEach(function (R) {
+        s = piorPasso(s, estadoPassoCalha(R, id));
+        const x = pendenciasCalha(R).find(function (q) { return q[0] === item; });
+        const nome = multi ? (R.c.nome || 'Calha sem nome') + ': ' : '';
+        if (x && !pp) pp = { item: item, passo: id, texto: nome + x[1], alvo: x[2], calhaId: R.c.id, classe: x[3] || null };
+        if (!ressalva) {
+          const r = primeiraRessalva(id === 'B.2' ? [R.avisos53] : id === 'B.3' ? [R.calha.avisos] : id === 'B.4' ? [R.vert.avisos] : []);
+          if (r) ressalva = nome + r;
+        }
+      });
+      out[id] = { estado: s, pend: pp, texto: pp ? pp.texto : ressalva };
+    });
+    let sB = 'atende';
+    ['B.1', 'B.2', 'B.3', 'B.4'].forEach(function (id) { sB = piorPasso(sB, out[id].estado); });
+    const pB = ['B.1', 'B.2', 'B.3', 'B.4'].map(function (id) { return out[id].pend; }).find(Boolean) || null;
+    out.B = { estado: sB, pend: pB, texto: pB ? pB.texto : null };
+    let sC = P.trechos.length ? 'atende' : 'incompleta';
+    P.trechos.forEach(function (T) { sC = N.piorEstado(sC, T.estado); });
+    if (P.semColetor.length) sC = N.piorEstado(sC, 'incompleta');
+    const pC = pend.find(function (p) { return p.passo === 'C'; }) || null;
+    // Incompleto sem nada a preencher no passo C: os trechos só esperam a vazão das calhas.
+    if (sC === 'incompleta' && !pC && P.trechos.length && !P.semColetor.length) sC = 'aguarda';
+    out.C = { estado: sC, pend: pC, texto: pC ? pC.texto : primeiraRessalva(P.trechos.map(function (T) { return T.avisos; })) };
     return out;
   }
 
@@ -446,7 +648,7 @@
     const partes = ['Calha ' + descSecao(k) + ' mm de ' + k.mat.rotulo.toLowerCase() + ' com ' + na(k.i * 100) + '% de caimento'];
     partes.push(k.y != null ? 'a água sobe ' + nf(k.y * 1000) + ' mm de um limite de ' + nf(k.yLim * 1000) + ' mm (' + nf(k.uso * 100) + '% da capacidade)' : 'transborda mesmo cheia');
     const n = R.dist.n;
-    partes.push(v.adocao && v.adocao.tubo ? (n > 1 ? n + ' condutores' : '1 condutor') + ' DN ' + v.adocao.tubo.dn + ' com ' + na(num(c.Lcond)) + ' m' : 'o condutor não tem tubo que atenda');
+    partes.push(v.adocao && v.adocao.tubo ? (n > 1 ? n + ' condutores' : '1 condutor') + ' ' + rotuloTubo(v.adocao.tubo) + ' com ' + na(num(c.Lcond)) + ' m' : 'o condutor não tem tubo que atenda');
     if (k.desnivel != null) partes.push('desnível de ' + nf(k.desnivel * 100, 1) + ' cm no maior trecho');
     return { status: R.status, texto: partes.join('; ') + '.' };
   }
@@ -457,6 +659,8 @@
   // mostra cada parcela.
   function listaMateriais(P, estado) {
     const matV = matVertical(estado).toLowerCase();
+    const idV = linhaVertical(estado);
+    const linhaV = idV === 'usuario' ? matV + ', tubo informado' : linhaTubo(idV).curto;
     const CALHAS = 0, VERTICAIS = 1, COLETORES = 2;
     const grupos = [
       { titulo: 'Calhas', itens: [] },
@@ -492,7 +696,8 @@
       if (R.Q > 0) somar(CALHAS, 'Saída ' + (c.saida === 'b' ? 'com funil' : 'em aresta viva'), R.dist.n, 'un', '5.6.4.1', nome);
       if (v.pronto && v.adocao.tubo) {
         const Lv = num(c.Lcond);
-        somar(VERTICAIS, 'Condutor vertical DN ' + v.adocao.tubo.dn + ', ' + matV, R.dist.n * Lv, 'm', '5.6', nome);
+        const t = v.adocao.tubo;
+        somar(VERTICAIS, 'Condutor vertical ' + (t.dn ? 'DN ' + t.dn : 'Di ' + na(t.di) + ' mm') + ', ' + linhaV + (t.dn ? ' (Di ' + na(t.di) + ' mm)' : ''), R.dist.n * Lv, 'm', '5.6', nome);
         somar(VERTICAIS, 'Curva de raio longo no pé do condutor', R.dist.n, 'un', '5.7.5', nome);
         somar(VERTICAIS, 'Inspeção ou caixa de areia no pé do condutor', R.dist.n, 'un', '5.7.5', nome);
       }
@@ -503,8 +708,11 @@
       const enterrado = T.t.instalacao !== 'aparente';
       const base = enterrado ? '5.7.4' : '5.7.3';
       if (T.escolhido) {
-        somar(COLETORES, 'Tubo de diâmetro interno ' + T.escolhido.D + ' mm, ' + T.mat.rotulo.toLowerCase() + (enterrado ? ', enterrado' : ', aparente'),
-          comp > 0 ? comp : null, 'm', '5.7.2', nome);
+        const t = T.escolhido;
+        const mat = tuboDoMaterial(T.mat.rotulo);
+        const desc = T.linha === 'tabela4' ? mat + ' com Di ≥ ' + na(t.di) + ' mm (Tabela 4, confirmar)' :
+          T.linha === 'usuario' ? mat + ', Di ' + na(t.di) + ' mm (informado)' : 'tubo DN ' + t.dn + ', ' + T.linhaInfo.curto + ' (Di ' + na(t.di) + ' mm)';
+        somar(COLETORES, desc.charAt(0).toUpperCase() + desc.slice(1) + (enterrado ? ', enterrado' : ', aparente'), comp > 0 ? comp : null, 'm', '5.7.2', nome);
       }
       const inter = comp > 0 ? Math.max(0, Math.ceil(comp / 20 - 1e-9) - 1) : 0;
       if (inter) somar(COLETORES, (enterrado ? 'Caixa de areia' : 'Inspeção') + ' intermediária em trecho reto', inter, 'un', base, nome);
@@ -543,6 +751,14 @@
     textoSaidas: textoSaidas,
     TEXTO_FONTE_H: TEXTO_FONTE_H,
     matVertical: matVertical,
+    linhaVertical: linhaVertical,
+    tubosVerticais: tubosVerticais,
+    linhaDoTrecho: linhaDoTrecho,
+    tubosTrecho: tubosTrecho,
+    PASSOS: PASSOS,
+    PASSO_DO_ITEM: PASSO_DO_ITEM,
+    situacaoPassos: situacaoPassos,
+    pendenciasCalha: pendenciasCalha,
     pendencias: pendencias,
     respostaCalha: respostaCalha,
     listaMateriais: listaMateriais,

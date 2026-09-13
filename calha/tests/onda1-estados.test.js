@@ -231,7 +231,8 @@ test('Referência independente: TC2 (Curitiba) e TC4 (Cruz Alta) batem com o cá
   assert.ok(Math.abs(R.calha.Qlim - REF.manning(g.S, g.P, 0.011, 0.005)) / R.calha.Qlim < 1e-6);
   // Coletor PVC 1%: a Tabela 4 impressa dá 75 → 133 (não basta) e 100 → 287 (basta).
   assert.ok(REF.TABELA4_N011[75][1] < Q && REF.TABELA4_N011[100][1] >= Q);
-  assert.equal(r.trechos[0].escolhido.D, 100);
+  // No app, o coletor enterrado de PVC é o NBR 7362: DN 100 com Di 105.
+  assert.equal(r.trechos[0].escolhido.dn, 100);
 
   // TC4: (b) 8 / 1,2 / 10 + (c) 1 × 10; Tabela 1 canto reto de 2 a 4 m (× 1,1); 250 × 115 de
   // concreto alisado (n 0,012), lâmina 1/2.

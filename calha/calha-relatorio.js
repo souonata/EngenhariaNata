@@ -16,7 +16,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (N, U, PJ, DS, MEM) {
   'use strict';
 
-  const { esc, nf, na, num, descSecao, avisosHtml, ROTULO_STATUS } = U;
+  const { esc, nf, na, num, descSecao, avisosHtml, ROTULO_STATUS, rotuloTubo } = U;
 
   function paragrafos(linhas) {
     return linhas.map(function (t) { return '<p>' + esc(t) + '</p>'; }).join('');
@@ -53,18 +53,27 @@
       const v = r.vert;
       return [esc(r.c.nome || 'Calha sem nome'), nf(r.A, 1), nf(r.Q, 0), nf(r.Qcalha, 0), c.pronta ? descSecao(c) : '—',
         c.pronta ? (c.y != null ? nf(c.y * 1000) : '&gt; h') + ' / ' + nf(c.yLim * 1000) : '—',
-        v.pronto && v.adocao.tubo ? r.dist.n + ' × DN ' + v.adocao.tubo.dn : '—', selo(r.status)];
+        v.pronto && v.adocao.tubo ? r.dist.n + ' × ' + rotuloTubo(v.adocao.tubo) : '—', selo(r.status)];
     }).concat([['<b>Total</b>', '<b>' + nf(P.A, 1) + '</b>', '<b>' + nf(P.Q, 0) + '</b>', '', '', '', '', '']]));
   }
 
   function tabelaTrechos(P) {
     if (!P.trechos.length) return '';
-    return tabela(['Trecho', 'Recebe', 'Q (L/min)', 'Material', 'Tubo', 'i', 'D interno', 'Desnível', 'Situação'], P.trechos.map(function (T) {
+    return tabela(['Trecho', 'Recebe', 'Q (L/min)', 'Material', 'Instalação', 'i', 'Tubo adotado', 'Uso', 'Desnível', 'Situação'], P.trechos.map(function (T) {
       return [esc(T.t.nome || 'Trecho'), T.recebe.length ? T.recebe.map(function (r) { return esc(r.c.nome || 'sem nome'); }).join(', ') : '—',
         T.Q > 0 ? nf(T.Q, 0) : '—', esc(T.mat.rotulo), T.t.instalacao === 'aparente' ? 'aparente' : 'enterrado',
-        T.i > 0 ? na(T.i * 100) + '%' : '—', T.pronto ? (T.escolhido ? T.escolhido.D + ' mm' : '&gt; 300') : '—',
-        T.desnivel != null ? nf(T.desnivel * 100, 1) + ' cm' : '—', selo(T.status)];
+        T.i > 0 ? na(T.i * 100) + '%' : '—', T.pronto ? (T.escolhido ? esc(rotuloTubo(T.escolhido)) + (T.linha === 'tabela4' ? ' (Tabela 4)' : '') : 'nenhum') : '—',
+        T.escolhido ? nf(T.uso * 100, 0) + '%' : '—', T.desnivel != null ? nf(T.desnivel * 100, 1) + ' cm' : '—', selo(T.status)];
     }));
+  }
+
+  // Origem do diâmetro interno de cada linha de tubo adotada (plano, B5): o PDF se sustenta sozinho.
+  function fontesTubos(P) {
+    if (!P.linhasUsadas || !P.linhasUsadas.length) return '';
+    return '<section class="rel-bloco"><h2>Tubos adotados: origem do diâmetro interno</h2><p class="rel-nota">Di = DE − 2e, com o diâmetro externo e a espessura impressos pelo fabricante; ' +
+      'o DN não serve para cálculo (3.11).</p><ul class="rel-fontes">' + P.linhasUsadas.map(function (l) {
+      return '<li><b>' + esc(l.rotulo) + ':</b> ' + esc(l.fonte) + '.</li>';
+    }).join('') + '</ul></section>';
   }
 
   function secaoCalha(R, P, estado, k) {
@@ -99,6 +108,7 @@
       ' L/min</dd></div><div><dt>Calhas</dt><dd>' + P.calhas.length + '</dd></div><div><dt>Trechos de coletor</dt><dd>' + P.trechos.length + '</dd></div></dl></section>';
     h += '<section class="rel-bloco"><h2>Quadro-resumo</h2>' + tabelaCalhas(P) + tabelaTrechos(P) +
       (m.conclusao ? '<p class="rel-conclusao">' + esc(m.conclusao) + '</p>' : '') + '</section>';
+    h += fontesTubos(P);
     P.calhas.forEach(function (R, k) { h += secaoCalha(R, P, estado, k); });
     const col = m.grupos.find(function (g) { return g.titulo === 'Coletores horizontais'; });
     if (col) {

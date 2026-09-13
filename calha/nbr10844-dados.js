@@ -185,15 +185,39 @@
   // Calhas semicirculares comerciais da Tabela 3 (diâmetro interno, mm).
   const CALHAS_SEMICIRCULARES = [100, 125, 150, 200];
 
-  // Tubos para condutores verticais: a norma manda adotar o DN cujo diâmetro
-  // INTERNO seja ≥ D do ábaco (5.6.4.1) e nunca menor que 70 mm (5.6.3).
-  // Diâmetros internos aproximados de PVC para águas pluviais — conferir no catálogo.
-  const TUBOS_VERTICAIS = [
-    { dn: 75, di: 72 },
-    { dn: 100, di: 97 },
-    { dn: 150, di: 146 },
-    { dn: 200, di: 194 },
+  // Catálogo de tubos (decisão D4, 13/09/2026): Tigre e Amanco Wavin. O diâmetro interno
+  // é Di = DE − 2e, com o DE e a espessura e impressos pelo fabricante; o DN não serve para
+  // cálculo (3.11). Onde as duas marcas diferem, fica o menor Di, a favor da segurança.
+  const LINHAS_TUBO = [
+    { id: 'pvc-sn', rotulo: 'PVC Série Normal (NBR 5688)', curto: 'PVC Série Normal', material: 'pvc', usos: ['vertical', 'horizontal'],
+      fonte: 'Tigre, Tubo Série Normal (ficha 2023); Amanco Wavin, ficha FTC000021 (out/2024)' },
+    { id: 'pvc-sr', rotulo: 'PVC Série Reforçada (NBR 5688)', curto: 'PVC Série Reforçada', material: 'pvc', usos: ['vertical', 'horizontal'],
+      fonte: 'Tigre, Tubo Série R e ficha Linha Esgoto Série Reforçada; Amanco Wavin, ficha FTC000022 (abr/2025)' },
+    { id: 'aquapluv-88', rotulo: 'Condutor circular 88 da calha Tigre Aquapluv', curto: 'condutor Aquapluv 88', material: 'pvc', usos: ['vertical'],
+      fonte: 'Tigre, catálogo Águas Pluviais e Drenagem (Aquapluv Style)' },
+    { id: 'amanco-pluvial', rotulo: 'Condutor DN 100 da Calha Pluvial Amanco', curto: 'condutor Calha Pluvial Amanco', material: 'pvc', usos: ['vertical'],
+      fonte: 'Amanco Wavin, ficha FTC000056 (ago/2024)' },
+    { id: 'pvc-7362', rotulo: 'PVC coletor de parede maciça (NBR 7362)', curto: 'coletor PVC NBR 7362', material: 'pvc', usos: ['horizontal'],
+      fonte: 'Tigre, Tubo Coletor Esgoto JEI (ficha mai/2025); Amanco Wavin, ficha Linha Coletor (2025)' },
   ];
+  // [linha, DN, DE, e, observação]
+  const CATALOGO_TUBOS = [
+    ['pvc-sn', 50, 50.7, 1.6], ['pvc-sn', 75, 75.5, 1.7], ['pvc-sn', 100, 101.6, 1.8],
+    ['pvc-sn', 150, 150, 2.6, 'Amanco e = 2,6; Tigre e = 2,5 (Di 145,0): vale o menor Di'], ['pvc-sn', 200, 200, 3.6],
+    ['pvc-sr', 50, 50.7, 1.8], ['pvc-sr', 75, 75.5, 2], ['pvc-sr', 100, 101.6, 2.5], ['pvc-sr', 150, 150, 3.6],
+    ['aquapluv-88', 88, 88, 1.7],
+    ['amanco-pluvial', 100, 101.6, 1.8],
+    ['pvc-7362', 100, 110, 2.5], ['pvc-7362', 150, 160, 3.6], ['pvc-7362', 200, 200, 4.5], ['pvc-7362', 250, 250, 6.1],
+    ['pvc-7362', 300, 315, 7.7], ['pvc-7362', 350, 355, 8.7], ['pvc-7362', 400, 400, 9.8],
+  ].map(function (r) {
+    return { linha: r[0], dn: r[1], de: r[2], e: r[3], di: Math.round((r[2] - 2 * r[3]) * 10) / 10, origem: 'fabricante', obs: r[4] || '' };
+  });
+
+  // Tubos para condutores verticais: a norma manda adotar o DN cujo diâmetro
+  // INTERNO seja ≥ D do ábaco (5.6.4.1) e nunca menor que 70 mm (5.6.3). Padrão: a Série
+  // Normal do catálogo, só os de Di ≥ 70 mm.
+  const TUBOS_VERTICAIS = CATALOGO_TUBOS.filter(function (t) { return t.linha === 'pvc-sn' && t.di >= 70; })
+    .map(function (t) { return { dn: t.dn, di: t.di }; });
 
   // Materiais de calha admitidos no item 4.1.1, cada um com o n da sua linha na
   // Tabela 2. `chapa` indica calha de chapa dobrada (dá corte e massa por metro);
@@ -264,6 +288,8 @@
     TABELA5: TABELA5,
     PERIODOS: PERIODOS,
     CALHAS_SEMICIRCULARES: CALHAS_SEMICIRCULARES,
+    LINHAS_TUBO: LINHAS_TUBO,
+    CATALOGO_TUBOS: CATALOGO_TUBOS,
     TUBOS_VERTICAIS: TUBOS_VERTICAIS,
     DIAMETRO_MINIMO_VERTICAL: 70,
     DECLIVIDADE_MINIMA: 0.005,

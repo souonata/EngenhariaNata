@@ -1748,3 +1748,39 @@ html.com-relatorio body { overflow: hidden; }
 /* A caixa da obra é uma grade de uma coluna: sem minmax(0, 1fr), o seletor de exemplos a alarga. */
 .carimbo-obra { grid-template-columns: minmax(0, 1fr); }
 .carimbo-obra > * { min-width: 0; }
+
+/* ================================================================== */
+/* 3.7 — passos do "Como usar" com a situação de cada um, guias        */
+/* "como escolher" e o catálogo de tubos                                */
+/* ================================================================== */
+.como-usar > .como-usar-sub { margin: 0.4rem 0 0; font-size: var(--t-14); color: var(--apagado); }
+.passo-estado {
+  margin: 0.3rem 0 0; display: flex; align-items: baseline; gap: 0.45rem;
+  font-size: var(--t-14); line-height: 1.4; color: var(--grafite);
+}
+.passo-estado:empty { display: none; }
+.passo-estado .ponto { flex: 0 0 auto; }
+.passo-estado b { font-weight: 600; color: var(--nanquim); }
+.guia {
+  display: grid; gap: 0.35rem; max-width: 40rem; padding: 0.1rem 0 0.1rem 0.85rem;
+  border-left: 3px solid var(--patina); font-size: var(--t-14); line-height: 1.5; color: var(--grafite);
+}
+.guia:empty { display: none; }
+.guia p { margin: 0; }
+.guia-atual b, .guia-todas dt { color: var(--nanquim); font-weight: 600; }
+.guia-alerta { display: block; margin-top: 0.35rem; padding: 0.3rem 0.55rem; background: var(--atencao-fundo); color: var(--atencao); }
+.guia-todas summary { cursor: pointer; width: fit-content; color: var(--patina); font-weight: 600; }
+.guia-todas summary:focus-visible { outline: 2px solid var(--patina); outline-offset: 2px; }
+.guia-todas dl { margin: 0.45rem 0 0; display: grid; gap: 0.5rem; }
+.guia-todas dd { margin: 0.1rem 0 0; }
+.guia-todas .on dt::after { content: ' · a escolhida'; color: var(--patina); font-weight: 500; }
+.catalogo summary { cursor: pointer; width: fit-content; font-family: var(--f-titulo); font-weight: 600; color: var(--patina); }
+.catalogo .tabela { margin-top: 0.5rem; }
+.catalogo .fonte { margin: 0.4rem 0 0; font-size: var(--t-12); color: var(--apagado); }
+.trecho .campo-linha { min-width: min(16rem, 100%); }
+.trecho select, #linhaV, #materialV { max-width: 100%; }
+.legenda-margens { margin: 0.4rem 0 0; font-size: var(--t-12); color: var(--apagado); max-width: 60rem; }
+.rel-fontes { margin: 0.4rem 0 0; padding-left: 1.1rem; display: grid; gap: 0.25rem; font-size: 0.92em; }
+@media print {
+  .guia, .passo-estado, .catalogo { display: none !important; }
+}

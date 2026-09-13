@@ -236,7 +236,8 @@
     const k = R.calha;
     s += '<text class="esq-rot" x="' + (X0 + X1) / 2 + '" y="94" text-anchor="middle">Calha ' + (k.pronta ? descSecao(k) + ' mm' : 'a dimensionar') +
       (k.i > 0 ? ' · i = ' + na(k.i * 100) + '%' : '') + (k.desnivel != null ? ' · desnível ' + nf(k.desnivel * 100, 1) + ' cm' : '') + '</text>';
-    const dn = R.vert.pronto && R.vert.adocao.tubo ? 'DN ' + R.vert.adocao.tubo.dn : 'DN a definir';
+    const tv = R.vert.pronto && R.vert.adocao.tubo;
+    const dn = tv ? (tv.dn ? 'DN ' + tv.dn : 'Di ' + na(tv.di) + ' mm') : 'DN a definir';
     const xsTubo = pos.map(XX);
     // Lado livre para o rótulo de um condutor: sem outro condutor a menos de LARG_ROT.
     const LARG_ROT = 110;
@@ -263,7 +264,7 @@
     s += '<path class="esq-coletor" d="M' + xa + ' ' + yCol + ' H' + xb + '"/>';
     s += '<path class="esq-seta" d="M' + xb + ' ' + (yCol - 8) + ' L' + (xb + 16) + ' ' + yCol + ' L' + xb + ' ' + (yCol + 8) + ' Z"/>';
     s += '<text class="esq-rot" x="' + (xb + 16) + '" y="' + (yCol + 24) + '" text-anchor="end">' +
-      (T ? esc(T.t.nome || 'Coletor') + (T.pronto && T.escolhido ? ': D ' + T.escolhido.D + ' mm · i = ' + na(T.i * 100) + '%' : '') : 'Sem coletor: marque esta calha num trecho (5.7)') + '</text>';
+      (T ? esc(T.t.nome || 'Coletor') + (T.pronto && T.escolhido ? ': ' + (T.escolhido.dn ? 'DN ' + T.escolhido.dn : 'Di ' + na(T.escolhido.di) + ' mm') + ' · i = ' + na(T.i * 100) + '%' : '') : 'Sem coletor: marque esta calha num trecho (passo C)') + '</text>';
     if (temL && c.saidas === 'intermediaria' && pos.length === 1) {
       s += '<path class="esq-cota" d="M' + X0 + ' ' + (Hh - 8) + ' H' + XX(pos[0]) + '"/>';
       s += '<text x="' + (X0 + XX(pos[0])) / 2 + '" y="' + (Hh - 13) + '" text-anchor="middle">' + na(pos[0]) + ' m</text>';

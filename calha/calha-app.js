@@ -15,8 +15,9 @@
   const $$ = function (s) { return Array.from(document.querySelectorAll(s)); };
 
   const U = window.CalhaUtil;
-  const { esc, nf, na, num, z, lerNum, mostrarNum, lerLista, normaliza, uid, copia, MAT_C, MAT_H, matCalha, matHor, tubosPadrao, avisosHtml, grande, pares, nota, aguardando, cabecalho, descSecao, ROTULO_STATUS, seloStatus } = U;
+  const { esc, nf, na, num, z, lerNum, mostrarNum, lerLista, normaliza, uid, copia, MAT_C, MAT_H, matCalha, matHor, tubosPadrao, linhaTubo, tubosDaLinha, rotuloTubo, avisosHtml, grande, pares, nota, aguardando, cabecalho, descSecao, ROTULO_STATUS, seloStatus } = U;
   const { novaCalha, novoTrecho, estadoVazio, EXEMPLOS, migrar } = window.CalhaEstado;
+  const GUIAS = window.CalhaGuias.GUIAS;
   const PJ = window.CalhaProjeto;
   const { temNivel, textoSaidas, TEXTO_FONTE_H } = PJ;
   const { FIGURAS, svgSecao, svgAbaco, svgEsquema } = window.CalhaDesenhos;
@@ -134,7 +135,27 @@
     }).join('');
   }
 
-  /* Barra da calha: presa no topo enquanto se preenchem os itens 5.2 a 5.6, com a calha em
+  // Linha de tubo dos condutores verticais: há catálogo só de PVC; os demais materiais usam os
+  // tubos informados pelo usuário.
+  function montarLinhaV() {
+    const pvc = estado.materialV === 'pvc';
+    const linhas = DD.LINHAS_TUBO.filter(function (l) { return l.usos.indexOf('vertical') >= 0; });
+    $('#linhaV').innerHTML = (pvc ? linhas.map(function (l) { return '<option value="' + l.id + '">' + esc(l.rotulo) + '</option>'; }).join('') : '') +
+      '<option value="usuario">' + (pvc ? 'Meus tubos (outro fabricante ou série)' : 'Meus tubos: o app não tem catálogo de ' + esc(PJ.matVertical(estado).toLowerCase())) + '</option>';
+    $('#linhaV').value = PJ.linhaVertical(estado);
+  }
+
+  // Tabela da linha escolhida: DN, DE, espessura e o Di que sai deles, com a fonte.
+  function renderCatalogoV() {
+    const id = PJ.linhaVertical(estado);
+    if (id === 'usuario') { $('#catalogo-v-corpo').innerHTML = ''; return; }
+    $('#catalogo-v-corpo').innerHTML = '<div class="rolagem"><table class="tabela"><thead><tr><th>DN</th><th>DE (mm)</th><th>e (mm)</th><th>Di = DE − 2e (mm)</th></tr></thead><tbody>' +
+      tubosDaLinha(id, 'vertical').map(function (t) {
+        return '<tr><td>' + t.dn + '</td><td>' + na(t.de) + '</td><td>' + na(t.e) + '</td><td><b>' + nf(t.di, 1) + '</b>' + (t.obs ? ' <small>' + esc(t.obs) + '</small>' : '') + '</td></tr>';
+      }).join('') + '</tbody></table></div><p class="fonte">Fonte: ' + esc(linhaTubo(id).fonte) + '.</p>';
+  }
+
+  /* Barra da calha: presa no topo enquanto se preenchem os passos B.1 a B.4, com a calha em
      edição e os atalhos para trocar, criar, duplicar e remover. */
   let assinaturaBarra = '';
   function montarBarraCalha() {
@@ -186,6 +207,19 @@
       '" data-campo="' + campo + '" value="' + esc(mostrarNum(valor)) + '" /><em>' + uni + '</em></span></label>';
   }
 
+  // Linhas de tubo que valem para o material do trecho; 'auto' diz qual é a padrão.
+  function opcoesLinhaTrecho(t) {
+    const pvc = t.material === 'pvc';
+    const ops = [['auto', 'Padrão: ' + (pvc ? (t.instalacao === 'aparente' ? 'PVC Série Normal' : 'coletor PVC NBR 7362') : 'diâmetros da Tabela 4')]];
+    if (pvc) {
+      DD.LINHAS_TUBO.filter(function (l) { return l.usos.indexOf('horizontal') >= 0; }).forEach(function (l) { ops.push([l.id, l.rotulo]); });
+      ops.push(['tabela4', 'Diâmetros da Tabela 4 (confirmar o Di)']);
+    }
+    ops.push(['usuario', 'Meus tubos (diâmetros internos)']);
+    const sel = ops.some(function (o) { return o[0] === t.linha; }) ? t.linha : 'auto';
+    return ops.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === sel ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('');
+  }
+
   function montarTrechos() {
     $('#trechos').innerHTML = estado.trechos.map(function (t, i) {
       const chks = estado.calhas.map(function (c) {
@@ -198,9 +232,12 @@
         '<fieldset><legend>Recebe os condutores das calhas</legend><div class="chips">' + chks + '</div></fieldset>' +
         '<div class="linha-campos">' + campoTrecho(i, 'Qextra', 'Vazão extra', 'L/min', t.Qextra) +
         '<label class="campo"><span>Material (4.1.3)</span><select data-trecho="' + i + '" data-campo="material">' + opcoesMateriais(MAT_H, t.material) + '</select></label>' +
-        '<label class="campo"><span>Tubo</span><select data-trecho="' + i + '" data-campo="instalacao"><option value="enterrado"' + (t.instalacao !== 'aparente' ? ' selected' : '') +
+        '<label class="campo"><span>Instalação</span><select data-trecho="' + i + '" data-campo="instalacao"><option value="enterrado"' + (t.instalacao !== 'aparente' ? ' selected' : '') +
         '>Enterrado (caixa de areia)</option><option value="aparente"' + (t.instalacao === 'aparente' ? ' selected' : '') + '>Aparente (inspeção)</option></select></label>' +
+        '<label class="campo campo-linha"><span>Linha de tubo</span><select data-trecho="' + i + '" data-campo="linha">' + opcoesLinhaTrecho(t) + '</select></label>' +
         campoTrecho(i, 'decl', 'Declividade', '%', t.decl) + campoTrecho(i, 'comp', 'Comprimento', 'm', t.comp) + '</div>' +
+        (PJ.linhaDoTrecho(t) === 'usuario' ? '<label class="campo campo-largo"><span>Diâmetros internos disponíveis (mm), separados por ponto e vírgula</span><input type="text" inputmode="decimal" data-trecho="' + i +
+          '" data-campo="tubosH" value="' + esc(t.tubosH || '') + '" placeholder="Ex.: 97; 144,8; 192,8" /><small class="dica">Di = DE − 2e, do catálogo do tubo que você vai usar.</small></label>' : '') +
         '<p class="parcial" data-trecho-res="' + i + '"></p></li>';
     }).join('');
   }
@@ -235,6 +272,7 @@
     montarLocais();
     $('#material').value = c.material;
     $('#materialV').value = estado.materialV;
+    montarLinhaV();
     $('#espessura').value = String(c.espessura);
     G_NUM.forEach(function (id) { document.getElementById(id).value = mostrarNum(estado[id]); });
     C_NUM.forEach(function (id) { document.getElementById(id).value = mostrarNum(c[id]); });
@@ -263,6 +301,10 @@
     estado.localId = $('#local').value === '' ? '' : Number($('#local').value);
     c.material = $('#material').value;
     estado.materialV = $('#materialV').value;
+    // A lista de linhas só tem catálogo com PVC; com outro material ela mostra só "Meus tubos"
+    // e não apaga a linha de PVC escolhida antes.
+    const lv = $('#linhaV');
+    if (estado.materialV === 'pvc' && lv.options.length > 1) estado.linhaV = lv.value;
     c.espessura = Number($('#espessura').value);
     G_NUM.forEach(function (id) { estado[id] = lerNum(document.getElementById(id).value); });
     C_NUM.forEach(function (id) { c[id] = lerNum(document.getElementById(id).value); });
@@ -288,7 +330,7 @@
       const t = estado.trechos[Number(el.dataset.trecho)];
       if (!t) return;
       const k = el.dataset.campo;
-      t[k] = k === 'nome' || k === 'material' || k === 'instalacao' ? el.value : lerNum(el.value);
+      t[k] = ['nome', 'material', 'instalacao', 'linha', 'tubosH'].indexOf(k) >= 0 ? el.value : lerNum(el.value);
     });
     estado.trechos.forEach(function (t, i) {
       const caixas = $$('[data-trecho-calha="' + i + '"]');
@@ -389,6 +431,9 @@
     $('#btn-dimensionar').textContent = c.forma === 'semicircular' ? 'Escolher o menor diâmetro'
       : c.forma === 'retangular' && c.otima ? 'Calcular a seção econômica' : 'Calcular a altura mínima';
     mostrar('[data-so-h]', c.fonteH === 'digitada');
+    const usuarioV = PJ.linhaVertical(estado) === 'usuario';
+    mostrar('[data-tubos-usuario]', usuarioV);
+    mostrar('[data-tubos-catalogo]', !usuarioV);
     $('#dica-area').textContent = (POSICOES[c.posicao] || POSICOES[c.tipoCalha] || {}).dica || '';
     const pos = estado.calhas.indexOf(c) + 1;
     const tag = 'Calha ' + (estado.calhas.length > 1 ? pos + ' de ' + estado.calhas.length + ': ' : ': ') + (c.nome || 'sem nome');
@@ -536,13 +581,13 @@
     const sugestao = function () {
       return {
         nivel: 'atencao',
-        html: 'Com <b>' + v.sugestao.n + ' saídas espaçadas</b>, cada condutor recebe ' + nf(v.sugestao.Q, 0) + ' L/min e cabe em DN ' +
-          v.sugestao.tubo.dn + '. <button type="button" class="btn" data-usar-saidas="' + v.sugestao.n + '">Usar ' + v.sugestao.n + ' saídas</button>',
+        html: 'Com <b>' + v.sugestao.n + ' saídas espaçadas</b>, cada condutor recebe ' + nf(v.sugestao.Q, 0) + ' L/min e cabe em ' +
+          esc(rotuloTubo(v.sugestao.tubo)) + '. <button type="button" class="btn" data-usar-saidas="' + v.sugestao.n + '">Usar ' + v.sugestao.n + ' saídas</button>',
       };
     };
     if (!v.pronto) {
       const falta = v.invalido ? 'Corrija o dado indicado abaixo.' :
-        v.faltando === 'H' ? (e.fonteH === 'digitada' ? 'Informe a lâmina H na calha.' : 'A lâmina H vem da calha: complete o item 5.5, ou escolha "Digitar".') :
+        v.faltando === 'H' ? (e.fonteH === 'digitada' ? 'Informe a lâmina H na calha.' : 'A lâmina H vem da calha: complete o passo B.3, ou escolha "Digitar".') :
         v.faltando === 'L' ? 'Informe o comprimento L do condutor vertical.' : 'O condutor é dimensionado quando houver vazão.';
       $('#r56').innerHTML = aguardando(falta) + avisosHtml(v.avisos) + '<div class="abaco-quadro">' + svgAbaco(e.saida, 0, 0, 0, null) + '</div>';
       return;
@@ -555,7 +600,9 @@
       return;
     }
     const a = v.adocao;
-    const selo = a.tubo ? '<span class="selo ok">DN ' + a.tubo.dn + (R.dist.n > 1 ? ' × ' + R.dist.n : '') + '</span>' : '<span class="selo erro">Sem tubo</span>';
+    const curto = function (t) { return t.dn ? 'DN ' + t.dn : 'Di ' + na(t.di) + ' mm'; };
+    const selo = a.tubo ? '<span class="selo ok">' + curto(a.tubo) + (R.dist.n > 1 ? ' × ' + R.dist.n : '') + '</span>' :
+      a.semTubos ? '<span class="selo">Faltam os tubos</span>' : '<span class="selo erro">Sem tubo</span>';
     let h = cabecalho(grande('D', v.D < 50 ? '&lt; 50' : nf(v.D), 'mm pelo ábaco (' + e.saida + ')'), selo);
     h += '<div class="abaco-quadro">' + svgAbaco(e.saida, R.Qcond, R.H, num(e.Lcond), v) + '</div>';
     h += '<div class="legenda-abaco"><span><i></i>curva H interpolada</span><span><i class="l"></i>curva L interpolada</span><span><i class="d"></i>interseção mais alta → D</span></div>';
@@ -565,14 +612,15 @@
       ['D pela curva H', (v.DH < 50 ? '&lt; 50' : nf(v.DH)) + ' <small>mm</small>'],
       ['D pela curva L', (v.DL < 50 ? '&lt; 50' : nf(v.DL)) + ' <small>mm</small>'],
       ['Governa', v.governa === 'H' ? 'entrada <small>(H)</small>' : 'tubo <small>(L)</small>'],
-      ['Adotado', a.tubo ? 'DN ' + a.tubo.dn + ' <small>Dᵢ ' + na(a.tubo.di) + ' mm</small>' : '—'],
+      ['Adotado', a.tubo ? curto(a.tubo) + ' <small>Dᵢ ' + nf(a.tubo.di, 1) + ' mm · ' + esc(v.linha === 'usuario' ? 'tubo informado' : linhaTubo(v.linha).curto) + '</small>' : '—'],
+      ['Folga de diâmetro', a.tubo ? (v.folga >= 0 ? '+' : '') + nf(v.folga * 100, 0) + ' <small>% sobre ' + nf(a.minimo) + ' mm exigidos</small>' : '—'],
     ]);
     const av = v.avisos.slice();
     if (a.peloMinimo) av.push({ nivel: 'info', texto: 'O ábaco pede menos de 70 mm; vale o diâmetro interno mínimo da norma (5.6.3).' });
-    if (!a.tubo) av.push({ nivel: 'erro', texto: 'Nenhum tubo da lista tem diâmetro interno ≥ ' + nf(a.minimo) + ' mm.' });
+    if (!a.tubo && !a.semTubos) av.push({ nivel: 'erro', texto: 'Nenhum tubo da linha tem diâmetro interno ≥ ' + nf(a.minimo) + ' mm.' });
     if (v.sugestao) {
       av.push(sugestao());
-    } else if (!a.tubo) {
+    } else if (!a.tubo && !a.semTubos) {
       av.push({ nivel: 'erro', texto: 'Nem com 12 saídas os condutores cabem: reveja a lâmina H, o comprimento L ou use funil de saída.' });
     }
     h += avisosHtml(av);
@@ -587,11 +635,12 @@
       const el = document.querySelector('[data-trecho-res="' + i + '"]');
       if (!el) return;
       if (T.pronto) {
-        el.innerHTML = 'Q = <b>' + nf(T.Q, 1) + ' L/min</b> → D <b>' + (T.escolhido ? T.escolhido.D + ' mm' : 'acima de 300 mm') + '</b>' +
-          (T.escolhido ? ' (' + nf((T.Q / T.escolhido.Q) * 100, 0) + '% da capacidade)' : '') +
+        el.innerHTML = 'Q = <b>' + nf(T.Q, 1) + ' L/min</b> → <b>' + (T.escolhido ? esc(rotuloTubo(T.escolhido)) : 'nenhum tubo da linha basta') + '</b>' +
+          (T.escolhido ? ' (uso de ' + nf(T.uso * 100, 0) + '% da capacidade)' : '') +
           (T.desnivel != null ? ' · desnível ' + nf(T.desnivel * 100, 1) + ' cm' : '');
       } else {
-        el.textContent = T.Q > 0 ? 'Informe a declividade.' : 'Marque as calhas que chegam neste trecho.';
+        el.textContent = !(T.Q > 0) ? (T.recebe.length ? 'Aguarda a vazão das calhas que recebe (passo B).' : 'Marque as calhas que chegam neste trecho.') :
+          T.linha === 'usuario' && !T.tubos.length ? 'Informe os diâmetros internos dos tubos.' : 'Informe a declividade.';
       }
     });
     if (!P.trechos.length) {
@@ -603,25 +652,28 @@
     let h = '';
     if (principal) {
       const e1 = principal.escolhido;
-      h += cabecalho(grande('D', e1 ? String(e1.D) : '&gt; 300', 'mm no trecho mais carregado'), seloStatus(principal.status));
-      h += '<p class="formula">lâmina = 2/3 <var>D</var> · ' + esc(principal.mat.rotulo) + ', <var>n</var> = ' + nf(principal.n, 3) + ' · <var>i</var> = ' +
+      h += cabecalho(grande('⌀', e1 ? (e1.dn ? 'DN ' + e1.dn : nf(e1.di, 1)) : '—', e1 ? 'Dᵢ ' + nf(e1.di, 1) + ' mm no trecho mais carregado' : 'nenhum tubo da linha basta'), seloStatus(principal.status));
+      h += '<p class="formula">lâmina = 2/3 <var>D</var><sub>i</sub> · ' + esc(principal.linhaInfo.curto) + ' · ' + esc(principal.mat.rotulo) + ', <var>n</var> = ' + nf(principal.n, 3) + ' · <var>i</var> = ' +
         na(principal.i * 100) + '% · <var>Q</var> = ' + nf(principal.Q, 1) + ' L/min<span class="ref">5.7.2</span></p>';
     }
-    h += '<div class="rolagem"><table class="tabela"><thead><tr><th>Trecho</th><th>Q (L/min)</th><th>i</th><th>D interno</th><th>Uso</th><th>Desnível</th></tr></thead><tbody>' +
+    h += '<div class="rolagem"><table class="tabela"><thead><tr><th>Trecho</th><th>Q (L/min)</th><th>i</th><th>Tubo adotado</th><th>Capacidade</th><th>Uso</th><th>Desnível</th></tr></thead><tbody>' +
       P.trechos.map(function (T) {
         return '<tr' + (T === principal ? ' class="escolhida"' : '') + '><td>' + esc(T.t.nome || 'Trecho') + '</td><td>' + (T.Q > 0 ? nf(T.Q, 0) : '—') + '</td><td>' +
-          (T.i > 0 ? na(T.i * 100) + '%' : '—') + '</td><td>' + (T.pronto ? (T.escolhido ? T.escolhido.D + ' mm' : '&gt; 300') : '—') + '</td><td>' +
-          (T.escolhido ? nf((T.Q / T.escolhido.Q) * 100, 0) + '%' : '—') + '</td><td>' + (T.desnivel != null ? nf(T.desnivel * 100, 1) + ' cm' : '—') + '</td></tr>';
+          (T.i > 0 ? na(T.i * 100) + '%' : '—') + '</td><td>' + (T.pronto ? (T.escolhido ? esc(rotuloTubo(T.escolhido)) : 'nenhum') : '—') + '</td><td>' +
+          (T.escolhido ? nf(T.escolhido.Q, 0) + ' L/min' : '—') + '</td><td>' + (T.escolhido ? nf(T.uso * 100, 0) + '%' : '—') + '</td><td>' +
+          (T.desnivel != null ? nf(T.desnivel * 100, 1) + ' cm' : '—') + '</td></tr>';
       }).join('') + '</tbody></table></div>';
     if (principal) {
       const c = principal;
-      h += '<div class="rolagem"><table class="tabela"><caption>Tabela 4 recalculada por Manning-Strickler para "' + esc(c.t.nome || 'Trecho') + '"' + (c.colT4 ? '; a coluna Tabela 4 traz o valor impresso na norma' : '') +
-        '</caption><thead><tr><th>D interno</th><th>Capacidade (L/min)</th>' + (c.colT4 ? '<th>Tabela 4</th>' : '') + '<th>Q / capacidade</th></tr></thead><tbody>' +
-        c.linhas.map(function (l, idx) {
-          const sel = c.escolhido && l.D === c.escolhido.D;
+      const temT4 = c.linhas.some(function (l) { return l.fonteQ === 'Tabela 4'; });
+      h += '<div class="rolagem"><table class="tabela"><caption>Tubos da linha "' + esc(c.linhaInfo.curto) + '" para "' + esc(c.t.nome || 'Trecho') + '": capacidade por Manning a 2/3 do diâmetro interno' +
+        (temT4 ? '; onde o Di, o n e a declividade coincidem com a Tabela 4, vale o valor impresso' : '') +
+        '</caption><thead><tr><th>Tubo</th><th>Capacidade (L/min)</th><th>Base</th><th>Q / capacidade</th></tr></thead><tbody>' +
+        c.linhas.map(function (l) {
+          const sel = c.escolhido && l === c.escolhido;
           const insuf = l.Q < c.Q;
-          return '<tr' + (sel ? ' class="escolhida"' : '') + '><td>' + l.D + ' mm</td><td' + (insuf ? ' class="insuf"' : '') + '>' + nf(l.Q, 0) + '</td>' +
-            (c.colT4 ? '<td>' + nf(c.colT4[idx]) + '</td>' : '') + '<td' + (insuf ? ' class="insuf"' : '') + '>' + nf((c.Q / l.Q) * 100, 0) + '%</td></tr>';
+          return '<tr' + (sel ? ' class="escolhida"' : '') + '><td>' + esc(rotuloTubo(l)) + '</td><td' + (insuf ? ' class="insuf"' : '') + '>' + nf(l.Q, 0) + '</td><td>' +
+            (l.fonteQ === 'Tabela 4' ? 'Tabela 4' : 'Manning') + '</td><td' + (insuf ? ' class="insuf"' : '') + '>' + nf((c.Q / l.Q) * 100, 0) + '%</td></tr>';
         }).join('') + '</tbody></table></div>';
     }
     const av = [];
@@ -649,7 +701,7 @@
   }
 
   function renderQuadro(P) {
-    let h = '<div class="rolagem"><table class="tabela quadro"><caption>Calhas: área, vazões, seção, lâmina e condutores</caption><thead><tr><th>Calha</th><th>Área (m²)</th><th>Q (L/min)</th><th>Q calha</th><th>Seção (mm)</th><th>Lâmina / limite</th><th>Uso</th><th>Condutores</th><th>Situação</th></tr></thead><tbody>' +
+    let h = '<div class="rolagem"><table class="tabela quadro"><caption>Calhas: área, vazões, seção, lâmina e condutores</caption><thead><tr><th>Calha</th><th>Área (m²)</th><th>Q (L/min)</th><th>Q calha</th><th>Seção (mm)</th><th>Lâmina / limite</th><th>Uso</th><th>Condutores</th><th>Folga do condutor</th><th>Situação</th></tr></thead><tbody>' +
       P.calhas.map(function (r) {
         const c = r.calha;
         const v = r.vert;
@@ -658,20 +710,23 @@
           '<td>' + (c.pronta ? descSecao(c) : '—') + '</td>' +
           '<td>' + (c.pronta ? (c.y != null ? nf(c.y * 1000) : '&gt; h') + ' / ' + nf(c.yLim * 1000) : '—') + '</td>' +
           '<td>' + (c.pronta ? nf(c.uso * 100, 0) + '%' : '—') + '</td>' +
-          '<td>' + (v.pronto && v.adocao.tubo ? r.dist.n + ' × DN ' + v.adocao.tubo.dn : '—') + '</td>' +
+          '<td>' + (v.pronto && v.adocao.tubo ? r.dist.n + ' × ' + esc(rotuloTubo(v.adocao.tubo)) : '—') + '</td>' +
+          '<td>' + (v.pronto && v.adocao.tubo ? '+' + nf(v.folga * 100, 0) + '%' : '—') + '</td>' +
           '<td>' + seloStatus(r.status) + '</td></tr>';
       }).join('') +
-      '<tr class="total"><td>Total</td><td>' + nf(P.A, 1) + '</td><td>' + nf(P.Q, 0) + '</td><td colspan="6"></td></tr></tbody></table></div>';
+      '<tr class="total"><td>Total</td><td>' + nf(P.A, 1) + '</td><td>' + nf(P.Q, 0) + '</td><td colspan="7"></td></tr></tbody></table></div>';
     if (P.trechos.length) {
-      h += '<div class="rolagem"><table class="tabela quadro"><caption>Coletores horizontais por trecho</caption><thead><tr><th>Trecho</th><th>Recebe</th><th>Q (L/min)</th><th>Material</th><th>i</th><th>D interno</th><th>Uso</th><th>Desnível</th><th>Situação</th></tr></thead><tbody>' +
+      h += '<div class="rolagem"><table class="tabela quadro"><caption>Coletores horizontais por trecho</caption><thead><tr><th>Trecho</th><th>Recebe</th><th>Q (L/min)</th><th>Material</th><th>i</th><th>Tubo adotado</th><th>Uso</th><th>Desnível</th><th>Situação</th></tr></thead><tbody>' +
         P.trechos.map(function (T) {
           return '<tr><td>' + esc(T.t.nome || 'Trecho') + '</td><td>' + (T.recebe.length ? T.recebe.map(function (r) { return esc(r.c.nome || 'sem nome'); }).join(', ') : '—') +
             (z(num(T.t.Qextra)) > 0 ? ' + extra' : '') + '</td><td>' + (T.Q > 0 ? nf(T.Q, 0) : '—') + '</td><td>' + esc(T.mat.rotulo) + '</td><td>' +
-            (T.i > 0 ? na(T.i * 100) + '%' : '—') + '</td><td>' + (T.pronto ? (T.escolhido ? T.escolhido.D + ' mm' : '&gt; 300') : '—') + '</td><td>' +
-            (T.escolhido ? nf((T.Q / T.escolhido.Q) * 100, 0) + '%' : '—') + '</td><td>' + (T.desnivel != null ? nf(T.desnivel * 100, 1) + ' cm' : '—') + '</td><td>' +
+            (T.i > 0 ? na(T.i * 100) + '%' : '—') + '</td><td>' + (T.pronto ? (T.escolhido ? esc(rotuloTubo(T.escolhido)) + (T.linha === 'tabela4' ? ' <small>Tabela 4</small>' : '') : 'nenhum') : '—') + '</td><td>' +
+            (T.escolhido ? nf(T.uso * 100, 0) + '%' : '—') + '</td><td>' + (T.desnivel != null ? nf(T.desnivel * 100, 1) + ' cm' : '—') + '</td><td>' +
             seloStatus(T.status) + '</td></tr>';
         }).join('') + '</tbody></table></div>';
     }
+    h += '<p class="legenda-margens">Uso = vazão de projeto ÷ capacidade (a calha na lâmina limite adotada; o coletor com lâmina a 2/3 do diâmetro interno). ' +
+      'Folga do condutor = Di adotado ÷ D exigido − 1, com D exigido pelo ábaco ou pelo mínimo de 70 mm.</p>';
     $('#quadro-corpo').innerHTML = h;
   }
 
@@ -696,15 +751,21 @@
     set('res-calha', c.pronta ? descSecao(c) + '<small>mm</small>' : '—');
     ponto('calha', P.ativa.status);
     const contagem = {};
+    const ordem = [];
     P.calhas.forEach(function (r) {
-      if (r.vert.pronto && r.vert.adocao.tubo) contagem[r.vert.adocao.tubo.dn] = (contagem[r.vert.adocao.tubo.dn] || 0) + r.dist.n;
+      const t = r.vert.pronto && r.vert.adocao.tubo;
+      if (!t) return;
+      const k = t.dn ? 'DN' + t.dn : 'Di' + nf(t.di);
+      if (!(k in contagem)) { contagem[k] = 0; ordem.push([t.di, k]); }
+      contagem[k] += r.dist.n;
     });
-    const dns = Object.keys(contagem).sort(function (a, b) { return a - b; });
-    set('res-vertical', dns.length ? dns.map(function (dn) { return contagem[dn] + '×DN' + dn; }).join(' · ') : '—');
+    ordem.sort(function (a, b) { return a[0] - b[0]; });
+    set('res-vertical', ordem.length ? ordem.map(function (x) { return contagem[x[1]] + '×' + x[1]; }).join(' · ') : '—');
     ponto('vertical', piorStatus(P.calhas.map(function (r) { return r.status; })));
     const prontos = P.trechos.filter(function (T) { return T.pronto; });
     const maior = prontos.slice().sort(function (a, b) { return b.Q - a.Q; })[0];
-    set('res-horizontal', maior ? (maior.escolhido ? 'D ' + maior.escolhido.D + '<small>mm</small>' : 'revisar') : '—');
+    const em = maior && maior.escolhido;
+    set('res-horizontal', maior ? (em ? (em.dn ? 'DN ' + em.dn : nf(em.di) + '<small>mm</small>') : 'revisar') : '—');
     ponto('horizontal', piorStatus(P.trechos.map(function (T) { return T.status; })));
   }
 
@@ -730,9 +791,68 @@
     const p = pendAtual[0];
     const resto = pendAtual.length - 1;
     el.className = 'coach';
-    el.innerHTML = '<p><span class="coach-item">' + p.item + '</span><b>Próximo passo:</b> ' + esc(p.texto) +
+    el.innerHTML = '<p><span class="coach-item">' + esc(p.passo || p.item) + '</span><b>Próximo passo:</b> ' + esc(p.texto) +
       (resto ? ' <small>(e mais ' + resto + (resto > 1 ? ' pendências)' : ' pendência)') + '</small>' : '') + '</p>' +
       '<button type="button" class="btn primario" id="btn-coach">Ir até lá</button>';
+  }
+
+  // "Como usar" como painel de situação: cada passo diz se está pronto, o que falta ou que só
+  // espera o anterior; clicar no nome leva ao campo da pendência (trocando de calha se preciso).
+  const ROTULO_PASSO = {
+    atende: 'Pronto', ressalva: 'Pronto, com ressalva', nao_atende: 'Não atende', fora_do_dominio: 'Fora do ábaco',
+    sem_suporte: 'Sem dado válido', incompleta: 'Falta', invalida: 'Entrada inválida', aguarda: 'Aguarda o passo anterior',
+  };
+  let passosAtual = {};
+  function renderPassos(P) {
+    passosAtual = P.passos || {};
+    $$('[data-estado-passo]').forEach(function (el) {
+      const s = passosAtual[el.dataset.estadoPasso];
+      if (!s) { el.innerHTML = ''; return; }
+      const cls = s.estado === 'aguarda' ? '' : PJ.EXIBICAO[s.estado];
+      const txt = s.texto && s.estado !== 'atende' && s.estado !== 'aguarda' ? ': ' + esc(s.texto) : '';
+      el.className = 'passo-estado ' + (s.estado === 'atende' ? 'ok' : s.estado === 'aguarda' ? 'aguarda' : 'pendente');
+      el.innerHTML = '<i class="ponto ' + cls + '"></i><span><b>' + ROTULO_PASSO[s.estado] + '</b>' + txt + '</span>';
+    });
+  }
+
+  // "Como escolher": a opção escolhida em destaque e, recolhidas, todas as opções para comparar.
+  function montarGuias() {
+    $$('[data-guia]').forEach(function (el) {
+      const g = GUIAS[el.dataset.guia];
+      if (!g) return;
+      const ops = g.opcoes ? Object.keys(g.opcoes) : [];
+      el.innerHTML = (g.intro ? '<p class="guia-intro">' + esc(g.intro) + '</p>' : '') +
+        (ops.length && g.atual !== false ? '<p class="guia-atual" data-guia-atual></p>' : '') +
+        (ops.length ? '<details class="guia-todas"><summary>' + (g.atual === false ? 'Como escolher cada opção' : 'Quando escolher cada opção') + '</summary><dl>' +
+          ops.map(function (k) { return '<div data-guia-op="' + esc(k) + '"><dt>' + esc(g.opcoes[k][0]) + '</dt><dd>' + esc(g.opcoes[k][1]) + '</dd></div>'; }).join('') +
+          '</dl></details>' : '');
+    });
+  }
+  // Calhas cujo transbordamento entra na construção: a norma pede 25 anos (5.1.2 c).
+  function alertaT() {
+    if (Number(estado.T) >= 25) return '';
+    const cr = estado.calhas.filter(function (c) { return c.tipoCalha === 'platibanda' || c.tipoCalha === 'agua-furtada'; });
+    if (!cr.length) return '';
+    return '<span class="guia-alerta">Neste projeto, ' + cr.map(function (c) { return '"' + esc(c.nome || 'calha sem nome') + '"'; }).join(', ') +
+      (cr.length > 1 ? ' ficam' : ' fica') + ' em platibanda ou água-furtada: se transbordar, a água entra na construção. Considere 25 anos.</span>';
+  }
+  function renderGuias() {
+    const c = calhaAtiva();
+    const atual = {
+      modoI: estado.modoI, T: String(estado.T), saidas: c.saidas, curva: c.curva, forma: c.forma,
+      fracLamina: String(c.fracLamina), saida: c.saida, fonteH: c.fonteH, linhaV: PJ.linhaVertical(estado),
+    };
+    $$('[data-guia]').forEach(function (el) {
+      const k = el.dataset.guia;
+      const g = GUIAS[k];
+      if (!g || !g.opcoes) return;
+      const v = atual[k];
+      el.querySelectorAll('[data-guia-op]').forEach(function (d) { d.classList.toggle('on', d.dataset.guiaOp === v); });
+      const p = el.querySelector('[data-guia-atual]');
+      if (!p) return;
+      const o = g.opcoes[v];
+      p.innerHTML = o ? '<b>' + esc(o[0]) + ':</b> ' + esc(o[1]) + (k === 'T' ? alertaT() : '') : '';
+    });
   }
 
   // Deixa visível o que falta ou está inválido: os campos das pendências da calha ativa e do
@@ -878,6 +998,9 @@
     renderQuadro(P);
     renderResumo(P);
     renderCoach(P);
+    renderPassos(P);
+    renderGuias();
+    renderCatalogoV();
     marcarPendencias();
     renderResposta(P);
     renderMateriais(P);
@@ -997,7 +1120,7 @@
     });
   }
 
-  // Pelo painel das calhas, foca o nome da nova; pela barra do topo, leva ao item 5.2.
+  // Pelo painel das calhas, foca o nome da nova; pela barra do topo, leva ao passo B.1.
   function criarCalha(focarNome) {
     ler();
     const c = novaCalha('Calha ' + (estado.calhas.length + 1));
@@ -1008,7 +1131,7 @@
     atualizar();
     if (focarNome) $('#nome-calha').focus();
     else $('#s52').scrollIntoView();
-    toast('Nova calha criada. Marque-a no trecho de coletor que recebe seus condutores (5.7).');
+    toast('Nova calha criada. Marque-a no trecho de coletor que recebe seus condutores (passo C).');
   }
 
   function ativarCalha(id, rolar) {
@@ -1065,10 +1188,19 @@
       if (t.type === 'radio' || t.tagName === 'SELECT' || t.type === 'checkbox') {
         nomeExemplo = null;
         const posAntes = calhaAtiva().posicao;
+        const linhaAntes = PJ.linhaVertical(estado);
         ler();
         if (t.name === 'posicao') aplicarPosicao(calhaAtiva(), posAntes);
         normalizarOpcoes();
         if (t.id === 'local' || t.name === 'modoI') montarOpcoesT();
+        if (t.id === 'materialV') montarLinhaV();
+        // "Meus tubos" começa com a linha que estava escolhida, para editar em vez de digitar do zero.
+        if (t.id === 'linhaV' && t.value === 'usuario' && !estado.tubos.length && linhaAntes !== 'usuario') {
+          estado.tubos = tubosDaLinha(linhaAntes, 'vertical').map(function (x) { return { dn: x.dn, di: x.di }; });
+          montarTubos();
+          toast('Lista copiada de "' + linhaTubo(linhaAntes).curto + '": troque pelos DN e Di do seu tubo');
+        }
+        if (t.dataset.trecho !== undefined && ['material', 'linha', 'instalacao'].indexOf(t.dataset.campo) >= 0) montarTrechos();
         atualizar();
       }
     });
@@ -1082,6 +1214,12 @@
         return;
       }
       if (ev.target.closest('#btn-coach')) { irPara(pendAtual[0]); return; }
+      const passo = ev.target.closest('[data-ir-passo]');
+      if (passo) {
+        const s = passosAtual[passo.dataset.irPasso];
+        if (s && s.pend) { ev.preventDefault(); irPara(s.pend); }
+        return;
+      }
       const remTubo = ev.target.closest('[data-remover-tubo]');
       if (remTubo) {
         ler();
@@ -1145,7 +1283,7 @@
       nomeExemplo = null;
       preencher();
       atualizar();
-      toast('Calha duplicada. Marque a cópia no trecho de coletor que a recebe (5.7).');
+      toast('Calha duplicada. Marque a cópia no trecho de coletor que a recebe (passo C).');
     });
     $('#btn-remover-calha').addEventListener('click', function () {
       if (estado.calhas.length < 2) return;
@@ -1187,7 +1325,7 @@
       estado.tubos = tubosPadrao();
       montarTubos();
       atualizar();
-      toast('Lista de tubos restaurada (valores aproximados de PVC)');
+      toast('Lista copiada da Série Normal (Tigre e Amanco): troque pelos valores do seu tubo');
     });
     $('#btn-copiar-materiais').addEventListener('click', function () {
       copiar(textoMateriais(), 'Lista de materiais copiada', 'Não deu para copiar a lista');
@@ -1259,6 +1397,7 @@
     iniciarVerificacoes();
     iniciarBarraCalha();
     montarSelects();
+    montarGuias();
     const ini = carregarInicial();
     estado = ini.estado;
     nomeExemplo = ini.exemplo;
