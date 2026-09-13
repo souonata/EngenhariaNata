@@ -12,7 +12,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (N, U, PJ) {
   'use strict';
 
-  const { esc, nf, na, num, z, lerNum, mostrarNum, lerLista, normaliza, uid, copia, MAT_C, MAT_H, matCalha, matHor, tubosPadrao, avisosHtml, grande, pares, nota, aguardando, cabecalho, descSecao, ROTULO_STATUS, seloStatus } = U;
+  const { esc, nf, na, num, z, lerNum, mostrarNum, lerLista, normaliza, uid, copia, MAT_C, MAT_H, matCalha, matHor, tubosPadrao, linhaTubo, rotuloTubo, avisosHtml, grande, pares, nota, aguardando, cabecalho, descSecao, ROTULO_STATUS, seloStatus } = U;
   const textoSaidas = PJ.textoSaidas;
   const TEXTO_FONTE_H = PJ.TEXTO_FONTE_H;
 
@@ -27,6 +27,24 @@
     espacadas: 'saídas igualmente espaçadas',
     personalizadas: 'saídas em posições informadas',
   };
+
+  function pct(x) { return (x >= 0 ? '+' : '') + nf(x * 100, 0) + '%'; }
+  function diTexto(t) { return t.de ? 'DE ' + na(t.de) + ' − 2 × ' + na(t.e) + ' = Di ' + na(t.di) + ' mm' : 'Di ' + na(t.di) + ' mm'; }
+
+  // Tubo adotado com a origem do diâmetro interno: catálogo (DE e e do fabricante) ou informado.
+  function textoTuboV(v, estado) {
+    const t = v.adocao.tubo;
+    const lin = linhaTubo(v.linha);
+    const nome = (t.dn ? 'DN ' + t.dn + ', ' : '') + (v.linha === 'usuario' ? PJ.matVertical(estado).toLowerCase() + ', tubo informado pelo usuário' : lin.rotulo);
+    return 'Adotado ' + nome + ': ' + diTexto(t) + ' ≥ ' + nf(v.adocao.minimo) + ' mm' + (v.adocao.peloMinimo ? ' (mínimo de 70 mm do item 5.6.3)' : '') +
+      '; folga de diâmetro ' + pct(v.folga) + '.' + (t.de ? ' Fonte: ' + lin.fonte + '.' : '');
+  }
+  function textoTuboH(T) {
+    const t = T.escolhido;
+    return 'Adotado ' + (t.dn ? 'DN ' + t.dn + ' (' + diTexto(t) + ')' : diTexto(t)) + ': capacidade ' + nf(t.Q, 0) + ' L/min ' +
+      (t.fonteQ === 'Tabela 4' ? '(valor impresso na Tabela 4, mesmas condições)' : '(Manning a 2/3 do Di)') + '; uso ' + nf(T.uso * 100, 0) + '% da capacidade.' +
+      (t.de ? ' Fonte: ' + T.linhaInfo.fonte + '.' : '');
+  }
 
   function memorialCalha(R, estado) {
     const e = R.c;
@@ -66,7 +84,7 @@
       passos.push(['5.6', 'Condutor vertical', [
         'Ábaco (' + e.saida + ') da Figura 3, ' + (e.saida === 'a' ? 'saída em aresta viva' : 'funil de saída') + ': Q = ' + nf(R.Qcond, 1) + ' L/min, H = ' + nf(R.H) + ' mm (' + TEXTO_FONTE_H[e.fonteH] + '), L = ' + na(num(e.Lcond)) + ' m.',
         'D pela curva H = ' + (v.DH < 50 ? '< 50' : nf(v.DH)) + ' mm; pela curva L = ' + (v.DL < 50 ? '< 50' : nf(v.DL)) + ' mm; vale a interseção mais alta: D = ' + (v.D < 50 ? '< 50' : nf(v.D)) + ' mm.',
-        v.adocao.tubo ? 'Adotado DN ' + v.adocao.tubo.dn + ' de ' + PJ.matVertical(estado).toLowerCase() + ' (diâmetro interno ' + na(v.adocao.tubo.di) + ' mm ≥ ' + nf(v.adocao.minimo) + ' mm' + (v.adocao.peloMinimo ? ', mínimo de 70 mm do item 5.6.3' : '') + ').' : 'Nenhum tubo disponível atende.',
+        v.adocao.tubo ? textoTuboV(v, estado) : v.adocao.semTubos ? 'Sem tubos: informe o diâmetro interno dos tubos de ' + PJ.matVertical(estado).toLowerCase() + ' (Di ≥ ' + nf(v.adocao.minimo) + ' mm).' : 'Nenhum tubo disponível atende.',
       ].concat(v.avisos.map(function (a) { return 'Obs.: ' + a.texto; }))]);
     }
     return passos;
@@ -100,9 +118,10 @@
           const linhas = [
             'Recebe: ' + (T.recebe.length ? T.recebe.map(function (r) { return r.c.nome || 'sem nome'; }).join(', ') : 'nenhuma calha') +
               (z(num(T.t.Qextra)) > 0 ? ' + ' + nf(num(T.t.Qextra), 0) + ' L/min extra' : '') + '. Q = ' + nf(T.Q, 1) + ' L/min.',
-            T.mat.rotulo + ' (n = ' + nf(T.n, 3) + '), ' + (T.t.instalacao === 'aparente' ? 'aparente' : 'enterrado') + ', i = ' + na(T.i * 100) + '%, lâmina 2/3 D.',
+            T.mat.rotulo + ' (n = ' + nf(T.n, 3) + '), ' + (T.t.instalacao === 'aparente' ? 'aparente' : 'enterrado') + ', i = ' + na(T.i * 100) + '%, lâmina 2/3 do Di.',
+            'Tubo: ' + T.linhaInfo.rotulo + '.',
           ];
-          if (T.pronto) linhas.push(T.escolhido ? 'Adotado D = ' + T.escolhido.D + ' mm (capacidade ' + nf(T.escolhido.Q, 0) + ' L/min).' : 'Nenhum diâmetro até 300 mm atende.');
+          if (T.pronto) linhas.push(T.escolhido ? textoTuboH(T) : 'Nenhum tubo da linha atende.');
           if (T.desnivel != null) linhas.push('Desnível: ' + nf(T.desnivel * 100, 1) + ' cm em ' + na(num(T.t.comp)) + ' m.');
           return ['5.7', T.t.nome || 'Trecho', linhas];
         }),
@@ -111,14 +130,18 @@
     const concl = [];
     const prontas = P.calhas.filter(function (r) { return r.calha.pronta; });
     if (prontas.length) concl.push(prontas.length + ' calha(s): ' + prontas.map(function (r) { return (r.c.nome || 'sem nome') + ' ' + descSecao(r.calha) + ' mm'; }).join('; '));
-    const porDN = {};
+    const porTubo = {};
+    const ordemTubo = [];
     P.calhas.forEach(function (r) {
-      if (r.vert.pronto && r.vert.adocao.tubo) porDN[r.vert.adocao.tubo.dn] = (porDN[r.vert.adocao.tubo.dn] || 0) + r.dist.n;
+      if (!(r.vert.pronto && r.vert.adocao.tubo)) return;
+      const k = rotuloTubo(r.vert.adocao.tubo);
+      if (!(k in porTubo)) { porTubo[k] = 0; ordemTubo.push([r.vert.adocao.tubo.di, k]); }
+      porTubo[k] += r.dist.n;
     });
-    const dns = Object.keys(porDN).sort(function (a, b) { return a - b; });
-    if (dns.length) concl.push('condutores verticais: ' + dns.map(function (dn) { return porDN[dn] + ' × DN ' + dn; }).join(', '));
+    ordemTubo.sort(function (a, b) { return a[0] - b[0]; });
+    if (ordemTubo.length) concl.push('condutores verticais: ' + ordemTubo.map(function (x) { return porTubo[x[1]] + ' × ' + x[1]; }).join(', '));
     const trs = P.trechos.filter(function (T) { return T.escolhido; });
-    if (trs.length) concl.push('coletores: ' + trs.map(function (T) { return (T.t.nome || 'trecho') + ' D ' + T.escolhido.D + ' mm'; }).join(', '));
+    if (trs.length) concl.push('coletores: ' + trs.map(function (T) { return (T.t.nome || 'trecho') + ' ' + rotuloTubo(T.escolhido); }).join(', '));
     // A conclusão diz a situação do projeto antes do resultado: nunca um resultado "limpo" de
     // um projeto com pendência ou ressalva.
     const sit = P.status !== 'ok' ? 'Situação do projeto: ' + ROTULO_STATUS[P.status] + '. ' : '';

@@ -187,6 +187,15 @@ npm run build          # build de produção (gera local/dist)
 
 _Última atualização: 2026-09-13_
 
+- **CALHA 3.7.0 — ONDA 2 E PASSOS A–C (PUBLICADA EM 2026-09-13, branch `feat/calha-onda2-catalogo`):**
+  D4 = Tigre e Amanco Wavin (fichas levantadas em `calha/referencias/catalogo-tubos-tigre-amanco.md`,
+  local). Catálogo com Di = DE − 2e por linha (PVC Série Normal/Reforçada NBR 5688, condutores
+  Aquapluv 88 e Calha Pluvial Amanco, coletor NBR 7362); coletor escolhido pelo Di real
+  (Manning 2/3), valor impresso da Tabela 4 só em condições idênticas, material sem catálogo com
+  ressalva ou "meus tubos"; folga/uso/margem. Títulos do site trocados de "Item 5.x" por passos
+  A, B.1–B.4, C; "Como usar" virou painel com a situação de cada passo (clique leva ao campo); guias
+  "como escolher" em cada opção. Detalhes em `calha/HANDOFF.md`. `npm run validate` 45/411.
+
 - **CALHA — PLANO DA AUDITORIA E ONDA 1 (3.6.0, 2026-09-13):** o plano de correções para
   nota 9–10 está em `calha/referencias/plano-implementacao-auditoria.md` (artefato local, não
   versionado, como o resto de `calha/referencias/`; os PDFs de norma e o texto extraído dela

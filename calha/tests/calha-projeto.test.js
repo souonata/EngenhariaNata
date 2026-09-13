@@ -10,11 +10,12 @@ const E = require('../calha-estado.js');
 const P = require('../calha-projeto.js');
 const M = require('../calha-memorial.js');
 
-test('Galpão: 924,5 L/min por água, coletor D 200 → D 250, nada pendente', () => {
+test('Galpão: 924,5 L/min por água, coletor NBR 7362 DN 200 → DN 250, nada pendente', () => {
   const e = E.EXEMPLOS.galpao().estado;
   const r = P.calcularProjeto(e);
   r.calhas.forEach((c) => assert.equal(c.Q.toFixed(1), '924.5'));
-  assert.deepEqual(r.trechos.map((t) => t.escolhido.D), [200, 250]);
+  assert.deepEqual(r.trechos.map((t) => t.escolhido.dn), [200, 250]);
+  assert.deepEqual(r.trechos.map((t) => t.escolhido.di), [191, 237.8]);
   assert.equal(P.pendencias(r, e).length, 0);
 });
 

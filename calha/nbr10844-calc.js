@@ -556,9 +556,20 @@
     return manning(g.S, g.P, n, i);
   }
 
+  // 5.7.2: capacidade a 2/3 do diâmetro INTERNO real de cada tubo, por Manning. Um Di
+  // comercial nunca recebe a capacidade de outro diâmetro da tabela. Política da Tabela 4
+  // (plano de 13/09/2026, seção 3.7): com Di igual a um D da tabela (±0,05 mm) e n e i iguais
+  // aos de uma coluna, o aceite usa o valor impresso, e a linha registra "Tabela 4".
   function condutorHorizontal(p) {
-    const linhas = DADOS.TABELA4.diametros.map(function (D) {
-      return { D: D, Q: qCondutorHorizontal(D, p.n, p.i) };
+    const t4 = DADOS.TABELA4;
+    const base = p.tubos || t4.diametros.map(function (D) { return { dn: null, di: D, origem: 'norma' }; });
+    const tubos = base.filter(function (t) { return t.di > 0; }).slice().sort(function (a, b) { return a.di - b.di; });
+    const coluna = t4.Q[p.n] ? t4.declividades.findIndex(function (d) { return Math.abs(d - p.i) < 1e-9; }) : -1;
+    const linhas = tubos.map(function (t) {
+      const Qm = qCondutorHorizontal(t.di, p.n, p.i);
+      const k = coluna >= 0 ? t4.diametros.findIndex(function (D) { return Math.abs(D - t.di) <= 0.05; }) : -1;
+      const Qt = k >= 0 ? t4.Q[p.n][k][coluna] : null;
+      return Object.assign({}, t, { D: t.di, Qmanning: Qm, Qtabela: Qt, Q: Qt != null ? Qt : Qm, fonteQ: Qt != null ? 'Tabela 4' : 'Manning' });
     });
     const escolhido = linhas.find(function (l) { return l.Q >= p.Q; }) || null;
     return { linhas: linhas, escolhido: escolhido };

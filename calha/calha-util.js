@@ -61,6 +61,24 @@
   function matHor(id) { return MAT_H.find(function (m) { return m.id === id; }) || MAT_H[0]; }
   function tubosPadrao() { return DD.TUBOS_VERTICAIS.map(function (t) { return { dn: t.dn, di: t.di }; }); }
 
+  // Linha de tubo do catálogo, ou uma das duas origens sem catálogo: a Tabela 4 (D da norma
+  // como diâmetro interno, a confirmar) e os tubos informados pelo usuário.
+  const LINHA_TABELA4 = { id: 'tabela4', rotulo: 'Diâmetros da Tabela 4 (confirmar o Di do tubo)', curto: 'Di da Tabela 4', fonte: 'NBR 10844, Tabela 4 (diâmetro interno)' };
+  const LINHA_USUARIO = { id: 'usuario', rotulo: 'Meus tubos (DN e diâmetro interno do catálogo)', curto: 'tubo informado', fonte: 'diâmetros internos informados pelo usuário' };
+  function linhaTubo(id) {
+    if (id === 'tabela4') return LINHA_TABELA4;
+    return DD.LINHAS_TUBO.find(function (l) { return l.id === id; }) || LINHA_USUARIO;
+  }
+  function tubosDaLinha(id, uso) {
+    return DD.CATALOGO_TUBOS.filter(function (t) {
+      return t.linha === id && (uso !== 'vertical' || t.di >= DD.DIAMETRO_MINIMO_VERTICAL);
+    });
+  }
+  function rotuloTubo(t) {
+    if (!t) return '—';
+    return t.dn ? 'DN ' + t.dn + ' (Di ' + na(t.di) + ' mm)' : 'Di ' + na(t.di) + ' mm';
+  }
+
   /* ------------------------------------------------------------------ */
   /* Pedaços de HTML                                                    */
   /* ------------------------------------------------------------------ */
@@ -116,6 +134,9 @@
     matCalha: matCalha,
     matHor: matHor,
     tubosPadrao: tubosPadrao,
+    linhaTubo: linhaTubo,
+    tubosDaLinha: tubosDaLinha,
+    rotuloTubo: rotuloTubo,
     avisosHtml: avisosHtml,
     grande: grande,
     pares: pares,

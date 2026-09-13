@@ -31,7 +31,8 @@
     };
   }
   function novoTrecho(nome, ids) {
-    return { id: uid(), nome: nome || 'Trecho', calhas: ids || [], Qextra: '', material: 'pvc', decl: 1, comp: '', instalacao: 'enterrado' };
+    // linha 'auto': coletor NBR 7362 enterrado e Série Normal aparente (PVC); Tabela 4 nos demais.
+    return { id: uid(), nome: nome || 'Trecho', calhas: ids || [], Qextra: '', material: 'pvc', decl: 1, comp: '', instalacao: 'enterrado', linha: 'auto', tubosH: '' };
   }
   function estadoVazio() {
     const c = novaCalha('Calha 1');
@@ -39,7 +40,8 @@
       versao: 3, projeto: '',
       modoI: 'tabela', localId: '', T: 5, areaProj: '', Imanual: '', Tmanual: '', fonteChuva: '',
       idfK: '', idfA: '', idfB: '', idfC: '',
-      materialV: 'pvc', tubos: tubosPadrao(),
+      // Condutores verticais: linha do catálogo; `tubos` são os que o usuário informa (linha 'usuario').
+      materialV: 'pvc', linhaV: 'pvc-sn', tubos: [],
       calhas: [c], ativa: c.id,
       trechos: [novoTrecho('Coletor 1', [c.id])],
     };
@@ -113,14 +115,38 @@
       if (!MAT_C.some(function (m) { return m.id === c.material; })) c.material = MAT_C[0].id;
     });
     if (!DD.MATERIAIS_VERTICAL.some(function (m) { return m.id === e.materialV; })) e.materialV = DD.MATERIAIS_VERTICAL[0].id;
-    if (!Array.isArray(e.tubos)) e.tubos = tubosPadrao();
+    if (!Array.isArray(e.tubos)) e.tubos = [];
+    const linhaV = DD.LINHAS_TUBO.find(function (l) { return l.id === e.linhaV; });
+    if (e.linhaV !== 'usuario' && !(linhaV && linhaV.usos.indexOf('vertical') >= 0)) e.linhaV = 'pvc-sn';
     e.trechos.forEach(function (t) {
       if (!MAT_H.some(function (m) { return m.id === t.material; })) t.material = MAT_H[0].id;
       if (t.instalacao !== 'aparente') t.instalacao = 'enterrado';
+      const l = DD.LINHAS_TUBO.find(function (x) { return x.id === t.linha; });
+      if (['auto', 'usuario', 'tabela4'].indexOf(t.linha) < 0 && !(l && l.usos.indexOf('horizontal') >= 0)) t.linha = 'auto';
+      if (typeof t.tubosH !== 'string') t.tubosH = '';
       t.calhas = t.calhas.filter(function (id) { return e.calhas.some(function (c) { return c.id === id; }); });
     });
     if (!e.calhas.some(function (c) { return c.id === e.ativa; })) e.ativa = e.calhas[0].id;
     return e;
+  }
+
+  // Antes do catálogo (3.6.x e anteriores) havia uma só lista de tubos, com Di aproximados de
+  // PVC. A lista intacta vira a Série Normal do catálogo; uma lista editada continua valendo,
+  // como tubos informados pelo usuário. Material sem catálogo não herda os Di de PVC.
+  const TUBOS_ANTIGOS = [[75, 72], [100, 97], [150, 146], [200, 194]];
+  function migrarTubos(e, s) {
+    if (s.linhaV !== undefined) return;
+    const t = Array.isArray(s.tubos) ? s.tubos : null;
+    const intacta = !t || (t.length === TUBOS_ANTIGOS.length && t.every(function (x, k) {
+      return Number(x.dn) === TUBOS_ANTIGOS[k][0] && Number(x.di) === TUBOS_ANTIGOS[k][1];
+    }));
+    if (intacta) {
+      e.linhaV = e.materialV === 'pvc' ? 'pvc-sn' : 'usuario';
+      e.tubos = [];
+    } else {
+      e.linhaV = 'usuario';
+      e.tubos = t.map(function (x) { return { dn: x.dn, di: x.di }; });
+    }
   }
 
   function migrar(s) {
@@ -128,6 +154,7 @@
       const e = Object.assign(estadoVazio(), s);
       e.calhas = (s.calhas || []).map(function (c) { return Object.assign(novaCalha(), c); });
       e.trechos = (s.trechos || []).map(function (t) { return Object.assign(novoTrecho(), t); });
+      migrarTubos(e, s);
       return validar(e);
     }
     // Versões 1 e 2: uma calha só, com os campos soltos no estado.
@@ -148,6 +175,7 @@
     if (v.materialH) t.material = v.materialH;
     if (v.declH !== undefined) t.decl = v.declH;
     if (v.QHauto === false) { t.calhas = []; t.Qextra = v.QH; }
+    migrarTubos(e, v);
     return validar(e);
   }
 
