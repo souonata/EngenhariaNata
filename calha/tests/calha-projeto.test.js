@@ -103,19 +103,33 @@ test('Migração: estado da versão 2 vira projeto com uma calha e um trecho', (
   assert.match(M.memorial(r, e).conclusao, /DN/);
 });
 
-test('Lâmina calculada abaixo do ábaco vira pendência do item 5.6, sem diâmetro', () => {
+test('Lâmina limite abaixo do ábaco vira pendência do item 5.6 e leva à altura da calha', () => {
   const e = E.EXEMPLOS.residencia().estado;
-  e.calhas[0].fonteH = 'calculada';
+  // 120 × 70 com lâmina de 2/3: a calha atende (y 42 mm), mas H = 46,7 mm fica abaixo da
+  // menor curva do ábaco.
+  e.calhas[0].h = 70;
   const r = P.calcularProjeto(e);
   const R = r.calhas[0];
-  assert.ok(R.H < 50);
+  assert.ok(R.calha.ok);
+  assert.ok(Math.abs(R.H - 0.6667 * 70) < 1e-9, 'lâmina 0,6667 × 70 mm');
   assert.equal(R.vert.fora, 'H');
   assert.equal(R.vert.adocao.tubo, null);
   assert.equal(R.status, 'fora');
   const p = P.pendencias(r, e);
   assert.equal(p[0].item, '5.6');
-  assert.equal(p[0].alvo, 'input[name="fonteH"]');
+  assert.equal(p[0].alvo, '#h');
   assert.match(M.memorial(r, e).grupos[1].passos.find((x) => x[0] === '5.6')[2][1], /sem extrapolar/);
+});
+
+test('As opções "lâmina calculada" e "digitar" saíram: projetos salvos usam a lâmina limite', () => {
+  ['calculada', 'digitada'].forEach((f) => {
+    const s = JSON.parse(JSON.stringify(E.EXEMPLOS.residencia().estado));
+    Object.assign(s.calhas[0], { fonteH: f, Hlam: 30 });
+    const e = E.migrar(s);
+    assert.equal(e.calhas[0].fonteH, 'limite', f);
+    const R = P.calcularProjeto(e).calhas[0];
+    assert.ok(Math.abs(R.H - R.calha.yLim * 1000) < 1e-9, f);
+  });
 });
 
 test('Relatório em PDF: uma seção por calha, com seção desenhada, ábaco e ids únicos', () => {

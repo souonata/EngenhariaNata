@@ -113,6 +113,8 @@
     if (!e.calhas.length) e.calhas = [novaCalha('Calha 1')];
     e.calhas.forEach(function (c) {
       if (!MAT_C.some(function (m) { return m.id === c.material; })) c.material = MAT_C[0].id;
+      // As opções "lâmina calculada" e "digitar" saíram na 3.7.1: H é sempre a lâmina limite.
+      c.fonteH = 'limite';
     });
     if (!DD.MATERIAIS_VERTICAL.some(function (m) { return m.id === e.materialV; })) e.materialV = DD.MATERIAIS_VERTICAL[0].id;
     if (!Array.isArray(e.tubos)) e.tubos = [];
@@ -163,7 +165,7 @@
       if (MAPA_MAT_C[v.material]) v.material = MAPA_MAT_C[v.material];
       if (MAPA_MAT_H[v.materialH]) v.materialH = MAPA_MAT_H[v.materialH];
       if (MAPA_SAIDAS[v.saidas]) v.saidas = MAPA_SAIDAS[v.saidas];
-      v.fonteH = v.Hauto === false ? 'digitada' : 'limite';
+      v.fonteH = 'limite';
     }
     const e = estadoVazio();
     ['projeto', 'modoI', 'localId', 'T', 'areaProj', 'Imanual', 'Tmanual', 'idfK', 'idfA', 'idfB', 'idfC', 'tubos'].forEach(function (k) {

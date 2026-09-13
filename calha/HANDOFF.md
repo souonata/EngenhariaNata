@@ -239,3 +239,18 @@ revisões das fichas, em `calha/referencias/catalogo-tubos-tigre-amanco.md` (loc
   guia avisa quando há calha de platibanda ou água-furtada com T < 25 (5.1.2 c).
 - Testes: `tests/onda2-catalogo.test.js` (T-C1-01/02/04, T-M1, B2, B3, migração, passos);
   `npm run validate` 45 arquivos/411 testes. Scripts com `?v=3.7.0`.
+
+## 3.7.1 — H só pela lâmina máxima admitida
+Pedido do usuário (13/09/2026): saíram as opções "Lâmina calculada" e "Digitar" do passo B.4.
+A calculada (lâmina da vazão de projeto) quase sempre ficava abaixo de 50 mm, sem leitura no
+ábaco, e o H digitado podia não corresponder à calha. Agora H = lâmina limite do passo B.3
+(`R.H = yLim`); se ela ficar abaixo de 50 mm, a pendência leva à altura da seção (`#h`, `#Dcalha`
+ou `#ht`). Projetos salvos com `fonteH` 'calculada' ou 'digitada' migram para 'limite' (`validar`);
+`Hlam` fica ignorado. Saíram os códigos H_NEGATIVO, H_ACIMA_ALTURA e H_ACIMA_LIMITE (a C4 da
+auditoria deixou de existir: não há H fora da calha). Scripts com `?v=3.7.1`.
+- **Semicircular e Tabela 3** (pedido do usuário no mesmo dia): o botão "Escolher o menor
+  diâmetro" usa só os diâmetros da Tabela 3 (100, 125, 150 e 200 mm); se nem o de 200 basta,
+  não inventa medida (antes arredondava para qualquer D acima de 200) e sugere mais saídas ou
+  outra forma. A conferência com a Tabela 3 (`N.qTabela3`, linear em D e em i) passou a valer
+  também entre os nós, dentro de 100–200 mm e 0,5–2%; fora disso, nota `FORA_TABELA3` e vale
+  só Manning.

@@ -112,6 +112,28 @@ test('Dimensionar calha devolve seção que atende', () => {
   assert.equal(Math.round(s.dims.D * 1000), 150); // Tabela 3: 150 mm a 1% leva 541 L/min
 });
 
+test('Semicircular: o botão só escolhe diâmetros da Tabela 3; fora dela não inventa medida', () => {
+  const s = N.dimensionarCalha({ forma: 'semicircular', dims: {}, Q: 3000, n: 0.011, i: 0.01, fracLamina: 1 });
+  assert.equal(s.dims, null, '200 mm a 1% leva 1167 L/min: não basta');
+  assert.equal(s.semTabela, true);
+  assert.ok(s.Dmin * 1000 > 200);
+  [100, 125, 150, 200].forEach((Dt) => {
+    const r = N.dimensionarCalha({ forma: 'semicircular', dims: {}, Q: N.qTabela3(Dt, 0.005) * 0.99, n: 0.011, i: 0.005, fracLamina: 1 });
+    assert.ok(D.CALHAS_SEMICIRCULARES.includes(Math.round(r.dims.D * 1000)), 'Q da linha de ' + Dt + ' mm');
+  });
+});
+
+test('Tabela 3 interpolada: valores exatos nos nós, linear entre eles e nada fora da tabela', () => {
+  assert.equal(N.qTabela3(150, 0.01), 541);
+  assert.equal(N.qTabela3(100, 0.02), 256);
+  assert.ok(Math.abs(N.qTabela3(175, 0.01) - (541 + 1167) / 2) < 1e-9, 'meio caminho entre 150 e 200 mm');
+  assert.ok(Math.abs(N.qTabela3(150, 0.015) - (541 + 757) / 2) < 1e-9, 'meio caminho entre 1% e 2%');
+  assert.equal(N.qTabela3(90, 0.01), null);
+  assert.equal(N.qTabela3(250, 0.01), null);
+  assert.equal(N.qTabela3(150, 0.03), null);
+  assert.equal(N.qTabela3(150, 0.004), null);
+});
+
 test('Chapa: desenvolvimento e corte usual', () => {
   const dev = N.desenvolvimento('retangular', { b: 0.12, h: 0.08 }, 0.04);
   assert.ok(Math.abs(dev - 0.32) < 1e-12);

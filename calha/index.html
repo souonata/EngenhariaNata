@@ -16,7 +16,7 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;1,400&family=Barlow+Condensed:wght@500;600;700&family=STIX+Two+Text:ital,wght@1,400;1,500&display=swap"
     />
-    <link rel="stylesheet" href="calha.css?v=3.7.0" />
+    <link rel="stylesheet" href="calha.css?v=3.7.1" />
   </head>
   <body>
     <svg aria-hidden="true" width="0" height="0" style="position: absolute">
@@ -504,23 +504,12 @@
             </div>
           </fieldset>
           <div class="guia" data-guia="saida"></div>
-          <fieldset>
-            <legend>Lâmina <var>H</var> na calha, usada no ábaco</legend>
-            <div class="seg">
-              <div>
-                <label><input type="radio" name="fonteH" value="limite" /><span>Lâmina máxima admitida</span></label>
-                <label><input type="radio" name="fonteH" value="calculada" /><span>Lâmina calculada</span></label>
-                <label><input type="radio" name="fonteH" value="digitada" /><span>Digitar</span></label>
-              </div>
-            </div>
-          </fieldset>
-          <div class="guia" data-guia="fonteH"></div>
+          <p class="nota-norma">
+            <strong>Lâmina <var>H</var></strong>A lâmina na calha usada no ábaco (5.6.4) é a lâmina
+            máxima admitida, escolhida no passo B.3. O ábaco lê <var>H</var> de 50 a 100 mm: se a
+            lâmina ficar abaixo de 50 mm, aumente a altura da calha.
+          </p>
           <div class="linha-campos">
-            <label class="campo" data-so-h>
-              <span>Lâmina na calha <var>H</var></span>
-              <span class="com-unidade"><input id="Hlam" class="num" type="text" inputmode="decimal" /><em>mm</em></span>
-              <small class="dica">Até a altura da calha; acima da lâmina limite adotada, a calha não atende.</small>
-            </label>
             <label class="campo">
               <span>Comprimento do condutor <var>L</var></span>
               <span class="com-unidade"><input id="Lcond" class="num" type="text" inputmode="decimal" /><em>m</em></span>
@@ -726,16 +715,16 @@
 
     <div class="toast" id="toast" role="status" hidden></div>
 
-    <script src="nbr10844-dados.js?v=3.7.0"></script>
-    <script src="nbr10844-abacos.js?v=3.7.0"></script>
-    <script src="nbr10844-calc.js?v=3.7.0"></script>
-    <script src="calha-util.js?v=3.7.0"></script>
-    <script src="calha-estado.js?v=3.7.0"></script>
-    <script src="calha-projeto.js?v=3.7.0"></script>
-    <script src="calha-desenhos.js?v=3.7.0"></script>
-    <script src="calha-memorial.js?v=3.7.0"></script>
-    <script src="calha-relatorio.js?v=3.7.0"></script>
-    <script src="calha-guias.js?v=3.7.0"></script>
-    <script src="calha-app.js?v=3.7.0"></script>
+    <script src="nbr10844-dados.js?v=3.7.1"></script>
+    <script src="nbr10844-abacos.js?v=3.7.1"></script>
+    <script src="nbr10844-calc.js?v=3.7.1"></script>
+    <script src="calha-util.js?v=3.7.1"></script>
+    <script src="calha-estado.js?v=3.7.1"></script>
+    <script src="calha-projeto.js?v=3.7.1"></script>
+    <script src="calha-desenhos.js?v=3.7.1"></script>
+    <script src="calha-memorial.js?v=3.7.1"></script>
+    <script src="calha-relatorio.js?v=3.7.1"></script>
+    <script src="calha-guias.js?v=3.7.1"></script>
+    <script src="calha-app.js?v=3.7.1"></script>
   </body>
 </html>

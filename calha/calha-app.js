@@ -28,9 +28,9 @@
   const CHAVE_VERIF = 'calha10844:verificacoes';
 
   const G_NUM = ['areaProj', 'Imanual', 'Tmanual', 'idfK', 'idfA', 'idfB', 'idfC'];
-  const C_NUM = ['Lc', 'xSaida', 'nSaidas', 'decl', 'b', 'h', 'Dcalha', 'bt', 'z', 'ht', 'abas', 'Hlam', 'Lcond'];
+  const C_NUM = ['Lc', 'xSaida', 'nSaidas', 'decl', 'b', 'h', 'Dcalha', 'bt', 'z', 'ht', 'abas', 'Lcond'];
   const G_RADIO = ['modoI', 'T'];
-  const C_RADIO = ['saidas', 'curva', 'faixa', 'posicao', 'forma', 'fracLamina', 'saida', 'fonteH'];
+  const C_RADIO = ['saidas', 'curva', 'faixa', 'posicao', 'forma', 'fracLamina', 'saida'];
   const C_CHECK = ['otima'];
 
   let estado = null;
@@ -430,7 +430,6 @@
     $('#rot-decl').innerHTML = c.tipoCalha === 'agua-furtada' ? 'Declividade <var>i</var> (a da cobertura)' : 'Declividade <var>i</var> (mínimo 0,5%)';
     $('#btn-dimensionar').textContent = c.forma === 'semicircular' ? 'Escolher o menor diâmetro'
       : c.forma === 'retangular' && c.otima ? 'Calcular a seção econômica' : 'Calcular a altura mínima';
-    mostrar('[data-so-h]', c.fonteH === 'digitada');
     const usuarioV = PJ.linhaVertical(estado) === 'usuario';
     mostrar('[data-tubos-usuario]', usuarioV);
     mostrar('[data-tubos-catalogo]', !usuarioV);
@@ -564,8 +563,8 @@
       ]);
     }
     if (c.tabela3) {
-      h += '<p class="aviso ok">Conferência com a Tabela 3: calha semicircular D = ' + c.tabela3.D + ' mm, i = ' + na(c.tabela3.i * 100) + '% → ' +
-        nf(c.tabela3.Q) + ' L/min pela norma (seção cheia); o cálculo dá ' + nf(c.Qcheia, 0) + ' L/min.</p>';
+      h += '<p class="aviso ok">Conferência com a Tabela 3' + (c.tabela3.exata ? '' : ' (interpolada)') + ': calha semicircular D = ' + nf(c.tabela3.D) + ' mm, i = ' +
+        na(c.tabela3.i * 100) + '% → ' + nf(c.tabela3.Q) + ' L/min pela norma (seção cheia); o cálculo por Manning dá ' + nf(c.Qcheia, 0) + ' L/min.</p>';
     }
     const av = c.avisos.slice();
     if (c.y == null) av.unshift({ nivel: 'erro', texto: 'Mesmo cheia até a borda, a seção escoa ' + nf(c.Qcheia, 0) + ' L/min, menos que os ' + nf(R.Qcalha, 0) + ' L/min de projeto. Use "' + $('#btn-dimensionar').textContent + '" ou distribua mais saídas.' });
@@ -587,7 +586,7 @@
     };
     if (!v.pronto) {
       const falta = v.invalido ? 'Corrija o dado indicado abaixo.' :
-        v.faltando === 'H' ? (e.fonteH === 'digitada' ? 'Informe a lâmina H na calha.' : 'A lâmina H vem da calha: complete o passo B.3, ou escolha "Digitar".') :
+        v.faltando === 'H' ? 'A lâmina H é a lâmina máxima admitida da calha: complete o passo B.3.' :
         v.faltando === 'L' ? 'Informe o comprimento L do condutor vertical.' : 'O condutor é dimensionado quando houver vazão.';
       $('#r56').innerHTML = aguardando(falta) + avisosHtml(v.avisos) + '<div class="abaco-quadro">' + svgAbaco(e.saida, 0, 0, 0, null) + '</div>';
       return;
@@ -608,7 +607,7 @@
     h += '<div class="legenda-abaco"><span><i></i>curva H interpolada</span><span><i class="l"></i>curva L interpolada</span><span><i class="d"></i>interseção mais alta → D</span></div>';
     h += pares([
       ['Vazão no condutor', nf(R.Qcond, 1) + ' <small>L/min</small>'],
-      ['Lâmina H', nf(R.H) + ' <small>mm, ' + TEXTO_FONTE_H[e.fonteH] + '</small>'],
+      ['Lâmina H', nf(R.H) + ' <small>mm, ' + TEXTO_FONTE_H.limite + '</small>'],
       ['D pela curva H', (v.DH < 50 ? '&lt; 50' : nf(v.DH)) + ' <small>mm</small>'],
       ['D pela curva L', (v.DL < 50 ? '&lt; 50' : nf(v.DL)) + ' <small>mm</small>'],
       ['Governa', v.governa === 'H' ? 'entrada <small>(H)</small>' : 'tubo <small>(L)</small>'],
@@ -840,7 +839,7 @@
     const c = calhaAtiva();
     const atual = {
       modoI: estado.modoI, T: String(estado.T), saidas: c.saidas, curva: c.curva, forma: c.forma,
-      fracLamina: String(c.fracLamina), saida: c.saida, fonteH: c.fonteH, linhaV: PJ.linhaVertical(estado),
+      fracLamina: String(c.fracLamina), saida: c.saida, linhaV: PJ.linhaVertical(estado),
     };
     $$('[data-guia]').forEach(function (el) {
       const k = el.dataset.guia;
@@ -1367,8 +1366,13 @@
         c.h = Math.round(r.dims.h * 1000);
         toast('Seção ajustada: ' + c.b + ' × ' + c.h + ' mm');
       } else if (c.forma === 'semicircular') {
+        if (!r.dims) {
+          toast('Nem o diâmetro de 200 mm da Tabela 3 basta (o cálculo pede ' + nf(r.Dmin * 1000) + ' mm): ponha mais saídas ou use a seção retangular');
+          return;
+        }
         c.Dcalha = Math.round(r.dims.D * 1000);
-        toast('Diâmetro ajustado: ' + c.Dcalha + ' mm' + (r.comercial ? ' (Tabela 3)' : ''));
+        const foraI = R.calha.i < 0.005 - 1e-12 || R.calha.i > 0.02 + 1e-12;
+        toast('Diâmetro da Tabela 3: ' + c.Dcalha + ' mm' + (foraI ? ' (declividade fora da tabela: conferência só por Manning)' : ''));
       } else {
         if (!(d.b > 0)) { toast('Informe o fundo b da seção trapezoidal'); return; }
         c.ht = Math.round(r.dims.h * 1000);
