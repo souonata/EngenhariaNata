@@ -442,10 +442,12 @@ html:not([data-theme="dark"]) .device-screen {
 }
 
 /* Parado, o escudo fica na borda esquerda do recorte: folga lateral também. Rodando, o
-   letreiro precisa do recorte na largura exata do dock. */
+   letreiro precisa do recorte na largura exata do dock. Com border-box a folga conta
+   dentro do max-width: sem somar os 24px, o fim de "NATA" era cortado. */
 .dock[data-easter-state="locked"] .dock-marquee-viewport {
     padding-inline: 12px;
     margin-inline: -12px;
+    max-width: calc(100% + 24px);
 }
 
 .dock-marquee-track {

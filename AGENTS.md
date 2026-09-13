@@ -206,6 +206,10 @@ _Última atualização: 2026-09-13_
   cortada): trocado pelo contorno que cabe (y 1–23). O `.dock-marquee-viewport` ganhou folga
   (padding com margem negativa) para o brilho e a pulsação não serem recortados; parado, também
   nas laterais. `?v=` do CSS 1.0.7 e do script 1.1.1.
+  **Correção (branch `fix/dock-nata-cortado`, 2026-09-13):** essa folga lateral cortava 12 px
+  do fim de "NATA" — com `box-sizing: border-box` o padding conta dentro do `max-width: 100%`.
+  No estado parado o `max-width` passou a `calc(100% + 24px)`; medido em 375 e 1024 px: 12 px
+  livres dos dois lados, sem rolagem lateral. `?v=` do CSS 1.0.8.
 
 - **CALHA 3.7.0 — ONDA 2 E PASSOS A–C (PUBLICADA EM 2026-09-13, branch `feat/calha-onda2-catalogo`):**
   D4 = Tigre e Amanco Wavin (fichas levantadas em `calha/referencias/catalogo-tubos-tigre-amanco.md`,
