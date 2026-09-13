@@ -50,7 +50,7 @@
     forma: {
       opcoes: {
         retangular: ['Retangular', 'Calha de chapa dobrada ou de alvenaria em que você define a largura e a altura. Com "Liberar a largura", o app acha a seção econômica, com largura igual ao dobro da lâmina.'],
-        semicircular: ['Semicircular', 'Meia-cana de PVC ou de chapa. A Tabela 3 da norma traz a capacidade dos diâmetros de 100 a 200 mm; o botão escolhe só entre 100, 125, 150 e 200 mm, e o app confere o resultado pela tabela, interpolando quando a declividade fica entre as colunas. Não se aplica à alvenaria.'],
+        semicircular: ['Semicircular', 'Meia-cana de PVC ou de chapa. A Tabela 3 da norma traz a capacidade dos diâmetros de 100 a 200 mm; o botão escolhe só entre 100, 125, 150 e 200 mm, o menor que escoa a vazão e deixa a lâmina em pelo menos 50 mm para o ábaco do condutor (com ⅔ da altura, isso pede D de 150 mm ou mais). O app confere pela tabela, interpolando entre as colunas. Não se aplica à alvenaria.'],
         trapezoidal: ['Trapezoidal', 'Paredes inclinadas (talude z na horizontal para 1 na vertical), como em calhas moldadas de concreto: mais larga em cima para a mesma largura de fundo.'],
       },
     },

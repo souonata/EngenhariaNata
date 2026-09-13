@@ -594,6 +594,9 @@
     if (v.fora) {
       const avFora = v.avisos.slice();
       if (v.sugestao) avFora.push(sugestao());
+      if (v.fora === 'H') {
+        avFora.push({ nivel: 'atencao', texto: 'No passo B.3, use "' + $('#btn-dimensionar').textContent + '": o botão escolhe a menor seção comercial que também deixa a lâmina em pelo menos 50 mm, onde o ábaco começa.' });
+      }
       $('#r56').innerHTML = cabecalho(grande('D', '—', 'fora do ábaco (' + e.saida + ')'), '<span class="selo fora">Sem leitura</span>') +
         '<div class="abaco-quadro">' + svgAbaco(e.saida, 0, 0, 0, null) + '</div>' + avisosHtml(avFora);
       return;
@@ -1360,23 +1363,27 @@
       if (!(R.Qcalha > 0) || !(R.calha.i > 0)) { toast('Falta a vazão da calha ou a declividade'); return; }
       const d = R.calha.dims;
       const r = N.dimensionarCalha({ forma: c.forma, dims: d, Q: R.Qcalha, n: R.calha.n, i: R.calha.i, fracLamina: R.calha.frac, otima: c.otima });
+      const porAbaco = ' (a menor que deixa a lâmina em 50 mm, o início do ábaco do condutor)';
       if (c.forma === 'retangular') {
         if (!c.otima && !(d.b > 0)) { toast('Informe a largura b ou libere a largura'); return; }
         c.b = Math.round(r.dims.b * 1000);
         c.h = Math.round(r.dims.h * 1000);
-        toast('Seção ajustada: ' + c.b + ' × ' + c.h + ' mm');
+        toast('Seção ajustada: ' + c.b + ' × ' + c.h + ' mm' + (r.peloAbaco ? porAbaco : ''));
       } else if (c.forma === 'semicircular') {
         if (!r.dims) {
-          toast('Nem o diâmetro de 200 mm da Tabela 3 basta (o cálculo pede ' + nf(r.Dmin * 1000) + ' mm): ponha mais saídas ou use a seção retangular');
+          toast('Nenhum diâmetro da Tabela 3 serve: ' + (r.Dmin > 0.2 + 1e-9 ? 'a vazão pede ' + nf(r.Dmin * 1000) + ' mm' :
+            'com essa lâmina máxima, só D ≥ ' + nf(r.DminAbaco * 1000) + ' mm deixa H em 50 mm para o ábaco') +
+            '. Ponha mais saídas, escolha uma lâmina maior ou use a seção retangular');
           return;
         }
         c.Dcalha = Math.round(r.dims.D * 1000);
         const foraI = R.calha.i < 0.005 - 1e-12 || R.calha.i > 0.02 + 1e-12;
-        toast('Diâmetro da Tabela 3: ' + c.Dcalha + ' mm' + (foraI ? ' (declividade fora da tabela: conferência só por Manning)' : ''));
+        toast('Diâmetro da Tabela 3: ' + c.Dcalha + ' mm' + (r.peloAbaco ? ' (o menor que deixa a lâmina em 50 mm, o início do ábaco do condutor)' : '') +
+          (foraI ? '; declividade fora da tabela: conferência só por Manning' : ''));
       } else {
         if (!(d.b > 0)) { toast('Informe o fundo b da seção trapezoidal'); return; }
         c.ht = Math.round(r.dims.h * 1000);
-        toast('Altura ajustada: ' + c.ht + ' mm');
+        toast('Altura ajustada: ' + c.ht + ' mm' + (r.peloAbaco ? porAbaco : ''));
       }
       nomeExemplo = null;
       preencher();

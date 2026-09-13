@@ -254,3 +254,11 @@ auditoria deixou de existir: não há H fora da calha). Scripts com `?v=3.7.1`.
   outra forma. A conferência com a Tabela 3 (`N.qTabela3`, linear em D e em i) passou a valer
   também entre os nós, dentro de 100–200 mm e 0,5–2%; fora disso, nota `FORA_TABELA3` e vale
   só Manning.
+
+## 3.7.2 — o botão de dimensionar respeita o ábaco
+Pedido do usuário: a semicircular de 125 mm com lâmina de ⅔ dava H = 41,7 mm e o condutor ficava
+"sem leitura". `dimensionarCalha` agora escolhe a menor medida comercial que escoa a vazão **e**
+deixa a lâmina limite em pelo menos 50 mm (`H_MIN_ABACO`, a menor curva da Figura 3; 5.6.4.1 só
+interpola): semicircular só da Tabela 3 (⅔ → D ≥ 150; ½ → D = 200; cheia → D ≥ 100); retangular
+e trapezoidal com h em múltiplos de 5 mm (⅔ → h ≥ 75; ½ → h ≥ 100). `peloAbaco` indica quando foi
+o ábaco que decidiu, e o aviso diz isso. Com H < 50 mm, o passo B.4 manda usar o botão do B.3.

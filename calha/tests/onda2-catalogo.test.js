@@ -146,6 +146,24 @@ test('T-C1-04: DN, Di e fonte iguais no memorial, na lista de materiais e no PDF
   assert.match(pdf, /Amanco Wavin, ficha Linha Coletor/);
 });
 
+test('Seção pelo botão: com os dados do exemplo, o condutor vertical tem leitura no ábaco', () => {
+  ['semicircular', 'retangular', 'trapezoidal'].forEach((forma) => {
+    const e = E.EXEMPLOS.residencia().estado;
+    const c = e.calhas[0];
+    Object.assign(c, { forma, b: 120, bt: 100, z: 0.5 });
+    const R0 = P.calcularCalha(e, c, P.calcularChuva(e));
+    const dims = forma === 'retangular' ? { b: 0.12 } : forma === 'trapezoidal' ? { b: 0.1, z: 0.5 } : {};
+    const r = N.dimensionarCalha({ forma, dims, Q: R0.Qcalha, n: R0.calha.n, i: R0.calha.i, fracLamina: R0.calha.frac });
+    if (forma === 'semicircular') c.Dcalha = Math.round(r.dims.D * 1000);
+    else if (forma === 'retangular') c.h = Math.round(r.dims.h * 1000);
+    else c.ht = Math.round(r.dims.h * 1000);
+    const R = P.calcularProjeto(e).calhas[0];
+    assert.ok(R.H >= 50, forma + ': H = ' + R.H);
+    assert.ok(!R.vert.fora, forma);
+    assert.equal(R.estado, 'atende', forma);
+  });
+});
+
 test('Como usar: cada passo diz o que falta e leva ao campo certo', () => {
   const e = E.estadoVazio();
   let s = P.calcularProjeto(e).passos;
