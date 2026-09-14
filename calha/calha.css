@@ -958,8 +958,21 @@ legend {
 
 .abaco .rotulo-curva {
   font-family: var(--f-titulo);
-  font-size: 11px;
-  fill: var(--apagado);
+  font-size: 12px;
+  font-weight: 500;
+  fill: var(--grafite);
+}
+
+.abaco .chamada-rotulo {
+  fill: none;
+  stroke: var(--linha-forte);
+  stroke-width: 0.9;
+  stroke-dasharray: 2 3;
+}
+
+.abaco .leitura-abaco rect {
+  fill: var(--papel);
+  stroke: var(--linha);
 }
 
 .abaco .ativa-h {

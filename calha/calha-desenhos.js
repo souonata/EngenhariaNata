@@ -132,20 +132,41 @@
 
   function svgAbaco(k, Qc, Hin, Lin, res) {
     const ab = N.ABACOS[k];
-    const W = 560, Hh = 440, ml = 50, mr = 44, mt = 14, mb = 42;
-    const pw = W - ml - mr, ph = Hh - mt - mb;
+    // As legendas têm faixas próprias: topo, lateral direita e leitura abaixo dos eixos.
+    // A grade conserva os 466 × 384 de antes, sem comprimir as curvas para abrir espaço.
+    const temLeitura = res && Qc > 0;
+    const W = 600, Hh = temLeitura ? 548 : 480, ml = 50, mt = 46;
+    const pw = 466, ph = 384;
     const X = function (q) { return ml + (Math.min(Math.max(q, 0), 2800) / 2800) * pw; };
     const Y = function (d) { return mt + ((150 - Math.min(Math.max(d, 50), 150)) / 100) * ph; };
     const dentro = function (q, d) { return q >= 0 && q <= 2800 && d >= 50 && d <= 150; };
     function caminho(fnQ, d0, d1) {
       let dstr = '';
       let aberto = false;
+      let fim = null;
       for (let d = d0; d <= d1 + 1e-9; d += 0.5) {
         const q = fnQ(d);
-        if (dentro(q, d)) { dstr += (aberto ? ' L' : ' M') + X(q).toFixed(1) + ' ' + Y(d).toFixed(1); aberto = true; }
+        if (dentro(q, d)) { dstr += (aberto ? ' L' : ' M') + X(q).toFixed(1) + ' ' + Y(d).toFixed(1); aberto = true; fim = { x: X(q), y: Y(d) }; }
         else aberto = false;
       }
-      return dstr;
+      return { d: dstr, fim: fim };
+    }
+    const rotulosTopo = [], rotulosDireita = [];
+    function curva(c, familia) {
+      const linha = caminho(function (d) { return N.qNaCurva(c.pts, d); }, c.faixa[0], c.faixa[1]);
+      if (linha.fim) {
+        const r = { x: linha.fim.x, y: linha.fim.y, texto: familia + (c.v === Infinity ? '∞' : na(c.v)) };
+        // H100 do ábaco (b) acaba na lateral; nunca prolongar a curva até o topo.
+        (r.y < mt + 20 ? rotulosTopo : rotulosDireita).push(r);
+      }
+      return '<path class="curva-' + familia.toLowerCase() + '" d="' + linha.d + '"/>';
+    }
+    function distribuir(rotulos, eixo, min, max, passo) {
+      rotulos.sort(function (a, b) { return a[eixo] - b[eixo]; });
+      rotulos.forEach(function (r, i) { r.pos = Math.max(r[eixo], i ? rotulos[i - 1].pos + passo : min); });
+      for (let i = rotulos.length - 1; i >= 0; i--) {
+        rotulos[i].pos = Math.min(rotulos[i].pos, i === rotulos.length - 1 ? max : rotulos[i + 1].pos - passo);
+      }
     }
     let s = '<svg class="desenho abaco" viewBox="0 0 ' + W + ' ' + Hh + '" role="img" aria-labelledby="abaco-t"><title id="abaco-t">Ábaco (' + k +
       ') da Figura 3 com a leitura do diâmetro para Q = ' + nf(Qc) + ' L/min</title>';
@@ -157,25 +178,14 @@
     s += '<text x="' + X(2800) + '" y="' + (Y(50) + 35) + '" text-anchor="end">Q (L/min)</text>';
     s += '<text transform="translate(13 ' + (mt + ph / 2) + ') rotate(-90)" text-anchor="middle">D (mm)</text></g>';
 
-    ab.H.forEach(function (c) {
-      s += '<path class="curva-h" d="' + caminho(function (d) { return N.qNaCurva(c.pts, d); }, c.faixa[0], c.faixa[1]) + '"/>';
-      const d1 = c.faixa[1];
-      const q1 = N.qNaCurva(c.pts, d1);
-      s += '<text class="rotulo-curva" x="' + (X(q1) + 3) + '" y="' + (Y(d1) + (d1 >= 149 ? 11 : -3)) + '">H' + c.v + '</text>';
-    });
-    ab.L.forEach(function (c) {
-      s += '<path class="curva-l" d="' + caminho(function (d) { return N.qNaCurva(c.pts, d); }, c.faixa[0], c.faixa[1]) + '"/>';
-      const d1 = c.faixa[1];
-      let q1 = N.qNaCurva(c.pts, d1);
-      if (q1 > 2800) q1 = 2800;
-      s += '<text class="rotulo-curva" x="' + (X(q1) + 4) + '" y="' + (Y(d1) + 4) + '">' + (c.v === Infinity ? 'L∞' : 'L' + na(c.v)) + '</text>';
-    });
+    ab.H.forEach(function (c) { s += curva(c, 'H'); });
+    ab.L.forEach(function (c) { s += curva(c, 'L'); });
 
-    if (res && Qc > 0) {
+    if (temLeitura) {
       const Hc = Math.min(Math.max(Hin, 50), 100);
       const Lc = Math.max(Lin, 0.3);
-      s += '<path class="ativa-h" d="' + caminho(function (d) { return N.qNaFamilia(ab.H, Hc, d, 'H'); }, 50, 150) + '"/>';
-      s += '<path class="ativa-l" d="' + caminho(function (d) { return N.qNaFamilia(ab.L, Lc, d, 'L'); }, 50, 150) + '"/>';
+      s += '<path class="ativa-h" d="' + caminho(function (d) { return N.qNaFamilia(ab.H, Hc, d, 'H'); }, 50, 150).d + '"/>';
+      s += '<path class="ativa-l" d="' + caminho(function (d) { return N.qNaFamilia(ab.L, Lc, d, 'L'); }, 50, 150).d + '"/>';
       const Dtopo = Math.max(res.DH, res.DL);
       const xq = X(Qc);
       s += '<line class="guia" x1="' + xq + '" y1="' + Y(50) + '" x2="' + xq + '" y2="' + Y(Dtopo) + '"/>';
@@ -183,18 +193,28 @@
       s += '<circle class="marco h" cx="' + xq + '" cy="' + Y(res.DH) + '" r="5"/>';
       s += '<circle class="marco l" cx="' + xq + '" cy="' + Y(res.DL) + '" r="5"/>';
       s += '<circle class="marco d" cx="' + X(0) + '" cy="' + Y(Dtopo) + '" r="4"/>';
-      const lado = Qc > 2000 ? 'end' : 'start';
-      const dx = Qc > 2000 ? -9 : 9;
+      const yLeitura = Y(50) + 65;
+      s += '<g class="leitura-abaco"><rect x="' + ml + '" y="' + (yLeitura - 18) + '" width="' + (W - ml - 14) + '" height="58" rx="4"/>';
       if (Dtopo < 50) {
-        // As duas leituras caem abaixo do eixo: um rótulo só, sem amontoar no pé do ábaco.
-        s += '<text class="etq d" x="' + (xq + dx) + '" y="' + (Y(50) - 12) + '" text-anchor="' + lado + '">H ' + nf(Hin) + ' mm e L ' + na(Lin) + ' m pedem D &lt; 50 mm</text>';
+        s += '<text class="etq d" x="' + (ml + 12) + '" y="' + (yLeitura + 5) + '">H ' + nf(Hin) + ' mm e L ' + na(Lin) + ' m</text>';
+        s += '<text class="etq d" x="' + (ml + 12) + '" y="' + (yLeitura + 25) + '">pedem D &lt; 50 mm</text>';
       } else {
-        const sep = Math.abs(Y(res.DH) - Y(res.DL)) < 15;
-        s += '<text class="etq h" x="' + (xq + dx) + '" y="' + (Y(res.DH) + (sep && res.DH >= res.DL ? -6 : 4)) + '" text-anchor="' + lado + '">H ' + nf(Hin) + ' mm → ' + (res.DH < 50 ? '&lt; 50' : nf(res.DH)) + '</text>';
-        s += '<text class="etq l" x="' + (xq + dx) + '" y="' + (Y(res.DL) + (sep && res.DL > res.DH ? -6 : sep ? 14 : 4)) + '" text-anchor="' + lado + '">L ' + na(Lin) + ' m → ' + (res.DL < 50 ? '&lt; 50' : nf(res.DL)) + '</text>';
-        s += '<text class="etq d" x="' + (X(0) + 8) + '" y="' + (Y(Dtopo) - 6) + '">D = ' + nf(Dtopo) + ' mm</text>';
+        s += '<text class="etq h" x="' + (ml + 12) + '" y="' + yLeitura + '">H ' + nf(Hin) + ' mm → ' + (res.DH < 50 ? '&lt; 50' : nf(res.DH)) + ' mm</text>';
+        s += '<text class="etq l" x="' + (ml + 12) + '" y="' + (yLeitura + 24) + '">L ' + na(Lin) + ' m → ' + (res.DL < 50 ? '&lt; 50' : nf(res.DL)) + ' mm</text>';
+        s += '<text class="etq d" x="' + (W - 26) + '" y="' + (yLeitura + 12) + '" text-anchor="end">D = ' + nf(Dtopo) + ' mm</text>';
       }
+      s += '</g>';
     }
+    distribuir(rotulosTopo, 'x', ml + 24, X(2800) - 24, 46);
+    distribuir(rotulosDireita, 'y', mt + 28, Y(50) - 16, 22);
+    rotulosTopo.forEach(function (r) {
+      s += '<path class="chamada-rotulo" d="M' + r.x + ' ' + (r.y - 3) + ' L' + r.pos + ' 29"/>';
+      s += '<text class="rotulo-curva" x="' + r.pos + '" y="22" text-anchor="middle">' + r.texto + '</text>';
+    });
+    rotulosDireita.forEach(function (r) {
+      s += '<path class="chamada-rotulo" d="M' + (r.x + 4) + ' ' + r.y + ' L' + (X(2800) + 10) + ' ' + r.pos + ' H' + (X(2800) + 18) + '"/>';
+      s += '<text class="rotulo-curva" x="' + (X(2800) + 24) + '" y="' + (r.pos + 4) + '">' + r.texto + '</text>';
+    });
     return s + '</svg>';
   }
 
