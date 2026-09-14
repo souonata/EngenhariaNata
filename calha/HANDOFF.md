@@ -1,6 +1,6 @@
 # HANDOFF — Calha 10844 (app de calhas da NBR 10844)
 
-_Atualizado: 2026-09-14 (versão 3.9.0). Leia isto antes de mexer em qualquer arquivo desta pasta._
+_Atualizado: 2026-09-14 (versão 3.9.1, local). Leia isto antes de mexer em qualquer arquivo desta pasta._
 
 ## O que é
 App didático do portfólio Engenharia NATA para dimensionar calhas, condutores verticais e
@@ -346,3 +346,21 @@ a página é recusado (`JA_TEM`). A pdf-lib 1.17.1 vem do cdnjs só ao usar a fu
 `integrity` SHA-384 (`PDFLIB_SRI`); o arquivo é lido e gravado no navegador. Conferido com um
 relatório real impresso pelo Edge: 5 → 6 páginas, 3 campos de texto + 1 de assinatura.
 Testes em `tests/assinatura.test.js` (posições, texto WinAnsi, quebra, nome do arquivo).
+
+## 3.9.1 — legendas do ábaco fora da grade (local, ainda não publicado)
+Pedido do usuário: impedir que os nomes das curvas e as leituras se sobreponham entre si ou
+a linhas do gráfico. `svgAbaco()` reserva faixas no topo e à direita para os 15 nomes H/L,
+distribuídos com espaçamento mínimo. Chamadas pontilhadas ligam cada nome à extremidade
+realmente desenhada, inclusive H100 do tipo (b), que acaba na lateral, e L0,3/L0,6 junto ao topo.
+As leituras H/L/D e o aviso de D < 50 mm ficam em quadro abaixo dos eixos, com linhas separadas.
+Os estilos usam as cores dos temas claro/escuro; tela e relatório compartilham o mesmo SVG.
+
+A grade mantém 466 × 384 unidades; a comparação independente de 256 cenários com a versão
+anterior confirmou curvas idênticas (somente deslocamento vertical de 32 unidades). Os 68
+testes existentes do Calha passaram. O navegador conferiu oito casos nos tipos (a)/(b),
+incluindo leituras próximas, interpoladas, abaixo de 50 e na borda: sem colisões de texto,
+legendas dentro da grade ou cortes, em desktop e 390 px. Cache-bust do CSS nas duas páginas
+e de `calha-desenhos.js` no avançado atualizado para 3.9.1; branch `feat/calha-legendas-abaco`.
+Validação final: `npm run validate` aprovado (47 arquivos/430 testes, paridade e demais
+validadores OK). Página avançada e prévia do relatório conferidas no navegador, sem colisões
+nem erros de console; contraste conferido também no tema escuro.

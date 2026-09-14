@@ -186,6 +186,12 @@ npm run build          # build de produção (gera local/dist)
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
 _Última atualização: 2026-09-14_
+- **CALHA 3.9.1 — LEGENDAS DO ÁBACO (LOCAL, branch `feat/calha-legendas-abaco`, 2026-09-14):**
+  nomes H/L em faixas fora da grade, com espaçamento mínimo e chamadas pontilhadas para as
+  extremidades reais; H100 do ábaco (b) fica na lateral. Leituras H/L/D e aviso de D < 50 mm
+  em quadro abaixo dos eixos. Mesma geometria e cálculo, aplicado à tela e ao relatório.
+  Conferência independente em 256 cenários e 68 testes do Calha aprovados. Detalhes em
+  `calha/HANDOFF.md`. Ainda não publicado.
 
 - **CATÁLOGO — ÍCONES DOS CARDS (PUBLICADO EM 2026-09-14, branch `fix/catalogo-icones-cards`):**
   na lista de cards cada ícone tinha um tamanho (60 px com título curto, 34–39 px com título
