@@ -16,7 +16,7 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;1,400&family=Barlow+Condensed:wght@500;600;700&family=STIX+Two+Text:ital,wght@1,400;1,500&display=swap"
     />
-    <link rel="stylesheet" href="calha.css?v=3.8.0" />
+    <link rel="stylesheet" href="calha.css?v=3.9.0" />
   </head>
   <body>
     <svg aria-hidden="true" width="0" height="0" style="position: absolute">
@@ -689,6 +689,25 @@
           <div class="acoes">
             <button class="btn primario btn-grande" type="button" id="btn-pdf">Gerar PDF do projeto</button>
           </div>
+          <div class="assinatura-pdf">
+            <h3>Assinatura digital</h3>
+            <ol>
+              <li>Gere o PDF do projeto e salve pelo botão "Imprimir ou salvar em PDF".</li>
+              <li>
+                Escolha aqui o PDF salvo. O app acrescenta uma página final com campos para o nome,
+                o registro profissional e a data do responsável técnico e um campo de assinatura
+                digital, e baixa o arquivo pronto para assinar.
+              </li>
+            </ol>
+            <div class="acoes">
+              <button class="btn" type="button" data-escolher-pdf>Escolher o PDF salvo…</button>
+            </div>
+            <p class="nota-assinatura">
+              Os campos funcionam no Adobe Acrobat Reader e em outros leitores de PDF com
+              formulário; a assinatura aceita certificado digital, como o ICP-Brasil. O PDF é lido
+              e gravado neste navegador, sem ir para nenhum servidor.
+            </p>
+          </div>
         </div>
       </section>
     </main>
@@ -709,23 +728,26 @@
       <div class="relatorio-barra no-print">
         <p id="rel-t">Relatório do projeto</p>
         <button class="btn primario" type="button" id="btn-rel-imprimir">Imprimir ou salvar em PDF</button>
+        <button class="btn" type="button" data-escolher-pdf>Acrescentar assinatura digital</button>
         <button class="btn" type="button" id="btn-rel-fechar">Fechar</button>
       </div>
       <div class="relatorio-folha" id="relatorio-corpo"></div>
     </div>
 
     <div class="toast" id="toast" role="status" hidden></div>
+    <input type="file" id="arquivo-assinatura" accept="application/pdf,.pdf" hidden />
 
-    <script src="nbr10844-dados.js?v=3.8.0"></script>
-    <script src="nbr10844-abacos.js?v=3.8.0"></script>
-    <script src="nbr10844-calc.js?v=3.8.0"></script>
-    <script src="calha-util.js?v=3.8.0"></script>
-    <script src="calha-estado.js?v=3.8.0"></script>
-    <script src="calha-projeto.js?v=3.8.0"></script>
-    <script src="calha-desenhos.js?v=3.8.0"></script>
-    <script src="calha-memorial.js?v=3.8.0"></script>
-    <script src="calha-relatorio.js?v=3.8.0"></script>
-    <script src="calha-guias.js?v=3.8.0"></script>
-    <script src="calha-app.js?v=3.8.0"></script>
+    <script src="nbr10844-dados.js?v=3.9.0"></script>
+    <script src="nbr10844-abacos.js?v=3.9.0"></script>
+    <script src="nbr10844-calc.js?v=3.9.0"></script>
+    <script src="calha-util.js?v=3.9.0"></script>
+    <script src="calha-estado.js?v=3.9.0"></script>
+    <script src="calha-projeto.js?v=3.9.0"></script>
+    <script src="calha-desenhos.js?v=3.9.0"></script>
+    <script src="calha-memorial.js?v=3.9.0"></script>
+    <script src="calha-relatorio.js?v=3.9.0"></script>
+    <script src="calha-guias.js?v=3.9.0"></script>
+    <script src="calha-assinatura.js?v=3.9.0"></script>
+    <script src="calha-app.js?v=3.9.0"></script>
   </body>
 </html>

@@ -23,6 +23,7 @@
   // critério do app ou dado de fabricante vem dito como tal.
   const PADROES = [
     'Calha de chapa de aço galvanizado. A conta vale igual para PVC, que tem a mesma rugosidade na norma.',
+    'Calha retangular na proporção que escoa mais com menos chapa: a largura é o dobro da altura que a água pode ocupar.',
     'Caimento da calha de 0,5%, o mínimo da norma.',
     'Água até ⅔ da altura da calha, com ⅓ de folga contra transbordamento: critério do app, a norma não fixa esse valor.',
     'Saída da calha em furo simples, de borda reta: critério do app. A saída com funil, que permite cano menor, está no modo avançado.',
@@ -129,6 +130,7 @@
       nSaidas: ent.descidas === 'varias' ? ent.nDescidas : 2,
       material: 'aco-galvanizado', decl: 0.5, fracLamina: '0.6667', saida: 'a',
       forma: ent.forma === 'semicircular' ? 'semicircular' : 'retangular',
+      // Retangular sem medida escolhida de fora: a seção econômica (b = 2y) sai do próprio caso.
       otima: ent.forma !== 'semicircular',
       Lcond: ent.Lcond,
     });

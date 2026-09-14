@@ -20,7 +20,7 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap"
     />
-    <link rel="stylesheet" href="calha.css?v=3.8.0" />
+    <link rel="stylesheet" href="calha.css?v=3.9.0" />
   </head>
   <body class="simples">
     <svg aria-hidden="true" width="0" height="0" style="position: absolute">
@@ -128,43 +128,14 @@
           <span class="s-feito" data-feito="2" hidden>pronto</span>
         </div>
 
-        <svg class="s-figura" id="s-figura" data-posicao="beiral" viewBox="0 0 360 196" role="img" aria-labelledby="s-figura-t">
-          <title id="s-figura-t">Corte do telhado: a largura da água é medida na horizontal, da calha até a cumeeira; a altura, da calha até a cumeeira; e a altura até o chão, da calha até o piso</title>
-          <g class="chuva"><path d="M92 8 l-4 9 M122 8 l-4 9 M152 8 l-4 9 M182 8 l-4 9 M212 8 l-4 9 M242 8 l-4 9" /></g>
-          <path class="chao" d="M8 184 H352" />
-          <path class="aux" d="M70 40 V26 M266 100 V26 M56 100 H254" />
-          <path class="cota" d="M72 26 H264" />
-          <text class="rot" x="168" y="21" text-anchor="middle">largura</text>
-          <path class="cota" d="M56 42 V98" />
-          <text class="rot" x="50" y="74" text-anchor="end">altura</text>
-          <g class="so-beiral">
-            <rect class="parede" x="226" y="96" width="9" height="88" />
-            <path class="telhado" d="M70 40 L270 102" />
-            <path class="peca" d="M258 101 V111 H274 V101" />
-            <path class="peca" d="M266 111 V178 Q266 184 272 184" />
-            <text class="rot" x="280" y="92">calha</text>
-          </g>
-          <g class="so-plat">
-            <rect class="parede" x="274" y="60" width="9" height="124" />
-            <path class="telhado" d="M70 40 L256 98" />
-            <path class="peca" d="M254 99 V111 H272" />
-            <path class="peca" d="M262 111 V178 Q262 184 268 184" />
-            <path class="aux" d="M283 60 H300 M272 100 H300" />
-            <path class="cota" d="M296 62 V98" />
-            <text class="rot" x="302" y="84">mureta</text>
-            <text class="rot" x="226" y="124" text-anchor="end">calha</text>
-          </g>
-          <path class="aux" d="M280 111 H300" />
-          <path class="cota" d="M296 113 V182" />
-          <text class="rot" x="302" y="146">até o</text>
-          <text class="rot" x="302" y="160">chão</text>
-        </svg>
+        <!-- Telhado em perspectiva, desenhado por calha-simples-app.js com os valores nas cotas. -->
+        <div class="s-figura" id="s-figura"></div>
 
         <div class="s-campos">
           <div class="s-campo">
             <label for="s-Lc">Comprimento da calha</label>
             <span class="s-unid"><input id="s-Lc" type="text" inputmode="decimal" placeholder="12" /><em>m</em></span>
-            <small>De ponta a ponta.</small>
+            <small>Ao longo da beirada, de ponta a ponta.</small>
           </div>
           <div class="s-campo">
             <label for="s-largura">Largura da água do telhado</label>
@@ -225,7 +196,7 @@
             <label class="s-opcao"
               ><input type="radio" name="s-forma" value="retangular" />
               <svg viewBox="0 0 80 40" aria-hidden="true"><path d="M20 6 V34 H60 V6" fill="none" stroke="currentColor" stroke-width="3" /></svg>
-              <b>Retangular</b><span>Chapa dobrada, a mais comum.</span></label
+              <b>Retangular</b><span>Chapa dobrada; largura e altura saem da conta.</span></label
             >
             <label class="s-opcao"
               ><input type="radio" name="s-forma" value="semicircular" />
@@ -264,13 +235,13 @@
 
     <div class="toast" id="toast" role="status" hidden></div>
 
-    <script src="nbr10844-dados.js?v=3.8.0"></script>
-    <script src="nbr10844-abacos.js?v=3.8.0"></script>
-    <script src="nbr10844-calc.js?v=3.8.0"></script>
-    <script src="calha-util.js?v=3.8.0"></script>
-    <script src="calha-estado.js?v=3.8.0"></script>
-    <script src="calha-projeto.js?v=3.8.0"></script>
-    <script src="calha-simples.js?v=3.8.0"></script>
-    <script src="calha-simples-app.js?v=3.8.0"></script>
+    <script src="nbr10844-dados.js?v=3.9.0"></script>
+    <script src="nbr10844-abacos.js?v=3.9.0"></script>
+    <script src="nbr10844-calc.js?v=3.9.0"></script>
+    <script src="calha-util.js?v=3.9.0"></script>
+    <script src="calha-estado.js?v=3.9.0"></script>
+    <script src="calha-projeto.js?v=3.9.0"></script>
+    <script src="calha-simples.js?v=3.9.0"></script>
+    <script src="calha-simples-app.js?v=3.9.0"></script>
   </body>
 </html>
