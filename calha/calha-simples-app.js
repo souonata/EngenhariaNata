@@ -94,10 +94,140 @@
     $('#s-alt-pequena').hidden = ent.semTabela !== 'pequena';
     $('#s-alt-local').hidden = ent.semTabela !== 'local';
     $$('[data-periodo]').forEach(function (el) { el.textContent = S.periodo(ent); });
-    $('#s-figura').setAttribute('data-posicao', ent.posicao);
+    $('#s-figura').innerHTML = desenhoTelhado();
     const doPasso2 = ['Lc', 'largura', 'altura', 'mureta', 'Lcond', 'nDescidas'];
     $('[data-feito="1"]').hidden = !p1;
     $('[data-feito="2"]').hidden = res.faltas.some(function (f) { return doPasso2.indexOf(f.campo) >= 0; });
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Desenho do telhado                                                 */
+  /* ------------------------------------------------------------------ */
+
+  // Descidas ao longo da calha, de 0 (a ponta da frente) a 1 (a do fundo), como no cálculo.
+  function posicoesDescidas() {
+    if (ent.descidas === 'meio') return [0.5];
+    if (ent.descidas === 'duas') return [0, 1];
+    if (ent.descidas === 'varias') {
+      const n = Math.min(Math.max(Math.round(Number(ent.nDescidas)) || 3, 2), 8);
+      return Array.from({ length: n }, function (_, k) { return (k + 0.5) / n; });
+    }
+    return [0];
+  }
+
+  // Corte do telhado na frente e a calha correndo para o fundo (projeção oblíqua a 30°), com os
+  // valores digitados nas cotas. As proporções são fixas: as medidas vêm escritas, não em escala.
+  // Clicar numa cota leva ao campo dela.
+  function desenhoTelhado() {
+    const W = 200, HC = 92, HR = 152, L = 150, AX = 0.52, AY = -0.3;
+    const plat = ent.posicao === 'platibanda';
+    const pts = [];
+    const P = function (x, y, z) { const p = [x + z * AX, -y + z * AY]; pts.push(p); return p; };
+    const f = function (n) { return n.toFixed(1); };
+    const pt = function (p) { return f(p[0]) + ' ' + f(p[1]); };
+    const poly = function (ps, cls) { return '<path class="' + cls + '" d="M' + ps.map(pt).join(' L') + ' Z" />'; };
+    const lin = function (ps, cls) { return '<path class="' + cls + '" d="M' + ps.map(pt).join(' L') + '" />'; };
+    const medida = function (x) { return x === '' || x == null ? '' : mostrarNum(x) + ' m'; };
+    const texto = function (p, rot, val, ancora, extra) {
+      return '<text x="' + f(p[0]) + '" y="' + f(p[1]) + '" text-anchor="' + (ancora || 'middle') + '"' + (extra || '') + '><tspan class="rot">' + rot +
+        '</tspan>' + (val ? '<tspan class="val"> ' + esc(val) + '</tspan>' : '') + '</text>';
+    };
+    const valor = function (p, val, ancora) {
+      return val ? '<text class="val" x="' + f(p[0]) + '" y="' + f(p[1]) + '" text-anchor="' + ancora + '">' + esc(val) + '</text>' : '';
+    };
+    const cota = function (campo, corpo) { return '<g class="s-cota" data-ir="' + S.CAMPOS[campo] + '">' + corpo + '</g>'; };
+
+    const xe = plat ? W - 18 : W;
+    const c0 = plat ? W - 18 : W - 4;
+    const c1 = plat ? W : W + 14;
+    const cb = HC - 12;
+    const incl = (HR - HC) / xe;
+    const wx0 = plat ? W : W - 28;
+    const wx1 = plat ? W + 8 : W - 20;
+    const wtop = plat ? HC + 36 : HR - incl * wx1;
+    const xp = plat ? W - 9 : W + 5;
+    const zs = posicoesDescidas().map(function (t) { return t * L; });
+
+    let s = '';
+    for (let k = 0; k < 7; k++) {
+      const p = P(20 + k * 26, HR + 34, L / 2);
+      s += '<path class="chuva" d="M' + f(p[0] + 4) + ' ' + f(p[1] - 9) + ' l-4 9" />';
+    }
+    s += poly([P(wx1, 0, 0), P(wx1 + 70, 0, 0), P(wx1 + 70, 0, L), P(wx1, 0, L)], 'solo');
+    const fachada = [P(wx1, 0, 0), P(wx1, wtop, 0), P(wx1, wtop, L), P(wx1, 0, L)];
+    const topo = [P(wx0, wtop, 0), P(wx1, wtop, 0), P(wx1, wtop, L), P(wx0, wtop, L)];
+    const corte = [P(wx0, 0, 0), P(wx1, 0, 0), P(wx1, wtop, 0), P(wx0, wtop, 0)];
+    // Na mureta: as quatro bordas da calha ao longo do comprimento, o perfil do fundo fechado,
+    // que mostra onde a calha termina, e os canos com o pé virado para dentro.
+    const bordasCalha = function (cls) {
+      return [[c0, HC], [c1, HC], [c0, cb], [c1, cb]].map(function (q) {
+        return lin([P(q[0], q[1], 0), P(q[0], q[1], L)], cls);
+      }).join('') + poly([P(c0, HC, L), P(c0, cb, L), P(c1, cb, L), P(c1, HC, L)], cls);
+    };
+    const canos = function (cls) {
+      return zs.map(function (z) { return lin([P(xp, cb, z), P(xp, 4, z), P(xp + (plat ? -7 : 7), 0, z)], cls); }).join('');
+    };
+    if (!plat) s += poly(fachada, 'fachada');
+    s += poly([P(0, HR, 0), P(xe, HC, 0), P(xe, HC, L), P(0, HR, L)], 'plano');
+    s += poly([P(c0, HC, 0), P(c1, HC, 0), P(c1, HC, L), P(c0, HC, L)], 'calha-agua');
+    if (plat) {
+      // Calha e canos vão inteiros; a mureta, desenhada por cima, cobre o que fica atrás dela.
+      s += bordasCalha('calha-borda') + canos('cano') + poly(fachada, 'fachada') + poly(topo, 'topo');
+    } else {
+      s += poly([P(c1, HC, 0), P(c1, cb, 0), P(c1, cb, L), P(c1, HC, L)], 'calha-lado') + canos('cano');
+    }
+    s += lin([P(-30, 0, 0), P(wx1 + 70, 0, 0)], 'chao');
+    s += poly(corte, 'corte');
+    s += lin([P(0, HR, 0), P(xe, HC, 0)], 'telhado');
+    s += poly([P(c0, HC, 0), P(c0, cb, 0), P(c1, cb, 0), P(c1, HC, 0)], 'perfil');
+    if (plat) {
+      // O trecho escondido volta tracejado, recortado pela silhueta da mureta: linha oculta só
+      // onde de fato se esconde; o que aparece antes da quina segue em linha cheia.
+      const silhueta = [fachada, topo, corte].map(function (ps) { return '<path d="M' + ps.map(pt).join(' L') + ' Z" />'; }).join('');
+      s += '<clipPath id="s-atras-mureta">' + silhueta + '</clipPath>' +
+        '<g clip-path="url(#s-atras-mureta)">' + bordasCalha('oculto') + canos('oculto') + '</g>';
+    }
+
+    // Cotas: largura e altura no corte; comprimento ao longo da calha; chão e mureta no fundo.
+    const yl = HR + 18;
+    s += cota('largura', lin([P(0, HR + 4, 0), P(0, yl + 5, 0)], 'aux') + lin([P(xe, HC + 4, 0), P(xe, yl + 5, 0)], 'aux') +
+      lin([P(0, yl, 0), P(xe, yl, 0)], 'cota') + texto(P(xe / 2, yl + 6, 0), 'largura', medida(ent.largura)));
+    s += cota('altura', lin([P(-26, HC, 0), P(c0, HC, 0)], 'aux') + lin([P(-26, HR, 0), P(-4, HR, 0)], 'aux') +
+      lin([P(-20, HC + 1, 0), P(-20, HR - 1, 0)], 'cota') + texto(P(-28, (HC + HR) / 2 + 6, 0), 'altura', '', 'end') +
+      valor(P(-28, (HC + HR) / 2 - 13, 0), medida(ent.altura), 'end'));
+    const ang = f(Math.atan2(AY, AX) * 180 / Math.PI);
+    const d = Math.hypot(AX, AY);
+    const nx = -AY / d;
+    const ny = AX / d;
+    const xc = plat ? wx1 : c1;
+    const yc = plat ? wtop + 16 : HC + 26;
+    const base = plat ? wtop + 3 : HC + 3;
+    const m = P(xc, yc, L / 2);
+    const tp = [m[0] - nx * 7, m[1] - ny * 7];
+    s += cota('Lc', lin([P(xc, base, 0), P(xc, yc + 5, 0)], 'aux') + lin([P(xc, base, L), P(xc, yc + 5, L)], 'aux') +
+      lin([P(xc, yc, 0), P(xc, yc, L)], 'cota') +
+      texto(tp, 'comprimento', medida(ent.Lc), 'middle', ' transform="rotate(' + ang + ' ' + f(tp[0]) + ' ' + f(tp[1]) + ')"'));
+    const xch = plat ? wx1 + 22 : c1 + 22;
+    s += cota('Lcond', lin([P(plat ? wx1 : c1, cb, L), P(xch + 6, cb, L)], 'aux') + lin([P(xch, 1, L), P(xch, cb - 1, L)], 'cota') +
+      texto(P(xch + 8, cb / 2 + 6, L), 'até o chão', '', 'start') + valor(P(xch + 8, cb / 2 - 13, L), medida(ent.Lcond), 'start'));
+    if (plat) {
+      s += cota('mureta', lin([P(wx1, wtop, L), P(xch + 6, wtop, L)], 'aux') + lin([P(xch, HC + 1, L), P(xch, wtop - 1, L)], 'cota') +
+        texto(P(xch + 8, (HC + wtop) / 2 + 6, L), 'mureta', medida(ent.mureta), 'start'));
+    }
+
+    const xs = pts.map(function (p) { return p[0]; });
+    const ys = pts.map(function (p) { return p[1]; });
+    const x0 = Math.min.apply(null, xs) - 72;
+    const x1 = Math.max.apply(null, xs) + (plat ? 132 : 112);
+    const y0 = Math.min.apply(null, ys) - 30;
+    const y1 = Math.max.apply(null, ys) + 12;
+    const partes = [['largura', ent.largura], ['altura da cumeeira', ent.altura], ['comprimento da calha', ent.Lc], ['altura até o chão', ent.Lcond]];
+    if (plat) partes.push(['mureta', ent.mureta]);
+    const titulo = 'Telhado em perspectiva, com a calha ' + (plat ? 'atrás da mureta' : 'na beirada') + ' e ' +
+      (zs.length === 1 ? '1 descida' : zs.length + ' descidas') + '. ' +
+      partes.map(function (p) { return p[0] + (p[1] === '' || p[1] == null ? ': a preencher' : ': ' + medida(p[1])); }).join('; ') + '.';
+    return '<svg viewBox="' + f(x0) + ' ' + f(y0) + ' ' + f(x1 - x0) + ' ' + f(y1 - y0) + '" role="img" aria-labelledby="s-figura-t">' +
+      '<title id="s-figura-t">' + esc(titulo) + '</title>' + s + '</svg>';
   }
 
   /* ------------------------------------------------------------------ */

@@ -185,7 +185,19 @@ npm run build          # build de produção (gera local/dist)
 
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
-_Última atualização: 2026-09-13_
+_Última atualização: 2026-09-14_
+
+- **CALHA 3.9.0 (PUBLICADA EM 2026-09-14, branch `feat/calha-assinatura-pdf`):** o PDF do relatório
+  ganha campos de assinatura em dois passos: salvo pelo "Imprimir", o PDF é escolhido no app e
+  `calha/calha-assinatura.js` (pdf-lib do cdnjs, sob demanda, com SRI) acrescenta uma página com
+  campos de nome, registro profissional e data e um campo de assinatura digital (`/FT /Sig`).
+  Inclui também a 3.8.1: a seção econômica
+  retangular (b = 2y) fica proporcional também quando o ábaco decide: a seção cresce inteira
+  (b = 2·lâmina limite), não só a altura (o exemplo passa de 90 × 75 para 100 × 75 mm). Vale para o
+  botão do avançado e para o modo simples. Largura fixa de 120 mm foi recusada pelo usuário
+  ("nenhum viés"). O desenho do passo 2 virou perspectiva (corte na frente, calha correndo para o
+  fundo) com os valores digitados nas cotas, inclusive o comprimento da calha. Detalhes em
+  `calha/HANDOFF.md`.
 
 - **CALHA 3.8.0 — MODO SIMPLES NA ENTRADA (PUBLICADA EM 2026-09-13, branch `feat/calha-modo-simples`):**
   `calha/index.html` virou um assistente de três passos (cidade e posição da calha → medidas do

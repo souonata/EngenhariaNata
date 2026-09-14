@@ -444,7 +444,12 @@
       const b = arredondaCima(2 * hi, 0.005);
       const y = laminaNormal('retangular', { b: b, h: 10 }, p.Q, p.n, p.i, 10).y;
       const hVazao = arredondaCima(y / frac, 0.005);
-      return { dims: { b: b, h: Math.max(hVazao, hAbaco) }, y: y, peloAbaco: hAbaco > hVazao };
+      if (hVazao >= hAbaco) return { dims: { b: b, h: hVazao }, y: y, peloAbaco: false };
+      // O ábaco pede lâmina limite maior que a da vazão: a seção cresce inteira, com a largura no
+      // dobro da lâmina limite (b = 2·yLim), e não só a altura, que a deixaria desproporcional.
+      const bAbaco = Math.max(b, arredondaCima(Math.round(2 * frac * hAbaco * 1000) / 1000, 0.005));
+      const yAbaco = laminaNormal('retangular', { b: bAbaco, h: 10 }, p.Q, p.n, p.i, 10).y;
+      return { dims: { b: bAbaco, h: hAbaco }, y: yAbaco, peloAbaco: true };
     }
     const dims = Object.assign({}, p.dims, { h: 10 });
     const y = laminaNormal(p.forma, dims, p.Q, p.n, p.i, 10).y;

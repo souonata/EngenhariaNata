@@ -1,6 +1,6 @@
 # HANDOFF — Calha 10844 (app de calhas da NBR 10844)
 
-_Atualizado: 2026-09-13 (versão 3.8.0). Leia isto antes de mexer em qualquer arquivo desta pasta._
+_Atualizado: 2026-09-14 (versão 3.9.0). Leia isto antes de mexer em qualquer arquivo desta pasta._
 
 ## O que é
 App didático do portfólio Engenharia NATA para dimensionar calhas, condutores verticais e
@@ -35,6 +35,7 @@ guarda os PDFs das normas (NBR 10844 sem marca d'água, BS EN 12056-3, HR Wallin
 | `calha-desenhos.js` | SVG: Figura 2, seção, ábaco, esquema da fachada |
 | `calha-memorial.js` | memorial por calha e em texto |
 | `calha-relatorio.js` | relatório do projeto (HTML) para imprimir/salvar em PDF |
+| `calha-assinatura.js` | página de assinatura acrescentada ao PDF salvo (pdf-lib sob demanda) → `CalhaAssinatura` |
 | `calha-app.js` | interface: estado vivo, formulário, visibilidade, render, eventos |
 | `calha-simples.js` | modo simples, parte pura: entradas → estado do avançado → resultado → `CalhaSimples` |
 | `calha-simples-app.js` | modo simples, a tela (chave própria `calha10844:simples:v1`) |
@@ -280,7 +281,8 @@ Pedido do usuário: quem só quer a calha da casa não deve ver artigo da norma,
   ou a chuva local com fonte; nunca se inventa a chuva. 2) comprimento da calha, largura da água
   (projeção), altura da cumeeira (Figura 2(b)), altura da mureta (Figura 2(c), só na platibanda),
   altura da calha até o chão (= L do ábaco), canos de descida (ponta, meio, duas pontas, vários) e
-  formato (retangular com a largura liberada, b = 2y, ou meia-cana da Tabela 3). 3) resultado.
+  formato (retangular com a largura liberada, seção econômica b = 2y, ou meia-cana da Tabela 3).
+  3) resultado.
   Água-furtada e paredes mais altas: só no avançado (dito no passo 1).
 - **Nenhuma conta nova.** `CalhaSimples.resolver` monta o estado do avançado, dimensiona pelo
   caminho do botão da 3.7.2 (`dimensionarCalha` com `H_MIN_ABACO`) e lê `calcularProjeto`. O
@@ -300,3 +302,47 @@ Pedido do usuário: quem só quer a calha da casa não deve ver artigo da norma,
   pendências em palavras comuns, ações de vazão grande, busca de cidades.
 - Conferido no navegador em 390 × 844 e 820 × 1180 (sem rolagem lateral), tema escuro, passagem
   para o avançado, confirmação e redirecionamento de link antigo, console sem erros.
+
+## 3.8.1 — seção econômica proporcional também quando o ábaco decide
+O exemplo do modo simples dava 90 × 75 mm: com a largura liberada (b = 2y), `dimensionarCalha`
+subia só a altura até a lâmina limite de 50 mm pedida pelo ábaco, e a largura ficava na da vazão.
+Uma largura fixa (120 mm, "medida de loja") chegou a ser feita e foi recusada pelo usuário: nada de
+medida escolhida de fora do caso. Agora, quando o ábaco decide, a seção cresce inteira: h = altura
+do ábaco e b = 2·lâmina limite (⅔ → 100 × 75 mm); quando a vazão decide, nada muda (b = 2y). Vale
+para o botão "Calcular a seção econômica" do avançado e para o modo simples, que usa o mesmo
+caminho. O padrão dito no resultado descreve só o método ("a largura é o dobro da altura que a
+água pode ocupar").
+
+**Desenho do passo 2 em perspectiva.** O corte 2D não mostrava o comprimento da calha. Agora
+`desenhoTelhado()` (calha-simples-app.js) gera a cada digitação um corte na frente com a calha
+correndo para o fundo, em projeção oblíqua a 30° (x + 0,52·z, −y − 0,3·z; proporções fixas, as
+medidas vêm escritas). As cotas mostram os valores digitados (largura, altura, comprimento ao
+longo da calha, até o chão e mureta), as descidas seguem a opção escolhida e clicar numa cota
+leva ao campo. Na mureta, calha (as quatro bordas e o perfil do fundo fechado) e canos são desenhados
+inteiros, a mureta os cobre e o trecho escondido volta tracejado dentro de um `clipPath` com a
+silhueta da mureta: linha oculta só onde se esconde; o cano da frente, à vista, fica cheio (antes
+só as bordas de baixo, tracejadas até fora da mureta). Foram comparadas cinco
+projeções (para trás 30° com a cota do chão no fundo ou na frente, para trás 45°, para a frente,
+para trás à esquerda) e duas posições da cota do comprimento: ficou para trás 30°, chão no fundo,
+comprimento acima da calha (para a frente mostrava o telhado por baixo; à esquerda virava o texto).
+Texto a 18–19 unidades do viewBox para ficar legível a 390 px (≈ 11 px na tela).
+
+## 3.9.0 — PDF do relatório com campos de assinatura
+Pedido do usuário: o PDF deve ter campos para a pessoa digitar o nome e assinar digitalmente.
+O "Imprimir → Salvar como PDF" do navegador não gera campos de formulário, então há dois
+passos (escolha do usuário, contra a alternativa de montar o PDF inteiro como imagem):
+1. o relatório é salvo pelo "Imprimir ou salvar em PDF", como antes (vetorial, pesquisável);
+2. em "Assinatura digital" (seção Projeto em PDF do avançado) ou no botão "Acrescentar
+   assinatura digital" da barra do relatório, a pessoa escolhe esse PDF e `calha-assinatura.js`
+   acrescenta uma página final "Assinatura do responsável técnico" e baixa
+   `<nome> - para assinar.pdf`.
+
+A página tem campos de texto `responsavel_nome`, `responsavel_registro` (CREA ou CAU) e
+`responsavel_data`, e o campo de assinatura digital `responsavel_assinatura`: a pdf-lib não cria
+`/FT /Sig` pela API de formulário, então o widget é montado no dicionário e posto em `/Annots`
+e no `/AcroForm`, com um quadro desenhado por baixo para aparecer em qualquer leitor. Texto em
+Helvetica (WinAnsi; o que não couber vira "?"), margens da folha do relatório. Um PDF que já tem
+a página é recusado (`JA_TEM`). A pdf-lib 1.17.1 vem do cdnjs só ao usar a função, com
+`integrity` SHA-384 (`PDFLIB_SRI`); o arquivo é lido e gravado no navegador. Conferido com um
+relatório real impresso pelo Edge: 5 → 6 páginas, 3 campos de texto + 1 de assinatura.
+Testes em `tests/assinatura.test.js` (posições, texto WinAnsi, quebra, nome do arquivo).

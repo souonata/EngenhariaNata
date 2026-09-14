@@ -979,6 +979,32 @@
     try { window.print(); } catch (e) { volta(); toast('A impressão está bloqueada nesta janela: abra o site direto no navegador'); }
   }
 
+  // Passo 2 do PDF assinável: o PDF salvo pelo "Imprimir" ganha a página de assinatura, com
+  // campos de formulário e o campo de assinatura digital (calha-assinatura.js). O arquivo é
+  // lido e gravado neste navegador.
+  function acrescentarAssinatura(arquivo) {
+    const ASS = window.CalhaAssinatura;
+    toast('Preparando a página de assinatura…');
+    Promise.all([ASS.carregarPdfLib(), arquivo.arrayBuffer()]).then(function (r) {
+      return ASS.acrescentar(r[0], r[1], { arquivo: arquivo.name });
+    }).then(function (bytes) {
+      const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = ASS.nomeAssinavel(arquivo.name);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 10000);
+      toast('Pronto: "' + a.download + '", com a página de assinatura no fim');
+    }).catch(function (e) {
+      const codigo = e && e.code;
+      toast(codigo === 'JA_TEM' ? 'Este PDF já tem a página de assinatura.' :
+        codigo === 'SEM_BIBLIOTECA' ? 'Não deu para carregar o gerador de PDF: confira a conexão e tente de novo.' :
+          'Não deu para ler este arquivo como PDF. Escolha o PDF salvo pelo "Imprimir ou salvar em PDF".');
+    });
+  }
+
   /* ------------------------------------------------------------------ */
   /* Ciclo principal                                                    */
   /* ------------------------------------------------------------------ */
@@ -1397,6 +1423,14 @@
     $('#btn-pdf-topo').addEventListener('click', abrirRelatorio);
     $('#btn-rel-fechar').addEventListener('click', fecharRelatorio);
     $('#btn-rel-imprimir').addEventListener('click', imprimirRelatorio);
+    $$('[data-escolher-pdf]').forEach(function (b) {
+      b.addEventListener('click', function () { $('#arquivo-assinatura').click(); });
+    });
+    $('#arquivo-assinatura').addEventListener('change', function (ev) {
+      const arquivo = ev.target.files && ev.target.files[0];
+      ev.target.value = '';
+      if (arquivo) acrescentarAssinatura(arquivo);
+    });
     document.addEventListener('keydown', function (ev) {
       if (ev.key === 'Escape' && !$('#relatorio').hidden) fecharRelatorio();
     });

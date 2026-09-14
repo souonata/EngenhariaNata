@@ -30,6 +30,27 @@ test('Exemplo: a água da residência de Curitiba, com o resultado lido do calcu
   assert.match(res.resultado.descida.valor, /^DN \d+$/);
 });
 
+test('Retangular sem medida de fora: largura e altura na proporção da seção econômica, também quando o ábaco decide', () => {
+  let peloAbaco = 0;
+  let pelaVazao = 0;
+  [3, 6, 12, 20, 30, 45].forEach((Lc) => {
+    const res = S.resolver(casa({ Lc, largura: 6, descidas: 'duas' }));
+    const c = res.estado.calhas[0];
+    assert.equal(c.otima, true);
+    const R0 = P.calcularCalha(res.estado, c, P.calcularChuva(res.estado));
+    const r = N.dimensionarCalha({ forma: 'retangular', dims: {}, Q: R0.Qcalha, n: R0.calha.n, i: R0.calha.i, fracLamina: R0.calha.frac, otima: true });
+    assert.equal(c.b, Math.round(r.dims.b * 1000), 'mesmo caminho do botão, Lc ' + Lc);
+    assert.equal(c.h, Math.round(r.dims.h * 1000));
+    // Largura ≈ 2 × lâmina limite (⅔ da altura), com a folga do arredondamento de 5 mm.
+    assert.ok(Math.abs(c.b - (4 / 3) * c.h) <= 10, 'Lc ' + Lc + ': ' + c.b + ' × ' + c.h);
+    if (r.peloAbaco) peloAbaco++;
+    else pelaVazao++;
+  });
+  assert.ok(peloAbaco && pelaVazao, 'os dois casos: ábaco e vazão decidindo');
+  assert.equal(S.resolver(S.exemplo()).resultado.calha.valor, '100 × 75 mm');
+  assert.ok(!S.PADROES.some((p) => /120 mm|loja/.test(p)));
+});
+
 test('Aberto no modo avançado (link → migrar), o estado dá a mesma seção, DN, Di e estado', () => {
   const casos = [
     casa(),
