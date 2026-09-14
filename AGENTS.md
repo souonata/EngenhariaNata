@@ -187,6 +187,14 @@ npm run build          # build de produção (gera local/dist)
 
 _Última atualização: 2026-09-14_
 
+- **CATÁLOGO — ÍCONES DOS CARDS (PUBLICADO EM 2026-09-14, branch `fix/catalogo-icones-cards`):**
+  na lista de cards cada ícone tinha um tamanho (60 px com título curto, 34–39 px com título
+  longo): o `svg { max-width: 100% }` do `shared-styles.css` encolhia o ícone quando a linha
+  flexível espremia o link. `.app-card-header > a` passou a `flex: 0 0 auto` e quem se ajusta é o
+  título. O SVG do card das Calhas não tinha a classe `app-icon-large` e media 0 × 0 (ícone
+  sumido). Medido: 19/19 ícones com 60 × 60 em 1650 e 390 px, sem rolagem lateral. `?v=` do CSS
+  1.0.9.
+
 - **CALHA 3.9.0 (PUBLICADA EM 2026-09-14, branch `feat/calha-assinatura-pdf`):** o PDF do relatório
   ganha campos de assinatura em dois passos: salvo pelo "Imprimir", o PDF é escolhido no app e
   `calha/calha-assinatura.js` (pdf-lib do cdnjs, sob demanda, com SRI) acrescenta uma página com

@@ -707,7 +707,10 @@ html:not([data-theme="dark"]) .device-screen {
     flex-shrink: 0;
 }
 
+/* O ícone não encolhe: com títulos longos a linha flexível espremia o link e o
+   svg { max-width: 100% } do shared-styles reduzia o ícone junto (39, 34 px...). */
 .app-card-header > a {
+    flex: 0 0 auto;
     text-decoration: none;
     display: inline-block;
     transition: transform 0.2s ease;
