@@ -94,6 +94,8 @@ npm run build          # build de produção (gera local/dist)
 - **`public/404.html` é o atalho das lojas** do construtor (repo `SiteVendaTemplate`, `sites.engnata.eu`):
   caminho de um nível que não existe no site (ex.: `engnata.eu/minhaloja`) vai para
   `sites.engnata.eu/ir/minhaloja`, que leva à loja publicada ou mostra "não encontramos".
+  Antes disso ele tenta `/<nome>/<nome>.html`: apps sem `index.html` na pasta (solar, bitola,
+  salario, mutuo...) abrem por `engnata.eu/<app>`.
   **Nome de app novo = endereço que nenhuma loja pode usar:** acrescente-o também à lista de
   reservados do construtor (`backend/src/tenancy/slugs.js` no SiteVendaTemplate).
 - **DNS:** subdomínios de app (`volvo.engnata.eu`) não têm `www.`. `www.` é só para o apex (`www.engnata.eu`).

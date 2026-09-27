@@ -6,17 +6,27 @@
     <meta name="robots" content="noindex" />
     <title>Página não encontrada — Engenharia NATA</title>
     <script>
-      // Atalho das lojas: engnata.eu/<nome> leva à loja <nome>.engnata.eu.
-      // Só caminhos de um nível no formato de endereço de loja (3 a 40 letras, números
-      // ou hífen). sites.engnata.eu/ir/<nome> confere se a loja existe e está publicada;
-      // se não estiver, mostra "não encontramos" lá mesmo.
+      // Atalho: engnata.eu/<nome> leva ao app <nome> do site ou à loja <nome>.engnata.eu.
+      // Só caminhos de um nível no formato de endereço (3 a 40 letras, números ou hífen).
+      // 1) Apps em /<app>/<app>.html (solar, bitola...): a pasta sozinha não tem página,
+      //    então quem digita engnata.eu/solar vai direto para o app.
+      // 2) Senão, sites.engnata.eu/ir/<nome> confere se a loja existe e está publicada;
+      //    se não estiver, mostra "não encontramos" lá mesmo.
       (function () {
         var m = /^\/([a-z0-9][a-z0-9-]{1,38}[a-z0-9])\/?$/i.exec(
           location.pathname,
         );
-        if (m && m[1].indexOf("--") === -1) {
-          location.replace("https://sites.engnata.eu/ir/" + m[1].toLowerCase());
-        }
+        if (!m || m[1].indexOf("--") !== -1) return;
+        var nome = m[1].toLowerCase();
+        var app = "/" + nome + "/" + nome + ".html";
+        var loja = "https://sites.engnata.eu/ir/" + nome;
+        fetch(app, { method: "HEAD" })
+          .then(function (r) {
+            location.replace(r.ok ? app : loja);
+          })
+          .catch(function () {
+            location.replace(loja);
+          });
       })();
     </script>
     <style>
