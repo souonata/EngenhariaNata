@@ -340,6 +340,21 @@ PDF processing, release, download, and deletion. A mounted policy or classifier 
 the operator explicitly sets `PINTOR_POLICY_PATH` or `PINTOR_CLASSIFIER_PATH`; otherwise the
 conservative deterministic baseline runs.
 
+Once the smoke passes, reclaim disk with the post-deploy hygiene step. Preview it, then apply:
+
+```sh
+sh deploy/prune-old-releases.sh              # dry-run: prints the keep/remove plan
+sh deploy/prune-old-releases.sh --apply      # delete the old ones, then purge BuildKit cache
+```
+
+It keeps the live image and release, the pinned rollback (`0.6.2` / `2b08f7e`), and the two most
+recent of each (`KEEP_RECENT`, `PINNED_RELEASES`, `PINNED_IMAGES` override the defaults), deletes
+the rest, then runs `docker builder prune -a -f`. That last step is not optional: `docker rmi` of an
+old tag frees nothing while the BuildKit cache still holds its layers, so the disk only drops after
+the cache is purged. Every publish otherwise leaves ~762 MB of image, ~250 MB of release and layer
+cache behind -- the 20 GB root reached 93% before this was added, and the 2026-09-26 cleanup freed
+~13 GB.
+
 The connector host also runs `deploy/pintor-tunnel-watchdog.timer`. Every minute it checks the
 uncached public health endpoint. Three consecutive failures restart only the `cloudflared`
 container; a single transient edge failure does not flap the tunnel. Install the tracked script and
