@@ -35,6 +35,8 @@ Portfólio de apps web educativos para engenharia, energia, utilidades residenci
 
 A coluna **Calc. extraído** sinaliza apps cuja lógica numérica foi separada num módulo `*-calc.js` (ESM puro, sem DOM) e está coberta por testes automatizados. Hoje são três: `mutuo/mutuo-calc.js`, `salario/salario-calc.js` e `patentenautica/exercise-answers-calc.js` — este último não segue o padrão `<app>/<app>-calc.js` porque cobre a correção de exercícios, não um cálculo do app inteiro. Os demais seguem o padrão original (cálculo dentro da classe da app); a migração será feita em ondas — ver [ROADMAP.md](./ROADMAP.md).
 
+O catálogo também tem o **Sites Vendas**, o construtor de lojas online em `https://sites.engnata.eu`. Ele não tem pasta aqui: é um site standalone, só em `pt-BR`, com código no repo `SiteVendaTemplate`. Neste repositório ficam apenas o ícone e o card.
+
 ## Arquitetura resumida
 
 ```text
