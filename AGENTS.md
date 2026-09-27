@@ -18,6 +18,8 @@ Portfólio **estático** de apps web educativos (engenharia, energia, utilidades
 - **Site no ar:** `https://engnata.eu/` (custom domain nativo do GitHub Pages; `www` e
   `https://souonata.github.io/EngenhariaNata/` redirecionam pra cá). Ver seção 4 (Deploy).
 - **Domínios de app são subdomínios diretos**, ex.: o Assistente Volvo é `https://volvo.engnata.eu` (sem `www.`; `www.volvo...` **não resolve** no DNS).
+- **Sites Vendas** (construtor de lojas) é outro site standalone: `https://sites.engnata.eu`, só em
+  pt-BR, código no repo `SiteVendaTemplate`. Aqui ficam apenas o ícone e o card do catálogo.
 
 ## 2. Estrutura
 
@@ -192,7 +194,15 @@ npm run build          # build de produção (gera local/dist)
 
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
-_Última atualização: 2026-09-14_
+_Última atualização: 2026-09-27_
+- **SITES VENDAS NO CATÁLOGO (branch `feat/app-sites-vendas`, 2026-09-27):** ícone e card
+  "Sites Vendas" abrem o construtor de lojas em `https://sites.engnata.eu/` na mesma aba. É site
+  standalone, só em pt-BR, com código no repo `SiteVendaTemplate`: aqui não há pasta, página
+  interna, entrada no `sobre`, sitemap nem versão (sem etiqueta `V.` no ícone, como o Volvo). O
+  card tem texto nos três idiomas porque o validador de paridade exige; em IT/SV ele avisa que é
+  para vender no Brasil e que o site é em português. Ícone: vitrine de toldo listrado nas cores da
+  plataforma.
+
 - **CALHA 3.9.1 — LEGENDAS DO ÁBACO (LOCAL, branch `feat/calha-legendas-abaco`, 2026-09-14):**
   nomes H/L em faixas fora da grade, com espaçamento mínimo e chamadas pontilhadas para as
   extremidades reais; H100 do ábaco (b) fica na lateral. Leituras H/L/D e aviso de D < 50 mm
