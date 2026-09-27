@@ -91,6 +91,11 @@ npm run build          # build de produção (gera local/dist)
 
 - **Service worker (`sw.js`) é um kill-switch:** apaga caches e se desregistra, não intercepta fetch. Não é cache de JS antigo — se algo "não atualiza", suspeite de **deploy/branch**, não do SW.
 - **Site no ar ≠ repo cru:** é build Vite. Para validar o que o usuário realmente vê, cheque o bundle publicado, não só os arquivos locais.
+- **`public/404.html` é o atalho das lojas** do construtor (repo `SiteVendaTemplate`, `sites.engnata.eu`):
+  caminho de um nível que não existe no site (ex.: `engnata.eu/minhaloja`) vai para
+  `sites.engnata.eu/ir/minhaloja`, que leva à loja publicada ou mostra "não encontramos".
+  **Nome de app novo = endereço que nenhuma loja pode usar:** acrescente-o também à lista de
+  reservados do construtor (`backend/src/tenancy/slugs.js` no SiteVendaTemplate).
 - **DNS:** subdomínios de app (`volvo.engnata.eu`) não têm `www.`. `www.` é só para o apex (`www.engnata.eu`).
 - **br12c** é standalone — copiado inteiro no deploy, fora do bundle.
 - **br12c tem service worker PRÓPRIO e versionado** (`br12c/sw.js`, cache `br12c-guide-vN`) —
