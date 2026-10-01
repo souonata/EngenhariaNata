@@ -51,9 +51,15 @@ class DecisionPolicy:
     # between, and no ink crosses. A reviewer marked that twice, at the same coordinates -- colour
     # dying at every twist on the sheet.
     #
-    # Measured over four manuals: 30 -> 36 lifts stops-mid from 19/46 to 23/46 and coverage from
-    # 0.2933 to 0.3200, with every precision category unchanged. 36 and 42 measure identically, so
+    # Measured over four manuals: 30 -> 36 lifts stops-mid from 6/56 to 10/56 and coverage from
+    # 0.1925 to 0.2174, with every precision category unchanged. 36 and 42 measure identically, so
     # this is not an edge fitted to one drawing; 36 is the more conservative of two equal answers.
+    #
+    # Those figures replace the ones this comment first carried (19/46 -> 23/46, coverage 0.2933 ->
+    # 0.3200). Those were read with a scorer whose tolerance was a disc, which counted any defect
+    # shorter than its own radius as already fixed. The same +4 conductors are repaired either way,
+    # so the choice of 36 stands; the base was flattered, not the gain.
+    #
     # Making the ceiling itself relative to the sheet is the real repair and is not attempted here.
     bridge_max_gap_px: float = 36.0
     bridge_gap_factor: float = 0.60
