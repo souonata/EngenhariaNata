@@ -110,8 +110,10 @@ class PintorApp extends App {
             if (!response.ok) {
                 throw new Error(body.detail || i18n.t('access.unavailable'));
             }
+            // Must be known before the access code is submitted: the first visit unlocks via
+            // submitAccess -> checkAccount, which would otherwise skip the sign-in panel.
+            this.accountsRequired = Boolean(body.accounts_required);
             if (!body.access_required || body.authenticated) {
-                this.accountsRequired = Boolean(body.accounts_required);
                 await this.checkAccount();
             }
         } catch (error) {
