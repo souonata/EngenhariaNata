@@ -10,12 +10,12 @@
   --surface: #ffffff;
   --surface-muted: #f4f2ea;
   --ink: #22251f;
-  --ink-2: #555b4e;
-  --ink-mut: #8a8f80;
+  --ink-2: #4d5246;   /* 7.7:1 no papel (era #555b4e / 6.7:1) */
+  --ink-mut: #676c5c; /* 5.2:1 no papel — passa AA (era #8a8f80 / 3.2:1) */
   --leaf: #3e7d4f;
   --litchi: #c0392b;
   --leaf-soft: #e7efe3;
-  --frost: #6b8fa3;
+  --frost: #52738a; /* 5:1 no branco (era #6b8fa3 / 3.3:1) — usado como texto/rótulo */
   --hair: #e3e0d4;
 
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
@@ -32,7 +32,7 @@ html[data-theme="dark"] {
   --surface-muted: #1d1f1a;
   --ink: #e8e7dd;
   --ink-2: #b3b6a6;
-  --ink-mut: #7c8073;
+  --ink-mut: #8e9282; /* 5.1:1 no papel escuro — passa AA (era #7c8073 / 4.33:1) */
   --leaf: #7bbf86;
   --litchi: #e0685a;
   --leaf-soft: rgba(123, 191, 134, 0.1);
@@ -291,8 +291,11 @@ body {
   background: var(--leaf-soft);
 }
 .lichia-status > div.is-next dd {
-  color: var(--leaf);
+  color: #336642; /* 5.7:1 no leaf-soft claro (var(--leaf) dava 4.23:1 aqui) */
   font-weight: 600;
+}
+html[data-theme="dark"] .lichia-status > div.is-next dd {
+  color: var(--leaf); /* no escuro var(--leaf) já dá 6:1 no leaf-soft */
 }
 
 /* PLANO PET */
@@ -703,8 +706,8 @@ body.lichia-no-scroll {
   padding: 1.05rem 1.2rem;
 }
 .lichia-estacao.is-primavera { --est: var(--leaf); }
-.lichia-estacao.is-verao { --est: #cc9528; }
-.lichia-estacao.is-outono { --est: #c1692c; }
+.lichia-estacao.is-verao { --est: #936b1d; } /* 4.8:1 no branco (era #cc9528 / 2.55:1) */
+.lichia-estacao.is-outono { --est: #9a5423; } /* 5.7:1 no branco (era #c1692c / 3.78:1) */
 .lichia-estacao.is-inverno { --est: var(--frost); }
 html[data-theme="dark"] .lichia-estacao.is-verao { --est: #e0b75e; }
 html[data-theme="dark"] .lichia-estacao.is-outono { --est: #db9059; }
@@ -788,7 +791,7 @@ html[data-theme="dark"] .lichia-estacao.is-outono { --est: #db9059; }
 }
 .lichia-infra__card.is-vaso { --acc: var(--leaf); }
 .lichia-infra__card.is-irrigacao { --acc: var(--frost); }
-.lichia-infra__card.is-luz { --acc: #cc9528; }
+.lichia-infra__card.is-luz { --acc: #936b1d; }
 html[data-theme="dark"] .lichia-infra__card.is-luz { --acc: #e0b75e; }
 .lichia-infra__head {
   display: flex;
@@ -1243,8 +1246,8 @@ html[data-theme="dark"] .lichia-infra__card.is-luz { --acc: #e0b75e; }
   transition: background 0.15s, color 0.15s;
 }
 .lichia-cal__mes.is-primavera { --est: var(--leaf); }
-.lichia-cal__mes.is-verao { --est: #cc9528; }
-.lichia-cal__mes.is-outono { --est: #c1692c; }
+.lichia-cal__mes.is-verao { --est: #936b1d; }
+.lichia-cal__mes.is-outono { --est: #9a5423; }
 .lichia-cal__mes.is-inverno { --est: var(--frost); }
 html[data-theme="dark"] .lichia-cal__mes.is-verao { --est: #e0b75e; }
 html[data-theme="dark"] .lichia-cal__mes.is-outono { --est: #db9059; }
@@ -1273,8 +1276,8 @@ html[data-theme="dark"] .lichia-cal__mes.is-sel { color: var(--surface); }
   padding: 1.1rem 1.25rem;
 }
 .lichia-cal__panel.is-primavera { --est: var(--leaf); }
-.lichia-cal__panel.is-verao { --est: #cc9528; }
-.lichia-cal__panel.is-outono { --est: #c1692c; }
+.lichia-cal__panel.is-verao { --est: #936b1d; }
+.lichia-cal__panel.is-outono { --est: #9a5423; }
 .lichia-cal__panel.is-inverno { --est: var(--frost); }
 html[data-theme="dark"] .lichia-cal__panel.is-verao { --est: #e0b75e; }
 html[data-theme="dark"] .lichia-cal__panel.is-outono { --est: #db9059; }
