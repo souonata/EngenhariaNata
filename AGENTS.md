@@ -446,7 +446,7 @@ _Última atualização: 2026-09-27_
 
 - **PINTOR — MANUAIS GRANDES, RETENÇÃO DE 24 H E TRABALHO PÁGINA A PÁGINA (0.5.0, PUBLICADO EM
   2026-08-22):** segunda leva. **200 MB por arquivo** (`PINTOR_MAX_UPLOAD_MB=200`) e o upload
-  deixou de ser `await file.read(...)`: agora escorre para `workspace/incoming/` em blocos de 1 MB,
+  deixou de ser `await file.read(...)`: agora escorre para `workspace/incoming/` (pasta de runtime do Pintor no servidor, fora do repositório) em blocos de 1 MB,
   com o limite conferido durante a escrita, e o `store.create` recebe um caminho (aceita bytes ou
   path, faz o sha256 em blocos e move para a pasta do job). Medido contra API viva: upload de
   188,8 MB cresceu o processo da API em **13,1 MB** e gravou `source_bytes` 188.757.233 intacto.
@@ -504,7 +504,7 @@ _Última atualização: 2026-09-27_
   console e o beta nunca fica sem administrador ativo — o `bootstrap_admin` reativa o admin
   configurado no boot, então suspensão não tranca ninguém para fora. Trocar papel ou suspender
   revoga as sessões da conta. **Rounds** são lotes curados de relatos aceitos (em
-  `improvement_rounds/`): um round aberto por vez, todo aceite com consentimento entra sozinho,
+  `improvement_rounds/`, pasta de runtime do Pintor no servidor, fora do repositório): um round aberto por vez, todo aceite com consentimento entra sozinho,
   reverter a decisão tira, e fechar congela a lista e grava `<id>-manifest.json` para curadoria
   offline — `automatic_training: false`, o serviço continua sem treinar nem promover modelo.
   **Meus desenhos** mostra ao dono tudo o que é dele (na fila, pintando, pronto), com posição na
