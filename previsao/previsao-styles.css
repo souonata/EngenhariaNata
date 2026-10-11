@@ -19,6 +19,9 @@
     --grid-ref:rgba(255,255,255,.05);
     --grid-cross:rgba(255,255,255,.18);
     --rain:#8fe9cf;                /* hachura de chuva (tema-aware) */
+    --rain-bg:transparent;         /* fundo da célula de chuva (só no claro) */
+    --rain-boost:1;                /* multiplica a opacidade da chuva */
+    --wind:#9aa7d6;                /* barras/pico de vento */
     --sel:#4aa8ff;                 /* hora aberta no quadro de detalhes */
     --sel-band:rgba(74,168,255,.16);
   }
@@ -38,7 +41,12 @@
     --grid-maj:rgba(0,0,0,.45);
     --grid-ref:rgba(0,0,0,.08);
     --grid-cross:rgba(0,0,0,.22);
-    --rain:#2c8fb0;                /* tom de água, mais escuro p/ aparecer no claro */
+    /* Chuva no claro: tom de água bem mais escuro, véu azul atrás da hachura e
+       opacidade reforçada — no celular, sob sol, a hachura clara sumia. */
+    --rain:#0a5f8c;
+    --rain-bg:rgba(10,95,140,.20);
+    --rain-boost:1.6;
+    --wind:#5866a3;
     --sel:#0b6bc4;
     --sel-band:rgba(11,107,196,.14);
   }
@@ -63,6 +71,9 @@
   .g-cross{ stroke:var(--grid-cross); }
   .g-now{ stroke:#ff5fa0; stroke-opacity:.85; }   /* hora atual: rosa */
   .rain-hatch{ stroke:var(--rain); }   /* cor da hachura de chuva pelo tema */
+  .rain-bg{ fill:var(--rain-bg); }
+  .rain-cell{ opacity:min(1, calc(var(--op) * var(--rain-boost))); }
+  .wind-bar{ fill:var(--wind); opacity:var(--op); }
 
   /* ─── Barra superior: idioma + tema (oculta no topo ao abrir) ─── */
   .topbar{
@@ -323,7 +334,7 @@
   .lbl-wind{
     position:absolute;
     font-size:.5rem; font-weight:700; line-height:1; white-space:nowrap;
-    color:#9aa7d6; pointer-events:none;
+    color:var(--wind); pointer-events:none;
     text-shadow:0 0 3px var(--bg),0 0 3px var(--bg),0 0 2px var(--bg);
   }
   /* Hora discreta do cruzamento (puxada por um traço) */

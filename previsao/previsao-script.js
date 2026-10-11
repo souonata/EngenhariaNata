@@ -674,7 +674,7 @@ function buildRow(day, hours, isToday, nowH, scaleMax, lat, yLowG, yHighG){
     const hgt = WIND_BASE + WIND_SPAN * frac;       // 2..10 unidades
     const op  = (0.18 + 0.6 * frac).toFixed(2);
     const tip = `${T().windLabel} ${String(h.hour).padStart(2,'0')}h: ${Math.round(h.wind||0)} ${WIND_UNIT}`;
-    return `<rect x="${(xAt(i) - wBarW/2).toFixed(1)}" y="${(WIND_H - hgt).toFixed(1)}" width="${wBarW.toFixed(1)}" height="${hgt.toFixed(1)}" fill="#9aa7d6" opacity="${op}"><title>${tip}</title></rect>`;
+    return `<rect x="${(xAt(i) - wBarW/2).toFixed(1)}" y="${(WIND_H - hgt).toFixed(1)}" width="${wBarW.toFixed(1)}" height="${hgt.toFixed(1)}" class="wind-bar" style="--op:${op}"><title>${tip}</title></rect>`;
   }).join('');
 
   // Pico de vento do dia (a velocidade vai dentro da bolinha no ponto de leitura).
@@ -705,9 +705,9 @@ function buildRow(day, hours, isToday, nowH, scaleMax, lat, yLowG, yHighG){
     const op      = Math.max(0.3, frac * 0.45, (pop / 100) * 0.85).toFixed(2);
     const x = (xAt(i) - rBarW/2).toFixed(1);
     const pid = `rn${day.date.replace(/-/g,'')}_${currentIdx}_${i}`;
-    rainDefs.push(`<pattern id="${pid}" patternUnits="userSpaceOnUse" width="${spacing.toFixed(2)}" height="${spacing.toFixed(2)}" patternTransform="rotate(${angle})"><line x1="0" y1="-0.5" x2="0" y2="${(spacing+0.5).toFixed(2)}" class="rain-hatch" stroke-width="${thick}" stroke-dasharray="${(spacing*0.5).toFixed(2)} ${(spacing*0.55).toFixed(2)}"/></pattern>`);
+    rainDefs.push(`<pattern id="${pid}" patternUnits="userSpaceOnUse" width="${spacing.toFixed(2)}" height="${spacing.toFixed(2)}" patternTransform="rotate(${angle})"><rect x="0" y="0" width="${spacing.toFixed(2)}" height="${spacing.toFixed(2)}" class="rain-bg"/><line x1="0" y1="-0.5" x2="0" y2="${(spacing+0.5).toFixed(2)}" class="rain-hatch" stroke-width="${thick}" stroke-dasharray="${(spacing*0.5).toFixed(2)} ${(spacing*0.55).toFixed(2)}"/></pattern>`);
     const rainTip = `${T().rainLabel} ${String(hours[i].hour).padStart(2,'0')}h: ${fmt1(m)} mm · ${Math.round(pop)}% ${T().probLabel}`;
-    rainRects.push(`<rect x="${x}" y="${padT}" width="${rBarW.toFixed(1)}" height="${ch}" fill="url(#${pid})" opacity="${op}"><title>${rainTip}</title></rect>`);
+    rainRects.push(`<rect x="${x}" y="${padT}" width="${rBarW.toFixed(1)}" height="${ch}" fill="url(#${pid})" class="rain-cell" style="--op:${op}"><title>${rainTip}</title></rect>`);
   });
   const rainDefsSvg = rainDefs.join('');
   const rainSvg = rainRects.join('');
@@ -744,7 +744,7 @@ function buildRow(day, hours, isToday, nowH, scaleMax, lat, yLowG, yHighG){
   const hourColor = (h) => {
     if (maxHourSet.has(h.hour)) return maxCol;
     if (minHourSet.has(h.hour)) return minCol;
-    if (h.hour === windHour) return '#9aa7d6';
+    if (h.hour === windHour) return 'var(--wind)';
     if (rainHourSet.has(h.hour)) return 'var(--rain)';
     return '';
   };
@@ -790,7 +790,7 @@ function buildRow(day, hours, isToday, nowH, scaleMax, lat, yLowG, yHighG){
   // Bola do PICO de vento do dia (no topo da barra mais alta), com a velocidade.
   // Mesmo tamanho e estilo que os números de temperatura (t-num), na cor das barras.
   const windBall = windMax > 0
-    ? `<span class="t-num" data-h="${hours[iWindMax].hour}" data-t="${Math.round(hours[iWindMax].temp)}" data-w="${Math.round(windMax)}" data-wd="${Math.round(hours[iWindMax].windDir||0)}" data-pop="${Math.round(hours[iWindMax].pop||0)}" data-mm="${(hours[iWindMax].mm||0).toFixed(1)}" title="${T().windPeak} ${Math.round(windMax)} ${WIND_UNIT} · ${String(hours[iWindMax].hour).padStart(2,'0')}h" style="left:${(xAt(iWindMax)/VBW*100).toFixed(2)}%;top:${(windTopY/WIND_H*100).toFixed(1)}%;font-size:${fcqw}cqw;color:#9aa7d6">${Math.round(windMax)}</span>`
+    ? `<span class="t-num" data-h="${hours[iWindMax].hour}" data-t="${Math.round(hours[iWindMax].temp)}" data-w="${Math.round(windMax)}" data-wd="${Math.round(hours[iWindMax].windDir||0)}" data-pop="${Math.round(hours[iWindMax].pop||0)}" data-mm="${(hours[iWindMax].mm||0).toFixed(1)}" title="${T().windPeak} ${Math.round(windMax)} ${WIND_UNIT} · ${String(hours[iWindMax].hour).padStart(2,'0')}h" style="left:${(xAt(iWindMax)/VBW*100).toFixed(2)}%;top:${(windTopY/WIND_H*100).toFixed(1)}%;font-size:${fcqw}cqw;color:var(--wind)">${Math.round(windMax)}</span>`
     : '';
 
 
