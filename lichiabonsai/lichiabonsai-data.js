@@ -77,6 +77,28 @@ export const PLANO_PET = {
 // LINHA DO TEMPO — adicione novas entradas no topo (mais recente primeiro).
 export const TIMELINE = [
   {
+    data: '2026-10-11',
+    titulo: { pt: 'Para dentro de casa, com 13 cm e 15 folhas', it: 'In casa, a 13 cm e con 15 foglie' },
+    texto: {
+      pt: 'Quase dois meses depois do último registro, a muda mede 13 cm — 2 cm a mais que em 22/08 — e soma 15 folhas: dez no tronco principal e cinco no ramo menor. No dia 1º de outubro, com a chegada do outono, ela saiu do terraço e foi trazida para dentro de casa, onde agora é iluminada por uma lâmpada SANSI de 15 W, LED E27 para plantas de interior, a 25 cm da planta e ligada 12 h por dia. É o primeiro passo do plano para o primeiro inverno, antes das geadas da Lombardia. Segue no berçário, na garrafa PET dentro do vaso maior, com a cobertura de fibra de coco, sem poda nem mexida nas raízes.',
+      it: 'Quasi due mesi dopo l’ultimo aggiornamento, la piantina misura 13 cm — 2 cm in più rispetto al 22/08 — e conta 15 foglie: dieci sul tronco principale e cinque sul ramo più piccolo. Il 1° ottobre, con l’arrivo dell’autunno, è uscita dal terrazzo ed è stata portata in casa, dove ora è illuminata da una lampadina SANSI da 15 W, LED E27 per piante da interno, a 25 cm dalla pianta e accesa 12 ore al giorno. È il primo passo del piano per il primo inverno, prima delle gelate della Lombardia. Resta nel vivaio, nella bottiglia PET dentro il vaso più grande, con la copertura di fibra di cocco, senza potature né interventi sulle radici.',
+    },
+    fotos: [
+      {
+        arquivo: '2026-10-11-vista-do-topo.webp',
+        legenda: { pt: 'Vista de cima: a copa mais cheia, com 15 folhas, já dentro de casa', it: 'Vista dall’alto: la chioma più piena, con 15 foglie, ormai in casa' },
+      },
+      {
+        arquivo: '2026-10-11-tronco-e-ramos.webp',
+        legenda: { pt: 'Detalhe do tronco principal e do ramo menor saindo da fibra de coco', it: 'Dettaglio del tronco principale e del ramo più piccolo che escono dalla fibra di cocco' },
+      },
+      {
+        arquivo: '2026-10-11-vista-geral.webp',
+        legenda: { pt: 'Vista geral, 13 cm de altura, sob a luz da lâmpada LED de 15 W', it: 'Vista generale, 13 cm di altezza, sotto la luce della lampadina LED da 15 W' },
+      },
+    ],
+  },
+  {
     data: '2026-08-22',
     titulo: { pt: 'Novo fluxo e 11 cm de altura', it: 'Nuovo getto e 11 cm di altezza' },
     texto: {
@@ -289,6 +311,7 @@ export const MEDICOES = [
   { data: '2026-07-04', alturaCm: 7, folhas: 2 },
   { data: '2026-07-12', alturaCm: 8, folhas: 4 },
   { data: '2026-08-22', alturaCm: 11, folhas: 11 },
+  { data: '2026-10-11', alturaCm: 13, folhas: 15 },
 ];
 
 // REGISTROS POR FASE — SUAS fotos/notas reais de cada fase do guia (o loop de
@@ -299,8 +322,8 @@ export const MEDICOES = [
 export const FASE_REGISTROS = {
   f0: {
     nota: {
-      pt: 'Germinação em 21/06, transplante para a garrafa PET de 2 L em 25/06 e, em 26/06, a garrafa (furada no fundo) foi para dentro de um vaso maior com terra — isolando as raízes do calor e da luz. Rega com água de condensação do ar-condicionado (macia, levemente ácida). A raiz pivotante foi preservada. Em 04/07 surgiu o primeiro broto no nó entre as duas folhas; em 12/07 ele já havia alongado, aberto duas folhas novas e levado a muda a 8 cm e quatro folhas. Entre 14/07 e 18/07 essas folhas novas perderam o vermelho de brotação e amadureceram para verde — o lançamento firmou. Em 22/08, a muda chegou a 11 cm e 11 folhas: três no novo ramo que emerge do solo e oito no tronco principal, incluindo um novo par acobreado no ápice.',
-      it: 'Germinazione il 21/06, trapianto nella bottiglia PET da 2 L il 25/06 e, il 26/06, la bottiglia (forata sul fondo) è finita dentro un vaso più grande con terra — isolando le radici dal calore e dalla luce. Irrigazione con acqua di condensa del condizionatore (dolce, leggermente acida). Il fittone è stato preservato. Il 04/07 è comparso il primo germoglio nel nodo tra le due foglie; il 12/07 si era già allungato, aveva aperto due foglie nuove e portato la piantina a 8 cm e quattro foglie. Tra il 14/07 e il 18/07 quelle foglie nuove hanno perso il rosso di germogliazione e sono maturate al verde — il getto si è consolidato. Il 22/08 la piantina ha raggiunto 11 cm e 11 foglie: tre sul nuovo ramo che emerge dal terreno e otto sul tronco principale, compresa una nuova coppia color rame all’apice.',
+      pt: 'Germinação em 21/06, transplante para a garrafa PET de 2 L em 25/06 e, em 26/06, a garrafa (furada no fundo) foi para dentro de um vaso maior com terra — isolando as raízes do calor e da luz. Rega com água de condensação do ar-condicionado (macia, levemente ácida). A raiz pivotante foi preservada. Em 04/07 surgiu o primeiro broto no nó entre as duas folhas; em 12/07 ele já havia alongado, aberto duas folhas novas e levado a muda a 8 cm e quatro folhas. Entre 14/07 e 18/07 essas folhas novas perderam o vermelho de brotação e amadureceram para verde — o lançamento firmou. Em 22/08, a muda chegou a 11 cm e 11 folhas: três no novo ramo que emerge do solo e oito no tronco principal, incluindo um novo par acobreado no ápice. Levada para dentro de casa em 01/10, chegou em 11/10 — sob uma lâmpada LED de 15 W — a 13 cm e 15 folhas: dez no tronco principal e cinco no ramo menor.',
+      it: 'Germinazione il 21/06, trapianto nella bottiglia PET da 2 L il 25/06 e, il 26/06, la bottiglia (forata sul fondo) è finita dentro un vaso più grande con terra — isolando le radici dal calore e dalla luce. Irrigazione con acqua di condensa del condizionatore (dolce, leggermente acida). Il fittone è stato preservato. Il 04/07 è comparso il primo germoglio nel nodo tra le due foglie; il 12/07 si era già allungato, aveva aperto due foglie nuove e portato la piantina a 8 cm e quattro foglie. Tra il 14/07 e il 18/07 quelle foglie nuove hanno perso il rosso di germogliazione e sono maturate al verde — il getto si è consolidato. Il 22/08 la piantina ha raggiunto 11 cm e 11 foglie: tre sul nuovo ramo che emerge dal terreno e otto sul tronco principale, compresa una nuova coppia color rame all’apice. Portata in casa il 01/10, l’11/10 — sotto una lampadina LED da 15 W — ha raggiunto 13 cm e 15 foglie: dieci sul tronco principale e cinque sul ramo più piccolo.',
     },
     fotos: [
       { arquivo: '2026-06-26-vaso-isolante-detalhe.webp', legenda: { pt: 'O vaso isolante: garrafa furada dentro de um vaso com terra', it: 'Il vaso isolante: bottiglia forata dentro un vaso con terra' } },
@@ -361,11 +384,13 @@ export const ESTACAO_CULTIVO = [
     itens: {
       pt: [
         'LED full-spectrum branco (~20–40 W), braço ajustável, ~20–30 cm acima.',
+        'Em uso desde 01/10/2026: lâmpada SANSI 15 W, LED E27 para plantas de interior, a 25 cm da planta, 12 h/dia (provisória, até o LED full-spectrum com braço).',
         'Timer ou smart plug: 12–14 h/dia no inverno, sempre no mesmo horário.',
         'Pode ser controlada pelo mesmo ESP32 (luz + bomba juntas).',
       ],
       it: [
         'LED full-spectrum bianco (~20–40 W), braccio regolabile, ~20–30 cm sopra.',
+        'In uso dal 01/10/2026: lampadina SANSI 15 W, LED E27 per piante da interno, a 25 cm dalla pianta, 12 ore/giorno (provvisoria, in attesa del LED full-spectrum con braccio).',
         'Timer o smart plug: 12–14 h/giorno in inverno, sempre alla stessa ora.',
         'Gestibile dallo stesso ESP32 (luce + pompa insieme).',
       ],
