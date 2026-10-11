@@ -789,6 +789,11 @@ _Última atualização: 2026-09-27_
   desprezível nas 24 marcas; build e checkup passaram. A inspeção visual a 97% confirmou 11° 9,2′
   entre 9′ e 10′, e os layouts 390 × 844 e 820 × 1180 permaneceram sem overflow horizontal.
 
+- **ATUALIZAÇÃO DO DIÁRIO (11/10):** novo post bilíngue com três fotos tratadas em WebP; muda com
+  13 cm e 15 folhas (10 no tronco principal, 5 no ramo menor), já dentro de casa sob lâmpada SANSI
+  15 W LED E27 para plantas (registrada também em `ESTACAO_CULTIVO` › luz e na nota de `f0`).
+  Medição adicionada; cache-bust do script para 1.2.3. Originais em `lichiabonsai/raw-images/`
+  (untracked, não commitar).
 - **ATUALIZAÇÃO DO DIÁRIO (22/08):** novo post bilíngue com três fotos tratadas em WebP; muda
   registrada com 11 cm e 11 folhas — três no novo ramo que emerge do solo e oito no tronco
   principal. Status atualizado para crescimento livre no berçário e cache-bust do script para
