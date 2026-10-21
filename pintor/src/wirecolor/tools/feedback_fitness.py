@@ -57,6 +57,9 @@ class PageScore:
     painted: bool
     reason: str = ""
     outcomes: list = field(default_factory=list)
+    # The same overlay judged by the previous ruler, so a scorer change is reported beside the
+    # number it replaces instead of silently moving it.
+    legacy_outcomes: list = field(default_factory=list)
 
     def totals(self) -> tuple[float, float]:
         scorable = [item for item in self.outcomes if item.scorable]
@@ -107,6 +110,42 @@ def _painted_near(alpha, x: float, y: float, radius_px: float, direction=None):
     return False, column, row
 
 
+def _snap_to_ink(ink, x: float, y: float, radius_px: float):
+    """The drawn pixel a reviewer pointed at: the source ink nearest the mark, within tolerance.
+
+    Returns ``(column, row)`` or None when no ink lies within the tolerance of the mark.
+    """
+    import numpy as np
+
+    height, width = ink.shape[:2]
+    column, row = int(round(x * width)), int(round(y * height))
+    reach = max(1, int(round(radius_px)))
+    left, right = max(0, column - reach), min(width, column + reach + 1)
+    top, bottom = max(0, row - reach), min(height, row + reach + 1)
+    if right <= left or bottom <= top:
+        return None
+    rows, columns = np.nonzero(ink[top:bottom, left:right])
+    if not len(rows):
+        return None
+    distances = (rows + top - row) ** 2 + (columns + left - column) ** 2
+    nearest = int(distances.argmin())
+    if distances[nearest] > reach * reach:
+        return None
+    return int(columns[nearest] + left), int(rows[nearest] + top)
+
+
+def _ink_painted(alpha, column: int, row: int) -> bool:
+    """Is the drawn pixel itself under paint? One pixel of slack absorbs anti-aliasing.
+
+    The painted band is always wider than the stroke it follows, so paint on a conductor covers
+    every ink pixel of that conductor, including the edge pixel nearest a click.
+    """
+    height, width = alpha.shape[:2]
+    left, right = max(0, column - 1), min(width, column + 2)
+    top, bottom = max(0, row - 1), min(height, row + 2)
+    return bool((alpha[top:bottom, left:right] > 0).any())
+
+
 def _mark_direction(points) -> tuple | None:
     """Unit vector along a segment mark, or None when the mark is a single point."""
     if len(points) < 2:
@@ -137,6 +176,47 @@ def _dominant_colour(rgba, x: float, y: float, radius_px: float):
     return tuple(int(value) for value in colours[counts.argmax()])
 
 
+def _conductor_colours(rgba, column: int, row: int, radius_px: float, palette: set):
+    """Palette colours on the painted band that covers one drawn pixel, with pixel counts.
+
+    The band is the connected opaque region through that pixel, cut to the mark's tolerance window
+    so a junction cannot pull in the far end of the sheet. Only exact palette colours count: the
+    renderer paints palette RGB, and anything else is a rail, an anti-aliased edge or a blend.
+    """
+    import cv2
+    import numpy as np
+
+    height, width = rgba.shape[:2]
+    reach = max(1, int(round(radius_px)))
+    left, right = max(0, column - reach), min(width, column + reach + 1)
+    top, bottom = max(0, row - reach), min(height, row + reach + 1)
+    window = rgba[top:bottom, left:right]
+    # A non-white two-colour cable leaves its centre pixel bare so the drawn line shows between
+    # the stripes; closing that one-pixel seam keeps both stripes one band.
+    opaque = cv2.morphologyEx((window[:, :, 3] > 0).astype(np.uint8), cv2.MORPH_CLOSE,
+                              np.ones((3, 3), dtype=np.uint8))
+    _, labels = cv2.connectedComponents(opaque, connectivity=8)
+    # The ink pixel may sit a pixel outside the band's opaque core, as _ink_painted allows.
+    seeds = labels[max(0, row - top - 1):row - top + 2, max(0, column - left - 1):column - left + 2]
+    seeds = seeds[seeds > 0]
+    if not len(seeds):
+        return {}
+    band = window[(labels == np.bincount(seeds).argmax()) & (window[:, :, 3] > 0)][:, :3]
+    colours, counts = np.unique(band, axis=0, return_counts=True)
+    return {tuple(int(v) for v in colour): int(count) for colour, count in zip(colours, counts)
+            if tuple(int(v) for v in colour) in palette}
+
+
+def _expected_parts(code: str, convention) -> list | None:
+    """Every colour a code names, base first, as RGB; None when a part is not in the convention."""
+    if convention is None:
+        return None
+    parts = [part for part in str(code).split("/") if part]
+    if not parts or not all(part in convention.codes for part in parts):
+        return None
+    return [tuple(reversed(convention.colors_bgr[part])) for part in parts]
+
+
 def _expected_rgb(code: str, convention) -> tuple | None:
     if convention is None:
         return None
@@ -147,8 +227,18 @@ def _expected_rgb(code: str, convention) -> tuple | None:
     return (red, green, blue)
 
 
-def score_page(overlay_rgba, marks: list, convention, colour_tolerance: int = 60) -> list:
-    """Judge every mark on one page against the overlay that was produced for it."""
+def score_page(overlay_rgba, marks: list, convention, colour_tolerance: int = 60,
+               ink=None) -> list:
+    """Judge every mark on one page against the overlay that was produced for it.
+
+    ``ink`` is the source page rendered to the overlay's canvas as a boolean mask. When it is given,
+    a *non-wire* or *bleed* mark is judged on the object the reviewer pointed at rather than on any
+    paint inside the tolerance square. The square cannot separate "the housing was painted" from
+    "the wire that legitimately ends at the housing was painted" -- on D4/D6 page 111 every one of
+    the nine unmet housing marks had paint 2.3-4.1 pt away and none at the mark. So the mark snaps
+    to the nearest drawn pixel within the same tolerance, and only that ink is asked about. A mark
+    with no ink in reach keeps the square.
+    """
     height, width = overlay_rgba.shape[:2]
     radius = math.hypot(width, height) * MARK_TOLERANCE_DIAGONAL
     alpha = overlay_rgba[:, :, 3]
@@ -168,8 +258,46 @@ def score_page(overlay_rgba, marks: list, convention, colour_tolerance: int = 60
             satisfied = all(hits) if len(points) > 1 else hits[0]
             detail = f"{sum(hits)}/{len(hits)} pontos pintados"
         elif kind in WANT_BARE:
+            snapped = 0
+            if ink is not None and ink.shape[:2] == alpha.shape[:2]:
+                hits = []
+                for x, y in points:
+                    pixel = _snap_to_ink(ink, x, y, radius)
+                    if pixel is None:
+                        hits.append(_painted_near(alpha, x, y, radius, direction)[0])
+                    else:
+                        snapped += 1
+                        hits.append(_ink_painted(alpha, *pixel))
             satisfied = not any(hits)
             detail = f"{sum(hits)}/{len(hits)} pontos pintados (deviam estar limpos)"
+            if ink is not None:
+                detail += f"; {snapped}/{len(points)} ancorados no traço"
+        elif kind in WANT_CODE and ink is not None and ink.shape[:2] == alpha.shape[:2]:
+            # A two-colour cable is two equal stripes, so the colour a pixel majority picks is a
+            # coin toss between them -- and the v1 ruler compared that toss with the base colour
+            # alone. Anchored on the conductor under the mark, every named colour must be on its
+            # band, and any other colour there must be rarer than the rarest one named.
+            parts = _expected_parts(mark.get("expected_code") or "", convention)
+            if parts is None:
+                outcomes.append(MarkOutcome(
+                    kind=kind, page=int(mark.get("page", -1)), satisfied=None,
+                    detail=("expected colour code is absent from the selected convention: "
+                            f"{mark.get('expected_code')!r}"), scorable=False))
+                continue
+            palette = {tuple(reversed(bgr)) for bgr in convention.colors_bgr.values()}
+            pixel = _snap_to_ink(ink, points[0][0], points[0][1], radius)
+            if pixel is None:
+                found = _dominant_colour(overlay_rgba, points[0][0], points[0][1], radius)
+                satisfied = found is not None and any(
+                    all(abs(int(a) - int(b)) <= colour_tolerance for a, b in zip(found, part))
+                    for part in parts)
+                detail = f"esperado {parts}, encontrado {found}; 0/1 ancorados no traço"
+            else:
+                colours = _conductor_colours(overlay_rgba, *pixel, radius, palette)
+                named = [colours.get(part, 0) for part in parts]
+                strays = [count for colour, count in colours.items() if colour not in parts]
+                satisfied = min(named) > 0 and all(count < min(named) for count in strays)
+                detail = f"esperado {parts}, encontrado {colours}; 1/1 ancorados no traço"
         elif kind in WANT_CODE:
             wanted = _expected_rgb(mark.get("expected_code") or "", convention)
             found = _dominant_colour(overlay_rgba, points[0][0], points[0][1], radius)

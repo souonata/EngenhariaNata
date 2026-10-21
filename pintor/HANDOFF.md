@@ -20,6 +20,101 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-21 Generation 2 starts by measuring with a straight ruler (G2-0, G2-1)
+
+The Gen 2 brief (`docs/GEN2-MISSION-PROMPT.md`) opens with two stop points: ship what is merged and
+freeze a baseline (G2-0), then fix the ruler before touching the engine (G2-1).
+
+### G2-0: release, baseline, lockbox
+
+- **Published as 0.6.9 / engine 3.1.8 (PR #75), API first.** Source commit `6b12292` was cloned
+  into `/opt/pintor-api-releases/6b12292`. Image `engnata/pintor-api:0.6.9` was built before the
+  container was touched; inside it, `pintor-wiring 3.1.8`, PyMuPDF 1.28.2 and #73's
+  `assembled_rectangles` were confirmed. The container was recreated on the existing
+  `pintor-api_pintor-data` volume and became healthy. The external smoke passed:
+  `external_auth=ok account=ok unauthenticated=401 job=ready result=pdf delete=204`.
+  `/api/health` answers `0.6.9 / 3.1.8`. `check-release-drift.sh` reported `site 0.6.8` against
+  `api 0.6.9` -- the safe direction -- until #75 merges. Rollback:
+  `cd /opt/pintor-api-releases/ad6b364/pintor && docker compose -p pintor-api --env-file
+  /opt/pintor-api/.env up -d`. `prune-old-releases.sh` has not been run yet.
+- **CI has been red on `main` since the #73 merge**, and #73 is not the cause. `pyproject.toml`
+  asks for `PyMuPDF>=1.24` with no ceiling, and CI started installing PyMuPDF 2.0. Under 2.0,
+  `test_full_page_image_with_stray_ink_is_declined` fails: a full-page scan with stray vector ink
+  is judged trustworthy vector geometry. The image is built from `requirements-web.lock`
+  (1.28.2), so production is unaffected. PR #75 makes CI install with `-c requirements-web.lock`.
+  **Before the lock moves to 2.x, the raster-scan tier must be re-measured.**
+- **The baseline reproduces to the digit.** Repainting `marks4` (13 pages, 5 manuals, 195
+  scorable marks) on today's `main` gives fitness **0.3212** under the square ruler: clean regions
+  0.2667, coverage 0.2484, exact colour 0.5. This is the figure #73 reported.
+- **A benchmark trap.** Run without the OCR runtime on the path (`workspaces/ocr-runtime`, or
+  `python -I`), the three raster D3 pages fail with `ModuleNotFoundError`. The fitness silently
+  reads **0.2549** and only `"complete": false` gives it away.
+- **The lockbox** is recorded privately in `workspaces/gen2/g2-0/lockbox.json`. The seed is
+  `pintor-gen2-lockbox-2026-10-21`, and the rule is the lowest `sha256(seed:id)` per stratum,
+  drawn only from publications that no generation has developed or evaluated on:
+  - coloured gasoline: library pubs **83** and **3793**;
+  - large-format foldout: **2505**, qualified by page size only.
+
+  Pubs 1095 and 2543 were the obvious picks. Both are ineligible, because Gen 1 evaluated on them.
+  The 2026 *Colored Wiring Diagram* stratum is still pending: the two known diagrams were inspected
+  while the brief was written. Pub 3793 was only touched by an automated stroke-colour count.
+
+### G2-1: a mark is judged on the thing it points at
+
+`feedback_fitness.score_page` takes an optional `ink` mask: the source page rendered onto the
+overlay's canvas (`feedback_bench.source_ink`). With it, two rules change.
+
+- **`non-wire` and `bleed`** snap to the nearest drawn pixel within the existing tolerance and ask
+  whether *that* pixel is painted, with one pixel of anti-aliasing slack. The square could not tell
+  "the housing was painted" from "the wire ending at the housing was painted". A mark with no ink
+  in reach keeps the square.
+- **`wrong-colour`** snaps the same way. It then takes the painted band through that pixel, closing
+  the one-pixel bare seam the vector renderer leaves between two non-white stripes, and reads the
+  band's exact palette colours. Every colour the code names must be present, and any other colour
+  must be rarer than the rarest one named. The square ruler compared the majority pixel with the
+  *base* colour only, which for a two-stripe cable is a coin toss.
+
+No threshold was added: the snap uses the existing mark tolerance. Every report now carries both
+`summary` and `summary_square_ruler`, computed from the same overlays.
+
+| `marks4`, same overlays | square ruler | anchored ruler |
+| ----------------------- | ------------ | -------------- |
+| fitness                 | 0.3212       | **0.4285**     |
+| clean regions           | 0.2667       | **0.6333**     |
+| coverage                | 0.2484       | 0.2484         |
+| exact colour            | 0.5 (2/4)    | 0.5 (2/4)      |
+| non-wire                | 8/29         | **19/29**      |
+
+Fifteen verdicts changed, and every one was checked on a rendered crop:
+
+- **eleven `non-wire` marks now pass.** Each sits on a housing or a symbol whose wire ends at its
+  edge (D4/D6 p111 ×9, D13 p1, D1/D2 p46). The housing is black and the wire is painted.
+- **the two D1/D2 p46 "wrong colours" were right all along.** Both are `W/BL` cables painted white
+  and blue, and the square ruler had found "BL" against an expected "W".
+- **two marks the square ruler passed are real wrong colours**, and they are the most useful result
+  of this round:
+  - a `W/SB` cable on D4/D6 p111 is painted plain white;
+  - a `Y/SB` cable on D3 p57 (raster/OCR) is painted `Y/W`, most likely an OCR read of `SB` as `W`.
+
+  Both had passed because their base colour was right.
+
+Exact colour stays at 2/4, but those are now the right two. Four scorable marks cannot carry the
+metric this product ranks first. That is why G2-4 (decolourise and repaint the factory-coloured
+pages) gets one assertion per conductor.
+
+Still unmet under the anchored ruler:
+
+- eight `non-wire` marks on D13 (seven on page 1, one on page 2). Per 2026-09-05 these are
+  probably the twist bowties, where the rule asks for the cable colour to pass through, but they
+  have not been inspected this round;
+- two `non-wire` marks on D4–D11 p337;
+- one `bleed` on D1/D2 p46;
+- D4/D6 p113, which is still refused whole by the V2 gate.
+
+Coverage (0.25) is now the lowest component.
+
+Suite: **530 Python tests**.
+
 ## 2026-10-21 a housing is a rectangle however it is drawn, and too big is not too big to strip
 
 The 2026-09-05 diagnosis was right about the primitive and incomplete about the page. The fifteen

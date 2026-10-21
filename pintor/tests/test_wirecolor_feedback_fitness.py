@@ -135,6 +135,162 @@ class MarkScoring(unittest.TestCase):
         self.assertIsNone(outcomes[0].satisfied)
 
 
+class NonWireMarksAnchorOnTheDrawing(unittest.TestCase):
+    """A non-wire mark asks about the object under it, not about any paint in the square.
+
+    The canvas is a housing edge (a vertical stroke) with a wire running into it from the left.
+    The wire legitimately ends at the housing, so its band stops a pixel short of the edge.
+    """
+
+    SIZE = 2000
+
+    @classmethod
+    def setUpClass(cls):
+        cls.convention = load_convention("volvo_classic")
+
+    def _drawing(self):
+        ink = np.zeros((self.SIZE, self.SIZE), dtype=bool)
+        ink[800:1200, 999:1002] = True            # housing edge
+        ink[999:1002, 500:999] = True             # wire ending at the housing
+        return ink
+
+    def _wire_painted(self):
+        rgba = np.zeros((self.SIZE, self.SIZE, 4), dtype=np.uint8)
+        rgba[996:1005, 500:998] = 255
+        return rgba
+
+    def _at(self, column, row):
+        return _mark("non-wire", [[column / self.SIZE, row / self.SIZE]])
+
+    def test_a_wire_ending_at_the_housing_no_longer_fails_the_housing_mark(self):
+        mark = self._at(1004, 1008)
+
+        square = score_page(self._wire_painted(), [mark], self.convention)[0]
+        anchored = score_page(self._wire_painted(), [mark], self.convention,
+                              ink=self._drawing())[0]
+
+        self.assertFalse(square.satisfied)
+        self.assertTrue(anchored.satisfied)
+        self.assertIn("1/1 ancorados", anchored.detail)
+
+    def test_a_painted_housing_still_fails_the_mark(self):
+        rgba = self._wire_painted()
+        rgba[800:1200, 997:1005] = 255
+
+        anchored = score_page(rgba, [self._at(1004, 1008)], self.convention,
+                              ink=self._drawing())[0]
+
+        self.assertFalse(anchored.satisfied)
+
+    def test_a_mark_with_no_ink_in_reach_keeps_the_square(self):
+        rgba = self._wire_painted()
+        rgba[1300:1310, 1300:1310] = 255
+
+        anchored = score_page(rgba, [self._at(1305, 1312)], self.convention,
+                              ink=self._drawing())[0]
+
+        self.assertFalse(anchored.satisfied)
+        self.assertIn("0/1 ancorados", anchored.detail)
+
+    def test_an_ink_mask_of_another_size_is_ignored(self):
+        mark = self._at(1004, 1008)
+
+        anchored = score_page(self._wire_painted(), [mark], self.convention,
+                              ink=np.ones((10, 10), dtype=bool))[0]
+
+        self.assertFalse(anchored.satisfied)
+
+    def test_paint_everything_still_fails_every_anchored_mark(self):
+        everything = np.full((self.SIZE, self.SIZE, 4), 255, dtype=np.uint8)
+
+        anchored = score_page(everything, [self._at(1004, 1008)], self.convention,
+                              ink=self._drawing())[0]
+
+        self.assertFalse(anchored.satisfied)
+
+    def _two_colour_wire(self, base, tracer, base_rows=4, tracer_rows=5):
+        """A horizontal W/BL-style cable: two touching stripes over a drawn conductor."""
+        rgba = np.zeros((self.SIZE, self.SIZE, 4), dtype=np.uint8)
+        rgba[996:996 + base_rows, 500:998, :3] = base
+        rgba[996 + base_rows:996 + base_rows + tracer_rows, 500:998, :3] = tracer
+        rgba[996:996 + base_rows + tracer_rows, 500:998, 3] = 255
+        return rgba
+
+    def _rgb(self, code):
+        return tuple(reversed(self.convention.colors_bgr[code]))
+
+    def _wrong_colour_mark(self, code):
+        return _mark("wrong-colour", [[700 / self.SIZE, 1003 / self.SIZE]], code)
+
+    def test_a_two_colour_cable_needs_both_colours_not_the_base_majority(self):
+        """The v1 ruler compared the majority pixel with the base colour alone.
+
+        On D1/D2 page 46 both scorable wrong-colour marks were W/BL cables and both failed with
+        "found BL": one stripe of a two-stripe cable outnumbering the other by a row is enough.
+        """
+        rgba = self._two_colour_wire(self._rgb("W"), self._rgb("BL"))
+        mark = self._wrong_colour_mark("W/BL")
+
+        square = score_page(rgba, [mark], self.convention)[0]
+        anchored = score_page(rgba, [mark], self.convention, ink=self._drawing())[0]
+
+        self.assertFalse(square.satisfied)
+        self.assertTrue(anchored.satisfied)
+
+    def test_the_bare_seam_between_two_non_white_stripes_keeps_them_one_band(self):
+        """The renderer leaves the centre pixel bare between two non-white stripes."""
+        rgba = self._two_colour_wire(self._rgb("Y"), self._rgb("SB"))
+        rgba[1000, :, 3] = 0
+
+        anchored = score_page(rgba, [self._wrong_colour_mark("Y/SB")], self.convention,
+                              ink=self._drawing())[0]
+
+        self.assertTrue(anchored.satisfied, anchored.detail)
+
+    def test_a_one_colour_cable_cannot_answer_for_a_two_colour_code(self):
+        blue = self._rgb("BL")
+        rgba = self._two_colour_wire(blue, blue)
+
+        anchored = score_page(rgba, [self._wrong_colour_mark("W/BL")], self.convention,
+                              ink=self._drawing())[0]
+
+        self.assertFalse(anchored.satisfied)
+
+    def test_a_colour_the_code_does_not_name_fails_when_it_is_not_rare(self):
+        rgba = self._two_colour_wire(self._rgb("W"), self._rgb("BL"))
+        red = self._two_colour_wire(self._rgb("R"), self._rgb("R"), base_rows=0, tracer_rows=12)
+        touching = red[:, :, 3] > 0
+        touching[:, :700] = False
+        rgba[touching] = red[touching]
+
+        anchored = score_page(rgba, [self._wrong_colour_mark("W/BL")], self.convention,
+                              ink=self._drawing())[0]
+
+        self.assertFalse(anchored.satisfied)
+
+    def test_the_source_ink_lands_under_the_overlay_pixel_that_would_colour_it(self):
+        import tempfile
+
+        import fitz
+
+        from wirecolor.tools.feedback_bench import source_ink
+
+        with tempfile.TemporaryDirectory() as folder:
+            pdf = Path(folder) / "line.pdf"
+            document = fitz.open()
+            page = document.new_page(width=100, height=50)
+            page.draw_line((10, 25), (90, 25), width=2)
+            document.save(pdf)
+            document.close()
+
+            ink = source_ink(pdf, 0, (200, 400))
+
+        self.assertEqual(ink.shape, (200, 400))
+        self.assertTrue(ink[100, 200])
+        self.assertFalse(ink[50, 200])
+        self.assertFalse(ink[100, 10])
+
+
 class CrossingConductors(unittest.TestCase):
     ZONE = [(40.0, 40.0, 60.0, 60.0)]
 

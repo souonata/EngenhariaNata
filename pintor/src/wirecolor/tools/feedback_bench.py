@@ -50,9 +50,32 @@ def find_source(name: str, library: Path, digest: str | None = None,
     return None
 
 
+def source_ink(pdf: Path, page_index: int, shape: tuple) -> "np.ndarray":
+    """The source page rendered onto the overlay's canvas as a boolean ink mask.
+
+    The painters size their canvas as ``page.rect`` times the paint scale, so rendering the page
+    with the matching scale puts every drawn pixel under the overlay pixel that would colour it.
+    """
+    import fitz
+    import numpy as np
+
+    height, width = shape
+    with fitz.open(str(pdf)) as document:
+        page = document[page_index]
+        matrix = fitz.Matrix(width / page.rect.width, height / page.rect.height)
+        pixmap = page.get_pixmap(matrix=matrix, colorspace=fitz.csGRAY, alpha=False)
+        gray = np.frombuffer(pixmap.samples, dtype=np.uint8).reshape(
+            pixmap.height, pixmap.stride)[:, :pixmap.width]
+    ink = np.zeros((height, width), dtype=bool)
+    rows, columns = min(height, gray.shape[0]), min(width, gray.shape[1])
+    ink[:rows, :columns] = gray[:rows, :columns] < 128
+    return ink
+
+
 def paint_and_score(pdf: Path, page_index: int, marks: list, out_dir: Path,
                     policy=None, paint_dpi: int = 720,
-                    paint_pixel_budget: int = 60_000_000) -> PageScore:
+                    paint_pixel_budget: int = 60_000_000,
+                    keep_overlay: bool = False) -> PageScore:
     """Paint one marked page through the same route the web service would choose."""
     import numpy as np
     from PIL import Image
@@ -89,16 +112,22 @@ def paint_and_score(pdf: Path, page_index: int, marks: list, out_dir: Path,
         outcomes = score_page(np.zeros((4, 4, 4), dtype=np.uint8), marks,
                               load_convention(convention_name) if convention_name else None)
         return PageScore(manual=pdf.stem, page=page_index, painted=False,
-                         reason=reason or "not released", outcomes=outcomes)
+                         reason=reason or "not released", outcomes=outcomes,
+                         legacy_outcomes=outcomes)
 
     rgba = np.array(Image.open(overlay).convert("RGBA"))
-    outcomes = score_page(rgba, marks, load_convention(convention_name))
-    overlay.unlink(missing_ok=True)
-    return PageScore(manual=pdf.stem, page=page_index, painted=True, outcomes=outcomes)
+    convention = load_convention(convention_name)
+    outcomes = score_page(rgba, marks, convention,
+                          ink=source_ink(pdf, page_index, rgba.shape[:2]))
+    legacy_outcomes = score_page(rgba, marks, convention)
+    if not keep_overlay:
+        overlay.unlink(missing_ok=True)
+    return PageScore(manual=pdf.stem, page=page_index, painted=True, outcomes=outcomes,
+                     legacy_outcomes=legacy_outcomes)
 
 
 def run(feedback: Path, library: Path, out_dir: Path, policy=None,
-        limit_pages: int | None = None) -> dict:
+        limit_pages: int | None = None, keep_overlays: bool = False) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     scores, missing_sources, benchmark_errors = [], [], []
     source_candidates = sorted(library.rglob("*.pdf"))
@@ -115,7 +144,8 @@ def run(feedback: Path, library: Path, out_dir: Path, policy=None,
                 break
             print(f"  {pdf.stem[:44]} p{page_index + 1} ({len(marks)} marcas)", flush=True)
             try:
-                scores.append(paint_and_score(pdf, page_index, marks, out_dir, policy=policy))
+                scores.append(paint_and_score(pdf, page_index, marks, out_dir, policy=policy,
+                                              keep_overlay=keep_overlays))
             except Exception as error:                 # one bad page never stops a benchmark
                 import numpy as np
 
@@ -129,20 +159,28 @@ def run(feedback: Path, library: Path, out_dir: Path, policy=None,
                     load_convention(report.get("convention") or "volvo_classic"),
                 )
                 scores.append(PageScore(manual=pdf.stem, page=page_index, painted=False,
-                                        reason=message, outcomes=outcomes))
+                                        reason=message, outcomes=outcomes,
+                                        legacy_outcomes=outcomes))
+    legacy_scores = [PageScore(manual=page.manual, page=page.page, painted=page.painted,
+                               reason=page.reason, outcomes=page.legacy_outcomes)
+                     for page in scores]
     payload = {
-        "schema": "pintor-feedback-benchmark-v1",
+        "schema": "pintor-feedback-benchmark-v2",
         "seconds": round(time.time() - started, 1),
         "complete": not missing_sources and not benchmark_errors,
         "sources_not_found": missing_sources,
         "errors": benchmark_errors,
         "summary": summarise(scores),
+        # The same overlays judged by the v1 ruler (any paint inside the tolerance square counts
+        # against a non-wire mark). Kept beside the new number so the two can never be confused.
+        "summary_square_ruler": summarise(legacy_scores),
         "pages": [{
             "manual": page.manual, "page_1_based": page.page + 1, "painted": page.painted,
             "reason": page.reason,
             "marks": [{"kind": item.kind, "satisfied": item.satisfied,
+                       "satisfied_square_ruler": legacy.satisfied,
                        "scorable": item.scorable, "detail": item.detail}
-                      for item in page.outcomes],
+                      for item, legacy in zip(page.outcomes, page.legacy_outcomes)],
         } for page in scores],
     }
     (out_dir / "benchmark.json").write_text(
@@ -156,10 +194,12 @@ def main() -> None:
     parser.add_argument("--library", required=True, help="root holding the source manuals")
     parser.add_argument("--out", required=True, help="directory for the benchmark report")
     parser.add_argument("--limit-pages", type=int, default=None)
+    parser.add_argument("--keep-overlays", action="store_true",
+                        help="keep each painted overlay PNG beside the report for inspection")
     args = parser.parse_args()
 
     payload = run(Path(args.feedback), Path(args.library), Path(args.out),
-                  limit_pages=args.limit_pages)
+                  limit_pages=args.limit_pages, keep_overlays=args.keep_overlays)
     print(json.dumps(payload["summary"], indent=2, ensure_ascii=False))
 
 
