@@ -88,6 +88,11 @@ npm run build          # build de produção (gera local/dist)
 4. Para apps com núcleo extraído (`salario`, `mutuo`, `patentenautica`): mexeu no cálculo → atualize/adicione testes **antes** do commit.
 5. Texto sempre nos três idiomas (`pt-BR`, `it-IT` e `sv-SE`) — o validador de paridade exige.
 6. Rode `npm run validate` antes de commitar.
+7. **Cada app é independente.** Todos fazem parte do Engenharia Nata e podem usar seus recursos e
+   padrões comuns (`assets/css/`, `src/core/`, `src/i18n/`, `favicon.svg`, o catálogo da home), mas
+   **nenhum app usa arquivos que estão na pasta de outro** (ex.: `lichiabonsai/` não importa nada de
+   `pintor/`, nem o contrário). Se dois apps precisarem do mesmo recurso, ele sobe para um local comum.
+   Use uma branch/worktree por app para não misturar commits e alterações de apps diferentes.
 
 ## 6. Gotchas (já mordidos)
 
