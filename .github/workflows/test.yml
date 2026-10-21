@@ -48,7 +48,9 @@ jobs:
           cache-dependency-path: pintor/pyproject.toml
 
       - name: Install Pintor with web boundary
-        run: python -m pip install -e './pintor[web,test]'
+        # Constrained by the lock the image is built from, so CI tests the PyMuPDF that ships.
+        # Unpinned, CI picked up PyMuPDF 2.0 on 2026-10-21 while the image still carries 1.28.2.
+        run: python -m pip install -c pintor/requirements-web.lock -e './pintor[web,test]'
 
       - name: Run standalone safety and web tests
         env:
