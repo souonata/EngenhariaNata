@@ -27,10 +27,16 @@ freeze a baseline (G2-0), then fix the ruler before touching the engine (G2-1).
 
 ### G2-0: release, baseline, lockbox
 
-- **Release 0.6.9 / engine 3.1.8** is prepared in PR #75 so that #73 goes live. Production still
-  answers `0.6.8 / 3.1.7`. The release clone is at `/opt/pintor-api-releases/6b12292` on the VM.
-  The build, `up -d` and smoke are left to the owner. The PR carries the commands and the API-first
-  order: deploy before merging, because the site publishes `config/versions.json` from `main`.
+- **Published as 0.6.9 / engine 3.1.8 (PR #75), API first.** Source commit `6b12292` was cloned
+  into `/opt/pintor-api-releases/6b12292`. Image `engnata/pintor-api:0.6.9` was built before the
+  container was touched; inside it, `pintor-wiring 3.1.8`, PyMuPDF 1.28.2 and #73's
+  `assembled_rectangles` were confirmed. The container was recreated on the existing
+  `pintor-api_pintor-data` volume and became healthy. The external smoke passed:
+  `external_auth=ok account=ok unauthenticated=401 job=ready result=pdf delete=204`.
+  `/api/health` answers `0.6.9 / 3.1.8`. `check-release-drift.sh` reported `site 0.6.8` against
+  `api 0.6.9` -- the safe direction -- until #75 merges. Rollback:
+  `cd /opt/pintor-api-releases/ad6b364/pintor && docker compose -p pintor-api --env-file
+  /opt/pintor-api/.env up -d`. `prune-old-releases.sh` has not been run yet.
 - **CI has been red on `main` since the #73 merge**, and #73 is not the cause. `pyproject.toml`
   asks for `PyMuPDF>=1.24` with no ceiling, and CI started installing PyMuPDF 2.0. Under 2.0,
   `test_full_page_image_with_stray_ink_is_declined` fails: a full-page scan with stray vector ink
