@@ -20,7 +20,8 @@ sys.path.insert(0, str(BACKEND / "src"))
 
 import fitz
 
-from wirecolor.detect.vector_symbols import (_is_twist_mark, classify_symbol_geometry,
+from wirecolor.detect.vector_symbols import (_is_twist_mark, assembled_rectangles,
+                                             classify_symbol_geometry,
                                              clip_segments_to_opaque, strip_symbol_strokes,
                                              symbol_geometry)
 from wirecolor.eval.vector_truth import build_nets, extract_segments, node_segments
@@ -222,6 +223,133 @@ class TwistMarkStripping(unittest.TestCase):
         _zones, strokes = symbol_geometry(page, DPI, PEN_PX)
         doc.close()
         self.assertEqual(strokes, set(), "real crossings of routed cables must survive")
+
+
+def stroke(page, *points):
+    """One open path through ``points``, emitted exactly as drawn (``line`` closes it back)."""
+    shape = page.new_shape()
+    shape.draw_polyline([fitz.Point(x, y) for x, y in points])
+    shape.finish(color=(0, 0, 0), width=1.0, closePath=False)
+    shape.commit()
+
+
+def loose_box(page, x0, y0, x1, y1):
+    """A rectangle drawn as four independent one-stroke paths, as the D4/D6 p111 pin boxes are."""
+    stroke(page, (x0, y0), (x1, y0))
+    stroke(page, (x1, y1), (x1, y0))
+    stroke(page, (x0, y1), (x1, y1))
+    stroke(page, (x0, y0), (x0, y1))
+
+
+class AssembledRectangles(unittest.TestCase):
+    def test_four_loose_strokes_meeting_at_the_corners_are_a_symbol(self):
+        doc, page = page_with(lambda p: loose_box(p, 100, 100, 140, 120))
+        zones, strokes = symbol_geometry(page, DPI, PEN_PX)
+        doc.close()
+        self.assertEqual(len(zones), 1)
+        self.assertEqual(len(strokes), 4)
+
+    def test_the_assembled_box_stops_bonding_the_cables_it_touches(self):
+        def draw(p):
+            loose_box(p, 100, 100, 140, 140)
+            stroke(p, (60, 120), (100, 120))
+            stroke(p, (140, 120), (180, 120))
+
+        doc, page = page_with(draw)
+        segments = extract_segments(page, DPI)
+        self.assertEqual(len(build_nets(node_segments(segments))), 1,
+                         "precondition: the loose outline bonds both cables")
+        _, strokes = symbol_geometry(page, DPI, PEN_PX)
+        stripped, removed = strip_symbol_strokes(segments, strokes)
+        doc.close()
+        self.assertEqual(removed, 4)
+        self.assertEqual(len(build_nets(node_segments(stripped))), 2)
+
+    def test_each_rectangle_is_found_once(self):
+        doc, page = page_with(lambda p: loose_box(p, 100, 100, 140, 120))
+        found = assembled_rectangles(page.get_drawings())
+        doc.close()
+        self.assertEqual(len(found), 1)
+
+    def test_a_side_inside_a_longer_polyline_is_a_route_not_a_side(self):
+        """Three loose sides closed by a conductor's L-shaped route are not a housing."""
+        def draw(p):
+            stroke(p, (100, 100), (140, 100))
+            stroke(p, (140, 100), (140, 120))
+            stroke(p, (100, 120), (140, 120))
+            stroke(p, (60, 100), (100, 100), (100, 120))
+
+        doc, page = page_with(draw)
+        zones, strokes = symbol_geometry(page, DPI, PEN_PX)
+        doc.close()
+        self.assertEqual((zones, strokes), ([], set()))
+
+    def test_sides_that_do_not_meet_are_not_a_rectangle(self):
+        def draw(p):
+            stroke(p, (100, 100), (140, 100))
+            stroke(p, (140, 100), (140, 120))
+            stroke(p, (100, 120), (140, 120))
+            stroke(p, (100, 103), (100, 120))      # 3 pt short of the corner
+
+        doc, page = page_with(draw)
+        found = assembled_rectangles(page.get_drawings())
+        doc.close()
+        self.assertEqual(found, [])
+
+    def test_assembled_shapes_keep_the_closed_shape_size_bounds(self):
+        """The floor that spares junction squares and the ceiling that spares the page border
+        apply to an assembled rectangle exactly as to a closed path."""
+        doc, page = page_with(lambda p: loose_box(p, 100, 100, 103, 103))
+        self.assertEqual(symbol_geometry(page, DPI, PEN_PX), ([], set()))
+        doc.close()
+        doc, page = page_with(lambda p: loose_box(p, 5, 5, 395, 295))
+        zones, strokes = symbol_geometry(page, DPI, PEN_PX)
+        doc.close()
+        self.assertEqual(zones, [])
+        self.assertEqual(len(strokes), 4, "a frame is not a zone, but its ink is not wire either")
+
+
+class OversizedOutlines(unittest.TestCase):
+    """A rectangle too large or too thin to be a component is not a protected zone -- a zone
+    withdraws every run that crosses it -- but its ink is still not a conductor. On D4/D6 p111 the
+    89-pole connector (40% of the diagonal) and a 10 x 352 pt pin strip are each one long edge that
+    every pin wire touches, so leaving that edge in topology bonds all of those wires together."""
+
+    def test_a_long_connector_strip_loses_its_ink_but_protects_nothing(self):
+        def draw(p):
+            loose_box(p, 300, 20, 310, 280)
+            for y in (60, 100, 140):
+                stroke(p, (200, y), (300, y))
+
+        doc, page = page_with(draw)
+        segments = extract_segments(page, DPI)
+        self.assertEqual(len(build_nets(node_segments(segments))), 1,
+                         "precondition: the strip's edge bonds every pin wire")
+        zones, strokes = symbol_geometry(page, DPI, PEN_PX)
+        stripped, removed = strip_symbol_strokes(segments, strokes)
+        doc.close()
+        self.assertEqual(zones, [])
+        self.assertEqual(removed, 4)
+        self.assertEqual(len(build_nets(node_segments(stripped))), 3)
+
+    def test_an_oversized_closed_rectangle_loses_its_ink_but_protects_nothing(self):
+        doc, page = page_with(lambda p: rect(p, 100, 20, 140, 280))
+        zones, strokes = symbol_geometry(page, DPI, PEN_PX)
+        doc.close()
+        self.assertEqual(zones, [])
+        self.assertEqual(len(strokes), 4)
+
+    def test_an_oversized_closed_shape_that_is_not_a_rectangle_is_left_alone(self):
+        def draw(p):
+            shape = p.new_shape()
+            shape.draw_polyline([fitz.Point(x, y) for x, y in
+                                 ((20, 20), (380, 20), (380, 280), (200, 150), (20, 280))])
+            shape.finish(color=(0, 0, 0), width=1.0, closePath=True)
+            shape.commit()
+
+        doc, page = page_with(draw)
+        self.assertEqual(symbol_geometry(page, DPI, PEN_PX), ([], set()))
+        doc.close()
 
 
 if __name__ == "__main__":

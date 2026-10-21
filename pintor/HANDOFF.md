@@ -1,6 +1,6 @@
 # Pintor handoff
 
-Last updated: 2026-08-30
+Last updated: 2026-10-21
 
 ## Product boundary
 
@@ -19,6 +19,54 @@ supported/confirmed colour convention remains mandatory, and uncertain segments 
 The product name is localized in the interface: **Pintor** in Portuguese, **Pittore** in Italian,
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
+
+## 2026-10-21 a housing is a rectangle however it is drawn, and too big is not too big to strip
+
+The 2026-09-05 diagnosis was right about the primitive and incomplete about the page. The fifteen
+clean-region marks on D4/D6 Group 30 page 111 sit on three different geometries, and only one of
+them is the loose-stroke housing:
+
+| shell                                  | how it is drawn               | why nothing stripped it      |
+| -------------------------------------- | ----------------------------- | ---------------------------- |
+| pin boxes of 32, 26, 16, actuator pins | four one-stroke paths         | not a closed subpath         |
+| connector 22 pin strip, 10 x 352 pt    | four one-stroke paths         | aspect 35, over the 14 limit |
+| 89-pole connector 15, 54 x 407 pt      | one closed path, a real `re`  | 40% of the diagonal, over 12% |
+
+**Assembled rectangles.** `assembled_rectangles` finds four paths of exactly one axis-aligned stroke
+each whose ends meet at the corners (0.6 pt, the tolerance the closed-subpath test already used).
+Each side must _be_ its path, the same structural guard as the paired twist mark, so a stroke
+inside a conductor's polyline is never a side. The rectangle then goes through the same floor,
+ceiling and aspect as a closed path -- no new threshold.
+
+**The ceiling bounds the zone, not the ink.** A zone withdraws every run that crosses it, so it must
+stay component-sized. But the long edge of a pin strip or of a large connector is touched by every
+pin wire, and while it stays in topology it bonds all of them into one net. An oversized
+_rectangle_ (closed or assembled) now loses its strokes and gains no zone; any other oversized
+closed shape is untouched, because none was measured. The floor still bounds both.
+
+| corpus `marks4` (13 pages, 4 manuals) | main   | assembled only | + oversized ink |
+| ------------------------------------- | ------ | -------------- | --------------- |
+| fitness                               | 0.2215 | 0.2723         | **0.3212**      |
+| clean regions                         | 0.1000 | 0.1667         | **0.2667**      |
+| coverage                              | 0.2174 | 0.2422         | **0.2484**      |
+| exact colour                          | 0.5    | 0.5            | 0.5             |
+| non-wire                              | 3/29   | 5/29           | **8/29**        |
+| stops-mid                             | 10/56  | 14/56          | 14/56           |
+| missing                               | 25/105 | 25/105         | 26/105          |
+
+Every gained mark is on page 111 (+10) and **no mark was lost** on any page. Elsewhere the new rule
+fires only on page borders, title blocks and, on the D13 foldout, the ECU-EMS 2.2 housing (2126 x
+113 pt) -- the same giant-connector case. It adds no zone on any benchmark page.
+
+**What page 111 still reports, and why it is the scorer.** None of the nine non-wire marks still
+unmet there has paint at the marked point. The nearest paint is 2.3-4.1 pt away, inside the
+scorer's +/-4.1 pt square, and where inspected it is a pin wire that legitimately ends at the shell.
+A point mark cannot separate "you painted the box" from "the wire that ends at the box is painted"
+-- the same limit noted for the D13 bowties. Shrinking the square for `non-wire` would be the honest
+next measurement, not an engine change. One of the nine sits on a stroked lens below connector 21
+(two short lines plus curves), a twist variant no detector reads yet.
+
+Suite: **520 Python tests** and the full repository validation.
 
 ## 2026-09-05 a twist mark that replaces the cable, and a bridge sized for A4
 

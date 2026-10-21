@@ -26,6 +26,12 @@ Bounding the size is what keeps this honest. The page border and the title block
 rectangles and they are enormous; treating them as symbols would erase the sheet. The floor matters
 just as much in the other direction: pin circles, splice stars and junction dots are closed too,
 and deleting a junction dot would sever every tap on the page.
+
+The ceiling bounds the ZONE, not the ink. A rectangle too large or too thin to be a component --
+an 89-pole connector, a pin strip, the page border -- protects nothing, because a zone withdraws
+every run crossing it; but its outline is still not a conductor, and a long edge that every pin
+wire touches bonds them all into one net. So an oversized rectangle loses its strokes and gains no
+zone. The floor bounds both.
 """
 from __future__ import annotations
 
@@ -63,6 +69,10 @@ TWIST_LEN_FRACTION = 0.95      # a twist diagonal is shorter than the conductor 
 TWIST_LEN_RATIO = 0.65         # the two diagonals are near-equal in length
 TWIST_MIN_ANGLE_DEG = 20.0     # they actually cross, not collinear
 TWIST_MID_FRACTION = 0.30      # their midpoints coincide, within this share of the longer diagonal
+
+# Two strokes share a corner when their ends lie this close, in PDF points: the same tolerance the
+# closed-subpath test below accepts between a subpath's first and last point.
+RECT_CORNER_TOL = 0.6
 
 
 def _item_points(item):
@@ -136,6 +146,15 @@ def _is_opaque_housing(path) -> bool:
     return min(float(channel) for channel in fill[:3]) >= PAPER_FILL_MIN_CHANNEL
 
 
+def _is_axis_rectangle(subpath) -> bool:
+    """Whether a closed subpath is four axis-aligned sides, as a housing or a frame is drawn."""
+    corners = subpath[:-1]
+    if len(corners) != 4:
+        return False
+    return all(abs(a.x - b.x) <= RECT_CORNER_TOL or abs(a.y - b.y) <= RECT_CORNER_TOL
+               for a, b in zip(subpath, subpath[1:]))
+
+
 @dataclass(frozen=True)
 class SymbolGeometry:
     """Classified component geometry without changing the legacy two-value API."""
@@ -188,10 +207,39 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
     max_twist_len = diagonal * MIN_CONDUCTOR_DIAGONAL_FRACTION * TWIST_LEN_FRACTION
 
     zones, strokes, opaque_zones = [], set(), []
+
+    def admit(points):
+        """``(zone, strip)`` for a closed outline.
+
+        ``strip`` says its ink is not a conductor; ``zone`` additionally says it is component-sized
+        and may be protected. Below the floor it is neither -- a junction or a pin circle.
+        """
+        xs = [p.x for p in points]
+        ys = [p.y for p in points]
+        x0, x1, y0, y1 = min(xs), max(xs), min(ys), max(ys)
+        short, long_ = min(x1 - x0, y1 - y0), max(x1 - x0, y1 - y0)
+        if short < min_side:
+            return None, False
+        if long_ > max_side or long_ > MAX_ASPECT * max(short, 1e-6):
+            return None, True                 # a bar or a frame, not a housing
+        return (x0, y0, x1, y1), True
+
     # Whether a bowtie's two diagonals share a path is the producer's choice, not the
     # drawing's, so look for the pair across paths as well as within one.
     strokes |= paired_twist_strokes(page, matrix, max_twist_len)
-    for path in page.get_drawings():
+    # The same holds for a rectangle: one closed path, or four one-stroke paths meeting at the
+    # corners. Both are held to the same size bounds.
+    drawings = page.get_drawings()
+    for sides in assembled_rectangles(drawings):
+        zone, strip = admit([point * matrix for _path, a, b in sides for point in (a, b)])
+        if not strip:
+            continue
+        if zone is not None:
+            zones.append(zone)
+        for path, _a, _b in sides:
+            for a, b in _path_segments_px(path.get("items", ()), matrix):
+                strokes.add(_seg_key(a, b))
+    for path in drawings:
         items = path.get("items", ())
         # A twisted-pair bowtie is stroked (fill=None) but is not a closed housing; strip its own
         # ink so the cable underneath stays one run and the colour passes straight over the mark.
@@ -207,22 +255,19 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
         for subpath in _subpaths(items):
             if len(subpath) < 3:
                 continue
-            if abs(subpath[0].x - subpath[-1].x) > 0.6 or abs(subpath[0].y - subpath[-1].y) > 0.6:
+            if abs(subpath[0].x - subpath[-1].x) > RECT_CORNER_TOL \
+                    or abs(subpath[0].y - subpath[-1].y) > RECT_CORNER_TOL:
                 continue                      # open: a conductor, not a symbol
             points = [(p * matrix) for p in subpath]
-            xs = [p.x for p in points]
-            ys = [p.y for p in points]
-            x0, x1, y0, y1 = min(xs), max(xs), min(ys), max(ys)
-            width, height = x1 - x0, y1 - y0
-            short, long_ = min(width, height), max(width, height)
-            if short < min_side or long_ > max_side:
+            zone, strip = admit(points)
+            # Oversized, only a rectangle's ink is released: other closed shapes that large were
+            # never measured.
+            if not strip or (zone is None and not _is_axis_rectangle(subpath)):
                 continue
-            if long_ > MAX_ASPECT * max(short, 1e-6):
-                continue                      # a bar or a frame, not a housing
-            zone = (x0, y0, x1, y1)
-            zones.append(zone)
-            if opaque:
-                opaque_zones.append(zone)
+            if zone is not None:
+                zones.append(zone)
+                if opaque:
+                    opaque_zones.append(zone)
             for a, b in zip(points, points[1:]):
                 if a.x != b.x or a.y != b.y:
                     strokes.add(_seg_key((a.x, a.y), (b.x, b.y)))
@@ -297,6 +342,81 @@ def paired_twist_strokes(page, matrix, max_len):
                 strokes.add(_seg_key(a2, b2))
             del position
     return strokes
+
+
+def assembled_rectangles(drawings, tolerance=RECT_CORNER_TOL):
+    """Rectangles drawn as four separate one-stroke paths that meet at their corners.
+
+    The closed-subpath reader sees a housing only when the producer emitted it as one path. The
+    D4/D6 Group 30 sheet (page 111) draws its connector pin boxes as four independent paths of one
+    straight stroke each -- the same primitive a conductor is made of -- so nothing recognised
+    them, the outline entered topology as wire, and the colour of the cable reaching the first pin
+    ran around the box. Fifteen of the reviewer's nineteen unmet clean-region marks sat on that
+    page.
+
+    Each side must BE its path, as for the paired twist mark: a stroke inside a longer polyline is
+    part of a conductor's route and is never a side. Returns ``(path, a, b)`` for the four sides of
+    each rectangle, in PDF space; the caller holds them to the same size bounds as a closed path.
+    """
+    horizontals, verticals = [], []
+    for path in drawings:
+        if path.get("fill") is not None:
+            continue
+        lines = []
+        for item in path.get("items", ()):
+            if item[0] != "l":
+                lines = None
+                break
+            a, b = item[1], item[2]
+            if abs(a.x - b.x) > 1e-6 or abs(a.y - b.y) > 1e-6:
+                lines.append((a, b))
+        if not lines or len(lines) != 1:
+            continue
+        a, b = lines[0]
+        if abs(a.y - b.y) <= tolerance and abs(a.x - b.x) > tolerance:
+            left, right = (a, b) if a.x < b.x else (b, a)
+            horizontals.append((path, left, right))
+        elif abs(a.x - b.x) <= tolerance and abs(a.y - b.y) > tolerance:
+            upper, lower = (a, b) if a.y < b.y else (b, a)
+            verticals.append((path, upper, lower))
+
+    cell = max(tolerance, 1e-3)
+
+    def bucket(point):
+        return int(point.x // cell), int(point.y // cell)
+
+    def near(index, point):
+        column, row = bucket(point)
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                for entry in index.get((column + dx, row + dy), ()):
+                    if abs(entry[1].x - point.x) <= tolerance \
+                            and abs(entry[1].y - point.y) <= tolerance:
+                        yield entry
+
+    # A vertical side is found from its upper end, a bottom side from its left end, so every
+    # rectangle is reached exactly once: from its top side.
+    by_upper, by_left = {}, {}
+    for path, upper, lower in verticals:
+        by_upper.setdefault(bucket(upper), []).append((path, upper, lower))
+    for path, left, right in horizontals:
+        by_left.setdefault(bucket(left), []).append((path, left, right))
+
+    found = []
+    for top in horizontals:
+        _path, top_left, top_right = top
+        for left_side in near(by_upper, top_left):
+            for right_side in near(by_upper, top_right):
+                if right_side[0] is left_side[0] \
+                        or abs(left_side[2].y - right_side[2].y) > tolerance:
+                    continue
+                for bottom in near(by_left, left_side[2]):
+                    if bottom[0] is top[0]:
+                        continue
+                    if abs(bottom[2].x - right_side[2].x) <= tolerance \
+                            and abs(bottom[2].y - right_side[2].y) <= tolerance:
+                        found.append([top, left_side, right_side, bottom])
+    return found
 
 def symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
                     max_side_fraction=MAX_SIDE_DIAGONAL_FRACTION):
