@@ -40,8 +40,11 @@ html[data-theme="dark"] {
   --hair: #34382f;
 }
 
-/* Base da página (vence o body dos shared por ordem de origem) */
-body {
+/* Base da página. `html body` (e não só `body`) de propósito: no build de
+   produção o Vite põe o shared-styles DEPOIS deste CSS, e o `body` dele
+   (fundo verde #4e7262, texto #333) vencia por ordem — o diário nunca
+   aparecia no papel claro. Maior especificidade não depende da ordem. */
+html body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
