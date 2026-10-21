@@ -400,6 +400,23 @@ are routed separately from wire-versus-furniture evidence. Exported evidence doe
 a page-specific correction. The training tools derive general parameters from multiple publications
 and keep a publication-grouped lockbox.
 
+## Benchmark against reviewer marks
+
+`feedback_bench` paints only the pages a reviewer marked and scores them. Every report carries two
+rulers over the same overlays: `summary` anchors each `non-wire`, `bleed` and `wrong-colour` mark on
+the drawn pixel nearest it, and `summary_square_ruler` is the earlier rule that counted any paint
+inside the tolerance square. A two-colour code is met only when both of its colours are on the
+conductor under the mark.
+
+```powershell
+$env:PYTHONPATH = "workspaces\ocr-runtime"
+python -m wirecolor.tools.feedback_bench --feedback marks.json --library D:\volvo-library `
+  --out workspaces\bench --keep-overlays
+```
+
+Raster pages need the OCR runtime on `PYTHONPATH`. Without it they fail with an import error, the
+report says `"complete": false`, and the score drops without anything else looking wrong.
+
 ## Tests
 
 ```powershell
