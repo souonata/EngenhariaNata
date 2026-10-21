@@ -12,7 +12,10 @@ dependencies = [
   "numpy>=1.26",
   "opencv-python-headless>=4.8",
   "Pillow>=10",
-  "PyMuPDF>=1.24",
+  # PyMuPDF 2.0 judges a full-page scan with stray vector ink as trustworthy vector geometry
+  # (test_full_page_image_with_stray_ink_is_declined). Lift the ceiling only after that tier is
+  # re-measured on 2.x.
+  "PyMuPDF>=1.24,<2",
   "scikit-image>=0.22",
   "scipy>=1.11",
 ]
