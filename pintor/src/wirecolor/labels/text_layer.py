@@ -33,6 +33,8 @@ class Legend:
     y: float
     axis: str                 # "h" or "v" -- the direction the text runs
     wire_id: str | None       # the drawing's own wire number, when printed
+    bbox: tuple | None = None  # printed extent in working pixels (x0, y0, x1, y1)
+    leader: bool = False       # anchored on the wire its callout leader touches
 
 
 def _equals_boxes(page):
@@ -89,8 +91,10 @@ def read_legends(page, dpi, convention):
                 x0, y0, x1, y1 = span["bbox"]
                 import fitz
                 centre = fitz.Point((x0 + x1) / 2.0, (y0 + y1) / 2.0) * matrix
+                extent = fitz.Rect(x0, y0, x1, y1) * matrix
                 legends.append(Legend(raw=raw, code=code, x=centre.x, y=centre.y,
-                                      axis=axis, wire_id=parse_wire_id(raw)))
+                                      axis=axis, wire_id=parse_wire_id(raw),
+                                      bbox=(extent.x0, extent.y0, extent.x1, extent.y1)))
     return legends
 
 
@@ -155,6 +159,7 @@ def promote_bare_letters(all_legends, strong, zones, convention, corr_px=BARE_LE
 
     solid = {code for code in convention.colors_bgr if len(code) == 1}
     strong_ids = {id(legend) for legend in strong}
+    bare_grammar = bare_code_grammar(strong)
     peers_by_code = {}
     for legend in strong:
         if legend.code in solid:
@@ -167,6 +172,29 @@ def promote_bare_letters(all_legends, strong, zones, convention, corr_px=BARE_LE
         if _inside_zone(legend.x, legend.y, zones):
             continue
         peers = peers_by_code.get(legend.code, ())
-        if any(hypot(peer.x - legend.x, peer.y - legend.y) <= corr_px for peer in peers):
+        if bare_grammar or any(
+                hypot(peer.x - legend.x, peer.y - legend.y) <= corr_px for peer in peers):
             promoted.append(legend)
     return promoted
+
+
+# A sheet labels its conductors with bare codes ("R", "SB", "R/PU" -- no cross-section) when at
+# least this share of its strong legends carries no digit, over at least this many legends.
+BARE_GRAMMAR_SHARE = 0.75
+BARE_GRAMMAR_MIN_LEGENDS = 12
+
+
+def bare_code_grammar(strong) -> bool:
+    """True when the sheet itself writes its wire codes without gauges.
+
+    On such a sheet a bare single letter is the sheet's ordinary spelling of a colour, not stray
+    lettering: the factory-coloured gasoline pages print "R", "Y", "P", "T" and "W" beside the
+    conductors they paint in those colours, and requiring a gauged peer left those wires black --
+    or let a neighbouring two-letter code claim them (pub 36: a red fuse feed painted SB). A gauged
+    diesel sheet such as pub 2542, where the bare "P" is a pressure sensor's letter, stays under
+    the corroboration rule. The symbol-zone exclusion applies on every sheet.
+    """
+    if len(strong) < BARE_GRAMMAR_MIN_LEGENDS:
+        return False
+    bare = sum(1 for legend in strong if not any(ch.isdigit() for ch in legend.raw))
+    return bare / len(strong) >= BARE_GRAMMAR_SHARE

@@ -50,21 +50,25 @@ def _candidate_table(legends, runs, policy):
 
 
 def _finish(legends, runs, candidates, chosen, policy, solver, classifier_influenced,
-            fallback_reason=None):
+            fallback_reason=None, run_activation_costs=None):
     from .ownership import OwnedRun, cost
 
     owned = [OwnedRun(index=i, points=points, code=None, legend_raw=None, distance=None)
              for i, points in enumerate(runs)]
+    # The margin is judged on the costs the solver actually compared: with a learned prior a run's
+    # activation cost is part of every candidate on it, and judging the geometric distance alone
+    # would call a decision the prior settled "ambiguous".
+    activation = run_activation_costs or [0.0] * len(runs)
     by_legend = {}
     for li, ri, value in candidates:
-        by_legend.setdefault(li, []).append((value, ri))
+        by_legend.setdefault(li, []).append((value + activation[ri], ri))
     assigned_legends = set()
     abstained_margin = 0
     for li, ri, value in chosen:
         alternatives = [candidate for candidate, other_ri in by_legend.get(li, ())
                         if other_ri != ri]
         second = min([policy.refuse_cost, *alternatives])
-        margin = max(0.0, (second - value) / max(policy.refuse_cost, 1e-6))
+        margin = max(0.0, (second - value - activation[ri]) / max(policy.refuse_cost, 1e-6))
         if margin < policy.min_direct_assignment_margin:
             owned[ri].abstained = True
             owned[ri].abstain_reason = "ambiguous direct assignment"
@@ -120,7 +124,7 @@ def _linear_assignment(legends, runs, candidates, policy, fallback_reason=None,
     learned = any(cost > 0 for cost in run_activation_costs)
     solver = "linear-assignment+learned-prior" if learned else "linear-assignment"
     return _finish(legends, runs, candidates, chosen, policy, solver, learned,
-                   fallback_reason=fallback_reason)
+                   fallback_reason=fallback_reason, run_activation_costs=run_activation_costs)
 
 
 def _milp_assignment(legends, runs, candidates, policy, classifier, min_run_px,
@@ -184,7 +188,10 @@ def _milp_assignment(legends, runs, candidates, policy, classifier, min_run_px,
                                   fallback_reason=f"MILP fallback: {reason}")
     chosen = [(li, ri, value) for ci, (li, ri, value) in enumerate(candidates)
               if result.x[ci] >= 0.5]
-    return _finish(legends, runs, candidates, chosen, policy, "milp", True)
+    activation = [policy.classifier_assignment_weight * (1.0 - probability)
+                  for probability in probabilities]
+    return _finish(legends, runs, candidates, chosen, policy, "milp", True,
+                   run_activation_costs=activation)
 
 
 def constrained_assign(legends, runs, policy=None, classifier=None, min_run_px=1.0,

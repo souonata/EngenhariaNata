@@ -70,7 +70,7 @@ def paint_dpi_for(page, analysis_dpi, want=PAINT_DPI, budget=PAINT_PIXEL_BUDGET)
 
 def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_classic",
                diagnose=False, band_scale=None, paint_dpi=None, paint_pixel_budget=None, force=False,
-               decision_policy=None, run_classifier=None, overlay_path=None):
+               decision_policy=None, run_classifier=None, overlay_path=None, wirenet=None):
     import fitz
 
     from ..detect.vector_dashes import dashed_geometry, mark_dashed
@@ -126,6 +126,25 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
     owned, semantic_pin_markers, engineering_semantics = enforce_vector_semantics(
         context, owned, context.pin_markers, convention, decision=decision)
 
+    # Optional learned filter: a coloured run whose ink WireNet does not recognise as a conductor
+    # goes black. It can only withdraw colour, never assign one.
+    from ..engine.wirenet import WireNet
+
+    wirenet = wirenet if wirenet is not None else WireNet.from_environment()
+    wirenet_withdrawn = None
+    if wirenet is not None:
+        from ..engine.wirenet import withdraw_unrecognised_runs
+        from .wirenet_dataset import DPI as WIRENET_DPI, render_gray
+
+        probability = wirenet.conductor_probability(render_gray(page, WIRENET_DPI))
+        scale = WIRENET_DPI / float(dpi)
+        originals = [run.points for run in owned]
+        for run in owned:
+            run.points = [(x * scale, y * scale) for x, y in run.points]
+        wirenet_withdrawn = withdraw_unrecognised_runs(owned, probability)
+        for run, points in zip(owned, originals):
+            run.points = points
+
     # paint at the sheet's affordable resolution; geometry was analysed at `dpi`
     out_dpi = paint_dpi_for(
         page, dpi, want=paint_dpi or PAINT_DPI,
@@ -147,9 +166,13 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
     # for it was measured against a reviewer's marks and cost far more than it protected: four such
     # pages carried 152 of 232 marks and satisfied none, because a page never released satisfies
     # nothing. Abstaining per conductor is what the rest of the engine already does.
-    from ..detect.vector_symbols import runs_crossing_zones
+    from ..detect.vector_symbols import runs_crossing_zones, trim_runs_ending_inside_zones
 
     scaled_zones = [tuple(value * factor for value in zone) for zone in context.blocked_zones]
+    # A conductor ending inside a component is cut back to its edge before anything is judged:
+    # the body is never paintable, and a pin tick drawn inside it must not cost the wire its colour.
+    runs_trimmed_at_symbols = trim_runs_ending_inside_zones(owned, scaled_zones)
+    owned = [run for run in owned if len(run.points) >= 2]
     # The painted band is wider than the centreline it follows, so a conductor skimming a small
     # symbol can cover it end to end without its centreline spanning it. Judging both with the same
     # half-band tolerance keeps the geometric withdrawal and the pixel gate from disagreeing.
@@ -188,12 +211,22 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
         # every conductor touching a zone the pixels say was crossed, and paint once more. One
         # repair pass, then the page is judged on what it actually produced.
         # The gate reports zones in ANALYSIS pixels; the runs are already in paint pixels.
-        repair_zones = [tuple(value * factor for value in zone)
-                        for zone in (*v2["crossed_zones"], *v2.get("deep_zones", ()))]
+        # Grown by half a band: a conductor that only skims the zone has its centreline outside
+        # it and its paint inside, and left alone it fails the second gate exactly like the first
+        # (measured on pubs 2531 and 2471: one such skimmer refused a page of 113 conductors).
+        grow = half_band + 1.0
+        repair_zones = [(x0 * factor - grow, y0 * factor - grow,
+                         x1 * factor + grow, y1 * factor + grow)
+                        for x0, y0, x1, y1 in (*v2["crossed_zones"], *v2.get("deep_zones", ()))]
         touching = runs_crossing_zones(owned, repair_zones, tolerance=1e9)
-        if touching:
+        # A pin disc inside a failing zone is paint the run withdrawal can never remove.
+        markers_inside = [marker for marker in pin_markers
+                          if any(x0 <= marker.x <= x1 and y0 <= marker.y <= y1
+                                 for x0, y0, x1, y1 in repair_zones)]
+        if touching or markers_inside:
             runs_withdrawn += len(touching)
             owned = [run for index, run in enumerate(owned) if index not in touching]
+            pin_markers = [marker for marker in pin_markers if marker not in markers_inside]
             rgba, painted = build_rgba(
                 owned, canvas_hw, convention, out_dpi, pen_px=pen_px * factor,
                 diagnose=diagnose, scale=band_scale, page_pt=page_pt,
@@ -248,6 +281,9 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
         "learned_abstentions": decision["learned_abstentions"],
         "semantic_abstentions": engineering_semantics["semantic_abstentions"],
         "runs_withdrawn_crossing_symbols": runs_withdrawn,
+        "runs_trimmed_at_symbols": runs_trimmed_at_symbols,
+        "wirenet_withdrawn": wirenet_withdrawn,
+        "wirenet_model": getattr(wirenet, "path", None),
         "decision_abstentions": decision["abstained"],
         "decision": decision,
         "decision_policy": decision_policy.to_dict(),
