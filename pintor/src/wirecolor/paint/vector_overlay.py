@@ -205,8 +205,91 @@ def band_px(pen_px, scale=None, dpi=200, page_pt=None):
 UNPAINTED_BGR = (255, 0, 255)
 
 
+# Render styles. "stripes" is the default: two equal bands side by side for a two-colour cable.
+# "oem" draws the cable the way Volvo Penta's own colour diagrams do -- a black rail, the base
+# colour as the core and the second colour as a thin centred tracer -- inside the same band width,
+# so every geometric gate measures exactly what it measures for "stripes".
+RENDER_STYLES = ("stripes", "oem")
+
+
+def render_style(requested=None) -> str:
+    import os
+
+    style = (requested or os.getenv("PINTOR_RENDER_STYLE", "") or "stripes").strip().lower()
+    return style if style in RENDER_STYLES else "stripes"
+
+
+def _paint_piece_oem(canvas, points, tokens, band, convention):
+    """Black rail, base-colour core, centred tracer: the factory's own cable, at our band width."""
+    if len(points) < 2:
+        return
+    polyline = points.astype(np.int32)
+    rail = max(1, band // 6)
+    core = max(1, band - 2 * rail)
+    cv2.polylines(canvas, [polyline], False, (0, 0, 0, 255), band, cv2.LINE_8)
+    cv2.polylines(canvas, [polyline], False, (*_bgr(tokens[0], convention), 255), core,
+                  cv2.LINE_8)
+    if len(tokens) > 1:
+        tracer = max(1, core // 3)
+        cv2.polylines(canvas, [polyline], False, (*_bgr(tokens[1], convention), 255), tracer,
+                      cv2.LINE_8)
+
+
+# Core width by printed cross-section, relative to the signal band: the factory's 2026 sheets draw
+# AWG 18 at 1.5 pt, 16 at 2.0, 14 at 3.0 and 10-8 at 5.0. Capped lower than the factory's 3.3x so
+# a heavy cable cannot swallow its neighbours on a dense sheet.
+_AWG_FACTOR = ((18, 1.0), (16, 1.33), (14, 2.0), (12, 2.33), (0, 2.67))
+_MM2_FACTOR = ((1.0, 1.0), (1.5, 1.33), (2.5, 1.67), (4.0, 2.0), (6.0, 2.33), (1e9, 2.67))
+
+
+def gauge_factor(legend_raw) -> float:
+    """How much heavier than a signal wire the printed gauge says this cable is (1.0 = signal)."""
+    import re
+
+    from ..labels.parse import AWG_GAUGES, GAUGES, _WORD_AWG_RE
+
+    text = " ".join(str(legend_raw or "").upper().split())
+    match = _WORD_AWG_RE.match(text)
+    if match and int(match.group("gauge")) in AWG_GAUGES:
+        awg = int(match.group("gauge"))
+        return next(factor for limit, factor in _AWG_FACTOR if awg >= limit)
+    for number in re.findall(r"(?<![\d(W])(\d{1,2}(?:[.,]\d{1,2})?)(?![\d)])", text):
+        value = float(number.replace(",", "."))
+        if value in GAUGES:
+            return next(factor for limit, factor in _MM2_FACTOR if value <= limit)
+    return 1.0
+
+
+def _shortened(points, by):
+    """The polyline with ``by`` pixels taken off each end, so a heavier cap still ends where the
+    signal-weight cap did -- at a component's edge, not inside it."""
+    if by <= 0 or len(points) < 2:
+        return points
+    out = [tuple(point) for point in points]
+    for reverse in (False, True):
+        if reverse:
+            out.reverse()
+        remaining = by
+        while len(out) >= 2 and remaining > 0:
+            (ax, ay), (bx, by_) = out[0], out[1]
+            length = hypot(bx - ax, by_ - ay)
+            if length > remaining:
+                t = remaining / length
+                out[0] = (ax + (bx - ax) * t, ay + (by_ - ay) * t)
+                break
+            remaining -= length
+            out.pop(0)
+        if reverse:
+            out.reverse()
+    return np.array(out, np.float32) if len(out) >= 2 else np.zeros((0, 2), np.float32)
+
+
+def _bgr(token, convention):
+    return (255, 255, 255) if token == convention.white_token else convention.colors_bgr[token]
+
+
 def build_rgba(owned_runs, canvas_hw, convention, dpi, pen_px=None, diagnose=False, scale=None,
-               page_pt=None, dash_pitch=None, pin_markers=()):
+               page_pt=None, dash_pitch=None, pin_markers=(), style=None):
     """RGBA overlay painting every run that carries a code.
 
     Runs without a code are left untouched -- an unpainted conductor is a miss, a wrongly painted
@@ -218,6 +301,10 @@ def build_rgba(owned_runs, canvas_hw, convention, dpi, pen_px=None, diagnose=Fal
     height, width = canvas_hw
     canvas = np.zeros((height, width, 4), np.uint8)
     band = band_px(pen_px if pen_px else dpi / 72.0, scale, dpi, page_pt)
+    paint_piece = _paint_piece_oem if render_style(style) == "oem" else _paint_piece
+    import os
+
+    gauge_widths = os.getenv("PINTOR_RENDER_GAUGE", "").strip() == "1"
     painted = 0
 
     for run in owned_runs:
@@ -240,8 +327,14 @@ def build_rgba(owned_runs, canvas_hw, convention, dpi, pen_px=None, diagnose=Fal
         # shows both colours running parallel inside every dash.
         pieces = ([run.points] if not (dash_pitch and getattr(run, "dashed", False))
                   else dash_spans(run.points, *dash_pitch))
+        width = band
+        if paint_piece is _paint_piece_oem and gauge_widths:
+            width = max(band, int(round(band * gauge_factor(run.legend_raw))))
         for piece in pieces:
-            _paint_piece(canvas, np.array(piece, np.float32), tokens, band, convention)
+            piece = np.array(piece, np.float32)
+            if width > band:
+                piece = _shortened(piece, (width - band) / 2.0)
+            paint_piece(canvas, piece, tokens, width, convention)
         painted += 1
 
     paint_pin_markers(canvas, pin_markers, convention)
