@@ -195,6 +195,36 @@ class VectorProtectedRegionTests(unittest.TestCase):
         self.assertFalse(result["passed"])
         self.assertGreater(result["painted_px_in_protected"], 0)
 
+    def test_caps_of_many_conductors_on_one_edge_do_not_cross_the_connector(self):
+        """Wires to pin 1 and pin 8 put caps near the top and bottom of the same left edge.
+
+        Their union touches both the top and the bottom row of the window, which the union test
+        read as one conductor crossing the box -- and the repair pass then withdrew every wire
+        ending at that connector.
+        """
+        rgba = np.zeros((200, 300, 4), dtype=np.uint8)
+        for row in (62, 90, 117):                  # pins near the top, the middle, the bottom
+            rgba[row - 2:row + 3, 40:84, 3] = 255  # each wire ends 2 px inside the left edge
+        result = v2_vector_protected_overlap(rgba, [(80, 60, 140, 120)], 200, 200)
+        self.assertTrue(result["passed"], result)
+        self.assertEqual(result["zones_crossed"], 0)
+        self.assertEqual(rgba[62:118, 82:138, 3].max(), 0)   # the caps are still erased
+
+    def test_one_conductor_through_the_connector_still_crosses_it(self):
+        rgba = np.zeros((200, 300, 4), dtype=np.uint8)
+        rgba[88:93, 40:200, 3] = 255
+        result = v2_vector_protected_overlap(rgba, [(80, 60, 140, 120)], 200, 200)
+        self.assertFalse(result["passed"])
+        self.assertEqual(result["zones_crossed"], 1)
+
+    def test_one_conductor_reaching_deep_inside_is_still_refused(self):
+        rgba = np.zeros((200, 300, 4), dtype=np.uint8)
+        rgba[62:67, 40:120, 3] = 255               # cap on the left edge
+        rgba[88:93, 40:120, 3] = 255               # a second wire 36 px into the box
+        result = v2_vector_protected_overlap(rgba, [(80, 60, 140, 120)], 200, 200, pen_px=3)
+        self.assertFalse(result["passed"])
+        self.assertEqual(result["zones_entered_deeply"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()

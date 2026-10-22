@@ -197,6 +197,21 @@ class ConstraintSolverTests(unittest.TestCase):
         self.assertEqual([run.code for run in new], [run.code for run in old])
         self.assertEqual(diagnostics.solver, "linear-assignment")
 
+    def test_a_legend_between_two_parallel_wires_colours_neither(self):
+        """The calibrated default margin: a near tie between two conductors is left black."""
+        upper, lower = [(0, 0), (100, 0)], [(0, 10), (100, 10)]
+        owned, diagnostics = constrained_assign([_legend("R", 50, 5)], [upper, lower],
+                                                DecisionPolicy())
+        self.assertIsNone(owned[0].code)
+        self.assertIsNone(owned[1].code)
+        self.assertEqual(diagnostics.abstained_margin, 1)
+
+    def test_a_legend_clearly_beside_one_wire_still_colours_it(self):
+        upper, lower = [(0, 0), (100, 0)], [(0, 40), (100, 40)]
+        owned, _ = constrained_assign([_legend("R", 50, 3)], [upper, lower], DecisionPolicy())
+        self.assertEqual(owned[0].code, "R")
+        self.assertIsNone(owned[1].code)
+
     def test_classifier_prior_is_paid_globally_and_can_avoid_furniture(self):
         class FurniturePrior:
             metadata = {"fixture": True}
