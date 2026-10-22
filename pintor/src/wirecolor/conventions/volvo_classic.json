@@ -41,8 +41,13 @@
     "RED": "R", "ROD": "R",
     "VIOLET": "VO", "LILA": "VO",
     "WHITE": "W", "IVORY": "W", "VIT": "W",
-    "YELLOW": "Y", "GUL": "Y"
+    "YELLOW": "Y", "GUL": "Y",
+    "PINK": "P", "TAN": "T",
+    "DK GREEN": "DGN", "DARK GREEN": "DGN", "LT GREEN": "LGN", "LIGHT GREEN": "LGN",
+    "DK BLUE": "DBL", "DARK BLUE": "DBL", "LT BLUE": "LBL", "LIGHT BLUE": "LBL",
+    "LT BROWN": "LBN", "LIGHT BROWN": "LBN"
   },
+  "word_gauges": ["mm2", "awg"],
   "table_aliases": {
     "T": "T",
     "B": "SB",

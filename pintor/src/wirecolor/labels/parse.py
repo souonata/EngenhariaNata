@@ -46,6 +46,14 @@ _LIGHTNESS_RE = re.compile(r"^(DK|LT)\s+(?=[A-Za-z])", re.IGNORECASE)
 _LIGHTNESS = {"DK": "D", "LT": "L"}
 _WORD_GAUGE_RE = re.compile(r"(?<!\d)\d{1,2}[.,]\d{1,2}(?!\d)")
 
+# Colour words followed by an American Wire Gauge: the grammar of Volvo Penta's 2026 "Colored
+# Wiring Diagram" series and of SAE-style US harness drawings -- "PINK / DK.GREEN 18",
+# "BLACK/LT.GREEN  18", "BLACK 14". The whole printed span must be exactly that shape, so prose
+# that merely contains a colour word and a number ("Torque 14", "Red wire to pin 4") never parses.
+AWG_GAUGES = {4, 6, 8, 10, 12, 14, 16, 18, 20, 22}
+_WORD_AWG_RE = re.compile(
+    r"^(?P<base>[A-Z][A-Z. ]*?)(?:\s*/\s*(?P<tracer>[A-Z][A-Z. ]*?))?\s+(?P<gauge>\d{1,2})$")
+
 
 def _wire_digits(match):
     if not match:
@@ -152,8 +160,31 @@ def parse_code(text: str, convention, allow_pin: bool = False) -> str | None:
                 or _parse_word_code(candidate, convention)
             if code:
                 return code
-        return None
+        # Last, and on the original text only: a pin strip would eat the gauge.
+        return _parse_word_awg(text, convention)
     return _parse_code_core(text, convention) or _parse_word_code(text, convention)
+
+
+def _colour_word(words: str, aliases: dict) -> str | None:
+    """One colour spelled out, lightness prefix included: "DK.GREEN", "LT BLUE", "PINK"."""
+    key = " ".join(words.replace(".", " ").split())
+    return aliases.get(key)
+
+
+def _parse_word_awg(text: str, convention) -> str | None:
+    """Colour words with an AWG gauge, exact printed text only (see ``AWG_GAUGES``)."""
+    if "awg" not in getattr(convention, "word_gauges", ()):
+        return None
+    aliases = getattr(convention, "word_aliases", {})
+    match = _WORD_AWG_RE.match(" ".join(text.upper().split()))
+    if not aliases or not match or int(match.group("gauge")) not in AWG_GAUGES:
+        return None
+    parts = [_colour_word(match.group("base"), aliases)]
+    if match.group("tracer"):
+        parts.append(_colour_word(match.group("tracer"), aliases))
+    if not all(parts) or not all(part in convention.codes for part in parts):
+        return None
+    return "/".join(parts)
 
 
 def _parse_word_code(text: str, convention) -> str | None:
@@ -171,10 +202,16 @@ def _parse_word_code(text: str, convention) -> str | None:
     normalized = "".join(character for character in normalized
                          if not unicodedata.combining(character)).upper()
     def codes_in(fragment: str) -> set[str]:
-        return {
-            code for alias, code in aliases.items()
-            if re.search(rf"(?<![A-Z]){re.escape(alias)}(?![A-Z])", fragment)
-        }
+        # Longest spelling first, and each match consumed, so "DARK GREEN" is DGN and does not
+        # also count the "GREEN" inside it as GN.
+        fragment = " ".join(fragment.replace(".", " ").split())
+        found = set()
+        for alias in sorted(aliases, key=len, reverse=True):
+            pattern = rf"(?<![A-Z]){re.escape(alias)}(?![A-Z])"
+            if re.search(pattern, fragment):
+                found.add(aliases[alias])
+                fragment = re.sub(pattern, " ", fragment)
+        return found
 
     if "/" in normalized:
         left, right = normalized.split("/", 1)
