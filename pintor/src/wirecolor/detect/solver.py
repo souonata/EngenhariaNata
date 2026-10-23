@@ -189,6 +189,11 @@ def solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
         if L["cx"] > 0.62 * W and L["cy"] > 0.70 * H:
             rej += 1
             continue
+        # A code with a callout leader names the wire the leader ends on, not the nearest one
+        # (detect/raster_leaders.py).
+        if L.get("leader_target") is not None:
+            _seed(L, L["leader_target"])
+            continue
         # A code printed in a closed terminal cell belongs to the cable entering that cell, or to
         # nothing. It is never a loose label for the nearest passing wire (detect/pin_cells.py).
         if L.get("pin_cell") is not None:

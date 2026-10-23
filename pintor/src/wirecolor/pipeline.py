@@ -19,6 +19,7 @@ from .detect.components import (
 from .detect.dots import detect_dots, make_dot_near
 from .detect.housings import detect_housings, find_dense_pin_border_arcs, make_in_housing
 from .detect.pin_cells import annotate_pin_cells
+from .detect.raster_leaders import detach_leaders
 from .detect.skeleton import build_segments, build_wire_mask, find_twist, is_twist_mark
 from .detect.solver import solve
 from .instrument import diag, ocr_memo
@@ -561,6 +562,11 @@ def _unseen(harvested, known, reach=22.0):
     return fresh
 
 
+def _report_leaders(count):
+    if count:
+        print(f"callout_leaders: {count} codes anchored where their leader ends")
+
+
 def run_page(image_path: str, labels_path: str, convention,
              probe=None, who=None, netends=None, deadends=False,
              harvest_path=None, allow_splice_propagation=False) -> dict:
@@ -741,6 +747,7 @@ def run_page(image_path: str, labels_path: str, convention,
                 prepared_pin_furniture)
 
     segments, twist, bridge_twist, pin_furniture_pre = prepare_topology(wire)
+    _report_leaders(detach_leaders(segments, twist, labels))
 
     splice_dots = {(dx, dy) for dx, dy, _r in dots if (dx, dy) not in terminal_dots}
     sol = solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
@@ -781,6 +788,7 @@ def run_page(image_path: str, labels_path: str, convention,
             in_housing, inline_components)
         wire = cut_inline_component_zones(wire, inline_components)
         segments, twist, bridge_twist, pin_furniture_pre = prepare_topology(wire)
+        detach_leaders(segments, twist, labels)
         sol = solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
                     probe=probe, who=who, netends=netends, deadends=deadends,
                     color_boundary_dots=splice_dots | set(terminal_dots))
