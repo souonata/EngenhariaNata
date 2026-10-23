@@ -459,6 +459,8 @@ def solve_dashes(segments, twist, labels, in_housing, terminal_dots=(), holes=()
     for L in labels:
         if _label_is_reserved(L) or _inside_housing(L["cx"], L["cy"]):
             continue
+        if L.get("pin_cell") is not None:
+            continue                      # a terminal cell's code: see detect/pin_cells.py
         raw = str(L.get("raw", "")).strip().upper()
         bare = not _strong_label(L)
         near_housing = bare and _inside_housing(L["cx"], L["cy"], 60)

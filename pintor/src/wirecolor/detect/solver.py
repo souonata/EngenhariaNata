@@ -15,6 +15,7 @@ from collections import defaultdict
 import cv2
 import numpy as np
 
+from .pin_cells import cell_entry_arc
 from .skeleton import deep_tang as _deep_tang, unit
 
 
@@ -187,6 +188,15 @@ def solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
         # would paint logo strokes -- never treat anything in that corner as a cable label.
         if L["cx"] > 0.62 * W and L["cy"] > 0.70 * H:
             rej += 1
+            continue
+        # A code printed in a closed terminal cell belongs to the cable entering that cell, or to
+        # nothing. It is never a loose label for the nearest passing wire (detect/pin_cells.py).
+        if L.get("pin_cell") is not None:
+            owner = cell_entry_arc(L["pin_cell"], segments, twist)
+            if owner is None:
+                rej += 1
+            else:
+                _seed(L, owner)
             continue
         # round 8: a bare single-letter label with no gauge digits sitting AT a housing is a
         # pin/component designator ('T' temp pin, 'R' relay coil), never a cable code -- as a
