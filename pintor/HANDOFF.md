@@ -20,6 +20,50 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-23 a code in a terminal cell belongs to the cable entering the cell (scan route)
+
+Branch `feat/pintor-raster-caixas-pino`. Not released: production stays 0.7.1 / engine 3.2.1.
+
+**The leak.** On a scanned page, a relay or connector drawn as a filled body lists each terminal in
+its own white cell (`DBL/W 86`). The raster housing detector only recognises outlined rectangles, so
+the body was never a housing. The code was then treated as a loose cable label and attached to the
+nearest wire within reach. On the rasterised pub 36 p7, the SB wire leaving pin 87a was painted
+DBL/W, and an R/PU feed Y/R, each about 40 px from the cell.
+
+**The rule** (`detect/pin_cells.py`). A cell is found from the paper around the code. It must:
+
+- not reach the edge of a generous window;
+- be at least half paper;
+- sit in a body, with nearly all ink 5–9 px outside its outline.
+
+A code in such a cell seeds only the one arc that ends at the cell and leaves it. With no cable or
+two cables entering, it is rejected. The overview solver, the dashed pass and the multiscale
+close-ups all apply it.
+
+The first version accepted any closed pocket of paper. On pub 7741532 p73, connector-lead codes
+between their neighbours (`W/SB 5`, `BL/R 1`) and an `R/W` became "cells". They painted a GN route
+R/W and a BL wire SB: three new wrong conductors on that page and one each on two others. The wall
+test removed those false cells.
+
+**Measured** (`teacher_bench --raster-dpi 200`, one page per publication, OCR reused from the
+baseline folder so both runs read identical labels; the baseline reproduced to the conductor):
+
+|                        | 0.7.1  | terminal cells |
+| ---------------------- | ------ | -------------- |
+| right                  | 119    | 119            |
+| wrong                  | 123    | **121**        |
+| exact-colour precision | 0.4917 | 0.4958         |
+| coverage (length)      | 0.1045 | 0.1045         |
+
+Only pub 36 p7 moves: 9 right, wrong 3 → 1. The 13 other pages are identical, including the two
+where cells were found (7797351: 10 cells; 7745609: 3). `marks4` is unchanged (0.5873, every class
+equal, 14 pages).
+
+**What the scan route still gets wrong.** On pub 7743245 p5, an `R/PU` printed below the wires, with
+a callout line up to its wire, is attached to the nearest wire, a PU. The vector route detaches
+callout leaders (`detect/vector_leaders.py`); the raster route has no equivalent. That is the next
+lever for scans, after the edge-line two-colour harvester fix (pub 7745609).
+
 ## 2026-10-23 published as 0.7.1 / engine 3.2.1
 
 The next entry (#81) shipped. Published API first:

@@ -18,6 +18,7 @@ from .detect.components import (
 )
 from .detect.dots import detect_dots, make_dot_near
 from .detect.housings import detect_housings, find_dense_pin_border_arcs, make_in_housing
+from .detect.pin_cells import annotate_pin_cells
 from .detect.skeleton import build_segments, build_wire_mask, find_twist, is_twist_mark
 from .detect.solver import solve
 from .instrument import diag, ocr_memo
@@ -607,6 +608,10 @@ def run_page(image_path: str, labels_path: str, convention,
     binary = (gray < 210).astype(np.uint8) * 255
 
     housings = detect_housings(binary, labels, W, H)
+    # A code printed in a closed terminal cell owns only the cable entering that cell.
+    pin_cells = annotate_pin_cells(binary, labels)
+    if pin_cells:
+        print(f"pin_cells: {len(pin_cells)} codes printed inside terminal cells")
     dots = detect_dots(binary, W, H)
 
     # round 12: a star-shaped splice can yield SEVERAL small distance-transform cores; the
@@ -784,6 +789,7 @@ def run_page(image_path: str, labels_path: str, convention,
     # a component box, connector or terminal identified in the overview remains a hard semantic
     # boundary when a close-up is inspected.
     sol["housings"] = tuple(housings)
+    sol["pin_cells"] = tuple(pin_cells)
     sol["terminal_dots"] = frozenset(terminal_dots)
     sol["inline_components"] = tuple(inline_components)
 

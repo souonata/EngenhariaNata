@@ -33,6 +33,9 @@ The Engenharia NATA beta has two page-analysis modes:
   but does not draw the conductors, those codes never enter wire ownership. Pintor instead places a
   clearance-bounded disc inside the corresponding pin; a two-colour code uses two equal semicircles.
   The connector housing, component outline, and implied-but-absent wire stay black;
+- terminal cells: on a scanned page, a code printed in a closed cell inside a filled relay or
+  connector body (`DBL/W 86`) belongs to the one cable that ends at that cell, or to nothing. It is
+  never handed to the nearest passing wire;
 - outlined pictorial cables: when the real conductors are hollow raster tubes and separate thin
   vector leaders point from exact colour codes to those tubes, Pintor follows the closed cable
   interior instead of the leader. At least two independent one-to-one callouts must resolve on the

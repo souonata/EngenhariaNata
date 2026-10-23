@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from math import hypot
 
+from .detect.pin_cells import in_any_cell
 from .instrument import diag
 
 
@@ -475,6 +476,11 @@ def collect_multiscale_evidence(img, segments, solution, convention, width, heig
                     # ownership even when OCR happens to parse one as a valid colour code.
                     if scene.object_at(lx, ly, {"component-or-connector"}, margin=5):
                         note(observation, "inside-component")
+                        continue
+                    # A code inside a terminal cell was already given to the cable entering the
+                    # cell, or to none; a close-up must not hand it to a passing wire instead.
+                    if in_any_cell(solution.get("pin_cells", ()), lx, ly):
+                        note(observation, "inside-pin-cell")
                         continue
                     ranked = scene.rank_roots(
                         lx, ly, vertical, max_distance=scene.label_distance)
