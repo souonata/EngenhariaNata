@@ -121,6 +121,88 @@ class Harvest(unittest.TestCase):
         self.assertTrue(conductor.factory_conflict)
 
 
+def _classic_page(draw):
+    """A page in the classic colour style: 0.85 pt drafting pen, 2.5 pt cores, no black rails."""
+    import fitz
+
+    document = fitz.open()
+    page = document.new_page(width=400, height=240)
+    for x in range(300, 390, 10):               # component furniture fixes the drafting pen
+        page.draw_line((x, 200), (x, 230), color=(0, 0, 0), width=0.85)
+    page.draw_line((20, 20), (380, 20), color=(0.9, 0.1, 0.1), width=2.5)   # a red conductor
+    draw(page)
+    return document, page
+
+
+def _line(page, a, b, colour, width):
+    page.draw_line(a, b, color=colour, width=width)
+
+
+class ClassicHarvest(unittest.TestCase):
+    def test_a_white_core_inside_a_black_outline_is_a_white_conductor(self):
+        from wirecolor.eval.teacher import colour_class, harvest_page
+
+        def draw(page):
+            _line(page, (20, 50), (300, 50), (0.9, 0.1, 0.1), 4.0)     # a heavy red cable
+            _line(page, (20, 80), (300, 80), (0, 0, 0), 4.0)
+            _line(page, (20, 80), (300, 80), (1, 1, 1), 2.5)
+
+        document, page = _classic_page(draw)
+        white = [conductor for conductor in harvest_page(page).conductors
+                 if conductor.segments[0][0][1] == 80]
+        self.assertEqual(len(white), 1)
+        self.assertEqual(colour_class(white[0].base_rgb), "white")
+        self.assertIsNone(white[0].tracer_rgb)
+        document.close()
+
+    def test_a_black_tracer_at_the_drafting_pen_counts_on_a_classic_sheet(self):
+        from wirecolor.eval.teacher import colour_class, harvest_page
+
+        def draw(page):
+            _line(page, (20, 80), (300, 80), (0, 0, 0), 4.0)
+            _line(page, (20, 80), (300, 80), (1, 1, 1), 2.5)
+            _line(page, (20, 80), (300, 80), (0, 0, 0), 0.85)
+
+        document, page = _classic_page(draw)
+        white = [conductor for conductor in harvest_page(page).conductors
+                 if conductor.segments[0][0][1] == 80]
+        self.assertEqual(len(white), 1)
+        self.assertEqual(colour_class(white[0].tracer_rgb), "dark")     # W/SB
+        document.close()
+
+    def test_one_tracer_path_over_several_pieces_is_shared_out(self):
+        from wirecolor.eval.teacher import harvest_page
+
+        def draw(page):
+            for a, b in (((20, 120), (120, 120)), ((120, 120), (220, 120)),
+                         ((220, 120), (320, 120))):
+                _line(page, a, b, (1, 0.85, 0), 2.5)                    # three yellow pieces
+            page.draw_polyline([(20, 120), (120, 120), (220, 120), (320, 120)],
+                               color=(0, 0.5, 0.2), width=0.85,
+                               closePath=False)                          # one green tracer path
+
+        document, page = _classic_page(draw)
+        yellow = [conductor for conductor in harvest_page(page).conductors
+                  if conductor.segments[0][0][1] == 120]
+        self.assertEqual(len(yellow), 3)
+        self.assertTrue(all(conductor.tracer_rgb for conductor in yellow))
+        document.close()
+
+    def test_a_short_white_crossing_knockout_is_not_a_conductor(self):
+        from wirecolor.eval.teacher import colour_class, harvest_page
+
+        def draw(page):
+            _line(page, (20, 160), (300, 160), (0.1, 0.3, 0.9), 2.5)    # the wire underneath
+            _line(page, (150, 160), (170, 160), (1, 1, 1), 3.5)         # its crossing gap
+            _line(page, (160, 100), (160, 220), (0.1, 0.6, 0.2), 2.5)   # the wire on top
+
+        document, page = _classic_page(draw)
+        whites = [conductor for conductor in harvest_page(page).conductors
+                  if colour_class(conductor.base_rgb) == "white"]
+        self.assertEqual(whites, [])
+        document.close()
+
+
 class TrimAtComponentEdges(unittest.TestCase):
     class Run:
         def __init__(self, points):

@@ -34,7 +34,7 @@ SEARCH_FIELDS = (
     "promoted_min_run_factor", "promoted_max_fold",
     "bridge_max_gap_px", "bridge_gap_factor", "bridge_angle_tol_deg",
     "bridge_lateral_min_px", "bridge_lateral_factor",
-    "continuation_snap_px", "min_direct_assignment_margin",
+    "continuation_snap_px", "min_direct_assignment_margin", "min_run_legend_margin",
     "classifier_assignment_weight", "classifier_direct_min_probability",
     "classifier_propagated_min_probability",
 )
