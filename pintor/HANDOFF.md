@@ -20,9 +20,28 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-23 published as 0.7.1 / engine 3.2.1
+
+The next entry (#81) shipped. Published API first:
+
+- **Source.** Commit `f220dc3` (the bump on top of the #81 merge `41aac72`) was cloned into
+  `/opt/pintor-api-releases/f220dc3`.
+- **Image.** `engnata/pintor-api:0.7.1` was built before the container was touched. Inside it were
+  confirmed `pintor-wiring 3.2.1`, PyMuPDF 1.28.2, the `oem` style with gauge widths on,
+  `min_direct_assignment_margin` 0.06 and `min_run_legend_margin` 0.001.
+- **Container.** Recreated on the existing `pintor-api_pintor-data` volume; healthy.
+- **Smoke.** The external smoke passed:
+  `external_auth=ok account=ok unauthenticated=401 job=ready result=pdf delete=204`.
+- **Site.** PR #82 merged as `36f53f1`, and GitHub Pages deployed.
+- **Drift.** `check-release-drift.sh` reports `site 0.7.1`, `api 0.7.1 (engine 3.2.1)`.
+- **Rollback.** `cd /opt/pintor-api-releases/cb005db/pintor && docker compose -p pintor-api
+  --env-file /opt/pintor-api/.env up -d` returns to 0.7.0.
+
+WireNet is still not mounted in production. The root disk was at 37 %.
+
 ## 2026-10-23 a straighter teacher, contested runs left black, and the scan route's first baseline
 
-Branch `feat/pintor-gen2-feixes`. Nothing here is released: production stays 0.7.0 / engine 3.2.0.
+Branch `feat/pintor-gen2-feixes`, merged as #81 and released in 0.7.1 (entry above).
 
 ### The truth was corrected before the engine was touched
 
