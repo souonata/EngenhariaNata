@@ -205,18 +205,30 @@ def band_px(pen_px, scale=None, dpi=200, page_pt=None):
 UNPAINTED_BGR = (255, 0, 255)
 
 
-# Render styles. "stripes" is the default: two equal bands side by side for a two-colour cable.
-# "oem" draws the cable the way Volvo Penta's own colour diagrams do -- a black rail, the base
-# colour as the core and the second colour as a thin centred tracer -- inside the same band width,
-# so every geometric gate measures exactly what it measures for "stripes".
-RENDER_STYLES = ("stripes", "oem")
+# Render styles. "oem" is the default (owner's choice, 2026-10-23): the cable as Volvo Penta's own
+# colour diagrams draw it -- a black rail, the base colour as the core and the second colour as a
+# thin centred tracer -- with the core widened by the printed gauge. "stripes", two equal bands
+# side by side, stays available. At signal gauge both have the same footprint, so every geometric
+# gate measures the same paint.
+RENDER_STYLES = ("oem", "stripes")
+DEFAULT_RENDER_STYLE = "oem"
 
 
 def render_style(requested=None) -> str:
     import os
 
-    style = (requested or os.getenv("PINTOR_RENDER_STYLE", "") or "stripes").strip().lower()
-    return style if style in RENDER_STYLES else "stripes"
+    style = (requested or os.getenv("PINTOR_RENDER_STYLE", "") or DEFAULT_RENDER_STYLE)
+    style = style.strip().lower()
+    return style if style in RENDER_STYLES else DEFAULT_RENDER_STYLE
+
+
+def gauge_widths_enabled(requested=None) -> bool:
+    """Widen the OEM core by the printed gauge: on unless ``PINTOR_RENDER_GAUGE=0``."""
+    import os
+
+    if requested is not None:
+        return bool(requested)
+    return os.getenv("PINTOR_RENDER_GAUGE", "1").strip() != "0"
 
 
 def _paint_piece_oem(canvas, points, tokens, band, convention):
@@ -260,13 +272,13 @@ def gauge_factor(legend_raw) -> float:
     return 1.0
 
 
-def _shortened(points, by):
-    """The polyline with ``by`` pixels taken off each end, so a heavier cap still ends where the
+def _shortened(points, by, start=True, end=True):
+    """The polyline with ``by`` pixels taken off its ends, so a heavier cap still ends where the
     signal-weight cap did -- at a component's edge, not inside it."""
     if by <= 0 or len(points) < 2:
         return points
     out = [tuple(point) for point in points]
-    for reverse in (False, True):
+    for reverse in [flag for flag, wanted in ((False, start), (True, end)) if wanted]:
         if reverse:
             out.reverse()
         remaining = by
@@ -289,7 +301,7 @@ def _bgr(token, convention):
 
 
 def build_rgba(owned_runs, canvas_hw, convention, dpi, pen_px=None, diagnose=False, scale=None,
-               page_pt=None, dash_pitch=None, pin_markers=(), style=None):
+               page_pt=None, dash_pitch=None, pin_markers=(), style=None, gauge=None):
     """RGBA overlay painting every run that carries a code.
 
     Runs without a code are left untouched -- an unpainted conductor is a miss, a wrongly painted
@@ -302,9 +314,7 @@ def build_rgba(owned_runs, canvas_hw, convention, dpi, pen_px=None, diagnose=Fal
     canvas = np.zeros((height, width, 4), np.uint8)
     band = band_px(pen_px if pen_px else dpi / 72.0, scale, dpi, page_pt)
     paint_piece = _paint_piece_oem if render_style(style) == "oem" else _paint_piece
-    import os
-
-    gauge_widths = os.getenv("PINTOR_RENDER_GAUGE", "").strip() == "1"
+    gauge_widths = gauge_widths_enabled(gauge)
     painted = 0
 
     for run in owned_runs:
@@ -330,10 +340,12 @@ def build_rgba(owned_runs, canvas_hw, convention, dpi, pen_px=None, diagnose=Fal
         width = band
         if paint_piece is _paint_piece_oem and gauge_widths:
             width = max(band, int(round(band * gauge_factor(run.legend_raw))))
-        for piece in pieces:
+        for number, piece in enumerate(pieces):
             piece = np.array(piece, np.float32)
             if width > band:
-                piece = _shortened(piece, (width - band) / 2.0)
+                # Only the cable's own two ends pull back; a dash keeps its drawn length and phase.
+                piece = _shortened(piece, (width - band) / 2.0, start=number == 0,
+                                   end=number == len(pieces) - 1)
             paint_piece(canvas, piece, tokens, width, convention)
         painted += 1
 

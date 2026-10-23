@@ -268,10 +268,37 @@ class RenderStyles(unittest.TestCase):
         battery = len(self._column(self._paint("R", raw="35 R", gauge="1")))
         self.assertGreater(battery, 2 * signal)
 
-    def test_gauge_widths_are_off_unless_asked_for(self):
-        signal = len(self._column(self._paint("R", raw="R 0,75")))
-        battery = len(self._column(self._paint("R", raw="35 R")))
+    def test_gauge_widths_can_be_turned_off(self):
+        signal = len(self._column(self._paint("R", raw="R 0,75", gauge="0")))
+        battery = len(self._column(self._paint("R", raw="35 R", gauge="0")))
         self.assertEqual(signal, battery)
+
+    def test_oem_with_gauge_is_the_default(self):
+        import os
+
+        from wirecolor.paint.vector_overlay import gauge_widths_enabled, render_style
+
+        saved = {key: os.environ.pop(key, None)
+                 for key in ("PINTOR_RENDER_STYLE", "PINTOR_RENDER_GAUGE")}
+        try:
+            self.assertEqual(render_style(), "oem")
+            self.assertTrue(gauge_widths_enabled())
+        finally:
+            for key, value in saved.items():
+                if value is not None:
+                    os.environ[key] = value
+
+    def test_oem_white_is_railed_and_never_black_between_colours(self):
+        convention = load_convention("volvo_classic")
+        green = tuple(convention.colors_bgr["GN"])
+        single = self._column(self._paint("W", raw="W"))
+        self.assertEqual((single[0], single[-1]), ((0, 0, 0), (0, 0, 0)))
+        self.assertIn((255, 255, 255), single)
+        pair = self._column(self._paint("GN/W", raw="GN/W"))
+        inner = pair[1:-1]
+        self.assertNotIn((0, 0, 0), inner)
+        self.assertIn(green, inner)
+        self.assertEqual(inner[len(inner) // 2], (255, 255, 255))
 
     def test_gauges_are_read_from_both_systems(self):
         from wirecolor.paint.vector_overlay import gauge_factor

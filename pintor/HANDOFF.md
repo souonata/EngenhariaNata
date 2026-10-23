@@ -172,14 +172,35 @@ artefacts in `workspaces/wirenet/`.
 
 ### Render styles
 
-`PINTOR_RENDER_STYLE=oem` draws the factory's cable: black rail, base core and centred tracer,
-inside the same footprint as a one-colour band, so every gate measures the same paint.
-`PINTOR_RENDER_GAUGE=1` additionally widens the OEM core by the printed gauge, mm² or AWG, after
-the factory's 2026 ratios with a 2.67× cap. Each end is pulled back by the extra half-width so a
-heavier cap still ends at a component's edge. V2 passes and the painted count is unchanged on the
-2026 SCU and on D4/D6 p111. Both are off by default: the owner picks after side-by-side renders.
-The default "stripes" makes a fine two-colour cable two 1-px lines with a bare centre, which reads
-as faint on A4. That is the visible reason to consider the OEM style.
+**Default since 2026-10-23, the owner's choice after side-by-side renders: OEM with gauge widths.**
+The cable is drawn as the factory draws it: black rail, base-colour core and centred tracer, inside
+the same footprint as a one-colour band at signal gauge. The core is widened by the printed gauge,
+mm² or AWG, after the factory's 2026 ratios with a 2.67× cap. Only the cable's own two ends pull
+back by the extra half-width, so a dash keeps its drawn length and phase, and a heavy cap still
+ends at a component's edge.
+
+The raster route uses the same rail, core and tracer, without gauge (a scan carries none per
+claim). Outlined pictorial cables are filled without a rail, so their drawn edges stay as drawn.
+
+`PINTOR_RENDER_GAUGE=0` and `PINTOR_RENDER_STYLE=stripes` restore the earlier looks. The old
+"stripes" made a fine two-colour cable two 1-px lines with a bare centre, which read as faint on
+A4. The checker agent's rules (`.claude/agents/wirecolor-checker.md`) now describe both styles.
+
+Measured as the new default against the stripes run, on identical truth and the same engine:
+
+| measure                        | stripes (cand-6) | OEM + gauge |
+| ------------------------------ | ---------------- | ----------- |
+| marks4 fitness (anchored)      | 0.5835           | **0.5873**  |
+| marks4 stops-mid met           | 14/56            | **16/56**   |
+| marks4 non-wire / wrong-colour | 19/29, 2/4       | 19/29, 2/4  |
+| factory pages released         | 48               | 48          |
+| factory right / wrong          | 1,433 / 348      | 1,418 / 340 |
+| factory precision              | 0.805            | **0.807**   |
+| factory coverage (length)      | 0.474            | 0.471       |
+
+Stray paint moves from 7.4 % to 8.1 %, and that is the ruler, not the engine. The scorer counts as
+"stray" any paint outside ±1.5 pt of a factory centreline, and a gauge-widened battery cable
+(about 3.8 pt) overflows that band by construction.
 
 ### Not done, next
 

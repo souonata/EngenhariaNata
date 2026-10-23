@@ -459,10 +459,14 @@ $env:PINTOR_WIRENET_PATH = "workspaces\wirenet\run\wirenet.onnx"   # off when un
 
 ## Render styles
 
-`PINTOR_RENDER_STYLE=stripes`, the default, draws a two-colour cable as two equal bands side by
-side. `PINTOR_RENDER_STYLE=oem` draws it the way the factory's own colour diagrams do: a black rail,
-the base colour as the core and the second colour as a thin centred tracer, inside the same band
-width, so every geometric gate measures the same paint footprint.
+The default is the factory's own look (`PINTOR_RENDER_STYLE=oem`): a black rail, the base colour as
+the core and the second colour as a thin centred tracer. The core is widened by the printed gauge,
+mm² or AWG, after the 2026 factory ratios with a 2.67× cap, and each end is pulled back by the extra
+half-width so a heavy cable still stops at a component's edge. At signal gauge the footprint equals
+a one-colour band, so every geometric gate measures the same paint. `PINTOR_RENDER_GAUGE=0` keeps
+every cable at signal width, and `PINTOR_RENDER_STYLE=stripes` restores the earlier two equal bands
+side by side. The raster route uses the same rail, core and tracer. It has no per-claim gauge, and
+outlined pictorial cables are filled without a rail so their drawn edges stay as drawn.
 
 ## Benchmark against reviewer marks
 
