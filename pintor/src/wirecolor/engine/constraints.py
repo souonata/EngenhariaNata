@@ -59,19 +59,30 @@ def _finish(legends, runs, candidates, chosen, policy, solver, classifier_influe
     # activation cost is part of every candidate on it, and judging the geometric distance alone
     # would call a decision the prior settled "ambiguous".
     activation = run_activation_costs or [0.0] * len(runs)
-    by_legend = {}
+    by_legend, by_run = {}, {}
     for li, ri, value in candidates:
         by_legend.setdefault(li, []).append((value + activation[ri], ri))
+        by_run.setdefault(ri, []).append((value, li))
     assigned_legends = set()
     abstained_margin = 0
+    # Every other candidate run counts as an alternative, even one the global solution gave to a
+    # better-fitting legend. Discounting those was measured on the corrected factory truth and
+    # lost 7-9 points of precision for no held-out coverage: the global tie-break is not safe.
     for li, ri, value in chosen:
         alternatives = [candidate for candidate, other_ri in by_legend.get(li, ())
                         if other_ri != ri]
         second = min([policy.refuse_cost, *alternatives])
         margin = max(0.0, (second - value - activation[ri]) / max(policy.refuse_cost, 1e-6))
-        if margin < policy.min_direct_assignment_margin:
+        rivals = [candidate for candidate, other_li in by_run.get(ri, ())
+                  if other_li != li and legends[other_li].code != legends[li].code]
+        run_margin = max(0.0, (min([policy.refuse_cost, *rivals]) - value)
+                         / max(policy.refuse_cost, 1e-6))
+        if (margin < policy.min_direct_assignment_margin
+                or run_margin < policy.min_run_legend_margin):
             owned[ri].abstained = True
-            owned[ri].abstain_reason = "ambiguous direct assignment"
+            owned[ri].abstain_reason = ("ambiguous direct assignment"
+                                        if margin < policy.min_direct_assignment_margin
+                                        else "contested by another colour's legend")
             owned[ri].abstained_from_code = legends[li].code
             abstained_margin += 1
             continue

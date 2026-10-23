@@ -212,6 +212,35 @@ class ConstraintSolverTests(unittest.TestCase):
         self.assertEqual(owned[0].code, "R")
         self.assertIsNone(owned[1].code)
 
+    def test_a_run_two_colours_nearly_tie_for_stays_black(self):
+        """The run-side margin: two legends of different colours almost equally near one run."""
+        wire = [(0, 0), (100, 0)]
+        policy = DecisionPolicy().evolved(min_run_legend_margin=0.06)
+        owned, diagnostics = constrained_assign(
+            [_legend("R", 40, 5), _legend("GN", 60, 6)], [wire], policy)
+        self.assertIsNone(owned[0].code)
+        self.assertEqual(owned[0].abstain_reason, "contested by another colour's legend")
+        self.assertEqual(diagnostics.abstained_margin, 1)
+
+    def test_by_default_a_run_an_equally_near_rival_colour_fits_stays_black(self):
+        wire = [(0, 0), (100, 0)]
+        owned, _ = constrained_assign(
+            [_legend("R", 40, 5), _legend("GN", 60, 5)], [wire], DecisionPolicy())
+        self.assertIsNone(owned[0].code)
+
+    def test_by_default_a_clearly_nearer_legend_still_colours_its_run(self):
+        wire = [(0, 0), (100, 0)]
+        owned, _ = constrained_assign(
+            [_legend("R", 40, 3), _legend("GN", 60, 30)], [wire], DecisionPolicy())
+        self.assertEqual(owned[0].code, "R")
+
+    def test_a_repeated_code_is_not_a_rival_on_the_run_side(self):
+        wire = [(0, 0), (100, 0)]
+        policy = DecisionPolicy().evolved(min_run_legend_margin=0.06)
+        owned, _ = constrained_assign(
+            [_legend("R", 40, 5), _legend("R", 60, 6)], [wire], policy)
+        self.assertEqual(owned[0].code, "R")
+
     def test_classifier_prior_is_paid_globally_and_can_avoid_furniture(self):
         class FurniturePrior:
             metadata = {"fixture": True}

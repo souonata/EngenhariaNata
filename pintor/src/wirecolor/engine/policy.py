@@ -83,6 +83,13 @@ class DecisionPolicy:
     # precision from 0.777 to 0.889 for coverage 0.551 -> 0.475, and on the held-out publications
     # from 0.735 to 0.930 for 0.604 -> 0.396. Wrong colour is the defect that misleads.
     min_direct_assignment_margin: float = 0.06
+    # The same test from the conductor's side: a run that a legend of another colour fits at least
+    # as well as the legend it was given is contested, and stays black rather than let the global
+    # solution pick. 0.001 means "no farther than a tenth of a pixel". Replayed on the corrected
+    # factory truth (2026-10-23): training publications 0.903 -> 0.913 precision for coverage
+    # 0.493 -> 0.474, held-out 0.909 -> 0.924 for 0.589 -> 0.569. Wider bands cost more coverage
+    # than they removed wrong paint.
+    min_run_legend_margin: float = 0.001
 
     # The general constraint solver has a deadline and falls back to the exact assignment solver.
     milp_time_limit_seconds: float = 8.0
@@ -109,6 +116,7 @@ class DecisionPolicy:
         "classifier_direct_min_probability": (0.0, 0.60),
         "classifier_propagated_min_probability": (0.0, 0.60),
         "min_direct_assignment_margin": (0.0, 0.18),
+        "min_run_legend_margin": (0.0, 0.18),
         "milp_time_limit_seconds": (1.0, 30.0),
     }
 
