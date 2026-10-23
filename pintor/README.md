@@ -400,6 +400,70 @@ are routed separately from wire-versus-furniture evidence. Exported evidence doe
 a page-specific correction. The training tools derive general parameters from multiple publications
 and keep a publication-grouped lockbox.
 
+## Benchmark against the factory's own colour diagrams
+
+Volvo Penta has printed colour wiring diagrams for years, mostly for gasoline engines. Since 2026 it
+also publishes a dedicated _Colored Wiring Diagram_ series. `teacher_bench` turns each such page
+into a conductor-by-conductor test (`src/wirecolor/eval/teacher.py`):
+
+- **harvest** finds every painted conductor. The factory draws a conductor as a wide base-colour
+  core, optionally over a black rail (2026) and optionally with a thin centred tracer in its second
+  colour.
+- **atlas** learns which RGB means which colour token by vote of the printed codes. Nothing is
+  assumed about the factory palette.
+- **twin** rebuilds the page in monochrome. Conductors become one black centreline at the sheet's
+  drafting pen, everything else turns grey, and the text is reinserted as text.
+- **score** paints the twin with the production route and judges every conductor as right, wrong or
+  missed.
+
+A conductor whose printed code contradicts the factory's paint is a _factory conflict_. It is kept
+out of the precision, because a painter that follows the print is obeying the rules.
+
+```powershell
+$env:PYTHONPATH = "src;workspaces\ocr-runtime"
+python -m wirecolor.tools.teacher_bench --pages teacher_pages.json --out workspaces\teacher `
+  --keep-overlays
+python -m wirecolor.tools.teacher_bench --pages teacher_pages.json --out workspaces\teacher-main `
+  --engine-src C:\checkout-of-main\pintor\src
+```
+
+`--engine-src` paints with another checkout's engine in its own interpreter while the twins and the
+truth stay those of this tree, so two engines are compared on identical ground truth. The factory
+colours are used only to evaluate and to learn. The painter never consults them.
+
+`teacher_policy_sweep` replays only the decision layer on the twins of a finished benchmark folder,
+scored by length against the factory colours. It takes minutes instead of an hour per candidate and
+is how `min_direct_assignment_margin` was calibrated. Choose on training publications, confirm on
+held-out ones, then confirm with a full `teacher_bench`:
+
+```powershell
+python -m wirecolor.tools.teacher_policy_sweep --bench workspaces\teacher --pages teacher_pages.json `
+  --param min_direct_assignment_margin --values 0,0.03,0.06,0.09 --publications 7749124,7743245
+```
+
+## WireNet: a learned wire-versus-furniture filter
+
+WireNet is a small U-Net (1.9 M parameters) that labels every pixel of a 200 DPI page render as
+paper, conductor ink or other ink. It is trained on the factory-coloured pages through their
+monochrome twins, with publications split between training and validation. It decides nothing about
+colour. In the vector painter it is an optional fail-safe: a coloured run whose ink the network does
+not recognise as a conductor goes black, and nothing else changes.
+
+```powershell
+python -m wirecolor.tools.wirenet_dataset --pages teacher_pages.json --out workspaces\wirenet\data
+# training needs PyTorch (CUDA recommended); the painter only needs onnxruntime
+python -m wirecolor.tools.train_wirenet --data workspaces\wirenet\data `
+  --val-publications 7742218,47718008 --out workspaces\wirenet\run
+$env:PINTOR_WIRENET_PATH = "workspaces\wirenet\run\wirenet.onnx"   # off when unset
+```
+
+## Render styles
+
+`PINTOR_RENDER_STYLE=stripes`, the default, draws a two-colour cable as two equal bands side by
+side. `PINTOR_RENDER_STYLE=oem` draws it the way the factory's own colour diagrams do: a black rail,
+the base colour as the core and the second colour as a thin centred tracer, inside the same band
+width, so every geometric gate measures the same paint footprint.
+
 ## Benchmark against reviewer marks
 
 `feedback_bench` paints only the pages a reviewer marked and scores them. Every report carries two

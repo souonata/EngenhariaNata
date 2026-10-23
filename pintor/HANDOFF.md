@@ -1,6 +1,6 @@
 # Pintor handoff
 
-Last updated: 2026-10-21
+Last updated: 2026-10-23
 
 ## Product boundary
 
@@ -19,6 +19,180 @@ supported/confirmed colour convention remains mandatory, and uncertain segments 
 The product name is localized in the interface: **Pintor** in Portuguese, **Pittore** in Italian,
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
+
+## 2026-10-23 the factory's own colour diagrams became the test, and the engine moved (G2-2..G2-6)
+
+### The teacher benchmark
+
+`eval/teacher.py` and `tools/teacher_bench.py` turn every factory-coloured vector page into a
+conductor-by-conductor test. The harvester finds each painted conductor in two styles:
+
+- the classic gasoline style: a wide base-colour stroke, with a thin centred tracer that often
+  shares its exact geometry;
+- the 2026 *Colored Wiring Diagram* style: a black rail 0.25 pt wider than the core, the core, and
+  a centred tracer.
+
+The 2026 colourist also left the original drafting line on top of many cores. It is ink, not a
+colour, so it is excluded. The palette is learned per publication by vote of the printed codes. A
+twin is rebuilt in monochrome: conductors become one black centreline at the drafting pen, other
+ink turns grey, and the text is reinserted as text. The production route paints the twin, and every
+conductor is judged right, wrong or missed against the factory's colour.
+
+A conductor whose code printed **on it** (< 6 pt) contradicts the factory's paint is a *factory
+conflict* and is kept out of the precision. The 2026 SCU sheet prints `RED 16` beside the wire it
+paints black, and `BLACK 16` beside the one it paints red. Codes at the end of a leader (6–20 pt)
+were too often nearest a neighbour in the bundle to judge anything. Measured on pubs 91, 2531 and
+36, 49 of 55 disagreements were at 6 pt or more.
+
+**Corpus.** A census of all 7,502 library PDFs found 177 coloured pages in 50 PDFs. After removing
+mechanical illustrations and leaflets (no printed wire palette), duplicates (`backfill__*` copies,
+resolved by SHA or text) and the lockbox, **49 pages in 14 publications** remain
+(`workspaces/gen2/teacher_pages_final.json`). Pub 47717669 is a compilation. Its pages 4 and 6
+are the Non-EVC main harness, identical in text to 47718008, and pages 2, 3 and 5 are harness
+variants that may include the EVC lockbox drawing. Only its page 1 (the 07-2026 SCU) is used.
+
+**Lockbox.** The 2026 *Colored* stratum is drawn as 47718007. Every 2026 diagram in the library is
+a sibling of one inspected for the brief, which is recorded.
+
+**Twin traps found on the way.**
+
+- `Shape.finish` closes paths by default, which joined every polyline back to its start.
+- A twin sized to the MEDIA box threw overlays off scale on cropped pages: the SCU sheets, and
+  pub 187 p61 (an 8 pt crop offset that had read as precision 0.04).
+- Rotated pages (pub 1095) are drawn in unrotated space and given the source's rotation.
+- Tracers with the core's exact geometry fell into its group unrecorded.
+
+### What the engine got (each measured on the twins, engine snapshots against frozen truth)
+
+1. **Colour words with AWG** (`labels/parse.py`): `PINK / DK.GREEN 18` → `P/DGN`, exact text only,
+   with whole-span matching. Lightness words now match longest-first; "Dark green 1,5" used to read
+   GN. Before this, the 2026 sheets were refused outright.
+2. **V2 judged per connected piece** (`verify/validators.py`). The union of eight caps on one
+   connector edge "spanned" the box.
+3. **Conductors ending inside a component are trimmed to its edge**
+   (`detect/vector_symbols.trim_runs_ending_inside_zones`). Pin ticks drawn inside a connector
+   body made every wire "enter deeply", and the repair pass withdrew all of them. On the 2026 SCU
+   36 of 50 correctly coloured conductors were withdrawn, and coverage went 0.31 → 0.94.
+4. **The repair pass grows the failing zone by half a band and withdraws the pin discs inside it.**
+   A skimming conductor, or a pin disc, used to keep the second gate failing, and whole pages were
+   refused. This released pubs 2531 p13/p15/p17, 2471 p17/p21 and **D4/D6 p113**.
+5. **Bare-code grammar** (`text_layer.bare_code_grammar`). On a sheet where at least 75 % of the
+   strong codes carry no gauge, a bare single letter outside every symbol zone is a colour. It turns
+   on for the gasoline sheets only. Every gauged diesel sheet checked (2542, 34, 77, 251, 2543, 28)
+   keeps the corroboration rule that protects a pressure sensor's `P`.
+6. **Callout leaders leave the topology** (`detect/vector_leaders.py`). A short straight segment
+   with one free end against exactly one code and the other end on a wire is annotation. Its code
+   is anchored where it touches. Found on the classic pages (19–22 per sheet), never on 2026 or
+   diesel sheets. Measured gain was small: coverage +0.5 pt, precision +1 pt.
+7. **`min_direct_assignment_margin` 0.0 → 0.06.** It was calibrated with
+   `tools/teacher_policy_sweep.py`, which replays only the decision layer, chosen on training
+   publications and confirmed on held-out ones (length-weighted):
+
+   | margin | train precision | train coverage | held-out precision | held-out coverage |
+   | ------ | --------------- | -------------- | ------------------ | ----------------- |
+   | 0.00   | 0.777           | 0.551          | 0.735              | 0.604             |
+   | 0.06   | 0.889           | 0.475          | 0.930              | 0.396             |
+
+   The margin is now judged on the solver's own costs, including a learned prior's activation
+   cost, not on geometry alone.
+
+### Result on the factory twins (49 pages, identical truth for both engines)
+
+|                              | engine on `main` | Gen 2 engine (cand-6) |
+| ---------------------------- | ---------------- | --------------------- |
+| pages released               | 24 / 49          | **48 / 49**           |
+| conductors right             | 345              | **1,433**             |
+| conductors wrong             | 110              | 348                   |
+| exact-colour precision       | 0.758            | **0.805**             |
+| coverage (count)             | 0.048            | **0.197**             |
+| coverage (length)            | 0.099            | **0.474**             |
+| macro coverage / publication | 0.129            | **0.284**             |
+
+Coverage is bounded below 1: a conductor with no code anywhere on the sheet cannot be coloured.
+The precision is conservative. The harvester knows only a *centred* tracer, and some classic sheets
+draw the second colour as two edge lines (a Y/GR read as Y; a P/W as P). Of the 348 wrong
+verdicts, 120 have a nearby printed code that matches what the engine painted, 56 match the
+factory, and 172 have no code nearby. The true precision lies between 0.805 and roughly 0.87.
+Teaching the harvester edge tracers is the next truth fix.
+On the pictorial pub 187 p61 the margin costs coverage without buying precision (31 → 22 right,
+2 → 3 wrong). The 348 wrong conductors are mostly dense-bundle ownership on the classic sheets.
+
+### Reviewer marks (`marks4`, same overlays, both rulers)
+
+| marks4             | `main` | cand-6     |
+| ------------------ | ------ | ---------- |
+| fitness (anchored) | 0.4285 | **0.5835** |
+| fitness (square)   | 0.3212 | 0.4373     |
+| pages painted      | 13/14  | **14/14**  |
+| missing met        | 26/105 | **87/105** |
+| non-wire met       | 19/29  | 19/29      |
+| wrong-colour met   | 2/4    | 2/4        |
+
+The gain is D4/D6 p113, released at last (60 of its 63 marks), plus two on p111. One D1/D2 p40
+mark went from painted to black (the margin), never to a wrong colour.
+
+### WireNet
+
+A 1.9 M-parameter U-Net labels every pixel of a 200 DPI render as paper, conductor ink or other ink
+(`engine/wirenet.py`, `tools/wirenet_dataset.py`, `tools/train_wirenet.py`). It is trained on the
+twins of the factory pages, 48 pages in 14 publications. In the vector painter it is an optional
+fail-safe: a coloured run whose ink the network does not call conductor ink along at least half
+its length goes black. It never assigns or changes a colour, and it is off unless
+`PINTOR_WIRENET_PATH` points at an ONNX file. It runs on onnxruntime, about 3 s for an A3 page.
+
+**Evaluation is cross-validated by publication.** There are three folds, with sibling editions
+kept together (both SCU sheets), and every page is painted by a model that never saw its
+publication.
+
+- Conductor-ink F1 on the held-out folds: **0.946 / 0.912 / 0.944**.
+- On the twins, Gen 2 engine without and with WireNet:
+
+|                    | without | with       |
+| ------------------ | ------- | ---------- |
+| conductors right   | 1,433   | 1,426      |
+| conductors wrong   | 348     | **293**    |
+| precision          | 0.805   | **0.830**  |
+| coverage (length)  | 0.474   | 0.470      |
+| stray paint (mean) | 7.6 %   | **0.7 %**  |
+
+Stray paint is paint outside every factory conductor: relay boxes, connector shells, frames. It is
+almost entirely removed, at the cost of seven right conductors in 1,433.
+
+**A leak was found and removed before these numbers.** Pub 47717669 (a compilation) carries the
+Non-EVC main harness on its pages 4 and 6, identical to 47718008 in another fold. Those pages
+and its harness variants (2, 3, 5) are out of both training and benchmark. An earlier run-2 model
+trained before that cleanup is not used for any number here.
+
+**Its limit.** It has never seen a diesel connector shell. On D4/D6 p111 it calls the long edges of
+the 89- and 29-pole connectors conductor ink, so it cannot help there yet.
+
+The training environment is an isolated venv with a CUDA build of PyTorch (`.[wirenet]` plus the
+PyTorch index). A 10,000-step run takes about 13 minutes on an RTX 4060. Models are private
+artefacts in `workspaces/wirenet/`.
+
+### Render styles
+
+`PINTOR_RENDER_STYLE=oem` draws the factory's cable: black rail, base core and centred tracer,
+inside the same footprint as a one-colour band, so every gate measures the same paint.
+`PINTOR_RENDER_GAUGE=1` additionally widens the OEM core by the printed gauge, mm² or AWG, after
+the factory's 2026 ratios with a 2.67× cap. Each end is pulled back by the extra half-width so a
+heavier cap still ends at a component's edge. V2 passes and the painted count is unchanged on the
+2026 SCU and on D4/D6 p111. Both are off by default: the owner picks after side-by-side renders.
+The default "stripes" makes a fine two-colour cable two 1-px lines with a bare centre, which reads
+as faint on A4. That is the visible reason to consider the OEM style.
+
+### Not done, next
+
+1. **Dense-bundle ownership** is now the main source of wrong colours. The next work is a
+   bundle-aware assignment (ordered labels against ordered parallel runs) and pictorial leader
+   fans (pub 187).
+2. **The raster route** has neither twins nor WireNet. Rendering a twin as an image-only PDF with
+   scan noise gives the scan route its own conductor-level truth.
+3. **Diesel housings.** WireNet has never seen a diesel connector shell and calls its long edges
+   conductor (D4/D6 p111). The training set needs diesel examples.
+4. **Conventions beyond Volvo** (SAE J1128, DIN 47002, JIS) need a publication corpus before they
+   may be supported (safety rules). Nothing was added unvalidated.
+5. **Lockbox (G2-7).** Open once, after the owner accepts this round.
 
 ## 2026-10-21 Generation 2 starts by measuring with a straight ruler (G2-0, G2-1)
 
