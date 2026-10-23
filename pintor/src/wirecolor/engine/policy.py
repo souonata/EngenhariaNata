@@ -77,9 +77,12 @@ class DecisionPolicy:
     classifier_direct_min_probability: float = 0.08
     classifier_propagated_min_probability: float = 0.30
 
-    # Explicit ambiguity abstention.  Zero preserves the measured baseline; learned candidates may
-    # raise it, but only inside the safe bound below.
-    min_direct_assignment_margin: float = 0.0
+    # Explicit ambiguity abstention: a legend whose best conductor is barely better than its second
+    # best leaves both black. Calibrated on the factory-coloured twins (2026-10-23), replaying the
+    # decision layer by publication: on the training publications 0.0 -> 0.06 took length-weighted
+    # precision from 0.777 to 0.889 for coverage 0.551 -> 0.475, and on the held-out publications
+    # from 0.735 to 0.930 for 0.604 -> 0.396. Wrong colour is the defect that misleads.
+    min_direct_assignment_margin: float = 0.06
 
     # The general constraint solver has a deadline and falls back to the exact assignment solver.
     milp_time_limit_seconds: float = 8.0

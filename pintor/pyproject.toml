@@ -22,6 +22,9 @@ dependencies = [
 
 [project.optional-dependencies]
 learning = ["optuna>=4.0,<5"]
+# Training WireNet only; the painter runs its ONNX export through onnxruntime (the ocr extra).
+# A CUDA build of torch comes from the PyTorch index, e.g. --index-url .../whl/cu128.
+wirenet = ["torch>=2.4", "onnx>=1.16"]
 ocr = ["rapidocr==3.9.2", "onnxruntime==1.29.0"]
 web = [
   "fastapi>=0.117,<1",

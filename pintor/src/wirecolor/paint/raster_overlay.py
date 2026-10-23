@@ -23,16 +23,41 @@ from .legacy import TERM_GAP, _perp_offsets
 OCG_NAME = "Wire colors"
 
 
-def _scaled_strokers(convention, t: Transform):
-    """v1 band geometry scaled by the transform (widths in native px)."""
+def _scaled_strokers(convention, t: Transform, style=None):
+    """v1 band geometry scaled by the transform (widths in native px).
+
+    The default "oem" style draws a cable the way the factory's own colour diagrams do: a black
+    rail, the base colour as the core at the v1 band width, and the second colour as a thin centred
+    tracer. "stripes" keeps the v1 abutting half-bands. A scan carries no gauge per claim, so the
+    raster route does not widen by gauge.
+    """
+    from .vector_overlay import render_style
+
     colors = convention.colors_bgr
     white = convention.white_token
     s = t.s
+    oem = render_style(style) == "oem"
 
     def w(px):                       # scale a v1 200-DPI width, keep >= 1
         return max(1, round(px * s))
 
-    def _stroke(canvas, mask, poly, code, thick):
+    def _bgr(code):
+        return (255, 255, 255) if code == white else colors[code]
+
+    def _oem(canvas, mask, poly, codes, core):
+        pi = poly.astype(np.int32)
+        # White keeps its 2-px rail each side (round 10e); a colour gets 1 px.
+        rail = core + (4 if codes[0] == white else 2)
+        cv2.polylines(canvas, [pi], False, (0, 0, 0), rail, cv2.LINE_AA)
+        cv2.polylines(canvas, [pi], False, _bgr(codes[0]), core, cv2.LINE_AA)
+        if len(codes) > 1:
+            cv2.polylines(canvas, [pi], False, _bgr(codes[1]), max(1, core // 3), cv2.LINE_AA)
+        cv2.polylines(mask, [pi], False, 255, rail, cv2.LINE_AA)
+
+    def _stroke(canvas, mask, poly, code, thick, railed=True):
+        if oem and railed:
+            _oem(canvas, mask, poly, [code], w(thick))
+            return
         pi = poly.astype(np.int32)
         if code == white:            # white channel: TRUE white core delimited by a 2-px black
             # rail each side (round 10e, user pref -- 1 px vanished at 100% viewer zoom).
@@ -47,13 +72,16 @@ def _scaled_strokers(convention, t: Transform):
     def _pts(order):
         return np.array([(x * t.sx, y * t.sy) for (y, x) in order], np.float32)
 
-    def _pair_stroke(canvas, mask, pts, codes, total_v1):
+    def _pair_stroke(canvas, mask, pts, codes, total_v1, railed=True):
         """Two-colour band as two ABUTTING half-bands (round-8c, user markup): the halves
         overlap ~1 px at the centreline so neither white paper nor the original wire ink can
         ever show between the colours -- the transition is a hard colour-to-colour edge.
         A W half is plain near-white here (no rails: a rail would re-draw exactly the dark
         seam line the abutment removes)."""
         B = max(4, w(total_v1))                     # total band width, native px
+        if oem and railed:
+            _oem(canvas, mask, pts, codes, B)
+            return
         half = max(2, round(B / 2) + 1)             # +1 -> centre overlap kills the seam
         a, b = _perp_offsets(pts, B / 4)
         halves = list(zip((a, b), codes))
@@ -99,10 +127,11 @@ def _scaled_strokers(convention, t: Transform):
         if len(order) < 10:
             return
         pts = _pts(order)
+        # The tube's own black edges are the cable's outline; a rail would thicken them.
         if len(codes) == 1:
-            _stroke(canvas, mask, pts, codes[0], width)
+            _stroke(canvas, mask, pts, codes[0], width, railed=False)
         else:
-            _pair_stroke(canvas, mask, pts, codes, width)
+            _pair_stroke(canvas, mask, pts, codes, width, railed=False)
 
     return render_seg, render_dash, render_outlined
 

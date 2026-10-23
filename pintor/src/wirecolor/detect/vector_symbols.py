@@ -524,6 +524,53 @@ def _segment_inside_zone(a, b, zone):
             (a[0] + (b[0] - a[0]) * leave, a[1] + (b[1] - a[1]) * leave))
 
 
+def _inside(point, zone) -> bool:
+    x0, y0, x1, y1 = zone
+    return x0 < point[0] < x1 and y0 < point[1] < y1
+
+
+def _trim_end_inside(points, zone):
+    """Drop the tail of ``points`` that lies inside ``zone``, ending it on the zone boundary."""
+    if not _inside(points[-1], zone):
+        return points
+    for index in range(len(points) - 1, 0, -1):
+        if not _inside(points[index - 1], zone):
+            part = _segment_inside_zone(points[index - 1], points[index], zone)
+            boundary = part[0] if part else points[index - 1]
+            return [*points[:index], boundary]
+    return []
+
+
+def trim_runs_ending_inside_zones(runs, zones) -> int:
+    """Cut every conductor that ENDS inside a component zone back to the zone's boundary.
+
+    A wire drawn to a connector usually continues inside the body as a short tick to the pin
+    number; topology follows the tick, so the painted band reached deep into the connector and the
+    pixel gate withdrew every conductor touching it. Measured on the 2026 SCU diagram, nine
+    connectors were "entered deeply" this way and 36 of 50 correctly coloured conductors were
+    withdrawn. The body of a component is never paintable, so the colour stops at its edge, as the
+    factory's own colour diagrams draw it. A conductor that passes THROUGH a zone is not trimmed;
+    ``runs_crossing_zones`` still withdraws it. Runs are modified in place; returns how many were cut.
+    """
+    trimmed = 0
+    for run in runs:
+        points = [(float(x), float(y)) for x, y in run.points]
+        if len(points) < 2:
+            continue
+        original = len(points), points[0], points[-1]
+        for zone in zones:
+            if len(points) < 2:
+                break
+            points = _trim_end_inside(points, zone)
+            if len(points) >= 2:
+                points = _trim_end_inside(points[::-1], zone)[::-1]
+        if (len(points), points[0] if points else None, points[-1] if points else None) \
+                != original:
+            trimmed += 1
+            run.points = points if len(points) >= 2 else []
+    return trimmed
+
+
 def runs_crossing_zones(runs, zones, tolerance=1.0):
     """Indices of the runs whose polyline passes THROUGH a protected zone, not merely into it.
 

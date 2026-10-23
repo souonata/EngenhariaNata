@@ -81,6 +81,15 @@ def v2_protected_overlap(rgba: np.ndarray, solution: dict, transform) -> dict:
     return dict(name="V2", passed=bad == 0, painted_px_in_protected=bad)
 
 
+def _paint_pieces(painted: np.ndarray):
+    """Each 8-connected piece of paint inside a zone window, as a boolean mask."""
+    import cv2
+
+    count, labels = cv2.connectedComponents(painted.astype(np.uint8), connectivity=8)
+    for label in range(1, count):
+        yield labels == label
+
+
 def v2_vector_protected_overlap(rgba: np.ndarray, protected_zones, analysis_dpi: int,
                                 paint_dpi: int, pen_px: float = 0.0,
                                 geometrically_severed_zones=()) -> dict:
@@ -136,28 +145,37 @@ def v2_vector_protected_overlap(rgba: np.ndarray, protected_zones, analysis_dpi:
         if not count:
             continue
         trimmed += count
-        rows = np.flatnonzero(painted.any(axis=1))
-        columns = np.flatnonzero(painted.any(axis=0))
-        spans_vertically = bool(painted[0].any() and painted[-1].any())
-        spans_horizontally = bool(painted[:, 0].any() and painted[:, -1].any())
         zone_key = tuple(round(float(value), 6) for value in (x0, y0, x1, y1))
         geometry_proves_severed = zone_key in severed
-        if (spans_vertically or spans_horizontally) and not geometry_proves_severed:
+        # Judged per connected piece of paint, never on the union. Eight conductors ending on the
+        # left edge of one connector put caps near its top and its bottom corner; their union
+        # "spans" the box although no single conductor enters more than a cap's depth. Measured on
+        # the 2026 SCU diagram, that union withdrew 36 of 50 correctly coloured conductors.
+        crossed, too_deep = False, False
+        for piece in _paint_pieces(painted):
+            rows = np.flatnonzero(piece.any(axis=1))
+            columns = np.flatnonzero(piece.any(axis=0))
+            top_edge, bottom_edge = bool(piece[0].any()), bool(piece[-1].any())
+            left_edge, right_edge = bool(piece[:, 0].any()), bool(piece[:, -1].any())
+            if (top_edge and bottom_edge) or (left_edge and right_edge):
+                crossed = True
+                break
+            # Depth is measured from whichever edge this piece actually touches.
+            depth = min(
+                int(rows[-1]) + 1 if top_edge else piece.shape[0],
+                piece.shape[0] - int(rows[0]) if bottom_edge else piece.shape[0],
+                int(columns[-1]) + 1 if left_edge else piece.shape[1],
+                piece.shape[1] - int(columns[0]) if right_edge else piece.shape[1],
+            )
+            too_deep |= depth > allowed_depth
+        if crossed and not geometry_proves_severed:
             crossings += 1
             crossed_zones.append((x0, y0, x1, y1))
-        else:
-            # Depth is measured from whichever edge the paint actually touches.
-            depth = min(
-                int(rows[-1]) + 1 if painted[0].any() else painted.shape[0],
-                painted.shape[0] - int(rows[0]) if painted[-1].any() else painted.shape[0],
-                int(columns[-1]) + 1 if painted[:, 0].any() else painted.shape[1],
-                painted.shape[1] - int(columns[0]) if painted[:, -1].any() else painted.shape[1],
-            )
-            if depth > allowed_depth and not geometry_proves_severed:
-                deep += 1
-                deep_zones.append((x0, y0, x1, y1))
-            elif geometry_proves_severed:
-                severed_cap_zones.append((x0, y0, x1, y1))
+        elif too_deep and not geometry_proves_severed:
+            deep += 1
+            deep_zones.append((x0, y0, x1, y1))
+        elif geometry_proves_severed:
+            severed_cap_zones.append((x0, y0, x1, y1))
         rgba[top:bottom, left:right, 3] = np.where(painted, 0, window)
     return dict(name="V2-vector", passed=crossings == 0 and deep == 0,
                 protected_zones_checked=checked, painted_px_in_protected=trimmed,

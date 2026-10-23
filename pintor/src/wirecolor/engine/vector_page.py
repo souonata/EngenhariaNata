@@ -13,7 +13,7 @@ from math import hypot
 from .policy import DecisionPolicy
 
 
-CONTEXT_SCHEMA_VERSION = 6
+CONTEXT_SCHEMA_VERSION = 7
 
 
 @dataclass
@@ -68,7 +68,9 @@ class VectorPageContext:
 
         if int(raw.get("schema_version", 0)) != CONTEXT_SCHEMA_VERSION:
             raise ValueError("vector decision cache schema mismatch")
-        legends = lambda name: [Legend(**item) for item in raw.get(name, ())]
+        legends = lambda name: [Legend(**{**item, "bbox": tuple(item["bbox"])
+                                           if item.get("bbox") else None})
+                                for item in raw.get(name, ())]
         return cls(
             runs=[[(float(x), float(y)) for x, y in points] for points in raw["runs"]],
             raw_legends=legends("raw_legends"), legends=legends("legends"),
@@ -114,10 +116,22 @@ def extract_vector_context(page, dpi, convention, *, legend_filter=None):
                                      modal_pen_px, node_segments)
     from ..labels.text_layer import promote_bare_letters, read_legends, strong_legends
 
+    from ..detect.vector_leaders import detach_leaders
+
     pen_px = modal_pen_px(page, dpi)
     symbols = classify_symbol_geometry(page, dpi, pen_px)
-    stripped, zone_dropped = strip_symbol_strokes(
-        extract_segments(page, dpi), symbols.stroke_keys)
+    raw_legends = read_legends(page, dpi, convention)
+    if legend_filter is not None:
+        raw_legends = [legend for legend in raw_legends if legend_filter(legend)]
+    pin_markers, pin_legend_indexes = connector_pin_markers(page, dpi, raw_legends)
+    conductor_legends = [legend for index, legend in enumerate(raw_legends)
+                         if index not in pin_legend_indexes]
+    # A callout leader is annotation: it leaves the topology before any node is formed, and its
+    # code is anchored where it touches the wire.
+    segments_with_leaders = extract_segments(page, dpi)
+    without_leaders, conductor_legends, leaders = detach_leaders(
+        segments_with_leaders, conductor_legends, dpi)
+    stripped, zone_dropped = strip_symbol_strokes(without_leaders, symbols.stroke_keys)
     # Paper-filled housings hide the source stroke beneath them. The page therefore provides no
     # evidence of continuity through the body, so topology must stop at each visible boundary.
     stripped, opaque_clipped = clip_segments_to_opaque(stripped, symbols.opaque_zones)
@@ -133,12 +147,6 @@ def extract_vector_context(page, dpi, convention, *, legend_filter=None):
             length = sum(hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(points, points[1:]))
             if length >= minimum:
                 runs.append(points)
-    raw_legends = read_legends(page, dpi, convention)
-    if legend_filter is not None:
-        raw_legends = [legend for legend in raw_legends if legend_filter(legend)]
-    pin_markers, pin_legend_indexes = connector_pin_markers(page, dpi, raw_legends)
-    conductor_legends = [legend for index, legend in enumerate(raw_legends)
-                         if index not in pin_legend_indexes]
     legends = strong_legends(conductor_legends)
     promoted = promote_bare_letters(
         conductor_legends, legends, symbols.zones, convention)

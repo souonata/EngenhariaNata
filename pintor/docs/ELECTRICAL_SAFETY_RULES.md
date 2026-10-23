@@ -59,8 +59,10 @@ abstentions; per-object geometry remains private to the processing report.
 7. **Only conductor ink is paintable.** Text, component outlines, connector bodies, terminals,
    junction dots, frames, dimensions, hatching, and unknown furniture remain untouched.
 8. **Visual semantics are preserved.** Dashed conductors remain dashed. A two-colour code keeps
-   its base/tracer order. White conductors remain distinguishable from the page. If the renderer
-   cannot express the source line style and colour code faithfully, the run stays black.
+   its base/tracer order: by default the base colour is the core and the second colour a centred
+   tracer, as the factory's colour diagrams draw it. White conductors remain distinguishable from
+   the page. A printed gauge may widen a cable but never carry its paint into a component. If the
+   renderer cannot express the source line style and colour code faithfully, the run stays black.
 9. **The source is immutable.** Colour is a removable optional-content overlay. The source PDF
    bytes and all non-overlay drawing operators remain unchanged.
 10. **No release without proof.** A result is downloadable only after the protected-region gate,

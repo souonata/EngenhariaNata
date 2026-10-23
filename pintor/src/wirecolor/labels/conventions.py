@@ -30,6 +30,9 @@ class Convention:
     two_color_sep: str = "/"
     word_aliases: dict = field(default_factory=dict)
     table_aliases: dict = field(default_factory=dict)
+    # Gauge systems a spelled-out colour may carry: "mm2" (decimal, "Green 1.5") and/or "awg"
+    # (integer, "PINK / DK.GREEN 18").
+    word_gauges: tuple = ("mm2",)
 
 
 def load_convention(name: str) -> Convention:
@@ -53,6 +56,7 @@ def load_convention(name: str) -> Convention:
                       for alias, code in raw.get("word_aliases", {}).items()},
         table_aliases={str(alias).upper(): str(code)
                        for alias, code in raw.get("table_aliases", {}).items()},
+        word_gauges=tuple(raw.get("word_gauges", ("mm2",))),
     )
 
 
