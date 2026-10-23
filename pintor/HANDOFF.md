@@ -20,6 +20,26 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-23 Generation 2 published as 0.7.0 / engine 3.2.0
+
+Published API first, as for every release since 0.6.0:
+
+- **Source.** Commit `cb005db` (the bump on top of the #78 merge `88f04cf`) was cloned into
+  `/opt/pintor-api-releases/cb005db`.
+- **Image.** `engnata/pintor-api:0.7.0` was built before the container was touched. Inside it were
+  confirmed `pintor-wiring 3.2.0`, PyMuPDF 1.28.2, the `oem` default style with gauge widths on,
+  `min_direct_assignment_margin` 0.06, and `PINK / DK.GREEN 18` → `P/DGN`.
+- **Container.** Recreated on the existing `pintor-api_pintor-data` volume; healthy.
+- **Smoke.** The external smoke passed:
+  `external_auth=ok account=ok unauthenticated=401 job=ready result=pdf delete=204`.
+- **Site.** PR #79 merged as `72721b8`, and GitHub Pages deployed.
+- **Drift.** `check-release-drift.sh` reports `site 0.7.0`, `api 0.7.0 (engine 3.2.0)`.
+- **Rollback.** `cd /opt/pintor-api-releases/6b12292/pintor && docker compose -p pintor-api
+  --env-file /opt/pintor-api/.env up -d` returns to 0.6.9.
+
+WireNet is not mounted in production (`PINTOR_WIRENET_PATH` unset). `prune-old-releases.sh` has
+not been run; the root disk was at 31 %.
+
 ## 2026-10-23 the factory's own colour diagrams became the test, and the engine moved (G2-2..G2-6)
 
 ### The teacher benchmark
