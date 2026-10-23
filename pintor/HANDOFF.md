@@ -61,8 +61,8 @@ four publication groups in `workspaces/gen2/g2-5/rall-b0-g0..3`, OCR cached ther
 Six pages change, and no wire turns wrong in exchange for a right one. The held-out publication
 7742218 gains 6 right conductors over three pages, with its wrong count unchanged overall (+1, −1,
 0); 7743245 p5 loses 7 wrong for 1 right. The 14-page sample used before could not see this: it
-moved by one or two conductors either way. `marks4` is unchanged (0.5873, every class
-equal, 14 pages).
+moved by one or two conductors either way. `marks4` is unchanged (0.5873, every class equal, 14
+pages).
 
 On 7745609 p7 the first version looked better than the final one for a bad reason. It mistook a wire
 with `P/Y` printed on it for a leader, cut that wire from the topology, and so blocked a wrong P/Y
