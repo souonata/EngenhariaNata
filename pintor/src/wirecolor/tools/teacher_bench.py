@@ -74,8 +74,37 @@ def _paint(twin_pdf: Path, out_dir: Path, overlay: Path) -> dict:
             "legends": report.get("legends"), "runs_painted": report.get("runs_painted")}
 
 
+def rasterised(document, dpi: int, seed: str = ""):
+    """The twin as a scan: one grey page image, no text layer, no vector ink.
+
+    A light blur and grain stand in for the scanner. The page keeps its size and rotation, so the
+    painted overlay lands in the frame the truth is scored in.
+    """
+    import hashlib
+
+    import fitz
+    import numpy as np
+
+    rng = np.random.default_rng(int(hashlib.sha256(seed.encode()).hexdigest()[:8], 16))
+    out = fitz.open()
+    for page in document:
+        pixmap = page.get_pixmap(matrix=fitz.Matrix(dpi / 72.0, dpi / 72.0),
+                                 colorspace=fitz.csGRAY, alpha=False)
+        gray = np.frombuffer(pixmap.samples, dtype=np.uint8).reshape(
+            pixmap.height, pixmap.stride)[:, :pixmap.width].astype(np.float32)
+        import cv2
+
+        gray = cv2.GaussianBlur(gray, (0, 0), 0.6)
+        gray = np.clip(gray + rng.normal(0.0, 6.0, gray.shape), 0, 255).astype(np.uint8)
+        ok, png = cv2.imencode(".png", gray)
+        target = out.new_page(width=page.rect.width, height=page.rect.height)
+        target.insert_image(target.rect, stream=png.tobytes())
+    return out
+
+
 def run(pages: list, out_dir: Path, keep_overlays: bool = False,
-        engine_src: str | None = None) -> dict:
+        engine_src: str | None = None, twins_only: bool = False,
+        raster_dpi: int | None = None) -> dict:
     import fitz
     import numpy as np
     from PIL import Image
@@ -122,8 +151,13 @@ def run(pages: list, out_dir: Path, keep_overlays: bool = False,
                 twin_doc = fitz.open()
                 build_twin(page, harvest, twin_doc)
                 twin_pdf = out_dir / f"{tag}_twin.pdf"
+                if raster_dpi:
+                    twin_doc = rasterised(twin_doc, raster_dpi, seed=f"{tag}")
                 twin_doc.save(twin_pdf)
                 twin_doc.close()
+                if twins_only:
+                    reports.append(record)
+                    continue
                 overlay = out_dir / f"{tag}_overlay.png"
                 painted = (_paint_with(engine_src, twin_pdf, out_dir, overlay) if engine_src
                            else _paint(twin_pdf, out_dir, overlay))
@@ -202,12 +236,17 @@ def main() -> None:
     parser.add_argument("--pages", required=True, help="JSON list of {pdf, page, publication}")
     parser.add_argument("--out", required=True, help="directory for twins and the report")
     parser.add_argument("--keep-overlays", action="store_true")
+    parser.add_argument("--raster-dpi", type=int, default=None,
+                        help="turn each twin into an image-only scan at this resolution")
+    parser.add_argument("--twins-only", action="store_true",
+                        help="build the twins and stop: input for teacher_policy_sweep")
     parser.add_argument("--engine-src", default=None,
                         help="paint with the wirecolor package under this src directory instead")
     args = parser.parse_args()
     pages = json.loads(Path(args.pages).read_text(encoding="utf-8"))
     payload = run(pages, Path(args.out), keep_overlays=args.keep_overlays,
-                  engine_src=args.engine_src)
+                  engine_src=args.engine_src, twins_only=args.twins_only,
+                  raster_dpi=args.raster_dpi)
     print(json.dumps(payload["summary"], indent=2))
 
 

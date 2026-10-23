@@ -38,6 +38,9 @@ MIN_CONDUCTOR_PT = 6.0
 
 # The 2026 rail is the core width + 0.25 pt; accept a little rounding either side.
 RAIL_EXTRA_PT = (0.12, 0.45)
+# A lighter stroke at least this share of a black one with the same geometry is a core inside an
+# outline (classic white wires: 2.5 pt over 4.0 pt), not a tracer.
+OUTLINE_CORE_SHARE = 0.5
 
 # A printed code names the conductor its leader or its baseline sits beside.
 LEGEND_REACH_PT = 24.0
@@ -141,7 +144,11 @@ def wire_widths(strokes, pen) -> tuple[list, list]:
                 and stroke.width >= CONDUCTOR_PEN_FACTOR * pen:
             chroma[round(stroke.width, 2)] += stroke.length
     total = sum(chroma.values()) or 1.0
-    cores = sorted(width for width, length in chroma.items() if length >= 0.05 * total)
+    # A tracer runs the whole length of its conductor, so its width carries as much coloured
+    # length as a core's. It is told apart by being much thinner than the sheet's dominant core.
+    dominant = chroma.most_common(1)[0][0] if chroma else 0.0
+    cores = sorted(width for width, length in chroma.items()
+                   if length >= 0.05 * total and width >= TRACER_WIDTH_FACTOR * dominant)
 
     by_geometry = defaultdict(list)
     for stroke in strokes:
@@ -250,7 +257,35 @@ def _is_candidate(stroke, pen, cores, rails) -> bool:
         return stroke.width >= CONDUCTOR_PEN_FACTOR * pen
     # An uncoloured stroke is a conductor only at a conductor's own weight: a black wire on the
     # classic pages is as wide as the coloured ones, and on the 2026 series it is a bare rail.
-    return _near_any(stroke.width, cores) or _near_any(stroke.width, rails)
+    if rails:
+        return _near_any(stroke.width, rails)
+    return _near_any(stroke.width, cores)
+
+
+# The classic sheets break the wire underneath a crossing with a short white stroke. Measured on
+# pub 91 p433: 9-34 pt long, crossed by the wire on top.
+KNOCKOUT_MAX_PT = 40.0
+
+
+def _segments_cross(a, b, c, d) -> bool:
+    def side(p, q, r):
+        return (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])
+
+    return (side(a, b, c) * side(a, b, d) < 0) and (side(c, d, a) * side(c, d, b) < 0)
+
+
+def _without_crossing_knockouts(conductors):
+    """Drop short white strokes that another conductor crosses: crossing gaps, not wires."""
+    kept = []
+    for conductor in conductors:
+        if colour_class(conductor.base_rgb) == "white" and conductor.length <= KNOCKOUT_MAX_PT:
+            crossed = any(_segments_cross(a, b, c, d)
+                          for other in conductors if other is not conductor
+                          for c, d in other.segments for a, b in conductor.segments)
+            if crossed:
+                continue
+        kept.append(conductor)
+    return kept
 
 
 def harvest_strokes(strokes) -> PageHarvest:
@@ -267,9 +302,14 @@ def harvest_strokes(strokes) -> PageHarvest:
         core = members[0]
         if len(members) > 1 and colour_class(members[0].rgb) == "dark":
             extra = members[0].width - members[1].width
+            lighter = colour_class(members[1].rgb) in ("chromatic", "white")
             if RAIL_EXTRA_PT[0] <= extra <= RAIL_EXTRA_PT[1]:
                 core = members[1]
                 rail_pairs += 1
+            elif lighter and members[1].width >= OUTLINE_CORE_SHARE * members[0].width:
+                # The classic sheets draw a white wire as a 2.5 pt white core over a 4.0 pt
+                # black outline: the outline is ink, the core is the colour.
+                core = members[1]
         conductor = Conductor(segments=list(core.segments), width=core.width, base_rgb=core.rgb,
                               members={stroke.index for stroke in members})
         # A tracer drawn with exactly the core's geometry lands in the same group (pub 36 draws
@@ -277,6 +317,7 @@ def harvest_strokes(strokes) -> PageHarvest:
         conductor.inline_tracers = [stroke for stroke in members
                                     if stroke.width <= TRACER_WIDTH_FACTOR * core.width]
         conductors.append(conductor)
+    conductors = _without_crossing_knockouts(conductors)
     # Widest first: a narrower candidate lying inside a wider conductor is its tracer, not a
     # conductor of its own.
     conductors.sort(key=lambda conductor: -conductor.width)
@@ -286,8 +327,13 @@ def harvest_strokes(strokes) -> PageHarvest:
         for a, b in conductor.segments:
             grid.add(number, a, b)
 
-    def container(segments, width, length, exclude=None):
-        """The wider conductor holding at least 80 % of these segments along its centre."""
+    def containers(segments, width, length, exclude=None):
+        """Wider conductors holding these segments along their centre, by length held.
+
+        A tracer may be drawn as one polyline over several pieces of its conductor (pub 91 draws
+        the grey of a Y/GR as one path along three yellow ones), so it is shared out by segment.
+        Empty unless at least 80 % of its length lies inside some conductor.
+        """
         matched = Counter()
         for a, b in segments:
             midpoint = ((a[0] + b[0]) / 2.0, (a[1] + b[1]) / 2.0)
@@ -302,11 +348,9 @@ def harvest_strokes(strokes) -> PageHarvest:
                        for point in (a, b, midpoint)):
                     matched[number] += hypot(b[0] - a[0], b[1] - a[1])
                     break
-        if matched:
-            number, covered = matched.most_common(1)[0]
-            if covered >= 0.8 * length:
-                return number
-        return None
+        if sum(matched.values()) >= 0.8 * length:
+            return matched
+        return Counter()
 
     tracer_votes = defaultdict(Counter)
     tracers = 0
@@ -315,8 +359,10 @@ def harvest_strokes(strokes) -> PageHarvest:
         nonlocal tracers
         conductors[host].members |= set(indexes)
         # The 2026 colourist left the original drawn line, at the drafting pen, on top of many
-        # cores. It is part of the conductor's ink but not a colour of it.
-        if colour_class(rgb) == "dark" and abs(width - pen) <= 0.05:
+        # cores. It is part of the conductor's ink but not a colour of it. Only on a sheet in
+        # that style (black rails): on the classic sheets a black tracer is drawn at the drafting
+        # pen too (0.85 pt over a 2.5 pt white core is W/SB on pub 91).
+        if rail_pairs and colour_class(rgb) == "dark" and abs(width - pen) <= 0.05:
             return
         tracer_votes[host][rgb_key(rgb)] += length
         tracers += 1
@@ -327,18 +373,21 @@ def harvest_strokes(strokes) -> PageHarvest:
 
     absorbed = set()
     for number, conductor in enumerate(conductors):
-        host = container(conductor.segments, conductor.width, conductor.length, exclude=number)
-        if host is not None and host not in absorbed:
-            absorb(host, conductor.base_rgb, conductor.width, conductor.length,
-                   conductor.members)
+        hosts = containers(conductor.segments, conductor.width, conductor.length, exclude=number)
+        hosts = {host: held for host, held in hosts.items() if host not in absorbed}
+        if hosts and sum(hosts.values()) >= 0.8 * conductor.length:
+            for host, held in hosts.items():
+                absorb(host, conductor.base_rgb, conductor.width, held, conductor.members)
             absorbed.add(number)
     taken = {index for conductor in conductors for index in conductor.members}
     for stroke in strokes:
         if stroke.index in taken or stroke.closed:
             continue
-        host = container(stroke.segments, stroke.width, stroke.length)
-        if host is not None and host not in absorbed:
-            absorb(host, stroke.rgb, stroke.width, stroke.length, {stroke.index})
+        hosts = containers(stroke.segments, stroke.width, stroke.length)
+        hosts = {host: held for host, held in hosts.items() if host not in absorbed}
+        if hosts and sum(hosts.values()) >= 0.8 * stroke.length:
+            for host, held in hosts.items():
+                absorb(host, stroke.rgb, stroke.width, held, {stroke.index})
 
     kept = []
     for number, conductor in enumerate(conductors):
