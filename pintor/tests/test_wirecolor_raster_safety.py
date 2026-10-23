@@ -238,6 +238,54 @@ class RasterElectricalSafetyTests(unittest.TestCase):
         self.assertFalse(verdict["passed"])
         self.assertGreater(verdict["painted_px_in_protected"], 0)
 
+    def test_v2_erases_the_shallow_cap_of_a_wire_ending_at_a_housing(self):
+        rgba = np.zeros((120, 120, 4), dtype=np.uint8)
+        rgba[33:37, 0:13, 3] = 255                # a wire from the left, its cap 2 px into the margin
+        solution = {"housings": [(20, 20, 40, 30)], "inline_components": []}
+
+        verdict = v2_protected_overlap(rgba, solution, Transform(1.0, 1.0))
+
+        self.assertTrue(verdict["passed"], verdict)
+        self.assertGreater(verdict["housing_caps_erased_px"], 0)
+        self.assertEqual(rgba[33:37, 11:13, 3].max(), 0)
+
+    def test_v2_still_rejects_paint_reaching_deep_into_a_housing(self):
+        rgba = np.zeros((120, 120, 4), dtype=np.uint8)
+        rgba[33:37, 0:40, 3] = 255                # 29 px past the margin edge, into the body
+        solution = {"housings": [(20, 20, 40, 30)], "inline_components": []}
+
+        verdict = v2_protected_overlap(rgba, solution, Transform(1.0, 1.0))
+
+        self.assertFalse(verdict["passed"])
+
+    def test_v2_erases_a_cap_lying_beyond_an_inline_components_end(self):
+        rgba = np.zeros((120, 120, 4), dtype=np.uint8)
+        rgba[74:77, 0:17, 3] = 255                # a wire stopping 3 px short of the contact
+        solution = {"housings": [], "inline_components": [(20, 75, 95, 75, 6)]}
+
+        verdict = v2_protected_overlap(rgba, solution, Transform(1.0, 1.0))
+
+        self.assertTrue(verdict["passed"], verdict)
+
+    def test_v2_erases_a_neighbour_wire_grazing_an_inline_components_edge(self):
+        rgba = np.zeros((120, 120, 4), dtype=np.uint8)
+        rgba[81:84, 0:120, 3] = 255               # a parallel wire whose edge touches the radius
+        solution = {"housings": [], "inline_components": [(20, 75, 95, 75, 6)]}
+
+        verdict = v2_protected_overlap(rgba, solution, Transform(1.0, 1.0))
+
+        self.assertTrue(verdict["passed"], verdict)
+        self.assertGreater(verdict["housing_caps_erased_px"], 0)
+
+    def test_v2_still_rejects_a_wire_running_inside_an_inline_components_radius(self):
+        rgba = np.zeros((120, 120, 4), dtype=np.uint8)
+        rgba[78:80, 0:120, 3] = 255               # 3 px inside the radius, beside the body
+        solution = {"housings": [], "inline_components": [(20, 75, 95, 75, 6)]}
+
+        verdict = v2_protected_overlap(rgba, solution, Transform(1.0, 1.0))
+
+        self.assertFalse(verdict["passed"])
+
     def test_v2_rejects_overlay_crossing_an_inline_component(self):
         rgba = np.zeros((120, 120, 4), dtype=np.uint8)
         rgba[75, 60, 3] = 255

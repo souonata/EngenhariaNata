@@ -62,12 +62,35 @@ def v2_protected_overlap(rgba: np.ndarray, solution: dict, transform) -> dict:
     alpha = rgba[:, :, 3]
     Hc, Wc = alpha.shape
     bad = 0
+    trimmed = 0
     for hx, hy, hw, hh in solution["housings"]:
         x0, y0, ww, hh2 = transform.rect(hx - TERM_GAP, hy - TERM_GAP,
                                          hw + 2 * TERM_GAP, hh + 2 * TERM_GAP)
-        sub = alpha[max(0, round(y0)):min(Hc, round(y0 + hh2)),
-                    max(0, round(x0)):min(Wc, round(x0 + ww))]
-        bad += int(np.count_nonzero(sub))
+        top, left = max(0, round(y0)), max(0, round(x0))
+        sub = alpha[top:min(Hc, round(y0 + hh2)), left:min(Wc, round(x0 + ww))]
+        if not np.count_nonzero(sub):
+            continue
+        # Judged per connected piece, as the vector gate is. A cap that enters through one edge
+        # no deeper than the clearance margin around the housing is a wire ending at it, and is
+        # erased. Paint reaching two opposite edges crossed it; paint deeper than the margin, or
+        # touching no edge at all, is inside the body. Both still refuse. Measured on a
+        # rasterised factory twin (pub 36 p7): 11 px of caps refused a page of 112 claims.
+        allowed = max(1, round(TERM_GAP * transform.s))
+        for piece in _paint_pieces(sub > 0):
+            rows = np.flatnonzero(piece.any(axis=1))
+            columns = np.flatnonzero(piece.any(axis=0))
+            top_edge, bottom_edge = bool(piece[0].any()), bool(piece[-1].any())
+            left_edge, right_edge = bool(piece[:, 0].any()), bool(piece[:, -1].any())
+            spans = (top_edge and bottom_edge) or (left_edge and right_edge)
+            depth = min(int(rows[-1]) + 1 if top_edge else 1 << 30,
+                        piece.shape[0] - int(rows[0]) if bottom_edge else 1 << 30,
+                        int(columns[-1]) + 1 if left_edge else 1 << 30,
+                        piece.shape[1] - int(columns[0]) if right_edge else 1 << 30)
+            if spans or depth > allowed:
+                bad += int(np.count_nonzero(piece))
+            else:
+                trimmed += int(np.count_nonzero(piece))
+                sub[piece] = 0
     for x1, y1, x2, y2, radius in solution.get("inline_components", ()):
         probe = np.zeros_like(alpha)
         a = tuple(round(v) for v in transform.pt(x1, y1))
@@ -77,8 +100,30 @@ def v2_protected_overlap(rgba: np.ndarray, solution: dict, transform) -> dict:
         cv2.line(probe, a, b, 255, 2 * r, cv2.LINE_8)
         cv2.circle(probe, a, r, 255, -1)
         cv2.circle(probe, b, r, 255, -1)
-        bad += int(np.count_nonzero(alpha[probe > 0]))
-    return dict(name="V2", passed=bad == 0, painted_px_in_protected=bad)
+        inside = (probe > 0) & (alpha > 0)
+        if not inside.any():
+            continue
+        # Paint beside the component's body -- between its two ends -- bridges it and refuses.
+        # A piece lying wholly beyond one end is the cap of a wire that stops at the contact, and
+        # a piece that never comes closer to the axis than the radius less one pixel of
+        # rasterisation slack is the edge of a neighbouring stroke grazing the zone. Both are
+        # erased, as a housing cap is. Measured on a rasterised factory twin (pub 36 p7): four
+        # 1-px slivers of a parallel wire, 24 px off a 24 px radius, refused a 112-claim scan.
+        dx, dy = b[0] - a[0], b[1] - a[1]
+        length_sq = float(dx * dx + dy * dy) or 1.0
+        graze = r - max(1.0, transform.s)
+        for piece in _paint_pieces(inside):
+            rows, columns = np.nonzero(piece)
+            t = ((columns - a[0]) * dx + (rows - a[1]) * dy) / length_sq
+            nearest = np.clip(t, 0.0, 1.0)
+            distance = np.hypot(columns - (a[0] + nearest * dx), rows - (a[1] + nearest * dy))
+            if float(distance.min()) < graze and ((t > 0.0) & (t < 1.0)).any():
+                bad += int(len(rows))
+            else:
+                trimmed += int(len(rows))
+                alpha[piece] = 0
+    return dict(name="V2", passed=bad == 0, painted_px_in_protected=bad,
+                housing_caps_erased_px=trimmed)
 
 
 def _paint_pieces(painted: np.ndarray):
