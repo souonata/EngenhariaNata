@@ -408,7 +408,9 @@ into a conductor-by-conductor test (`src/wirecolor/eval/teacher.py`):
 
 - **harvest** finds every painted conductor. The factory draws a conductor as a wide base-colour
   core, optionally over a black rail (2026) and optionally with a thin centred tracer in its second
-  colour.
+  colour. The classic sheets add three variants the harvester also reads: a white core inside a
+  black outline, one tracer path laid over several pieces of its conductor, and a black tracer at
+  the drafting pen. Their short white crossing knock-outs are not conductors.
 - **atlas** learns which RGB means which colour token by vote of the printed codes. Nothing is
   assumed about the factory palette.
 - **twin** rebuilds the page in monochrome. Conductors become one black centreline at the sheet's
@@ -431,10 +433,14 @@ python -m wirecolor.tools.teacher_bench --pages teacher_pages.json --out workspa
 truth stay those of this tree, so two engines are compared on identical ground truth. The factory
 colours are used only to evaluate and to learn. The painter never consults them.
 
+`--raster-dpi 200` turns each twin into an image-only scan (grey, lightly blurred, with grain) and
+so measures the scan route against the same conductor-level truth. `--twins-only` builds the twins
+and stops, as input for the policy sweep.
+
 `teacher_policy_sweep` replays only the decision layer on the twins of a finished benchmark folder,
 scored by length against the factory colours. It takes minutes instead of an hour per candidate and
-is how `min_direct_assignment_margin` was calibrated. Choose on training publications, confirm on
-held-out ones, then confirm with a full `teacher_bench`:
+is how `min_direct_assignment_margin` and `min_run_legend_margin` were calibrated. Choose on
+training publications, confirm on held-out ones, then confirm with a full `teacher_bench`:
 
 ```powershell
 python -m wirecolor.tools.teacher_policy_sweep --bench workspaces\teacher --pages teacher_pages.json `

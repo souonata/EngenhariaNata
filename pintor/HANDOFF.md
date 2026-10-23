@@ -20,6 +20,124 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-23 a straighter teacher, contested runs left black, and the scan route's first baseline
+
+Branch `feat/pintor-gen2-feixes`. Nothing here is released: production stays 0.7.0 / engine 3.2.0.
+
+### The truth was corrected before the engine was touched
+
+The harvester misread four classic-sheet drawings. Each one either hid a wire from the truth or gave
+it the wrong colour:
+
+- a white wire drawn as a 2.5 pt white core over a 4.0 pt black outline was harvested as black;
+- a tracer drawn as one path over several pieces of its conductor (pub 91: the grey of a Y/GR over
+  three yellow pieces) belonged to no piece, so the wire was read as one colour;
+- a black tracer at the drafting pen (0.85 pt over a 2.5 pt white core, W/SB on pub 91) was
+  discarded as the 2026 colourist's leftover line, which only exists on railed sheets;
+- the short white strokes that break the wire underneath a crossing were harvested as white wires.
+
+A core width must also reach 60 % of the sheet's dominant core width, because a tracer carries as
+much length as its core. The `ClassicHarvest` tests fail on the old harvester.
+
+0.7.0 re-measured on the corrected truth (49 pages): precision **0.8525**, coverage 0.2948 (length
+0.4946), 1,433 right, 248 wrong, 48/49 released. These are the baseline from now on. The 0.805 in
+the next entry was measured against the old truth.
+
+### Where the missing colour is, and why rule 2 stays
+
+Every missed conductor on the twins, by the reason its run stayed black:
+
+| reason                                        | conductors | length   |
+| --------------------------------------------- | ---------- | -------- |
+| no engine run under it (short pieces dropped) | 1,269      | 32 k pt  |
+| run unclaimed: no legend owned it             | 1,056      | 235 k pt |
+| ambiguity margin abstained                    | 480        | 152 k pt |
+| partly painted: another piece of it coloured  | 333        | 128 k pt |
+| other abstentions                             | 42         | —        |
+
+Measured on the factory colours, to decide what may be changed:
+
+- **Splices.** At a node of three branches where the coded branches agree and one is uncoded, the
+  uncoded branch had the same colour 48 times and another colour 2 times (53 nodes in the corpus).
+- **Straight through a branch node.** Of 345 opposite branch pairs, 25 change colour (7 %).
+  Propagating straight through would have painted 102 runs right and 28 wrong. Safety rule 2 holds
+  as written. Fragmentation is not a propagation problem.
+- **Unclaimed runs** (1,240 conductors, counted by their main run): 497 have no strong legend with
+  their code on the page; 486 have one, but out of ownership reach; 145 can reach it at more than
+  the refusal cost; 106 lost it to another run.
+- **Missed conductors with no strong legend of their code:** 500 (53 k pt) are printed as a bare
+  single letter, which only competes for long leftover runs; 155 (19 k pt) have the text on the page
+  but not parsed as a legend; 305 (75 k pt) have no exact text.
+
+### Measured and not shipped
+
+| change                                                                | train P / C   | held-out P / C |
+| --------------------------------------------------------------------- | ------------- | -------------- |
+| (current)                                                             | 0.903 / 0.493 | 0.909 / 0.589  |
+| margin ignores alternatives the global solution gave away             | 0.814 / —     | 0.841 / —      |
+| bare single letters compete in the main assignment (bare-code sheets) | 0.909 / 0.483 | 0.902 / 0.577  |
+
+More legends in the main assignment means more near ties, so more abstentions, not more colour.
+
+### What shipped in the engine: a contested run stays black
+
+`min_run_legend_margin` (policy, default 0.001) is the ambiguity margin seen from the conductor. A
+run that a legend of another colour fits at least as well as the legend it was given stays black
+instead of letting the global assignment pick. Replayed on the decision layer:
+
+| `min_run_legend_margin` | train P / C   | held-out P / C |
+| ----------------------- | ------------- | -------------- |
+| 0                       | 0.903 / 0.493 | 0.909 / 0.589  |
+| **0.001**               | 0.913 / 0.474 | 0.924 / 0.569  |
+| 0.03                    | 0.914 / 0.452 | 0.924 / 0.568  |
+| 0.12                    | 0.916 / 0.421 | 0.934 / 0.526  |
+
+Wider bands remove less wrong paint than right paint. Full `teacher_bench`, same truth (r070 → rC):
+
+|                        | 0.7.0  | contested runs black |
+| ---------------------- | ------ | -------------------- |
+| exact-colour precision | 0.8525 | **0.8691**           |
+| conductors wrong       | 248    | **207**              |
+| conductors right       | 1,433  | 1,374                |
+| coverage (length)      | 0.4946 | 0.4761               |
+| pages released         | 48/49  | 48/49                |
+
+Wrong paint fell on five publications, two of them held out (7742218: 102 → 81; 7797351: 15 → 13).
+On the 2026 sheet 47718008 it costs 4 right conductors with no wrong one to remove. Crops: pub
+7743245 p13 loses a P/W painted SB and an R painted R/PU; pub 7742218 p433 loses two right SB wires
+that sit between `SB` and `R` legends. `marks4` is unchanged (fitness 0.5873, every class equal, 14
+pages).
+
+### The scan route
+
+- **V2 judges raster paint per piece**, as the vector gate does. A cap no deeper than the clearance
+  around a housing, a cap beyond an inline component's end, and the edge of a neighbouring wire that
+  never comes nearer the component's axis than its radius less one pixel are erased and reported as
+  `housing_caps_erased_px`. Paint deeper in, or beside a component's body, still refuses. The
+  rasterised pub 36 p7 twin was refused for 4 slivers (11 px) of a parallel wire on a 24 px radius;
+  it is now released.
+- **Baseline** (`teacher_bench --raster-dpi 200`, one page per publication, 14 pages): 11 released,
+  **119 right, 123 wrong (precision 0.49)**, coverage 0.098 (length 0.10), 14–31 % of the paint off
+  every conductor. The SCU 70-pin and pub 7749393 decline (their full-word codes are not read by the
+  OCR route); 47715511 has no readable code.
+- **Part of it is the ruler.** Pub 7745609 (66 of the 123 wrong) draws a two-colour wire as a core
+  in one colour with edge lines in the other (LGN/R: red core, light-green edges). The harvester
+  resolves impossible codes there (`LGN/LGN`, `SB/SB`) and 471 of its 717 conductors have no colour.
+  Without that page: 105 right, 57 wrong (0.65).
+- **Part of it is real.** On pub 36 p7, codes printed inside a relay's pin boxes (`DBL/W 86`,
+  `Y/R 86`) leak onto neighbouring wires: an SB wire from pin 87a is painted DBL/W, an R/PU wire
+  Y/R.
+
+### Not done, next
+
+1. **Scan-route ownership at connector pin boxes.** On clean twins the raster route paints about as
+   much wrong as right. It needs the pin-row grammar the vector route has, or it must abstain there.
+2. **Harvester: the edge-line two-colour style** (pub 7745609 and siblings), before trusting any
+   number from those sheets.
+3. **Bare single letters** (500 missed conductors). Letting them compete was measured worse; a pin-
+   or leader-anchored reading is the next idea.
+4. **Diesel housings** for WireNet; conventions beyond Volvo; the lockbox (G2-7), as before.
+
 ## 2026-10-23 Generation 2 published as 0.7.0 / engine 3.2.0
 
 Published API first, as for every release since 0.6.0:
