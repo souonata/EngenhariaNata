@@ -20,6 +20,55 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-24 a callout leader is followed to its wire on scans, and the scan route has 49 pages
+
+Branch `feat/pintor-raster-linhas-chamada`. Not released: production stays 0.7.1 / engine 3.2.1; #84
+(terminal cells) is merged but not released either.
+
+**The error.** On a scan a leader is only skeleton, and every wire it crosses cuts it into pieces at
+a junction. On the rasterised pub 7743245 p5, the leader from `R/PU` crosses a PU wire before it
+reaches the R/PU wire. The code was attached to the crossed PU wire, which is nearer the text, and
+the two leader pieces were painted as cable. Bundles labelled from above (7742218:
+`R/PU OR/SB W/SB SB`, each leader crossing the wires above its own) failed the same way.
+
+**The rule** (`detect/raster_leaders.py`, the scan-route counterpart of `vector_leaders.py`). A
+leader:
+
+- starts with a short straight piece whose free end lies against exactly one code;
+- leaves across the code's axis, with nothing continuing in line on the far side of the code;
+- runs straight through crossings, where the crossed wire passes on both sides;
+- ends on one wire (one arc or the two halves of one wire, at least 24 px);
+- is no longer than 30 pt.
+
+The code then seeds that wire, and the leader pieces leave the topology, so they are never painted.
+Terminal-cell codes have no leader. Codes owned through a leader are skipped by the dashed pass.
+
+Two false positives were found and closed while measuring. A wire with `T/SB` printed across it (pub
+7749124 p7) looked like a leader from the text to the next junction; the in-line test rejects it. A
+tiny target (an 8 px outline fragment under a `VO`) is rejected by the 24 px minimum.
+
+**The scan route now measures on all 49 teacher pages** (`teacher_bench --raster-dpi 200`, run as
+four publication groups in `workspaces/gen2/g2-5/rall-b0-g0..3`, OCR cached there for reruns):
+
+|                          | 0.7.1 + #84 | callout leaders |
+| ------------------------ | ----------- | --------------- |
+| pages released           | 46          | 46              |
+| right                    | 752         | **761**         |
+| wrong                    | 471         | **464**         |
+| exact-colour precision   | 0.6149      | **0.6212**      |
+| length right / wrong, pt | 284k / 117k | 288k / 115k     |
+
+Six pages change, and no wire turns wrong in exchange for a right one. The held-out publication
+7742218 gains 6 right conductors over three pages, with its wrong count unchanged overall (+1, −1,
+0); 7743245 p5 loses 7 wrong for 1 right. The 14-page sample used before could not see this: it
+moved by one or two conductors either way. `marks4` is unchanged (0.5873, every class equal, 14
+pages).
+
+On 7745609 p7 the first version looked better than the final one for a bad reason. It mistook a wire
+with `P/Y` printed on it for a leader, cut that wire from the topology, and so blocked a wrong P/Y
+spread into two crossing SB wires. That spread is real and still there: a code on a vertical wire
+flows round the corner of a crossing into a black wire. It is the next scan-route defect.
+
 ## 2026-10-23 a code in a terminal cell belongs to the cable entering the cell (scan route)
 
 Branch `feat/pintor-raster-caixas-pino`. Not released: production stays 0.7.1 / engine 3.2.1.
