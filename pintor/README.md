@@ -39,6 +39,8 @@ The Engenharia NATA beta has two page-analysis modes:
 - callout leaders on scans: a code joined to its wire by a thin leader belongs to the wire the
   leader ends on, followed straight through any wire it crosses on the way. The leader itself is
   never painted. A wire with a code printed across it is not a leader;
+- shared pins on scans: two wires that end at the same pin at an acute angle are two wires, not the
+  U-turn of one harness loop. A U-turn is joined only when nothing else lies at its tip;
 - outlined pictorial cables: when the real conductors are hollow raster tubes and separate thin
   vector leaders point from exact colour codes to those tubes, Pintor follows the closed cable
   interior instead of the leader. At least two independent one-to-one callouts must resolve on the
