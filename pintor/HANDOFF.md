@@ -20,10 +20,30 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-24 published as 0.7.2 / engine 3.2.2
+
+The two scan-route entries below (#84 terminal cells, #85 callout leaders) shipped. Published API
+first:
+
+- **Source.** Commit `72c6620` (the bump on top of the #85 merge `4f03ec3`) was cloned into
+  `/opt/pintor-api-releases/72c6620`.
+- **Image.** `engnata/pintor-api:0.7.2` was built before the container was touched. Inside it were
+  confirmed `pintor-wiring 3.2.2`, PyMuPDF 1.28.2, the `oem` style, both margins (0.06, 0.001) and
+  the new `detect/pin_cells.py` and `detect/raster_leaders.py`.
+- **Container.** Recreated on the existing `pintor-api_pintor-data` volume; healthy.
+- **Smoke.** The external smoke passed:
+  `external_auth=ok account=ok unauthenticated=401 job=ready result=pdf delete=204`.
+- **Site.** PR #86 merged as `b92e89f`, and GitHub Pages deployed.
+- **Drift.** `check-release-drift.sh` reports `site 0.7.2`, `api 0.7.2 (engine 3.2.2)`.
+- **Rollback.** `cd /opt/pintor-api-releases/f220dc3/pintor && docker compose -p pintor-api
+  --env-file /opt/pintor-api/.env up -d` returns to 0.7.1.
+
+WireNet is still not mounted in production. The root disk was at 42 %; `prune-old-releases.sh` has
+not been run.
+
 ## 2026-10-24 a callout leader is followed to its wire on scans, and the scan route has 49 pages
 
-Branch `feat/pintor-raster-linhas-chamada`. Not released: production stays 0.7.1 / engine 3.2.1; #84
-(terminal cells) is merged but not released either.
+Branch `feat/pintor-raster-linhas-chamada`, merged as #85 and released in 0.7.2 (entry above).
 
 **The error.** On a scan a leader is only skeleton, and every wire it crosses cuts it into pieces at
 a junction. On the rasterised pub 7743245 p5, the leader from `R/PU` crosses a PU wire before it
@@ -71,7 +91,7 @@ flows round the corner of a crossing into a black wire. It is the next scan-rout
 
 ## 2026-10-23 a code in a terminal cell belongs to the cable entering the cell (scan route)
 
-Branch `feat/pintor-raster-caixas-pino`. Not released: production stays 0.7.1 / engine 3.2.1.
+Branch `feat/pintor-raster-caixas-pino`, merged as #84 and released in 0.7.2.
 
 **The leak.** On a scanned page, a relay or connector drawn as a filled body lists each terminal in
 its own white cell (`DBL/W 86`). The raster housing detector only recognises outlined rectangles, so
