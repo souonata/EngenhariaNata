@@ -20,6 +20,41 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-25 a code printed on its wire owns that wire (scan route)
+
+Branch `feat/pintor-raster-lado-legenda`. Not released: production stays 0.7.3 / engine 3.2.3.
+
+**The error.** A scan's text is erased from the wire mask, so a code printed ON its wire cuts that
+wire into two pieces ending at the text's short edges, about half a text-width from its centre. A
+parallel wire running just beside the text is nearer the centre and won. On pub 7741532 p73,
+`W/BN 1` is printed on the W/BN wire and went to the P wire 22 px below.
+
+**The rule** (`detect/solver.py`, `wire_through_label`). If one wire piece ends at each short edge
+of the code, within 12 px outside it, in line with the text (within max(6 px, 0.8 × the text's
+half-height) of its centre line, and level with each other within 4 px), and each leaves away from
+the text along its axis, the code seeds both pieces. That happens before any ranking by distance.
+Leader and terminal-cell codes keep their own rules, which come first.
+
+Such a code is also **strong evidence**, even without a gauge (`printed_on_wire`, recognised by all
+four strong-label checks: solver, page resolver, multiscale and dashed pass). Its colour keeps the
+net from merging into another colour. Without that, on pub 7749124 p17 the bare `SB` and `GR`
+printed on neighbouring wires merged inside their connector and painted GR as SB.
+
+**Measured on the 49 scanned teacher pages** (OCR reused; baseline 0.7.3):
+
+|                          | 0.7.3       | printed on its wire |
+| ------------------------ | ----------- | ------------------- |
+| pages released           | 46          | 46                  |
+| right                    | 764         | **910**             |
+| wrong                    | 414         | **363**             |
+| exact-colour precision   | 0.6486      | **0.7148**          |
+| length right / wrong, pt | 290k / 106k | 319k / 101k         |
+
+16 pages change, and none gains a wrong conductor. Most of the gain is on sheets that print codes
+over their wires (7745609, 7749124). The held-out publications barely use that style: right 271 →
+274, wrong 153 → 153. The first version, without the strong flag, gave 896 / 378 and the 7749124 p17
+regression. `marks4` is unchanged (0.5873, every class equal, 14 pages).
+
 ## 2026-10-24 published as 0.7.3 / engine 3.2.3
 
 The hairpin entry below (#88) shipped. Published API first:
