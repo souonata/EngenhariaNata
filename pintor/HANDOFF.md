@@ -20,6 +20,43 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-24 two wires at one pin are not a hairpin (scan route)
+
+Branch `feat/pintor-raster-esquina`. Not released: production stays 0.7.2 / engine 3.2.2.
+
+**The leak, correctly named.** The previous entry described a code flowing "round the corner of a
+crossing". The solver trace on the rasterised pub 7745609 p7 shows the actual mechanism. The P/Y
+wire and the SB diagonal beside it both end at the same pin of connector 24, at an acute angle. The
+solver has a hairpin rule for the U-turn of a harness loop: two arms that point the same way,
+converge and share ink are one cable. At the pin it joined P/Y to SB, and P/Y then ran down the
+diagonal into the horizontal SB.
+
+**The rule** (`detect/solver.py`, `tip_is_free`). A hairpin is joined only when nothing else lies
+within 20 px of its tip: no other arc end of at least 12 px, which includes connector stubs and
+other furniture already excluded from the topology, and no housing. A U-turn's cap has nothing
+there; two wires meeting at a pin have the connector's stub. On 7745609 p7 the stub of connector 24
+ends 15 px above the tip.
+
+**Measured on the 49 scanned teacher pages** (OCR reused; baseline is 0.7.2):
+
+|                          | 0.7.2       | free hairpin tip |
+| ------------------------ | ----------- | ---------------- |
+| pages released           | 46          | 46               |
+| right                    | 761         | **764**          |
+| wrong                    | 464         | **414**          |
+| exact-colour precision   | 0.6212      | **0.6486**       |
+| length right / wrong, pt | 288k / 115k | 290k / 106k      |
+
+23 pages change, and the wrong count falls on nearly all of them. That includes the held-out
+publications: 7742218 −19 over seven pages, 7797351 −2, 7797368 −2. Four pages lose one right
+conductor. `marks4` is unchanged (0.5873, every class equal, 14 pages), so the real hairpins on the
+reviewed diesel sheets are still joined.
+
+**Exposed, not caused.** On pub 7741532 p73 the W/BN and P wires enter neighbouring pins. The false
+hairpin used to paint both W/BN, one right and one wrong. Now they stay apart, and the code
+`W/BN 1`, printed between the two lines, goes to the P line below it: 7/2 → 6/3. Which side of its
+text a wire lies on is the next scan-route ownership defect.
+
 ## 2026-10-24 published as 0.7.2 / engine 3.2.2
 
 The two scan-route entries below (#84 terminal cells, #85 callout leaders) shipped. Published API

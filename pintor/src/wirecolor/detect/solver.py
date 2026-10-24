@@ -18,6 +18,9 @@ import numpy as np
 from .pin_cells import cell_entry_arc
 from .skeleton import deep_tang as _deep_tang, unit
 
+# A hairpin's U-turn has nothing else within this distance of its tip.
+HAIRPIN_TIP_PX = 20
+
 
 def solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
           probe=None, who=None, netends=None, deadends=False, color_boundary_dots=()):
@@ -286,6 +289,30 @@ def solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
         _, comp = cv2.connectedComponents(win, 8)
         return comp[ay - y0, ax - x0] == comp[by - y0, bx - x0]
 
+    def tip_is_free(p, q):
+        """A hairpin's U-turn has nothing else at its tip; two wires meeting at a pin do.
+
+        Two wires that end at the same connector pin at an acute angle also point the same way,
+        converge and share ink, and joining them as a hairpin carried one colour into the other
+        (pub 7745609 p7: P/Y into the SB beside it at connector 24, whose stub ends 15 px above).
+        """
+        (si, ki), (sj, kj) = p, q
+        Ea, Eb = segments[si]["ends"][ki], segments[sj]["ends"][kj]
+        ty, tx = (Ea[0] + Eb[0]) / 2, (Ea[1] + Eb[1]) / 2
+        if in_housing(tx, ty, 8):
+            return False
+        reach = HAIRPIN_TIP_PX // 6 + 1
+        cy, cx = round(ty / 6), round(tx / 6)
+        for dcy in range(-reach, reach + 1):
+            for dcx in range(-reach, reach + 1):
+                for (sk, kk) in eidx.get((cy + dcy, cx + dcx), []):
+                    if sk in (si, sj) or len(segments[sk]["order"]) < 12:
+                        continue
+                    ey, ex = segments[sk]["ends"][kk]
+                    if (ey - ty) ** 2 + (ex - tx) ** 2 <= HAIRPIN_TIP_PX ** 2:
+                        return False
+        return True
+
     def converging(p, q):
         """Hairpin arms CONVERGE to the tip; pair stripes stay parallel. Compare the gap at the
         ends with the gap 30 px in."""
@@ -354,7 +381,7 @@ def solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
                 dq = deep_tang(sj, kj)
                 if dp[0] * dq[0] + dp[1] * dq[1] >= 0.8:   # side-by-side pair mate (round-4 ban) ...
                     Eq = segments[sj]["ends"][kj]
-                    if not (converging(p, q) and ink_connected(E, Eq)):
+                    if not (converging(p, q) and ink_connected(E, Eq) and tip_is_free(p, q)):
                         continue                            # ... unless it is a hairpin tip
                 cands[p][q] = cont_score(p, q)
             # weak gap mates (numpy prefilter, then exact checks on the survivors)
