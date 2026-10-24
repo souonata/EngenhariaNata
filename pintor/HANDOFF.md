@@ -20,9 +20,29 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-24 published as 0.7.3 / engine 3.2.3
+
+The hairpin entry below (#88) shipped. Published API first:
+
+- **Source.** Commit `8b84653` (the bump on top of the #88 merge `4be89cc`) was cloned into
+  `/opt/pintor-api-releases/8b84653`.
+- **Image.** `engnata/pintor-api:0.7.3` was built before the container was touched. Inside it were
+  confirmed `pintor-wiring 3.2.3`, PyMuPDF 1.28.2, `HAIRPIN_TIP_PX` 20 with `tip_is_free` in the
+  solver, and both margins (0.06, 0.001).
+- **Container.** Recreated on the existing `pintor-api_pintor-data` volume; healthy.
+- **Smoke.** The external smoke passed:
+  `external_auth=ok account=ok unauthenticated=401 job=ready result=pdf delete=204`.
+- **Site.** PR #89 merged as `3acb5cc`, and GitHub Pages deployed.
+- **Drift.** `check-release-drift.sh` reports `site 0.7.3`, `api 0.7.3 (engine 3.2.3)`.
+- **Rollback.** `cd /opt/pintor-api-releases/72c6620/pintor && docker compose -p pintor-api
+  --env-file /opt/pintor-api/.env up -d` returns to 0.7.2.
+
+The root disk was at 48 %, with eight release folders and eight `engnata/pintor-api` images
+(0.6.2 to 0.7.3). `prune-old-releases.sh` has not been run and is now worth running.
+
 ## 2026-10-24 two wires at one pin are not a hairpin (scan route)
 
-Branch `feat/pintor-raster-esquina`. Not released: production stays 0.7.2 / engine 3.2.2.
+Branch `feat/pintor-raster-esquina`, merged as #88 and released in 0.7.3 (entry above).
 
 **The leak, correctly named.** The previous entry described a code flowing "round the corner of a
 crossing". The solver trace on the rasterised pub 7745609 p7 shows the actual mechanism. The P/Y
