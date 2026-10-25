@@ -20,6 +20,56 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-25 the ruler reads rotated pages, and a code's axis turns with the page
+
+Branch `feat/pintor-gabarito-borda`. Not released: production stays 0.7.5 / engine 3.2.5.
+
+### Why 43 % of the teacher's conductors were unknown
+
+3,350 of the 3,750 unknown conductors came from one publication, 7745609. All six of its foldouts
+are rotated 90°, and three things went wrong in the harvester, not in the engine:
+
+- **Frames.** The harvester reads strokes in unrotated page space, while `read_legends` returns text
+  in the displayed frame. Every code was paired with a conductor elsewhere on the sheet, the votes
+  came out at random, and the publication's atlas was empty. `printed_codes(page, convention)` now
+  returns the strong codes in the harvester's frame; `teacher_bench` and `teacher_policy_sweep` use
+  it.
+- **Orientation.** This sheet draws a two-colour wire as a core and two edge lines, and the edge is
+  not always the code's first colour: light green is the edge both in LGN/R and in SB/LGN. A
+  two-colour code on a two-colour conductor is now one `pair` vote. `build_atlas` orients it by the
+  colours the single-colour codes already taught, and keeps the printed order when nothing is known.
+  The scorer never depended on order.
+- **The outline rule.** The classic white-wire rule (a light core inside a black outline is a white
+  wire) fired on SB/LGN, a 2.34 pt light-green core in 4.67 pt of black, right at its 50 % share. It
+  now applies to white cores only.
+
+Result: unknown conductors 3,750 → **1,075** (−71 %); on 7745609, 3,350 → 675. On the other 13
+publications every verdict is identical.
+
+### The new baseline (same overlays, rescored with `--rescore`)
+
+|                              | right | wrong | precision  |
+| ---------------------------- | ----- | ----- | ---------- |
+| vector, engine 0.7.0         | 1,658 | 336   | 0.8315     |
+| vector, engine 0.7.5         | 1,588 | 278   | 0.8510     |
+| vector, + axis fix (this PR) | 1,597 | 269   | **0.8558** |
+| scan route, 0.7.1            | 1,359 | 770   | 0.6383     |
+| scan route, 0.7.5            | 1,649 | 490   | **0.7709** |
+
+The vector route judged on 7745609 now shows 294 right and 80 wrong, while the scan route gets 900
+right there. On this dense-bundle style the vector engine is far behind; that is the next lead for
+vector coverage.
+
+### The engine: a code's axis on a rotated page
+
+`read_legends` turned each code's position with the page but kept its writing direction in unrotated
+space. On a 90° page, 105 of 106 codes read as vertical while the wire beside them was horizontal in
+82 cases, so ownership penalised the very wire a code names. The direction now turns with the page.
+Upright pages are unchanged by construction.
+
+On the rotated publication 7745609: right 285 → 294, wrong 89 → 80. No other publication changes.
+`marks4` is unchanged (0.5873); its pages are upright.
+
 ## 2026-10-25 published as 0.7.5 / engine 3.2.5
 
 The filled-body entry below (#94) shipped. Published API first:
