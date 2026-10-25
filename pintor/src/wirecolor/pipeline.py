@@ -17,7 +17,8 @@ from .detect.components import (
     find_inline_component_zones,
 )
 from .detect.dots import detect_dots, make_dot_near
-from .detect.housings import detect_housings, find_dense_pin_border_arcs, make_in_housing
+from .detect.housings import (detect_housings, filled_bodies, find_dense_pin_border_arcs,
+                              make_in_housing, on_filled_body)
 from .detect.pin_cells import annotate_pin_cells
 from .detect.raster_leaders import detach_leaders
 from .detect.skeleton import build_segments, build_wire_mask, find_twist, is_twist_mark
@@ -704,6 +705,8 @@ def run_page(image_path: str, labels_path: str, convention,
     _pair_rows(_dot_rows(terminal_dots, 0), vertical_wires=True)
     _pair_rows(_dot_rows(terminal_dots, 1), vertical_wires=False)
     in_housing = make_in_housing(housings)
+    # A wire end on a filled component body terminates there; it is never joined across it.
+    on_body = on_filled_body(filled_bodies(binary))
 
     # Small enclosed background regions are used throughout terminal/component reasoning.  Build
     # them once from the unmodified page raster; later semantic filtering decides which are real
@@ -753,7 +756,8 @@ def run_page(image_path: str, labels_path: str, convention,
     splice_dots = {(dx, dy) for dx, dy, _r in dots if (dx, dy) not in terminal_dots}
     sol = solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
                 probe=probe, who=who, netends=netends, deadends=deadends,
-                color_boundary_dots=splice_dots | set(terminal_dots))
+                color_boundary_dots=splice_dots | set(terminal_dots),
+                on_body=on_body)
 
     # Open contacts and similar small inline components may sit over a faint continuous CAD line.
     # Detect them from a preliminary page-wide topology, cut their complete symbol capsules out of
@@ -792,7 +796,8 @@ def run_page(image_path: str, labels_path: str, convention,
         detach_leaders(segments, twist, labels)
         sol = solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
                     probe=probe, who=who, netends=netends, deadends=deadends,
-                    color_boundary_dots=splice_dots | set(terminal_dots))
+                    color_boundary_dots=splice_dots | set(terminal_dots),
+                on_body=on_body)
 
     # Persist the global electrical context for every later zoom.  These objects are not crop-local:
     # a component box, connector or terminal identified in the overview remains a hard semantic
