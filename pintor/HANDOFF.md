@@ -20,9 +20,33 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-25 published as 0.7.4 / engine 3.2.4
+
+The printed-on-wire entry below (#91) shipped. Published API first:
+
+- **Source.** Commit `8b6e077` (the bump on top of the #91 merge `9c49281`) was cloned into
+  `/opt/pintor-api-releases/8b6e077`.
+- **Image.** The first `docker compose build` failed in the `pip install` step (exit code 2) and
+  left production untouched on 0.7.3. The same build, re-run unchanged, succeeded; the first
+  attempt's detailed log was not kept, so the cause is unknown (most likely a transient download).
+  Inside `engnata/pintor-api:0.7.4` were confirmed `pintor-wiring 3.2.4`, PyMuPDF 1.28.2,
+  `wire_through_label` with `LABEL_EDGE_PX` 12, `printed_on_wire` in the page resolver,
+  `HAIRPIN_TIP_PX` 20, both margins (0.06, 0.001) and `rapidocr check` passing.
+- **Container.** Recreated on the existing `pintor-api_pintor-data` volume; healthy.
+- **Smoke.** The external smoke passed:
+  `external_auth=ok account=ok unauthenticated=401 job=ready result=pdf delete=204`.
+- **Site.** PR #92 merged as `7ef7fd4`, and GitHub Pages deployed.
+- **Drift.** `check-release-drift.sh` reports `site 0.7.4`, `api 0.7.4 (engine 3.2.4)`.
+- **Rollback.** `cd /opt/pintor-api-releases/8b84653/pintor && docker compose -p pintor-api
+  --env-file /opt/pintor-api/.env up -d` returns to 0.7.3.
+
+The root disk went from 53 % to 57 % with this build: nine release folders and nine
+`engnata/pintor-api` images (0.6.2 to 0.7.4). `prune-old-releases.sh` has still not been run; at
+this rate it is needed within a few releases.
+
 ## 2026-10-25 a code printed on its wire owns that wire (scan route)
 
-Branch `feat/pintor-raster-lado-legenda`. Not released: production stays 0.7.3 / engine 3.2.3.
+Branch `feat/pintor-raster-lado-legenda`, merged as #91 and released in 0.7.4 (entry above).
 
 **The error.** A scan's text is erased from the wire mask, so a code printed ON its wire cuts that
 wire into two pieces ending at the text's short edges, about half a text-width from its centre. A
