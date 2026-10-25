@@ -368,6 +368,11 @@ def assign_weak_to_leftovers(owned, weak_legends, min_run_px, policy=None):
     return assigned
 
 
+# Two runs whose outward directions at a shared node are closer than 60 degrees fold back on each
+# other by more than 120 degrees.
+FOLD_BACK_COS = 0.5
+
+
 def propagate_continuations(owned, snap_px=1.5, max_passes=12):
     """Carry colour only through an unbranched degree-2 physical continuation.
 
@@ -378,24 +383,38 @@ def propagate_continuations(owned, snap_px=1.5, max_passes=12):
     At degree two, one coded run and one uncoded run are the two visible pieces of the same physical
     stroke after vector decomposition. The uncoded half may inherit the code. Conflicting explicit
     codes still stop propagation, and an existing assignment is never overwritten.
+
+    Two runs that fold back on each other at a degree-two node are two wires ending at one terminal,
+    not one wire: a lead that climbs to a coil's pin and the one that leaves the same pin heading back
+    down. Measured on pub 7745609 p11, P/Y passed through an ignition coil's pin into the SB lead
+    beside it. A fold sharper than 120 degrees stops propagation.
     """
     def key(point):
         return (round(point[0] / snap_px), round(point[1] / snap_px))
 
-    nodes = {}
+    nodes, ends = {}, {}
     for run in owned:
         if len(run.points) < 2:
             continue
-        for point in (run.points[0], run.points[-1]):
+        for at_start, point in ((True, run.points[0]), (False, run.points[-1])):
             nodes.setdefault(key(point), []).append(run)
+            ends.setdefault(key(point), []).append(_outward(run, at_start)[1])
+
+    def folds_back(node):
+        if len(ends[node]) != 2:
+            return False
+        (ax, ay), (bx, by) = ends[node]
+        return ax * bx + ay * by > FOLD_BACK_COS    # both bodies lie on the same side of the node
 
     added = 0
     for _ in range(max_passes):
         changed = 0
-        for incident in nodes.values():
+        for node, incident in nodes.items():
             unique_incident = list({id(run): run for run in incident}.values())
             if len(unique_incident) != 2:
                 continue                      # splice/fork/terminal: physical colour boundary
+            if folds_back(node):
+                continue                      # two wires meeting at one pin
             codes = {run.code for run in unique_incident if run.code}
             if len(codes) != 1:
                 continue                      # nothing to give, or a real colour boundary

@@ -53,6 +53,40 @@ class Detection(unittest.TestCase):
         legend = _legend("T/W", 95, 100, 105, 124, axis="v")
         self.assertEqual(printed_in_line([legend], [wire], [wire, stub]), ([0], [(0, 0)]))
 
+    def test_the_wire_is_followed_from_a_short_piece_across_a_crossing_gap(self):
+        """BL/W leaves its text as a stub that stops at a heavy wire crossing it; the run beyond is
+        its wire."""
+        stub, beyond, pin = [(76, 100), (99, 100)], [(0, 100), (70, 100)], [(125, 100), (140, 100)]
+        proven, claims = printed_in_line([_legend("BL/W", *self.TEXT)], [beyond],
+                                         [beyond, stub, pin])
+        self.assertEqual((proven, claims), ([0], [(0, 0)]))
+
+    def test_the_wire_is_not_followed_across_a_component_or_off_its_line(self):
+        stub, pin = [(76, 100), (99, 100)], [(125, 100), (140, 100)]
+        beyond = [(0, 100), (70, 100)]
+        legend = _legend("BL/W", *self.TEXT)
+        housing = [(68, 90, 78, 110)]
+        self.assertEqual(printed_in_line([legend], [beyond], [beyond, stub, pin], housing)[1], [])
+        lower = [(0, 106), (70, 106)]                  # another wire, below the centre line
+        self.assertEqual(printed_in_line([legend], [lower], [lower, stub, pin])[1], [])
+        turning = [(76, 100), (90, 100), (90, 140)]    # the short piece itself bends away
+        self.assertEqual(printed_in_line([legend], [beyond], [beyond, turning, pin])[1], [])
+
+    def test_a_run_that_doubles_back_at_a_pin_is_two_wires_and_is_not_claimed(self):
+        """Two pin stubs of one plug end at the same pin: SB's stub and its neighbour form a V."""
+        stub, pin = [(76, 100), (99, 100)], [(125, 100), (140, 100)]
+        v_shape = [(70, 100), (40, 100), (10, 90), (70, 90)]
+        proven, claims = printed_in_line([_legend("SB", *self.TEXT)], [v_shape],
+                                         [v_shape, stub, pin])
+        self.assertEqual((proven, claims), ([0], []))
+
+    def test_a_fork_ahead_of_the_short_piece_is_declined(self):
+        stub, pin = [(76, 100), (99, 100)], [(125, 100), (140, 100)]
+        first, second = [(0, 100), (70, 100)], [(0, 101), (71, 101)]
+        proven, claims = printed_in_line([_legend("BL/W", *self.TEXT)], [first, second],
+                                         [first, second, stub, pin])
+        self.assertEqual((proven, claims), ([0], []))
+
     def test_a_leader_code_is_already_anchored_and_is_left_alone(self):
         wire, stub = [(0, 100), (99, 100)], [(125, 100), (140, 100)]
         legend = _legend("T/W", *self.TEXT, leader=True)
@@ -110,6 +144,20 @@ class PrintedThrough(unittest.TestCase):
         below, above = [(110, 106), (110, 300)], [(120, 0), (120, 94)]
         self.assertEqual(
             printed_through([_legend("P/DGN", *self.LABEL)], [below], [below, above]), [])
+
+    def test_a_code_printed_across_its_wire_claims_it(self):
+        """SB set across the wire that rises from it to a star point."""
+        below, above = [(110, 106), (110, 300)], [(110, 40), (110, 94)]
+        legend = _legend("SB", *self.LABEL)
+        self.assertEqual(printed_in_line([legend], [below], [below, above]), ([0], [(0, 0)]))
+
+    def test_a_code_on_an_unbroken_wire_does_not_claim_the_wire_broken_across_it(self):
+        """The code may name the wire it sits on; the broken one is then a crossing wire."""
+        below, above = [(110, 106), (110, 300)], [(110, 40), (110, 94)]
+        passing = [(0, 100), (300, 100)]
+        legend = _legend("SB", *self.LABEL)
+        self.assertEqual(printed_in_line([legend], [below, passing], [below, above, passing]),
+                         ([], []))
 
     def test_a_bare_letter_in_a_wire_vetoes_a_colour_claimed_by_distance(self):
         """A bare Y cannot paint, but the wire it is printed in is not P/DGN's."""
