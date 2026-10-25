@@ -110,11 +110,9 @@ def run(pages: list, out_dir: Path, keep_overlays: bool = False,
     from PIL import Image
 
     from ..eval.teacher import (build_atlas, build_twin, displayed_conductors, harvest_page,
-                                legend_votes,
-                                mark_printed_conflicts, resolve_tokens, score_overlay,
-                                summarise_scores)
+                                legend_votes, mark_printed_conflicts, printed_codes,
+                                resolve_tokens, score_overlay, summarise_scores)
     from ..labels.conventions import load_convention
-    from ..labels.text_layer import read_legends, strong_legends
 
     Image.MAX_IMAGE_PIXELS = None
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -139,7 +137,7 @@ def run(pages: list, out_dir: Path, keep_overlays: bool = False,
             document = fitz.open(entry["pdf"])
             page = document[int(entry["page"]) - 1]
             harvest = harvest_page(page)
-            legends = strong_legends(read_legends(page, 72, convention))
+            legends = printed_codes(page, convention)
             votes += legend_votes(harvest.conductors, legends)
             harvested.append((entry, document, page, harvest, legends))
         atlas = build_atlas(votes)

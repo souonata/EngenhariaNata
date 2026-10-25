@@ -138,6 +138,53 @@ class Harvest(unittest.TestCase):
         self.assertNotIn(stray_blue, atlas)
         self.assertEqual(atlas[light_blue]["token"], "BL")
 
+    def test_two_colour_codes_are_oriented_by_the_single_colour_ones(self):
+        """Pub 7745609 draws light green as the edge in LGN/R and in SB/LGN alike."""
+        from collections import Counter
+
+        from wirecolor.eval.teacher import build_atlas
+
+        light_green, black, red = (0.73, 0.85, 0.49), (0.12, 0.1, 0.09), (0.85, 0.16, 0.15)
+        votes = Counter({(black, "base", "SB"): 40, (red, "base", "R"): 30,
+                         ((light_green, red), "pair", "LGN/R"): 20,     # edge LGN, core R
+                         ((light_green, black), "pair", "SB/LGN"): 20})  # edge LGN, core SB
+        atlas = build_atlas(votes)
+        self.assertEqual(atlas[light_green]["token"], "LGN")
+        self.assertEqual(atlas[black]["token"], "SB")
+        self.assertEqual(atlas[red]["token"], "R")
+
+    def test_a_code_s_axis_turns_with_the_page(self):
+        """The engine compares a code's axis with its wire's; both must be read as displayed."""
+        import fitz
+
+        from wirecolor.labels.text_layer import read_legends
+
+        convention = load_convention("volvo_classic")
+        document = fitz.open()
+        page = document.new_page(width=400, height=200)
+        page.insert_text((150, 94), "R/PU", fontsize=6)
+        self.assertEqual([code.axis for code in read_legends(page, 72, convention)], ["h"])
+        page.set_rotation(90)
+        self.assertEqual([code.axis for code in read_legends(page, 72, convention)], ["v"])
+        document.close()
+
+    def test_codes_are_read_in_the_drawing_frame_on_a_rotated_page(self):
+        import fitz
+
+        from wirecolor.eval.teacher import printed_codes
+
+        convention = load_convention("volvo_classic")
+        document = fitz.open()
+        page = document.new_page(width=400, height=200)
+        page.draw_line((20, 100), (380, 100), color=(0.9, 0.1, 0.1), width=2.5)
+        page.insert_text((150, 94), "R/PU", fontsize=6)
+        upright = [(round(code.x), round(code.y)) for code in printed_codes(page, convention)]
+        page.set_rotation(90)
+        turned = [(round(code.x), round(code.y)) for code in printed_codes(page, convention)]
+        self.assertEqual(len(upright), 1)
+        self.assertEqual(turned, upright)
+        document.close()
+
 
 def _classic_page(draw):
     """A page in the classic colour style: 0.85 pt drafting pen, 2.5 pt cores, no black rails."""
@@ -218,6 +265,23 @@ class ClassicHarvest(unittest.TestCase):
         whites = [conductor for conductor in harvest_page(page).conductors
                   if colour_class(conductor.base_rgb) == "white"]
         self.assertEqual(whites, [])
+        document.close()
+
+    def test_a_coloured_core_inside_black_is_a_two_colour_wire(self):
+        """Pub 7745609 draws SB/LGN as a 2.34 pt light-green core in 4.67 pt of black."""
+        from wirecolor.eval.teacher import colour_class, harvest_page
+
+        def draw(page):
+            _line(page, (20, 20), (380, 20), (0.85, 0.16, 0.15), 4.67)   # a plain red cable
+            _line(page, (20, 80), (300, 80), (0.12, 0.1, 0.09), 4.67)
+            _line(page, (20, 80), (300, 80), (0.73, 0.85, 0.49), 2.34)
+
+        document, page = _classic_page(draw)
+        wire = [conductor for conductor in harvest_page(page).conductors
+                if conductor.segments[0][0][1] == 80]
+        self.assertEqual(len(wire), 1)
+        self.assertEqual(colour_class(wire[0].base_rgb), "dark")
+        self.assertEqual(colour_class(wire[0].tracer_rgb), "chromatic")
         document.close()
 
 
