@@ -20,6 +20,27 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-25 published as 0.7.8 / engine 3.2.8
+
+The unclaimed-run change in the entry below (#104) shipped. Published API first:
+
+- **Source.** Commit `4eef04f` (the bump on top of the #104 merge `c0c2349`) was cloned into
+  `/opt/pintor-api-releases/4eef04f`.
+- **Image.** `engnata/pintor-api:0.7.8` was built at the first attempt, its plain log kept in
+  `/tmp/pintor-build-0.7.8.log` on the VM. Inside it were confirmed `pintor-wiring 3.2.8`, PyMuPDF
+  1.28.2, the leader rule that a leader lands on a wire's body, the wire followed past short pieces,
+  codes printed across their wire, the hairpin and fold-back guards, and `rapidocr check` passing.
+- **Container.** Recreated on the existing `pintor-api_pintor-data` volume; healthy.
+- **Smoke.** The external smoke passed:
+  `external_auth=ok account=ok unauthenticated=401 job=ready result=pdf delete=204`.
+- **Site.** PR #105 merged as `a4d53cb`, and GitHub Pages deployed.
+- **Drift.** `check-release-drift.sh` reports `site 0.7.8`, `api 0.7.8 (engine 3.2.8)`.
+- **Rollback.** `cd /opt/pintor-api-releases/e8a9944/pintor && docker compose -p pintor-api
+  --env-file /opt/pintor-api/.env up -d` returns to 0.7.7.
+
+The root disk is at 41%, with 6 release folders and 6 `engnata/pintor-api` images (0.6.2 and
+0.7.4–0.7.8). `prune-old-releases.sh` can bring that back down.
+
 ## 2026-10-25 vector route: unclaimed runs on the dense foldouts
 
 Branch `feat/pintor-vetorial-trechos-orfaos`. This continues roadmap item 3 on pub 7745609, after
