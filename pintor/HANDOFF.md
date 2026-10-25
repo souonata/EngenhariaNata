@@ -20,9 +20,30 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-25 published as 0.7.5 / engine 3.2.5
+
+The filled-body entry below (#94) shipped. Published API first:
+
+- **Source.** Commit `1aa9ed4` (the bump on top of the #94 merge `a79f165`) was cloned into
+  `/opt/pintor-api-releases/1aa9ed4`.
+- **Image.** `engnata/pintor-api:0.7.5` was built at the first attempt, its plain log kept in
+  `/tmp/pintor-build-0.7.5.log` on the VM. Inside it were confirmed `pintor-wiring 3.2.5`, PyMuPDF
+  1.28.2, the filled-body constants (opening 15 px, side 25 px, end 2 px), `at_body` in the solver
+  and `on_filled_body` in the pipeline, the earlier scan-route rules, and `rapidocr check` passing.
+- **Container.** Recreated on the existing `pintor-api_pintor-data` volume; healthy.
+- **Smoke.** The external smoke passed:
+  `external_auth=ok account=ok unauthenticated=401 job=ready result=pdf delete=204`.
+- **Site.** PR #95 merged as `4f71e7e`, and GitHub Pages deployed.
+- **Drift.** `check-release-drift.sh` reports `site 0.7.5`, `api 0.7.5 (engine 3.2.5)`.
+- **Rollback.** `cd /opt/pintor-api-releases/8b6e077/pintor && docker compose -p pintor-api
+  --env-file /opt/pintor-api/.env up -d` returns to 0.7.4.
+
+After this build the root disk is at 62%, with 10 release folders and 10
+`engnata/pintor-api` images. `prune-old-releases.sh` has still not been run.
+
 ## 2026-10-25 a wire end on a filled body terminates there; a straighter atlas; rescoring
 
-Branch `feat/pintor-atlas-cor-fora`. Not released: production stays 0.7.4 / engine 3.2.4.
+Branch `feat/pintor-atlas-cor-fora`, merged as #94 and released in 0.7.5 (entry above).
 
 ### The ruler: weak atlas entries far from their colour
 
