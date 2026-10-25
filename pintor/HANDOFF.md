@@ -20,6 +20,27 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-25 published as 0.7.7 / engine 3.2.7
+
+The vector-coverage change in the entry below (#101) shipped. Published API first:
+
+- **Source.** Commit `e8a9944` (the bump on top of the #101 merge `110d232`) was cloned into
+  `/opt/pintor-api-releases/e8a9944`.
+- **Image.** `engnata/pintor-api:0.7.7` was built at the first attempt, its plain log kept in
+  `/tmp/pintor-build-0.7.7.log` on the VM. Inside it were confirmed `pintor-wiring 3.2.7`, PyMuPDF
+  1.28.2, `detect/vector_inline.py` with the printed-through veto, the 1,900 pt conductor-floor cap,
+  context schema 8 and `rapidocr check` passing.
+- **Container.** Recreated on the existing `pintor-api_pintor-data` volume; healthy.
+- **Smoke.** The external smoke passed:
+  `external_auth=ok account=ok unauthenticated=401 job=ready result=pdf delete=204`.
+- **Site.** PR #102 merged as `9ea776d`, and GitHub Pages deployed.
+- **Drift.** `check-release-drift.sh` reports `site 0.7.7`, `api 0.7.7 (engine 3.2.7)`.
+- **Rollback.** `cd /opt/pintor-api-releases/52f2d4a/pintor && docker compose -p pintor-api
+  --env-file /opt/pintor-api/.env up -d` returns to 0.7.6.
+
+The root disk is at 36%, with 5 release folders and 5 `engnata/pintor-api` images (0.6.2 and
+0.7.4–0.7.7).
+
 ## 2026-10-25 vector route: a code printed in its wire, and a conductor floor that stops growing
 
 Branch `feat/pintor-vetorial-cobertura`. Roadmap item 3 (vector coverage), starting with pub 7745609.
