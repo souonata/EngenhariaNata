@@ -20,6 +20,99 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-25 vector route: unclaimed runs on the dense foldouts
+
+Branch `feat/pintor-vetorial-trechos-orfaos`. This continues roadmap item 3 on pub 7745609, after
+0.7.7. The largest black share left there was the unclaimed run: 442 conductors and 54k pt that no
+code claimed and that propagation did not reach.
+
+### What the unclaimed runs were
+
+`unclaimed_probe.py` and `unclaimed_causes.py` (workspace) sorted them by the nearest code of the
+right colour:
+
+| cause                                                 | runs | run length |
+| ----------------------------------------------------- | ---- | ---------- |
+| the code is printed in line and claimed another run   | 104  | 11.0k pt   |
+| the right code had been taken for a callout leader    | 81   | 12.5k pt   |
+| no code of that colour within reach                   | 68   | 7.9k pt    |
+| inside a component (pin stubs in a plug)              | 65   | 8.4k pt    |
+| the code is printed across the run                    | 37   | 4.7k pt    |
+| the code is already on a nearer run                   | 34   | 3.1k pt    |
+| the code is printed in line, but its pieces are short | 20   | 2.4k pt    |
+
+Pin stubs inside plug drawings are left alone: the factory paints them, but painting inside a
+component is the riskier side.
+
+### The rules
+
+- **A wire's own stub is not a leader** (`detect/vector_leaders.py`). A leader lands on the body of
+  a wire: inside one stroke, or where two strokes of a straight wire meet. Before, a code printed in
+  its wire had its stub to the next corner or junction taken for a leader. The stub left the topology
+  and the code was anchored on the corner, which happened on 7745609 p7 71 times out of 90. A leader
+  drawn twice is recognised: its copy overlaps it, which a continuation does not. 7742218, 7743245
+  and 7743606 draw their leaders twice, and the first version lost 20 right conductors there.
+- **The wire is followed past a short piece** (`detect/vector_inline.py`). A code whose piece is too
+  short to be a run is followed along the text's centre line, across crossing gaps of up to 1.5 text
+  heights and never through a component, to the first run. On p7 BL/W reaches the 74 pt run beyond
+  the heavy W/OR wire that crosses it.
+- **A code printed across its wire names it.** The wire stops at one long edge of the text and
+  resumes at the other, level with itself, as under an SB set across the wire that rises to a star
+  point. The claim is made only when the code is printed in line with nothing and no stroke passes
+  through the text unbroken.
+- **Two wires at one pin.** A run that doubles back on itself by more than 120° is two pin stubs
+  ending at the same pin, and no code claims it. Propagation also stops where two runs fold back on
+  each other at one node (`engine/ownership.py`). On p11 P/Y had passed through an ignition coil's
+  pin into the SB lead beside it.
+
+### Measured (49 teacher pages, vector route, frozen snapshots)
+
+|         | right | wrong | precision  | coverage   | by length  |
+| ------- | ----- | ----- | ---------- | ---------- | ---------- |
+| 0.7.7   | 2,269 | 222   | 0.9109     | 0.3050     | 0.5126     |
+| this PR | 2,483 | 220   | **0.9186** | **0.3337** | **0.5366** |
+
+- Painted length: right 743k → 778k pt, wrong 41.1k → 40.6k pt.
+- Only two publications change:
+  - 7745609: right 927 → **1,124**, wrong 34 → 32;
+  - 7749124: right 387 → 404, wrong 23 → 23.
+- The held-out publications do not change (531 / 89).
+- `marks4` is unchanged (0.5873, every class equal, 14 pages).
+
+The steps, each measured on its own:
+
+| step                                        | right | wrong |
+| ------------------------------------------- | ----- | ----- |
+| corner rule alone, before the copy fix      | 2,273 | 227   |
+| + copy fix and following past short pieces  | 2,400 | 230   |
+| + no claim on a run that doubles back       | 2,397 | 227   |
+| + junction rule and codes across their wire | 2,481 | 223   |
+| + no propagation where runs fold back       | 2,483 | 220   |
+
+12 wrong conductors go away and 10 new ones appear:
+
+- 5 are a ruler error: the printed code is SB/W and we paint SB/W, while the truth calls the wire
+  white (a white core inside black rails).
+- 2 extend a wrong the engine already had: a stretch of a PU line was claimed BR/W by distance, and
+  that colour now reaches two more of its runs.
+- 3 are R/PU painted R by a promoted bare R, now that other runs are claimed and that R reaches a
+  leftover run 63 px away before R/PU's propagation does.
+
+### What still keeps 7745609 black (after)
+
+| reason                                     | conductors | length   |
+| ------------------------------------------ | ---------- | -------- |
+| no engine run under it                     | 1,500      | 27.4k pt |
+| run unclaimed                              | 334        | 38.9k pt |
+| partly painted                             | 186        | 25.0k pt |
+| abstained, ambiguous                       | 22         | 2.3k pt  |
+| abstained, two colours printed in its line | 6          | 0.1k pt  |
+| abstained, contested                       | 2          | 0.1k pt  |
+
+Before, unclaimed runs were 442 / 54.0k pt and partly painted 203 / 28.3k pt. In the engine, coded
+runs went 1,440 → 1,709 and abstained runs 141 → 69. What is left unclaimed is mostly pin stubs
+inside plugs and runs with no code of their colour within reach.
+
 ## 2026-10-25 published as 0.7.7 / engine 3.2.7
 
 The vector-coverage change in the entry below (#101) shipped. Published API first:

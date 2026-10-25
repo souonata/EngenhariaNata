@@ -162,7 +162,7 @@ def extract_vector_context(page, dpi, convention, *, legend_filter=None):
                 runs.append(points)
     legends = strong_legends(conductor_legends)
     # A stub too short to be a run still proves the wire passes through the text.
-    inline_legends, inline_claims = printed_in_line(legends, runs, every_piece)
+    inline_legends, inline_claims = printed_in_line(legends, runs, every_piece, symbols.zones)
     through_codes = printed_through(conductor_legends, runs, every_piece)
     promoted = promote_bare_letters(
         conductor_legends, legends, symbols.zones, convention)

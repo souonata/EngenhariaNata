@@ -13,6 +13,18 @@ A leader is recognised only by drawing evidence. It is one short straight segmen
 (nothing else touches it) and lies against the text of exactly one code; the other end lands on
 another segment. Such a segment is annotation, not a conductor: it leaves the topology, and its
 code is anchored where it touches the wire.
+
+A leader lands on the body of a wire and makes a T: inside one stroke, or where two strokes of a
+straight wire meet. Anywhere else the "leader" is the wire's own stub between its code and the next
+node:
+
+* where one stroke starts, the wire turns a corner, as with a code printed in a wire that leaves
+  the text and bends away;
+* where three or more strokes meet, the wire runs from the text to a junction, as with a code
+  printed across a wire that rises to a star point.
+
+Measured on pub 7745609, those stubs were taken for leaders 81 times: the stub left the topology,
+the code was anchored on the corner or the star point, and the wire it is printed in stayed black.
 """
 from __future__ import annotations
 
@@ -36,6 +48,15 @@ def _distance_to_segment(point, a, b):
     t = max(0.0, min(1.0, ((point[0] - ax) * dx + (point[1] - ay) * dy) / length_sq))
     foot = (ax + t * dx, ay + t * dy)
     return hypot(point[0] - foot[0], point[1] - foot[1]), foot
+
+
+def _line_distance(point, a, b):
+    """Distance from ``point`` to the infinite line through a and b."""
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    length = hypot(dx, dy)
+    if length == 0:
+        return hypot(point[0] - a[0], point[1] - a[1])
+    return abs(dy * (point[0] - a[0]) - dx * (point[1] - a[1])) / length
 
 
 def _near_box(point, box, gap):
@@ -76,14 +97,45 @@ def detach_leaders(segments, legends, dpi):
     gap, touch = TEXT_GAP_PT * scale, TOUCH_PT * scale
     grid = _Grid(segments, cell=max(highest, 8.0))
 
-    def touches(point, own):
+    def touching(point, own):
+        found = []
         for index in grid.near(point):
             if index == own:
                 continue
             distance, foot = _distance_to_segment(point, *segments[index])
             if distance <= touch:
-                return index, foot
-        return None
+                found.append((index, foot))
+        return found
+
+    def along(index, other):
+        """True when ``other`` is a copy of stroke ``index`` drawn over it, not its continuation."""
+        (a, b), (c, d) = segments[index], segments[other]
+        if any(_line_distance(point, c, d) > touch for point in (a, b)):
+            return False
+        dx, dy = b[0] - a[0], b[1] - a[1]
+        length = hypot(dx, dy)
+        if length == 0:
+            return False
+        project = lambda point: ((point[0] - a[0]) * dx + (point[1] - a[1]) * dy) / length
+        low, high = sorted((project(c), project(d)))
+        return min(high, length) - max(low, 0.0) > touch
+
+    def at_end(point, other):
+        a, b = segments[other]
+        return min(hypot(point[0] - a[0], point[1] - a[1]),
+                   hypot(point[0] - b[0], point[1] - b[1])) <= touch
+
+    def straight(first, second):
+        (a, b), (c, d) = segments[first], segments[second]
+        return _line_distance(c, a, b) <= touch and _line_distance(d, a, b) <= touch
+
+    def node(index, point, targets):
+        """True when the tip is a corner or a junction of the wire, not a point on its body."""
+        # Some sheets draw a leader twice; its copy is neither, and nothing else is evidence.
+        others = [target for target, _foot in targets if not along(index, target)]
+        if not others or any(not at_end(point, other) for other in others):
+            return False
+        return not (len(others) == 2 and straight(*others))
 
     candidates = []
     boxed = [(index, legend) for index, legend in enumerate(legends) if legend.bbox]
@@ -95,12 +147,12 @@ def detach_leaders(segments, legends, dpi):
             owners = [number for number, legend in boxed if _near_box(free, legend.bbox, gap)]
             if len(owners) != 1 or _near_box(tip, legends[owners[0]].bbox, gap):
                 continue
-            if touches(free, index) is not None:
+            if touching(free, index):
                 continue
-            target = touches(tip, index)
-            if target is None:
+            targets = touching(tip, index)
+            if not targets or node(index, tip, targets):
                 continue
-            target_index, foot = target
+            target_index, foot = targets[0]
             ta, tb = segments[target_index]
             axis = "h" if abs(tb[0] - ta[0]) >= abs(tb[1] - ta[1]) else "v"
             box = legends[owners[0]].bbox

@@ -271,3 +271,13 @@ class PhysicalContinuationTests(unittest.TestCase):
                 self._run(2, [(200, 0), (300, 0)])]
         propagate_continuations(runs)
         self.assertEqual([r.code for r in runs], ["Y", "Y", "Y"])
+
+    def test_colour_turns_a_corner_but_not_back_on_itself(self):
+        """A lead climbing to a coil's pin and the lead leaving that pin back down are two wires."""
+        from wirecolor.engine.ownership import propagate_continuations
+        corner = [self._run(0, [(0, 100), (0, 0)], code="P/Y"), self._run(1, [(0, 0), (80, 0)])]
+        propagate_continuations(corner)
+        self.assertEqual([r.code for r in corner], ["P/Y", "P/Y"])
+        folded = [self._run(0, [(0, 100), (0, 0)], code="P/Y"), self._run(1, [(0, 0), (30, 90)])]
+        self.assertEqual(propagate_continuations(folded), 0)
+        self.assertIsNone(folded[1].code)

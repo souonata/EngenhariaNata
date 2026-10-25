@@ -46,10 +46,19 @@ The Engenharia NATA beta has two page-analysis modes:
   text's centre. It counts as strong evidence, so that wire never merges into another colour;
 - codes printed in their wire, on vector pages: when a wire is broken for its code, it stops at one
   edge of the text and resumes at the other, on the text's centre line. That code names both
-  pieces and no other wire. If every piece is too short to paint, the code paints nothing rather
-  than the nearest parallel wire. In turn, a wire that passes through printed codes carries only
-  that code. This counts a bare letter too weak to paint, and a bundle label printed across its
-  wires. A wire that passes through two different codes stays black;
+  pieces and no other wire:
+  - a piece too short to paint is followed along the centre line, across crossing gaps and never
+    through a component, to the next piece that can be painted. If there is none, the code paints
+    nothing rather than the nearest parallel wire;
+  - a code printed across its wire names it too: the wire stops at one long edge of the text and
+    resumes at the other. That claim is made only when nothing passes through the text unbroken;
+  - a run that doubles back at a pin is two wires and is never claimed, and colour never passes
+    between two runs that fold back on each other at one pin;
+  - the wire's own stub from its code to a corner or a junction is not a callout leader.
+
+  In turn, a wire that passes through printed codes carries only that code. This counts a bare
+  letter too weak to paint, and a bundle label printed across its wires. A wire that passes through
+  two different codes stays black;
 - filled component bodies on scans: a relay, connector or sensor drawn as a filled body is a
   component even without an outlined rectangle. A wire that ends on it terminates there, so two
   cables ending at the same relay are never joined across it;
