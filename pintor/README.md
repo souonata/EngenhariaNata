@@ -44,6 +44,9 @@ The Engenharia NATA beta has two page-analysis modes:
 - codes printed on their wire, on scans: when a wire runs into the text on one side and out on the
   other, in line with it, the code belongs to that wire even if a parallel wire runs nearer the
   text's centre. It counts as strong evidence, so that wire never merges into another colour;
+- filled component bodies on scans: a relay, connector or sensor drawn as a filled body is a
+  component even without an outlined rectangle. A wire that ends on it terminates there, so two
+  cables ending at the same relay are never joined across it;
 - outlined pictorial cables: when the real conductors are hollow raster tubes and separate thin
   vector leaders point from exact colour codes to those tubes, Pintor follows the closed cable
   interior instead of the leader. At least two independent one-to-one callouts must resolve on the
@@ -446,7 +449,9 @@ colours are used only to evaluate and to learn. The painter never consults them.
 
 `--raster-dpi 200` turns each twin into an image-only scan (grey, lightly blurred, with grain) and
 so measures the scan route against the same conductor-level truth. `--twins-only` builds the twins
-and stops, as input for the policy sweep.
+and stops, as input for the policy sweep. `--rescore` judges the overlays a finished run kept
+against the truth the current tree builds, without painting, so a change to the ruler is measured on
+identical paint; it writes `teacher_benchmark_rescored.json` beside the original.
 
 `teacher_policy_sweep` replays only the decision layer on the twins of a finished benchmark folder,
 scored by length against the factory colours. It takes minutes instead of an hour per candidate and
