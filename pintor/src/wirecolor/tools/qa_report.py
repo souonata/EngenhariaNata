@@ -33,9 +33,9 @@ def analyse(pdf_path, page_index, dpi=200, convention_name="volvo_classic"):
     from ..detect.vector_symbols import strip_symbol_strokes, symbol_geometry
     from ..engine.ownership import MAX_OWNERSHIP_PX, _nearest, assign, corroboration_rate
     from ..engine.ownership import bridge_straight_continuations, propagate_continuations
-    from ..eval.vector_truth import (MIN_CONDUCTOR_DIAGONAL_FRACTION, build_nets,
-                                     canvas_diagonal_px, decompose_runs, extract_segments,
-                                     modal_pen_px, node_segments)
+    from ..eval.vector_truth import (build_nets, canvas_diagonal_px, conductor_floor_px,
+                                     decompose_runs, extract_segments, modal_pen_px,
+                                     node_segments)
     from ..labels.conventions import load_convention
     from ..labels.text_layer import read_legends, strong_legends
 
@@ -50,7 +50,7 @@ def analyse(pdf_path, page_index, dpi=200, convention_name="volvo_classic"):
     segments = node_segments(stripped)
     nets = build_nets(segments)
 
-    minimum = canvas_diagonal_px(page, dpi) * MIN_CONDUCTOR_DIAGONAL_FRACTION
+    minimum = conductor_floor_px(page, dpi)
     runs = []
     for net in nets:
         for points in decompose_runs(segments, net):

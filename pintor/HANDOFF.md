@@ -20,6 +20,105 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-25 vector route: a code printed in its wire, and a conductor floor that stops growing
+
+Branch `feat/pintor-vetorial-cobertura`. Roadmap item 3 (vector coverage), starting with pub 7745609.
+There the vector route had 294 right and 80 wrong, while the scan route had 900 right.
+
+### Why 7745609 stayed black
+
+On p7, 114 of 243 codes are printed in a break of their own wire. The wire stops at one edge of the
+text and resumes at the other, on its centre line. Ownership judged them only by distance from the
+text centre, which fails three ways in rows 6–11 pt apart:
+
+- **A tie inside one wire.** The two pieces are equally near (T/W: 18 px and 18 px), so the code
+  abstained.
+- **A lost run.** The same code printed at the far end was given the run and was ambiguous there, so
+  the whole run abstained (PU/LBL).
+- **A wrong wire.** A parallel wire's end sat nearer: DBL/OR took the Y/GR wire, and SB/LGN took the
+  LBL wire.
+
+Separately, the minimum run length scales with the page diagonal: 49.6 pt on these 2,916 pt
+foldouts. The pieces of wire between crossing gaps are 30–48 pt, so they never became runs, and
+colour stopped at every gap.
+
+### The rules (`detect/vector_inline.py`, `engine/constraints.py`)
+
+- **A code printed in its wire names that wire.** A run is the code's wire when two things hold:
+  - its end sits just outside one edge of the text, within 0.35 text heights of the centre line,
+    leaving along the text's axis;
+  - another stroke, however short, leaves the opposite edge the same way.
+
+  The code then costs 0 on each such run, and its own pieces are not alternatives to each other. The
+  code paints every piece it splits, unless another colour's code is printed in line with that piece
+  too.
+- **It names no other wire.** If every piece of that wire is too short to be a run, the code
+  refuses rather than claim a neighbour by distance. On p7, BL/P had taken the BL/W wire this way.
+- **A wire printed through with another code is vetoed.** A run that passes through printed codes
+  may carry only that code, and nothing when two different codes are printed in its line. Every code
+  counts: a bare letter too weak to paint, and a bundle label printed across its wires. The veto runs
+  after assignment and again after propagation, and can only remove colour. It caught the two
+  regressions the first version introduced:
+  - pub 7749124 p11: injector pigtail codes (GR/Y, GR/W, GR/OR) are in line with runs that
+    continue through the injector plug into the P/DGN feeds. The P/DGN label is printed across those
+    feeds, so the runs now stay black instead of painting the feed GR/x.
+  - pub 7745609: a P/DGN code 11 pt away took the wire a bare Y is printed in. That wire is now
+    Y, through the bare-letter path.
+
+### The conductor floor stops at a B-size sheet (`eval/vector_truth.py`)
+
+`conductor_floor_px` is the old `0.017 × diagonal`, with the diagonal capped at 1,900 pt. It feeds
+the minimum run length and the twist-mark length. On a foldout, the floor is now 32.3 pt instead of
+49.6 pt. The largest-symbol limit still uses the full diagonal: it exists to reject the sheet border,
+which does grow with the page.
+
+The cap was chosen by a decision-layer replay over the 49 pages:
+
+- At 1,500 pt it reaches the 1,771 pt sheets and costs held-out precision (0.941 → 0.924).
+- At 1,200 pt held-out precision falls to 0.915.
+- The held-out fold has no large page whose codes the classic convention reads, so the evidence for
+  1,900 pt comes from the two large classic publications taken one at a time:
+  - 7745609: painted length right +16 %, wrong −27 %;
+  - 7749124: right +1.6 %, wrong flat.
+
+### Measured (49 teacher pages, vector route, frozen snapshots)
+
+|                             | right | wrong | precision  | coverage   | by length  |
+| --------------------------- | ----- | ----- | ---------- | ---------- | ---------- |
+| 0.7.6                       | 1,597 | 269   | 0.8558     | 0.2147     | 0.4376     |
+| + printed in its wire, veto | 1,957 | 231   | 0.8944     | 0.2630     | 0.4989     |
+| + floor capped (this PR)    | 2,269 | 222   | **0.9109** | **0.3050** | **0.5126** |
+
+- Painted length: right 635k → 743k pt, wrong 52.9k → 41.1k pt.
+- Only three publications change:
+  - 7745609: right 294 → **927**, now ahead of the scan route's 900; wrong 80 → 34;
+  - 7749124: right 350 → 387, wrong 24 → 23;
+  - 47718008: right 22 → 24.
+- The held-out publications do not change (531 / 89).
+- `marks4` is unchanged (0.5873, every class equal, 14 pages).
+
+The first version, without the veto, gave 1,955 / 240: +6 wrong on 7749124, all of them traced
+above.
+
+Also in this PR: the vector context schema goes to 8, with the in-line claims and the
+printed-through codes. The context cache key now includes the schema version, so a cache from an
+older extractor is rebuilt instead of refused. The 6 → 7 bump had left that trap. `qa_report` uses
+the same conductor floor as the engine.
+
+### What still keeps 7745609 black (after)
+
+| reason                 | conductors | length   |
+| ---------------------- | ---------- | -------- |
+| no engine run under it | 1,546      | 29.5k pt |
+| run unclaimed          | 442        | 54.0k pt |
+| partly painted         | 203        | 28.3k pt |
+| abstained, ambiguous   | 51         | 5.5k pt  |
+| abstained, contested   | 3          | 0.2k pt  |
+
+Before, the same table read 1,952 / 46k, 385 / 63k, 176 / 31k, 280 / 45k and 39 / 5k. In the engine,
+runs went 1,777 → 2,658, coded runs 640 → 1,440, and abstained runs 502 → 141. The next lever is the
+unclaimed run: a run with no legend near it that propagation does not reach.
+
 ## 2026-10-25 published as 0.7.6 / engine 3.2.6
 
 The rotated-page axis fix in the entry below (#98) shipped. Published API first:

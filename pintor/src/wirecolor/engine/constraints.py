@@ -33,12 +33,20 @@ class ConstraintDiagnostics:
         }
 
 
-def _candidate_table(legends, runs, policy):
+def _candidate_table(legends, runs, policy, inline_legends=(), inline_claims=()):
     from .ownership import cost
 
+    # A code printed in the line of a run names it outright: its distance from the text centre is
+    # only the drafting gap, and a parallel wire can sit nearer. It names no other run.
+    inline, in_line = set(inline_claims), set(inline_legends)
     table = []
     for li, legend in enumerate(legends):
         for ri, points in enumerate(runs):
+            if (li, ri) in inline:
+                table.append((li, ri, 0.0))
+                continue
+            if li in in_line:
+                continue
             value = cost(
                 legend, points,
                 max_ownership_px=policy.max_ownership_px,
@@ -50,7 +58,7 @@ def _candidate_table(legends, runs, policy):
 
 
 def _finish(legends, runs, candidates, chosen, policy, solver, classifier_influenced,
-            fallback_reason=None, run_activation_costs=None):
+            fallback_reason=None, run_activation_costs=None, inline_claims=()):
     from .ownership import OwnedRun, cost
 
     owned = [OwnedRun(index=i, points=points, code=None, legend_raw=None, distance=None)
@@ -63,6 +71,11 @@ def _finish(legends, runs, candidates, chosen, policy, solver, classifier_influe
     for li, ri, value in candidates:
         by_legend.setdefault(li, []).append((value + activation[ri], ri))
         by_run.setdefault(ri, []).append((value, li))
+    # The pieces a code splits are one wire: neither is an alternative to the other.
+    partners, inline_codes = {}, {}
+    for li, ri in inline_claims:
+        partners.setdefault(li, set()).add(ri)
+        inline_codes.setdefault(ri, set()).add(legends[li].code)
     assigned_legends = set()
     abstained_margin = 0
     # Every other candidate run counts as an alternative, even one the global solution gave to a
@@ -70,7 +83,7 @@ def _finish(legends, runs, candidates, chosen, policy, solver, classifier_influe
     # lost 7-9 points of precision for no held-out coverage: the global tie-break is not safe.
     for li, ri, value in chosen:
         alternatives = [candidate for candidate, other_ri in by_legend.get(li, ())
-                        if other_ri != ri]
+                        if other_ri != ri and other_ri not in partners.get(li, ())]
         second = min([policy.refuse_cost, *alternatives])
         margin = max(0.0, (second - value - activation[ri]) / max(policy.refuse_cost, 1e-6))
         rivals = [candidate for candidate, other_li in by_run.get(ri, ())
@@ -92,6 +105,21 @@ def _finish(legends, runs, candidates, chosen, policy, solver, classifier_influe
         owned[ri].distance = round(value, 1)
         owned[ri].confidence = round(min(1.0, 0.55 * max(
             0.0, 1.0 - value / max(policy.refuse_cost, 1.0)) + 0.45 * margin), 4)
+        assigned_legends.add(li)
+
+    # A code printed in its wire names every piece it splits, whichever piece the solver gave it,
+    # unless another colour's code is printed in the line of that piece too.
+    for li, ri in sorted(inline_claims):
+        legend, run = legends[li], owned[ri]
+        if run.code or inline_codes[ri] != {legend.code}:
+            continue
+        run.code = legend.code
+        run.legend_raw = legend.raw
+        run.distance = 0.0
+        run.confidence = 1.0
+        run.abstained = False
+        run.abstain_reason = None
+        run.abstained_from_code = None
         assigned_legends.add(li)
 
     # Repeated same-code legends corroborate but can never steal or recolour a run.
@@ -116,7 +144,7 @@ def _finish(legends, runs, candidates, chosen, policy, solver, classifier_influe
 
 
 def _linear_assignment(legends, runs, candidates, policy, fallback_reason=None,
-                       run_activation_costs=None):
+                       run_activation_costs=None, inline_claims=()):
     import numpy as np
     from scipy.optimize import linear_sum_assignment
 
@@ -135,11 +163,12 @@ def _linear_assignment(legends, runs, candidates, policy, fallback_reason=None,
     learned = any(cost > 0 for cost in run_activation_costs)
     solver = "linear-assignment+learned-prior" if learned else "linear-assignment"
     return _finish(legends, runs, candidates, chosen, policy, solver, learned,
-                   fallback_reason=fallback_reason, run_activation_costs=run_activation_costs)
+                   fallback_reason=fallback_reason, run_activation_costs=run_activation_costs,
+                   inline_claims=inline_claims)
 
 
 def _milp_assignment(legends, runs, candidates, policy, classifier, min_run_px,
-                     feature_rows=None):
+                     feature_rows=None, inline_claims=()):
     import numpy as np
     from scipy.optimize import Bounds, LinearConstraint, milp
     from scipy.sparse import coo_matrix
@@ -196,17 +225,18 @@ def _milp_assignment(legends, runs, candidates, policy, classifier, min_run_px,
     if not result.success or result.x is None:
         reason = getattr(result, "message", "MILP returned no solution")
         return _linear_assignment(legends, runs, candidates, policy,
-                                  fallback_reason=f"MILP fallback: {reason}")
+                                  fallback_reason=f"MILP fallback: {reason}",
+                                  inline_claims=inline_claims)
     chosen = [(li, ri, value) for ci, (li, ri, value) in enumerate(candidates)
               if result.x[ci] >= 0.5]
     activation = [policy.classifier_assignment_weight * (1.0 - probability)
                   for probability in probabilities]
     return _finish(legends, runs, candidates, chosen, policy, "milp", True,
-                   run_activation_costs=activation)
+                   run_activation_costs=activation, inline_claims=inline_claims)
 
 
 def constrained_assign(legends, runs, policy=None, classifier=None, min_run_px=1.0,
-                       feature_rows=None):
+                       feature_rows=None, inline_legends=(), inline_claims=()):
     """Assign every legend globally, with an explicit refusal outcome.
 
     Without a classifier the specialized exact assignment solver is the fastest correct solver.
@@ -218,9 +248,9 @@ def constrained_assign(legends, runs, policy=None, classifier=None, min_run_px=1
     assignment_classifier = None if classifier_unit == "atomic-piece" else classifier
     if not legends or not runs:
         return _finish(legends, runs, [], [], policy, "empty", bool(assignment_classifier))
-    candidates = _candidate_table(legends, runs, policy)
+    candidates = _candidate_table(legends, runs, policy, inline_legends, inline_claims)
     if assignment_classifier is None or policy.classifier_assignment_weight <= 0:
-        return _linear_assignment(legends, runs, candidates, policy)
+        return _linear_assignment(legends, runs, candidates, policy, inline_claims=inline_claims)
     if policy.constraint_solver == "auto":
         features = feature_rows or run_feature_rows(runs, legends, min_run_px)
         activation_costs = [policy.classifier_assignment_weight
@@ -230,15 +260,42 @@ def constrained_assign(legends, runs, policy=None, classifier=None, min_run_px=1
         # be eliminated algebraically: adding its one-time cost to each candidate is exactly the
         # same optimisation problem and lets the specialized assignment solver run far faster.
         return _linear_assignment(legends, runs, candidates, policy,
-                                  run_activation_costs=activation_costs)
+                                  run_activation_costs=activation_costs,
+                                  inline_claims=inline_claims)
     try:
         return _milp_assignment(legends, runs, candidates, policy, assignment_classifier, min_run_px,
-                                feature_rows=feature_rows)
+                                feature_rows=feature_rows, inline_claims=inline_claims)
     except Exception as error:
         # Painting must remain available if an optional learning dependency/model is broken.
         return _linear_assignment(
             legends, runs, candidates, policy,
-            fallback_reason=f"MILP exception: {type(error).__name__}: {error}")
+            fallback_reason=f"MILP exception: {type(error).__name__}: {error}",
+            inline_claims=inline_claims)
+
+
+def veto_printed_through(owned, through_codes):
+    """Remove the colour of a run that passes through another colour's printed code.
+
+    Black beats wrong: a run may carry only the code printed in its line, and nothing when two
+    different codes are. Never adds or changes a colour.
+    """
+    printed = {}
+    for index, code in through_codes:
+        printed.setdefault(index, set()).add(code)
+    vetoed = 0
+    for run in owned:
+        codes = printed.get(run.index)
+        if not run.code or not codes or codes == {run.code}:
+            continue
+        run.abstained_from_code = run.code
+        run.code = None
+        run.legend_raw = None
+        run.propagated = False
+        run.abstained = True
+        run.abstain_reason = ("two colours printed in its line" if len(codes) > 1
+                              else "another colour printed in its line")
+        vetoed += 1
+    return vetoed
 
 
 def abstain_with_classifier(owned, feature_rows, classifier, policy):

@@ -7,13 +7,13 @@ expensive immutable page context from the cheap, parameterised decision pass.
 """
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from math import hypot
 
 from .policy import DecisionPolicy
 
 
-CONTEXT_SCHEMA_VERSION = 7
+CONTEXT_SCHEMA_VERSION = 8
 
 
 @dataclass
@@ -36,6 +36,11 @@ class VectorPageContext:
     run_features: list[dict]
     pieces: list[dict]
     piece_features: list[dict]
+    # legends printed in the line of a wire, and (legend index, run index) for that wire's runs
+    inline_legends: list[int] = field(default_factory=list)
+    inline_claims: list[tuple[int, int]] = field(default_factory=list)
+    # (run index, code) for every code, weak or strong, printed in line with or across a run
+    through_codes: list[tuple[int, str]] = field(default_factory=list)
     schema_version: int = CONTEXT_SCHEMA_VERSION
 
     def to_dict(self):
@@ -59,6 +64,9 @@ class VectorPageContext:
             "run_features": self.run_features,
             "pieces": self.pieces,
             "piece_features": self.piece_features,
+            "inline_legends": list(self.inline_legends),
+            "inline_claims": [list(pair) for pair in self.inline_claims],
+            "through_codes": [[index, code] for index, code in self.through_codes],
         }
 
     @classmethod
@@ -97,6 +105,9 @@ class VectorPageContext:
             } for piece in raw["pieces"]],
             piece_features=[{str(key): float(value) for key, value in row.items()}
                             for row in raw["piece_features"]],
+            inline_legends=[int(li) for li in raw.get("inline_legends", ())],
+            inline_claims=[(int(li), int(ri)) for li, ri in raw.get("inline_claims", ())],
+            through_codes=[(int(index), str(code)) for index, code in raw.get("through_codes", ())],
         )
 
 
@@ -108,12 +119,13 @@ def extract_vector_context(page, dpi, convention, *, legend_filter=None):
     exact printed spelling to look like an engineering colour code before it spends the full
     topology pass on a candidate page.
     """
+    from ..detect.vector_inline import printed_in_line, printed_through
     from ..detect.vector_pins import connector_pin_markers
     from ..detect.vector_symbols import (classify_symbol_geometry, clip_segments_to_opaque,
                                          strip_symbol_strokes)
-    from ..eval.vector_truth import (MIN_CONDUCTOR_DIAGONAL_FRACTION, build_nets,
-                                     canvas_diagonal_px, decompose_runs, extract_segments,
-                                     modal_pen_px, node_segments)
+    from ..eval.vector_truth import (build_nets, canvas_diagonal_px, conductor_floor_px,
+                                     decompose_runs, extract_segments, modal_pen_px,
+                                     node_segments)
     from ..labels.text_layer import promote_bare_letters, read_legends, strong_legends
 
     from ..detect.vector_leaders import detach_leaders
@@ -138,16 +150,20 @@ def extract_vector_context(page, dpi, convention, *, legend_filter=None):
     segments = node_segments(stripped)
     nets = build_nets(segments)
     diagonal = canvas_diagonal_px(page, dpi)
-    minimum = diagonal * MIN_CONDUCTOR_DIAGONAL_FRACTION
-    runs = []
+    minimum = conductor_floor_px(page, dpi)
+    runs, every_piece = [], []
     for net in nets:
         for points in decompose_runs(segments, net):
             if len(points) < 2:
                 continue
+            every_piece.append(points)
             length = sum(hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(points, points[1:]))
             if length >= minimum:
                 runs.append(points)
     legends = strong_legends(conductor_legends)
+    # A stub too short to be a run still proves the wire passes through the text.
+    inline_legends, inline_claims = printed_in_line(legends, runs, every_piece)
+    through_codes = printed_through(conductor_legends, runs, every_piece)
     promoted = promote_bare_letters(
         conductor_legends, legends, symbols.zones, convention)
     from .classifier import atomic_piece_feature_rows, run_feature_rows
@@ -164,6 +180,8 @@ def extract_vector_context(page, dpi, convention, *, legend_filter=None):
         opaque_segments_clipped=opaque_clipped,
         run_features=run_features,
         pieces=pieces, piece_features=piece_features,
+        inline_legends=inline_legends, inline_claims=inline_claims,
+        through_codes=through_codes,
     )
 
 
@@ -173,14 +191,17 @@ def decide_vector_context(context, policy=None, classifier=None):
     from ..detect.vector_rails import (split_fused_frame_borders, strip_connector_rails,
                                        strip_frame_borders)
     from .classifier import run_feature_rows
-    from .constraints import abstain_with_classifier, constrained_assign
+    from .constraints import abstain_with_classifier, constrained_assign, veto_printed_through
     from .ownership import (assign_weak_to_leftovers, bridge_straight_continuations,
                             propagate_continuations)
 
     policy = (policy or DecisionPolicy()).validate()
     owned, constraint_diagnostics = constrained_assign(
         context.legends, context.runs, policy=policy, classifier=classifier,
-        min_run_px=context.min_run_px, feature_rows=context.run_features)
+        min_run_px=context.min_run_px, feature_rows=context.run_features,
+        inline_legends=context.inline_legends, inline_claims=context.inline_claims)
+    # A run printed through with another colour's code neither keeps nor passes on that colour.
+    printed_vetoes = veto_printed_through(owned, context.through_codes)
     bare_recovered = assign_weak_to_leftovers(
         owned, context.promoted, policy.promoted_min_run_factor * context.min_run_px,
         policy=policy)
@@ -205,6 +226,7 @@ def decide_vector_context(context, policy=None, classifier=None):
     frames_stripped = strip_frame_borders(
         owned, context.min_run_px, context.page_diagonal_px)
     owned, frame_splits = split_fused_frame_borders(owned, context.min_run_px)
+    printed_vetoes += veto_printed_through(owned, context.through_codes)
 
     final_features = []
     if classifier is not None:
@@ -252,6 +274,7 @@ def decide_vector_context(context, policy=None, classifier=None):
         "frames_stripped": frames_stripped,
         "frame_splits": frame_splits,
         "learned_abstentions": learned_abstentions,
+        "printed_vetoes": printed_vetoes,
         "painted_by_continuation": sum(1 for run in owned if run.code and run.propagated),
         "abstained": sum(1 for run in owned if run.abstained),
         "abstentions": [
