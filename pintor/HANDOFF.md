@@ -20,9 +20,29 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-25 published as 0.7.6 / engine 3.2.6
+
+The rotated-page axis fix in the entry below (#98) shipped. Published API first:
+
+- **Source.** Commit `52f2d4a` (the bump on top of the #98 merge `937f6c8`) was cloned into
+  `/opt/pintor-api-releases/52f2d4a`.
+- **Image.** `engnata/pintor-api:0.7.6` was built at the first attempt, its plain log kept in
+  `/tmp/pintor-build-0.7.6.log` on the VM. Inside it were confirmed `pintor-wiring 3.2.6`, PyMuPDF
+  1.28.2, the turning writing direction in `labels/text_layer.py`, the filled-body rule and
+  `rapidocr check` passing.
+- **Container.** Recreated on the existing `pintor-api_pintor-data` volume; healthy.
+- **Smoke.** The external smoke passed:
+  `external_auth=ok account=ok unauthenticated=401 job=ready result=pdf delete=204`.
+- **Site.** PR #99 merged as `e737c0a`, and GitHub Pages deployed.
+- **Drift.** `check-release-drift.sh` reports `site 0.7.6`, `api 0.7.6 (engine 3.2.6)`.
+- **Rollback.** `cd /opt/pintor-api-releases/1aa9ed4/pintor && docker compose -p pintor-api
+  --env-file /opt/pintor-api/.env up -d` returns to 0.7.5.
+
+The root disk is at 30%, with 4 release folders and 4 `engnata/pintor-api` images.
+
 ## 2026-10-25 the ruler reads rotated pages, and a code's axis turns with the page
 
-Branch `feat/pintor-gabarito-borda`. Not released: production stays 0.7.5 / engine 3.2.5.
+Branch `feat/pintor-gabarito-borda`, merged as #98 and released in 0.7.6 (entry above).
 
 ### Why 43 % of the teacher's conductors were unknown
 
