@@ -22,7 +22,8 @@ sys.path.insert(0, str(BACKEND / "src"))
 import fitz
 
 from wirecolor.eval.cerl import Observation, score_sheet
-from wirecolor.eval.vector_truth import build_nets, build_truth, extract_segments, longest_path
+from wirecolor.eval.vector_truth import (build_nets, build_truth, conductor_floor_px,
+                                         extract_segments, longest_path)
 
 DPI = 200
 SCALE = DPI / 72.0
@@ -177,6 +178,19 @@ class GeometryTests(unittest.TestCase):
         self.assertEqual(len(nets), 1)
         path = longest_path(segments, nets[0])
         self.assertGreater(len(path), 2)
+
+    def test_the_conductor_floor_grows_with_the_sheet_only_up_to_b_size(self):
+        """A foldout keeps the lettering and wire pitch of a smaller sheet: its floor stops growing."""
+        def floor_pt(width, height):
+            doc = fitz.open()
+            page = doc.new_page(width=width, height=height)
+            floor = conductor_floor_px(page, DPI) / SCALE
+            doc.close()
+            return floor
+
+        self.assertAlmostEqual(floor_pt(842, 595), 0.017 * (842 ** 2 + 595 ** 2) ** 0.5, places=3)
+        self.assertAlmostEqual(floor_pt(2448, 1584), 0.017 * 1900, places=3)
+        self.assertAlmostEqual(floor_pt(3370, 2384), floor_pt(2448, 1584), places=6)
 
     def test_rotated_pages_are_handled(self):
         def draw(page):

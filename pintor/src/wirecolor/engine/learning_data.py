@@ -7,7 +7,8 @@ import json
 import os
 
 from .policy import DecisionPolicy
-from .vector_page import VectorPageContext, decide_vector_context, extract_vector_context
+from .vector_page import (CONTEXT_SCHEMA_VERSION, VectorPageContext, decide_vector_context,
+                          extract_vector_context)
 
 
 CACHE_VERSION = 5
@@ -22,7 +23,9 @@ def _sha256(path):
 
 
 def context_fingerprint(pdf_path, page_index, dpi, convention_name):
-    payload = f"{CACHE_VERSION}|{_sha256(pdf_path)}|{page_index}|{dpi}|{convention_name}"
+    # The context schema is part of the key: a cache from an older extractor is rebuilt, not refused.
+    payload = (f"{CACHE_VERSION}|{CONTEXT_SCHEMA_VERSION}|{_sha256(pdf_path)}|{page_index}|{dpi}"
+               f"|{convention_name}")
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 

@@ -43,6 +43,14 @@ MIN_CONDUCTOR_MM = None      # None => derive from the page, see min_conductor_p
 # that survives a change of sheet size.
 MIN_CONDUCTOR_DIAGONAL_FRACTION = 0.017
 
+# ...but only up to this diagonal, in points. Past a B-size sheet (1,901 pt) a foldout keeps the
+# lettering and wire pitch of the smaller sheets and simply draws more circuit. Measured on pub
+# 7745609 (2,916 pt foldouts): the floor scaled to 49.6 pt, while the pieces of wire between
+# crossing gaps are 30-48 pt, so they never became runs and colour stopped at every gap. Capped,
+# the floor there is 32.3 pt: painted length right +16 %, wrong -27 %; pub 7749124 (2,573 pt) right
+# +1.6 %, wrong flat. A cap of 1,500 pt reached the 1,771 pt sheets and cost held-out precision.
+CONDUCTOR_FLOOR_MAX_DIAGONAL_PT = 1900.0
+
 # Endpoints within this distance are the same point. Vector drawings are exact, so this only has to
 # absorb rounding in the PDF's own coordinates, not drafting slop.
 SNAP_PX = 1.5
@@ -319,6 +327,12 @@ def canvas_diagonal_px(page, dpi):
     """Page diagonal in working pixels -- the natural scale for "how long is a real conductor"."""
     scale = dpi / 72.0
     return hypot(page.rect.width * scale, page.rect.height * scale)
+
+
+def conductor_floor_px(page, dpi):
+    """Shortest stroke chain that counts as a conductor run, in working pixels."""
+    diagonal = min(canvas_diagonal_px(page, dpi), CONDUCTOR_FLOOR_MAX_DIAGONAL_PT * dpi / 72.0)
+    return diagonal * MIN_CONDUCTOR_DIAGONAL_FRACTION
 
 
 # Below this the page carries no schematic geometry the vector path can read: the drawing is a

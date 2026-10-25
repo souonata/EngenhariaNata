@@ -198,13 +198,13 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
     segments the symbols are drawn with. ``opaque_zones`` are the paper-filled housings that hide
     any conductor drawn underneath and may therefore sever topology safely.
     """
-    from ..eval.vector_truth import (MIN_CONDUCTOR_DIAGONAL_FRACTION, _matrix, canvas_diagonal_px)
+    from ..eval.vector_truth import _matrix, canvas_diagonal_px, conductor_floor_px
 
     matrix = _matrix(page, dpi)
     diagonal = canvas_diagonal_px(page, dpi)
     min_side = min_side_pens * max(pen_px, 0.5)
     max_side = diagonal * max_side_fraction
-    max_twist_len = diagonal * MIN_CONDUCTOR_DIAGONAL_FRACTION * TWIST_LEN_FRACTION
+    max_twist_len = conductor_floor_px(page, dpi) * TWIST_LEN_FRACTION
 
     zones, strokes, opaque_zones = [], set(), []
 
