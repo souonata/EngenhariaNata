@@ -71,10 +71,16 @@ def read_legends(page, dpi, convention):
     matrix = _matrix(page, dpi)
     equals_boxes = _equals_boxes(page)
     legends = []
+    rotation = page.rotation_matrix
     for block in page.get_text("dict").get("blocks", ()):
         for line in block.get("lines", ()):
-            direction = line.get("dir", (1, 0))
-            axis = "h" if abs(direction[0]) >= abs(direction[1]) else "v"
+            # The writing direction comes in unrotated page space, like the position: it turns
+            # with the page. On a 90-degree foldout (pub 7745609) every code printed along a
+            # horizontal wire read as vertical, and ownership penalised the very wire it names.
+            dx, dy = line.get("dir", (1, 0))
+            shown_x = rotation.a * dx + rotation.c * dy
+            shown_y = rotation.b * dx + rotation.d * dy
+            axis = "h" if abs(shown_x) >= abs(shown_y) else "v"
             for span in line.get("spans", ()):
                 raw = (span.get("text") or "").strip()
                 if not raw:

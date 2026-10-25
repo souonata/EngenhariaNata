@@ -302,13 +302,15 @@ def harvest_strokes(strokes) -> PageHarvest:
         core = members[0]
         if len(members) > 1 and colour_class(members[0].rgb) == "dark":
             extra = members[0].width - members[1].width
-            lighter = colour_class(members[1].rgb) in ("chromatic", "white")
+            white_core = colour_class(members[1].rgb) == "white"
             if RAIL_EXTRA_PT[0] <= extra <= RAIL_EXTRA_PT[1]:
                 core = members[1]
                 rail_pairs += 1
-            elif lighter and members[1].width >= OUTLINE_CORE_SHARE * members[0].width:
+            elif white_core and members[1].width >= OUTLINE_CORE_SHARE * members[0].width:
                 # The classic sheets draw a white wire as a 2.5 pt white core over a 4.0 pt
-                # black outline: the outline is ink, the core is the colour.
+                # black outline: the outline is ink, the core is the colour. Only for white: a
+                # coloured core inside black is a two-colour wire (pub 7745609 draws SB/LGN as a
+                # 2.34 pt light-green core in 4.67 pt of black).
                 core = members[1]
         conductor = Conductor(segments=list(core.segments), width=core.width, base_rgb=core.rgb,
                               members={stroke.index for stroke in members})
@@ -462,15 +464,46 @@ def mark_printed_conflicts(conductors, legends, convention) -> int:
     return flagged
 
 
+def printed_codes(page, convention) -> list:
+    """The page's strong colour codes, in the frame the harvester reads strokes in.
+
+    Text comes back in the displayed (rotated) frame and drawings in the unrotated one. On a page
+    rotated 90 degrees (pub 7745609, all six foldouts) every code was paired with a conductor
+    elsewhere on the sheet, no colour reached the atlas and 3,350 conductors stayed unknown.
+    """
+    from dataclasses import replace
+
+    import fitz
+
+    from ..labels.text_layer import read_legends, strong_legends
+
+    legends = strong_legends(read_legends(page, 72, convention))
+    if not page.rotation:
+        return legends
+    matrix = page.derotation_matrix
+    moved = []
+    for legend in legends:
+        point = fitz.Point(legend.x, legend.y) * matrix
+        box = tuple(fitz.Rect(legend.bbox) * matrix) if legend.bbox else None
+        moved.append(replace(legend, x=point.x, y=point.y, bbox=box))
+    return moved
+
+
 def legend_votes(conductors, legends) -> Counter:
-    """(rgb, role, token) votes from every printed code to the conductor nearest it."""
+    """(rgb, role, token) votes from every printed code to the conductor nearest it.
+
+    A two-colour code on a two-colour conductor is kept as one ``pair`` vote; ``build_atlas``
+    decides its orientation, because not every sheet draws the code's first colour as the core.
+    """
     votes = Counter()
     for legend, best in nearest_conductors(conductors, legends):
         conductor = conductors[best]
         parts = legend.code.split("/")
-        votes[(rgb_key(conductor.base_rgb), "base", parts[0])] += 1
         if len(parts) == 2 and conductor.tracer_rgb is not None:
-            votes[(rgb_key(conductor.tracer_rgb), "tracer", parts[1])] += 1
+            votes[((rgb_key(conductor.base_rgb), rgb_key(conductor.tracer_rgb)), "pair",
+                   legend.code)] += 1
+        else:
+            votes[(rgb_key(conductor.base_rgb), "base", parts[0])] += 1
     return votes
 
 
@@ -503,16 +536,36 @@ def build_atlas(votes: Counter, min_support: int = 2, min_purity: float = 0.6) -
     """
     from math import dist
 
+    def agreed(by_colour):
+        found = {}
+        for rgb, tokens in by_colour.items():
+            token, count = tokens.most_common(1)[0]
+            total = sum(tokens.values())
+            if count >= min_support and count / total >= min_purity:
+                found[rgb] = {"token": token, "support": count,
+                              "purity": round(count / total, 3), "votes": dict(tokens)}
+        return found
+
     by_colour = defaultdict(Counter)
-    for (rgb, _role, token), count in votes.items():
-        by_colour[rgb][token] += count
-    atlas = {}
-    for rgb, tokens in by_colour.items():
-        token, count = tokens.most_common(1)[0]
-        total = sum(tokens.values())
-        if count >= min_support and count / total >= min_purity:
-            atlas[rgb] = {"token": token, "support": count, "purity": round(count / total, 3),
-                          "votes": dict(tokens)}
+    for (rgb, role, token), count in votes.items():
+        if role != "pair":
+            by_colour[rgb][token] += count
+    # Two-colour codes are oriented by what the single-colour codes already taught: pub 7745609
+    # draws light green as the edge both in LGN/R and in SB/LGN, so its core is the code's second
+    # colour in one and its first in the other. Sheets that draw the first colour as the core keep
+    # the printed order.
+    single = agreed(by_colour)
+    for ((base, tracer), _role, code), count in ((key, count) for key, count in votes.items()
+                                                 if key[1] == "pair"):
+        first, second = code.split("/")
+        known = {rgb: entry["token"] for rgb, entry in single.items()}
+        printed_order = (known.get(base) == first) + (known.get(tracer) == second)
+        swapped = (known.get(base) == second) + (known.get(tracer) == first)
+        if swapped > printed_order:
+            first, second = second, first
+        by_colour[base][first] += count
+        by_colour[tracer][second] += count
+    atlas = agreed(by_colour)
     dominant = {}
     for rgb, entry in atlas.items():
         best = dominant.get(entry["token"])

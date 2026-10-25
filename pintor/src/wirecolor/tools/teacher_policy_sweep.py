@@ -84,9 +84,8 @@ def main() -> None:
     from ..engine.policy import DecisionPolicy
     from ..engine.vector_page import decide_vector_context, extract_vector_context
     from ..eval.teacher import (build_atlas, harvest_page, legend_votes, mark_printed_conflicts,
-                                resolve_tokens)
+                                printed_codes, resolve_tokens)
     from ..labels.conventions import load_convention
-    from ..labels.text_layer import read_legends, strong_legends
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bench", required=True, help="teacher_bench folder holding the twins")
@@ -112,7 +111,7 @@ def main() -> None:
             document = fitz.open(entry["pdf"])
             page = document[int(entry["page"]) - 1]
             harvest = harvest_page(page)
-            legends = strong_legends(read_legends(page, 72, convention))
+            legends = printed_codes(page, convention)
             votes += legend_votes(harvest.conductors, legends)
             loaded.append((entry, document, page, harvest, legends))
         atlas = build_atlas(votes)
