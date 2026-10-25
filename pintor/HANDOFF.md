@@ -35,11 +35,28 @@ The filled-body entry below (#94) shipped. Published API first:
   `external_auth=ok account=ok unauthenticated=401 job=ready result=pdf delete=204`.
 - **Site.** PR #95 merged as `4f71e7e`, and GitHub Pages deployed.
 - **Drift.** `check-release-drift.sh` reports `site 0.7.5`, `api 0.7.5 (engine 3.2.5)`.
-- **Rollback.** `cd /opt/pintor-api-releases/8b6e077/pintor && docker compose -p pintor-api
-  --env-file /opt/pintor-api/.env up -d` returns to 0.7.4.
+- **Rollback.**
+  `cd /opt/pintor-api-releases/8b6e077/pintor && docker compose -p pintor-api --env-file /opt/pintor-api/.env up -d`
+  returns to 0.7.4.
 
-After this build the root disk is at 62%, with 10 release folders and 10
-`engnata/pintor-api` images. `prune-old-releases.sh` has still not been run.
+After this build the root disk was at 62%, with 10 release folders and 10 `engnata/pintor-api`
+images.
+
+**Cleanup (same day).** `deploy/prune-old-releases.sh` was run from the live release, dry-run first
+and then with `--apply`, keeping its defaults:
+
+- **Kept:** releases `1aa9ed4` (0.7.5, live), `8b6e077` (0.7.4, the documented rollback) and
+  `2b08f7e` (0.6.2, the script's pinned default), with their images.
+- **Removed:** seven release folders and seven images (0.6.7 to 0.7.3), plus the BuildKit cache.
+- **Untouched:** the `pintor-api_pintor-data` volume, which the script never deletes.
+
+The root disk went from 62% to 25% (12 GB to 4.6 GB used). Afterwards the container was healthy on
+0.7.5 and the external smoke passed:
+`external_auth=ok account=ok unauthenticated=401 job=ready result=pdf delete=204`.
+
+The script still pins `2b08f7e` / `0.6.2` as its rollback by default. Today's rollback (0.7.4) is
+kept anyway as one of the two most recent releases, so the 0.6.2 pin only costs about 0.9 GB.
+Changing that default is optional.
 
 ## 2026-10-25 a wire end on a filled body terminates there; a straighter atlas; rescoring
 
