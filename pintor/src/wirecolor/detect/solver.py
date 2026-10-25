@@ -20,6 +20,9 @@ from .skeleton import deep_tang as _deep_tang, unit
 
 # A hairpin's U-turn has nothing else within this distance of its tip.
 HAIRPIN_TIP_PX = 20
+# The wire a code is printed on ends this close outside the text's short edges (erasure margin 3 px
+# plus the skeleton's retreat from a cut).
+LABEL_EDGE_PX = 12
 
 
 def solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
@@ -65,6 +68,52 @@ def solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
     for L in labels:
         xs_ = [p[0] for p in L["box"]]; ys_ = [p[1] for p in L["box"]]
         label_boxes.append((min(xs_) - 5, min(ys_) - 5, max(xs_) + 5, max(ys_) + 5))
+
+    def ends_within(y, x, radius):
+        reach = int(radius // 6) + 1
+        cy, cx = round(y / 6), round(x / 6)
+        for dcy in range(-reach, reach + 1):
+            for dcx in range(-reach, reach + 1):
+                for (si, k) in eidx.get((cy + dcy, cx + dcx), []):
+                    ey, ex = segments[si]["ends"][k]
+                    if (ey - y) ** 2 + (ex - x) ** 2 <= radius * radius:
+                        yield si, k
+
+    def wire_through_label(L):
+        """The two pieces of the wire a code is printed on, or None.
+
+        The text is erased from a scan's wire mask, so the wire a code is printed ON is cut into two
+        pieces that end at the text's two short edges, in line with it. A parallel wire beside the
+        text can still be nearer its centre (pub 7741532 p73: ``W/BN 1`` printed on the W/BN wire,
+        the P wire 22 px below), so the two in-line pieces are the stronger evidence.
+        """
+        xs = [p[0] for p in L["box"]]
+        ys = [p[1] for p in L["box"]]
+        x0, x1, y0, y1 = min(xs), max(xs), min(ys), max(ys)
+        horizontal = (x1 - x0) >= (y1 - y0)
+        middle = (y0 + y1) / 2 if horizontal else (x0 + x1) / 2
+        half = ((y1 - y0) if horizontal else (x1 - x0)) / 2
+        pieces = []
+        for edge, sign in (((x0, -1), (x1, 1)) if horizontal else ((y0, -1), (y1, 1))):
+            point = (middle, edge) if horizontal else (edge, middle)
+            best = None
+            for si, k in ends_within(point[0], point[1], LABEL_EDGE_PX + half):
+                if si in twist or len(segments[si]["order"]) < 12:
+                    continue
+                ey, ex = segments[si]["ends"][k]
+                outside = ((ex if horizontal else ey) - edge) * sign
+                offset = (ey if horizontal else ex) - middle
+                ty, tx = unit(segments[si]["tang"][k])
+                away = (-tx if horizontal else -ty) * sign       # into the arc, away from the text
+                if -3 <= outside <= LABEL_EDGE_PX and abs(offset) <= max(6, 0.8 * half)                         and away >= 0.9 and (best is None or outside < best[1]):
+                    best = (si, outside, offset)
+            if best is None:
+                return None
+            pieces.append(best)
+        (left, _, left_offset), (right, _, right_offset) = pieces
+        if left == right or abs(left_offset - right_offset) > 4:
+            return None
+        return left, right
 
     def in_label_box(px, py):
         return any(bx0 <= px <= bx1 and by0 <= py <= by1 for bx0, by0, bx1, by1 in label_boxes)
@@ -173,6 +222,7 @@ def solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
         sensor kept {P} on the upper run and vetoed its collinear join to the BL/OR net)."""
         return (any(ch.isdigit() for ch in str(L.get("raw", "")).upper())
                 or "/" in L["code"]
+                or L.get("printed_on_wire")
                 or L.get("evidence_source") in {
                     "page-code-table", "parallel-bare-bundle",
                 })
@@ -213,6 +263,16 @@ def solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
         if len(L["code"]) == 1 and not any(ch.isdigit() for ch in _raw) \
                 and in_housing(L["cx"], L["cy"], 60):
             rej += 1
+            continue
+        # A code printed on its wire owns that wire, whatever runs nearer beside the text. That is
+        # strong evidence even without a gauge, so its colour also keeps the net from merging with
+        # another colour (pub 7749124 p17: bare SB and GR on neighbouring pins merged inside the
+        # connector and painted GR as SB).
+        through = wire_through_label(L)
+        if through is not None:
+            L["printed_on_wire"] = True
+            for si in through:
+                _seed(L, si)
             continue
         # wide labels (gauge-first style: "1.5 BL/R (w6)") sit at the end of a leader, farther from
         # their wire than compact codes -- scale the match radius with the label's own size.

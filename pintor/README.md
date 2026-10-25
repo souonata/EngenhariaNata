@@ -41,6 +41,9 @@ The Engenharia NATA beta has two page-analysis modes:
   never painted. A wire with a code printed across it is not a leader;
 - shared pins on scans: two wires that end at the same pin at an acute angle are two wires, not the
   U-turn of one harness loop. A U-turn is joined only when nothing else lies at its tip;
+- codes printed on their wire, on scans: when a wire runs into the text on one side and out on the
+  other, in line with it, the code belongs to that wire even if a parallel wire runs nearer the
+  text's centre. It counts as strong evidence, so that wire never merges into another colour;
 - outlined pictorial cables: when the real conductors are hollow raster tubes and separate thin
   vector leaders point from exact colour codes to those tubes, Pintor follows the closed cable
   interior instead of the leader. At least two independent one-to-one callouts must resolve on the
