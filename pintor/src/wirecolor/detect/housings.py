@@ -93,6 +93,47 @@ def detect_housings(binary, labels, W, H):
     return _kept
 
 
+# A filled component body survives an opening this wide; no conductor is drawn that thick.
+BODY_OPENING_PX = 15
+# ... and is at least this large on its shorter side, which leaves out junction dots and ticks.
+BODY_MIN_SIDE_PX = 25
+# A wire end this close to a filled body ends on it.
+BODY_END_PX = 2
+
+
+def filled_bodies(binary):
+    """Mask of the filled component bodies on a page: relays, control units, sensors, batteries.
+
+    The rectangle detector sees only outlined boxes. A body drawn filled -- a relay block, a
+    connector shell, a starter -- was not a housing at all: its outline became a short arc of
+    "wire", and the solver joined two cables that end at the same relay through it (pub 7742218
+    p445: Y/R at pin 87 carried into the SB leaving pin 85). The holes of a body, such as the
+    white terminal cells of a relay, stay outside the mask.
+    """
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (BODY_OPENING_PX, BODY_OPENING_PX))
+    opened = cv2.morphologyEx((binary > 0).astype("uint8"), cv2.MORPH_OPEN, kernel)
+    count, labels, stats, _ = cv2.connectedComponentsWithStats(opened, 8)
+    bodies = (labels > 0).astype("uint8")
+    for index in range(1, count):
+        if min(stats[index, 2], stats[index, 3]) < BODY_MIN_SIDE_PX:
+            bodies[labels == index] = 0
+    return bodies
+
+
+def on_filled_body(bodies):
+    """Predicate (y, x) -> True where a point lies on, or within BODY_END_PX of, a filled body."""
+    if not bodies.any():
+        return None
+    distance = cv2.distanceTransform((bodies == 0).astype("uint8"), cv2.DIST_L2, 3)
+    height, width = bodies.shape
+
+    def on_body(y, x):
+        y, x = int(round(y)), int(round(x))
+        return 0 <= y < height and 0 <= x < width and distance[y, x] <= BODY_END_PX
+
+    return on_body
+
+
 def make_in_housing(housings):
     def in_housing(px, py, m=0):
         return any(hx - m <= px <= hx + hw + m and hy - m <= py <= hy + hh + m

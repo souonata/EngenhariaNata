@@ -20,6 +20,64 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-25 a wire end on a filled body terminates there; a straighter atlas; rescoring
+
+Branch `feat/pintor-atlas-cor-fora`. Not released: production stays 0.7.4 / engine 3.2.4.
+
+### The ruler: weak atlas entries far from their colour
+
+About a quarter of the atlas votes come from a code paired with a neighbouring conductor. On pub
+7742218 two blues (5 and 3 votes) were learned as PU, whose own purple carries 70 votes, so every
+OR/BL the painter followed from the print was scored wrong. `build_atlas` now drops an entry when
+all of these hold:
+
+- the token's dominant entry has at least five times its support;
+- it looks clearly different (CIE76 > 30);
+- its own votes are not consistent (purity under 0.9, or fewer than 3 votes).
+
+Its conductors become unknown. The palette's nominal colours could not do this job: several right
+entries sit as far from them as the wrong ones. Rescored on identical paint, the change touches 28
+conductors and moves every run by 2 to 8 wrong; no engine ranking changes.
+
+`teacher_bench --rescore` re-judges the overlays a run kept against the current truth without
+painting. It reproduced the original verdicts exactly before the atlas change.
+
+### The engine: two cables ending at one relay are not one cable
+
+On the rasterised 7742218 pages, the Y/R wire ends at pin 87 on the left edge of relay 2. The SB
+wire leaves pin 85 a few pixels lower on the same edge. The relay is a filled grey body, which the
+rectangle housing detector never sees. The solver's corner rule joined the two ends there, and Y/R
+ran down the whole SB wire, repeated on all seven pages of that diagram.
+
+`detect/housings.py` now finds filled bodies (`filled_bodies`: what survives a 15 px opening, at
+least 25 px on its shorter side, so dots, ticks and cables are left out). A wire end within 2 px of
+a body joins nothing (`on_body`, kept with the dot ends as `at_end` in the solver): a component is
+never a bridge (safety rule 3).
+
+Measured on the 49 scanned teacher pages (new ruler on both sides):
+
+|                          | 0.7.4       | ends on a body terminate |
+| ------------------------ | ----------- | ------------------------ |
+| right                    | 908         | 894                      |
+| wrong                    | 361         | **327**                  |
+| exact-colour precision   | 0.7155      | **0.7322**               |
+| length right / wrong, pt | 317k / 100k | 316k / **90k**           |
+| held-out right / wrong   | 272 / 151   | 273 / **125**            |
+
+23 pages change, and none gains a wrong conductor. The held-out publication improves on its own (+1
+right, −26 wrong). The 14 right conductors lost are on training publications. `marks4` is unchanged
+(0.5873).
+
+**Measured and not shipped.** Two broader variants were tried first:
+
+- Erasing every filled body from the wire mask and counting it as a housing removed 22 wrong but
+  lost 41 right, and raised the wrong length. The relay codes and fuse letters inside the bodies no
+  longer found their wires, and on 7749124 p15 a relay box's border was painted red.
+- Taking out only the skeleton arcs lying inside a body did not catch the bridge. The joining piece
+  was the start of the SB wire itself, 63 % on the body edge.
+
+The fix that shipped changes no wire and no label, only where a join may happen.
+
 ## 2026-10-25 published as 0.7.4 / engine 3.2.4
 
 The printed-on-wire entry below (#91) shipped. Published API first:

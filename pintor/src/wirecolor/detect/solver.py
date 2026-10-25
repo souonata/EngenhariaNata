@@ -26,7 +26,8 @@ LABEL_EDGE_PX = 12
 
 
 def solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
-          probe=None, who=None, netends=None, deadends=False, color_boundary_dots=()):
+          probe=None, who=None, netends=None, deadends=False, color_boundary_dots=(),
+          on_body=None):
     """Run the net-solver. Returns a dict with everything downstream stages (paint, dashes,
     validators) and the P0 golden harness need: mate, at_dot, claims, seeds, per-net colour
     state (nfind/net_colors/seed_pts) and the v1 counter line values."""
@@ -209,6 +210,17 @@ def solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
         if _d not in color_boundary_dots:
             for (_sa, _), (_sb, _) in zip(_lst, _lst[1:]):
                 nunion(_sa, _sb)
+
+    # A wire end lying on a filled component body terminates at that component; it continues into
+    # nothing. Two cables ending at the same relay were joined at its edge by the corner rule
+    # (pub 7742218 p445: Y/R at pin 87 into the SB leaving pin 85). Components are never bridges.
+    at_body = set()
+    if on_body is not None:
+        for _si, _s in enumerate(segments):
+            for _k, (_ey, _ex) in enumerate(_s["ends"]):
+                if on_body(_ey, _ex):
+                    at_body.add((_si, _k))
+    at_end = at_dot | at_body
 
     # --- label seeds: colour each label's home net (rejection rules unchanged from rounds 1-4) ---
     seeds = []                             # (label, home segment)
@@ -422,7 +434,7 @@ def solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
     # ERASED LABEL BOX may land on a stub down to 12 px: the erased code text chops the wire into
     # pieces that are often ALL short, and those stubs are cut wire, not dashes.
     _gap_ports = [(sj, kj) for sj in live if len(segments[sj]["order"]) >= 12
-                  for kj in (0, 1) if (sj, kj) not in at_dot]
+                  for kj in (0, 1) if (sj, kj) not in at_end]
     _gap_pos = np.array([segments[sj]["ends"][kj] for (sj, kj) in _gap_ports], np.float32) \
         if _gap_ports else np.zeros((0, 2), np.float32)
 
@@ -430,12 +442,12 @@ def solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
         seeded_si = bool(net_colors[nfind(si)])   # a label's own wire stub is never a dash/fragment:
         for k in (0, 1):                          # the erased code text cuts the wire into short pieces
             p = (si, k)
-            if p in at_dot:
+            if p in at_end:
                 continue
             E = segments[si]["ends"][k]
             dp = deep_tang(si, k)
             for (sj, kj) in others_at(E, si):
-                if sj in twist or (sj, kj) in at_dot:
+                if sj in twist or (sj, kj) in at_end:
                     continue
                 q = (sj, kj)
                 dq = deep_tang(sj, kj)
@@ -530,7 +542,7 @@ def solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
     nodes = defaultdict(list)
     for si in live:
         for k in (0, 1):
-            if (si, k) not in at_dot:
+            if (si, k) not in at_end:
                 nodes[pfind((si, k))].append((si, k))
 
     # --- solve to fixpoint -------------------------------------------------------------------------
@@ -592,7 +604,7 @@ def solve(segments, twist, labels, in_housing, dot_near, wire, W, H,
         for si in live:
             for k in (0, 1):
                 p = (si, k)
-                if p in mate or p in at_dot:
+                if p in mate or p in at_end:
                     continue
                 av = avail(p)
                 if len(av) == 1:
