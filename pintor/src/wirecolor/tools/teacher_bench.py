@@ -104,7 +104,7 @@ def rasterised(document, dpi: int, seed: str = ""):
 
 def run(pages: list, out_dir: Path, keep_overlays: bool = False,
         engine_src: str | None = None, twins_only: bool = False,
-        raster_dpi: int | None = None) -> dict:
+        raster_dpi: int | None = None, rescore: bool = False) -> dict:
     import fitz
     import numpy as np
     from PIL import Image
@@ -118,6 +118,13 @@ def run(pages: list, out_dir: Path, keep_overlays: bool = False,
 
     Image.MAX_IMAGE_PIXELS = None
     out_dir.mkdir(parents=True, exist_ok=True)
+    # A rescore judges the overlays an earlier run kept against the truth this tree builds now,
+    # so a change to the ruler is measured on identical paint without repainting.
+    earlier = {}
+    if rescore:
+        report = json.loads((out_dir / "teacher_benchmark.json").read_text(encoding="utf-8"))
+        earlier = {(str(record["publication"]), int(record["page"])): record.get("paint")
+                   for record in report["pages"]}
     convention = load_convention("volvo_classic")
     started = time.time()
 
@@ -148,19 +155,24 @@ def run(pages: list, out_dir: Path, keep_overlays: bool = False,
                 resolve_tokens(harvest.conductors, atlas, convention)
                 record["factory_conflicts"] = mark_printed_conflicts(
                     harvest.conductors, legends, convention)
-                twin_doc = fitz.open()
-                build_twin(page, harvest, twin_doc)
-                twin_pdf = out_dir / f"{tag}_twin.pdf"
-                if raster_dpi:
-                    twin_doc = rasterised(twin_doc, raster_dpi, seed=f"{tag}")
-                twin_doc.save(twin_pdf)
-                twin_doc.close()
-                if twins_only:
-                    reports.append(record)
-                    continue
                 overlay = out_dir / f"{tag}_overlay.png"
-                painted = (_paint_with(engine_src, twin_pdf, out_dir, overlay) if engine_src
-                           else _paint(twin_pdf, out_dir, overlay))
+                if rescore:
+                    painted = earlier.get((publication, int(entry["page"])))
+                    if painted is None:
+                        raise RuntimeError("the earlier run has no paint record for this page")
+                else:
+                    twin_doc = fitz.open()
+                    build_twin(page, harvest, twin_doc)
+                    twin_pdf = out_dir / f"{tag}_twin.pdf"
+                    if raster_dpi:
+                        twin_doc = rasterised(twin_doc, raster_dpi, seed=f"{tag}")
+                    twin_doc.save(twin_pdf)
+                    twin_doc.close()
+                    if twins_only:
+                        reports.append(record)
+                        continue
+                    painted = (_paint_with(engine_src, twin_pdf, out_dir, overlay) if engine_src
+                               else _paint(twin_pdf, out_dir, overlay))
                 record["paint"] = painted
                 if painted["released"]:
                     rgba = np.array(Image.open(overlay).convert("RGBA"))
@@ -172,7 +184,7 @@ def run(pages: list, out_dir: Path, keep_overlays: bool = False,
                                                      convention)
                 record["summary"] = summarise_scores(results, paint_stats)
                 record["conductor_scores"] = [result.__dict__ for result in results]
-                if not keep_overlays:
+                if not keep_overlays and not rescore:
                     overlay.unlink(missing_ok=True)
             except Exception as error:                  # one bad page never stops a benchmark
                 record["error"] = f"{type(error).__name__}: {error}"
@@ -193,8 +205,8 @@ def run(pages: list, out_dir: Path, keep_overlays: bool = False,
         "atlases": atlases,
         "pages": reports,
     }
-    (out_dir / "teacher_benchmark.json").write_text(json.dumps(payload, indent=1),
-                                                    encoding="utf-8")
+    name = "teacher_benchmark_rescored.json" if rescore else "teacher_benchmark.json"
+    (out_dir / name).write_text(json.dumps(payload, indent=1), encoding="utf-8")
     return payload
 
 
@@ -238,6 +250,9 @@ def main() -> None:
     parser.add_argument("--keep-overlays", action="store_true")
     parser.add_argument("--raster-dpi", type=int, default=None,
                         help="turn each twin into an image-only scan at this resolution")
+    parser.add_argument("--rescore", action="store_true",
+                        help="judge the overlays kept in --out against the current truth, "
+                             "without painting; writes teacher_benchmark_rescored.json")
     parser.add_argument("--twins-only", action="store_true",
                         help="build the twins and stop: input for teacher_policy_sweep")
     parser.add_argument("--engine-src", default=None,
@@ -246,7 +261,7 @@ def main() -> None:
     pages = json.loads(Path(args.pages).read_text(encoding="utf-8"))
     payload = run(pages, Path(args.out), keep_overlays=args.keep_overlays,
                   engine_src=args.engine_src, twins_only=args.twins_only,
-                  raster_dpi=args.raster_dpi)
+                  raster_dpi=args.raster_dpi, rescore=args.rescore)
     print(json.dumps(payload["summary"], indent=2))
 
 

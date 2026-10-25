@@ -120,6 +120,24 @@ class Harvest(unittest.TestCase):
         self.assertEqual(mark_printed_conflicts([conductor], [legend], convention), 1)
         self.assertTrue(conductor.factory_conflict)
 
+    def test_a_weak_stray_shade_does_not_join_the_atlas(self):
+        """Pub 7742218: a blue with 5 stray PU votes beside PU's own purple with 70."""
+        from collections import Counter
+
+        from wirecolor.eval.teacher import build_atlas
+
+        purple, stray_blue = (0.55, 0.21, 0.51), (0.0, 0.49, 0.76)
+        blue, light_blue = (0.4, 0.48, 0.71), (0.0, 0.62, 0.87)
+        votes = Counter({(purple, "base", "PU"): 70,
+                         (stray_blue, "tracer", "PU"): 5, (stray_blue, "tracer", "SB"): 2,
+                         (stray_blue, "tracer", "BL"): 1,
+                         (blue, "base", "BL"): 51,
+                         (light_blue, "base", "BL"): 10})      # a second shade, printed consistently
+        atlas = build_atlas(votes)
+        self.assertEqual(atlas[purple]["token"], "PU")
+        self.assertNotIn(stray_blue, atlas)
+        self.assertEqual(atlas[light_blue]["token"], "BL")
+
 
 def _classic_page(draw):
     """A page in the classic colour style: 0.85 pt drafting pen, 2.5 pt cores, no black rails."""

@@ -474,8 +474,35 @@ def legend_votes(conductors, legends) -> Counter:
     return votes
 
 
+# A weak entry for a token is dropped when the token's dominant entry has at least this many times
+# its support and looks clearly different (CIE76 distance in Lab), unless the codes near it agree
+# (a second shade of one colour, printed consistently) and are more than a couple.
+OUTLIER_SUPPORT_RATIO = 5
+OUTLIER_LAB_DISTANCE = 30.0
+OUTLIER_KEEP_PURITY = 0.9
+OUTLIER_KEEP_SUPPORT = 3
+
+
+def _lab(rgb):
+    import numpy as np
+
+    import cv2
+
+    pixel = np.uint8([[[round(rgb[2] * 255), round(rgb[1] * 255), round(rgb[0] * 255)]]])
+    return cv2.cvtColor(pixel, cv2.COLOR_BGR2LAB)[0, 0].astype(float)
+
+
 def build_atlas(votes: Counter, min_support: int = 2, min_purity: float = 0.6) -> dict:
-    """rgb -> token where the printed codes agree; uncoloured fallbacks for black and white."""
+    """rgb -> token where the printed codes agree; uncoloured fallbacks for black and white.
+
+    About a quarter of the votes come from a code paired with a neighbouring conductor, so a few
+    stray votes can name a colour after the wrong token. On pub 7742218 two blues (5 and 3 votes)
+    became PU, whose own purple carries 70, and every OR/BL the painter followed from the print
+    was scored wrong. A weak entry far from its token's dominant colour is therefore left out:
+    its conductors are unknown, which a ruler can afford, rather than wrong.
+    """
+    from math import dist
+
     by_colour = defaultdict(Counter)
     for (rgb, _role, token), count in votes.items():
         by_colour[rgb][token] += count
@@ -486,6 +513,20 @@ def build_atlas(votes: Counter, min_support: int = 2, min_purity: float = 0.6) -
         if count >= min_support and count / total >= min_purity:
             atlas[rgb] = {"token": token, "support": count, "purity": round(count / total, 3),
                           "votes": dict(tokens)}
+    dominant = {}
+    for rgb, entry in atlas.items():
+        best = dominant.get(entry["token"])
+        if best is None or entry["support"] > atlas[best]["support"]:
+            dominant[entry["token"]] = rgb
+    for rgb in list(atlas):
+        head = dominant[atlas[rgb]["token"]]
+        entry = atlas[rgb]
+        consistent = (entry["purity"] >= OUTLIER_KEEP_PURITY
+                      and entry["support"] >= OUTLIER_KEEP_SUPPORT)
+        if (rgb != head and not consistent
+                and atlas[head]["support"] >= OUTLIER_SUPPORT_RATIO * entry["support"]
+                and dist(_lab(rgb), _lab(head)) > OUTLIER_LAB_DISTANCE):
+            del atlas[rgb]
     return atlas
 
 
