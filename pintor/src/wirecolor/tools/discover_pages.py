@@ -53,6 +53,23 @@ SUSPECT_TITLE = re.compile(r"wiring|schemat|circuit|electr|harness|group\s*30", 
 SUSPECT_TEXT = ("wiring diagram", "wiring schematic", "circuit diagram",
                 "electrical diagram", "cable harness", "group 30")
 
+# Scanned pages are confirmed by reading them, not by their shape. Measured on the 2026-10 library
+# scan (1,064 candidate manuals): the structural rule -- a near-full-page image in a document about
+# wiring -- selected 6,165 scanned pages, and OCR found colour codes beside lines on 7 % of them,
+# while it missed 63 % of the scanned diagrams that do carry codes: small circuits set in a text
+# page, and plates beside a glossary. So every page the vector evidence leaves open, with at least
+# this share of its area in images, is read at the discovery resolution, and kept only when OCR
+# finds a strong code beside line-like ink. 95 % of the scanned diagrams with codes clear 5 %.
+OCR_PROSPECT_MIN_COVERAGE = 0.05
+# A drawing can carry its codes as vector outlines: no text layer and no image, only paths. Such a
+# page is read too when it is headed as a wiring diagram, holds almost no text and real line art.
+# Measured: of 59 such headed pages in the scan, 2 carried codes -- pub 7747622's EMS 2 engine
+# harness (65 codes beside lines) among them, which every other rule left black.
+OUTLINED_MAX_TEXT = 400
+OUTLINED_MIN_PATHS = 200
+OCR_POSITIVE = ("confirmed", "probable")
+OCR_MAX_PIXELS = 60_000_000
+
 
 def code_patterns(convention):
     """Wire-code matchers built from the Convention, so this holds for any manufacturer."""
@@ -194,18 +211,53 @@ def merged_convention(names=None):
     return SimpleNamespace(codes=frozenset(codes), two_color_sep=separator)
 
 
+def _read_scanned_pages(pdf_path, prospects, convention_names, progress=None, chunk_pages=50):
+    """OCR verdict for each prospect page index, in the order given."""
+    import tempfile
+
+    import fitz
+
+    from ..labels.ocr import build_engine
+    from .inventory_wiring_pages import _render_for_ocr
+    from .wiring_evidence import DISCOVERY_DPI, inspect_ocr_image
+
+    threads = max(1, int(os.getenv("OMP_NUM_THREADS", "2") or 2))
+    engine = build_engine(intra_op_threads=threads)
+    verdicts = {}
+    with tempfile.TemporaryDirectory(prefix="pintor-scan-") as temp:
+        image = Path(temp) / "page.png"
+        for start in range(0, len(prospects), max(1, chunk_pages)):
+            document = fitz.open(pdf_path)
+            try:
+                for index in prospects[start:start + chunk_pages]:
+                    try:
+                        _render_for_ocr(document[index], image, DISCOVERY_DPI, OCR_MAX_PIXELS)
+                        verdicts[index] = inspect_ocr_image(
+                            str(image), convention_names=convention_names, engine=engine)
+                    except Exception as error:      # one unreadable image must not end the sweep
+                        verdicts[index] = {"status": "error",
+                                           "reason": f"{type(error).__name__}: {error}"}
+                    if progress is not None:
+                        progress(len(verdicts), len(prospects))
+            finally:
+                document.close()
+    return verdicts
+
+
 def scan_document(pdf_path, convention_name="auto", min_codes=MIN_CODES, max_pages=0,
-                  progress=None, chunk_pages=50):
+                  progress=None, chunk_pages=50, read_scans=True, ocr_max_pages=0,
+                  ocr_progress=None):
     """Judge every page of ONE uploaded document and report the paintable ones.
 
     Same two kinds of evidence as the library sweep, applied to a single file:
 
     * **positioned code beside vector ink** -- one strong legend is enough when a sufficiently long
       stroke runs beside it, which retains small sensor and relay figures;
-    * **raster foldout inside a wiring document** -- a near-full-page image on a large sheet with
-      almost no text, in a file that is independently known to be about wiring. It carries no text
-      to count, so it is a *candidate*: only OCR can confirm it, and the painter abstains if the
-      labels never materialise.
+    * **colour codes read on a scanned page** -- every page the vector evidence leaves open, with
+      ``OCR_PROSPECT_MIN_COVERAGE`` of its area in images, is read with OCR and kept only when a
+      strong code sits beside line-like ink. ``read_scans=False`` restores the old structural rule
+      (a near-full-page image in a document about wiring, unread); ``ocr_max_pages`` caps how many
+      pages are read, largest image share first, and the rest fall back to that rule.
 
     Returns the page indices to paint plus the evidence behind each one, so the interface can say
     why a page was chosen and the operator can audit a sweep afterwards.
@@ -215,7 +267,7 @@ def scan_document(pdf_path, convention_name="auto", min_codes=MIN_CODES, max_pag
     convention_names = None if convention_name in ("", "auto") else [convention_name]
     convention = merged_convention(convention_names)
     gauged_re, striped_re = code_patterns(convention)
-    from .wiring_evidence import inspect_vector_page
+    from .wiring_evidence import PRIMARY_WIRING_HEADING, inspect_vector_page
     document = fitz.open(pdf_path)
     try:
         page_count = len(document)
@@ -246,11 +298,16 @@ def scan_document(pdf_path, convention_name="auto", min_codes=MIN_CODES, max_pag
                 # legends. Pages without legends need only the cheap image-coverage probe here.
                 geometry = page_geometry(page, len(text.strip()), want_strokes=False)
                 geometry["stroke_primitives"] = int(vector.get("segments", 0))
+                outlined = (len(text.strip()) < OUTLINED_MAX_TEXT
+                            and geometry["image_coverage"] < OCR_PROSPECT_MIN_COVERAGE
+                            and bool(PRIMARY_WIRING_HEADING.search(text))
+                            and len(page.get_drawings()) >= OUTLINED_MIN_PATHS)
                 evidence.append({
                     "page": index,
                     "codes": codes,
                     "geometry": geometry,
                     "vector": vector,
+                    "outlined": outlined,
                 })
         finally:
             document.close()
@@ -264,6 +321,19 @@ def scan_document(pdf_path, convention_name="auto", min_codes=MIN_CODES, max_pag
     confirmed_anywhere = any(
         item["vector"].get("status") == "confirmed" for item in evidence)
     wiring_document = wiring_phrase or confirmed_anywhere
+
+    open_statuses = {"confirmed", "excluded_non_wiring", "already_colored"}
+    prospects = sorted(
+        (item for item in evidence
+         if item["vector"].get("status") not in open_statuses
+         and (item["geometry"]["image_coverage"] >= OCR_PROSPECT_MIN_COVERAGE
+              or item["outlined"] or item["vector"].get("requires_ocr"))),
+        key=lambda item: -item["geometry"]["image_coverage"]) if read_scans else []
+    if ocr_max_pages > 0:
+        prospects = prospects[:ocr_max_pages]
+    scanned = _read_scanned_pages(
+        pdf_path, [item["page"] for item in prospects], convention_names,
+        progress=ocr_progress, chunk_pages=chunk_pages) if prospects else {}
 
     pages = []
     for item in evidence:
@@ -282,6 +352,12 @@ def scan_document(pdf_path, convention_name="auto", min_codes=MIN_CODES, max_pag
             tier, status = "vector+owned-colour", "confirmed"
         elif item["vector"].get("status") == "review":
             tier, status = "vector+colour-review", "candidate"
+        reading = scanned.get(item["page"])
+        if reading is not None and status != "confirmed":
+            if reading.get("status") in OCR_POSITIVE:
+                tier, status = "raster+ocr-codes", "candidate"
+            else:
+                tier, status = "raster+ocr-no-codes", "rejected"
         pages.append({
             "page": item["page"],
             "codes": item["codes"],
@@ -290,6 +366,8 @@ def scan_document(pdf_path, convention_name="auto", min_codes=MIN_CODES, max_pag
             "image_coverage": item["geometry"]["image_coverage"],
             "stroke_primitives": item["geometry"]["stroke_primitives"],
             "vector": item["vector"],
+            "ocr": None if reading is None else {
+                key: reading.get(key) for key in ("status", "reason", "near_wire")},
         })
 
     confirmed = [item["page"] for item in pages if item["status"] == "confirmed"]
@@ -311,6 +389,7 @@ def scan_document(pdf_path, convention_name="auto", min_codes=MIN_CODES, max_pag
         "candidates": candidates,
         "excluded_non_wiring": excluded_non_wiring,
         "already_colored": already_colored,
+        "scanned_pages_read": len(scanned),
         "selected": sorted(set(confirmed) | set(candidates)),
         "evidence": [item for item in pages if item["status"] != "rejected"],
     }

@@ -162,7 +162,8 @@
         "reading-raster-labels": "Lendo códigos visíveis com OCR e rastreando os fios…",
         "tracing-conductors": "Separando fios físicos de símbolos, terminais e molduras…",
         "review": "Preparando a revisão visual…",
-        "scanning-document": "Procurando wiring diagrams no documento"
+        "scanning-document": "Procurando wiring diagrams no documento",
+        "reading-scanned-pages": "Lendo as páginas digitalizadas com OCR"
       },
       "queuePosition": "Na fila · {position}º lugar"
     },
@@ -459,7 +460,8 @@
         "reading-raster-labels": "Lettura OCR dei codici visibili e tracciamento dei fili…",
         "tracing-conductors": "Separazione dei fili fisici da simboli, terminali e cornici…",
         "review": "Preparazione della revisione visiva…",
-        "scanning-document": "Ricerca degli schemi elettrici nel documento"
+        "scanning-document": "Ricerca degli schemi elettrici nel documento",
+        "reading-scanned-pages": "Lettura OCR delle pagine scansionate"
       },
       "queuePosition": "In coda · {position}º posto"
     },
@@ -756,7 +758,8 @@
         "reading-raster-labels": "Läser synliga koder med OCR och spårar ledningar…",
         "tracing-conductors": "Skiljer fysiska ledningar från symboler, anslutningar och ramar…",
         "review": "Förbereder den visuella granskningen…",
-        "scanning-document": "Söker kopplingsscheman i dokumentet"
+        "scanning-document": "Söker kopplingsscheman i dokumentet",
+        "reading-scanned-pages": "Läser skannade sidor med OCR"
       },
       "queuePosition": "I kö · plats {position}"
     },
