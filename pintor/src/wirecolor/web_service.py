@@ -251,6 +251,7 @@ def _public_state(state: dict) -> dict:
         "download", "feedback_id", "current_page", "completed_pages", "selected_page_count",
         "page_discovery", "discovery", "queue_position", "finished_at", "source_bytes",
         "scanned_pages", "expires_at", "shared_for_improvement",
+        "scanned_images_read", "scanned_images_total",
     }
     return {key: state[key] for key in allowed if key in state}
 
@@ -1251,10 +1252,17 @@ def discover_job_pages(store: JobStore, job_id: str, source: Path, state: dict) 
         store.update(job_id, stage="scanning-document", scanned_pages=scanned,
                      page_count=total)
 
+    def report_reading(read: int, total: int) -> None:
+        # Each scanned page takes seconds to read; the update is also the supervisor's heartbeat.
+        store.update(job_id, stage="reading-scanned-pages", scanned_images_read=read,
+                     scanned_images_total=total)
+
     report = scan_document(
         source, state.get("requested_convention", "auto"),
         max_pages=int(os.getenv("PINTOR_SCAN_MAX_PAGES", "0")),
         progress=report_progress,
+        ocr_max_pages=int(os.getenv("PINTOR_SCAN_OCR_MAX_PAGES", "0")),
+        ocr_progress=report_reading,
     )
     summary = {
         "page_count": report["page_count"],
@@ -1264,6 +1272,7 @@ def discover_job_pages(store: JobStore, job_id: str, source: Path, state: dict) 
         "candidates": len(report["candidates"]),
         "excluded_non_wiring": len(report["excluded_non_wiring"]),
         "already_colored": len(report["already_colored"]),
+        "scanned_pages_read": report.get("scanned_pages_read", 0),
         # Evidence is kept only for the pages that were chosen, so the operator can audit a sweep.
         "evidence": report["evidence"][:500],
     }

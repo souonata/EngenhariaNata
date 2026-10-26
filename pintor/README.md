@@ -27,8 +27,12 @@ The Engenharia NATA beta has two page-analysis modes:
   rejected. A diagnostic or instructional prose page with only an incidental mini-circuit is not a
   wiring-diagram page. Wiring whose conductor paths are already chromatic is also ignored; isolated
   coloured logos, warnings and short component marks do not hide an otherwise black-and-white
-  schematic. A near-full-page image on a large sheet inside a document independently known to be
-  about wiring remains an OCR candidate;
+  schematic, and a black diagram with one tinted stroke is still black. A connector table on the
+  same page does not hide a circuit drawn beside it: when the codes beside strokes are scattered
+  rather than stacked in one column, the page is judged on its strokes. Codes written with the
+  American gauge after the metric one (`BN/BL 1,0 (17)`) are read. Every scanned page the vector
+  evidence leaves open, with at least 5 % of its area in images, is read with OCR and painted only
+  when a strong code sits beside line-like ink; `PINTOR_SCAN_OCR_MAX_PAGES` caps how many are read;
 - connector schedules: when a pictorial installation page shows colour codes beside connector pins
   but does not draw the conductors, those codes never enter wire ownership. Pintor instead places a
   clearance-bounded disc inside the corresponding pin; a two-colour code uses two equal semicircles.
@@ -45,20 +49,18 @@ The Engenharia NATA beta has two page-analysis modes:
   other, in line with it, the code belongs to that wire even if a parallel wire runs nearer the
   text's centre. It counts as strong evidence, so that wire never merges into another colour;
 - codes printed in their wire, on vector pages: when a wire is broken for its code, it stops at one
-  edge of the text and resumes at the other, on the text's centre line. That code names both
-  pieces and no other wire:
-  - a piece too short to paint is followed along the centre line, across crossing gaps and never
-    through a component, to the next piece that can be painted. If there is none, the code paints
-    nothing rather than the nearest parallel wire;
-  - a code printed across its wire names it too: the wire stops at one long edge of the text and
-    resumes at the other. That claim is made only when nothing passes through the text unbroken;
-  - a run that doubles back at a pin is two wires and is never claimed, and colour never passes
-    between two runs that fold back on each other at one pin;
-  - the wire's own stub from its code to a corner or a junction is not a callout leader.
-
-  In turn, a wire that passes through printed codes carries only that code. This counts a bare
-  letter too weak to paint, and a bundle label printed across its wires. A wire that passes through
-  two different codes stays black;
+  edge of the text and resumes at the other, on the text's centre line. That code names both pieces
+  and no other wire. A piece too short to paint is followed along the centre line, across crossing
+  gaps and never through a component, to the next piece that can be painted; if there is none, the
+  code paints nothing rather than the nearest parallel wire;
+- codes printed across their wire, on vector pages: the wire stops at one long edge of the text and
+  resumes at the other, and the code names it too, provided nothing passes through the text
+  unbroken. The wire's own stub from its code to a corner or a junction is not a callout leader;
+- two wires at one pin, on vector pages: a run that doubles back at a pin is never claimed, and
+  colour never passes between two runs that fold back on each other there;
+- printed codes protect their wire, on vector pages: a wire that passes through printed codes
+  carries only that code, counting a bare letter too weak to paint and a bundle label printed across
+  its wires. A wire that passes through two different codes stays black;
 - filled component bodies on scans: a relay, connector or sensor drawn as a filled body is a
   component even without an outlined rectangle. A wire that ends on it terminates there, so two
   cables ending at the same relay are never joined across it;
