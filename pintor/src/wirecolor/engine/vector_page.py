@@ -13,7 +13,7 @@ from math import hypot
 from .policy import DecisionPolicy
 
 
-CONTEXT_SCHEMA_VERSION = 8
+CONTEXT_SCHEMA_VERSION = 9
 
 
 @dataclass
@@ -41,6 +41,8 @@ class VectorPageContext:
     inline_claims: list[tuple[int, int]] = field(default_factory=list)
     # (run index, code) for every code, weak or strong, printed in line with or across a run
     through_codes: list[tuple[int, str]] = field(default_factory=list)
+    # outlines of housings too large to be zones, as (x0, y0, x1, y1): no bridge crosses them
+    bridge_barriers: list[tuple[float, float, float, float]] = field(default_factory=list)
     schema_version: int = CONTEXT_SCHEMA_VERSION
 
     def to_dict(self):
@@ -67,6 +69,7 @@ class VectorPageContext:
             "inline_legends": list(self.inline_legends),
             "inline_claims": [list(pair) for pair in self.inline_claims],
             "through_codes": [[index, code] for index, code in self.through_codes],
+            "bridge_barriers": [list(segment) for segment in self.bridge_barriers],
         }
 
     @classmethod
@@ -108,6 +111,8 @@ class VectorPageContext:
             inline_legends=[int(li) for li in raw.get("inline_legends", ())],
             inline_claims=[(int(li), int(ri)) for li, ri in raw.get("inline_claims", ())],
             through_codes=[(int(index), str(code)) for index, code in raw.get("through_codes", ())],
+            bridge_barriers=[tuple(float(value) for value in segment)
+                             for segment in raw.get("bridge_barriers", ())],
         )
 
 
@@ -182,6 +187,7 @@ def extract_vector_context(page, dpi, convention, *, legend_filter=None):
         pieces=pieces, piece_features=piece_features,
         inline_legends=inline_legends, inline_claims=inline_claims,
         through_codes=through_codes,
+        bridge_barriers=list(symbols.barriers),
     )
 
 
@@ -214,7 +220,7 @@ def decide_vector_context(context, policy=None, classifier=None):
         angle_tol_deg=policy.bridge_angle_tol_deg, max_passes=policy.bridge_max_passes,
         lateral_min_px=policy.bridge_lateral_min_px,
         lateral_factor=policy.bridge_lateral_factor,
-        blocked_zones=context.blocked_zones)
+        blocked_zones=context.blocked_zones, barriers=context.bridge_barriers)
     propagated += propagate_continuations(
         owned, snap_px=policy.continuation_snap_px,
         max_passes=policy.continuation_max_passes)
