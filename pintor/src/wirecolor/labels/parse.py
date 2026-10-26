@@ -26,6 +26,10 @@ _CODE_RE = re.compile(r"[A-Z0]{1,3}(?:/[A-Z0]{1,3})?")
 _WIRE_ID_SUFFIX_RE = re.compile(r"\(W[0-9IL|]+\)?$")
 _WIRE_ID_CAPTURE_RE = re.compile(r"\(W([0-9IL|]+)\)?$")
 _WIRE_ID_CLOSED_RE = re.compile(r"\(W([0-9IL|]+)\)$")
+# A metric cross-section followed by its American gauge in parentheses: "BN/BL 1,0 (17)",
+# "R/PU 6 (10)", as on the power-trim diagrams of pub 140. The bracketed number is only metadata
+# once the number before it is a real cross-section, so it is dropped only then.
+_AWG_EQUIVALENT_RE = re.compile(r"(?P<mm>\d{1,2}(?:\.\d{1,2})?)\(\d{1,2}\)$")
 
 # A connector PIN number printed beside the colour, e.g. "3 PU" or "PU 3". On pictorial harness
 # sheets (installation instructions, EVC posters) the number after a colour is the terminal it
@@ -231,6 +235,9 @@ def _parse_code_core(text: str, convention) -> str | None:
     # tightly-scoped trailing form; accepting I/L/| here cannot invent a colour token because the
     # whole suffix is discarded before the gauge/code grammar runs.
     t = _WIRE_ID_SUFFIX_RE.sub("", t)
+    equivalent = _AWG_EQUIVALENT_RE.search(t)
+    if equivalent and float(equivalent.group("mm")) in GAUGES:
+        t = t[:equivalent.end("mm")]
     codes = convention.codes
     if not t:
         return None

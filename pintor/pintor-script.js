@@ -412,6 +412,9 @@ class PintorApp extends App {
         if (job.stage === 'scanning-document' && job.page_count) {
             return `${label} · ${job.scanned_pages || 0}/${job.page_count}`;
         }
+        if (job.stage === 'reading-scanned-pages' && job.scanned_images_total) {
+            return `${label} · ${job.scanned_images_read || 0}/${job.scanned_images_total}`;
+        }
         if (job.selected_page_count) {
             const done = Number(job.completed_pages || 0) + 1;
             return `${label} · ${Math.min(done, job.selected_page_count)}/${job.selected_page_count}`;
@@ -1702,6 +1705,9 @@ class PintorApp extends App {
             } else if (body.stage === 'scanning-document' && body.page_count) {
                 document.getElementById('processingStage').textContent +=
                     ` · ${body.scanned_pages || 0}/${body.page_count}`;
+            } else if (body.stage === 'reading-scanned-pages' && body.scanned_images_total) {
+                document.getElementById('processingStage').textContent +=
+                    ` · ${body.scanned_images_read || 0}/${body.scanned_images_total}`;
             } else if (body.current_page !== null && body.current_page !== undefined) {
                 document.getElementById('processingStage').textContent +=
                     ` · ${Number(body.completed_pages || 0) + 1}/${body.selected_page_count || 1}`;

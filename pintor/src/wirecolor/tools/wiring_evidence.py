@@ -15,6 +15,7 @@ import re
 
 
 DISCOVERY_DPI = 200
+COLOURED_MIN_SHARE = 0.05   # share of long-stroke ink in colour for an already-coloured page
 
 PRIMARY_WIRING_HEADING = re.compile(
     r"\b(?:wiring|wire|circuit)\s+(?:diagram|schematic)s?\b|\belectrical\s+schematic\b",
@@ -55,6 +56,20 @@ MECHANICAL_PAGE_PATTERN = re.compile(
     r"\b(?:propeller\s+shaft|bearing\s+box)\b",
     re.IGNORECASE,
 )
+
+# A connector table on the page does not make every code on it a table cell. A diagnostic page
+# often prints the circuit above the table, and the table names colours in words. These verdicts
+# therefore yield to the geometry: when at least this many codes sit beside long strokes, and less
+# than half of them stand in one column, the page carries a circuit and is judged on it. Measured on
+# the 2026-10 library scan: real tables put every code in one column (share 1.0, 17 to 30 codes);
+# the DTC circuits they were vetoing scatter theirs (share 0.11 to 0.27, 11 to 27 codes).
+DEFEASIBLE_TABLE_REASONS = frozenset((
+    "connector pin/function table, not a physical conductor diagram",
+    "connector pin/function table continuation, not a physical conductor diagram",
+    "connector pin table, not a conductor diagram",
+))
+SCATTERED_CIRCUIT_MIN_CODES = 6
+SCATTERED_CIRCUIT_MAX_COLUMN_SHARE = 0.5
 
 CONNECTOR_TABLE_HEADER_PATTERN = re.compile(
     r"\b(?:ECM\s+connector\s+identification|pin\s+colou?r\s+function)\b",
@@ -113,6 +128,18 @@ def _explicit_non_wiring_reason(text: str) -> str | None:
             and not PRIMARY_WIRING_HEADING.search(text):
         return "connector pin/function table continuation, not a physical conductor diagram"
     return None
+
+
+def _scattered_circuit(page, dpi: int, legends) -> bool:
+    """True when codes beside strokes are spread like a circuit's, not stacked like a table's."""
+    if len(legends) < SCATTERED_CIRCUIT_MIN_CODES:
+        return False
+    column = 0.01 * page.rect.width * dpi / 72.0
+    columns: dict[int, int] = {}
+    for legend in legends:
+        left = legend.bbox[0] if legend.bbox else legend.x
+        columns[round(left / column)] = columns.get(round(left / column), 0) + 1
+    return max(columns.values()) / len(legends) < SCATTERED_CIRCUIT_MAX_COLUMN_SHARE
 
 
 def _excluded_payload(reason: str, convention=None, legends=(), **extra) -> dict:
@@ -467,8 +494,12 @@ def inspect_vector_colour(page, dpi: int = DISCOVERY_DPI, legends: list | None =
     share = chromatic_length / total_length if total_length else 0.0
     # Page-wide colour is not enough: manuals often place a blue cutaway, logo or warning beside a
     # separate black-and-white circuit. Only a conductor-scale chromatic stroke beside an actual
-    # wire-colour legend proves that the wiring itself has already been coloured.
-    already_colored = chromatic_near_legends >= 1
+    # wire-colour legend proves that the wiring itself has already been coloured -- and one such
+    # stroke is not a coloured drawing either. Measured on the 2026-10 library scan: every page
+    # coloured by the factory carries at least 11.7 % of its long-stroke ink in colour (median 36.6 %
+    # on the teacher pages), while the black power-trim diagrams of pub 140 carry one tinted stroke,
+    # 0.6-1.2 %, and were being skipped as already coloured.
+    already_colored = chromatic_near_legends >= 1 and share >= COLOURED_MIN_SHARE
     return {
         "already_colored": already_colored,
         "long_segments": long_segments,
@@ -509,7 +540,7 @@ def inspect_vector_page(page, dpi: int = DISCOVERY_DPI,
             "reason": "corrupted PDF text layer requires OCR before colour evidence is trusted",
         }
     explicit_exclusion = _explicit_non_wiring_reason(text)
-    if explicit_exclusion:
+    if explicit_exclusion and explicit_exclusion not in DEFEASIBLE_TABLE_REASONS:
         return _excluded_payload(explicit_exclusion)
 
     names = convention_names or list_conventions()
@@ -530,6 +561,8 @@ def inspect_vector_page(page, dpi: int = DISCOVERY_DPI,
         choices.append((distinctive, gauged_or_striped, len(legends), name, convention, legends))
 
     if not choices:
+        if explicit_exclusion:
+            return _excluded_payload(explicit_exclusion)
         return {
             "status": "no_evidence",
             "confidence": "none",
@@ -576,7 +609,7 @@ def inspect_vector_page(page, dpi: int = DISCOVERY_DPI,
         segment for segment in segments
         if hypot(segment[1][0] - segment[0][0], segment[1][1] - segment[0][1]) >= minimum_length
     ]
-    associations = []
+    associations, associated = [], []
     for legend in legends:
         nearest = min(
             (_point_segment_distance(legend.x, legend.y, (*segment[0], *segment[1]))
@@ -585,12 +618,16 @@ def inspect_vector_page(page, dpi: int = DISCOVERY_DPI,
         # the measured library prints its code 175 px beyond the curved stroke endpoint. The page
         # is included for review; painting still has to satisfy its stricter ownership threshold.
         if nearest <= 220.0:
+            associated.append(legend)
             associations.append({
                 "code": legend.code,
                 "raw": legend.raw,
                 "nearest_segment_px": round(nearest, 1),
             })
     exact_legends = [_legend_payload(legend) for legend in legends]
+    if explicit_exclusion and not _scattered_circuit(page, dpi, associated):
+        return _excluded_payload(explicit_exclusion, name, legends, runs=len(long_segments),
+                                 segments=len(segments), colour_evidence=colour_evidence)
     if associations:
         if all(legend.code == "OR" and legend.raw.strip() == "OR" for legend in legends):
             return _excluded_payload(

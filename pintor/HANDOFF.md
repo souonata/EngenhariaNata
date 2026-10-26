@@ -20,6 +20,118 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-26 upload page detection, measured on a scan of the live library
+
+Branch `feat/pintor-deteccao-paginas`. The owner asked for two things: better automatic detection
+of the pages to paint when a whole document is uploaded, and an `original_wiring_diagram/` folder
+that holds the latest edition of every manual with a colour-coded wiring diagram, and nothing else.
+
+### The library scan (`workspaces/library_scan_2026_10/`, private)
+
+- **Source.** The live library on the homelab (`volvo-assistant`, `/opt/volvo-assistant/backend`).
+  Its database has 7,425 publications, each row the current edition (`publications`), with the
+  superseded ones in `publication_revisions`. The D: copy dates from 2026-08-28 and lacked 146 of
+  them (0.8 GB). The database was only read; the 38 PDFs the scan needed and D: lacked were fetched
+  into the workspace and checked by SHA-256. The database `local_path` is right, but a list written
+  on Windows carries a trailing `\r` that scp reads as part of the name.
+- **Selection: 1,064 manuals, 59,657 pages.** It covers:
+  - a page with 8 or more colour codes in its stored text (92 publications);
+  - a title or phrase suggesting wiring (830);
+  - the manuals behind the folder's files;
+  - mostly scanned operator, installation and workshop manuals, where diagrams carry no text.
+- **Inventory with OCR** (`inventory_wiring_pages`, 20 shards, resumed once after the session
+  ended):
+
+  | confirmed | probable | review | already coloured | excluded | no evidence |
+  | --------- | -------- | ------ | ---------------- | -------- | ----------- |
+  | 787       | 1,345    | 568    | 112              | 3,170    | 53,675      |
+
+  Visual checks of its OCR-positive pages: 24 of 24 sampled were real diagrams with codes, mostly
+  small scanned circuits set in a text page.
+
+### What the upload detector got wrong
+
+`scan_document` (the upload sweep) ran over the same 1,064 manuals and was compared page by page:
+
+- **Scanned pages were selected by shape, not read.** A near-full-page image in a document about
+  wiring became a candidate, and 885 of the 1,064 manuals counted as about wiring. It chose 6,165
+  scanned pages; OCR finds codes beside lines on 7 % of them, each one minutes of the scan route.
+  It also missed 63 % of the scanned diagrams that do carry codes: small circuits set in a text
+  page, and plates beside a colour glossary.
+- **Connector tables vetoed the circuits beside them.** "Pin Color Function" or a table
+  continuation excluded a whole page before its strokes were looked at. Diagnostic pages draw the
+  circuit above the table, and the table names colours in words.
+- **A long parts list made a diagram "prose".** On the power-trim pages of pub 140 only 2 codes were
+  read, so the page fell under the prose rule. The codes carry the American gauge after the metric
+  one, as in `BN/BL 1,0 (17)`, and the parser refused them.
+- **One tinted stroke made a black diagram "already coloured".**
+- **Labels drawn as vector outlines** have no text and no image, so only OCR can see them. That is
+  the EMS 2 engine harness of pub 7747622 (TAD734GE).
+
+### The rules (`tools/discover_pages.py`, `tools/wiring_evidence.py`, `labels/parse.py`)
+
+- **Scanned pages are read.** Every page the vector evidence leaves open, with 5 % or more of its
+  area in images, is rendered at the discovery resolution and kept only when OCR finds a strong code
+  beside line-like ink. The same holds for a page headed as a wiring diagram with almost no text,
+  no image and 200 or more vector paths. `PINTOR_SCAN_OCR_MAX_PAGES` caps the reading, largest
+  image share first. `read_scans=False` restores the old structural rule. The web job shows the new
+  stage `reading-scanned-pages` with a counter in all three languages. Each update is also the
+  supervisor's heartbeat.
+- **Connector-table verdicts yield to the geometry.** When 6 or more codes sit beside strokes and
+  fewer than half stand in one column, the page is judged on its strokes. Real tables put every
+  code in one column (share 1.0, 17 to 30 codes); the circuits they were vetoing scatter theirs
+  (0.11 to 0.27). Cable colour references, multilink installation pages and bulletins stay
+  excluded.
+- **A bracketed American gauge is read** when it follows a real metric cross-section.
+- **An already-coloured page needs 5 % of its long-stroke ink in colour.** Every factory-coloured
+  page flagged in the scan has at least 11.7 % (median 36.6 % on the teacher pages); the pub 140
+  power-trim pages have 0.6-1.2 %.
+
+### Measured
+
+Over the 59,657 pages, against the pages where vector geometry or OCR finds codes beside lines
+(2,169 pages):
+
+|                | pages selected | with codes      | of the pages with codes found |
+| -------------- | -------------- | --------------- | ----------------------------- |
+| 0.7.8          | 7,313          | 1,444 (19.7 %)  | 66.6 %                        |
+| this branch    | 2,488          | 2,129 (85.6 %)  | **98.2 %**                    |
+
+- **The reference shares its OCR with the new rule.** The independent check is the visual sample
+  above.
+- **The vector fixes add 38 confirmed pages in 6 publications.** All 38 were checked by eye, and
+  none is a false positive.
+- **End to end on 5 manuals,** the branch's `scan_document` agrees with the inventory: 57 pages
+  selected, none extra, and 5 of the inventory's pages missed (under 5 % image cover). The cost is
+  OCR on the scanned pages, about 10-15 s each on one core. On this machine with 2 threads, a
+  128-page manual took 162 s, a 76-page one 326 s, and the 258-page TAD734GE 94 s.
+- **Painting is unchanged:** teacher benchmark 2,483 / 220, `marks4` 0.5873.
+- **Not solved here.** The V REF diagnostic pages of pub 35/39 are now detected, but the painter
+  builds only 2 runs on them and paints nothing. On the pub 140 power-trim page, purple bleeds into
+  the 9a connector box.
+
+### The folder `original_wiring_diagram/` (ignored by Git)
+
+The owner's rule: keep a manual when at least one page carries a wiring diagram with printed colour
+codes, paintable or factory-coloured.
+
+- **Before:** 124 files. The 78 of 2026-08-19, plus 33 added on 2026-08-23 under a looser criterion
+  (any "wiring diagram" heading or colour legend), plus later additions.
+- **Copied: 289 manuals (2.09 GB),** each checked by SHA-256 against the live library. The
+  evidence:
+  - 85 rest on vector geometry or factory colour;
+  - 105 on OCR codes on 2 or more pages;
+  - 99 on a single OCR page, mostly single-sheet engine wiring drawings.
+- **Sent to the Windows Recycle Bin: 13 files.** A copy of the August note is kept in the workspace.
+  - **No colour-coded diagram:** RailPac DH10A, Product Newsletter PNL528.2, Check HVIL TB90, EDC II
+    Electrical System, Repair Specification DTC 47711053, and the note `_added_2026-08-23.json`.
+  - **Outdated editions whose current editions have no such diagram either:** Battery Equalizer
+    47716476 and DTC 47712259.
+  - **The owner's strict reading:** AQ270, AQ175A and MD7B (colour given by a lettered table), EFI
+    Diagnostic 7797354 (GM-style codes), and Electrical, Ignition, Fuel 7743244 (corrupted text).
+- **After: 400 files, 2.82 GB,** every one the current edition of a live publication, with its
+  evidence. The lists are `folder_copied.json` and `folder_recycled.json` in the workspace.
+
 ## 2026-10-25 published as 0.7.8 / engine 3.2.8
 
 The unclaimed-run change in the entry below (#104) shipped. Published API first:
@@ -2227,8 +2339,9 @@ default.
 - `workspaces/wirecolor_foreign/` — publication-held lockbox/foreign-format evidence.
 - `library/manuals/` — one private source-PDF copy for every manifest publication containing
   code-bearing wiring pages; `library/manifest.json` records selection evidence and SHA-256.
-- `original_wiring_diagram/` — flat, descriptive-name convenience copy of those 78 verified
-  server-origin PDFs (433,932,385 bytes); every file matches the source-library manifest SHA-256.
+- `original_wiring_diagram/` — flat, descriptive-name copy of the latest edition of every manual
+  with a colour-coded wiring diagram (400 files, 2.82 GB since the 2026-10-26 library scan; see that
+  entry). Every file matches a current live-library SHA-256.
 - `markups/` — original manual markup PDFs and exported annotations.
 
 These directories are intentionally ignored by Git.
