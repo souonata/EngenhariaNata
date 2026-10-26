@@ -14,7 +14,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 
 import fitz  # noqa: E402
 from wirecolor.eval.vector_truth import (_ribbon, _rings, build_nets, decompose_runs,  # noqa: E402
-                                         extract_segments, filled_ribbons, node_segments)
+                                         draws_wires_as_outlines, extract_segments,
+                                         filled_ribbons, node_segments)
 
 DPI = 200
 SCALE = DPI / 72.0
@@ -183,6 +184,24 @@ class OutlineStrokedWires(unittest.TestCase):
         doc, page = outline_page([corners(50, 100, 250, 100.75)], fill=(1, 1, 1))
         self.assertEqual(extract_segments(page, DPI), [])
         doc.close()
+
+    def test_rings_are_read_only_where_nothing_is_stroked(self):
+        # A sheet that strokes its wires draws its pictures in rings: the rims of the ECU and
+        # plug drawings on pub 7745609. There a filled path keeps its old, whole-path reading.
+        rings = [hribbon(99.625, 300, 100, mitre_left=True),
+                 vribbon(100, 99.625, 200, mitre_top=True)]
+        doc, page = outline_page(rings)
+        self.assertTrue(draws_wires_as_outlines(page, DPI))
+        self.assertEqual(len(extract_segments(page, DPI)), 2)
+        shape = page.new_shape()
+        for y in range(20, 290, 10):                     # 27 stroked wires, 7 diagonals of ink
+            shape.draw_line(fitz.Point(20, y), fitz.Point(380, y))
+        shape.finish(color=(0, 0, 0), width=0.5)
+        shape.commit()
+        self.assertFalse(draws_wires_as_outlines(page, DPI))
+        ribbons = [ribbon for _index, ribbon in filled_ribbons(page, DPI)]
+        doc.close()
+        self.assertEqual(ribbons, [], "the L-shaped path is not one thin rectangle")
 
     def test_a_slot_cut_out_of_a_shape_is_not_a_wire(self):
         doc, page = outline_page([corners(40, 80, 260, 120), corners(50, 100, 250, 100.75)],

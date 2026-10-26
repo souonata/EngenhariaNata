@@ -261,7 +261,7 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
                 strokes.add(_seg_key(a, b))
     # An outline-stroked sheet draws its housings in the same filled ribbons as its wires, which
     # ``filled_ribbons`` reads as conductors. Those rectangles are held to the same bounds.
-    ribbons = [ribbon for _index, ribbon in filled_ribbons(page, dpi, drawings)]
+    ribbons = [ribbon for _index, ribbon in filled_ribbons(page, dpi, drawings) if ribbon.outlined]
     for sides in ribbon_rectangles(ribbons):
         corners = [fitz.Point(x, y) for ribbon in sides for x, y in ribbon.segment()]
         zone, strip = admit(corners)

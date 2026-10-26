@@ -134,12 +134,14 @@ class Ribbon:
 
     ``axis`` is "h" or "v"; ``centre`` is the cross coordinate of its centreline; ``lo`` and
     ``hi`` bound it along the axis; ``half`` is half its drawn width. All in working pixels.
+    ``outlined`` says it was read as a ring of an outline-stroked page, and may be joined.
     """
 
-    __slots__ = ("axis", "centre", "lo", "hi", "half")
+    __slots__ = ("axis", "centre", "lo", "hi", "half", "outlined")
 
-    def __init__(self, axis, centre, lo, hi, half):
+    def __init__(self, axis, centre, lo, hi, half, outlined=True):
         self.axis, self.centre, self.lo, self.hi, self.half = axis, centre, lo, hi, half
+        self.outlined = outlined
 
     def segment(self):
         if self.axis == "h":
@@ -220,15 +222,27 @@ def _is_ink_fill(fill):
     return bool(channels) and min(channels) < PAPER_FILL_MIN_CHANNEL
 
 
-def _path_ribbons(path, matrix):
-    """The ribbons one ink-filled, unstroked path draws, each read from its own closed ring.
+def _path_ribbons(path, matrix, rings=True):
+    """The ribbons one ink-filled, unstroked path draws.
 
-    A ring lying inside another ring of the same path may be a hole cut out of it rather than ink,
-    and is not read.
+    With ``rings`` the path is outline-stroked artwork, read one closed ring at a time; a ring
+    lying inside another ring of the same path may be a hole cut out of it rather than ink, and is
+    not read. Without, the path is the long thin filled rectangle of autotraced and pictorial
+    sheets (pub 4872), read from its own bounds as one ribbon or none.
     """
-    if path.get("fill") is None or path.get("color") is not None \
-            or not _is_ink_fill(path["fill"]):
+    if not _is_fill_only(path) or not _is_ink_fill(path["fill"]):
         return []
+    if not rings:
+        rect = path.get("rect")
+        if rect is None:
+            return []
+        corners = [fitz_point(rect.x0, rect.y0) * matrix, fitz_point(rect.x1, rect.y0) * matrix,
+                   fitz_point(rect.x1, rect.y1) * matrix, fitz_point(rect.x0, rect.y1) * matrix]
+        ribbon = _ribbon([(corner.x, corner.y) for corner in corners])
+        if ribbon is None:
+            return []
+        ribbon.outlined = False
+        return [ribbon]
     boxes = []
     for ring in _rings(path.get("items", ())):
         if len(ring) < 3:
@@ -310,19 +324,70 @@ def _join_ribbons(ribbons, slack=RIBBON_JOIN_SLACK_PX):
     return ribbons
 
 
+def _stroke_segments(path, matrix):
+    """The straight segments a stroked path draws, in working pixels."""
+    segments = []
+    for item in path.get("items", ()):
+        op = item[0]
+        points = []
+        if op == "l":
+            points = [item[1], item[2]]
+        elif op == "c":
+            points = [item[1], item[2], item[3], item[4]]
+        elif op == "qu":
+            quad = item[1]
+            points = [quad.ul, quad.ur, quad.lr, quad.ll, quad.ul]
+        elif op == "re":
+            rect = item[1]
+            points = [fitz_point(rect.x0, rect.y0), fitz_point(rect.x1, rect.y0),
+                      fitz_point(rect.x1, rect.y1), fitz_point(rect.x0, rect.y1),
+                      fitz_point(rect.x0, rect.y0)]
+        for a, b in zip(points, points[1:]):
+            ta, tb = a * matrix, b * matrix
+            pa, pb = (ta.x, ta.y), (tb.x, tb.y)
+            if hypot(pb[0] - pa[0], pb[1] - pa[1]) > 0:
+                segments.append((pa, pb))
+    return segments
+
+
+def _is_fill_only(path):
+    return path.get("fill") is not None and path.get("color") is None
+
+
+def draws_wires_as_outlines(page, dpi, drawings=None):
+    """Whether the page carries no stroked schematic, so its wires can only be filled outlines.
+
+    Rings of filled paths are read as wires only then. Where the wires are stroked, the multi-ring
+    fills are pictures: on the factory twins of pub 7745609 the ECU and the sensor plugs are drawn
+    in shaded rings, and reading their rims as wires joined the pin leads to them and took two
+    right conductors off each of three foldouts. The bound is ``MIN_SCHEMATIC_INK_RATIO``, the
+    stroked ink below which a page has no schematic the stroke reader can use. Measured: the V REF
+    sheets of pub 7749393 and 7746872 stroke 0.5-1.2 diagonals (their component boxes), the GenV
+    diagnostics of pub 47706663 about 1-2; every factory twin strokes 15 or more.
+    """
+    matrix = _matrix(page, dpi)
+    drawings = page.get_drawings() if drawings is None else drawings
+    stroked = sum(hypot(b[0] - a[0], b[1] - a[1]) for path in drawings if not _is_fill_only(path)
+                  for a, b in _stroke_segments(path, matrix))
+    return stroked / canvas_diagonal_px(page, dpi) < MIN_SCHEMATIC_INK_RATIO
+
+
 def filled_ribbons(page, dpi, drawings=None):
     """``(path index, ribbon)`` for every conductor the page draws as a filled outline, joined.
 
     Some sheets carry no stroked conductor at all: the artwork was outline-stroked before export,
     so each wire piece is a thin filled ring, several to a path. Measured on pub 7749393, PDF
     page 288 (the V REF circuit): the six stroked paths on the sheet are component boxes and every
-    wire is a ring, so the page read as two segments and painted nothing.
+    wire is a ring, so the page read as two segments and painted nothing. On such a page every
+    ring is read and the rings are joined (see ``draws_wires_as_outlines``). Anywhere else a filled
+    path is read as it always was: one ribbon when the whole path is one, standing alone.
     """
     matrix = _matrix(page, dpi)
     drawings = page.get_drawings() if drawings is None else drawings
+    rings = draws_wires_as_outlines(page, dpi, drawings)
     found = [(index, ribbon) for index, path in enumerate(drawings)
-             for ribbon in _path_ribbons(path, matrix)]
-    _join_ribbons([ribbon for _index, ribbon in found])
+             for ribbon in _path_ribbons(path, matrix, rings)]
+    _join_ribbons([ribbon for _index, ribbon in found if ribbon.outlined])
     return found
 
 
@@ -330,8 +395,8 @@ def extract_segments(page, dpi):
     """Straight segments of the page's conductor ink, in working pixels.
 
     Stroked paths contribute their strokes. A filled path is normally page furniture -- a symbol
-    body, a junction dot, a title block -- and is skipped, EXCEPT where a closed ring of it is a
-    long thin bar of ink, which is a conductor drawn as fill and contributes its centreline (see
+    body, a junction dot, a title block -- and is skipped, EXCEPT where it is a long thin bar of
+    ink, which is a conductor drawn as fill and contributes its centreline (see
     ``filled_ribbons``). Curves are flattened to their control-point chords; conductors here are
     overwhelmingly orthogonal, and a curve that is part of one still contributes endpoints in the
     right places for topology.
@@ -343,32 +408,13 @@ def extract_segments(page, dpi):
     for index, ribbon in filled_ribbons(page, dpi, drawings):
         ribbons.setdefault(index, []).append(ribbon)
     for index, path in enumerate(drawings):
-        if path.get("fill") is not None and path.get("color") is None:
+        if _is_fill_only(path):
             for ribbon in ribbons.get(index, ()):
                 a, b = ribbon.segment()
                 if hypot(b[0] - a[0], b[1] - a[1]) > 0:
                     segments.append((a, b))
             continue
-        for item in path.get("items", ()):
-            op = item[0]
-            points = []
-            if op == "l":
-                points = [item[1], item[2]]
-            elif op == "c":
-                points = [item[1], item[2], item[3], item[4]]
-            elif op == "qu":
-                quad = item[1]
-                points = [quad.ul, quad.ur, quad.lr, quad.ll, quad.ul]
-            elif op == "re":
-                rect = item[1]
-                points = [fitz_point(rect.x0, rect.y0), fitz_point(rect.x1, rect.y0),
-                          fitz_point(rect.x1, rect.y1), fitz_point(rect.x0, rect.y1),
-                          fitz_point(rect.x0, rect.y0)]
-            for a, b in zip(points, points[1:]):
-                ta, tb = a * matrix, b * matrix
-                pa, pb = (ta.x, ta.y), (tb.x, tb.y)
-                if hypot(pb[0] - pa[0], pb[1] - pa[1]) > 0:
-                    segments.append((pa, pb))
+        segments.extend(_stroke_segments(path, matrix))
     return segments
 
 
