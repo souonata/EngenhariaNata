@@ -166,8 +166,9 @@ class SymbolGeometry:
     zones: list
     stroke_keys: set
     opaque_zones: list
-    # The sides of the rectangles stripped without a zone (too large or too thin to protect), as
-    # (x0, y0, x1, y1) segments. A frame protects nothing, but a gap is never bridged across it.
+    # The sides of the rectangles stripped without a zone (too large or too thin to protect) and,
+    # on an outline-stroked page, the edges of every filled shape that is not a wire, as
+    # (x0, y0, x1, y1) segments. They protect nothing, but a gap is never bridged across them.
     barriers: list = field(default_factory=list)
 
 
@@ -204,11 +205,12 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
     ``zones`` are protected bounding boxes. ``stroke_keys`` identify the individual straight
     segments the symbols are drawn with. ``opaque_zones`` are the paper-filled housings that hide
     any conductor drawn underneath and may therefore sever topology safely. ``barriers`` are the
-    outlines of the rectangles stripped without a zone.
+    outlines of the rectangles stripped without a zone and of an outline page's filled symbols.
     """
     import fitz
 
-    from ..eval.vector_truth import _matrix, canvas_diagonal_px, conductor_floor_px, filled_ribbons
+    from ..eval.vector_truth import (_matrix, canvas_diagonal_px, conductor_floor_px,
+                                     filled_furniture, filled_ribbons)
 
     matrix = _matrix(page, dpi)
     diagonal = canvas_diagonal_px(page, dpi)
@@ -273,6 +275,11 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
             fence(corners)
         for ribbon in sides:
             strokes.add(_seg_key(*ribbon.segment()))
+    # Nor may a bridge cross the filled ink of a connector, a pin chevron or a dot drawn between
+    # two wire ends: on an outline page nothing else marks a component there.
+    for ring in filled_furniture(page, dpi, drawings):
+        barriers.extend((a[0], a[1], b[0], b[1]) for a, b in zip(ring, ring[1:] + ring[:1])
+                        if a != b)
     for path in drawings:
         items = path.get("items", ())
         # A twisted-pair bowtie is stroked (fill=None) but is not a closed housing; strip its own

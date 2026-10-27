@@ -391,6 +391,32 @@ def filled_ribbons(page, dpi, drawings=None):
     return found
 
 
+def filled_furniture(page, dpi, drawings=None):
+    """The closed rings of ink on an outline-stroked page that are not wires, in working pixels.
+
+    There a connector, a pin chevron, a junction dot or an arrowhead is filled ink like the wires
+    around it, and nothing else marks it. On pub 7749393 p146 the oxygen sensor's harness wires end
+    either side of an inline connector drawn as two filled chevrons, and the sensor's own lead
+    beyond it is printed W. Empty for a page that does not ``draws_wires_as_outlines``.
+    """
+    drawings = page.get_drawings() if drawings is None else drawings
+    if not draws_wires_as_outlines(page, dpi, drawings):
+        return []
+    matrix = _matrix(page, dpi)
+    rings = []
+    for path in drawings:
+        if not _is_fill_only(path) or not _is_ink_fill(path["fill"]):
+            continue
+        for ring in _rings(path.get("items", ())):
+            if len(ring) < 3:
+                continue
+            points = [(p.x, p.y) for p in (point * matrix for point in ring)]
+            if len(points) >= _MIN_RING_POINTS and _ribbon(points) is not None:
+                continue
+            rings.append(points)
+    return rings
+
+
 def extract_segments(page, dpi):
     """Straight segments of the page's conductor ink, in working pixels.
 

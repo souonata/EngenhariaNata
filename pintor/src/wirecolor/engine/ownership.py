@@ -198,6 +198,12 @@ def _outward(run, at_start):
     return tip, (-inward[0] / length, -inward[1] / length)
 
 
+# A barrier counts only inside a bridge's gap, this far from either wire end, in working pixels:
+# the ink a wire stops against touches its end. On pub 7749393 p146 the nearer chevron of the
+# inline connector reaches 0.7 px into the gap and the farther one lies 3.9 px in.
+BARRIER_END_TRIM_PX = 1.0
+
+
 def bridge_straight_continuations(owned, max_gap_px, min_conductor_px,
                                   angle_tol_deg=12.0, max_passes=8,
                                   lateral_min_px=6.0, lateral_factor=0.12,
@@ -220,9 +226,11 @@ def bridge_straight_continuations(owned, max_gap_px, min_conductor_px,
       * it is the ONLY uncoded candidate in that cone -- at a fork we decline rather than guess,
       * the gap does not cross a component zone. A fuse, switch, contact, connector, terminal or
         unknown closed symbol is a physical conductor boundary, even when both sides are collinear.
-      * the gap does not cross a ``barrier``: the outline of a housing too large to be a zone. On
-        pub 7749393 the throttle sensor's three cells are one 164 pt box, above the zone ceiling,
-        and a bridge carried OR/SB across its edge from pin 3 into the potentiometer wiper.
+      * the gap does not cross a ``barrier``: the outline of a housing too large to be a zone, or
+        of a filled symbol on an outline-stroked page. On pub 7749393 the throttle sensor's three
+        cells are one 164 pt box, above the zone ceiling, and a bridge carried OR/SB across its
+        edge from pin 3 into the potentiometer wiper. Only the gap's interior counts: a hop arc
+        or a pin chevron that merely touches a wire end is where that wire stops.
 
     Only uncoded runs are ever painted, so this can add paint but never change an existing colour.
     """
@@ -252,8 +260,16 @@ def bridge_straight_continuations(owned, max_gap_px, min_conductor_px,
                         return True
         return False
 
-    def crosses_barrier(a, b):
-        """Whether the gap a->b meets a barrier segment, touching included."""
+    def crosses_barrier(tip, tip2):
+        """Whether the interior of the gap tip->tip2 meets a barrier segment, touching included."""
+        if not barriers:
+            return False
+        dx, dy = tip2[0] - tip[0], tip2[1] - tip[1]
+        length = hypot(dx, dy)
+        trim = min(BARRIER_END_TRIM_PX, length / 4.0) / max(length, 1e-9)
+        a = (tip[0] + dx * trim, tip[1] + dy * trim)
+        b = (tip2[0] - dx * trim, tip2[1] - dy * trim)
+
         def side(p, q, r):
             value = (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])
             return (value > 1e-9) - (value < -1e-9)
