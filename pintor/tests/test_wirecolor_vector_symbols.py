@@ -24,7 +24,9 @@ from wirecolor.detect.vector_symbols import (_is_twist_mark, assembled_rectangle
                                              classify_symbol_geometry,
                                              clip_segments_to_opaque, strip_symbol_strokes,
                                              symbol_geometry)
+from wirecolor.engine.vector_page import decide_vector_context, extract_vector_context
 from wirecolor.eval.vector_truth import build_nets, extract_segments, node_segments
+from wirecolor.labels.conventions import load_convention
 
 DPI = 200
 SCALE = DPI / 72.0
@@ -241,6 +243,22 @@ def loose_box(page, x0, y0, x1, y1):
     stroke(page, (x0, y0), (x0, y1))
 
 
+def wire_and_box(page, with_box):
+    """One stroked path: a wire down to y = 300 and, as four lone strokes, the 10 pt box it ends
+    on, drawn as on pub 7741802: bottom, right, top, left, each overshooting its neighbour by a
+    fraction of a point. The top-right ends fall on one graph node, the top-left ones do not. The
+    wire cuts the top side, and the short piece to the left is below the conductor floor, so the
+    rest of the outline is one run leaving the wire's end: a continuation, to the solver."""
+    shape = page.new_shape()
+    shape.draw_line(fitz.Point(100, 100), fitz.Point(100, 300))
+    if with_box:
+        for a, b in (((104.7, 310), (95.6, 310)), ((104.5, 310.2), (104.5, 300)),
+                     ((95.6, 300), (104.7, 300)), ((95.8, 310.2), (95.8, 299.8))):
+            shape.draw_line(fitz.Point(*a), fitz.Point(*b))
+    shape.finish(color=(0, 0, 0), width=0.5, closePath=False)
+    shape.commit()
+
+
 class AssembledRectangles(unittest.TestCase):
     def test_four_loose_strokes_meeting_at_the_corners_are_a_symbol(self):
         doc, page = page_with(lambda p: loose_box(p, 100, 100, 140, 120))
@@ -264,6 +282,67 @@ class AssembledRectangles(unittest.TestCase):
         doc.close()
         self.assertEqual(removed, 4)
         self.assertEqual(len(build_nets(node_segments(stripped))), 2)
+
+    def test_lone_strokes_inside_a_longer_path_are_sides(self):
+        """Pub 7741802 p69 draws the 9a box as four lone strokes inside the path of the wire that
+        ends on it. The box is a housing, and only its own four strokes leave the topology."""
+        doc, page = page_with(lambda p: wire_and_box(p, with_box=True))
+        segments = extract_segments(page, DPI)
+        zones, strokes = symbol_geometry(page, DPI, PEN_PX)
+        stripped, removed = strip_symbol_strokes(segments, strokes)
+        doc.close()
+        self.assertEqual(len(zones), 1)
+        self.assertEqual(removed, 4)
+        self.assertEqual(len(stripped), 1, "the wire stays")
+
+    def test_a_coded_wire_ending_on_a_lone_stroke_box_keeps_its_colour_off_the_box(self):
+        def draw(p):
+            wire_and_box(p, with_box=True)
+            p.insert_text((104, 200), "PU/R", fontsize=6)
+
+        doc, page = page_with(draw, width=400, height=500)
+        context = extract_vector_context(page, DPI, load_convention("volvo_classic"))
+        doc.close()
+        owned, _diagnostics = decide_vector_context(context)
+        coded = [run for run in owned if run.code]
+        self.assertEqual([run.code for run in coded], ["PU/R"])
+        self.assertTrue(all(y <= 300 * SCALE + 1e-6 for run in coded for _x, y in run.points),
+                        "no colour below the wire's end, on the box")
+
+    def test_a_dashed_outline_loses_its_ink_but_protects_nothing(self):
+        """A dashed rectangle is an enclosure its wires cross, as the control panel on pub
+        7741802 p69: no zone, but its outline is not a wire either."""
+        def draw(p):
+            for a, b in (((100, 100), (160, 100)), ((160, 100), (160, 180)),
+                         ((100, 180), (160, 180)), ((100, 100), (100, 180))):
+                shape = p.new_shape()
+                shape.draw_line(fitz.Point(*a), fitz.Point(*b))
+                shape.finish(color=(0, 0, 0), width=0.5, dashes="[3 2] 0", closePath=False)
+                shape.commit()
+
+        doc, page = page_with(draw)
+        zones, strokes = symbol_geometry(page, DPI, PEN_PX)
+        doc.close()
+        self.assertEqual(zones, [])
+        self.assertEqual(len(strokes), 4)
+
+    def test_a_box_printed_over_itself_is_one_rectangle(self):
+        """Pub 47701683 p39 prints every stroke 21 times; each copy of a side is the same side,
+        and every copy leaves the topology with it."""
+        def draw(p):
+            for _ in range(21):
+                loose_box(p, 100, 100, 140, 120)
+
+        doc, page = page_with(draw)
+        found = assembled_rectangles(page.get_drawings())
+        segments = extract_segments(page, DPI)
+        zones, strokes = symbol_geometry(page, DPI, PEN_PX)
+        stripped, _removed = strip_symbol_strokes(segments, strokes)
+        doc.close()
+        self.assertEqual(len(found), 1)
+        self.assertEqual(len(found[0]), 4 * 21)
+        self.assertEqual(len(zones), 1)
+        self.assertEqual(stripped, [])
 
     def test_each_rectangle_is_found_once(self):
         doc, page = page_with(lambda p: loose_box(p, 100, 100, 140, 120))

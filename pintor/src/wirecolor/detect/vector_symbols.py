@@ -199,6 +199,7 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
     any conductor drawn underneath and may therefore sever topology safely.
     """
     from ..eval.vector_truth import _matrix, canvas_diagonal_px, conductor_floor_px
+    from .vector_dashes import parse_pattern
 
     matrix = _matrix(page, dpi)
     diagonal = canvas_diagonal_px(page, dpi)
@@ -234,11 +235,16 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
         zone, strip = admit([point * matrix for _path, a, b in sides for point in (a, b)])
         if not strip:
             continue
-        if zone is not None:
+        # A dashed outline is an enclosure -- a control panel, a module boundary -- that its wires
+        # cross to reach what is inside: on pub 7741802 p69 the Y wire runs into the dashed panel
+        # to its switch. Its ink is not a wire, but it protects nothing.
+        if zone is not None and not any(parse_pattern(path.get("dashes"))
+                                        for path, _a, _b in sides):
             zones.append(zone)
-        for path, _a, _b in sides:
-            for a, b in _path_segments_px(path.get("items", ()), matrix):
-                strokes.add(_seg_key(a, b))
+        # Only the side's own stroke: its path may also hold the wires that end on the box.
+        for _path, a, b in sides:
+            a, b = a * matrix, b * matrix
+            strokes.add(_seg_key((a.x, a.y), (b.x, b.y)))
     for path in drawings:
         items = path.get("items", ())
         # A twisted-pair bowtie is stroked (fill=None) but is not a closed housing; strip its own
@@ -344,41 +350,75 @@ def paired_twist_strokes(page, matrix, max_len):
     return strokes
 
 
+def _lone_strokes(path):
+    """The straight strokes of a stroked path that are each a subpath of their own.
+
+    A stroke that starts where the previous item ended, or ends where the next one starts, is a
+    piece of a longer polyline. Zero-length strokes are ignored, as if absent.
+    """
+    items = [item for item in path.get("items", ())
+             if item[0] != "l" or abs(item[1].x - item[2].x) > 1e-6
+             or abs(item[1].y - item[2].y) > 1e-6]
+
+    def joined(p, q):
+        return abs(p.x - q.x) < 0.05 and abs(p.y - q.y) < 0.05
+
+    lone = []
+    for index, item in enumerate(items):
+        if item[0] != "l":
+            continue
+        a, b = item[1], item[2]
+        previous = _item_points(items[index - 1]) if index else []
+        following = _item_points(items[index + 1]) if index + 1 < len(items) else []
+        if (previous and joined(previous[-1], a)) or (following and joined(following[0], b)):
+            continue
+        lone.append((a, b))
+    return lone
+
+
 def assembled_rectangles(drawings, tolerance=RECT_CORNER_TOL):
-    """Rectangles drawn as four separate one-stroke paths that meet at their corners.
+    """Rectangles drawn as four separate one-stroke subpaths that meet at their corners.
 
-    The closed-subpath reader sees a housing only when the producer emitted it as one path. The
-    D4/D6 Group 30 sheet (page 111) draws its connector pin boxes as four independent paths of one
-    straight stroke each -- the same primitive a conductor is made of -- so nothing recognised
-    them, the outline entered topology as wire, and the colour of the cable reaching the first pin
-    ran around the box. Fifteen of the reviewer's nineteen unmet clean-region marks sat on that
-    page.
+    The closed-subpath reader sees a housing only when the producer emitted it as one closed
+    subpath. The D4/D6 Group 30 sheet (page 111) draws its connector pin boxes as four independent
+    paths of one straight stroke each -- the same primitive a conductor is made of -- so nothing
+    recognised them, the outline entered topology as wire, and the colour of the cable reaching the
+    first pin ran around the box. Fifteen of the reviewer's nineteen unmet clean-region marks sat on
+    that page.
 
-    Each side must BE its path, as for the paired twist mark: a stroke inside a longer polyline is
-    part of a conductor's route and is never a side. Returns ``(path, a, b)`` for the four sides of
-    each rectangle, in PDF space; the caller holds them to the same size bounds as a closed path.
+    Each side must BE its subpath, as for the paired twist mark: a stroke inside a longer polyline
+    is part of a conductor's route and is never a side. Whether the four subpaths share a path
+    object is the producer's choice: pub 7741802 p69 draws the 9a connector box as four lone
+    strokes inside a 34-item path that also holds the PU/R wire ending on it, and the wire's colour
+    ran round the box.
+
+    A stroke drawn several times over is one side: pub 47701683 p39 prints every line 21 times, and
+    each rectangle there matched in 21^4 ways. Copies within 0.1 pt are grouped, each rectangle is
+    returned once, with every copy ``(path, a, b)`` of its four sides, in PDF space; the caller
+    holds them to the same size bounds as a closed path.
     """
     horizontals, verticals = [], []
     for path in drawings:
         if path.get("fill") is not None:
             continue
-        lines = []
-        for item in path.get("items", ()):
-            if item[0] != "l":
-                lines = None
-                break
-            a, b = item[1], item[2]
-            if abs(a.x - b.x) > 1e-6 or abs(a.y - b.y) > 1e-6:
-                lines.append((a, b))
-        if not lines or len(lines) != 1:
-            continue
-        a, b = lines[0]
-        if abs(a.y - b.y) <= tolerance and abs(a.x - b.x) > tolerance:
-            left, right = (a, b) if a.x < b.x else (b, a)
-            horizontals.append((path, left, right))
-        elif abs(a.x - b.x) <= tolerance and abs(a.y - b.y) > tolerance:
-            upper, lower = (a, b) if a.y < b.y else (b, a)
-            verticals.append((path, upper, lower))
+        for a, b in _lone_strokes(path):
+            if abs(a.y - b.y) <= tolerance and abs(a.x - b.x) > tolerance:
+                left, right = (a, b) if a.x < b.x else (b, a)
+                horizontals.append((path, left, right))
+            elif abs(a.x - b.x) <= tolerance and abs(a.y - b.y) > tolerance:
+                upper, lower = (a, b) if a.y < b.y else (b, a)
+                verticals.append((path, upper, lower))
+
+    def grouped(sides):
+        """``(path, a, b, copies)`` per distinct stroke, its first copy standing for all."""
+        groups = {}
+        for side in sides:
+            _path, a, b = side
+            key = (round(a.x, 1), round(a.y, 1), round(b.x, 1), round(b.y, 1))
+            groups.setdefault(key, []).append(side)
+        return [(copies[0][0], copies[0][1], copies[0][2], copies) for copies in groups.values()]
+
+    horizontals, verticals = grouped(horizontals), grouped(verticals)
 
     cell = max(tolerance, 1e-3)
 
@@ -397,25 +437,31 @@ def assembled_rectangles(drawings, tolerance=RECT_CORNER_TOL):
     # A vertical side is found from its upper end, a bottom side from its left end, so every
     # rectangle is reached exactly once: from its top side.
     by_upper, by_left = {}, {}
-    for path, upper, lower in verticals:
-        by_upper.setdefault(bucket(upper), []).append((path, upper, lower))
-    for path, left, right in horizontals:
-        by_left.setdefault(bucket(left), []).append((path, left, right))
+    for side in verticals:
+        by_upper.setdefault(bucket(side[1]), []).append(side)
+    for side in horizontals:
+        by_left.setdefault(bucket(side[1]), []).append(side)
 
-    found = []
+    found, seen = [], set()
     for top in horizontals:
-        _path, top_left, top_right = top
+        _path, top_left, top_right, _copies = top
         for left_side in near(by_upper, top_left):
             for right_side in near(by_upper, top_right):
-                if right_side[0] is left_side[0] \
+                if right_side is left_side \
                         or abs(left_side[2].y - right_side[2].y) > tolerance:
                     continue
                 for bottom in near(by_left, left_side[2]):
-                    if bottom[0] is top[0]:
+                    if bottom is top:
                         continue
                     if abs(bottom[2].x - right_side[2].x) <= tolerance \
                             and abs(bottom[2].y - right_side[2].y) <= tolerance:
-                        found.append([top, left_side, right_side, bottom])
+                        corners = (round(top_left.x, 1), round(top_left.y, 1),
+                                   round(bottom[2].x, 1), round(bottom[2].y, 1))
+                        if corners in seen:
+                            continue
+                        seen.add(corners)
+                        found.append([copy for side in (top, left_side, right_side, bottom)
+                                      for copy in side[3]])
     return found
 
 def symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
