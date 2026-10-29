@@ -1,6 +1,6 @@
 # Pintor handoff
 
-Last updated: 2026-10-23
+Last updated: 2026-10-27
 
 ## Product boundary
 
@@ -144,7 +144,7 @@ colour is the printed code, and paint stops at the box edge.
 
 ### Not done
 
-- **The 9a box on pub 7741802 p68 (Power Trim SX).** PU/R runs round the outline of the 9a
+- **The 9a box on pub 7741802 p69 (Power Trim SX).** PU/R runs round the outline of the 9a
   connector box. This happens on `main` as well, since #107 made the page paint. The box is drawn
   as four sides inside longer stroked polylines, so neither the closed-path reader nor
   `assembled_rectangles` finds it. The next step is to find small closed rectangles in the noded
@@ -157,6 +157,36 @@ colour is the printed code, and paint stops at the box edge.
 - **Black wires that could be painted.** On the V REF pages, the bus pieces between junctions and
   the MAP sensor's C lead; on 7797351 p158, the L-shaped run described above.
 - **Not published.** The version bump and the release are a separate step.
+
+## 2026-10-27 published as 0.7.9 / engine 3.2.9
+
+The upload page detection in the entry below (#107) shipped. Published API first:
+
+- **Source.** Commit `3d32ab6` (the bump on top of the #107 merge `c51ca53`) was cloned into
+  `/opt/pintor-api-releases/3d32ab6`. The clone is owned by root, so a `git log` there must run as
+  root too (`sudo git -C ...`); as `popov`, git refuses it as dubious ownership.
+- **Image.** `engnata/pintor-api:0.7.9` was built, its plain log kept in
+  `/tmp/pintor-build-0.7.9.log` on the VM. Inside it were confirmed:
+  - `pintor-wiring 3.2.9` and PyMuPDF 1.28.2;
+  - the OCR reading of scanned pages (`_read_scanned_pages`, `read_scans`);
+  - the 5 % coloured-ink share, the scattered-circuit test and the bracketed AWG reading;
+  - the `reading-scanned-pages` job stage;
+  - `rapidocr check` passing.
+- **Container.** Recreated on the existing `pintor-api_pintor-data` volume; healthy.
+  - `OMP_NUM_THREADS` is 2.
+  - `PINTOR_SCAN_OCR_MAX_PAGES` is unset, so every prospect page is read.
+- **Smoke.** The external smoke passed:
+  `external_auth=ok account=ok unauthenticated=401 job=ready result=pdf delete=204`.
+  - Its synthetic page is vector, so it does not reach the new route.
+  - Separately, `scan_document` ran inside the live container on a synthetic scanned page. The page
+    was read by OCR and selected in 6.0 s (`scanned_pages_read 1`).
+- **Site.** PR #108 merged as `a7092ab`, and GitHub Pages deployed.
+- **Drift.** `check-release-drift.sh` reports `site 0.7.9`, `api 0.7.9 (engine 3.2.9)`.
+- **Rollback.** `cd /opt/pintor-api-releases/4eef04f/pintor && docker compose -p pintor-api
+  --env-file /opt/pintor-api/.env up -d` returns to 0.7.8.
+
+The root disk is at 46%, with 7 release folders and 7 `engnata/pintor-api` images (0.6.2 and
+0.7.4–0.7.9). `prune-old-releases.sh` can bring that back down.
 
 ## 2026-10-26 upload page detection, measured on a scan of the live library
 
