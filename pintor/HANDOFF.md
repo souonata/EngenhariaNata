@@ -87,6 +87,143 @@ the box.
   housings do.
 - **Closed one-path dashed rectangles** still become zones. Only assembled ones changed here.
 
+## 2026-10-27 vector route: wires drawn as filled outlines
+
+Branch `feat/pintor-vetorial-contornos`. Since #107 the upload detector confirms the V REF
+diagnostic circuits of pub 7749393 (library 35) and pub 7746872 (library 39). The painter then
+returned them unchanged.
+
+### Why the V REF pages painted nothing
+
+These sheets were outline-stroked before export. Every wire piece is its own thin filled ring,
+many rings to one filled path, beside the triangles that fill each join and the junction dots. On
+pub 7749393 p288 the only stroked paths are the component boxes. `extract_segments` read a filled
+path as a conductor only when the whole path was one thin rectangle. So the page gave two segments:
+
+- the header rule;
+- the ECM box's dashed border, a row of short filled dashes taken as one 387 pt "wire".
+
+The painter got 2 runs and painted 0.
+
+The IAC variant (p290) also draws two sensor boxes as four ribbon rings each. The TCP sheets
+(p298, p300) draw the three-cell throttle sensor as one 164 pt box, above the zone ceiling.
+
+### The rules
+
+- **A page that strokes no schematic draws its wires as outlines** (`eval/vector_truth.py`,
+  `draws_wires_as_outlines`). The test is the existing `MIN_SCHEMATIC_INK_RATIO`: stroked ink
+  under 5 page diagonals. The V REF sheets stroke 0.5-1.2 diagonals (their component boxes), the
+  GenV diagnostics of pub 47706663 about 1-2, and every factory twin 15 or more. Every other page
+  reads its fills exactly as before: the next three rules apply only here, the bridge barrier
+  everywhere. Without the gate the twins of
+  pub 7745609 lost 4 right conductors and gained 1 wrong: their ECU and sensor-plug pictures are
+  shaded rings. Read as wires, the pin leads joined the rims. A plug closed into a housing, and the
+  SB code printed at the plug, which used to abstain between the plug outline and the LGN/W wire
+  below it, then took the wire.
+- **On such a page every closed ring of an ink fill is read on its own** (`filled_ribbons`). A
+  ring is a ribbon by the same bounds as before (at most 6 px wide, at least 18 px long,
+  axis-aligned). Three kinds of ring are not read:
+  - a paper-white ring, which is a mask (this check applies on every page);
+  - a ring inside another ring of its path, which may be a hole;
+  - each short dash of a dashed border.
+- **Touching ribbons share their end exactly.** A ring stops at the edge of the ring it meets, or
+  at the tip of its mitre, half a pen from the other's centreline. Each end lying in another
+  ribbon's ink moves along its own axis onto that centreline, so a corner or a T is one point and
+  the run walks round it. An end that stops short of the other ink, as at a line hop, is not moved.
+- **Four ribbons meeting at their corners are a housing** (`detect/vector_symbols.py`,
+  `ribbon_rectangles`). They get the same size bounds as a stroked box: a zone, and their ink
+  leaves the topology. A side that runs on past its corner is a wire.
+- **A housing too large to be a zone still stops a bridge** (`engine/ownership.py`). Until now
+  such a box lost its ink and gained no zone, and nothing kept a bridge from crossing its edge. On
+  p298 a bridge carried OR/SB 10 pt across the box edge from pin 3 into the potentiometer wiper.
+  The outline of every rectangle stripped without a zone is now a barrier that no bridge may cross
+  (safety rule 3). This one applies on every page. The vector context schema goes to 9.
+- **On an outline page no bridge crosses a filled symbol either** (`filled_furniture`). There an
+  inline connector, a pin chevron or a dot is filled ink like the wires, and nothing else marks
+  it. On p146 the oxygen sensor's harness wire stops above an inline connector drawn as two filled
+  chevrons, and the sensor's own lead below it is printed W. A bridge carried P/DGN across the
+  connector onto that lead. Every filled ring that is not a wire is now a barrier too. Only the
+  gap's interior counts (1 px in from each end), so a hop arc or a chevron that merely touches a
+  wire end does not block.
+
+### Measured
+
+The V REF pages, as painted runs / runs:
+
+| layout         | pub 7749393 pages | pub 7746872 pages | before         | after              |
+| -------------- | ----------------- | ----------------- | -------------- | ------------------ |
+| V REF #1 (ETC) | p288, p292        | p197, p203        | 0 / 2          | 16 / 26            |
+| V REF (IAC)    | p290, p294        | p199, p201, p205  | 0 / 7 to 0 / 9 | 17 / 28 to 17 / 30 |
+| V REF #2 (TCP) | p298, p300        | p207, p209        | 1 / 6          | 8 / 16 or 8 / 17   |
+
+- 13 pages go from 4 painted runs (only the SB ground lead of the TCP sheets) to 181.
+- Pages of one layout give the same claims. One of each layout and publication was checked by eye
+  on rendered crops (p288, p290, p298; p197, p199, p207, p209), and every painted colour is the
+  code printed on its wire.
+- Nothing is painted inside a box, and V2/V7 pass on every page.
+- What stays black is conservative:
+  - bus pieces between two junctions, which no code names and propagation does not cross (rule 2);
+  - on the ETC sheet, the MAP sensor's C lead, where two runs are within the assignment margin.
+
+The benchmarks, each on frozen snapshots:
+
+- **Teacher benchmark (49 pages): 2,483 right / 220 wrong, identical to 0.7.8 conductor by
+  conductor** (precision 0.9186, coverage 0.3337, by length 0.5366, held out 531 / 89; run
+  `g2-5/rOS3` against `g2-5/rL6`). The first version, without the gate, gave 2,479 / 221. That loss
+  was the ECU and plug pictures of pub 7745609 described above.
+- **`marks4`:** unchanged (0.5873, every class and every mark equal, 14 pages).
+
+**The library.** Over the 1,186 vector pages the upload detector selects in the 2026-10 scan, the
+new extractor or a barrier changes something on 459. Painted with both engines, leaving out the
+lockbox publications, that is 455 pages:
+
+| publication                              | pages | runs painted, 0.7.8 → this branch |
+| ---------------------------------------- | ----- | --------------------------------- |
+| 7749393 EGC diagnostics (library 35)     | 76    | 43 → 460                          |
+| 7746872 EFI diagnostics (library 39)     | 69    | 71 → 418                          |
+| 47706663 EGC diagnostics GenV            | 97    | 128 → 383                         |
+| 47714177 DTC Group 30, Gen V+            | 84    | 81 → 277                          |
+| 7741412 Digital Trim Instrument          | 6     | 276 → 285                         |
+| 7797351 EFI diagnostics 8.1Gi            | 19    | 142 → 108                         |
+| 47702487 D5-D7 industrial, Group 30      | 4     | 219 → 212                         |
+| 7742218 EFI diagnostics 4.3-5.7          | 11    | 6 → 4                             |
+| 27 other publications                    | 89    | unchanged in total                |
+
+In all, 1,471 → 2,652 painted runs, and 174 → 301 pages with paint. Every page that lost paint
+was compared by eye with 0.7.8:
+
+- **The colour no longer runs into a component.** 0.7.8 carried colour:
+  - GR/BL from pin C along the inside of the crankshaft sensor box and out at pin A;
+  - OR/BL onto the throttle sensor's wiper;
+  - P/W and T/OR onto the motor leads inside the GenV throttle body;
+  - P/BL and BL/Y onto the coils of the idle air control valve.
+- **No bridge across a connector strip.** On 47702487 p156, W1.0 was bridged across connector
+  strips 34 and 33 onto the unlabelled injector leads (rules 1 and 3). This costs coverage where
+  the colour really continues.
+- **A run whose corner now joins can be refused.** On 7797351 p158 the GR/OR code is printed
+  horizontally beside the vertical leg of an L. Joined, that L costs 92 against the refusal at 90
+  (axis mismatch), and stays black. 0.7.8 painted only its horizontal piece, the right colour by
+  luck.
+
+Gains were sampled by eye on 13 pages of different layouts across the four diagnostics manuals,
+besides the V REF pages (zoomed to full resolution where a crop was ambiguous). On every one each
+colour is the printed code, and paint stops at the box edge.
+
+### Not done
+
+- **The 9a box on pub 7741802 p69 (Power Trim SX).** PU/R runs round the outline of the 9a
+  connector box. This happens on `main` as well, since #107 made the page paint. The box is drawn
+  as four sides inside longer stroked polylines, so neither the closed-path reader nor
+  `assembled_rectangles` finds it. Fixed in the entry above (#111).
+- **Stroked pages are not covered by the new bridge barrier.** A stroked page may still bridge
+  through an inline connector drawn as two stroked chevrons; the barrier covers outline pages only.
+  Not measured.
+- **The ECM's dashed border on 47706663 p78.** PU/LBL is painted on a few of its dashes, as on
+  `main`.
+- **Black wires that could be painted.** On the V REF pages, the bus pieces between junctions and
+  the MAP sensor's C lead; on 7797351 p158, the L-shaped run described above.
+- **Not published.** The version bump and the release are a separate step.
+
 ## 2026-10-27 published as 0.7.9 / engine 3.2.9
 
 The upload page detection in the entry below (#107) shipped. Published API first:
