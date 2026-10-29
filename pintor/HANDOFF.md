@@ -61,11 +61,10 @@ times the same 37 library pages change, with the same paint counts and lengths.
   conductor (precision 0.9186, held out 531 / 89; run `g2-5/r9B` against `g2-5/rL6`). On top of
   #110 the same, conductor by conductor (`g2-5/rC9`).
 - **`marks4`:** anchored ruler unchanged (0.5873, every class equal, 14 pages; on top of #110 the
-  same, mark for mark). On the square ruler,
-  one non-wire mark on D4/D6 p111 is now unmet (0.5546 → 0.5305). R 2.5, R/SB 2.5 and R/W 2.5 inside
-  the dashed "24 V system" box are now painted next to it, each with its code printed on its wire.
-  They used to be withdrawn because that box was a zone. The anchored ruler finds no paint on the
-  marked ink.
+  same, mark for mark). On the square ruler, one non-wire mark on D4/D6 p111 is now unmet (0.5546 →
+  0.5305). R 2.5, R/SB 2.5 and R/W 2.5 inside the dashed "24 V system" box are now painted next to
+  it, each with its code printed on its wire. They used to be withdrawn because that box was a zone.
+  The anchored ruler finds no paint on the marked ink.
 - **The library.** Over the 1,186 vector pages the upload detector selects, leaving out the lockbox,
   the symbol geometry changes on 37. Painted with both engines, 25 are identical and 12 lose paint.
   Of the runs `main` paints and this branch does not:
