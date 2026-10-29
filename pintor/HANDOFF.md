@@ -20,6 +20,34 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-29 published as 0.7.10 / engine 3.2.10
+
+The two vector route entries below shipped: wires drawn as filled outlines (#110) and boxes drawn
+as four lone strokes (#111). Published API first:
+
+- **Source.** Commit `91996ba` (the bump on top of the #111 merge `f04c5da`) was cloned into
+  `/opt/pintor-api-releases/91996ba`.
+- **Image.** `engnata/pintor-api:0.7.10` was built at the first attempt, its plain log kept in
+  `/tmp/pintor-build-0.7.10.log` on the VM. Inside it were confirmed:
+  - `pintor-wiring 3.2.10` and PyMuPDF 1.28.2;
+  - vector context schema 9;
+  - the outline reading (`draws_wires_as_outlines`, `filled_ribbons`, `filled_furniture`);
+  - the box reading (`ribbon_rectangles`, `_lone_strokes`) and `BARRIER_END_TRIM_PX` 1.0;
+  - `rapidocr check` passing in the build.
+- **Container.** Recreated on the existing `pintor-api_pintor-data` volume; healthy.
+- **Smoke.** The external smoke passed:
+  `external_auth=ok account=ok unauthenticated=401 job=ready result=pdf delete=204`.
+  - Its synthetic page is a stroked sheet, so it does not reach the outline route.
+  - Separately, a synthetic outline-drawn sheet was painted inside the live container: 1 run,
+    coloured GR/BR.
+- **Site.** PR #112 merged as `dab99fc`, and GitHub Pages deployed.
+- **Drift.** `check-release-drift.sh` reports `site 0.7.10`, `api 0.7.10 (engine 3.2.10)`.
+- **Rollback.** `cd /opt/pintor-api-releases/3d32ab6/pintor && docker compose -p pintor-api
+  --env-file /opt/pintor-api/.env up -d` returns to 0.7.9.
+
+The root disk is at 52%, with 8 release folders and 8 `engnata/pintor-api` images (0.6.2 and
+0.7.4–0.7.10). `prune-old-releases.sh` can bring that back down.
+
 ## 2026-10-27 vector route: boxes drawn as four lone strokes
 
 Branch `feat/pintor-caixa-9a`. Since #107, the power-trim pages of pub 7741802 are painted, and
