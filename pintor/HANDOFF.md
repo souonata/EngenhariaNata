@@ -20,6 +20,78 @@ The product name is localized in the interface: **Pintor** in Portuguese, **Pitt
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
 
+## 2026-10-27 vector route: boxes drawn as four lone strokes
+
+Branch `feat/pintor-caixa-9a`. Since #107, the power-trim pages of pub 7741802 are painted, and
+on p69 (Power Trim SX, early production) the PU/R wire's purple ran round the small 9a connector
+box it ends on.
+
+### Why
+
+The 9a box is four strokes, each its own subpath, inside a 34-item stroked path that also holds
+the PU/R wire. `assembled_rectangles` took a side only when it was a whole path, so the box stayed
+in the topology as wire.
+
+The wire meets the box's top side in a T. The piece of the top left of the T (3 pt) is shorter
+than the conductor floor and is dropped before the decision. So the decision layer sees at the T
+only the wire and the rest of the outline, which looks like a continuation. PU/R propagated round
+the box.
+
+### The rules (`detect/vector_symbols.py`)
+
+- **A side is a stroke that is its own subpath** (`_lone_strokes`), whatever path holds it. Only
+  each side's own stroke leaves the topology, not every stroke of its path: the path may hold the
+  wire.
+- **Copies of one stroke are one side.** Pub 47701683 p39 prints every line 21 times, so each
+  rectangle matched 21^4 times: 4.8 million zones on that page in the first version. Copies within
+  0.1 pt are grouped, each rectangle is reported once, and every copy is stripped with it.
+- **A dashed rectangle is an enclosure**, such as a control panel or an optional-equipment box,
+  and its wires cross it. It loses its ink but gets no zone. On p69 the dashed control panel would
+  otherwise cut the Y wire short of its switch. Like every rectangle stripped without a zone, its
+  outline is a bridge barrier (#110), so a wire is still not bridged across it as before.
+
+### Measured (frozen snapshots)
+
+Measured first against `main` before #110, then again on top of it (`main` at `cd94ebb`). Both
+times the same 37 library pages change, with the same paint counts and lengths.
+
+- **p69:** the 9a box is clean. The R/PU wire no longer runs round the outline of the 5b connector
+  either.
+- **Teacher benchmark (49 pages):** 2,483 right / 220 wrong, identical to `main` conductor by
+  conductor (precision 0.9186, held out 531 / 89; run `g2-5/r9B` against `g2-5/rL6`). On top of
+  #110 the same, conductor by conductor (`g2-5/rC9`).
+- **`marks4`:** anchored ruler unchanged (0.5873, every class equal, 14 pages; on top of #110 the
+  same, mark for mark). On the square ruler, one non-wire mark on D4/D6 p111 is now unmet (0.5546 →
+  0.5305). R 2.5, R/SB 2.5 and R/W 2.5 inside the dashed "24 V system" box are now painted next to
+  it, each with its code printed on its wire. They used to be withdrawn because that box was a zone.
+  The anchored ruler finds no paint on the marked ink.
+- **The library.** Over the 1,186 vector pages the upload detector selects, leaving out the lockbox,
+  the symbol geometry changes on 37. Painted with both engines, 25 are identical and 12 lose paint.
+  Of the runs `main` paints and this branch does not:
+  - 102 lie on box outlines now stripped: connector cells, relay contacts, small pin boxes. That is
+    wrong paint gone.
+  - 20 are wires, and 23 more runs are withdrawn for crossing a new zone. Those checked by eye were
+    mostly colour that `main` carried across a connector:
+    - on 7741802 p76, through the 8-cell connector 16 onto unlabelled dashed cables;
+    - on 7737962 p60 (Railpac), up from the pin row into the transmission unit.
+
+    Two cases are not fixes:
+    - **A wire drawn straight through a fuse.** On 7741802 p72 the R/PU wire runs straight through
+      the inline fuse 6, which is now a zone. The run is withdrawn whole (the existing zone-crossing
+      policy), so both coded sides go black where `main` painted them, and painted the fuse element
+      as well.
+    - **A wire hidden under a white mask.** On 7737962 p60 a wire hidden under the transmission
+      unit's white fill changes colour: `main` paints it pink, this branch yellow. Both paint
+      geometry the drawing hides, because a paper fill without a stroke is not an opaque housing
+      yet.
+
+### Not done
+
+- **Cut a wire at a recognised fuse instead of withdrawing it.** Each side keeps its own code.
+- **Paper-filled masks without a stroke** (7737962 p60) should hide what they cover, as opaque
+  housings do.
+- **Closed one-path dashed rectangles** still become zones. Only assembled ones changed here.
+
 ## 2026-10-27 vector route: wires drawn as filled outlines
 
 Branch `feat/pintor-vetorial-contornos`. Since #107 the upload detector confirms the V REF
@@ -147,8 +219,7 @@ colour is the printed code, and paint stops at the box edge.
 - **The 9a box on pub 7741802 p69 (Power Trim SX).** PU/R runs round the outline of the 9a
   connector box. This happens on `main` as well, since #107 made the page paint. The box is drawn
   as four sides inside longer stroked polylines, so neither the closed-path reader nor
-  `assembled_rectangles` finds it. The next step is to find small closed rectangles in the noded
-  graph, and measure that on the bench.
+  `assembled_rectangles` finds it. Fixed in the entry above (#111).
 - **Stroked pages are not covered by the new bridge barrier.** A stroked page may still bridge
   through an inline connector drawn as two stroked chevrons; the barrier covers outline pages only.
   Not measured.
