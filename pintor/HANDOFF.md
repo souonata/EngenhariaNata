@@ -47,15 +47,21 @@ the box.
   0.1 pt are grouped, each rectangle is reported once, and every copy is stripped with it.
 - **A dashed rectangle is an enclosure**, such as a control panel or an optional-equipment box,
   and its wires cross it. It loses its ink but gets no zone. On p69 the dashed control panel would
-  otherwise cut the Y wire short of its switch.
+  otherwise cut the Y wire short of its switch. Like every rectangle stripped without a zone, its
+  outline is a bridge barrier (#110), so a wire is still not bridged across it as before.
 
 ### Measured (frozen snapshots)
+
+Measured first against `main` before #110, then again on top of it (`main` at `cd94ebb`). Both
+times the same 37 library pages change, with the same paint counts and lengths.
 
 - **p69:** the 9a box is clean. The R/PU wire no longer runs round the outline of the 5b connector
   either.
 - **Teacher benchmark (49 pages):** 2,483 right / 220 wrong, identical to `main` conductor by
-  conductor (precision 0.9186, held out 531 / 89; run `g2-5/r9B` against `g2-5/rL6`).
-- **`marks4`:** anchored ruler unchanged (0.5873, every class equal, 14 pages). On the square ruler,
+  conductor (precision 0.9186, held out 531 / 89; run `g2-5/r9B` against `g2-5/rL6`). On top of
+  #110 the same, conductor by conductor (`g2-5/rC9`).
+- **`marks4`:** anchored ruler unchanged (0.5873, every class equal, 14 pages; on top of #110 the
+  same, mark for mark). On the square ruler,
   one non-wire mark on D4/D6 p111 is now unmet (0.5546 → 0.5305). R 2.5, R/SB 2.5 and R/W 2.5 inside
   the dashed "24 V system" box are now painted next to it, each with its code printed on its wire.
   They used to be withdrawn because that box was a zone. The anchored ruler finds no paint on the
