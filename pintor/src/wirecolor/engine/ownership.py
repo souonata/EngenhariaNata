@@ -198,10 +198,16 @@ def _outward(run, at_start):
     return tip, (-inward[0] / length, -inward[1] / length)
 
 
+# A barrier counts only inside a bridge's gap, this far from either wire end, in working pixels:
+# the ink a wire stops against touches its end. On pub 7749393 p146 the nearer chevron of the
+# inline connector reaches 0.7 px into the gap and the farther one lies 3.9 px in.
+BARRIER_END_TRIM_PX = 1.0
+
+
 def bridge_straight_continuations(owned, max_gap_px, min_conductor_px,
                                   angle_tol_deg=12.0, max_passes=8,
                                   lateral_min_px=6.0, lateral_factor=0.12,
-                                  blocked_zones=()):
+                                  blocked_zones=(), barriers=()):
     """Carry a colour across a small gap to the run that continues STRAIGHT on the far side.
 
     A component symbol drawn on a conductor -- a hop, a bowtie twisted-pair mark, a small box --
@@ -220,6 +226,11 @@ def bridge_straight_continuations(owned, max_gap_px, min_conductor_px,
       * it is the ONLY uncoded candidate in that cone -- at a fork we decline rather than guess,
       * the gap does not cross a component zone. A fuse, switch, contact, connector, terminal or
         unknown closed symbol is a physical conductor boundary, even when both sides are collinear.
+      * the gap does not cross a ``barrier``: the outline of a housing too large to be a zone, or
+        of a filled symbol on an outline-stroked page. On pub 7749393 the throttle sensor's three
+        cells are one 164 pt box, above the zone ceiling, and a bridge carried OR/SB across its
+        edge from pin 3 into the potentiometer wiper. Only the gap's interior counts: a hop arc
+        or a pin chevron that merely touches a wire end is where that wire stops.
 
     Only uncoded runs are ever painted, so this can add paint but never change an existing colour.
     """
@@ -249,6 +260,34 @@ def bridge_straight_continuations(owned, max_gap_px, min_conductor_px,
                         return True
         return False
 
+    def crosses_barrier(tip, tip2):
+        """Whether the interior of the gap tip->tip2 meets a barrier segment, touching included."""
+        if not barriers:
+            return False
+        dx, dy = tip2[0] - tip[0], tip2[1] - tip[1]
+        length = hypot(dx, dy)
+        trim = min(BARRIER_END_TRIM_PX, length / 4.0) / max(length, 1e-9)
+        a = (tip[0] + dx * trim, tip[1] + dy * trim)
+        b = (tip2[0] - dx * trim, tip2[1] - dy * trim)
+
+        def side(p, q, r):
+            value = (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])
+            return (value > 1e-9) - (value < -1e-9)
+
+        def within(p, q, r):
+            return (min(p[0], q[0]) - 1e-9 <= r[0] <= max(p[0], q[0]) + 1e-9
+                    and min(p[1], q[1]) - 1e-9 <= r[1] <= max(p[1], q[1]) + 1e-9)
+
+        for x0, y0, x1, y1 in barriers:
+            c, d = (x0, y0), (x1, y1)
+            s1, s2, s3, s4 = side(a, b, c), side(a, b, d), side(c, d, a), side(c, d, b)
+            if s1 != s2 and s3 != s4:
+                return True
+            if (s1 == 0 and within(a, b, c)) or (s2 == 0 and within(a, b, d)) \
+                    or (s3 == 0 and within(c, d, a)) or (s4 == 0 and within(c, d, b)):
+                return True
+        return False
+
     added = 0
     for _ in range(max_passes):
         # open ends, recomputed each pass because a bridge can extend a coloured chain
@@ -272,7 +311,7 @@ def bridge_straight_continuations(owned, max_gap_px, min_conductor_px,
                 gap = hypot(tip2[0] - tip[0], tip2[1] - tip[1])
                 if gap < 0.5 or gap > max_gap_px:
                     continue
-                if crosses_blocked_zone(tip, tip2):
+                if crosses_blocked_zone(tip, tip2) or crosses_barrier(tip, tip2):
                     continue
                 # the far end must lie ahead, along `out`
                 ahead = atan2(tip2[1] - tip[1], tip2[0] - tip[0])

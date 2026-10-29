@@ -68,6 +68,33 @@ class BridgeStraightContinuations(unittest.TestCase):
             [left, right], max_gap_px=30, min_conductor_px=50, blocked_zones=blocked), 0)
         self.assertIsNone(right.code)
 
+    def test_a_housing_outline_blocks_a_collinear_bridge(self):
+        # A box too large to be a zone still has edges. On pub 7749393 the lead to pin 3 and the
+        # potentiometer wiper inside the box were collinear across its bottom edge.
+        lead = Run([(100, 300), (100, 210)], "OR/SB")
+        wiper = Run([(100, 190), (100, 120)])
+        barrier = [(40, 200, 300, 200)]
+        self.assertEqual(bridge_straight_continuations(
+            [lead, wiper], max_gap_px=30, min_conductor_px=50, barriers=barrier), 0)
+        self.assertIsNone(wiper.code)
+
+    def test_a_barrier_elsewhere_does_not_block(self):
+        left = Run([(0, 100), (100, 100)], "R")
+        right = Run([(120, 100), (300, 100)])
+        barrier = [(40, 200, 300, 200), (110, 101, 110, 150)]   # below the gap, and short of it
+        self.assertEqual(bridge_straight_continuations(
+            [left, right], max_gap_px=30, min_conductor_px=50, barriers=barrier), 1)
+        self.assertEqual(right.code, "R")
+
+    def test_ink_touching_only_a_wire_end_does_not_block(self):
+        # A hop arc rises from one wire end and lands on the other: it never enters the gap.
+        left = Run([(0, 100), (100, 100)], "R")
+        right = Run([(120, 100), (300, 100)])
+        arc = [(100, 100, 110, 90), (110, 90, 120, 100)]
+        self.assertEqual(bridge_straight_continuations(
+            [left, right], max_gap_px=30, min_conductor_px=50, barriers=arc), 1)
+        self.assertEqual(right.code, "R")
+
     def test_offset_line_is_not_bridged(self):
         # Collinear in direction but laterally displaced -- a different cable running parallel.
         left = Run([(0, 100), (100, 100)], "OR")

@@ -35,7 +35,7 @@ zone. The floor bounds both.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 # A symbol is at least this many modal pen widths across its SHORT side. Below it live the pin
 # circles and junction dots -- closed, but electrical connections rather than components. Measured
@@ -73,6 +73,10 @@ TWIST_MID_FRACTION = 0.30      # their midpoints coincide, within this share of 
 # Two strokes share a corner when their ends lie this close, in PDF points: the same tolerance the
 # closed-subpath test below accepts between a subpath's first and last point.
 RECT_CORNER_TOL = 0.6
+
+# The same for filled ribbons, in working pixels. Their ends are joined exactly where their ink
+# touches (``vector_truth.RIBBON_JOIN_SLACK_PX``), so this only absorbs float rounding.
+RIBBON_CORNER_TOL_PX = 0.5
 
 
 def _item_points(item):
@@ -162,6 +166,10 @@ class SymbolGeometry:
     zones: list
     stroke_keys: set
     opaque_zones: list
+    # The sides of the rectangles stripped without a zone (too large or too thin to protect) and,
+    # on an outline-stroked page, the edges of every filled shape that is not a wire, as
+    # (x0, y0, x1, y1) segments. They protect nothing, but a gap is never bridged across them.
+    barriers: list = field(default_factory=list)
 
 
 def _is_twist_mark(items, matrix, max_len):
@@ -196,9 +204,13 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
 
     ``zones`` are protected bounding boxes. ``stroke_keys`` identify the individual straight
     segments the symbols are drawn with. ``opaque_zones`` are the paper-filled housings that hide
-    any conductor drawn underneath and may therefore sever topology safely.
+    any conductor drawn underneath and may therefore sever topology safely. ``barriers`` are the
+    outlines of the rectangles stripped without a zone and of an outline page's filled symbols.
     """
-    from ..eval.vector_truth import _matrix, canvas_diagonal_px, conductor_floor_px
+    import fitz
+
+    from ..eval.vector_truth import (_matrix, canvas_diagonal_px, conductor_floor_px,
+                                     filled_furniture, filled_ribbons)
 
     matrix = _matrix(page, dpi)
     diagonal = canvas_diagonal_px(page, dpi)
@@ -206,7 +218,7 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
     max_side = diagonal * max_side_fraction
     max_twist_len = conductor_floor_px(page, dpi) * TWIST_LEN_FRACTION
 
-    zones, strokes, opaque_zones = [], set(), []
+    zones, strokes, opaque_zones, barriers = [], set(), [], []
 
     def admit(points):
         """``(zone, strip)`` for a closed outline.
@@ -224,6 +236,13 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
             return None, True                 # a bar or a frame, not a housing
         return (x0, y0, x1, y1), True
 
+    def fence(points):
+        """Keep a stripped rectangle's outline when it gets no zone: no bridge crosses it."""
+        xs = [p.x for p in points]
+        ys = [p.y for p in points]
+        x0, x1, y0, y1 = min(xs), max(xs), min(ys), max(ys)
+        barriers.extend([(x0, y0, x1, y0), (x1, y0, x1, y1), (x0, y1, x1, y1), (x0, y0, x0, y1)])
+
     # Whether a bowtie's two diagonals share a path is the producer's choice, not the
     # drawing's, so look for the pair across paths as well as within one.
     strokes |= paired_twist_strokes(page, matrix, max_twist_len)
@@ -231,14 +250,36 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
     # corners. Both are held to the same size bounds.
     drawings = page.get_drawings()
     for sides in assembled_rectangles(drawings):
-        zone, strip = admit([point * matrix for _path, a, b in sides for point in (a, b)])
+        corners = [point * matrix for _path, a, b in sides for point in (a, b)]
+        zone, strip = admit(corners)
         if not strip:
             continue
         if zone is not None:
             zones.append(zone)
+        else:
+            fence(corners)
         for path, _a, _b in sides:
             for a, b in _path_segments_px(path.get("items", ()), matrix):
                 strokes.add(_seg_key(a, b))
+    # An outline-stroked sheet draws its housings in the same filled ribbons as its wires, which
+    # ``filled_ribbons`` reads as conductors. Those rectangles are held to the same bounds.
+    ribbons = [ribbon for _index, ribbon in filled_ribbons(page, dpi, drawings) if ribbon.outlined]
+    for sides in ribbon_rectangles(ribbons):
+        corners = [fitz.Point(x, y) for ribbon in sides for x, y in ribbon.segment()]
+        zone, strip = admit(corners)
+        if not strip:
+            continue
+        if zone is not None:
+            zones.append(zone)
+        else:
+            fence(corners)
+        for ribbon in sides:
+            strokes.add(_seg_key(*ribbon.segment()))
+    # Nor may a bridge cross the filled ink of a connector, a pin chevron or a dot drawn between
+    # two wire ends: on an outline page nothing else marks a component there.
+    for ring in filled_furniture(page, dpi, drawings):
+        barriers.extend((a[0], a[1], b[0], b[1]) for a, b in zip(ring, ring[1:] + ring[:1])
+                        if a != b)
     for path in drawings:
         items = path.get("items", ())
         # A twisted-pair bowtie is stroked (fill=None) but is not a closed housing; strip its own
@@ -268,10 +309,13 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
                 zones.append(zone)
                 if opaque:
                     opaque_zones.append(zone)
+            else:
+                fence(points)
             for a, b in zip(points, points[1:]):
                 if a.x != b.x or a.y != b.y:
                     strokes.add(_seg_key((a.x, a.y), (b.x, b.y)))
-    return SymbolGeometry(zones=zones, stroke_keys=strokes, opaque_zones=opaque_zones)
+    return SymbolGeometry(zones=zones, stroke_keys=strokes, opaque_zones=opaque_zones,
+                          barriers=barriers)
 
 
 
@@ -416,6 +460,89 @@ def assembled_rectangles(drawings, tolerance=RECT_CORNER_TOL):
                     if abs(bottom[2].x - right_side[2].x) <= tolerance \
                             and abs(bottom[2].y - right_side[2].y) <= tolerance:
                         found.append([top, left_side, right_side, bottom])
+    return found
+
+
+def _ribbon_lines(ribbons, axis, tolerance):
+    """Collinear ribbons that touch end to end, merged into ``(centre, lo, hi, members)`` lines.
+
+    A housing side may arrive as several rings, split where a divider or a pin lead meets it; after
+    ``vector_truth`` joins their ends they share those points exactly.
+    """
+    lines = []
+    members = sorted((ribbon for ribbon in ribbons if ribbon.axis == axis),
+                     key=lambda ribbon: ribbon.centre)
+    groups, group = [], []
+    for ribbon in members:
+        if group and ribbon.centre - group[0].centre > tolerance:
+            groups.append(group)
+            group = []
+        group.append(ribbon)
+    if group:
+        groups.append(group)
+    for group in groups:
+        group.sort(key=lambda ribbon: ribbon.lo)
+        line = [group[0]]
+        hi = group[0].hi
+        for ribbon in group[1:]:
+            if ribbon.lo <= hi + tolerance:
+                line.append(ribbon)
+                hi = max(hi, ribbon.hi)
+                continue
+            lines.append((sum(r.centre for r in line) / len(line), line[0].lo, hi, line))
+            line, hi = [ribbon], ribbon.hi
+        lines.append((sum(r.centre for r in line) / len(line), line[0].lo, hi, line))
+    return lines
+
+
+def ribbon_rectangles(ribbons, tolerance=RIBBON_CORNER_TOL_PX):
+    """Rectangles whose four sides are filled ribbons meeting exactly at the corners.
+
+    The outline-stroked twin of ``assembled_rectangles``. On pub 7749393 the sensor boxes of the
+    V REF circuits are drawn in the wire's own ink, one ring per side; unrecognised, a box joined
+    the lead outside it to the potentiometer wiper inside it, and the wire's colour ran into the
+    sensor. A side must end at both corners: a line that runs on past one is a wire, and so is any
+    rectangle whose corners do not meet. Returns the ribbons of every side, in working pixels.
+    """
+    horizontals = _ribbon_lines(ribbons, "h", tolerance)
+    verticals = _ribbon_lines(ribbons, "v", tolerance)
+    cell = max(4.0 * tolerance, 1.0)
+
+    def bucket(x, y):
+        return int(x // cell), int(y // cell)
+
+    def near(index, x, y):
+        column, row = bucket(x, y)
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                for entry in index.get((column + dx, row + dy), ()):
+                    yield entry
+
+    # Vertical sides by their upper end; bottom sides by their left end.
+    by_upper, by_left = {}, {}
+    for line in verticals:
+        by_upper.setdefault(bucket(line[0], line[1]), []).append(line)
+    for line in horizontals:
+        by_left.setdefault(bucket(line[1], line[0]), []).append(line)
+
+    def at(line, x, y):
+        return abs(line[0] - x) <= tolerance and abs(line[1] - y) <= tolerance
+
+    found = []
+    for top in horizontals:
+        y, left_x, right_x = top[0], top[1], top[2]
+        lefts = [line for line in near(by_upper, left_x, y) if at(line, left_x, y)]
+        rights = [line for line in near(by_upper, right_x, y) if at(line, right_x, y)]
+        for left in lefts:
+            for right in rights:
+                if right is left or abs(left[2] - right[2]) > tolerance:
+                    continue
+                for bottom in near(by_left, left_x, left[2]):
+                    if bottom is top or abs(bottom[0] - left[2]) > tolerance \
+                            or abs(bottom[1] - left_x) > tolerance \
+                            or abs(bottom[2] - right_x) > tolerance:
+                        continue
+                    found.append([*top[3], *left[3], *right[3], *bottom[3]])
     return found
 
 def symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,

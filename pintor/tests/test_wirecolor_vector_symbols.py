@@ -351,6 +351,102 @@ class OversizedOutlines(unittest.TestCase):
         self.assertEqual(symbol_geometry(page, DPI, PEN_PX), ([], set()))
         doc.close()
 
+    def test_an_oversized_rectangle_leaves_its_outline_as_a_barrier(self):
+        doc, page = page_with(lambda p: rect(p, 100, 20, 140, 280))
+        barriers = classify_symbol_geometry(page, DPI, PEN_PX).barriers
+        doc.close()
+        self.assertEqual(len(barriers), 4)
+        x0, y0, x1, y1 = (value / SCALE for value in barriers[0])
+        self.assertAlmostEqual(min(y0, y1), 20, places=3)
+
+    def test_a_protected_rectangle_needs_no_barrier(self):
+        doc, page = page_with(lambda p: rect(p, 100, 100, 140, 140))
+        geometry = classify_symbol_geometry(page, DPI, PEN_PX)
+        doc.close()
+        self.assertEqual(len(geometry.zones), 1)
+        self.assertEqual(geometry.barriers, [])
+
+
+def ribbon_page(rings, width=400, height=300):
+    """One filled, unstroked path of explicitly closed rings: an outline-stroked drawing."""
+    doc = fitz.open()
+    page = doc.new_page(width=width, height=height)
+    shape = page.new_shape()
+    for ring in rings:
+        shape.draw_polyline([*ring, ring[0]])
+    shape.finish(color=None, fill=(0, 0, 0), closePath=False)
+    shape.commit()
+    return doc, page
+
+
+def bar(x0, y0, x1, y1):
+    return [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+
+
+def ribbon_box(x0, y0, x1, y1, half=0.5):
+    """Four side rings, each running to the outer edge of its neighbours, as an outline export
+    draws a 1 pt box."""
+    return [bar(x0 - half, y0 - half, x1 + half, y0 + half),
+            bar(x0 - half, y0 - half, x0 + half, y1 + half),
+            bar(x1 - half, y0 - half, x1 + half, y1 + half),
+            bar(x0 - half, y1 - half, x1 + half, y1 + half)]
+
+
+class RibbonHousings(unittest.TestCase):
+    """On an outline-stroked sheet a housing is four filled rings in the wire's own ink. The
+    reader in ``vector_truth`` turns them into conductor segments, so the symbol classifier must
+    find the same rectangle there or the box joins every lead that meets it."""
+
+    def test_a_box_of_four_ribbons_is_a_symbol(self):
+        doc, page = ribbon_page(ribbon_box(100, 100, 140, 150))
+        geometry = classify_symbol_geometry(page, DPI, PEN_PX)
+        segments = extract_segments(page, DPI)
+        doc.close()
+        self.assertEqual(len(geometry.zones), 1)
+        x0, y0, x1, y1 = (value / SCALE for value in geometry.zones[0])
+        self.assertAlmostEqual(x0, 100, places=3)
+        self.assertAlmostEqual(y1, 150, places=3)
+        stripped, removed = strip_symbol_strokes(segments, geometry.stroke_keys)
+        self.assertEqual((removed, stripped), (4, []))
+
+    def test_the_ribbon_box_stops_bonding_the_leads_it_touches(self):
+        # A lead outside the box and the wiper lead inside it both end on the left side.
+        rings = ribbon_box(100, 100, 140, 150) + [bar(60, 119.625, 99.5, 120.375),
+                                                  bar(100.5, 119.625, 125, 120.375)]
+        doc, page = ribbon_page(rings)
+        segments = extract_segments(page, DPI)
+        self.assertEqual(len(build_nets(node_segments(segments))), 1,
+                         "precondition: the side bonds the lead outside to the one inside")
+        geometry = classify_symbol_geometry(page, DPI, PEN_PX)
+        doc.close()
+        stripped, removed = strip_symbol_strokes(segments, geometry.stroke_keys)
+        self.assertEqual(removed, 4)
+        self.assertEqual(len(geometry.zones), 1)
+
+    def test_a_side_that_runs_past_its_corner_is_a_wire(self):
+        rings = ribbon_box(100, 100, 140, 150)
+        rings[1] = bar(99.5, 99.5, 100.5, 200)        # the left side carries on down as a wire
+        doc, page = ribbon_page(rings)
+        geometry = classify_symbol_geometry(page, DPI, PEN_PX)
+        doc.close()
+        self.assertEqual(geometry.zones, [])
+        self.assertEqual(geometry.stroke_keys, set())
+
+    def test_sides_that_do_not_touch_are_not_a_rectangle(self):
+        rings = ribbon_box(100, 100, 140, 150)
+        rings[3] = bar(100.5, 152, 139.5, 153)        # the bottom floats 2 pt below the sides
+        doc, page = ribbon_page(rings)
+        self.assertEqual(classify_symbol_geometry(page, DPI, PEN_PX).zones, [])
+        doc.close()
+
+    def test_a_ribbon_box_too_large_to_protect_is_a_barrier(self):
+        doc, page = ribbon_page(ribbon_box(100, 20, 140, 280))
+        geometry = classify_symbol_geometry(page, DPI, PEN_PX)
+        doc.close()
+        self.assertEqual(geometry.zones, [])
+        self.assertEqual(len(geometry.stroke_keys), 4)
+        self.assertEqual(len(geometry.barriers), 4)
+
 
 if __name__ == "__main__":
     unittest.main()
