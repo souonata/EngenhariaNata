@@ -265,6 +265,7 @@ def paint_page(pdf_path, page_index, out_dir, dpi=200, convention_name="volvo_cl
         "opaque_symbol_zones": len(context.opaque_zones),
         "symbol_strokes_removed": context.symbol_strokes_removed,
         "opaque_segments_clipped": context.opaque_segments_clipped,
+        "hidden_segments_dropped": context.hidden_segments_dropped,
         "legends": len(context.legends),
         "pin_markers_painted": len(pin_markers),
         "pin_marker_codes": sorted({marker.code for marker in pin_markers}),
