@@ -226,11 +226,13 @@ def bridge_straight_continuations(owned, max_gap_px, min_conductor_px,
       * it is the ONLY uncoded candidate in that cone -- at a fork we decline rather than guess,
       * the gap does not cross a component zone. A fuse, switch, contact, connector, terminal or
         unknown closed symbol is a physical conductor boundary, even when both sides are collinear.
-      * the gap does not cross a ``barrier``: the outline of a housing too large to be a zone, or
-        of a filled symbol on an outline-stroked page. On pub 7749393 the throttle sensor's three
-        cells are one 164 pt box, above the zone ceiling, and a bridge carried OR/SB across its
-        edge from pin 3 into the potentiometer wiper. Only the gap's interior counts: a hop arc
-        or a pin chevron that merely touches a wire end is where that wire stops.
+      * the gap does not cross a ``barrier``: the outline of a housing too large to be a zone, of
+        a closed shape too small to be one (a junction, a pin circle, a switch contact), or of a
+        filled shape that is not a wire (a dot, a splice star, a chevron). On pub 7749393 the
+        throttle sensor's three cells are one 164 pt box, above the zone ceiling, and a bridge
+        carried OR/SB across its edge from pin 3 into the potentiometer wiper. Only the gap's
+        interior counts: a hop arc or a pin chevron that merely touches a wire end is where that
+        wire stops.
 
     Only uncoded runs are ever painted, so this can add paint but never change an existing colour.
     """
@@ -311,8 +313,6 @@ def bridge_straight_continuations(owned, max_gap_px, min_conductor_px,
                 gap = hypot(tip2[0] - tip[0], tip2[1] - tip[1])
                 if gap < 0.5 or gap > max_gap_px:
                     continue
-                if crosses_blocked_zone(tip, tip2) or crosses_barrier(tip, tip2):
-                    continue
                 # the far end must lie ahead, along `out`
                 ahead = atan2(tip2[1] - tip[1], tip2[0] - tip[0])
                 if abs((ahead - base + 3.14159) % 6.28318 - 3.14159) > tol:
@@ -324,6 +324,9 @@ def bridge_straight_continuations(owned, max_gap_px, min_conductor_px,
                 # lateral offset of the far tip from our ray
                 lateral = abs(-sin(base) * (tip2[0] - tip[0]) + cos(base) * (tip2[1] - tip[1]))
                 if lateral > lateral_limit:
+                    continue
+                # last, as the dearest: a page can hold thousands of barrier segments
+                if crosses_blocked_zone(tip, tip2) or crosses_barrier(tip, tip2):
                     continue
                 candidates.append((gap, other))
             if len(candidates) == 1:
@@ -412,7 +415,7 @@ def assign_weak_to_leftovers(owned, weak_legends, min_run_px, policy=None):
 FOLD_BACK_COS = 0.5
 
 
-def propagate_continuations(owned, snap_px=1.5, max_passes=12):
+def propagate_continuations(owned, snap_px=1.5, max_passes=12, stub_ends=()):
     """Carry colour only through an unbranched degree-2 physical continuation.
 
     Electrical connectivity and conductor identity are different layers. A splice, terminal or
@@ -427,10 +430,20 @@ def propagate_continuations(owned, snap_px=1.5, max_passes=12):
     not one wire: a lead that climbs to a coil's pin and the one that leaves the same pin heading back
     down. Measured on pub 7745609 p11, P/Y passed through an ignition coil's pin into the SB lead
     beside it. A fold sharper than 120 degrees stops propagation.
+
+    ``stub_ends`` are the ends of the pieces too short to be runs, overshoots aside. They are not
+    conductors, but they are ink meeting the node, and each one counts towards its degree. Without
+    them a wire ending in a T on an outline looked like a corner: on pub 7737962 p60 the pin
+    strip's edge left of pin 39 is 7 pt long, below the conductor floor, so the Y wire turned the
+    strip's corner and ran down its side; on pub 47706663 p78 PU/LBL climbed the dashed connector
+    line it ends on.
     """
+    from collections import Counter
+
     def key(point):
         return (round(point[0] / snap_px), round(point[1] / snap_px))
 
+    stubs = Counter(key(point) for point in stub_ends)
     nodes, ends = {}, {}
     for run in owned:
         if len(run.points) < 2:
@@ -450,7 +463,7 @@ def propagate_continuations(owned, snap_px=1.5, max_passes=12):
         changed = 0
         for node, incident in nodes.items():
             unique_incident = list({id(run): run for run in incident}.values())
-            if len(unique_incident) != 2:
+            if len(unique_incident) + stubs[node] != 2:
                 continue                      # splice/fork/terminal: physical colour boundary
             if folds_back(node):
                 continue                      # two wires meeting at one pin

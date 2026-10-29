@@ -13,7 +13,34 @@ from math import hypot
 from .policy import DecisionPolicy
 
 
-CONTEXT_SCHEMA_VERSION = 9
+CONTEXT_SCHEMA_VERSION = 10
+
+# A piece this short that ends in free space is a stroke overshooting the line it meets, hidden in
+# that line's ink, not an arm of the node. Measured over the library's selected vector pages: the
+# free pieces at the nodes where colour used to pass cluster at 0.4-1.0 pt (corners drawn with an
+# overshoot), and the next ones are 2 pt and longer.
+OVERSHOOT_PT = 1.5
+
+
+def _arm_stub_ends(pieces, stubs, overshoot_px):
+    """Both ends of every piece too short to be a run, except the overshoots.
+
+    An overshoot is a stub shorter than ``overshoot_px`` with an end no other piece reaches. A stub
+    joining two nodes always counts, however short: a pin circle's arc between two wires is one.
+    """
+    from collections import Counter
+
+    ends = Counter()
+    for points in pieces:
+        ends[tuple(points[0])] += 1
+        ends[tuple(points[-1])] += 1
+    out = []
+    for points, length in stubs:
+        free = ends[tuple(points[0])] == 1 or ends[tuple(points[-1])] == 1
+        if free and length < overshoot_px:
+            continue
+        out.extend((points[0], points[-1]))
+    return out
 
 
 @dataclass
@@ -43,6 +70,10 @@ class VectorPageContext:
     through_codes: list[tuple[int, str]] = field(default_factory=list)
     # outlines of housings too large to be zones, as (x0, y0, x1, y1): no bridge crosses them
     bridge_barriers: list[tuple[float, float, float, float]] = field(default_factory=list)
+    # both ends of every piece too short to be a run, overshoots aside: ink that still counts at a
+    # node's degree
+    stub_ends: list[tuple[float, float]] = field(default_factory=list)
+    hidden_segments_dropped: int = 0
     schema_version: int = CONTEXT_SCHEMA_VERSION
 
     def to_dict(self):
@@ -70,6 +101,8 @@ class VectorPageContext:
             "inline_claims": [list(pair) for pair in self.inline_claims],
             "through_codes": [[index, code] for index, code in self.through_codes],
             "bridge_barriers": [list(segment) for segment in self.bridge_barriers],
+            "stub_ends": [[float(x), float(y)] for x, y in self.stub_ends],
+            "hidden_segments_dropped": self.hidden_segments_dropped,
         }
 
     @classmethod
@@ -113,6 +146,8 @@ class VectorPageContext:
             through_codes=[(int(index), str(code)) for index, code in raw.get("through_codes", ())],
             bridge_barriers=[tuple(float(value) for value in segment)
                              for segment in raw.get("bridge_barriers", ())],
+            stub_ends=[(float(x), float(y)) for x, y in raw.get("stub_ends", ())],
+            hidden_segments_dropped=int(raw.get("hidden_segments_dropped", 0)),
         )
 
 
@@ -127,7 +162,7 @@ def extract_vector_context(page, dpi, convention, *, legend_filter=None):
     from ..detect.vector_inline import printed_in_line, printed_through
     from ..detect.vector_pins import connector_pin_markers
     from ..detect.vector_symbols import (classify_symbol_geometry, clip_segments_to_opaque,
-                                         strip_symbol_strokes)
+                                         drop_hidden_segments, strip_symbol_strokes)
     from ..eval.vector_truth import (build_nets, canvas_diagonal_px, conductor_floor_px,
                                      decompose_runs, extract_segments, modal_pen_px,
                                      node_segments)
@@ -152,11 +187,13 @@ def extract_vector_context(page, dpi, convention, *, legend_filter=None):
     # Paper-filled housings hide the source stroke beneath them. The page therefore provides no
     # evidence of continuity through the body, so topology must stop at each visible boundary.
     stripped, opaque_clipped = clip_segments_to_opaque(stripped, symbols.opaque_zones)
+    # Nor does ink the page never shows: under a paper shape drawn after it, clipped, or white.
+    stripped, hidden_dropped = drop_hidden_segments(page, dpi, stripped)
     segments = node_segments(stripped)
     nets = build_nets(segments)
     diagonal = canvas_diagonal_px(page, dpi)
     minimum = conductor_floor_px(page, dpi)
-    runs, every_piece = [], []
+    runs, every_piece, stubs = [], [], []
     for net in nets:
         for points in decompose_runs(segments, net):
             if len(points) < 2:
@@ -165,6 +202,9 @@ def extract_vector_context(page, dpi, convention, *, legend_filter=None):
             length = sum(hypot(b[0] - a[0], b[1] - a[1]) for a, b in zip(points, points[1:]))
             if length >= minimum:
                 runs.append(points)
+            else:
+                stubs.append((points, length))
+    stub_ends = _arm_stub_ends(every_piece, stubs, OVERSHOOT_PT * dpi / 72.0)
     legends = strong_legends(conductor_legends)
     # A stub too short to be a run still proves the wire passes through the text.
     inline_legends, inline_claims = printed_in_line(legends, runs, every_piece, symbols.zones)
@@ -188,6 +228,8 @@ def extract_vector_context(page, dpi, convention, *, legend_filter=None):
         inline_legends=inline_legends, inline_claims=inline_claims,
         through_codes=through_codes,
         bridge_barriers=list(symbols.barriers),
+        stub_ends=[(float(x), float(y)) for x, y in stub_ends],
+        hidden_segments_dropped=hidden_dropped,
     )
 
 
@@ -213,7 +255,7 @@ def decide_vector_context(context, policy=None, classifier=None):
         policy=policy)
     propagated = propagate_continuations(
         owned, snap_px=policy.continuation_snap_px,
-        max_passes=policy.continuation_max_passes)
+        max_passes=policy.continuation_max_passes, stub_ends=context.stub_ends)
     bridge_gap = min(policy.bridge_max_gap_px, policy.bridge_gap_factor * context.min_run_px)
     bridged = bridge_straight_continuations(
         owned, max_gap_px=bridge_gap, min_conductor_px=context.min_run_px,
@@ -223,7 +265,7 @@ def decide_vector_context(context, policy=None, classifier=None):
         blocked_zones=context.blocked_zones, barriers=context.bridge_barriers)
     propagated += propagate_continuations(
         owned, snap_px=policy.continuation_snap_px,
-        max_passes=policy.continuation_max_passes)
+        max_passes=policy.continuation_max_passes, stub_ends=context.stub_ends)
 
     rails_stripped = strip_connector_rails(
         owned, context.page_diagonal_px, context.min_run_px)
