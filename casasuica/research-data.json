@@ -25,27 +25,35 @@
       "checkedAt": "31/10/2026",
       "commute": {
         "status": "consultado",
-        "minutes": 5.0,
-        "transitMinutes": 5.0,
-        "walkEstimate": 0,
-        "rangeMinutes": [
-          5.0,
-          5.0
-        ],
-        "precision": "endereço",
+        "minutes": 5,
         "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
         "requestedOrigin": "Schachenstrasse 36, 6010 Kriens",
         "resolvedOrigin": "Kriens, Schachenstrasse 36",
         "destination": "Kriens, Zentrum Pilatus",
         "departure": "2026-11-02T07:51:00+0100",
         "arrival": "2026-11-02T07:56:00+0100",
-        "transfers": 0,
-        "products": [
-          "16"
-        ],
         "date": "2026-11-02",
         "checkedAt": "2026-10-31",
-        "url": "https://transport.opendata.ch/v1/connections?from=Schachenstrasse+36%2C+6010+Kriens&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "url": "https://transport.opendata.ch/v1/connections?from=Schachenstrasse+36%2C+6010+Kriens&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3",
+        "originCoordinates": {
+          "latitude": 47.035235,
+          "longitude": 8.285047
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": 0,
+      "bike": {
+        "minutes": 6,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -71,27 +79,35 @@
       "checkedAt": "31/10/2026",
       "commute": {
         "status": "consultado",
-        "minutes": 15.0,
-        "transitMinutes": 15.0,
-        "walkEstimate": 0,
-        "rangeMinutes": [
-          15.0,
-          21.0
-        ],
-        "precision": "endereço",
+        "minutes": 15,
         "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
         "requestedOrigin": "Krienserstrasse 17, 6048 Horw",
         "resolvedOrigin": "Horw, Krienserstrasse 17",
         "destination": "Kriens, Zentrum Pilatus",
         "departure": "2026-11-02T07:41:00+0100",
         "arrival": "2026-11-02T07:56:00+0100",
-        "transfers": 0,
-        "products": [
-          "16"
-        ],
         "date": "2026-11-02",
         "checkedAt": "2026-10-31",
-        "url": "https://transport.opendata.ch/v1/connections?from=Krienserstrasse+17%2C+6048+Horw&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "url": "https://transport.opendata.ch/v1/connections?from=Krienserstrasse+17%2C+6048+Horw&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3",
+        "originCoordinates": {
+          "latitude": 47.023528,
+          "longitude": 8.305845
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": 0,
+      "bike": {
+        "minutes": 16,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -117,7 +133,36 @@
       "checkedAt": "31/10/2026",
       "routeOrigin": null,
       "commute": {
-        "status": "sem endereço exato"
+        "status": "consultado",
+        "minutes": 41,
+        "confirmed": false,
+        "approximate": true,
+        "originBasis": "city-center",
+        "precision": "aproximação pelo centro/parada central da cidade",
+        "requestedOrigin": "6032 Emmen — endereço não divulgado",
+        "resolvedOrigin": "Emmen, Kirche",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:19:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=8588526&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.079028,
+          "longitude": 8.302949
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": null,
+      "bike": {
+        "minutes": 32,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "city-center",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -143,28 +188,35 @@
       "checkedAt": "31/10/2026",
       "commute": {
         "status": "consultado",
-        "minutes": 32.0,
-        "transitMinutes": 32.0,
-        "walkEstimate": 0,
-        "rangeMinutes": [
-          32.0,
-          32.0
-        ],
-        "precision": "endereço",
+        "minutes": 32,
         "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
         "requestedOrigin": "Sonnmattstrasse 3, 6043 Adligenswil",
         "resolvedOrigin": "Adligenswil, Sonnmattstrasse 3",
         "destination": "Kriens, Zentrum Pilatus",
         "departure": "2026-11-02T06:48:00+0100",
         "arrival": "2026-11-02T07:20:00+0100",
-        "transfers": 1,
-        "products": [
-          "73",
-          "1"
-        ],
         "date": "2026-11-02",
         "checkedAt": "2026-10-31",
-        "url": "https://transport.opendata.ch/v1/connections?from=Sonnmattstrasse+3%2C+6043+Adligenswil&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "url": "https://transport.opendata.ch/v1/connections?from=Sonnmattstrasse+3%2C+6043+Adligenswil&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3",
+        "originCoordinates": {
+          "latitude": 47.073706,
+          "longitude": 8.380477
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": null,
+      "bike": {
+        "minutes": 51,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -191,29 +243,35 @@
       "guestWC": 1,
       "commute": {
         "status": "consultado",
-        "minutes": 55.0,
-        "transitMinutes": 55.0,
-        "walkEstimate": 0,
-        "rangeMinutes": [
-          55.0,
-          61.0
-        ],
-        "precision": "endereço",
+        "minutes": 55,
         "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
         "requestedOrigin": "Mühlehofstrasse 3, 6210 Sursee",
         "resolvedOrigin": "Sursee, Mühlehofstrasse 3",
         "destination": "Kriens, Zentrum Pilatus",
         "departure": "2026-11-02T06:55:00+0100",
         "arrival": "2026-11-02T07:50:00+0100",
-        "transfers": 2,
-        "products": [
-          "84",
-          "IR 27",
-          "1"
-        ],
         "date": "2026-11-02",
         "checkedAt": "2026-10-31",
-        "url": "https://transport.opendata.ch/v1/connections?from=M%C3%BChlehofstrasse+3%2C+6210+Sursee&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "url": "https://transport.opendata.ch/v1/connections?from=M%C3%BChlehofstrasse+3%2C+6210+Sursee&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3",
+        "originCoordinates": {
+          "latitude": 47.167869,
+          "longitude": 8.11185
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": null,
+      "bike": {
+        "minutes": 109,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -241,28 +299,35 @@
       "originPrecision": "estacao",
       "commute": {
         "status": "consultado",
-        "minutes": 40.0,
-        "transitMinutes": 35.0,
-        "walkEstimate": 5,
-        "rangeMinutes": [
-          35.0,
-          46.0
-        ],
-        "precision": "parada/estação",
+        "minutes": 35,
         "confirmed": false,
-        "requestedOrigin": "Wolhusen",
+        "approximate": true,
+        "originBasis": "city-center",
+        "precision": "aproximação pelo centro/parada central da cidade",
+        "requestedOrigin": "6110 Wolhusen — endereço não divulgado",
         "resolvedOrigin": "Wolhusen",
         "destination": "Kriens, Zentrum Pilatus",
         "departure": "2026-11-02T06:45:00+0100",
         "arrival": "2026-11-02T07:20:00+0100",
-        "transfers": 1,
-        "products": [
-          "RE7",
-          "1"
-        ],
         "date": "2026-11-02",
         "checkedAt": "2026-10-31",
-        "url": "https://transport.opendata.ch/v1/connections?from=Wolhusen&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "url": "https://transport.opendata.ch/v1/connections?from=Wolhusen&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3",
+        "originCoordinates": {
+          "latitude": 47.055489,
+          "longitude": 8.079753
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": null,
+      "bike": {
+        "minutes": 86,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "city-center",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -288,28 +353,35 @@
       "checkedAt": "31/10/2026",
       "commute": {
         "status": "consultado",
-        "minutes": 33.0,
-        "transitMinutes": 33.0,
-        "walkEstimate": 0,
-        "rangeMinutes": [
-          33.0,
-          42.0
-        ],
-        "precision": "endereço",
+        "minutes": 33,
         "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
         "requestedOrigin": "Surseestrasse 9, 6206 Neuenkirch",
         "resolvedOrigin": "Neuenkirch, Surseestrasse 9",
         "destination": "Kriens, Zentrum Pilatus",
         "departure": "2026-11-02T06:57:00+0100",
         "arrival": "2026-11-02T07:30:00+0100",
-        "transfers": 1,
-        "products": [
-          "72",
-          "5"
-        ],
         "date": "2026-11-02",
         "checkedAt": "2026-10-31",
-        "url": "https://transport.opendata.ch/v1/connections?from=Surseestrasse+9%2C+6206+Neuenkirch&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "url": "https://transport.opendata.ch/v1/connections?from=Surseestrasse+9%2C+6206+Neuenkirch&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3",
+        "originCoordinates": {
+          "latitude": 47.101484,
+          "longitude": 8.202366
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": null,
+      "bike": {
+        "minutes": 55,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -335,29 +407,35 @@
       "checkedAt": "31/10/2026",
       "commute": {
         "status": "consultado",
-        "minutes": 57.0,
-        "transitMinutes": 57.0,
-        "walkEstimate": 0,
-        "rangeMinutes": [
-          57.0,
-          58.0
-        ],
-        "precision": "endereço",
+        "minutes": 57,
         "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
         "requestedOrigin": "Breitenstrasse 8, 6064 Kerns",
         "resolvedOrigin": "Kerns, Breitenstrasse 8",
         "destination": "Kriens, Zentrum Pilatus",
         "departure": "2026-11-02T06:29:00+0100",
         "arrival": "2026-11-02T07:26:00+0100",
-        "transfers": 2,
-        "products": [
-          "341",
-          "S5",
-          "16"
-        ],
         "date": "2026-11-02",
         "checkedAt": "2026-10-31",
-        "url": "https://transport.opendata.ch/v1/connections?from=Breitenstrasse+8%2C+6064+Kerns&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "url": "https://transport.opendata.ch/v1/connections?from=Breitenstrasse+8%2C+6064+Kerns&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3",
+        "originCoordinates": {
+          "latitude": 46.898595,
+          "longitude": 8.275382
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": null,
+      "bike": {
+        "minutes": 85,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -383,29 +461,35 @@
       "checkedAt": "31/10/2026",
       "commute": {
         "status": "consultado",
-        "minutes": 57.0,
-        "transitMinutes": 57.0,
-        "walkEstimate": 0,
-        "rangeMinutes": [
-          57.0,
-          58.0
-        ],
-        "precision": "endereço",
+        "minutes": 57,
         "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
         "requestedOrigin": "Breitenstrasse 8, 6064 Kerns",
         "resolvedOrigin": "Kerns, Breitenstrasse 8",
         "destination": "Kriens, Zentrum Pilatus",
         "departure": "2026-11-02T06:29:00+0100",
         "arrival": "2026-11-02T07:26:00+0100",
-        "transfers": 2,
-        "products": [
-          "341",
-          "S5",
-          "16"
-        ],
         "date": "2026-11-02",
         "checkedAt": "2026-10-31",
-        "url": "https://transport.opendata.ch/v1/connections?from=Breitenstrasse+8%2C+6064+Kerns&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "url": "https://transport.opendata.ch/v1/connections?from=Breitenstrasse+8%2C+6064+Kerns&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3",
+        "originCoordinates": {
+          "latitude": 46.898595,
+          "longitude": 8.275382
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": null,
+      "bike": {
+        "minutes": 85,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -431,28 +515,35 @@
       "checkedAt": "31/10/2026",
       "commute": {
         "status": "consultado",
-        "minutes": 42.0,
-        "transitMinutes": 42.0,
-        "walkEstimate": 0,
-        "rangeMinutes": [
-          42.0,
-          44.0
-        ],
-        "precision": "parada/estação",
+        "minutes": 35,
         "confirmed": false,
+        "approximate": true,
+        "originBasis": "city-center",
+        "precision": "aproximação pelo centro/parada central da cidade",
         "requestedOrigin": "Chrummweid 9, 6026 Rain",
-        "resolvedOrigin": "Rain, Chrummweid",
+        "resolvedOrigin": "Rain, Dorf",
         "destination": "Kriens, Zentrum Pilatus",
-        "departure": "2026-11-02T06:38:00+0100",
-        "arrival": "2026-11-02T07:20:00+0100",
-        "transfers": 1,
-        "products": [
-          "51",
-          "1"
-        ],
+        "departure": "2026-11-02T07:15:00+0100",
+        "arrival": "2026-11-02T07:50:00+0100",
         "date": "2026-11-02",
         "checkedAt": "2026-10-31",
-        "url": "https://transport.opendata.ch/v1/connections?from=Chrummweid+9%2C+6026+Rain&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "url": "https://transport.opendata.ch/v1/connections?from=Rain%2C+Dorf&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.129974,
+          "longitude": 8.257602
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": null,
+      "bike": {
+        "minutes": 62,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "city-center",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -478,28 +569,35 @@
       "checkedAt": "31/10/2026",
       "commute": {
         "status": "consultado",
-        "minutes": 55.0,
-        "transitMinutes": 55.0,
-        "walkEstimate": 0,
-        "rangeMinutes": [
-          55.0,
-          59.0
-        ],
-        "precision": "endereço",
+        "minutes": 55,
         "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
         "requestedOrigin": "Hengsthöhe 1, 6280 Hochdorf",
         "resolvedOrigin": "Hochdorf, Hengsthöhe 1",
         "destination": "Kriens, Zentrum Pilatus",
         "departure": "2026-11-02T06:55:00+0100",
         "arrival": "2026-11-02T07:50:00+0100",
-        "transfers": 1,
-        "products": [
-          "S99",
-          "1"
-        ],
         "date": "2026-11-02",
         "checkedAt": "2026-10-31",
-        "url": "https://transport.opendata.ch/v1/connections?from=Hengsth%C3%B6he+1%2C+6280+Hochdorf&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "url": "https://transport.opendata.ch/v1/connections?from=Hengsth%C3%B6he+1%2C+6280+Hochdorf&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3",
+        "originCoordinates": {
+          "latitude": 47.168839,
+          "longitude": 8.299649
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": null,
+      "bike": {
+        "minutes": 85,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -526,29 +624,35 @@
       "guestWC": 1,
       "commute": {
         "status": "consultado",
-        "minutes": 69.0,
-        "transitMinutes": 69.0,
-        "walkEstimate": 0,
-        "rangeMinutes": [
-          69.0,
-          81.0
-        ],
-        "precision": "endereço",
+        "minutes": 69,
         "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
         "requestedOrigin": "Kantonsstrasse 92, 6234 Triengen",
         "resolvedOrigin": "Triengen, Kantonsstrasse 92",
         "destination": "Kriens, Zentrum Pilatus",
         "departure": "2026-11-02T06:41:00+0100",
         "arrival": "2026-11-02T07:50:00+0100",
-        "transfers": 2,
-        "products": [
-          "85",
-          "IR 27",
-          "1"
-        ],
         "date": "2026-11-02",
         "checkedAt": "2026-10-31",
-        "url": "https://transport.opendata.ch/v1/connections?from=Kantonsstrasse+92%2C+6234+Triengen&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "url": "https://transport.opendata.ch/v1/connections?from=Kantonsstrasse+92%2C+6234+Triengen&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3",
+        "originCoordinates": {
+          "latitude": 47.244981,
+          "longitude": 8.07075
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": null,
+      "bike": {
+        "minutes": 156,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -574,27 +678,35 @@
       "checkedAt": "31/10/2026",
       "commute": {
         "status": "consultado",
-        "minutes": 10.0,
-        "transitMinutes": 10.0,
-        "walkEstimate": 0,
-        "rangeMinutes": [
-          10.0,
-          19.0
-        ],
-        "precision": "endereço",
+        "minutes": 10,
         "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
         "requestedOrigin": "Schällenmatt 11, 6010 Kriens",
         "resolvedOrigin": "Kriens, Schällenmatt 11",
         "destination": "Kriens, Zentrum Pilatus",
         "departure": "2026-11-02T07:46:00+0100",
         "arrival": "2026-11-02T07:56:00+0100",
-        "transfers": 0,
-        "products": [
-          "16"
-        ],
         "date": "2026-11-02",
         "checkedAt": "2026-10-31",
-        "url": "https://transport.opendata.ch/v1/connections?from=Sch%C3%A4llenmatt+11%2C+6010+Kriens&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "url": "https://transport.opendata.ch/v1/connections?from=Sch%C3%A4llenmatt+11%2C+6010+Kriens&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3",
+        "originCoordinates": {
+          "latitude": 47.025645,
+          "longitude": 8.292607
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": null,
+      "bike": {
+        "minutes": 11,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -619,12 +731,36 @@
       "availabilityStatus": "observado",
       "checkedAt": "31/10/2026",
       "commute": {
-        "status": "geocodificação rejeitada",
+        "status": "consultado",
+        "minutes": 9,
+        "confirmed": false,
+        "approximate": true,
+        "originBasis": "city-center",
+        "precision": "aproximação pelo centro/parada central da cidade",
         "requestedOrigin": "Schützenrain 22, 6012 Obernau",
-        "resolvedOrigins": [
-          "Ortschwaben, Schützenrain"
-        ],
-        "url": "https://transport.opendata.ch/v1/connections?from=Sch%C3%BCtzenrain+22%2C+6012+Obernau&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "resolvedOrigin": "Obernau, Dorf",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:47:00+0100",
+        "arrival": "2026-11-02T07:56:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Obernau%2C+Dorf&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.031125,
+          "longitude": 8.25187
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": null,
+      "bike": {
+        "minutes": 15,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "city-center",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -651,28 +787,35 @@
       "mandatoryExtras": 350,
       "commute": {
         "status": "consultado",
-        "minutes": 39.0,
-        "transitMinutes": 39.0,
-        "walkEstimate": 0,
-        "rangeMinutes": [
-          39.0,
-          48.0
-        ],
-        "precision": "endereço",
+        "minutes": 39,
         "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
         "requestedOrigin": "Sonnelandweg 2, 6206 Neuenkirch",
         "resolvedOrigin": "Neuenkirch, Sonnelandweg 2",
         "destination": "Kriens, Zentrum Pilatus",
         "departure": "2026-11-02T06:51:00+0100",
         "arrival": "2026-11-02T07:30:00+0100",
-        "transfers": 1,
-        "products": [
-          "72",
-          "5"
-        ],
         "date": "2026-11-02",
         "checkedAt": "2026-10-31",
-        "url": "https://transport.opendata.ch/v1/connections?from=Sonnelandweg+2%2C+6206+Neuenkirch&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "url": "https://transport.opendata.ch/v1/connections?from=Sonnelandweg+2%2C+6206+Neuenkirch&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3",
+        "originCoordinates": {
+          "latitude": 47.100805,
+          "longitude": 8.198202
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": null,
+      "bike": {
+        "minutes": 56,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -698,27 +841,35 @@
       "checkedAt": "31/10/2026",
       "commute": {
         "status": "consultado",
-        "minutes": 39.0,
-        "transitMinutes": 39.0,
-        "walkEstimate": 0,
-        "rangeMinutes": [
-          39.0,
-          41.0
-        ],
-        "precision": "endereço",
+        "minutes": 39,
         "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
         "requestedOrigin": "Hellbühlstrasse 46, 6102 Malters",
         "resolvedOrigin": "Malters, Hellbühlstrasse 46",
         "destination": "Kriens, Zentrum Pilatus",
         "departure": "2026-11-02T06:47:00+0100",
         "arrival": "2026-11-02T07:26:00+0100",
-        "transfers": 0,
-        "products": [
-          "214"
-        ],
         "date": "2026-11-02",
         "checkedAt": "2026-10-31",
-        "url": "https://transport.opendata.ch/v1/connections?from=Hellb%C3%BChlstrasse+46%2C+6102+Malters&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "url": "https://transport.opendata.ch/v1/connections?from=Hellb%C3%BChlstrasse+46%2C+6102+Malters&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3",
+        "originCoordinates": {
+          "latitude": 47.044237,
+          "longitude": 8.185628
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": null,
+      "bike": {
+        "minutes": 42,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -745,28 +896,35 @@
       "guestWC": 1,
       "commute": {
         "status": "consultado",
-        "minutes": 28.0,
-        "transitMinutes": 28.0,
-        "walkEstimate": 0,
-        "rangeMinutes": [
-          28.0,
-          31.0
-        ],
-        "precision": "endereço",
+        "minutes": 28,
         "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
         "requestedOrigin": "Pilatusweg 9, 6030 Ebikon",
         "resolvedOrigin": "Ebikon, Pilatusweg 9",
         "destination": "Kriens, Zentrum Pilatus",
         "departure": "2026-11-02T07:22:00+0100",
         "arrival": "2026-11-02T07:50:00+0100",
-        "transfers": 1,
-        "products": [
-          "7",
-          "1"
-        ],
         "date": "2026-11-02",
         "checkedAt": "2026-10-31",
-        "url": "https://transport.opendata.ch/v1/connections?from=Pilatusweg+9%2C+6030+Ebikon&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "url": "https://transport.opendata.ch/v1/connections?from=Pilatusweg+9%2C+6030+Ebikon&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3",
+        "originCoordinates": {
+          "latitude": 47.068953,
+          "longitude": 8.32497
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": null,
+      "bike": {
+        "minutes": 32,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -792,28 +950,35 @@
       "checkedAt": "31/10/2026",
       "commute": {
         "status": "consultado",
-        "minutes": 29.0,
-        "transitMinutes": 29.0,
-        "walkEstimate": 0,
-        "rangeMinutes": [
-          29.0,
-          38.0
-        ],
-        "precision": "parada/estação",
+        "minutes": 32,
         "confirmed": false,
+        "approximate": true,
+        "originBasis": "city-center",
+        "precision": "aproximação pelo centro/parada central da cidade",
         "requestedOrigin": "Konstanz 18, 6023 Rothenburg",
-        "resolvedOrigin": "Rothenburg, Konstanz",
+        "resolvedOrigin": "Rothenburg, Flecken",
         "destination": "Kriens, Zentrum Pilatus",
-        "departure": "2026-11-02T07:21:00+0100",
-        "arrival": "2026-11-02T07:50:00+0100",
-        "transfers": 1,
-        "products": [
-          "52",
-          "1"
-        ],
+        "departure": "2026-11-02T07:28:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
         "date": "2026-11-02",
         "checkedAt": "2026-10-31",
-        "url": "https://transport.opendata.ch/v1/connections?from=Konstanz+18%2C+6023+Rothenburg&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "url": "https://transport.opendata.ch/v1/connections?from=Rothenburg%2C+Flecken&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.0938,
+          "longitude": 8.271714
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": null,
+      "bike": {
+        "minutes": 40,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "city-center",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -840,27 +1005,35 @@
       "guestWC": 1,
       "commute": {
         "status": "consultado",
-        "minutes": 23.0,
-        "transitMinutes": 23.0,
-        "walkEstimate": 0,
-        "rangeMinutes": [
-          23.0,
-          23.0
-        ],
-        "precision": "endereço",
+        "minutes": 23,
         "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
         "requestedOrigin": "Wesemlinstrasse 39, 6006 Luzern",
         "resolvedOrigin": "Luzern, Wesemlinstrasse 39",
         "destination": "Kriens, Zentrum Pilatus",
         "departure": "2026-11-02T07:19:00+0100",
         "arrival": "2026-11-02T07:42:00+0100",
-        "transfers": 0,
-        "products": [
-          "1"
-        ],
         "date": "2026-11-02",
         "checkedAt": "2026-10-31",
-        "url": "https://transport.opendata.ch/v1/connections?from=Wesemlinstrasse+39%2C+6006+Luzern&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "url": "https://transport.opendata.ch/v1/connections?from=Wesemlinstrasse+39%2C+6006+Luzern&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3",
+        "originCoordinates": {
+          "latitude": 47.06171,
+          "longitude": 8.310938
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": null,
+      "bike": {
+        "minutes": 25,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -886,28 +1059,35 @@
       "checkedAt": "31/10/2026",
       "commute": {
         "status": "consultado",
-        "minutes": 32.0,
-        "transitMinutes": 32.0,
-        "walkEstimate": 0,
-        "rangeMinutes": [
-          32.0,
-          34.0
-        ],
-        "precision": "endereço",
+        "minutes": 32,
         "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
         "requestedOrigin": "Lerchenbühlstrasse 22, 6045 Meggen",
         "resolvedOrigin": "Meggen, Lerchenbühlstrasse 22",
         "destination": "Kriens, Zentrum Pilatus",
         "departure": "2026-11-02T07:18:00+0100",
         "arrival": "2026-11-02T07:50:00+0100",
-        "transfers": 1,
-        "products": [
-          "24",
-          "1"
-        ],
         "date": "2026-11-02",
         "checkedAt": "2026-10-31",
-        "url": "https://transport.opendata.ch/v1/connections?from=Lerchenb%C3%BChlstrasse+22%2C+6045+Meggen&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "url": "https://transport.opendata.ch/v1/connections?from=Lerchenb%C3%BChlstrasse+22%2C+6045+Meggen&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3",
+        "originCoordinates": {
+          "latitude": 47.040726,
+          "longitude": 8.361872
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": null,
+      "bike": {
+        "minutes": 37,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
       }
     },
     {
@@ -933,32 +1113,1854 @@
       "checkedAt": "31/10/2026",
       "commute": {
         "status": "consultado",
-        "minutes": 34.0,
-        "transitMinutes": 34.0,
-        "walkEstimate": 0,
-        "rangeMinutes": [
-          34.0,
-          43.0
-        ],
-        "precision": "endereço",
+        "minutes": 34,
         "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
         "requestedOrigin": "Büelstrasse 24, 6052 Hergiswil NW",
         "resolvedOrigin": "Hergiswil (NW), Büelstrasse 24",
         "destination": "Kriens, Zentrum Pilatus",
         "departure": "2026-11-02T07:22:00+0100",
         "arrival": "2026-11-02T07:56:00+0100",
-        "transfers": 1,
-        "products": [
-          "S5",
-          "16"
-        ],
         "date": "2026-11-02",
         "checkedAt": "2026-10-31",
-        "url": "https://transport.opendata.ch/v1/connections?from=B%C3%BCelstrasse+24%2C+6052+Hergiswil+NW&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3"
+        "url": "https://transport.opendata.ch/v1/connections?from=B%C3%BCelstrasse+24%2C+6052+Hergiswil+NW&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=3",
+        "originCoordinates": {
+          "latitude": 46.9849,
+          "longitude": 8.303974
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "floor": null,
+      "bike": {
+        "minutes": 35,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-kriens-22",
+      "title": "3.5 Zimmer · busca ampliada",
+      "town": "Kriens",
+      "address": "Am Mattenhof 2a, Kriens",
+      "rent": 2290,
+      "net": null,
+      "charges": null,
+      "rooms": 3.5,
+      "bedrooms": null,
+      "bathrooms": 1,
+      "area": 83,
+      "garden": "A confirmar",
+      "pets": "Sim · indicado no índice",
+      "floor": null,
+      "available": "01/12/2026",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-kriens/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 8,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Am Mattenhof 2a, Kriens",
+        "resolvedOrigin": "Kriens, Am Mattenhof 2a",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:48:00+0100",
+        "arrival": "2026-11-02T07:56:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Am+Mattenhof+2a%2C+Kriens&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.027986,
+          "longitude": 8.301338
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 13,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-kriens-23",
+      "title": "2.5 Zimmer · busca ampliada",
+      "town": "Kriens",
+      "address": "Schachenstrasse 23, Kriens",
+      "rent": 1470,
+      "net": null,
+      "charges": null,
+      "rooms": 2.5,
+      "bedrooms": null,
+      "bathrooms": 1,
+      "area": 61,
+      "garden": "A confirmar",
+      "pets": "Sim · indicado no índice",
+      "floor": null,
+      "available": "01/02/2027",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-kriens/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 7,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Schachenstrasse 23, Kriens",
+        "resolvedOrigin": "Kriens, Schachenstrasse 23",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:53:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Schachenstrasse+23%2C+Kriens&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.035338,
+          "longitude": 8.281175
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 5,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-kriens-24",
+      "title": "3.5 Zimmer · outra unidade / 88 m²",
+      "town": "Kriens",
+      "address": "Am Mattenhof 2a, Kriens",
+      "rent": 2890,
+      "net": null,
+      "charges": null,
+      "rooms": 3.5,
+      "bedrooms": null,
+      "bathrooms": 1,
+      "area": 88,
+      "garden": "A confirmar",
+      "pets": "Sim · indicado no índice",
+      "floor": null,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-kriens/trefferliste",
+      "notes": "Índice informa 88 m²; descrição reutiliza 82,5 m² e data antiga. Unidade, área e disponibilidade exigem confirmação.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 8,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Am Mattenhof 2a, Kriens",
+        "resolvedOrigin": "Kriens, Am Mattenhof 2a",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:48:00+0100",
+        "arrival": "2026-11-02T07:56:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Am+Mattenhof+2a%2C+Kriens&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.027986,
+          "longitude": 8.301338
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 13,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-kriens-25",
+      "title": "3.5 Zimmer · 95 m²",
+      "town": "Kriens",
+      "address": "Am Mattenhof 2a, Kriens",
+      "rent": 3100,
+      "net": null,
+      "charges": null,
+      "rooms": 3.5,
+      "bedrooms": null,
+      "bathrooms": 2,
+      "area": 95,
+      "garden": "A confirmar",
+      "pets": "Sim · indicado no índice",
+      "floor": null,
+      "available": "01/11/2026",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-kriens/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 8,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Am Mattenhof 2a, Kriens",
+        "resolvedOrigin": "Kriens, Am Mattenhof 2a",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:48:00+0100",
+        "arrival": "2026-11-02T07:56:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Am+Mattenhof+2a%2C+Kriens&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.027986,
+          "longitude": 8.301338
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 13,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-kriens-26",
+      "title": "3.5 Zimmer · busca ampliada",
+      "town": "Kriens",
+      "address": "Langsägestrasse 21, Kriens",
+      "rent": 2840,
+      "net": null,
+      "charges": null,
+      "rooms": 3.5,
+      "bedrooms": null,
+      "bathrooms": null,
+      "area": 86,
+      "garden": "Compartilhado",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-kriens/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 0,
+        "confirmed": false,
+        "approximate": true,
+        "originBasis": "city-center",
+        "precision": "aproximação pelo centro/parada central da cidade",
+        "requestedOrigin": "Langsägestrasse 21, Kriens",
+        "resolvedOrigin": "Kriens, Zentrum Pilatus",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": null,
+        "arrival": null,
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Kriens%2C+Zentrum+Pilatus&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 3,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "city-center",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-malters-27",
+      "title": "3.5 Zimmer · cobertura",
+      "town": "Malters",
+      "address": "Sigristhalde 4 (Haus Q), Malters",
+      "rent": 1970,
+      "net": null,
+      "charges": null,
+      "rooms": 3.5,
+      "bedrooms": null,
+      "bathrooms": 2,
+      "area": 82,
+      "garden": "A confirmar",
+      "pets": "Sim · indicado no índice",
+      "floor": null,
+      "available": "01/12/2026",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-malters/trefferliste",
+      "notes": "Cobertura com terraço; banho/WC e ducha/WC separados. Andar numérico e encargos a confirmar.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 40,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Sigristhalde 4 (Haus Q), Malters",
+        "resolvedOrigin": "Malters, Sigristhalde 4",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T06:55:00+0100",
+        "arrival": "2026-11-02T07:35:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Sigristhalde+4%2C+Malters&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.04443,
+          "longitude": 8.1826
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 44,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-malters-28",
+      "title": "2.5 Zimmer · busca ampliada",
+      "town": "Malters",
+      "address": "Muoshofstrasse 24, Malters",
+      "rent": 1490,
+      "net": null,
+      "charges": null,
+      "rooms": 2.5,
+      "bedrooms": null,
+      "bathrooms": 1,
+      "area": 69,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-malters/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 35,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Muoshofstrasse 24, Malters",
+        "resolvedOrigin": "Malters, Muoshofstrasse 24",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:00:00+0100",
+        "arrival": "2026-11-02T07:35:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Muoshofstrasse+24%2C+Malters&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.038998,
+          "longitude": 8.18619
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 42,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-malters-29",
+      "title": "2.5 Zimmer · busca ampliada",
+      "town": "Malters",
+      "address": "Muoshofstrasse 22, Malters",
+      "rent": 1490,
+      "net": null,
+      "charges": null,
+      "rooms": 2.5,
+      "bedrooms": null,
+      "bathrooms": 1,
+      "area": 69,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-malters/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 34,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Muoshofstrasse 22, Malters",
+        "resolvedOrigin": "Malters, Muoshofstrasse 22",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:01:00+0100",
+        "arrival": "2026-11-02T07:35:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Muoshofstrasse+22%2C+Malters&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.038901,
+          "longitude": 8.18574
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 42,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-malters-30",
+      "title": "4.5 Zimmer · busca ampliada",
+      "town": "Malters",
+      "address": "Hellbühlstrasse 53, Malters",
+      "rent": 1950,
+      "net": null,
+      "charges": null,
+      "rooms": 4.5,
+      "bedrooms": null,
+      "bathrooms": null,
+      "area": 115,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-malters/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 44,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Hellbühlstrasse 53, Malters",
+        "resolvedOrigin": "Malters, Hellbühlstrasse 53",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T06:51:00+0100",
+        "arrival": "2026-11-02T07:35:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Hellb%C3%BChlstrasse+53%2C+Malters&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.04652,
+          "longitude": 8.18798
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 42,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-malters-31",
+      "title": "3.5 Zimmer · busca ampliada",
+      "town": "Malters",
+      "address": "Neuhalde 8, Malters",
+      "rent": 2190,
+      "net": null,
+      "charges": null,
+      "rooms": 3.5,
+      "bedrooms": null,
+      "bathrooms": null,
+      "area": 120,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-malters/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 42,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Neuhalde 8, Malters",
+        "resolvedOrigin": "Malters, Neuhalde 8",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T06:53:00+0100",
+        "arrival": "2026-11-02T07:35:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Neuhalde+8%2C+Malters&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.044033,
+          "longitude": 8.180514
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 44,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-horw-32",
+      "title": "3.5 Zimmer · busca ampliada",
+      "town": "Horw",
+      "address": "Kantonsstrasse 40, Horw",
+      "rent": 2660,
+      "net": null,
+      "charges": null,
+      "rooms": 3.5,
+      "bedrooms": null,
+      "bathrooms": 2,
+      "area": 114,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "Imediato / a combinar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-horw/trefferliste",
+      "notes": "Índice permite gatos; permissão para cão não foi informada. Dois banheiros completos descritos. Encargos a confirmar.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 17,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Kantonsstrasse 40, Horw",
+        "resolvedOrigin": "Horw, Kantonsstrasse 40",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:43:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Kantonsstrasse+40%2C+Horw&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.02302,
+          "longitude": 8.308419
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 17,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-horw-33",
+      "title": "4.5 Zimmer · busca ampliada",
+      "town": "Horw",
+      "address": "Winkelstrasse 12, Horw",
+      "rent": 2050,
+      "net": null,
+      "charges": null,
+      "rooms": 4.5,
+      "bedrooms": null,
+      "bathrooms": null,
+      "area": 90,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-horw/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 21,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Winkelstrasse 12, Horw",
+        "resolvedOrigin": "Horw, Winkelstrasse 12",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:39:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Winkelstrasse+12%2C+Horw&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.013626,
+          "longitude": 8.312717
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 22,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-emmen-34",
+      "title": "4.5 Zimmer · busca ampliada",
+      "town": "Emmen",
+      "address": "Reussmatt 7, Emmen",
+      "rent": 1970,
+      "net": null,
+      "charges": null,
+      "rooms": 4.5,
+      "bedrooms": null,
+      "bathrooms": 1,
+      "area": 97,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "01/12/2026",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-emmen/trefferliste",
+      "notes": "Um banheiro e WC separado; lavabo não conta como segundo banheiro completo. Encargos e cão a confirmar.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 42,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Reussmatt 7, Emmen",
+        "resolvedOrigin": "Emmen, Reussmatt 7",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:18:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Reussmatt+7%2C+Emmen&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.076848,
+          "longitude": 8.301952
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 31,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-emmen-35",
+      "title": "3.5 Zimmer · busca ampliada",
+      "town": "Emmen",
+      "address": "Kolbenstrasse 15, Emmen",
+      "rent": 1760,
+      "net": null,
+      "charges": null,
+      "rooms": 3.5,
+      "bedrooms": null,
+      "bathrooms": null,
+      "area": 72,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-emmen/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 49,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Kolbenstrasse 15, Emmen",
+        "resolvedOrigin": "Emmen, Kolbenstrasse 15",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:11:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Kolbenstrasse+15%2C+Emmen&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.091095,
+          "longitude": 8.293267
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 38,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-emmen-36",
+      "title": "2.5 Zimmer · busca ampliada",
+      "town": "Emmen",
+      "address": "Kirchfeldstrasse (número não informado), Emmen",
+      "rent": 1980,
+      "net": null,
+      "charges": null,
+      "rooms": 2.5,
+      "bedrooms": null,
+      "bathrooms": null,
+      "area": 83,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-emmen/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 41,
+        "confirmed": false,
+        "approximate": true,
+        "originBasis": "city-center",
+        "precision": "aproximação pelo centro/parada central da cidade",
+        "requestedOrigin": "Kirchfeldstrasse (número não informado), Emmen",
+        "resolvedOrigin": "Emmen, Kirche",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:19:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=8588526&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.079028,
+          "longitude": 8.302949
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 32,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "city-center",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-emmenbruecke-37",
+      "title": "5.5 Zimmer · busca ampliada",
+      "town": "Emmenbrücke",
+      "address": "Alpstrasse 22, Emmenbrücke",
+      "rent": 2900,
+      "net": null,
+      "charges": null,
+      "rooms": 5.5,
+      "bedrooms": null,
+      "bathrooms": null,
+      "area": 125,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "Imediato / a combinar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-emmenbruecke/trefferliste",
+      "notes": "Encargos e garagem incluídos no preço indicado. Demais requisitos a confirmar.",
+      "totalConfirmed": true,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 31,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Alpstrasse 22, Emmenbrücke",
+        "resolvedOrigin": "Emmen, Alpstrasse 22",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:29:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Alpstrasse+22%2C+Emmenbr%C3%BCcke&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.076944,
+          "longitude": 8.268679
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 30,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-emmenbruecke-38",
+      "title": "4.5 Zimmer · busca ampliada",
+      "town": "Emmenbrücke",
+      "address": "Fadenstrasse 30, Emmenbrücke",
+      "rent": 2720,
+      "net": null,
+      "charges": null,
+      "rooms": 4.5,
+      "bedrooms": null,
+      "bathrooms": 2,
+      "area": 116,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "01/12/2026",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-emmenbruecke/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 24,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Fadenstrasse 30, Emmenbrücke",
+        "resolvedOrigin": "Emmen, Fadenstrasse 30",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:36:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Fadenstrasse+30%2C+Emmenbr%C3%BCcke&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.069038,
+          "longitude": 8.279332
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 25,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-emmenbruecke-39",
+      "title": "2.5 Zimmer · busca ampliada",
+      "town": "Emmenbrücke",
+      "address": "Seetalplatz 1a, Emmenbrücke",
+      "rent": 2145,
+      "net": null,
+      "charges": null,
+      "rooms": 2.5,
+      "bedrooms": null,
+      "bathrooms": 1,
+      "area": 90,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-emmenbruecke/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 22,
+        "confirmed": false,
+        "approximate": true,
+        "originBasis": "city-center",
+        "precision": "aproximação pelo centro/parada central da cidade",
+        "requestedOrigin": "Seetalplatz 1a, Emmenbrücke",
+        "resolvedOrigin": "Emmenbrücke",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:38:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Emmenbr%C3%BCcke&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.070604,
+          "longitude": 8.282566
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 26,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "city-center",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-emmenbruecke-40",
+      "title": "3.5 Zimmer · maisonette",
+      "town": "Emmenbrücke",
+      "address": "Neuhofstrasse 27, Emmenbrücke",
+      "rent": 2180,
+      "net": null,
+      "charges": null,
+      "rooms": 3.5,
+      "bedrooms": null,
+      "bathrooms": 2,
+      "area": 98,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-emmenbruecke/trefferliste",
+      "notes": "Ducha/WC e banheiro com banheira; terraço na cobertura. Estacionamento opcional CHF 130. Demais dados a confirmar.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 41,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Neuhofstrasse 27, Emmenbrücke",
+        "resolvedOrigin": "Emmen, Neuhofstrasse 27",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:19:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Neuhofstrasse+27%2C+Emmenbr%C3%BCcke&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.072317,
+          "longitude": 8.258409
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 28,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-emmenbruecke-41",
+      "title": "3.5 Zimmer · busca ampliada",
+      "town": "Emmenbrücke",
+      "address": "Gerliswilstrasse 52, Emmenbrücke",
+      "rent": 1850,
+      "net": null,
+      "charges": null,
+      "rooms": 3.5,
+      "bedrooms": null,
+      "bathrooms": 1,
+      "area": 71,
+      "garden": "A confirmar",
+      "pets": "Sim · indicado no índice",
+      "floor": 2,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-emmenbruecke/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 27,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Gerliswilstrasse 52, Emmenbrücke",
+        "resolvedOrigin": "Emmen, Gerliswilstrasse 52",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:33:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Gerliswilstrasse+52%2C+Emmenbr%C3%BCcke&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.07417,
+          "longitude": 8.277208
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 28,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-emmenbruecke-42",
+      "title": "4 Zimmer · cobertura",
+      "town": "Emmenbrücke",
+      "address": "Benziwilstrasse 18, Emmenbrücke",
+      "rent": 2385,
+      "net": null,
+      "charges": null,
+      "rooms": 4,
+      "bedrooms": null,
+      "bathrooms": 2,
+      "area": 115,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "15/12/2026",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-emmenbruecke/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 31,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Benziwilstrasse 18, Emmenbrücke",
+        "resolvedOrigin": "Emmen, Benziwilstrasse 18",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:29:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Benziwilstrasse+18%2C+Emmenbr%C3%BCcke&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.088295,
+          "longitude": 8.278922
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 36,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-emmenbruecke-43",
+      "title": "2.5 Zimmer · busca ampliada",
+      "town": "Emmenbrücke",
+      "address": "Obere Erlen 31, Emmenbrücke",
+      "rent": 1690,
+      "net": null,
+      "charges": null,
+      "rooms": 2.5,
+      "bedrooms": null,
+      "bathrooms": 1,
+      "area": 63,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-emmenbruecke/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 39,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Obere Erlen 31, Emmenbrücke",
+        "resolvedOrigin": "Emmen, Obere Erlen 31",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:21:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Obere+Erlen+31%2C+Emmenbr%C3%BCcke&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.074186,
+          "longitude": 8.257337
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 29,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-emmenbruecke-44",
+      "title": "4.5 Zimmer · busca ampliada",
+      "town": "Emmenbrücke",
+      "address": "Obere Landenbergstrasse 1, Emmenbrücke",
+      "rent": 1840,
+      "net": null,
+      "charges": null,
+      "rooms": 4.5,
+      "bedrooms": null,
+      "bathrooms": null,
+      "area": 100,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-emmenbruecke/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 28,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Obere Landenbergstrasse 1, Emmenbrücke",
+        "resolvedOrigin": "Emmen, Obere Landenbergstrasse 1",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:32:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Obere+Landenbergstrasse+1%2C+Emmenbr%C3%BCcke&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.079154,
+          "longitude": 8.272045
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 31,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-emmenbruecke-45",
+      "title": "4.5 Zimmer · busca ampliada",
+      "town": "Emmenbrücke",
+      "address": "Rüeggisingerstrasse 14, Emmenbrücke",
+      "rent": 2660,
+      "net": null,
+      "charges": null,
+      "rooms": 4.5,
+      "bedrooms": null,
+      "bathrooms": null,
+      "area": 96,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-emmenbruecke/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 33,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Rüeggisingerstrasse 14, Emmenbrücke",
+        "resolvedOrigin": "Emmen, Rüeggisingerstrasse 14",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:27:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=R%C3%BCeggisingerstrasse+14%2C+Emmenbr%C3%BCcke&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.076507,
+          "longitude": 8.277373
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 29,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-emmenbruecke-46",
+      "title": "3.5 Zimmer · busca ampliada",
+      "town": "Emmenbrücke",
+      "address": "Seetalstrasse 40, Emmenbrücke",
+      "rent": 1780,
+      "net": null,
+      "charges": null,
+      "rooms": 3.5,
+      "bedrooms": null,
+      "bathrooms": null,
+      "area": null,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-emmenbruecke/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 32,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Seetalstrasse 40, Emmenbrücke",
+        "resolvedOrigin": "Emmen, Seetalstrasse 40",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:28:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Seetalstrasse+40%2C+Emmenbr%C3%BCcke&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.073878,
+          "longitude": 8.291008
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 28,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-emmenbruecke-47",
+      "title": "3.5 Zimmer · busca ampliada",
+      "town": "Emmenbrücke",
+      "address": "Gerliswilstrasse 68, Emmenbrücke",
+      "rent": 1305,
+      "net": null,
+      "charges": null,
+      "rooms": 3.5,
+      "bedrooms": null,
+      "bathrooms": null,
+      "area": null,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-emmenbruecke/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 27,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Gerliswilstrasse 68, Emmenbrücke",
+        "resolvedOrigin": "Emmen, Gerliswilstrasse 68",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:33:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Gerliswilstrasse+68%2C+Emmenbr%C3%BCcke&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.076557,
+          "longitude": 8.275941
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 29,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-emmenbruecke-48",
+      "title": "3.5 Zimmer · busca ampliada",
+      "town": "Emmenbrücke",
+      "address": "Fadenstrasse (número não informado), Emmenbrücke",
+      "rent": 2400,
+      "net": null,
+      "charges": null,
+      "rooms": 3.5,
+      "bedrooms": null,
+      "bathrooms": null,
+      "area": 94,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-emmenbruecke/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 22,
+        "confirmed": false,
+        "approximate": true,
+        "originBasis": "city-center",
+        "precision": "aproximação pelo centro/parada central da cidade",
+        "requestedOrigin": "Fadenstrasse (número não informado), Emmenbrücke",
+        "resolvedOrigin": "Emmenbrücke",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:38:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Emmenbr%C3%BCcke&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.070604,
+          "longitude": 8.282566
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 26,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "city-center",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-luzern-49",
+      "title": "2.5 Zimmer · busca ampliada",
+      "town": "Luzern",
+      "address": "Tribschenstrasse 62b, Luzern",
+      "rent": 1640,
+      "net": null,
+      "charges": null,
+      "rooms": 2.5,
+      "bedrooms": null,
+      "bathrooms": 1,
+      "area": 51,
+      "garden": "A confirmar",
+      "pets": "Sim · indicado no índice",
+      "floor": null,
+      "available": "01/02/2027",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-luzern/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 22,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Tribschenstrasse 62b, Luzern",
+        "resolvedOrigin": "Luzern, Tribschenstrasse 62b",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:38:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Tribschenstrasse+62b%2C+Luzern&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.042227,
+          "longitude": 8.316177
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 19,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-luzern-50",
+      "title": "3.5 Zimmer · busca ampliada",
+      "town": "Luzern",
+      "address": "Zürichstrasse 83 / Steinerstrasse 26, Luzern",
+      "rent": null,
+      "net": 2211,
+      "charges": null,
+      "rooms": 3.5,
+      "bedrooms": null,
+      "bathrooms": null,
+      "area": 110,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "01/12/2026",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-luzern/trefferliste",
+      "notes": "CHF 2211 é aluguel SEM encargos. Total final desconhecido; pode ultrapassar o teto. Confirmar antes de comparar.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 22,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Zürichstrasse 83 / Steinerstrasse 26, Luzern",
+        "resolvedOrigin": "Luzern, Zürichstrasse 83",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:35:00+0100",
+        "arrival": "2026-11-02T07:57:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Z%C3%BCrichstrasse+83%2C+Luzern&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.060569,
+          "longitude": 8.3089
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 24,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-luzern-51",
+      "title": "3.5 Zimmer · busca ampliada",
+      "town": "Luzern",
+      "address": "Cécile-Lauber-Gasse 10, Luzern",
+      "rent": 2800,
+      "net": null,
+      "charges": null,
+      "rooms": 3.5,
+      "bedrooms": null,
+      "bathrooms": null,
+      "area": 90,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": 2,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-luzern/trefferliste",
+      "notes": "Garagem incluída; dois espaços sanitários, sem prova suficiente de dois banheiros completos. Encargos a confirmar.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 22,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Cécile-Lauber-Gasse 10, Luzern",
+        "resolvedOrigin": "Luzern, Cécile-Lauber-Gasse 10",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:38:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=C%C3%A9cile-Lauber-Gasse+10%2C+Luzern&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.043677,
+          "longitude": 8.316015
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 20,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-luzern-52",
+      "title": "4 Zimmer · 3º andar",
+      "town": "Luzern",
+      "address": "Bireggstrasse 22, Luzern",
+      "rent": 2760,
+      "net": null,
+      "charges": null,
+      "rooms": 4,
+      "bedrooms": null,
+      "bathrooms": 1,
+      "area": 79,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": 3,
+      "available": "01/03/2027",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-luzern/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 11,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Bireggstrasse 22, Luzern",
+        "resolvedOrigin": "Luzern, Bireggstrasse 22",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:49:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Bireggstrasse+22%2C+Luzern&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.0419,
+          "longitude": 8.305534
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 15,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-luzern-53",
+      "title": "4 Zimmer · 1º andar",
+      "town": "Luzern",
+      "address": "Bireggstrasse 22, Luzern",
+      "rent": 2690,
+      "net": null,
+      "charges": null,
+      "rooms": 4,
+      "bedrooms": null,
+      "bathrooms": 1,
+      "area": 79,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": 1,
+      "available": "01/03/2027",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-luzern/trefferliste",
+      "notes": "Índice informa 4 Zimmer, mas texto menciona três cômodos. Quartos reais e total precisam de confirmação.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 11,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Bireggstrasse 22, Luzern",
+        "resolvedOrigin": "Luzern, Bireggstrasse 22",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:49:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Bireggstrasse+22%2C+Luzern&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.0419,
+          "longitude": 8.305534
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 15,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
+      }
+    },
+    {
+      "id": "broad-luzern-54",
+      "title": "3 Zimmer · busca ampliada",
+      "town": "Luzern",
+      "address": "Hallwilerweg 14, Luzern",
+      "rent": 2330,
+      "net": null,
+      "charges": null,
+      "rooms": 3,
+      "bedrooms": null,
+      "bathrooms": null,
+      "area": 76,
+      "garden": "A confirmar",
+      "pets": "A confirmar",
+      "floor": null,
+      "available": "A confirmar",
+      "source": "Homegate · página de resultados (anúncio individual a confirmar)",
+      "sourceIndex": true,
+      "url": "https://www.homegate.ch/mieten/wohnung/ort-luzern/trefferliste",
+      "notes": "Dados resumidos do índice; confirmar encargos, quartos reais, cão e disponibilidade no anúncio individual.",
+      "totalConfirmed": false,
+      "availabilityStatus": "incerto",
+      "checkedAt": "31/10/2026",
+      "commute": {
+        "status": "consultado",
+        "minutes": 11,
+        "confirmed": true,
+        "approximate": false,
+        "originBasis": "address",
+        "precision": "endereço",
+        "requestedOrigin": "Hallwilerweg 14, Luzern",
+        "resolvedOrigin": "Luzern, Hallwilerweg 14",
+        "destination": "Kriens, Zentrum Pilatus",
+        "departure": "2026-11-02T07:49:00+0100",
+        "arrival": "2026-11-02T08:00:00+0100",
+        "date": "2026-11-02",
+        "checkedAt": "2026-10-31",
+        "url": "https://transport.opendata.ch/v1/connections?from=Hallwilerweg+14%2C+Luzern&to=Kriens%2C+Zentrum+Pilatus&date=2026-11-02&time=08%3A00&isArrivalTime=1&limit=1",
+        "originCoordinates": {
+          "latitude": 47.048267,
+          "longitude": 8.302593
+        },
+        "destinationCoordinates": {
+          "latitude": 47.033844,
+          "longitude": 8.27944
+        }
+      },
+      "bike": {
+        "minutes": 16,
+        "approximate": true,
+        "confirmed": false,
+        "originBasis": "address",
+        "method": "geographic-estimate-v1"
       }
     }
   ],
-  "version": "2026-10-31-expanded-v1",
+  "version": "2026-10-31-broad-v2",
   "fx": {
     "chfPerEur": 0.9194,
     "date": "2026-10-30",
@@ -970,5 +2972,12 @@
     "arrivalTime": "08:00",
     "timezone": "Europe/Zurich",
     "source": "https://transport.opendata.ch/docs.html"
+  },
+  "collectionPolicy": "Índices de imóveis consultados uma vez; respostas de transporte cacheadas e novas consultas sequenciais com intervalo de 3 s. Endereço resolvido quando possível, centro/parada central em 9 anúncios. Filtros e bicicleta calculados localmente, sem rede.",
+  "bicycleAssumptions": {
+    "speedKmh": 15,
+    "distanceMultiplier": 1.35,
+    "bufferMinutes": 3,
+    "method": "Distância geográfica × 1,35, velocidade assumida de 15 km/h + 3 min. Não inclui relevo, infraestrutura cicloviária ou trânsito; não é rota calculada por navegador."
   }
 }

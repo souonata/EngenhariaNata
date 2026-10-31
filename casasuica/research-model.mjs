@@ -1,4 +1,18 @@
-export const DEFAULT_FILTERS = Object.freeze({ currency: 'EUR', maxPrice: 3000, chfPerEur: 0.9194, minBedrooms: 2, minBathrooms: 0, maxMinutes: 45, includeUnknown: true, mode: 'candidates', town: '', sort: 'rent' });
+export const DEFAULT_FILTERS = Object.freeze({ currency: 'EUR', maxPrice: 3000, chfPerEur: 0.9194, minBedrooms: 2, minBathrooms: 0, maxMinutes: 45, travelMode: 'transit', garden: 'any', groundFloorOnly: false, includeUnknown: true, mode: 'candidates', town: '', sort: 'rent' });
+
+export function estimateBicycleMinutes(origin, destination) {
+    if (![origin?.latitude, origin?.longitude, destination?.latitude, destination?.longitude].every(Number.isFinite)) {
+        return null;
+    }
+    if ([origin, destination].some(p => Math.abs(p.latitude) > 90 || Math.abs(p.longitude) > 180)) {
+        return null;
+    }
+    const rad = x => x * Math.PI / 180;
+    const a = Math.sin(rad(destination.latitude - origin.latitude) / 2) ** 2 + Math.cos(rad(origin.latitude)) * Math.cos(rad(destination.latitude)) * Math.sin(rad(destination.longitude - origin.longitude) / 2) ** 2;
+    const directKm = 6371 * 2 * Math.atan2(Math.sqrt(Math.min(1, a)), Math.sqrt(Math.max(0, 1 - a)));
+    // Planning assumptions, not a routed cycling itinerary: 35% detour, 15 km/h, 3 min buffer.
+    return Math.max(1, Math.ceil(directKm * 1.35 / 15 * 60 + 3));
+}
 
 export function evaluateProperty(row, filters = DEFAULT_FILTERS) {
     const excluded = [], pending = [];
@@ -28,23 +42,35 @@ export function evaluateProperty(row, filters = DEFAULT_FILTERS) {
             }
         }
     }
-    if (['Compartilhado', 'Não'].includes(row.garden)) {
-        excluded.push('Sem jardim privativo com área verde');
-    } else if (row.garden !== 'Privativo com área verde') {
-        pending.push('Jardim privativo com área verde a confirmar');
+    if (filters.garden === 'private') {
+        if (['Compartilhado', 'Não'].includes(row.garden)) {
+            excluded.push('Sem jardim privativo com área verde');
+        } else if (row.garden !== 'Privativo com área verde') {
+            pending.push('Jardim privativo com área verde a confirmar');
+        }
+    }
+    if (filters.groundFloorOnly) {
+        if (row.floor === null || row.floor === undefined || row.floor === '') {
+            pending.push('Andar não informado');
+        } else if (Number(row.floor) !== 0) {
+            excluded.push('Não é térreo');
+        }
     }
     if (row.pets === 'Não') {
         excluded.push('Animais proibidos');
     } else if (!String(row.pets || '').startsWith('Sim')) {
         pending.push('Permissão para cão a confirmar');
     }
-    if ((row.commute?.minutes !== null && row.commute?.minutes !== undefined)) {
-        if (Number(row.commute.minutes) > Number(filters.maxMinutes)) {
-            excluded.push('Trajeto consultado acima do limite');
+    const travelMode = filters.travelMode || 'transit';
+    const choices = travelMode === 'bike' ? [row.bike] : travelMode === 'either' ? [row.commute, row.bike] : [row.commute];
+    const known = choices.filter(c => Number.isFinite(c?.minutes));
+    const within = known.filter(c => c.minutes <= Number(filters.maxMinutes));
+    if (within.length) {
+        if (!within.some(c => c.confirmed && !c.approximate)) {
+            pending.push(travelMode === 'bike' ? 'Tempo de bicicleta aproximado' : 'Tempo aproximado / trecho desde a porta não verificado');
         }
-        if (!row.commute.confirmed) {
-            pending.push('Trecho desde a porta não verificado');
-        }
+    } else if (known.length === choices.length) {
+        excluded.push('Trajeto consultado acima do limite');
     } else {
         pending.push('Trajeto não verificado');
     }
