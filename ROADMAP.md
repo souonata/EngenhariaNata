@@ -5,7 +5,7 @@ Panorama do estado atual do portfólio Engenharia NATA, com foco no que já est�
 ## Snapshot atual
 
 - Portfólio estático com 17 páginas/apps públicas, além dos apps discretos do easter egg
-  (`br12c`, `lichiabonsai`, `pintor` e `casasuica`): estão no HTML, mas fora do `sitemap.xml` e só
+  (`br12c`, `lichiabonsai`, `pintor`, `casasuica` e `livecostswiss`): estão no HTML, mas fora do `sitemap.xml` e só
   alcançáveis pelo dock que o easter egg de toques libera.
 - Núcleo atual cobre engenharia residencial, energia, água, finanças, planejamento rural e educação náutica.
 - Idiomas suportados: `pt-BR`, `it-IT` e `sv-SE`. O sueco **está no ar**: 18 dos 21 arquivos

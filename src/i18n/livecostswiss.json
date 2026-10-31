@@ -1,0 +1,38 @@
+{
+  "pt-BR": {
+    "titulo": "Livecost Swiss",
+    "eyebrow": "PLANEJAR A VIDA NA SUÍÇA",
+    "descricao": "Salários, despesas e metas de economia para morar na Suíça.",
+    "password": "Senha de acesso",
+    "wrongPassword": "Senha incorreta. Tente novamente.",
+    "unlock": "Desbloquear",
+    "lock": "Bloquear novamente",
+    "privacy": "O orçamento fica neste navegador. Painel em inglês, com valores ajustáveis e estimativas identificadas.",
+    "back": "← Engenharia NATA",
+    "frameTitle": "Livecost Swiss — custo de vida (inglês)"
+  },
+  "it-IT": {
+    "titulo": "Livecost Swiss",
+    "eyebrow": "PIANIFICARE LA VITA IN SVIZZERA",
+    "descricao": "Stipendi, spese e obiettivi di risparmio per vivere in Svizzera.",
+    "password": "Password di accesso",
+    "wrongPassword": "Password errata. Riprova.",
+    "unlock": "Sblocca",
+    "lock": "Blocca di nuovo",
+    "privacy": "Il budget resta in questo browser. Pannello in inglese con valori modificabili e stime indicate.",
+    "back": "← Engenharia NATA",
+    "frameTitle": "Livecost Swiss — costo della vita (inglese)"
+  },
+  "sv-SE": {
+    "titulo": "Livecost Swiss",
+    "eyebrow": "PLANERA LIVET I SCHWEIZ",
+    "descricao": "Löner, utgifter och sparmål för att bo i Schweiz.",
+    "password": "Lösenord",
+    "wrongPassword": "Fel lösenord. Försök igen.",
+    "unlock": "Lås upp",
+    "lock": "Lås igen",
+    "privacy": "Budgeten sparas i den här webbläsaren. Panel på engelska med justerbara värden och tydligt angivna uppskattningar.",
+    "back": "← Engenharia NATA",
+    "frameTitle": "Livecost Swiss — levnadskostnader (engelska)"
+  }
+}
