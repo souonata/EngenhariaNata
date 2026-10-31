@@ -59,3 +59,41 @@ test('expired listings remain in archive but not candidate list', () => {
 test('unknown toggle removes pending rows without deleting archive', () => {
     const rows = [row, { ...row, id: 'b', bedrooms: null }]; assert.equal(filterResearchRows(rows).length, 2); assert.equal(filterResearchRows(rows, { ...DEFAULT_FILTERS, includeUnknown: false }).length, 1); assert.equal(rows.length, 2);
 });
+test('all numeric columns toggle ascending/descending and keep unknown values last', () => {
+    for (const field of ['rent', 'area', 'bedrooms', 'bathrooms', 'floor', 'transit', 'bike']) {
+        const set = (id, value) => ({ ...row, id, ...(field === 'transit' ? { commute: { minutes: value } } : field === 'bike' ? { bike: { minutes: value } } : { [field]: value }) });
+        const rows = [set('unknown', null), set('high', 10), set('low', 0)];
+        assert.deepEqual(filterResearchRows(rows, { ...DEFAULT_FILTERS, mode: 'archive', sort: field, sortDirection: 'asc' }).map(r => r.row.id), ['low', 'high', 'unknown'], field);
+        assert.deepEqual(filterResearchRows(rows, { ...DEFAULT_FILTERS, mode: 'archive', sort: field, sortDirection: 'desc' }).map(r => r.row.id), ['high', 'low', 'unknown'], field);
+        assert.deepEqual(rows.map(r => r.id), ['unknown', 'high', 'low']);
+    }
+});
+test('text and status columns sort both ways without reordering ties', () => {
+    const rows = [{ ...row, id: 'z', town: 'Zürich' }, { ...row, id: 'a1', town: 'Adligenswil' }, { ...row, id: 'a2', town: 'Adligenswil' }];
+    assert.deepEqual(filterResearchRows(rows, { ...DEFAULT_FILTERS, sort: 'town' }).map(r => r.row.id), ['a1', 'a2', 'z']);
+    assert.deepEqual(filterResearchRows(rows, { ...DEFAULT_FILTERS, sort: 'town', sortDirection: 'desc' }).map(r => r.row.id), ['z', 'a1', 'a2']);
+    for (const field of ['garden', 'pets']) {
+        const values = [{ ...row, id: 'unknown', [field]: 'A confirmar' }, { ...row, id: 'b', [field]: 'B' }, { ...row, id: 'a', [field]: 'A' }];
+        assert.deepEqual(filterResearchRows(values, { ...DEFAULT_FILTERS, mode: 'archive', sort: field }).map(r => r.row.id), ['a', 'b', 'unknown']);
+        assert.deepEqual(filterResearchRows(values, { ...DEFAULT_FILTERS, mode: 'archive', sort: field, sortDirection: 'desc' }).map(r => r.row.id), ['b', 'a', 'unknown']);
+    }
+    const statuses = [row, { ...row, id: 'pending', bedrooms: null }, { ...row, id: 'excluded', pets: 'Não' }];
+    assert.deepEqual(filterResearchRows(statuses, { ...DEFAULT_FILTERS, mode: 'archive', sort: 'status' }).map(r => r.row.id), ['a', 'pending', 'excluded']);
+    assert.deepEqual(filterResearchRows(statuses, { ...DEFAULT_FILTERS, mode: 'archive', sort: 'status', sortDirection: 'desc' }).map(r => r.row.id), ['excluded', 'pending', 'a']);
+});
+test('quantity column filters honor exact bounds and flag missing or estimated values', () => {
+    const filters = { ...DEFAULT_FILTERS, minArea: 80, maxFloor: 0, maxTransitMinutes: 45, maxBikeMinutes: 35 };
+    const home = { ...row, area: 80, floor: 0, bike: { minutes: 35, approximate: true } };
+    const exact = evaluateProperty(home, filters);
+    assert.equal(exact.excluded.length, 0);
+    assert.equal(exact.confirmed, false);
+    assert.ok(exact.pending.includes('Tempo de bicicleta aproximado'));
+    for (const change of [{ area: 79.9 }, { floor: 1 }, { commute: { minutes: 46 } }, { bike: { minutes: 36 } }]) {
+        assert.ok(evaluateProperty({ ...home, ...change }, filters).excluded.length);
+    }
+    const missing = evaluateProperty({ ...home, area: null, floor: null, commute: {}, bike: {} }, filters);
+    assert.equal(missing.excluded.length, 0);
+    assert.ok(missing.pending.includes('Área não informada'));
+    assert.ok(missing.pending.includes('Andar não informado'));
+    assert.equal(filterResearchRows([{ ...home, floor: 1 }], { ...filters, mode: 'archive' }).length, 1);
+});
