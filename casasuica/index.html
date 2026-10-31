@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="referrer" content="no-referrer">
+    <title>Casa Suíça — Engenharia NATA</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="stylesheet" href="../assets/css/shared-styles.css?v=2.4.0">
+    <link rel="stylesheet" href="../assets/css/dock-global.css?v=1.2.0">
+    <link rel="stylesheet" href="casasuica-styles.css?v=1.0.0">
+</head>
+<body>
+    <div class="language-selector">
+        <button id="btnPortugues" class="lang-btn" data-lang="pt-BR">PT</button>
+        <button id="btnItaliano" class="lang-btn" data-lang="it-IT">IT</button>
+        <button id="btnSvenska" class="lang-btn" data-lang="sv-SE">SV</button>
+    </div>
+    <main class="swiss-shell">
+        <section class="swiss-card" aria-labelledby="swiss-title">
+            <span class="swiss-cross" aria-hidden="true">+</span>
+            <p class="swiss-eyebrow" data-i18n="eyebrow">NOSSO PRÓXIMO LAR</p>
+            <h1 id="swiss-title" data-i18n="titulo">Casa Suíça</h1>
+            <p data-i18n="descricao">Nossa busca por uma casa na região de Kriens e Lucerna.</p>
+            <form id="swiss-gate">
+                <label for="swiss-password" data-i18n="password">Senha de acesso</label>
+                <input id="swiss-password" type="password" autocomplete="off" required aria-describedby="swiss-error" autocapitalize="none" spellcheck="false">
+                <p id="swiss-error" class="swiss-error" role="alert" hidden data-i18n="wrongPassword">Senha incorreta. Tente novamente.</p>
+                <button class="swiss-primary" type="submit" data-i18n="unlock">Desbloquear</button>
+            </form>
+            <div id="swiss-unlocked" hidden>
+                <p role="status" data-i18n="unlocked">Acesso liberado. Vamos encontrar nosso próximo lar.</p>
+                <a id="swiss-open" class="swiss-primary" rel="noreferrer" data-i18n="open">Abrir painel de busca ↗</a>
+                <button id="swiss-lock" class="swiss-secondary" type="button" data-i18n="lock">Bloquear novamente</button>
+            </div>
+            <p class="swiss-note" data-i18n="privacy">O painel é privado e pede login do ChatGPT. Seus imóveis salvos continuam no navegador em que foram adicionados.</p>
+            <a class="swiss-back" href="../index.html" data-i18n="back">← Engenharia NATA</a>
+        </section>
+    </main>
+    <script type="module" src="casasuica-script.js?v=1.0.0"></script>
+</body>
+</html>

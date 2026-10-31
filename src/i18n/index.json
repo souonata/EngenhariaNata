@@ -103,7 +103,8 @@
     "app-visitantes": "Visitantes",
     "app-visitantes-tooltip": "Total de visitas ao portfólio",
     "title-lang-sv": "Sueco",
-    "aria-lang-sv": "Mudar idioma para sueco"
+    "aria-lang-sv": "Mudar idioma para sueco",
+    "app-casasuica": "Casa Suíça"
   },
   "it-IT": {
     "app-about": "Sul Progetto",
@@ -208,7 +209,8 @@
     "app-visitantes": "Visitatori",
     "app-visitantes-tooltip": "Totale visite al portafoglio",
     "title-lang-sv": "Svedese",
-    "aria-lang-sv": "Cambia lingua in svedese"
+    "aria-lang-sv": "Cambia lingua in svedese",
+    "app-casasuica": "Casa Svizzera"
   },
   "sv-SE": {
     "app-about": "Om projektet",
@@ -313,6 +315,7 @@
     "app-visitantes": "Besökare",
     "app-visitantes-tooltip": "Totalt antal besök på portföljen",
     "title-lang-sv": "Svenska",
-    "aria-lang-sv": "Byt språk till svenska"
+    "aria-lang-sv": "Byt språk till svenska",
+    "app-casasuica": "Hem i Schweiz"
   }
 }

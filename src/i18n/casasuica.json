@@ -1,0 +1,41 @@
+{
+  "pt-BR": {
+    "titulo": "Casa Suíça",
+    "eyebrow": "NOSSO PRÓXIMO LAR",
+    "descricao": "Nossa busca por uma casa na região de Kriens e Lucerna.",
+    "password": "Senha de acesso",
+    "wrongPassword": "Senha incorreta. Tente novamente.",
+    "unlock": "Desbloquear",
+    "unlocked": "Acesso liberado. Vamos encontrar nosso próximo lar.",
+    "open": "Abrir painel de busca ↗",
+    "lock": "Bloquear novamente",
+    "privacy": "O painel é privado e pede login do ChatGPT. Seus imóveis salvos continuam no navegador em que foram adicionados.",
+    "back": "← Engenharia NATA"
+  },
+  "it-IT": {
+    "titulo": "Casa Svizzera",
+    "eyebrow": "LA NOSTRA PROSSIMA CASA",
+    "descricao": "La nostra ricerca di una casa nella regione di Kriens e Lucerna.",
+    "password": "Password di accesso",
+    "wrongPassword": "Password errata. Riprova.",
+    "unlock": "Sblocca",
+    "unlocked": "Accesso sbloccato. Troviamo la nostra prossima casa.",
+    "open": "Apri il pannello di ricerca ↗",
+    "lock": "Blocca di nuovo",
+    "privacy": "Il pannello è privato e richiede il login ChatGPT. Gli immobili salvati rimangono nel browser in cui sono stati aggiunti.",
+    "back": "← Engenharia NATA"
+  },
+  "sv-SE": {
+    "titulo": "Hem i Schweiz",
+    "eyebrow": "VÅRT NÄSTA HEM",
+    "descricao": "Vårt sökande efter ett hem i regionen Kriens och Luzern.",
+    "password": "Lösenord",
+    "wrongPassword": "Fel lösenord. Försök igen.",
+    "unlock": "Lås upp",
+    "unlocked": "Upplåst. Nu hittar vi vårt nästa hem.",
+    "open": "Öppna bostadssökningen ↗",
+    "lock": "Lås igen",
+    "privacy": "Panelen är privat och kräver ChatGPT-inloggning. Sparade bostäder finns kvar i den webbläsare där de lades till.",
+    "back": "← Engenharia NATA"
+  }
+}
