@@ -167,3 +167,9 @@ Ao mexer em um app existente ou adicionar um novo:
 4. Importe os CSS compartilhados (`assets/css/shared-styles.css`, `assets/css/v2-components.css` e `assets/css/controls-styles.css`).
 5. Para fórmulas numéricas, separe a lógica em `meuapp-calc.js` (ESM puro, sem DOM) e crie `meuapp-calc.test.js` com cobertura de fronteiras, invariantes e edge cases.
 6. Registre o app no catálogo principal, na página `sobre/` e nos arquivos de documentação.
+
+### Casa Suíça (acesso discreto)
+
+O easter egg de nove toques revela o launcher `casasuica/`, disponível em PT/IT/SV.
+A senha de conveniência abre o link do painel privado de busca de aluguel; o login
+do ChatGPT continua sendo a autenticação do painel. Nenhum dado pessoal é copiado para o portfólio.

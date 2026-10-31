@@ -199,6 +199,8 @@ npm run build          # build de produção (gera local/dist)
 
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
+- **CASA SUÍÇA (2026-10-31):** `casasuica/` é um launcher discreto no easter egg de 9 toques, com trava de interface pela senha solicitada `swiss`. Interface PT/IT/SV, sem persistir senha ou desbloqueio. Abre o Site privado existente; autenticação real permanece no ChatGPT. Não copiar dados financeiros nem listas pessoais para este repositório público. HTML descoberto pelo Vite; i18n importado como módulo. Fora dos cards públicos, sobre e sitemap, seguindo os outros apps secretos.
+
 _Última atualização: 2026-09-27_
 - **SITES VENDAS NO CATÁLOGO (branch `feat/app-sites-vendas`, 2026-09-27):** ícone e card
   "Sites Vendas" abrem o construtor de lojas em `https://sites.engnata.eu/` na mesma aba. É site
