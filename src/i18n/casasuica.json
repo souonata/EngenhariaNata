@@ -6,11 +6,10 @@
     "password": "Senha de acesso",
     "wrongPassword": "Senha incorreta. Tente novamente.",
     "unlock": "Desbloquear",
-    "unlocked": "Acesso liberado. Vamos encontrar nosso próximo lar.",
-    "open": "Abrir painel de busca ↗",
     "lock": "Bloquear novamente",
-    "privacy": "O painel é privado e pede login do ChatGPT. Seus imóveis salvos continuam no navegador em que foram adicionados.",
-    "back": "← Engenharia NATA"
+    "privacy": "O painel funciona aqui no Engenharia NATA, sem login. Os imóveis ficam salvos neste navegador. Exporte backups para guardar ou transferir sua seleção.",
+    "back": "← Engenharia NATA",
+    "frameTitle": "Casa Suíça — painel de busca de imóveis"
   },
   "it-IT": {
     "titulo": "Casa Svizzera",
@@ -19,11 +18,10 @@
     "password": "Password di accesso",
     "wrongPassword": "Password errata. Riprova.",
     "unlock": "Sblocca",
-    "unlocked": "Accesso sbloccato. Troviamo la nostra prossima casa.",
-    "open": "Apri il pannello di ricerca ↗",
     "lock": "Blocca di nuovo",
-    "privacy": "Il pannello è privato e richiede il login ChatGPT. Gli immobili salvati rimangono nel browser in cui sono stati aggiunti.",
-    "back": "← Engenharia NATA"
+    "privacy": "Il pannello funziona qui su Engenharia NATA, senza login. Gli immobili vengono salvati in questo browser. Esporta un backup per conservare o trasferire la selezione.",
+    "back": "← Engenharia NATA",
+    "frameTitle": "Casa Svizzera — pannello di ricerca immobiliare (portoghese)"
   },
   "sv-SE": {
     "titulo": "Hem i Schweiz",
@@ -32,10 +30,9 @@
     "password": "Lösenord",
     "wrongPassword": "Fel lösenord. Försök igen.",
     "unlock": "Lås upp",
-    "unlocked": "Upplåst. Nu hittar vi vårt nästa hem.",
-    "open": "Öppna bostadssökningen ↗",
     "lock": "Lås igen",
-    "privacy": "Panelen är privat och kräver ChatGPT-inloggning. Sparade bostäder finns kvar i den webbläsare där de lades till.",
-    "back": "← Engenharia NATA"
+    "privacy": "Panelen körs här på Engenharia NATA utan inloggning. Bostäder sparas i den här webbläsaren. Exportera säkerhetskopior för att spara eller flytta ditt urval.",
+    "back": "← Engenharia NATA",
+    "frameTitle": "Hem i Schweiz — bostadssökning (portugisiska)"
   }
 }
