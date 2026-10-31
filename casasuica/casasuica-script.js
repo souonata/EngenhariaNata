@@ -2,8 +2,10 @@ import { App } from '../src/core/app.js';
 import traducoes from '../src/i18n/casasuica.json';
 import dashboardTemplate from './dashboard-source.txt?raw';
 import research from './research-data.json';
+import researchModel from './research-model.mjs?raw';
 
-const dashboardHtml = dashboardTemplate.replace('/*RESEARCH_DATA*/', () => JSON.stringify(research).replaceAll('<', '\\u003c'));
+const dashboardHtml = dashboardTemplate.replace('/*RESEARCH_DATA*/', () => JSON.stringify(research).replaceAll('<', '\\u003c'))
+    .replace('/*RESEARCH_MODEL*/', () => researchModel.replaceAll('export ', ''));
 
 // Convenience gate for a static app. Passwords and browser data are not sent to a server.
 class CasaSuicaApp extends App {

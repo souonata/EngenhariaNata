@@ -20,7 +20,7 @@
     "version:minor": "node scripts/update-versions.js minor",
     "version:major": "node scripts/update-versions.js major",
     "checkup": "rg \"console\\.log|\\bdebugger\\b\" -g \"*.js\" -n ../index-script.js ../sw.js ../assets ../src ../aquecimento ../arcondicionado ../bitola ../bombaagua ../bugs ../chuva ../fazenda ../helice ../iluminacao ../mutuo ../patentenautica ../salario ../sobre ../solar ../template-app ../ventilacao || echo 'OK: nenhum console.log ou debugger encontrado'",
-    "test": "vitest run --config vitest.config.js",
+    "test": "vitest run --config vitest.config.js && npm run test:casasuica",
     "test:watch": "vitest --config vitest.config.js",
     "test:coverage": "vitest run --coverage --config vitest.config.js",
     "validate:patentenautica": "node ../patentenautica/scripts/validate_integrity.mjs",
@@ -32,7 +32,8 @@
     "validate": "npm run lint:check && npm run format:check && npm run style:check && npm test && npm run validate:i18n && npm run validate:assets && npm run validate:patentenautica && npm run validate:pintor-release && npm run validate:pintor",
     "prebuild": "npm run lint:check",
     "validate:assets": "node ../scripts/validate_assets_referenciados.mjs",
-    "validate:pintor-release": "node ../scripts/validate_pintor_release.mjs"
+    "validate:pintor-release": "node ../scripts/validate_pintor_release.mjs",
+    "test:casasuica": "node --test ../casasuica/research-model.test.mjs ../casasuica/dashboard-state.test.mjs"
   },
   "keywords": [
     "engenharia",

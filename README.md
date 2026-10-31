@@ -176,4 +176,8 @@ em `engnata.eu/casasuica/`, sem ChatGPT Sites ou login. A seleção fica no nave
 ser exportada/importada como JSON. O dashboard permanece em português; a tela de acesso é PT/IT/SV.
 A senha estática não é autenticação de servidor. Nenhum dado pessoal é versionado no portfólio.
 
-A pesquisa inicial de 31/10/2026 está em `casasuica/research-data.json`: quatro candidatos com requisitos pendentes, nenhum apresentado como plenamente compatível. Jardim privativo com área verde é obrigatório. Preços, fontes, data e pendências aparecem na tabela. Consulta manual, sem feed ou cobertura exaustiva garantida.
+A pesquisa de 31/10/2026 está em `casasuica/research-data.json`, com todos os 21 registros da busca ampliada e sua situação. Jardim privativo com área verde é obrigatório. Preços, fontes, data e pendências aparecem na tabela. Consulta manual, sem feed ou cobertura exaustiva garantida.
+
+### Pesquisa ampliada Casa Suíça — 31/10/2026
+
+Arquivo local com 21 registros de pesquisa, inclusive descartados para consulta. Filtros por preço em EUR/CHF, câmbio, quartos, banheiros completos, tempo de transporte público e cidade; jardim privativo com área verde obrigatório. Padrão €3.000 / 45 min até Kriens, Zentrum Pilatus. Horários consultados para 02/11/2026 até 08h; endereço da empresa ainda não informado. Todos os registros e filtros ficam no navegador, com export JSON e HTML independente. `npm run test:casasuica` em `local/` verifica classificação, limites, persistência e exportação.
