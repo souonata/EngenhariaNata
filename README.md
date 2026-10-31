@@ -171,5 +171,9 @@ Ao mexer em um app existente ou adicionar um novo:
 ### Casa Suíça (acesso discreto)
 
 O easter egg de nove toques revela o launcher `casasuica/`, disponível em PT/IT/SV.
-A senha de conveniência abre o link do painel privado de busca de aluguel; o login
-do ChatGPT continua sendo a autenticação do painel. Nenhum dado pessoal é copiado para o portfólio.
+A senha de conveniência abre o painel de busca de aluguel local, servido pelo GitHub Pages
+em `engnata.eu/casasuica/`, sem ChatGPT Sites ou login. A seleção fica no navegador e pode
+ser exportada/importada como JSON. O dashboard permanece em português; a tela de acesso é PT/IT/SV.
+A senha estática não é autenticação de servidor. Nenhum dado pessoal é versionado no portfólio.
+
+A pesquisa inicial de 31/10/2026 está em `casasuica/research-data.json`: quatro candidatos com requisitos pendentes, nenhum apresentado como plenamente compatível. Jardim privativo com área verde é obrigatório. Preços, fontes, data e pendências aparecem na tabela. Consulta manual, sem feed ou cobertura exaustiva garantida.

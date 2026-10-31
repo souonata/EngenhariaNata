@@ -1,10 +1,11 @@
 import { App } from '../src/core/app.js';
 import traducoes from '../src/i18n/casasuica.json';
+import dashboardTemplate from './dashboard-source.txt?raw';
+import research from './research-data.json';
 
-// Convenience gate on a public static site, not server authentication.
-// The destination retains its independent, owner-private ChatGPT access checks.
-const dashboardUrl = 'https://casa-suica-kriens-ale.cleverdate1.chatgpt.site/';
+const dashboardHtml = dashboardTemplate.replace('/*RESEARCH_DATA*/', () => JSON.stringify(research).replaceAll('<', '\\u003c'));
 
+// Convenience gate for a static app. Passwords and browser data are not sent to a server.
 class CasaSuicaApp extends App {
     constructor() {
         super({
@@ -18,14 +19,18 @@ class CasaSuicaApp extends App {
         const form = document.getElementById('swiss-gate');
         const password = document.getElementById('swiss-password');
         const error = document.getElementById('swiss-error');
-        const unlocked = document.getElementById('swiss-unlocked');
-        const open = document.getElementById('swiss-open');
+        const shell = document.getElementById('swiss-shell');
+        const dashboard = document.getElementById('swiss-dashboard');
+        const frame = document.getElementById('swiss-frame');
         const lock = () => {
             form.reset();
-            form.hidden = false;
+            password.removeAttribute('aria-invalid');
             error.hidden = true;
-            unlocked.hidden = true;
-            open.removeAttribute('href');
+            frame.removeAttribute('srcdoc');
+            dashboard.hidden = true;
+            shell.hidden = false;
+            document.body.classList.remove('swiss-dashboard-open');
+            document.documentElement.classList.remove('swiss-dashboard-open');
         };
 
         lock();
@@ -41,10 +46,12 @@ class CasaSuicaApp extends App {
             }
             password.removeAttribute('aria-invalid');
             error.hidden = true;
-            form.hidden = true;
-            unlocked.hidden = false;
-            open.href = dashboardUrl;
-            open.focus();
+            frame.srcdoc = dashboardHtml;
+            shell.hidden = true;
+            dashboard.hidden = false;
+            document.body.classList.add('swiss-dashboard-open');
+            document.documentElement.classList.add('swiss-dashboard-open');
+            document.getElementById('swiss-lock').focus();
         });
         password.addEventListener('input', () => {
             error.hidden = true;
@@ -54,7 +61,6 @@ class CasaSuicaApp extends App {
             lock();
             password.focus();
         });
-        // Returning through browser history must ask for the password again.
         window.addEventListener('pagehide', lock);
         window.addEventListener('pageshow', event => {
             if (event.persisted) {

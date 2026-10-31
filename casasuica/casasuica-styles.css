@@ -51,8 +51,8 @@ body {
     margin-top: 24px;
 }
 
-#swiss-gate[hidden],
-#swiss-unlocked[hidden],
+#swiss-shell[hidden],
+#swiss-dashboard[hidden],
 #swiss-error[hidden] {
     display: none;
 }
@@ -109,4 +109,60 @@ body {
 .swiss-card :focus-visible {
     outline: 3px solid #d5a328;
     outline-offset: 4px;
+}
+
+.swiss-dashboard-open {
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+
+.swiss-dashboard-open [id="engnataDockGlobal"] {
+    display: none;
+}
+
+#swiss-dashboard {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+
+.swiss-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 16px;
+    background: #173d33;
+    color: white;
+}
+
+.swiss-toolbar a,
+.swiss-toolbar button {
+    color: white;
+    font: inherit;
+}
+
+.swiss-toolbar button {
+    min-height: 44px;
+    padding: 8px 14px;
+    border: 1px solid #8b9e8e;
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+}
+
+#swiss-frame {
+    display: block;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    border: 0;
+    background: #f6f5ef;
 }
