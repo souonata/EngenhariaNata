@@ -81,6 +81,12 @@ test('text and status columns sort both ways without reordering ties', () => {
     assert.deepEqual(filterResearchRows(statuses, { ...DEFAULT_FILTERS, mode: 'archive', sort: 'status' }).map(r => r.row.id), ['a', 'pending', 'excluded']);
     assert.deepEqual(filterResearchRows(statuses, { ...DEFAULT_FILTERS, mode: 'archive', sort: 'status', sortDirection: 'desc' }).map(r => r.row.id), ['excluded', 'pending', 'a']);
 });
+test('translated enum labels determine text order while unknown values stay last', () => {
+    const rows = [{ ...row, id: 'unknown', pets: 'A confirmar' }, { ...row, id: 'no', pets: 'Não' }, { ...row, id: 'yes', pets: 'Sim' }];
+    const filters = { ...DEFAULT_FILTERS, mode: 'archive', sort: 'pets', locale: 'sv-SE', translations: { 'A confirmar': 'Ej bekräftat', 'Não': 'Nej', 'Sim': 'Ja' } };
+    assert.deepEqual(filterResearchRows(rows, filters).map(result => result.row.id), ['yes', 'no', 'unknown']);
+    assert.deepEqual(filterResearchRows(rows, { ...filters, sortDirection: 'desc' }).map(result => result.row.id), ['no', 'yes', 'unknown']);
+});
 test('quantity column filters honor exact bounds and flag missing or estimated values', () => {
     const filters = { ...DEFAULT_FILTERS, minArea: 80, maxFloor: 0, maxTransitMinutes: 45, maxBikeMinutes: 35 };
     const home = { ...row, area: 80, floor: 0, bike: { minutes: 35, approximate: true } };

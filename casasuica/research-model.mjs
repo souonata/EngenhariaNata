@@ -122,7 +122,8 @@ export function filterResearchRows(rows, filters = DEFAULT_FILTERS) {
             if (field === 'bike') {
                 return result.row.bike?.minutes;
             }
-            return result.row[field];
+            const raw = result.row[field];
+            return ['garden', 'pets'].includes(field) ? raw === 'A confirmar' ? null : filters.translations?.[raw] ?? raw : raw;
         };
         const left = value(a), right = value(b);
         const missing = v => v === null || v === undefined || v === '' || v === 'A confirmar' || (typeof v === 'number' && !Number.isFinite(v));
@@ -130,7 +131,7 @@ export function filterResearchRows(rows, filters = DEFAULT_FILTERS) {
         if (missing(left) || missing(right)) {
             return Number(missing(left)) - Number(missing(right));
         }
-        const comparison = typeof left === 'number' && typeof right === 'number' ? left - right : String(left).localeCompare(String(right), 'pt-BR', { numeric: true, sensitivity: 'base' });
+        const comparison = typeof left === 'number' && typeof right === 'number' ? left - right : String(left).localeCompare(String(right), filters.locale || 'pt-BR', { numeric: true, sensitivity: 'base' });
         return comparison * (filters.sortDirection === 'desc' ? -1 : 1);
     });
 }

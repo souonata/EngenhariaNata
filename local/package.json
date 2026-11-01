@@ -33,7 +33,7 @@
     "prebuild": "npm run lint:check",
     "validate:assets": "node ../scripts/validate_assets_referenciados.mjs",
     "validate:pintor-release": "node ../scripts/validate_pintor_release.mjs",
-    "test:casasuica": "node --test ../casasuica/research-model.test.mjs ../casasuica/dashboard-state.test.mjs",
+    "test:casasuica": "node --test ../casasuica/research-model.test.mjs ../casasuica/dashboard-state.test.mjs ../casasuica/dashboard-languages.test.mjs",
     "test:livecostswiss": "node --test ../livecostswiss/dashboard-state.test.mjs"
   },
   "keywords": [
