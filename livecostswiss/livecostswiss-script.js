@@ -1,8 +1,9 @@
 import { App } from '../src/core/app.js';
 import traducoes from '../src/i18n/livecostswiss.json';
 import dashboardTemplate from './dashboard-source.txt?raw';
-
-const dashboardHtml = dashboardTemplate;
+import dashboardTranslations from '../src/i18n/livecostswiss-dashboard.json';
+import { i18n } from '../src/core/i18n.js';
+import { renderDashboard } from './dashboard-language.mjs';
 
 // Convenience gate for a static app. Passwords and browser data are not sent to a server.
 class LivecostSwissApp extends App {
@@ -10,8 +11,22 @@ class LivecostSwissApp extends App {
         super({
             appName: 'livecostswiss',
             traducoes,
-            callbacks: { aoInicializar: () => this.configurar() }
+            callbacks: {
+                aoInicializar: () => this.configurar(),
+                aoTrocarIdioma: () => this.atualizarIdioma()
+            }
         });
+    }
+
+    atualizarIdioma() {
+        const language = document.getElementById('swiss-language');
+        if (language) {
+            language.value = i18n.idiomaAtual;
+        }
+        const frame = document.getElementById('swiss-frame');
+        if (frame && frame.hasAttribute('srcdoc')) {
+            frame.contentWindow.postMessage({ type: 'livecost-language', locale: i18n.idiomaAtual }, window.location.origin);
+        }
     }
 
     configurar() {
@@ -45,7 +60,7 @@ class LivecostSwissApp extends App {
             }
             password.removeAttribute('aria-invalid');
             error.hidden = true;
-            frame.srcdoc = dashboardHtml;
+            frame.srcdoc = renderDashboard(dashboardTemplate, dashboardTranslations, i18n.idiomaAtual);
             shell.hidden = true;
             dashboard.hidden = false;
             document.body.classList.add('swiss-dashboard-open');
@@ -56,6 +71,10 @@ class LivecostSwissApp extends App {
             error.hidden = true;
             password.removeAttribute('aria-invalid');
         });
+        const language = document.getElementById('swiss-language');
+        language.value = i18n.idiomaAtual;
+        language.addEventListener('change', () => i18n.trocarIdioma(language.value));
+        frame.addEventListener('load', () => this.atualizarIdioma());
         document.getElementById('swiss-lock').addEventListener('click', () => {
             lock();
             password.focus();

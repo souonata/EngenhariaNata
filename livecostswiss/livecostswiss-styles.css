@@ -192,3 +192,26 @@ body.swiss-dashboard-open {
     padding: 6px 10px;
   }
 }
+
+.swiss-language {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.swiss-language select {
+  min-height: 44px;
+  max-width: 150px;
+  background: #173d33;
+  color: white;
+  border: 1px solid #8b9e8e;
+  border-radius: 8px;
+  padding: 6px;
+  font: inherit;
+}
+
+@media (width <= 480px) {
+  .swiss-toolbar {
+    flex-wrap: wrap;
+  }
+}
