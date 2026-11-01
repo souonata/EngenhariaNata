@@ -7,9 +7,10 @@
     "wrongPassword": "Senha incorreta. Tente novamente.",
     "unlock": "Desbloquear",
     "lock": "Bloquear novamente",
-    "privacy": "O orçamento fica neste navegador. Painel em inglês, com valores ajustáveis e estimativas identificadas.",
+    "privacy": "O orçamento fica neste navegador e acompanha o idioma selecionado no Engenharia NATA.",
     "back": "← Engenharia NATA",
-    "frameTitle": "Livecost Swiss — custo de vida (inglês)"
+    "frameTitle": "Livecost Swiss — custo de vida",
+    "language": "Idioma"
   },
   "it-IT": {
     "titulo": "Livecost Swiss",
@@ -19,9 +20,10 @@
     "wrongPassword": "Password errata. Riprova.",
     "unlock": "Sblocca",
     "lock": "Blocca di nuovo",
-    "privacy": "Il budget resta in questo browser. Pannello in inglese con valori modificabili e stime indicate.",
+    "privacy": "Il budget resta in questo browser e segue la lingua selezionata su Engenharia NATA.",
     "back": "← Engenharia NATA",
-    "frameTitle": "Livecost Swiss — costo della vita (inglese)"
+    "frameTitle": "Livecost Swiss — costo della vita",
+    "language": "Lingua"
   },
   "sv-SE": {
     "titulo": "Livecost Swiss",
@@ -31,8 +33,9 @@
     "wrongPassword": "Fel lösenord. Försök igen.",
     "unlock": "Lås upp",
     "lock": "Lås igen",
-    "privacy": "Budgeten sparas i den här webbläsaren. Panel på engelska med justerbara värden och tydligt angivna uppskattningar.",
+    "privacy": "Budgeten sparas i den här webbläsaren och följer språket som valts på Engenharia NATA.",
     "back": "← Engenharia NATA",
-    "frameTitle": "Livecost Swiss — levnadskostnader (engelska)"
+    "frameTitle": "Livecost Swiss — levnadskostnader",
+    "language": "Språk"
   }
 }
