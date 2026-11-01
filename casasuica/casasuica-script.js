@@ -1,11 +1,11 @@
-import { App } from '../src/core/app.js';
+import { App, i18n } from '../src/core/app.js';
 import traducoes from '../src/i18n/casasuica.json';
 import dashboardTemplate from './dashboard-source.txt?raw';
 import research from './research-data.json';
 import researchModel from './research-model.mjs?raw';
-
-const dashboardHtml = dashboardTemplate.replace('/*RESEARCH_DATA*/', () => JSON.stringify(research).replaceAll('<', '\\u003c'))
-    .replace('/*RESEARCH_MODEL*/', () => researchModel.replaceAll('export ', ''));
+import localization from './dashboard-localization.mjs?raw';
+import translations from './dashboard-translations.json';
+import { buildDashboardDocument } from './dashboard-document.mjs';
 
 // Convenience gate for a static app. Passwords and browser data are not sent to a server.
 class CasaSuicaApp extends App {
@@ -48,7 +48,10 @@ class CasaSuicaApp extends App {
             }
             password.removeAttribute('aria-invalid');
             error.hidden = true;
-            frame.srcdoc = dashboardHtml;
+            frame.srcdoc = buildDashboardDocument({
+                template: dashboardTemplate, research, model: researchModel,
+                localization, translations, locale: i18n.obterIdiomaAtual()
+            });
             shell.hidden = true;
             dashboard.hidden = false;
             document.body.classList.add('swiss-dashboard-open');

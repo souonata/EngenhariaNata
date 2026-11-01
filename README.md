@@ -173,7 +173,7 @@ Ao mexer em um app existente ou adicionar um novo:
 O easter egg de nove toques revela o launcher `casasuica/`, disponível em PT/IT/SV.
 A senha de conveniência abre o painel de busca de aluguel local, servido pelo GitHub Pages
 em `engnata.eu/casasuica/`, sem ChatGPT Sites ou login. A seleção fica no navegador e pode
-ser exportada/importada como JSON. O dashboard permanece em português; a tela de acesso é PT/IT/SV.
+ser exportada/importada como JSON. O dashboard completo e a tela de acesso seguem o idioma selecionado no site: PT/IT/SV.
 A senha estática não é autenticação de servidor. Nenhum dado pessoal é versionado no portfólio.
 
 A pesquisa de 31/10/2026 está em `casasuica/research-data.json`, com todos os 54 registros da busca ampliada e sua situação. Jardim privativo e térreo são filtros opcionais, desligados por padrão. Preços, fontes, data e pendências aparecem na tabela. Consulta manual, sem feed ou cobertura exaustiva garantida.
@@ -189,3 +189,5 @@ Casa Suíça 1.4.0: clique/toque nos cabeçalhos para alternar crescente/decresc
 ### Livecost Swiss (acesso discreto)
 
 `livecostswiss/` segue a Casa Suíça: nove toques no logo revelam o app e a senha `swiss` abre o orçamento completo no Pages. Entrada e painel financeiro em PT/IT/SV, seguindo o idioma escolhido no site. O seletor no painel muda o idioma sem recarregar o orçamento. Valores, tema e despesas ficam apenas neste navegador, na chave independente `livecost-swiss-v1`. A senha é uma trava estática de conveniência, não autenticação de servidor. O painel inclui somente cenários ajustáveis e referências públicas; não inclui o histórico pessoal da Itália nem dados de sessão do navegador.
+
+Casa Suíça 1.5.0: o painel completo herda `engnata_idioma` do site no momento de desbloquear. Menus, filtros, ordenação, mensagens e resumos de pesquisa estão em português, italiano e sueco. Categorias/valores dos backups permanecem canônicos; notas pessoais não são traduzidas. Datas e números seguem o idioma, mantendo CHF/EUR. O HTML offline inclui o idioma escolhido e seu catálogo, sem serviços externos.

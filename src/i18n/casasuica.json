@@ -9,7 +9,8 @@
     "lock": "Bloquear novamente",
     "privacy": "O painel funciona aqui no Engenharia NATA, sem login. Os imóveis ficam salvos neste navegador. Exporte backups para guardar ou transferir sua seleção.",
     "back": "← Engenharia NATA",
-    "frameTitle": "Casa Suíça — painel de busca de imóveis"
+    "frameTitle": "Casa Suíça — painel de busca de imóveis",
+    "documentTitle": "Casa Suíça — Engenharia NATA"
   },
   "it-IT": {
     "titulo": "Casa Svizzera",
@@ -21,7 +22,8 @@
     "lock": "Blocca di nuovo",
     "privacy": "Il pannello funziona qui su Engenharia NATA, senza login. Gli immobili vengono salvati in questo browser. Esporta un backup per conservare o trasferire la selezione.",
     "back": "← Engenharia NATA",
-    "frameTitle": "Casa Svizzera — pannello di ricerca immobiliare (portoghese)"
+    "frameTitle": "Casa Svizzera — ricerca immobiliare",
+    "documentTitle": "Casa Svizzera — Engenharia NATA"
   },
   "sv-SE": {
     "titulo": "Hem i Schweiz",
@@ -33,6 +35,7 @@
     "lock": "Lås igen",
     "privacy": "Panelen körs här på Engenharia NATA utan inloggning. Bostäder sparas i den här webbläsaren. Exportera säkerhetskopior för att spara eller flytta ditt urval.",
     "back": "← Engenharia NATA",
-    "frameTitle": "Hem i Schweiz — bostadssökning (portugisiska)"
+    "frameTitle": "Hem i Schweiz — bostadssökning",
+    "documentTitle": "Hem i Schweiz — Engenharia NATA"
   }
 }

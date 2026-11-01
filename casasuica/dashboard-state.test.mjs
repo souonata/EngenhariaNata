@@ -2,11 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { JSDOM } from '../local/node_modules/jsdom/lib/api.js';
+import { buildDashboardDocument } from './dashboard-document.mjs';
 const data = JSON.parse(readFileSync(new URL('./research-data.json', import.meta.url)));
 const template = readFileSync(new URL('./dashboard-source.txt', import.meta.url), 'utf8');
-const model = readFileSync(new URL('./research-model.mjs', import.meta.url), 'utf8').replaceAll('export ', '');
-function create(saved) {
-    const html = template.replace('/*RESEARCH_DATA*/', () => JSON.stringify(data)).replace('/*RESEARCH_MODEL*/', () => model);
+const model = readFileSync(new URL('./research-model.mjs', import.meta.url), 'utf8');
+const localization = readFileSync(new URL('./dashboard-localization.mjs', import.meta.url), 'utf8');
+const translations = JSON.parse(readFileSync(new URL('./dashboard-translations.json', import.meta.url), 'utf8'));
+function create(saved, locale = 'pt-BR') {
+    const html = buildDashboardDocument({ template, research: data, model, localization, translations, locale });
     return new JSDOM(html, { url: 'https://engnata.eu/casasuica/', runScripts: 'dangerously', beforeParse(window) {
         if (saved) {
             window.localStorage.setItem('casa-suica-v1', saved);
