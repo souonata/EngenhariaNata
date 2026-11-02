@@ -61,6 +61,12 @@ The Engenharia NATA beta has two page-analysis modes:
 - printed codes protect their wire, on vector pages: a wire that passes through printed codes
   carries only that code, counting a bare letter too weak to paint and a bundle label printed across
   its wires. A wire that passes through two different codes stays black;
+- nodes stop colour, on vector pages: colour passes on only where exactly two pieces of ink meet. A
+  short piece left at a T, such as a pin strip's edge or one dash of a connector line, still makes
+  the node a branch; a stroke that merely overshoots a corner does not. No colour is carried across
+  a junction dot, a splice star, a pin or terminal circle, a switch contact or a filled chevron;
+- hidden ink, on vector pages: a stroke the rendered page does not show (painted over by a
+  paper-coloured shape, clipped away, or drawn in white) is not a conductor and is never painted;
 - filled component bodies on scans: a relay, connector or sensor drawn as a filled body is a
   component even without an outlined rectangle. A wire that ends on it terminates there, so two
   cables ending at the same relay are never joined across it;

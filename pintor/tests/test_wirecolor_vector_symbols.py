@@ -447,6 +447,158 @@ class OversizedOutlines(unittest.TestCase):
         self.assertEqual(geometry.barriers, [])
 
 
+def schematic(page):
+    """Ten long strokes far from the test, so the page reads as stroked, not outline-drawn."""
+    shape = page.new_shape()
+    for index in range(10):
+        shape.draw_line(fitz.Point(10, 230 + 6 * index), fitz.Point(390, 230 + 6 * index))
+    shape.finish(color=(0, 0, 0), width=0.5, closePath=False)
+    shape.commit()
+
+
+def dot(page, x, y, radius, filled):
+    shape = page.new_shape()
+    shape.draw_circle(fitz.Point(x, y), radius)
+    shape.finish(color=None if filled else (0, 0, 0), fill=(0, 0, 0) if filled else None,
+                 width=0.5)
+    shape.commit()
+
+
+class NodeBarriers(unittest.TestCase):
+    """A junction dot, a splice star, a pin circle or a switch contact is a node, never a bridge.
+
+    Measured over the library's selected vector pages: of 746 bridges, about 150 crossed one, as
+    on pub 47700749 p312 (R/W across a five-way junction into three of its branches) and pub
+    7740536 p27 (BN across a push-button's contacts)."""
+
+    def test_a_junction_dot_on_a_stroked_page_is_a_barrier(self):
+        doc, page = page_with(lambda p: (schematic(p), dot(p, 200, 150, 1.8, filled=True)))
+        geometry = classify_symbol_geometry(page, DPI, PEN_PX)
+        doc.close()
+        self.assertEqual(geometry.zones, [])
+        self.assertGreaterEqual(len(geometry.barriers), 4)
+
+    def test_a_pin_circle_is_a_barrier_but_stays_in_the_topology(self):
+        doc, page = page_with(lambda p: (schematic(p), dot(p, 200, 150, 1.8, filled=False)))
+        geometry = classify_symbol_geometry(page, DPI, PEN_PX)
+        doc.close()
+        self.assertEqual(geometry.zones, [])
+        self.assertEqual(geometry.stroke_keys, set())
+        self.assertGreaterEqual(len(geometry.barriers), 4)
+
+    def test_a_wire_drawn_as_a_filled_bar_is_no_barrier(self):
+        def draw(p):
+            schematic(p)
+            shape = p.new_shape()                     # fill only, as pub 4872 draws its wires
+            shape.draw_rect(fitz.Rect(50, 100, 350, 101.5))
+            shape.finish(color=None, fill=(0, 0, 0))
+            shape.commit()
+
+        doc, page = page_with(draw)
+        geometry = classify_symbol_geometry(page, DPI, PEN_PX)
+        doc.close()
+        self.assertEqual(geometry.barriers, [])
+
+    def _painted(self, symbol):
+        def draw(p):
+            schematic(p)
+            line(p, 60, 150, 198, 150)                   # a 4 pt gap: under the bridge limit
+            line(p, 202, 150, 340, 150)
+            symbol(p)
+            p.insert_text((100, 146), "PU/R", fontsize=6)
+
+        doc, page = page_with(draw)
+        context = extract_vector_context(page, DPI, load_convention("volvo_classic"))
+        doc.close()
+        owned, _diagnostics = decide_vector_context(context)
+        return [run for run in owned if run.code]
+
+    def test_no_colour_crosses_a_junction_dot(self):
+        coded = self._painted(lambda p: (dot(p, 200, 150, 1.8, filled=True),
+                                         line(p, 200, 151.8, 200, 210)))
+        self.assertEqual([run.code for run in coded], ["PU/R"])
+        self.assertTrue(all(x <= 198 * SCALE + 1e-3 for run in coded for x, _y in run.points))
+
+    def test_no_colour_crosses_a_pin_circle(self):
+        coded = self._painted(lambda p: dot(p, 200, 150, 1.5, filled=False))
+        self.assertEqual([run.code for run in coded], ["PU/R"])
+
+    def test_colour_still_crosses_an_empty_gap(self):
+        coded = self._painted(lambda p: None)
+        self.assertEqual([run.code for run in coded], ["PU/R", "PU/R"])
+
+
+def paper(page, x0, y0, x1, y1, outlined=False):
+    """A paper-coloured box drawn over whatever is already there, outlined in paper too or not."""
+    shape = page.new_shape()
+    shape.draw_rect(fitz.Rect(x0, y0, x1, y1))
+    shape.finish(color=(1, 1, 1) if outlined else None, fill=(1, 1, 1))
+    shape.commit()
+
+
+class HiddenInk(unittest.TestCase):
+    """A stroke the page never shows is not a conductor (pub 47709824, pub 7740612 p150)."""
+
+    def _kept(self, draw):
+        from wirecolor.detect.vector_symbols import drop_hidden_segments
+
+        doc, page = page_with(draw)
+        segments = extract_segments(page, DPI)
+        kept, dropped = drop_hidden_segments(page, DPI, segments)
+        doc.close()
+        return kept, dropped
+
+    def test_a_line_painted_over_by_paper_leaves_the_topology(self):
+        def draw(p):
+            line(p, 40, 100, 360, 100)
+            line(p, 40, 200, 360, 200)
+            paper(p, 20, 180, 380, 220)
+
+        kept, dropped = self._kept(draw)
+        self.assertGreater(dropped, 0)
+        self.assertEqual({round(y / SCALE) for a, b in kept for _x, y in (a, b)}, {100})
+
+    def test_a_paper_box_outlined_in_paper_hides_too(self):
+        def draw(p):
+            line(p, 40, 200, 360, 200)
+            paper(p, 20, 180, 380, 220, outlined=True)
+
+        kept, _dropped = self._kept(draw)
+        self.assertEqual(kept, [], "the line and the box's own white outline are both unseen")
+
+    def test_a_dashed_wire_is_shown(self):
+        def draw(p):
+            shape = p.new_shape()
+            shape.draw_line(fitz.Point(40, 150), fitz.Point(360, 150))
+            shape.finish(color=(0.8, 0.8, 0.8), width=0.5, dashes="[4 8] 0")
+            shape.commit()
+
+        self.assertEqual(self._kept(draw)[1], 0)
+
+    def test_a_cable_with_a_white_core_is_shown(self):
+        def draw(p):
+            for colour, width in (((0, 0, 0), 2.4), ((1, 1, 1), 1.6)):
+                shape = p.new_shape()
+                shape.draw_line(fitz.Point(40, 150), fitz.Point(360, 150))
+                shape.finish(color=colour, width=width)
+                shape.commit()
+
+        self.assertEqual(self._kept(draw)[1], 0)
+
+    def test_a_label_beside_a_hidden_line_paints_nothing(self):
+        def draw(p):
+            line(p, 40, 200, 360, 200)
+            paper(p, 20, 190, 380, 210, outlined=True)
+            p.insert_text((100, 188), "PU/R", fontsize=6)
+
+        doc, page = page_with(draw)
+        context = extract_vector_context(page, DPI, load_convention("volvo_classic"))
+        doc.close()
+        owned, _diagnostics = decide_vector_context(context)
+        self.assertGreater(context.hidden_segments_dropped, 0)
+        self.assertEqual([run.code for run in owned if run.code], [])
+
+
 def ribbon_page(rings, width=400, height=300):
     """One filled, unstroked path of explicitly closed rings: an outline-stroked drawing."""
     doc = fitz.open()

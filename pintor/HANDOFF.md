@@ -1,6 +1,6 @@
 # Pintor handoff
 
-Last updated: 2026-10-27
+Last updated: 2026-10-29
 
 ## Product boundary
 
@@ -19,6 +19,88 @@ supported/confirmed colour convention remains mandatory, and uncertain segments 
 The product name is localized in the interface: **Pintor** in Portuguese, **Pittore** in Italian,
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
+
+## 2026-10-29 vector route: bleeds through nodes, across junctions and on hidden ink
+
+Branch `feat/pintor-sangrias`. The owner asked for the three open bleeds of the entries below: the
+"white mask" of pub 7737962 p60, the chevron barrier on stroked pages, and the ECM's dashed border
+on pub 47706663 p78. Each turned out to be a wider class than its page, and each class is a hard
+invariant of `docs/ELECTRICAL_SAFETY_RULES.md` the engine was not enforcing.
+
+### What was wrong
+
+- **A T with a short arm looked like a corner (rule 2).** Propagation counted a node's degree
+  among runs only, and a piece shorter than the conductor floor is no run.
+  - On 7737962 p60 the pin strip's top edge between two pins is 7 pt, so the Y wire ending at pin
+    39 turned the strip's corner down to the control unit. R/SB ran 80 pt along the same edge, and
+    pin 18's wire, printed Y, was painted OR.
+  - On 47706663 p78 the dash below PU/LBL's end on the connector line is 7 pt, so PU/LBL climbed
+    the line.
+  - The white strips on 7737962 p60 hide two text labels and no stroke: they were not the cause.
+- **Bridges crossed nodes (rules 1-3).** Of 746 bridges on the library's selected vector pages
+  (lockbox excluded), the sample showed colour carried across junction dots and splice stars (pub
+  47700749 p312: R/W into three branches of a five-way dot), terminal circles, connector box
+  outlines and push-button contacts (pub 7740536 p27, pub 7741802 p75). Only outline pages had
+  barriers. A gap whose wires end on a dot's rim runs inside the dot and meets no edge of it.
+- **Hidden ink was painted (rule 7).** A stroke can be in the content stream and nowhere on the
+  page. Pub 47709824 draws a 0.5 pt rule under a white box outlined in white, and fifteen pages of
+  it and its sibling editions painted that rule P; pub 7740612 p150 painted R on a page-height line
+  under the drawing's background. A render check of every painted run found 26 such runs in the
+  library selection (0-11 % ink along their length).
+
+### The rules (`engine/ownership.py`, `engine/vector_page.py`, `detect/vector_symbols.py`)
+
+- **Every piece of ink counts at a node.** The context keeps both ends of every piece too short
+  to be a run (`stub_ends`), and `propagate_continuations` counts them in the degree. An
+  overshoot does not count: a piece under `OVERSHOOT_PT` (1.5 pt) with one free end. Measured at
+  the nodes where colour used to pass, the free pieces cluster at 0.4-1.0 pt (corners drawn with
+  an overshoot) and the next ones are 2 pt and longer. A short piece joining two nodes always
+  counts, as a pin circle's arc between two wires does.
+- **Node barriers on every page.** The outline of every closed shape below the symbol floor (a
+  junction, a pin or terminal circle, a switch contact) and of every ink-filled shape that is not
+  a wire becomes a bridge barrier, plus the two diagonals of its box. The barrier test now runs
+  after the bridge's angle tests: pages carry thousands of barrier segments.
+- **Hidden ink leaves the topology.** `drop_hidden_segments` renders the page in grey and removes
+  each segment with less than 20 % of its length within 3 px of ink darker than grey 245, before
+  nodes are built. The window keeps a cable drawn as a black casing with a white core; the light
+  grey dashed wires of the D13 posters show 30-33 %. It costs one render: 0.04 s on an A4 page,
+  0.8 s on a 3,370 pt poster whose extraction takes 52 s.
+- Vector context schema 9 -> 10 (`stub_ends`, `hidden_segments_dropped`).
+
+### Measured (frozen snapshots, truth tree = main 0.7.10)
+
+|                           | main (`rM10`) | stub rule (`rSB2`) | + barriers (`rSB3`) | + hidden (`rSB4`) |
+| ------------------------- | ------------- | ------------------ | ------------------- | ----------------- |
+| teacher right / wrong     | 2,483 / 220   | 2,469 / 208        | 2,462 / 205         | 2,461 / 205       |
+| precision                 | 0.9186        | 0.9223             | 0.9231              | 0.9231            |
+| held out                  | 531 / 89      | 530 / 85           | 530 / 85            | 530 / 85          |
+| `marks4` fitness          | 0.5873        | 0.6092             | 0.6300              | 0.6300            |
+| `marks4` marks satisfied  | 124           | 127                | 130                 | 130               |
+| library runs painted      | 13,642        | 12,935             | 12,470              | 12,445            |
+
+- **`marks4`:** clean regions 0.6333 -> 0.7667, coverage 0.6398 -> 0.6522, exact colour 0.5
+  unchanged. The square ruler moves 0.5305 -> 0.5805.
+- **The teacher's lost right conductors** are colour that passed a splice, a junction dot or a
+  three-way T and happened to match the factory drawing: SB/LGN on 47718008 at a three-way
+  splice, BL/P and BL/W on 7745609 through two junction dots. The rules leave such a node black.
+  One more, SB on 7743245 p7, is refused as ambiguous once hidden lines of the alternator drawing
+  leave the topology and a picture line competes for its label.
+- **The library:** the stub rule alone changes 238 pages (733 runs lose colour, 26 gain, 1
+  changes). The lost colour was checked by eye by class: a coloured wire ending square on a line
+  whose arm it entered (pin strips, bus bars, junction dot rims, twisted-pair lenses, relay diode
+  loops), and colour through real T-junctions. Bridges fall from 750 to 275; the blocked ones
+  sampled crossed junction dots, splice stars, terminal circles, connector outlines or switches.
+- Tests: 683 pass. The new end-to-end tests (pin strip, dashed connector line, junction dot, pin
+  circle, hidden line) fail on `main`.
+
+### Not done
+
+- **The leader-labelled BL/P and BL/W verticals on 7745609** are not owned by their own callouts;
+  they were coloured only by the bridge across a junction dot, now blocked.
+- **A bridge rule for recognised line hops** (rule 3: only after its own corpus and safety gate).
+- **Cut a wire at a recognised fuse** and **closed one-path dashed rectangles** remain open, as in
+  the entries below.
+- **Not published.**
 
 ## 2026-10-29 published as 0.7.10 / engine 3.2.10
 

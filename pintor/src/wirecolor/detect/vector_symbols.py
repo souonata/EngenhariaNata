@@ -166,9 +166,10 @@ class SymbolGeometry:
     zones: list
     stroke_keys: set
     opaque_zones: list
-    # The sides of the rectangles stripped without a zone (too large or too thin to protect) and,
-    # on an outline-stroked page, the edges of every filled shape that is not a wire, as
-    # (x0, y0, x1, y1) segments. They protect nothing, but a gap is never bridged across them.
+    # The sides of the rectangles stripped without a zone (too large or too thin to protect), the
+    # outlines of the closed shapes below the symbol floor (junctions, pin circles) and the edges
+    # of every filled shape that is not a wire, as (x0, y0, x1, y1) segments. They protect
+    # nothing, but a gap is never bridged across them.
     barriers: list = field(default_factory=list)
 
 
@@ -205,12 +206,13 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
     ``zones`` are protected bounding boxes. ``stroke_keys`` identify the individual straight
     segments the symbols are drawn with. ``opaque_zones`` are the paper-filled housings that hide
     any conductor drawn underneath and may therefore sever topology safely. ``barriers`` are the
-    outlines of the rectangles stripped without a zone and of an outline page's filled symbols.
+    outlines of the rectangles stripped without a zone, of the closed shapes below the symbol floor
+    and of the filled shapes that are not wires.
     """
     import fitz
 
     from ..eval.vector_truth import (_matrix, canvas_diagonal_px, conductor_floor_px,
-                                     filled_furniture, filled_ribbons)
+                                     draws_wires_as_outlines, filled_furniture, filled_ribbons)
     from .vector_dashes import parse_pattern
 
     matrix = _matrix(page, dpi)
@@ -270,7 +272,8 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
             strokes.add(_seg_key((a.x, a.y), (b.x, b.y)))
     # An outline-stroked sheet draws its housings in the same filled ribbons as its wires, which
     # ``filled_ribbons`` reads as conductors. Those rectangles are held to the same bounds.
-    ribbons = [ribbon for _index, ribbon in filled_ribbons(page, dpi, drawings) if ribbon.outlined]
+    wire_fills = filled_ribbons(page, dpi, drawings)
+    ribbons = [ribbon for _index, ribbon in wire_fills if ribbon.outlined]
     for sides in ribbon_rectangles(ribbons):
         corners = [fitz.Point(x, y) for ribbon in sides for x, y in ribbon.segment()]
         zone, strip = admit(corners)
@@ -282,12 +285,30 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
             fence(corners)
         for ribbon in sides:
             strokes.add(_seg_key(*ribbon.segment()))
+
+    def ring(points):
+        """Keep a closed shape's outline as a barrier: no bridge crosses it."""
+        barriers.extend((a[0], a[1], b[0], b[1]) for a, b in zip(points, points[1:] + points[:1])
+                        if a != b)
+
+    def node(points):
+        """A junction's or a pin's outline, and the diagonals of its box. Wires end on its rim, so
+        the gap between them runs inside the shape without meeting its edge; it meets a
+        diagonal."""
+        ring(points)
+        xs = [p[0] for p in points]
+        ys = [p[1] for p in points]
+        x0, y0, x1, y1 = min(xs), min(ys), max(xs), max(ys)
+        barriers.extend([(x0, y0, x1, y1), (x0, y1, x1, y0)])
+
     # Nor may a bridge cross the filled ink of a connector, a pin chevron or a dot drawn between
     # two wire ends: on an outline page nothing else marks a component there.
-    for ring in filled_furniture(page, dpi, drawings):
-        barriers.extend((a[0], a[1], b[0], b[1]) for a, b in zip(ring, ring[1:] + ring[:1])
-                        if a != b)
-    for path in drawings:
+    outline_page = draws_wires_as_outlines(page, dpi, drawings)
+    for points in filled_furniture(page, dpi, drawings):
+        ring(points)
+    # The filled paths a stroked page draws its wires with, as long thin bars (pub 4872).
+    wire_paths = {index for index, _ribbon in wire_fills}
+    for index, path in enumerate(drawings):
         items = path.get("items", ())
         # A twisted-pair bowtie is stroked (fill=None) but is not a closed housing; strip its own
         # ink so the cable underneath stays one run and the colour passes straight over the mark.
@@ -299,6 +320,15 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
         # different: these manuals use them for opaque housings whose ink outline remains visible.
         opaque = _is_opaque_housing(path)
         if path.get("fill") is not None and not opaque:
+            # A dot is a junction and a filled chevron a connector, and a bridge across either
+            # carries a colour through a node no degree-two rule ever checked: on pub 47700749
+            # p312 R/W crossed a five-way dot into three of its branches. Not on an outline page,
+            # where ``filled_furniture`` already holds them, nor where the path is a wire.
+            if not outline_page and index not in wire_paths:
+                for subpath in _subpaths(items):
+                    if len(subpath) >= 3 and abs(subpath[0].x - subpath[-1].x) <= RECT_CORNER_TOL \
+                            and abs(subpath[0].y - subpath[-1].y) <= RECT_CORNER_TOL:
+                        node([((p * matrix).x, (p * matrix).y) for p in subpath[:-1]])
             continue
         for subpath in _subpaths(items):
             if len(subpath) < 3:
@@ -308,9 +338,15 @@ def classify_symbol_geometry(page, dpi, pen_px, min_side_pens=MIN_SIDE_PENS,
                 continue                      # open: a conductor, not a symbol
             points = [(p * matrix) for p in subpath]
             zone, strip = admit(points)
+            # Below the floor a closed shape is a junction or a pin circle: a node, not a symbol.
+            # Its ink stays in the topology, but a bridge across it would carry a colour through
+            # a terminal (pub 7740536 p27: BN across a push-button's contacts).
+            if not strip:
+                node([(p.x, p.y) for p in points[:-1]])
+                continue
             # Oversized, only a rectangle's ink is released: other closed shapes that large were
             # never measured.
-            if not strip or (zone is None and not _is_axis_rectangle(subpath)):
+            if zone is None and not _is_axis_rectangle(subpath):
                 continue
             if zone is not None:
                 zones.append(zone)
@@ -678,6 +714,68 @@ def clip_segments_to_opaque(segments, opaque_zones, margin=0.0):
             if start != end:
                 kept.append((start, end))
     return kept, clipped
+
+
+# A segment is hidden when less than this share of its length lies within HIDDEN_WINDOW_PX of ink
+# on the rendered page. Measured over the library's selected vector pages: the painted runs the
+# page shows nowhere carry 0-11 % ink along their length, the light grey dashed wires of the D13
+# posters 30-33 %. The window (about 1 pt) keeps a cable drawn as a black casing with a white core.
+HIDDEN_MAX_INK = 0.2
+HIDDEN_WINDOW_PX = 3
+# Darker than this is ink, on a 0-255 grey render: the posters draw their wires in grey 210.
+PAPER_GREY_LEVEL = 245
+
+
+def drop_hidden_segments(page, dpi, segments, min_length_px=6.0):
+    """Remove the segments the page, as rendered, does not show.
+
+    A stroke can be in the content stream and nowhere on the page: painted over by a paper-coloured
+    shape drawn after it, clipped away, or stroked in paper colour. ``clip_segments_to_opaque``
+    covers the paper-filled housing with an ink outline; the others painted geometry nobody can
+    see. On pub 47709824 a 0.5 pt rule runs 365 pt across the sheet under a white box whose own
+    outline is white, and fifteen pages painted it P; on pub 7740612 p150 a page-height line under
+    the drawing's background was painted R. The render decides. Returns ``(kept, dropped)``.
+    """
+    import fitz
+    import numpy as np
+
+    if not segments:
+        return list(segments), 0
+    pixmap = page.get_pixmap(matrix=fitz.Matrix(dpi / 72.0, dpi / 72.0), colorspace=fitz.csGRAY,
+                             alpha=False)
+    height, width = pixmap.height, pixmap.width
+    grey = np.frombuffer(pixmap.samples, np.uint8).reshape(height, pixmap.stride)[:, :width]
+    ink = grey < PAPER_GREY_LEVEL
+    for axis in (0, 1):
+        grown = ink.copy()
+        for shift in range(1, HIDDEN_WINDOW_PX + 1):
+            if axis == 0:
+                grown[shift:] |= ink[:-shift]
+                grown[:-shift] |= ink[shift:]
+            else:
+                grown[:, shift:] |= ink[:, :-shift]
+                grown[:, :-shift] |= ink[:, shift:]
+        ink = grown
+
+    # One sample every 2 px along every segment, all segments at once.
+    starts = np.array([[float(a[0]), float(a[1])] for a, _b in segments])
+    steps = np.array([[float(b[0]) - float(a[0]), float(b[1]) - float(a[1])]
+                      for a, b in segments])
+    lengths = np.hypot(steps[:, 0], steps[:, 1])
+    counts = (lengths / 2.0).astype(int) + 2
+    owner = np.repeat(np.arange(len(segments)), counts)
+    position = np.arange(counts.sum()) - np.repeat(np.cumsum(counts) - counts, counts)
+    t = position / np.repeat(counts - 1, counts)
+    xs = np.rint(starts[owner, 0] + steps[owner, 0] * t).astype(int)
+    ys = np.rint(starts[owner, 1] + steps[owner, 1] * t).astype(int)
+    inside = (xs >= 0) & (xs < width) & (ys >= 0) & (ys < height)
+    samples = np.bincount(owner[inside], minlength=len(segments))
+    inked = np.bincount(owner[inside], weights=ink[ys[inside], xs[inside]],
+                        minlength=len(segments))
+    shown = inked >= HIDDEN_MAX_INK * np.maximum(samples, 1)
+    hidden = (lengths >= min_length_px) & ((samples == 0) | ~shown)
+    kept = [segment for segment, gone in zip(segments, hidden) if not gone]
+    return kept, int(hidden.sum())
 
 
 def _segment_inside_zone(a, b, zone):
