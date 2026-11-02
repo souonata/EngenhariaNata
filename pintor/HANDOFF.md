@@ -1,6 +1,6 @@
 # Pintor handoff
 
-Last updated: 2026-10-29
+Last updated: 2026-11-02
 
 ## Product boundary
 
@@ -19,6 +19,35 @@ supported/confirmed colour convention remains mandatory, and uncertain segments 
 The product name is localized in the interface: **Pintor** in Portuguese, **Pittore** in Italian,
 **Målaren** in Swedish, and **Painter** in the native English fallback. Technical identifiers,
 paths, package names, and the public route remain `pintor` and `/pintor/`.
+
+## 2026-11-02 published as 0.7.11 / engine 3.2.11
+
+The bleed round in the entry below (#114) shipped. Published API first:
+
+- **Source.** Commit `f29dfe0` (the bump on top of the #114 merge `675f5bb`) was cloned into
+  `/opt/pintor-api-releases/f29dfe0`.
+- **Image.** `engnata/pintor-api:0.7.11` was built at the first attempt, its plain log kept in
+  `/tmp/pintor-build-0.7.11.log` on the VM. Inside it were confirmed:
+  - `pintor-wiring 3.2.11` and PyMuPDF 1.28.2;
+  - vector context schema 10, `OVERSHOOT_PT` 1.5;
+  - the hidden-ink bounds (`HIDDEN_MAX_INK` 0.2, `HIDDEN_WINDOW_PX` 3, `PAPER_GREY_LEVEL` 245);
+  - `rapidocr check` passing.
+- **Container.** Recreated on the existing `pintor-api_pintor-data` volume; healthy.
+- **Smoke.** The external smoke passed:
+  `external_auth=ok account=ok unauthenticated=401 job=ready result=pdf delete=204`.
+  - Its synthetic page reaches none of the three rules.
+  - Separately, one synthetic sheet holding all three cases was decided inside the live
+    container: a wire ending on a pin strip, two wires either side of a junction dot, and a
+    labelled line under a white box. Only the two wires carrying their own codes were coloured
+    (PU/R stops at the strip, GN/W stops at the dot) and the hidden line was dropped. 0.7.10 painted
+    all three bleeds on the same sheet.
+- **Site.** PR #125 merged as `508910a`, and GitHub Pages deployed.
+- **Drift.** `check-release-drift.sh` reports `site 0.7.11`, `api 0.7.11 (engine 3.2.11)`.
+- **Rollback.** `cd /opt/pintor-api-releases/91996ba/pintor && docker compose -p pintor-api
+  --env-file /opt/pintor-api/.env up -d` returns to 0.7.10.
+
+The root disk is at 45%, with 9 release folders and 3 `engnata/pintor-api` images (0.7.9–0.7.11).
+`prune-old-releases.sh` can clear the old folders.
 
 ## 2026-10-29 vector route: bleeds through nodes, across junctions and on hidden ink
 
