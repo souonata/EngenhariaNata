@@ -50,15 +50,18 @@ test('optional defaults migrate old filters; separate index listings can both be
     assert.equal(w.document.getElementById('research-ground-floor').checked, false);
     dom.window.close();
 });
-test('every archived home has both minute values; town-centre approximations stay unconfirmed', () => {
+test('every archived home has routed walking and estimated cycling to the exact new destination', () => {
     for (const row of data.rows) {
-        assert.ok(Number.isFinite(row.commute.minutes), row.id);
+        assert.ok(Number.isFinite(row.walk.minutes), row.id);
+        assert.equal(row.walk.minutes, Math.ceil(row.walk.durationSeconds / 60));
+        assert.equal(row.commute.minutes, null, 'old transit is not presented for the new destination');
+        assert.deepEqual(row.walk.destinationCoordinates, data.walkingReference.destination);
         assert.ok(Number.isFinite(row.bike.minutes), row.id);
         const origin = row.commute.originCoordinates;
         assert.ok(origin.latitude > 46.75 && origin.latitude < 47.35 && origin.longitude > 7.85 && origin.longitude < 8.55, row.id + ': reject a resolved place outside the search region');
-        if (row.commute.originBasis === 'city-center') {
-            assert.equal(row.commute.approximate, true);
-            assert.equal(row.commute.confirmed, false);
+        if (row.walk.originBasis !== 'address') {
+            assert.equal(row.walk.approximate, true);
+            assert.equal(row.walk.confirmed, false);
         }
         assert.equal(row.bike.approximate, true);
     }
@@ -66,7 +69,8 @@ test('every archived home has both minute values; town-centre approximations sta
     const w = dom.window;
     const mode = w.document.getElementById('research-mode'); mode.value = 'archive'; mode.dispatchEvent(new w.Event('change'));
     for (const tr of w.document.querySelectorAll('#research-rows > tr')) {
-        assert.match(tr.querySelector('[data-column="transit"]').textContent, /^(≈ )?\d+ min$/);
+        assert.equal(tr.querySelector('[data-column="transit"]').textContent, '—');
+        assert.match(tr.querySelector('[data-column="walk"]').textContent, /^(≈ )?\d+ min$/);
         assert.match(tr.querySelector('[data-column="bike"]').textContent, /^≈ \d+ min$/);
         assert.equal(tr.querySelectorAll('[data-column] a, [data-column] small, [data-column] details').length, 0);
     }
@@ -85,7 +89,7 @@ test('header clicks reverse sort, expose accessible direction and persist throug
     button.click();
     assert.equal(button.closest('th').getAttribute('aria-sort'), 'ascending');
     assert.equal(displayed()[0].rent, Math.min(...data.rows.filter(row => row.rent !== null).map(row => row.rent)));
-    for (const field of ['transit', 'bike']) {
+    for (const field of ['walk', 'transit', 'bike']) {
         const sort = doc.querySelector('[data-sort="' + field + '"]'); sort.click(); sort.click();
         assert.equal(sort.closest('th').getAttribute('aria-sort'), 'descending');
         assert.equal(button.closest('th').getAttribute('aria-sort'), 'none');
@@ -125,7 +129,7 @@ test('quantity filters above columns synchronize with top controls and can be cl
     w.resetResearchFilters();
     assert.equal(doc.getElementById('column-price').value, '3000');
     assert.equal(doc.getElementById('column-area').value, '0');
-    for (const id of ['column-floor', 'column-transit', 'column-bike']) {
+    for (const id of ['column-floor', 'column-walk', 'column-transit', 'column-bike']) {
         assert.equal(doc.getElementById(id).value, '');
     }
     dom.window.close();
@@ -147,4 +151,28 @@ test('HTML download includes dataset and current state and has no runtime templa
     assert.equal(reopened.window.document.getElementById('column-area').value, '100');
     assert.equal(reopened.window.document.querySelector('[data-sort="bedrooms"]').closest('th').getAttribute('aria-sort'), 'descending');
     dom.window.close(); reopened.window.close();
+});
+
+test('new walking search migrates existing browsers once without losing budget or personal listings', () => {
+    const old = { list: [{ id: 'mine', title: 'My home', town: 'Kriens' }], prefs: {}, researchFilters: { maxPrice: 2500, minBedrooms: 3, maxMinutes: 45, travelMode: 'transit' } };
+    const dom = create(JSON.stringify(old)), w = dom.window, doc = w.document;
+    assert.equal(doc.getElementById('research-travel-mode').value, 'walk');
+    assert.equal(doc.getElementById('research-minutes').value, '40');
+    assert.equal(doc.getElementById('research-price').value, '2500');
+    assert.equal(doc.getElementById('research-bedrooms').value, '3');
+    assert.ok(doc.getElementById('research-destination').textContent.includes('47.038013412537815'));
+    const change = (id, value) => {
+        const el = doc.getElementById(id); el.value = value; el.dispatchEvent(new w.Event('change'));
+    };
+    change('research-lease', '18');
+    doc.getElementById('research-renewal').click();
+    change('research-minutes', '35');
+    const saved = w.localStorage.getItem('casa-suica-v1'); dom.window.close();
+    const reopened = create(saved), d = reopened.window.document;
+    assert.equal(d.getElementById('research-minutes').value, '35');
+    assert.equal(d.getElementById('research-lease').value, '18');
+    assert.equal(d.getElementById('research-renewal').checked, false);
+    assert.equal(JSON.parse(reopened.window.localStorage.getItem('casa-suica-v1')).list[0].id, 'mine');
+    assert.equal(d.querySelectorAll('#research-sources a').length, data.sources.length);
+    reopened.window.close();
 });
