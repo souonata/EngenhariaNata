@@ -1,6 +1,37 @@
-export const DEFAULT_FILTERS = Object.freeze({ currency: 'EUR', maxPrice: 3000, chfPerEur: 0.9194, minBedrooms: 2, minBathrooms: 0, minArea: 0, maxFloor: null, maxTransitMinutes: null, maxBikeMinutes: null, maxMinutes: 45, travelMode: 'transit', garden: 'any', groundFloorOnly: false, includeUnknown: true, mode: 'candidates', town: '', sort: 'rent', sortDirection: 'asc' });
+export const DEFAULT_FILTERS = Object.freeze({ currency: 'EUR', maxPrice: 3000, chfPerEur: 0.9194, minBedrooms: 2, minBathrooms: 0, minArea: 0, maxFloor: null, maxTransitMinutes: null, maxBikeMinutes: null, maxWalkMinutes: null, maxMinutes: 40, travelMode: 'walk', leaseMonths: '12', allowRenewal: true, garden: 'any', groundFloorOnly: false, includeUnknown: true, mode: 'candidates', town: '', sort: 'rent', sortDirection: 'asc' });
 
-export const SORT_LABELS = Object.freeze({ town: 'Cidade', rent: 'Preço', area: 'Área', bedrooms: 'Quartos', bathrooms: 'Banheiros', floor: 'Andar', garden: 'Jardim', pets: 'Cão', transit: 'Transporte público', bike: 'Bicicleta', status: 'Situação' });
+export const SORT_LABELS = Object.freeze({ town: 'Cidade', rent: 'Preço', area: 'Área', bedrooms: 'Quartos', bathrooms: 'Banheiros', floor: 'Andar', garden: 'Jardim', pets: 'Cão', walk: 'A pé', transit: 'Transporte público', bike: 'Bicicleta', status: 'Situação' });
+
+export function evaluateLease(row, filters) {
+    const months = Number(filters.leaseMonths || 0), lease = row.lease || {};
+    const excluded = [], pending = [];
+    if (!months) {
+        return { excluded, pending };
+    }
+    let maximum = lease.maxMonths;
+    if (lease.endDate) {
+        const start = [row.checkedAt?.split('/').reverse().join('-'), lease.startDate, /^\d{2}\/\d{2}\/\d{4}$/.test(row.available) ? row.available.split('/').reverse().join('-') : null].filter(Boolean).sort().at(-1);
+        if (start) {
+            const remaining = (Date.parse(lease.endDate + 'T23:59:59Z') - Date.parse(start + 'T00:00:00Z')) / (86400000 * 30.4375);
+            maximum = Math.min(maximum ?? Infinity, remaining);
+        }
+    }
+    if (lease.minMonths > months) {
+        excluded.push('Permanência mínima acima da duração escolhida');
+    }
+    if (Number.isFinite(maximum) && maximum < months) {
+        if (filters.allowRenewal && lease.renewal !== 'no') {
+            pending.push('Estadia depende de renovação por acordo mútuo');
+        } else {
+            excluded.push('Prazo anunciado menor que a duração escolhida');
+        }
+    } else if (lease.type !== 'open-ended' && !Number.isFinite(maximum)) {
+        pending.push(lease.renewal === 'by-agreement' ? 'Renovação anunciada por acordo; confirmar duração total' : 'Duração e renovação do contrato a confirmar');
+    } else if (lease.type === 'open-ended') {
+        pending.push('Confirmar permanência mínima e condições de saída');
+    }
+    return { excluded, pending };
+}
 
 export function estimateBicycleMinutes(origin, destination) {
     if (![origin?.latitude, origin?.longitude, destination?.latitude, destination?.longitude].every(Number.isFinite)) {
@@ -17,13 +48,15 @@ export function estimateBicycleMinutes(origin, destination) {
 }
 
 export function evaluateProperty(row, filters = DEFAULT_FILTERS) {
-    const excluded = [], pending = [];
+    const { excluded, pending } = evaluateLease(row, filters);
     const limit = Number(filters.maxPrice) * (filters.currency === 'EUR' ? Number(filters.chfPerEur) : 1);
     if (!Number.isFinite(limit) || limit < 0 || !Number.isFinite(Number(filters.chfPerEur)) || Number(filters.chfPerEur) <= 0) {
         return { excluded: ['Informe preço e câmbio válidos.'], pending, confirmed: false };
     }
     if (['expirado', 'removido'].includes(row.availabilityStatus)) {
         excluded.push('Anúncio expirado/removido na consulta');
+    } else if (row.availabilityStatus === 'reservado') {
+        excluded.push('Anúncio reservado na consulta');
     } else if (row.availabilityStatus === 'incerto') {
         pending.push('Disponibilidade incerta');
     }
@@ -53,6 +86,7 @@ export function evaluateProperty(row, filters = DEFAULT_FILTERS) {
     }
     for (const [maximum, value, label, approximate] of [
         [filters.maxFloor, row.floor, 'Andar'],
+        [filters.maxWalkMinutes, row.walk?.minutes, 'Caminhada', row.walk?.approximate || !row.walk?.confirmed],
         [filters.maxTransitMinutes, row.commute?.minutes, 'Transporte público', row.commute?.approximate || !row.commute?.confirmed],
         [filters.maxBikeMinutes, row.bike?.minutes, 'Bicicleta', row.bike?.approximate || !row.bike?.confirmed]
     ]) {
@@ -85,13 +119,13 @@ export function evaluateProperty(row, filters = DEFAULT_FILTERS) {
     } else if (!String(row.pets || '').startsWith('Sim')) {
         pending.push('Permissão para cão a confirmar');
     }
-    const travelMode = filters.travelMode || 'transit';
-    const choices = travelMode === 'bike' ? [row.bike] : travelMode === 'either' ? [row.commute, row.bike] : [row.commute];
+    const travelMode = filters.travelMode || 'walk';
+    const choices = travelMode === 'walk' ? [row.walk] : travelMode === 'bike' ? [row.bike] : travelMode === 'either' ? [row.commute, row.bike] : [row.commute];
     const known = choices.filter(c => Number.isFinite(c?.minutes));
     const within = known.filter(c => c.minutes <= Number(filters.maxMinutes));
     if (within.length) {
         if (!within.some(c => c.confirmed && !c.approximate)) {
-            pending.push(travelMode === 'bike' ? 'Tempo de bicicleta aproximado' : 'Tempo aproximado / trecho desde a porta não verificado');
+            pending.push(travelMode === 'walk' ? 'Caminhada aproximada: origem sem endereço exato' : travelMode === 'bike' ? 'Tempo de bicicleta aproximado' : 'Tempo aproximado / trecho desde a porta não verificado');
         }
     } else if (known.length === choices.length) {
         excluded.push('Trajeto consultado acima do limite');
@@ -118,6 +152,9 @@ export function filterResearchRows(rows, filters = DEFAULT_FILTERS) {
             }
             if (field === 'transit') {
                 return result.row.commute?.minutes;
+            }
+            if (field === 'walk') {
+                return result.row.walk?.minutes;
             }
             if (field === 'bike') {
                 return result.row.bike?.minutes;

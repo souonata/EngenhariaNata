@@ -53,11 +53,12 @@ export function localizeStaticContent() {
 
 export function savedNotesLabel(listing) {
     const row = RESEARCH.rows.find(item => item.id === listing.researchId);
-    const prefix = 'Pesquisa de ' + RESEARCH.checkedAt + '. ';
+    const date = /^Pesquisa de (\d{2}\/\d{2}\/\d{4})\. /.exec(listing.notes || '')?.[1];
+    const prefix = 'Pesquisa de ' + date + '. ';
     const suffix = '. ' + (row?.notes || '');
     if (row && listing.notes?.startsWith(prefix) && listing.notes.endsWith(suffix)) {
         const reasons = listing.notes.slice(prefix.length, -suffix.length).split('; ').filter(Boolean).map(reason => tr(reason)).join('; ');
-        return tr('Pesquisa de {date}. {reasons}. {notes}', { date: dateLabel(RESEARCH.checkedAt), reasons, notes: tr(row.notes) });
+        return tr('Pesquisa de {date}. {reasons}. {notes}', { date: dateLabel(date), reasons, notes: tr(row.notes) });
     }
     // Personal titles and notes are never sent to a service or automatically translated.
     return listing.notes || '';

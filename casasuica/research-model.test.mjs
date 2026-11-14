@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { evaluateProperty, filterResearchRows, DEFAULT_FILTERS, estimateBicycleMinutes } from './research-model.mjs';
+import { evaluateProperty as evaluateModel, filterResearchRows as filterModel, DEFAULT_FILTERS as WALK_DEFAULT_FILTERS, estimateBicycleMinutes } from './research-model.mjs';
+// Existing transit/currency cases keep their original explicit search scenario.
+const DEFAULT_FILTERS = { ...WALK_DEFAULT_FILTERS, travelMode: 'transit', maxMinutes: 45, leaseMonths: '0' };
+const evaluateProperty = (row, filters = DEFAULT_FILTERS) => evaluateModel(row, filters);
+const filterResearchRows = (rows, filters = DEFAULT_FILTERS) => filterModel(rows, filters);
 const row = { id: 'a', town: 'Horw', rent: 2758.2, totalConfirmed: true, bedrooms: 2, bathrooms: 1, garden: 'Privativo com área verde', pets: 'Sim', commute: { minutes: 45, confirmed: true }, availabilityStatus: 'observado' };
 test('EUR 3000 converts to CHF 2758.20; both exact limits are inclusive', () => assert.equal(evaluateProperty(row).confirmed, true));
 test('CHF 2758.21 exceeds the EUR limit', () => assert.ok(evaluateProperty({ ...row, rent: 2758.21 }).excluded.includes('Acima do preço máximo')));
@@ -102,4 +106,34 @@ test('quantity column filters honor exact bounds and flag missing or estimated v
     assert.ok(missing.pending.includes('Área não informada'));
     assert.ok(missing.pending.includes('Andar não informado'));
     assert.equal(filterResearchRows([{ ...home, floor: 1 }], { ...filters, mode: 'archive' }).length, 1);
+});
+
+test('walking scope accepts exactly 40 routed minutes and excludes 41; approximate origins stay pending', () => {
+    const r = { ...row, walk: { minutes: 40, confirmed: true }, lease: { minMonths: 3, maxMonths: 18 } };
+    assert.equal(WALK_DEFAULT_FILTERS.travelMode, 'walk');
+    assert.equal(WALK_DEFAULT_FILTERS.maxMinutes, 40);
+    assert.equal(evaluateModel(r).confirmed, true);
+    assert.ok(evaluateModel({ ...r, walk: { minutes: 41, confirmed: true } }).excluded.includes('Trajeto consultado acima do limite'));
+    const approximate = evaluateModel({ ...r, walk: { minutes: 20, approximate: true } });
+    assert.equal(approximate.excluded.length, 0);
+    assert.ok(approximate.pending.includes('Caminhada aproximada: origem sem endereço exato'));
+    assert.ok(evaluateModel(r, { ...WALK_DEFAULT_FILTERS, maxWalkMinutes: 39 }).excluded.length);
+});
+test('short leases need mutual renewal; fixed non-renewable ends and minimum terms are respected', () => {
+    const r = { ...row, walk: { minutes: 20, confirmed: true }, lease: { minMonths: 3, maxMonths: 6, renewal: 'unknown' } };
+    const result = evaluateModel(r);
+    assert.equal(result.excluded.length, 0);
+    assert.ok(result.pending.includes('Estadia depende de renovação por acordo mútuo'));
+    assert.ok(evaluateModel(r, { ...WALK_DEFAULT_FILTERS, allowRenewal: false }).excluded.length);
+    assert.ok(evaluateModel({ ...r, lease: { ...r.lease, renewal: 'no' } }).excluded.length);
+    assert.ok(evaluateModel({ ...r, lease: { minMonths: 18 } }).excluded.length);
+    assert.equal(evaluateModel({ ...r, lease: { minMonths: 3, maxMonths: 12 } }).confirmed, true);
+    assert.ok(evaluateModel({ ...r, lease: { renewal: 'by-agreement' } }).pending.includes('Renovação anunciada por acordo; confirmar duração total'));
+    assert.ok(evaluateModel({ ...r, checkedAt: '14/11/2026', lease: { startDate: '2026-12-01', endDate: '2027-03-31', renewal: 'no' } }).excluded.length);
+    assert.ok(evaluateModel({ ...r, availabilityStatus: 'reservado' }).excluded.includes('Anúncio reservado na consulta'));
+});
+test('walking sort keeps unknown last in both directions', () => {
+    const rows = [null, 40, 0].map((minutes, i) => ({ ...row, id: String(i), walk: { minutes } }));
+    assert.deepEqual(filterModel(rows, { ...WALK_DEFAULT_FILTERS, mode: 'archive', sort: 'walk' }).map(x => x.row.id), ['2', '1', '0']);
+    assert.deepEqual(filterModel(rows, { ...WALK_DEFAULT_FILTERS, mode: 'archive', sort: 'walk', sortDirection: 'desc' }).map(x => x.row.id), ['1', '2', '0']);
 });

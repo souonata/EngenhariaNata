@@ -169,3 +169,18 @@ test('unsupported locale falls back to site default and embedded translations/da
     assert.ok(dom.window.document.getElementById('research-rows').textContent.includes(payload));
     dom.window.close();
 });
+
+test('a database refresh still translates untouched generated notes saved on an older research date', () => {
+    const initial = create('pt-BR');
+    initial.window.saveResearch(research.rows[0].id);
+    const saved = JSON.parse(initial.window.localStorage.getItem('casa-suica-v1'));
+    saved.list[0].notes = saved.list[0].notes.replace('Pesquisa de ' + research.checkedAt, 'Pesquisa de 31/10/2026');
+    initial.window.close();
+    const localized = create('it-IT', JSON.stringify(saved));
+    const text = localized.window.document.getElementById('allentries').textContent;
+    assert.ok(text.includes('31/10/2026'));
+    assert.ok(text.includes(translations['it-IT'][research.rows[0].notes]));
+    assert.ok(!text.includes('Pesquisa de 31/10/2026'));
+    assert.equal(JSON.parse(localized.window.localStorage.getItem('casa-suica-v1')).list[0].notes, saved.list[0].notes);
+    localized.window.close();
+});
