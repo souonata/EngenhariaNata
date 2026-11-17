@@ -1,195 +1,77 @@
 # Engenharia NATA
 
-Portfólio de apps web educativos para engenharia, energia, utilidades residenciais e finanças. O projeto é estático, trilíngue (`pt-BR` / `it-IT` / `sv-SE`) e prioriza cálculo prático com explicação passo a passo no navegador.
+Apps web educativos de engenharia, energia, utilidades residenciais e finanças. Cada app faz o cálculo no navegador e explica o passo a passo.
 
-- Site: `https://engnata.eu/`
-- Stack principal: HTML, CSS e JavaScript modular (ESM)
-- Status atual: 12 calculadoras ativas + previsão do tempo + app de patente náutica + página do plugin AudioLab + 2 páginas de suporte (`sobre/` e `bugs/`)
-- Cobertura de testes: **362 testes automatizados** (Vitest) em 41 arquivos — `br12c` (31,
-  o handbook do HP-12C), `pintor` (3), `src/utils` (2), `patentenautica` (2), `src/core` (1),
-  `salario` (1) e `mutuo` (1)
-- Backlog e prioridades: [ROADMAP.md](./ROADMAP.md)
-- Checklist de release/commit: [PRE_COMMIT.md](./PRE_COMMIT.md)
+- Site: [engnata.eu](https://engnata.eu/)
+- Idiomas: português (`pt-BR`), italiano (`it-IT`) e sueco (`sv-SE`)
+- Stack: HTML, CSS e JavaScript modular (ESM), sem framework; build com Vite
 
-## Apps do portfólio
+## Apps
 
-| Pasta             | Tipo                    | Resumo                                                         | Calc. extraído |
-| ----------------- | ----------------------- | -------------------------------------------------------------- | :------------: |
-| `bombaagua/`      | Engenharia hidráulica   | Calcula potência, perdas e consumo horário de bomba d'água     |                |
-| `iluminacao/`     | Engenharia elétrica     | Dimensiona lux, lâmpadas e custo de energia residencial        |                |
-| `ventilacao/`     | Conforto ambiental      | Calcula ACH, qualidade do ar e área mínima de ventilação       |                |
-| `chuva/`          | Água / sustentabilidade | Dimensiona captação de chuva, cisterna e economia mensal       |                |
-| `mutuo/`          | Finanças                | Compara SAC, Price e Americano com memorial e gráficos         |       ✅       |
-| `helice/`         | Náutica                 | Apoia escolha de passo de hélice para embarcações de lazer     |                |
-| `patentenautica/` | Educação náutica        | Banco filtrável, conta opcional, fontes oficiais e Carta 5/D   |       ✅       |
-| `solar/`          | Energia                 | Dimensiona sistema fotovoltaico off-grid e configurações       |                |
-| `bitola/`         | Instalações elétricas   | Define bitola de cabos considerando corrente e queda de tensão |                |
-| `arcondicionado/` | Climatização            | Dimensiona BTU e cenários multi-split                          |                |
-| `aquecimento/`    | Energia térmica         | Dimensiona aquecimento solar de água e ambiente                |                |
-| `salario/`        | Finanças                | Calcula salário líquido Brasil/Itália com memorial e gráficos  |       ✅       |
-| `fazenda/`        | Planejamento rural      | Planeja produção auto-sustentável com base regional            |                |
-| `previsao/`       | Meteorologia            | Previsão de 7 dias (Open-Meteo): temperatura horária e chuva   |      n/a       |
-| `audiolab/`       | Áudio / software livre  | Apresenta o plugin AudioLab para Jellyfin e ensina a instalar  |      n/a       |
-| `bugs/`           | Suporte                 | Canal de reporte de problemas e sugestões                      |      n/a       |
-| `sobre/`          | Institucional           | Página de visão geral do projeto e apps ativos                 |      n/a       |
+| App               | Área                    | O que faz                                                  |
+| ----------------- | ----------------------- | ---------------------------------------------------------- |
+| `aquecimento/`    | Energia térmica         | Dimensiona aquecimento solar de água e ambiente            |
+| `arcondicionado/` | Climatização            | Dimensiona BTU e cenários multi-split                      |
+| `bitola/`         | Instalações elétricas   | Define a bitola do cabo pela corrente e queda de tensão    |
+| `bombaagua/`      | Hidráulica              | Calcula potência, perdas e consumo de bomba d'água         |
+| `br12c/`          | Finanças                | Calculadora financeira no estilo HP-12C, com guia          |
+| `calha/`          | Hidráulica predial      | Dimensiona calhas e condutores pela NBR 10844              |
+| `chuva/`          | Água                    | Dimensiona captação de chuva, cisterna e economia          |
+| `fazenda/`        | Planejamento rural      | Planeja produção autossustentável                          |
+| `helice/`         | Náutica                 | Ajuda a escolher o passo da hélice                         |
+| `iluminacao/`     | Elétrica                | Calcula lux, lâmpadas e custo de energia                   |
+| `mutuo/`          | Finanças                | Compara sistemas de financiamento, com memorial e gráficos |
+| `patentenautica/` | Educação náutica        | Estudo para a patente náutica italiana (quiz e carteggio)  |
+| `previsao/`       | Meteorologia            | Previsão de 7 dias com temperatura e chuva                 |
+| `salario/`        | Finanças                | Calcula o salário líquido (Brasil, Itália e Suécia)        |
+| `solar/`          | Energia                 | Dimensiona sistema fotovoltaico                            |
+| `ventilacao/`     | Conforto ambiental      | Calcula renovação de ar e ventilação mínima                |
+| `audiolab/`       | Software livre          | Apresenta o plugin AudioLab para Jellyfin                  |
+| `sobre/`, `bugs/` | Institucional / suporte | Visão geral do projeto e canal de reporte de problemas     |
 
-A coluna **Calc. extraído** sinaliza apps cuja lógica numérica foi separada num módulo `*-calc.js` (ESM puro, sem DOM) e está coberta por testes automatizados. Hoje são três: `mutuo/mutuo-calc.js`, `salario/salario-calc.js` e `patentenautica/exercise-answers-calc.js` — este último não segue o padrão `<app>/<app>-calc.js` porque cobre a correção de exercícios, não um cálculo do app inteiro. Os demais seguem o padrão original (cálculo dentro da classe da app); a migração será feita em ondas — ver [ROADMAP.md](./ROADMAP.md).
+O catálogo também leva ao [Sites Vendas](https://sites.engnata.eu), um construtor de lojas online mantido em outro repositório.
 
-O catálogo também tem o **Sites Vendas**, o construtor de lojas online em `https://sites.engnata.eu`. Ele não tem pasta aqui: é um site standalone, só em `pt-BR`, com código no repo `SiteVendaTemplate`. Neste repositório ficam apenas o ícone e o card.
-
-## Arquitetura resumida
+## Estrutura
 
 ```text
 EngenhariaNata/
-├── index.html                  # landing e catálogo de apps
-├── assets/                     # CSS compartilhado, utilitários e vendor
-├── config/versions.json        # versões por app e data de atualização
-├── src/
-│   ├── core/                   # base de app, i18n e tema
-│   ├── components/             # componentes reutilizáveis
-│   ├── utils/                  # formatadores, validação, storage e DOM
-│   └── i18n/                   # textos por app e por idioma
-├── <app>/                      # cada app tem html + script + styles próprios
-│   ├── <app>-script.js         # eventos, render, DOM (camada de UI)
-│   ├── <app>-calc.js           # núcleo numérico puro (apps já migrados)
-│   └── <app>-calc.test.js      # suíte Vitest (apps já migrados)
-├── patentenautica/             # banco filtrável, conta/progresso, quiz IT/PT, Carta 5/D e PDFs
-├── sobre/                      # página institucional
-├── bugs/                       # formulário de reporte
-├── sw.js                       # service worker
-├── .github/workflows/          # GitHub Actions (testes + build)
-└── local/                      # toolchain de desenvolvimento e validação
+├── index.html            # página inicial e catálogo
+├── assets/               # CSS e JS compartilhados (inclui Chart.js local)
+├── config/versions.json  # versão de cada app
+├── src/                  # base dos apps: core, componentes, utilitários e textos (i18n)
+├── <app>/                # cada app na sua pasta: html + script + styles
+└── local/                # ferramentas de desenvolvimento (Vite, Vitest, ESLint, Prettier, Stylelint)
 ```
 
-## Testes automatizados
+## Rodando localmente
 
-A suíte de testes é executada por **Vitest** sobre os arquivos `<app>/<app>-calc.test.js`. Cobre fórmulas, invariantes, casos extremos e regressão de bugs já corrigidos.
+Requer Node 20 ou superior.
 
 ```bash
 cd local
-npm test                # roda todos os testes
-npm run test:watch      # modo watch durante desenvolvimento
-npm run test:coverage   # gera relatório de cobertura
+npm ci
+npm run dev        # http://localhost:5173
 ```
 
-Cobertura atual dos núcleos `salario-calc.js` e `mutuo-calc.js` (medida em 2026-08-29):
-
-| Métrica     |   Valor    |
-| ----------- | :--------: |
-| Statements  | **98,24%** |
-| Branches    | **88,88%** |
-| Functions   |  **100%**  |
-| Lines       | **98,42%** |
-| Total casos |  **143**   |
-
-Os 143 casos são só destes dois núcleos (`salario` 84, `mutuo` 59). A suíte completa do
-projeto tem 362 testes — o restante cobre `br12c`, `pintor`, `patentenautica` e o `src/`.
-
-A camada UI (`<app>-script.js`) ainda não é coberta automaticamente — testes de DOM ficam para fase futura.
-
-## Auditoria fiscal e correções (2026)
-
-A calculadora `salario` recebeu auditoria completa das fórmulas brasileiras e italianas, com correções aplicadas:
-
-- **13º IRRF (Brasil)** — agora respeita escolha automática entre dedução tradicional e simplificada (mesma regra do mensal); antes usava só a tradicional, inflando o IRRF para quem ganhava alto.
-- **Férias IRRF (Brasil)** — mesma correção do bug acima.
-- **Aviso prévio (Brasil)** — fórmula atualizada para a interpretação do MTE/Lei 12.506/2011: 30 dias até o 1º ano completo, +3 dias por ano completo a partir do 2º (capado em 90 dias).
-- **Trattamento integrativo (Itália)** — implementado o taper linear €15.000-€28.000 em vez do clip simplificado.
-- **Tabelas tributárias atualizadas para 2026**:
-  - INSS BR: novo teto **R$ 8.475,55** (faixas 1.621/2.902,84/4.354,27/8.475,55).
-  - IRPEF IT: 2º scaglione passa de **35% → 33%** (Legge di Bilancio 2026).
-  - INPS IT: soglia +1% a **€56.224** (Circolare INPS 6/2026).
-
-O `mutuo-calc.js` extraiu PMT/SAC/Price/Americano em funções puras, com invariantes (Σ amortizações = principal, Σ juros + Σ amortizações = totalPago) cobertos por testes em todos os 3 sistemas.
-
-## Ambiente local
-
-O setup de desenvolvimento fica em `local/`.
+Outros comandos (sempre a partir de `local/`):
 
 ```bash
-cd local
-npm install
-npm run dev
+npm test           # testes (Vitest)
+npm run validate   # lint + formatação + estilos + testes: rode antes de commitar
+npm run build      # build de produção em local/dist
 ```
 
-Comandos úteis:
+## Publicação
 
-```bash
-cd local
-npm run control        # painel local para controlar o Vite
-npm run dev            # servidor Vite (porta 5173)
-npm run build          # build de produção
-npm test               # suíte Vitest (roda 1x)
-npm run test:watch     # Vitest em modo watch
-npm run test:coverage  # cobertura com v8
-npm run lint:check     # ESLint sem autofix
-npm run format:check   # Prettier sem escrita
-npm run style:check    # Stylelint sem autofix
-npm run validate       # lint + format + style + tests
-npm run validate:patentenautica # valida banco, conta/sync, referências PDF, Carta 5/D e 103 figuras
-npm run checkup        # varredura rápida de console.log/debugger
-npm run version:patch  # atualiza versão do local/package.json
-```
+Todo push no `main` dispara o GitHub Actions, que faz o build e publica no GitHub Pages. O que está no ar é o build do `main`; mudanças em outras branches só aparecem depois do merge.
 
-Observações:
+## Adicionando um app
 
-- `npm run validate` é a verificação completa antes de commit.
-- A validação completa inclui a auditoria de integridade da camada oficial italiana e das traduções estáticas do `patentenautica/`.
-- O `patentenautica/` continua utilizável sem conta; o login cloud aceita somente e-mail e sincroniza questões, histórico de quizzes e exercícios de carteggio. A página de conta permite acompanhar e redefinir esse progresso pelo backend PocketBase autohospedado descrito em `patentenautica/backend/`.
-- O projeto usa `Chart.js` local em `assets/js/vendor/`, `localStorage` para preferências/configurações e GoatCounter para analytics.
-- ESLint precisa ser executado a partir de `local/` (config em `local/.eslintrc.json`).
+1. Crie uma pasta, por exemplo `meuapp/`, com `meuapp.html`, `meuapp-script.js` e `meuapp-styles.css`.
+2. Estenda a base em `src/core/app.js` para herdar idioma, tema e inicialização.
+3. Coloque os textos em `src/i18n/meuapp.json`, nos três idiomas.
+4. Separe as fórmulas em `meuapp-calc.js` (sem DOM) e cubra com testes em `meuapp-calc.test.js`.
+5. Registre o app no catálogo (`index.html`), na página `sobre/` e em `config/versions.json`.
+6. Rode `npm run validate`.
 
-## CI
-
-O workflow [`.github/workflows/test.yml`](./.github/workflows/test.yml) roda em todo `push` e `pull_request`:
-
-1. Instala dependências (`npm ci` em `local/`).
-2. Roda toda a suíte de testes (`npm test`).
-3. Faz build de produção (`npm run build`) como smoke check.
-
-O build falha bloqueia o merge.
-
-## Fluxo de manutenção
-
-Ao mexer em um app existente ou adicionar um novo:
-
-1. Atualize `index.html` para refletir o catálogo principal.
-2. Sincronize `src/i18n/index.json`, `src/i18n/sobre.json` e `sobre/sobre.html`.
-3. Registre a versão inicial ou mudança relevante em `config/versions.json`.
-4. Revise `README.md`, `ROADMAP.md`, `PRE_COMMIT.md` e `sitemap.xml` quando a mudança afetar o portfólio.
-5. Para apps já migrados (`salario`, `mutuo`): se mexer no cálculo, atualize/adicione testes em `<app>-calc.test.js` antes do commit.
-
-## Adicionando um novo app
-
-1. Crie uma pasta própria, por exemplo `meuapp/`, com `meuapp.html`, `meuapp-script.js` e `meuapp-styles.css`.
-2. Reaproveite a base em `src/core/app.js` para herdar idioma, tema e inicialização padrão.
-3. Crie `src/i18n/meuapp.json` com as chaves de `pt-BR` e `it-IT`.
-4. Importe os CSS compartilhados (`assets/css/shared-styles.css`, `assets/css/v2-components.css` e `assets/css/controls-styles.css`).
-5. Para fórmulas numéricas, separe a lógica em `meuapp-calc.js` (ESM puro, sem DOM) e crie `meuapp-calc.test.js` com cobertura de fronteiras, invariantes e edge cases.
-6. Registre o app no catálogo principal, na página `sobre/` e nos arquivos de documentação.
-
-### Casa Suíça (acesso discreto)
-
-O easter egg de nove toques revela o launcher `casasuica/`, disponível em PT/IT/SV.
-A senha de conveniência abre o painel de busca de aluguel local, servido pelo GitHub Pages
-em `engnata.eu/casasuica/`, sem ChatGPT Sites ou login. A seleção fica no navegador e pode
-ser exportada/importada como JSON. O dashboard completo e a tela de acesso seguem o idioma selecionado no site: PT/IT/SV.
-A senha estática não é autenticação de servidor. Nenhum dado pessoal é versionado no portfólio.
-
-A pesquisa atualizada em 14/11/2026 está em `casasuica/research-data.json`, com 109 registros e sua situação (55 novos; arquivo anterior preservado). Jardim privativo e térreo são filtros opcionais, desligados por padrão. Preços, fontes, data e pendências aparecem na tabela. Consulta manual, sem feed ou cobertura exaustiva garantida.
-
-### Pesquisa ampliada Casa Suíça — 14/11/2026
-
-Arquivo local de 109 registros, incluindo descartados, removidos e reservados. Padrão €3.000 / 40 minutos **a pé** até **47.038013412537815, 8.29237687360966**; 65 registros dentro do limite de caminhada antes dos demais critérios e 49 candidatos com pendências nos filtros padrão. Todos têm caminho pela rede pedonal OSRM/OpenStreetMap (segundos arredondados para cima); origem sem endereço exato continua aproximada. Tempos de bicicleta são estimados para o novo ponto. Os tempos antigos de TP ficam apenas em `legacyCommute`, pois usavam outro destino; a coluna atual mostra `—`, sem fingir uma nova consulta.
-
-Estadia de 3, 6, 12 ou 18 meses, com opção de incluir contratos curtos cuja extensão precisa ser negociada por ambas as partes. Datas finais, prazo mínimo/máximo e renovação anunciada ficam visíveis; ausência de informação não confirma renovação. Reservados/removidos e contratos incompatíveis sem renovação ficam no arquivo. Preço EUR/CHF, câmbio, quartos, banheiros completos, área, andar, cidade, jardim e térreo continuam editáveis. Jardim/térreo opcionais por padrão. Quantidades de quartos não são inferidas de Zimmer.
-
-O painel cataloga 51 fontes/caminhos (portais, agências, cooperativas, sublocação e outros serviços), com situação individual: anúncio/índice consultado, inventário dinâmico/inacessível ou somente caminho adicional. Cobertura parcial e manual, sem promessa de todas as ofertas da Suíça, disponibilidade garantida ou atualização automática; nenhuma agência foi contatada. Geocodificação e matrizes de caminhada cacheadas localmente, consultas sequenciais com pausa de 3 s. Filtros, ordenação, seleção e exportações JSON/HTML funcionam sem consultar portais.
-
-Casa Suíça 1.4.0: clique/toque nos cabeçalhos para alternar crescente/decrescente; setas indicam a ordem ativa. Filtros de quantidade ficam acima das respectivas colunas (preço, área, quartos, banheiros, andar e minutos de TP/bicicleta). Campos vazios nos máximos opcionais removem o limite extra; valores não informados ficam no final e pendentes. Ordenação e filtros persistem e funcionam offline.
-
-### Livecost Swiss (acesso discreto)
-
-`livecostswiss/` segue a Casa Suíça: nove toques no logo revelam o app e a senha `swiss` abre o orçamento completo no Pages. Entrada e painel financeiro em PT/IT/SV, seguindo o idioma escolhido no site. O seletor no painel muda o idioma sem recarregar o orçamento. Valores, tema e despesas ficam apenas neste navegador, na chave independente `livecost-swiss-v1`. A senha é uma trava estática de conveniência, não autenticação de servidor. O painel inclui somente cenários ajustáveis e referências públicas; não inclui o histórico pessoal da Itália nem dados de sessão do navegador.
-
-Casa Suíça 1.5.0: o painel completo herda `engnata_idioma` do site no momento de desbloquear. Menus, filtros, ordenação, mensagens e resumos de pesquisa estão em português, italiano e sueco. Categorias/valores dos backups permanecem canônicos; notas pessoais não são traduzidas. Datas e números seguem o idioma, mantendo CHF/EUR. O HTML offline inclui o idioma escolhido e seu catálogo, sem serviços externos.
+Mais detalhes: [ROADMAP.md](./ROADMAP.md) e [PRE_COMMIT.md](./PRE_COMMIT.md).
