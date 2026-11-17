@@ -17,7 +17,7 @@ Portfólio **estático** de apps web educativos (engenharia, energia, utilidades
 - **Build/dev:** Vite (config e toolchain ficam em `local/`).
 - **Site no ar:** `https://engnata.eu/` (custom domain nativo do GitHub Pages; `www` e
   `https://souonata.github.io/EngenhariaNata/` redirecionam pra cá). Ver seção 4 (Deploy).
-- **Domínios de app são subdomínios diretos**, ex.: o Assistente Volvo é `https://volvo.engnata.eu` (sem `www.`; `www.volvo...` **não resolve** no DNS).
+- **Domínios de app são subdomínios diretos**, ex.: `https://sites.engnata.eu` (sem `www.`; `www.<app>...` **não resolve** no DNS).
 - **Sites Vendas** (construtor de lojas) é outro site standalone: `https://sites.engnata.eu`, só em
   pt-BR, código no repo `SiteVendaTemplate`. Aqui ficam apenas o ícone e o card do catálogo.
 
@@ -90,8 +90,8 @@ npm run build          # build de produção (gera local/dist)
 6. Rode `npm run validate` antes de commitar.
 7. **Cada app é independente.** Todos fazem parte do Engenharia Nata e podem usar seus recursos e
    padrões comuns (`assets/css/`, `src/core/`, `src/i18n/`, `favicon.svg`, o catálogo da home), mas
-   **nenhum app usa arquivos que estão na pasta de outro** (ex.: `lichiabonsai/` não importa nada de
-   `pintor/`, nem o contrário). Se dois apps precisarem do mesmo recurso, ele sobe para um local comum.
+   **nenhum app usa arquivos que estão na pasta de outro** (ex.: `calha/` não importa nada de
+   `solar/`, nem o contrário). Se dois apps precisarem do mesmo recurso, ele sobe para um local comum.
    Use uma branch/worktree por app para não misturar commits e alterações de apps diferentes.
 
 ## 6. Gotchas (já mordidos)
@@ -105,7 +105,7 @@ npm run build          # build de produção (gera local/dist)
   salario, mutuo...) abrem por `engnata.eu/<app>`.
   **Nome de app novo = endereço que nenhuma loja pode usar:** acrescente-o também à lista de
   reservados do construtor (`backend/src/tenancy/slugs.js` no SiteVendaTemplate).
-- **DNS:** subdomínios de app (`volvo.engnata.eu`) não têm `www.`. `www.` é só para o apex (`www.engnata.eu`).
+- **DNS:** subdomínios de app (`sites.engnata.eu`) não têm `www.`. `www.` é só para o apex (`www.engnata.eu`).
 - **br12c** é standalone — copiado inteiro no deploy, fora do bundle.
 - **br12c tem service worker PRÓPRIO e versionado** (`br12c/sw.js`, cache `br12c-guide-vN`) —
   **NÃO** é o kill-switch do site principal. Ele cacheia de verdade: HTML/JS/CSS = network-first
@@ -114,46 +114,10 @@ npm run build          # build de produção (gera local/dist)
   antigos e força o re-precache. Sem isso, dá o clássico "mudei mas não atualizou" pros usuários
   que já visitaram (especialmente em estáticos cache-first).
 
-## 7. Apps secretos (easter egg) e o app "Bonsai Lichia"
+## 7. App "Rotta 12 — Patente Náutica" (`patentenautica/`)
 
-- **Gesto:** 9 toques (`pointerdown`/Enter/Espaço) em até **6 s** no logo do dock
-  (`#dockEasterEggTrigger`, "ENGENHARIA NATA"). Lógica em `index-script.js`
-  (`registrarToqueEasterEgg` → `desbloquearEasterEggVisitantes` → `revelarAppSecreto`).
-- **Mecanismo (genérico):** todo `.app-icon` com **`data-app-secreto`** começa `display:none`
-  inline + `aria-hidden`; ao desbloquear, `revelarAppSecreto()` revela **todos** (limpa o display,
-  adiciona `.is-unlocked`) e `sortAppsForLocale()` os mantém sempre por ÚLTIMO no grid. **Não
-  persiste** entre reloads (proposital). O `display:none` inline é necessário porque `.app-icon`
-  é `display:flex` (venceria `[hidden]`). **Para adicionar um app secreto:** marque o
-  `<a class="app-icon" data-app-secreto ...>` no `index.html` + nome i18n (`app-<x>`) em
-  `src/i18n/index.json`. Mexeu no `index-script.js`? **bumpe o `?v=`** do `<script>` (cache-bust
-  do dev; em produção o Vite re-hasheia o bundle).
-- Secretos atuais: **Assistente Volvo** (link externo `https://volvo.engnata.eu`, standalone —
-  NÃO criar página interna) e **Bonsai Lichia** (app interno, abaixo).
-
-### 7.1 App "Bonsai Lichia" (`lichiabonsai/`)
-- **Guia interativo + diário** de cultivo (germinação de uma lichia → bonsai, Turate/Lombardia). App
-  **discreto**: fora do catálogo e do sitemap, `noindex`; só pelo easter egg ou link direto
-  **`engnata.eu/lichiabonsai/`** (o HTML é `index.html`, p/ URL limpa, como o `br12c`).
-- **Bilíngue** pt-BR/it-IT (abre em pt, respeita a sessão). Estende o `App` base; design editorial
-  próprio (`lichiabonsai-styles.css`, paleta verde/vermelho-lichia, light/dark). Re-renderiza tudo
-  ao trocar idioma; estado de UI (fases/técnicas abertas, mês do calendário) preservado na instância.
-- **Dois tipos de dado** (ambos ESM bundlados pelo Vite, sem fetch em runtime):
-  1. **DIÁRIO — você edita `lichiabonsai/lichiabonsai-data.js`**: linha do tempo, medições, checklist,
-     metas, status, plano, `ESTACAO_CULTIVO` (infra) e **`FASE_REGISTROS`** (suas fotos/notas reais por
-     fase do guia — o *loop de feedback*; chaves `f0`…`f5` batem com as fases). Tudo bilíngue `{pt,it}`.
-  2. **GUIA (referência, raramente muda)** em módulos separados: `guia-fases.js` (`GUIA_INTRO` +
-     `GUIA_FASES`, roteiro 0–25 anos), `guia-tecnicas.js` (`TECNICAS`, passo a passo ilustrado),
-     `guia-calendario.js` (`CALENDARIO` 12 meses + `PRAGAS` + `MATERIAIS`), `guia-diagramas.js`
-     (`DIAGRAMAS` = SVGs inline, theme-aware via `var(--…)`/`currentColor`; chave em `diagrama` liga
-     fase/técnica ao desenho).
-- **Fase atual** é detectada por `META.dataInicial` + data de hoje (anos decorridos → índice em
-  `GUIA_FASES`); o **mês atual** destaca-se no calendário. (Substituiu o antigo bloco `ESTACOES` de
-  4 cards — o calendário de 12 meses é mais rico.)
-- **Fotos:** ponha o `.webp` em `lichiabonsai/fotos/` e referencie o nome do arquivo no data; o
-  Vite as inclui no build via `import.meta.glob` (não precisa tocar no `deploy.yml`). Rótulos de UI
-  em `src/i18n/lichiabonsai.json` (copiado pelo deploy.yml junto com os outros i18n).
-
-### 7.2 App "Rotta 12 — Patente Náutica" (`patentenautica/`)
+> Notas privadas de manutenção ficam em `AGENTS.local.md` (não versionado; copie entre PCs).
+> Leia-o também, se existir neste PC.
 
 - App de estudo para a patente náutica italiana entro 12 miglia, a motore, publicado na rota limpa
   `/patentenautica/`. O italiano ministerial é a camada canônica; português é tradução auxiliar.
@@ -199,29 +163,11 @@ npm run build          # build de produção (gera local/dist)
 
 ## 9. Estado atual / handoff  ⟵ ATUALIZE AO FIM DE CADA SESSÃO
 
-- **CASA SUÍÇA 1.6.0 (2026-11-14):** pesquisa centrada em 47.038013412537815, 8.29237687360966, padrão caminhada 40 min/€3.000. 109 registros (55 novos), 65 dentro da caminhada antes dos demais filtros e 49 candidatos pendentes no padrão. `walk` usa matriz OSRM foot de rede pedonal, minutos arredondados para cima, origem aproximada sinalizada; `bike` recalculada por estimativa geográfica. TP antigo foi preservado em `legacyCommute`, sem reaproveitar minutos de outro destino na coluna atual. `sources` cataloga 51 caminhos com cobertura individual honesta (consultado/índice/inacessível/somente catálogo); dados antigos mantêm sua data e disponibilidade incerta. Removidos e reservados ficam só no arquivo. Coluna de caminhada ordenável, filtro numérico e contrato/renovação visível; seletores 3/6/12/18 meses e inclusão de contratos curtos com renovação a negociar. Renovação nunca é presumida; contratos curtos ficam pendentes se puderem depender de acordo mútuo. Nova busca migra uma vez os navegadores existentes, mantendo preço, quartos, seleção e notas pessoais. Tudo PT/IT/SV e offline. Caches/evidências em `../rental-research-2026-11-14`, sem consultar portais durante uso ou tradução. Verificação: 38 testes Casa Suíça e 7 Livecost; suíte geral 439/461 na primeira execução, com 22 timeouts BR12C passando na repetição apenas dos casos afetados (30 s). Lint/formato/style, i18n/assets/integridade/Pintor e build/privacy gate passaram; layout mobile 390×844 e painel italiano conferidos no browser.
-
-- **CASA SUÍÇA 1.5.0 (2026-11-01):** painel inteiro em pt-BR/it-IT/sv-SE, herdando `i18n.obterIdiomaAtual()` no desbloqueio (sessionStorage `engnata_idioma` do core). `dashboard-document.mjs` monta srcdoc/offline; `dashboard-localization.mjs` traduz UI e formata datas/números; `dashboard-translations.json` contém UI, motivos e resumos curados. Opções de selects recebem valores canônicos antes de traduzir rótulos; filtros/status/backup preservam compatibilidade. Notas/títulos pessoais permanecem intactos; resumos automáticos da seleção e edição aparecem traduzidos sem regravar a origem quando não alterados. Ordenação textual usa o locale/rótulos traduzidos e mantém ausentes no fim; moedas continuam CHF/EUR. Novos testes exercitam o código real da trava, herança e troca antes de desbloquear, 54 resumos, dados pessoais, edição, filtros e exportação offline. Não carregar pesquisas externas para traduzir.
-
-- **LIVECOST SWISS 1.1.0 (2026-11-01):** painel completo traduzido para PT/IT/SV (113 mensagens em `src/i18n/livecostswiss-dashboard.json`), incluindo tabela, pizza, despesas editáveis, resultados e notas/fontes. O idioma inicial vem do i18n central (`engnata_idioma` na sessão); seletor na toolbar atualiza também a sessão do site. Documento embarcado recebe o idioma ao abrir e troca em tempo real por mensagem validada do pai, sem recarregar/perder os valores. Chaves de despesas e modelo suíço permanecem iguais entre idiomas. `dashboard-language.mjs` monta o documento com catálogos JSON seguros; testes cobrem paridade, todo texto estático, troca de idioma após recálculo e estado preservado. Verificado no browser PT→SV→IT, 7 testes Livecost, 25 Casa Suíça, paridade/i18n, lint/style/assets/integridade e build/privacy gate. Suíte geral: 453/461 de primeira; os 8 timeouts BR12C passaram no rerun dos 7 arquivos (36 testes, limite 30 s).
-
-- **LIVECOST SWISS 1.0.0 (2026-10-31):** novo app discreto `/livecostswiss/`, mesmo fluxo da Casa Suíça (nove toques, senha estática `swiss`, relock em voltar/reload). Dashboard financeiro em inglês importado como `dashboard-source.txt?raw`, sem dependências de outros apps. Shell PT/IT/SV; tema sistema/claro/escuro e orçamento persistem exclusivamente em `livecost-swiss-v1`. Cenários 80/90/100k, tabela/pizza de despesas e fontes/limitações. Histórico pessoal italiano e dados salvos do usuário não entram no repo. Trava estática não é autenticação; manter noindex e fora do sitemap e dos cards públicos. Verificado: 5 testes novos, 25 Casa Suíça, lint/style/i18n/assets/integridade e build/privacy gate. Suíte geral: 444/461 de primeira, 17 timeouts BR12C; os 9 arquivos afetados passaram no rerun (53 testes) com 30 s. Browser real abriu o orçamento e alternou claro; QA mobile pendente.
-
-- **CASA SUÍÇA 1.4.1 (2026-10-31):** atalhos para Homegate, ImmoScout24, Newhome e Comparis no início do painel, antes do título/estatísticas. Reutiliza o array de portais existente; links abrem em nova aba. Grade de quatro colunas no desktop e duas no celular, no fluxo normal da página. Nenhuma chamada aos portais ao carregar; HTML offline atualizado.
-
-- **CASA SUÍÇA 1.4.0 (2026-10-31):** cabeçalhos clicáveis alternam crescente/decrescente, com setas e aria-sort. Tabela em 11 colunas: cidade/imóvel, preço, área, quartos, banheiros completos, andar, jardim, cão, TP, bicicleta e situação. Campos numéricos acima das colunas; preço/quartos/banheiros sincronizam com filtros gerais. Novos minArea/maxFloor/maxTransitMinutes/maxBikeMinutes, estes três máximos vazios = sem limite extra. Quantidades desconhecidas continuam pendentes; valores ausentes ficam no fim em ambos os sentidos. sort/sortDirection e filtros persistem; estados antigos ganham padrões sem perder a seleção. Ordenar/filtrar não consulta rede. 25 testes do app cobrem ordenação, empates/zeros/ausentes, filtros por coluna, acessibilidade, sincronização, persistência e exportação. Correção mobile 1.3.1 preservada.
-
-- **CASA SUÍÇA 1.3.1 (2026-10-31):** correção de área útil no celular: raiz/corpo abertos zeram a altura mínima herdada de 100vh e usam fundo claro; painel fixo preenche a viewport dinâmica, toolbar não encolhe, iframe ocupa o restante. Até 768px o menu vira uma linha horizontal rolável clara e sem a marca redundante; sidebar deixa de reservar a faixa verde. Cache bust CSS/JS 1.3.1. Browser visual não disponível (controle desativado nas configurações Work); validar no aparelho do usuário.
-
-- **CASA SUÍÇA 1.3.0 (2026-10-31):** jardim e térreo opcionais (`garden:any`, `groundFloorOnly:false`). 54 registros (21 anteriores + 33 de índices públicos), todos em JSON e HTML offline. `sourceIndex` sinaliza disponibilidade/total pendentes; shortlist distingue IDs mesmo quando a URL da fonte é igual. Os 54 têm TP e bicicleta em minutos, sem detalhes de rota na coluna; origem/fonte ficam em Notas. 45 origens por endereço e 9 aproximações pelo centro/parada central, marcadas ≈. API geocodificou Emmen,Dorf como Gümmenen e Obernau como Ortschwaben: rejeitados; centro Emmen usa estação ID 8588526 (Emmen,Kirche). Emmenbrücke é alias do município Emmen quando rua/número conferem. Bicicleta é estimativa geográfica ×1,35 / 15 km/h + 3 min (sem relevo/rota real), gerada offline por `build-bike-estimates.mjs`; nunca tratada como confirmada. `travelMode` = transit/bike/either aplica o limite ao modo selecionado. Pesquisa usa cache e consultas sequenciais com intervalo de 3 s; filtros não acessam rede. 20 testes de app passaram; validação geral e build passaram. Browser UI indisponível: desativado nas configurações Work. Financeiro pessoal permanece fora do repo público.
-
-- **CASA SUÍÇA 1.2.0 (2026-10-31):** dashboard completo no Pages (`casasuica/`), trava estática `swiss`, sem ChatGPT Site. Pesquisa ampliada: 21 registros em `research-data.json`, incluindo descartados/expirados/fora dos limites para auditoria, todos cacheados no navegador. Filtros persistentes: EUR/CHF, preço (padrão EUR 3000), câmbio (BCE 30/10: 0,9194 CHF/EUR), quartos reais, banheiros completos (lavabo separado não conta), TP até 45 min, cidade e dados pendentes. Regra antiga de jardim obrigatório substituída pela versão 1.3.0. Referência de destino: Kriens, Zentrum Pilatus; consulta Transport API para 02/11/2026 até 08:00. `commute.confirmed` só quando geocodificação confere o endereço; tempo não é até a empresa. API confundiu Schützenrain/Obernau com Ortschwaben: resultado rejeitado. `research-model.mjs` é a lógica pura injetada no srcdoc e testada via `npm run test:casasuica`, também chamado por `npm test`; testes de persistência e export HTML. Download de todos em JSON e HTML independente/offline; filtros nunca apagam registros. Original financeiro pessoal permanece fora do repo público.
-
 _Última atualização: 2026-09-27_
 - **SITES VENDAS NO CATÁLOGO (branch `feat/app-sites-vendas`, 2026-09-27):** ícone e card
   "Sites Vendas" abrem o construtor de lojas em `https://sites.engnata.eu/` na mesma aba. É site
   standalone, só em pt-BR, com código no repo `SiteVendaTemplate`: aqui não há pasta, página
-  interna, entrada no `sobre`, sitemap nem versão (sem etiqueta `V.` no ícone, como o Volvo). O
+  interna, entrada no `sobre`, sitemap nem versão (sem etiqueta `V.` no ícone). O
   card tem texto nos três idiomas porque o validador de paridade exige; em IT/SV ele avisa que é
   para vender no Brasil e que o site é em português. Ícone: vitrine de toldo listrado nas cores da
   plataforma.
@@ -326,310 +272,16 @@ _Última atualização: 2026-09-27_
   html/css/js para `dist/calha/` — sem mexer no `deploy.yml`. Testes Vitest em `calha/tests/`.
   `npm run validate` passou (44 arquivos/401 testes, paridade i18n OK). O
   `npm run build` local gera `dist/calha/`, mas o `postbuild` acusa
-  `pintor/output/pdf/random_validation_20260823/*.html`, artefatos privados locais deste PC
+  artefatos privados locais deste PC
   (ignorados no git, inexistentes no CI) — não é do calha. Bancada local não versionada em
   `calha2/` com os PDFs das normas (**não commitar**). Desde a 3.5.4, a Figura 2(e) é vetorial
   no estilo das demais (duas superfícies iguais paralelas + a maior em cima e a lateral); a
   fórmula escrita pelo app usa módulo, sem área negativa. Detalhes em `calha/HANDOFF.md`.
 
-- **PINTOR — DUAS FALHAS REAIS DO SITE CORRIGIDAS (3.1.6, PUBLICADO — API 0.6.3):** reproduzi localmente os
-  dois erros reportados em `engnata.eu/pintor/`. (1) *Uma página insegura matava a varredura
-  inteira*: no `Group 30 Electrical system`, a página 22 punha 27 pixels de tinta dentro de um
-  símbolo protegido, o portão V2 fazia `raise` e o trabalho terminava `failed` sem libertar nada —
-  incluindo as 7 páginas que tinham passado. O portão continua categórico e a camada é descartada;
-  agora a página fica `declined` com o nome do portão e a contagem de pixels, e a varredura segue.
-  O manual passa a `ready` com 1 pintada e 7 declinadas. (2) *Manual de cablagem declinado por não
-  ter cablagem*: o `Wiring Diagram MD2010-40` de 2000 são chapas digitalizadas com a lista de
-  componentes ao lado (700–1300 caracteres), e a única forma de candidato raster exigia
-  `text_chars < 200` — nenhuma página chegava ao OCR. Agora uma chapa digitalizada (cobertura de
-  imagem ≥0,25, folha inteira, sem esquema vetorial próprio, dentro de documento de cablagem) é
-  candidata; continua a precisar que o OCR ache os códigos. O manual vai de 0 para 12 páginas e
-  termina `ready` com 11 pintadas, 40 a 135 condutores nas páginas de esquema.
-  **Defeito conhecido que isto expôs:** na página 19 pintada, duas caixas de conector ficam
-  coloridas (régua de pinos da unidade de alarme e conector do ponto morto) e o V2 aprovou —
-  o detetor de alojamentos da rota raster não as reconhece. É comportamento pré-existente da rota
-  raster; é o próximo a corrigir. Suíte: 474 testes Python e `npm run validate`.
-  **PUBLICADO:** commit `d76a125` → release `/opt/pintor-api-releases/d76a125` → imagem
-  `engnata/pintor-api:0.6.3` (com `pintor-wiring-3.1.6`). Volume `pintor-api_pintor-data`
-  reutilizado, container saudável, smoke externo `external_auth=ok account=ok
-  unauthenticated=401 job=ready result=pdf delete=204`. Rollback: release `2b08f7e` /
-  imagem `0.6.2`. **Lembrete: a API NÃO sai do `main` — publicar exige reconstruir no VM.**
-
-- **PINTOR — ROUND 2 FECHADO: TABELAS DE CÓDIGO POR PÁGINA E OCR FRESCO (3.1.5, PUBLICADO — API 0.6.3):**
-  as 60 decisões do Round 2 (45 pintáveis, 15 rejeições) fecharam quatro lacunas sem alargar o
-  vocabulário global: tabelas de código locais da página (`B`=preto, `Gr`=verde) só valem com
-  cabeçalho `Wire Colour`/`Kod/Code` e seis nomes de cor; chicotes curtos de diagnóstico exigem três
-  códigos distintos, OCR ≥0,95, alinhamento compacto e tinta dos dois lados; o verificador estrito
-  refaz o OCR quando o `scanner_version` do ledger está atrasado (agora v15); e o *foldout* raster
-  dentro de PDF com texto exato passa a cair no OCR fresco + topologia raster em vez de morrer na
-  rejeição vetorial. `CAN H`/`CAN L` continuam nomes de sinal, nunca cores. Medido nas 60 páginas:
-  **44 de 45 pintáveis verificadas** (17 vetoriais, 27 raster, todas com leitura refeita), 3148
-  condutores físicos e 73 códigos distintos; **zero falsos positivos** nas 15 rejeições (3 rejeitadas,
-  12 revisão). O único falso negativo conservador é `140:51`. Suíte: 467 testes Python, 362 Vitest e
-  `npm run validate`. Detalhes em `pintor/HANDOFF.md`.
-
-- **PINTOR — DETECÇÃO CALIBRADA PELO FEEDBACK + ROUND 2 (3.1.4, PUBLICADO — API 0.6.3):** o JSON do
-  primeiro round validou 142 decisões (92 pintáveis, 50 rejeições). O gate novo zerou os 39 falsos
-  positivos vetoriais rotulados: texto PDF corrompido exige OCR; tabelas de pino, layouts Multilink,
-  ilustrações de sensor/componente e mapas dominados por marcadores de pino não podem virar fios.
-  Páginas diagnósticas com circuitos reais continuam elegíveis. OCR antigo ganhou nomes de cores
-  suecos/ingleses condicionados a bitola decimal; `308:107` passou de um `Gy` fraco para 9 labels e
-  20 condutores verificados. O Round 2 em `D:/volvo-library/inv/shard_00/round_02/review.html` tem
-  60 páginas/42 manuais (20 vetoriais, 20 raster prováveis, 20 OCR review), máximo 2 por manual,
-  zero repetição das 142 decisões e zero erros. Suíte: 459 testes Python, 362 Vitest e validação
-  completa. Detalhes em `pintor/HANDOFF.md`.
-
-- **PINTOR — REVISÃO HUMANA OFFLINE DO INVENTÁRIO (3.1.3, PUBLICADO — API 0.6.3):**
-  `pintor-review-inventory` gera um pacote local e móvel a partir de um ou vários ledgers amplos,
-  sem tocar nos PDFs. A grade mostra evidência automática, busca/filtros e três decisões orientadas
-  à pintura (`paintable_wiring`, `do_not_paint`, `unsure`); o visor abre uma imagem de 2800 px sob
-  demanda, com roda/botões de zoom, pan por arraste, ajuste e atalhos Y/N/U. O progresso fica no
-  navegador e pode ser exportado/importado em `pintor-wiring-page-feedback-v1`, amarrado ao SHA do
-  manual, página e fingerprint da evidência; revisão divergente falha fechada e nada é treinado ou
-  promovido automaticamente. Gerado em `D:/volvo-library/inv/shard_00/review.html`: 560 candidatos
-  de 105 manuais, 560 imagens de alta resolução + miniaturas lazy, zero erros. Browser real aprovou
-  decisão/motivo/nota, autosave após reload, zoom/pan e console limpo. Suíte: 452 testes Python, 362
-  Vitest e `npm run validate`. Detalhes em `pintor/HANDOFF.md`.
-
-- **PINTOR — VERIFICAÇÃO ESTRITA DE WIRING DIAGRAMS (3.1.2, PUBLICADO — API 0.6.3):** o inventário amplo
-  ganhou uma segunda etapa retomável, `pintor-verify-inventory`. Ela reaproveita texto/OCR já
-  coletado, mas só publica no CSV/HTML páginas em que a topologia e a semântica de produção aprovam
-  ao menos um condutor físico com código de cor; rejeitados, ambíguos e erros ficam apenas no ledger
-  de auditoria. Há rotas separadas para vetor exato, chicote pictórico contornado e raster/OCR.
-  Páginas só com pinos não qualificam. O texto exato minúsculo `r/p`, `25w04` e `25 gr` deixou de
-  virar os falsos códigos `R/P`, `W` e `GR`, preservando IDs reais como `0.75 WH (w14)`. Smoke real
-  no shard 01: 19 candidatos → 8 verificados, 8 rejeitados, 3 revisão, 0 erros; os três fluxogramas
-  administrativos ficaram com zero fios, oito páginas raster reais passaram e `pub3763:20`
-  preservou seus 8 fios contornados. Suíte: 449 testes Python, 362 Vitest e `npm run validate`.
-  Detalhes em `pintor/HANDOFF.md`.
-
-- **PINTOR — SEMÂNTICA DE ENGENHARIA GLOBAL (0.6.0, PUBLICADO via PR #27):** todas as rotas de
-  produção (vetorial, raster/OCR,
-  chicote pictórico, pinos, lote, P1, pipeline legado e worker web) passam pelo mesmo gate antes
-  de renderizar: gramática da página → papéis dos objetos → condutores físicos entre fronteiras →
-  fonte de cor impressa → conflitos/desconhecidos → pintura. Só condutor físico e pino confirmado
-  podem receber cor; chamada de legenda, contorno, terminal, junção e geometria incerta ficam
-  pretos. Contexto elétrico pode rejeitar uma associação, nunca inventar cor. Resultado e detalhe
-  administrativo mostram gramática, papéis, anotações excluídas e evidências, sem expor a geometria
-  privada de cada claim. Validação real: `pub81:334` = 27 pinos/0 fios; `pub3763:20` = 8 fios/8
-  chamadas excluídas; ambos V2/V7. Suíte: 435 testes Python, 362 Vitest e build. Detalhes em
-  `pintor/HANDOFF.md` e
-  `pintor/docs/ELECTRICAL_SAFETY_RULES.md`. API `engnata/pintor-api:0.6.0` saudável no SHA
-  `b73d286`, smoke externo completo; merge `4612f0e`, Pages e testes pós-merge passaram.
-
-- **PINTOR — FIOS PICTÓRICOS CONTORNADOS (0.5.6, branch
-  `codex/pintor-exhaustive-discovery`):** a amostra real `pub3763:20` desenha os 8 fios como tubos
-  raster grossos e vazios; as linhas vetoriais finas saindo de `Y`, `R/SB`, `SB`, `R/BL` e `LBN`
-  são apenas chamadas de legenda. A nova rota híbrida usa texto + chamadas exatos somente para
-  localizar cada tubo bitonal, extrai o eixo do interior fechado e pinta sua largura medida. Exige
-  pelo menos duas chamadas independentes e cobertura completa antes de assumir exclusividade;
-  imagem sombreada e ambiguidade causam abstinência. O reparo fez 8/8 em 2,2 s, contra 1/1046 em
-  189,2 s, manteve todas as chamadas pretas e passou V2/V7 com zero pixels protegidos. Detalhes e
-  regressões em `pintor/HANDOFF.md`.
-
-- **PINTOR — MARCADORES DE PINO DE CONECTOR (0.5.5, branch
-  `codex/pintor-exhaustive-discovery`):** a amostra real `pub81:334` não desenha os fios; ela só
-  imprime os códigos ao lado dos pinos. Esses rótulos agora são separados do algoritmo de posse de
-  fios e geram círculos centralizados dentro dos pinos, com duas metades iguais para códigos de duas
-  cores. O raio respeita simultaneamente 72% do raio do pino, a distância ao pino vizinho e a borda
-  do conector; nesta página o diâmetro ficou em ~0,62 mm. Resultado: 27 pinos marcados, 0/37
-  contornos pintados, V2/V7 aprovados. Um gate exige ao menos dois pares rótulo↔pino por conector,
-  e uma página densa de fios manteve 99/150 atribuições com zero falsos marcadores. Detalhes e
-  regressões em `pintor/HANDOFF.md`.
-
-- **PINTOR — REVISÃO ADMIN COM ZOOM/PAN + AMOSTRA REAL (0.5.4, branch
-  `codex/pintor-exhaustive-discovery`):** só desenhos cujos donos marcaram erros e escolheram
-  compartilhar aparecem em **Relatos**; uploads privados continuam invisíveis ao admin e expiram
-  normalmente. O detalhe do relato agora tem ajustar/zoom, roda do mouse e pan por arraste, usando
-  a mesma transformação para imagem e marcações; trocar Pintado/Original preserva a vista. A
-  matemática foi extraída para `pintor/pintor-viewport.js` e ganhou regressões. Um fixture local com
-  API viva confirmou 33%→50%, pan, duas marcações alinhadas e transformação idêntica ao alternar a
-  imagem. Foi sorteada uma amostra reproduzível de seis páginas P&B reais (seed `20260823`, quatro
-  confirmadas + duas prováveis, manuais distintos) em
-  `pintor/output/pdf/random_validation_20260823`; os artefatos são privados/ignorados. A queda
-  terminou com quatro resultados aprovados por V2/V7, uma abstinência integral byte-idêntica e um
-  rascunho denso (`pub80:163`) mantido só para diagnóstico porque V2 bloqueou 20.184 pixels em zonas
-  protegidas. O raster revelou ainda que `ctypes.CDLL(None)` lança `TypeError` no Windows após o
-  OCR; o `malloc_trim` opcional agora é ignorado com segurança nessa plataforma e tem teste de
-  regressão.
-
-- **PINTOR — ROBÔ DE INVENTÁRIO (branch `codex/pintor-exhaustive-discovery`):** varre cada página
-  de cada PDF, encontra até diagramas mínimos de sensor/relé com um único código junto ao fio,
-  rejeita palavras/designadores que imitam cores e ignora somente páginas cujos próprios condutores
-  já são cromáticos junto aos códigos — cor decorativa ou numa ilustração separada não elimina um
-  circuito P&B. Gera ledger retomável + JSON/CSV/HTML/miniaturas sem alterar os manuais. Passagem
-  vetorial + RapidOCR concluída nos 78 manuais/9.027 páginas: 233 confirmadas, 182 prováveis, 2
-  para revisão, 56 páginas já coloridas ignoradas, 4.238 páginas não-elétricas excluídas e **417
-  candidatas P&B** no total (251 novas além da lista antiga); zero pendências, erros ou chaves
-  duplicadas. RapidOCR 3.9.2 + ONNX Runtime 1.29.0 estão instalados e os três modelos passaram no
-  `rapidocr check`. A revisão remove produto/boletim, dimensão mecânica, pin table, layout de cores
-  de cabos, hidráulica/combustível, fluxo de serviço e `R1/P1/T1` usados como designadores. Os
-  exemplos rejeitados pelo usuário estão todos fora do relatório final em
-  `pintor/workspaces/wiring_inventory_bw_ocr_final`. Detalhes em `pintor/HANDOFF.md`.
-
-- **PINTOR — MANUAIS GRANDES, RETENÇÃO DE 24 H E TRABALHO PÁGINA A PÁGINA (0.5.0, PUBLICADO EM
-  2026-08-22):** segunda leva. **200 MB por arquivo** (`PINTOR_MAX_UPLOAD_MB=200`) e o upload
-  deixou de ser `await file.read(...)`: agora escorre para `workspace/incoming/` (pasta de runtime do Pintor no servidor, fora do repositório) em blocos de 1 MB,
-  com o limite conferido durante a escrita, e o `store.create` recebe um caminho (aceita bytes ou
-  path, faz o sha256 em blocos e move para a pasta do job). Medido contra API viva: upload de
-  188,8 MB cresceu o processo da API em **13,1 MB** e gravou `source_bytes` 188.757.233 intacto.
-  **O SERVIÇO NÃO É ARQUIVO:** `PINTOR_RETENTION_HOURS` continua 24 e agora vale para TODO upload,
-  com ou sem conta — fica o tempo de o dono baixar o resultado e é apagado do servidor. A única
-  exceção é o manual que o dono marcou com erros e escolheu compartilhar: `shared_job_ids()` lê isso
-  dos registros de feedback e o `cleanup_expired` pula esses jobs, então a contribuição sobrevive E
-  o dono mantém o controle dela — excluir o job continua retirando a cópia compartilhada, que é o
-  caminho de revogação. O consentimento é exigido no upload E no relato, então relatar um manual
-  enviado sem consentimento não o guarda por tabela. `/api/account/jobs` devolve `expires_at` e
-  `shared_for_improvement`, e a tela mostra contagem regressiva ou "Guardado — compartilhado para
-  melhorias". A limpeza roda no boot, antes de novo upload e a cada 5 min mesmo com a API ociosa;
-  jobs em fila/processamento são preservados e as 24 h começam no estado terminal. O armazenamento
-  vivo mantém cota: `PINTOR_MAX_ACCOUNT_STORAGE_MB` (2 GB) por conta, visível ao dono e ao admin
-  (coluna Disco), e `PINTOR_MAX_STORAGE_MB` (8 GB) no workspace; a VM tinha 13 GB livres antes da
-  publicação. Bug corrigido no caminho: o cookie
-  `pintor_session` usava `max_age=retention_seconds`, o que com retenção 0 mandava `Max-Age=0` e
-  apagava o cookie na chegada, quebrando toda sessão anônima.
-  **PÁGINA A PÁGINA:** a varredura reabre o documento a cada 50 páginas (o store por documento do
-  MuPDF segura tudo o que já foi lido até fechar); a pintura anexa cada overlay assim que ele
-  existe (`append_overlays`, extraído de `attach_overlays`), roda o V7 daquela página na hora e
-  apaga o PNG — nunca há todos os overlays em disco ao mesmo tempo, e uma falha de preservação
-  aparece na página que a causou. Previews só são pré-renderizados nas primeiras
-  `PINTOR_EAGER_PREVIEWS` (12) páginas; o resto é renderizado na primeira visualização e cacheado.
-  **SUPERVISÃO POR PROGRESSO:** o antigo `PINTOR_JOB_TIMEOUT_SECONDS=180` mataria qualquer manual
-  longo. Agora o supervisor compara `(updated_at, stage, current_page, completed_pages,
-  scanned_pages)` entre polls e só mata quando o job PARA (`PINTOR_JOB_STALL_SECONDS`, 900 s) ou
-  quando passa do teto absoluto (`PINTOR_JOB_MAX_SECONDS`, 6 h). O rlimit de CPU passou de 150 s
-  para o teto.
-  **MEDIDO** (manuais sintéticos, 50 páginas de fiação cada, pipeline real):
-  400 páginas → 50/50 pintadas, 144,5 s, pico 1.173,7 MB RSS, 17,7 MB de workspace;
-  1.200 páginas → 50/50, 144,6 s, pico 1.175,6 MB, 27,2 MB. Triplicar o manual mexeu 1,9 MB
-  (0,16%) no pico de memória, e o PDF final reabriu com 400 e 1.200 páginas. Nenhum overlay ficou
-  em disco; 24 previews em vez de 100.
-  **VERIFICADO:** 72 testes Python web/account/preservation e `npm run validate` com 359 testes
-  Vitest, i18n/lint/format/style. Cobertura nova:
-  upload em streaming preserva bytes/digest e não deixa lixo no staging; arquivo acima do limite é
-  recusado sem ser guardado; só o manual compartilhado sobrevive ao `cleanup_expired`, e relato sem
-  consentimento no upload não guarda nada; a cota recusa e volta a aceitar depois de uma exclusão;
-  preview pulado é renderizado na primeira visualização; job que reporta progresso não é morto e
-  job parado morre como `ProcessingStalled`. Contra API viva: dois manuais enviados, um relatado com
-  erro marcado e compartilhado, ambos envelhecidos além da janela — a varredura de reinício apagou
-  o não-compartilhado e manteve o contribuído junto com a cópia no inbox de treino. O gate adicional
-  prova que a limpeza periódica funciona sem restart/upload e nunca apaga job ativo.
-  **PENDENTE:** as medições usam manuais vetoriais sintéticos. Uma folha A0 escaneada custa muito
-  mais POR PÁGINA, e é o orçamento por página — não o tamanho do manual — que a limita. O pico de
-  ~1,2 GB é custo de UMA página; uma A0 raster pode passar disso sozinha, então vale uma rodada com
-  corpus real antes de prometer um manual específico.
-
-- **PINTOR — CONSOLE DE CADASTROS, VARREDURA E FILA (0.5.0, PUBLICADO PELO PR #25):** o painel de
-  admin virou três abas. **Cadastros** lista cada tester com papel,
-  situação, nº de desenhos e de relatos, e permite suspender/reativar (derruba as sessões sem
-  apagar nada), promover/rebaixar e excluir a conta junto com todos os jobs e cópias de treino
-  pendentes. Duas regras vivem no store, não só na tela: o admin não mexe na própria conta pelo
-  console e o beta nunca fica sem administrador ativo — o `bootstrap_admin` reativa o admin
-  configurado no boot, então suspensão não tranca ninguém para fora. Trocar papel ou suspender
-  revoga as sessões da conta. **Rounds** são lotes curados de relatos aceitos (em
-  `improvement_rounds/`, pasta de runtime do Pintor no servidor, fora do repositório): um round aberto por vez, todo aceite com consentimento entra sozinho,
-  reverter a decisão tira, e fechar congela a lista e grava `<id>-manifest.json` para curadoria
-  offline — `automatic_training: false`, o serviço continua sem treinar nem promover modelo.
-  **Meus desenhos** mostra ao dono tudo o que é dele (na fila, pintando, pronto), com posição na
-  fila, etapa ao vivo, selo no que ficou pronto desde o acesso anterior, e reabrir/baixar/excluir.
-  Excluir a conta repede a senha e apaga credenciais, sessões, jobs e cópias de feedback.
-  **SEM LIMITE DE PÁGINAS:** `MAX_DOCUMENT_PAGES` (2.000) e `MAX_SELECTED_PAGES` (50) sumiram da API
-  e do parser do front. Sobrou `MAX_PAGE_NUMBER = 100_000`, só para um intervalo digitado errado não
-  virar uma lista que estoura a memória antes de abrir o PDF, mais os orçamentos por página
-  (dimensão e pixels de análise), inalterados. Numa varredura, página fora do orçamento é pulada e
-  reportada em vez de derrubar o job; em página pedida explicitamente continua erro.
-  **VARREDURA:** upload sem seleção de páginas passa por `tools/discover_pages.scan_document`, que
-  reaproveita as regras de evidência já validadas contra o corpus: uma legenda exata precisa ser
-  associada geometricamente a um traço vetorial de condutor; a antiga contagem bruta de oito códigos
-  não confirma mais uma página nem supera as exclusões semânticas. Imagem quase de página inteira em
-  folha grande e quase sem texto, dentro de um documento sabidamente de fiação, é candidata para
-  OCR. Contagem de traços continua não sendo evidência. Com `convention=auto` os tokens de todas as
-  convenções são unidos, porque a detecção só
-  decide SE a página é wiring diagram — qual vocabulário é ela continua sendo decidido por
-  `_select_convention`, página a página. Documento sem nada qualificável é `declined` com stage
-  `no-wiring-page`, não `failed`. `PINTOR_SCAN_MAX_PAGES` (padrão 0 = ilimitado) limita a varredura.
-  **FILA:** `ProcessingQueue` concede o único slot de pintura em ordem de chegada e sabe responder
-  quantos arquivos estão na frente; a posição aparece na tela de processamento e em cada card na
-  fila. O formulário aceita vários arquivos de uma vez (um job por arquivo).
-  `PINTOR_MAX_ACTIVE_JOBS` (padrão 20) substituiu a regra de dois jobs ativos. No boot, jobs
-  deixados em `queued`/`processing` por um restart voltam para a frente da fila
-  (`PINTOR_RESUME_ON_START=0` desliga).
-  **VOLTAR DEPOIS:** contas guardam `previous_login_at`; `/api/account/jobs` devolve `since` e marca
-  cada job com `finished_since_last_login`. A retenção continua 24 h, então essa visão só alcança um
-  dia para trás.
-  **VERIFICADO:** 50 testes Python nos módulos de web/contas (104 rodados nos quatro módulos) e
-  `npm run validate` com 359 testes Vitest, paridade i18n, ESLint, Prettier e Stylelint. Contra API
-  viva: manual sintético de 6 páginas com 2 de fiação varrido, as 2 achadas e pintadas, PDF final
-  reaberto com as 6 páginas; três arquivos juntos enfileiraram em ordem com posição visível e
-  drenaram um a um; matar o serviço no meio da fila e reiniciar retomou os dois jobs interrompidos
-  até `ready`; dono que volta viu só o que terminou na ausência. No browser: suspensão, promoção,
-  exclusão de conta, criar/fechar round, upload múltiplo, cards de fila ao vivo e a recusa da
-  varredura localizada em PT/IT/SV.
-  **PUBLICAÇÃO:** a API `engnata/pintor-api:0.5.0` foi construída do commit `656aa9a`, ficou
-  saudável antes do merge e passou smoke externo (conta temporária, processamento real, download e
-  exclusão). PR #25 mergeado como `d384128`; Pages run `32572129340` passou e o bundle público novo
-  foi conferido. **PENDENTE:** medir manual real de 500+ páginas antes de prometer desempenho; o
-  teto continua 3 GB/2 CPUs. "Pronto desde o último acesso" não sobrevive à retenção de 24 h.
-  Detalhes em `pintor/HANDOFF.md`.
-
-- **PINTOR — RASTER/OCR NA BETA PROTEGIDA:** o app secreto `/pintor/` e a API dedicada
-  `pintor-api.engnata.eu` agora aceitam tanto páginas vetoriais quanto páginas formadas somente por
-  imagem. A interface 0.4.3 traduz o nome exibido como **Pintor** (PT), **Pittore** (IT),
-  **Målaren** (SV) e **Painter** no fallback inglês, sem alterar a rota ou os identificadores
-  técnicos; o cabeçalho reúne o símbolo dos três fios ao nome e não repete o selo decorativo de beta.
-  A proteção continua explícita e ativa na tela de acesso. A API publicada 0.4.0 também adiciona
-  contas persistentes para testers externos atrás do
-  código beta: usuário único, senha de no mínimo 4 caracteres armazenada apenas com scrypt+salt,
-  sessão opaca HttpOnly e propriedade dos jobs por conta. Um console restrito ao papel admin lista
-  feedback, compara original/resultado com as marcações e registra aceitar/rejeitar/pedir
-  esclarecimento; nem aceitação promove ou treina modelo automaticamente. O administrador é
-  bootstrapado somente por username + hash em segredo de ambiente, nunca por senha no Git ou no
-  frontend. A rota raster usa RapidOCR/ONNX Runtime pinados, skeletonização e as mesmas regras
-  elétricas/gates V2/V7; emendas não propagam cor, convenção automática exige duas leituras OCR
-  fortes e trechos incertos permanecem pretos. Um PDF sintético realmente image-only (zero texto e
-  zero desenho vetorial) completou OCR, pintura removível e preservação. A versão publicada aceita
-  manuais de até 2.000 páginas e até 50 páginas escolhidas por job (`40, 42, 44-46`), processa-as
-  sequencialmente e entrega um único PDF completo com uma OCG. Os demais limites continuam 25 MB,
-  análise 75 Mpx,
-  overlay 60 Mpx e retenção 24 h. O frontend continua
-  `noindex`, fora do sitemap e visível apenas no easter egg; autenticação beta, owner isolation,
-  rate limits, worker isolado, container non-root/read-only sem egress e firewall do tunnel
-  permanecem. A imagem Linux atual `0.4.0` conserva o limite de cada chamada ONNX em 1600², mantém
-  A0 em grayscale,
-  restringe pools nativos e libera/trimma o runtime OCR antes da topologia. A reprodução real que
-  falhava (`9362 × 6623`, A0 image-only, PDF de 44 páginas) chegou a `ready` no host protegido em
-  279,3 s: convenção Volvo `high`, 80 labels, 3.107 runs/464 pintados, V2/V7 e preservação aprovados,
-  PDF final reaberto com 44 páginas, acesso anônimo `401` e exclusão `204`. Durante OCR foram
-  observados ~826 MB RSS/~1,45 GB VSZ, caindo depois para ~533 MB/~1,06 GB; o container continua
-  limitado a 3 GB, 2 CPUs, um job e sem egress. Isso qualifica a reprodução de capacidade, não
-  universaliza precisão para fabricantes/layouts ainda sem corpus. Detalhes em `pintor/HANDOFF.md`.
-  **TÚNEL AUTO-RECUPERÁVEL (0.2.2):** em 20/08 o origin/API continuava saudável, mas as quatro
-  conexões do `cloudflared` caíram e o hostname público respondeu `530/1033`; por isso o browser
-  mostrava o inglês nativo `Failed to fetch` antes de validar o código. O conector `.10` foi
-  reiniciado, voltou com quatro conexões HTTP/2 e CORS correto, e recebeu
-  `pintor-tunnel-watchdog.timer`: health público a cada minuto, restart somente após três falhas
-  consecutivas. O frontend 0.2.2 traduz falhas de transporte em PT/IT/SV. Script e units ficam em
-  `pintor/deploy/`; o timer está enabled/active no host. Em 20/08 a credencial beta foi rotacionada
-  a pedido do proprietário; o hash e o segredo HMAC atualizado permanecem somente na VM, e o valor
-  em texto claro continua restrito a `/root/pintor-beta-access.txt` com modo `0600`. A rotação foi
-  validada externamente: credencial anterior `401`, nova `200`, capability autenticada `200` e
-  capability anônima `401`. Nenhuma credencial deve ser documentada ou commitada.
-  **OVERLAY SEM FALSO ALARME (0.4.3):** falhas de previews/imagens, analytics bloqueado e
-  ErrorEvents vazios de extensões não abrem mais a faixa de “página travada”; falha de
-  script/stylesheet same-origin, exceção real, promise rejeitada e reporte fatal explícito continuam
-  visíveis. Respostas HTTP tratadas como `401` de sessão e `409` de username duplicado podem aparecer
-  em vermelho apenas no DevTools, comportamento normal do navegador.
-  **PUBLICAÇÃO 0.4.1/0.4.0:** o PR #21 foi integrado ao `main` em `a09c7b7`; Pages e CI passaram,
-  a imagem `engnata/pintor-api:0.4.0` ficou saudável no host protegido e o smoke externo confirmou
-  registro de conta efêmera, login, isolamento anônimo `401`, processamento/download de PDF e
-  exclusão `204`. O administrador `popov` é bootstrapado apenas por hash no `.env` root-only; a
-  senha não consta do repositório, imagem ou documentação. O frontend foi conferido em PT/IT/SV
-  sem erros de console. O rollback pré-publicação foi preservado sem copiar o `.env`.
-
 - **SITE TRILÍNGUE — SUECO (`sv-SE`) + DOCK GLOBAL (branch `feat/i18n-sueco`):** iniciativa em
   andamento; plano completo e fases na seção própria do `ROADMAP.md`. **Decisões travadas:** idioma
-  acoplado ao país (`sv-SE` ⇒ Suécia); Salário/Mutuo terão o **modelo sueco completo**; `br12c` e
-  `lichiabonsai` entram; **`patentenautica` fica FORA e não exibe a bandeira sueca** (o exame é
+  acoplado ao país (`sv-SE` ⇒ Suécia); Salário/Mutuo terão o **modelo sueco completo**; `br12c`
+  entra; **`patentenautica` fica FORA e não exibe a bandeira sueca** (o exame é
   italiano e o app usa `data-study-mode`, não seletor de idioma). **Vento do app meteo em m/s em
   TODOS os idiomas.**
   - **FEITO (Fases 0, 1 e 3):** núcleo i18n com 3 idiomas, moeda por mapa (BRL/EUR/SEK), cadeia de
@@ -705,8 +357,7 @@ _Última atualização: 2026-09-27_
     os apps da raiz — eles nunca passaram pelo Prettier e usam 4 espaços. Não rode
     `prettier --write` neles: reformata tudo para 2 espaços e infla o diff (aconteceu: 1.788
     inserções onde o real eram 451).
-  - **Fora do sueco por decisão:** `fazenda` (base agronômica regional) e `lichiabonsai`
-    (333 campos `{pt, it}` de conteúdo nos módulos de dados) — ver ROADMAP.
+  - **Fora do sueco por decisão:** `fazenda` (base agronômica regional) — ver ROADMAP.
   - **Line endings resolvido:** `.gitattributes` agora tem `* text=auto eol=lf`. Os 275 arquivos já
     estavam em LF no index, então não houve mudança de conteúdo — só parou de quebrar o
     `format:check` depois de cada merge no Windows.
@@ -724,16 +375,16 @@ _Última atualização: 2026-09-27_
   italiana. `npm run validate` passou com 284 testes e a validação náutica; `npm run build` e o
   smoke HTTP passaram com página, JS, CSS e Carta 5/D retornando 200. Repetir esses checks após
   alterações futuras na carta ou na navegação.
-  Origem `C:\Users\abros\OneDrive\Documentos\projetos\patenteNautica` removida após verificação de 116/116 arquivos e SHA-256 dos
+  A pasta de origem local foi removida após verificação de 116/116 arquivos e SHA-256 dos
   103 PNGs, quatro PDFs e dados canônicos. A publicação é feita pelo workflow do GitHub Pages
-  após integração em `main`; arquivos locais de `.claude` e `lichiabonsai` permanecem fora do escopo.
+  após integração em `main`.
 
 - **REFERÊNCIAS OFICIAIS E CONTAS (base integrada):** o vínculo histórico à Dispensa foi substituído
   por resposta ministerial, explicação original, página exata da banca MIT e fontes públicas ou
   institucionais para as 1.472 questões, com gerador reproduzível e validação de cobertura. Inclui
   banco completo com filtros combináveis, quiz aleatório/selecionado, perfil local exportável e
   conta opcional para sincronizar progresso, inclusive simulado só de inéditas. O backend PocketBase
-  0.39.8 está ativo na VM Proxmox 205 `engnata-backend` (192.168.1.13), publicado somente por
+  0.39.8 está ativo numa VM própria, publicado somente por
   Cloudflare Tunnel em `accounts.engnata.eu`; porta LAN restrita, painel público bloqueado, rate
   limiting e backups diário interno + VM configurados. O teste público confirmou criação/login por
   usuário ou e-mail, isolamento, sincronização, troca de e-mail/senha e exclusão em cascata. Versão
@@ -812,59 +463,20 @@ _Última atualização: 2026-09-27_
   desprezível nas 24 marcas; build e checkup passaram. A inspeção visual a 97% confirmou 11° 9,2′
   entre 9′ e 10′, e os layouts 390 × 844 e 820 × 1180 permaneceram sem overflow horizontal.
 
-- **ATUALIZAÇÃO DO DIÁRIO (11/10):** novo post bilíngue com três fotos tratadas em WebP; muda com
-  13 cm e 15 folhas (10 no tronco principal, 5 no ramo menor), já dentro de casa sob lâmpada SANSI
-  15 W LED E27 para plantas (registrada também em `ESTACAO_CULTIVO` › luz e na nota de `f0`).
-  Medição adicionada; cache-bust do script para 1.2.3. Originais em `lichiabonsai/raw-images/`
-  (untracked, não commitar).
-- **ATUALIZAÇÃO DO DIÁRIO (22/08):** novo post bilíngue com três fotos tratadas em WebP; muda
-  registrada com 11 cm e 11 folhas — três no novo ramo que emerge do solo e oito no tronco
-  principal. Status atualizado para crescimento livre no berçário e cache-bust do script para
-  1.2.2. Build Vite e verificação local PT/IT concluídos; as três imagens carregam corretamente.
-- **ATUALIZAÇÃO DO DIÁRIO (12/07):** novo post bilíngue registrando o primeiro fluxo com duas
-  folhas novas; muda medida em 8 cm e quatro folhas totais. Três fotos da nova leva foram
-  selecionadas, tratadas e convertidas para WebP (régua, vista geral e detalhe das folhas
-  acobreadas). Cache-bust do script atualizado para 1.1.4. Suíte: 284 testes OK. Publicação:
-  commit/push no main; pendente apenas confirmar o deploy automático no ar.
-- **PUBLICADO:** rebuild do Bonsai Lichia mergeado no `main` e pushado em 2026-06-26 (branch
-  `feat/lichiabonsai-guia-interativo`; build + 223 testes OK, verificado no preview Vite
-  light/dark/mobile/pt/it). Deploy automático via Actions → confirmar no ar em `engnata.eu/lichiabonsai/`.
-- **Bonsai Lichia virou GUIA INTERATIVO** (era só diário). Pedido: "guia interativo, temporal, com
-  exemplos/imagens/esquemas, e atualizável com fotos reais da evolução". Novas seções data-driven:
-  **Guia em fases** (roteiro 0–25 anos, fase atual auto-detectada e aberta, cada fase com objetivo /
-  o-que-fazer / resultado / erro comum / **diagrama SVG** / bloco "Seu registro" p/ fotos reais —
-  `FASE_REGISTROS`), **Calendário anual** (12 meses, mês atual destacado, clicável), **Técnicas
-  ilustradas** (12 cards expansíveis com esquema), **Pragas e cuidados**, **Materiais por etapa**.
-  Conteúdo destila/supera a conversa do ChatGPT (roteiro de 25 anos da lichia). Ver seção 7.1 p/ a
-  arquitetura (módulos `guia-*.js`). `?v=` de CSS/JS bumpado p/ `1.1.0`. Removido o bloco `ESTACOES`
-  (4 cards) — substituído pelo calendário.
 - **`main` (antes desta branch):** em dia, deployado e verificado no ar. Branch `feat/auditoria-padronizacao-apps` == `main`, sincronizadas no remoto.
 - **Domínio migrado para custom domain NATIVO** do GitHub Pages: `engnata.eu` serve **direto** (URL
   limpa, HTTPS forçado), fixado por `public/CNAME`; `www` → 301 → apex; DNS na Cloudflare (apex com
   A/AAAA → IPs do Pages, **DNS only**). Build com `base: './'` (relativo). Detalhes na seção 4.
   (Antes era forwarding GoDaddy/Redirect Rule; histórico na memória de roteamento.)
 - **SEO unificado:** `canonical`/`og`/`twitter`/JSON-LD/`sitemap.xml`/`robots.txt` → `https://engnata.eu/...`.
-- **App "Bonsai Lichia"** (`lichiabonsai/`, HTML = `index.html`) construído e no ar em
-  `engnata.eu/lichiabonsai/`: diário editorial bilíngue, **data-driven**, discreto (noindex, fora do
-  catálogo) e **2º app secreto** do easter egg (com o Volvo, via `data-app-secreto`). Ver seção 7/7.1.
-  - **Seções (ordem na página):** hero, status, plano (próx. etapa), **guia em fases**, **calendário
-    anual**, **técnicas ilustradas**, linha do tempo, medições (sparkline), metas, checklist, estação
-    de cultivo (infra), **pragas e cuidados**, **materiais por etapa**. Diário em `lichiabonsai-data.js`
-    (`TIMELINE`/`MEDICOES`/`FASE_REGISTROS`/`ESTACAO_CULTIVO`…); guia nos módulos `guia-*.js` (ver 7.1).
-  - **Estado do diário (25/06):** transplante p/ PET 2 L registrado; fase → Enraizamento; próximo passo
-    → 1º inverno (aceita **luz de cultivo**, pois a casa nova em Turate não tem face sul); medições 5→7 cm.
-    Plano de infra ("Estação de cultivo") **definido mas a executar** — ver memória `bonsai-estacao-cultivo`.
-    Atualizar = editar `lichiabonsai/lichiabonsai-data.js` (ver memória `bonsai-lichia-fotos`).
 - **br12c:** máscaras das teclas no retrato realinhadas (`transform: scaleY` por tema no `@media`
   retrato); cache do SW bumpado p/ `br12c-guide-v3`.
-- **Referência untracked (de propósito):** `lichia-bonsai-site-v2/` (+ `.zip`) e os originais das fotos
-  do bonsai — são a FONTE das fotos tratadas em `lichiabonsai/fotos/`. Não commitar.
 - **Gotcha do dev (cache de `?v=`):** ao mexer em script/CSS de um app (`index-script.js`,
-  `lichiabonsai-script.js`, `*-styles.css`…), **bumpe o `?v=`** no HTML correspondente — o navegador
-  segura módulos `?v=` antigos (em produção o Vite re-hasheia, então é só p/ o dev). No lichiabonsai,
-  mudança **só de dados** (`lichiabonsai-data.js`) também pede bump do `?v` do **script** (cascateia o
-  data module fresco no Vite dev). Apps com fotos (`import.meta.glob`) exigem preview via **Vite**
-  (porta 5173); e `/lichiabonsai/` com query cai na raiz no Vite dev — navegue p/ `/lichiabonsai/index.html`.
+  `*-script.js`, `*-styles.css`…), **bumpe o `?v=`** no HTML correspondente — o navegador
+  segura módulos `?v=` antigos (em produção o Vite re-hasheia, então é só p/ o dev). Mudança **só de
+  dados** num módulo importado também pede bump do `?v` do **script** (cascateia o módulo fresco no
+  Vite dev). Apps com imagens via `import.meta.glob` exigem preview via **Vite** (porta 5173); rota de
+  pasta com query pode cair na raiz no Vite dev — navegue p/ `/<app>/index.html`.
 - **Sincronização entre PCs:** o sintoma "funciona num PC, noutro não" costuma ser **branch
   diferente** entre máquinas. Antes de começar: `git fetch && git status` e confirme em qual
   branch está. Ao trocar de máquina, faça `git pull` da branch correta e `cd local && npm ci`.

@@ -4,3 +4,7 @@ A referência canônica deste projeto (para Claude Code **e** Codex) é o `AGENT
 Mantém-se **um único** arquivo de contexto para os dois agentes. A linha abaixo importa-o:
 
 @AGENTS.md
+
+Notas privadas (não versionadas; só existem nos PCs onde foram copiadas):
+
+@AGENTS.local.md

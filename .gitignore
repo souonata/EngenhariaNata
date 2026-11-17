@@ -20,3 +20,6 @@ calha2/
 calha/referencias/*.pdf
 calha/referencias/auditoria-2026-09-13/nbr10844-texto-extraido.txt
 calha/tmp/
+
+# Contexto privado de agentes (não versionar)
+AGENTS.local.md
